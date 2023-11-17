@@ -90,7 +90,7 @@ export enum GenderTypes {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.5.4a
+ * @version 0.5.6b
  * @alpha
  */
 class GToolkit {
@@ -167,7 +167,7 @@ class GToolkit {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Config
-    public static DebugLevel: DebugLevels = DebugLevels.Dev;
+    public debugLevel: DebugLevels = DebugLevels.Dev;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Type Guard
@@ -671,7 +671,8 @@ class GToolkit {
     }
 
     /**
-     * 是否 playerId 或 guid 指向自己.
+     * 是否 playerId 或 gameObjectId 指向自己.
+     * @scope 仅客户端.
      * @param id
      */
     public isSelfCharacter(id: number | string) {
@@ -994,7 +995,7 @@ class GToolkit {
     public log(announcer: { name: string }, msg: unknown): void;
 
     public log(announcer: { name: string }, msg: string | unknown): void {
-        if (GToolkit.DebugLevel !== DebugLevels.Dev) {
+        if (this.debugLevel !== DebugLevels.Dev) {
             return;
         }
 
@@ -1010,7 +1011,7 @@ class GToolkit {
     public warn(announcer: { name: string }, msg: unknown): void;
 
     public warn(announcer: { name: string }, msg: string | unknown): void {
-        if (GToolkit.DebugLevel === DebugLevels.Silent) {
+        if (this.debugLevel === DebugLevels.Silent) {
             return;
         }
 
@@ -1027,7 +1028,7 @@ class GToolkit {
     public error(announcer: { name: string }, msg: unknown): void;
 
     public error(announcer: { name: string }, msg: string | unknown): void {
-        if (GToolkit.DebugLevel === DebugLevels.Silent) {
+        if (this.debugLevel === DebugLevels.Silent) {
             return;
         }
 
