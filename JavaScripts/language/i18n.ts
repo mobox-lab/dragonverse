@@ -33,79 +33,9 @@ export enum LanguageTypes {
  * 最佳实践要求 发布后此表数据不应被采纳.
  */
 let languageDefault = {
-    // ["ts_language_1"]: "{0}通关成功，用时<color=#red>{1}</color>",
-
-
-    ["UI_FashionMagazineSerialSuffix"]: "期",
-
-    ["UI_FashionMagazineAbleToStore"]: "去购买",
-
-    ["UI_FashionMagazineUnableToStore"]: "服装和您的性别不符，仅供浏览哦",
-
-    ["UI_GameSelectGameComingSoon"]: "正在筹备",
-
-    ["UI_ActOfMotion"]: "动作",
-
-    ["UI_ActOfExpression"]: "表情",
-
-    ["UI_Common_Tips"]: "提示",
-
-    ["UI_Create_Role_Tips"]: "确认创建该角色？\n一旦创建，性别将无法更改",
-
-    ["UI_SPRINT_MSG"]: "快速点击画面吧！",
-
-    ["UI_CURVE_MSG"]: "抓住快要离开跳台的瞬间 点击\"跳跃\"按钮！",
-
-    ["UI_FALL_MSG"]: "提前点击按钮摆好姿势落地哦！",
-
-    ["UI_COMMON_OK"]: "确定",
-
-    ["UI_COMMON_CANCEL"]: "取消",
-
-    ["UI_Common_CostNotEnough"]: "费用不足\n赚到足够的钱再来吧",
-
-    ["UI_STORE_BUYSUCCESS"]: "购买成功",
-    ["UI_STORE_BUYTIPS"]: "要购买穿着的服饰吗？",
-
-    ["UI_STORE_RESET"]: "要清除已试穿装扮吗？\n我们将为您替换为当前穿戴的装扮",
-    ["UI_STORE_GOODS_TIME_FOREVER"]: "永久",
-    ["UI_STORE_GOODS_TIME_DAY"]: "天",
-
-    ["UI_STORE_OWNED_GOODS"]: "已拥有",
-
-    ["UI_EXCHANGE_STORE_WAIT"]: "再想一下",
-
-    ["UI_EXCHANGE_STORE_SURE"]: "确认兑换该单品吗？",
-
-    ["UI_FAKE_NICKNAME1"]: "丸不动辣-",
-    ["UI_FAKE_NICKNAME2"]: "三十年执行策划",
-    ["UI_FAKE_NICKNAME3"]: "起个名字真费劲",
-    ["UI_FAKE_NICKNAME4"]: "你叭叭啥",
-    ["UI_FAKE_NICKNAME5"]: "真嘟假嘟0_o",
-
-    ["UI_ENERGY_NOT_ENOUGH"]: "体力不够了，休息一会",
-    ["UI_TREASURE_HAS_DIGGED"]: "宝物已经被挖掘了哦，再找找吧",
-    ["UI_TREASURE_FAR"]: "离宝物近一点才能挖掘哦，再找找吧",
-    ["UI_DIGGING_TIPS"]: "持续点击挖掘按钮，用力挖出宝藏吧",
-    ["UI_DRESS_PIECES_NOT_ENOUGH"]: "皮肤碎片不够兑换哦，再去挖一点再来吧",
-    ["UI_NO_REWARD"]: "好可惜，宝箱是空的呢，再挖挖吧",
-    ["UI_DIG_TIPS"]: "一直点击挖掘按钮，将宝物从沙子里挖出来吧",
-
-    ["UI_NOBODY_ACCEPT_INVITATION"]: "无人接受",
-    ["UI_ScalerText_text_Interrupt"]: "动作被中断",
-
-    ["UI_BagItem_txtTime_003"]: "小时",
-    ["FORMAT_TIME_MINUTE"]: "分",
-    ["FORMAT_TIME_SECOND"]: "秒",
-
-    //#region 背包
-    ["UI_BAG_BtnTextUnload"]: "卸下",
-    ["UI_BAG_BtnTextEquip"]: "装备",
-    ["UI_BAG_TextForever"]: "永久",
-
-    ["UI_BAG_Full"]: "装备栏已满!",
-
-    //#endregion
+//#region Bag
+    BagItemName0001: "背包物体0001",
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 };
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 

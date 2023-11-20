@@ -1,4 +1,5 @@
 import {ConfigBase, IElementBase} from "./ConfigBase";
+import {BagItemConfig} from "./BagItem";
 import {LanguageConfig} from "./Language";
 import {SoundConfig} from "./Sound";
 
@@ -19,6 +20,7 @@ export class GameConfig{
 		}
 		return this.configMap.get(ConfigClass.name) as T;
 	}
+	public static get BagItem():BagItemConfig{ return this.getConfig(BagItemConfig) };
 	public static get Language():LanguageConfig{ return this.getConfig(LanguageConfig) };
 	public static get Sound():SoundConfig{ return this.getConfig(SoundConfig) };
 }
