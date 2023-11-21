@@ -1,4 +1,6 @@
 import GToolkit from "../util/GToolkit";
+import { EventDefine } from "../const/EventDefine";
+import noReply = mwext.Decorator.noReply;
 
 /**
  * Salt Token.
@@ -25,6 +27,9 @@ class SaltToken {
 export default class AuthModuleData extends Subdata {
     //@Decorator.saveProperty
     //public isSave: bool;
+
+    @Decorator.persistence()
+    public enteredCode: string = null;
 }
 
 /**
@@ -102,9 +107,21 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
         this.server.net_verifyCode(this.generateSaltToken(), code);
     }
 
+    /**
+     * 是否 已取得 EnterCode.
+     */
+    public enterCodeValid(): boolean {
+        return !GToolkit.isNullOrEmpty(this.data.enteredCode);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
+    public net_getEnterCode(enteredCode: string) {
+        this.data.enteredCode = enteredCode;
+        Event.dispatchToLocal(EventDefine.GetEnterCode);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -217,6 +234,13 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         return true;
     }
 
+    public async verityEnterCode(code: string): Promise<boolean> {
+//TODO_LviatYi 构造 Http 请求 验证 EnterCode.
+//         fetch().then((resp) => {
+//         });
+        return code === "123456788";
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
@@ -229,14 +253,17 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         });
     }
 
+    @noReply()
     public net_verifyCode(token: SaltToken, code: string) {
         if (!this.tokenVerify(token)) {
             return;
         }
+        const currPlayerId = this.currentPlayerId;
 
-//TODO_LviatYi 构造 Http 请求.
-//         fetch().then((resp) => {
-//         });
+        this.verityEnterCode(code).then((value) => {
+                if (value) this.getClient(currPlayerId)?.net_getEnterCode(code);
+            },
+        );
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
