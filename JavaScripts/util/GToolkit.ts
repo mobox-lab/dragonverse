@@ -95,7 +95,7 @@ export enum GenderTypes {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.6.1b
+ * @version 0.6.2b
  * @alpha
  */
 class GToolkit {
@@ -253,6 +253,7 @@ class GToolkit {
      * @param item
      */
     public remove<T>(array: T[], item: T): boolean {
+        if (!array) return;
         const index = array.indexOf(item);
         if (index > -1) {
             array.splice(index, 1);
@@ -1080,6 +1081,8 @@ class GToolkit {
 //#region Log
     public log(announcer: { name: string }, msg: string): void;
 
+    public log(announcer: { name: string }, msg: (...param: unknown[]) => string): void;
+
     public log(announcer: { name: string }, msg: unknown): void;
 
     /**
@@ -1094,12 +1097,16 @@ class GToolkit {
 
         if (typeof msg === "string") {
             console.log(`${announcer.name}: ${msg}`);
+        } else if (typeof msg === "function") {
+            console.log(`${announcer.name}: ${msg()}`);
         } else {
             console.log(`${announcer.name}: ${msg.toString()}`);
         }
     }
 
     public warn(announcer: { name: string }, msg: string): void;
+
+    public warn(announcer: { name: string }, msg: (...param: unknown[]) => string): void;
 
     public warn(announcer: { name: string }, msg: unknown): void;
 
@@ -1115,13 +1122,16 @@ class GToolkit {
 
         if (typeof msg === "string") {
             console.warn(`${announcer.name}: ${msg}`);
-
+        } else if (typeof msg === "function") {
+            console.warn(`${announcer.name}: ${msg()}`);
         } else {
             console.warn(`${announcer.name}: ${msg.toString()}`);
         }
     }
 
     public error(announcer: { name: string }, msg: string): void;
+
+    public error(announcer: { name: string }, msg: (...param: unknown[]) => string): void;
 
     public error(announcer: { name: string }, msg: unknown): void;
 
@@ -1137,7 +1147,8 @@ class GToolkit {
 
         if (typeof msg === "string") {
             console.error(`${announcer.name}: ${msg}`);
-
+        } else if (typeof msg === "function") {
+            console.error(`${announcer.name}: ${msg()}`);
         } else {
             console.error(`${announcer.name}: ${msg.toString()}`);
         }
