@@ -1,7 +1,7 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","bagId","qualityId","generationAreaId","maxExistenceTime","existenceTime","generationInterval","successRate","hitPoint","resultAlgo"],["","","","","","","","","",""]];
+const EXCELDATA:Array<Array<any>> = [["id","bagId","qualityId","generationAreaId","existenceCount","existenceTime","generationInterval","successRate","hitPoint","resultAlgo"],["","","","","","","","","",""]];
 export interface ICollectibleItemElement extends IElementBase{
- 	/**    采集物品 ID      */
+ 	/**采集物品 ID*/
 	id:number
 	/**背包物 ID*/
 	bagId:number
@@ -10,7 +10,7 @@ export interface ICollectibleItemElement extends IElementBase{
 	/**生成区域 ID*/
 	generationAreaId:Array<number>
 	/**最大存在数量*/
-	maxExistenceTime:number
+	existenceCount:number
 	/**存在时间（秒 Sec）*/
 	existenceTime:number
 	/**生成间隔（秒 Sec）*/

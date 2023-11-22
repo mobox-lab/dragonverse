@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","name"],["",""]];
+const EXCELDATA:Array<Array<any>> = [["id","name"],["","Language"]];
 export interface IQualityElement extends IElementBase{
  	/**品质 ID*/
 	id:number

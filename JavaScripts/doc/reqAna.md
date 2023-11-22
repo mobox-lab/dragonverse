@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 需求分析及设计文档
 
-v1.0.3  
+v1.0.4  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -188,10 +188,10 @@ Auth 通过 Https 通信向远端验证 api，这需要与服务端配合。
   - [[x11,y11,x12,y12,x13,y13...x1m,y1m],[x21,y21,x22,y22,x23,y23...x2n,y2n]...]
     > ![生成范围数据意义](pic/generationRange.png)
   - 建议使用凸多边形，可以降低算法开发成本。
-- **最大存在数量** MaxExistence
+- **最大存在数量** ExistenceCount
   - 采集物所生成的实例 在整个世界地图中 最大同时存在数量。
-- **存在时间** ExistenceTime
-  - 采集物实例的存在时间。
+- **最大存在时间** ExistenceTime
+  - 采集物实例的最大存在时间。
   - 达到存在时间时采集物将销毁。
 - **生成间隔** GenerationInterval
   - 与 上一次同种采集物的 生成时间的 间隔。
@@ -257,8 +257,8 @@ Auth 通过 Https 通信向远端验证 api，这需要与服务端配合。
   - 建议使用凸多边形，可以降低算法开发成本。
 - **生成间隔** GenerationInterval
   - 与 上一次同种可捕捉龙的 生成时间的 间隔。
-- **存在时间** ExistenceTime
-  - 可捕捉龙实例的存在时间。
+- **最大存在时间** ExistenceTime
+  - 可捕捉龙实例的最大存在时间。
   - 达到存在时间时可捕捉龙将销毁。
 - **可捕捉次数** HitPoint
   - 可捕捉龙实例可被捕捉的总次数 一般为 1。

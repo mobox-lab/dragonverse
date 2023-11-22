@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","name","range"],["","",""]];
+const EXCELDATA:Array<Array<any>> = [["id","name","range"],["","Language",""]];
 export interface IAreaElement extends IElementBase{
  	/**区域 ID*/
 	id:number
