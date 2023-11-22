@@ -1,8 +1,8 @@
-import { GameConfig } from "../config/GameConfig";
-import { IBagItemElement } from "../config/BagItem";
-import { Yoact } from "../depend/yoact/Yoact";
-import IUnique from "../depend/yoact/IUnique";
-import YoactArray from "../depend/yoact/YoactArray";
+import { GameConfig } from "../../config/GameConfig";
+import { IBagItemElement } from "../../config/BagItem";
+import { Yoact } from "../../depend/yoact/Yoact";
+import IUnique from "../../depend/yoact/IUnique";
+import YoactArray from "../../depend/yoact/YoactArray";
 import createYoact = Yoact.createYoact;
 
 export default class BagModuleData extends Subdata {
