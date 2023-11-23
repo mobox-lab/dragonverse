@@ -4,8 +4,6 @@ import { IBagItemElement } from "../../config/BagItem";
 import { QualityTypes } from "../../const/QualityTypes";
 import { ResultAlgo, ResultAlgoFactory, ResultAlgoTypes } from "./ResultAlgoTypes";
 import GToolkit from "../../util/GToolkit";
-import Enumerable from "linq";
-import clearTimeout = mw.clearTimeout;
 
 /**
  * Collectible Item.
@@ -123,7 +121,7 @@ export default class CollectibleItem {
      */
     private randomGenerate() {
 //#region Exist for Test
-        this._location = GToolkit.randomVector();
+        this._location = GToolkit.randomVector().subtract(new Vector(0.5, 0.5, 0.5));
         this._location.multiply(10000);
         this._location.z = 0;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
