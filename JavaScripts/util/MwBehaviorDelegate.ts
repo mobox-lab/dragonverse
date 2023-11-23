@@ -2,7 +2,7 @@ import { Delegate } from "../depend/delegate/Delegate";
 import SimpleDelegate = Delegate.SimpleDelegate;
 
 @Component
-export default class UiWithScriptBehavior extends mw.Script {
+export default class MwBehaviorDelegate extends mw.Script {
 //#region Member
     public readonly delegate: SimpleDelegate<unknown> = new SimpleDelegate();
 

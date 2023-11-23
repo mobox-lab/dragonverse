@@ -2,7 +2,7 @@ import CollectiblePanel_Generate from "../../ui-generate/collectible-item/Collec
 import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
 import ModuleService = mwext.ModuleService;
 import GToolkit from "../../util/GToolkit";
-import UiWithScriptBehavior from "../../util/UiWithScriptBehavior";
+import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
 import Script = mw.Script;
 
 export class CollectibleInteractorPanel extends CollectiblePanel_Generate {
@@ -13,7 +13,7 @@ export class CollectibleInteractorPanel extends CollectiblePanel_Generate {
 
     private _module: CollectibleItemModuleC;
 
-    private _standardBehavior: UiWithScriptBehavior;
+    private _standardBehavior: MwBehaviorDelegate;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld UI Event
@@ -24,7 +24,7 @@ export class CollectibleInteractorPanel extends CollectiblePanel_Generate {
 
 //#region Member init
         this._module = ModuleService.getModule(CollectibleItemModuleC);
-        Script.spawnScript(UiWithScriptBehavior).then(value => {
+        Script.spawnScript(MwBehaviorDelegate).then(value => {
             this._standardBehavior = value;
             this._standardBehavior.delegate.add(this.renderPosition);
             this._standardBehavior.start();
