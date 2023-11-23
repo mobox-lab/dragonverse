@@ -4,6 +4,15 @@ import CollectibleItem from "./CollectibleItem";
 import GToolkit from "../../util/GToolkit";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Regulator from "../../depend/regulator/Regulator";
+import UUID from "pure-uuid";
+import noReply = mwext.Decorator.noReply;
+import GameObject = mw.GameObject;
+import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
+import CollectibleItemTrigger from "./trigger/CollectibleItemTrigger";
+import { EventDefine } from "../../const/EventDefine";
+import CharacterEnterCollectibleItemRangeEventArgs from "./trigger/CharacterEnterCollectibleItemRangeEventArgs";
+import EventListener = mw.EventListener;
+import MainPanel from "../../ui/main/MainPanel";
 
 export default class CollectibleItemModuleData extends Subdata {
     //@Decorator.persistence()
@@ -24,6 +33,49 @@ export default class CollectibleItemModuleData extends Subdata {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, CollectibleItemModuleData> {
+//#region Constant
+    public static readonly PREFAB_MAP: Map<number, string> = new Map();
+
+    static {
+        this.PREFAB_MAP.set(1, "19864DB9433C12B44D2F95BE76825159");
+    }
+
+    public static async collectibleItemPrefabFactory(
+        syncKey: string,
+        id: number,
+        location: Vector) {
+        const assetId = this.PREFAB_MAP.get(id);
+        const obj = await GameObjPool.asyncSpawn(
+            assetId,
+            GameObjPoolSourceType.Prefab,
+        );
+        const trigger = GToolkit.getFirstScript(obj, CollectibleItemTrigger);
+        trigger.init(syncKey);
+        obj.worldTransform.position = location;
+        return obj;
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Member
+
+    /**
+     * 玩家私有全采集物映射.
+     *  - key sync key.
+     *  - value CollectibleItem.
+     */
+    public syncItemMap: Map<string, { item: CollectibleItem, object: GameObject }> = new Map();
+
+    /**
+     * 待采集物映射.
+     */
+    public collectCandidates: string[] = [];
+
+    private _mainPanel: MainPanel;
+
+    private _eventListeners: EventListener[] = [];
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 //#region MetaWorld Event
     protected onAwake(): void {
         super.onAwake();
@@ -33,9 +85,12 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         super.onStart();
 
 //#region Member init
+        this._mainPanel = UIService.getUI(MainPanel);
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Subscribe
+        this._eventListeners.push(Event.addLocalListener(EventDefine.EnterCollectibleItemRange, this.onEnterCollectibleItemRange));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.LeaveCollectibleItemRange, this.onLeaveCollectibleItemRange));
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -49,8 +104,9 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 
     protected onDestroy(): void {
         super.onDestroy();
+
 //#region Event Unsubscribe
-        //TODO_LviatYi 
+        this._eventListeners.forEach(value => value.disconnect());
 //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -61,9 +117,98 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Method
+    /**
+     * 客户端 采集.
+     * @param syncKey
+     */
+    public collect(syncKey: string) {
+        GToolkit.log(CollectibleItemModuleC, `try collect item.`);
+        if (!this.syncItemMap.has(syncKey)) {
+            GToolkit.log(CollectibleItemModuleC, `item not exist in client when collect. syncKey: ${syncKey}`);
+            return;
+        }
+
+        const item = this.syncItemMap.get(syncKey).item;
+        GToolkit.log(CollectibleItemModuleC, item.toString());
+        if (!item.isCollectible) {
+            GToolkit.warn(CollectibleItemModuleC, `item un collectible. waiting for delete.`);
+            return;
+        }
+
+        const success: boolean = GToolkit.randomWeight([CollectibleItem.successRate(item.id)], 1) === 0;
+        if (!success) {
+            GToolkit.log(CollectibleItemModuleC, `collect fail`);
+            return;
+        }
+
+        GToolkit.log(CollectibleItemModuleC, `collect success. last collect count: ${item.hitPoint}`);
+        this.server.net_collectItem(syncKey);
+        item.collect();
+    }
+
+    private generate(syncKey: string, item: CollectibleItem) {
+        GToolkit.log(CollectibleItemModuleC, `try generate item. ${item.toString()}`);
+        if (this.syncItemMap.get(syncKey)) {
+            GToolkit.error(CollectibleItemModuleC, `item already exist in client when generate. syncKey: ${syncKey}`);
+            return;
+        }
+
+        const itemAsync = {item: item, object: null};
+
+        this.syncItemMap.set(syncKey, itemAsync);
+
+        CollectibleItemModuleC.collectibleItemPrefabFactory(
+            syncKey,
+            item.id,
+            item.location,
+        ).then((value) => {
+            itemAsync.object = value;
+        });
+    }
+
+    private destroy(syncKey: string) {
+        GToolkit.log(CollectibleItemModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).item.toString() ?? "null"}`);
+
+        this.syncItemMap.get(syncKey)?.object.destroy();
+        this.syncItemMap.delete(syncKey);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
+    public net_generate(syncKey: string,
+                        id: number,
+                        hitPoint: number,
+                        generateTime: number,
+                        location: Vector) {
+        this.generate(
+            syncKey,
+            new CollectibleItem()
+                .sync(id,
+                    hitPoint,
+                    generateTime,
+                    location));
+    }
+
+    public net_destroy(syncKey: string) {
+        this.destroy(syncKey);
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Event Callback
+    public onEnterCollectibleItemRange = (args: CharacterEnterCollectibleItemRangeEventArgs) => {
+        if (args.playerId === Player.localPlayer.playerId) {
+            this.collectCandidates.push(args.itemSyncKey);
+            this._mainPanel.addCollectibleItemInteractor(args.itemSyncKey);
+        }
+    };
+    public onLeaveCollectibleItemRange = (args: CharacterEnterCollectibleItemRangeEventArgs) => {
+        if (args.playerId === Player.localPlayer.playerId) {
+            GToolkit.remove(this.collectCandidates, args.itemSyncKey);
+            this._mainPanel.removeCollectibleItemInteractor(args.itemSyncKey);
+        }
+    };
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -74,9 +219,16 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      *  - key 玩家 PlayerId.
      *  - value 该玩家现存所有采集物.
      */
-    public existenceItemMap: Map<number, CollectibleItem[]> = new Map();
+    public existenceItemMap: Map<number, string[]> = new Map();
 
-    private _regulator: Regulator = new Regulator(GameServiceConfig.TRY_GENERATE_INTERVAL);
+    /**
+     * 全采集物映射.
+     *  - key sync key.
+     *  - value CollectibleItem.
+     */
+    public syncItemMap: Map<string, CollectibleItem> = new Map();
+
+    private _generateRegulator: Regulator = new Regulator(GameServiceConfig.TRY_GENERATE_INTERVAL);
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -101,7 +253,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
 
-        if (this._regulator.ready()) {
+        if (this._generateRegulator.ready()) {
             this.tryGenerate();
         }
     }
@@ -142,7 +294,8 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     private lastItemGenerateTime(playerId: number, id: number): number {
         return Enumerable
             .from(this.existenceItemMap.get(playerId))
-            .where((item) => item.id === id)
+            .select((syncKey) => this.syncItemMap.get(syncKey))
+            .where((item) => item ? item.id === id : false)
             .defaultIfEmpty({generateTime: 0} as CollectibleItem)
             .max((item) => item.generateTime);
     }
@@ -155,7 +308,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     private getItemExistenceCount(playerId: number, id: number): number {
         return Enumerable
             .from(this.existenceItemMap.get(playerId))
-            .count((item) => item.id === id);
+            .count((syncKey) => this.syncItemMap.get(syncKey)?.id === id ?? false);
     }
 
     /**
@@ -178,6 +331,12 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
                      i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
                      this.isGenerateEnable(playerId, item.id);
                      i++) {
+                    GToolkit.log(CollectibleItemModuleS, `checking generate. 
+                        playerId: ${playerId}. 
+                        id: ${item.id}. 
+                        current count: ${this.getItemExistenceCount(playerId, item.id)}. 
+                        max count: ${CollectibleItem.maxExistenceCount(item.id)}.
+                        trial: ${i}.`);
                     this.generate(playerId, item.id);
                 }
             });
@@ -217,56 +376,91 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @param itemId
      */
     private generate(playerId: number, itemId: number) {
-        GToolkit.log(CollectibleItemModuleS, `try generate collectible item in server, itemId: ${itemId}.`);
+        GToolkit.log(CollectibleItemModuleS, `try generate item, itemId: ${itemId}.`);
         GToolkit.log(CollectibleItemModuleS, () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`);
         GToolkit.log(CollectibleItemModuleS, () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
 
+        const syncKey = new UUID(4).toString();
         const item = new CollectibleItem();
 
-        let array: CollectibleItem[] = this.existenceItemMap.get(playerId);
+        let array: string[] = this.existenceItemMap.get(playerId);
         if (!array) {
             array = [];
             this.existenceItemMap.set(playerId, array);
         }
 
-        array.push(item);
+        array.push(syncKey);
+        this.syncItemMap.set(syncKey, item);
 
         item.generate(itemId);
 
+        GToolkit.log(CollectibleItemModuleS, `generate item success. syncKey: ${syncKey}`);
+
         item.autoDestroyTimerId = setTimeout(() => {
-                this.destroy(playerId, item);
+                this.destroy(playerId, syncKey);
             },
             CollectibleItem.maxExistenceTime(itemId),
+        );
+
+        this.getClient(playerId).net_generate(
+            syncKey,
+            item.id,
+            item.hitPoint,
+            item.generateTime,
+            item.location,
         );
     }
 
     /**
      * 注册 销毁采集物.
      * @param playerId
-     * @param item
+     * @param syncKey
      * @private
      */
-    private destroy(playerId: number, item: CollectibleItem) {
-        GToolkit.log(CollectibleItemModuleS, `try destroy collectible item in server, itemId: ${item.id}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `current count: ${this.getItemExistenceCount(playerId, item.id)}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
+    private destroy(playerId: number, syncKey: string) {
+        const item = this.syncItemMap.get(syncKey);
+        if (!item) {
+            GToolkit.error(CollectibleItemModuleS, `destroy item is null`);
+            return;
+        }
+        GToolkit.log(CollectibleItemModuleS, `try destroy item, itemId: ${item.id}.`);
+        GToolkit.log(CollectibleItemModuleS, () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
+        GToolkit.log(CollectibleItemModuleS, () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`);
+        GToolkit.log(CollectibleItemModuleS, () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
+
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
             item.autoDestroyTimerId = null;
         }
 
-        let array: CollectibleItem[] = this.existenceItemMap.get(playerId);
-        if (!array || !GToolkit.remove(array, item)) {
+        let array: string[] = this.existenceItemMap.get(playerId);
+        if (!array || !GToolkit.remove(array, syncKey)) {
             GToolkit.log(CollectibleItemModuleS, `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
              but it not exist in server`);
         }
 
         item.destroy();
+        GToolkit.log(CollectibleItemModuleS, `destroy item success. syncKey: ${syncKey}`);
+
+        this.getClient(playerId).net_destroy(syncKey);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
+    @noReply()
+    public net_collectItem(syncKey: string) {
+        const item = this.syncItemMap.get(syncKey);
+        if (!item) {
+            GToolkit.error(CollectibleItemModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
+            return;
+        }
+        GToolkit.log(CollectibleItemModuleS, `try collect item. ${item.toString()}`);
+        item.collect();
+        if (!item.isCollectible) {
+            this.destroy(this.currentPlayerId, syncKey);
+        }
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

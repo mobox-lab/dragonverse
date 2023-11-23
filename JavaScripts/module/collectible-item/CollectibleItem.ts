@@ -2,7 +2,7 @@ import { ICollectibleItemElement } from "../../config/CollectibleItem";
 import { GameConfig } from "../../config/GameConfig";
 import { IBagItemElement } from "../../config/BagItem";
 import { QualityTypes } from "../../const/QualityTypes";
-import { ResultAlgo, ResultAlgoFactory, ResultAlgoTypes } from "../../const/ResultAlgoTypes";
+import { ResultAlgo, ResultAlgoFactory, ResultAlgoTypes } from "./ResultAlgoTypes";
 import GToolkit from "../../util/GToolkit";
 import Enumerable from "linq";
 import clearTimeout = mw.clearTimeout;
@@ -62,6 +62,13 @@ export default class CollectibleItem {
     }
 
     /**
+     * 是否 可采集.
+     */
+    public get isCollectible(): boolean {
+        return this._hitPoint > 0;
+    }
+
+    /**
      * 位置.
      */
     public get location(): Vector {
@@ -69,6 +76,18 @@ export default class CollectibleItem {
     }
 
 //#region Method
+    public sync(
+        id: number,
+        hitPoint: number,
+        generateTime: number,
+        location: Vector): this {
+        this._id = id;
+        this._hitPoint = hitPoint;
+        this._generateTime = generateTime;
+        this._location = location;
+        this._isGenerated = true;
+        return this;
+    }
 
     /**
      * 生成.
@@ -96,9 +115,6 @@ export default class CollectibleItem {
      */
     public collect() {
         --this._hitPoint;
-        if (!this._hitPoint) {
-            this.destroy();
-        }
     }
 
     /**
@@ -107,10 +123,16 @@ export default class CollectibleItem {
      */
     private randomGenerate() {
 //#region Exist for Test
-        this._location = Vector.zero;
+        this._location = GToolkit.randomVector();
+        this._location.multiply(10000);
+        this._location.z = 0;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //TODO_LviatYi 随机生成位置
+    }
+
+    public toString(): string {
+        return `id:${this._id}, hitPoint:${this._hitPoint}, generateTime:${new Date(this._generateTime)}, location:${this._location}`;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
