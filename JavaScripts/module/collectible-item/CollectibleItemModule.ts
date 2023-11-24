@@ -44,6 +44,10 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         syncKey: string,
         id: number,
         location: Vector) {
+        if (!location) {
+            GToolkit.error(CollectibleItemModuleC, ` generate item param location invalid.`);
+            return null;
+        }
         const assetId = this.PREFAB_MAP.get(id);
         const obj = await GameObjPool.asyncSpawn(
             assetId,

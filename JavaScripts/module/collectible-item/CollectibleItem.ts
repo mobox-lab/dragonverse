@@ -4,6 +4,8 @@ import { IBagItemElement } from "../../config/BagItem";
 import { QualityTypes } from "../../const/QualityTypes";
 import { ResultAlgo, ResultAlgoFactory, ResultAlgoTypes } from "./ResultAlgoTypes";
 import GToolkit from "../../util/GToolkit";
+import AreaManager from "../../gameplay/area/AreaManager";
+import Shape from "../../util/area/Shape";
 
 /**
  * Collectible Item.
@@ -120,13 +122,11 @@ export default class CollectibleItem {
      * @private
      */
     private randomGenerate() {
-//#region Exist for Test
-        this._location = GToolkit.randomVector().subtract(new Vector(0.5, 0.5, 0.5));
-        this._location.multiply(10000);
-        this._location.z = 0;
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-//TODO_LviatYi 随机生成位置
+        const p = Shape.randomPoint(AreaManager.getInstance().getAreas(CollectibleItem.generationAreaId(this._id)));
+        if (!p) {
+            return;
+        }
+        this._location = new Vector(p.x, p.y, 0);
     }
 
     public toString(): string {
@@ -170,11 +170,11 @@ export default class CollectibleItem {
     };
 
     /**
-     * 最大存在时间 ms.
-     * @config
+     * 生成区域.
+     * @param id
      */
-    public static maxExistenceTime(id: number): number {
-        return this.getConfig(id).existenceTime * 1000;
+    public static generationAreaId(id: number): number[] {
+        return this.getConfig(id).generationAreaId;
     }
 
     /**
@@ -183,6 +183,14 @@ export default class CollectibleItem {
      */
     public static maxExistenceCount(id: number): number {
         return this.getConfig(id).existenceCount;
+    }
+
+    /**
+     * 最大存在时间 ms.
+     * @config
+     */
+    public static maxExistenceTime(id: number): number {
+        return this.getConfig(id).existenceTime * 1000;
     }
 
     /**
