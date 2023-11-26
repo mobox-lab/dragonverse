@@ -28,11 +28,9 @@ export default class BagModuleData extends Subdata {
         if (!this.itemsMap[bagId]) {
             this.itemsMap[bagId] = 0;
         }
-        if (count > 0) {
-            this.itemsMap[bagId] += count;
-        } else {
-            const target = this.itemsMap[bagId] - count;
-            this.itemsMap[bagId] = target >= 0 ? target : 0;
+        this.itemsMap[bagId] += count;
+        if (this.itemsMap[bagId] < 0) {
+            this.itemsMap[bagId] = 0;
         }
     }
 
@@ -171,7 +169,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
      * @param bagId
      */
     public getItemCount(bagId: number): number {
-        return this.bagItemYoact.getItem(bagId).count;
+        return this.bagItemYoact.getItem(bagId)?.count ?? 0;
     }
 
     /**
@@ -202,7 +200,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     }
 
     private selfSetItem(bagId: number, count: number = null) {
-        count = count >= 0 ? count : 0;
+        count = count >= 0 ? count : null;
         const item = this.bagItemYoact.getItem(bagId);
         if (item) {
             if (count === null) {
@@ -293,8 +291,13 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
 //#region Net Method
     public net_addItem(bagId: number, count: number) {
         this.currentData.addItem(bagId, count);
+        if (this.currentData.getItemCount(bagId) === 0) {
+            this.currentData.removeItem(bagId);
+        }
         this.currentData.save(false);
-        this.getClient(this.currentPlayerId).net_setItem(bagId, count);
+        this.getClient(this.currentPlayerId).net_setItem(
+            bagId,
+            this.currentData.getItemCount(bagId));
     }
 
     public net_removeItem(bagId: number) {
