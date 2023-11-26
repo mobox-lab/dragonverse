@@ -1,4 +1,6 @@
 import tryGenerateTsWidgetTypeByUEObject = mw.tryGenerateTsWidgetTypeByUEObject;
+import Character = mw.Character;
+import GameObject = mw.GameObject;
 
 /**
  * 日志等级.
@@ -95,7 +97,7 @@ export enum GenderTypes {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.6.0b
+ * @version 0.6.8b
  * @alpha
  */
 class GToolkit {
@@ -247,6 +249,52 @@ class GToolkit {
                 index;
     }
 
+    /**
+     * remove item from array.
+     * @param array
+     * @param item
+     */
+    public remove<T>(array: T[], item: T): boolean {
+        if (!array) return;
+        const index = array.indexOf(item);
+        if (index > -1) {
+            array.splice(index, 1);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * fold data.
+     * @param data
+     * @param foldCount
+     * @param func
+     */
+    public fold<UF, F>(data: UF[], foldCount: number, func: (data: UF[]) => F): F[] {
+        const result: F[] = [];
+        for (let i = 0; i < data.length; i += foldCount) {
+            result.push(func(data.slice(i, i + foldCount)));
+        }
+
+        return result;
+    }
+
+    /**
+     * unfold data.
+     * @param data
+     * @param foldCount
+     * @param func
+     */
+    public unfold<F, UF>(data: F[], foldCount: number, func: (data: F) => UF[]): UF[] {
+        const result: UF[] = [];
+
+        for (let i = 0; i < data.length; i++) {
+            result.push(...func(data[i]));
+        }
+
+        return result;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Prototype
@@ -306,6 +354,37 @@ class GToolkit {
         let result = Math.random() * (max - min) + min;
 
         return integer ? result | 0 : result;
+    }
+
+    /**
+     * random with weight.
+     * @param weight
+     * @param total total weight. add last weight as total-sum(weight)
+     * @return number [0,weight.length)
+     *         -1 when weight is empty.
+     */
+    public randomWeight(weight: number[], total: number = undefined): number {
+        if (!weight.length) return -1;
+        const stepWeight = new Array<number>(weight.length);
+        for (let i = 0; i < weight.length; i++) {
+            stepWeight[i] = (i === 0 ? 0 : stepWeight[i - 1]) + weight[i];
+        }
+        if (total !== undefined && total > stepWeight[stepWeight.length - 1]) {
+            stepWeight.push(total);
+        }
+
+        const r = this.random(0, stepWeight[stepWeight.length - 1]);
+        let start: number = 0;
+        let end = stepWeight.length;
+        while (start < end) {
+            let mid = ((start + end) / 2) | 0;
+            if (r < stepWeight[mid]) {
+                end = mid;
+            } else {
+                start = mid + 1;
+            }
+        }
+        return start;
     }
 
     /**
@@ -681,8 +760,93 @@ class GToolkit {
      * 泛型获取 GameObject.
      * @param guid
      */
-    public getGameObject<T>(guid: string) {
+    public getGameObjectByGuid<T>(guid: string) {
         return GameObject.findGameObjectById(guid) as T;
+    }
+
+    /**
+     * 获取 GameObject 及其子 GameObject 下的所有指定脚本.
+     * @param object
+     * @param scriptCls
+     */
+    public getScript<T>(object: GameObject, scriptCls: { new(...param: unknown[]): T }): T[] {
+        const result: T[] = [];
+
+        let p: GameObject = object;
+        let stack: GameObject[] = [p];
+
+        while (stack.length > 0) {
+            p = stack.shift();
+            stack.push(...p.getChildren());
+            result.push(...p.getScripts()
+                .filter(script => script instanceof scriptCls)
+                .map((value) => (value as T)));
+        }
+
+        return result;
+    }
+
+    /**
+     * 获取 GameObject 及其子 GameObject 下的首个指定脚本.
+     * @param object
+     * @param scriptCls
+     */
+    public getFirstScript<T>(object: GameObject, scriptCls: { new(...param: unknown[]): T }): T {
+        let p: GameObject = object;
+        let stack: GameObject[] = [p];
+
+        while (stack.length > 0) {
+            p = stack.shift();
+            stack.push(...p.getChildren());
+            const s = p.getScripts().find((s) => {
+                return s instanceof scriptCls;
+            });
+            if (s) return s as T;
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取 GameObject 及其子 GameObject 下的所有同名 GameObject.
+     * @param object
+     * @param name
+     */
+    public getGameObject(object: GameObject, name: string): GameObject[] {
+        const result: GameObject[] = [];
+
+        let p: GameObject = object;
+        let stack: GameObject[] = [p];
+
+        while (stack.length > 0) {
+            p = stack.shift();
+            stack.push(...p.getChildren());
+            result.push(...p.getChildren()
+                .filter(g => g.name === name));
+        }
+
+        return result;
+    }
+
+    /**
+     * 获取 GameObject 及其子 GameObject 下的首个指定脚本.
+     * @param object
+     * @param name
+     */
+    public getFirstGameObject(object: GameObject, name: string): GameObject {
+        let p: GameObject = object;
+        let stack: GameObject[] = [p];
+
+        while (stack.length > 0) {
+            p = stack.shift();
+            stack.push(...p.getChildren());
+            const result = p.getChildren().find((g) => {
+                return g.name === name;
+            });
+            if (result) return result;
+        }
+
+        return null;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -715,17 +879,30 @@ class GToolkit {
     }
 
     /**
-     * 是否 playerId 或 gameObjectId 指向自己.
-     * @scope 仅客户端.
-     * @param id
+     * GameObject 是否为 Character.
+     * @param obj
      */
-    public isSelfCharacter(id: number | string) {
+    public isCharacter(obj: GameObject): obj is Character {
+        return (obj instanceof Character) && obj.player !== null;
+    }
+
+    /**
+     * 是否 playerId gameObjectId 或 obj 指向自己.
+     * @scope 仅客户端.
+     * @param idOrObj
+     */
+    public isSelfCharacter(idOrObj: number | string | GameObject) {
         if (SystemUtil.isServer()) {
             this.error(GToolkit, `isSelfCharacter should be called in Client`);
             return false;
         }
         const self: Player = Player.localPlayer;
-        return typeof id === "number" ? self.playerId === id : self.character.gameObjectId === id;
+
+        return typeof idOrObj === "number" ?
+            self.playerId === idOrObj :
+            typeof idOrObj === "string" ?
+                self.character.gameObjectId === idOrObj :
+                this.isCharacter(idOrObj) && idOrObj.player === self;
     }
 
     /**
@@ -1066,6 +1243,8 @@ class GToolkit {
 //#region Log
     public log(announcer: { name: string }, msg: string): void;
 
+    public log(announcer: { name: string }, msg: (...param: unknown[]) => string): void;
+
     public log(announcer: { name: string }, msg: unknown): void;
 
     /**
@@ -1080,12 +1259,16 @@ class GToolkit {
 
         if (typeof msg === "string") {
             console.log(`${announcer.name}: ${msg}`);
+        } else if (typeof msg === "function") {
+            console.log(`${announcer.name}: ${msg()}`);
         } else {
             console.log(`${announcer.name}: ${msg.toString()}`);
         }
     }
 
     public warn(announcer: { name: string }, msg: string): void;
+
+    public warn(announcer: { name: string }, msg: (...param: unknown[]) => string): void;
 
     public warn(announcer: { name: string }, msg: unknown): void;
 
@@ -1101,13 +1284,16 @@ class GToolkit {
 
         if (typeof msg === "string") {
             console.warn(`${announcer.name}: ${msg}`);
-
+        } else if (typeof msg === "function") {
+            console.warn(`${announcer.name}: ${msg()}`);
         } else {
             console.warn(`${announcer.name}: ${msg.toString()}`);
         }
     }
 
     public error(announcer: { name: string }, msg: string): void;
+
+    public error(announcer: { name: string }, msg: (...param: unknown[]) => string): void;
 
     public error(announcer: { name: string }, msg: unknown): void;
 
@@ -1123,7 +1309,8 @@ class GToolkit {
 
         if (typeof msg === "string") {
             console.error(`${announcer.name}: ${msg}`);
-
+        } else if (typeof msg === "function") {
+            console.error(`${announcer.name}: ${msg()}`);
         } else {
             console.error(`${announcer.name}: ${msg.toString()}`);
         }

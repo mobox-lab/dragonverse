@@ -2,7 +2,7 @@
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.8.1b  
+v0.8.4b  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -27,7 +27,7 @@ by LviatYi
 |    背包物 ID    | BagId              | int   |        |
 |     品质 ID     | QualityId          | int   |        |
 |   生成区域 ID   | GenerationAreaId   | int[] |        |
-|  最大存在数量   | MaxExistence       | int   |        |
+|  最大存在数量   | ExistenceCount     | int   |        |
 |    存在时间     | ExistenceTime      | int   | 秒 Sec |
 |    生成间隔     | GenerationInterval | int   | 秒 Sec |
 |   采集成功率    | SuccessRate        | int   | %      |
@@ -39,7 +39,6 @@ by LviatYi
 |       Name        | PropName           | Type    | Desc   |
 | :---------------: | :----------------- | ------- | ------ |
 |        ID         | Id                 | int     |        |
-|       名称        | Name               | string  |        |
 |     背包物 ID     | BagId              | int     |        |
 |       形象        | Avatar             | UNKNOWN |        |
 |      元素 ID      | ElementalId        | int     |        |
