@@ -1,19 +1,25 @@
 import { Singleton } from "../../depend/singleton/Singleton";
 import { GameConfig } from "../../config/GameConfig";
 
-export enum BagType {
+export enum BagTypes {
     /**
      * 空置.
      */
     Null,
+    /**
+     * 收集物.
+     */
     CollectibleItem,
+    /**
+     * 龙.
+     */
     Dragon,
 }
 
 export default class BagItemCluster extends Singleton<BagItemCluster>() {
-    private _clusterCache: Map<number, BagType> = new Map<number, BagType>();
+    private _clusterCache: Map<number, BagTypes> = new Map<number, BagTypes>();
 
-    private _clusterSet: Map<BagType, Set<number>> = new Map<BagType, Set<number>>();
+    private _clusterSet: Map<BagTypes, Set<number>> = new Map<BagTypes, Set<number>>();
 
     protected onConstruct(): void {
         super.onConstruct();
@@ -27,7 +33,7 @@ export default class BagItemCluster extends Singleton<BagItemCluster>() {
      * memoize.
      * @param bagId
      */
-    public queryType(bagId: number) {
+    public queryType(bagId: number): BagTypes {
         let type = this._clusterCache.get(bagId);
         if (type !== undefined) {
             return type;
@@ -40,10 +46,19 @@ export default class BagItemCluster extends Singleton<BagItemCluster>() {
         }
 
         if (type === undefined) {
-            return BagType.Null;
+            return BagTypes.Null;
         }
         this._clusterCache.set(bagId, type);
         return type;
+    }
+
+    /**
+     * 是否 指定类型.
+     * @param bagId
+     * @param type
+     */
+    public isType(bagId: number, type: BagTypes): boolean {
+        return this.queryType(bagId) === type;
     }
 }
 
@@ -54,7 +69,7 @@ function initCollectibleItemCluster() {
         set.add(config.bagId);
     }
 
-    this._clusterSet.set(BagType.CollectibleItem, set);
+    this._clusterSet.set(BagTypes.CollectibleItem, set);
 }
 
 function initDragonCluster() {
@@ -64,5 +79,5 @@ function initDragonCluster() {
         set.add(config.bagId);
     }
 
-    this._clusterSet.set(BagType.Dragon, set);
+    this._clusterSet.set(BagTypes.Dragon, set);
 }
