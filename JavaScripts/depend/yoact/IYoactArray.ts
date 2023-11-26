@@ -36,7 +36,6 @@ export class OnItemAddArg {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export default interface IYoactArray<T extends IUnique> {
-
     /**
      * 当 数据项 移除 时 调用.
      *      - (index:number)=>void;
@@ -59,10 +58,27 @@ export default interface IYoactArray<T extends IUnique> {
     setAll(data: T[]): this;
 
     /**
+     * 获取数据.
+     */
+    getAll(): T[];
+
+    /**
+     * 获取数据. 以 {@link IterableIterator} 形式.
+     */
+    getAllAsIterator(): IterableIterator<T>;
+
+    /**
      * 获取数据项. 不存在则返回 null.
      * @param primaryKey 主键.
      */
     getItem(primaryKey: number): T;
+
+    /**
+     * 获取数据项. 不存在则返回 {@link defaultValue} 并以此填充入 {@link IYoactArray} 中.
+     * @param primaryKey
+     * @param defaultValue
+     */
+    getItemWithDefault(primaryKey: number, defaultValue: T): T;
 
     /**
      * 添加 数据项.
@@ -85,7 +101,15 @@ export default interface IYoactArray<T extends IUnique> {
 
     /**
      * 定义比较器 以进行排序.
-     * @param cmp
+     * @param cmp 排序器.
+     *      - default null 取消排序器.
      */
     sort(cmp: (item: T) => number): void;
+
+    /**
+     * 定义过滤器 以进行过滤.
+     * @param flt 过滤器.
+     *      - default null 取消过滤器.
+     */
+    filter(flt: (item: T) => boolean): void;
 }

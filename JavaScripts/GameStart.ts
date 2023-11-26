@@ -7,6 +7,7 @@ import CollectibleItemModuleData, {
     CollectibleItemModuleC,
     CollectibleItemModuleS,
 } from "./module/collectible-item/CollectibleItemModule";
+import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -87,6 +88,7 @@ export default class GameStart extends mw.Script {
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
         moduleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         moduleService.registerModule(CollectibleItemModuleS, CollectibleItemModuleC, CollectibleItemModuleData);
+        moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
     }
 
     private registerTestKeyT() {
