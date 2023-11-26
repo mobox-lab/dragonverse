@@ -1,5 +1,5 @@
-﻿import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
-import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
+﻿import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
+import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
 
 @UIBind("")
 export default class MainPanel extends MainPanel_Generate {
