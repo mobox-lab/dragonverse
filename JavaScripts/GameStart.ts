@@ -1,12 +1,18 @@
 import i18n, { LanguageTypes } from "./language/i18n";
 import GToolkit, { DebugLevels } from "./util/GToolkit";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/AuthModule";
+import { GM } from "module_gm";
+import GMPanel from "./ui/gm/GmPanel";
+import CollectibleItemModuleData, {
+    CollectibleItemModuleC,
+    CollectibleItemModuleS,
+} from "./module/collectible-item/CollectibleItemModule";
 
 @Component
 export default class GameStart extends mw.Script {
     public static instance: GameStart = null;
 
-    //region Dev Config
+//region Dev Config
 
     @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
@@ -17,16 +23,16 @@ export default class GameStart extends mw.Script {
     @mw.Property({displayName: "线上存储", group: "发布"})
     public isOnline: boolean = false;
 
-    @mw.Property({displayName: "是否开启GM", group: "调试"})
+    @mw.Property({displayName: "是否 GM", group: "调试"})
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({displayName: "服务端log等级", group: "调试", enumType: LanguageTypes})
+    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: LanguageTypes})
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({displayName: "客户端log等级", group: "调试", enumType: LanguageTypes})
+    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: LanguageTypes})
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     protected onStart(): void {
         this.useUpdate = true;
@@ -68,7 +74,7 @@ export default class GameStart extends mw.Script {
     private initializeClient() {
         GToolkit.debugLevel = this.clientLogLevel;
 
-        // this.isShowGMPanel && GM.start(GMPanel);
+        this.isShowGMPanel && GM.start(GMPanel);
     }
 
     private initializeServer() {
@@ -80,9 +86,12 @@ export default class GameStart extends mw.Script {
         const moduleService = ModuleService;
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
         moduleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
+        moduleService.registerModule(CollectibleItemModuleS, CollectibleItemModuleC, CollectibleItemModuleData);
     }
 
     private registerTestKeyT() {
-        GToolkit.log(GameStart, `Key T pressed`);
+        InputUtil.onKeyDown(mw.Keys.T, () => {
+            GToolkit.log(GameStart, `Key T pressed`);
+        });
     }
 }
