@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","bagId","qualityId","generationAreaId","existenceCount","existenceTime","generationInterval","successRate","hitPoint","resultAlgo"],["","","","","","","","","",""]];
+const EXCELDATA:Array<Array<any>> = [["id","bagId","qualityId","generationAreaId","existenceCount","existenceTime","generationInterval","successRate","hitPoint","resultAlgo"],["","","","","","","","","",""],[1,1,1,[1],20,3600,5,80,5,1]];
 export interface ICollectibleItemElement extends IElementBase{
  	/**采集物品 ID*/
 	id:number

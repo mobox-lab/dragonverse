@@ -39,7 +39,6 @@ by LviatYi
 |       Name        | PropName           | Type    | Desc   |
 | :---------------: | :----------------- | ------- | ------ |
 |        ID         | Id                 | int     |        |
-|       名称        | Name               | string  |        |
 |     背包物 ID     | BagId              | int     |        |
 |       形象        | Avatar             | UNKNOWN |        |
 |      元素 ID      | ElementalId        | int     |        |
