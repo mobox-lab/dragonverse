@@ -1,19 +1,23 @@
 import { Singleton } from "../../depend/singleton/Singleton";
 import { GameConfig } from "../../config/GameConfig";
 
+/**
+ * 背包类型枚举.
+ * @flag
+ */
 export enum BagTypes {
     /**
      * 空置.
      */
-    Null,
+    Null = 0,
     /**
      * 收集物.
      */
-    CollectibleItem,
+    CollectibleItem = 1 << 1,
     /**
      * 龙.
      */
-    Dragon,
+    Dragon = 1 << 2,
 }
 
 export default class BagItemCluster extends Singleton<BagItemCluster>() {
@@ -58,7 +62,7 @@ export default class BagItemCluster extends Singleton<BagItemCluster>() {
      * @param type
      */
     public isType(bagId: number, type: BagTypes): boolean {
-        return this.queryType(bagId) === type;
+        return (this.queryType(bagId) & type) > 0;
     }
 }
 
