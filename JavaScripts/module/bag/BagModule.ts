@@ -28,11 +28,6 @@ export default class BagModuleData extends Subdata {
     ];
 
     /**
-     * 最新版本号.
-     */
-    public static readonly LAST_VERSION: number = BagModuleData.RELEASE_VERSIONS[BagModuleData.RELEASE_VERSIONS.length - 1];
-
-    /**
      * 版本升级办法.
      * UVM[n] : 从 RV[n] 升级到 RV[n+1] 的方法.
      */
@@ -40,8 +35,6 @@ export default class BagModuleData extends Subdata {
         // () => {
         // },
     ];
-
-    private _version: number;
 
     @Decorator.persistence()
     public itemsMap: object = {};
@@ -53,39 +46,49 @@ export default class BagModuleData extends Subdata {
     public handbook: ByteArray;
 
     protected initDefaultData(): void {
-        this._version = BagModuleData.LAST_VERSION;
+        this.currentVersion = this.version;
         this.itemsMap = {};
         this.gold = 0;
         this.initHandBook();
     }
 
+
+    protected onDataInit(): void {
+        super.onDataInit();
+        this.checkVersion();
+    }
+
+    /**
+     * 定义为最新版本号.
+     * 为什么不做成只读属性而是个 getter 呢.
+     */
     public get version(): number {
-        return this._version;
+        return BagModuleData.RELEASE_VERSIONS[BagModuleData.RELEASE_VERSIONS.length - 1];
     }
 
     /**
      * 数据版本检查.
      */
     public checkVersion() {
-        if (this.version === BagModuleData.LAST_VERSION) return;
+        if (this.currentVersion === this.version) return;
 
         GToolkit.log(BagModuleData, () => {
             return `数据准备升级.
-当前版本: ${this.version}.
-最新版本: ${BagModuleData.LAST_VERSION}.`;
+当前版本: ${this.currentVersion}.
+最新版本: ${this.version}.`;
         });
 
-        const startIndex = BagModuleData.RELEASE_VERSIONS.indexOf(this.version);
+        const startIndex = BagModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
         if (startIndex < 0) {
             GToolkit.error(BagModuleData, `数据号版本异常.
 不是已发布的版本号.
-当前版本: ${this.version}.`);
+当前版本: ${this.currentVersion}.`);
             return;
         }
 
         for (let i = startIndex; i < BagModuleData.UPDATE_VERSION_METHOD.length - 1; ++i) {
             BagModuleData.UPDATE_VERSION_METHOD[i]();
-            this._version = BagModuleData.RELEASE_VERSIONS[i + 1];
+            this.currentVersion = BagModuleData.RELEASE_VERSIONS[i + 1];
         }
     }
 
@@ -211,7 +214,7 @@ export class HandbookItemUnique implements IUnique {
 
     public static arrayFromByteArray(data: BagModuleData): HandbookItemUnique[] {
         const result: HandbookItemUnique[] = [];
-        for (let i = 0; i < data.handbook.count; ++i) {
+        for (let i = 1; i < data.handbook.count; ++i) {
             const collected = data.handbook.getValue(i) > 0;
             result.push(new HandbookItemUnique(
                 i,
