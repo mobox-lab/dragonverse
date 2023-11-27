@@ -1,3 +1,6 @@
+import ModuleC = mwext.ModuleC;
+import ModuleS = mwext.ModuleS;
+import Subdata = mwext.Subdata;
 import { GameConfig } from "../../config/GameConfig";
 import { IBagItemElement } from "../../config/BagItem";
 import { Yoact } from "../../depend/yoact/Yoact";
@@ -5,7 +8,8 @@ import IUnique from "../../depend/yoact/IUnique";
 import YoactArray from "../../depend/yoact/YoactArray";
 import createYoact = Yoact.createYoact;
 import GToolkit from "../../util/GToolkit";
-import CollectibleItem from "../collectible-item/CollectibleItem";
+import ByteArray from "../../depend/byteArray/ByteArray";
+import Enumerable from "linq";
 
 export default class BagModuleData extends Subdata {
     //@Decorator.persistence()
@@ -15,15 +19,74 @@ export default class BagModuleData extends Subdata {
         return GameConfig.BagItem.getElement(bagId);
     }
 
+    /**
+     * 已经发布的正式数据版本号.
+     * RV.
+     */
+    public static readonly RELEASE_VERSIONS: number[] = [
+        202312061339,
+    ];
+
+    /**
+     * 最新版本号.
+     */
+    public static readonly LAST_VERSION: number = BagModuleData.RELEASE_VERSIONS[BagModuleData.RELEASE_VERSIONS.length - 1];
+
+    /**
+     * 版本升级办法.
+     * UVM[n] : 从 RV[n] 升级到 RV[n+1] 的方法.
+     */
+    public static readonly UPDATE_VERSION_METHOD: (() => void)[] = [
+        // () => {
+        // },
+    ];
+
+    private _version: number;
+
     @Decorator.persistence()
     public itemsMap: object = {};
 
     @Decorator.persistence()
     public gold: number = 0;
 
+    @Decorator.persistence()
+    public handbook: ByteArray;
+
     protected initDefaultData(): void {
+        this._version = BagModuleData.LAST_VERSION;
         this.itemsMap = {};
         this.gold = 0;
+        this.initHandBook();
+    }
+
+    public get version(): number {
+        return this._version;
+    }
+
+    /**
+     * 数据版本检查.
+     */
+    public checkVersion() {
+        if (this.version === BagModuleData.LAST_VERSION) return;
+
+        GToolkit.log(BagModuleData, () => {
+            return `数据准备升级.
+当前版本: ${this.version}.
+最新版本: ${BagModuleData.LAST_VERSION}.`;
+        });
+
+        const startIndex = BagModuleData.RELEASE_VERSIONS.indexOf(this.version);
+        if (startIndex < 0) {
+            GToolkit.error(BagModuleData, `数据号版本异常.
+不是已发布的版本号.
+当前版本: ${this.version}.`);
+            return;
+        }
+
+        for (let i = startIndex; i < BagModuleData.UPDATE_VERSION_METHOD.length - 1; ++i) {
+            BagModuleData.UPDATE_VERSION_METHOD[i]();
+            this._version = BagModuleData.RELEASE_VERSIONS[i + 1];
+        }
     }
 
     /**
@@ -81,6 +144,29 @@ export default class BagModuleData extends Subdata {
     public isAfford(price: number) {
         return this.gold >= price;
     }
+
+    /**
+     * 初始化 图鉴.
+     * @private
+     */
+    private initHandBook() {
+        const maxBagId = Enumerable
+            .from(GameConfig.BagItem.getAllElement())
+            .max(item => item.id);
+
+        this.handbook = new ByteArray(maxBagId + 1);
+    }
+
+    /**
+     * 记录收集.
+     */
+    public recordItem(bagId: number): boolean {
+        if (this.handbook.getValue(bagId)) {
+            return false;
+        }
+        this.handbook.setValue(bagId, true);
+        return true;
+    }
 }
 
 export class BagItemUnique implements IUnique {
@@ -96,7 +182,6 @@ export class BagItemUnique implements IUnique {
                 element));
         }
         return result;
-
     }
 
     constructor(id: number, count: number) {
@@ -135,6 +220,7 @@ export class BagItemUnique implements IUnique {
 export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 //#region Member
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
+    public handbookYoact: ByteArray;
 
     public goldYoact: { count: number } = createYoact({count: 0});
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -149,6 +235,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 
 //#region Member init
         this.bagItemYoact.setAll(BagItemUnique.arrayFromObject(this.data));
+        this.handbookYoact = createYoact(this.data.handbook);
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Subscribe
@@ -192,7 +279,8 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
      * @param autoRemove 自动移除. 当使得物品数量为 0 时, 是否自动移除.
      */
     public addItem(bagId: number, count: number, autoRemove: boolean = true) {
-        const setCount = this.getItemCount(bagId) + count;
+        const currCount = this.getItemCount(bagId);
+        const setCount = currCount + count;
         GToolkit.log(BagModuleC, () => {
             return `add item.
     playerId: ${this.localPlayerId}. 
@@ -225,7 +313,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
      * @param price
      */
     public isAfford(price: number): boolean {
-        return this.data.isAfford(price);
+        return isAfford(this.data, price);
     }
 
     /**
@@ -246,6 +334,12 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
             }
         } else {
             if (count === null) return;
+
+            if (!this.handbookYoact.getValue(bagId)) {
+                this.handbookYoact.setValue(bagId, true);
+                GToolkit.log(BagModuleC, `record item. id: ${bagId}.`);
+            }
+
             this.bagItemYoact.addItem(new BagItemUnique(bagId, count));
         }
     }
@@ -259,6 +353,13 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 
     public net_setGold(count: number) {
         this.goldYoact.count = count;
+    }
+
+    public net_setRecord(bagId: number, value: number) {
+        if (this.handbookYoact.getValue(bagId) !== value) {
+            GToolkit.log(BagModuleC, `${value > 0 ? "" : "un"}record item. id: ${bagId}.`);
+            this.handbookYoact.setValue(bagId, value);
+        }
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -341,6 +442,14 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
     autoRemove: ${autoRemove}.`;
         });
 
+        if (!playerData.getItemCount(bagId) &&
+            count > 0 &&
+            playerData.recordItem(bagId)) {
+            GToolkit.log(BagModuleS, `record item. id: ${bagId}.`);
+        }
+
+        this.getClient(playerId).net_setRecord(bagId, playerData.handbook.getValue(bagId));
+
         playerData.addItem(bagId, count);
         if (autoRemove && playerData.getItemCount(bagId) === 0) {
             playerData.removeItem(bagId);
@@ -383,4 +492,8 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+function isAfford(data: BagModuleData, price: number) {
+    return data.isAfford(price);
 }
