@@ -205,6 +205,43 @@ export class BagItemUnique implements IUnique {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
+export class HandbookItemUnique implements IUnique {
+    public id: number;
+    public collected: boolean;
+
+    public static arrayFromByteArray(data: BagModuleData): HandbookItemUnique[] {
+        const result: HandbookItemUnique[] = [];
+        for (let i = 0; i < data.handbook.count; ++i) {
+            const collected = data.handbook.getValue(i) > 0;
+            result.push(new HandbookItemUnique(
+                i,
+                collected));
+        }
+        return result;
+    }
+
+    constructor(id: number, collected: boolean) {
+        this.id = id;
+        this.collected = collected;
+    }
+
+//#region IUnique
+    public move(updated: this): boolean {
+        let changed: boolean = false;
+        if (this.collected !== updated.collected) {
+            changed = true;
+            this.collected = updated.collected;
+        }
+        return changed;
+    }
+
+    public primaryKey(): number {
+        return this.id;
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
 /**
  * Bag Module.
  *
@@ -220,7 +257,7 @@ export class BagItemUnique implements IUnique {
 export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 //#region Member
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
-    public handbookYoact: ByteArray;
+    public handbookYoact: YoactArray<HandbookItemUnique> = new YoactArray<HandbookItemUnique>();
 
     public goldYoact: { count: number } = createYoact({count: 0});
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -235,7 +272,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 
 //#region Member init
         this.bagItemYoact.setAll(BagItemUnique.arrayFromObject(this.data));
-        this.handbookYoact = createYoact(this.data.handbook);
+        this.handbookYoact.setAll(HandbookItemUnique.arrayFromByteArray(this.data));
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Subscribe
@@ -335,8 +372,9 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         } else {
             if (count === null) return;
 
-            if (!this.handbookYoact.getValue(bagId)) {
-                this.handbookYoact.setValue(bagId, true);
+            const handbookItem = this.handbookYoact.getItem(bagId);
+            if (!handbookItem.collected) {
+                handbookItem.collected = true;
                 GToolkit.log(BagModuleC, `record item. id: ${bagId}.`);
             }
 
@@ -356,9 +394,11 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     }
 
     public net_setRecord(bagId: number, value: number) {
-        if (this.handbookYoact.getValue(bagId) !== value) {
-            GToolkit.log(BagModuleC, `${value > 0 ? "" : "un"}record item. id: ${bagId}.`);
-            this.handbookYoact.setValue(bagId, value);
+        const handbookItem = this.handbookYoact.getItem(bagId);
+        const v = value > 0;
+        if (!(handbookItem.collected !== v)) {
+            GToolkit.log(BagModuleC, `${v ? "" : "un"}record item. id: ${bagId}.`);
+            handbookItem.collected = v;
         }
     }
 
