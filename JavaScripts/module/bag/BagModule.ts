@@ -4,6 +4,8 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import IUnique from "../../depend/yoact/IUnique";
 import YoactArray from "../../depend/yoact/YoactArray";
 import createYoact = Yoact.createYoact;
+import GToolkit from "../../util/GToolkit";
+import CollectibleItem from "../collectible-item/CollectibleItem";
 
 export default class BagModuleData extends Subdata {
     //@Decorator.persistence()
@@ -24,6 +26,12 @@ export default class BagModuleData extends Subdata {
         this.gold = 0;
     }
 
+    /**
+     * 添加物品.
+     * 不会使结果 <0.
+     * @param bagId
+     * @param count
+     */
     public addItem(bagId: number, count: number) {
         if (!this.itemsMap[bagId]) {
             this.itemsMap[bagId] = 0;
@@ -34,6 +42,11 @@ export default class BagModuleData extends Subdata {
         }
     }
 
+    /**
+     * 查询 背包指定物品数量.
+     * 当不存在时 返回 0.
+     * @param bagId
+     */
     public getItemCount(bagId: number) {
         return this.itemsMap[bagId] ?? 0;
     }
@@ -173,13 +186,23 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     }
 
     /**
-     * 添加或删除指定数量的背包物品.
-     * @param bagId 物品 id.
+     * 添加或删除指定数量的 BagItem.
+     * @param bagId BagItem id.
      * @param count 数量.
+     * @param autoRemove 自动移除. 当使得物品数量为 0 时, 是否自动移除.
      */
-    public addItem(bagId: number, count: number) {
-        this.selfSetItem(bagId, this.getItemCount(bagId) + count);
-        this.server.net_addItem(bagId, count);
+    public addItem(bagId: number, count: number, autoRemove: boolean = true) {
+        const setCount = this.getItemCount(bagId) + count;
+        GToolkit.log(BagModuleC, () => {
+            return `add item.
+    playerId: ${this.localPlayerId}. 
+    id: ${bagId}. 
+    current count: ${this.getItemCount(bagId)}. 
+    target count: ${setCount}.
+    autoRemove: ${autoRemove}.`;
+        });
+        this.selfSetItem(bagId, autoRemove && !setCount ? null : setCount);
+        this.server.net_addItem(bagId, count, autoRemove);
     }
 
     /**
@@ -187,7 +210,13 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
      * @param bagId
      */
     public removeItem(bagId: number) {
-        this.selfSetItem(bagId, null);
+        GToolkit.log(BagModuleC, () => {
+            return `remove item.
+    playerId: ${this.localPlayerId}. 
+    id: ${bagId}. 
+    current count: ${this.getItemCount(bagId)}.`;
+        });
+        this.selfSetItem(bagId);
         this.server.net_removeItem(bagId);
     }
 
@@ -199,8 +228,15 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         return this.data.isAfford(price);
     }
 
+    /**
+     * 设定 Client BagItem 数量.
+     * @param bagId
+     * @param count
+     *      - >=0 设定数量.
+     *      - null default. 移除物品.
+     * @private
+     */
     private selfSetItem(bagId: number, count: number = null) {
-        count = count >= 0 ? count : null;
         const item = this.bagItemYoact.getItem(bagId);
         if (item) {
             if (count === null) {
@@ -217,8 +253,8 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
-    public net_setItem(bagId: number, count: number) {
-        this.selfSetItem(bagId, count);
+    public net_setItem(bagId: number, count: number, autoRemove: boolean = true) {
+        this.selfSetItem(bagId, autoRemove && !count ? null : count);
     }
 
     public net_setGold(count: number) {
@@ -286,23 +322,64 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         this.getClient(playerId).net_setGold(playerData.getGold());
     }
 
+    /**
+     添加或删除指定数量的 BagItem.
+     * @param playerId 玩家 id.
+     * @param bagId BagItem id.
+     * @param count 数量.
+     * @param autoRemove 自动移除. 当使得物品数量为 0 时, 是否自动移除.
+     *      true default.
+     */
+    public addItem(playerId: number, bagId: number, count: number, autoRemove: boolean = true) {
+        const playerData = this.getPlayerData(playerId);
+        GToolkit.log(BagModuleS, () => {
+            return `add item.
+    playerId: ${playerId}. 
+    id: ${bagId}. 
+    current count: ${playerData.getItemCount(bagId)}. 
+    target count: ${playerData.getItemCount(bagId) + count}.
+    autoRemove: ${autoRemove}.`;
+        });
+
+        playerData.addItem(bagId, count);
+        if (autoRemove && playerData.getItemCount(bagId) === 0) {
+            playerData.removeItem(bagId);
+        }
+        playerData.save(false);
+
+        this.getClient(playerId).net_setItem(
+            bagId,
+            playerData.getItemCount(bagId),
+            autoRemove);
+    }
+
+    /**
+     * 移除物品
+     * @param playerId
+     * @param bagId
+     */
+    public removeItem(playerId: number, bagId: number) {
+        const playerData = this.getPlayerData(playerId);
+        GToolkit.log(BagModuleS, () => {
+            return `add item.
+    playerId: ${playerId}. 
+    id: ${bagId}. 
+    current count: ${playerData.getItemCount(bagId)}.`;
+        });
+        playerData.removeItem(bagId);
+        playerData.save(false);
+    }
+
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
-    public net_addItem(bagId: number, count: number) {
-        this.currentData.addItem(bagId, count);
-        if (this.currentData.getItemCount(bagId) === 0) {
-            this.currentData.removeItem(bagId);
-        }
-        this.currentData.save(false);
-        this.getClient(this.currentPlayerId).net_setItem(
-            bagId,
-            this.currentData.getItemCount(bagId));
+    public net_addItem(bagId: number, count: number, autoRemove: boolean = true) {
+        this.addItem(this.currentPlayerId, bagId, count, autoRemove);
     }
 
     public net_removeItem(bagId: number) {
-        this.currentData.removeItem(bagId);
-        this.currentData.save(false);
+        this.removeItem(this.currentPlayerId, bagId);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
