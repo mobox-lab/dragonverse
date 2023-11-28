@@ -6,6 +6,7 @@ import HandbookPanelItem from "./HandbookPanelItem";
 import GToolkit from "../../util/GToolkit";
 import { Yoact } from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
+import Enumerable from "linq";
 
 export default class HandbookPanel extends HandbookPanel_Generate {
 //#region Member
@@ -36,8 +37,19 @@ export default class HandbookPanel extends HandbookPanel_Generate {
         });
 
         bindYoact(() => {
-            this.mTextCompletion.text=`/${this._bagModule.handbookYoact}`
-        })
+            const currCount = Enumerable
+                .from(this._bagModule.handbookYoact.getAll())
+                .count((item) => item.collected);
+            const allCount = this._bagModule.handbookYoact.length;
+
+            this.mTextCompletion.text = `${
+                currCount
+            }/${
+                allCount
+            }`;
+
+            this.mProgressBar.currentValue = currCount / allCount;
+        });
 //#endregion ------------------------------------------------------------------------------------------
 
 //#region Widget bind

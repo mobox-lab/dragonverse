@@ -11,6 +11,79 @@ import GToolkit from "../../util/GToolkit";
 import ByteArray from "../../depend/byteArray/ByteArray";
 import Enumerable from "linq";
 
+export class BagItemUnique implements IUnique {
+    public id: number;
+    public count: number;
+
+    public static arrayFromObject(data: BagModuleData): BagItemUnique[] {
+        const result: BagItemUnique[] = [];
+        for (const key in data.itemsMap) {
+            const element = data.itemsMap[key] as number;
+            result.push(new BagItemUnique(
+                Number(key),
+                element));
+        }
+        return result;
+    }
+
+    constructor(id: number, count: number) {
+        this.id = id;
+        this.count = count;
+    }
+
+//#region IUnique
+    public move(updated: this): boolean {
+        let changed: boolean = false;
+        if (this.count !== updated.count) {
+            changed = true;
+            this.count = updated.count;
+        }
+
+        return changed;
+    }
+
+    public primaryKey = (): number => this.id;
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+export class HandbookItemUnique implements IUnique {
+    public id: number;
+    public collected: boolean;
+
+    public static arrayFromByteArray(data: BagModuleData): HandbookItemUnique[] {
+        const result: HandbookItemUnique[] = [];
+        for (let i = 1; i < data.handbook.count; ++i) {
+            const collected = data.handbook.getValue(i) > 0;
+            result.push(new HandbookItemUnique(
+                i,
+                collected));
+        }
+        return result;
+    }
+
+    constructor(id: number, collected: boolean) {
+        this.id = id;
+        this.collected = collected;
+    }
+
+//#region IUnique
+    public move(updated: this): boolean {
+        let changed: boolean = false;
+        if (this.collected !== updated.collected) {
+            changed = true;
+            this.collected = updated.collected;
+        }
+        return changed;
+    }
+
+    public primaryKey(): number {
+        return this.id;
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
 export default class BagModuleData extends Subdata {
     //@Decorator.persistence()
     //public isSave: bool;
@@ -43,8 +116,18 @@ export default class BagModuleData extends Subdata {
     public gold: number = 0;
 
     @Decorator.persistence()
-    public handbook: ByteArray;
+    public handbookStr: string;
 
+    private _handbook: ByteArray = null;
+
+    public get handbook(): ByteArray {
+        if (this._handbook === null) {
+            this._handbook = ByteArray.from(this.handbookStr);
+        }
+        return this._handbook;
+    };
+
+//#region Sub data
     protected initDefaultData(): void {
         this.currentVersion = this.version;
         this.itemsMap = {};
@@ -52,10 +135,14 @@ export default class BagModuleData extends Subdata {
         this.initHandBook();
     }
 
-
     protected onDataInit(): void {
         super.onDataInit();
         this.checkVersion();
+    }
+
+    public save(syncToClient: boolean): this {
+        this.handbookStr = this.handbook.toString();
+        return super.save(syncToClient);
     }
 
     /**
@@ -65,6 +152,23 @@ export default class BagModuleData extends Subdata {
     public get version(): number {
         return BagModuleData.RELEASE_VERSIONS[BagModuleData.RELEASE_VERSIONS.length - 1];
     }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Data init
+    /**
+     * 初始化 图鉴.
+     * @private
+     */
+    private initHandBook() {
+        const maxBagId = Enumerable
+            .from(GameConfig.BagItem.getAllElement())
+            .max(item => item.id);
+
+        this.handbookStr = new ByteArray(maxBagId + 1).toString();
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     /**
      * 数据版本检查.
@@ -149,18 +253,6 @@ export default class BagModuleData extends Subdata {
     }
 
     /**
-     * 初始化 图鉴.
-     * @private
-     */
-    private initHandBook() {
-        const maxBagId = Enumerable
-            .from(GameConfig.BagItem.getAllElement())
-            .max(item => item.id);
-
-        this.handbook = new ByteArray(maxBagId + 1);
-    }
-
-    /**
      * 记录收集.
      */
     public recordItem(bagId: number): boolean {
@@ -170,79 +262,6 @@ export default class BagModuleData extends Subdata {
         this.handbook.setValue(bagId, true);
         return true;
     }
-}
-
-export class BagItemUnique implements IUnique {
-    public id: number;
-    public count: number;
-
-    public static arrayFromObject(data: BagModuleData): BagItemUnique[] {
-        const result: BagItemUnique[] = [];
-        for (const key in data.itemsMap) {
-            const element = data.itemsMap[key] as number;
-            result.push(new BagItemUnique(
-                Number(key),
-                element));
-        }
-        return result;
-    }
-
-    constructor(id: number, count: number) {
-        this.id = id;
-        this.count = count;
-    }
-
-//#region IUnique
-    public move(updated: this): boolean {
-        let changed: boolean = false;
-        if (this.count !== updated.count) {
-            changed = true;
-            this.count = updated.count;
-        }
-
-        return changed;
-    }
-
-    public primaryKey = (): number => this.id;
-
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-}
-
-export class HandbookItemUnique implements IUnique {
-    public id: number;
-    public collected: boolean;
-
-    public static arrayFromByteArray(data: BagModuleData): HandbookItemUnique[] {
-        const result: HandbookItemUnique[] = [];
-        for (let i = 1; i < data.handbook.count; ++i) {
-            const collected = data.handbook.getValue(i) > 0;
-            result.push(new HandbookItemUnique(
-                i,
-                collected));
-        }
-        return result;
-    }
-
-    constructor(id: number, collected: boolean) {
-        this.id = id;
-        this.collected = collected;
-    }
-
-//#region IUnique
-    public move(updated: this): boolean {
-        let changed: boolean = false;
-        if (this.collected !== updated.collected) {
-            changed = true;
-            this.collected = updated.collected;
-        }
-        return changed;
-    }
-
-    public primaryKey(): number {
-        return this.id;
-    }
-
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 /**
