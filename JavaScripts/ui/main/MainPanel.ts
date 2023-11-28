@@ -1,6 +1,7 @@
 ﻿import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
 import BagPanel from "../bag/BagPanel";
+import HandbookPanel from "../handbook/HandbookPanel";
 
 @UIBind("")
 export default class MainPanel extends MainPanel_Generate {
@@ -50,7 +51,8 @@ export default class MainPanel extends MainPanel_Generate {
                 });
             }
         });
-        this.btnBag.onPressed.add(() => this.showBag());
+        this.btnBag.onPressed.add(showBag);
+        this.btnHandbook.onPressed.add(showHandbook);
 //#endregion ------------------------------------------------------------------------------------------
 
 //#region Widget bind
@@ -201,12 +203,16 @@ export default class MainPanel extends MainPanel_Generate {
         this.collectibleInteractorMap.delete(syncKey);
     }
 
-    public showBag() {
-        UIService.show(BagPanel);
-    }
-
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Callback
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+function showBag() {
+    UIService.show(BagPanel);
+}
+
+function showHandbook() {
+    UIService.show(HandbookPanel);
 }

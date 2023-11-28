@@ -6,11 +6,13 @@ import { AdvancedTweenTask } from "../waterween/tweenTask/AdvancedTweenTask";
 import Waterween from "../waterween/Waterween";
 import Easing from "../easing/Easing";
 import IYoactArray from "../yoact/IYoactArray";
+import UUID from "pure-uuid";
 import ButtonTouchMethod = mw.ButtonTouchMethod;
 import SimpleDelegate = Delegate.SimpleDelegate;
 import UIService = mw.UIService;
 import UIScript = mw.UIScript;
 import SimpleDelegateFunction = Delegate.SimpleDelegateFunction;
+import Canvas = mw.Canvas;
 
 // export class Margin {
 //     public top: number;
@@ -56,7 +58,7 @@ import SimpleDelegateFunction = Delegate.SimpleDelegateFunction;
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.0.2b
+ * @version 1.0.4b
  */
 export default class ScrollView<
     D extends IUnique,
@@ -98,10 +100,15 @@ export default class ScrollView<
         yoactArray: IYoactArray<D>,
         uiItemConstr: { new(): UItem },
         scrollBox: mw.ScrollBox,
-        container: mw.Canvas,
+        container: mw.Canvas = undefined,
         useSmartLayoutStrategy: boolean = true,
     ) {
         this._scrollBox = scrollBox;
+
+        if (!container) {
+            container = Canvas.newObject(undefined, `containerScrollView-auto-${new UUID(4).toString().substring(0, 8)}`);
+            scrollBox.addChild(container);
+        }
         this._container = container;
 
         if (useSmartLayoutStrategy) {
@@ -268,6 +275,13 @@ export default class ScrollView<
         return this;
     }
 
+    /**
+     * 重设选中项.
+     */
+    public resetSelect() {
+        this.onClickItem(null);
+    }
+
     private innerInsertUiItem(uiItem: UItem, key: number, index: number = -1) {
         const ueWidget = GToolkit.getUePanelWidget(this._container);
         const children = ueWidget.GetAllChildren();
@@ -297,11 +311,7 @@ export default class ScrollView<
         if (uiItem.clickObj) {
             uiItem.clickObj.onClicked.clear();
             uiItem.clickObj.onClicked.add(() => {
-                if (this._currentSelectKey === key) return;
-                this.onItemSelect.invoke(key);
-                this._uiMap.get(this._currentSelectKey)?.onSetSelect(false);
-                this._uiMap.get(key).onSetSelect(true);
-                this._currentSelectKey = key;
+                this.onClickItem(key);
             });
             uiItem.clickObj.touchMethod = ButtonTouchMethod.PreciseTap;
         }
@@ -324,5 +334,15 @@ export default class ScrollView<
         if (!this._offsetTask) return;
         Waterween.destroyTweenTask(this._offsetTask);
         this._offsetTask = null;
+    }
+
+    private onClickItem(key: number): void {
+        if (this._currentSelectKey === key) return;
+        this.onItemSelect.invoke(key);
+        this._uiMap.get(this._currentSelectKey)?.onSetSelect(false);
+        if (key !== null) {
+            this._uiMap.get(key).onSetSelect(true);
+        }
+        this._currentSelectKey = key;
     }
 }
