@@ -12,12 +12,15 @@ by LviatYi
 
 ## 背包物 BagItem
 
-| Name | PropName | Type   | Desc |
-| :--: | :------- | ------ | ---- |
-|  ID  | Id       | int    |      |
-| 名称 | Name     | string |      |
-| 描述 | Desc     | string |      |
-| 图标 | Icon     | string |      |
+|   Name   | PropName   | Type    | Desc |
+| :------: | :--------- | ------- | ---- |
+|    ID    | Id         | int     |      |
+|   名称   | Name       | string  |      |
+|   描述   | Desc       | string  |      |
+|   图标   | Icon       | string  |      |
+| 可完成性 | Achievable | boolean |      |
+
+- **可完成性** 是否 可以被图鉴记录。
 
 ## 采集物 CollectibleItem
 
