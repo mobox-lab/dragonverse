@@ -27,7 +27,7 @@ export class CollectibleInteractorPanel extends CollectiblePanel_Generate {
         Script.spawnScript(MwBehaviorDelegate).then(value => {
             this._standardBehavior = value;
             this._standardBehavior.delegate.add(this.renderPosition);
-            this._standardBehavior.start();
+            this._standardBehavior.run();
         });
 //#endregion ------------------------------------------------------------------------------------------
 

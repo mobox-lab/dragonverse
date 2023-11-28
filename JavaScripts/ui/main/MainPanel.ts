@@ -2,6 +2,7 @@
 import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
 import BagPanel from "../bag/BagPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
+import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
 
 @UIBind("")
 export default class MainPanel extends MainPanel_Generate {
@@ -9,6 +10,7 @@ export default class MainPanel extends MainPanel_Generate {
     private character: Character;
     private attackAnim = null;
     private collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
+    private sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld UI Event
@@ -195,12 +197,27 @@ export default class MainPanel extends MainPanel_Generate {
         this.collectibleInteractorContainer.addChild(collectibleInteractor.uiObject);
     }
 
+    public addSceneDragonInteractor(syncKey: string) {
+        const sceneDragonInteractor = UIService.create(SceneDragonInteractorPanel);
+        sceneDragonInteractor.init(syncKey);
+        this.sceneDragonInteractorMap.set(syncKey, sceneDragonInteractor);
+        this.sceneDragonInteractorContainer.addChild(sceneDragonInteractor.uiObject);
+    }
+
     public removeCollectibleItemInteractor(syncKey: string) {
         const uis = this.collectibleInteractorMap.get(syncKey);
         if (uis) {
             this.collectibleInteractorContainer.removeChild(uis.uiObject);
         }
         this.collectibleInteractorMap.delete(syncKey);
+    }
+
+    public removeSceneDragonInteractor(syncKey: string) {
+        const uis = this.sceneDragonInteractorMap.get(syncKey);
+        if (uis) {
+            this.sceneDragonInteractorContainer.removeChild(uis.uiObject);
+        }
+        this.sceneDragonInteractorMap.delete(syncKey);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
