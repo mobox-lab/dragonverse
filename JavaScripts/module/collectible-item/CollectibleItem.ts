@@ -128,7 +128,7 @@ export default class CollectibleItem {
         this._location = new Vector(p.x, p.y, 0);
     }
 
-    public toString(): string {
+    public info(): string {
         return `id:${this._id}, hitPoint:${this._hitPoint}, generateTime:${new Date(this._generateTime)}, location:${this._location}`;
     }
 

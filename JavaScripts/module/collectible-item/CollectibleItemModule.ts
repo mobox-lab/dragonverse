@@ -45,10 +45,14 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         id: number,
         location: Vector) {
         if (!location) {
-            GToolkit.error(CollectibleItemModuleC, ` generate item param location invalid.`);
+            GToolkit.error(CollectibleItemModuleC, `generate item param location invalid.`);
             return null;
         }
         const assetId = this.PREFAB_MAP.get(id);
+        if (GToolkit.isNullOrEmpty(assetId)) {
+            GToolkit.error(CollectibleItemModuleC, `prefab not set. id: ${id}`);
+            return null;
+        }
         const obj = await GameObjPool.asyncSpawn(
             assetId,
             GameObjPoolSourceType.Prefab,
@@ -133,7 +137,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         }
 
         const item = this.syncItemMap.get(syncKey).item;
-        GToolkit.log(CollectibleItemModuleC, item.toString());
+        GToolkit.log(CollectibleItemModuleC, item.info());
         if (!item.isCollectible) {
             GToolkit.warn(CollectibleItemModuleC, `item un collectible. waiting for delete.`);
             return;
@@ -151,27 +155,23 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
     }
 
     private generate(syncKey: string, item: CollectibleItem) {
-        GToolkit.log(CollectibleItemModuleC, `try generate item. ${item.toString()}`);
+        GToolkit.log(CollectibleItemModuleC, `try generate item. ${item.info()}`);
         if (this.syncItemMap.get(syncKey)) {
             GToolkit.error(CollectibleItemModuleC, `item already exist in client when generate. syncKey: ${syncKey}`);
             return;
         }
-
-        const itemAsync = {item: item, object: null};
-
-        this.syncItemMap.set(syncKey, itemAsync);
 
         CollectibleItemModuleC.collectibleItemPrefabFactory(
             syncKey,
             item.id,
             item.location,
         ).then((value) => {
-            itemAsync.object = value;
+            this.syncItemMap.set(syncKey, {item: item, object: value});
         });
     }
 
     private destroy(syncKey: string) {
-        GToolkit.log(CollectibleItemModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).item.toString() ?? "null"}`);
+        GToolkit.log(CollectibleItemModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).item.info() ?? "null"}`);
 
         this.syncItemMap.get(syncKey)?.object.destroy();
         this.syncItemMap.delete(syncKey);
@@ -459,7 +459,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             GToolkit.error(CollectibleItemModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
             return;
         }
-        GToolkit.log(CollectibleItemModuleS, `try collect item. ${item.toString()}`);
+        GToolkit.log(CollectibleItemModuleS, `try collect item. ${item.info()}`);
         item.collect();
         if (!item.isCollectible) {
             this.destroy(this.currentPlayerId, syncKey);
