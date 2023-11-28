@@ -54,9 +54,11 @@ export class HandbookItemUnique implements IUnique {
     public static arrayFromByteArray(data: BagModuleData): HandbookItemUnique[] {
         const result: HandbookItemUnique[] = [];
         for (let i = 1; i < data.handbook.count; ++i) {
+            //#region 视图 筛除 不可收集物.
             if (!GameConfig.BagItem.getElement(i)?.achievable ?? false) {
                 continue;
             }
+            //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
             const collected = data.handbook.getValue(i) > 0;
             result.push(new HandbookItemUnique(
