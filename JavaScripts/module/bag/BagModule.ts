@@ -54,6 +54,10 @@ export class HandbookItemUnique implements IUnique {
     public static arrayFromByteArray(data: BagModuleData): HandbookItemUnique[] {
         const result: HandbookItemUnique[] = [];
         for (let i = 1; i < data.handbook.count; ++i) {
+            if (!GameConfig.BagItem.getElement(i)?.achievable ?? false) {
+                continue;
+            }
+
             const collected = data.handbook.getValue(i) > 0;
             result.push(new HandbookItemUnique(
                 i,
@@ -294,7 +298,8 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 
 //#region Member init
         this.bagItemYoact.setAll(BagItemUnique.arrayFromObject(this.data));
-        this.handbookYoact.setAll(HandbookItemUnique.arrayFromByteArray(this.data));
+        this.handbookYoact
+            .setAll(HandbookItemUnique.arrayFromByteArray(this.data));
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Subscribe
@@ -395,7 +400,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
             if (count === null) return;
 
             const handbookItem = this.handbookYoact.getItem(bagId);
-            if (!handbookItem.collected) {
+            if (handbookItem && !handbookItem.collected) {
                 handbookItem.collected = true;
                 GToolkit.log(BagModuleC, `record item. id: ${bagId}.`);
             }
@@ -417,6 +422,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 
     public net_setRecord(bagId: number, value: number) {
         const handbookItem = this.handbookYoact.getItem(bagId);
+        if (!handbookItem) return;
         const v = value > 0;
         if (!(handbookItem.collected !== v)) {
             GToolkit.log(BagModuleC, `${v ? "" : "un"}record item. id: ${bagId}.`);
