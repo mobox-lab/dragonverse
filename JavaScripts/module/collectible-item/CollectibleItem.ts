@@ -207,7 +207,11 @@ export default class CollectibleItem {
     public static generationInterval(id: number): number {
         return this.getConfig(id).generationInterval * 1000;
     }
-    
+
+    public static bagId(id: number): number {
+        return this.getConfig(id).bagId;
+    }
+
     public static getConfig(id: number): ICollectibleItemElement {
         return GameConfig.CollectibleItem.getElement(id);
     }
