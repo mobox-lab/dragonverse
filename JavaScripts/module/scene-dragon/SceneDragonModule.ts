@@ -9,6 +9,9 @@ import Enumerable from "linq";
 import { GameConfig } from "../../config/GameConfig";
 import UUID from "pure-uuid";
 import noReply = mwext.Decorator.noReply;
+import { EventDefine } from "../../const/EventDefine";
+import CollectibleItem from "../collectible-item/CollectibleItem";
+import { BagModuleS } from "../bag/BagModule";
 
 /**
  * 场景龙存在数据.
@@ -50,6 +53,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     }
 
     public static async sceneDragonPrefabFactory(
+        syncKey: string,
         item: SceneDragon) {
         if (!item.location) {
             GToolkit.error(SceneDragonModuleC, `generate item param location invalid.`);
@@ -65,7 +69,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             GameObjPoolSourceType.Prefab,
         );
         const behavior = GToolkit.getFirstScript(obj, SceneDragonBehavior);
-        behavior.init(item);
+        behavior.init(syncKey, item);
         obj.worldTransform.position = item.location;
 
         return new SceneDragonExistInfo(
@@ -92,6 +96,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     private _mainPanel: MainPanel;
 
+    private _eventListeners: EventListener[] = [];
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -107,6 +113,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Subscribe
+        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOutOfAliveRange, this.onDragonOutOfAliveRange));
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -122,6 +129,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         super.onDestroy();
 
 //#region Event Unsubscribe
+        this._eventListeners.forEach(value => value.disconnect());
 //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -169,10 +177,13 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         }
 
         SceneDragonModuleC.sceneDragonPrefabFactory(
+            syncKey,
             item,
         ).then((value) => {
             this.syncItemMap.set(syncKey, value);
+            this._mainPanel.addSceneDragonInteractor(syncKey);
         });
+
     }
 
     private destroy(syncKey: string) {
@@ -180,6 +191,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
         this.syncItemMap.get(syncKey)?.object.destroy();
         this.syncItemMap.delete(syncKey);
+
+        this._mainPanel.removeSceneDragonInteractor(syncKey);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -206,11 +219,18 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Callback
+    private onDragonOutOfAliveRange = (syncKey: string) => {
+        GToolkit.log(SceneDragonModuleC, `knows dragon out of alive range. syncKey: ${syncKey}`);
+        this.server.net_destroy(syncKey);
+    };
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonModuleData> {
 //#region Member
+    private _bagModuleS: BagModuleS;
+
     /**
      * 私有玩家场景龙存在映射.
      *  - key 玩家 PlayerId.
@@ -241,6 +261,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         super.onStart();
 
 //#region Member init
+        this._bagModuleS = ModuleService.getModule(BagModuleS);
 //#endregion ------------------------------------------------------------------------------------------
 
 //#region Event Subscribe
@@ -364,6 +385,16 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         const syncKey = new UUID(4).toString();
         const item = new SceneDragon();
 
+        item.generate(itemId);
+
+        const playerPosition = Player.getPlayer(playerId)?.character.worldTransform.position ?? null;
+        if (playerPosition === null || Vector.squaredDistance(item.location, playerPosition) > GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE) {
+            GToolkit.log(SceneDragonModuleS, `generate item skipped. player is too far.`);
+            GToolkit.log(SceneDragonModuleS, `  id: ${item.id}.`);
+            GToolkit.log(SceneDragonModuleS, `  location: ${item.location}.`);
+            return;
+        }
+
         let array: string[] = this.existenceItemMap.get(playerId);
         if (!array) {
             array = [];
@@ -372,8 +403,6 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         array.push(syncKey);
         this.syncItemMap.set(syncKey, item);
-
-        item.generate(itemId);
 
         GToolkit.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
 
@@ -436,9 +465,21 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         }
         GToolkit.log(SceneDragonModuleS, `try collect item. ${item.info()}`);
         item.catch();
+        this._bagModuleS.addItem(this.currentPlayerId, SceneDragon.bagId(item.id), 1);
         if (!item.isCatchable) {
             this.destroy(this.currentPlayerId, syncKey);
         }
+    }
+
+    @noReply()
+    public net_destroy(syncKey: string) {
+        const item = this.syncItemMap.get(syncKey);
+        if (!item) {
+            GToolkit.error(SceneDragonModuleS, `item not exist in server when destroy. syncKey: ${syncKey} `);
+            return;
+        }
+        GToolkit.log(SceneDragonModuleS, `try destroy item. ${item.info()}`);
+        this.destroy(this.currentPlayerId, syncKey);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
