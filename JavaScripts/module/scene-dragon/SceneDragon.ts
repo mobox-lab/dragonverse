@@ -204,6 +204,10 @@ export default class SceneDragon {
         return SuccessRateAlgoFactory(this.getConfig(id).successRateAlgoId as SuccessRateAlgoTypes);
     }
 
+    public static bagId(id: number): number {
+        return this.getConfig(id).bagId;
+    }
+
     public static getConfig(id: number): IDragonElement {
         return GameConfig.Dragon.getElement(id);
     }
