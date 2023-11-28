@@ -1,27 +1,36 @@
-import { GameConfig } from "../../config/GameConfig";
-import Enumerable from "linq";
-import CollectibleItem from "./CollectibleItem";
 import GToolkit from "../../util/GToolkit";
-import GameServiceConfig from "../../const/GameServiceConfig";
+import SceneDragonBehavior from "./SceneDragonBehavior";
+import SceneDragon from "./SceneDragon";
+import MainPanel from "../../ui/main/MainPanel";
+import GameObject = mw.GameObject;
 import Regulator from "../../depend/regulator/Regulator";
+import GameServiceConfig from "../../const/GameServiceConfig";
+import Enumerable from "linq";
+import { GameConfig } from "../../config/GameConfig";
 import UUID from "pure-uuid";
 import noReply = mwext.Decorator.noReply;
-import GameObject = mw.GameObject;
-import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
-import CollectibleItemTrigger from "./trigger/CollectibleItemTrigger";
-import { EventDefine } from "../../const/EventDefine";
-import CharacterEnterCollectibleItemRangeEventArgs from "./trigger/CharacterEnterCollectibleItemRangeEventArgs";
-import EventListener = mw.EventListener;
-import MainPanel from "../../ui/main/MainPanel";
 
-export default class CollectibleItemModuleData extends Subdata {
+/**
+ * 场景龙存在数据.
+ */
+class SceneDragonExistInfo {
+    public behavior: SceneDragonBehavior;
+    public object: GameObject;
+
+    constructor(behaviorInfo: SceneDragonBehavior, object: GameObject) {
+        this.behavior = behaviorInfo;
+        this.object = object;
+    }
+}
+
+export default class SceneDragonModuleData extends Subdata {
     //@Decorator.persistence()
     //public isSave: bool;
 }
 
 /**
- * CollectibleItem Module.
- * 采集物模块.
+ * SceneDragon Module.
+ * 场景龙模块.
  *
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
@@ -32,35 +41,37 @@ export default class CollectibleItemModuleData extends Subdata {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, CollectibleItemModuleData> {
+export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonModuleData> {
 //#region Constant
     public static readonly PREFAB_MAP: Map<number, string> = new Map();
 
     static {
-        this.PREFAB_MAP.set(1, "19864DB9433C12B44D2F95BE76825159");
+        this.PREFAB_MAP.set(1, "CA62F48046026D8E9EB0F2B9833CF516");
     }
 
-    public static async collectibleItemPrefabFactory(
-        syncKey: string,
-        id: number,
-        location: Vector) {
-        if (!location) {
-            GToolkit.error(CollectibleItemModuleC, `generate item param location invalid.`);
+    public static async sceneDragonPrefabFactory(
+        item: SceneDragon) {
+        if (!item.location) {
+            GToolkit.error(SceneDragonModuleC, `generate item param location invalid.`);
             return null;
         }
-        const assetId = this.PREFAB_MAP.get(id);
+        const assetId = this.PREFAB_MAP.get(item.id);
         if (GToolkit.isNullOrEmpty(assetId)) {
-            GToolkit.error(CollectibleItemModuleC, `prefab not set. id: ${id}`);
+            GToolkit.error(SceneDragonModuleC, `prefab not set. id: ${item.id}`);
             return null;
         }
         const obj = await GameObjPool.asyncSpawn(
             assetId,
             GameObjPoolSourceType.Prefab,
         );
-        const trigger = GToolkit.getFirstScript(obj, CollectibleItemTrigger);
-        trigger.init(syncKey);
-        obj.worldTransform.position = location;
-        return obj;
+        const behavior = GToolkit.getFirstScript(obj, SceneDragonBehavior);
+        behavior.init(item);
+        obj.worldTransform.position = item.location;
+
+        return new SceneDragonExistInfo(
+            behavior,
+            obj,
+        );
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -68,20 +79,19 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 //#region Member
 
     /**
-     * 玩家私有全采集物映射.
+     * 玩家私有全场景龙映射.
      *  - key sync key.
-     *  - value CollectibleItem.
+     *  - value SceneDragon.
      */
-    public syncItemMap: Map<string, { item: CollectibleItem, object: GameObject }> = new Map();
+    public syncItemMap: Map<string, SceneDragonExistInfo> = new Map();
 
     /**
-     * 待采集物映射.
+     * 待场景龙映射.
      */
     public collectCandidates: string[] = [];
 
     private _mainPanel: MainPanel;
 
-    private _eventListeners: EventListener[] = [];
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -97,8 +107,6 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Subscribe
-        this._eventListeners.push(Event.addLocalListener(EventDefine.EnterCollectibleItemRange, this.onEnterCollectibleItemRange));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.LeaveCollectibleItemRange, this.onLeaveCollectibleItemRange));
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -114,7 +122,6 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         super.onDestroy();
 
 //#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
 //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -126,52 +133,50 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 
 //#region Method
     /**
-     * 客户端 采集.
+     * 客户端 捕捉.
      * @param syncKey
      */
-    public collect(syncKey: string) {
-        GToolkit.log(CollectibleItemModuleC, `try collect item.`);
+    public catch(syncKey: string) {
+        GToolkit.log(SceneDragonModuleC, `try collect item.`);
         if (!this.syncItemMap.has(syncKey)) {
-            GToolkit.log(CollectibleItemModuleC, `item not exist in client when collect. syncKey: ${syncKey}`);
+            GToolkit.log(SceneDragonModuleC, `item not exist in client when collect. syncKey: ${syncKey}`);
             return;
         }
 
-        const item = this.syncItemMap.get(syncKey).item;
-        GToolkit.log(CollectibleItemModuleC, item.info());
-        if (!item.isCollectible) {
-            GToolkit.warn(CollectibleItemModuleC, `item un collectible. waiting for delete.`);
+        const item: SceneDragon = this.syncItemMap.get(syncKey).behavior.data;
+        GToolkit.log(SceneDragonModuleC, item.info());
+        if (!item.isCatchable) {
+            GToolkit.warn(SceneDragonModuleC, `item un collectible. waiting for delete.`);
             return;
         }
 
-        const success: boolean = GToolkit.randomWeight([CollectibleItem.successRate(item.id)], 1) === 0;
+        const success: boolean = GToolkit.randomWeight([SceneDragon.successRateAlgo(item.id)()], 1) === 0;
         if (!success) {
-            GToolkit.log(CollectibleItemModuleC, `collect fail`);
+            GToolkit.log(SceneDragonModuleC, `collect fail`);
             return;
         }
 
-        GToolkit.log(CollectibleItemModuleC, `collect success. last collect count: ${item.hitPoint}`);
-        this.server.net_collectItem(syncKey);
-        item.collect();
+        GToolkit.log(SceneDragonModuleC, `collect success. last collect count: ${item.hitPoint}`);
+        this.server.net_catch(syncKey);
+        item.catch();
     }
 
-    private generate(syncKey: string, item: CollectibleItem) {
-        GToolkit.log(CollectibleItemModuleC, `try generate item. ${item.info()}`);
+    private generate(syncKey: string, item: SceneDragon) {
+        GToolkit.log(SceneDragonModuleC, `try generate item. ${item.info()}`);
         if (this.syncItemMap.get(syncKey)) {
-            GToolkit.error(CollectibleItemModuleC, `item already exist in client when generate. syncKey: ${syncKey}`);
+            GToolkit.error(SceneDragonModuleC, `item already exist in client when generate. syncKey: ${syncKey}`);
             return;
         }
 
-        CollectibleItemModuleC.collectibleItemPrefabFactory(
-            syncKey,
-            item.id,
-            item.location,
+        SceneDragonModuleC.sceneDragonPrefabFactory(
+            item,
         ).then((value) => {
-            this.syncItemMap.set(syncKey, {item: item, object: value});
+            this.syncItemMap.set(syncKey, value);
         });
     }
 
     private destroy(syncKey: string) {
-        GToolkit.log(CollectibleItemModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).item.info() ?? "null"}`);
+        GToolkit.log(SceneDragonModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).behavior.data.info() ?? "null"}`);
 
         this.syncItemMap.get(syncKey)?.object.destroy();
         this.syncItemMap.delete(syncKey);
@@ -187,7 +192,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
                         location: Vector) {
         this.generate(
             syncKey,
-            new CollectibleItem()
+            new SceneDragon()
                 .sync(id,
                     hitPoint,
                     generateTime,
@@ -201,36 +206,24 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Callback
-    public onEnterCollectibleItemRange = (args: CharacterEnterCollectibleItemRangeEventArgs) => {
-        if (args.playerId === Player.localPlayer.playerId) {
-            this.collectCandidates.push(args.itemSyncKey);
-            this._mainPanel.addCollectibleItemInteractor(args.itemSyncKey);
-        }
-    };
-    public onLeaveCollectibleItemRange = (args: CharacterEnterCollectibleItemRangeEventArgs) => {
-        if (args.playerId === Player.localPlayer.playerId) {
-            GToolkit.remove(this.collectCandidates, args.itemSyncKey);
-            this._mainPanel.removeCollectibleItemInteractor(args.itemSyncKey);
-        }
-    };
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, CollectibleItemModuleData> {
+export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonModuleData> {
 //#region Member
     /**
-     * 私有玩家采集物存在映射.
+     * 私有玩家场景龙存在映射.
      *  - key 玩家 PlayerId.
-     *  - value 该玩家现存所有采集物.
+     *  - value 该玩家现存所有场景龙.
      */
     public existenceItemMap: Map<number, string[]> = new Map();
 
     /**
-     * 全采集物映射.
+     * 全场景龙映射.
      *  - key sync key.
-     *  - value CollectibleItem.
+     *  - value SceneDragon.
      */
-    public syncItemMap: Map<string, CollectibleItem> = new Map();
+    public syncItemMap: Map<string, SceneDragon> = new Map();
 
     private _generateRegulator: Regulator = new Regulator(GameServiceConfig.TRY_GENERATE_INTERVAL);
 
@@ -248,7 +241,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         super.onStart();
 
 //#region Member init
-//#endregion ------------------------------------------------------------------------------------------ 
+//#endregion ------------------------------------------------------------------------------------------
 
 //#region Event Subscribe
 //#endregion ------------------------------------------------------------------------------------------
@@ -265,7 +258,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     protected onDestroy(): void {
         super.onDestroy();
 //#region Event Unsubscribe
-        //TODO_LviatYi 
+        //TODO_LviatYi
 //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -291,7 +284,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
 //#region Method
     /**
-     * 指定玩家 与 id 的采集物最新生成时间.
+     * 指定玩家 与 id 的场景龙最新生成时间.
      * @param playerId
      * @param id
      */
@@ -300,19 +293,8 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             .from(this.existenceItemMap.get(playerId))
             .select((syncKey) => this.syncItemMap.get(syncKey))
             .where((item) => item ? item.id === id : false)
-            .defaultIfEmpty({generateTime: 0} as CollectibleItem)
+            .defaultIfEmpty({generateTime: 0} as SceneDragon)
             .max((item) => item.generateTime);
-    }
-
-    /**
-     * 指定玩家 与 id 的存在数量.
-     * @param playerId
-     * @param id
-     */
-    private getItemExistenceCount(playerId: number, id: number): number {
-        return Enumerable
-            .from(this.existenceItemMap.get(playerId))
-            .count((syncKey) => this.syncItemMap.get(syncKey)?.id === id ?? false);
     }
 
     /**
@@ -329,17 +311,15 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         }
 
         Enumerable
-            .from(GameConfig.CollectibleItem.getAllElement())
+            .from(GameConfig.Dragon.getAllElement())
             .forEach((item) => {
                 for (let i = 0;
                      i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
                      this.isGenerateEnable(playerId, item.id);
                      i++) {
-                    GToolkit.log(CollectibleItemModuleS, `checking generate. 
-                        playerId: ${playerId}. 
-                        id: ${item.id}. 
-                        current count: ${this.getItemExistenceCount(playerId, item.id)}. 
-                        max count: ${CollectibleItem.maxExistenceCount(item.id)}.
+                    GToolkit.log(SceneDragonModuleS, `checking generate.
+                        playerId: ${playerId}.
+                        id: ${item.id}.
                         trial: ${i}.`);
                     this.generate(playerId, item.id);
                 }
@@ -369,23 +349,20 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @param id
      */
     private isGenerateEnable(playerId: number, id: number): boolean {
-        return this.getItemExistenceCount(playerId, id) < CollectibleItem.maxExistenceCount(id) &&
-            this.lastItemGenerateTime(playerId, id) + CollectibleItem.generationInterval(id) < Date.now();
+        return this.lastItemGenerateTime(playerId, id) + SceneDragon.generationInterval(id) < Date.now();
     }
 
     /**
-     * 注册 生成采集物.
-     * @desc 采集物是私有的 采集物的存在依赖 playerId 属性.
+     * 注册 生成场景龙.
+     * @desc 场景龙是私有的 场景龙的存在依赖 playerId 属性.
      * @param playerId
      * @param itemId
      */
     private generate(playerId: number, itemId: number) {
-        GToolkit.log(CollectibleItemModuleS, `try generate item, itemId: ${itemId}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
+        GToolkit.log(SceneDragonModuleS, `try generate item, itemId: ${itemId}.`);
 
         const syncKey = new UUID(4).toString();
-        const item = new CollectibleItem();
+        const item = new SceneDragon();
 
         let array: string[] = this.existenceItemMap.get(playerId);
         if (!array) {
@@ -398,12 +375,12 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
         item.generate(itemId);
 
-        GToolkit.log(CollectibleItemModuleS, `generate item success. syncKey: ${syncKey}`);
+        GToolkit.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
 
         item.autoDestroyTimerId = setTimeout(() => {
                 this.destroy(playerId, syncKey);
             },
-            CollectibleItem.maxExistenceTime(itemId),
+            SceneDragon.maxExistenceTime(itemId),
         );
 
         this.getClient(playerId).net_generate(
@@ -416,7 +393,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     }
 
     /**
-     * 注册 销毁采集物.
+     * 注册 销毁场景龙.
      * @param playerId
      * @param syncKey
      * @private
@@ -424,13 +401,11 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     private destroy(playerId: number, syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            GToolkit.error(CollectibleItemModuleS, `destroy item is null`);
+            GToolkit.error(SceneDragonModuleS, `destroy item is null`);
             return;
         }
-        GToolkit.log(CollectibleItemModuleS, `try destroy item, itemId: ${item.id}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
+        GToolkit.log(SceneDragonModuleS, () => `try destroy item, itemId: ${item.id}.`);
+        GToolkit.log(SceneDragonModuleS, () => `    reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
@@ -439,12 +414,12 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
         let array: string[] = this.existenceItemMap.get(playerId);
         if (!array || !GToolkit.remove(array, syncKey)) {
-            GToolkit.log(CollectibleItemModuleS, `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
+            GToolkit.log(SceneDragonModuleS, `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
              but it not exist in server`);
         }
 
         item.destroy();
-        GToolkit.log(CollectibleItemModuleS, `destroy item success. syncKey: ${syncKey}`);
+        GToolkit.log(SceneDragonModuleS, `destroy item success. syncKey: ${syncKey}`);
 
         this.getClient(playerId).net_destroy(syncKey);
     }
@@ -453,15 +428,15 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
 //#region Net Method
     @noReply()
-    public net_collectItem(syncKey: string) {
+    public net_catch(syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            GToolkit.error(CollectibleItemModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
+            GToolkit.error(SceneDragonModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
             return;
         }
-        GToolkit.log(CollectibleItemModuleS, `try collect item. ${item.info()}`);
-        item.collect();
-        if (!item.isCollectible) {
+        GToolkit.log(SceneDragonModuleS, `try collect item. ${item.info()}`);
+        item.catch();
+        if (!item.isCatchable) {
             this.destroy(this.currentPlayerId, syncKey);
         }
     }

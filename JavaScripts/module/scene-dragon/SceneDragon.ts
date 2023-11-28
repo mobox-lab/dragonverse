@@ -1,14 +1,18 @@
-import { ICollectibleItemElement } from "../../config/CollectibleItem";
 import { GameConfig } from "../../config/GameConfig";
 import { IBagItemElement } from "../../config/BagItem";
 import { QualityTypes } from "../../const/QualityTypes";
-import { ResultAlgo, ResultAlgoFactory, ResultAlgoTypes } from "./ResultAlgoTypes";
 import Shape from "../../util/area/Shape";
 import AreaManager from "../../gameplay/area/AreaManager";
+import {
+    SuccessRateAlgo,
+    SuccessRateAlgoFactory,
+    SuccessRateAlgoTypes,
+} from "../collectible-item/SuccessRateAlgoTypes";
+import { IDragonElement } from "../../config/Dragon";
 
 /**
- * Collectible Item.
- * 可收集物.
+ * Scene Dragon.
+ * 场景龙. (可捕捉龙).
  *
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
@@ -19,7 +23,7 @@ import AreaManager from "../../gameplay/area/AreaManager";
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export default class CollectibleItem {
+export default class SceneDragon {
     private _id: number;
 
     /**
@@ -40,7 +44,7 @@ export default class CollectibleItem {
     public autoDestroyTimerId: number = null;
 
     /**
-     * 剩余可采集次数.
+     * 剩余可捕捉次数.
      */
     public get hitPoint(): number {
         return this._hitPoint;
@@ -61,9 +65,9 @@ export default class CollectibleItem {
     }
 
     /**
-     * 是否 可采集.
+     * 是否 可捕捉.
      */
-    public get isCollectible(): boolean {
+    public get isCatchable(): boolean {
         return this._hitPoint > 0;
     }
 
@@ -110,9 +114,9 @@ export default class CollectibleItem {
     }
 
     /**
-     * 采集.
+     * 捕捉.
      */
-    public collect() {
+    public catch() {
         --this._hitPoint;
     }
 
@@ -121,7 +125,7 @@ export default class CollectibleItem {
      * @private
      */
     private randomGenerate() {
-        const p = Shape.randomPoint(AreaManager.getInstance().getAreas(CollectibleItem.generationAreaId(this._id)));
+        const p = Shape.randomPoint(AreaManager.getInstance().getAreas(SceneDragon.generationAreaId(this._id)));
         if (!p) {
             return;
         }
@@ -129,20 +133,12 @@ export default class CollectibleItem {
     }
 
     public info(): string {
-        return `id:${this._id}, hitPoint:${this._hitPoint}, generateTime:${new Date(this._generateTime)}, location:${this._location}`;
+        return `id:${this._id}, hitPoint:${this._hitPoint}, generateTime:${new Date(this._generateTime)}, birth location:${this._location}`;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Config
-
-    /**
-     * 采集成功率. [0,1]
-     * @config
-     */
-    public static successRate(id: number): number {
-        return this.getConfig(id).successRate / 100;
-    }
 
     /**
      * 名称.
@@ -177,27 +173,11 @@ export default class CollectibleItem {
     }
 
     /**
-     * 最大存在数量.
-     * @config
-     */
-    public static maxExistenceCount(id: number): number {
-        return this.getConfig(id).existenceCount;
-    }
-
-    /**
      * 最大存在时间 ms.
      * @config
      */
     public static maxExistenceTime(id: number): number {
         return this.getConfig(id).existenceTime * 1000;
-    }
-
-    /**
-     * 采集结果算法.
-     * @config
-     */
-    public static resultAlgo(id: number): ResultAlgo {
-        return ResultAlgoFactory(this.getConfig(id).resultAlgo as ResultAlgoTypes);
     }
 
     /**
@@ -207,21 +187,37 @@ export default class CollectibleItem {
     public static generationInterval(id: number): number {
         return this.getConfig(id).generationInterval * 1000;
     }
-    
-    public static getConfig(id: number): ICollectibleItemElement {
-        return GameConfig.CollectibleItem.getElement(id);
+
+    /**
+     * 捕捉消耗.
+     * @param id
+     */
+    public static cost(id: number): number {
+        return this.getConfig(id).cost;
+    }
+
+    /**
+     * 捕捉成功率算法.
+     * @config
+     */
+    public static successRateAlgo(id: number): SuccessRateAlgo {
+        return SuccessRateAlgoFactory(this.getConfig(id).successRateAlgoId as SuccessRateAlgoTypes);
+    }
+
+    public static getConfig(id: number): IDragonElement {
+        return GameConfig.Dragon.getElement(id);
     }
 
     public static getBagConfig(id: number): IBagItemElement {
         return GameConfig.BagItem.getElement(this.getConfig(id).bagId);
     }
 
-    public getConfig(): ICollectibleItemElement {
-        return CollectibleItem.getConfig(this._id);
+    public getConfig(): IDragonElement {
+        return SceneDragon.getConfig(this._id);
     }
 
     public getBagConfig(): IBagItemElement {
-        return CollectibleItem.getBagConfig(this._id);
+        return SceneDragon.getBagConfig(this._id);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
