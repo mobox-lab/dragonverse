@@ -13,6 +13,7 @@ import { EventDefine } from "../../const/EventDefine";
 import CharacterEnterCollectibleItemRangeEventArgs from "./trigger/CharacterEnterCollectibleItemRangeEventArgs";
 import EventListener = mw.EventListener;
 import MainPanel from "../../ui/main/MainPanel";
+import { BagModuleS } from "../bag/BagModule";
 
 export default class CollectibleItemModuleData extends Subdata {
     //@Decorator.persistence()
@@ -207,6 +208,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
             this._mainPanel.addCollectibleItemInteractor(args.itemSyncKey);
         }
     };
+
     public onLeaveCollectibleItemRange = (args: CharacterEnterCollectibleItemRangeEventArgs) => {
         if (args.playerId === Player.localPlayer.playerId) {
             GToolkit.remove(this.collectCandidates, args.itemSyncKey);
@@ -218,6 +220,8 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 
 export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, CollectibleItemModuleData> {
 //#region Member
+    private _bagModuleS: BagModuleS;
+
     /**
      * 私有玩家采集物存在映射.
      *  - key 玩家 PlayerId.
@@ -248,6 +252,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         super.onStart();
 
 //#region Member init
+        this._bagModuleS = ModuleService.getModule(BagModuleS);
 //#endregion ------------------------------------------------------------------------------------------ 
 
 //#region Event Subscribe
@@ -387,6 +392,8 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         const syncKey = new UUID(4).toString();
         const item = new CollectibleItem();
 
+        item.generate(itemId);
+
         let array: string[] = this.existenceItemMap.get(playerId);
         if (!array) {
             array = [];
@@ -395,8 +402,6 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
         array.push(syncKey);
         this.syncItemMap.set(syncKey, item);
-
-        item.generate(itemId);
 
         GToolkit.log(CollectibleItemModuleS, `generate item success. syncKey: ${syncKey}`);
 
@@ -461,6 +466,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         }
         GToolkit.log(CollectibleItemModuleS, `try collect item. ${item.info()}`);
         item.collect();
+        this._bagModuleS.addItem(this.currentPlayerId, CollectibleItem.bagId(item.id), 1);
         if (!item.isCollectible) {
             this.destroy(this.currentPlayerId, syncKey);
         }
