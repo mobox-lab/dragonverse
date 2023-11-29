@@ -1,4 +1,5 @@
 ﻿import mainPanel_Generate from "../../ui-generate/main/mainPanel_generate";
+import BagPanel from "../bag/BagPanel";
 import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 
 @UIBind("")
@@ -49,6 +50,7 @@ export default class MainPanel extends mainPanel_Generate {
                 });
             }
         });
+        this.btnBag.onPressed.add(() => this.showBag());
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Widget bind
@@ -197,6 +199,10 @@ export default class MainPanel extends mainPanel_Generate {
             this.collectibleInteractorContainer.removeChild(uis.uiObject);
         }
         this.collectibleInteractorMap.delete(syncKey);
+    }
+
+    public showBag() {
+        UIService.show(BagPanel);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

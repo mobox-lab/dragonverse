@@ -1,6 +1,7 @@
 import { GM } from "module_gm";
 import i18n, { LanguageTypes } from "./language/i18n";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/AuthModule";
+import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
 import CollectibleItemModuleData, {
     CollectibleItemModuleC,
     CollectibleItemModuleS,
@@ -91,6 +92,7 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         moduleService.registerModule(CollectibleItemModuleS, CollectibleItemModuleC, CollectibleItemModuleData);
         moduleService.registerModule(CompanionModule_S, CompanionModule_C, CompanionData);
+        moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
     }
 
     private registerTestKeyT() {
