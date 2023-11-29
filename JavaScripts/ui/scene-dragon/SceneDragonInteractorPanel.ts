@@ -135,8 +135,6 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
     }
 
     private get currentDistanceSqr() {
-        GToolkit.log(SceneDragonInteractorPanel, `current dist sqr:`);
-        GToolkit.log(SceneDragonInteractorPanel, Vector.squaredDistance(this.behavior.gameObject.worldTransform.position, this._character.worldTransform.position));
         return Vector.squaredDistance(this.behavior.gameObject.worldTransform.position, this._character.worldTransform.position);
     }
 
