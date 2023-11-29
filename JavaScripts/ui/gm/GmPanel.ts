@@ -1,4 +1,5 @@
 import { AddGMCommand, GMBasePanel } from "module_gm";
+import { CompanionModule_S } from "../../module/companion/CompanionModule_S";
 import GMHUD_Generate from "../../ui-generate/gm/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
 import GToolkit from "../../util/GToolkit";
@@ -30,3 +31,35 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
 AddGMCommand("Hello world", () => {
     GToolkit.log(GMPanel, `Hello world`);
 }, null, "CHello");
+
+AddGMCommand("给玩家添加宠物", () => {
+
+
+
+}, (player: mw.Player) => {
+    mwext.ModuleService.getModule(CompanionModule_S).addCompanionForPlayer(player.playerId, 1)
+})
+
+AddGMCommand("设置宠物为参战", () => {
+
+
+
+}, (player: mw.Player, index: string) => {
+
+    let module = mwext.ModuleService.getModule(CompanionModule_S);
+    let companions = module.getPlayerCompanionIdList(player.playerId);
+    module.net_switchCompanionShowup(companions[Number(0)], player.playerId);
+})
+
+AddGMCommand("取消所有宠物参战状态", () => {
+
+
+
+}, (player: mw.Player, index: string) => {
+
+    let module = mwext.ModuleService.getModule(CompanionModule_S);
+    let companions = module.getPlayerCompanionIdList(player.playerId);
+    for (let id of companions) {
+        module.net_switchCompanionShowup(id, player.playerId, false);
+    }
+})

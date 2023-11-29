@@ -433,7 +433,7 @@ export class StateMachine<TOwnId = string, TStateId = string, TEvent = string> e
 
 
 
-    private changeState(name: TStateId) {
+    protected changeState(name: TStateId) {
         this.currentState?.exit();
         const bundle: StateBundle<TStateId, TEvent> = this._nameToStateBundle.get(name);
         if (!bundle || !bundle.state) {

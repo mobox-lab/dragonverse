@@ -3,7 +3,7 @@ import { ActionStatus } from "./ActionStatus";
 
 
 
-export abstract class Action<T extends IContext> {
+export abstract class AAction<T extends IContext> {
 
 
     private _coolDown: number = 0;

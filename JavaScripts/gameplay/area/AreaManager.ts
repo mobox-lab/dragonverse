@@ -1,7 +1,7 @@
-import { Singleton } from "../../depend/singleton/Singleton";
-import Shape from "../../util/area/Shape";
 import { GameConfig } from "../../config/GameConfig";
+import { Singleton } from "../../depend/singleton/Singleton";
 import GToolkit from "../../util/GToolkit";
+import Shape from "../../util/area/Shape";
 
 export default class AreaManager extends Singleton<AreaManager>() {
     private areaMap: Map<number, Shape[]> = new Map<number, Shape[]>();
@@ -17,7 +17,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
                     GToolkit.error(AreaManager, `range param invalid. length is not even.`);
                 } else {
                     const area = Shape.toSeqPoint(GToolkit.fold(range, 2, (data) => {
-                        return {x: data[0], y: data[1]};
+                        return { x: data[0], y: data[1] };
                     }));
                     areas.push(area);
                 }

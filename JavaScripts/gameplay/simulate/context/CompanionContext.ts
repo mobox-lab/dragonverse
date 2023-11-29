@@ -1,17 +1,37 @@
+import { CompanionState } from "../../archtype/companion/CompanionState";
+import { SteeringTarget } from "../steering/SteeringTarget";
 import { IContext } from "./IContext";
+import { MovementContext } from "./MovementContext";
 
-export class CompanionContext implements IContext {
+
+class Follower implements SteeringTarget {
+
+    position: mw.Vector;
+    velocity: mw.Vector;
+    maxSpeed: number;
+    rotation: mw.Rotation;
+    maxForce: number;
+
+}
+
+export class CompanionContext extends MovementContext implements IContext {
 
 
 
     /**
-     * 主人位置
+     * 跟随者
      */
-    public ownerPosition: mw.Vector;
+    follower: Follower = new Follower();
+
+
 
     /**
-     * 主人的当前的移动向量
+     * 网络同步状态
      */
-    public ownerVelocity: mw.Vector;
+    syncedState: CompanionState;
+
+
+
+
 
 }
