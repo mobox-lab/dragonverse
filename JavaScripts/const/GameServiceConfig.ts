@@ -1,13 +1,83 @@
 export default class GameServiceConfig {
-//#region CollectibleItem
+//#region Generate
     /**
-     * 采集物 单次 同型 最大尝试生成次数.
+     * 采集物 场景龙 单次 同型 最大尝试生成次数.
      */
     public static readonly MAX_SINGLE_GENERATE_TRIAL_COUNT = 5;
 
     /**
-     * 采集物 检查生成间隔.
+     * 采集物 场景龙 检查生成间隔.
      */
     public static readonly TRY_GENERATE_INTERVAL = 1000;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Scene Dragon
+    /**
+     * 场景龙 最远存活距离.
+     */
+    public static readonly SCENE_DRAGON_MAX_LIVE_DISTANCE = 100000;
+
+    /**
+     * 场景龙 存活检查间隔.
+     */
+    public static readonly SCENE_DRAGON_ALIVE_CHECK_INTERVAL = 1000;
+
+    /**
+     * 场景龙 交互器 UI 活跃检测距离比例.
+     */
+    public static readonly SCENE_DRAGON_UI_ACTIVITY_DISTANCE_RATIO = 0.03;
+
+    /**
+     * 场景龙 交互器 UI 过渡开始距离比例.
+     */
+    public static readonly SCENE_DRAGON_UI_TRANSITION_START_DISTANCE_RATIO = 0.01;
+
+    /**
+     * 场景龙 交互器 UI 活跃检测间隔.
+     */
+    public static readonly SCENE_DRAGON_UI_DORMANT_DETECT_INTERVAL = 3000;
+
+    /**
+     * 场景龙 可捕捉距离.
+     */
+    public static readonly SCENE_DRAGON_CATCHABLE_DISTANCE = 250;
+
+    /**
+     * 场景龙 最远存活距离平方.
+     */
+    public static get SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE() {
+        return GameServiceConfig.SCENE_DRAGON_MAX_LIVE_DISTANCE *
+            GameServiceConfig.SCENE_DRAGON_MAX_LIVE_DISTANCE;
+    }
+
+    /**
+     * 场景龙 交互器 UI 活跃检测距离平方.
+     * @desc 进入活跃检测距离时 交互器 进入 **活跃态**. 否则进入 **休眠态**.
+     * @desc 活跃态 交互器 将进行更加频繁的距离检测 以平滑 UI 过渡.
+     */
+    public static get SQR_SCENE_DRAGON_UI_ACTIVITY_DISTANCE() {
+        return GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE *
+            this.SCENE_DRAGON_UI_ACTIVITY_DISTANCE_RATIO *
+            this.SCENE_DRAGON_UI_ACTIVITY_DISTANCE_RATIO;
+    }
+
+    /**
+     * 场景龙 可捕捉距离平方.
+     */
+    public static get SQR_SCENE_DRAGON_CATCHABLE_DISTANCE() {
+        return this.SCENE_DRAGON_CATCHABLE_DISTANCE *
+            this.SCENE_DRAGON_CATCHABLE_DISTANCE;
+    }
+
+    /**
+     * 场景龙 交互器 UI 过渡开始距离平方.
+     * @desc 进入过渡开始距离时 交互器 从此为 0 值计算过渡参数 t.
+     */
+    public static get SQR_SCENE_DRAGON_UI_TRANSITION_START_DISTANCE() {
+        return this.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE *
+            this.SCENE_DRAGON_UI_TRANSITION_START_DISTANCE_RATIO *
+            this.SCENE_DRAGON_UI_TRANSITION_START_DISTANCE_RATIO;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

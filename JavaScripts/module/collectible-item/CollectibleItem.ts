@@ -128,7 +128,7 @@ export default class CollectibleItem {
         this._location = new Vector(p.x, p.y, 0);
     }
 
-    public toString(): string {
+    public info(): string {
         return `id:${this._id}, hitPoint:${this._hitPoint}, generateTime:${new Date(this._generateTime)}, location:${this._location}`;
     }
 
@@ -207,7 +207,11 @@ export default class CollectibleItem {
     public static generationInterval(id: number): number {
         return this.getConfig(id).generationInterval * 1000;
     }
-    
+
+    public static bagId(id: number): number {
+        return this.getConfig(id).bagId;
+    }
+
     public static getConfig(id: number): ICollectibleItemElement {
         return GameConfig.CollectibleItem.getElement(id);
     }

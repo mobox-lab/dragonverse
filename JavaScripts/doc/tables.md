@@ -12,12 +12,13 @@ by LviatYi
 
 ## 背包物 BagItem
 
-| Name | PropName | Type   | Desc |
-| :--: | :------- | ------ | ---- |
-|  ID  | Id       | int    |      |
-| 名称 | Name     | string |      |
-| 描述 | Desc     | string |      |
-| 图标 | Icon     | string |      |
+|   Name   | PropName   | Type    | Desc                |
+| :------: | :--------- | ------- | ------------------- |
+|    ID    | Id         | int     |                     |
+|   名称   | Name       | string  |                     |
+|   描述   | Desc       | string  |                     |
+|   图标   | Icon       | string  |                     |
+| 可完成性 | Achievable | boolean | 是否 可以被图鉴记录 |
 
 ## 采集物 CollectibleItem
 
@@ -63,7 +64,7 @@ by LviatYi
 ```json
 [
     [x11,y11,x12,y12,x13,y13...x1m,y1m],
-    [x21,y21,x22,y22,x23,y23...x2n,y2n]
+    [x21,y21,x22,y22,x23,y23...x2n,y2n],
     ...
 ]
 ```

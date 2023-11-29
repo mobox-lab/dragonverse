@@ -1,42 +1,40 @@
-import { GM } from "module_gm";
 import i18n, { LanguageTypes } from "./language/i18n";
+import GToolkit, { DebugLevels } from "./util/GToolkit";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/AuthModule";
-import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
+import { GM } from "module_gm";
+import GMPanel from "./ui/gm/GmPanel";
 import CollectibleItemModuleData, {
     CollectibleItemModuleC,
     CollectibleItemModuleS,
 } from "./module/collectible-item/CollectibleItemModule";
-import { CompanionData } from "./module/companion/CompanionData";
-import { CompanionModule_C } from "./module/companion/CompanionModule_C";
-import { CompanionModule_S } from "./module/companion/CompanionModule_S";
-import GMPanel from "./ui/gm/GmPanel";
-import GToolkit, { DebugLevels } from "./util/GToolkit";
+import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
+import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 
 @Component
 export default class GameStart extends mw.Script {
     public static instance: GameStart = null;
 
-    //region Dev Config
+//region Dev Config
 
-    @mw.Property({ displayName: "是否发布", group: "发布" })
+    @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
-    @mw.Property({ displayName: "语言", group: "发布", enumType: LanguageTypes })
+    @mw.Property({displayName: "语言", group: "发布", enumType: LanguageTypes})
     public language: LanguageTypes = LanguageTypes.Chinese;
 
-    @mw.Property({ displayName: "线上存储", group: "发布" })
+    @mw.Property({displayName: "线上存储", group: "发布"})
     public isOnline: boolean = false;
 
-    @mw.Property({ displayName: "是否 GM", group: "调试" })
+    @mw.Property({displayName: "是否 GM", group: "调试"})
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({ displayName: "服务端日志等级", group: "调试", enumType: LanguageTypes })
+    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: LanguageTypes})
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "客户端日志等级", group: "调试", enumType: LanguageTypes })
+    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: LanguageTypes})
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     protected onStart(): void {
         this.useUpdate = true;
@@ -91,7 +89,7 @@ export default class GameStart extends mw.Script {
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
         moduleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         moduleService.registerModule(CollectibleItemModuleS, CollectibleItemModuleC, CollectibleItemModuleData);
-        moduleService.registerModule(CompanionModule_S, CompanionModule_C, CompanionData);
+        moduleService.registerModule(SceneDragonModuleS, SceneDragonModuleC, SceneDragonModuleData);
         moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
     }
 

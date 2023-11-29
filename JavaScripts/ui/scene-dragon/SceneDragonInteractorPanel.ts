@@ -1,0 +1,145 @@
+import ModuleService = mwext.ModuleService;
+import GToolkit from "../../util/GToolkit";
+import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
+import SceneDragonPanel_Generate from "../../ui-generate/scene-dragon/SceneDragonPanel_generate";
+import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
+import Easing from "../../depend/easing/Easing";
+import SceneDragonBehavior from "../../module/scene-dragon/SceneDragonBehavior";
+import Character = mw.Character;
+import GameServiceConfig from "../../const/GameServiceConfig";
+import Regulator from "../../depend/regulator/Regulator";
+
+export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
+//#region Member
+    public syncKey: string;
+
+    public behavior: SceneDragonBehavior;
+
+    private _obj: GameObject;
+
+    private _module: SceneDragonModuleC;
+
+    private _activityBehavior: MwBehaviorDelegate;
+
+    private _activityCheckRegulator: Regulator;
+
+    private _character: Character;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region MetaWorld UI Event
+
+    protected onAwake(): void {
+        super.onAwake();
+        this.canUpdate = true;
+
+//#region Member init
+        this._module = ModuleService.getModule(SceneDragonModuleC);
+        this._character = Player.localPlayer.character;
+        this._activityCheckRegulator = new Regulator(GameServiceConfig.SCENE_DRAGON_UI_DORMANT_DETECT_INTERVAL);
+        Script.spawnScript(MwBehaviorDelegate)
+            .then(value => {
+                this._activityBehavior = value;
+                this._activityBehavior.delegate.add(this.activityDistanceDetect);
+                this._activityBehavior.delegate.add(this.renderPosition);
+            });
+//#endregion ------------------------------------------------------------------------------------------
+
+//#region Widget bind
+//#endregion ------------------------------------------------------------------------------------------
+
+//#region Event subscribe
+//#endregion ------------------------------------------------------------------------------------------
+    }
+
+    protected onUpdate() {
+        if (this._activityCheckRegulator.ready()) {
+            this.dormantDistanceDetect();
+        }
+    }
+
+    protected onShow() {
+    }
+
+    protected onHide() {
+        GToolkit.log(SceneDragonInteractorPanel, `hided`);
+    }
+
+    protected onDestroy() {
+        GToolkit.log(SceneDragonInteractorPanel, `destroyed`);
+        this._activityBehavior.destroy();
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Init
+    public init(syncKey: string) {
+        this.syncKey = syncKey;
+        this.behavior = this._module.syncItemMap.get(this.syncKey).behavior;
+        this._obj = this._module.syncItemMap.get(this.syncKey).object;
+        this.btnCatch.onClicked.add(() => {
+            this._module.catch(this.syncKey);
+        });
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region UI Behavior
+    private renderPosition = () => {
+        const v = new Vector2();
+        ScreenUtil.projectWorldPositionToWidgetPosition(
+            Player.localPlayer,
+            this._obj.worldTransform.position,
+            v,
+            true);
+
+        v.x -= this.uiObject.size.x / 2;
+        v.y -= this.uiObject.size.y / 2;
+
+        this.uiObject.position = v;
+    };
+
+    private activityDistanceDetect = () => {
+        const currentDistanceSqr = this.currentDistanceSqr;
+
+        let t: number = currentDistanceSqr < GameServiceConfig.SQR_SCENE_DRAGON_CATCHABLE_DISTANCE ?
+            1 :
+            1 -
+            (currentDistanceSqr - GameServiceConfig.SQR_SCENE_DRAGON_CATCHABLE_DISTANCE) /
+            (GameServiceConfig.SQR_SCENE_DRAGON_UI_TRANSITION_START_DISTANCE - GameServiceConfig.SQR_SCENE_DRAGON_CATCHABLE_DISTANCE);
+
+        this.setTransition(t);
+
+        if (currentDistanceSqr > GameServiceConfig.SQR_SCENE_DRAGON_UI_ACTIVITY_DISTANCE) {
+            this._activityBehavior.pause();
+            this.setTransition(0);
+        }
+    };
+
+    private dormantDistanceDetect = () => {
+        if (this._activityBehavior.running) {
+            return;
+        }
+        if (this.currentDistanceSqr <= GameServiceConfig.SQR_SCENE_DRAGON_UI_ACTIVITY_DISTANCE) {
+            this._activityBehavior.run();
+        }
+    };
+
+    /**
+     * 根据 t 值设定过渡效果
+     * @param t will be clamped in [0,1]
+     */
+    public setTransition(t: number) {
+        t = Easing.clamp01(t);
+        this.rootCanvas.renderOpacity = t;
+        this.btnCatch.renderOpacity = t >= 1 ? 1 : 0;
+    }
+
+    private get currentDistanceSqr() {
+        return Vector.squaredDistance(this.behavior.gameObject.worldTransform.position, this._character.worldTransform.position);
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Event Callback
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}

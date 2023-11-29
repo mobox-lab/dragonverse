@@ -7,6 +7,11 @@ export default class MwBehaviorDelegate extends mw.Script {
     public readonly delegate: SimpleDelegate<unknown> = new SimpleDelegate();
 
     private _run: boolean = false;
+
+    public get running() {
+        return this._run;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -34,16 +39,14 @@ export default class MwBehaviorDelegate extends mw.Script {
     protected onDestroy(): void {
         super.onDestroy();
 
-//#region Event subscribe
-        //TODO_LviatYi 
-//#endregion ------------------------------------------------------------------------------------------
+        this.pause();
     }
 
 //#endregion
 
 //#region Init
 
-    public start() {
+    public run() {
         this._run = true;
     }
 
