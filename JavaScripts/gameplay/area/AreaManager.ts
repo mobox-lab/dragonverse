@@ -1,22 +1,22 @@
 import { Singleton } from "../../depend/singleton/Singleton";
-import Shape from "../../util/area/Shape";
+import PolygonShape from "../../util/area/Shape";
 import { GameConfig } from "../../config/GameConfig";
 import GToolkit from "../../util/GToolkit";
 
 export default class AreaManager extends Singleton<AreaManager>() {
-    private areaMap: Map<number, Shape[]> = new Map<number, Shape[]>();
+    private areaMap: Map<number, PolygonShape[]> = new Map<number, PolygonShape[]>();
 
     protected onConstruct(): void {
         super.onConstruct();
 
         GameConfig.Area.getAllElement().forEach((value) => {
-            const areas: Shape[] = [];
+            const areas: PolygonShape[] = [];
 
             for (const range of value.range) {
                 if (range.length % 2) {
                     GToolkit.error(AreaManager, `range param invalid. length is not even.`);
                 } else {
-                    const area = Shape.toSeqPoint(GToolkit.fold(range, 2, (data) => {
+                    const area = PolygonShape.toSeqPoint(GToolkit.fold(range, 2, (data) => {
                         return {x: data[0], y: data[1]};
                     }));
                     areas.push(area);
@@ -39,7 +39,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
      * @param ids
      */
     public getAreas(ids: number[]) {
-        const areas: Shape[] = [];
+        const areas: PolygonShape[] = [];
         if (!ids) return areas;
 
         ids.forEach((value) => {
