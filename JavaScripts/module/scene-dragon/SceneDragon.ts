@@ -1,7 +1,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { IBagItemElement } from "../../config/BagItem";
 import { QualityTypes } from "../../const/QualityTypes";
-import Shape from "../../util/area/Shape";
+import PolygonShape, { IPoint, randomPoint } from "../../util/area/Shape";
 import AreaManager from "../../gameplay/area/AreaManager";
 import {
     SuccessRateAlgo,
@@ -9,6 +9,7 @@ import {
     SuccessRateAlgoTypes,
 } from "../collectible-item/SuccessRateAlgoTypes";
 import { IDragonElement } from "../../config/Dragon";
+import GToolkit from "../../util/GToolkit";
 
 /**
  * Scene Dragon.
@@ -24,6 +25,29 @@ import { IDragonElement } from "../../config/Dragon";
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export default class SceneDragon {
+//#region Constant
+    /**
+     * 最小寻路距离.
+     */
+    public static readonly NAVIGATION_RANDOM_MIN_DISTANCE = 1000;
+
+    /**
+     * 最大寻路距离.
+     */
+    public static readonly NAVIGATION_RANDOM_MAX_DISTANCE = 8000;
+
+    /**
+     * 行走速度上限.
+     */
+    public static readonly WALK_SPEED = 100;
+
+    /**
+     * 跑步速度上限.
+     */
+    public static readonly RUN_SPEED = 450;
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
     private _id: number;
 
     /**
@@ -125,9 +149,9 @@ export default class SceneDragon {
      * @private
      */
     private randomGenerate() {
-        const p = Shape.randomPoint(AreaManager.getInstance().getAreas(SceneDragon.generationAreaId(this._id)));
-        if (!p) {
-            return;
+        let p: IPoint = null;
+        while (!p) {
+            p = randomPoint(AreaManager.getInstance().getAreas(SceneDragon.generationAreaId(this._id)));
         }
         this._location = new Vector(p.x, p.y, 0);
     }

@@ -74,7 +74,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
         return new SceneDragonExistInfo(
             behavior,
-            obj,
+            obj.getChildByName("SceneDragonMesh"),
         );
     }
 
@@ -183,7 +183,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             this.syncItemMap.set(syncKey, value);
             this._mainPanel.addSceneDragonInteractor(syncKey);
         });
-
     }
 
     private destroy(syncKey: string) {
@@ -338,10 +337,11 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
                      i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
                      this.isGenerateEnable(playerId, item.id);
                      i++) {
-                    GToolkit.log(SceneDragonModuleS, `checking generate.
-                        playerId: ${playerId}.
-                        id: ${item.id}.
-                        trial: ${i}.`);
+                    GToolkit.log(SceneDragonModuleS,
+                        `checking generate.`,
+                        () => `playerId: ${playerId}.`,
+                        () => `id: ${item.id}.`,
+                        () => `trial: ${i}.`);
                     this.generate(playerId, item.id);
                 }
             });
