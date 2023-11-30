@@ -3,7 +3,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { IBagItemElement } from "../../config/BagItem";
 import { QualityTypes } from "../../const/QualityTypes";
 import { ResultAlgo, ResultAlgoFactory, ResultAlgoTypes } from "./ResultAlgoTypes";
-import Shape from "../../util/area/Shape";
+import PolygonShape, { randomPoint } from "../../util/area/Shape";
 import AreaManager from "../../gameplay/area/AreaManager";
 
 /**
@@ -121,7 +121,7 @@ export default class CollectibleItem {
      * @private
      */
     private randomGenerate() {
-        const p = Shape.randomPoint(AreaManager.getInstance().getAreas(CollectibleItem.generationAreaId(this._id)));
+        const p = randomPoint(AreaManager.getInstance().getAreas(CollectibleItem.generationAreaId(this._id)));
         if (!p) {
             return;
         }
