@@ -87,6 +87,11 @@ export enum GenderTypes {
 }
 
 /**
+ * 日志 lambda.
+ */
+export type logString = (...params: unknown[]) => string;
+
+/**
  * GToolkit.
  * General Toolkit deep binding MW Ts.
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
@@ -97,7 +102,7 @@ export enum GenderTypes {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.7.0b
+ * @version 0.7.1b
  * @alpha
  */
 class GToolkit {
@@ -1239,9 +1244,8 @@ class GToolkit {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Log
-    public log(announcer: { name: string }, ...messages: string[]): void;
 
-    public log(announcer: { name: string }, ...messages: ((...param: unknown[]) => string)[]): void;
+    public log(announcer: { name: string }, ...messages: (logString | string)[]): void;
 
     public log(announcer: { name: string }, ...messages: unknown[]): void;
 
@@ -1250,7 +1254,7 @@ class GToolkit {
      * @param announcer announcer with name.
      * @param messages text.
      */
-    public log(announcer: { name: string }, ...messages: (string | unknown)[]): void {
+    public log(announcer: { name: string }, ...messages: (logString | string | unknown)[]): void {
         if (this.debugLevel !== DebugLevels.Dev) return;
 
         let title = true;
@@ -1269,9 +1273,8 @@ class GToolkit {
         }
     }
 
-    public warn(announcer: { name: string }, ...messages: string[]): void;
 
-    public warn(announcer: { name: string }, ...messages: ((...param: unknown[]) => string)[]): void;
+    public warn(announcer: { name: string }, ...messages: (logString | string)[]): void;
 
     public warn(announcer: { name: string }, ...messages: unknown[]): void;
 
@@ -1280,8 +1283,8 @@ class GToolkit {
      * @param announcer announcer with name.
      * @param messages text.
      */
-    public warn(announcer: { name: string }, ...messages: (string | unknown)[]): void {
-        if (this.debugLevel !== DebugLevels.Dev) return;
+    public warn(announcer: { name: string }, ...messages: (logString | string | unknown)[]): void {
+        if (this.debugLevel === DebugLevels.Silent) return;
 
         let title = true;
         for (const msg of messages) {
@@ -1299,9 +1302,7 @@ class GToolkit {
         }
     }
 
-    public error(announcer: { name: string }, ...messages: string[]): void;
-
-    public error(announcer: { name: string }, ...messages: ((...param: unknown[]) => string)[]): void;
+    public error(announcer: { name: string }, ...messages: (logString | string)[]): void;
 
     public error(announcer: { name: string }, ...messages: unknown[]): void;
 
@@ -1310,8 +1311,8 @@ class GToolkit {
      * @param announcer announcer with name.
      * @param messages text.
      */
-    public error(announcer: { name: string }, ...messages: (string | unknown)[]): void {
-        if (this.debugLevel !== DebugLevels.Dev) return;
+    public error(announcer: { name: string }, ...messages: (logString | string | unknown)[]): void {
+        if (this.debugLevel === DebugLevels.Silent) return;
 
         let title = true;
         for (const msg of messages) {
