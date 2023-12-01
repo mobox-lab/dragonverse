@@ -16,9 +16,6 @@ tsconfig.tsbuildinfo
 # Log
 TsBuilder.log
 
-# Custom
-JavaScripts/doc/*.drawio
-
 # Meta world
 .mw/**/*
 DBCache/**/*
@@ -41,3 +38,7 @@ NAVDATA.bin
 JavaScripts/ui-generate/**/*
 ## 便于不含包管理工具的环境使用
 !node_modules/**/*
+
+# Custom
+JavaScripts/doc/*.drawio
+Log4TsSelfConfig.ts
