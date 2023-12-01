@@ -27,7 +27,6 @@ by LviatYi
 |       ID        | Id                 | int   |        |
 |    背包物 ID    | BagId              | int   |        |
 |     品质 ID     | QualityId          | int   |        |
-|   生成区域 ID   | GenerationAreaId   | int[] |        |
 |  最大存在数量   | ExistenceCount     | int   |        |
 |    存在时间     | ExistenceTime      | int   | 秒 Sec |
 |    生成间隔     | GenerationInterval | int   | 秒 Sec |
@@ -44,7 +43,6 @@ by LviatYi
 |       形象        | Avatar             | UNKNOWN |        |
 |      元素 ID      | ElementalId        | int     |        |
 |      品质 ID      | QualityId          | int     |        |
-|    生成区域 ID    | GenerationAreaId   | int[]   |        |
 |     存在时间      | ExistenceTime      | int     | 秒 Sec |
 |     生成间隔      | GenerationInterval | int     | 秒 Sec |
 |    可捕捉次数     | HitPoint           | int     |        |

@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","bagId","avatar","elementalId","qualityId","generationAreaId","existenceTime","generationInterval","hitPoint","cost","successRateAlgoId"],["","","","","","","","","","",""],[1,3,0,0,0,[1],300,80,1,10,1]];
+const EXCELDATA:Array<Array<any>> = [["id","bagId","avatar","elementalId","qualityId","existenceTime","generationInterval","hitPoint","cost","successRateAlgoId"],["","","","","","","","","",""],[1,3,0,0,0,300,80,1,10,1]];
 export interface IDragonElement extends IElementBase{
  	/**龙 ID*/
 	id:number
@@ -11,8 +11,6 @@ export interface IDragonElement extends IElementBase{
 	elementalId:number
 	/**品质 ID*/
 	qualityId:number
-	/**生成区域 ID*/
-	generationAreaId:Array<number>
 	/**存在时间*/
 	existenceTime:number
 	/**生成间隔*/

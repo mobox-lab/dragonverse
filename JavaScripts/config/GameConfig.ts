@@ -3,6 +3,7 @@ import {AreaConfig} from "./Area";
 import {BagItemConfig} from "./BagItem";
 import {CollectibleItemConfig} from "./CollectibleItem";
 import {CollectResultAlgoConfig} from "./CollectResultAlgo";
+import {DialogueConfig} from "./Dialogue";
 import {DragonConfig} from "./Dragon";
 import {ElementalConfig} from "./Elemental";
 import {LanguageConfig} from "./Language";
@@ -31,6 +32,7 @@ export class GameConfig{
 	public static get BagItem():BagItemConfig{ return this.getConfig(BagItemConfig) };
 	public static get CollectibleItem():CollectibleItemConfig{ return this.getConfig(CollectibleItemConfig) };
 	public static get CollectResultAlgo():CollectResultAlgoConfig{ return this.getConfig(CollectResultAlgoConfig) };
+	public static get Dialogue():DialogueConfig{ return this.getConfig(DialogueConfig) };
 	public static get Dragon():DragonConfig{ return this.getConfig(DragonConfig) };
 	public static get Elemental():ElementalConfig{ return this.getConfig(ElementalConfig) };
 	public static get Language():LanguageConfig{ return this.getConfig(LanguageConfig) };
