@@ -7,9 +7,9 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import IUnique from "../../depend/yoact/IUnique";
 import YoactArray from "../../depend/yoact/YoactArray";
 import createYoact = Yoact.createYoact;
-import GToolkit from "../../util/GToolkit";
 import ByteArray from "../../depend/byteArray/ByteArray";
 import Enumerable from "linq";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -182,7 +182,7 @@ export default class BagModuleData extends Subdata {
     public checkVersion() {
         if (this.currentVersion === this.version) return;
 
-        GToolkit.log(BagModuleData, () => {
+        Log4Ts.log(BagModuleData, () => {
             return `数据准备升级.
 当前版本: ${this.currentVersion}.
 最新版本: ${this.version}.`;
@@ -190,7 +190,7 @@ export default class BagModuleData extends Subdata {
 
         const startIndex = BagModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
         if (startIndex < 0) {
-            GToolkit.error(BagModuleData, `数据号版本异常.
+            Log4Ts.error(BagModuleData, `数据号版本异常.
 不是已发布的版本号.
 当前版本: ${this.currentVersion}.`);
             return;
@@ -347,7 +347,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     public addItem(bagId: number, count: number, autoRemove: boolean = true) {
         const currCount = this.getItemCount(bagId);
         const setCount = currCount + count;
-        GToolkit.log(BagModuleC, () => {
+        Log4Ts.log(BagModuleC, () => {
             return `add item.
     playerId: ${this.localPlayerId}. 
     id: ${bagId}. 
@@ -364,7 +364,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
      * @param bagId
      */
     public removeItem(bagId: number) {
-        GToolkit.log(BagModuleC, () => {
+        Log4Ts.log(BagModuleC, () => {
             return `remove item.
     playerId: ${this.localPlayerId}. 
     id: ${bagId}. 
@@ -404,7 +404,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
             const handbookItem = this.handbookYoact.getItem(bagId);
             if (handbookItem && !handbookItem.collected) {
                 handbookItem.collected = true;
-                GToolkit.log(BagModuleC, `record item. id: ${bagId}.`);
+                Log4Ts.log(BagModuleC, `record item. id: ${bagId}.`);
             }
 
             this.bagItemYoact.addItem(new BagItemUnique(bagId, count));
@@ -427,7 +427,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         if (!handbookItem) return;
         const v = value > 0;
         if (!(handbookItem.collected !== v)) {
-            GToolkit.log(BagModuleC, `${v ? "" : "un"}record item. id: ${bagId}.`);
+            Log4Ts.log(BagModuleC, `${v ? "" : "un"}record item. id: ${bagId}.`);
             handbookItem.collected = v;
         }
     }
@@ -503,7 +503,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
      */
     public addItem(playerId: number, bagId: number, count: number, autoRemove: boolean = true) {
         const playerData = this.getPlayerData(playerId);
-        GToolkit.log(BagModuleS, () => {
+        Log4Ts.log(BagModuleS, () => {
             return `add item.
     playerId: ${playerId}. 
     id: ${bagId}. 
@@ -515,7 +515,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         if (!playerData.getItemCount(bagId) &&
             count > 0 &&
             playerData.recordItem(bagId)) {
-            GToolkit.log(BagModuleS, `record item. id: ${bagId}.`);
+            Log4Ts.log(BagModuleS, `record item. id: ${bagId}.`);
         }
 
         this.getClient(playerId).net_setRecord(bagId, playerData.handbook.getValue(bagId));
@@ -539,7 +539,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
      */
     public removeItem(playerId: number, bagId: number) {
         const playerData = this.getPlayerData(playerId);
-        GToolkit.log(BagModuleS, () => {
+        Log4Ts.log(BagModuleS, () => {
             return `add item.
     playerId: ${playerId}. 
     id: ${bagId}. 

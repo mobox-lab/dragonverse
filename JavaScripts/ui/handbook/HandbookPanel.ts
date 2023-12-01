@@ -7,6 +7,7 @@ import GToolkit from "../../util/GToolkit";
 import { Yoact } from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
 import Enumerable from "linq";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export default class HandbookPanel extends HandbookPanel_Generate {
 //#region Member
@@ -33,7 +34,7 @@ export default class HandbookPanel extends HandbookPanel_Generate {
             undefined,
             true,
         ).listenOnItemSelect((key: number) => {
-            GToolkit.log(HandbookPanel, `item clicked. id: ${key}`);
+            Log4Ts.log(HandbookPanel, `item clicked. id: ${key}`);
         });
 
         bindYoact(() => {

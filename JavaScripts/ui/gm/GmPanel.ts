@@ -3,6 +3,7 @@ import GMHUD_Generate from "../../ui-generate/gm/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
 import GToolkit from "../../util/GToolkit";
 import { BagModuleC } from "../../module/bag/BagModule";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 /**
  * GM.
@@ -24,15 +25,15 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
     public show(): void {
         super.show();
 
-        GToolkit.warn(GMPanel, `GMPanel show`);
+        Log4Ts.warn(GMPanel, `GMPanel show`);
     }
 }
 
 AddGMCommand("Hello world", () => {
-    GToolkit.log(GMPanel, `Hello world`);
+    Log4Ts.log(GMPanel, `Hello world`);
 }, null, "CHello");
 
 AddGMCommand("增加测试物品", (player, value) => {
-    GToolkit.log(GMPanel, `增加测试物品 ${value}`);
+    Log4Ts.log(GMPanel, `增加测试物品 ${value}`);
     ModuleService.getModule(BagModuleC).addItem(1, Number(value));
 });

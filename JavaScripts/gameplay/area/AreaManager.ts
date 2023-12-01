@@ -2,6 +2,7 @@ import { Singleton } from "../../depend/singleton/Singleton";
 import PolygonShape from "../../util/area/Shape";
 import { GameConfig } from "../../config/GameConfig";
 import GToolkit from "../../util/GToolkit";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export default class AreaManager extends Singleton<AreaManager>() {
     private areaMap: Map<number, PolygonShape[]> = new Map<number, PolygonShape[]>();
@@ -14,7 +15,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
 
             for (const range of value.range) {
                 if (range.length % 2) {
-                    GToolkit.error(AreaManager, `range param invalid. length is not even.`);
+                   Log4Ts.error(AreaManager, `range param invalid. length is not even.`);
                 } else {
                     const area = PolygonShape.toSeqPoint(GToolkit.fold(range, 2, (data) => {
                         return {x: data[0], y: data[1]};

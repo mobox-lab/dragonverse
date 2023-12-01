@@ -1,6 +1,7 @@
 import GToolkit from "../util/GToolkit";
 import { EventDefine } from "../const/EventDefine";
 import noReply = mwext.Decorator.noReply;
+import Log4Ts from "../depend/log4ts/Log4Ts";
 
 /**
  * Salt Token.
@@ -133,7 +134,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (GToolkit.isNullOrEmpty(token)) {
-            GToolkit.log({name: "AuthModule"}, `token is empty when encrypt.`);
+            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -221,12 +222,12 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            GToolkit.log({name: "AuthModule"}, `token time verify failed.`);
+            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (GToolkit.isNullOrEmpty(token)) {
-            GToolkit.log({name: "AuthModule"}, `token invalid.`);
+            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
             return false;
         }
 

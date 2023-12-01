@@ -8,6 +8,7 @@ import FiniteStateMachine, { Region, State } from "../../depend/finite-state-mac
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import bindYoact = Yoact.bindYoact;
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 class SceneDragonBehaviorState {
 //#region Constant
@@ -124,7 +125,7 @@ export default class SceneDragonBehavior extends mw.Script {
     protected onStart(): void {
         super.onStart();
         if (SystemUtil.isServer()) {
-            GToolkit.log(SceneDragonBehavior, `SceneDragonBehavior is running on server, please check!`);
+            Log4Ts.log(SceneDragonBehavior, `SceneDragonBehavior is running on server, please check!`);
             return;
         }
 
@@ -144,7 +145,7 @@ export default class SceneDragonBehavior extends mw.Script {
         super.onUpdate(dt);
 
         if (this.regulator.ready() && !this.checkAlive()) {
-            GToolkit.log(SceneDragonBehavior, `dragon out of alive range. syncKey: ${this.syncKey}`);
+            Log4Ts.log(SceneDragonBehavior, `dragon out of alive range. syncKey: ${this.syncKey}`);
             Event.dispatchToLocal(EventDefine.DragonOutOfAliveRange, this.syncKey);
         }
 
@@ -185,7 +186,7 @@ export default class SceneDragonBehavior extends mw.Script {
     private initStateMachine() {
         const idleWait = new State<SceneDragonBehaviorState>(SceneDragonStates.IdleWait)
             .aE(() => {
-                GToolkit.log(SceneDragonBehavior,
+                Log4Ts.log(SceneDragonBehavior,
                     `enter idle wait state.`,
                     `key: ${this.syncKey}.`);
                 if (this.state.destination) {
@@ -196,7 +197,7 @@ export default class SceneDragonBehavior extends mw.Script {
             .aU((dt) => this.state.activeStamina += dt * SceneDragonBehaviorState.ACTIVE_STAMINA_RECOVERY_IN_IDLE);
         const idleMotion = new State<SceneDragonBehaviorState>(SceneDragonStates.IdleMotion)
             .aE(() => {
-                GToolkit.log(SceneDragonBehavior,
+                Log4Ts.log(SceneDragonBehavior,
                     `enter idle motion state.`,
                     `key: ${this.syncKey}.`);
                 if (this.state.destination) {
@@ -210,7 +211,7 @@ export default class SceneDragonBehavior extends mw.Script {
             });
         const walk = new State<SceneDragonBehaviorState>(SceneDragonStates.Walk)
             .aE(() => {
-                GToolkit.log(SceneDragonBehavior,
+                Log4Ts.log(SceneDragonBehavior,
                     `enter walk state.`,
                     `key: ${this.syncKey}.`);
                 (this.gameObject as Character).maxWalkSpeed = SceneDragon.WALK_SPEED;
@@ -225,7 +226,7 @@ export default class SceneDragonBehavior extends mw.Script {
             });
         const run = new State<SceneDragonBehaviorState>(SceneDragonStates.Run)
             .aE(() => {
-                GToolkit.log(SceneDragonBehavior,
+                Log4Ts.log(SceneDragonBehavior,
                     `enter run state.`,
                     `key: ${this.syncKey}.`);
                 (this.gameObject as Character).maxWalkSpeed = SceneDragon.RUN_SPEED;
@@ -237,7 +238,7 @@ export default class SceneDragonBehavior extends mw.Script {
             });
         const death = new State<SceneDragonBehaviorState>(SceneDragonStates.Death)
             .aE(() => {
-                GToolkit.log(SceneDragonBehavior,
+                Log4Ts.log(SceneDragonBehavior,
                     `enter death state.`,
                     `key: ${this.syncKey}.`);
             });
@@ -288,7 +289,7 @@ export default class SceneDragonBehavior extends mw.Script {
             return;
         }
 
-        GToolkit.log(SceneDragonBehavior, `navigating now.`,
+        Log4Ts.log(SceneDragonBehavior, `navigating now.`,
             `key: ${this.syncKey}`,
             `destination: ${this.state.destination}`,
         );
@@ -296,8 +297,8 @@ export default class SceneDragonBehavior extends mw.Script {
             this.gameObject,
             this.state.destination,
             undefined,
-            () => GToolkit.log(SceneDragonBehavior, `navigate success`),
-            () => GToolkit.log(SceneDragonBehavior, `navigate fail`),
+            () => Log4Ts.log(SceneDragonBehavior, `navigate success`),
+            () => Log4Ts.log(SceneDragonBehavior, `navigate fail`),
         );
     }
 
