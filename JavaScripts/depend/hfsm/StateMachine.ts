@@ -62,7 +62,7 @@ export class StateMachine<TOwnId = string, TStateId = string, TEvent = string> e
     }
 
     public get activeState() {
-        return this.currentState.name;
+        return this.currentState ? this.currentState.name : undefined;
     }
 
 

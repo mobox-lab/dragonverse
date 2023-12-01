@@ -21,29 +21,35 @@ export class CompanionState implements IState {
      * 当前状态名
      */
     @mw.Property({ replicated: true })
-    stateName: CompanionStateEnum
+    stateName: CompanionStateEnum = 0;
 
 
     /**
      * 当前状态进入时间
      */
     @mw.Property({ replicated: true })
-    switchTime: number;
+    switchTime: number = 0;
 
 
     /**
      * 随机种子
      */
     @mw.Property({ replicated: true })
-    public seed: number;
+    public seed: number = 0;
 
+
+    /**
+     * 起始位置
+     */
+    @mw.Property({ replicated: true })
+    public start: mw.Vector = mw.Vector.zero;
 
 
     public static create(stateName: CompanionStateEnum) {
 
         const ret = new CompanionState();
         ret.switchTime = ret.seed = Date.now();
-        ret.stateName = stateName
+        ret.stateName = stateName;
         return ret;
     }
 }

@@ -6,10 +6,10 @@ import { MovementContext } from "./MovementContext";
 
 class Follower implements SteeringTarget {
 
-    position: mw.Vector;
-    velocity: mw.Vector;
-    maxSpeed: number;
-    rotation: mw.Rotation;
+    position: mw.Vector = new mw.Vector();
+    velocity: mw.Vector = new mw.Vector();
+    maxSpeed: number
+    rotation: mw.Rotation = new mw.Rotation();
     maxForce: number;
 
 }

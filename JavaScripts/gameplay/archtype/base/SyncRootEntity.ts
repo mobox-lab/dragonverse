@@ -74,7 +74,7 @@ export abstract class SyncRootEntity<T extends IState> extends InitializeChecker
 
     private onLogicStateChanged(state: T): void {
 
-        this.onLogicStateSynced.call(state);
+        this.onLogicStateSynced.call(this.state);
     }
 
     protected onDestroy(): void {

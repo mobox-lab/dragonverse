@@ -57,6 +57,7 @@ export default abstract class MovementEntity<T extends IState> extends ClientDis
 
 
     protected onInitialize(): void {
+        super.onInitialize();
         (this.gameObject as mw.Character).complexMovementEnabled = false;
     }
 

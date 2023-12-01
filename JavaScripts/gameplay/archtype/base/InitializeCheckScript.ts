@@ -5,7 +5,7 @@ export abstract class InitializeCheckerScript extends mw.Script {
 
     private static _requireMap: Map<string, string[]> = new Map<string, string[]>();
 
-    private _isInitializeComplete: boolean = false;
+    protected isInitializeComplete: boolean = false;
 
     public static required(target: unknown, propertyKey: string) {
 
@@ -65,11 +65,11 @@ export abstract class InitializeCheckerScript extends mw.Script {
      */
     public initializeComplete() {
 
-        if (this._isInitializeComplete) {
+        if (this.isInitializeComplete) {
             return;
         }
         this.onInitialize();
-        this._isInitializeComplete = true;
+        this.isInitializeComplete = true;
 
     }
 

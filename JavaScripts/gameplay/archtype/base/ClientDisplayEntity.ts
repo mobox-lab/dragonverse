@@ -40,6 +40,10 @@ export default abstract class ClientDisplayEntity<T extends IState> extends Init
         super.onStart();
     }
 
+    protected onInitialize(): void {
+        this.onLogicStateSynced(this._hosted.state);
+    }
+
 
     public setHosted(value: IClientDisplayHosted<T>) {
         if (this._hosted) {
@@ -53,8 +57,7 @@ export default abstract class ClientDisplayEntity<T extends IState> extends Init
             if (!state) {
                 return;
             }
-            this.onLogicStateSynced(state);
-            this._cacheState = this._hosted.state.clone() as unknown as T;
+            this._cacheState = this.onLogicStateSynced(state);
         }
     }
 
@@ -71,17 +74,22 @@ export default abstract class ClientDisplayEntity<T extends IState> extends Init
     }
 
 
-    private onLogicStateSynced(state: T): void {
+    private onLogicStateSynced(state: T) {
 
+
+        if (!this.isInitializeComplete) {
+            return;
+        }
         if (this._cacheState && this._cacheState.equal(state)) {
             return;
         }
 
-        this.preLogicStateChange(this._cacheState, state)
+        let ret = this.preLogicStateChange(this._cacheState, state)
         this.postLogicStateChange(state);
+        return ret;
     }
 
-    protected abstract preLogicStateChange(old: T, newEst: T): void;
+    protected abstract preLogicStateChange(old: T, newEst: T): T;
 
     protected abstract postLogicStateChange(state: T): void;
 

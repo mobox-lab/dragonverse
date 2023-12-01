@@ -100,7 +100,7 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
         let config = GameConfig.Dragon.getElement(companion.companionId);
         let controller = this.getController(playerId);
         if (companion.isShowUp) {
-            controller.createCompanion(config.avatar, companion.companionSign);
+            controller.createCompanion(config.avatar.toString(), companion.companionSign);
         } else {
             controller.removeCompanionWithSign(companion.companionSign);
         }

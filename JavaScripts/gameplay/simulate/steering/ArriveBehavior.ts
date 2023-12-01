@@ -6,14 +6,16 @@ const displacement = new mw.Vector();
 
 export class ArriveBehavior extends SteeringBehavior {
 
-
+    public target: mw.Vector = new mw.Vector()
 
     constructor(
-        public target: mw.Vector,
-        public deceleration: number,
-        public tolerance: number
+
+        target: mw.Vector = new mw.Vector(),
+        public deceleration: number = 50,
+        public tolerance: number = 10
     ) {
         super()
+        this.target.set(target);
     }
 
 
