@@ -2,6 +2,7 @@ import GToolkit from "../../../util/GToolkit";
 import { EventDefine } from "../../../const/EventDefine";
 import Character = mw.Character;
 import CharacterEnterCollectibleItemRangeEventArgs from "./CharacterEnterCollectibleItemRangeEventArgs";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 /**
  * 采集物 Trigger.
@@ -42,7 +43,7 @@ export default class CollectibleItemTrigger extends mw.Script {
                 trigger.onEnter.add(this.onObjectEnter);
                 trigger.onLeave.add(this.onObjectLeave);
             } else {
-                GToolkit.error(CollectibleItemTrigger, `there is no trigger under this game object.`);
+                Log4Ts.error(CollectibleItemTrigger, `there is no trigger under this game object.`);
             }
         }
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -80,7 +81,7 @@ export default class CollectibleItemTrigger extends mw.Script {
     };
 
     private characterEnter = (playerId: number) => {
-        GToolkit.log(CollectibleItemTrigger, `player enter. playerId: ${playerId}`);
+        Log4Ts.log(CollectibleItemTrigger, `player enter. playerId: ${playerId}`);
         this._enteredList.add(playerId);
         Event.dispatchToLocal(
             EventDefine.EnterCollectibleItemRange,
@@ -89,7 +90,7 @@ export default class CollectibleItemTrigger extends mw.Script {
     };
 
     private characterLeave = (playerId: number) => {
-        GToolkit.log(CollectibleItemTrigger, `player leave. playerId: ${playerId}`);
+        Log4Ts.log(CollectibleItemTrigger, `player leave. playerId: ${playerId}`);
         this._enteredList.delete(playerId);
         Event.dispatchToLocal(
             EventDefine.LeaveCollectibleItemRange,

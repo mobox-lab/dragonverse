@@ -13,6 +13,7 @@ import UIService = mw.UIService;
 import UIScript = mw.UIScript;
 import SimpleDelegateFunction = Delegate.SimpleDelegateFunction;
 import Canvas = mw.Canvas;
+import Log4Ts from "../log4ts/Log4Ts";
 
 // export class Margin {
 //     public top: number;
@@ -117,11 +118,11 @@ export default class ScrollView<
             switch (this.orientation) {
                 case mw.Orientation.OrientHorizontal:
                     if (padding.bottom > 0) {
-                        GToolkit.warn(ScrollView, `检测正使用 padding.bottom.`);
-                        GToolkit.warn(ScrollView, `在水平滑动的控件中使用此属性可能导致布局计算问题.`);
-                        GToolkit.warn(ScrollView, `此 Bug 可能来自 UE 内部.`);
-                        GToolkit.warn(ScrollView, `已智能覆写为 0.`);
-                        GToolkit.warn(ScrollView, `如不需要智能覆写 请关闭 useSmartLayoutStrategy 选项.`);
+                        Log4Ts.warn(ScrollView, `检测正使用 padding.bottom.`);
+                        Log4Ts.warn(ScrollView, `在水平滑动的控件中使用此属性可能导致布局计算问题.`);
+                        Log4Ts.warn(ScrollView, `此 Bug 可能来自 UE 内部.`);
+                        Log4Ts.warn(ScrollView, `已智能覆写为 0.`);
+                        Log4Ts.warn(ScrollView, `如不需要智能覆写 请关闭 useSmartLayoutStrategy 选项.`);
                         padding.bottom = 0;
                     }
                     container.size.y = scrollBox.size.y;
@@ -137,11 +138,11 @@ export default class ScrollView<
                     break;
                 case mw.Orientation.OrientVertical:
                     if (padding.right > 0) {
-                        GToolkit.warn(ScrollView, `检测正使用 padding.right.`);
-                        GToolkit.warn(ScrollView, `在垂直滑动的控件中使用此属性可能导致布局计算问题.`);
-                        GToolkit.warn(ScrollView, `此 Bug 可能来自 UE 内部.`);
-                        GToolkit.warn(ScrollView, `已智能覆写为 0.`);
-                        GToolkit.warn(ScrollView, `如不需要智能覆写 请关闭 useSmartLayoutStrategy 选项.`);
+                        Log4Ts.warn(ScrollView, `检测正使用 padding.right.`);
+                        Log4Ts.warn(ScrollView, `在垂直滑动的控件中使用此属性可能导致布局计算问题.`);
+                        Log4Ts.warn(ScrollView, `此 Bug 可能来自 UE 内部.`);
+                        Log4Ts.warn(ScrollView, `已智能覆写为 0.`);
+                        Log4Ts.warn(ScrollView, `如不需要智能覆写 请关闭 useSmartLayoutStrategy 选项.`);
                         padding.right = 0;
                     }
                     container.size.x = scrollBox.size.x;

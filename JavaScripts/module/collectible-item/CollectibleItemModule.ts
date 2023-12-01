@@ -14,6 +14,7 @@ import CharacterEnterCollectibleItemRangeEventArgs from "./trigger/CharacterEnte
 import EventListener = mw.EventListener;
 import MainPanel from "../../ui/main/MainPanel";
 import { BagModuleS } from "../bag/BagModule";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export default class CollectibleItemModuleData extends Subdata {
     //@Decorator.persistence()
@@ -46,12 +47,12 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         id: number,
         location: Vector) {
         if (!location) {
-            GToolkit.error(CollectibleItemModuleC, `generate item param location invalid.`);
+            Log4Ts.error(CollectibleItemModuleC, `generate item param location invalid.`);
             return null;
         }
         const assetId = this.PREFAB_MAP.get(id);
         if (GToolkit.isNullOrEmpty(assetId)) {
-            GToolkit.error(CollectibleItemModuleC, `prefab not set. id: ${id}`);
+            Log4Ts.error(CollectibleItemModuleC, `prefab not set. id: ${id}`);
             return null;
         }
         const obj = await GameObjPool.asyncSpawn(
@@ -131,34 +132,34 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
      * @param syncKey
      */
     public collect(syncKey: string) {
-        GToolkit.log(CollectibleItemModuleC, `try collect item.`);
+       Log4Ts.log(CollectibleItemModuleC, `try collect item.`);
         if (!this.syncItemMap.has(syncKey)) {
-            GToolkit.log(CollectibleItemModuleC, `item not exist in client when collect. syncKey: ${syncKey}`);
+           Log4Ts.log(CollectibleItemModuleC, `item not exist in client when collect. syncKey: ${syncKey}`);
             return;
         }
 
         const item = this.syncItemMap.get(syncKey).item;
-        GToolkit.log(CollectibleItemModuleC, item.info());
+       Log4Ts.log(CollectibleItemModuleC, item.info());
         if (!item.isCollectible) {
-            GToolkit.warn(CollectibleItemModuleC, `item un collectible. waiting for delete.`);
+            Log4Ts.warn(CollectibleItemModuleC, `item un collectible. waiting for delete.`);
             return;
         }
 
         const success: boolean = GToolkit.randomWeight([CollectibleItem.successRate(item.id)], 1) === 0;
         if (!success) {
-            GToolkit.log(CollectibleItemModuleC, `collect fail`);
+           Log4Ts.log(CollectibleItemModuleC, `collect fail`);
             return;
         }
 
-        GToolkit.log(CollectibleItemModuleC, `collect success. last collect count: ${item.hitPoint}`);
+       Log4Ts.log(CollectibleItemModuleC, `collect success. last collect count: ${item.hitPoint}`);
         this.server.net_collectItem(syncKey);
         item.collect();
     }
 
     private generate(syncKey: string, item: CollectibleItem) {
-        GToolkit.log(CollectibleItemModuleC, `try generate item. ${item.info()}`);
+       Log4Ts.log(CollectibleItemModuleC, `try generate item. ${item.info()}`);
         if (this.syncItemMap.get(syncKey)) {
-            GToolkit.error(CollectibleItemModuleC, `item already exist in client when generate. syncKey: ${syncKey}`);
+            Log4Ts.error(CollectibleItemModuleC, `item already exist in client when generate. syncKey: ${syncKey}`);
             return;
         }
 
@@ -172,7 +173,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
     }
 
     private destroy(syncKey: string) {
-        GToolkit.log(CollectibleItemModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).item.info() ?? "null"}`);
+       Log4Ts.log(CollectibleItemModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).item.info() ?? "null"}`);
 
         this.syncItemMap.get(syncKey)?.object.destroy();
         this.syncItemMap.delete(syncKey);
@@ -340,7 +341,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
                      i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
                      this.isGenerateEnable(playerId, item.id);
                      i++) {
-                    GToolkit.log(CollectibleItemModuleS, `checking generate. 
+                   Log4Ts.log(CollectibleItemModuleS, `checking generate. 
                         playerId: ${playerId}. 
                         id: ${item.id}. 
                         current count: ${this.getItemExistenceCount(playerId, item.id)}. 
@@ -385,9 +386,9 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @param itemId
      */
     private generate(playerId: number, itemId: number) {
-        GToolkit.log(CollectibleItemModuleS, `try generate item, itemId: ${itemId}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
+       Log4Ts.log(CollectibleItemModuleS, `try generate item, itemId: ${itemId}.`);
+       Log4Ts.log(CollectibleItemModuleS, () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`);
+       Log4Ts.log(CollectibleItemModuleS, () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
 
         const syncKey = new UUID(4).toString();
         const item = new CollectibleItem();
@@ -403,7 +404,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         array.push(syncKey);
         this.syncItemMap.set(syncKey, item);
 
-        GToolkit.log(CollectibleItemModuleS, `generate item success. syncKey: ${syncKey}`);
+       Log4Ts.log(CollectibleItemModuleS, `generate item success. syncKey: ${syncKey}`);
 
         item.autoDestroyTimerId = setTimeout(() => {
                 this.destroy(playerId, syncKey);
@@ -429,13 +430,13 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     private destroy(playerId: number, syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            GToolkit.error(CollectibleItemModuleS, `destroy item is null`);
+            Log4Ts.error(CollectibleItemModuleS, `destroy item is null`);
             return;
         }
-        GToolkit.log(CollectibleItemModuleS, `try destroy item, itemId: ${item.id}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`);
-        GToolkit.log(CollectibleItemModuleS, () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
+       Log4Ts.log(CollectibleItemModuleS, `try destroy item, itemId: ${item.id}.`);
+       Log4Ts.log(CollectibleItemModuleS, () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
+       Log4Ts.log(CollectibleItemModuleS, () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`);
+       Log4Ts.log(CollectibleItemModuleS, () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
@@ -444,12 +445,12 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
         let array: string[] = this.existenceItemMap.get(playerId);
         if (!array || !GToolkit.remove(array, syncKey)) {
-            GToolkit.log(CollectibleItemModuleS, `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
+           Log4Ts.log(CollectibleItemModuleS, `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
              but it not exist in server`);
         }
 
         item.destroy();
-        GToolkit.log(CollectibleItemModuleS, `destroy item success. syncKey: ${syncKey}`);
+       Log4Ts.log(CollectibleItemModuleS, `destroy item success. syncKey: ${syncKey}`);
 
         this.getClient(playerId).net_destroy(syncKey);
     }
@@ -461,10 +462,10 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     public net_collectItem(syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            GToolkit.error(CollectibleItemModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
+            Log4Ts.error(CollectibleItemModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
             return;
         }
-        GToolkit.log(CollectibleItemModuleS, `try collect item. ${item.info()}`);
+       Log4Ts.log(CollectibleItemModuleS, `try collect item. ${item.info()}`);
         item.collect();
         this._bagModuleS.addItem(this.currentPlayerId, CollectibleItem.bagId(item.id), 1);
         if (!item.isCollectible) {

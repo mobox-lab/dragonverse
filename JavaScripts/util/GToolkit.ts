@@ -1,24 +1,7 @@
 import tryGenerateTsWidgetTypeByUEObject = mw.tryGenerateTsWidgetTypeByUEObject;
 import Character = mw.Character;
 import GameObject = mw.GameObject;
-
-/**
- * 日志等级.
- */
-export enum DebugLevels {
-    /**
-     * 无日志.
-     */
-    Silent = 0,
-    /**
-     * 信息. 包含 warn error.
-     */
-    Info,
-    /**
-     * 开发. 包含 log warn error.
-     */
-    Dev,
-}
+import Log4Ts, { Announcer, DebugLevels, logString } from "../depend/log4ts/Log4Ts";
 
 /**
  * 时间值维度 枚举.
@@ -97,7 +80,7 @@ export enum GenderTypes {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.6.8b
+ * @version 0.7.4b
  * @alpha
  */
 class GToolkit {
@@ -171,13 +154,6 @@ class GToolkit {
         return this._accountService;
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-    //#region Config
-    /**
-     * 日志等级.
-     */
-    public debugLevel: DebugLevels = DebugLevels.Dev;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Type Guard
@@ -377,10 +353,8 @@ class GToolkit {
      * @param weight
      * @param total total weight. add last weight as total-sum(weight)
      * @return number [0,weight.length)
-     *         -1 when weight is empty.
      */
     public randomWeight(weight: number[], total: number = undefined): number {
-        if (!weight.length) return -1;
         const stepWeight = new Array<number>(weight.length);
         for (let i = 0; i < weight.length; i++) {
             stepWeight[i] = (i === 0 ? 0 : stepWeight[i - 1]) + weight[i];
@@ -616,14 +590,14 @@ class GToolkit {
             return val;
         }
         if (this.hammingWeight(from) > 0 || this.hammingWeight(to) > 0) {
-            this.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
+            Log4Ts.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
         }
 
         if (
             (0x1 << this.bitFirstOne(from)) as TimeFormatDimensionFlags > TimeFormatDimensionFlags.Day ||
             (0x1 << this.bitFirstOne(to)) as TimeFormatDimensionFlags > TimeFormatDimensionFlags.Day
         ) {
-            this.error(GToolkit, GToolkit.FLAG_NOT_SUPPORT_MSG);
+            Log4Ts.error(GToolkit, GToolkit.FLAG_NOT_SUPPORT_MSG);
         }
 
         while (from !== to) {
@@ -754,7 +728,7 @@ class GToolkit {
      */
     public bitFirstOne(num: number): number {
         if ((num | 0) !== num) {
-            this.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
+            Log4Ts.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
             return -1;
         }
 
@@ -925,7 +899,7 @@ class GToolkit {
      */
     public isSelfCharacter(idOrObj: number | string | GameObject) {
         if (SystemUtil.isServer()) {
-            this.error(GToolkit, `isSelfCharacter should be called in Client`);
+            Log4Ts.error(GToolkit, `isSelfCharacter should be called in Client`);
             return false;
         }
         const self: Player = Player.localPlayer;
@@ -947,8 +921,8 @@ class GToolkit {
     public setCharacterDescription(character: mw.Character, data: mw.CharacterDescription | Array<string> | string) {
         let characterDescription = character.getDescription();
         if (!characterDescription) {
-            this.error(GToolkit, `characterDescription is null`);
-            this.log(GToolkit, `请喊 LviatYi 来看看.`);
+            Log4Ts.error(GToolkit, `characterDescription is null`);
+            Log4Ts.log(GToolkit, `请喊 LviatYi 来看看.`);
         }
 
         character.clearDescription();
@@ -1205,6 +1179,21 @@ class GToolkit {
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+    //#region Navigator
+    /**
+     * 是否 两点之间存在合法路径.
+     * @param origin
+     * @param dest
+     */
+    public hasValidPath(origin: Vector, dest: Vector): boolean {
+        return Navigation.findPath(
+            origin,
+            dest,
+        ).length > 0;
+    }
+
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
     //#region Functional
     /**
      * 计算角色在地形上运动时的倾倒角.
@@ -1273,78 +1262,90 @@ class GToolkit {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Log
-    public log(announcer: { name: string }, msg: string): void;
+    public log(announcer: Announcer, ...messages: (logString | string)[]): void;
 
-    public log(announcer: { name: string }, msg: (...param: unknown[]) => string): void;
-
-    public log(announcer: { name: string }, msg: unknown): void;
+    public log(announcer: Announcer, ...messages: unknown[]): void;
 
     /**
      * debug log.
      * @param announcer announcer with name.
-     * @param msg text.
+     * @param messages text.
+     * @deprecated
      */
-    public log(announcer: { name: string }, msg: string | unknown): void {
-        if (this.debugLevel !== DebugLevels.Dev) {
-            return;
-        }
+    public log(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+        if (Log4Ts.debugLevel !== DebugLevels.Dev) return;
 
-        if (typeof msg === "string") {
-            console.log(`${announcer.name}: ${msg}`);
-        } else if (typeof msg === "function") {
-            console.log(`${announcer.name}: ${msg()}`);
-        } else {
-            console.log(`${announcer.name}: ${msg.toString()}`);
+        let title = true;
+        for (const msg of messages) {
+            let msgStr: string;
+            if (typeof msg === "string") {
+                msgStr = msg;
+            } else if (typeof msg === "function") {
+                msgStr = msg();
+            } else {
+                msgStr = msg.toString();
+            }
+
+            console.log(`${title ? announcer.name + ": " : `    `}${msgStr}`);
+            title = false;
         }
     }
 
-    public warn(announcer: { name: string }, msg: string): void;
+    public warn(announcer: Announcer, ...messages: (logString | string)[]): void;
 
-    public warn(announcer: { name: string }, msg: (...param: unknown[]) => string): void;
-
-    public warn(announcer: { name: string }, msg: unknown): void;
+    public warn(announcer: Announcer, ...messages: unknown[]): void;
 
     /**
      * debug warn.
      * @param announcer announcer with name.
-     * @param msg text.
+     * @param messages text.
+     * @deprecated
      */
-    public warn(announcer: { name: string }, msg: string | unknown): void {
-        if (this.debugLevel === DebugLevels.Silent) {
-            return;
-        }
+    public warn(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+        if (Log4Ts.debugLevel === DebugLevels.Silent) return;
 
-        if (typeof msg === "string") {
-            console.warn(`${announcer.name}: ${msg}`);
-        } else if (typeof msg === "function") {
-            console.warn(`${announcer.name}: ${msg()}`);
-        } else {
-            console.warn(`${announcer.name}: ${msg.toString()}`);
+        let title = true;
+        for (const msg of messages) {
+            let msgStr: string;
+            if (typeof msg === "string") {
+                msgStr = msg;
+            } else if (typeof msg === "function") {
+                msgStr = msg();
+            } else {
+                msgStr = msg.toString();
+            }
+
+            console.warn(`${title ? announcer.name + ": " : `    `}${msgStr}`);
+            title = false;
         }
     }
 
-    public error(announcer: { name: string }, msg: string): void;
+    public error(announcer: Announcer, ...messages: (logString | string)[]): void;
 
-    public error(announcer: { name: string }, msg: (...param: unknown[]) => string): void;
-
-    public error(announcer: { name: string }, msg: unknown): void;
+    public error(announcer: Announcer, ...messages: unknown[]): void;
 
     /**
      * debug error.
      * @param announcer announcer with name.
-     * @param msg text.
+     * @param messages text.
+     * @deprecated
      */
-    public error(announcer: { name: string }, msg: string | unknown): void {
-        if (this.debugLevel === DebugLevels.Silent) {
-            return;
-        }
+    public error(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+        if (Log4Ts.debugLevel === DebugLevels.Silent) return;
 
-        if (typeof msg === "string") {
-            console.error(`${announcer.name}: ${msg}`);
-        } else if (typeof msg === "function") {
-            console.error(`${announcer.name}: ${msg()}`);
-        } else {
-            console.error(`${announcer.name}: ${msg.toString()}`);
+        let title = true;
+        for (const msg of messages) {
+            let msgStr: string;
+            if (typeof msg === "string") {
+                msgStr = msg;
+            } else if (typeof msg === "function") {
+                msgStr = msg();
+            } else {
+                msgStr = msg.toString();
+            }
+
+            console.error(`${title ? announcer.name + ": " : `    `}${msgStr}`);
+            title = false;
         }
     }
 

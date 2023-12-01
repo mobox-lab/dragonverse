@@ -4,6 +4,7 @@ import ModuleService = mwext.ModuleService;
 import GToolkit from "../../util/GToolkit";
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
 import Script = mw.Script;
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class CollectibleInteractorPanel extends CollectiblePanel_Generate {
 //#region Member
@@ -45,11 +46,11 @@ export class CollectibleInteractorPanel extends CollectiblePanel_Generate {
     }
 
     protected onHide() {
-        GToolkit.log(CollectibleInteractorPanel, `hided`);
+        Log4Ts.log(CollectibleInteractorPanel, `hided`);
     }
 
     protected onDestroy() {
-        GToolkit.log(CollectibleInteractorPanel, `destroyed`);
+        Log4Ts.log(CollectibleInteractorPanel, `destroyed`);
         this._standardBehavior.pause();
         this._standardBehavior.destroy();
     }

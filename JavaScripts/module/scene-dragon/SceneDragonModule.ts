@@ -12,6 +12,7 @@ import noReply = mwext.Decorator.noReply;
 import { EventDefine } from "../../const/EventDefine";
 import CollectibleItem from "../collectible-item/CollectibleItem";
 import { BagModuleS } from "../bag/BagModule";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 /**
  * 场景龙存在数据.
@@ -56,12 +57,12 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         syncKey: string,
         item: SceneDragon) {
         if (!item.location) {
-            GToolkit.error(SceneDragonModuleC, `generate item param location invalid.`);
+            Log4Ts.error(SceneDragonModuleC, `generate item param location invalid.`);
             return null;
         }
         const assetId = this.PREFAB_MAP.get(item.id);
         if (GToolkit.isNullOrEmpty(assetId)) {
-            GToolkit.error(SceneDragonModuleC, `prefab not set. id: ${item.id}`);
+            Log4Ts.error(SceneDragonModuleC, `prefab not set. id: ${item.id}`);
             return null;
         }
         const obj = await GameObjPool.asyncSpawn(
@@ -74,7 +75,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
         return new SceneDragonExistInfo(
             behavior,
-            obj,
+            obj.getChildByName("SceneDragonMesh"),
         );
     }
 
@@ -145,34 +146,34 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
      * @param syncKey
      */
     public catch(syncKey: string) {
-        GToolkit.log(SceneDragonModuleC, `try collect item.`);
+        Log4Ts.log(SceneDragonModuleC, `try collect item.`);
         if (!this.syncItemMap.has(syncKey)) {
-            GToolkit.log(SceneDragonModuleC, `item not exist in client when collect. syncKey: ${syncKey}`);
+            Log4Ts.log(SceneDragonModuleC, `item not exist in client when collect. syncKey: ${syncKey}`);
             return;
         }
 
         const item: SceneDragon = this.syncItemMap.get(syncKey).behavior.data;
-        GToolkit.log(SceneDragonModuleC, item.info());
+        Log4Ts.log(SceneDragonModuleC, item.info());
         if (!item.isCatchable) {
-            GToolkit.warn(SceneDragonModuleC, `item un collectible. waiting for delete.`);
+            Log4Ts.warn(SceneDragonModuleC, `item un collectible. waiting for delete.`);
             return;
         }
 
         const success: boolean = GToolkit.randomWeight([SceneDragon.successRateAlgo(item.id)()], 1) === 0;
         if (!success) {
-            GToolkit.log(SceneDragonModuleC, `collect fail`);
+            Log4Ts.log(SceneDragonModuleC, `collect fail`);
             return;
         }
 
-        GToolkit.log(SceneDragonModuleC, `collect success. last collect count: ${item.hitPoint}`);
+        Log4Ts.log(SceneDragonModuleC, `collect success. last collect count: ${item.hitPoint}`);
         this.server.net_catch(syncKey);
         item.catch();
     }
 
     private generate(syncKey: string, item: SceneDragon) {
-        GToolkit.log(SceneDragonModuleC, `try generate item. ${item.info()}`);
+        Log4Ts.log(SceneDragonModuleC, `try generate item. ${item.info()}`);
         if (this.syncItemMap.get(syncKey)) {
-            GToolkit.error(SceneDragonModuleC, `item already exist in client when generate. syncKey: ${syncKey}`);
+            Log4Ts.error(SceneDragonModuleC, `item already exist in client when generate. syncKey: ${syncKey}`);
             return;
         }
 
@@ -183,11 +184,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             this.syncItemMap.set(syncKey, value);
             this._mainPanel.addSceneDragonInteractor(syncKey);
         });
-
     }
 
     private destroy(syncKey: string) {
-        GToolkit.log(SceneDragonModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).behavior.data.info() ?? "null"}`);
+        Log4Ts.log(SceneDragonModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).behavior.data.info() ?? "null"}`);
 
         this.syncItemMap.get(syncKey)?.object.destroy();
         this.syncItemMap.delete(syncKey);
@@ -220,7 +220,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
 //#region Event Callback
     private onDragonOutOfAliveRange = (syncKey: string) => {
-        GToolkit.log(SceneDragonModuleC, `knows dragon out of alive range. syncKey: ${syncKey}`);
+        Log4Ts.log(SceneDragonModuleC, `knows dragon out of alive range. syncKey: ${syncKey}`);
         this.server.net_destroy(syncKey);
     };
 
@@ -338,10 +338,11 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
                      i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
                      this.isGenerateEnable(playerId, item.id);
                      i++) {
-                    GToolkit.log(SceneDragonModuleS, `checking generate.
-                        playerId: ${playerId}.
-                        id: ${item.id}.
-                        trial: ${i}.`);
+                    Log4Ts.log(SceneDragonModuleS,
+                        `checking generate.`,
+                        () => `playerId: ${playerId}.`,
+                        () => `id: ${item.id}.`,
+                        () => `trial: ${i}.`);
                     this.generate(playerId, item.id);
                 }
             });
@@ -380,7 +381,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * @param itemId
      */
     private generate(playerId: number, itemId: number) {
-        GToolkit.log(SceneDragonModuleS, `try generate item, itemId: ${itemId}.`);
+        Log4Ts.log(SceneDragonModuleS, `try generate item, itemId: ${itemId}.`);
 
         const syncKey = new UUID(4).toString();
         const item = new SceneDragon();
@@ -389,9 +390,9 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         const playerPosition = Player.getPlayer(playerId)?.character.worldTransform.position ?? null;
         if (playerPosition === null || Vector.squaredDistance(item.location, playerPosition) > GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE) {
-            GToolkit.log(SceneDragonModuleS, `generate item skipped. player is too far.`);
-            GToolkit.log(SceneDragonModuleS, `  id: ${item.id}.`);
-            GToolkit.log(SceneDragonModuleS, `  location: ${item.location}.`);
+            Log4Ts.log(SceneDragonModuleS, `generate item skipped. player is too far.`);
+            Log4Ts.log(SceneDragonModuleS, `  id: ${item.id}.`);
+            Log4Ts.log(SceneDragonModuleS, `  location: ${item.location}.`);
             return;
         }
 
@@ -404,7 +405,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         array.push(syncKey);
         this.syncItemMap.set(syncKey, item);
 
-        GToolkit.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
+        Log4Ts.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
 
         item.autoDestroyTimerId = setTimeout(() => {
                 this.destroy(playerId, syncKey);
@@ -430,11 +431,11 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     private destroy(playerId: number, syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            GToolkit.error(SceneDragonModuleS, `destroy item is null`);
+            Log4Ts.error(SceneDragonModuleS, `destroy item is null`);
             return;
         }
-        GToolkit.log(SceneDragonModuleS, () => `try destroy item, itemId: ${item.id}.`);
-        GToolkit.log(SceneDragonModuleS, () => `    reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
+        Log4Ts.log(SceneDragonModuleS, () => `try destroy item, itemId: ${item.id}.`);
+        Log4Ts.log(SceneDragonModuleS, () => `    reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
@@ -443,12 +444,12 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         let array: string[] = this.existenceItemMap.get(playerId);
         if (!array || !GToolkit.remove(array, syncKey)) {
-            GToolkit.log(SceneDragonModuleS, `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
+            Log4Ts.log(SceneDragonModuleS, `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
              but it not exist in server`);
         }
 
         item.destroy();
-        GToolkit.log(SceneDragonModuleS, `destroy item success. syncKey: ${syncKey}`);
+        Log4Ts.log(SceneDragonModuleS, `destroy item success. syncKey: ${syncKey}`);
 
         this.getClient(playerId).net_destroy(syncKey);
     }
@@ -460,10 +461,10 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     public net_catch(syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            GToolkit.error(SceneDragonModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
+            Log4Ts.error(SceneDragonModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
             return;
         }
-        GToolkit.log(SceneDragonModuleS, `try collect item. ${item.info()}`);
+        Log4Ts.log(SceneDragonModuleS, `try collect item. ${item.info()}`);
         item.catch();
         this._bagModuleS.addItem(this.currentPlayerId, SceneDragon.bagId(item.id), 1);
         if (!item.isCatchable) {
@@ -475,10 +476,10 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     public net_destroy(syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            GToolkit.error(SceneDragonModuleS, `item not exist in server when destroy. syncKey: ${syncKey} `);
+            Log4Ts.error(SceneDragonModuleS, `item not exist in server when destroy. syncKey: ${syncKey} `);
             return;
         }
-        GToolkit.log(SceneDragonModuleS, `try destroy item. ${item.info()}`);
+        Log4Ts.log(SceneDragonModuleS, `try destroy item. ${item.info()}`);
         this.destroy(this.currentPlayerId, syncKey);
     }
 

@@ -8,6 +8,7 @@ import SceneDragonBehavior from "../../module/scene-dragon/SceneDragonBehavior";
 import Character = mw.Character;
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Regulator from "../../depend/regulator/Regulator";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
 //#region Member
@@ -61,11 +62,11 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
     }
 
     protected onHide() {
-        GToolkit.log(SceneDragonInteractorPanel, `hided`);
+        Log4Ts.log(SceneDragonInteractorPanel, `hided`);
     }
 
     protected onDestroy() {
-        GToolkit.log(SceneDragonInteractorPanel, `destroyed`);
+        Log4Ts.log(SceneDragonInteractorPanel, `destroyed`);
         this._activityBehavior.destroy();
     }
 

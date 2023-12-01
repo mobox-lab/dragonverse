@@ -1,4 +1,5 @@
 import { GM } from "module_gm";
+import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
 import i18n, { LanguageTypes } from "./language/i18n";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/AuthModule";
 import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
@@ -11,7 +12,6 @@ import { CompanionModule_C } from "./module/companion/CompanionModule_C";
 import { CompanionModule_S } from "./module/companion/CompanionModule_S";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 import GMPanel from "./ui/gm/GmPanel";
-import GToolkit, { DebugLevels } from "./util/GToolkit";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -77,13 +77,13 @@ export default class GameStart extends mw.Script {
     }
 
     private initializeClient() {
-        GToolkit.debugLevel = this.clientLogLevel;
+        Log4Ts.debugLevel = this.clientLogLevel;
 
         this.isShowGMPanel && GM.start(GMPanel);
     }
 
     private initializeServer() {
-        GToolkit.debugLevel = this.serverLogLevel;
+        Log4Ts.debugLevel = this.serverLogLevel;
         DataStorage.setTemporaryStorage(!this.isOnline);
     }
 
@@ -100,7 +100,7 @@ export default class GameStart extends mw.Script {
 
     private registerTestKeyT() {
         InputUtil.onKeyDown(mw.Keys.T, () => {
-            GToolkit.log(GameStart, `Key T pressed`);
+            Log4Ts.log(GameStart, `Key T pressed`);
         });
     }
 }

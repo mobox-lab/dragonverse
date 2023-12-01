@@ -4,14 +4,56 @@ import GToolkit from "../GToolkit";
 /**
  * Point.
  */
-interface IPoint {
+export interface IPoint {
     x: number;
     y: number;
 }
 
+const RANDOM_MAX_TRIAL = 20;
+
 /**
- * Shape.
- * @desc 一个区域. 由一系列点 依先后顺序构成.
+ * I Shape.
+ * 形状.
+ * @desc 提供形状的基本操作.
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+ */
+export interface IShape {
+    /**
+     * 是否 给定点在 Shape 内.
+     * @param point
+     */
+    inShape(point: IPoint): boolean;
+
+    /**
+     * 随机获取 Shape 内一点.
+     * @desc Monte Carlo 法.
+     * @param trial 最大尝试次数.
+     */
+    randomPoint(trial: number): IPoint | undefined;
+
+    /**
+     * 包围盒.
+     * @return [IPoint, IPoint] [左下点,右上点]
+     */
+    boundingBox(): [IPoint, IPoint];
+
+    /**
+     * 包围盒面积.
+     */
+    boundingBoxArea(): number;
+}
+
+/**
+ * PolygonShape.
+ * 多边形.
+ * @desc 由一系列点 依先后顺序构成.
  * @desc ---
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
@@ -22,7 +64,7 @@ interface IPoint {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export default class Shape {
+export default class PolygonShape implements IShape {
     /**
      * 顺序点.
      * @desc 按顺序存储的点.
@@ -32,7 +74,7 @@ export default class Shape {
     private readonly _seqPoints: IPoint[];
 
     /**
-     * 将给定点转换为凸包并作为 Shape.
+     * 将给定点转换为凸包并作为 PolygonShape.
      * 仅接受有效参数. 有效参数指:
      *   - 设定输入点为 p0,p1...pn. 定义其构成边 l, 其中 li 由两相邻点 (pi-1,pi) i>1 或 (pn,p0) 构成.
      *   - 输入点个数 n>=3 且任意两边 li,lj 不相交.
@@ -40,7 +82,7 @@ export default class Shape {
      * @param points
      * @constructor
      */
-    public static toConvexHull(points: IPoint[]): Shape {
+    public static toConvexHull(points: IPoint[]): PolygonShape {
         if (!this.lengthCheck(points)) {
             return null;
         }
@@ -70,11 +112,11 @@ export default class Shape {
             convexHull.push(point);
         }
 
-        return new Shape(convexHull);
+        return new PolygonShape(convexHull);
     }
 
     /**
-     * 将给定点作为 Shape.
+     * 将给定点作为 PolygonShape.
      * 仅接受有效参数. 有效参数指:
      * - 设定输入点为 p0,p1...pn. 定义其构成边 l, 其中 li 由两相邻点 (pi-1,pi) i>1 或 (pn,p0) 构成.
      * - 输入点个数 n>=3 且任意两边 li,lj 不相交.
@@ -82,37 +124,18 @@ export default class Shape {
      * @param points
      * @constructor
      */
-    public static toSeqPoint(points: IPoint[]): Shape {
+    public static toSeqPoint(points: IPoint[]): PolygonShape {
         if (!this.lengthCheck(points)) {
             return null;
         }
 
-        return new Shape(points);
-    }
-
-    /**
-     * 给定组合图形中的随机一点.
-     * @desc 包装盒权重法. 根据包装盒面积作为权重计算所选的区域.
-     * @param shapes
-     */
-    public static randomPoint(shapes: Shape[]): IPoint {
-        const weight: number[] = shapes.map(value => value.boundingBoxArea());
-        const i = GToolkit.randomWeight(weight);
-        if (i !== -1) {
-            return shapes[i].randomPoint();
-        } else {
-            return null;
-        }
+        return new PolygonShape(points);
     }
 
     constructor(seqPoints: IPoint[]) {
         this._seqPoints = seqPoints;
     }
 
-    /**
-     * 是否 给定点在 Shape 内.
-     * @param point
-     */
     public inShape(point: IPoint): boolean {
         let inside = false;
 
@@ -132,12 +155,7 @@ export default class Shape {
         return inside;
     }
 
-    /**
-     * 随机获取 Shape 内一点.
-     * @desc Monte Carlo 法.
-     * @param trial 最大尝试次数.
-     */
-    public randomPoint(trial: number = 20): IPoint {
+    public randomPoint(trial: number = RANDOM_MAX_TRIAL): IPoint {
         const [pointMin, pointMax] = this.boundingBox();
         let tried = 0;
 
@@ -153,17 +171,10 @@ export default class Shape {
         return {x, y};
     }
 
-    /**
-     * 包围盒.
-     * @return [IPoint, IPoint] [左下点,右下点]
-     */
     public boundingBox(): [IPoint, IPoint] {
-        return Shape.boundingBox(this._seqPoints);
+        return PolygonShape.boundingBox(this._seqPoints);
     }
 
-    /**
-     * 包围盒面积.
-     */
     public boundingBoxArea(): number {
         const [p1, p2] = this.boundingBox();
         return (p2.y - p1.y) * (p2.x - p1.x);
@@ -175,7 +186,7 @@ export default class Shape {
      * @desc 区域至少需要 3 个点.
      * @param points
      */
-    public static lengthCheck(points: IPoint[]): boolean {
+    private static lengthCheck(points: IPoint[]): boolean {
         return points.length >= 3;
     }
 
@@ -184,7 +195,7 @@ export default class Shape {
      * @desc 最小点指 y 值最小的点，如果 y 值相同则取 x 值最小的点.
      * @param points
      */
-    public static getMinPoint(points: IPoint[]) {
+    private static getMinPoint(points: IPoint[]) {
         let minPoint = points[0];
         let i = 1;
         for (; i < points.length; i++) {
@@ -202,7 +213,7 @@ export default class Shape {
      * @param points
      * @param center
      */
-    public static sortByPolarAngle(points: IPoint[], center: IPoint) {
+    private static sortByPolarAngle(points: IPoint[], center: IPoint) {
         points.sort((a, b) => {
             let aAngle = Math.atan2(a.y - center.y, a.x - center.x);
             let bAngle = Math.atan2(b.y - center.y, b.x - center.x);
@@ -217,7 +228,7 @@ export default class Shape {
      * @desc 获取点集中最小和最大的 x,y 值.
      * @param points
      */
-    public static boundingBox(points: IPoint[]): [IPoint, IPoint] {
+    private static boundingBox(points: IPoint[]): [IPoint, IPoint] {
         let minX: number = points[0]?.x ?? 0;
         let minY: number = points[0]?.y ?? 0;
         let maxX: number = points[0]?.x ?? 0;
@@ -245,4 +256,21 @@ export default class Shape {
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+
+/**
+ * 给定组合图形中的随机一点.
+ * @desc 包装盒权重法. 根据包装盒面积作为权重计算所选的区域.
+ * @param shapes
+ * @param maxTrial 尝试次数.
+ */
+export function randomPoint(shapes: IShape[], maxTrial: number = RANDOM_MAX_TRIAL): IPoint {
+    const weight: number[] = shapes.map(value => value.boundingBoxArea());
+    const i = GToolkit.randomWeight(weight);
+    if (i !== -1) {
+        return shapes[i].randomPoint(maxTrial);
+    } else {
+        return null;
+    }
 }
