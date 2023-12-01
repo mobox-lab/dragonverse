@@ -105,12 +105,15 @@ by LviatYi
 |    名称    | Name        | string |      |
 | 捕捉成功率 | SuccessRate | int    | %    |
 
-## 龙语 DragonLanguage
+## 对话 Dialogue
 
-|   Name   | PropName | Type   | Desc |
-| :------: | :------- | ------ | ---- |
-|    ID    | Id       | int    |      |
-| 文本 Key | Content  | string |      |
+|      Name       | PropName | Type   | Desc            |
+| :-------------: | :------- | ------ | --------------- |
+|       ID        | Id       | int    | 对话节点 Id     |
+|    子节点 Id    | SubIds   | int[]  | 子级对话节点 Id |
+|      内容       | Content  | string |                 |
+| 对话节点功能 Id | FuncId   | int    |                 |
+|      图标       | Icon     | string |                 |
 
 [JetbrainsMonoNerdFont]: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip@fallbackFont
 [SarasaMonoSC]: https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
