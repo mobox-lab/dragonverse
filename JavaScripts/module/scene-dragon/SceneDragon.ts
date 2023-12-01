@@ -119,11 +119,10 @@ export default class SceneDragon {
     /**
      * 生成.
      */
-    public generate(id: number) {
+    public generate(id: number, location: Vector) {
         this._id = id;
-
+        this._location = location;
         this._hitPoint = this.getConfig().hitPoint;
-        this.randomGenerate();
         this._generateTime = Date.now();
         this._isGenerated = true;
     }
@@ -142,18 +141,6 @@ export default class SceneDragon {
      */
     public catch() {
         --this._hitPoint;
-    }
-
-    /**
-     * 随机生成位置.
-     * @private
-     */
-    private randomGenerate() {
-        let p: IPoint = null;
-        while (!p) {
-            p = randomPoint(AreaManager.getInstance().getAreas(SceneDragon.generationAreaId(this._id)));
-        }
-        this._location = new Vector(p.x, p.y, 0);
     }
 
     public info(): string {
@@ -187,14 +174,6 @@ export default class SceneDragon {
     public static quality(id: number): QualityTypes {
         return this.getConfig(id).qualityId as QualityTypes;
     };
-
-    /**
-     * 生成区域.
-     * @param id
-     */
-    public static generationAreaId(id: number): number[] {
-        return this.getConfig(id).generationAreaId;
-    }
 
     /**
      * 最大存在时间 ms.
