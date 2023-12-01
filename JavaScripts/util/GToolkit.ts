@@ -1,24 +1,7 @@
 import tryGenerateTsWidgetTypeByUEObject = mw.tryGenerateTsWidgetTypeByUEObject;
 import Character = mw.Character;
 import GameObject = mw.GameObject;
-
-/**
- * 日志等级.
- */
-export enum DebugLevels {
-    /**
-     * 无日志.
-     */
-    Silent = 0,
-    /**
-     * 信息. 包含 warn error.
-     */
-    Info,
-    /**
-     * 开发. 包含 log warn error.
-     */
-    Dev,
-}
+import Log4Ts, { Announcer, DebugLevels, logString } from "../depend/log4ts/Log4Ts";
 
 /**
  * 时间值维度 枚举.
@@ -87,11 +70,6 @@ export enum GenderTypes {
 }
 
 /**
- * 日志 lambda.
- */
-export type logString = (...params: unknown[]) => string;
-
-/**
  * GToolkit.
  * General Toolkit deep binding MW Ts.
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
@@ -102,7 +80,7 @@ export type logString = (...params: unknown[]) => string;
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.7.1b
+ * @version 0.7.4b
  * @alpha
  */
 class GToolkit {
@@ -176,13 +154,6 @@ class GToolkit {
         return this._accountService;
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-//#region Config
-    /**
-     * 日志等级.
-     */
-    public debugLevel: DebugLevels = DebugLevels.Dev;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Type Guard
@@ -587,14 +558,14 @@ class GToolkit {
             return val;
         }
         if (this.hammingWeight(from) > 0 || this.hammingWeight(to) > 0) {
-            this.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
+            Log4Ts.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
         }
 
         if (
             (0x1 << this.bitFirstOne(from)) as TimeFormatDimensionFlags > TimeFormatDimensionFlags.Day ||
             (0x1 << this.bitFirstOne(to)) as TimeFormatDimensionFlags > TimeFormatDimensionFlags.Day
         ) {
-            this.error(GToolkit, GToolkit.FLAG_NOT_SUPPORT_MSG);
+            Log4Ts.error(GToolkit, GToolkit.FLAG_NOT_SUPPORT_MSG);
         }
 
         while (from !== to) {
@@ -725,7 +696,7 @@ class GToolkit {
      */
     public bitFirstOne(num: number): number {
         if ((num | 0) !== num) {
-            this.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
+            Log4Ts.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
             return -1;
         }
 
@@ -896,7 +867,7 @@ class GToolkit {
      */
     public isSelfCharacter(idOrObj: number | string | GameObject) {
         if (SystemUtil.isServer()) {
-            this.error(GToolkit, `isSelfCharacter should be called in Client`);
+            Log4Ts.error(GToolkit, `isSelfCharacter should be called in Client`);
             return false;
         }
         const self: Player = Player.localPlayer;
@@ -918,8 +889,8 @@ class GToolkit {
     public setCharacterDescription(character: mw.Character, data: mw.CharacterDescription | Array<string> | string) {
         let characterDescription = character.getDescription();
         if (!characterDescription) {
-            this.error(GToolkit, `characterDescription is null`);
-            this.log(GToolkit, `请喊 LviatYi 来看看.`);
+            Log4Ts.error(GToolkit, `characterDescription is null`);
+            Log4Ts.log(GToolkit, `请喊 LviatYi 来看看.`);
         }
 
         character.clearDescription();
@@ -1259,18 +1230,18 @@ class GToolkit {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Log
+    public log(announcer: Announcer, ...messages: (logString | string)[]): void;
 
-    public log(announcer: { name: string }, ...messages: (logString | string)[]): void;
-
-    public log(announcer: { name: string }, ...messages: unknown[]): void;
+    public log(announcer: Announcer, ...messages: unknown[]): void;
 
     /**
      * debug log.
      * @param announcer announcer with name.
      * @param messages text.
+     * @deprecated
      */
-    public log(announcer: { name: string }, ...messages: (logString | string | unknown)[]): void {
-        if (this.debugLevel !== DebugLevels.Dev) return;
+    public log(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+        if (Log4Ts.debugLevel !== DebugLevels.Dev) return;
 
         let title = true;
         for (const msg of messages) {
@@ -1288,18 +1259,18 @@ class GToolkit {
         }
     }
 
+    public warn(announcer: Announcer, ...messages: (logString | string)[]): void;
 
-    public warn(announcer: { name: string }, ...messages: (logString | string)[]): void;
-
-    public warn(announcer: { name: string }, ...messages: unknown[]): void;
+    public warn(announcer: Announcer, ...messages: unknown[]): void;
 
     /**
      * debug warn.
      * @param announcer announcer with name.
      * @param messages text.
+     * @deprecated
      */
-    public warn(announcer: { name: string }, ...messages: (logString | string | unknown)[]): void {
-        if (this.debugLevel === DebugLevels.Silent) return;
+    public warn(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+        if (Log4Ts.debugLevel === DebugLevels.Silent) return;
 
         let title = true;
         for (const msg of messages) {
@@ -1317,17 +1288,18 @@ class GToolkit {
         }
     }
 
-    public error(announcer: { name: string }, ...messages: (logString | string)[]): void;
+    public error(announcer: Announcer, ...messages: (logString | string)[]): void;
 
-    public error(announcer: { name: string }, ...messages: unknown[]): void;
+    public error(announcer: Announcer, ...messages: unknown[]): void;
 
     /**
      * debug error.
      * @param announcer announcer with name.
      * @param messages text.
+     * @deprecated
      */
-    public error(announcer: { name: string }, ...messages: (logString | string | unknown)[]): void {
-        if (this.debugLevel === DebugLevels.Silent) return;
+    public error(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+        if (Log4Ts.debugLevel === DebugLevels.Silent) return;
 
         let title = true;
         for (const msg of messages) {
