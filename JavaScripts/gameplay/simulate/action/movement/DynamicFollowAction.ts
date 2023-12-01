@@ -14,7 +14,7 @@ export class FollowAction extends SteeringMovementAction {
 
 
     protected onExecuted(context: MovementContext) {
-        this.addBehavior(new ArriveBehavior(context.))
+        this.addBehavior(new ArriveBehavior())
 
     }
 
