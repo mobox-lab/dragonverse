@@ -25,5 +25,6 @@ export class MovementContext implements IContext {
     public closesFloorDist: number = 0;
 
 
+    ownerGuid: string;
 
 }

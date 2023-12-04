@@ -1,4 +1,5 @@
 import { MovementContext } from "../../context/MovementContext";
+import { ObstacleAvoidanceBehavior } from "../../steering/ObstacleAvoidanceBehavior";
 import { SteeringBehavior } from "../../steering/SteeringBehavior";
 import { SteeringTarget } from "../../steering/SteeringTarget";
 import { AAction } from "../base/Action";
@@ -12,11 +13,14 @@ export abstract class SteeringMovementAction extends AAction<MovementContext> im
 
 
 
-
-
     private behaviors: SteeringBehavior[] = [];
 
     private _steeringForce: mw.Vector = new mw.Vector();
+
+    private _avoidance: ObstacleAvoidanceBehavior = new ObstacleAvoidanceBehavior([
+        { rotation: new mw.Rotation(0, 30, 0), length: 200 },
+        { rotation: new mw.Rotation(0, 0, -40), length: 400 }
+    ])
 
 
 
@@ -39,6 +43,12 @@ export abstract class SteeringMovementAction extends AAction<MovementContext> im
      * @param context 
      */
     protected onUpdate(context: MovementContext) {
+
+        this._avoidance.ignoreGuid.length = 0;
+
+        this._avoidance.ignoreGuid.push(context.ownerGuid);
+
+        this.addBehavior(this._avoidance);
 
         this.calculate(context);
 

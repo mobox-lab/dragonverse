@@ -101,15 +101,15 @@ export default class CompanionEntity extends MovementEntity<CompanionState> {
 
         this._context.force.set(0, 0, 0);
         this._context.entity = this;
-        this._context.talker = this.gameObject.gameObjectId;
+        this._context.ownerGuid = this.gameObject.gameObjectId;
 
         tempCheckPoint.set(this.gameObject.worldTransform.getUpVector()).multiply(-10000).add(this.position);
 
-        let result = mw.QueryUtil.lineTrace(this.position, tempCheckPoint, false, true, [this.gameObject.gameObjectId]);
+        // let result = mw.QueryUtil.lineTrace(this.position, tempCheckPoint, false, true, [this.gameObject.gameObjectId]);
 
-        if (result.length > 0) {
-            this._context.closesFloorDist = result[0].distance;
-        }
+        // if (result.length > 0) {
+        //     this._context.closesFloorDist = result[0].distance;
+        // }
     }
 
 

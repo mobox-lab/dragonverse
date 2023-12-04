@@ -1,4 +1,3 @@
-import { VisualizeDebug } from "../../../util/VisualizeDebug";
 import { Smoother } from "../Smoother";
 import ClientDisplayEntity from "../base/ClientDisplayEntity";
 import { IState } from "../base/IState";
@@ -77,7 +76,7 @@ export default abstract class MovementEntity<T extends IState> extends ClientDis
             this.velocity.multiply(this.maxSpeed);
         }
 
-        VisualizeDebug.drawArrow(this.position, this.position.clone().add(this.velocity), 10);
+        // VisualizeDebug.drawArrow(this.position, this.position.clone().add(this.velocity), 10);
         let worldTransform = this.gameObject.worldTransform;
         displacement.set(this.velocity).multiply(dt);
         target.set(worldTransform.position).add(displacement);

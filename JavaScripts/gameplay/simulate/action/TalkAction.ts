@@ -1,10 +1,9 @@
 import { Bubble } from "module_bubble";
 import GToolkit from "../../../util/GToolkit";
-import { CompanionContext } from "../context/CompanionContext";
-import { TalkContext } from "../context/TalkContext";
+import { IContext } from "../context/IContext";
 import { AAction } from "./base/Action";
 
-export class TalkAction extends AAction<TalkContext>{
+export class TalkAction extends AAction<IContext>{
 
 
     private _lastMessage: string = undefined
@@ -15,7 +14,7 @@ export class TalkAction extends AAction<TalkContext>{
         super();
     }
 
-    protected onExecuted(context: TalkContext) {
+    protected onExecuted(context: IContext) {
         this.coolDown = GToolkit.random(3, 10, true) * 1000;
     }
 
@@ -32,12 +31,12 @@ export class TalkAction extends AAction<TalkContext>{
         return message;
     }
 
-    protected onUpdate(context: CompanionContext) {
+    protected onUpdate(context: IContext) {
         let message = this.selected();
-        Bubble.showBubble(0, message, context.talker, true)
+        Bubble.showBubble(0, message, context.ownerGuid, true)
         this.endInSuccess(context);
     }
-    protected onStop(context: CompanionContext) {
+    protected onStop(context: IContext) {
 
     }
 

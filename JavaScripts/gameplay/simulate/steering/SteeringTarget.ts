@@ -18,4 +18,6 @@ export interface SteeringTarget {
 
     /**最大加速度 */
     maxForce: number;
+
+
 }

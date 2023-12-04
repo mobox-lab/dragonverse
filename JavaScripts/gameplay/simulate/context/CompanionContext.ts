@@ -2,7 +2,6 @@ import { CompanionState } from "../../archtype/companion/CompanionState";
 import { SteeringTarget } from "../steering/SteeringTarget";
 import { IContext } from "./IContext";
 import { MovementContext } from "./MovementContext";
-import { TalkContext } from "./TalkContext";
 
 
 class Follower implements SteeringTarget {
@@ -16,7 +15,7 @@ class Follower implements SteeringTarget {
 }
 
 
-export class CompanionContext extends MovementContext implements IContext, TalkContext {
+export class CompanionContext extends MovementContext implements IContext {
 
 
 
@@ -33,7 +32,6 @@ export class CompanionContext extends MovementContext implements IContext, TalkC
     syncedState: CompanionState;
 
 
-    talker: string;
 
 
 

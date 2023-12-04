@@ -1,5 +1,4 @@
 import { CompanionContext } from "../../context/CompanionContext";
-import { FleeBehavior } from "../../steering/FleeBehavior";
 import { PursuitBehavior } from "../../steering/PursuitBehavior";
 import { SteeringMovementAction } from "./SteeringMovementAction";
 
@@ -18,7 +17,6 @@ export class FollowAction extends SteeringMovementAction {
 
     private _arrive: PursuitBehavior;
 
-    private _flee: FleeBehavior;
 
     private _offset: mw.Vector = new mw.Vector();
 
@@ -30,7 +28,6 @@ export class FollowAction extends SteeringMovementAction {
     ) {
         super();
         this._arrive = new PursuitBehavior(null, this.predictionFactor);
-        this._flee = new FleeBehavior(mw.Vector.zero, this.radius);
     }
 
 
@@ -52,15 +49,19 @@ export class FollowAction extends SteeringMovementAction {
         this._offset = this.radomFollowPoint(context.syncedState, 70, this._offset);
     }
 
-    protected onUpdate(context: CompanionContext): void {
 
+    protected calculateFollowPosition(context: CompanionContext) {
         origin.set(context.follower.position);
         context.follower.position.add(this._offset);
+        return context.follower.position;
+    }
+
+    protected onUpdate(context: CompanionContext): void {
+
+        let position = this.calculateFollowPosition(context)
         this._arrive.evader = context.follower;
-        this._flee.target.set(context.follower.position);
 
         this.addBehavior(this._arrive);
-        this.addBehavior(this._flee);
 
         super.onUpdate(context);
         if (mw.Vector.squaredDistance(context.entity.position, context.follower.position) <= 100 ** 2) {
