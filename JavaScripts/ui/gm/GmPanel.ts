@@ -1,9 +1,12 @@
 import { AddGMCommand, GMBasePanel } from "module_gm";
+import { CompanionModule_S } from "../../module/companion/CompanionModule_S";
 import GMHUD_Generate from "../../ui-generate/gm/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
 import GToolkit from "../../util/GToolkit";
 import { BagModuleC } from "../../module/bag/BagModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import DialoguePanel from "../dialogue/DialoguePanel";
+import DialogueManager from "../../gameplay/dialogue/DialogueManager";
 
 /**
  * GM.
@@ -33,7 +36,39 @@ AddGMCommand("Hello world", () => {
     Log4Ts.log(GMPanel, `Hello world`);
 }, null, "CHello");
 
-AddGMCommand("增加测试物品", (player, value) => {
-    Log4Ts.log(GMPanel, `增加测试物品 ${value}`);
-    ModuleService.getModule(BagModuleC).addItem(1, Number(value));
-});
+AddGMCommand("给玩家添加宠物",
+    undefined,
+    (player: mw.Player) => {
+        mwext.ModuleService.getModule(CompanionModule_S).addCompanionForPlayer(player.playerId, 1);
+    });
+
+AddGMCommand("设置宠物为参战",
+    undefined,
+    (player: mw.Player, index: string) => {
+        let module = mwext.ModuleService.getModule(CompanionModule_S);
+        let companions = module.getPlayerCompanionIdList(player.playerId);
+        module.net_switchCompanionShowup(companions[Number(0)], player.playerId);
+    });
+
+AddGMCommand("取消所有宠物参战状态",
+    undefined,
+    (player: mw.Player, index: string) => {
+        let module = mwext.ModuleService.getModule(CompanionModule_S);
+        let companions = module.getPlayerCompanionIdList(player.playerId);
+        for (let id of companions) {
+            module.net_switchCompanionShowup(id, player.playerId, false);
+        }
+    });
+
+AddGMCommand("增加测试物品",
+    (player, value) => {
+        Log4Ts.log(GMPanel, `增加测试物品 ${value}`);
+        ModuleService.getModule(BagModuleC).addItem(1, Number(value));
+    });
+
+AddGMCommand("进入对话",
+    (player, value) => {
+        Log4Ts.log(GMPanel, `进入对话 ${value}`);
+        DialogueManager.getInstance().greet(1);
+    });
+
