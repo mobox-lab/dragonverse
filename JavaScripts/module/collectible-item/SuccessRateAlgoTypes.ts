@@ -20,17 +20,17 @@ export type SuccessRateAlgo = (...param: unknown[]) => number;
 export function SuccessRateAlgoFactory(type: SuccessRateAlgoTypes): SuccessRateAlgo {
     switch (type) {
         case SuccessRateAlgoTypes.TestAlgo:
-            return TestAlgo;
+            return testAlgo;
         case SuccessRateAlgoTypes.Null:
         default:
-            return NormalAlgo;
+            return normalAlgo;
     }
 }
 
-export function NormalAlgo(): number {
+export function normalAlgo(): number {
     return 1;
 }
 
-export function TestAlgo(): number {
+export function testAlgo(): number {
     return 0.8;
 }
