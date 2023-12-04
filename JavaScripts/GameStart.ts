@@ -34,6 +34,8 @@ export default class GameStart extends mw.Script {
     @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: LanguageTypes})
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
+    private _godMode: boolean = false;
+
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     protected onStart(): void {
@@ -42,6 +44,7 @@ export default class GameStart extends mw.Script {
 
         this.initialize();
         this.registerTestKeyT();
+        this.registerGodModeG();
     }
 
     protected onUpdate(dt: number): void {
@@ -96,6 +99,20 @@ export default class GameStart extends mw.Script {
     private registerTestKeyT() {
         InputUtil.onKeyDown(mw.Keys.T, () => {
             Log4Ts.log(GameStart, `Key T pressed`);
+        });
+    }
+
+    private registerGodModeG() {
+        InputUtil.onKeyDown(mw.Keys.G, () => {
+            this._godMode = !this._godMode;
+            Log4Ts.log(GameStart,
+                `Key G pressed`,
+                `God Mode: ${this._godMode ? "On" : "Off"}`);
+            if (this._godMode) {
+                Player.localPlayer.character.switchToFlying();
+            } else {
+                Player.localPlayer.character.switchToWalking();
+            }
         });
     }
 }
