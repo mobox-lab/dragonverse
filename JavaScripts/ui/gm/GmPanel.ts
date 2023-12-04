@@ -1,11 +1,9 @@
 import { AddGMCommand, GMBasePanel } from "module_gm";
-import { CompanionModule_S } from "../../module/companion/CompanionModule_S";
 import GMHUD_Generate from "../../ui-generate/gm/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
-import GToolkit from "../../util/GToolkit";
 import { BagModuleC } from "../../module/bag/BagModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import DialoguePanel from "../dialogue/DialoguePanel";
+import { CompanionModule_S } from "../../module/companion/CompanionModule_S";
 import DialogueManager from "../../gameplay/dialogue/DialogueManager";
 
 /**
