@@ -379,9 +379,11 @@ class GToolkit {
 
     /**
      * random in array.
+     * return null when array invalid or length is zero.
      * @param array
      */
-    public randomArrayItem<T>(array: Array<T>): T {
+    public randomArrayItem<T>(array: Array<T>): T | null {
+        if (!array || array.length === 0) return null;
         return array[this.random(0, array.length, true)];
     }
 

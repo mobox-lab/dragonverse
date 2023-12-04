@@ -13,6 +13,7 @@ import { EventDefine } from "../../const/EventDefine";
 import CollectibleItem from "../collectible-item/CollectibleItem";
 import { BagModuleS } from "../bag/BagModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { getGenerationPointMap } from "../../gameplay/generate/GenerateUtil";
 
 /**
  * 场景龙存在数据.
@@ -228,6 +229,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 }
 
 export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonModuleData> {
+//#region Constant
+    private static readonly GENERATION_HOLDER_TAG = "scene-dragon-points";
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 //#region Member
     private _bagModuleS: BagModuleS;
 
@@ -246,6 +251,23 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     public syncItemMap: Map<string, SceneDragon> = new Map();
 
     private _generateRegulator: Regulator = new Regulator(GameServiceConfig.TRY_GENERATE_INTERVAL);
+
+    /**
+     * 生成位置表.
+     * @desc 从制定标签锚点的子锚点收集.
+     * @desc key id.
+     * @desc value 生成位置.
+     * @private
+     */
+    private _generateLocationsMap: Map<number, Vector[]>;
+
+    private getValidGenerateLocation(id: number, playerId: number): Vector[] {
+        if (!this._generateLocationsMap) {
+            this._generateLocationsMap = getGenerationPointMap(SceneDragonModuleS.GENERATION_HOLDER_TAG, SceneDragonModuleS);
+        }
+
+        return this._generateLocationsMap.get(id);
+    }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -383,10 +405,15 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     private generate(playerId: number, itemId: number) {
         Log4Ts.log(SceneDragonModuleS, `try generate item, itemId: ${itemId}.`);
 
+        let location = GToolkit.randomArrayItem(this.getValidGenerateLocation(itemId, playerId));
+        if (location === null) {
+            Log4Ts.error(SceneDragonModuleS, `generate location is null.`);
+            return;
+        }
+
         const syncKey = new UUID(4).toString();
         const item = new SceneDragon();
-
-        item.generate(itemId);
+        item.generate(itemId, location);
 
         const playerPosition = Player.getPlayer(playerId)?.character.worldTransform.position ?? null;
         if (playerPosition === null || Vector.squaredDistance(item.location, playerPosition) > GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE) {

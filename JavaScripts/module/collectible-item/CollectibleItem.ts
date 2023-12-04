@@ -91,11 +91,10 @@ export default class CollectibleItem {
     /**
      * 生成.
      */
-    public generate(id: number) {
+    public generate(id: number, location: Vector) {
         this._id = id;
-
+        this._location = location;
         this._hitPoint = this.getConfig().hitPoint;
-        this.randomGenerate();
         this._generateTime = Date.now();
         this._isGenerated = true;
     }
@@ -114,18 +113,6 @@ export default class CollectibleItem {
      */
     public collect() {
         --this._hitPoint;
-    }
-
-    /**
-     * 随机生成位置.
-     * @private
-     */
-    private randomGenerate() {
-        const p = randomPoint(AreaManager.getInstance().getAreas(CollectibleItem.generationAreaId(this._id)));
-        if (!p) {
-            return;
-        }
-        this._location = new Vector(p.x, p.y, 0);
     }
 
     public info(): string {
@@ -167,14 +154,6 @@ export default class CollectibleItem {
     public static quality(id: number): QualityTypes {
         return this.getConfig(id).qualityId as QualityTypes;
     };
-
-    /**
-     * 生成区域.
-     * @param id
-     */
-    public static generationAreaId(id: number): number[] {
-        return this.getConfig(id).generationAreaId;
-    }
 
     /**
      * 最大存在数量.
