@@ -22,17 +22,17 @@ by LviatYi
 
 ## 采集物 CollectibleItem
 
-|      Name       | PropName           | Type  | Desc   |
-| :-------------: | :----------------- | ----- | ------ |
-|       ID        | Id                 | int   |        |
-|    背包物 ID    | BagId              | int   |        |
-|     品质 ID     | QualityId          | int   |        |
-|  最大存在数量   | ExistenceCount     | int   |        |
-|    存在时间     | ExistenceTime      | int   | 秒 Sec |
-|    生成间隔     | GenerationInterval | int   | 秒 Sec |
-|   采集成功率    | SuccessRate        | int   | %      |
-|   可采集次数    | HitPoint           | int   |        |
-| 采集结果算法 ID | ResultAlgoId       | int   |        |
+|      Name       | PropName           | Type | Desc   |
+| :-------------: | :----------------- | ---- | ------ |
+|       ID        | Id                 | int  |        |
+|    背包物 ID    | BagId              | int  |        |
+|     品质 ID     | QualityId          | int  |        |
+|  最大存在数量   | ExistenceCount     | int  |        |
+|    存在时间     | ExistenceTime      | int  | 秒 Sec |
+|    生成间隔     | GenerationInterval | int  | 秒 Sec |
+|   采集成功率    | SuccessRate        | int  | %      |
+|   可采集次数    | HitPoint           | int  |        |
+| 采集结果算法 ID | ResultAlgoId       | int  |        |
 
 ## 龙 Dragon
 
@@ -105,6 +105,8 @@ by LviatYi
 
 ## 对话 Dialogue
 
+### 对话节点 DialogueNode
+
 |      Name       | PropName | Type   | Desc            |
 | :-------------: | :------- | ------ | --------------- |
 |       ID        | Id       | int    | 对话节点 Id     |
@@ -112,6 +114,13 @@ by LviatYi
 |      内容       | Content  | string |                 |
 | 对话节点功能 Id | FuncId   | int    |                 |
 |      图标       | Icon     | string |                 |
+
+### 对话节点功能 DialogueNodeFunc
+
+| Name | PropName | Type   | Desc |
+| :--: | :------- | ------ | ---- |
+|  ID  | Id       | int    |      |
+| 名称 | Name     | string |      |
 
 [JetbrainsMonoNerdFont]: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip@fallbackFont
 [SarasaMonoSC]: https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
