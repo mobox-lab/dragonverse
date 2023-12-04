@@ -1,3 +1,4 @@
+import { VisualizeDebug } from "../../../util/VisualizeDebug";
 import { Smoother } from "../Smoother";
 import ClientDisplayEntity from "../base/ClientDisplayEntity";
 import { IState } from "../base/IState";
@@ -20,13 +21,13 @@ export default abstract class MovementEntity<T extends IState> extends ClientDis
     /**
      * 最大速度
      */
-    public maxSpeed: number = 100;
+    public maxSpeed: number = 600;
 
 
     /**
      * 最大转向角度
      */
-    public maxTurnAngle: number = 10;
+    public maxTurnAngle: number = 30;
 
 
     /**
@@ -44,7 +45,7 @@ export default abstract class MovementEntity<T extends IState> extends ClientDis
     /**
      * 最大加速度
      */
-    public maxForce: number = 200;
+    public maxForce: number = 5000;
 
 
     public get position() {
@@ -64,6 +65,7 @@ export default abstract class MovementEntity<T extends IState> extends ClientDis
 
     public onUpdate(dt: number): void {
 
+        velocitySmooth.set(this.velocity);
         this.velocity.add(this.acceleration.multiply(dt));
 
         if (this.velocity.sqrLength <= Number.EPSILON) {
@@ -75,6 +77,7 @@ export default abstract class MovementEntity<T extends IState> extends ClientDis
             this.velocity.multiply(this.maxSpeed);
         }
 
+        VisualizeDebug.drawArrow(this.position, this.position.clone().add(this.velocity), 10);
         let worldTransform = this.gameObject.worldTransform;
         displacement.set(this.velocity).multiply(dt);
         target.set(worldTransform.position).add(displacement);
@@ -87,7 +90,6 @@ export default abstract class MovementEntity<T extends IState> extends ClientDis
 
         this.lookAt(target);
         this.acceleration.set(0, 0, 0);
-
     }
 
 

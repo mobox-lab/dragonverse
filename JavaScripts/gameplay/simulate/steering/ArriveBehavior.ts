@@ -11,8 +11,8 @@ export class ArriveBehavior extends SteeringBehavior {
     constructor(
 
         target: mw.Vector = new mw.Vector(),
-        public deceleration: number = 50,
-        public tolerance: number = 10
+        public deceleration: number = 2,
+        public tolerance: number = 100
     ) {
         super()
         this.target.set(target);

@@ -34,11 +34,17 @@ export abstract class SteeringMovementAction extends AAction<MovementContext> im
     }
 
 
+    /**
+     * 每次更新完后会移除所有update,需要在update中重新添加
+     * @param context 
+     */
     protected onUpdate(context: MovementContext) {
 
         this.calculate(context);
 
         context.force.add(this._steeringForce);
+
+        this.behaviors.length = 0;
     }
 
 
@@ -84,6 +90,9 @@ export abstract class SteeringMovementAction extends AAction<MovementContext> im
     }
 
 
+    protected onStop(context: MovementContext) {
+        this.behaviors.length = 0;
+    }
 
 
 

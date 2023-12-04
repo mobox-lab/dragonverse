@@ -3,13 +3,33 @@ import { AAction } from "./Action";
 
 type IAction = AAction<any>;
 
-export class ActionCollection {
+export class ActionCollection implements IterableIterator<[string, IAction]> {
 
     private _actionsMap: Map<string, IAction>;
 
     constructor() {
         this._actionsMap = new Map<string, IAction>();
     }
+
+
+
+
+    [Symbol.iterator](): IterableIterator<[string, IAction]> {
+        return this._actionsMap[Symbol.iterator]()
+    }
+
+    next(...args: [] | [undefined]): IteratorResult<[string, IAction], any> {
+        return this._actionsMap.entries().next(...args);
+    }
+    return?(value?: any): IteratorResult<[string, IAction], any> {
+        return this._actionsMap.entries().return(value);
+
+    }
+    throw?(e?: any): IteratorResult<[string, IAction], any> {
+        return this._actionsMap.entries().throw(e);
+    }
+
+
 
     add(action: IAction): boolean {
         if (action == null) {
@@ -42,6 +62,8 @@ export class ActionCollection {
     clear(): void {
         this._actionsMap.clear();
     }
+
+
 
 
 

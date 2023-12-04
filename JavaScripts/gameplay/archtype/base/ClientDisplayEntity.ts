@@ -65,6 +65,9 @@ export default abstract class ClientDisplayEntity<T extends IState> extends Init
 
 
     protected isDisplayForLocal() {
+        if (!this._hosted) {
+            return false;
+        }
         return this._hosted.isLocalPlayer();
     }
 

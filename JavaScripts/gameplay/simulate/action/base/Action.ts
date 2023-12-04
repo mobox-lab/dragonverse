@@ -14,17 +14,16 @@ export abstract class AAction<T extends IContext>  {
 
     private _actionStatus: ActionStatus = ActionStatus.Idle;
 
-    public nameId: string = "";
+    public get nameId() {
+        return this.constructor.name;
+    }
 
 
     public get elapsedTime() {
 
-        if (this._actionStatus == ActionStatus.Running) {
 
-            return Date.now() - this._startTime;
-        }
+        return Date.now() - this._startTime;
 
-        return 0;
     }
 
 
@@ -83,7 +82,7 @@ export abstract class AAction<T extends IContext>  {
             return;
         }
 
-        this._actionStatus = ActionStatus.Running;
+        this._actionStatus = ActionStatus.Success;
         this.finalizeAction(context);
     }
 

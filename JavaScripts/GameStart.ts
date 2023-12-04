@@ -12,6 +12,7 @@ import { CompanionModule_C } from "./module/companion/CompanionModule_C";
 import { CompanionModule_S } from "./module/companion/CompanionModule_S";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 import GMPanel from "./ui/gm/GmPanel";
+import { VisualizeDebug } from "./util/VisualizeDebug";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -40,6 +41,8 @@ export default class GameStart extends mw.Script {
     //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     protected onStart(): void {
+
+        console.log("------------------------ this is clent?", SystemUtil.isClient());
         this.useUpdate = true;
         GameStart.instance = this;
 
@@ -80,6 +83,7 @@ export default class GameStart extends mw.Script {
         Log4Ts.debugLevel = this.clientLogLevel;
 
         this.isShowGMPanel && GM.start(GMPanel);
+        VisualizeDebug.init(mw.Player.localPlayer);
     }
 
     private initializeServer() {

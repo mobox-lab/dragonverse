@@ -19,5 +19,11 @@ export class MovementContext implements IContext {
     public entity: SteeringTarget;
 
 
+    /**
+     * 最近的地面距离
+     */
+    public closesFloorDist: number = 0;
+
+
 
 }

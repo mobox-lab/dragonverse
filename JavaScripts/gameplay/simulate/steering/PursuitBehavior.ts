@@ -1,3 +1,4 @@
+import { VisualizeDebug } from "../../../util/VisualizeDebug";
 import { ArriveBehavior } from "./ArriveBehavior";
 import { SteeringBehavior } from "./SteeringBehavior";
 import { SteeringTarget } from "./SteeringTarget";
@@ -13,10 +14,13 @@ export class PursuitBehavior extends SteeringBehavior {
 
     private _arrive: ArriveBehavior;
 
-    constructor(public evader: SteeringTarget = null, public predictionFactor: number = 1) {
+    constructor(
+        public evader: SteeringTarget = null,
+        public predictionFactor: number = 1,
+    ) {
 
         super();
-        this._arrive = new ArriveBehavior(mw.Vector.zero, 1, 1);
+        this._arrive = new ArriveBehavior(mw.Vector.zero, 1.5, 200);
     }
 
     calculate(target: SteeringTarget, force: mw.Vector) {
@@ -53,6 +57,7 @@ export class PursuitBehavior extends SteeringBehavior {
         predictedPosition.set(evader.position).add(newEvaderVelocity);
 
         this._arrive.target.set(predictedPosition);
+        VisualizeDebug.drawPoint(predictedPosition, 30, "#ff0000");
         this._arrive.calculate(target, force);
 
         return force;

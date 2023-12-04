@@ -1,9 +1,11 @@
-import seedrandom from "seedrandom";
 import { StateMachine } from "../../../../depend/hfsm/StateMachine";
 import { StateBase } from "../../../../depend/hfsm/base/StateBase";
 import { CompanionState } from "../../../archtype/companion/CompanionState";
 import { ActionCollection } from "../../action/base/ActionCollection";
+import { ActionStatus } from "../../action/base/ActionStatus";
+import { IAction } from "../../action/base/IAction";
 import { IActionCollection } from "../../action/base/IActionCollection";
+import { FollowAction } from "../../action/movement/DynamicFollowAction";
 import { SteeringMovementAction } from "../../action/movement/SteeringMovementAction";
 import { CompanionContext } from "../../context/CompanionContext";
 import { CompanionStateEnum } from "./CompanionStateEnum";
@@ -49,13 +51,23 @@ abstract class BaseCompanionState extends StateBase<CompanionStateEnum> implemen
 
     declare fsm: CompanionStateRoot;
 
-    private _rng: seedrandom.PRNG = null;
 
-    private _seed: number = 0;
+    private _currentAction: IAction;
 
-    public enter() {
-        this._seed = this.fsm.context.syncedState.seed;
-        this.generateRNG();
+
+
+
+
+    public logic() {
+
+
+        if (this._currentAction) {
+            this._currentAction.execute(this.fsm.context);
+
+            if (this._currentAction.actionStatus === ActionStatus.Success) {
+
+            }
+        }
     }
 
     public collection(source: CompanionState): CompanionState {
@@ -64,25 +76,7 @@ abstract class BaseCompanionState extends StateBase<CompanionStateEnum> implemen
 
 
 
-    public random(min: number = undefined, max: number = undefined, integer: boolean = true): number {
-        if (min === undefined) {
-            min = 0;
-        }
-        if (max === undefined) {
-            max = min + 1;
-        }
 
-        let result = this._rng() * (max - min) + min;
-
-        this._seed++;
-        this.generateRNG();
-        return integer ? Math.floor(result) | 0 : result;
-    }
-
-
-    private generateRNG() {
-        this._rng = seedrandom(this._seed.toString());
-    }
 
     add(action: SteeringMovementAction): boolean {
         return this._actionCollection.add(action);
@@ -99,14 +93,45 @@ abstract class BaseCompanionState extends StateBase<CompanionStateEnum> implemen
         return this._actionCollection.contains(actionId);
     }
 
+    protected select() {
+
+        let cacheArr: IAction[] = [];
+        let select: IAction = null;
+        for (const [k, v] of this._actionCollection) {
+            if (v.coolDown) {
+                select = v;
+                break;
+            }
+            cacheArr.push(v);
+        }
+
+        if (!select) {
+            cacheArr.sort((a, b) => {
+                return a.coolDown - b.coolDown;
+            })
+
+            select = cacheArr[0];
+        }
+
+        this._currentAction = select;
+
+    }
+
+    protected abstract onActionSuccess(action: IAction): void
+
+
+    protected get currentActionStatus() {
+        return this._currentAction?.actionStatus;
+    }
 
     clear(): void {
-
+        this._actionCollection.clear();
     }
 
     create(actionId: string) {
 
     }
+
 
 
 
@@ -116,7 +141,7 @@ abstract class BaseCompanionState extends StateBase<CompanionStateEnum> implemen
 class CompanionStateFollowState extends BaseCompanionState {
 
 
-    private _desire: mw.Vector = new mw.Vector();
+
 
     constructor() {
         super(true);
@@ -126,34 +151,12 @@ class CompanionStateFollowState extends BaseCompanionState {
 
     public init() {
 
+        this.add(new FollowAction());
     }
-
-
-
-    private radomFollowPoint(radius: number, center: mw.Vector, outer: mw.Vector) {
-        let theta = this.random() * 2 * Math.PI;
-        let phi = this.random() * Math.PI / 2;
-        let r = Math.cbrt(this.random()) * radius;
-
-        let x = r * Math.sin(phi) * Math.cos(theta);
-        let y = r * Math.sin(phi) * Math.sin(theta);
-        let z = r * Math.cos(phi);
-
-        outer.set(x, y, z).add(center);
-
-        return outer;
-    }
-
 
     public enter() {
-        super.enter()
-        this.radomFollowPoint(this.random(150, 300, true), this.fsm.context.follower.position, this._desire);
 
-    }
-
-
-    public logic() {
-
+        this.select();
     }
 
 
@@ -163,6 +166,9 @@ class CompanionStateFollowState extends BaseCompanionState {
 
     public requestExit() {
 
+    }
+
+    protected onActionSuccess(action: IAction): void {
     }
 }
 
@@ -182,9 +188,7 @@ class CompanionStateIdle extends BaseCompanionState {
 
     }
 
-    public logic() {
 
-    }
 
     public exit() {
 
@@ -193,33 +197,15 @@ class CompanionStateIdle extends BaseCompanionState {
 
     }
 
+    protected onActionSuccess(action: IAction): void {
+
+    }
+
+
+
 }
 
 
-class CompanionStateFollow extends BaseCompanionState {
 
-
-
-    constructor() {
-        super(true);
-    }
-
-    public init() {
-
-    }
-    public enter() {
-
-    }
-    public logic() {
-    }
-
-    public exit() {
-    }
-
-    public requestExit() {
-    }
-
-
-}
 
 
