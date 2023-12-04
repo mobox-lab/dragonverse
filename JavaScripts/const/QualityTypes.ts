@@ -6,4 +6,7 @@ export enum QualityTypes {
      * 空置.
      */
     None,
+
+
+    Normal,
 }
