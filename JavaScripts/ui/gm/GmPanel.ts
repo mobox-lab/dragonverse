@@ -4,6 +4,8 @@ import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
 import GToolkit from "../../util/GToolkit";
 import { BagModuleC } from "../../module/bag/BagModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import DialoguePanel from "../dialogue/DialoguePanel";
+import DialogueManager from "../../gameplay/dialogue/DialogueManager";
 
 /**
  * GM.
@@ -37,3 +39,9 @@ AddGMCommand("增加测试物品", (player, value) => {
     Log4Ts.log(GMPanel, `增加测试物品 ${value}`);
     ModuleService.getModule(BagModuleC).addItem(1, Number(value));
 });
+
+AddGMCommand("进入对话", (player, value) => {
+    Log4Ts.log(GMPanel, `进入对话 ${value}`);
+    DialogueManager.getInstance().greet(1);
+});
+
