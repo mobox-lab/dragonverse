@@ -415,9 +415,9 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @param itemId
      */
     private generate(playerId: number, itemId: number) {
-        Log4Ts.log(CollectibleItemModuleS, `try generate item, itemId: ${itemId}.`);
-        Log4Ts.log(CollectibleItemModuleS, () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`);
-        Log4Ts.log(CollectibleItemModuleS, () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
+        Log4Ts.log(CollectibleItemModuleS, `try generate item, itemId: ${itemId}.`,
+            CollectibleItemModuleS, () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`,
+            CollectibleItemModuleS, () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
 
         let location = GToolkit.randomArrayItem(this.getValidGenerateLocation(itemId, playerId));
         if (location === null) {
@@ -469,10 +469,10 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             Log4Ts.error(CollectibleItemModuleS, `destroy item is null`);
             return;
         }
-        Log4Ts.log(CollectibleItemModuleS, `try destroy item, itemId: ${item.id}.`);
-        Log4Ts.log(CollectibleItemModuleS, () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
-        Log4Ts.log(CollectibleItemModuleS, () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`);
-        Log4Ts.log(CollectibleItemModuleS, () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
+        Log4Ts.log(CollectibleItemModuleS, `try destroy item, itemId: ${item.id}.`,
+            CollectibleItemModuleS, () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`,
+            CollectibleItemModuleS, () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`,
+            CollectibleItemModuleS, () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
