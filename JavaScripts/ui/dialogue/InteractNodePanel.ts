@@ -2,13 +2,20 @@ import InteractNode_Generate from "../../ui-generate/dialogue/InteractNode_gener
 import { IDialogueInteractNodeElement } from "../../config/DialogueInteractNode";
 import GToolkit from "../../util/GToolkit";
 import { DialogueFuncFactory, DialogueFuncTypes } from "./DialogueFuncTypes";
-import DialoguePanel from "./DialoguePanel";
-import { GameConfig } from "../../config/GameConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { IDialogueFuncElement } from "../../config/DialogueFunc";
+import DialogueManager from "../../gameplay/dialogue/DialogueManager";
 
 export default class InteractNodePanel extends InteractNode_Generate {
 //#region Member
+    private _dialogueManager: DialogueManager;
+
+    private get dm() {
+        if (!this._dialogueManager) {
+            this._dialogueManager = DialogueManager.getInstance();
+        }
+        return this._dialogueManager;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld UI Event
@@ -60,11 +67,9 @@ export default class InteractNodePanel extends InteractNode_Generate {
             }
 
             if (hasContentNodeId(config)) {
-                UIService
-                    .getUI(DialoguePanel)
-                    .refresh(GameConfig.DialogueContentNode.getElement(config.contentNodeId));
+                this.dm.chat(config.contentNodeId);
             } else {
-                UIService.getUI(DialoguePanel).shutDown();
+                this.dm.exit();
             }
         });
 

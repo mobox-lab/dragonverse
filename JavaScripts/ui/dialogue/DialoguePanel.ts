@@ -3,17 +3,34 @@ import { IDialogueContentNodeElement } from "../../config/DialogueContentNode";
 import GToolkit from "../../util/GToolkit";
 import Waterween from "../../depend/waterween/Waterween";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
-import DialogueContext = UE.DialogueContext;
 import { GameConfig } from "../../config/GameConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import InteractNodePanel from "./InteractNodePanel";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import { isDialogueContentNodeHasNextId } from "../../gameplay/dialogue/DialogueManager";
+import { EventDefine } from "../../const/EventDefine";
 
 export default class DialoguePanel extends DialoguePanel_Generate {
 //#region Member
     private _nextArrowJumpTask: AdvancedTweenTask<unknown>;
 
     public nextArrowShown: boolean = true;
+
+    private _currentContentId: number = null;
+
+    public get currentContentId(): number {
+        return this._currentContentId;
+    }
+
+    /**
+     * 是否 正在交谈.
+     * @desc 正在交谈指 正聚焦一个 对话内容节点.
+     * @desc 不意味着视角被锁定.
+     */
+    public get isDialoguing() {
+        return this._currentContentId !== null;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld UI Event
@@ -64,31 +81,32 @@ export default class DialoguePanel extends DialoguePanel_Generate {
     /**
      * 绘制节点.
      * @privateRemarks 描述 对话内容节点的判定树.
-     * @privateRemarks {@label CONDITION} 条件桩 (nextId content interactNodeIds) 的空情况.
+     * @privateRemarks 条件桩 (nextId content interactNodeIds) 的空情况.
      * @param config
      */
     public refresh(config: IDialogueContentNodeElement) {
         if (!config) {
             Log4Ts.error(DialoguePanel, `config is null.`);
-            this.shutDown();
+            this.callDmToShutDown();
             return;
         }
 
+        this._currentContentId = config.id;
         const content = config.content;
 
 //#region 条件项 000
         if (GToolkit.isNullOrEmpty(content) &&
-            !hasNextId(config) &&
+            !isDialogueContentNodeHasNextId(config) &&
             GToolkit.isNullOrEmpty(config.interactNodeIds)) {
-            this.shutDown();
+            this.callDmToShutDown();
             return;
         }
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 //#region 条件项 100 101
         if (GToolkit.isNullOrEmpty(content) &&
-            hasNextId(config)) {
+            isDialogueContentNodeHasNextId(config)) {
             Log4Ts.error(DialoguePanel, `配置了一行无意义的 DialogueContentNode. id: ${config.id}`);
-            this.shutDown();
+            this.callDmToShutDown();
             return;
         }
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -107,14 +125,14 @@ export default class DialoguePanel extends DialoguePanel_Generate {
         this.showInteractOptions(options);
         if (GToolkit.isNullOrEmpty(options)) {
 //#region 条件项 110
-            if (hasNextId(config)) this.btnDialogueContent
+            if (isDialogueContentNodeHasNextId(config)) this.btnDialogueContent
                 .onClicked
                 .add(
                     () => this.refresh(GameConfig.DialogueContentNode.getElement(config.nextId)),
                 );
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 //#region 条件项 010
-            else this.btnDialogueContent.onClicked.add(() => this.shutDown());
+            else this.btnDialogueContent.onClicked.add(this.callDmToShutDown);
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
         }
 //#region 条件项 0--
@@ -127,15 +145,20 @@ export default class DialoguePanel extends DialoguePanel_Generate {
             GToolkit.trySetVisibility(this.cnvContentNode, true);
             this.txtSourceName.text = config.sourceId.toString();
             this.txtContent.text = content;
-            this.showNextArrow(hasNextId(config));
+            this.showNextArrow(isDialogueContentNodeHasNextId(config));
         }
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
     /**
      * 隐藏此界面.
+     * @param id 仅当当前 对话内容节点 {@link currentContentId} id 与参数相同时隐藏.
      */
-    public shutDown() {
+    public shutDown(id: number = undefined) {
+        if (!(id === undefined || id === this._currentContentId)) {
+            return;
+        }
+        this._currentContentId = null;
         UIService.hide(DialoguePanel);
     }
 
@@ -176,14 +199,12 @@ export default class DialoguePanel extends DialoguePanel_Generate {
         });
     }
 
+    private callDmToShutDown = () => {
+        Event.dispatchToLocal(EventDefine.LeaveDialogue, undefined);
+    };
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Callback
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-}
-
-export function hasNextId(config: IDialogueContentNodeElement | number): boolean {
-    if (typeof config === "number") config = GameConfig.DialogueContentNode.getElement(config);
-
-    return !(GToolkit.isNullOrUndefined(config.nextId) || config.nextId === 0);
 }
