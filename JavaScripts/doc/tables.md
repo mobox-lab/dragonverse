@@ -1,3 +1,8 @@
+---
+export_on_save:
+  puppeteer: true
+---
+
 # Dragon Verse | Tables
 
 Dragon Verse 配置表程序侧定义文档
