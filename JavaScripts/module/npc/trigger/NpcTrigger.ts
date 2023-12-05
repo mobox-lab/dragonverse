@@ -1,7 +1,7 @@
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import GToolkit from "../../../util/GToolkit";
 import { EventDefine } from "../../../const/EventDefine";
-import CharacterEnterNpcInteractRangeEventArgs from "./CharacterEnterNpcInteractRangeEventArgs";
+import CharacterTriggerNpcInteractRangeEventArgs from "./PlayerInteractNpcEventArgs";
 
 /**
  * Npc Trigger.
@@ -83,8 +83,8 @@ export default class NpcTrigger extends mw.Script {
         Log4Ts.log(NpcTrigger, `player enter. playerId: ${playerId}`);
         this._enteredList.add(playerId);
         Event.dispatchToLocal(
-            EventDefine.EnterCollectibleItemRange,
-            new CharacterEnterNpcInteractRangeEventArgs(playerId, this._npcId),
+            EventDefine.EnterNpcInteractRange,
+            new CharacterTriggerNpcInteractRangeEventArgs(playerId, this._npcId),
         );
     };
 
@@ -92,8 +92,8 @@ export default class NpcTrigger extends mw.Script {
         Log4Ts.log(NpcTrigger, `player leave. playerId: ${playerId}`);
         this._enteredList.delete(playerId);
         Event.dispatchToLocal(
-            EventDefine.LeaveCollectibleItemRange,
-            new CharacterEnterNpcInteractRangeEventArgs(playerId, this._npcId),
+            EventDefine.LeaveNpcInteractRange,
+            new CharacterTriggerNpcInteractRangeEventArgs(playerId, this._npcId),
         );
     };
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

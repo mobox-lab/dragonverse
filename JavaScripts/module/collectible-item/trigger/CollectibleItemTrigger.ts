@@ -1,7 +1,7 @@
 import GToolkit from "../../../util/GToolkit";
 import { EventDefine } from "../../../const/EventDefine";
 import Character = mw.Character;
-import CharacterEnterCollectibleItemRangeEventArgs from "./CharacterEnterCollectibleItemRangeEventArgs";
+import PlayerInteractCollectibleItemEventArgs from "./PlayerInteractCollectibleItemEventArgs";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 /**
@@ -85,7 +85,7 @@ export default class CollectibleItemTrigger extends mw.Script {
         this._enteredList.add(playerId);
         Event.dispatchToLocal(
             EventDefine.EnterCollectibleItemRange,
-            new CharacterEnterCollectibleItemRangeEventArgs(playerId, this._syncKey),
+            new PlayerInteractCollectibleItemEventArgs(playerId, this._syncKey),
         );
     };
 
@@ -94,7 +94,7 @@ export default class CollectibleItemTrigger extends mw.Script {
         this._enteredList.delete(playerId);
         Event.dispatchToLocal(
             EventDefine.LeaveCollectibleItemRange,
-            new CharacterEnterCollectibleItemRangeEventArgs(playerId, this._syncKey),
+            new PlayerInteractCollectibleItemEventArgs(playerId, this._syncKey),
         );
     };
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
