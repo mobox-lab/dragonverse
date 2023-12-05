@@ -1,11 +1,10 @@
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import GToolkit from "../../../util/GToolkit";
 import { EventDefine } from "../../../const/EventDefine";
-import Character = mw.Character;
-import PlayerInteractCollectibleItemEventArgs from "./PlayerInteractCollectibleItemEventArgs";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import CharacterTriggerNpcInteractRangeEventArgs from "./PlayerInteractNpcEventArgs";
 
 /**
- * 采集物 Trigger.
+ * Npc Trigger.
  *
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
@@ -15,11 +14,11 @@ import Log4Ts from "../../../depend/log4ts/Log4Ts";
  * @author LviatYi
  */
 @Component
-export default class CollectibleItemTrigger extends mw.Script {
+export default class NpcTrigger extends mw.Script {
 //#region Member
     private _enteredList: Set<number> = new Set<number>();
 
-    private _syncKey: string = null;
+    private _npcId: number = null;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //region MetaWorld Event
@@ -43,7 +42,7 @@ export default class CollectibleItemTrigger extends mw.Script {
                 trigger.onEnter.add(this.onObjectEnter);
                 trigger.onLeave.add(this.onObjectLeave);
             } else {
-                Log4Ts.error(CollectibleItemTrigger, `there is no trigger under this game object.`);
+                Log4Ts.error(NpcTrigger, `there is no trigger under this game object.`);
             }
         }
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -59,8 +58,8 @@ export default class CollectibleItemTrigger extends mw.Script {
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Method
-    public init(syncKey: string) {
-        this._syncKey = syncKey;
+    public init(id: number) {
+        this._npcId = id;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -81,20 +80,20 @@ export default class CollectibleItemTrigger extends mw.Script {
     };
 
     private characterEnter = (playerId: number) => {
-        Log4Ts.log(CollectibleItemTrigger, `player enter. playerId: ${playerId}`);
+        Log4Ts.log(NpcTrigger, `player enter. playerId: ${playerId}`);
         this._enteredList.add(playerId);
         Event.dispatchToLocal(
-            EventDefine.EnterCollectibleItemRange,
-            new PlayerInteractCollectibleItemEventArgs(playerId, this._syncKey),
+            EventDefine.EnterNpcInteractRange,
+            new CharacterTriggerNpcInteractRangeEventArgs(playerId, this._npcId),
         );
     };
 
     private characterLeave = (playerId: number) => {
-        Log4Ts.log(CollectibleItemTrigger, `player leave. playerId: ${playerId}`);
+        Log4Ts.log(NpcTrigger, `player leave. playerId: ${playerId}`);
         this._enteredList.delete(playerId);
         Event.dispatchToLocal(
-            EventDefine.LeaveCollectibleItemRange,
-            new PlayerInteractCollectibleItemEventArgs(playerId, this._syncKey),
+            EventDefine.LeaveNpcInteractRange,
+            new CharacterTriggerNpcInteractRangeEventArgs(playerId, this._npcId),
         );
     };
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

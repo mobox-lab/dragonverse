@@ -10,7 +10,7 @@ import GameObject = mw.GameObject;
 import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import CollectibleItemTrigger from "./trigger/CollectibleItemTrigger";
 import { EventDefine } from "../../const/EventDefine";
-import CharacterEnterCollectibleItemRangeEventArgs from "./trigger/CharacterEnterCollectibleItemRangeEventArgs";
+import PlayerInteractCollectibleItemEventArgs from "./trigger/PlayerInteractCollectibleItemEventArgs";
 import EventListener = mw.EventListener;
 import MainPanel from "../../ui/main/MainPanel";
 import { BagModuleS } from "../bag/BagModule";
@@ -204,14 +204,14 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Callback
-    public onEnterCollectibleItemRange = (args: CharacterEnterCollectibleItemRangeEventArgs) => {
+    public onEnterCollectibleItemRange = (args: PlayerInteractCollectibleItemEventArgs) => {
         if (args.playerId === Player.localPlayer.playerId) {
             this.collectCandidates.push(args.itemSyncKey);
             this._mainPanel.addCollectibleItemInteractor(args.itemSyncKey);
         }
     };
 
-    public onLeaveCollectibleItemRange = (args: CharacterEnterCollectibleItemRangeEventArgs) => {
+    public onLeaveCollectibleItemRange = (args: PlayerInteractCollectibleItemEventArgs) => {
         if (args.playerId === Player.localPlayer.playerId) {
             GToolkit.remove(this.collectCandidates, args.itemSyncKey);
             this._mainPanel.removeCollectibleItemInteractor(args.itemSyncKey);

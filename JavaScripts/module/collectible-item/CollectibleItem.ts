@@ -3,8 +3,6 @@ import { GameConfig } from "../../config/GameConfig";
 import { IBagItemElement } from "../../config/BagItem";
 import { QualityTypes } from "../../const/QualityTypes";
 import { ResultAlgo, ResultAlgoFactory, ResultAlgoTypes } from "./ResultAlgoTypes";
-import PolygonShape, { randomPoint } from "../../util/area/Shape";
-import AreaManager from "../../gameplay/area/AreaManager";
 
 /**
  * Collectible Item.
