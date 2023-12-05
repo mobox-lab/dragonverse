@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","contentNodeId","content","funcId","icon"],["","","","",""],[1,3,"Test1000001",0,null],[2,0,"Exit",0,null]];
+const EXCELDATA:Array<Array<any>> = [["id","contentNodeId","content","funcId","icon"],["","","","",""],[1,3,"Test1000001",1,null],[2,0,"Exit",2,null],[3,7,"Dialogue0006",3,null],[4,8,"Dialogue0007",4,null]];
 export interface IDialogueInteractNodeElement extends IElementBase{
  	/**ID*/
 	id:number
