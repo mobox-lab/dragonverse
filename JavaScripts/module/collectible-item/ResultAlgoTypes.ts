@@ -17,17 +17,17 @@ export type ResultAlgo = (...param: unknown[]) => number;
 export function ResultAlgoFactory(type: ResultAlgoTypes): ResultAlgo {
     switch (type) {
         case ResultAlgoTypes.TestAlgo:
-            return TestAlgo;
+            return testAlgo;
         case ResultAlgoTypes.Null:
         default:
-            return NormalResultAlgo;
+            return normalResultAlgo;
     }
 }
 
-export function NormalResultAlgo() {
+export function normalResultAlgo() {
     return 10;
 }
 
-export function TestAlgo(): number {
+export function testAlgo(): number {
     return 100;
 }

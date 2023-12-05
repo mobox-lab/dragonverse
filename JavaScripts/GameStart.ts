@@ -1,15 +1,19 @@
+import { GM } from "module_gm";
+import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
 import i18n, { LanguageTypes } from "./language/i18n";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/AuthModule";
-import GMPanel from "./ui/gm/GmPanel";
+import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
 import CollectibleItemModuleData, {
     CollectibleItemModuleC,
     CollectibleItemModuleS,
 } from "./module/collectible-item/CollectibleItemModule";
-import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
+import { CompanionData } from "./module/companion/CompanionData";
+import { CompanionModule_C } from "./module/companion/CompanionModule_C";
+import { CompanionModule_S } from "./module/companion/CompanionModule_S";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
-import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
-import { GM } from "module_gm";
 import Camera = mw.Camera;
+import GMPanel from "./ui/gm/GmPanel";
+import { VisualizeDebug } from "./util/VisualizeDebug";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -48,6 +52,7 @@ export default class GameStart extends mw.Script {
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     protected onStart(): void {
+        Log4Ts.log(GameStart, `this is ${SystemUtil.isClient() ? "client" : "server"}`);
         this.useUpdate = true;
         GameStart.instance = this;
 
@@ -94,6 +99,7 @@ export default class GameStart extends mw.Script {
         Log4Ts.debugLevel = this.clientLogLevel;
 
         this.isShowGMPanel && GM.start(GMPanel);
+        VisualizeDebug.init(mw.Player.localPlayer);
     }
 
     private initializeServer() {
@@ -108,6 +114,8 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(CollectibleItemModuleS, CollectibleItemModuleC, CollectibleItemModuleData);
         moduleService.registerModule(SceneDragonModuleS, SceneDragonModuleC, SceneDragonModuleData);
         moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
+        moduleService.registerModule(CompanionModule_S, CompanionModule_C, CompanionData);
+
     }
 
     private registerTestKeyT() {
