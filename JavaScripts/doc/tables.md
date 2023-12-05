@@ -130,7 +130,7 @@ by LviatYi
 | ~~100~~  | ---          | ---        | ---                | 无意义的     |
 | ~~101~~  | ---          | ---        | ---                | 无意义的     |
 | 110      | 显示下一条   | 显示       | 隐藏               |              |
-| 111      | 显示下一条   | 显示       | Content 完整后显示 |              |
+| 111      | 无           | 显示       | Content 完整后显示 |              |
 
 ### 对话交互节点 DialogueInteractNode
 
@@ -141,7 +141,7 @@ by LviatYi
 |       ID        | Id            | int    | 对话交互节点 Id   |
 | 对话内容节点 Id | ContentNodeId | int    | 子对话内容节点 Id |
 |      内容       | Content       | string |                   |
-| 对话节点功能 Id | FuncId        | int    |                   |
+| 对话节点功能 Id | FuncId        | int    | 对话节点功能 Id   |
 |      图标       | Icon          | string |                   |
 
 对于 ContentNodeId 置空性，配置行的含义为：
@@ -150,6 +150,8 @@ by LviatYi
 - 空 直接退出对话。
 
 ### 对话节点功能 DialogueNodeFunc
+
+定义对话节点的附带行为。
 
 | Name | PropName | Type   | Desc |
 | :--: | :------- | ------ | ---- |
