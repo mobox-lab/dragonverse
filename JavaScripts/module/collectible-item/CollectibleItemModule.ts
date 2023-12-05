@@ -43,7 +43,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         this.PREFAB_MAP.set(1, "19864DB9433C12B44D2F95BE76825159");
     }
 
-    public static async collectibleItemPrefabFactory(
+    public static async CollectibleItemPrefabFactory(
         syncKey: string,
         id: number,
         location: Vector) {
@@ -164,7 +164,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
             return;
         }
 
-        CollectibleItemModuleC.collectibleItemPrefabFactory(
+        CollectibleItemModuleC.CollectibleItemPrefabFactory(
             syncKey,
             item.id,
             item.location,
