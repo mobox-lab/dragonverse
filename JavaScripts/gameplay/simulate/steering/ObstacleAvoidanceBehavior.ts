@@ -15,7 +15,7 @@ class Sensor {
 
     public safe: boolean = true;
 
-    public distance = Number.MAX_SAFE_INTEGER;;
+    public distance = Number.MAX_SAFE_INTEGER;
 
     public update(origin: mw.Vector, originRotation: mw.Rotation, source: string[]) {
 
