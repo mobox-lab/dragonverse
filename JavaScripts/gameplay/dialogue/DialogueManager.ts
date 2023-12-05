@@ -33,8 +33,8 @@ export default class DialogueManager extends Singleton<DialogueManager>() {
     protected onConstruct(): void {
         super.onConstruct();
 
-        Event.addLocalListener(EventDefine.PlayerEnterDialogue, this.onPlayerEnterDialogue);
-        Event.addLocalListener(EventDefine.PlayerEnterDialogue, this.onPlayerLeaveDialogue);
+        Event.addLocalListener(EventDefine.EnterDialogue, this.onPlayerEnterDialogue);
+        Event.addLocalListener(EventDefine.EnterDialogue, this.onPlayerLeaveDialogue);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
