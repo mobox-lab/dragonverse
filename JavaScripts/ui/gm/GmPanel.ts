@@ -64,7 +64,7 @@ AddGMCommand("输出当前角色位置",
 AddGMCommand("输出当前角色旋转",
     (player) => {
         Log4Ts.log(GMPanel,
-            `Print current player location:`,
+            `Print current player rotation:`,
             player.character.worldTransform.rotation,
         );
     },
@@ -109,7 +109,7 @@ AddGMCommand("增加测试物品",
 AddGMCommand("进入对话",
     (player, value) => {
         Log4Ts.log(GMPanel, `进入对话 ${value}`);
-        DialogueManager.getInstance().greet(1);
+        DialogueManager.getInstance().chat(1);
     },
     undefined,
     "对话");

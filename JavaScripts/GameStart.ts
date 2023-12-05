@@ -14,6 +14,7 @@ import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from ".
 import Camera = mw.Camera;
 import GMPanel from "./ui/gm/GmPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
+import NpcModuleData, { NpcModuleC, NpcModuleS } from "./module/npc/NpcModule";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -111,11 +112,11 @@ export default class GameStart extends mw.Script {
         const moduleService = ModuleService;
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
         moduleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
+        moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
         moduleService.registerModule(CollectibleItemModuleS, CollectibleItemModuleC, CollectibleItemModuleData);
         moduleService.registerModule(SceneDragonModuleS, SceneDragonModuleC, SceneDragonModuleData);
-        moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
+        moduleService.registerModule(NpcModuleS, NpcModuleC, NpcModuleData);
         moduleService.registerModule(CompanionModule_S, CompanionModule_C, CompanionData);
-
     }
 
     private registerTestKeyT() {
