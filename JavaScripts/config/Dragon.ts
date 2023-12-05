@@ -1,7 +1,7 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
 const EXCELDATA:Array<Array<any>> = [["id","bagId","avatar","elementalId","qualityId","existenceTime","generationInterval","hitPoint","cost","successRateAlgoId"],["","","","","","","","","",""],[1,4,"0",1,1,300,80,1,10,1],[2,5,"0",2,1,300,80,1,10,1],[3,6,"0",3,1,300,80,1,10,1],[4,7,"0",4,1,300,80,1,10,1]];
 export interface IDragonElement extends IElementBase{
- 	/**龙 ID*/
+ 	/**ID*/
 	id:number
 	/**背包物 ID*/
 	bagId:number

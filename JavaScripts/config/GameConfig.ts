@@ -1,6 +1,7 @@
 import {ConfigBase, IElementBase} from "./ConfigBase";
 import {AreaConfig} from "./Area";
 import {BagItemConfig} from "./BagItem";
+import {CharacterConfig} from "./Character";
 import {CollectibleItemConfig} from "./CollectibleItem";
 import {CollectResultAlgoConfig} from "./CollectResultAlgo";
 import {DialogueContentNodeConfig} from "./DialogueContentNode";
@@ -9,6 +10,7 @@ import {DialogueInteractNodeConfig} from "./DialogueInteractNode";
 import {DragonConfig} from "./Dragon";
 import {ElementalConfig} from "./Elemental";
 import {LanguageConfig} from "./Language";
+import {NpcConfig} from "./Npc";
 import {QualityConfig} from "./Quality";
 import {SoundConfig} from "./Sound";
 import {SuccessRateAlgoConfig} from "./SuccessRateAlgo";
@@ -32,6 +34,7 @@ export class GameConfig{
 	}
 	public static get Area():AreaConfig{ return this.getConfig(AreaConfig) };
 	public static get BagItem():BagItemConfig{ return this.getConfig(BagItemConfig) };
+	public static get Character():CharacterConfig{ return this.getConfig(CharacterConfig) };
 	public static get CollectibleItem():CollectibleItemConfig{ return this.getConfig(CollectibleItemConfig) };
 	public static get CollectResultAlgo():CollectResultAlgoConfig{ return this.getConfig(CollectResultAlgoConfig) };
 	public static get DialogueContentNode():DialogueContentNodeConfig{ return this.getConfig(DialogueContentNodeConfig) };
@@ -40,6 +43,7 @@ export class GameConfig{
 	public static get Dragon():DragonConfig{ return this.getConfig(DragonConfig) };
 	public static get Elemental():ElementalConfig{ return this.getConfig(ElementalConfig) };
 	public static get Language():LanguageConfig{ return this.getConfig(LanguageConfig) };
+	public static get Npc():NpcConfig{ return this.getConfig(NpcConfig) };
 	public static get Quality():QualityConfig{ return this.getConfig(QualityConfig) };
 	public static get Sound():SoundConfig{ return this.getConfig(SoundConfig) };
 	public static get SuccessRateAlgo():SuccessRateAlgoConfig{ return this.getConfig(SuccessRateAlgoConfig) };
