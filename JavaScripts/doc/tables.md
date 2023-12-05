@@ -175,12 +175,14 @@ by LviatYi
 
 ### NPC NonPlayerCharacter
 
-|   Name   | PropName    | Type    | Desc            |
-| :------: | :---------- | ------- | --------------- |
-|    ID    | Id          | int     |                 |
-| 角色 ID  | CharacterId | int     |                 |
-| 初始位置 | Position    | vector3 |                 |
-|   招呼   | GreetNodeId | int     | 对话内容节点 Id |
+|      Name       | PropName    | Type     | Desc            |
+| :-------------: | :---------- | -------- | --------------- |
+|       ID        | Id          | int      |                 |
+|     角色 ID     | CharacterId | int      |                 |
+|    初始位置     | Position    | vector3  |                 |
+|    初始旋转     | Rotation    | rotation |                 |
+|      招呼       | GreetNodeId | int      | 对话内容节点 Id |
+| 附属数据类型 ID | NpcDataId   | int      | Npc 附属数据 Id |
 
 对于 GreetNodeId ，其指向一个 **对话内容节点** (DialogueContentNode)，且对于该节点的：
 
@@ -209,6 +211,13 @@ by LviatYi
   - 强制锁定玩家视角。玩家被强制拉入对话。
   - 提供或不提供交互节点。
     > 到了江心 且问你吃板刀还是馄饨
+
+### NPCData NonPlayerCharacterData
+
+| Name | PropName | Type   | Desc |
+| :--: | :------- | ------ | ---- |
+|  ID  | Id       | int    |      |
+| 名称 | Name     | string |      |
 
 [JetbrainsMonoNerdFont]: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip@fallbackFont
 [SarasaMonoSC]: https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
