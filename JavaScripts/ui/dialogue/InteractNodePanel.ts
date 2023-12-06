@@ -4,6 +4,7 @@ import GToolkit from "../../util/GToolkit";
 import { DialogueFuncFactory, DialogueFuncTypes } from "./DialogueFuncTypes";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import DialogueManager from "../../gameplay/dialogue/DialogueManager";
+import i18n from "../../language/i18n";
 
 export default class InteractNodePanel extends InteractNode_Generate {
 //#region Member
@@ -52,7 +53,7 @@ export default class InteractNodePanel extends InteractNode_Generate {
             return this;
         }
 
-        this.txtContent.text = config.content;
+        this.txtContent.text = i18n.lan(config.content);
         if (config.icon) {
             GToolkit.trySetVisibility(this.imgIcon, true);
             this.imgIcon.imageGuid = config.icon;

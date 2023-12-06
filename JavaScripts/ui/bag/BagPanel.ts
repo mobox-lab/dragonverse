@@ -53,7 +53,7 @@ export default class BagPanel extends BagMain_Generate {
                 this.mDesc.text = i18n.lan(GameConfig.BagItem.getElement(key).desc);
             }));
             this._selectEffects.push(bindYoact(() => {
-                this.mNum.text = `数量${data.count}`;
+                this.mNum.text = i18n.lan("数量") + `${data.count}`;
             }));
         });
 //#endregion ------------------------------------------------------------------------------------------

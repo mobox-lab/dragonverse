@@ -9,6 +9,7 @@ import InteractNodePanel from "./InteractNodePanel";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { isDialogueContentNodeHasNextId } from "../../gameplay/dialogue/DialogueManager";
 import { EventDefine } from "../../const/EventDefine";
+import i18n from "../../language/i18n";
 
 export default class DialoguePanel extends DialoguePanel_Generate {
 //#region Member
@@ -143,8 +144,8 @@ export default class DialoguePanel extends DialoguePanel_Generate {
 //#region 条件项 1--
         else {
             GToolkit.trySetVisibility(this.cnvContentNode, true);
-            this.txtSourceName.text = config.sourceId.toString();
-            this.txtContent.text = content;
+            this.txtSourceName.text = i18n.lan(GameConfig.Character.getElement(config.sourceId)?.name ?? "null");
+            this.txtContent.text = i18n.lan(content);
             this.showNextArrow(isDialogueContentNodeHasNextId(config));
         }
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
