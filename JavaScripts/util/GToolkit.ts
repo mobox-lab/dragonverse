@@ -7,7 +7,7 @@ import Log4Ts, { Announcer, DebugLevels, logString } from "../depend/log4ts/Log4
 /**
  * Prototype of a class constructor.
  */
-export type Constructor<TResult> = new (...args: Array<any>) => TResult;
+export type Constructor<TResult> = new (...args: Array<unknown>) => TResult;
 
 /**
  * A function taking one argument and returning a boolean result.
@@ -154,7 +154,7 @@ export class Switcher {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.7.9b
+ * @version 0.8.0b
  * @alpha
  */
 class GToolkit {

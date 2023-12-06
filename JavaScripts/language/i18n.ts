@@ -52,19 +52,23 @@ type LanguageTable = {
 /**
  * i18n.
  * 文本本地化工具.
- *
- * It depends on GameConfigBase.
- * To use specified language, you should call:
- * <code>
- *     i18n.use(LanguageType);
- * </code>
- *
- * When releasing, you should call:
- * <code>
- *     i18n.release();
- * </code>
- *
- *
+ * @desc ---
+ * @desc It depends on GameConfigBase.
+ * @desc To use specified language, you should call:
+ * @desc <code>
+ * @desc     i18n.use(LanguageType);
+ * @desc </code>
+ * @desc
+ * @desc When releasing, you should call:
+ * @desc <code>
+ * @desc     i18n.release();
+ * @desc </code>
+ * @desc
+ * @desc Recommended way to call the trans api:
+ * @desc <code>
+ * @desc     i18n.lan(i18n.keyTable.UI_Common_Tips);
+ * @desc </code>
+ * @desc ---
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
  * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
@@ -73,13 +77,15 @@ type LanguageTable = {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.4.0b
+ * @version 1.5.0b
  */
 class i18n {
     /**
      * Lan Config Keys.
      */
     public keyTable: LanguageTable;
+
+    private _languageType: LanguageTypes = 0;
 
     /**
      * i18n 本地化.
@@ -130,12 +136,20 @@ class i18n {
     }
 
     /**
-     * 使用指定语言.
+     * 使用指定语种.
      * @param languageType
      */
     public use(languageType: LanguageTypes = 0): this {
+        this._languageType = languageType;
         GameConfig.initLanguage(languageType, defaultGetLanguage);
         return this;
+    }
+
+    /**
+     * 当前使用的语种.
+     */
+    public currentLanguage(): LanguageTypes {
+        return this._languageType;
     }
 
     /**
