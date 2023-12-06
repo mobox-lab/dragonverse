@@ -121,7 +121,7 @@ by LviatYi
 |          ID          | Id              | int    | 对话内容节点 Id   |
 |     下条内容 Id      | NextId          | int    | 子对话内容节点 Id |
 |         内容         | Content         | string |                   |
-|     来源角色 Id      | SourceId        | int    |                   |
+|     来源角色 Id      | SourceId        | int    | 角色 Id           |
 | 对话交互节点列表 Ids | InteractNodeIds | int[]  |                   |
 
 对于 NextId Content InteractNodeIds 分别为空，配置行的含义为：
