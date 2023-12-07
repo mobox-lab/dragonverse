@@ -154,7 +154,7 @@ export class Switcher {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.8.0b
+ * @version 0.8.1b
  * @alpha
  */
 class GToolkit {
@@ -488,15 +488,15 @@ class GToolkit {
 
     /**
      * 生成uuid
-     * @returns 
+     * @returns
      */
     public generateUUID(): string {
         let d = new Date().getTime();
 
-        const uuid = 'xyx-xxy'.replace(/[xy]/g, function (c) {
+        const uuid = "xyx-xxy".replace(/[xy]/g, function (c) {
             const r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
-            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
         });
         return uuid;
     }
@@ -1005,6 +1005,17 @@ class GToolkit {
     }
 
     /**
+     * playerId 与 player 合取 player.
+     * @param player
+     */
+    public queryPlayer(player: number | Player) {
+        if (typeof player === "number") {
+            return Player.getPlayer(player);
+        }
+        return player;
+    }
+
+    /**
      * 换装.
      * 源自 {@link CommonUtil.changeAppearance}
      * 不知道要这个有啥用 直接 setDescription 不好么.
@@ -1087,10 +1098,10 @@ class GToolkit {
      * @profession
      */
     public rotateCharacterMesh(character: mw.Character,
-        pitch: number,
-        yaw: number,
-        roll: number,
-        origin: mw.Vector = mw.Vector.zero) {
+                               pitch: number,
+                               yaw: number,
+                               roll: number,
+                               origin: mw.Vector = mw.Vector.zero) {
         const component: UE.SceneComponent = character["ueCharacter"].mesh as unknown as UE.SceneComponent;
         const originRotator = component.RelativeRotation;
 
@@ -1148,9 +1159,9 @@ class GToolkit {
      * @param disableGuid
      */
     public setButtonGuid(button: mw.Button,
-        normalGuid: string,
-        pressedGuid: string = undefined,
-        disableGuid: string = undefined) {
+                         normalGuid: string,
+                         pressedGuid: string = undefined,
+                         disableGuid: string = undefined) {
         if (!pressedGuid) {
             pressedGuid = normalGuid;
         }
@@ -1230,10 +1241,10 @@ class GToolkit {
      * @return hitPoint 命中首个点的命中信息 当未命中时返回 null.
      */
     public detectVerticalTerrain(startPoint: mw.Vector,
-        length: number = 1000,
-        self: mw.GameObject = null,
-        ignoreObjectGuids: string[] = [],
-        debug: boolean = false) {
+                                 length: number = 1000,
+                                 self: mw.GameObject = null,
+                                 ignoreObjectGuids: string[] = [],
+                                 debug: boolean = false) {
         return QueryUtil.lineTrace(
             startPoint,
             this.newWithZ(startPoint, startPoint.z - length),
