@@ -1,7 +1,7 @@
 import { GM } from "module_gm";
 import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
 import i18n, { LanguageTypes } from "./language/i18n";
-import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/AuthModule";
+import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
 import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
 import CollectibleItemModuleData, {
     CollectibleItemModuleC,
