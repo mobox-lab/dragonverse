@@ -169,6 +169,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
             item.id,
             item.location,
         ).then((value) => {
+            if (!value) return;
             this.syncItemMap.set(syncKey, {item: item, object: value});
         });
     }
@@ -416,8 +417,8 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      */
     private generate(playerId: number, itemId: number) {
         Log4Ts.log(CollectibleItemModuleS, `try generate item, itemId: ${itemId}.`,
-            CollectibleItemModuleS, () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`,
-            CollectibleItemModuleS, () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
+            () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`,
+            () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
 
         let location = GToolkit.randomArrayItem(this.getValidGenerateLocation(itemId, playerId));
         if (location === null) {
