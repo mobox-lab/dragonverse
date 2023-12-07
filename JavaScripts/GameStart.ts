@@ -11,7 +11,6 @@ import { CompanionData } from "./module/companion/CompanionData";
 import { CompanionModule_C } from "./module/companion/CompanionModule_C";
 import { CompanionModule_S } from "./module/companion/CompanionModule_S";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
-import Camera = mw.Camera;
 import GMPanel from "./ui/gm/GmPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 import NpcModuleData, { NpcModuleC, NpcModuleS } from "./module/npc/NpcModule";
@@ -120,9 +119,7 @@ export default class GameStart extends mw.Script {
     }
 
     private registerTestKeyT() {
-        InputUtil.onKeyDown(mw.Keys.T, () => {
-            Log4Ts.log(GameStart, `Key T pressed`);
-        });
+        InputUtil.onKeyDown(mw.Keys.T, () => Log4Ts.log(GameStart, `Key T pressed`));
     }
 
     private registerGodModeG() {

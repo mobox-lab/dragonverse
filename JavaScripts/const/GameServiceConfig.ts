@@ -1,16 +1,4 @@
 export default class GameServiceConfig {
-//#region Auth
-    /**
-     * 测试用 Code 验证 Url.
-     */
-    public static readonly TEST_CODE_VERITY_URL = "https://platform-api-test.p12.games";
-
-    /**
-     * 发布用 Code 验证 Url.
-     */
-    public static readonly RELEASE_CODE_VERITY_URL = "https://platform-api.p12.games";
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
 //#region Generate
     /**
      * 采集物 场景龙 单次 同型 最大尝试生成次数.
