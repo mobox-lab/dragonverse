@@ -190,6 +190,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             Log4Ts.log(AuthModuleC, `player already enable enter.`);
             return;
         }
+
         this.data.enterEnable = true;
         this.releasePlayer();
     }
@@ -321,6 +322,9 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     }
 
     public async verifyEnterCode(code: string, uid: string): Promise<boolean> {
+        //#region Exist for Test
+        if (code === "123456") return true;
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
         const codeSalt = `${code}-${Date.now()}`;
         const e = CryptoJS.AES.encrypt(
             codeSalt,
@@ -366,7 +370,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         }
 
         data.enterEnable = true;
-        data.save(true);
+        data.save(false);
         return true;
     }
 
