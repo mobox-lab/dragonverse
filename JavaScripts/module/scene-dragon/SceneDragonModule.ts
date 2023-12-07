@@ -182,6 +182,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             syncKey,
             item,
         ).then((value) => {
+            if (!value) return;
+
             this.syncItemMap.set(syncKey, value);
             this._mainPanel.addSceneDragonInteractor(syncKey);
         });

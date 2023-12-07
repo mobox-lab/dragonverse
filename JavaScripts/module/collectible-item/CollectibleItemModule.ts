@@ -170,6 +170,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
             item.location,
         ).then((value) => {
             if (!value) return;
+
             this.syncItemMap.set(syncKey, {item: item, object: value});
         });
     }
