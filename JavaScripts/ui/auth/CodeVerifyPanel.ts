@@ -15,7 +15,10 @@ export default class CodeVerifyPanel extends CodeVerifyPanel_Generate {
 //#region Member init
         this.inputBox.text = "";
         this.btnEnter.enable = false;
-        this.btnEnter.onClicked.add(() => ModuleService.getModule(AuthModuleC).verifyCode(this.inputBox.text));
+        this.btnEnter.onClicked.add(() => {
+            ModuleService.getModule(AuthModuleC).verifyCode(this.inputBox.text);
+            UIService.destroyUI(CodeVerifyPanel);
+        });
         this.btnCancel.onClicked.add(() => UIService.destroyUI(CodeVerifyPanel));
         this.inputBox.onTextChanged.add((text) => {
             if (text.length < 6) this.btnEnter.enable = false;
@@ -24,6 +27,9 @@ export default class CodeVerifyPanel extends CodeVerifyPanel_Generate {
         });
 
         InputUtil.onKeyDown(Keys.Enter, () => this.btnEnter.onClicked.broadcast());
+        InputUtil.onKeyDown(Keys.Escape, () => {
+            UIService.destroyUI(CodeVerifyPanel);
+        });
 //#endregion ------------------------------------------------------------------------------------------
 
 //#region Widget bind
@@ -44,6 +50,7 @@ export default class CodeVerifyPanel extends CodeVerifyPanel_Generate {
 
     public destroy(): void {
         InputUtil.unbindButton(Keys.Enter);
+        InputUtil.unbindButton(Keys.Escape);
         super.destroy();
     }
 
