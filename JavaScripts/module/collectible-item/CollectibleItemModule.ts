@@ -472,9 +472,9 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             return;
         }
         Log4Ts.log(CollectibleItemModuleS, `try destroy item, itemId: ${item.id}.`,
-            CollectibleItemModuleS, () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`,
-            CollectibleItemModuleS, () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`,
-            CollectibleItemModuleS, () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
+            () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`,
+            () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`,
+            () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
