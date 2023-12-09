@@ -14,6 +14,7 @@ import {NpcConfig} from "./Npc";
 import {QualityConfig} from "./Quality";
 import {SoundConfig} from "./Sound";
 import {SuccessRateAlgoConfig} from "./SuccessRateAlgo";
+import {TaskConfig} from "./Task";
 
 export class GameConfig{
 	private static configMap:Map<string, ConfigBase<IElementBase>> = new Map();
@@ -47,4 +48,5 @@ export class GameConfig{
 	public static get Quality():QualityConfig{ return this.getConfig(QualityConfig) };
 	public static get Sound():SoundConfig{ return this.getConfig(SoundConfig) };
 	public static get SuccessRateAlgo():SuccessRateAlgoConfig{ return this.getConfig(SuccessRateAlgoConfig) };
+	public static get Task():TaskConfig{ return this.getConfig(TaskConfig) };
 }

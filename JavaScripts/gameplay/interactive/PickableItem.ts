@@ -1,0 +1,235 @@
+import GToolkit from "../../util/GToolkit";
+import { InitializeCheckerScript } from "../archtype/base/InitializeCheckScript";
+import { KeyItem } from "./KeyItemPuzzel";
+import { IPickerController } from "./PickerController";
+
+export abstract class PickableItem extends InitializeCheckerScript implements KeyItem {
+
+
+    @mw.Property({ displayName: "放置物类型" })
+    type: number = 0
+
+    public storage: string = ''
+
+
+    @mw.Property({ displayName: "初始位置" })
+    public initializePosition: mw.Vector = new mw.Vector()
+
+    public detectionCollisionWhenPutdown = true;
+
+    public size: mw.Vector = mw.Vector.zero;
+
+    private _trigger: mw.Trigger;
+
+    private _beenPicked: boolean = false
+
+    private _candidates: IPickerController[] = [];
+
+
+
+    protected holder: IPickerController;
+
+    public set pickStatus(value: boolean) {
+
+        if (this._beenPicked === value) {
+            return;
+        }
+        this._beenPicked = value;
+        this.onPickStatusChanged();
+    }
+
+    public get pickStatus() {
+        return this._beenPicked;
+    }
+
+
+
+
+    protected onInitialize(): void {
+        this._trigger = this.gameObject.getChildByName("trigger") as mw.Trigger;
+        this.size = this.gameObject.getBoundingBoxExtent(true, false, this.size);
+        this.onPickStatusChanged();
+    }
+
+
+
+
+    private onPickStatusChanged() {
+
+        if (!this._beenPicked) {
+            this._trigger.onEnter.add(this.onTriggerIn);
+            this._trigger.onLeave.add(this.onTriggerOut);
+            this.holder = null;
+            this.onBeenLand();
+        } else {
+
+            this._trigger.onEnter.remove(this.onTriggerIn);
+            this._trigger.onLeave.remove(this.onTriggerOut);
+            this.removeCandidate();
+            this.onBeenPicked();
+            this.addCandidate(this.holder);
+        }
+    }
+
+
+
+
+    private removeCandidate(target?: IPickerController) {
+
+        if (!target) {
+            this._candidates.forEach((value) => {
+                value.onPressedInteractive.remove(this.controllerTryPickupSelf, this);
+            })
+            this._candidates.length = 0;
+            return;
+        }
+
+        for (let i = this._candidates.length; i >= 0; i--) {
+            let candidate = this._candidates[i];
+            if (target === candidate) {
+
+                this._candidates.splice(i, 1);
+                target.onPressedInteractive.remove(this.controllerTryPickupSelf, this);
+
+            }
+        }
+    }
+
+    private addCandidate(target: IPickerController) {
+
+        if (this._candidates.indexOf(target) !== -1) {
+            return;
+        }
+        this._candidates.push(target);
+        target.onPressedInteractive.add(this.controllerTryPickupSelf, this);
+
+    }
+
+    private onTriggerOut = (go: mw.GameObject) => {
+        let picker: IPickerController = GToolkit.getComponentWhichIs(go, 'pick');
+        if (!picker) {
+            return;
+        }
+
+        if (this._candidates.indexOf(picker) === -1) {
+            return;
+        }
+
+        this.removeCandidate(picker);
+
+    }
+
+    private onTriggerIn = (go: mw.GameObject) => {
+
+        let picker: IPickerController = GToolkit.getComponentWhichIs(go, 'pick');
+        if (!picker) {
+            return;
+        }
+
+        this.addCandidate(picker);
+    }
+
+
+    protected resetGameObject(position?: mw.Vector) {
+        if (!position) {
+            position = this.initializePosition;
+        }
+        this.gameObject.parent = null;
+        this.gameObject.worldTransform.position = position;
+        (this.gameObject as mw.Model).setCollision(mw.PropertyStatus.On);
+    }
+
+
+    /**
+     * 尝试被捡起
+     * @param candidate 
+     * @returns 
+     */
+    protected async controllerTryPickupSelf(candidate: IPickerController) {
+        if (this.pickStatus) {
+            return;
+        }
+
+        if (candidate.pickType && candidate.pickType.indexOf(this.type) === -1) {
+            return;
+        }
+        if (!await candidate.pick(this)) {
+            return false;
+        }
+        this.holder = candidate;
+        this.pickStatus = true;
+    }
+
+
+    /**
+     * 被放下
+     * @returns 
+     */
+    async putdown(): Promise<boolean> {
+
+        if (this.detectionCollisionWhenPutdown) {
+
+            let position = this.findValidPutPosition();
+            if (!position) {
+                return false;
+            }
+            this.resetGameObject(position);
+        }
+
+        this.holder = null;
+        this.pickStatus = false;
+        return true;
+
+    }
+
+    protected findValidPutPosition() {
+
+        let handlerTransform = this.holder.gameObject.worldTransform;
+        let nowPosition = this.gameObject.worldTransform.position;
+        let radius = this.size.z / 2;
+        let dirs = [
+            handlerTransform.getForwardVector(),
+            handlerTransform.getForwardVector().multiply(-1),
+            handlerTransform.getRightVector(),
+            handlerTransform.getRightVector().multiply(-1)
+        ]
+
+        const ignore = [this.holder.gameObject.gameObjectId, this.gameObject.gameObjectId, this._trigger.gameObjectId];
+        for (const dir of dirs) {
+
+            let origin = nowPosition.clone().add(dir.multiply(radius * 2))
+
+            let end = origin.clone();
+            end.z -= 300;
+            origin.z += 300;
+            let traceResult = mw.QueryUtil.sphereTrace(origin, end, radius, false, true, ignore);
+
+            if (traceResult.length > 0) {
+
+                let closest = traceResult[0];
+                let distance = closest.distance;
+                if (distance >= radius) {
+
+                    closest.position.z -= radius;
+                    return closest.position;
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+
+
+    /** 交互物被拾起 */
+    protected onBeenPicked() {
+
+
+    }
+
+    /** 交互物被放下 */
+    protected onBeenLand() {
+
+    }
+}

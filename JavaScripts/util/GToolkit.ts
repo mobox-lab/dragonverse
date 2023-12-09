@@ -288,6 +288,35 @@ class GToolkit {
         return method(instance);
     }
 
+
+    public getComponent<T extends mw.Script>(cls: any, go: mw.GameObject) {
+
+        let scripts = go.getScripts();
+
+        for (const script of scripts) {
+
+            if (script instanceof cls) {
+                return script as T
+            }
+        }
+
+        return null;
+    }
+
+    public getComponentWhichIs<T>(go: mw.GameObject, method: string | ((instance: any) => boolean)) {
+
+        let scripts = go.getScripts();
+
+        for (const script of scripts) {
+
+            if (this.is(script, method)) {
+                return script as T
+            }
+        }
+
+        return null;
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Data Guard
@@ -1022,6 +1051,7 @@ class GToolkit {
         character.setDescription(data);
     }
 
+
     /**
      * 获取角色胶囊体 下圆心坐标.
      * @param character
@@ -1443,6 +1473,11 @@ class GToolkit {
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-}
 
+
+
+}
+type AnyClass<T> = {
+    new(...args: unknown[]): T
+}
 export default new GToolkit();

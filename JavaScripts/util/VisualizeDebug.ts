@@ -16,7 +16,6 @@ interface GameObject extends mw.GameObject {
 
 interface UEVector extends mw.Vector {
 
-    toUEVector?();
 }
 
 
