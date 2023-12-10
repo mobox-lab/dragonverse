@@ -6,6 +6,7 @@ import { CompanionModule_S } from "./CompanionModule_S";
 export class CompanionModule_C extends ModuleC<CompanionModule_S, CompanionData> implements ICompanionEntityCollection {
 
 
+
     private _controller: CompanionController;
 
     protected onAwake(): void {
