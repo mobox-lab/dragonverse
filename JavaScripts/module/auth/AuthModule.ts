@@ -5,6 +5,7 @@ import GameStart from "../../GameStart";
 import CryptoJS from "crypto-js";
 import noReply = mwext.Decorator.noReply;
 import GameServiceConfig from "../../const/GameServiceConfig";
+import Regulator from "../../depend/regulator/Regulator";
 
 /**
  * Salt Token.
@@ -82,6 +83,8 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 
     private _lastVerifyCodeTime: number = 0;
 
+    private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -101,6 +104,8 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
+
+        if (this._patrolRegulator.ready()) this.patrol();
     }
 
     protected onEnterScene(sceneType: number): void {
@@ -175,6 +180,16 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
         Log4Ts.log(AuthModuleC, `release player. enjoy!`);
         //TODO_LviatYi 放行玩家.
         Event.dispatchToLocal(EventDefine.PlayerEnableEnter);
+    }
+
+    /**
+     * 巡逻.
+     */
+    public patrol() {
+        //TODO_LviatYi 圈定新手村区域 进行区域检查
+
+        if (!this.data.enterEnable) return;
+        this.server.net_patrol();
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -437,6 +452,13 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             );
             this.getClient(this.currentPlayerId)?.net_enableEnter();
         }
+    }
+
+    @noReply()
+    public net_patrol() {
+        if (this.currentData.enterEnable) return;
+
+        RoomService.kick(this.currentPlayer, "You don't have access");
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
