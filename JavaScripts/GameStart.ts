@@ -1,4 +1,6 @@
 import { GM } from "module_gm";
+import * as mwaction from "mwaction";
+import { VectorExt } from "./declaration/vectorext";
 import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
 import i18n, { LanguageTypes } from "./language/i18n";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
@@ -10,10 +12,13 @@ import CollectibleItemModuleData, {
 import { CompanionData } from "./module/companion/CompanionData";
 import { CompanionModule_C } from "./module/companion/CompanionModule_C";
 import { CompanionModule_S } from "./module/companion/CompanionModule_S";
+import NpcModuleData, { NpcModuleC, NpcModuleS } from "./module/npc/NpcModule";
+import { QuestData } from "./module/quest/QuestData";
+import { QuestModuleC } from "./module/quest/QuestModuleC";
+import { QuestModuleS } from "./module/quest/QuestModuleS";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 import GMPanel from "./ui/gm/GmPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
-import NpcModuleData, { NpcModuleC, NpcModuleS } from "./module/npc/NpcModule";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -68,6 +73,7 @@ export default class GameStart extends mw.Script {
 
     protected onUpdate(dt: number): void {
         TweenUtil.TWEEN.update();
+        actions.AcitonMgr.update(dt * 1000);
     }
 
     protected onDestroy(): void {
@@ -94,6 +100,9 @@ export default class GameStart extends mw.Script {
         } else if (SystemUtil.isServer()) {
             this.initializeServer();
         }
+
+        VectorExt.initialize();
+        mwaction;
     }
 
     private initializeClient() {
@@ -117,6 +126,8 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(SceneDragonModuleS, SceneDragonModuleC, SceneDragonModuleData);
         moduleService.registerModule(NpcModuleS, NpcModuleC, NpcModuleData);
         moduleService.registerModule(CompanionModule_S, CompanionModule_C, CompanionData);
+        moduleService.registerModule(QuestModuleS, QuestModuleC, QuestData);
+
     }
 
     private registerTestKeyT() {
