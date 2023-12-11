@@ -15,8 +15,10 @@ export function getGenerationPointMap(tag: string, announcer: Announcer) {
             if (id === Number.NaN) return;
             let vecArr = result.get(id);
             if (!vecArr) {
-                result.set(id, []);
+                vecArr = [];
+                result.set(id, vecArr);
             }
             vecArr.push(item.worldTransform.position);
         });
+    return result;
 }

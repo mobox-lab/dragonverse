@@ -37,6 +37,16 @@ export abstract class Quest extends InitializeCheckerScript {
         return this._status;
     }
 
+    public set status(value: QuestStateEnum) {
+        if (value === this._status) {
+            return;
+        }
+        this._status = value;
+        if (value === QuestStateEnum.Complete) {
+            this.onComplete();
+        }
+    }
+
     public setUp(sender: QuestReporter, id: number, progress: number, status: QuestStateEnum, customData: string = '') {
 
         this._sender = sender;
@@ -44,6 +54,7 @@ export abstract class Quest extends InitializeCheckerScript {
         this._progress = progress;
         this._status = status;
         this.onSerializeCustomData(customData);
+        this.onStart();
     }
 
 
@@ -63,8 +74,9 @@ export abstract class Quest extends InitializeCheckerScript {
     protected updateTaskProgress(progress: number, customData: string = '') {
         this._progress = progress;
         this._sender.tryToUpdateTaskInfo(this._id, progress, customData);
-
     }
+
+
 
 
     /** 当任务被激活时回调 */

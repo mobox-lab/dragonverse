@@ -1,13 +1,13 @@
 import tryGenerateTsWidgetTypeByUEObject = mw.tryGenerateTsWidgetTypeByUEObject;
 import Character = mw.Character;
 import GameObject = mw.GameObject;
-import Log4Ts, { Announcer, DebugLevels, logString } from "../depend/log4ts/Log4Ts";
+import Log4Ts, { Announcer, DebugLevels, LogString } from "../depend/log4ts/Log4Ts";
 
 //#region Type Guard
 /**
  * Prototype of a class constructor.
  */
-export type Constructor<TResult> = new (...args: Array<any>) => TResult;
+export type Constructor<TResult> = new (...args: Array<unknown>) => TResult;
 
 /**
  * A function taking one argument and returning a boolean result.
@@ -18,7 +18,7 @@ export type Predicate<TArg = void> = (arg: TArg) => boolean;
 /**
  * A function taking any arguments and returning any result.
  */
-export type Function = (...params: unknown[]) => unknown;
+export type Method = (...params: unknown[]) => unknown;
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -93,8 +93,8 @@ export enum GenderTypes {
  */
 export class Switcher {
     private _cases: (boolean | number)[][] = [];
-    private _callbacks: Function[] = [];
-    private _default: Function = null;
+    private _callbacks: Method[] = [];
+    private _default: Method = null;
 
     /**
      * build judge case.
@@ -102,7 +102,7 @@ export class Switcher {
      * @param values
      *  when value is null or undefined, it will be ignored.
      */
-    public case(callback: Function, ...values: (boolean | number)[]): this {
+    public case(callback: Method, ...values: (boolean | number)[]): this {
         this._cases.push(values);
         this._callbacks.push(callback);
 
@@ -113,7 +113,7 @@ export class Switcher {
      * build judge default case.
      * @param callback
      */
-    public default(callback: Function): void {
+    public default(callback: Method): void {
         this._default = callback;
     }
 
@@ -152,9 +152,10 @@ export class Switcher {
  * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
  * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
  * @author LviatYi
+ * @author minjia.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.7.9b
+ * @version 0.8.5b
  * @alpha
  */
 class GToolkit {
@@ -273,48 +274,17 @@ class GToolkit {
     }
 
     /**
-     * 判断实例是否继承T接口
-     * @param instance 实列化对象
-     * @param method 对象方法名称
+     * 对 instance 进行强制类型推断.
+     * @param instance 对象
+     * @param method 对象方法名
      * @returns boolean
      */
-    public is<T>(instance: any, method: string | ((instance: any) => boolean)): instance is T {
-
+    public is<T extends object>(instance: object, method: string | ((instance: object) => boolean)): instance is T {
         if (typeof method === "string") {
-
             return method in instance;
         }
 
         return method(instance);
-    }
-
-
-    public getComponent<T extends mw.Script>(cls: any, go: mw.GameObject) {
-
-        let scripts = go.getScripts();
-
-        for (const script of scripts) {
-
-            if (script instanceof cls) {
-                return script as T
-            }
-        }
-
-        return null;
-    }
-
-    public getComponentWhichIs<T>(go: mw.GameObject, method: string | ((instance: any) => boolean)) {
-
-        let scripts = go.getScripts();
-
-        for (const script of scripts) {
-
-            if (this.is(script, method)) {
-                return script as T
-            }
-        }
-
-        return null;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -514,20 +484,21 @@ class GToolkit {
         return new mw.Vector(this.random(), this.random(), this.random());
     }
 
-
     /**
-     * 生成uuid
-     * @returns 
+     * 生成 uuid
+     * @deprecated use {@link new UUID(4).toString()} instead.
+     * @returns
      */
     public generateUUID(): string {
         let d = new Date().getTime();
 
-        const uuid = 'xyx-xxy'.replace(/[xy]/g, function (c) {
+        const uuid = "xyx-xxy".replace(/[xy]/g, function (c) {
             const r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
-            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
         });
         return uuid;
+        // return new UUID(4).toString();
     }
 
     /**
@@ -896,20 +867,32 @@ class GToolkit {
      * 获取 GameObject 及其子 GameObject 下的所有指定脚本.
      * @param object
      * @param scriptCls
+     * @param traverse 遍历深度. 从 1 计数.
+     *      0 default. 无限遍历.
      */
-    public getScript<T>(object: GameObject, scriptCls: { new(...param: unknown[]): T }): T[] {
+    public getScript<T extends mw.Script>(
+        object: GameObject,
+        scriptCls: {
+            new(...param: unknown[]): T
+        },
+        traverse: number = 0): T[] {
         const result: T[] = [];
 
-        let p: GameObject = object;
-        let stack: GameObject[] = [p];
+        let traversed: number = 0;
+        let stack: GameObject[] = [object];
+        let cache: GameObject[] = [];
 
-        while (stack.length > 0) {
-            p = stack.shift();
-            stack.push(...p.getChildren());
-            result.push(...p.getScripts()
-                .filter(script => script instanceof scriptCls)
-                .map((value) => (value as T)));
-        }
+        do {
+            for (const go of stack) {
+                cache.push(...go.getChildren());
+                result.push(...go.getScripts()
+                    .filter(script => script instanceof scriptCls)
+                    .map((value) => (value as T)));
+            }
+            stack = cache;
+            cache = [];
+            ++traversed;
+        } while (stack.length > 0 && (traverse === 0 || (traversed < traverse)));
 
         return result;
     }
@@ -918,19 +901,91 @@ class GToolkit {
      * 获取 GameObject 及其子 GameObject 下的首个指定脚本.
      * @param object
      * @param scriptCls
+     * @param traverse 遍历深度. 从 1 计数.
+     *      0 default. 无限遍历.
      */
-    public getFirstScript<T>(object: GameObject, scriptCls: { new(...param: unknown[]): T }): T {
-        let p: GameObject = object;
-        let stack: GameObject[] = [p];
+    public getFirstScript<T extends mw.Script>(object: GameObject,
+        scriptCls: (new (...args: unknown[]) => T) | Function,
+        traverse: number = 0): T | null {
+        let traversed: number = 0;
+        let stack: GameObject[] = [object];
+        let cache: GameObject[] = [];
 
-        while (stack.length > 0) {
-            p = stack.shift();
-            stack.push(...p.getChildren());
-            const s = p.getScripts().find((s) => {
-                return s instanceof scriptCls;
-            });
-            if (s) return s as T;
-        }
+        do {
+            for (const go of stack) {
+                cache.push(...go.getChildren());
+                const script = go.getScripts().find((s) => {
+                    return s instanceof scriptCls;
+                });
+                if (script) return script as T;
+            }
+            stack = cache;
+            cache = [];
+            ++traversed;
+        } while (stack.length > 0 && (traverse === 0 || (traversed < traverse)));
+
+        return null;
+    }
+
+
+    /**
+     * 获取 GameObject 及其子 GameObject 下的所有指定脚本.
+     * @param object
+     * @param method
+     * @param traverse 遍历深度. 从 1 计数.
+     *      0 default. 无限遍历.
+     */
+    public getScriptIs<T extends mw.Script>(
+        object: GameObject,
+        method: string | ((instance: object) => boolean),
+        traverse: number = 0): T[] {
+        const result: T[] = [];
+
+        let traversed: number = 0;
+        let stack: GameObject[] = [object];
+        let cache: GameObject[] = [];
+
+        do {
+            for (const go of stack) {
+                cache.push(...go.getChildren());
+                result.push(...go.getScripts()
+                    .filter(script => this.is(script, method))
+                    .map((value) => (value as T)));
+            }
+            stack = cache;
+            cache = [];
+            ++traversed;
+        } while (stack.length > 0 && (traverse === 0 || (traversed < traverse)));
+
+        return result;
+    }
+
+    /**
+     * 获取 GameObject 及其子 GameObject 下的首个指定脚本.
+     * @param object
+     * @param method
+     * @param traverse 遍历深度. 从 1 计数.
+     *      0 default. 无限遍历.
+     */
+    public getFirstScriptIs<T extends mw.Script>(object: GameObject,
+        method: string | ((instance: object) => boolean),
+        traverse: number = 0): T | null {
+        let traversed: number = 0;
+        let stack: GameObject[] = [object];
+        let cache: GameObject[] = [];
+
+        do {
+            for (const go of stack) {
+                cache.push(...go.getChildren());
+                const script = go.getScripts().find((s) => {
+                    return this.is(s, method);
+                });
+                if (script) return script as T;
+            }
+            stack = cache;
+            cache = [];
+            ++traversed;
+        } while (stack.length > 0 && (traverse === 0 || (traversed < traverse)));
 
         return null;
     }
@@ -1031,6 +1086,17 @@ class GToolkit {
             typeof idOrObj === "string" ?
                 self.character.gameObjectId === idOrObj :
                 this.isCharacter(idOrObj) && idOrObj.player === self;
+    }
+
+    /**
+     * playerId 与 player 合取 player.
+     * @param player
+     */
+    public queryPlayer(player: number | Player) {
+        if (typeof player === "number") {
+            return Player.getPlayer(player);
+        }
+        return player;
     }
 
     /**
@@ -1385,7 +1451,7 @@ class GToolkit {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Log
-    public log(announcer: Announcer, ...messages: (logString | string)[]): void;
+    public log(announcer: Announcer, ...messages: (LogString | string)[]): void;
 
     public log(announcer: Announcer, ...messages: unknown[]): void;
 
@@ -1395,7 +1461,7 @@ class GToolkit {
      * @param messages text.
      * @deprecated
      */
-    public log(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+    public log(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
         if (Log4Ts.debugLevel !== DebugLevels.Dev) return;
 
         let title = true;
@@ -1414,7 +1480,7 @@ class GToolkit {
         }
     }
 
-    public warn(announcer: Announcer, ...messages: (logString | string)[]): void;
+    public warn(announcer: Announcer, ...messages: (LogString | string)[]): void;
 
     public warn(announcer: Announcer, ...messages: unknown[]): void;
 
@@ -1424,7 +1490,7 @@ class GToolkit {
      * @param messages text.
      * @deprecated
      */
-    public warn(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+    public warn(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
         if (Log4Ts.debugLevel === DebugLevels.Silent) return;
 
         let title = true;
@@ -1443,7 +1509,7 @@ class GToolkit {
         }
     }
 
-    public error(announcer: Announcer, ...messages: (logString | string)[]): void;
+    public error(announcer: Announcer, ...messages: (LogString | string)[]): void;
 
     public error(announcer: Announcer, ...messages: unknown[]): void;
 
@@ -1453,7 +1519,7 @@ class GToolkit {
      * @param messages text.
      * @deprecated
      */
-    public error(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+    public error(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
         if (Log4Ts.debugLevel === DebugLevels.Silent) return;
 
         let title = true;
@@ -1473,11 +1539,6 @@ class GToolkit {
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-
-
 }
-type AnyClass<T> = {
-    new(...args: unknown[]): T
-}
+
 export default new GToolkit();

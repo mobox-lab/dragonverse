@@ -9,6 +9,19 @@ import { INpcElement } from "../../config/Npc";
 import NpcTrigger from "./trigger/NpcTrigger";
 import NpcBehavior from "./NpcBehavior";
 
+/**
+ * 场景龙存在数据.
+ */
+class NpcExistInfo {
+    public behavior: NpcBehavior;
+    public object: GameObject;
+
+    constructor(behavior: NpcBehavior, object: GameObject) {
+        this.behavior = behavior;
+        this.object = object;
+    }
+}
+
 export default class NpcModuleData extends Subdata {
     //@Decorator.persistence()
     //public isSave: bool;
@@ -52,15 +65,17 @@ export class NpcModuleC extends ModuleC<NpcModuleS, NpcModuleData> {
         );
 
         GToolkit.getFirstScript(obj, NpcTrigger)?.init(config.id);
-        GToolkit.getFirstScript(obj, NpcBehavior)?.init(config);
+        const behavior = GToolkit.getFirstScript(obj, NpcBehavior)?.init(config);
 
-        return obj;
+        return new NpcExistInfo(behavior, obj);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Member
     private _eventListeners: EventListener[] = [];
+
+    private _npcMap: Map<number, NpcBehavior> = new Map<number, NpcBehavior>();
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -114,13 +129,22 @@ export class NpcModuleC extends ModuleC<NpcModuleS, NpcModuleData> {
                     NpcModuleC.NpcPrefabFactory(config).then(
                         (value) => {
                             Log4Ts.log(NpcModuleC,
-                                `generate npc success.`,
+                                `generate npc ${value.behavior ? "success" : "fail"}.`,
                                 `id: ${config.id}`,
                                 `name: ${GameConfig.Character.getElement(config.characterId)?.name ?? "null"}`);
+                            if (!value.behavior) {
+                                return;
+                            } else {
+                                this._npcMap.set(config.id, value.behavior);
+                            }
                         },
                     );
                 },
             );
+    }
+
+    public getNpc(id: number) {
+        return this._npcMap.get(id);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

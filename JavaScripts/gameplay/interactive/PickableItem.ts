@@ -3,17 +3,19 @@ import { InitializeCheckerScript } from "../archtype/base/InitializeCheckScript"
 import { KeyItem } from "./KeyItemPuzzel";
 import { IPickerController } from "./PickerController";
 
+const tempUseVector = new mw.Vector();
+
 export abstract class PickableItem extends InitializeCheckerScript implements KeyItem {
 
 
-    @mw.Property({ displayName: "放置物类型" })
-    type: number = 0
+    @mw.Property({displayName: "放置物类型"})
+    type: number = 0;
 
-    public storage: string = ''
+    public storage: string = "";
 
 
-    @mw.Property({ displayName: "初始位置" })
-    public initializePosition: mw.Vector = new mw.Vector()
+    @mw.Property({displayName: "初始位置"})
+    public initializePosition: mw.Vector = new mw.Vector();
 
     public detectionCollisionWhenPutdown = true;
 
@@ -21,11 +23,12 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
     private _trigger: mw.Trigger;
 
-    private _beenPicked: boolean = false
+    private _beenPicked: boolean = false;
 
     private _candidates: IPickerController[] = [];
 
 
+    public onBeenPutInStorage: mw.Action1<PickableItem> = new mw.Action1();
 
     protected holder: IPickerController;
 
@@ -42,7 +45,10 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
         return this._beenPicked;
     }
 
-
+    protected onStart(): void {
+        this.initializePosition = this.gameObject.worldTransform.position;
+        super.onStart();
+    }
 
 
     protected onInitialize(): void {
@@ -50,8 +56,6 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
         this.size = this.gameObject.getBoundingBoxExtent(true, false, this.size);
         this.onPickStatusChanged();
     }
-
-
 
 
     private onPickStatusChanged() {
@@ -72,14 +76,12 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
     }
 
 
-
-
     private removeCandidate(target?: IPickerController) {
 
         if (!target) {
             this._candidates.forEach((value) => {
                 value.onPressedInteractive.remove(this.controllerTryPickupSelf, this);
-            })
+            });
             this._candidates.length = 0;
             return;
         }
@@ -106,7 +108,7 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
     }
 
     private onTriggerOut = (go: mw.GameObject) => {
-        let picker: IPickerController = GToolkit.getComponentWhichIs(go, 'pick');
+        let picker: IPickerController = GToolkit.getFirstScriptIs(go, "pick");
         if (!picker) {
             return;
         }
@@ -117,17 +119,17 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
         this.removeCandidate(picker);
 
-    }
+    };
 
     private onTriggerIn = (go: mw.GameObject) => {
 
-        let picker: IPickerController = GToolkit.getComponentWhichIs(go, 'pick');
+        let picker: IPickerController = GToolkit.getFirstScriptIs(go, "pick");
         if (!picker) {
             return;
         }
 
         this.addCandidate(picker);
-    }
+    };
 
 
     protected resetGameObject(position?: mw.Vector) {
@@ -142,8 +144,8 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
     /**
      * 尝试被捡起
-     * @param candidate 
-     * @returns 
+     * @param candidate
+     * @returns
      */
     protected async controllerTryPickupSelf(candidate: IPickerController) {
         if (this.pickStatus) {
@@ -163,16 +165,14 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
     /**
      * 被放下
-     * @returns 
+     * @returns
      */
     async putdown(): Promise<boolean> {
 
         if (this.detectionCollisionWhenPutdown) {
 
-            let position = this.findValidPutPosition();
-            if (!position) {
-                return false;
-            }
+            let position = this.findValidPutdownPosition();
+
             this.resetGameObject(position);
         }
 
@@ -182,7 +182,7 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
     }
 
-    protected findValidPutPosition() {
+    protected findValidPutdownPosition() {
 
         let handlerTransform = this.holder.gameObject.worldTransform;
         let nowPosition = this.gameObject.worldTransform.position;
@@ -191,13 +191,13 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
             handlerTransform.getForwardVector(),
             handlerTransform.getForwardVector().multiply(-1),
             handlerTransform.getRightVector(),
-            handlerTransform.getRightVector().multiply(-1)
-        ]
+            handlerTransform.getRightVector().multiply(-1),
+        ];
 
         const ignore = [this.holder.gameObject.gameObjectId, this.gameObject.gameObjectId, this._trigger.gameObjectId];
         for (const dir of dirs) {
 
-            let origin = nowPosition.clone().add(dir.multiply(radius * 2))
+            let origin = nowPosition.clone().add(dir.multiply(radius * 2));
 
             let end = origin.clone();
             end.z -= 300;
@@ -209,6 +209,11 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
                 let closest = traceResult[0];
                 let distance = closest.distance;
                 if (distance >= radius) {
+                    if (closest.gameObject instanceof mw.Trigger) {
+                        closest.gameObject.getBoundingBoxExtent(false, false, tempUseVector);
+
+                        closest.position.z -= tempUseVector.z / 2;
+                    }
 
                     closest.position.z -= radius;
                     return closest.position;
@@ -216,10 +221,16 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
             }
         }
 
-        return false;
+        return null;
     }
 
 
+    protected onDestroy(): void {
+        super.onDestroy();
+        this.holder = null;
+        this.removeCandidate();
+        this._candidates.length = 0;
+    }
 
 
     /** 交互物被拾起 */

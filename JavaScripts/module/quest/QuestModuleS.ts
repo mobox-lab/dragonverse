@@ -19,7 +19,6 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData>{
 
     }
 
-    @Decorator.noReply()
     public net_UpdateTaskStatus(taskId: number, progress: number, customData: string) {
         let taskInfo = this.currentData.getTaskInfo(taskId);
         if (!taskInfo) {
@@ -43,6 +42,8 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData>{
 
         this.currentData.updateTaskInfo(taskId, progress, status, customData);
 
+
+        return status;
 
 
 

@@ -3,12 +3,9 @@ import { PickableItem } from "./PickableItem";
 import { Puzzle } from "./Puzzle";
 
 
-
 export interface KeyItem {
 
-    type: number
-
-
+    type: number;
 
 
 }
@@ -18,18 +15,16 @@ export abstract class KeyItemPuzzle extends Puzzle {
 
     private _storageInfo: KeyItem[] = [];
 
-    @mw.Property({ displayName: "允许存储的类型" })
+    @mw.Property({displayName: "允许存储的类型"})
     public allowStorageType: number[] = [0];
 
-    @mw.Property({ displayName: "需要放置的数量" })
+    @mw.Property({displayName: "需要放置的数量"})
     public requiredPutNum: number = 0;
 
 
-
-    public onStorageProgressUpdate: mw.Action1<KeyItemPuzzle> = new mw.Action1()
+    public onStorageProgressUpdate: mw.Action1<KeyItemPuzzle> = new mw.Action1();
 
     private trigger: mw.Trigger;
-
 
 
     protected onInitialize(): void {
@@ -38,7 +33,7 @@ export abstract class KeyItemPuzzle extends Puzzle {
 
         this.trigger.onEnter.add((enter) => {
             this.onTriggerEnter(enter);
-        })
+        });
 
         this.onStorageNumUpdate();
     }
@@ -59,15 +54,15 @@ export abstract class KeyItemPuzzle extends Puzzle {
         if (!enter) {
             return;
         }
-        let storageItem: PickableItem = GToolkit.getComponent(PickableItem, enter);
+        let storageItem: PickableItem = GToolkit.getFirstScript(enter, PickableItem);
 
         if (!storageItem) {
-            this.onPutInSomeGameObject(enter, false)
+            this.onPutInSomeGameObject(enter, false);
             return;
         }
 
         if (!this.locked) {
-            this.onPutInSomeGameObject(enter, false)
+            this.onPutInSomeGameObject(enter, false);
             return;
         }
 
@@ -78,9 +73,8 @@ export abstract class KeyItemPuzzle extends Puzzle {
         }
 
         if (!this.checkExtraPutInCondition(storageItem)) {
-            return
+            return;
         }
-
 
 
         // 可以存储
@@ -88,8 +82,9 @@ export abstract class KeyItemPuzzle extends Puzzle {
         storageItem.storage = this.guid;
         storageInfo.push({
             type: storageItem.type,
-        })
+        });
         this.onPutInSomeGameObject(enter, true);
+        this.onStorageNumUpdate();
     }
 
     protected checkExtraPutInCondition(keyItem: KeyItem): boolean {
@@ -100,7 +95,6 @@ export abstract class KeyItemPuzzle extends Puzzle {
     protected onPutInSomeGameObject(keyItem: mw.GameObject, isAccepted: boolean) {
 
     }
-
 
 
     onReplicated(path, value, oldVal) {

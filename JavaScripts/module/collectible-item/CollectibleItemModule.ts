@@ -169,6 +169,8 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
             item.id,
             item.location,
         ).then((value) => {
+            if (!value) return;
+
             this.syncItemMap.set(syncKey, {item: item, object: value});
         });
     }
@@ -416,8 +418,8 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      */
     private generate(playerId: number, itemId: number) {
         Log4Ts.log(CollectibleItemModuleS, `try generate item, itemId: ${itemId}.`,
-            CollectibleItemModuleS, () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`,
-            CollectibleItemModuleS, () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
+            () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`,
+            () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
 
         let location = GToolkit.randomArrayItem(this.getValidGenerateLocation(itemId, playerId));
         if (location === null) {
@@ -470,9 +472,9 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             return;
         }
         Log4Ts.log(CollectibleItemModuleS, `try destroy item, itemId: ${item.id}.`,
-            CollectibleItemModuleS, () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`,
-            CollectibleItemModuleS, () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`,
-            CollectibleItemModuleS, () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
+            () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`,
+            () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`,
+            () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);

@@ -6,9 +6,9 @@ import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleS } from "./QuestModuleS";
 
-export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
+export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> {
 
-    
+    private _questMap: Map<number, Quest> = new Map();
 
     protected onStart(): void {
 
@@ -17,7 +17,6 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
 
 
     private async initializeTasks() {
-
 
         let character = Player.localPlayer.character;
         let script = await mw.Script.spawnScript(PickerController);
@@ -28,19 +27,20 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
 
             let go = await mw.GameObject.asyncSpawn(config.script);
 
-            let script: Quest = GToolkit.getComponent(Quest, go);
+            let script: Quest = GToolkit.getFirstScript(go, Quest);
 
             if (!script) {
-                throw new Error("预制体中没有绑定Quest脚本")
+                throw new Error("预制体中没有绑定Quest脚本");
             }
             script.gameObject = character;
             script.setUp(this, task.questId, task.progress, task.status, task.customData);
+            this._questMap.set(task.questId, script);
         }
 
     }
 
 
-    public tryToUpdateTaskInfo(taskId: number, progress: number, customData?: string) {
+    public async tryToUpdateTaskInfo(taskId: number, progress: number, customData?: string) {
 
         let info = this.data.getTaskInfo(taskId);
 
@@ -56,10 +56,9 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
             return;
         }
 
-        this.server.net_UpdateTaskStatus(taskId, progress, customData);
+        info.status = await this.server.net_UpdateTaskStatus(taskId, progress, customData);
+        this._questMap.get(taskId).status = info.status;
     }
-
-
 
 
 }

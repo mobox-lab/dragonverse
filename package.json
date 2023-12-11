@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "@types/crypto-js": "^4.2.1",
     "@types/uuid": "^9.0.7",
+    "crypto-js": "^4.2.0",
     "linq": "^4.0.2",
     "module_bubble": "^5.0.7",
     "module_gm": "^5.0.5",

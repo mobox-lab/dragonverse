@@ -19,12 +19,17 @@ export enum DebugLevels {
 /**
  * 日志 lambda.
  */
-export type logString = (...params: unknown[]) => string;
+export type LogString = (...params: unknown[]) => string;
 
 /**
  * 宣称者.
  */
 export type Announcer = { name: string };
+
+/**
+ * 宣称者或宣称者名.
+ */
+type NameOrAnnouncer = string | Announcer;
 
 /**
  * 日志打印函数.
@@ -92,11 +97,15 @@ export class Log4TsConfig {
      * 添加 白名单.
      * @param names
      */
-    public addWhiteList(...names: (string | string[])[]): this {
+    public addWhiteList(...names: (NameOrAnnouncer | NameOrAnnouncer[])[]): this {
         names.forEach(name => {
             if (Array.isArray(name)) {
-                name.forEach(n => this._whiteList.add(n));
+                name.forEach(n => {
+                    if (typeof n !== "string") n = n.name;
+                    this._whiteList.add(n);
+                });
             } else {
+                if (typeof name !== "string") name = name.name;
                 this._whiteList.add(name);
             }
         });
@@ -107,11 +116,15 @@ export class Log4TsConfig {
      * 添加 黑名单.
      * @param names
      */
-    public addBlackList(...names: (string | string[])[]): this {
+    public addBlackList(...names: (NameOrAnnouncer | NameOrAnnouncer[])[]): this {
         names.forEach(name => {
             if (Array.isArray(name)) {
-                name.forEach(n => this._blackList.add(n));
+                name.forEach(n => {
+                    if (typeof n !== "string") n = n.name;
+                    this._blackList.add(n);
+                });
             } else {
+                if (typeof name !== "string") name = name.name;
                 this._blackList.add(name);
             }
         });
@@ -203,7 +216,7 @@ export class Log4TsConfig {
      * short for {@link addWhiteList}.
      * @param names
      */
-    public aW(...names: (string | string[])[]) {
+    public aW(...names: (NameOrAnnouncer | NameOrAnnouncer[])[]) {
         return this.addWhiteList(...names);
     }
 
@@ -211,7 +224,7 @@ export class Log4TsConfig {
      * short for {@link addBlackList}.
      * @param names
      */
-    public aB(...names: (string | string[])[]) {
+    public aB(...names: (NameOrAnnouncer | NameOrAnnouncer[])[]) {
         return this.addBlackList(...names);
     }
 
@@ -223,6 +236,7 @@ export class Log4TsConfig {
  * pure TS 日志管理器.
  * @desc 提供统一的日志管理.
  * @desc 以及简单的过滤功能.
+ * @nothrow
  * @desc ---
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
@@ -232,10 +246,10 @@ export class Log4TsConfig {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.0.3
+ * @version 1.1.0
  */
 class Log4Ts {
-    //#region Config
+//#region Config
     /**
      * 日志等级.
      */
@@ -243,50 +257,53 @@ class Log4Ts {
 
     private _config: Log4TsConfig = new Log4TsConfig();
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    public log(announcer: Announcer, ...messages: (logString | string)[]): void;
+    public log(announcer: Announcer, ...messages: (LogString | string)[]): void;
 
     public log(announcer: Announcer, ...messages: unknown[]): void;
 
     /**
      * debug log.
      * @param announcer announcer with name.
+     *      when null or undefined, will print as second indent.
      * @param messages text.
      */
-    public log(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+    public log(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
         if (this.debugLevel !== DebugLevels.Dev || !this._config.checkAnnouncer(announcer)) return;
         const logFunc: LogFunc = this._config.logFunc;
 
         this.print(logFunc, announcer, ...messages);
     }
 
-    public warn(announcer: Announcer, ...messages: (logString | string)[]): void;
+    public warn(announcer: Announcer, ...messages: (LogString | string)[]): void;
 
     public warn(announcer: Announcer, ...messages: unknown[]): void;
 
     /**
      * debug warn.
      * @param announcer announcer with name.
+     *      when null or undefined, will print as second indent.
      * @param messages text.
      */
-    public warn(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+    public warn(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
         if (this.debugLevel === DebugLevels.Silent || !this._config.checkAnnouncer(announcer)) return;
         const logFunc: LogFunc = this._config.logFunc;
 
         this.print(logFunc, announcer, ...messages);
     }
 
-    public error(announcer: Announcer, ...messages: (logString | string)[]): void;
+    public error(announcer: Announcer, ...messages: (LogString | string)[]): void;
 
     public error(announcer: Announcer, ...messages: unknown[]): void;
 
     /**
      * debug error.
      * @param announcer announcer with name.
+     *      when null or undefined, will print as second indent.
      * @param messages text.
      */
-    public error(announcer: Announcer, ...messages: (logString | string | unknown)[]): void {
+    public error(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
         if (this.debugLevel === DebugLevels.Silent || !this._config.checkAnnouncer(announcer)) return;
         const logFunc: LogFunc = this._config.errorFunc;
 
@@ -302,22 +319,31 @@ class Log4Ts {
         return this;
     }
 
-    private print(logFunc: LogFunc, announcer: Announcer, ...messages: (logString | string | unknown)[]) {
-        let title = true;
+    private print(logFunc: LogFunc, announcer: Announcer, ...messages: (LogString | string | unknown)[]) {
         for (const msg of messages) {
             let msgStr: string;
             if (typeof msg === "string") {
                 msgStr = msg;
             } else if (typeof msg === "function") {
-                msgStr = msg();
+                try {
+                    msgStr = msg();
+                } catch (e) {
+                    msgStr = "function error.";
+                }
             } else {
-                msgStr = msg.toString();
+                msgStr = msg?.toString() ?? "message obj cant be convert to string.";
+            }
+            try {
+                logFunc(`${
+                    announcer && announcer.name ?
+                        announcer.name + ":" :
+                        `   `
+                } ${msgStr}`);
+            } catch (e) {
             }
 
-            logFunc(`${title ? announcer.name + ": " : `    `}${msgStr}`);
-            title = false;
+            announcer = null;
         }
-
     }
 }
 

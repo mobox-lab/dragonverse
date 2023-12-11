@@ -3,7 +3,7 @@ import * as mwaction from "mwaction";
 import { VectorExt } from "./declaration/vectorext";
 import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
 import i18n, { LanguageTypes } from "./language/i18n";
-import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/AuthModule";
+import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
 import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
 import CollectibleItemModuleData, {
     CollectibleItemModuleC,
@@ -19,7 +19,6 @@ import { QuestModuleS } from "./module/quest/QuestModuleS";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 import GMPanel from "./ui/gm/GmPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
-import Camera = mw.Camera;
 
 @Component
 export default class GameStart extends mw.Script {
@@ -73,8 +72,8 @@ export default class GameStart extends mw.Script {
     }
 
     protected onUpdate(dt: number): void {
-        actions.AcitonMgr.update(dt * 1000);
         TweenUtil.TWEEN.update();
+        actions.AcitonMgr.update(dt * 1000);
     }
 
     protected onDestroy(): void {
@@ -101,10 +100,10 @@ export default class GameStart extends mw.Script {
         } else if (SystemUtil.isServer()) {
             this.initializeServer();
         }
-        mwaction;
-        VectorExt.initialize(); 1
-    }
 
+        VectorExt.initialize();
+        mwaction;
+    }
 
     private initializeClient() {
         Log4Ts.debugLevel = this.clientLogLevel;
@@ -132,9 +131,7 @@ export default class GameStart extends mw.Script {
     }
 
     private registerTestKeyT() {
-        InputUtil.onKeyDown(mw.Keys.T, () => {
-            Log4Ts.log(GameStart, `Key T pressed`);
-        });
+        InputUtil.onKeyDown(mw.Keys.T, () => Log4Ts.log(GameStart, `Key T pressed`));
     }
 
     private registerGodModeG() {

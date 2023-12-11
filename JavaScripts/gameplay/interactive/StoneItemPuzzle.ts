@@ -51,22 +51,23 @@ export default class StoneItemPuzzle extends KeyItemPuzzle {
         super.onInitialize();
         this._ball = this.unLockPart.getChildByName("ball") as mw.IntegratedMover;
         this._light = this.unLockPart.getChildByName("light");
-        this.afterInitialize();
     }
 
 
     protected onPutInSomeGameObject(keyItem: mw.GameObject, isAccepted: boolean): void {
 
-        const end = keyItem.worldTransform.position.clone()
-        end.z -= 150;
-
-        let tween = actions.tween(keyItem.worldTransform).to(500, {
-            position: end
-        }).setTag(StoneItemAnimationTag)
 
         if (isAccepted) {
 
-            tween.start();
+            this._ball.setVisibility(mw.PropertyStatus.On);
+            this._ball.worldTransform.position = keyItem.worldTransform.position.clone();
+            const end = keyItem.worldTransform.position;
+            end.z -= 250;
+
+            actions.tween(this._ball.worldTransform).to(500, {
+                position: end
+            },).setTag("putan")
+                .start();
 
         } else {
 
@@ -78,10 +79,15 @@ export default class StoneItemPuzzle extends KeyItemPuzzle {
 
     protected onPostLockStatusChanged() {
 
-        this._ball.localTransform.position = this.lockBallPos;
         this._light.localTransform.position = this.lockLightPos;
         actions.tween(this._ball.localTransform)
             .delay(800)
+            .call(() => {
+                actions.tweens.stopAllByTag('putan');
+
+                this._ball.localTransform.position = this.lockBallPos;
+
+            })
             .to(1000, { position: this.animateBallPos })
             .to(500, { position: this.unlockBallPos })
             .setTag(StoneItemAnimationTag)

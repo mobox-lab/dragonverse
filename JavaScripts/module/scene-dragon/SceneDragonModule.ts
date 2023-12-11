@@ -51,7 +51,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     public static readonly PREFAB_MAP: Map<number, string> = new Map();
 
     static {
-        this.PREFAB_MAP.set(1, "CA62F48046026D8E9EB0F2B9833CF516");
+        this.PREFAB_MAP.set(1, "0AE59D354702965B1CE57C8DC29198E3");
     }
 
     public static async sceneDragonPrefabFactory(
@@ -73,10 +73,11 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         const behavior = GToolkit.getFirstScript(obj, SceneDragonBehavior);
         behavior.init(syncKey, item);
         obj.worldTransform.position = item.location;
+        obj.tag = "SceneDragon";
 
         return new SceneDragonExistInfo(
             behavior,
-            obj.getChildByName("SceneDragonMesh"),
+            obj,
         );
     }
 
@@ -182,6 +183,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             syncKey,
             item,
         ).then((value) => {
+            if (!value) return;
+
             this.syncItemMap.set(syncKey, value);
             this._mainPanel.addSceneDragonInteractor(syncKey);
         });

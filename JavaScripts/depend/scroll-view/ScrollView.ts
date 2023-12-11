@@ -7,13 +7,13 @@ import Waterween from "../waterween/Waterween";
 import Easing from "../easing/Easing";
 import IYoactArray from "../yoact/IYoactArray";
 import UUID from "pure-uuid";
+import Log4Ts from "../log4ts/Log4Ts";
 import ButtonTouchMethod = mw.ButtonTouchMethod;
 import SimpleDelegate = Delegate.SimpleDelegate;
 import UIService = mw.UIService;
 import UIScript = mw.UIScript;
 import SimpleDelegateFunction = Delegate.SimpleDelegateFunction;
 import Canvas = mw.Canvas;
-import Log4Ts from "../log4ts/Log4Ts";
 
 // export class Margin {
 //     public top: number;
@@ -59,7 +59,7 @@ import Log4Ts from "../log4ts/Log4Ts";
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.0.4b
+ * @version 1.0.5b
  */
 export default class ScrollView<
     D extends IUnique,
@@ -118,11 +118,11 @@ export default class ScrollView<
             switch (this.orientation) {
                 case mw.Orientation.OrientHorizontal:
                     if (padding.bottom > 0) {
-                        Log4Ts.warn(ScrollView, `检测正使用 padding.bottom.`);
-                        Log4Ts.warn(ScrollView, `在水平滑动的控件中使用此属性可能导致布局计算问题.`);
-                        Log4Ts.warn(ScrollView, `此 Bug 可能来自 UE 内部.`);
-                        Log4Ts.warn(ScrollView, `已智能覆写为 0.`);
-                        Log4Ts.warn(ScrollView, `如不需要智能覆写 请关闭 useSmartLayoutStrategy 选项.`);
+                        Log4Ts.warn(ScrollView, `检测正使用 padding.bottom.`,
+                            `在水平滑动的控件中使用此属性可能导致布局计算问题.`,
+                            `此 Bug 可能来自 UE 内部.`,
+                            `已智能覆写为 0.`,
+                            `如不需要智能覆写 请关闭 useSmartLayoutStrategy 选项.`);
                         padding.bottom = 0;
                     }
                     container.size.y = scrollBox.size.y;
@@ -138,11 +138,11 @@ export default class ScrollView<
                     break;
                 case mw.Orientation.OrientVertical:
                     if (padding.right > 0) {
-                        Log4Ts.warn(ScrollView, `检测正使用 padding.right.`);
-                        Log4Ts.warn(ScrollView, `在垂直滑动的控件中使用此属性可能导致布局计算问题.`);
-                        Log4Ts.warn(ScrollView, `此 Bug 可能来自 UE 内部.`);
-                        Log4Ts.warn(ScrollView, `已智能覆写为 0.`);
-                        Log4Ts.warn(ScrollView, `如不需要智能覆写 请关闭 useSmartLayoutStrategy 选项.`);
+                        Log4Ts.warn(ScrollView, `检测正使用 padding.right.`,
+                            `在垂直滑动的控件中使用此属性可能导致布局计算问题.`,
+                            `此 Bug 可能来自 UE 内部.`,
+                            `已智能覆写为 0.`,
+                            `如不需要智能覆写 请关闭 useSmartLayoutStrategy 选项.`);
                         padding.right = 0;
                     }
                     container.size.x = scrollBox.size.x;
@@ -333,7 +333,7 @@ export default class ScrollView<
 
     private removeOffsetTask() {
         if (!this._offsetTask) return;
-        Waterween.destroyTweenTask(this._offsetTask);
+        this._offsetTask.destroy();
         this._offsetTask = null;
     }
 
