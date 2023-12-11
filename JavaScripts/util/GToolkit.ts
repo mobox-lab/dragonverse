@@ -156,7 +156,7 @@ export class Switcher {
  * @author minjia.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.8.4b
+ * @version 0.8.5b
  * @alpha
  */
 class GToolkit {
@@ -979,7 +979,7 @@ class GToolkit {
             for (const go of stack) {
                 cache.push(...go.getChildren());
                 const script = go.getScripts().find((s) => {
-                    return this.is(script, method);
+                    return this.is(s, method);
                 });
                 if (script) return script as T;
             }
