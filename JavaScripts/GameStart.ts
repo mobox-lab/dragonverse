@@ -74,6 +74,7 @@ export default class GameStart extends mw.Script {
 
     protected onUpdate(dt: number): void {
         actions.AcitonMgr.update(dt * 1000);
+        TweenUtil.TWEEN.update();
     }
 
     protected onDestroy(): void {
