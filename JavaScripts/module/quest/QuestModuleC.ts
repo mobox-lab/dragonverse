@@ -8,7 +8,7 @@ import { QuestModuleS } from "./QuestModuleS";
 
 export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
 
-
+    
 
     protected onStart(): void {
 
@@ -17,6 +17,7 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
 
 
     private async initializeTasks() {
+
 
         let character = Player.localPlayer.character;
         let script = await mw.Script.spawnScript(PickerController);
