@@ -149,7 +149,7 @@ export default class SceneDragonBehavior extends mw.Script {
             Event.dispatchToLocal(EventDefine.DragonOutOfAliveRange, this.syncKey);
         }
 
-        this._machine.update(dt);
+        this._machine?.update(dt);
         this.state.idleStamina += dt * SceneDragonBehaviorState.IDLE_STAMINA_RECOVERY;
 
     }
