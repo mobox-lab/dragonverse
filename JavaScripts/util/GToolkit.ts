@@ -156,7 +156,7 @@ export class Switcher {
  * @author minjia.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.8.1b
+ * @version 0.8.4b
  * @alpha
  */
 class GToolkit {
@@ -286,44 +286,6 @@ class GToolkit {
         }
 
         return method(instance);
-    }
-
-    /**
-     *
-     * @param cls
-     * @param go
-     * @deprecated use {@link GToolkit.getScript} or {@link GToolkit.getFirstScript} instead.
-     */
-    public getComponent<T extends mw.Script>(cls: any, go: mw.GameObject): T {
-        let scripts = go.getScripts();
-
-        for (const script of scripts) {
-            if (script instanceof cls) {
-                return script as T;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     *
-     * @param go
-     * @param method
-     * @deprecated use {@link GToolkit.getScript} or {@link GToolkit.getFirstScript} instead.
-     */
-    public getComponentWhichIs<T>(go: mw.GameObject, method: string | ((instance: any) => boolean)) {
-
-        let scripts = go.getScripts();
-
-        for (const script of scripts) {
-
-            if (this.is(script, method)) {
-                return script as T;
-            }
-        }
-
-        return null;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -966,16 +928,49 @@ class GToolkit {
         return null;
     }
 
+
+    /**
+     * 获取 GameObject 及其子 GameObject 下的所有指定脚本.
+     * @param object
+     * @param method
+     * @param traverse 遍历深度. 从 1 计数.
+     *      0 default. 无限遍历.
+     */
+    public getScriptIs<T extends mw.Script>(
+        object: GameObject,
+        method: string | ((instance: object) => boolean),
+        traverse: number = 0): T[] {
+        const result: T[] = [];
+
+        let traversed: number = 0;
+        let stack: GameObject[] = [object];
+        let cache: GameObject[] = [];
+
+        do {
+            for (const go of stack) {
+                cache.push(...go.getChildren());
+                result.push(...go.getScripts()
+                    .filter(script => this.is(script, method))
+                    .map((value) => (value as T)));
+            }
+            stack = cache;
+            cache = [];
+            ++traversed;
+        } while (stack.length > 0 && (traverse === 0 || (traversed < traverse)));
+
+        return result;
+    }
+
     /**
      * 获取 GameObject 及其子 GameObject 下的首个指定脚本.
      * @param object
-     * @param scriptCls
+     * @param method
      * @param traverse 遍历深度. 从 1 计数.
      *      0 default. 无限遍历.
      */
     public getFirstScriptIs<T extends mw.Script>(object: GameObject,
                                                  method: string | ((instance: object) => boolean),
-                                               traverse: number = 0): T | null {
+                                                 traverse: number = 0): T | null {
         let traversed: number = 0;
         let stack: GameObject[] = [object];
         let cache: GameObject[] = [];
@@ -984,7 +979,7 @@ class GToolkit {
             for (const go of stack) {
                 cache.push(...go.getChildren());
                 const script = go.getScripts().find((s) => {
-                    return this.is(script,method);
+                    return this.is(script, method);
                 });
                 if (script) return script as T;
             }
@@ -1545,11 +1540,6 @@ class GToolkit {
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-
 }
 
-type AnyClass<T> = {
-    new(...args: unknown[]): T
-}
 export default new GToolkit();
