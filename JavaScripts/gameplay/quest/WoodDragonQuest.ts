@@ -19,17 +19,13 @@ interface SingleTaskInfo {
 class StoneTaskInfo {
 
 
-
-    @mw.Property({ displayName: "机关预制体场景guid" })
-    public puzzleGuid: string = ''
-
+    @mw.Property({displayName: "机关预制体场景guid"})
+    public puzzleGuid: string = "";
 
 
-    @mw.Property({ displayName: "石头预制体场景guid" })
-    public stoneGuid: string = ''
+    @mw.Property({displayName: "石头预制体场景guid"})
+    public stoneGuid: string = "";
 }
-
-
 
 
 interface PuzzleInfo {
@@ -45,19 +41,19 @@ interface PuzzleInfo {
 @mw.Component
 export default class WoodDragonQuest extends Quest {
 
-    @mw.Property({ displayName: "任务配置" })
+    @mw.Property({displayName: "任务配置"})
     private _taskConfig: StoneTaskInfo[] = [new StoneTaskInfo()];
 
 
-    @mw.Property({ displayName: "奖励预制体的guid" })
+    @mw.Property({displayName: "奖励预制体的guid"})
 
-    private _rewardGuid: string = ''
+    private _rewardGuid: string = "";
 
     private _cacheInfo: SingleTaskInfo[];
 
     private _puzzle: Map<KeyItemPuzzle, PuzzleInfo> = new Map();
 
-    private _reward: WoodRewardPuzzle
+    private _reward: WoodRewardPuzzle;
 
 
     protected onSerializeCustomData(customData: string) {
@@ -70,9 +66,9 @@ export default class WoodDragonQuest extends Quest {
             this._cacheInfo = this._taskConfig.map((value, index) => {
                 return {
                     index: index,
-                    complete: false
-                }
-            })
+                    complete: false,
+                };
+            });
         }
     }
 
@@ -90,30 +86,30 @@ export default class WoodDragonQuest extends Quest {
             const config = this._taskConfig[value.index];
 
             // 先生成机关
-            let puzzle = await GameObject.asyncFindGameObjectById(config.puzzleGuid)
+            let puzzle = await GameObject.asyncFindGameObjectById(config.puzzleGuid);
 
 
-            let puzzleScript: KeyItemPuzzle = GToolkit.getComponent(KeyItemPuzzle, puzzle);
+            let puzzleScript: KeyItemPuzzle = GToolkit.getFirstScript(puzzle, KeyItemPuzzle);
 
 
             if (!puzzleScript) {
-                throw new Error("配置的预制体中，没有Puzzle脚本")
+                throw new Error("配置的预制体中，没有Puzzle脚本");
             }
 
             let cacheInfo: PuzzleInfo = {
                 puzzle: puzzleScript,
                 index: value.index,
-            }
+            };
             puzzleScript.setup(!value.complete);
-            puzzleScript.onStorageProgressUpdate.add(this.onStorageProgressUpdated, this)
+            puzzleScript.onStorageProgressUpdate.add(this.onStorageProgressUpdated, this);
 
-            let stone = await GameObject.asyncFindGameObjectById(config.stoneGuid)
+            let stone = await GameObject.asyncFindGameObjectById(config.stoneGuid);
 
             if (!value.complete) {
 
-                let stoneScript: PickableItem = GToolkit.getComponent(PickableItem, stone);
+                let stoneScript: PickableItem = GToolkit.getFirstScript(stone, PickableItem);
                 if (!stoneScript) {
-                    throw new Error("配置的预制体中，没有PickableItem脚本")
+                    throw new Error("配置的预制体中，没有PickableItem脚本");
                 }
                 stoneScript.initializePosition = stone.worldTransform.position;
                 cacheInfo.stone = stoneScript;
@@ -126,10 +122,10 @@ export default class WoodDragonQuest extends Quest {
         }
 
 
-        let reward = await GameObject.asyncFindGameObjectById(this._rewardGuid)
-        const rewardScript: WoodRewardPuzzle = this._reward = GToolkit.getComponent(WoodRewardPuzzle, reward);
+        let reward = await GameObject.asyncFindGameObjectById(this._rewardGuid);
+        const rewardScript: WoodRewardPuzzle = this._reward = GToolkit.getFirstScript(reward, WoodRewardPuzzle);
         if (!rewardScript) {
-            throw new Error(" 奖励预制体没有存放脚本")
+            throw new Error(" 奖励预制体没有存放脚本");
         }
 
 
@@ -163,7 +159,7 @@ export default class WoodDragonQuest extends Quest {
             if (value.complete) {
                 progress++;
             }
-        })
+        });
         this.updateTaskProgress(progress, JSON.stringify(this._cacheInfo));
     }
 

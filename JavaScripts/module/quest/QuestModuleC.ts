@@ -6,9 +6,8 @@ import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleS } from "./QuestModuleS";
 
-export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
+export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> {
 
-    
 
     protected onStart(): void {
 
@@ -17,7 +16,6 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
 
 
     private async initializeTasks() {
-
 
         let character = Player.localPlayer.character;
         let script = await mw.Script.spawnScript(PickerController);
@@ -28,10 +26,10 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
 
             let go = await mw.GameObject.asyncSpawn(config.script);
 
-            let script: Quest = GToolkit.getComponent(Quest, go);
+            let script: Quest = GToolkit.getFirstScript(go, Quest);
 
             if (!script) {
-                throw new Error("预制体中没有绑定Quest脚本")
+                throw new Error("预制体中没有绑定Quest脚本");
             }
             script.gameObject = character;
             script.setUp(this, task.questId, task.progress, task.status, task.customData);
@@ -58,8 +56,6 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
 
         this.server.net_UpdateTaskStatus(taskId, progress, customData);
     }
-
-
 
 
 }
