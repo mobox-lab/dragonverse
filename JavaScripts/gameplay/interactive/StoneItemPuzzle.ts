@@ -18,7 +18,9 @@ export default class StoneItemPuzzle extends KeyItemPuzzle {
 
 
 
-    private _ball: mw.IntegratedMover;
+    private _mover: mw.IntegratedMover;
+
+    private _ball: mw.GameObject;
 
     private _light: mw.GameObject;
 
@@ -49,7 +51,8 @@ export default class StoneItemPuzzle extends KeyItemPuzzle {
 
     protected onInitialize(): void {
         super.onInitialize();
-        this._ball = this.unLockPart.getChildByName("ball") as mw.IntegratedMover;
+        this._ball = this.unLockPart.getChildByName("ball");
+        this._mover = this._ball.getChildByName("mover") as mw.IntegratedMover
         this._light = this.unLockPart.getChildByName("light");
     }
 
@@ -117,7 +120,7 @@ export default class StoneItemPuzzle extends KeyItemPuzzle {
         localTransform.position = this.unlockBallPos;
         localTransform = this._light.localTransform;
         localTransform.position = this.unlockLightPos;
-        this._ball.enable = true;
+        this._mover.enable = true;
 
     }
 
@@ -130,7 +133,8 @@ export default class StoneItemPuzzle extends KeyItemPuzzle {
         localTransform.position = this.lockBallPos;
         localTransform = this._light.localTransform;
         localTransform.position = this.lockLightPos
-        this._ball.enable = false;
+        this._mover.enable = false;
+
 
 
     }
