@@ -16,7 +16,6 @@
  */
 
 import { IIceBlockElement } from "../../config/IceBlock";
-import AssetsController from "../../controller/asset/AssetController";
 import { arrayToRot, arrayToVec } from "../../util/CommonUtil";
 import GToolkit from "../../util/GToolkit";
 import MovementController from "./MovementController";
@@ -72,7 +71,7 @@ export class IceBlock {
         if (obj instanceof mw.Character) {
             if (obj === Player.localPlayer.character) {
                 if (obj.velocity.z <= -this._config.triggerSpeedZ) {
-                    GToolkit.getComponent<MovementController>(MovementController, obj).addImpulse(obj, new mw.Vector(0, 0, this._config.impulse));
+                    GToolkit.getFirstScript<MovementController>(obj, MovementController).addImpulse(obj, new mw.Vector(0, 0, this._config.impulse));
                     GameObjPool.despawn(this._iceObj);
                     this._trigger.onEnter.clear();
                     GameObjPool.despawn(this._trigger);

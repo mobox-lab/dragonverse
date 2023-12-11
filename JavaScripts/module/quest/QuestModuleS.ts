@@ -1,6 +1,5 @@
 import { GameConfig } from "../../config/GameConfig";
 import MovementController from "../../gameplay/interactive/MovementController";
-import PickerController from "../../gameplay/interactive/PickerController";
 import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleC } from "./QuestModuleC";
@@ -10,7 +9,6 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData>{
 
     protected onPlayerJoined(player: mw.Player): void {
 
-        PickerController
 
         //创建一个移动控制器
         mw.Script.spawnScript(MovementController, true).then(val => {
