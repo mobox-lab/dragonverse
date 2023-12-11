@@ -3,6 +3,8 @@ import { InitializeCheckerScript } from "../archtype/base/InitializeCheckScript"
 import { KeyItem } from "./KeyItemPuzzel";
 import { IPickerController } from "./PickerController";
 
+const tempUseVector = new mw.Vector();
+
 export abstract class PickableItem extends InitializeCheckerScript implements KeyItem {
 
 
@@ -26,6 +28,7 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
     private _candidates: IPickerController[] = [];
 
 
+    public onBeenPutInStorage: mw.Action1<PickableItem> = new mw.Action1();
 
     protected holder: IPickerController;
 
@@ -40,6 +43,11 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
     public get pickStatus() {
         return this._beenPicked;
+    }
+
+    protected onStart(): void {
+        this.initializePosition = this.gameObject.worldTransform.position;
+        super.onStart();
     }
 
 
@@ -169,10 +177,8 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
         if (this.detectionCollisionWhenPutdown) {
 
-            let position = this.findValidPutPosition();
-            if (!position) {
-                return false;
-            }
+            let position = this.findValidPutdownPosition();
+
             this.resetGameObject(position);
         }
 
@@ -182,7 +188,7 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
     }
 
-    protected findValidPutPosition() {
+    protected findValidPutdownPosition() {
 
         let handlerTransform = this.holder.gameObject.worldTransform;
         let nowPosition = this.gameObject.worldTransform.position;
@@ -209,6 +215,11 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
                 let closest = traceResult[0];
                 let distance = closest.distance;
                 if (distance >= radius) {
+                    if (closest.gameObject instanceof mw.Trigger) {
+                        closest.gameObject.getBoundingBoxExtent(false, false, tempUseVector)
+
+                        closest.position.z -= tempUseVector.z / 2;
+                    }
 
                     closest.position.z -= radius;
                     return closest.position;
@@ -216,9 +227,16 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
             }
         }
 
-        return false;
+        return null;
     }
 
+
+    protected onDestroy(): void {
+        super.onDestroy();
+        this.holder = null;
+        this.removeCandidate();
+        this._candidates.length = 0;
+    }
 
 
 

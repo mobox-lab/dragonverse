@@ -20,10 +20,25 @@ export default class WoodRewardPuzzle extends Puzzle {
     public onPlayerGetReward: mw.Action = new mw.Action();
 
     private _effect: mw.GameObject;
+    private _collision: mw.GameObject;
 
-    public setup(lockState: boolean, isOpened: boolean): void {
+    public setup(lockState: boolean, isOpened: boolean, progress: number): void {
         super.setup(lockState);
+        this._progress = progress;
         this._isOpened = isOpened;
+        this._progress = progress;
+        this.onStart();
+    }
+
+    public set progress(value: number) {
+        if (value === this._progress) {
+            return;
+        }
+        this._progress = value;
+    }
+
+    public get progress() {
+        return this._progress;
     }
 
     protected onInitialize(): void {
@@ -33,7 +48,8 @@ export default class WoodRewardPuzzle extends Puzzle {
 
             this.onTriggerIn(value);
         })
-        this._effect = this.lockPart.getChildByName("")
+        this._effect = this.lockPart.getChildByName("effect")
+        this._collision = this.lockPart.getChildByName("collision")
     }
 
 
@@ -51,6 +67,16 @@ export default class WoodRewardPuzzle extends Puzzle {
         this.doGetAnimation();
     }
 
+    protected onLocked(): void {
+        super.onLocked();
+        (this._collision as mw.Model).setCollision(mw.CollisionStatus.On);
+    }
+
+    protected onUnlocked(): void {
+        super.onUnlocked();
+        (this._collision as mw.Model).setCollision(mw.CollisionStatus.Off);
+    }
+
 
     private doGetAnimation() {
 
@@ -61,9 +87,13 @@ export default class WoodRewardPuzzle extends Puzzle {
 
         // 旋转
         actions.tween(this._effect.worldTransform)
+            .call(() => {
+                this._effect.setVisibility(mw.PropertyStatus.On)
+            })
             .to(700, { scale: new mw.Vector(3, 1, 1) })
             .to(700, { scale: new mw.Vector(0, 1, 1) })
             .call((value) => {
+                this._effect.setVisibility(mw.PropertyStatus.FromParent)
                 this.createDragonThenFlyToPlayer();
             })
             .start();

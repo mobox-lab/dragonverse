@@ -11,7 +11,6 @@ export abstract class Persistence extends InitializeCheckerScript {
 
 
 
-    @Persistence.required
     public subKey: string = undefined;
 
 

@@ -49,6 +49,8 @@ export default class WoodDragonQuest extends Quest {
 
     private _rewardGuid: string = "";
 
+
+    @WoodDragonQuest.required
     private _cacheInfo: SingleTaskInfo[];
 
     private _puzzle: Map<KeyItemPuzzle, PuzzleInfo> = new Map();
@@ -114,6 +116,7 @@ export default class WoodDragonQuest extends Quest {
                 stoneScript.initializePosition = stone.worldTransform.position;
                 cacheInfo.stone = stoneScript;
                 isAllSubTaskCompleted = false;
+                stoneScript.onBeenPutInStorage.add(this.onPickItemBeenStorage, this);
             } else {
                 stone.destroy();
             }
@@ -128,10 +131,52 @@ export default class WoodDragonQuest extends Quest {
             throw new Error(" 奖励预制体没有存放脚本");
         }
 
-
-        rewardScript.locked = this.status !== QuestStateEnum.Complete;
-        rewardScript.isOpened = isAllSubTaskCompleted;
+        this._reward = rewardScript;
         rewardScript.onPlayerGetReward.add(this.onPlayerGetReward, this);
+
+        let progress = this.getCurrentCompleteSubProgress();
+
+        this._reward.setup(this.status !== QuestStateEnum.Complete, progress >= this._cacheInfo.length, progress)
+    }
+
+
+    private getCurrentCompleteSubProgress() {
+
+        let isAllSubTaskCompleted = true;
+        let progress = 0;
+        for (const info of this._cacheInfo) {
+
+            if (!info.complete) {
+                isAllSubTaskCompleted = false;
+            } else {
+                progress++;
+            }
+        }
+
+        return progress;
+    }
+
+    private updateRewardTaskInfo() {
+
+        let progress = this.getCurrentCompleteSubProgress();
+        this._reward.progress = progress;
+        this._reward.locked = this.status !== QuestStateEnum.Complete;
+        this._reward.isOpened = progress >= this._cacheInfo.length;
+    }
+
+
+    private async onPickItemBeenStorage(keyItem: PickableItem) {
+
+        for (const puzzle of this._puzzle.values()) {
+            if (puzzle.stone === keyItem) {
+                puzzle.stone = null;
+                keyItem.onBeenPutInStorage.remove(this.onPickItemBeenStorage, this);
+                await TimeUtil.delaySecond(0);
+                // 下一帧删除
+                keyItem.gameObject.destroy();
+                break;
+            }
+        }
 
     }
 
@@ -145,6 +190,9 @@ export default class WoodDragonQuest extends Quest {
         let index = puzzleInfo.index;
         let cacheInfo = this._cacheInfo[index];
         cacheInfo.complete = !keyItem.locked;
+        keyItem.onStorageProgressUpdate.remove(this.onStorageProgressUpdated, this);
+
+        this.updateRewardTaskInfo();
         this.updateProgressInfo();
     }
 
@@ -169,6 +217,9 @@ export default class WoodDragonQuest extends Quest {
 
 
     onComplete(): void {
+        if (this._reward) {
+            this._reward.locked = false;
 
+        }
     }
 }

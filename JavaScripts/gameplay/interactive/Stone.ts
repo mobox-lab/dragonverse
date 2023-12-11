@@ -13,6 +13,13 @@ export default class Stone extends PickableItem {
     @mw.Property({ displayName: "持有姿态id" })
     private stanceId: string = ''
 
+    @mw.Property({ displayName: "动画插槽" })
+
+    private animSlot: mw.AnimSlot = mw.AnimSlot.Upper;
+
+
+    @mw.Property({ displayName: "是否是姿态" })
+    private isStance: boolean = true
 
     @mw.Property({ displayName: "被拾起后的插槽位置", enumType: mw.HumanoidSlotType })
     private slotName: mw.HumanoidSlotType = mw.HumanoidSlotType.Head;
@@ -21,15 +28,15 @@ export default class Stone extends PickableItem {
     private slotOffset: mw.Vector = new mw.Vector();
 
 
-
-
-    private _stance: mw.Stance;
+    private _stance: mw.Stance | mw.Animation;
 
     private delayCheckId: number = 0;
 
 
 
+
     protected onInitialize(): void {
+
 
         super.onInitialize();
 
@@ -48,7 +55,12 @@ export default class Stone extends PickableItem {
         }
 
         if (!this._stance) {
-            this._stance = gameObject.loadStance(this.stanceId)
+            this._stance = this.isStance ? gameObject.loadStance(this.stanceId) : gameObject.loadAnimation(this.stanceId);
+        }
+        if (this._stance instanceof mw.Animation) {
+
+            this._stance.slot = this.animSlot;
+            (this._stance as mw.Animation).loop = 0;
         }
         this._stance.play();
 
@@ -61,8 +73,12 @@ export default class Stone extends PickableItem {
     protected onBeenLand(): void {
 
         this.clearDelayCheck();
-        if (this._stance) {
-            this._stance.stop();
+        this.clearStance();
+
+        if (this.storage) {
+
+            this.onBeenPutInStorage.call(this);
+            return;
         }
 
         this.delayCheckId = TimeUtil.delayExecute(() => {
@@ -86,13 +102,20 @@ export default class Stone extends PickableItem {
 
 
 
+    private clearStance() {
+        if (this._stance) {
+            this._stance.stop();
+        }
+    }
 
 
 
 
     protected onDestroy(): void {
         super.onDestroy();
+        this.clearStance();
         this.clearDelayCheck();
+        this.onBeenPutInStorage.clear();
     }
 
 
