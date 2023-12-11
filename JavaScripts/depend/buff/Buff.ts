@@ -76,6 +76,13 @@ export abstract class BuffBase {
         return [...this._suppressBuffs];
     }
 
+    /**
+     * 是否 为抑制者.
+     */
+    public get isSuppresser(): boolean {
+        return this._suppressBuffs.length > 0;
+    }
+
     protected readonly _killBuffs: BuffType[] = [];
 
     /**
@@ -85,6 +92,13 @@ export abstract class BuffBase {
      */
     public get killBuffs() {
         return [...this._killBuffs];
+    }
+
+    /**
+     * 是否 为扼杀者.
+     */
+    public get isKiller(): boolean {
+        return this._killBuffs.length > 0;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -191,42 +205,4 @@ export abstract class BuffBase {
      */
     public onRemove: () => void = null;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-}
-
-export class CheckMoveBuff extends BuffBase {
-    type: BuffType = BuffType.CHECK_MOVE;
-
-    constructor(
-        caster: UnifiedRoleController,
-        parent: UnifiedRoleController,
-        intervalTime: number) {
-        super(caster,
-            parent,
-            undefined,
-            intervalTime,
-            false);
-    }
-
-    // public onInterval = () => {
-    //     if (this.target.isMove === this.checkMove()) {
-    //         return;
-    //     }
-    //
-    //     this.target.isMove = this.checkMove();
-    //
-    //     if (this.target.isMove == false) {
-    //         return;
-    //     }
-    //
-    //     this.target.triggerActionEvent();
-    //     // EventManager.ins.trigger(EventDefine.INTERACTIVE_INTERRUPT, this.target.playerID);
-    // };
-    //
-    // private checkMove() {
-    //     if (!this.target) {
-    //         return false;
-    //     }
-    //
-    //     return this.target.isMoving || this.target.isJumping;
-    // }
 }
