@@ -16,6 +16,7 @@ export class SoilDragonQuest extends Quest {
         Player.localPlayer.character.velocity;
 
         Player.localPlayer.character.addImpulse
+
     }
 
 

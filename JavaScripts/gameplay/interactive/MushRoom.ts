@@ -1,3 +1,6 @@
+import GToolkit from "../../util/GToolkit";
+import MovementController from "./MovementController";
+
 /**
  * 弹跳蘑菇
  */
@@ -59,7 +62,8 @@ export default class MushRoom extends mw.Script {
     private onEnter = (obj: mw.GameObject) => {
         if (obj instanceof mw.Character) {
             if (obj === Player.localPlayer.character) {
-                this.addImpulse(obj, this._impulse);
+
+                GToolkit.getComponent<MovementController>(MovementController, obj).addImpulse(obj, new mw.Vector(0, 0, this._impulse));
                 this.mushRoomJump();
             }
         }
@@ -134,10 +138,6 @@ export default class MushRoom extends mw.Script {
 
     }
 
-    @RemoteFunction(mw.Server)
-    addImpulse(character: mw.Character, z: number) {
-        character.addImpulse(new mw.Vector(0, 0, z), true);
-    }
 
 
 }
