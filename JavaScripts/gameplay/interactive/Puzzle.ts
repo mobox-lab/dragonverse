@@ -12,11 +12,13 @@ export abstract class Puzzle extends Persistence {
 
     protected unLockPart: mw.GameObject;
 
+    @Puzzle.required
     private _cacheLockStatus: boolean;
 
     setup(lockState: boolean, ...args: any[]) {
         this._isLocked = lockState;
         this._cacheLockStatus = lockState;
+        this.onStart();
     }
 
 
@@ -68,16 +70,16 @@ export abstract class Puzzle extends Persistence {
 
     protected onUnlocked() {
 
-        this.lockPart.setVisibility(mw.PropertyStatus.Off, true);
-        this.unLockPart.setVisibility(mw.PropertyStatus.On, true);
+        this.lockPart.setVisibility(mw.PropertyStatus.Off, false);
+        this.unLockPart.setVisibility(mw.PropertyStatus.On, false);
 
     }
 
 
     protected onLocked() {
 
-        this.lockPart.setVisibility(mw.PropertyStatus.On, true);
-        this.unLockPart.setVisibility(mw.PropertyStatus.Off, true);
+        this.lockPart.setVisibility(mw.PropertyStatus.On, false);
+        this.unLockPart.setVisibility(mw.PropertyStatus.Off, false);
 
     }
 

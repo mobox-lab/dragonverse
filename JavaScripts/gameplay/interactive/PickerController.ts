@@ -9,6 +9,9 @@ export interface IPickerController extends mw.Script {
     pickType: number[];
 
     pick(item: PickableItem): Promise<boolean>
+
+
+
 }
 
 
@@ -58,17 +61,16 @@ export default class PickerController extends mw.Script implements IPickerContro
         }
 
         this._currentPickupItem = item;
+        item.onDestroyed.add(this.onCurPickItemDestroyed, this)
         return true;
     }
 
 
-    private async putdown() {
+    public async putdown() {
         if (this._currentPickupItem) {
 
-            let ret = await this._currentPickupItem.putdown();
-            if (!ret) {
-                return false;
-            }
+            this._currentPickupItem.putdown();
+            this._currentPickupItem.onDestroyed.remove(this.onCurPickItemDestroyed, this);
         }
 
         this._currentPickupItem = null;
@@ -76,5 +78,8 @@ export default class PickerController extends mw.Script implements IPickerContro
     }
 
 
+    private onCurPickItemDestroyed() {
+        this._currentPickupItem = null;
+    }
 
 }

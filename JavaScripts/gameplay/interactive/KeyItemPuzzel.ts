@@ -90,6 +90,7 @@ export abstract class KeyItemPuzzle extends Puzzle {
             type: storageItem.type,
         })
         this.onPutInSomeGameObject(enter, true);
+        this.onStorageNumUpdate();
     }
 
     protected checkExtraPutInCondition(keyItem: KeyItem): boolean {

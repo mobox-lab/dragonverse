@@ -25,38 +25,38 @@ export abstract class InitializeCheckerScript extends mw.Script {
 
     protected onStart(): void {
 
-        const name = this.constructor['__proto__'].name;
+
+        let proto = this.constructor['__proto__'];
+        const name = proto.name;
 
 
+        while (proto) {
 
-        if (!InitializeCheckerScript._requireMap.has(name)) {
 
-            this.initializeComplete();
-            return;
-        }
-
-        const requireList = InitializeCheckerScript._requireMap.get(name);
-
-        if (requireList.length == 0) {
-
-            this.initializeComplete();
-            return;
-        }
-
-        let isAllReady = true;
-        for (const requireName of requireList) {
-
-            if (!this[requireName]) {
-
-                isAllReady = false;
+            let name = proto.name;
+            if (name === 'InitializeCheckerScript') {
                 break;
             }
+            if (InitializeCheckerScript._requireMap.has(name)) {
+
+                const requireList = InitializeCheckerScript._requireMap.get(name);
+
+                if (requireList && requireList.length >= 0) {
+
+                    for (const requireName of requireList) {
+
+                        if (this[requireName] === undefined) {
+
+                            return;
+                        }
+                    }
+                }
+            }
+
+            proto = proto.__proto__;
         }
 
-        if (isAllReady) {
-
-            this.initializeComplete();
-        }
+        this.initializeComplete();
     }
 
 
@@ -69,7 +69,12 @@ export abstract class InitializeCheckerScript extends mw.Script {
             return;
         }
         this.onInitialize();
+        this.afterInitialize();
         this.isInitializeComplete = true;
+
+    }
+
+    protected afterInitialize() {
 
     }
 

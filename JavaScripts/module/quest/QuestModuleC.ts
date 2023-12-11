@@ -9,6 +9,7 @@ import { QuestModuleS } from "./QuestModuleS";
 export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
 
 
+    private _questMap: Map<number, Quest> = new Map();
 
     protected onStart(): void {
 
@@ -34,12 +35,13 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
             }
             script.gameObject = character;
             script.setUp(this, task.questId, task.progress, task.status, task.customData);
+            this._questMap.set(task.questId, script);
         }
 
     }
 
 
-    public tryToUpdateTaskInfo(taskId: number, progress: number, customData?: string) {
+    public async tryToUpdateTaskInfo(taskId: number, progress: number, customData?: string) {
 
         let info = this.data.getTaskInfo(taskId);
 
@@ -55,7 +57,8 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData>{
             return;
         }
 
-        this.server.net_UpdateTaskStatus(taskId, progress, customData);
+        info.status = await this.server.net_UpdateTaskStatus(taskId, progress, customData);
+        this._questMap.get(taskId).status = info.status;
     }
 
 
