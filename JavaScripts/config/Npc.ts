@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","characterId","position","rotation","greetNodeId"],["","","","",""],[1,1,new mw.Vector(4620,-18620,1500),new mw.Vector(0,0,175),1]];
+const EXCELDATA:Array<Array<any>> = [["id","characterId","position","rotation","greetNodeId","npcAction"],["","","","","",""],[1,1,new mw.Vector(4620,-18620,1500),new mw.Vector(0,0,175),1,[1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]]];
 export interface INpcElement extends IElementBase{
  	/**ID*/
 	id:number
@@ -11,6 +11,8 @@ export interface INpcElement extends IElementBase{
 	rotation:mw.Vector
 	/**招呼*/
 	greetNodeId:number
+	/**动作事件*/
+	npcAction:Array<number>
  } 
 export class NpcConfig extends ConfigBase<INpcElement>{
 	constructor(){

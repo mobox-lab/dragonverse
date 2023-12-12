@@ -27,9 +27,15 @@ export enum EventDefine {
      */
     LeaveDialogue = "LEAVE_DIALOGUE",
 
-
-    /** 玩家按下交互按钮 */
+    /**
+     * 玩家按下交互按钮.
+     */
     PlayerPressedInterActive = "PLAYER_PRESSED_INTERACTIVE",
+
+    /**
+     * npc 动作.
+     */
+    ShowNpcAction = "SHOW_NPC_ACTION",
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Tiny Game Fire
