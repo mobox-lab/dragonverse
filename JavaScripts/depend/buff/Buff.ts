@@ -4,8 +4,10 @@ import UnifiedRoleController from "../../module/role/UnifiedRoleController";
  * Buff 类型.
  */
 export enum BuffType {
-    NONE,
-    CHECK_MOVE,
+    None,
+    CheckMove,
+    Wet,
+    Explode,
 }
 
 /**
@@ -27,6 +29,10 @@ export enum BuffType {
  * @version 1.0.0b
  */
 export abstract class BuffBase {
+//#region Constant
+    public static readonly NORMAL_INTERVAL = 1000 / 15;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 //#region Member
 
     private _startTime: number = Date.now();
@@ -107,7 +113,7 @@ export abstract class BuffBase {
     /**
      * Buff 类型.
      */
-    abstract type: BuffType;
+    public abstract type: BuffType;
 
     /**
      * 施加者.
@@ -134,8 +140,10 @@ export abstract class BuffBase {
      * */
     public intervalTime: number = 0;
 
+//TODO_LviatYi 可叠加性.
     /**
      * 可叠加性.
+     * @desc 未实装.
      */
     public stackable: boolean = false;
 

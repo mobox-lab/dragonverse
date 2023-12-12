@@ -27,7 +27,7 @@ export class CheckMoveBuff extends BuffBase {
     public static readonly BuffMovePlayerChangeMoveState = "__BUFF_MOVE_PLAYER_CHANGE_MOVE_STATE__";
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    type: BuffType = BuffType.CHECK_MOVE;
+    public type: BuffType = BuffType.CheckMove;
 
     constructor(
         caster: UnifiedRoleController,
