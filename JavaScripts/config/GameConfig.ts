@@ -11,6 +11,7 @@ import { DragonConfig } from "./Dragon";
 import { ElementalConfig } from "./Elemental";
 import { IceBlockConfig } from "./IceBlock";
 import { LanguageConfig } from "./Language";
+import { NPCActionConfig } from "./NPCAction";
 import { NpcConfig } from "./Npc";
 import { QualityConfig } from "./Quality";
 import { SoundConfig } from "./Sound";
@@ -46,6 +47,7 @@ export class GameConfig {
 	public static get Elemental(): ElementalConfig { return this.getConfig(ElementalConfig) };
 	public static get IceBlock(): IceBlockConfig { return this.getConfig(IceBlockConfig) };
 	public static get Language(): LanguageConfig { return this.getConfig(LanguageConfig) };
+	public static get NPCAction(): NPCActionConfig { return this.getConfig(NPCActionConfig) };
 	public static get Npc(): NpcConfig { return this.getConfig(NpcConfig) };
 	public static get Quality(): QualityConfig { return this.getConfig(QualityConfig) };
 	public static get Sound(): SoundConfig { return this.getConfig(SoundConfig) };
