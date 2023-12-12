@@ -1,36 +1,23 @@
 import { QuestStateEnum } from "../../module/quest/Config";
 import { InitializeCheckerScript } from "../archtype/base/InitializeCheckScript";
 
-
-
-interface QuestReporter {
-
-
-    tryToUpdateTaskInfo(id: number, progress: number, customData?: string)
+export interface QuestReporter {
+    tryToUpdateTaskInfo(id: number, progress: number, customData?: string): void;
 }
 
-
 export abstract class Quest extends InitializeCheckerScript {
-
-
     @Quest.required
     private _id: number;
 
-    @Quest.required
-    private _progress: number;
+    protected abstract get progress(): number ;
 
     @Quest.required
     private _status: QuestStateEnum;
 
     private _sender: QuestReporter;
 
-
     public get taskId() {
         return this._id;
-    }
-
-    public get progress() {
-        return this._progress;
     }
 
     public get status() {
@@ -47,19 +34,15 @@ export abstract class Quest extends InitializeCheckerScript {
         }
     }
 
-    public setUp(sender: QuestReporter, id: number, progress: number, status: QuestStateEnum, customData: string = '') {
-
+    public setUp(sender: QuestReporter, id: number, status: QuestStateEnum, customData: string = "") {
         this._sender = sender;
         this._id = id;
-        this._progress = progress;
         this._status = status;
         this.onSerializeCustomData(customData);
         this.onStart();
     }
 
-
     protected onSerializeCustomData(customData: string) {
-
     }
 
     protected onInitialize(): void {
@@ -70,23 +53,13 @@ export abstract class Quest extends InitializeCheckerScript {
         }
     }
 
-
-    protected updateTaskProgress(progress: number, customData: string = '') {
-        this._progress = progress;
-        this._sender.tryToUpdateTaskInfo(this._id, progress, customData);
+    protected updateTaskProgress(customData: string = "") {
+        this._sender.tryToUpdateTaskInfo(this._id, this.progress, customData);
     }
 
-
-
-
-    /** 当任务被激活时回调 */
+    /** 当任务激活时回调 */
     abstract onActivated(): void;
 
-
-
-    /** 当任务被激活时回调 */
+    /** 当任务完成时回调 */
     abstract onComplete(): void;
-
-
-
 }

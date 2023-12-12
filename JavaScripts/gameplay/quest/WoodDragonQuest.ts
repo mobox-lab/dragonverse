@@ -4,15 +4,19 @@ import { KeyItemPuzzle } from "../interactive/KeyItemPuzzel";
 import { PickableItem } from "../interactive/PickableItem";
 import WoodRewardPuzzle from "../interactive/WoodRewardPuzzle";
 import { Quest } from "./Quest";
+import Enumerable from "linq";
 
-
-interface SingleTaskInfo {
-
-
+interface LiftTaskInfo {
     index: number;
 
     complete: boolean;
+}
 
+
+interface WoodDragonTaskInfo {
+    base: boolean;
+
+    liftTasks: LiftTaskInfo[];
 }
 
 @mw.Serializable
@@ -51,26 +55,32 @@ export default class WoodDragonQuest extends Quest {
 
 
     @WoodDragonQuest.required
-    private _cacheInfo: SingleTaskInfo[];
+    private _cacheInfo: WoodDragonTaskInfo;
 
     private _puzzle: Map<KeyItemPuzzle, PuzzleInfo> = new Map();
 
     private _reward: WoodRewardPuzzle;
 
+    protected get progress(): number {
+        return Enumerable
+            .from(this._cacheInfo.liftTasks)
+            .count(info => info.complete) + (this._cacheInfo.base ? 1 : 0);
+    }
+
 
     protected onSerializeCustomData(customData: string) {
         if (customData) {
-
             this._cacheInfo = JSON.parse(customData);
-
         } else {
-
-            this._cacheInfo = this._taskConfig.map((value, index) => {
-                return {
-                    index: index,
-                    complete: false,
-                };
-            });
+            this._cacheInfo = {
+                base: false,
+                liftTasks: this._taskConfig.map((value, index) => {
+                    return {
+                        index: index,
+                        complete: false,
+                    };
+                }),
+            };
         }
     }
 
@@ -84,7 +94,7 @@ export default class WoodDragonQuest extends Quest {
     private async generateAllPrefabs() {
 
         let isAllSubTaskCompleted = true;
-        for (const value of this._cacheInfo) {
+        for (const value of this._cacheInfo.liftTasks) {
             const config = this._taskConfig[value.index];
 
             // 先生成机关
@@ -136,24 +146,16 @@ export default class WoodDragonQuest extends Quest {
 
         let progress = this.getCurrentCompleteSubProgress();
 
-        this._reward.setup(this.status !== QuestStateEnum.Complete, progress >= this._cacheInfo.length, progress)
+        this._reward.setup(this.status !== QuestStateEnum.Complete, progress >= this._cacheInfo.liftTasks.length, progress);
     }
 
 
     private getCurrentCompleteSubProgress() {
+        return Enumerable.from(this._cacheInfo.liftTasks).count();
+    }
 
-        let isAllSubTaskCompleted = true;
-        let progress = 0;
-        for (const info of this._cacheInfo) {
-
-            if (!info.complete) {
-                isAllSubTaskCompleted = false;
-            } else {
-                progress++;
-            }
-        }
-
-        return progress;
+    private isAllSubComplete() {
+        return Enumerable.from(this._cacheInfo.liftTasks).all((element) => element.complete);
     }
 
     private updateRewardTaskInfo() {
@@ -161,7 +163,7 @@ export default class WoodDragonQuest extends Quest {
         let progress = this.getCurrentCompleteSubProgress();
         this._reward.progress = progress;
         this._reward.locked = this.status !== QuestStateEnum.Complete;
-        this._reward.isOpened = progress >= this._cacheInfo.length;
+        this._reward.isOpened = progress >= this._cacheInfo.liftTasks.length;
     }
 
 
@@ -197,18 +199,12 @@ export default class WoodDragonQuest extends Quest {
     }
 
     private onPlayerGetReward() {
-        this.updateProgressInfo(1);
+        this.updateProgressInfo();
     }
 
 
-    private updateProgressInfo(base: number = 0) {
-        let progress = base;
-        this._cacheInfo.forEach((value) => {
-            if (value.complete) {
-                progress++;
-            }
-        });
-        this.updateTaskProgress(progress, JSON.stringify(this._cacheInfo));
+    private updateProgressInfo() {
+        this.updateTaskProgress(JSON.stringify(this._cacheInfo));
     }
 
     onActivated(): void {
