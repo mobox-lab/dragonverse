@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","name","count","repeat","reward","script"],["","","","","",""],[1,"获取木龙",5,false,[null],"BFA2FBF640BDA222EEB4B9884B78C1B4"]];
+const EXCELDATA:Array<Array<any>> = [["id","name","count","repeat","reward","configPrefabGuid"],["","","","","",""],[1,"获取木龙",5,false,[null],"BFA2FBF640BDA222EEB4B9884B78C1B4"],[2,"获取火龙",2,false,null,"0B777B1642A1212E59FA3DA8648142A7"],[3,"获取水龙",0,null,null,null],[4,"获取土龙",0,null,null,null]];
 export interface ITaskElement extends IElementBase{
  	/**任务 ID*/
 	id:number
@@ -15,7 +15,7 @@ export interface ITaskElement extends IElementBase{
 	reward:Array<number>
 	/**物品数量]
 物品id见bag表，填bagid即可*/
-	script:string
+	configPrefabGuid:string
  } 
 export class TaskConfig extends ConfigBase<ITaskElement>{
 	constructor(){

@@ -31,4 +31,21 @@ export enum EventDefine {
     /** 玩家按下交互按钮 */
     PlayerPressedInterActive = "PLAYER_PRESSED_INTERACTIVE",
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Tiny Game Fire
+    /**
+     * 玩家进入 FirePuzzleBlock 触发器.
+     */
+    PlayerEnterFirePuzzleBlock = "PLAYER_ENTER_FIRE_PUZZLE_BLOCK",
+
+    /**
+     * 玩家离开 FirePuzzleBlock 触发器.
+     */
+    PlayerLeaveFirePuzzleBlock = "PLAYER_LEAVE_FIRE_PUZZLE_BLOCK",
+
+    /**
+     * 玩家消除岩浆.
+     */
+    PlayerDestroyMagma = "PLAYER_DESTROY_MAGMA"
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

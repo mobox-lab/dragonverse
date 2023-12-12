@@ -15,6 +15,9 @@ import GMPanel from "./ui/gm/GmPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 import NpcModuleData, { NpcModuleC, NpcModuleS } from "./module/npc/NpcModule";
 import RoleModuleData, { RoleModuleC, RoleModuleS } from "./module/role/RoleModule";
+import { QuestModuleC } from "./module/quest/QuestModuleC";
+import { QuestData } from "./module/quest/QuestData";
+import { QuestModuleS } from "./module/quest/QuestModuleS";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -119,6 +122,7 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(SceneDragonModuleS, SceneDragonModuleC, SceneDragonModuleData);
         moduleService.registerModule(NpcModuleS, NpcModuleC, NpcModuleData);
         moduleService.registerModule(CompanionModule_S, CompanionModule_C, CompanionData);
+        moduleService.registerModule(QuestModuleS, QuestModuleC, QuestData);
     }
 
     private registerTestKeyT() {
