@@ -1,5 +1,6 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
+import NpcInteractionPanel from "../npc-interaction/NpcInteractionPanel";
 
 /**
  * 对话节点功能 enum.
@@ -16,7 +17,11 @@ export enum DialogueFuncTypes {
     /**
      * 显示 Code 验证面板.
      */
-    ShowCodePanel
+    ShowCodePanel,
+    /**
+     * 交互动作
+     */
+    Action = 5
 }
 
 export type DialogueFunc = () => void;
@@ -27,6 +32,8 @@ export function DialogueFuncFactory(type: DialogueFuncTypes): DialogueFunc {
             return testFunc;
         case DialogueFuncTypes.ShowCodePanel:
             return showCodePanel;
+        case DialogueFuncTypes.Action:
+            return showActionPanel;
         case DialogueFuncTypes.Null:
         default:
             return normalDialogueFunc;
@@ -43,4 +50,8 @@ export function testFunc() {
 
 export function showCodePanel() {
     UIService.show(CodeVerifyPanel);
+}
+
+export function showActionPanel() {
+    UIService.show(NpcInteractionPanel);
 }
