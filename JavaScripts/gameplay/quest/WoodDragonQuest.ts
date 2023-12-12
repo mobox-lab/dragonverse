@@ -199,6 +199,7 @@ export default class WoodDragonQuest extends Quest {
     }
 
     private onPlayerGetReward() {
+        this._cacheInfo.base = true;
         this.updateProgressInfo();
     }
 
