@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.9.1  
+v0.9.3  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -27,6 +27,7 @@ by LviatYi
 
 - **2D 形状**
 - 即当形为 $[a_1,a_2,...,a_m|b_1,b_2,...,b_n]$ ，其中 $m,n$ 皆为偶数时。
+- 暂时不支持用于随机点生成.
 
 ![points-example](./pic/generationRange.png)
 
