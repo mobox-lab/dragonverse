@@ -125,10 +125,14 @@ export default class FireDragonQuest extends Quest {
 
         this._rewardPuzzle.setup(
             this.status !== QuestStateEnum.Complete,
-            Enumerable.from(this._cacheInfo.blockTasks).count(info => info.complete) >= GameConfig.Task.getElement(this.taskId).count - 1,
+            Enumerable
+                .from(this._cacheInfo.blockTasks)
+                .count(info => info.complete)
+            >= GameConfig.Task.getElement(this.taskId).count - 1,
         );
         this._rewardPuzzle.onPlayerGetReward.add((param) => {
             this._cacheInfo.reward = true;
+            this._rewardPuzzle.isOpened = false;
             this.updateTaskProgress(JSON.stringify(this._cacheInfo));
         });
     }
@@ -207,7 +211,7 @@ export default class FireDragonQuest extends Quest {
         const completeInfo = this.tryGetCompleteInfo(guid);
         if (!completeInfo) return;
         if (!this.isWater(block, completeInfo)) return;
-        
+
         this.addWetBuff(wetBuffDuration);
     };
 
@@ -227,6 +231,10 @@ export default class FireDragonQuest extends Quest {
             Log4Ts.log(FireDragonQuest, `cache info not found. guid: ${guid}`);
         }
 
+        this._rewardPuzzle.isOpened = Enumerable
+                .from(this._cacheInfo.blockTasks)
+                .count(info => info.complete)
+            >= GameConfig.Task.getElement(this.taskId).count - 1;
         this.updateTaskProgress(JSON.stringify(this._cacheInfo));
     };
 
