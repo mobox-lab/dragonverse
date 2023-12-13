@@ -22,9 +22,11 @@ by LviatYi
 |      ID      | Id       | int     |                |
 |     名称     | Name     | string  |                |
 |     点集     | Points   | int[][] |                |
-| 是否构成形状 | IsShape  | boolean | 是否构成多边形 |
 
-点集含义：
+点集可以作为 **2D 形状** 或 **3D 点集合**：
+
+- **2D 形状**
+- 即当形为 $[a_1,a_2,...,a_m|b_1,b_2,...,b_n]$ ，其中 $m,n$ 皆为偶数时。
 
 ![points-example](./pic/generationRange.png)
 
@@ -36,7 +38,10 @@ by LviatYi
 ]
 ```
 
-当 isShape 为 true 时，点集将构成多边形，否则构成一系列点。
+- **3D 点集合**
+- 即当形为 $[a_1,a_2,a_3|b_1,b_2,b_3|...|k_1,k_2,k_3]$ ，其一维数组的子元素为长度 3 的数组时。
+
+![generationPoints](pic/generationPoints.png)
 
 ## 元素 Elemental
 
