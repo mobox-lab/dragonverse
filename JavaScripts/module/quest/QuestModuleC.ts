@@ -23,7 +23,7 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
         for (const task of this.data) {
             let config = GameConfig.Task.getElement(task.questId);
 
-            let go = await mw.GameObject.asyncSpawn(config.configPrefabGuid);
+            let go = await mw.GameObject.asyncSpawn(config.questObjectGuid);
 
             let script: Quest = GToolkit.getFirstScript(go, Quest);
             if (!script) {
