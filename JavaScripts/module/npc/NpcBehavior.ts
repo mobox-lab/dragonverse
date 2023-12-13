@@ -80,7 +80,7 @@ export default class NpcBehavior extends mw.Script {
         this._oriRot = this._npcCharacter.worldTransform.rotation;
         //随机放一个动作
         if (this._config) {
-            let guids = this._config.BasicActions;
+            let guids = this._config.basicActions;
             let random = MathUtil.randomInt(0, guids.length);
             this._npcBasicAni = this._npcCharacter.loadAnimation(guids[random]);
             this._npcBasicAni.loop = 0;
@@ -201,20 +201,20 @@ export default class NpcBehavior extends mw.Script {
         if (this._config.id === npcId) {
             let config = GameConfig.NPCAction.getElement(actionId);
             if (config.type === 1) {
-                this._currentAni = this._npcCharacter.loadAnimation(config.ActionGuid);
+                this._currentAni = this._npcCharacter.loadAnimation(config.actionGuid);
                 this._currentAni.loop = config.circulate ? 0 : 1;
                 this._currentAni.play();
             } else if (config.type === 2) {
-                this._currentStance = this._npcCharacter.loadSubStance(config.ActionGuid);
+                this._currentStance = this._npcCharacter.loadSubStance(config.actionGuid);
                 this._currentStance.play();
             } else if (config.type === 3) {
                 this._npcCharacter.collisionWithOtherCharacterEnabled = false;
                 Player.localPlayer.character.movementEnabled = false;
                 Player.localPlayer.character.jumpEnabled = false;
 
-                this._npcCharacter.worldTransform.position = Player.localPlayer.character.worldTransform.position.add(Player.localPlayer.character.worldTransform.getForwardVector().multiply(config.v.z));
+                this._npcCharacter.worldTransform.position = Player.localPlayer.character.worldTransform.position.add(Player.localPlayer.character.worldTransform.getForwardVector().multiply(config.posOffset.z));
                 let r = mw.Rotation.zero;
-                mw.Rotation.add(Player.localPlayer.character.worldTransform.rotation, new mw.Rotation(config.r), r);
+                mw.Rotation.add(Player.localPlayer.character.worldTransform.rotation, new mw.Rotation(config.rotation), r);
                 this._npcCharacter.worldTransform.rotation = r;
                 this._currentAni = this._npcCharacter.loadAnimation(config.accectStance);
                 this._currentAni.play();
