@@ -80,7 +80,7 @@ export default class NpcBehavior extends mw.Script {
         this._oriRot = this._npcCharacter.worldTransform.rotation;
         //随机放一个动作
         if (this._config) {
-            let guids = this._config.BasicActions;
+            let guids = this._config.basicActions;
             let random = MathUtil.randomInt(0, guids.length);
             this._npcBasicAni = this._npcCharacter.loadAnimation(guids[random]);
             this._npcBasicAni.loop = 0;
