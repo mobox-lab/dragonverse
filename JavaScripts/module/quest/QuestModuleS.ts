@@ -4,11 +4,10 @@ import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleC } from "./QuestModuleC";
 
-export class QuestModuleS extends ModuleS<QuestModuleC, QuestData>{
+export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
 
 
     protected onPlayerJoined(player: mw.Player): void {
-
 
         //创建一个移动控制器
         mw.Script.spawnScript(MovementController, true).then(val => {
@@ -17,7 +16,7 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData>{
 
     }
 
-    public net_UpdateTaskStatus(taskId: number, progress: number, customData: string) {
+    public net_UpdateTaskStatus(taskId: number, progress: number, customData: string): Promise<QuestStateEnum> {
         let taskInfo = this.currentData.getTaskInfo(taskId);
         if (!taskInfo) {
             return;
@@ -33,24 +32,19 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData>{
         }
 
         if (taskConfig.repeat && status === QuestStateEnum.Complete) {
-
             // 如果可以重复完成就再度标记成可完成
             status = QuestStateEnum.Running;
         }
 
         this.currentData.updateTaskInfo(taskId, progress, status, customData);
 
-
-        return status;
-
-
-
+        return Promise.resolve(status);
     }
 
 
     /**
      * 下发奖励
-     * @param taskId 
+     * @param taskId
      */
     private onTaskStatusComplete(taskId: number) {
 

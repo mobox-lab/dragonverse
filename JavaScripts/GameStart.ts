@@ -12,13 +12,14 @@ import CollectibleItemModuleData, {
 import { CompanionData } from "./module/companion/CompanionData";
 import { CompanionModule_C } from "./module/companion/CompanionModule_C";
 import { CompanionModule_S } from "./module/companion/CompanionModule_S";
-import NpcModuleData, { NpcModuleC, NpcModuleS } from "./module/npc/NpcModule";
-import { QuestData } from "./module/quest/QuestData";
-import { QuestModuleC } from "./module/quest/QuestModuleC";
-import { QuestModuleS } from "./module/quest/QuestModuleS";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 import GMPanel from "./ui/gm/GmPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
+import NpcModuleData, { NpcModuleC, NpcModuleS } from "./module/npc/NpcModule";
+import RoleModuleData, { RoleModuleC, RoleModuleS } from "./module/role/RoleModule";
+import { QuestModuleC } from "./module/quest/QuestModuleC";
+import { QuestData } from "./module/quest/QuestData";
+import { QuestModuleS } from "./module/quest/QuestModuleS";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -120,6 +121,7 @@ export default class GameStart extends mw.Script {
     private registerModule(): void {
         const moduleService = ModuleService;
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
+        moduleService.registerModule(RoleModuleS, RoleModuleC, RoleModuleData);
         moduleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
         moduleService.registerModule(CollectibleItemModuleS, CollectibleItemModuleC, CollectibleItemModuleData);

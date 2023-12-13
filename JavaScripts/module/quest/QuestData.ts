@@ -2,9 +2,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { QuestStateEnum } from "./Config";
 
 
-
 class QuestProgressInfo {
-
     /**任务id */
     public questId: number = 0;
 
@@ -14,34 +12,26 @@ class QuestProgressInfo {
 
     public status: QuestStateEnum = QuestStateEnum.Running;
 
-    public customData: string = ''
-
+    public customData: string = "";
 }
 
 
 export class QuestData extends mwext.Subdata implements Iterable<QuestProgressInfo> {
-
-
-
-    static QuestUnitId = 1;
-
+    public static QuestUnitId = 1;
 
     @Decorator.persistence()
     private _questProgressInfo: QuestProgressInfo[] = [];
 
-
     protected initDefaultData(): void {
         const tasks = GameConfig.Task.getAllElement();
-
         for (const task of tasks) {
-
             this._questProgressInfo.push({
                 questId: QuestData.QuestUnitId++,
                 questCfgId: task.id,
                 progress: 0,
                 status: QuestStateEnum.Running,
-                customData: ''
-            })
+                customData: "",
+            });
         }
     }
 
@@ -52,12 +42,10 @@ export class QuestData extends mwext.Subdata implements Iterable<QuestProgressIn
      * @param status 状态
      * @param customData 自定义数据
      */
-    public updateTaskInfo(taskId: number, progress: number, status: QuestStateEnum = QuestStateEnum.Running, customData: string = '') {
-
+    public updateTaskInfo(taskId: number, progress: number, status: QuestStateEnum = QuestStateEnum.Running, customData: string = "") {
         const taskInfo = this.getTaskInfo(taskId);
 
         if (taskInfo) {
-
             taskInfo.progress = progress;
             taskInfo.status = status;
         }
@@ -71,7 +59,7 @@ export class QuestData extends mwext.Subdata implements Iterable<QuestProgressIn
     public getTaskInfo(taskId: number) {
         const taskInfo = this._questProgressInfo.find((value) => {
             return value.questId === taskId;
-        })
+        });
         return taskInfo;
     }
 

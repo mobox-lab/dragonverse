@@ -4,8 +4,10 @@ import UnifiedRoleController from "../../module/role/UnifiedRoleController";
  * Buff 类型.
  */
 export enum BuffType {
-    NONE,
-    CHECK_MOVE,
+    None,
+    CheckMove,
+    Wet,
+    Explode,
 }
 
 /**
@@ -27,6 +29,10 @@ export enum BuffType {
  * @version 1.0.0b
  */
 export abstract class BuffBase {
+//#region Constant
+    public static readonly NORMAL_INTERVAL = 1000 / 15;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 //#region Member
 
     private _startTime: number = Date.now();
@@ -76,6 +82,13 @@ export abstract class BuffBase {
         return [...this._suppressBuffs];
     }
 
+    /**
+     * 是否 为抑制者.
+     */
+    public get isSuppresser(): boolean {
+        return this._suppressBuffs.length > 0;
+    }
+
     protected readonly _killBuffs: BuffType[] = [];
 
     /**
@@ -87,13 +100,20 @@ export abstract class BuffBase {
         return [...this._killBuffs];
     }
 
+    /**
+     * 是否 为扼杀者.
+     */
+    public get isKiller(): boolean {
+        return this._killBuffs.length > 0;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Config
     /**
      * Buff 类型.
      */
-    abstract type: BuffType;
+    public abstract type: BuffType;
 
     /**
      * 施加者.
@@ -120,8 +140,10 @@ export abstract class BuffBase {
      * */
     public intervalTime: number = 0;
 
+//TODO_LviatYi 可叠加性.
     /**
      * 可叠加性.
+     * @desc 未实装.
      */
     public stackable: boolean = false;
 
@@ -191,42 +213,4 @@ export abstract class BuffBase {
      */
     public onRemove: () => void = null;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-}
-
-export class CheckMoveBuff extends BuffBase {
-    type: BuffType = BuffType.CHECK_MOVE;
-
-    constructor(
-        caster: UnifiedRoleController,
-        parent: UnifiedRoleController,
-        intervalTime: number) {
-        super(caster,
-            parent,
-            undefined,
-            intervalTime,
-            false);
-    }
-
-    // public onInterval = () => {
-    //     if (this.target.isMove === this.checkMove()) {
-    //         return;
-    //     }
-    //
-    //     this.target.isMove = this.checkMove();
-    //
-    //     if (this.target.isMove == false) {
-    //         return;
-    //     }
-    //
-    //     this.target.triggerActionEvent();
-    //     // EventManager.ins.trigger(EventDefine.INTERACTIVE_INTERRUPT, this.target.playerID);
-    // };
-    //
-    // private checkMove() {
-    //     if (!this.target) {
-    //         return false;
-    //     }
-    //
-    //     return this.target.isMoving || this.target.isJumping;
-    // }
 }

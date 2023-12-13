@@ -13,12 +13,36 @@ import UnifiedRoleController from "../../module/role/UnifiedRoleController";
  * @author maopan.liao
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+ * @version 1.0.0
  */
 export class BuffContainer {
     private buffs: Map<BuffType, BuffBase> = new Map();
 
+    private _suppresser: Set<BuffType> = new Set<BuffType>();
+
+    private _killer: Set<BuffType> = new Set<BuffType>();
+
+    private isSuppressed(type: BuffType): boolean {
+        for (const suppresser of this._suppresser) {
+            const buff = this.getBuff(suppresser);
+            if (buff.suppressBuffs.indexOf(type) !== -1) return true;
+        }
+
+        return false;
+    }
+
+    private isKilled(type: BuffType): boolean {
+        for (const killer of this._killer) {
+            const buff = this.getBuff(killer);
+            if (buff.killBuffs.indexOf(type) !== -1) return true;
+        }
+
+        return false;
+    }
+
     /**
      * 是否 存在同类型 Buff.
+     *      同类型 指具有相同的 {@link BuffBase.type}.
      * @param type
      */
     public hasBuff(type: BuffType) {
@@ -38,16 +62,29 @@ export class BuffContainer {
      * @param buff
      */
     public addBuff(buff: BuffBase) {
-        if (this.hasBuff(buff.type)) {
-            this.removeBuff(buff.type);
+        if (this.hasBuff(buff.type)) this.removeBuff(buff.type);
+        if (this.isKilled(buff.type)) return;
+        if (this.isSuppressed(buff.type)) buff.enable = false;
+
+        if (buff.isSuppresser) {
+            this._suppresser.add(buff.type);
+            for (const type of buff.suppressBuffs) {
+                const b = this.buffs.get(type);
+                if (!b || !b.enable) continue;
+                b.enable = false;
+            }
+        }
+        if (buff.isKiller) {
+            this._killer.add(buff.type);
+            for (const type of buff.killBuffs) {
+                this.removeBuff(type);
+            }
         }
 
         this.buffs.set(buff.type, buff);
         buff.start();
 
-        if (buff.survivalStrategy < 0) {
-            this.removeBuff(buff.type);
-        }
+        if (buff.survivalStrategy < 0) this.removeBuff(buff.type);
     }
 
     /**
@@ -85,13 +122,20 @@ export class BuffContainer {
      * @param buffType
      */
     public removeBuff(buffType: BuffType) {
-        if (!this.hasBuff(buffType)) {
-            return;
-        }
+        if (!this.hasBuff(buffType)) return;
 
         const buff = this.buffs.get(buffType);
         this.buffs.delete(buffType);
         buff.remove();
+
+        if (buff.isSuppresser) {
+            this._suppresser.delete(buffType);
+            for (const type of buff.suppressBuffs) {
+                const b = this.buffs.get(type);
+                if (!(!b || !b.enable) && !this.isSuppressed(type)) b.enable = true;
+            }
+        }
+        if (buff.isKiller) this._killer.delete(buffType);
     }
 
     public destroy() {

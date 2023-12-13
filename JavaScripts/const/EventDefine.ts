@@ -2,7 +2,7 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-10 14:01:08
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-13 16:00:31
+ * @LastEditTime: 2023-12-13 16:48:05
  * @FilePath: \DragonVerse\JavaScripts\const\EventDefine.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -35,8 +35,9 @@ export enum EventDefine {
      */
     LeaveDialogue = "LEAVE_DIALOGUE",
 
-
-    /** 玩家按下交互按钮 */
+    /**
+     * 玩家按下交互按钮.
+     */
     PlayerPressedInterActive = "PLAYER_PRESSED_INTERACTIVE",
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -45,5 +46,38 @@ export enum EventDefine {
     /**跑酷游戏时间变化 */
     OnRunningGameTimeChange = "On_RunningGame_Time_Change",
     /**跑酷游戏积分变化 */
-    OnRunningGameScoreChange = "On_RunningGame_Score_Change"
+    OnRunningGameScoreChange = "On_RunningGame_Score_Change",
+
+    /**
+     * npc 动作.
+     */
+    ShowNpcAction = "SHOW_NPC_ACTION",
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    //#region Tiny Game Fire
+    /**
+     * 玩家进入 FirePuzzleBlock 触发器.
+     */
+    PlayerEnterFirePuzzleBlock = "PLAYER_ENTER_FIRE_PUZZLE_BLOCK",
+
+    /**
+     * 玩家离开 FirePuzzleBlock 触发器.
+     */
+    PlayerLeaveFirePuzzleBlock = "PLAYER_LEAVE_FIRE_PUZZLE_BLOCK",
+
+    /**
+     * 玩家消除岩浆.
+     */
+    PlayerDestroyMagma = "PLAYER_DESTROY_MAGMA",
+    /**
+     * 玩家到达迷宫终点.
+     */
+    PlayerEnterDestination = "PLAYER_ENTER_DESTINATION",
+
+    /**
+     * 水龙任务完成
+     */
+    WaterDragonTaskComplete = "WATER_DRAGON_TASK_COMPLETE",
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 }

@@ -7,7 +7,7 @@ import { GameConfig } from "../../config/GameConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import InteractNodePanel from "./InteractNodePanel";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import { isDialogueContentNodeHasNextId } from "../../gameplay/dialogue/DialogueManager";
+import DialogueManager, { isDialogueContentNodeHasNextId } from "../../gameplay/dialogue/DialogueManager";
 import { EventDefine } from "../../const/EventDefine";
 import i18n from "../../language/i18n";
 
@@ -129,7 +129,7 @@ export default class DialoguePanel extends DialoguePanel_Generate {
             if (isDialogueContentNodeHasNextId(config)) this.btnDialogueContent
                 .onClicked
                 .add(
-                    () => this.refresh(GameConfig.DialogueContentNode.getElement(config.nextId)),
+                    () => DialogueManager.getInstance().chat(GameConfig.DialogueContentNode.getElement(config.nextId)),
                 );
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 //#region 条件项 010
@@ -155,12 +155,13 @@ export default class DialoguePanel extends DialoguePanel_Generate {
      * 隐藏此界面.
      * @param id 仅当当前 对话内容节点 {@link currentContentId} id 与参数相同时隐藏.
      */
-    public shutDown(id: number = undefined) {
+    public shutDown(id: number = undefined): boolean {
         if (!(id === undefined || id === this._currentContentId)) {
-            return;
+            return false;
         }
         this._currentContentId = null;
         UIService.hide(DialoguePanel);
+        return true;
     }
 
     /**

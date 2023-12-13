@@ -155,7 +155,7 @@ export class Switcher {
  * @author minjia.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.8.5b
+ * @version 0.8.8b
  * @alpha
  */
 class GToolkit {
@@ -859,8 +859,8 @@ class GToolkit {
      * 泛型获取 GameObject.
      * @param guid
      */
-    public getGameObjectByGuid<T>(guid: string) {
-        return GameObject.findGameObjectById(guid) as T;
+    public getGameObjectByGuid<T>(guid: string): T | null {
+        return (GameObject.findGameObjectById(guid) ?? null) as T;
     }
 
     /**
@@ -876,6 +876,8 @@ class GToolkit {
             new(...param: unknown[]): T
         },
         traverse: number = 0): T[] {
+        if (!object) return [];
+
         const result: T[] = [];
 
         let traversed: number = 0;
@@ -905,8 +907,12 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScript<T extends mw.Script>(object: GameObject,
+
         scriptCls: (new (...args: unknown[]) => T) | Function,
         traverse: number = 0): T | null {
+        if (!object) return null;
+
+
         let traversed: number = 0;
         let stack: GameObject[] = [object];
         let cache: GameObject[] = [];
@@ -939,6 +945,8 @@ class GToolkit {
         object: GameObject,
         method: string | ((instance: object) => boolean),
         traverse: number = 0): T[] {
+        if (!object) return [];
+
         const result: T[] = [];
 
         let traversed: number = 0;
@@ -968,8 +976,12 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScriptIs<T extends mw.Script>(object: GameObject,
+
         method: string | ((instance: object) => boolean),
         traverse: number = 0): T | null {
+        if (!object) return null;
+
+
         let traversed: number = 0;
         let stack: GameObject[] = [object];
         let cache: GameObject[] = [];
@@ -996,6 +1008,8 @@ class GToolkit {
      * @param name
      */
     public getGameObject(object: GameObject, name: string): GameObject[] {
+        if (!object) return [];
+
         const result: GameObject[] = [];
 
         let p: GameObject = object;
@@ -1012,11 +1026,13 @@ class GToolkit {
     }
 
     /**
-     * 获取 GameObject 及其子 GameObject 下的首个指定脚本.
+     * 获取 GameObject 及其子 GameObject 下的首个同名 GameObject.
      * @param object
      * @param name
      */
-    public getFirstGameObject(object: GameObject, name: string): GameObject {
+    public getFirstGameObject(object: GameObject, name: string): GameObject | null {
+        if (!object) return null;
+
         let p: GameObject = object;
         let stack: GameObject[] = [p];
 
@@ -1105,6 +1121,7 @@ class GToolkit {
      * 不知道要这个有啥用 直接 setDescription 不好么.
      * @param character
      * @param data
+     * @deprecated use {@link Character.setDescription} instead.
      */
     public setCharacterDescription(character: mw.Character, data: mw.CharacterDescription | Array<string> | string) {
         let characterDescription = character.getDescription();
