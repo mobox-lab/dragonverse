@@ -17,11 +17,11 @@ by LviatYi
 
 ## 区域 Area
 
-|     Name     | PropName | Type    | Desc           |
-| :----------: | :------- | ------- | -------------- |
-|      ID      | Id       | int     |                |
-|     名称     | Name     | string  |                |
-|     点集     | Points   | int[][] |                |
+| Name | PropName | Type    | Desc |
+| :--: | :------- | ------- | ---- |
+|  ID  | Id       | int     |      |
+| 名称 | Name     | string  |      |
+| 点集 | Points   | int[][] |      |
 
 点集可以作为 **2D 形状** 或 **3D 点集合**：
 
@@ -69,34 +69,34 @@ by LviatYi
 
 ## 采集物 CollectibleItem
 
-|      Name       | PropName           | Type | Desc   |
-| :-------------: | :----------------- | ---- | ------ |
-|       ID        | Id                 | int  |        |
-|    背包物 ID    | BagId              | int  |        |
-|     品质 ID     | QualityId          | int  |        |
-|   生成区域 ID   | AreaId             | int  |        |
-|  最大存在数量   | ExistenceCount     | int  |        |
-|    存在时间     | ExistenceTime      | int  | 秒 Sec |
-|    生成间隔     | GenerationInterval | int  | 秒 Sec |
-|   采集成功率    | SuccessRate        | int  | %      |
-|   可采集次数    | HitPoint           | int  |        |
-| 采集结果算法 ID | ResultAlgoId       | int  |        |
+|       Name       | PropName           | Type  | Desc   |
+| :--------------: | :----------------- | ----- | ------ |
+|        ID        | Id                 | int   |        |
+|    背包物 ID     | BagId              | int   |        |
+|     品质 ID      | QualityId          | int   |        |
+| 生成区域 ID 集合 | AreaIds            | int[] |        |
+|   最大存在数量   | ExistenceCount     | int   |        |
+|     存在时间     | ExistenceTime      | int   | 秒 Sec |
+|     生成间隔     | GenerationInterval | int   | 秒 Sec |
+|    采集成功率    | SuccessRate        | int   | %      |
+|    可采集次数    | HitPoint           | int   |        |
+| 采集结果算法 ID  | ResultAlgoId       | int   |        |
 
 ## 龙 Dragon
 
 ### 龙基 Dragon (Base)
 
-|    Name     | PropName           | Type    | Desc   |
-| :---------: | :----------------- | ------- | ------ |
-|     ID      | Id                 | int     |        |
-|    形象     | Avatar             | UNKNOWN |        |
-|   元素 ID   | ElementalId        | int     |        |
-|   品质 ID   | QualityId          | int     |        |
-| 生成区域 ID | AreaId             | int     |        |
-|  存在时间   | ExistenceTime      | int     | 秒 Sec |
-|  生成间隔   | GenerationInterval | int     | 秒 Sec |
-| 可捕捉次数  | HitPoint           | int     |        |
-|  捕捉消耗   | Cost               | int     |        |
+|       Name       | PropName           | Type    | Desc   |
+| :--------------: | :----------------- | ------- | ------ |
+|        ID        | Id                 | int     |        |
+|       形象       | Avatar             | UNKNOWN |        |
+|     元素 ID      | ElementalId        | int     |        |
+|     品质 ID      | QualityId          | int     |        |
+| 生成区域 ID 集合 | AreaIds            | int[]   |        |
+|     存在时间     | ExistenceTime      | int     | 秒 Sec |
+|     生成间隔     | GenerationInterval | int     | 秒 Sec |
+|    可捕捉次数    | HitPoint           | int     |        |
+|     捕捉消耗     | Cost               | int     |        |
 
 ### 个性龙 CharacterfulDragon
 
