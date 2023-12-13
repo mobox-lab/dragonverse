@@ -2,12 +2,13 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-13 11:06:56
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-13 16:22:13
+ * @LastEditTime : 2023-12-13 16:35:50
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\quest\WaterDragonQuest.ts
  * @Description  : 获取水龙任务
  */
 
 import { EventDefine } from "../../const/EventDefine";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { Quest } from "./Quest";
 
 
@@ -44,10 +45,10 @@ export default class WaterDragonQuest extends Quest {
 
 
     onActivated(): void {
-        console.log("水龙任务激活");
+        Log4Ts.log(this, "waterDragonTaskActivated");
     }
     onComplete(): void {
-        console.log("水龙任务完成");
+        Log4Ts.log(this, "waterDragonTaskComplete");
         Event.dispatchToLocal(EventDefine.WaterDragonTaskComplete);
     }
 
