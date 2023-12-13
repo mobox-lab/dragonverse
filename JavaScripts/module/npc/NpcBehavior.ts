@@ -33,19 +33,21 @@ export default class NpcBehavior extends mw.Script {
 
     private _dialogueManager: DialogueManager;
 
+    /**npc基础动画 */
+    private _npcBasicAni: Animation;
     /**npc人物 */
     private _npcCharacter: Character;
     /**npc当前播的动画 */
     private _currentAni: Animation;
     /**npc当前的姿态 */
     private _currentStance: SubStance;
-
     /**玩家当前播放的动画 */
     private _currentPlayerAni: Animation;
     /**玩家当前的姿态 */
     private _currentPlayerStance: SubStance;
-
+    /**npc初始位置 */
     private _oriPos: Vector;
+    /**npc初始旋转 */
     private _oriRot: Rotation;
 
     private get dm() {
@@ -76,6 +78,16 @@ export default class NpcBehavior extends mw.Script {
         this._npcCharacter = this.gameObject.getChildByName("mesh") as Character;
         this._oriPos = this._npcCharacter.worldTransform.position;
         this._oriRot = this._npcCharacter.worldTransform.rotation;
+        //随机放一个动作
+        if (this._config) {
+            let guids = this._config.BasicActions;
+            let random = MathUtil.randomInt(0, guids.length);
+            this._npcBasicAni = this._npcCharacter.loadAnimation(guids[random]);
+            this._npcBasicAni.loop = 0;
+            this._npcBasicAni.play();
+        }
+
+
     }
 
     protected onUpdate(dt: number): void {
@@ -97,6 +109,8 @@ export default class NpcBehavior extends mw.Script {
         this._config = config;
         this._communicable = validDialogueContentNodeId(config.greetNodeId);
 
+
+
         return this;
     }
 
@@ -111,6 +125,8 @@ export default class NpcBehavior extends mw.Script {
     public onEnterNpcInteractRange = (args: PlayerInteractNpcEventArgs) => {
         if (this._config.id !== args.id) return;
         if (!this._communicable) return;
+
+        this._npcBasicAni.stop();
         const contentNodeConfig = GameConfig.DialogueContentNode.getElement(this._config.greetNodeId);
         if (!contentNodeConfig) {
             Log4Ts.error(NpcBehavior, `can not find content node config. id: ${this._config.greetNodeId}`);
@@ -142,11 +158,14 @@ export default class NpcBehavior extends mw.Script {
         if (!this._communicable) return;
 
         this.dm.exit(this._config.greetNodeId);
-
-
+        this._npcBasicAni.play();
         if (this._currentAni) this._currentAni.stop();
     };
 
+
+    /** 
+     * @description: 结束npc交互动作
+     */
     public stopNpcAction() {
         if (this._currentAni) {
             this._currentAni.stop();
@@ -169,10 +188,14 @@ export default class NpcBehavior extends mw.Script {
             this._currentPlayerStance.stop();
             this._currentPlayerStance = null;
         }
-
-
     }
 
+    /** 
+     * @description: 开始npc交互动作
+     * @param actionId 动作id
+     * @param npcId npc id
+     * @return 
+     */
     public showNpcAction(actionId: number, npcId: number) {
         this.stopNpcAction();
         if (this._config.id === npcId) {
