@@ -1,6 +1,6 @@
 import { Bubble } from "module_bubble";
 import GToolkit from "../../../util/GToolkit";
-import { IContext } from "../context/IContext";
+import { IContext } from "../../archtype/context/IContext";
 import { AAction } from "./base/Action";
 
 export class TalkAction extends AAction<IContext>{

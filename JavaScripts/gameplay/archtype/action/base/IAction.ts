@@ -1,4 +1,4 @@
-import { IContext } from "../../context/IContext";
+import { IContext } from "../../../archtype/context/IContext";
 import { ActionStatus } from "./ActionStatus";
 
 export interface IAction {

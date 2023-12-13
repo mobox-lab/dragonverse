@@ -1,13 +1,13 @@
 import { StateMachine } from "../../../../depend/hfsm/StateMachine";
 import { StateBase } from "../../../../depend/hfsm/base/StateBase";
 import { CompanionState } from "../../../archtype/companion/CompanionState";
+import { CompanionContext } from "../../../archtype/context/CompanionContext";
 import { ActionCollection } from "../../action/base/ActionCollection";
 import { ActionStatus } from "../../action/base/ActionStatus";
 import { IAction } from "../../action/base/IAction";
 import { IActionCollection } from "../../action/base/IActionCollection";
 import { FollowAction } from "../../action/movement/DynamicFollowAction";
 import { SteeringMovementAction } from "../../action/movement/SteeringMovementAction";
-import { CompanionContext } from "../../context/CompanionContext";
 import { CompanionStateEnum } from "./CompanionStateEnum";
 
 
