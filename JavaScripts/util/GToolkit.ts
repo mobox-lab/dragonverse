@@ -2,7 +2,6 @@ import tryGenerateTsWidgetTypeByUEObject = mw.tryGenerateTsWidgetTypeByUEObject;
 import Character = mw.Character;
 import GameObject = mw.GameObject;
 import Log4Ts, { Announcer, DebugLevels, LogString } from "../depend/log4ts/Log4Ts";
-import UUID from "pure-uuid";
 
 //#region Type Guard
 /**
@@ -156,7 +155,7 @@ export class Switcher {
  * @author minjia.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.8.7b
+ * @version 0.8.8b
  * @alpha
  */
 class GToolkit {
@@ -1118,6 +1117,7 @@ class GToolkit {
      * 不知道要这个有啥用 直接 setDescription 不好么.
      * @param character
      * @param data
+     * @deprecated use {@link Character.setDescription} instead.
      */
     public setCharacterDescription(character: mw.Character, data: mw.CharacterDescription | Array<string> | string) {
         let characterDescription = character.getDescription();
