@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.9.0  
+v0.9.1  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -69,6 +69,7 @@ by LviatYi
 |       ID        | Id                 | int  |        |
 |    背包物 ID    | BagId              | int  |        |
 |     品质 ID     | QualityId          | int  |        |
+|   生成区域 ID   | AreaId             | int  |        |
 |  最大存在数量   | ExistenceCount     | int  |        |
 |    存在时间     | ExistenceTime      | int  | 秒 Sec |
 |    生成间隔     | GenerationInterval | int  | 秒 Sec |
@@ -85,6 +86,7 @@ by LviatYi
 |       形象        | Avatar             | UNKNOWN |        |
 |      元素 ID      | ElementalId        | int     |        |
 |      品质 ID      | QualityId          | int     |        |
+|    生成区域 ID    | AreaId             | int     |        |
 |     存在时间      | ExistenceTime      | int     | 秒 Sec |
 |     生成间隔      | GenerationInterval | int     | 秒 Sec |
 |    可捕捉次数     | HitPoint           | int     |        |
