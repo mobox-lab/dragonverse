@@ -79,19 +79,28 @@ by LviatYi
 
 ## 龙 Dragon
 
-|       Name        | PropName           | Type    | Desc   |
-| :---------------: | :----------------- | ------- | ------ |
-|        ID         | Id                 | int     |        |
-|     背包物 ID     | BagId              | int     |        |
-|       形象        | Avatar             | UNKNOWN |        |
-|      元素 ID      | ElementalId        | int     |        |
-|      品质 ID      | QualityId          | int     |        |
-|    生成区域 ID    | AreaId             | int     |        |
-|     存在时间      | ExistenceTime      | int     | 秒 Sec |
-|     生成间隔      | GenerationInterval | int     | 秒 Sec |
-|    可捕捉次数     | HitPoint           | int     |        |
-|     捕捉消耗      | Cost               | int     |        |
-| 捕捉成功率算法 ID | SuccessRateAlgoId  | int     |        |
+### 龙基 Dragon (Base)
+
+|    Name     | PropName           | Type    | Desc   |
+| :---------: | :----------------- | ------- | ------ |
+|     ID      | Id                 | int     |        |
+|    形象     | Avatar             | UNKNOWN |        |
+|   元素 ID   | ElementalId        | int     |        |
+|   品质 ID   | QualityId          | int     |        |
+| 生成区域 ID | AreaId             | int     |        |
+|  存在时间   | ExistenceTime      | int     | 秒 Sec |
+|  生成间隔   | GenerationInterval | int     | 秒 Sec |
+| 可捕捉次数  | HitPoint           | int     |        |
+|  捕捉消耗   | Cost               | int     |        |
+
+### 个性龙 CharacterfulDragon
+
+|       Name        | PropName          | Type | Desc     |
+| :---------------: | :---------------- | ---- | -------- |
+|        ID         | Id                | int  |          |
+|      龙基 Id      | DragonId          | int  | DragonID |
+|     背包物 ID     | BagId             | int  |          |
+| 捕捉成功率算法 ID | SuccessRateAlgoId | int  |          |
 
 ## 采集结果算法 CollectResultAlgo
 
