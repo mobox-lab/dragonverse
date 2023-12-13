@@ -24,6 +24,12 @@ import { EventDefine } from "../../const/EventDefine";
 export default class UnifiedRoleController extends mw.Script {
 //#region Constant
     private static readonly EXPLODE_EFFECT_GUID = "29393";
+
+    private static get EXPLODE_EFFECT_SCALE() {
+        return new Vector(2, 2, 2);
+    }
+
+
     private static readonly STEAM_EFFECT_GUID = "89589";
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -228,6 +234,9 @@ export default class UnifiedRoleController extends mw.Script {
             EffectService.playAtPosition(
                 UnifiedRoleController.EXPLODE_EFFECT_GUID,
                 hitResult.position,
+                {
+                    scale: UnifiedRoleController.EXPLODE_EFFECT_SCALE,
+                },
             );
         } else {
             Log4Ts.error(UnifiedRoleController, `there is no hit result.`);

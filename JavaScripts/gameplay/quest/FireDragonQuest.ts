@@ -175,22 +175,29 @@ export default class FireDragonQuest extends Quest {
         return block.originBlockType === FirePuzzleBlockTypes.Water ? true : completeInfo.complete;
     }
 
+    private addWetBuff(duration: number) {
+        this.roleModule
+            .controller
+            ?.addWetBuff(duration * 1e3);
+    }
+
 //#region Event Callback
-    public onPlayerEnterFirePuzzleBlock = (guid: string, force: number) => {
+    public onPlayerEnterFirePuzzleBlock = (guid: string, force: number, wetBuffDuration: number) => {
         if (!this.checkRoleModuleValid()) return;
         const block = this.tryGetBlock(guid);
         if (!block) return;
         const completeInfo = this.tryGetCompleteInfo(guid);
         if (!completeInfo) return;
-        if (this.isWater(block, completeInfo)) return;
-
-        this.roleModule
-            .controller
-            ?.touchMagma(
-                force,
-                block.gameObject.worldTransform.position,
-                guid);
-
+        if (this.isWater(block, completeInfo)) {
+            this.addWetBuff(wetBuffDuration);
+        } else {
+            this.roleModule
+                .controller
+                ?.touchMagma(
+                    force,
+                    block.gameObject.worldTransform.position,
+                    guid);
+        }
     };
 
     public onPlayerLeaveFirePuzzleBlock = (guid: string, wetBuffDuration: number) => {
@@ -200,10 +207,8 @@ export default class FireDragonQuest extends Quest {
         const completeInfo = this.tryGetCompleteInfo(guid);
         if (!completeInfo) return;
         if (!this.isWater(block, completeInfo)) return;
-
-        this.roleModule
-            .controller
-            ?.addWetBuff(wetBuffDuration * 1e3);
+        
+        this.addWetBuff(wetBuffDuration);
     };
 
     public onPlayerDestroyMagma = (guid: string) => {

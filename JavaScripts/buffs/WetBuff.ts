@@ -20,7 +20,22 @@ import Effect = mw.Effect;
  */
 export class WetBuff extends BuffBase {
 //#region Constant
-    private static readonly WetEffectGuid = "113914";
+    private static readonly WET_EFFECT_GUID = "113914";
+
+    private static readonly WET_EFFECT_SLOT = HumanoidSlotType.Buttocks;
+
+    private static get WET_EFFECT_POSITION() {
+        return new Vector(-4, 0, 15);
+    };
+
+    private static get WET_EFFECT_ROTATION() {
+        return new Rotation(4.11, 6.84, -7.49);
+    };
+
+    private static get WET_EFFECT_SCALE() {
+        return new Vector(1.1, 1.1, 1.1);
+    };
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     public type: BuffType = BuffType.Wet;
@@ -47,7 +62,6 @@ export class WetBuff extends BuffBase {
         return;
     };
 
-
     public onRefresh: () => void = () => {
         this.replayEffect();
     };
@@ -60,11 +74,14 @@ export class WetBuff extends BuffBase {
         }
         EffectService.stop(this._effectId);
         this._effectId = EffectService.playOnGameObject(
-            WetBuff.WetEffectGuid,
+            WetBuff.WET_EFFECT_GUID,
             char,
             {
                 duration: this.survivalStrategy / 1e3,
-                slotType: HumanoidSlotType.Root,
+                slotType: WetBuff.WET_EFFECT_SLOT,
+                position: WetBuff.WET_EFFECT_POSITION,
+                rotation: WetBuff.WET_EFFECT_ROTATION,
+                scale: WetBuff.WET_EFFECT_SCALE,
             },
         );
     }

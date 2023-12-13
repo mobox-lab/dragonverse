@@ -133,6 +133,7 @@ export default class FirePuzzleBlock extends mw.Script {
                 EventDefine.PlayerEnterFirePuzzleBlock,
                 this.gameObject.gameObjectId,
                 this.force,
+                this.wetBuffDuration,
             );
         }
     };
