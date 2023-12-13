@@ -2,10 +2,13 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-11 15:55:47
- * @FilePath     : \dragonverse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
+ * @LastEditTime : 2023-12-13 16:28:19
+ * @FilePath     : \dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
+
+import { EventDefine } from "../../const/EventDefine";
+import { QuestModuleC } from "../../module/quest/QuestModuleC";
 
 @Component
 export default class CloudEffect extends mw.Script {
@@ -35,6 +38,13 @@ export default class CloudEffect extends mw.Script {
         InputUtil.onKeyDown(Keys.Q, () => {
             this.destroyClouds(this.getCanDestroyClouds());
         });
+
+        //任务如果完成了云就都销毁
+        Event.addLocalListener(EventDefine.WaterDragonTaskComplete, () => {
+            this.clouds.length = 0;
+            this.cloudsParents.length = 0;
+            this.gameObject?.destroy();
+        });
     }
 
 
@@ -54,12 +64,10 @@ export default class CloudEffect extends mw.Script {
                 element.worldTransform.scale = new Vector((pos - startPos) / 50, (pos - startPos) / 50, (pos - startPos) / 50);
             }
 
-
             //改变位置
             if (distance < 1) {
                 element.localTransform.position = new Vector(startPos, element.localTransform.position.y, element.localTransform.position.z);
             } else {
-
                 let speed = 1;
                 element.localTransform.position = new Vector(pos + speed, element.localTransform.position.y, element.localTransform.position.z);
             }
@@ -101,6 +109,9 @@ export default class CloudEffect extends mw.Script {
                     if (this.clouds.length === 0 && this.cloudsParents.length === 0) {
                         //全部销毁
                         this.gameObject.destroy();
+
+                        //任务完成测试
+                        Event.dispatchToLocal(EventDefine.PlayerEnterDestination);
                     }
                 }).start();
             });
