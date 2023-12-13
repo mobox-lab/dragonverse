@@ -77,7 +77,7 @@ function initCollectibleItemCluster() {
 }
 
 function initDragonCluster() {
-    const configs = GameConfig.Dragon.getAllElement();
+    const configs = GameConfig.CharacterfulDragon.getAllElement();
     const set = new Set<number>();
     for (const config of configs) {
         set.add(config.bagId);

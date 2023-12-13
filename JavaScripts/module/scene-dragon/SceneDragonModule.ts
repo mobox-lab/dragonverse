@@ -2,18 +2,19 @@ import GToolkit from "../../util/GToolkit";
 import SceneDragonBehavior from "./SceneDragonBehavior";
 import SceneDragon from "./SceneDragon";
 import MainPanel from "../../ui/main/MainPanel";
-import GameObject = mw.GameObject;
 import Regulator from "../../depend/regulator/Regulator";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Enumerable from "linq";
 import { GameConfig } from "../../config/GameConfig";
 import UUID from "pure-uuid";
-import noReply = mwext.Decorator.noReply;
 import { EventDefine } from "../../const/EventDefine";
-import CollectibleItem from "../collectible-item/CollectibleItem";
 import { BagModuleS } from "../bag/BagModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { getGenerationPointMap } from "../../gameplay/generate/GenerateUtil";
+import AreaManager from "../../gameplay/area/AreaManager";
+import GameObject = mw.GameObject;
+import noReply = mwext.Decorator.noReply;
+import { IPoint3 } from "../../util/area/Shape";
+import { BagTypes } from "../bag/BagItemCluster";
 
 /**
  * 场景龙存在数据.
@@ -262,11 +263,11 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * @desc value 生成位置.
      * @private
      */
-    private _generateLocationsMap: Map<number, Vector[]>;
+    private _generateLocationsMap: Map<number, IPoint3[]>;
 
-    private getValidGenerateLocation(id: number, playerId: number): Vector[] {
+    private getValidGenerateLocation(id: number, playerId: number): IPoint3[] {
         if (!this._generateLocationsMap) {
-            this._generateLocationsMap = getGenerationPointMap(SceneDragonModuleS.GENERATION_HOLDER_TAG, SceneDragonModuleS);
+            this._generateLocationsMap = AreaManager.getInstance().getGenerationPointMap(BagTypes.Dragon);
         }
 
         return this._generateLocationsMap.get(id);
@@ -416,7 +417,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         const syncKey = new UUID(4).toString();
         const item = new SceneDragon();
-        item.generate(itemId, location);
+        item.generate(itemId, new Vector(location.x, location.y, location.z));
 
         const playerPosition = Player.getPlayer(playerId)?.character.worldTransform.position ?? null;
         if (playerPosition === null || Vector.squaredDistance(item.location, playerPosition) > GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE) {
