@@ -2,9 +2,9 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-11 17:50:24
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-12 15:42:08
+ * @LastEditTime : 2023-12-13 10:39:48
  * @FilePath     : \dragon-verse\JavaScripts\ui\npc-interaction\NpcInteractionPanel.ts
- * @Description  : 
+ * @Description  : npc动作交互面板
  */
 
 import { GameConfig } from "../../config/GameConfig";
@@ -40,7 +40,7 @@ export default class NpcInteractionPanel extends NPCActionPanel_Generate {
             let actionConfig = GameConfig.NPCAction.getElement(config.npcAction[i]);
             let item = UIService.create(NPCBigItem_Generate);
             item.text_Name.text = actionConfig.identity;
-            item.img_Thumbnail.imageGuid = actionConfig.ICON;
+            item.img_Thumbnail.imageGuid = actionConfig.icon;
             item.button.touchMethod = ButtonTouchMethod.PreciseTap;
             item.button.onClicked.add(() => {
                 //播动作
