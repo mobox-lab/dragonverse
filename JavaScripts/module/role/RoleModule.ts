@@ -162,7 +162,7 @@ export class RoleModuleS extends ModuleS<RoleModuleC, RoleModuleData> {
      */
     public addController(playerId: number, controller: UnifiedRoleController) {
         const p = Player.getAllPlayers().find((player) => {
-            player.playerId === playerId;
+            return player.playerId === playerId;
         });
         if (p) {
             this._controllers.set(playerId, controller);
@@ -187,7 +187,12 @@ export class RoleModuleS extends ModuleS<RoleModuleC, RoleModuleData> {
      * @param playerId
      */
     public removeController(playerId: number): boolean {
-        return this._controllers.delete(playerId);
+        const controller = this._controllers.get(playerId);
+        if (!this._controllers.delete(playerId)) return false;
+
+        controller.destroy();
+
+        return true;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

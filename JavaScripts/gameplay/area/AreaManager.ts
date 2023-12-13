@@ -13,9 +13,9 @@ export default class AreaManager extends Singleton<AreaManager>() {
         GameConfig.Area.getAllElement().forEach((value) => {
             const areas: PolygonShape[] = [];
 
-            for (const range of value.range) {
+            for (const range of value.points) {
                 if (range.length % 2) {
-                   Log4Ts.error(AreaManager, `range param invalid. length is not even.`);
+                    Log4Ts.error(AreaManager, `range param invalid. length is not even.`);
                 } else {
                     const area = PolygonShape.toSeqPoint(GToolkit.fold(range, 2, (data) => {
                         return {x: data[0], y: data[1]};

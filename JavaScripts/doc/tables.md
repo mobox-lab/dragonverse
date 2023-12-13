@@ -7,13 +7,50 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.8.4b  
+v0.9.0  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
 
 - [JetBrainsMono Nerd Font Mono][JetbrainsMonoNerdFont]
 - [Sarasa Mono SC][SarasaMonoSC]
+
+## 区域 Area
+
+|     Name     | PropName | Type    | Desc           |
+| :----------: | :------- | ------- | -------------- |
+|      ID      | Id       | int     |                |
+|     名称     | Name     | string  |                |
+|     点集     | Points   | int[][] |                |
+| 是否构成形状 | IsShape  | boolean | 是否构成多边形 |
+
+点集含义：
+
+![points-example](./pic/generationRange.png)
+
+```json
+[
+    [x11,y11,x12,y12,x13,y13...x1m,y1m],
+    [x21,y21,x22,y22,x23,y23...x2n,y2n],
+    ...
+]
+```
+
+当 isShape 为 true 时，点集将构成多边形，否则构成一系列点。
+
+## 元素 Elemental
+
+| Name | PropName | Type   | Desc |
+| :--: | :------- | ------ | ---- |
+|  ID  | Id       | int    |      |
+| 名称 | Name     | string |      |
+
+## 品质 Quality
+
+| Name | PropName | Type   | Desc |
+| :--: | :------- | ------ | ---- |
+|  ID  | Id       | int    |      |
+| 名称 | Name     | string |      |
 
 ## 背包物 BagItem
 
@@ -53,38 +90,6 @@ by LviatYi
 |    可捕捉次数     | HitPoint           | int     |        |
 |     捕捉消耗      | Cost               | int     |        |
 | 捕捉成功率算法 ID | SuccessRateAlgoId  | int     |        |
-
-## 区域 Area
-
-| Name | PropName | Type    | Desc |
-| :--: | :------- | ------- | ---- |
-|  ID  | Id       | int     |      |
-| 名称 | Name     | string  |      |
-| 范围 | Range    | int[][] |      |
-
-范围含义：
-
-```json
-[
-    [x11,y11,x12,y12,x13,y13...x1m,y1m],
-    [x21,y21,x22,y22,x23,y23...x2n,y2n],
-    ...
-]
-```
-
-## 元素 Elemental
-
-| Name | PropName | Type   | Desc |
-| :--: | :------- | ------ | ---- |
-|  ID  | Id       | int    |      |
-| 名称 | Name     | string |      |
-
-## 品质 Quality
-
-| Name | PropName | Type   | Desc |
-| :--: | :------- | ------ | ---- |
-|  ID  | Id       | int    |      |
-| 名称 | Name     | string |      |
 
 ## 采集结果算法 CollectResultAlgo
 
@@ -218,6 +223,23 @@ by LviatYi
 | :--: | :------- | ------ | ---- |
 |  ID  | Id       | int    |      |
 | 名称 | Name     | string |      |
+
+## 任务 Task
+
+|      Name       | PropName        | Type    | Desc                    |
+| :-------------: | :-------------- | ------- | ----------------------- |
+|       ID        | Id              | int     |                         |
+|      名称       | Name            | string  | 备注用 无需填入 lan_key |
+|    子项目数     | Count           | int     | 完成所达成数量          |
+|    可重复性     | Repeat          | boolean | 可否重复完成            |
+|    完成奖励     | Reward          | int[]   |                         |
+| Quest 物体 Guid | QuestObjectGuid | string  |                         |
+
+- 完成奖励
+  - `[int,int]`
+  - 含义为：[**背包物品 id**,数量]
+- Quest 物体 Guid
+  - 构建场景时 需将 Quest 预制体拖入场景，并填入其 Guid。
 
 [JetbrainsMonoNerdFont]: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip@fallbackFont
 [SarasaMonoSC]: https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
