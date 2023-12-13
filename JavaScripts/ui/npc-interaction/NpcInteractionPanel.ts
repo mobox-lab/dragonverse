@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-11 17:50:24
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-13 10:39:48
+ * @LastEditTime : 2023-12-13 16:36:23
  * @FilePath     : \dragon-verse\JavaScripts\ui\npc-interaction\NpcInteractionPanel.ts
  * @Description  : npc动作交互面板
  */
@@ -44,7 +44,6 @@ export default class NpcInteractionPanel extends NPCActionPanel_Generate {
             item.button.touchMethod = ButtonTouchMethod.PreciseTap;
             item.button.onClicked.add(() => {
                 //播动作
-                console.log(actionConfig.identity);
                 Event.dispatchToLocal(EventDefine.ShowNpcAction, actionConfig.id, npcId);
             });
             this.mContent3.addChild(item.uiObject);
