@@ -29,16 +29,20 @@ export class CompanionModule_C extends ModuleC<CompanionModule_S, CompanionData>
      * 将指定伙伴设定为参战状态
      * @param companionId 
      */
-    public async showUpCompanion(companionId: string) {
+    public async showUpCompanion(companionId: string, isShowUp: boolean = true) {
 
-        let ret = await this.server.net_switchCompanionShowup(companionId);
+        let oldShowUp = this.data.getCompanionWhoShowUp();
+        let ret = await this.server.net_switchCompanionShowup(companionId, isShowUp);
 
         if (ret) {
-            this.data.getCompanion(companionId).isShowUp = true;
+            this.data.getCompanion(companionId).isShowUp = isShowUp;
+
+            if (oldShowUp && oldShowUp.companionSign != companionId) {
+                this.data.getCompanion(oldShowUp.companionSign).isShowUp = false;
+            }
         }
 
         return ret;
-
     }
 
 
@@ -48,6 +52,19 @@ export class CompanionModule_C extends ModuleC<CompanionModule_S, CompanionData>
      */
     public getCompanionIdList() {
         return this.data.getCompanionIdList();
+    }
+
+
+    /**
+     * 获取当前参战的宠物信息
+     */
+    public getCurrentShowupCompanionInfo(): Readonly<CompanionInfo> {
+
+        let companionInfo = this.data.getCompanionWhoShowUp();
+        if (!companionInfo) {
+            return;
+        }
+        return companionInfo
     }
 
 

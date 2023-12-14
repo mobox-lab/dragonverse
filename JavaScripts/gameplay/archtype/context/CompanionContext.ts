@@ -1,4 +1,4 @@
-import { CompanionState } from "../companion/CompanionState";
+import { CompanionState } from "../entity/CompanionState";
 import { IContext } from "./IContext";
 import { MovementContext } from "./MovementContext";
 

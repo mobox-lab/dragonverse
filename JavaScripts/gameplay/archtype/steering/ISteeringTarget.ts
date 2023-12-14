@@ -2,13 +2,13 @@ export class SteeringOutput {
 
     linear: mw.Vector = new mw.Vector();
 
-    rotation: mw.Rotation = new mw.Rotation();
+    angular: mw.Vector = new mw.Vector();
 
 
     reset() {
 
         this.linear.set(0, 0, 0);
-        this.rotation.set(0, 0, 0);
+        this.angular.set(0, 0, 0);
     }
 
 }

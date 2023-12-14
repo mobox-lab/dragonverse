@@ -1,6 +1,7 @@
 import seedrandom from "seedrandom";
-import { CompanionStateEnum } from "../../simulate/planner/companion/CompanionStateEnum";
+import { TimeManager } from "../../../controller/TimeManager";
 import { IState } from "../base/IState";
+import { CompanionStateEnum } from "./CompanionController";
 @mw.Serializable
 export class CompanionState implements IState {
 
@@ -42,17 +43,23 @@ export class CompanionState implements IState {
     public start: mw.Vector = mw.Vector.zero;
 
 
+    /**
+     * 起始位置
+     */
+    @mw.Property({ replicated: true })
+    public offsetNum: number = 100;
+
 
     public static create(stateName: CompanionStateEnum) {
 
         const ret = new CompanionState();
-        ret.switchTime = ret.seed = Date.now();
+        ret.switchTime = ret.seed = TimeManager.getInstance().currentTime;
         ret.stateName = stateName;
         return ret;
     }
 
 
-    public random(min: number = undefined, max: number = undefined, integer: boolean = true): number {
+    public static random(state: CompanionState, min: number = undefined, max: number = undefined, integer: boolean = true): number {
 
         if (min === undefined) {
             min = 0;
@@ -61,8 +68,8 @@ export class CompanionState implements IState {
             max = min + 1;
         }
 
-        this.seed++;
-        let rng = seedrandom(this.seed.toString());
+        state.seed++;
+        let rng = seedrandom(state.seed.toString());
 
         let result = rng() * (max - min) + min;
         return integer ? Math.floor(result) | 0 : result;

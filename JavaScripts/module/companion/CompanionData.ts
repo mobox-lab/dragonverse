@@ -95,6 +95,19 @@ export class CompanionData extends mwext.Subdata {
     }
 
 
+    public getCompanionWhoShowUp() {
+
+        for (let companion of this.allCompanion) {
+            if (companion.isShowUp) {
+                return companion;
+            }
+        }
+
+        return null;
+
+    }
+
+
 
 
 }

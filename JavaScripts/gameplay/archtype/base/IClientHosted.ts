@@ -3,11 +3,6 @@ import { IState } from "./IState";
 export interface IClientDisplayHosted<T extends IState> {
 
 
-    /**
-     * 客户端申请改变逻辑状态
-     * @param state 
-     */
-    changeLogicState(state: T): void;
 
 
     /**

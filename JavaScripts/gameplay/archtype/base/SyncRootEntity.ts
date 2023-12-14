@@ -42,7 +42,6 @@ export abstract class SyncRootEntity<T extends IState> extends InitializeChecker
             for (const script of scripts) {
                 if (script instanceof ClientDisplayEntity) {
                     script.setHosted(this);
-                    script.extraCondition = true;
                     break;
                 }
             }
@@ -61,6 +60,7 @@ export abstract class SyncRootEntity<T extends IState> extends InitializeChecker
      */
     changeLogicState(state: T): void {
 
+        this._logicState = state;
         this.serverChangeLogicState(state);
     }
 
