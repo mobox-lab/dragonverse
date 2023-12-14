@@ -19,6 +19,7 @@ export class RunningGameGamingPanel extends RGGameUI_Generate {
     onShow() {
 
         this.info.text = "";
+        this.mScoreText.text = "0";
         //this.onTimeChange(40);
     }
 

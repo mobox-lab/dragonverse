@@ -227,7 +227,6 @@ export class RunningGameController {
         this.maxSpeed = this._oriMaxSpeed;
         TimeUtil.clearInterval(this._intervalHander);
         this._intervalHander = null;
-        this._character.movementEnabled = false;
         this._character = null;
     }
 

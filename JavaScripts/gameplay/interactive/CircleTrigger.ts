@@ -1,4 +1,5 @@
 import { EventDefine } from "../../const/EventDefine";
+import { RunningGameGetParticle } from "../quest/runnungGame/RunningGameQuest";
 
 
 /**
@@ -17,8 +18,8 @@ export enum CircleType {
     TransEnd = "5",
     /**引导区域 */
     Guide = "6",
-    /**游戏开始区域 */
-    GameStart = "7",
+    /**游戏准备开始区域 */
+    GameReady = "7",
     /**游戏结束区域 */
     GameEnd = "8",
 }
@@ -38,7 +39,7 @@ export default class CircleTrigger extends mw.Script {
             "传送门起点": CircleType.TransStart,
             "传送门终点": CircleType.TransEnd,
             "引导区域": CircleType.Guide,
-            "游戏开始区域": CircleType.GameStart,
+            "游戏准备开始区域": CircleType.GameReady,
             "游戏结束区域": CircleType.GameEnd,
         }
     })
@@ -62,6 +63,15 @@ export default class CircleTrigger extends mw.Script {
         if (obj instanceof mw.Character) {
             if (obj === Player.localPlayer.character) {
                 mw.Event.dispatchToLocal(EventDefine.PlayerEnterCircleTrigger, this._circleType);
+
+                if (this._circleType <= CircleType.Point) {
+                    const particle = GameObjPool.spawn(RunningGameGetParticle) as mw.Effect;
+                    particle.worldTransform.position = this.gameObject.worldTransform.position;
+                    particle.play(() => {
+                        GameObjPool.despawn(particle);
+                    })
+                }
+
             }
         }
     };

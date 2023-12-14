@@ -1,7 +1,7 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EventDefine } from "../../../const/EventDefine";
 import { UI } from "../../../edtors/DragonInfo";
-import { RunningGameEndPanel } from "../../../ui/runningGame/RunningGameEndPanel";
+import { RunningGameData, RunningGameEndPanel } from "../../../ui/runningGame/RunningGameEndPanel";
 import { RunningGameGamingPanel } from "../../../ui/runningGame/RunningGameGamingPanel";
 import { RunningGamePreparePanel } from "../../../ui/runningGame/RunningGamePreparePanel";
 import { RunningGameController } from "./RuninngGameController";
@@ -102,7 +102,7 @@ export class RunningGameMode {
                 this.onStart();
                 break;
             case RunningGameStatus.End:
-                this.onEnd();
+                Event.dispatchToLocal(EventDefine.OnRuningGameEnd);
                 break;
             default: break;
         }
@@ -130,12 +130,10 @@ export class RunningGameMode {
 
     private onStart() {
         UIService.show(RunningGamePreparePanel).showGo();
-        //TODO:正方体碰撞消失
         UIService.show(RunningGameGamingPanel);
         Event.dispatchToLocal(EventDefine.OnRunningGameTimeChange, this._gameTime);
         this._hander = TimeUtil.setInterval(this.onCountDown, 1);
-
-
+        Event.dispatchToLocal(EventDefine.OnRunningGameStart);
     }
 
     private onCountDown = () => {
@@ -158,8 +156,21 @@ export class RunningGameMode {
             this._gameController.onEnd();
             this._gameController = null;
         }
-        //出现结算UI
-        UIService.show(RunningGameEndPanel);
+
+        if (this._status != RunningGameStatus.Guide) {
+            //关闭游戏UI
+            UIService.hide(RunningGameGamingPanel);
+            //出现结算UI
+            Player.localPlayer.character.movementEnabled = false;
+            const data = new RunningGameData();
+            data.isNewRecord = true;
+            data.trans = this._enterTransTime;
+            data.speedUp = this._enterSpeedUpTime;
+            data.time = this._playTime;
+            data.score = this._playScore;
+            UIService.show(RunningGameEndPanel, data);
+        }
+
 
     }
 

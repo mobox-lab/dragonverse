@@ -2,11 +2,26 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-14 14:01:03
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-14 16:00:55
+ * @LastEditTime: 2023-12-14 16:55:48
  * @FilePath: \DragonVerse\JavaScripts\ui\runningGame\RunningGameEndPanel.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
+import { EventDefine } from "../../const/EventDefine";
 import RGEndUI_Generate from "../../ui-generate/runningGame/RGEndUI_generate";
+
+export class RunningGameData {
+    /**穿过关卡数 */
+    trans: number;
+    /**穿过奖励圈数 */
+    speedUp: number
+    /**花费时间 */
+    time: number;
+    /**总得分 */
+    score: number;
+    /**是否新纪录 */
+    isNewRecord: boolean;
+}
+
 
 export class RunningGameEndPanel extends RGEndUI_Generate {
 
@@ -21,10 +36,14 @@ export class RunningGameEndPanel extends RGEndUI_Generate {
 
     private onBackButtonClicked = () => {
         this.visible = false;
+        Event.dispatchToLocal(EventDefine.OnRunningGameBack);
+
     }
 
     private onAgainButtonClicked = () => {
         this.visible = false;
+        Event.dispatchToLocal(EventDefine.OnRunningGameAgain);
+
     }
 
 
@@ -58,11 +77,22 @@ export class RunningGameEndPanel extends RGEndUI_Generate {
     }
 
 
-    onShow() {
+    onShow(data: RunningGameData) {
 
-
-
+        this.setData(data);
         this.showBg();
+    }
+
+    private setData(data: RunningGameData) {
+        this.mTrans.text = data.trans + "";
+        this.mSpeedUp.text = data.speedUp + "";
+        this.mTime.text = data.time + "";
+        this.mScore.text = data.score + "";
+        if (data.isNewRecord) {
+            this.mNew.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+        } else {
+            this.mNew.visibility = mw.SlateVisibility.Hidden;
+        }
     }
 
 
