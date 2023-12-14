@@ -1,8 +1,8 @@
 import { Singleton } from "../../depend/singleton/Singleton";
-import PolygonShape, {
+import {
     AnyShape,
     IPoint3,
-    IShape2,
+    PolygonShape,
     IShape3,
     Point3FromArray,
     Point3SetShape,
@@ -15,11 +15,13 @@ import { ConfigBase } from "../../config/ConfigBase";
 import { ICollectibleItemElement } from "../../config/CollectibleItem";
 import { IDragonElement } from "../../config/Dragon";
 import { BagTypes } from "../../module/bag/BagItemCluster";
+import CollectibleItem from "../../module/collectible-item/CollectibleItem";
 
 export default class AreaManager extends Singleton<AreaManager>() {
 //#region Constant
-    private static readonly AREA_HOLDER_TAG = "collectible-item-points";
-    private static readonly AREA_TAG_PREFIX = "area-tag-";
+    private static readonly POINTS_3D_AREA_HOLDER_TAG = "points-3d-area-holder-tag";
+    private static readonly SHAPE_2D_AREA_HOLDER_TAG = "shape-2d-area-holder-tag";
+    public static readonly AREA_ID_TAG_PREFIX = "area-id-tag-";
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     private _areaMap: Map<number, AnyShape[]> = new Map<number, AnyShape[]>();
 
@@ -55,32 +57,67 @@ export default class AreaManager extends Singleton<AreaManager>() {
 
     private injectScenePoint() {
         if (this._injected) return;
-        const tag = AreaManager.AREA_HOLDER_TAG;
-        const holder = GameObject.findGameObjectsByTag(tag)[0];
-        if (!holder || holder.getChildren().length === 0) {
-            Log4Ts.error(AreaManager, `couldn't find holder or any child in it by tag: ${tag}`);
-            return;
+        const pointsTag = AreaManager.POINTS_3D_AREA_HOLDER_TAG;
+        const shapeTag = AreaManager.SHAPE_2D_AREA_HOLDER_TAG;
+        const pointsHolders = GameObject.findGameObjectsByTag(pointsTag);
+        const shapeHolders = GameObject.findGameObjectsByTag(shapeTag);
+
+        let injectReady = false;
+
+        if (GToolkit.isNullOrEmpty(pointsHolders)) {
+            Log4Ts.warn(AreaManager, `couldn't find holder or any child in it by tag: ${pointsTag}`);
+        } else {
+            injectReady = true;
         }
+        if (GToolkit.isNullOrEmpty(shapeHolders)) {
+            Log4Ts.warn(AreaManager, `couldn't find holder or any child in it by tag: ${shapeTag}`);
+        } else {
+            injectReady = true;
+        }
+        if (!injectReady) return;
 
         Enumerable
-            .from(GToolkit.getChildren(holder))
-            .where(item => !GToolkit.isNullOrEmpty(item.tag) && item.tag.startsWith(AreaManager.AREA_TAG_PREFIX))
-            .select(item => ({
-                id: Number(item.tag.substring(AreaManager.AREA_TAG_PREFIX.length)),
-                position: item.worldTransform.position,
-            }))
+            .from(pointsHolders)
+            .select(PacemakerPicker)
             .where(item => item.id !== Number.NaN)
             .groupBy(item => item.id)
             .select(item => ({
                 id: item.key(),
-                shape: new Point3SetShape(item.select(i => i.position).toArray()),
+                shape: new Point3SetShape(item
+                    .selectMany(i => i.positions)
+                    .toArray()),
             }))
             .forEach(item => {
                 let list = this._areaMap.get(item.id);
                 if (!list) {
+                    list = [];
                     this._areaMap.set(item.id, list);
                 }
                 list.push(item.shape);
+            });
+
+        Enumerable
+            .from(shapeHolders)
+            .select(PacemakerPicker)
+            .where(item => item.id !== Number.NaN)
+            .select(item => ({
+                id: item.id,
+                shape: new PolygonShape(item.positions),
+            }))
+            .groupBy(item => item.id)
+            .select(item => {
+                return {
+                    id: item.key(),
+                    shapes: item.select(i => i.shape).toArray(),
+                };
+            })
+            .forEach(item => {
+                let list = this._areaMap.get(item.id);
+                if (!list) {
+                    list = [];
+                    this._areaMap.set(item.id, list);
+                }
+                list.push(...item.shapes);
             });
 
         this._injected = true;
@@ -180,4 +217,24 @@ export default class AreaManager extends Singleton<AreaManager>() {
 
         return result;
     }
+}
+
+function PacemakerPicker(obj: GameObject) {
+    const pacemaker = Enumerable
+        .from(obj.getChildren())
+        .first(item => !GToolkit.isNullOrEmpty(item.tag) && item.tag.startsWith(AreaManager.AREA_ID_TAG_PREFIX));
+
+    const suite = pacemaker ? Enumerable
+        .from(obj.getChildren())
+        .where(item => GToolkit.isNullOrEmpty(item.tag))
+        .select(item => {
+            const pos = item.worldTransform.position;
+            return {x: pos.x, y: pos.y, z: pos.z};
+        })
+        .toArray() : [];
+
+    return {
+        id: pacemaker ? Number(pacemaker.tag.substring(AreaManager.AREA_ID_TAG_PREFIX.length)) : Number.NaN,
+        positions: suite,
+    };
 }
