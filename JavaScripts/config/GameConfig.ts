@@ -10,6 +10,7 @@ import {DialogueFuncConfig} from "./DialogueFunc";
 import {DialogueInteractNodeConfig} from "./DialogueInteractNode";
 import {DragonConfig} from "./Dragon";
 import {ElementalConfig} from "./Elemental";
+import {GlobalConfig} from "./Global";
 import {IceBlockConfig} from "./IceBlock";
 import {LanguageConfig} from "./Language";
 import {NPCActionConfig} from "./NPCAction";
@@ -47,6 +48,7 @@ export class GameConfig{
 	public static get DialogueInteractNode():DialogueInteractNodeConfig{ return this.getConfig(DialogueInteractNodeConfig) };
 	public static get Dragon():DragonConfig{ return this.getConfig(DragonConfig) };
 	public static get Elemental():ElementalConfig{ return this.getConfig(ElementalConfig) };
+	public static get Global():GlobalConfig{ return this.getConfig(GlobalConfig) };
 	public static get IceBlock():IceBlockConfig{ return this.getConfig(IceBlockConfig) };
 	public static get Language():LanguageConfig{ return this.getConfig(LanguageConfig) };
 	public static get NPCAction():NPCActionConfig{ return this.getConfig(NPCActionConfig) };

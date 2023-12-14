@@ -27,7 +27,7 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
 
             let script: Quest = GToolkit.getFirstScript(go, Quest);
             if (!script) {
-                Log4Ts.error(QuestModuleC, `预制体中没有绑定 Quest 脚本`);
+                Log4Ts.error(QuestModuleC, `预制体中没有绑定 Quest 脚本${config.name}`);
                 return;
             }
 
