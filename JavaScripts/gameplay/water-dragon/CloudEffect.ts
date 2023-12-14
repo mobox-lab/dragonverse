@@ -2,12 +2,13 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-13 16:28:19
+ * @LastEditTime : 2023-12-14 09:43:16
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
 
 import { EventDefine } from "../../const/EventDefine";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { QuestModuleC } from "../../module/quest/QuestModuleC";
 
 @Component
@@ -24,9 +25,7 @@ export default class CloudEffect extends mw.Script {
                 this.cloudsParents.push(element);
 
                 element.getChildren().forEach(cloud => {
-
                     this.clouds.push(cloud);
-
                 });
 
             }
@@ -35,8 +34,30 @@ export default class CloudEffect extends mw.Script {
         this.endPoint = this.gameObject.getChildByName("endPoint");
 
         this.useUpdate = true;
+
+        //按下Q键销毁云朵
         InputUtil.onKeyDown(Keys.Q, () => {
-            this.destroyClouds(this.getCanDestroyClouds());
+            let anchorGuid = this.getCanDestroyClouds();
+            SoundService.playSound("162446");
+            SoundService.playSound("201831");
+            GameObject.asyncSpawn("160357", {
+                replicates: false,
+                transform: new Transform(Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)),
+                    Player.localPlayer.character.worldTransform.rotation,
+                    Vector.one)
+            }).then((go) => {
+                // (go as Effect).play();
+                let target = GameObject.findGameObjectById(anchorGuid).getChildren()[0];
+                new Tween(go.worldTransform.position.clone()).to(target.worldTransform.position.clone(), 1000).onUpdate((pos) => {
+                    go.worldTransform.position = pos;
+                }).onComplete(() => {
+                    EffectService.playAtPosition("89080", target.worldTransform.position, { loopCount: 1 });
+                    (go as Effect).forceStop();
+
+                    this.destroyClouds(anchorGuid);
+                }).start();
+                Log4Ts.log(this, "生成云朵");
+            });
         });
 
         //任务如果完成了云就都销毁
@@ -54,7 +75,6 @@ export default class CloudEffect extends mw.Script {
             let endPos = this.endPoint.localTransform.position.x;
             let startPos = this.startPoint.localTransform.position.x;
             let distance = endPos - pos;
-
 
             if (distance < 50) {
                 element.worldTransform.scale = new Vector(distance / 50, distance / 50, distance / 50);
@@ -97,7 +117,6 @@ export default class CloudEffect extends mw.Script {
         if (cloudsParent) {
             cloudsParent.getChildren().forEach(element => {
                 EffectService.playAtPosition("89589", element.worldTransform.position, { duration: 3, scale: new Vector(2, 2, 2) });
-
             });
 
             cloudsParent.getChildren().forEach(element => {
@@ -111,7 +130,7 @@ export default class CloudEffect extends mw.Script {
                         this.gameObject.destroy();
 
                         //任务完成测试
-                        Event.dispatchToLocal(EventDefine.PlayerEnterDestination);
+                        // Event.dispatchToLocal(EventDefine.PlayerEnterDestination);
                     }
                 }).start();
             });
