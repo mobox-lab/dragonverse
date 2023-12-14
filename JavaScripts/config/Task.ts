@@ -1,21 +1,21 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA: Array<Array<any>> = [["id", "name", "count", "repeat", "reward", "questObjectGuid"], ["", "", "", "", "", ""], [1, "获取木龙", 5, false, [null], "BFA2FBF640BDA222EEB4B9884B78C1B4"], [2, "获取火龙", 2, false, null, "0B777B1642A1212E59FA3DA8648142A7"], [3, "获取水龙", 1, false, null, "1BF851F4459908F9C2AAB884763B1750"], [4, "获取土龙", 0, null, null, null]];
-export interface ITaskElement extends IElementBase {
-	/**任务 ID*/
-	id: number
+const EXCELDATA:Array<Array<any>> = [["id","name","count","repeat","reward","questObjectGuid"],["","","","","",""],[1,"获取木龙",5,false,[null],"BFA2FBF640BDA222EEB4B9884B78C1B4"],[2,"获取火龙",2,false,null,"0B777B1642A1212E59FA3DA8648142A7"],[3,"获取水龙",1,false,null,"1BF851F4459908F9C2AAB884763B1750"],[4,"获取土龙",0,null,null,null]];
+export interface ITaskElement extends IElementBase{
+ 	/**任务 ID*/
+	id:number
 	/**名称*/
-	name: string
+	name:string
 	/**子项目数*/
-	count: number
+	count:number
 	/**可重复性*/
-	repeat: boolean
+	repeat:boolean
 	/**完成奖励*/
-	reward: Array<number>
+	reward:Array<number>
 	/**Quest 物体 Guid*/
-	questObjectGuid: string
-}
+	questObjectGuid:string
+ } 
 export class TaskConfig extends ConfigBase<ITaskElement>{
-	constructor() {
+	constructor(){
 		super(EXCELDATA);
 	}
 
