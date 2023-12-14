@@ -1,12 +1,13 @@
 import { GameConfig } from "../../config/GameConfig";
 import PickerController from "../../gameplay/interactive/PickerController";
-import { Quest } from "../../gameplay/quest/Quest";
+import { Quest, QuestReporter } from "../../gameplay/quest/Quest";
 import GToolkit from "../../util/GToolkit";
 import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleS } from "./QuestModuleS";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
-export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> {
+export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements QuestReporter {
 
     private _questMap: Map<number, Quest> = new Map();
 
@@ -15,43 +16,34 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> {
         this.initializeTasks();
     }
 
-
     private async initializeTasks() {
-
         let character = Player.localPlayer.character;
         let script = await mw.Script.spawnScript(PickerController);
         script.gameObject = character;
         for (const task of this.data) {
-
             let config = GameConfig.Task.getElement(task.questId);
 
-            let go = await mw.GameObject.asyncSpawn(config.script);
+            let go = await mw.GameObject.asyncSpawn(config.questObjectGuid);
 
             let script: Quest = GToolkit.getFirstScript(go, Quest);
-
             if (!script) {
-                throw new Error("预制体中没有绑定Quest脚本");
+                Log4Ts.error(QuestModuleC, `预制体中没有绑定 Quest 脚本`);
+                return;
             }
+
             script.gameObject = character;
-            script.setUp(this, task.questId, task.progress, task.status, task.customData);
+            script.setUp(this, task.questId, task.status, task.customData);
             this._questMap.set(task.questId, script);
         }
-
     }
 
-
     public async tryToUpdateTaskInfo(taskId: number, progress: number, customData?: string) {
-
         let info = this.data.getTaskInfo(taskId);
-
-        if (!info) {
-            return;
-        }
+        if (!info) return;
 
         let config = GameConfig.Task.getElement(info.questCfgId);
 
         if (info.status === QuestStateEnum.Complete && !config.repeat) {
-
             // 已经完成了的任务，不允许再完成了
             return;
         }
@@ -59,6 +51,4 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> {
         info.status = await this.server.net_UpdateTaskStatus(taskId, progress, customData);
         this._questMap.get(taskId).status = info.status;
     }
-
-
 }

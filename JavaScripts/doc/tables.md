@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.8.4b  
+v0.9.4  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -15,60 +15,43 @@ by LviatYi
 - [JetBrainsMono Nerd Font Mono][JetbrainsMonoNerdFont]
 - [Sarasa Mono SC][SarasaMonoSC]
 
-## 背包物 BagItem
-
-|   Name   | PropName   | Type    | Desc                |
-| :------: | :--------- | ------- | ------------------- |
-|    ID    | Id         | int     |                     |
-|   名称   | Name       | string  |                     |
-|   描述   | Desc       | string  |                     |
-|   图标   | Icon       | string  |                     |
-| 可完成性 | Achievable | boolean | 是否 可以被图鉴记录 |
-
-## 采集物 CollectibleItem
-
-|      Name       | PropName           | Type | Desc   |
-| :-------------: | :----------------- | ---- | ------ |
-|       ID        | Id                 | int  |        |
-|    背包物 ID    | BagId              | int  |        |
-|     品质 ID     | QualityId          | int  |        |
-|  最大存在数量   | ExistenceCount     | int  |        |
-|    存在时间     | ExistenceTime      | int  | 秒 Sec |
-|    生成间隔     | GenerationInterval | int  | 秒 Sec |
-|   采集成功率    | SuccessRate        | int  | %      |
-|   可采集次数    | HitPoint           | int  |        |
-| 采集结果算法 ID | ResultAlgoId       | int  |        |
-
-## 龙 Dragon
-
-|       Name        | PropName           | Type    | Desc   |
-| :---------------: | :----------------- | ------- | ------ |
-|        ID         | Id                 | int     |        |
-|     背包物 ID     | BagId              | int     |        |
-|       形象        | Avatar             | UNKNOWN |        |
-|      元素 ID      | ElementalId        | int     |        |
-|      品质 ID      | QualityId          | int     |        |
-|     存在时间      | ExistenceTime      | int     | 秒 Sec |
-|     生成间隔      | GenerationInterval | int     | 秒 Sec |
-|    可捕捉次数     | HitPoint           | int     |        |
-|     捕捉消耗      | Cost               | int     |        |
-| 捕捉成功率算法 ID | SuccessRateAlgoId  | int     |        |
-
 ## 区域 Area
 
 | Name | PropName | Type    | Desc |
 | :--: | :------- | ------- | ---- |
 |  ID  | Id       | int     |      |
 | 名称 | Name     | string  |      |
-| 范围 | Range    | int[][] |      |
+| 点集 | Points   | int[][] |      |
 
-范围含义：
+点集可以作为 **2D 形状** 或 **3D 点集合**：
+
+- **2D 形状**
+- 即当配表数据形为 $a_1|a_2|...|a_m||b_1|b_2|...|b_n$ ，其中 $m,n$ 皆为偶数时。
+- 暂时不支持用于随机点生成.
+
+![points-example](./pic/generationRange.png)
 
 ```json
+// in json
 [
     [x11,y11,x12,y12,x13,y13...x1m,y1m],
     [x21,y21,x22,y22,x23,y23...x2n,y2n],
     ...
+]
+```
+
+- **3D 点集合**
+- 即当配表数据形为 $a_1|a_2|a_3||b_1|b_2|b_3||...||k_1|k_2|k_3$ ，其一维数组的子元素为长度 3 的数组时。
+
+![generationPoints](pic/generationPoints.png)
+
+```json
+// in json
+[
+    [a_1,a_2,a_3],
+    [b_1,b_2,b_3],
+    ...,
+    [k_1,k_2,k_3],
 ]
 ```
 
@@ -85,6 +68,56 @@ by LviatYi
 | :--: | :------- | ------ | ---- |
 |  ID  | Id       | int    |      |
 | 名称 | Name     | string |      |
+
+## 背包物 BagItem
+
+|   Name   | PropName   | Type    | Desc                |
+| :------: | :--------- | ------- | ------------------- |
+|    ID    | Id         | int     |                     |
+|   名称   | Name       | string  |                     |
+|   描述   | Desc       | string  |                     |
+|   图标   | Icon       | string  |                     |
+| 可完成性 | Achievable | boolean | 是否 可以被图鉴记录 |
+
+## 采集物 CollectibleItem
+
+|       Name       | PropName           | Type  | Desc   |
+| :--------------: | :----------------- | ----- | ------ |
+|        ID        | Id                 | int   |        |
+|    背包物 ID     | BagId              | int   |        |
+|     品质 ID      | QualityId          | int   |        |
+| 生成区域 ID 集合 | AreaIds            | int[] |        |
+|   最大存在数量   | ExistenceCount     | int   |        |
+|     存在时间     | ExistenceTime      | int   | 秒 Sec |
+|     生成间隔     | GenerationInterval | int   | 秒 Sec |
+|    采集成功率    | SuccessRate        | int   | %      |
+|    可采集次数    | HitPoint           | int   |        |
+| 采集结果算法 ID  | ResultAlgoId       | int   |        |
+
+## 龙 Dragon
+
+### 龙基 Dragon (Base)
+
+|       Name       | PropName           | Type    | Desc   |
+| :--------------: | :----------------- | ------- | ------ |
+|        ID        | Id                 | int     |        |
+|       形象       | Avatar             | UNKNOWN |        |
+|     元素 ID      | ElementalId        | int     |        |
+|     品质 ID      | QualityId          | int     |        |
+| 生成区域 ID 集合 | AreaIds            | int[]   |        |
+|     存在时间     | ExistenceTime      | int     | 秒 Sec |
+|     生成间隔     | GenerationInterval | int     | 秒 Sec |
+|    可捕捉次数    | HitPoint           | int     |        |
+|     捕捉消耗     | Cost               | int     |        |
+
+### 个性龙 CharacterfulDragon
+
+|       Name        | PropName          | Type | Desc     |
+| :---------------: | :---------------- | ---- | -------- |
+|        ID         | Id                | int  |          |
+|      龙基 Id      | DragonId          | int  | DragonID |
+|     背包物 ID     | BagId             | int  |          |
+| 捕捉成功率算法 ID | SuccessRateAlgoId | int  |          |
 
 ## 采集结果算法 CollectResultAlgo
 
@@ -218,6 +251,23 @@ by LviatYi
 | :--: | :------- | ------ | ---- |
 |  ID  | Id       | int    |      |
 | 名称 | Name     | string |      |
+
+## 任务 Task
+
+|      Name       | PropName        | Type    | Desc                    |
+| :-------------: | :-------------- | ------- | ----------------------- |
+|       ID        | Id              | int     |                         |
+|      名称       | Name            | string  | 备注用 无需填入 lan_key |
+|    子项目数     | Count           | int     | 完成所达成数量          |
+|    可重复性     | Repeat          | boolean | 可否重复完成            |
+|    完成奖励     | Reward          | int[]   |                         |
+| Quest 物体 Guid | QuestObjectGuid | string  |                         |
+
+- 完成奖励
+  - `[int,int]`
+  - 含义为：[**背包物品 id**,数量]
+- Quest 物体 Guid
+  - 构建场景时 需将 Quest 预制体拖入场景，并填入其 Guid。
 
 [JetbrainsMonoNerdFont]: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip@fallbackFont
 [SarasaMonoSC]: https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z

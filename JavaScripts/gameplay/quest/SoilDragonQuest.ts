@@ -11,6 +11,10 @@ import { Quest } from "./Quest";
 @mw.Component
 export default class SoilDragonQuest extends Quest {
 
+    protected get progress(): number {
+        return 0;
+    }
+
 
     private _infos: { index: number, complete: boolean }[];
 

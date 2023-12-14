@@ -1,4 +1,5 @@
 import GToolkit from "../../util/GToolkit";
+import UUID from "pure-uuid";
 
 
 export class CompanionEvents {
@@ -55,7 +56,7 @@ export class CompanionData extends mwext.Subdata {
 
     /**
      * 用户添加一个伙伴龙
-     * @param companionInfo 
+     * @param companionInfo
      */
     public addCompanion(companionInfo: CompanionInfo) {
 
@@ -79,8 +80,8 @@ export class CompanionData extends mwext.Subdata {
 
     /**
      * 通过id获取伙伴详细信息
-     * @param companionSign 指定id 
-     * @returns 
+     * @param companionSign 指定id
+     * @returns
      */
     public getCompanion(companionSign: string) {
 
@@ -119,14 +120,14 @@ export class CompanionDataHelper {
      * 创建一个伙伴信息
      * @param createTime 创建时间
      * @param companionId 配置id
-     * @returns 
+     * @returns
      */
     public static createSingleCompanionInfo(createTime: number, companionId: number): CompanionInfo {
 
         let ret = new CompanionInfo();
         ret.createTime = createTime
         ret.companionId = companionId;
-        ret.companionSign = GToolkit.generateUUID();
+        ret.companionSign = new UUID(4).toString();
         ret.isShowUp = false;
         return ret;
     }

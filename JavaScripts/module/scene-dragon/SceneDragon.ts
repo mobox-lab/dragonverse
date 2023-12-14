@@ -1,15 +1,13 @@
 import { GameConfig } from "../../config/GameConfig";
 import { IBagItemElement } from "../../config/BagItem";
 import { QualityTypes } from "../../const/QualityTypes";
-import PolygonShape, { IPoint, randomPoint } from "../../util/area/Shape";
-import AreaManager from "../../gameplay/area/AreaManager";
 import {
     SuccessRateAlgo,
     SuccessRateAlgoFactory,
     SuccessRateAlgoTypes,
 } from "../collectible-item/SuccessRateAlgoTypes";
 import { IDragonElement } from "../../config/Dragon";
-import GToolkit from "../../util/GToolkit";
+import { ICharacterfulDragonElement } from "../../config/CharacterfulDragon";
 
 /**
  * Scene Dragon.
@@ -122,7 +120,7 @@ export default class SceneDragon {
     public generate(id: number, location: Vector) {
         this._id = id;
         this._location = location;
-        this._hitPoint = this.getConfig().hitPoint;
+        this._hitPoint = this.getDragonConfig().hitPoint;
         this._generateTime = Date.now();
         this._isGenerated = true;
     }
@@ -172,7 +170,7 @@ export default class SceneDragon {
      * @config
      */
     public static quality(id: number): QualityTypes {
-        return this.getConfig(id).qualityId as QualityTypes;
+        return this.getDragonConfig(id).qualityId as QualityTypes;
     };
 
     /**
@@ -180,7 +178,7 @@ export default class SceneDragon {
      * @config
      */
     public static maxExistenceTime(id: number): number {
-        return this.getConfig(id).existenceTime * 1000;
+        return this.getDragonConfig(id).existenceTime * 1000;
     }
 
     /**
@@ -188,7 +186,7 @@ export default class SceneDragon {
      * @param id
      */
     public static generationInterval(id: number): number {
-        return this.getConfig(id).generationInterval * 1000;
+        return this.getDragonConfig(id).generationInterval * 1000;
     }
 
     /**
@@ -196,7 +194,7 @@ export default class SceneDragon {
      * @param id
      */
     public static cost(id: number): number {
-        return this.getConfig(id).cost;
+        return this.getDragonConfig(id).cost;
     }
 
     /**
@@ -211,16 +209,24 @@ export default class SceneDragon {
         return this.getConfig(id).bagId;
     }
 
-    public static getConfig(id: number): IDragonElement {
-        return GameConfig.Dragon.getElement(id);
+    public static getConfig(id: number): ICharacterfulDragonElement {
+        return GameConfig.CharacterfulDragon.getElement(id);
+    }
+
+    public static getDragonConfig(id: number): IDragonElement {
+        return GameConfig.Dragon.getElement(this.getConfig(id).dragonId);
     }
 
     public static getBagConfig(id: number): IBagItemElement {
         return GameConfig.BagItem.getElement(this.getConfig(id).bagId);
     }
 
-    public getConfig(): IDragonElement {
+    public getConfig(): ICharacterfulDragonElement {
         return SceneDragon.getConfig(this._id);
+    }
+
+    public getDragonConfig(): IDragonElement {
+        return SceneDragon.getDragonConfig(this._id);
     }
 
     public getBagConfig(): IBagItemElement {

@@ -14,13 +14,20 @@ export default class DialogueManager extends Singleton<DialogueManager>() {
 
     private _lockView: boolean = false;
 
-    private _isDialoguing: boolean = false;
+    private _currentDialogueNpcId: number | null = null;
 
     /**
      * 是否 正在对话.
      */
-    public get isDialoguing() {
-        return this._isDialoguing;
+    public get isDialoguing(): boolean {
+        return this._currentDialogueNpcId !== null;
+    }
+
+    /**
+     * 当前对话的 npc id.
+     */
+    public get currentDialogueNpcId(): number | null {
+        return this._currentDialogueNpcId;
     }
 
     private get dialoguePanel() {
@@ -56,8 +63,9 @@ export default class DialogueManager extends Singleton<DialogueManager>() {
             return;
         }
 
-        this.dialoguePanel.refresh(config);
         UIService.showUI(this.dialoguePanel);
+        this._currentDialogueNpcId = config.sourceId;
+        this.dialoguePanel.refresh(config);
 
         if (!greet) this.lockViewAngle();
     }
@@ -66,8 +74,10 @@ export default class DialogueManager extends Singleton<DialogueManager>() {
      * 退出对话.
      */
     public exit(id: number = undefined) {
-        this._dialoguePanel.shutDown(id);
-        this.releaseViewAngle();
+        if (this._dialoguePanel.shutDown(id)) {
+            this._currentDialogueNpcId = null;
+            this.releaseViewAngle();
+        }
     }
 
     /**
