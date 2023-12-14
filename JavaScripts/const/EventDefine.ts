@@ -2,7 +2,7 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-10 14:01:08
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-13 16:48:05
+ * @LastEditTime: 2023-12-14 13:26:14
  * @FilePath: \DragonVerse\JavaScripts\const\EventDefine.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -47,6 +47,11 @@ export enum EventDefine {
     OnRunningGameTimeChange = "On_RunningGame_Time_Change",
     /**跑酷游戏积分变化 */
     OnRunningGameScoreChange = "On_RunningGame_Score_Change",
+    /**当跑酷游戏信息变化 */
+    OnRunningGameInfoChange = "On_RunningGame_Info_Change",
+    /**当跑酷游戏结束 */
+    OnRuningGameEnd="On_RuningGame_End",
+
 
     /**
      * npc 动作.

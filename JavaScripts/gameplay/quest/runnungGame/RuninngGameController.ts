@@ -1,4 +1,5 @@
 import { GameConfig } from "../../../config/GameConfig";
+import { EventDefine } from "../../../const/EventDefine";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 export class RunningGameController {
@@ -42,6 +43,11 @@ export class RunningGameController {
     private set acceleration(value: number) {
         this._character.maxAcceleration = value;
     }
+
+    private get acceleration(): number {
+        return this._character.maxAcceleration;
+    }
+
     /**加速标志位时间，代表刚通过加速圈正处于加速过程中 */
     private _addFlagTime: number;
 
@@ -57,6 +63,9 @@ export class RunningGameController {
     /**玩家当前fov */
     private _curFov: number;
 
+    private _fovValue: number;
+
+
     /**设置玩家当前fov */
     public set curFov(value: number) {
         if (this._curFov === value) {
@@ -64,6 +73,10 @@ export class RunningGameController {
         }
         this._curFov = value;
         Camera.currentCamera.fov = value;
+    }
+
+    public get curFov(): number {
+        return this._curFov;
     }
 
     private _character: mw.Character;
@@ -81,16 +94,17 @@ export class RunningGameController {
         //初始化跑酷规则参数
         this._defaultMaxSpeed = GameConfig.Global.RG_MaxSpeed.value;
         this._speedUpMaxSpeed = this._defaultMaxSpeed * 3;
-        this._deceleration = GameConfig.Global.RG_Deceleration.value;
-        this._defaultAcceleration = GameConfig.Global.RG_Acceleration.value;
-        this._speedUpAcceleration = this._defaultMaxSpeed * 5;
-        this._addSpeedDurTime = 1;
+        this._deceleration = GameConfig.Global.RG_DEFAULT_Deceleration.value;
+        this._defaultAcceleration = GameConfig.Global.RG_DEFAULT_Acceleration.value;
+        this._speedUpAcceleration = GameConfig.Global.RG_UP_Acceleration.value;
+        this._addSpeedDurTime = GameConfig.Global.RG_SPEEDUP_TIME.value;;
         this._speedDownValue = GameConfig.Global.RG_SpeedDown_Value.value;
         this._defaultFov = Camera.currentCamera.fov;
         this._curFov = this._defaultFov;
+        this._fovValue = GameConfig.Global.RG_FOV_VALUE.value;
         //初始化玩家加速度和最大速度
         this._oriAcceleration = this._character.maxAcceleration;
-        this._oriAcceleration = this._character.maxFlySpeed;
+        this._oriMaxSpeed = this._character.maxFlySpeed;
         this.acceleration = this._defaultAcceleration;
         this.maxSpeed = this._defaultMaxSpeed;
         //初始化定时器
@@ -112,9 +126,8 @@ export class RunningGameController {
         if (speed <= this._defaultMaxSpeed) {
             fov = this._defaultFov;
         } else {
-            let fovValue = Math.floor((speed - this._defaultMaxSpeed) / 100 * 1);
-            Log4Ts.log({ name: this.constructor.name }, `--------->cur speed${speed} --------->set fov value${fovValue}`);
-            fov = this._defaultFov + (speed - this._defaultMaxSpeed)
+            let fovValue = Math.floor((speed - this._defaultMaxSpeed) / 100 * this._fovValue);
+            fov = this._defaultFov + fovValue;
         }
         this.curFov = fov;
     }
@@ -133,6 +146,8 @@ export class RunningGameController {
             //处于高速减速过程，需要让速度逐渐减小
             this.onSpeedDown();
         }
+        //Log4Ts.log({ name: this.constructor.name }, `--------->cur speed:${this.speed} ---------> fov value:${this.curFov}------>cur add:${this.acceleration}`);
+
     }
 
     /**
@@ -140,8 +155,11 @@ export class RunningGameController {
      */
     private checkAccelerationTime() {
         const curTime = Date.now();
-        if (curTime - this._addFlagTime > this._addSpeedDurTime * 1000) {
+        if ((curTime - this._addFlagTime) > this._addSpeedDurTime * 1000) {
             //加速时间到期
+
+            Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "加速时间到期");
+            //console.log("---------------checkAccelerationTime");
             this._addFlagTime = null;
             this.acceleration = this._defaultAcceleration;
         }
@@ -150,7 +168,10 @@ export class RunningGameController {
     private onSpeedDown() {
         //当前速度大于默认最大速度，需要减速
         let speed = this.speed;
-        if (speed > this._defaultMaxSpeed) {
+        if (speed > (this._defaultMaxSpeed + 1)) {
+            //Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "需要减速:" + Math.floor(speed));
+
+            //console.log("---------------onSpeedDown");
             speed -= this._deceleration;
             this.maxSpeed = speed > this._defaultMaxSpeed ? speed : this._defaultMaxSpeed;
         }
@@ -162,6 +183,9 @@ export class RunningGameController {
      */
     public enterSpeedUp() {
         //刷新加速标志位时间,重设置加速度
+
+        Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "通过加速圈:" + Math.floor(this.speed));
+
         this._addFlagTime = Date.now();
         this.acceleration = this._speedUpAcceleration;
         //计算最大速度
@@ -179,23 +203,32 @@ export class RunningGameController {
      * 通过减速圈
      */
     public enterSpeedDown() {
-        const speed = this.speed;
-        const maxSpeed = this.maxSpeed;
-        this.maxSpeed = speed - this._speedDownValue;
+
+
+        let speed = this.speed;
+        let maxSpeed = this.maxSpeed;
+
+        let changeMaxSpeed = speed - this._speedDownValue;
+        if (changeMaxSpeed <= 200) {
+            changeMaxSpeed = 200;
+        }
+        this.maxSpeed = changeMaxSpeed;
+        Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "通过减速圈前：" + Math.floor(this.speed) + "-" + Math.floor(this.maxSpeed));
         mw.TimeUtil.delayExecute(() => {
             this.maxSpeed = maxSpeed
-        }, 1)
+            Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "通过减速圈后：" + Math.floor(this.speed) + "-" + Math.floor(this.maxSpeed));
+        }, 10)
     }
 
 
-    public clear() {
+    public onEnd() {
         this.curFov = this._defaultFov;
         this.acceleration = this._oriAcceleration;
         this.maxSpeed = this._oriMaxSpeed;
         TimeUtil.clearInterval(this._intervalHander);
         this._intervalHander = null;
-
-
+        this._character.movementEnabled = false;
+        this._character = null;
     }
 
 

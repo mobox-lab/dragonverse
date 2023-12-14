@@ -10,6 +10,7 @@ export class RunningGameGamingPanel extends RGGameUI_Generate {
 
         Event.addLocalListener(EventDefine.OnRunningGameTimeChange, this.onTimeChange)
         Event.addLocalListener(EventDefine.OnRunningGameScoreChange, this.onScoreChange)
+        Event.addLocalListener(EventDefine.OnRunningGameInfoChange, this.onInfoChange)
 
     }
 
@@ -17,12 +18,25 @@ export class RunningGameGamingPanel extends RGGameUI_Generate {
 
     onShow() {
 
+        this.info.text = "";
         //this.onTimeChange(40);
     }
 
+    private onInfoChange = (str: string) => {
+        let text = this.info.text;
 
-    private onTimeChange(time: number) {
-        let min = time / 60;
+        if (text.length > 0) {
+            text += "\n";
+        }
+        text += this.mCountDown.text + str;
+        this.info.text = text;
+        this.mScrollBox.scrollToEnd();
+
+    }
+
+    private onTimeChange = (time: number) => {
+
+        let min = Math.floor(time / 60);
         let sec = time % 60;
 
         let minStr = min.toString();
@@ -34,10 +48,11 @@ export class RunningGameGamingPanel extends RGGameUI_Generate {
         if (sec < 10) {
             secStr = "0" + secStr;
         }
+        console.log("--------acccept time", time, min, sec, "---", minStr, secStr);
         this.mCountDown.text = minStr + ":" + secStr;
     }
 
-    private onScoreChange(score: number) {
+    private onScoreChange = (score: number) => {
         this.mScoreText.text = score.toString();
 
     }

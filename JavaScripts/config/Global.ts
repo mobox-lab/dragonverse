@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","key","string","strV","strVal","value","array1d","array2d","s1d","s2d","vec","patientMove"],["","ReadByName","","","","","","","","","",""],[1,"RG_MaxSpeed",null,"跑酷游戏最大飞行速度",null,1000,null,null,null,null,null,null],[2,"RG_Acceleration",null,"跑酷游戏加速速率",null,300,null,null,null,null,null,null],[3,"RG_Deceleration",null,"跑酷游戏减速速率",null,300,null,null,null,null,null,null],[4,"RG_Time",null,"跑酷游戏时间",null,40,null,null,null,null,null,null],[5,"RG_SpeedDown_Value",null,"跑酷通过减速圈减速差值",null,500,null,null,null,null,null,null],[6,"RG_Speed_Score",null,"跑酷进入奖励圈积分",null,50,null,null,null,null,null,null],[7,"RG_Time_Score",null,"跑酷进入加时圈积分",null,100,null,null,null,null,null,null],[8,"RG_TransStart_Score",null,"跑酷进入传送门起点积分",null,100,null,null,null,null,null,null],[9,"RG_TransEnd_Score",null,"跑酷进入传送门终点积分",null,100,null,null,null,null,null,null],[10,"RG_PrepareTextSize",null,"跑酷准备文本字体大小",null,150,null,null,null,null,null,null],[11,"RG_Ready_Time",null,"跑酷ready时间",null,2,null,null,null,null,null,null],[12,"RG_Interval_Time",null,"跑酷ready与go之间的间隔时间",null,0.5,null,null,null,null,null,null],[13,"RG_Go_Time",null,"跑酷GO时间",null,1,null,null,null,null,null,null],[14,"RG_Start_Loc",null,"跑酷起点区域前位置",null,0,null,null,null,null,null,null],[15,"RG_Back_Loc",null,"跑酷返回出口处位置",null,0,null,null,null,null,null,null]];
+const EXCELDATA:Array<Array<any>> = [["id","key","string","strV","strVal","value","array1d","array2d","s1d","s2d","vec","patientMove"],["","ReadByName","","","","","","","","","",""],[1,"RG_MaxSpeed",null,"跑酷游戏最大飞行速度",null,1000,null,null,null,null,null,null],[2,"RG_DEFAULT_Acceleration",null,"跑酷游戏默认加速速率",null,600,null,null,null,null,null,null],[3,"RG_DEFAULT_Deceleration",null,"跑酷游戏默认减速速率",null,100,null,null,null,null,null,null],[4,"RG_Time",null,"跑酷游戏时间",null,40,null,null,null,null,null,null],[5,"RG_SpeedDown_Value",null,"跑酷通过减速圈减速差值",null,500,null,null,null,null,null,null],[6,"RG_Speed_Score",null,"跑酷进入奖励圈积分",null,50,null,null,null,null,null,null],[7,"RG_Time_Score",null,"跑酷进入加时圈积分",null,100,null,null,null,null,null,null],[8,"RG_TransStart_Score",null,"跑酷进入传送门起点积分",null,100,null,null,null,null,null,null],[9,"RG_TransEnd_Score",null,"跑酷进入传送门终点积分",null,100,null,null,null,null,null,null],[10,"RG_PrepareTextSize",null,"跑酷准备文本字体大小",null,150,null,null,null,null,null,null],[11,"RG_Ready_Time",null,"跑酷ready时间",null,1,null,null,null,null,null,null],[12,"RG_Interval_Time",null,"跑酷ready与go之间的间隔时间",null,0.2,null,null,null,null,null,null],[13,"RG_Go_Time",null,"跑酷GO时间",null,1,null,null,null,null,null,null],[14,"RG_Start_Loc",null,"跑酷起点区域前位置",null,0,null,null,null,null,null,null],[15,"RG_Back_Loc",null,"跑酷返回出口处位置",null,0,null,null,null,null,null,null],[16,"RG_FOV_VALUE",null,"跑酷Fov变化系数",null,3,null,null,null,null,null,null],[17,"RG_SPEEDUP_TIME",null,"跑酷通过加速圈加速时间",null,1,null,null,null,null,null,null],[18,"RG_UP_Acceleration",null,"跑酷通过加速圈加速度",null,5000,null,null,null,null,null,null]];
 export interface IGlobalElement extends IElementBase{
  	/**id*/
 	id:number
@@ -32,10 +32,10 @@ export class GlobalConfig extends ConfigBase<IGlobalElement>{
 	}
 	/**跑酷游戏最大飞行速度*/
 	get RG_MaxSpeed():IGlobalElement{return this.getElement(1)};
-	/**跑酷游戏加速速率*/
-	get RG_Acceleration():IGlobalElement{return this.getElement(2)};
-	/**跑酷游戏减速速率*/
-	get RG_Deceleration():IGlobalElement{return this.getElement(3)};
+	/**跑酷游戏默认加速速率*/
+	get RG_DEFAULT_Acceleration():IGlobalElement{return this.getElement(2)};
+	/**跑酷游戏默认减速速率*/
+	get RG_DEFAULT_Deceleration():IGlobalElement{return this.getElement(3)};
 	/**跑酷游戏时间*/
 	get RG_Time():IGlobalElement{return this.getElement(4)};
 	/**跑酷通过减速圈减速差值*/
@@ -60,5 +60,11 @@ export class GlobalConfig extends ConfigBase<IGlobalElement>{
 	get RG_Start_Loc():IGlobalElement{return this.getElement(14)};
 	/**跑酷返回出口处位置*/
 	get RG_Back_Loc():IGlobalElement{return this.getElement(15)};
+	/**跑酷Fov变化系数*/
+	get RG_FOV_VALUE():IGlobalElement{return this.getElement(16)};
+	/**跑酷通过加速圈加速时间*/
+	get RG_SPEEDUP_TIME():IGlobalElement{return this.getElement(17)};
+	/**跑酷通过加速圈加速度*/
+	get RG_UP_Acceleration():IGlobalElement{return this.getElement(18)};
 
 }

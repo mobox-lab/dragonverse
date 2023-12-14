@@ -2,7 +2,7 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-12 13:26:06
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-13 16:12:25
+ * @LastEditTime: 2023-12-14 15:09:06
  * @FilePath: \DragonVerse\JavaScripts\gameplay\quest\runnungGame\RunningGameQuest.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -16,6 +16,9 @@ import { RunningGameMode, RunningGameStatus } from "./RunningGameMode";
 
 @mw.Component
 export default class RunningGameQuest extends Quest {
+    protected get progress(): number {
+        return 0;
+    }
 
     private _gameMode: RunningGameMode;
 
@@ -34,6 +37,9 @@ export default class RunningGameQuest extends Quest {
 
     private initEvents() {
         mw.Event.addLocalListener(EventDefine.PlayerEnterCircleTrigger, this.onPlayerEnterCircleTrigger);
+        mw.Event.addLocalListener(EventDefine.OnRuningGameEnd, this.runningGameEnd);
+
+        
     }
 
     private onPlayerEnterCircleTrigger = (circleType: CircleType) => {
@@ -96,12 +102,22 @@ export default class RunningGameQuest extends Quest {
 
     private onGameEnd() {
 
-        if (this._gameMode) {
-            this._gameMode.clear();
-            this._gameMode = null;
-        }
+        // if (this._gameMode) {
+        //     this._gameMode.onEnd();
+        //     this._gameMode = null;
+        // }
+
+        this.runningGameEnd();
         Player.localPlayer.character.switchToWalking();
 
+    }
+
+
+    private runningGameEnd = () => {
+        if (this._gameMode) {
+            this._gameMode.onEnd();
+            this._gameMode = null;
+        }
     }
 
 

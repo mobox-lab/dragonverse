@@ -31,6 +31,20 @@ export default class RGGameUI_Generate extends UIScript {
 		}
 		return this.mCountDown_Internal
 	}
+	private mScrollBox_Internal: mw.ScrollBox
+	public get mScrollBox(): mw.ScrollBox {
+		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
+			this.mScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mScrollBox') as mw.ScrollBox
+		}
+		return this.mScrollBox_Internal
+	}
+	private info_Internal: mw.TextBlock
+	public get info(): mw.TextBlock {
+		if(!this.info_Internal&&this.uiWidgetBase) {
+			this.info_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mScrollBox/info') as mw.TextBlock
+		}
+		return this.info_Internal
+	}
 
 
  

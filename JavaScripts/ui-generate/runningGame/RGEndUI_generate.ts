@@ -10,7 +10,126 @@
 
 @UIBind('UI/runningGame/RGEndUI.ui')
 export default class RGEndUI_Generate extends UIScript {
-	
+		private mBG_Internal: mw.Image
+	public get mBG(): mw.Image {
+		if(!this.mBG_Internal&&this.uiWidgetBase) {
+			this.mBG_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBG') as mw.Image
+		}
+		return this.mBG_Internal
+	}
+	private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mTextBg_1_Internal: mw.Image
+	public get mTextBg_1(): mw.Image {
+		if(!this.mTextBg_1_Internal&&this.uiWidgetBase) {
+			this.mTextBg_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBg_1') as mw.Image
+		}
+		return this.mTextBg_1_Internal
+	}
+	private mTextBg_Internal: mw.Image
+	public get mTextBg(): mw.Image {
+		if(!this.mTextBg_Internal&&this.uiWidgetBase) {
+			this.mTextBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBg') as mw.Image
+		}
+		return this.mTextBg_Internal
+	}
+	private mText_Internal: mw.TextBlock
+	public get mText(): mw.TextBlock {
+		if(!this.mText_Internal&&this.uiWidgetBase) {
+			this.mText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText') as mw.TextBlock
+		}
+		return this.mText_Internal
+	}
+	private mInfoCanvas_Internal: mw.Canvas
+	public get mInfoCanvas(): mw.Canvas {
+		if(!this.mInfoCanvas_Internal&&this.uiWidgetBase) {
+			this.mInfoCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mInfoCanvas') as mw.Canvas
+		}
+		return this.mInfoCanvas_Internal
+	}
+	private mTrans_Internal: mw.TextBlock
+	public get mTrans(): mw.TextBlock {
+		if(!this.mTrans_Internal&&this.uiWidgetBase) {
+			this.mTrans_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mInfoCanvas/mTrans') as mw.TextBlock
+		}
+		return this.mTrans_Internal
+	}
+	private mSpeedUp_Internal: mw.TextBlock
+	public get mSpeedUp(): mw.TextBlock {
+		if(!this.mSpeedUp_Internal&&this.uiWidgetBase) {
+			this.mSpeedUp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mInfoCanvas/mSpeedUp') as mw.TextBlock
+		}
+		return this.mSpeedUp_Internal
+	}
+	private mTime_Internal: mw.TextBlock
+	public get mTime(): mw.TextBlock {
+		if(!this.mTime_Internal&&this.uiWidgetBase) {
+			this.mTime_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mInfoCanvas/mTime') as mw.TextBlock
+		}
+		return this.mTime_Internal
+	}
+	private mScoreCanvas_Internal: mw.Canvas
+	public get mScoreCanvas(): mw.Canvas {
+		if(!this.mScoreCanvas_Internal&&this.uiWidgetBase) {
+			this.mScoreCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScoreCanvas') as mw.Canvas
+		}
+		return this.mScoreCanvas_Internal
+	}
+	private mScoreBg_Internal: mw.Image
+	public get mScoreBg(): mw.Image {
+		if(!this.mScoreBg_Internal&&this.uiWidgetBase) {
+			this.mScoreBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScoreCanvas/mScoreBg') as mw.Image
+		}
+		return this.mScoreBg_Internal
+	}
+	private mScore_Internal: mw.TextBlock
+	public get mScore(): mw.TextBlock {
+		if(!this.mScore_Internal&&this.uiWidgetBase) {
+			this.mScore_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScoreCanvas/mScore') as mw.TextBlock
+		}
+		return this.mScore_Internal
+	}
+	private mNew_Internal: mw.TextBlock
+	public get mNew(): mw.TextBlock {
+		if(!this.mNew_Internal&&this.uiWidgetBase) {
+			this.mNew_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScoreCanvas/mNew') as mw.TextBlock
+		}
+		return this.mNew_Internal
+	}
+	private mImage_Internal: mw.Image
+	public get mImage(): mw.Image {
+		if(!this.mImage_Internal&&this.uiWidgetBase) {
+			this.mImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImage') as mw.Image
+		}
+		return this.mImage_Internal
+	}
+	private mDownCanvas_Internal: mw.Canvas
+	public get mDownCanvas(): mw.Canvas {
+		if(!this.mDownCanvas_Internal&&this.uiWidgetBase) {
+			this.mDownCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mDownCanvas') as mw.Canvas
+		}
+		return this.mDownCanvas_Internal
+	}
+	private mBackButton_Internal: mw.StaleButton
+	public get mBackButton(): mw.StaleButton {
+		if(!this.mBackButton_Internal&&this.uiWidgetBase) {
+			this.mBackButton_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mDownCanvas/mBackButton') as mw.StaleButton
+		}
+		return this.mBackButton_Internal
+	}
+	private mAgainButton_Internal: mw.StaleButton
+	public get mAgainButton(): mw.StaleButton {
+		if(!this.mAgainButton_Internal&&this.uiWidgetBase) {
+			this.mAgainButton_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mDownCanvas/mAgainButton') as mw.StaleButton
+		}
+		return this.mAgainButton_Internal
+	}
+
 
  
 	/**

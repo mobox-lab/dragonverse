@@ -37,7 +37,7 @@ export class RunningGamePreparePanel extends RGPrepareUI_Generate {
             .to({ size: 1.2 })
             .duration(this._readyTime * 1000)
             .onUpdate(val => {
-                this.mReady.fontSize = val.size;
+                this.mReady.fontSize = val.size * this._basicTextSize;
             })
             .start()
             .onComplete(() => {

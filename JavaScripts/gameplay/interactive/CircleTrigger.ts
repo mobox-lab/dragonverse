@@ -54,7 +54,7 @@ export default class CircleTrigger extends mw.Script {
 
     private initTrigger() {
 
-        this._trigger = this.gameObject.getChildByName("trigger") as mw.Trigger;
+        this._trigger = this.gameObject.getChildByName("触发器") as mw.Trigger;
         this._trigger.onEnter.add(this.onEnter);
     }
 

@@ -1,6 +1,7 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EventDefine } from "../../../const/EventDefine";
 import { UI } from "../../../edtors/DragonInfo";
+import { RunningGameEndPanel } from "../../../ui/runningGame/RunningGameEndPanel";
 import { RunningGameGamingPanel } from "../../../ui/runningGame/RunningGameGamingPanel";
 import { RunningGamePreparePanel } from "../../../ui/runningGame/RunningGamePreparePanel";
 import { RunningGameController } from "./RuninngGameController";
@@ -132,14 +133,16 @@ export class RunningGameMode {
         //TODO:正方体碰撞消失
         UIService.show(RunningGameGamingPanel);
         Event.dispatchToLocal(EventDefine.OnRunningGameTimeChange, this._gameTime);
-        TimeUtil.setInterval(this.onCountDown, 1);
+        this._hander = TimeUtil.setInterval(this.onCountDown, 1);
 
 
     }
 
-    private onCountDown() {
+    private onCountDown = () => {
         this._gameTime--;
         this._playTime++;
+        //console.log("----------------countdown", this._gameTime);
+
         Event.dispatchToLocal(EventDefine.OnRunningGameTimeChange, this._gameTime);
         if (this._gameTime <= 0) {
             this.setStatus(RunningGameStatus.End);
@@ -152,11 +155,12 @@ export class RunningGameMode {
             this._hander = null;
         }
         if (this._gameController) {
-            this._gameController.clear();
+            this._gameController.onEnd();
             this._gameController = null;
         }
-
         //出现结算UI
+        UIService.show(RunningGameEndPanel);
+
     }
 
     private addGameTime(val: number) {
@@ -203,11 +207,11 @@ export class RunningGameMode {
 
 
 
-    public clear() {
-        if (this._gameController) {
-            this._gameController.clear();
-            this._gameController = null;
-        }
-    }
+    // public clear() {
+    //     if (this._gameController) {
+    //         this._gameController.clear();
+    //         this._gameController = null;
+    //     }
+    // }
 
 }
