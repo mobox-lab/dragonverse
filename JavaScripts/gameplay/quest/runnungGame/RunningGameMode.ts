@@ -139,8 +139,6 @@ export class RunningGameMode {
     private onCountDown = () => {
         this._gameTime--;
         this._playTime++;
-        //console.log("----------------countdown", this._gameTime);
-
         Event.dispatchToLocal(EventDefine.OnRunningGameTimeChange, this._gameTime);
         if (this._gameTime <= 0) {
             this.setStatus(RunningGameStatus.End);

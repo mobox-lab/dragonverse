@@ -49,7 +49,6 @@ export class RunningGameGamingPanel extends RGGameUI_Generate {
         if (sec < 10) {
             secStr = "0" + secStr;
         }
-        console.log("--------acccept time", time, min, sec, "---", minStr, secStr);
         this.mCountDown.text = minStr + ":" + secStr;
     }
 

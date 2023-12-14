@@ -159,7 +159,6 @@ export class RunningGameController {
             //加速时间到期
 
             Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "加速时间到期");
-            //console.log("---------------checkAccelerationTime");
             this._addFlagTime = null;
             this.acceleration = this._defaultAcceleration;
         }
@@ -170,8 +169,6 @@ export class RunningGameController {
         let speed = this.speed;
         if (speed > (this._defaultMaxSpeed + 1)) {
             //Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "需要减速:" + Math.floor(speed));
-
-            //console.log("---------------onSpeedDown");
             speed -= this._deceleration;
             this.maxSpeed = speed > this._defaultMaxSpeed ? speed : this._defaultMaxSpeed;
         }
