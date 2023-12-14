@@ -2,6 +2,8 @@ import { Puzzle } from "../interactive/Puzzle";
 import GToolkit from "../../util/GToolkit";
 import { Delegate } from "../../depend/delegate/Delegate";
 import SimpleDelegate = Delegate.SimpleDelegate;
+import { GameConfig } from "../../config/GameConfig";
+import { QuestStateEnum } from "../../module/quest/Config";
 
 /**
  * 火龙任务 奖励谜题.
@@ -28,6 +30,8 @@ export default class FireRewardPuzzle extends Puzzle {
 
     private _collision: mw.GameObject;
 
+    private _lights: Effect[] = [];
+
     public setup(lockState: boolean, isOpened: boolean): void {
         super.setup(lockState);
         this._isOpened = isOpened;
@@ -51,6 +55,12 @@ export default class FireRewardPuzzle extends Puzzle {
             this.onGameObjectEnter(value);
         });
         this._collision = this.lockPart.getChildByName("collision");
+
+        this._lights.push(this.lockPart.getChildByName("light") as Effect);
+        this._lights.push(this.lockPart.getChildByName("light2") as Effect);
+        this._lights.push(this.lockPart.getChildByName("light3") as Effect);
+        this._lights.push(this.lockPart.getChildByName("light4") as Effect);
+        this._lights.push(this.lockPart.getChildByName("light5") as Effect);
     }
 
     private onGameObjectEnter(value: mw.GameObject) {
@@ -74,5 +84,13 @@ export default class FireRewardPuzzle extends Puzzle {
 
     private doGetAnimation() {
         mw.EffectService.playAtPosition(this.effectId, this.gameObject.worldTransform.position);
+    }
+
+    public updateProgress(taskId: number, progress: number) {
+        this.isOpened = progress >= GameConfig.Task.getElement(taskId).count - 1;
+
+        for (let i = 0; i < progress && i < this._lights.length; ++i) {
+            this._lights[i].play();
+        }
     }
 }

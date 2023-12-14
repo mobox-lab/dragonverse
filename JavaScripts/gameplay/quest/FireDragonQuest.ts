@@ -133,6 +133,7 @@ export default class FireDragonQuest extends Quest {
         this._rewardPuzzle.onPlayerGetReward.add((param) => {
             this._cacheInfo.reward = true;
             this._rewardPuzzle.isOpened = false;
+            this._rewardPuzzle.locked = false;
             this.updateTaskProgress(JSON.stringify(this._cacheInfo));
         });
     }
@@ -231,10 +232,12 @@ export default class FireDragonQuest extends Quest {
             Log4Ts.log(FireDragonQuest, `cache info not found. guid: ${guid}`);
         }
 
-        this._rewardPuzzle.isOpened = Enumerable
+
+        this._rewardPuzzle.updateProgress(
+            this.taskId,
+            Enumerable
                 .from(this._cacheInfo.blockTasks)
-                .count(info => info.complete)
-            >= GameConfig.Task.getElement(this.taskId).count - 1;
+                .count(info => info.complete));
         this.updateTaskProgress(JSON.stringify(this._cacheInfo));
     };
 
