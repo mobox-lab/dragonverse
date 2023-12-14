@@ -151,12 +151,13 @@ export default class WoodDragonQuest extends Quest {
 
 
     private getCurrentCompleteSubProgress() {
-        return Enumerable.from(this._cacheInfo.liftTasks).count();
+
+        return Enumerable
+            .from(this._cacheInfo.liftTasks)
+            .count(info => info.complete);
     }
 
-    private isAllSubComplete() {
-        return Enumerable.from(this._cacheInfo.liftTasks).all((element) => element.complete);
-    }
+
 
     private updateRewardTaskInfo() {
 
@@ -190,7 +191,7 @@ export default class WoodDragonQuest extends Quest {
             return;
         }
         let index = puzzleInfo.index;
-        let cacheInfo = this._cacheInfo[index];
+        let cacheInfo = this._cacheInfo.liftTasks[index];
         cacheInfo.complete = !keyItem.locked;
         keyItem.onStorageProgressUpdate.remove(this.onStorageProgressUpdated, this);
 
