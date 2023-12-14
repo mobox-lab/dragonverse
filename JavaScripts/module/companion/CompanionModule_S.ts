@@ -1,8 +1,8 @@
 import { GameConfig } from "../../config/GameConfig";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
-import GToolkit from "../../util/GToolkit";
+import { BagModuleS } from "../bag/BagModule";
 import { CompanionController, ICompanionEntityCollection } from "./CompanionController";
-import { CompanionData, CompanionDataHelper, CompanionEvents, CompanionInfo } from "./CompanionData";
+import { CompanionData } from "./CompanionData";
+import { CompanionHelper } from "./CompanionHelper";
 import { CompanionModule_C } from "./CompanionModule_C";
 
 export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData> implements ICompanionEntityCollection {
@@ -10,31 +10,13 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
     private _map: Map<number, CompanionController> = new Map();
 
 
+
+
     protected onPlayerEnterGame(player: mw.Player): void {
         this.initializePlayerCompanion(player.playerId);
     }
 
-    /**
-     * 给玩家添加一个伙伴
-     * @param playerId 
-     * @param companionId 
-     * @returns 
-     */
-    addCompanionForPlayer(playerId: number, companionId: number): void {
 
-        let player = this.getClient(playerId);
-
-        if (!player) return;
-
-        let companion = CompanionDataHelper.createSingleCompanionInfo(Date.now(), companionId);
-        let data = this.getPlayerData(playerId);
-        data.addCompanion(companion);
-
-        player.net_companionAdded(companion);
-        mw.Event.dispatchToLocal(CompanionEvents.PlayerCompanionAdded, companion, playerId);
-        GToolkit.warn(this.constructor, `给${playerId}玩家添加${companionId}伙伴成功}`)
-        this.getPlayerData(playerId).save(false);
-    }
 
 
 
@@ -45,35 +27,61 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
      * @param showUp 是否参战斗
      * @returns 
      */
-    public async net_switchCompanionShowup(companionSign: string, showUp = true, playerId: number = this.currentPlayerId,) {
+    public async net_switchCompanionShowup(bagId: number, showUp = true, playerId: number = this.currentPlayerId) {
 
-        let data = this.getPlayerData(playerId);;
+        let data = this.getPlayerData(playerId);
+        let bagModule = mwext.ModuleService.getModule(BagModuleS);
 
-        let companion = data.getCompanion(companionSign);
-
-        if (companion) {
-
-            if (companion.isShowUp === showUp) {
-                Log4Ts.warn(this.constructor, `${playerId} 设置${companionSign}伙伴为参战状态失败,重复的参战状态`);
-                return false;
-            }
-
-            companion.isShowUp = showUp;
-            let oldShowUp = data.getCompanionWhoShowUp();
-            if (oldShowUp && oldShowUp.companionSign !== companionSign) {
-                let unShowup = this.net_switchCompanionShowup(oldShowUp.companionSign, false, playerId);
-                if (!unShowup) {
-                    return false;
-                }
-            }
-            Log4Ts.warn(this.constructor, `${playerId} 设置${companionSign}伙伴为参战状态成功,当前状态:${showUp}`);
-            this.onCompanionShowUp(companion, playerId);
-            data.save(false);
-            return true;
+        if (!bagModule.hasItem(bagId, playerId)) {
+            // 背包里没有这个东西，return
+            return data.currentShowupBagId;
         }
 
-        return false;
+
+        if (!CompanionHelper.isDragon(bagId)) {
+
+            // 也不是龙
+            return data.currentShowupBagId
+        }
+
+
+        if (bagId === data.currentShowupBagId) {
+
+            if (showUp) {
+                // 已经是参战状态了
+                return data.currentShowupBagId;
+            } else {
+
+                this.onCompanionShowUp(bagId, playerId, false);
+                data.setCompanionShowup(0);
+                return data.currentShowupBagId;
+            }
+        }
+
+        if (!showUp) {
+            // 不是参战状态
+            return data.currentShowupBagId;
+        }
+
+        if (data.currentShowupBagId) {
+
+            // 有参战的宠物，先取消参战
+            this.onCompanionShowUp(data.currentShowupBagId, playerId, false);
+        }
+
+        data.setCompanionShowup(bagId);
+        this.onCompanionShowUp(data.currentShowupBagId, playerId, true)
+        return data.currentShowupBagId;
+
+
+
+
+
+
     }
+
+
+
 
 
 
@@ -90,27 +98,22 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
 
 
 
-    public getPlayerCompanionIdList(playerId: number) {
-
-        return this.getPlayerData(playerId).getCompanionIdList();
-    }
-
-
-    public getCompanionDetailInfo(playerId: number, dragonSign: string) {
-        let data = this.getPlayerData(playerId);
-        return data.getCompanion(dragonSign);
-    }
 
 
 
-    private async onCompanionShowUp(companion: CompanionInfo, playerId: number) {
+    private async onCompanionShowUp(bagId: number, playerId: number, isShowUp = true) {
 
-        let config = GameConfig.Dragon.getElement(companion.companionId);
+
         let controller = this.getController(playerId);
-        if (companion.isShowUp) {
-            controller.createCompanion(config.avatar.toString(), companion.companionSign);
+        if (isShowUp) {
+            let dragonId = CompanionHelper.queryDragonIdByBagId(bagId);
+            let config = GameConfig.Dragon.getElement(dragonId);
+            if (!config) {
+                throw new Error(`can not find dragon config with id ${dragonId}`);
+            }
+            controller.createCompanion(config.avatar.toString(), bagId.toString());
         } else {
-            controller.removeCompanionWithSign(companion.companionSign);
+            controller.removeCompanionWithSign(bagId.toString());
         }
     }
 
@@ -119,11 +122,12 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
     private initializePlayerCompanion(playerId: number) {
         let data = this.getPlayerData(playerId);
 
-        data.foreachCompanion((value) => {
-            if (value.isShowUp) {
-                this.onCompanionShowUp(value, playerId);
-            }
-        })
+        let currentShowupBagId = data.currentShowupBagId;
+
+        if (currentShowupBagId) {
+            this.onCompanionShowUp(currentShowupBagId, playerId, true);
+        }
+
 
     }
 
