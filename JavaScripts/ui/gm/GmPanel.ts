@@ -1,10 +1,10 @@
 import { AddGMCommand, GMBasePanel } from "module_gm";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import DialogueManager from "../../gameplay/dialogue/DialogueManager";
+import { BagModuleC } from "../../module/bag/BagModule";
+import { CompanionModule_S } from "../../module/companion/CompanionModule_S";
 import GMHUD_Generate from "../../ui-generate/gm/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
-import { BagModuleC } from "../../module/bag/BagModule";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { CompanionModule_S } from "../../module/companion/CompanionModule_S";
-import DialogueManager from "../../gameplay/dialogue/DialogueManager";
 import GameObject = mw.GameObject;
 import FunctionOption = mw.FunctionOption;
 
@@ -21,10 +21,10 @@ import FunctionOption = mw.FunctionOption;
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
-//#region Constant
+    //#region Constant
     public static readonly PLAYER_START_GUID: string = "DC5A4E2B47A0C6E31572FE9882BE6861";
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     constructor() {
         super(GMHUD_Generate, GMItem_Generate);
     }
@@ -37,8 +37,8 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
 }
 
 AddGMCommand("Hello world", () => {
-        Log4Ts.log(GMPanel, `Hello world`);
-    },
+    Log4Ts.log(GMPanel, `Hello world`);
+},
     null,
     "CHello");
 
@@ -83,7 +83,7 @@ AddGMCommand("设置宠物为参战",
     (player: mw.Player, index: string) => {
         let module = mwext.ModuleService.getModule(CompanionModule_S);
         let companions = module.getPlayerCompanionIdList(player.playerId);
-        module.net_switchCompanionShowup(companions[Number(0)], player.playerId);
+        module.net_switchCompanionShowup(companions[Number(0)], true, player.playerId);
     },
     "宠物龙");
 
@@ -93,7 +93,7 @@ AddGMCommand("取消所有宠物参战状态",
         let module = mwext.ModuleService.getModule(CompanionModule_S);
         let companions = module.getPlayerCompanionIdList(player.playerId);
         for (let id of companions) {
-            module.net_switchCompanionShowup(id, player.playerId, false);
+            module.net_switchCompanionShowup(id, false, player.playerId,);
         }
     },
     "宠物龙");

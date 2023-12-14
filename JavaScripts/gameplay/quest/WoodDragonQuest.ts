@@ -1,10 +1,10 @@
+import Enumerable from "linq";
 import { QuestStateEnum } from "../../module/quest/Config";
 import GToolkit from "../../util/GToolkit";
 import { KeyItemPuzzle } from "../interactive/KeyItemPuzzel";
 import { PickableItem } from "../interactive/PickableItem";
 import WoodRewardPuzzle from "../interactive/WoodRewardPuzzle";
 import { Quest } from "./Quest";
-import Enumerable from "linq";
 
 interface LiftTaskInfo {
     index: number;
@@ -23,11 +23,11 @@ interface WoodDragonTaskInfo {
 class StoneTaskInfo {
 
 
-    @mw.Property({displayName: "机关预制体场景guid"})
+    @mw.Property({ displayName: "机关预制体场景guid" })
     public puzzleGuid: string = "";
 
 
-    @mw.Property({displayName: "石头预制体场景guid"})
+    @mw.Property({ displayName: "石头预制体场景guid" })
     public stoneGuid: string = "";
 }
 
@@ -45,11 +45,11 @@ interface PuzzleInfo {
 @mw.Component
 export default class WoodDragonQuest extends Quest {
 
-    @mw.Property({displayName: "任务配置"})
+    @mw.Property({ displayName: "任务配置" })
     private _taskConfig: StoneTaskInfo[] = [new StoneTaskInfo()];
 
 
-    @mw.Property({displayName: "奖励预制体的guid"})
+    @mw.Property({ displayName: "奖励预制体的guid" })
 
     private _rewardGuid: string = "";
 

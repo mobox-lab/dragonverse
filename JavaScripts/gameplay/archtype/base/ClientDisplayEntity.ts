@@ -8,37 +8,19 @@ import { InitializeCheckerScript } from "./InitializeCheckScript";
 
 export default abstract class ClientDisplayEntity<T extends IState> extends InitializeCheckerScript {
 
-    /**
-     * 初始化成功的外部条件
-     */
-    private _extraCondition: boolean = false;
 
-    public set extraCondition(value: boolean) {
-        this._extraCondition = value;
-        this.onStart();
-    }
 
-    public get extraCondition() {
-        return this._extraCondition;
-    }
 
+    @ClientDisplayEntity.required
     private _hosted: IClientDisplayHosted<T>;
 
-    private _cacheState: T;
-
     protected get state(): T {
-        return this._cacheState;
+        return this._hosted.state
     }
 
 
 
-    protected onStart(): void {
-        if (!this.extraCondition) {
-            return;
-        }
 
-        super.onStart();
-    }
 
     protected onInitialize(): void {
         this.onLogicStateSynced(this._hosted.state);
@@ -57,7 +39,7 @@ export default abstract class ClientDisplayEntity<T extends IState> extends Init
             if (!state) {
                 return;
             }
-            this._cacheState = this.onLogicStateSynced(state);
+            this.onLogicStateSynced(state);
         }
     }
 
@@ -72,9 +54,7 @@ export default abstract class ClientDisplayEntity<T extends IState> extends Init
     }
 
 
-    protected setLogicState(state: T): void {
-        this._hosted.changeLogicState(state);
-    }
+
 
 
     private onLogicStateSynced(state: T) {
@@ -83,11 +63,9 @@ export default abstract class ClientDisplayEntity<T extends IState> extends Init
         if (!this.isInitializeComplete) {
             return;
         }
-        if (this._cacheState && this._cacheState.equal(state)) {
-            return;
-        }
 
-        let ret = this.preLogicStateChange(this._cacheState, state)
+
+        let ret = this.preLogicStateChange(state, state)
         this.postLogicStateChange(state);
         return ret;
     }
@@ -100,7 +78,6 @@ export default abstract class ClientDisplayEntity<T extends IState> extends Init
 
     public onDestroy(): void {
         this._hosted = null;
-        this._cacheState = null;
         super.onDestroy();
     }
 }

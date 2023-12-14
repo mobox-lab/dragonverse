@@ -1,5 +1,5 @@
 
-import CompanionRoot from "../../gameplay/archtype/companion/CompanionRoot";
+import CompanionRoot from "../../gameplay/archtype/entity/CompanionRoot";
 
 
 export interface ICompanionEntityCollection {
@@ -42,6 +42,14 @@ export class CompanionController {
         entity.onDestroyed.add(this.onEntityDestroyed, this)
         return true;
 
+    }
+
+    public getCurrentCompanion() {
+        let go: CompanionRoot = this._companionInstance.values().next().value
+        if (!go) {
+            return null;
+        }
+        return go.sign;
     }
 
 

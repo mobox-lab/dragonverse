@@ -1,5 +1,6 @@
 import { GM } from "module_gm";
 import * as mwaction from "mwaction";
+import { TimeManager } from "./controller/TimeManager";
 import { VectorExt } from "./declaration/vectorext";
 import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
 import i18n, { LanguageTypes } from "./language/i18n";
@@ -12,14 +13,14 @@ import CollectibleItemModuleData, {
 import { CompanionData } from "./module/companion/CompanionData";
 import { CompanionModule_C } from "./module/companion/CompanionModule_C";
 import { CompanionModule_S } from "./module/companion/CompanionModule_S";
+import NpcModuleData, { NpcModuleC, NpcModuleS } from "./module/npc/NpcModule";
+import { QuestData } from "./module/quest/QuestData";
+import { QuestModuleC } from "./module/quest/QuestModuleC";
+import { QuestModuleS } from "./module/quest/QuestModuleS";
+import RoleModuleData, { RoleModuleC, RoleModuleS } from "./module/role/RoleModule";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 import GMPanel from "./ui/gm/GmPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
-import NpcModuleData, { NpcModuleC, NpcModuleS } from "./module/npc/NpcModule";
-import RoleModuleData, { RoleModuleC, RoleModuleS } from "./module/role/RoleModule";
-import { QuestModuleC } from "./module/quest/QuestModuleC";
-import { QuestData } from "./module/quest/QuestData";
-import { QuestModuleS } from "./module/quest/QuestModuleS";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -102,6 +103,7 @@ export default class GameStart extends mw.Script {
             this.initializeServer();
         }
 
+        TimeManager.getInstance();
         VectorExt.initialize();
         mwaction;
     }

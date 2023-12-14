@@ -1,4 +1,5 @@
 import { GameConfig } from "../../config/GameConfig";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GToolkit from "../../util/GToolkit";
 import { CompanionController, ICompanionEntityCollection } from "./CompanionController";
 import { CompanionData, CompanionDataHelper, CompanionEvents, CompanionInfo } from "./CompanionData";
@@ -44,7 +45,7 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
      * @param showUp 是否参战斗
      * @returns 
      */
-    public async net_switchCompanionShowup(companionSign: string, playerId: number = this.currentPlayerId, showUp = true) {
+    public async net_switchCompanionShowup(companionSign: string, showUp = true, playerId: number = this.currentPlayerId,) {
 
         let data = this.getPlayerData(playerId);;
 
@@ -53,12 +54,19 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
         if (companion) {
 
             if (companion.isShowUp === showUp) {
-                GToolkit.warn(this.constructor, `${playerId} 设置${companionSign}伙伴为参战状态失败,重复的参战状态`);
+                Log4Ts.warn(this.constructor, `${playerId} 设置${companionSign}伙伴为参战状态失败,重复的参战状态`);
                 return false;
             }
 
             companion.isShowUp = showUp;
-            GToolkit.warn(this.constructor, `${playerId} 设置${companionSign}伙伴为参战状态成功,当前状态:${showUp}`);
+            let oldShowUp = data.getCompanionWhoShowUp();
+            if (oldShowUp && oldShowUp.companionSign !== companionSign) {
+                let unShowup = this.net_switchCompanionShowup(oldShowUp.companionSign, false, playerId);
+                if (!unShowup) {
+                    return false;
+                }
+            }
+            Log4Ts.warn(this.constructor, `${playerId} 设置${companionSign}伙伴为参战状态成功,当前状态:${showUp}`);
             this.onCompanionShowUp(companion, playerId);
             data.save(false);
             return true;
