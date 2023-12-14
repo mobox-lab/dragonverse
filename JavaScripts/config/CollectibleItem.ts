@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","bagId","qualityId","areaId","existenceCount","existenceTime","generationInterval","successRate","hitPoint","resultAlgo"],["","","","","","","","","",""],[1,1,2,1,20,3600,300,80,5,1],[2,2,1,1,20,3600,300,80,5,1],[3,3,1,1,20,3600,300,80,5,1]];
+const EXCELDATA:Array<Array<any>> = [["id","bagId","qualityId","areaIds","existenceCount","existenceTime","generationInterval","successRate","hitPoint","resultAlgo"],["","","","","","","","","",""],[1,1,2,[1],20,3600,300,80,5,1],[2,2,1,[1],20,3600,300,80,5,1],[3,3,1,[1],20,3600,300,80,5,1]];
 export interface ICollectibleItemElement extends IElementBase{
  	/**采集物品 ID*/
 	id:number
@@ -7,8 +7,8 @@ export interface ICollectibleItemElement extends IElementBase{
 	bagId:number
 	/**品质 ID*/
 	qualityId:number
-	/**生成区域 ID*/
-	areaId:number
+	/**生成区域 ID 集合*/
+	areaIds:Array<number>
 	/**最大存在数量*/
 	existenceCount:number
 	/**存在时间（秒 Sec）*/

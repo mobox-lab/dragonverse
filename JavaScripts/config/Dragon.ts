@@ -1,18 +1,16 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","bagId","avatar","elementalId","qualityId","areaId","existenceTime","generationInterval","hitPoint","cost","successRateAlgoId"],["","","","","","","","","","",""],[1,4,"0",1,1,1,300,80,1,10,1],[2,5,"0",2,1,1,300,80,1,10,1],[3,6,"0",3,1,1,300,80,1,10,1],[4,7,"0",4,1,1,300,80,1,10,1]];
+const EXCELDATA:Array<Array<any>> = [["id","avatar","elementalId","qualityId","areaIds","existenceTime","generationInterval","hitPoint","cost"],["","","","","","","","",""],[1,"0",1,1,[1],300,80,1,10],[2,"0",2,1,[1],300,80,1,10],[3,"0",3,1,[1],300,80,1,10],[4,"0",4,1,[1],300,80,1,10]];
 export interface IDragonElement extends IElementBase{
  	/**ID*/
 	id:number
-	/**背包物 ID*/
-	bagId:number
 	/**形象*/
 	avatar:string
 	/**元素 ID*/
 	elementalId:number
 	/**品质 ID*/
 	qualityId:number
-	/**生成区域 ID*/
-	areaId:number
+	/**生成区域 ID 集合*/
+	areaIds:Array<number>
 	/**存在时间*/
 	existenceTime:number
 	/**生成间隔*/
@@ -21,8 +19,6 @@ export interface IDragonElement extends IElementBase{
 	hitPoint:number
 	/**捕捉消耗*/
 	cost:number
-	/**捕捉成功率算法*/
-	successRateAlgoId:number
  } 
 export class DragonConfig extends ConfigBase<IDragonElement>{
 	constructor(){

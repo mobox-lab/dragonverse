@@ -3,146 +3,6 @@ import Character = mw.Character;
 import GameObject = mw.GameObject;
 import Log4Ts, { Announcer, DebugLevels, LogString } from "../depend/log4ts/Log4Ts";
 
-//#region Type Guard
-/**
- * Prototype of a class constructor.
- */
-export type Constructor<TResult> = new (...args: Array<unknown>) => TResult;
-
-/**
- * A function taking one argument and returning a boolean result.
- * TArg void default.
- */
-export type Predicate<TArg = void> = (arg: TArg) => boolean;
-
-/**
- * A function taking any arguments and returning any result.
- */
-export type Method = (...params: unknown[]) => unknown;
-
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-/**
- * 时间值维度 枚举.
- *
- * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
- * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
- * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
- * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
- * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
- * @author LviatYi
- * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
- * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- */
-export enum TimeFormatDimensionFlags {
-    /**
-     * 毫秒.
-     */
-    Millisecond = 1 << 1,
-    /**
-     * 秒.
-     */
-    Second = 1 << 2,
-    /**
-     * 分.
-     */
-    Minute = 1 << 3,
-    /**
-     * 时.
-     */
-    Hour = 1 << 4,
-    /**
-     * 日.
-     */
-    Day = 1 << 5,
-    /**
-     * 月.
-     */
-    Month = 1 << 6,
-}
-
-/**
- * 性别 枚举.
- *
- * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
- * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
- * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
- * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
- * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
- * @author LviatYi
- * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
- * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- */
-export enum GenderTypes {
-    /**
-     * 武装直升机.
-     */
-    Helicopter,
-    /**
-     * 女性.
-     */
-    Female,
-    /**
-     * 男性.
-     */
-    Male,
-}
-
-/**
- * advance switch.
- */
-export class Switcher {
-    private _cases: (boolean | number)[][] = [];
-    private _callbacks: Method[] = [];
-    private _default: Method = null;
-
-    /**
-     * build judge case.
-     * @param callback
-     * @param values
-     *  when value is null or undefined, it will be ignored.
-     */
-    public case(callback: Method, ...values: (boolean | number)[]): this {
-        this._cases.push(values);
-        this._callbacks.push(callback);
-
-        return this;
-    }
-
-    /**
-     * build judge default case.
-     * @param callback
-     */
-    public default(callback: Method): void {
-        this._default = callback;
-    }
-
-    /**
-     * judge values.
-     * @param values
-     */
-    public judge(...values: (boolean | number)[]) {
-        for (let i = 0; i < this._cases.length; i++) {
-            let result = true;
-            for (let j = 0; j < values.length; j++) {
-                const pole = this._cases[i][j];
-                if (pole === null || pole === undefined) {
-                    continue;
-                }
-                result = values[j] === pole;
-                if (!result) break;
-            }
-
-            if (result) {
-                this._callbacks[i] && this._callbacks[i]();
-                return;
-            }
-        }
-
-        this._default && this._default();
-    }
-}
-
 /**
  * GToolkit.
  * General Toolkit deep binding MW Ts.
@@ -155,7 +15,7 @@ export class Switcher {
  * @author minjia.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.8.8b
+ * @version 0.8.9b
  * @alpha
  */
 class GToolkit {
@@ -482,23 +342,6 @@ class GToolkit {
      */
     public randomVector(): mw.Vector {
         return new mw.Vector(this.random(), this.random(), this.random());
-    }
-
-    /**
-     * 生成 uuid
-     * @deprecated use {@link new UUID(4).toString()} instead.
-     * @returns
-     */
-    public generateUUID(): string {
-        let d = new Date().getTime();
-
-        const uuid = "xyx-xxy".replace(/[xy]/g, function (c) {
-            const r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (c === "x" ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-        return uuid;
-        // return new UUID(4).toString();
     }
 
     /**
@@ -1044,6 +887,27 @@ class GToolkit {
         return null;
     }
 
+    /**
+     * 获取 GameObject 指定层数的所有子 GameObject.
+     * @param object
+     * @param traverse 遍历深度. 从 1 计数.
+     *      0 default. 无限遍历.
+     */
+    public getChildren(object: GameObject, traverse: number = 0): GameObject[] {
+        if (!object) return [];
+
+        const result: GameObject[] = [...object.getChildren()];
+        let p: number = 0;
+        let traversed: number = 1;
+        while (traverse !== 0 || traversed < traverse) {
+            const currLength = result.length;
+            for (; p < currLength; ++p) result.push(...result[p].getChildren());
+            ++traversed;
+        }
+
+        return result;
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Character
@@ -1552,6 +1416,146 @@ class GToolkit {
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+//#region Type Guard
+/**
+ * Prototype of a class constructor.
+ */
+export type Constructor<TResult> = new (...args: Array<unknown>) => TResult;
+
+/**
+ * A function taking one argument and returning a boolean result.
+ * TArg void default.
+ */
+export type Predicate<TArg = void> = (arg: TArg) => boolean;
+
+/**
+ * A function taking any arguments and returning any result.
+ */
+export type Method = (...params: unknown[]) => unknown;
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+/**
+ * 时间值维度 枚举.
+ *
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+ */
+export enum TimeFormatDimensionFlags {
+    /**
+     * 毫秒.
+     */
+    Millisecond = 1 << 1,
+    /**
+     * 秒.
+     */
+    Second = 1 << 2,
+    /**
+     * 分.
+     */
+    Minute = 1 << 3,
+    /**
+     * 时.
+     */
+    Hour = 1 << 4,
+    /**
+     * 日.
+     */
+    Day = 1 << 5,
+    /**
+     * 月.
+     */
+    Month = 1 << 6,
+}
+
+/**
+ * 性别 枚举.
+ *
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+ */
+export enum GenderTypes {
+    /**
+     * 武装直升机.
+     */
+    Helicopter,
+    /**
+     * 女性.
+     */
+    Female,
+    /**
+     * 男性.
+     */
+    Male,
+}
+
+/**
+ * advance switch.
+ */
+export class Switcher {
+    private _cases: (boolean | number)[][] = [];
+    private _callbacks: Method[] = [];
+    private _default: Method = null;
+
+    /**
+     * build judge case.
+     * @param callback
+     * @param values
+     *  when value is null or undefined, it will be ignored.
+     */
+    public case(callback: Method, ...values: (boolean | number)[]): this {
+        this._cases.push(values);
+        this._callbacks.push(callback);
+
+        return this;
+    }
+
+    /**
+     * build judge default case.
+     * @param callback
+     */
+    public default(callback: Method): void {
+        this._default = callback;
+    }
+
+    /**
+     * judge values.
+     * @param values
+     */
+    public judge(...values: (boolean | number)[]) {
+        for (let i = 0; i < this._cases.length; i++) {
+            let result = true;
+            for (let j = 0; j < values.length; j++) {
+                const pole = this._cases[i][j];
+                if (pole === null || pole === undefined) {
+                    continue;
+                }
+                result = values[j] === pole;
+                if (!result) break;
+            }
+
+            if (result) {
+                this._callbacks[i] && this._callbacks[i]();
+                return;
+            }
+        }
+
+        this._default && this._default();
+    }
 }
 
 export default new GToolkit();

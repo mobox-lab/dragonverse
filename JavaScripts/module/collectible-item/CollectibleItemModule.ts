@@ -5,17 +5,19 @@ import GToolkit from "../../util/GToolkit";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Regulator from "../../depend/regulator/Regulator";
 import UUID from "pure-uuid";
-import noReply = mwext.Decorator.noReply;
-import GameObject = mw.GameObject;
-import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import CollectibleItemTrigger from "./trigger/CollectibleItemTrigger";
 import { EventDefine } from "../../const/EventDefine";
 import PlayerInteractCollectibleItemEventArgs from "./trigger/PlayerInteractCollectibleItemEventArgs";
-import EventListener = mw.EventListener;
 import MainPanel from "../../ui/main/MainPanel";
 import { BagModuleS } from "../bag/BagModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { getGenerationPointMap } from "../../gameplay/generate/GenerateUtil";
+import AreaManager from "../../gameplay/area/AreaManager";
+import noReply = mwext.Decorator.noReply;
+import GameObject = mw.GameObject;
+import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
+import EventListener = mw.EventListener;
+import { IPoint3 } from "../../util/area/Shape";
+import { BagTypes } from "../bag/BagItemCluster";
 
 export default class CollectibleItemModuleData extends Subdata {
     //@Decorator.persistence()
@@ -248,26 +250,16 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
     /**
      * 生成位置表.
-     * @desc 从制定标签锚点的子锚点收集.
-     * @desc key id.
-     * @desc value 生成位置.
+     * @desc key player id.
+     * @desc value
+     *          - key id.
+     *          - value 生成位置.
      * @private
      */
-    private _generateLocationsMap: Map<number, Vector[]>;
+    private _generateLocationsMap: Map<number, Map<number, IPoint3[]>> = new Map();
 
-    private getValidGenerateLocation(id: number, playerId: number): Vector[] {
-        if (!this._generateLocationsMap) {
-            this._generateLocationsMap = getGenerationPointMap(CollectibleItemModuleS.GENERATION_HOLDER_TAG, CollectibleItemModuleS);
-        }
-
-        return Enumerable
-            .from(this._generateLocationsMap.get(id))
-            .except(Enumerable
-                .from(this.existenceItemMap.get(playerId))
-                .select(item => this.syncItemMap.get(item))
-                .where(item => item.id === id)
-                .select(item => item.location))
-            .toArray();
+    private getValidGenerateLocation(id: number, playerId: number): IPoint3 | null {
+        return GToolkit.randomArrayItem(this._generateLocationsMap.get(playerId)?.get(id) ?? null);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -312,11 +304,13 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
+        this._generateLocationsMap.delete(player.playerId);
         this.removePlayerRecord(player.playerId);
     }
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
+        this._generateLocationsMap.set(player.playerId, AreaManager.getInstance().getGenerationPointMap(BagTypes.CollectibleItem));
         this.addPlayerRecord(player.playerId);
     }
 
@@ -421,7 +415,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`,
             () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
 
-        let location = GToolkit.randomArrayItem(this.getValidGenerateLocation(itemId, playerId));
+        let location = this.getValidGenerateLocation(itemId, playerId);
         if (location === null) {
             Log4Ts.error(CollectibleItemModuleS, `generate location is null.`);
             return;
@@ -429,7 +423,9 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
         const syncKey = new UUID(4).toString();
         const item = new CollectibleItem();
-        item.generate(itemId, location);
+        const list = this._generateLocationsMap.get(playerId).get(itemId);
+        list.splice(list.indexOf(location), 1);
+        item.generate(itemId, new Vector(location.x, location.y, location.z));
 
         let array: string[] = this.existenceItemMap.get(playerId);
         if (!array) {
@@ -486,6 +482,13 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             Log4Ts.log(CollectibleItemModuleS, `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
              but it not exist in server`);
         }
+
+        const location = item.location;
+        this._generateLocationsMap.get(playerId)?.get(item.id)?.push({
+            x: location.x,
+            y: location.y,
+            z: location.z,
+        });
 
         item.destroy();
         Log4Ts.log(CollectibleItemModuleS, `destroy item success. syncKey: ${syncKey}`);

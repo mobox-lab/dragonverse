@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.9.1  
+v0.9.3  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -17,14 +17,17 @@ by LviatYi
 
 ## 区域 Area
 
-|     Name     | PropName | Type    | Desc           |
-| :----------: | :------- | ------- | -------------- |
-|      ID      | Id       | int     |                |
-|     名称     | Name     | string  |                |
-|     点集     | Points   | int[][] |                |
-| 是否构成形状 | IsShape  | boolean | 是否构成多边形 |
+| Name | PropName | Type    | Desc |
+| :--: | :------- | ------- | ---- |
+|  ID  | Id       | int     |      |
+| 名称 | Name     | string  |      |
+| 点集 | Points   | int[][] |      |
 
-点集含义：
+点集可以作为 **2D 形状** 或 **3D 点集合**：
+
+- **2D 形状**
+- 即当形为 $[a_1,a_2,...,a_m|b_1,b_2,...,b_n]$ ，其中 $m,n$ 皆为偶数时。
+- 暂时不支持用于随机点生成.
 
 ![points-example](./pic/generationRange.png)
 
@@ -36,7 +39,10 @@ by LviatYi
 ]
 ```
 
-当 isShape 为 true 时，点集将构成多边形，否则构成一系列点。
+- **3D 点集合**
+- 即当形为 $[a_1,a_2,a_3|b_1,b_2,b_3|...|k_1,k_2,k_3]$ ，其一维数组的子元素为长度 3 的数组时。
+
+![generationPoints](pic/generationPoints.png)
 
 ## 元素 Elemental
 
@@ -64,34 +70,34 @@ by LviatYi
 
 ## 采集物 CollectibleItem
 
-|      Name       | PropName           | Type | Desc   |
-| :-------------: | :----------------- | ---- | ------ |
-|       ID        | Id                 | int  |        |
-|    背包物 ID    | BagId              | int  |        |
-|     品质 ID     | QualityId          | int  |        |
-|   生成区域 ID   | AreaId             | int  |        |
-|  最大存在数量   | ExistenceCount     | int  |        |
-|    存在时间     | ExistenceTime      | int  | 秒 Sec |
-|    生成间隔     | GenerationInterval | int  | 秒 Sec |
-|   采集成功率    | SuccessRate        | int  | %      |
-|   可采集次数    | HitPoint           | int  |        |
-| 采集结果算法 ID | ResultAlgoId       | int  |        |
+|       Name       | PropName           | Type  | Desc   |
+| :--------------: | :----------------- | ----- | ------ |
+|        ID        | Id                 | int   |        |
+|    背包物 ID     | BagId              | int   |        |
+|     品质 ID      | QualityId          | int   |        |
+| 生成区域 ID 集合 | AreaIds            | int[] |        |
+|   最大存在数量   | ExistenceCount     | int   |        |
+|     存在时间     | ExistenceTime      | int   | 秒 Sec |
+|     生成间隔     | GenerationInterval | int   | 秒 Sec |
+|    采集成功率    | SuccessRate        | int   | %      |
+|    可采集次数    | HitPoint           | int   |        |
+| 采集结果算法 ID  | ResultAlgoId       | int   |        |
 
 ## 龙 Dragon
 
 ### 龙基 Dragon (Base)
 
-|    Name     | PropName           | Type    | Desc   |
-| :---------: | :----------------- | ------- | ------ |
-|     ID      | Id                 | int     |        |
-|    形象     | Avatar             | UNKNOWN |        |
-|   元素 ID   | ElementalId        | int     |        |
-|   品质 ID   | QualityId          | int     |        |
-| 生成区域 ID | AreaId             | int     |        |
-|  存在时间   | ExistenceTime      | int     | 秒 Sec |
-|  生成间隔   | GenerationInterval | int     | 秒 Sec |
-| 可捕捉次数  | HitPoint           | int     |        |
-|  捕捉消耗   | Cost               | int     |        |
+|       Name       | PropName           | Type    | Desc   |
+| :--------------: | :----------------- | ------- | ------ |
+|        ID        | Id                 | int     |        |
+|       形象       | Avatar             | UNKNOWN |        |
+|     元素 ID      | ElementalId        | int     |        |
+|     品质 ID      | QualityId          | int     |        |
+| 生成区域 ID 集合 | AreaIds            | int[]   |        |
+|     存在时间     | ExistenceTime      | int     | 秒 Sec |
+|     生成间隔     | GenerationInterval | int     | 秒 Sec |
+|    可捕捉次数    | HitPoint           | int     |        |
+|     捕捉消耗     | Cost               | int     |        |
 
 ### 个性龙 CharacterfulDragon
 

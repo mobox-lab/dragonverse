@@ -1,6 +1,7 @@
 import {ConfigBase, IElementBase} from "./ConfigBase";
 import {AreaConfig} from "./Area";
 import {BagItemConfig} from "./BagItem";
+import {CharacterfulDragonConfig} from "./CharacterfulDragon";
 import {CharacterConfig} from "./Character";
 import {CollectibleItemConfig} from "./CollectibleItem";
 import {CollectResultAlgoConfig} from "./CollectResultAlgo";
@@ -37,6 +38,7 @@ export class GameConfig{
 	}
 	public static get Area():AreaConfig{ return this.getConfig(AreaConfig) };
 	public static get BagItem():BagItemConfig{ return this.getConfig(BagItemConfig) };
+	public static get CharacterfulDragon():CharacterfulDragonConfig{ return this.getConfig(CharacterfulDragonConfig) };
 	public static get Character():CharacterConfig{ return this.getConfig(CharacterConfig) };
 	public static get CollectibleItem():CollectibleItemConfig{ return this.getConfig(CollectibleItemConfig) };
 	public static get CollectResultAlgo():CollectResultAlgoConfig{ return this.getConfig(CollectResultAlgoConfig) };
