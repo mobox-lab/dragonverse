@@ -83,10 +83,13 @@ AddGMCommand("设置宠物为参战(输入bagId)",
 
 
 
-AddGMCommand("增加测试物品",
+AddGMCommand("增加物品",
     (player, value) => {
-        Log4Ts.log(GMPanel, `增加测试物品 ${value}`);
-        ModuleService.getModule(BagModuleC).addItem(1, Number(value));
+        let splice = value.split(",");
+        let id = Number(splice[0]);
+        let count = splice[1] ? Number(splice[1]) : 1;
+        Log4Ts.log(GMPanel, `增加物品 ${value} ${count}个`);
+        ModuleService.getModule(BagModuleC).addItem(id, Number(count));
     },
     undefined,
     "背包");
