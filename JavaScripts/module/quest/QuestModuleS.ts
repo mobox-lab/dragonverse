@@ -8,6 +8,7 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
 
 
     protected onPlayerJoined(player: mw.Player): void {
+
         //创建一个移动控制器
         mw.Script.spawnScript(MovementController, true).then(val => {
             val.gameObject = player.character;
