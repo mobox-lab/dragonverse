@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.9.3  
+v0.9.4  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -26,12 +26,13 @@ by LviatYi
 点集可以作为 **2D 形状** 或 **3D 点集合**：
 
 - **2D 形状**
-- 即当形为 $[a_1,a_2,...,a_m|b_1,b_2,...,b_n]$ ，其中 $m,n$ 皆为偶数时。
+- 即当配表数据形为 $a_1|a_2|...|a_m||b_1|b_2|...|b_n$ ，其中 $m,n$ 皆为偶数时。
 - 暂时不支持用于随机点生成.
 
 ![points-example](./pic/generationRange.png)
 
 ```json
+// in json
 [
     [x11,y11,x12,y12,x13,y13...x1m,y1m],
     [x21,y21,x22,y22,x23,y23...x2n,y2n],
@@ -40,9 +41,19 @@ by LviatYi
 ```
 
 - **3D 点集合**
-- 即当形为 $[a_1,a_2,a_3|b_1,b_2,b_3|...|k_1,k_2,k_3]$ ，其一维数组的子元素为长度 3 的数组时。
+- 即当配表数据形为 $a_1|a_2|a_3||b_1|b_2|b_3||...||k_1|k_2|k_3$ ，其一维数组的子元素为长度 3 的数组时。
 
 ![generationPoints](pic/generationPoints.png)
+
+```json
+// in json
+[
+    [a_1,a_2,a_3],
+    [b_1,b_2,b_3],
+    ...,
+    [k_1,k_2,k_3],
+]
+```
 
 ## 元素 Elemental
 
