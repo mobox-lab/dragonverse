@@ -59,7 +59,7 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
             }
 
             companion.isShowUp = showUp;
-            let oldShowUp = this.currentData.getCompanionWhoShowUp();
+            let oldShowUp = data.getCompanionWhoShowUp();
             if (oldShowUp && oldShowUp.companionSign !== companionSign) {
                 let unShowup = this.net_switchCompanionShowup(oldShowUp.companionSign, false, playerId);
                 if (!unShowup) {
