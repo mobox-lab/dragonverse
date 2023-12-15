@@ -1,10 +1,10 @@
 import ModuleC = mwext.ModuleC;
 import ModuleS = mwext.ModuleS;
-import Subdata = mwext.Subdata;
+import SubData = mwext.Subdata;
 import UnifiedRoleController from "./UnifiedRoleController";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 
-export default class RoleModuleData extends Subdata {
+export default class RoleModuleData extends SubData {
     //@Decorator.persistence()
     //public isSave: bool;
 }
