@@ -17,13 +17,6 @@ export default class NPCBigItem_Generate extends UIScript {
 		}
 		return this.image_2_Internal
 	}
-	private button_Internal: mw.Button
-	public get button(): mw.Button {
-		if(!this.button_Internal&&this.uiWidgetBase) {
-			this.button_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/button') as mw.Button
-		}
-		return this.button_Internal
-	}
 	private img_Thumbnail_Internal: mw.Image
 	public get img_Thumbnail(): mw.Image {
 		if(!this.img_Thumbnail_Internal&&this.uiWidgetBase) {
@@ -37,6 +30,13 @@ export default class NPCBigItem_Generate extends UIScript {
 			this.text_Name_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/text_Name') as mw.TextBlock
 		}
 		return this.text_Name_Internal
+	}
+	private button_Internal: mw.Button
+	public get button(): mw.Button {
+		if(!this.button_Internal&&this.uiWidgetBase) {
+			this.button_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/button') as mw.Button
+		}
+		return this.button_Internal
 	}
 
 
