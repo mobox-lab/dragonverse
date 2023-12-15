@@ -10,29 +10,24 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
     private _map: Map<number, CompanionController> = new Map();
 
 
-
-
     protected onPlayerEnterGame(player: mw.Player): void {
         this.initializePlayerCompanion(player.playerId);
     }
 
 
-
-
-
     /**
      * 请求将一个宠物设置为参战状态
-     * @param companionSign 宠物唯一id
+     * @param bagId
      * @param playerId 玩家id
      * @param showUp 是否参战斗
-     * @returns 
+     * @returns
      */
     public async net_switchCompanionShowup(bagId: number, showUp = true, playerId: number = this.currentPlayerId) {
 
         let data = this.getPlayerData(playerId);
         let bagModule = mwext.ModuleService.getModule(BagModuleS);
 
-        if (!bagModule.hasItem(bagId, playerId)) {
+        if (!bagModule.hasItem(playerId, bagId)) {
             // 背包里没有这个东西，return
             return data.currentShowupBagId;
         }
@@ -41,7 +36,7 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
         if (!CompanionHelper.isDragon(bagId)) {
 
             // 也不是龙
-            return data.currentShowupBagId
+            return data.currentShowupBagId;
         }
 
 
@@ -70,20 +65,11 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
         }
 
         data.setCompanionShowup(bagId);
-        this.onCompanionShowUp(data.currentShowupBagId, playerId, true)
+        this.onCompanionShowUp(data.currentShowupBagId, playerId, true);
         return data.currentShowupBagId;
 
 
-
-
-
-
     }
-
-
-
-
-
 
 
     getController(playerId: number): CompanionController {
@@ -94,11 +80,6 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
 
         return this._map.get(playerId);
     }
-
-
-
-
-
 
 
     private async onCompanionShowUp(bagId: number, playerId: number, isShowUp = true) {
@@ -116,7 +97,6 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
             controller.removeCompanionWithSign(bagId.toString());
         }
     }
-
 
 
     private initializePlayerCompanion(playerId: number) {

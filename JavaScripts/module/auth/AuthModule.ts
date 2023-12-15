@@ -1,11 +1,16 @@
-import GToolkit from "../../util/GToolkit";
+import GToolkit, { Expression, TimeFormatDimensionFlags } from "../../util/GToolkit";
+import ModuleS = mwext.ModuleS;
+import ModuleC = mwext.ModuleC;
+import SubData = mwext.Subdata;
 import { EventDefine } from "../../const/EventDefine";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
 import GameStart from "../../GameStart";
 import CryptoJS from "crypto-js";
-import noReply = mwext.Decorator.noReply;
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Regulator from "../../depend/regulator/Regulator";
+import FixedQueue from "../../depend/queue/FixedQueue";
+import noReply = mwext.Decorator.noReply;
+import { SubGameTypes } from "../../const/SubGameTypes";
 
 /**
  * Salt Token.
@@ -39,6 +44,15 @@ interface CodeVerifyRequest {
 }
 
 /**
+ * 子游戏信息 记录请求.
+ */
+interface SubGameRequest {
+    secret: string;
+    userId: string;
+    takeTime: number;
+}
+
+/**
  * Code 验证回复.
  */
 interface CodeVerifyResponse {
@@ -47,7 +61,7 @@ interface CodeVerifyResponse {
     data: boolean;
 }
 
-export default class AuthModuleData extends Subdata {
+export default class AuthModuleData extends SubData {
     //@Decorator.saveProperty
     //public isSave: bool;
 
@@ -56,6 +70,53 @@ export default class AuthModuleData extends Subdata {
      */
     @Decorator.persistence()
     public enterEnable: boolean = false;
+
+    /**
+     * 玩家 Code 验证请求时间记录.
+     */
+    @Decorator.persistence()
+    public codeVerifyReqData: number[] = [];
+}
+
+class RequestGuard {
+    private _q: FixedQueue<number> = new FixedQueue<number>(GameServiceConfig.DAILY_MAX_TRIAL_COUNT);
+    private _p: number = 0;
+
+    public req(time: number = undefined): boolean {
+        const now = time ?? Date.now();
+        if (now < this._q.back()) {
+            // 失序.
+            return false;
+        }
+
+        this._q.shiftAll(item => now - item > GToolkit.timeConvert(1, TimeFormatDimensionFlags.Day, TimeFormatDimensionFlags.Millisecond));
+        while (true) {
+            const item = this._q.get(this._p);
+            if (item === null || now - item < GToolkit.timeConvert(1, TimeFormatDimensionFlags.Hour, TimeFormatDimensionFlags.Millisecond)) break;
+            ++this._p;
+        }
+
+        if (this._q.empty() || this._q.length - this._p < GameServiceConfig.HOUR_MAX_TRIAL_COUNT) {
+            this._q.push(time);
+            ++this._p;
+            return true;
+        }
+
+        return false;
+    }
+
+    public init(data: number[]): this {
+        this._q.length = 0;
+        for (const d of data) {
+            this.req(d);
+        }
+
+        return this;
+    }
+
+    public toArray() {
+        return this._q.toArray();
+    }
 }
 
 /**
@@ -81,9 +142,13 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 //#region Member
     private _originToken: string = null;
 
-    private _lastVerifyCodeTime: number = 0;
+    private _lastVerifyCodeTime: number = null;
 
     private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
+
+    private _codeVerityGuard: RequestGuard = new RequestGuard();
+
+    private _lastSubGameReportTime: number = 0;
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -110,6 +175,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
+        this._codeVerityGuard.init(this.data.codeVerifyReqData);
         this.server.net_getToken().then((value) => {
             this._originToken = value;
         });
@@ -135,27 +201,48 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
      * @param code
      */
     public verifyCode(code: string): void {
-        Log4Ts.log(AuthModuleC, `try to verify code.`,
-            `player:${Player.localPlayer.playerId}`,
-            `code: ${code}`,
-            `time: ${Date.now()}`);
-        if (this.data.enterEnable) {
-            Log4Ts.log(AuthModuleC,
-                `player already enable enter.`,
-                `try check in server.`,
-            );
-            this.server.net_checkPlayEnterEnable();
+        const playerId = Player.localPlayer.playerId;
+        logState(
+            AuthModuleC,
+            "log",
+            `try to verify code.`,
+            true,
+            playerId,
+            Player.localPlayer.userId,
+            code,
+        );
+
+        if (this.isVerifyCodeRunning()) {
+            Log4Ts.log(
+                undefined,
+                `player is verifying code.`);
             return;
         }
 
-        this._lastVerifyCodeTime = Date.now();
-        this.server.net_verifyCode(this.generateSaltToken(), code);
+        if (this.data.enterEnable) {
+            Log4Ts.log(
+                undefined,
+                `player already enable enter.`,
+                `try patrol in server.`);
+
+            this.releasePlayer();
+            this.server.net_patrol();
+            return;
+        }
+
+        const now = Date.now();
+        if (this._codeVerityGuard.req(now)) {
+            this._lastVerifyCodeTime = now;
+            this.server.net_verifyCode(this.generateSaltToken(), code);
+        } else {
+            Log4Ts.warn(undefined, `code verify request too frequently.`);
+        }
     }
 
     /**
      * 是否 仍在验证过程.
      */
-    public isVerifyCode() {
+    public isVerifyCodeRunning(): boolean {
         if (this._lastVerifyCodeTime === null || Date.now() - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME) {
             this._lastVerifyCodeTime = null;
             return false;
@@ -177,8 +264,11 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
      * @private
      */
     private releasePlayer() {
-        Log4Ts.log(AuthModuleC, `release player. enjoy!`);
-        //TODO_LviatYi 放行玩家.
+        logState(
+            AuthModuleC,
+            "log",
+            `release player. enjoy!`,
+            true, Player.localPlayer.playerId);
         Event.dispatchToLocal(EventDefine.PlayerEnableEnter);
     }
 
@@ -192,6 +282,27 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
         this.server.net_patrol();
     }
 
+    /**
+     * 是否 允许请求 code 验证.
+     * @private
+     */
+    private isVerityCodeEnable(): boolean {
+        return this._lastVerifyCodeTime === null || Date.now() - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME;
+    }
+
+    /**
+     * 上报子游戏信息.
+     * @param subGameType
+     * @param duration
+     */
+    public reportSubGameInfo(subGameType: SubGameTypes, duration: number) {
+        const thanLastReport = Date.now() - this._lastSubGameReportTime;
+        if (thanLastReport > GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL && thanLastReport > duration) {
+            this._lastSubGameReportTime = Date.now();
+            this.server.net_reportSubGameInfo(subGameType, duration);
+        }
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
@@ -202,7 +313,11 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     public net_enableEnter() {
         this._lastVerifyCodeTime = null;
         if (this.data.enterEnable) {
-            Log4Ts.log(AuthModuleC, `player already enable enter.`);
+            logState(
+                AuthModuleC,
+                "log",
+                `player already enable enter.`,
+                true, Player.localPlayer.playerId);
             return;
         }
 
@@ -214,6 +329,28 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 }
 
 export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
+//#region Constant
+    /**
+     * 验证时间容差.
+     * 容差范围内的时间允许通过验证.
+     * @private
+     */
+    private static readonly TIME_TOLERATE: number = 1e3 * 10;
+
+    /**
+     * 测试用 Code 验证 Url.
+     */
+    private static readonly TEST_CODE_VERIFY_URL = "https://platform-api-test.p12.games";
+
+    /**
+     * 发布用 Code 验证 Url.
+     */
+    private static readonly RELEASE_CODE_VERIFY_URL = "https://platform-api.p12.games";
+
+    private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
+
+    private static readonly CODE_VERIFY_AES_IV = this.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+
     /**
      * encrypt token with time salt.
      * @param token
@@ -248,27 +385,12 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         return timeStr === saltTime.toString() ? token : null;
     }
 
-//#region Constant
-    /**
-     * 验证时间容差.
-     * 容差范围内的时间允许通过验证.
-     * @private
-     */
-    private static readonly TIME_TOLERATE: number = 1e3 * 10;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    /**
-     * 测试用 Code 验证 Url.
-     */
-    private static readonly TEST_CODE_VERIFY_URL = "https://platform-api-test.p12.games";
+//#region Member
+    private _codeVerifyMap: Map<number, RequestGuard> = new Map<number, RequestGuard>();
 
-    /**
-     * 发布用 Code 验证 Url.
-     */
-    private static readonly RELEASE_CODE_VERIFY_URL = "https://platform-api.p12.games";
-
-    private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
-
-    private static readonly CODE_VERIFY_AES_IV = this.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+    private _subGameReportMap: Map<number, number> = new Map<number, number>();
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -303,10 +425,21 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
+
+        const playerData = this.getPlayerData(player);
+        if (playerData) {
+            playerData.codeVerifyReqData = this._codeVerifyMap.get(player.playerId).toArray();
+            playerData.save(false);
+        } else {
+            Log4Ts.log(AuthModuleS, `there is no data for player ${player.playerId}.`);
+        }
+        this._codeVerifyMap.delete(player.playerId);
+        this._subGameReportMap.delete(player.playerId);
     }
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
+        this._codeVerifyMap.set(player.playerId, new RequestGuard().init(this.getPlayerData(player).codeVerifyReqData));
     }
 
     protected onPlayerJoined(player: Player): void {
@@ -336,8 +469,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         return true;
     }
 
-    public async verifyEnterCode(code: string, uid: string): Promise<boolean> {
-        //TODO_LviatYi 避免频繁发送验证.
+    private async verifyEnterCode(code: string, uid: string): Promise<boolean> {
         //#region Exist for Test
         if (code === "123456") return true;
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -373,21 +505,42 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
      * @param player
      */
     public recordPlayer(player: number | Player): boolean {
-        Log4Ts.log(AuthModuleS,
-            `record player enabled.`,
-            () => `player:${typeof player === "number" ? player : player.playerId}`,
-            () => `uid: ${GToolkit.queryPlayer(player).userId}`,
-        );
+        logState(
+            AuthModuleS,
+            "log",
+            `release player. enjoy!`,
+            true,
+            typeof player === "number" ? player : player.playerId,
+            GToolkit.queryPlayer(player).userId);
 
         const data = this.getPlayerData(player);
         if (data.enterEnable) {
-            Log4Ts.warn(AuthModuleS, `player already recorded.`);
+            logState(
+                AuthModuleS,
+                "warn",
+                `player already recorded.`,
+                true,
+                typeof player === "number" ? player : player.playerId);
             return false;
         }
 
         data.enterEnable = true;
         data.save(false);
         return true;
+    }
+
+    /**
+     * 上报子游戏信息.
+     * @param playerId
+     * @param subGameType
+     * @param duration
+     */
+    public reportSubGameInfo(playerId: number, subGameType: SubGameTypes, duration: number) {
+        const thanLastReport = Date.now() - this._subGameReportMap.get(playerId) ?? 0;
+        if (thanLastReport > GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL && thanLastReport > duration) {
+            this._subGameReportMap.set(playerId, Date.now());
+            //TODO_LviatYi 报告子游戏信息.
+        }
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -401,31 +554,54 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         });
     }
 
+    /**
+     * 无准入 C 请求 P12 端验证 Code.
+     * 如通过则放行.
+     * @param token
+     * @param code
+     */
     @noReply()
     public net_verifyCode(token: SaltToken, code: string) {
-        Log4Ts.log(AuthModuleS,
+        const currPlayerId = this.currentPlayerId;
+        if (!this._codeVerifyMap.get(currPlayerId).req()) {
+            this.getClient(currPlayerId)?.net_verifyFail();
+            return;
+        }
+        const uid = this.currentPlayer.userId;
+        logState(
+            AuthModuleS,
+            "log",
             `receive code verify request.`,
-            `player:${this.currentPlayerId}`,
-            `code: ${code}`,
-            `time: ${Date.now()}`,
-        );
+            true,
+            currPlayerId,
+            uid,
+            code);
+
         if (!this.tokenVerify(token)) {
-            Log4Ts.warn(AuthModuleS, `token verify failed. token is invalid`);
+            logState(
+                AuthModuleS,
+                "warn",
+                `token verify failed. token is invalid`,
+                true,
+                currPlayerId,
+                uid,
+            );
             this.getClient(this.currentPlayerId)?.net_verifyFail();
             return;
         }
-
-        const currPlayerId = this.currentPlayerId;
-        const uid = this.currentPlayer.userId;
 
         this
             .verifyEnterCode(code, uid)
             .then((value) => {
                     if (!value) {
-                        Log4Ts.log(AuthModuleS,
+                        logState(
+                            AuthModuleS,
+                            "log",
                             `verify failed.`,
-                            `playerId: ${currPlayerId}`,
-                            `uid: ${uid}`);
+                            true,
+                            currPlayerId,
+                            uid,
+                        );
                         this.getClient(currPlayerId)?.net_verifyFail();
                         return;
                     }
@@ -438,29 +614,114 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             });
     }
 
+    /**
+     * 无准入 C 请求检查 S 端是否具有准入权限.
+     * 如有请求放行.
+     */
     @noReply()
     public net_checkPlayEnterEnable() {
-        Log4Ts.log(AuthModuleS,
+        logState(
+            AuthModuleS,
+            "log",
             `receive check auth request.`,
-            `player:${this.currentPlayerId}`,
-            `time: ${Date.now()}`,
+            true,
+            this.currentPlayerId,
+            Player.getPlayer(this.currentPlayerId).userId,
         );
 
         if (this.getPlayerData(this.currentPlayerId).enterEnable) {
-            Log4Ts.log(AuthModuleS,
+            logState(
+                AuthModuleS,
+                "log",
                 `enable enter.`,
-                `player:${this.currentPlayerId}`,
+                true,
+                this.currentPlayerId,
+                Player.getPlayer(this.currentPlayerId).userId,
             );
+
             this.getClient(this.currentPlayerId)?.net_enableEnter();
         }
     }
 
+    /**
+     * 有准入 C 巡逻 请求检查 S 端是否具有准入权限.
+     * 如无则踢出.
+     */
     @noReply()
     public net_patrol() {
+        logState(
+            AuthModuleS,
+            "log",
+            `receive patrol request.`,
+            true,
+            this.currentPlayerId,
+            Player.getPlayer(this.currentPlayerId).userId,
+        );
+
         if (this.currentData.enterEnable) return;
+
+        logState(
+            AuthModuleS,
+            "warn",
+            `detect player don't have access when patrolling.`,
+            true,
+            this.currentPlayerId,
+            Player.getPlayer(this.currentPlayerId).userId,
+        );
 
         RoomService.kick(this.currentPlayer, "You don't have access");
     }
 
+    /**
+     * 上报子游戏信息.
+     * @param subGameType
+     * @param duration
+     */
+    @noReply()
+    public net_reportSubGameInfo(subGameType: SubGameTypes, duration: number) {
+        this.reportSubGameInfo(this.currentPlayerId, subGameType, duration);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+function logState(
+    announcer: Announcer,
+    logType: "log" | "warn" | "error",
+    messages: string[] | string | LogString,
+    showTime: boolean = true,
+    playerId: number,
+    uid: string = undefined,
+    code: string = undefined): void {
+    let logFunc: Function;
+    switch (logType) {
+        case "log":
+            logFunc = Log4Ts.log;
+            break;
+        case "warn":
+            logFunc = Log4Ts.warn;
+            break;
+        case "error":
+            logFunc = Log4Ts.error;
+            break;
+    }
+
+    const result: Expression<string>[] = [];
+    if (messages) {
+        if (typeof messages === "string") {
+            result.push(() => messages);
+        } else if (messages instanceof Array) {
+            for (const msg of messages) {
+                result.push(() => msg);
+            }
+        } else {
+            result.push(messages);
+        }
+    }
+    result.push(() => `player: ${playerId.toString()}`);
+    if (uid) result.push(() => `uid: ${uid}`);
+    if (code) result.push(() => `code: ${code}`);
+    if (showTime) result.push(() => `time: ${Date.now().toString()}`);
+
+    logFunc(announcer, ...result);
 }
