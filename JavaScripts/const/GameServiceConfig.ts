@@ -1,6 +1,26 @@
 export default class GameServiceConfig {
 //#region Auth
     /**
+     * P12 通信 最短 Code 验证间隔.
+     */
+    public static readonly MIN_CODE_INTERVAL = 0.5e3;
+
+    /**
+     * P12 通信 最短 子游戏信息上传 间隔.
+     */
+    public static readonly MIN_SUB_GAME_INFO_INTERVAL = 1e3;
+
+    /**
+     * P12 通信 每日最大 Code 验证次数.
+     */
+    public static readonly DAILY_MAX_TRIAL_COUNT = 100;
+
+    /**
+     * P12 通信 每小时最大 Code 验证次数.
+     */
+    public static readonly HOUR_MAX_TRIAL_COUNT = 10;
+
+    /**
      * 最长等待授权时间.
      */
     public static readonly MAX_AUTH_WAITING_TIME = 5e3;
@@ -9,6 +29,8 @@ export default class GameServiceConfig {
      * 巡查时间间隔.
      */
     public static readonly GUARD_PATROL_INTERVAL = 5 * 60 * 1000;
+
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Generate

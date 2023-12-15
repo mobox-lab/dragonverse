@@ -1,6 +1,7 @@
 import ModuleC = mwext.ModuleC;
 import ModuleS = mwext.ModuleS;
 import Subdata = mwext.Subdata;
+import createYoact = Yoact.createYoact;
 import Enumerable from "linq";
 import { IBagItemElement } from "../../config/BagItem";
 import { GameConfig } from "../../config/GameConfig";
@@ -9,7 +10,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import IUnique from "../../depend/yoact/IUnique";
 import { Yoact } from "../../depend/yoact/Yoact";
 import YoactArray from "../../depend/yoact/YoactArray";
-import createYoact = Yoact.createYoact;
+import BagItemCluster, { BagTypes } from "./BagItemCluster";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -227,6 +228,14 @@ export default class BagModuleData extends Subdata {
         return this.itemsMap[bagId] ?? 0;
     }
 
+    /**
+     * 是否 背包存在物品.
+     * @param bagId
+     */
+    public hasItem(bagId: number): boolean {
+        return this.itemsMap[bagId] > 0;
+    }
+
     public removeItem(bagId: number) {
         delete this.itemsMap[bagId];
     }
@@ -287,7 +296,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
     public handbookYoact: YoactArray<HandbookItemUnique> = new YoactArray<HandbookItemUnique>();
 
-    public goldYoact: { count: number } = createYoact({ count: 0 });
+    public goldYoact: { count: number } = createYoact({count: 0});
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -549,11 +558,18 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         playerData.save(false);
     }
 
+    /**
+     * 是否 玩家具有物品.
+     * @param playerId 玩家 id.
+     * @param bagId 背包物品 Id.
+     * @param asType 指定类型.
+     *      default {@link BagTypes.Null}. 不进行检查
+     */
+    public hasItem(playerId: number, bagId: number, asType: BagTypes = BagTypes.Null): boolean {
+        if (asType) return BagItemCluster.getInstance().isType(bagId, asType);
 
-    public hasItem(bagId: number, playerId: number) {
         const playerData = this.getPlayerData(playerId);
-        return playerData.getItemCount(bagId) > 0;
-
+        return playerData.hasItem(bagId);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
