@@ -32,7 +32,7 @@ export default class GameStart extends mw.Script {
     public isRelease: boolean = false;
 
     @mw.Property({ displayName: "语言", group: "发布", enumType: LanguageTypes })
-    public language: LanguageTypes = LanguageTypes.Chinese;
+    public language: LanguageTypes = LanguageTypes.English;
 
     @mw.Property({ displayName: "线上存储", group: "发布" })
     public isOnline: boolean = false;
