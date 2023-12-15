@@ -9,7 +9,6 @@ import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteracto
 export default class MainPanel extends MainPanel_Generate {
     //#region Member
     private character: Character;
-    private attackAnim = null;
     private collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
     private sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -30,11 +29,8 @@ export default class MainPanel extends MainPanel_Generate {
                 });
             }
         });
-        this.btnAttack.onPressed.add(() => {
-            mw.Event.dispatchToLocal(EventDefine.PlayerPressedInterActive);
-        });
-        this.btnBag.onPressed.add(showBag);
-        this.btnHandbook.onPressed.add(showHandbook);
+        // this.btnBag.onPressed.add(showBag);
+        // this.btnHandbook.onPressed.add(showHandbook);
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Widget bind
