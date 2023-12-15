@@ -1,5 +1,4 @@
-import GToolkit from "../../util/GToolkit";
-import MovementController from "./MovementController";
+import { RoleModuleC } from "../../module/role/RoleModule";
 
 /**
  * 弹跳蘑菇
@@ -62,8 +61,10 @@ export default class MushRoom extends mw.Script {
     private onEnter = (obj: mw.GameObject) => {
         if (obj instanceof mw.Character) {
             if (obj === Player.localPlayer.character) {
-
-                GToolkit.getFirstScript(obj, MovementController).addImpulse(obj, new mw.Vector(0, 0, this._impulse));
+                ModuleService
+                    .getModule(RoleModuleC)
+                    .controller
+                    .addImpulse(obj, new mw.Vector(0, 0, this._impulse));
                 this.mushRoomJump();
             }
         }
