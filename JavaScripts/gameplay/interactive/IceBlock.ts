@@ -2,7 +2,7 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-11 15:42:26
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-11 17:48:25
+ * @LastEditTime: 2023-12-14 18:38:57
  * @FilePath: \DragonVerse\JavaScripts\gameplay\interactive\IceBlock.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -20,7 +20,7 @@ import { arrayToRot, arrayToVec } from "../../util/CommonUtil";
 import GToolkit from "../../util/GToolkit";
 import MovementController from "./MovementController";
 
-const IceGuid: string = "197413";
+const IceGuid: string = "88BDBCEE422124B5D71B199F040FC9F5";
 const IceBombGuid: string = "89089";
 /**
  * 冰块
@@ -50,19 +50,14 @@ export class IceBlock {
             this._iceObj.worldTransform.rotation = arrayToRot(this._config.iceRot);
             this._iceObj.worldTransform.scale = arrayToVec(this._config.iceScale);
 
-            if (this._config.mesh) {
-                AssetUtil.asyncDownloadAsset(this._config.mesh).then(val => {
-                    (this._iceObj as mw.Model).setMaterial(this._config.mesh);
-                })
-            }
         });
 
         //设置trigger
         GameObjPool.asyncSpawn("Trigger").then(val => {
             this._trigger = val as mw.Trigger;
             this._trigger.worldTransform.position = arrayToVec(this._config.iceLoc);
-            this._trigger.worldTransform.rotation = arrayToRot(this._config.iceRot);
-            this._trigger.worldTransform.scale = arrayToVec(this._config.iceScale);
+            this._trigger.worldTransform.rotation = arrayToRot(this._config.triggerRot);
+            this._trigger.worldTransform.scale = arrayToVec(this._config.triggerScale);
             this._trigger.onEnter.add(this.onEnter);
         })
     }
@@ -87,6 +82,7 @@ export class IceBlock {
     private creatIceBombParticle() {
         GameObjPool.asyncSpawn(IceBombGuid).then(val => {
             this._iceBombParticle = val as mw.Effect;
+            this._iceBombParticle.worldTransform.scale = arrayToVec(this._config.effectScale);
             this._iceBombParticle.worldTransform.position = arrayToVec(this._config.iceLoc);
             this._iceBombParticle.play(() => {
                 GameObjPool.despawn(this._iceBombParticle);
