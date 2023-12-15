@@ -1,1 +1,16 @@
-﻿{"Guid":"59380758431F9ED67AF5F9BB327A9DFB","Size":0,"sha1":"","Name":"BagItemIcon.ui","Type":"GameUI","Path":"../../../../MetaWorldSaved/Saved/MetaWorld/Project/Edit/dragon-verse/UI/bag/BagItemIcon.ui","Icon":"","URL":"","Version":"1","Language":"","SortId":0,"TimeStamp":0,"ExtraParam":null}
+{
+	"Guid": "59380758431F9ED67AF5F9BB327A9DFB",
+	"Size": 0,
+	"sha1": "",
+	"Name": "BagItemIcon.ui",
+	"Type": "GameUI",
+	"Path": "../../../../MetaWorldSaved/Saved/MetaWorld/Project/Edit/DragonVerse/UI/bag/BagItemIcon.ui.meta",
+	"Icon": "",
+	"URL": "",
+	"Version": "1",
+	"Language": "",
+	"SortId": 0,
+	"TimeStamp": 0,
+	"ExtraParam": null,
+	"LocalPath": "/UI/bag/BagItemIcon.ui.meta"
+}

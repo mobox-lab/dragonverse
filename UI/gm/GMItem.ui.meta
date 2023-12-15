@@ -1,1 +1,16 @@
-﻿{"Guid":"0041E63F4BFEDF48CDEF64848F82F607","Size":0,"sha1":"","Name":"GMItem.ui","Type":"GameUI","Path":"../../../../MetaWorldSaved/Saved/MetaWorld/Project/Edit/dragon-verse/UI/gm/GMItem.ui","Icon":"","URL":"","Version":"1","Language":"","SortId":0,"TimeStamp":0,"ExtraParam":null}
+{
+	"Guid": "0041E63F4BFEDF48CDEF64848F82F607",
+	"Size": 0,
+	"sha1": "",
+	"Name": "GMItem.ui",
+	"Type": "GameUI",
+	"Path": "../../../../MetaWorldSaved/Saved/MetaWorld/Project/Edit/DragonVerse/UI/gm/GMItem.ui.meta",
+	"Icon": "",
+	"URL": "",
+	"Version": "1",
+	"Language": "",
+	"SortId": 0,
+	"TimeStamp": 0,
+	"ExtraParam": null,
+	"LocalPath": "/UI/gm/GMItem.ui.meta"
+}
