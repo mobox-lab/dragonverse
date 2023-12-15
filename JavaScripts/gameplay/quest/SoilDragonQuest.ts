@@ -7,6 +7,7 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import { GameConfig } from "../../config/GameConfig";
+import { EventDefine } from "../../const/EventDefine";
 import { IceBlock } from "../interactive/IceBlock";
 import { Quest } from "./Quest";
 
@@ -20,11 +21,22 @@ import { Quest } from "./Quest";
 export default class SoilDragonQuest extends Quest {
 
     protected get progress(): number {
-        return 0;
+        return this.checkIsAllComplete();
     }
 
     private _infos: { index: number, complete: boolean }[];
 
+
+    private checkIsAllComplete() {
+        let isAllComplete = true;
+        for (const info of this._infos) {
+            if (!info.complete) {
+                isAllComplete = false;
+                break;
+            }
+        }
+        return isAllComplete ? 1 : 0;
+    }
 
     protected onSerializeCustomData(customData: string): void {
         if (customData) {
@@ -39,6 +51,18 @@ export default class SoilDragonQuest extends Quest {
 
     protected onInitialize(): void {
         super.onInitialize();
+
+        Event.addLocalListener(EventDefine.PlayerEnterIceTrigger, (index: number) => {
+            const info = this._infos.find((val) => {
+                return val.index === index;
+            });
+            if (info) {
+                info.complete = true;
+                this.updateTaskProgress(JSON.stringify(this._infos));
+            }
+
+        });
+
         this.creatIceBlock();
     }
 
