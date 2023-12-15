@@ -1,5 +1,6 @@
 import { GameConfig } from "../../config/GameConfig";
 import MovementController from "../../gameplay/interactive/MovementController";
+import { BagModuleS } from "../bag/BagModule";
 import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleC } from "./QuestModuleC";
@@ -28,7 +29,7 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
         }
         let status = (progress === taskConfig.count) ? QuestStateEnum.Complete : QuestStateEnum.Running;
         if (oldState !== status && status === QuestStateEnum.Complete) {
-            this.onTaskStatusComplete(taskId);
+            this.onTaskStatusComplete(taskId, this.currentPlayerId);
         }
 
         if (taskConfig.repeat && status === QuestStateEnum.Complete) {
@@ -46,7 +47,16 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
      * 下发奖励
      * @param taskId
      */
-    private onTaskStatusComplete(taskId: number) {
+    private onTaskStatusComplete(taskId: number, playerId: number) {
 
+        let reward = GameConfig.Task.getElement(taskId).reward;
+
+
+        for (let i = 0; i < reward.length; i += 2) {
+            let bagId = reward[i];
+            let count = reward[i + 1];
+
+            mwext.ModuleService.getModule(BagModuleS).addItem(playerId, bagId, count);
+        }
     }
 }
