@@ -1,6 +1,7 @@
-import { BuffBase, BuffType } from "../depend/buff/Buff";
+import BuffBase from "../depend/buff/Buff";
 import UnifiedRoleController from "../module/role/UnifiedRoleController";
 import Event = mw.Event;
+import { BuffType } from "./BuffType";
 
 interface CheckMoveBuffEventArgs {
     playerId: number,
@@ -22,7 +23,7 @@ interface CheckMoveBuffEventArgs {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class CheckMoveBuff extends BuffBase {
+export class CheckMoveBuff extends BuffBase<UnifiedRoleController> {
 //#region Constant
     public static readonly BuffMovePlayerChangeMoveState = "__BUFF_MOVE_PLAYER_CHANGE_MOVE_STATE__";
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

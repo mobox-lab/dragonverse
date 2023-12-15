@@ -1,15 +1,23 @@
 import { RoleModuleC, RoleModuleS } from "./RoleModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { BuffContainer } from "../../depend/buff/BuffContainer";
+import { AddBuffResult, BuffContainer } from "../../depend/buff/BuffContainer";
 import { CheckMoveBuff } from "../../buffs/CheckMoveBuff";
-import { BuffBase, BuffType } from "../../depend/buff/Buff";
 import { WetBuff } from "../../buffs/WetBuff";
 import GameStart from "../../GameStart";
 import { EventDefine } from "../../const/EventDefine";
+import BuffBase from "../../depend/buff/Buff";
+import { BuffType } from "../../buffs/BuffType";
+import Rotation = mw.Rotation;
+import GToolkit from "../../util/GToolkit";
+import Nolan from "../../depend/nolan/Nolan";
+import { ChatBuff } from "../../buffs/ChatBuff";
+import { GameConfig } from "../../config/GameConfig";
+import { MoveForbiddenBuff } from "../../buffs/MoveForbiddenBuff";
 
 /**
  * Unified Role State Controller.
  * 统一角色状态控制器.
+ * @desc Buffs 工作于 Server 端.
  * @desc ---
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
@@ -46,9 +54,9 @@ export default class UnifiedRoleController extends mw.Script {
 
     private _moduleS: RoleModuleS = null;
 
-    private _buffs: BuffContainer = null;
+    private _buffs: BuffContainer<UnifiedRoleController> = null;
 
-    public get buffs(): BuffContainer {
+    public get buffs(): BuffContainer<UnifiedRoleController> {
         if (SystemUtil.isServer()) {
             return this._buffs;
         }
@@ -65,6 +73,8 @@ export default class UnifiedRoleController extends mw.Script {
 
         return this._character;
     }
+
+    private _nolan: Nolan = null;
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -84,6 +94,7 @@ export default class UnifiedRoleController extends mw.Script {
             if (!this._moduleC) Log4Ts.log(UnifiedRoleController, `Role Module C not valid.`);
             else this._moduleC.initController(this);
             this._buffs = null;
+            this._nolan = new Nolan();
             this.onControllerReadyInClient();
         } else if (SystemUtil.isServer()) {
             this._moduleS = ModuleService.getModule<RoleModuleS>(RoleModuleS);
@@ -127,7 +138,7 @@ export default class UnifiedRoleController extends mw.Script {
 
 //#region Init
     /**
-     * 初始化.
+     * 外部初始化.
      * @server 仅服务端.
      * @friend {@link RoleModuleS}
      */
@@ -152,6 +163,11 @@ export default class UnifiedRoleController extends mw.Script {
         }
     };
 
+    @mw.RemoteFunction(mw.Client)
+    public lookAtNpc(position: Vector) {
+        this._nolan.lookAt(position);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Buff Controller
@@ -173,18 +189,32 @@ export default class UnifiedRoleController extends mw.Script {
      */
     @RemoteFunction(mw.Server)
     public addWetBuff(duration: number) {
-        if (!this.buffs.refreshBuff<WetBuff>(BuffType.Wet, null, (buff) => {
-            buff.survivalStrategy = duration;
-        })) {
-            let buff = new WetBuff(
-                this,
-                duration,
-            );
+        const result = this._buffs.addBuff(
+            {
+                type: BuffType.Wet,
+                caster: null,
+                refresher: (buff) => {
+                    buff.survivalStrategy = duration;
+                },
+                buffCreator: () => {
+                    return new WetBuff(
+                        this,
+                        duration,
+                    );
+                },
+            },
+        );
 
-            this._buffs.addBuff(buff);
-            Log4Ts.log(UnifiedRoleController, `${this.character.player.playerId} add wet buff.`);
-        } else {
-            Log4Ts.log(UnifiedRoleController, `${this.character.player.playerId} refresh wet buff.`);
+        switch (result) {
+            case AddBuffResult.Added:
+                Log4Ts.log(UnifiedRoleController, `${this.character.player.playerId} add wet buff.`);
+                break;
+            case AddBuffResult.Refreshed:
+                Log4Ts.log(UnifiedRoleController, `${this.character.player.playerId} refresh wet buff.`);
+                break;
+            default:
+                Log4Ts.log(UnifiedRoleController, `${this.character.player.playerId} add wet buff failed.`);
+                break;
         }
     }
 
@@ -192,7 +222,8 @@ export default class UnifiedRoleController extends mw.Script {
      * 触碰岩浆.
      * @param force
      * @param position
-     * @return 是否 玩家带有 {@link BuffType.Wet} .
+     * @param guid
+     * @return 是否 玩家带有 {@link BuffType.Wet}.
      */
     @RemoteFunction(mw.Server)
     public touchMagma(force: number, position: Vector, guid: string) {
@@ -251,6 +282,28 @@ export default class UnifiedRoleController extends mw.Script {
                 .normalized
                 .multiply(force),
             true);
+    }
+
+    @RemoteFunction(mw.Server)
+    public addChatBuff(location: Vector) {
+        this._buffs.addBuff(new ChatBuff(
+            location,
+            this));
+    }
+
+    @RemoteFunction(mw.Server)
+    public removeChatBuff() {
+        this._buffs.removeBuff(BuffType.Chat);
+    }
+
+    @RemoteFunction(mw.Server)
+    public addMoveForbiddenBuff() {
+        this._buffs.addBuff(new MoveForbiddenBuff(this));
+    }
+
+    @RemoteFunction(mw.Server)
+    public removeMoveForbiddenBuff() {
+        this._buffs.removeBuff(BuffType.MoveForbidden);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
