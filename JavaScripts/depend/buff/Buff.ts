@@ -1,21 +1,15 @@
-import UnifiedRoleController from "../../module/role/UnifiedRoleController";
-
 /**
  * Buff 类型.
+ * 应保证唯一性.
  */
-export enum BuffType {
-    None,
-    CheckMove,
-    Wet,
-    Explode,
-}
+declare type BuffType = number;
 
 /**
  * Buff 基类.
  * @desc Buff 是一种具有挂载者 {@link BuffBase.target} 与施加者 {@link BuffBase.caster} 的一组行为承诺.
- * @desc Buff 为管理一组行为承诺提供便利.
+ * @desc Buff 为管理一组行为承诺 提供便利.
  * @desc 其由施加者或不指定施加者发起 由挂载者接受 并具有在承诺的时机调用的行为.
- * @desc 仅服务端.
+ * @desc Buff 存在端依赖于 RoleCtrl.
  * @desc ---
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
@@ -26,9 +20,9 @@ export enum BuffType {
  * @author maopan.liao
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.0.0b
+ * @version 1.3.0b
  */
-export abstract class BuffBase {
+export default abstract class BuffBase<RoleCtrl> {
 //#region Constant
     public static readonly NORMAL_INTERVAL = 1000 / 15;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -107,6 +101,7 @@ export abstract class BuffBase {
         return this._killBuffs.length > 0;
     }
 
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Config
@@ -118,12 +113,12 @@ export abstract class BuffBase {
     /**
      * 施加者.
      */
-    public caster: UnifiedRoleController = null;
+    public caster: RoleCtrl = null;
 
     /**
      * 挂载者.
      */
-    public target: UnifiedRoleController = null;
+    public target: RoleCtrl = null;
 
     /**
      * Buff 存活策略.
@@ -150,8 +145,8 @@ export abstract class BuffBase {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     protected constructor(
-        caster: UnifiedRoleController,
-        parent: UnifiedRoleController,
+        caster: RoleCtrl,
+        parent: RoleCtrl,
         survivalStrategy: number = 0,
         intervalTime: number = 0,
         stackable: boolean = false,
