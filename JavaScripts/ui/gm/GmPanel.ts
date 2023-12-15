@@ -71,37 +71,25 @@ AddGMCommand("输出当前角色旋转",
     null,
     "探针");
 
-AddGMCommand("给玩家添加宠物",
-    undefined,
-    (player: mw.Player) => {
-        mwext.ModuleService.getModule(CompanionModule_S).addCompanionForPlayer(player.playerId, 1);
-    },
-    "宠物龙");
 
-AddGMCommand("设置宠物为参战",
+
+AddGMCommand("设置宠物为参战(输入bagId)",
     undefined,
     (player: mw.Player, index: string) => {
         let module = mwext.ModuleService.getModule(CompanionModule_S);
-        let companions = module.getPlayerCompanionIdList(player.playerId);
-        module.net_switchCompanionShowup(companions[Number(0)], true, player.playerId);
+        module.net_switchCompanionShowup(Number(index), true, player.playerId);
     },
     "宠物龙");
 
-AddGMCommand("取消所有宠物参战状态",
-    undefined,
-    (player: mw.Player, index: string) => {
-        let module = mwext.ModuleService.getModule(CompanionModule_S);
-        let companions = module.getPlayerCompanionIdList(player.playerId);
-        for (let id of companions) {
-            module.net_switchCompanionShowup(id, false, player.playerId,);
-        }
-    },
-    "宠物龙");
 
-AddGMCommand("增加测试物品",
+
+AddGMCommand("增加物品",
     (player, value) => {
-        Log4Ts.log(GMPanel, `增加测试物品 ${value}`);
-        ModuleService.getModule(BagModuleC).addItem(1, Number(value));
+        let splice = value.split(",");
+        let id = Number(splice[0]);
+        let count = splice[1] ? Number(splice[1]) : 1;
+        Log4Ts.log(GMPanel, `增加物品 ${value} ${count}个`);
+        ModuleService.getModule(BagModuleC).addItem(id, Number(count));
     },
     undefined,
     "背包");

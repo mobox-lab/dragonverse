@@ -2,7 +2,7 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-10 14:01:08
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-14 16:51:51
+ * @LastEditTime: 2023-12-15 10:16:52
  * @FilePath: \DragonVerse\JavaScripts\const\EventDefine.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -41,6 +41,8 @@ export enum EventDefine {
     PlayerPressedInterActive = "PLAYER_PRESSED_INTERACTIVE",
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+    /**玩家触发冰块触发器 */
+    PlayerEnterIceTrigger = "PLAYER_ENTER_ICE_TRIGGER",
     /**玩家进入触发跑酷游戏的圈 */
     PlayerEnterCircleTrigger = "PLAYER_ENTER_CIRCLE_TRIGGER",
     /**跑酷游戏时间变化 */
@@ -52,11 +54,11 @@ export enum EventDefine {
     /**当跑酷游戏正式开始 */
     OnRunningGameStart = "On_RuningGame_Start",
     /**当跑酷游戏结束 */
-    OnRuningGameEnd="On_RuningGame_End",
+    OnRuningGameEnd = "On_RuningGame_End",
     /**退出跑酷游戏 */
-    OnRunningGameBack="On_RuningGame_Back",
+    OnRunningGameBack = "On_RuningGame_Back",
     /**重开跑酷游戏 */
-    OnRunningGameAgain="On_RuningGame_Again",
+    OnRunningGameAgain = "On_RuningGame_Again",
 
 
     /**

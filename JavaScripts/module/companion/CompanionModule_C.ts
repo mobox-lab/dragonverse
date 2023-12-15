@@ -1,5 +1,5 @@
 import { CompanionController, ICompanionEntityCollection } from "./CompanionController";
-import { CompanionData, CompanionEvents, CompanionInfo } from "./CompanionData";
+import { CompanionData } from "./CompanionData";
 import { CompanionModule_S } from "./CompanionModule_S";
 
 
@@ -14,14 +14,7 @@ export class CompanionModule_C extends ModuleC<CompanionModule_S, CompanionData>
         this._controller = new CompanionController(Player.localPlayer.playerId);
     }
 
-    /**
-     * 服务端刷新玩家获得新的伙伴
-     * @param companionInfo 
-     */
-    net_companionAdded(companionInfo: CompanionInfo) {
-        this.data.addCompanion(companionInfo);
-        mw.Event.dispatchToLocal(CompanionEvents.PlayerCompanionAdded, companionInfo)
-    }
+
 
 
 
@@ -29,42 +22,26 @@ export class CompanionModule_C extends ModuleC<CompanionModule_S, CompanionData>
      * 将指定伙伴设定为参战状态
      * @param companionId 
      */
-    public async showUpCompanion(companionId: string, isShowUp: boolean = true) {
+    public async showUpCompanion(bagId: number, isShowUp: boolean = true) {
 
-        let oldShowUp = this.data.getCompanionWhoShowUp();
-        let ret = await this.server.net_switchCompanionShowup(companionId, isShowUp);
+        let ret = await this.server.net_switchCompanionShowup(bagId, isShowUp);
 
-        if (ret) {
-            this.data.getCompanion(companionId).isShowUp = isShowUp;
+        this.data.setCompanionShowup(ret);
 
-            if (oldShowUp && oldShowUp.companionSign != companionId) {
-                this.data.getCompanion(oldShowUp.companionSign).isShowUp = false;
-            }
-        }
 
         return ret;
     }
 
 
+
+
     /**
-     * 获取玩家拥有的所有伙伴id列表
+     * 获取当前参战的伙伴对应的bagId
      * @returns 
      */
-    public getCompanionIdList() {
-        return this.data.getCompanionIdList();
-    }
+    public getCurrentShowupBagId() {
 
-
-    /**
-     * 获取当前参战的宠物信息
-     */
-    public getCurrentShowupCompanionInfo(): Readonly<CompanionInfo> {
-
-        let companionInfo = this.data.getCompanionWhoShowUp();
-        if (!companionInfo) {
-            return;
-        }
-        return companionInfo
+        return this.data.getCurrentShowup();
     }
 
 
