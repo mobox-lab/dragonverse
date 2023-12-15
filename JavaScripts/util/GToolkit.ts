@@ -15,7 +15,7 @@ import Log4Ts, { Announcer, DebugLevels, LogString } from "../depend/log4ts/Log4
  * @author minjia.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.8.9b
+ * @version 0.9.0b
  * @alpha
  */
 class GToolkit {
@@ -147,7 +147,7 @@ class GToolkit {
         return method(instance);
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄1
 
     //#region Data Guard
     /**
@@ -750,8 +750,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScript<T extends mw.Script>(object: GameObject,
-        scriptCls: (new (...args: unknown[]) => T) | Function,
-        traverse: number = 0): T | null {
+                                               scriptCls: (new (...args: unknown[]) => T) | Function,
+                                               traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -817,8 +817,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScriptIs<T extends mw.Script>(object: GameObject,
-        method: string | ((instance: object) => boolean),
-        traverse: number = 0): T | null {
+                                                 method: string | ((instance: object) => boolean),
+                                                 traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -965,7 +965,7 @@ class GToolkit {
     }
 
     /**
-     * playerId 与 player 合取 player.
+     * playerId 与 player 获取 player.
      * @param player
      */
     public queryPlayer(player: number | Player) {
@@ -974,26 +974,6 @@ class GToolkit {
         }
         return player;
     }
-
-    /**
-     * 换装.
-     * 源自 {@link CommonUtil.changeAppearance}
-     * 不知道要这个有啥用 直接 setDescription 不好么.
-     * @param character
-     * @param data
-     * @deprecated use {@link Character.setDescription} instead.
-     */
-    public setCharacterDescription(character: mw.Character, data: mw.CharacterDescription | Array<string> | string) {
-        let characterDescription = character.getDescription();
-        if (!characterDescription) {
-            Log4Ts.error(GToolkit, `characterDescription is null`);
-            Log4Ts.log(GToolkit, `请喊 LviatYi 来看看.`);
-        }
-
-        character.clearDescription();
-        character.setDescription(data);
-    }
-
 
     /**
      * 获取角色胶囊体 下圆心坐标.
@@ -1060,10 +1040,10 @@ class GToolkit {
      * @profession
      */
     public rotateCharacterMesh(character: mw.Character,
-        pitch: number,
-        yaw: number,
-        roll: number,
-        origin: mw.Vector = mw.Vector.zero) {
+                               pitch: number,
+                               yaw: number,
+                               roll: number,
+                               origin: mw.Vector = mw.Vector.zero) {
         const component: UE.SceneComponent = character["ueCharacter"].mesh as unknown as UE.SceneComponent;
         const originRotator = component.RelativeRotation;
 
@@ -1121,9 +1101,9 @@ class GToolkit {
      * @param disableGuid
      */
     public setButtonGuid(button: mw.Button,
-        normalGuid: string,
-        pressedGuid: string = undefined,
-        disableGuid: string = undefined) {
+                         normalGuid: string,
+                         pressedGuid: string = undefined,
+                         disableGuid: string = undefined) {
         if (!pressedGuid) {
             pressedGuid = normalGuid;
         }
@@ -1203,10 +1183,10 @@ class GToolkit {
      * @return hitPoint 命中首个点的命中信息 当未命中时返回 null.
      */
     public detectVerticalTerrain(startPoint: mw.Vector,
-        length: number = 1000,
-        self: mw.GameObject = null,
-        ignoreObjectGuids: string[] = [],
-        debug: boolean = false) {
+                                 length: number = 1000,
+                                 self: mw.GameObject = null,
+                                 ignoreObjectGuids: string[] = [],
+                                 debug: boolean = false) {
         return QueryUtil.lineTrace(
             startPoint,
             this.newWithZ(startPoint, startPoint.z - length),
@@ -1429,6 +1409,11 @@ export type Constructor<TResult> = new (...args: Array<unknown>) => TResult;
  * TArg void default.
  */
 export type Predicate<TArg = void> = (arg: TArg) => boolean;
+
+/**
+ * A function taking no argument and returning a result.
+ */
+export type Expression<TResult> = () => TResult;
 
 /**
  * A function taking any arguments and returning any result.
