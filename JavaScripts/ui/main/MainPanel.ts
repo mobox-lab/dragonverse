@@ -7,6 +7,7 @@ import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteracto
 import GToolkit from "../../util/GToolkit";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import GlobalPromptPanel from "./GlobalPromptPanel";
+import AccountService = mw.AccountService;
 
 /**
  * 主界面 全局提示 参数.
@@ -41,9 +42,6 @@ export default class MainPanel extends MainPanel_Generate {
     private _sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
     private _promptPanel: GlobalPromptPanel;
 
-
-    private _promptCnvTask: AdvancedTweenTask<unknown>;
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -63,8 +61,10 @@ export default class MainPanel extends MainPanel_Generate {
                 });
             }
         });
-        // this.btnBag.onPressed.add(showBag);
-        // this.btnHandbook.onPressed.add(showHandbook);
+        this.btnBag.onPressed.add(showBag);
+        this.btnBook.onPressed.add(showHandbook);
+        this.btnCode.onPressed.add(showCode);
+        this.init();
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Widget bind
@@ -204,10 +204,13 @@ export default class MainPanel extends MainPanel_Generate {
     public init() {
         GToolkit.trySetVisibility(this.cnvProgressBar, false);
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
-
-        this.cnvDragonBall.removeObject();
-
         UIService.hideUI(this._promptPanel);
+
+        this.refreshAvatar();
+
+        //#region Exist for V1
+        GToolkit.trySetVisibility(this.btnMail, false);
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -247,6 +250,10 @@ export default class MainPanel extends MainPanel_Generate {
         this._promptPanel.showPrompt(message);
     }
 
+    public refreshAvatar() {
+        AccountService.fillAvatar(this.imgUserAvatarIcon);
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
@@ -262,4 +269,8 @@ function showBag() {
 
 function showHandbook() {
     UIService.show(HandbookPanel);
+}
+
+function showCode() {
+//TODO_LviatYi Show Code 验证页面.
 }

@@ -9,6 +9,7 @@ import GameObject = mw.GameObject;
 import FunctionOption = mw.FunctionOption;
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 import { EventDefine } from "../../const/EventDefine";
+import GToolkit from "../../util/GToolkit";
 
 /**
  * GM.
@@ -43,8 +44,8 @@ AddGMCommand("Hello world", () => {
     },
     null,
     "CHello");
-AddGMCommand("Prompt", () => {
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: "Hello world"});
+AddGMCommand("Prompt", (player, value) => {
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: GToolkit.isNullOrEmpty(value) ? "Hello world" : value});
     },
     null,
     "MainPanel");

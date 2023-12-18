@@ -1,7 +1,6 @@
 import GlobalPromptPanel_Generate from "../../ui-generate/main/GlobalPromptPanel_generate";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import Waterween from "../../depend/waterween/Waterween";
-import Easing from "../../depend/easing/Easing";
 
 export default class GlobalPromptPanel extends GlobalPromptPanel_Generate {
 //#region Member
