@@ -119,7 +119,7 @@ export default class GameStart extends mw.Script {
         KeyboardManager.getInstance();
         PlayerController.getInstance();
 
-        UIService.showUI(UIService.getUI(MainPanel, true));
+        UIService.show(MainPanel);
     }
 
     private initializeServer() {
