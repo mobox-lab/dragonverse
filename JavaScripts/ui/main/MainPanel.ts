@@ -21,11 +21,11 @@ export default class MainPanel extends MainPanel_Generate {
         //#region Member init
         this.btnJump.onPressed.add(() => {
             if (this.character) {
-                this.character.jump();
+                if (this.character.jumpEnabled) this.character.jump();
             } else {
                 Player.asyncGetLocalPlayer().then((player) => {
                     this.character = player.character;
-                    this.character.jump();
+                    if (this.character.jumpEnabled) this.character.jump();
                 });
             }
         });
