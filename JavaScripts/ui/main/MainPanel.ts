@@ -4,13 +4,46 @@ import BagPanel from "../bag/BagPanel";
 import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
 import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
+import GToolkit from "../../util/GToolkit";
+import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
+import GlobalPromptPanel from "./GlobalPromptPanel";
 
+/**
+ * 主界面 全局提示 参数.
+ */
+interface ShowGlobalPromptEventArgs {
+    message: string;
+}
+
+/**
+ * 主界面.
+ * @desc 常驻的. 除游戏实例销毁 任何时机不应该 destroy 此 UI.
+ * @desc 监听 {@link EventDefine.ShowGlobalPrompt} 事件. 事件参数 {@link ShowGlobalPromptEventArgs}.
+ * @desc
+ * @desc ---
+ *
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+ */
 @UIBind("")
 export default class MainPanel extends MainPanel_Generate {
     //#region Member
-    private character: Character;
-    private collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
-    private sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
+    private _eventListeners: EventListener[] = [];
+
+    private _character: Character;
+    private _collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
+    private _sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
+    private _promptPanel: GlobalPromptPanel;
+
+
+    private _promptCnvTask: AdvancedTweenTask<unknown>;
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -19,13 +52,14 @@ export default class MainPanel extends MainPanel_Generate {
         this.canUpdate = true;
 
         //#region Member init
+        this._promptPanel = UIService.create(GlobalPromptPanel);
         this.btnJump.onPressed.add(() => {
-            if (this.character) {
-                if (this.character.jumpEnabled) this.character.jump();
+            if (this._character) {
+                this._character.jump();
             } else {
                 Player.asyncGetLocalPlayer().then((player) => {
-                    this.character = player.character;
-                    if (this.character.jumpEnabled) this.character.jump();
+                    this._character = player.character;
+                    this._character.jump();
                 });
             }
         });
@@ -37,6 +71,7 @@ export default class MainPanel extends MainPanel_Generate {
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event subscribe
+        this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -64,6 +99,9 @@ export default class MainPanel extends MainPanel_Generate {
      * 注意：这之后UI对象已经被销毁了，需要移除所有对该文件和UI相关对象以及子对象的引用
      */
     protected onDestroy() {
+//#region Event Unsubscribe
+        this._eventListeners.forEach(value => value.disconnect());
+//#endregion ------------------------------------------------------------------------------------------
     }
 
     /**
@@ -163,42 +201,58 @@ export default class MainPanel extends MainPanel_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Init
+    public init() {
+        GToolkit.trySetVisibility(this.cnvProgressBar, false);
+        GToolkit.trySetVisibility(this.cnvDragonBall, false);
+
+        this.cnvDragonBall.removeObject();
+
+        UIService.hideUI(this._promptPanel);
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region UI Behavior
     public addCollectibleItemInteractor(syncKey: string) {
         const collectibleInteractor = UIService.create(CollectibleInteractorPanel);
         collectibleInteractor.init(syncKey);
-        this.collectibleInteractorMap.set(syncKey, collectibleInteractor);
+        this._collectibleInteractorMap.set(syncKey, collectibleInteractor);
         this.collectibleInteractorContainer.addChild(collectibleInteractor.uiObject);
     }
 
     public addSceneDragonInteractor(syncKey: string) {
         const sceneDragonInteractor = UIService.create(SceneDragonInteractorPanel);
         sceneDragonInteractor.init(syncKey);
-        this.sceneDragonInteractorMap.set(syncKey, sceneDragonInteractor);
+        this._sceneDragonInteractorMap.set(syncKey, sceneDragonInteractor);
         this.sceneDragonInteractorContainer.addChild(sceneDragonInteractor.uiObject);
     }
 
     public removeCollectibleItemInteractor(syncKey: string) {
-        const uis = this.collectibleInteractorMap.get(syncKey);
+        const uis = this._collectibleInteractorMap.get(syncKey);
         if (uis) {
             this.collectibleInteractorContainer.removeChild(uis.uiObject);
         }
-        this.collectibleInteractorMap.delete(syncKey);
+        this._collectibleInteractorMap.delete(syncKey);
     }
 
     public removeSceneDragonInteractor(syncKey: string) {
-        const uis = this.sceneDragonInteractorMap.get(syncKey);
+        const uis = this._sceneDragonInteractorMap.get(syncKey);
         if (uis) {
             this.sceneDragonInteractorContainer.removeChild(uis.uiObject);
         }
-        this.sceneDragonInteractorMap.delete(syncKey);
+        this._sceneDragonInteractorMap.delete(syncKey);
+    }
+
+    private showGlobalPrompt(message: string) {
+        this._promptPanel.showPrompt(message);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
+    private onShowGlobalPrompt = (args: ShowGlobalPromptEventArgs) => {
+        this.showGlobalPrompt(args.message);
+    };
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
