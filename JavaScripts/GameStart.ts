@@ -1,5 +1,7 @@
 import { GM } from "module_gm";
 import * as mwaction from "mwaction";
+import { KeyboardManager } from "./controller/KeyboardManager";
+import { PlayerController } from "./controller/PlayerController";
 import { TimeManager } from "./controller/TimeManager";
 import { VectorExt } from "./declaration/vectorext";
 import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
@@ -113,6 +115,8 @@ export default class GameStart extends mw.Script {
 
         this.isShowGMPanel && GM.start(GMPanel);
         VisualizeDebug.init(mw.Player.localPlayer);
+        KeyboardManager.getInstance();
+        PlayerController.getInstance();
     }
 
     private initializeServer() {
