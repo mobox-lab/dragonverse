@@ -174,7 +174,7 @@ export class RunningGameMode {
 
     private addGameTime(val: number) {
         this._gameTime += val;
-        Event.dispatchToLocal(EventDefine.OnRunningGameTimeChange, this._gameTime);
+        Event.dispatchToLocal(EventDefine.OnRunningGameTimeChange, this._gameTime, val);
     }
 
     private addScore(val: number) {

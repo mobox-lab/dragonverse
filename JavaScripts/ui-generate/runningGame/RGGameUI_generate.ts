@@ -10,26 +10,54 @@
 
 @UIBind('UI/runningGame/RGGameUI.ui')
 export default class RGGameUI_Generate extends UIScript {
-		private mImage_Internal: mw.Image
+		private mScoreCanvas_Internal: mw.Canvas
+	public get mScoreCanvas(): mw.Canvas {
+		if(!this.mScoreCanvas_Internal&&this.uiWidgetBase) {
+			this.mScoreCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mScoreCanvas') as mw.Canvas
+		}
+		return this.mScoreCanvas_Internal
+	}
+	private mImage_Internal: mw.Image
 	public get mImage(): mw.Image {
 		if(!this.mImage_Internal&&this.uiWidgetBase) {
-			this.mImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mImage') as mw.Image
+			this.mImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mScoreCanvas/mImage') as mw.Image
 		}
 		return this.mImage_Internal
 	}
 	private mScoreText_Internal: mw.TextBlock
 	public get mScoreText(): mw.TextBlock {
 		if(!this.mScoreText_Internal&&this.uiWidgetBase) {
-			this.mScoreText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mScoreText') as mw.TextBlock
+			this.mScoreText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mScoreCanvas/mScoreText') as mw.TextBlock
 		}
 		return this.mScoreText_Internal
+	}
+	private mScoreFly_Internal: mw.TextBlock
+	public get mScoreFly(): mw.TextBlock {
+		if(!this.mScoreFly_Internal&&this.uiWidgetBase) {
+			this.mScoreFly_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mScoreCanvas/mScoreFly') as mw.TextBlock
+		}
+		return this.mScoreFly_Internal
+	}
+	private mTimeCanvas_Internal: mw.Canvas
+	public get mTimeCanvas(): mw.Canvas {
+		if(!this.mTimeCanvas_Internal&&this.uiWidgetBase) {
+			this.mTimeCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTimeCanvas') as mw.Canvas
+		}
+		return this.mTimeCanvas_Internal
 	}
 	private mCountDown_Internal: mw.TextBlock
 	public get mCountDown(): mw.TextBlock {
 		if(!this.mCountDown_Internal&&this.uiWidgetBase) {
-			this.mCountDown_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/mCountDown') as mw.TextBlock
+			this.mCountDown_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTimeCanvas/mCountDown') as mw.TextBlock
 		}
 		return this.mCountDown_Internal
+	}
+	private mTimeFly_Internal: mw.TextBlock
+	public get mTimeFly(): mw.TextBlock {
+		if(!this.mTimeFly_Internal&&this.uiWidgetBase) {
+			this.mTimeFly_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTimeCanvas/mTimeFly') as mw.TextBlock
+		}
+		return this.mTimeFly_Internal
 	}
 	private mScrollBox_Internal: mw.ScrollBox
 	public get mScrollBox(): mw.ScrollBox {
