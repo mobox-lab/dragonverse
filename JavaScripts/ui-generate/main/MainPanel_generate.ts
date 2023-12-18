@@ -10,7 +10,14 @@
 
 @UIBind('UI/main/MainPanel.ui')
 export default class MainPanel_Generate extends UIScript {
-		private collectibleInteractorContainer_Internal: mw.Canvas
+		private btnJump_Internal: mw.Button
+	public get btnJump(): mw.Button {
+		if(!this.btnJump_Internal&&this.uiWidgetBase) {
+			this.btnJump_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/CnvFunctionHidden/btnJump') as mw.Button
+		}
+		return this.btnJump_Internal
+	}
+	private collectibleInteractorContainer_Internal: mw.Canvas
 	public get collectibleInteractorContainer(): mw.Canvas {
 		if(!this.collectibleInteractorContainer_Internal&&this.uiWidgetBase) {
 			this.collectibleInteractorContainer_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/collectibleInteractorContainer') as mw.Canvas
@@ -59,6 +66,13 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnDragonBall_Internal
 	}
+	private txtDragonBallNum_Internal: mw.TextBlock
+	public get txtDragonBallNum(): mw.TextBlock {
+		if(!this.txtDragonBallNum_Internal&&this.uiWidgetBase) {
+			this.txtDragonBallNum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvDragonBall/txtDragonBallNum') as mw.TextBlock
+		}
+		return this.txtDragonBallNum_Internal
+	}
 	private cnvPointer_Internal: mw.Canvas
 	public get cnvPointer(): mw.Canvas {
 		if(!this.cnvPointer_Internal&&this.uiWidgetBase) {
@@ -101,19 +115,54 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.txtScrollPrompt_Internal
 	}
+	private cnvProgressBar_Internal: mw.Canvas
+	public get cnvProgressBar(): mw.Canvas {
+		if(!this.cnvProgressBar_Internal&&this.uiWidgetBase) {
+			this.cnvProgressBar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvProgressBar') as mw.Canvas
+		}
+		return this.cnvProgressBar_Internal
+	}
 	private progressBar_Internal: mw.ProgressBar
 	public get progressBar(): mw.ProgressBar {
 		if(!this.progressBar_Internal&&this.uiWidgetBase) {
-			this.progressBar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/progressBar') as mw.ProgressBar
+			this.progressBar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvProgressBar/progressBar') as mw.ProgressBar
 		}
 		return this.progressBar_Internal
 	}
-	private btnJump_Internal: mw.Button
-	public get btnJump(): mw.Button {
-		if(!this.btnJump_Internal&&this.uiWidgetBase) {
-			this.btnJump_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/CnvFunctionHidden/btnJump') as mw.Button
+	private cnvMainFuntion_Internal: mw.Canvas
+	public get cnvMainFuntion(): mw.Canvas {
+		if(!this.cnvMainFuntion_Internal&&this.uiWidgetBase) {
+			this.cnvMainFuntion_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion') as mw.Canvas
 		}
-		return this.btnJump_Internal
+		return this.cnvMainFuntion_Internal
+	}
+	private btnBag_Internal: mw.StaleButton
+	public get btnBag(): mw.StaleButton {
+		if(!this.btnBag_Internal&&this.uiWidgetBase) {
+			this.btnBag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnBag') as mw.StaleButton
+		}
+		return this.btnBag_Internal
+	}
+	private btnBook_Internal: mw.StaleButton
+	public get btnBook(): mw.StaleButton {
+		if(!this.btnBook_Internal&&this.uiWidgetBase) {
+			this.btnBook_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnBook') as mw.StaleButton
+		}
+		return this.btnBook_Internal
+	}
+	private btnDragon_Internal: mw.StaleButton
+	public get btnDragon(): mw.StaleButton {
+		if(!this.btnDragon_Internal&&this.uiWidgetBase) {
+			this.btnDragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnDragon') as mw.StaleButton
+		}
+		return this.btnDragon_Internal
+	}
+	private miniMap_Internal: mw.Image
+	public get miniMap(): mw.Image {
+		if(!this.miniMap_Internal&&this.uiWidgetBase) {
+			this.miniMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/miniMap') as mw.Image
+		}
+		return this.miniMap_Internal
 	}
 
 
