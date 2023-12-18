@@ -9,6 +9,7 @@ import FireRewardPuzzle from "../fire-game/FireRewardPuzzle";
 import { QuestStateEnum } from "../../module/quest/Config";
 import GameObject = mw.GameObject;
 import { GameConfig } from "../../config/GameConfig";
+import AudioController from "../../controller/audio/AudioController";
 
 interface FireBlockCompleteInfo {
     guid: string;
@@ -35,6 +36,15 @@ export default class FireDragonQuest extends Quest {
 
     @mw.Property({displayName: "Reward Puzzle", group: "Puzzle", tooltip: "奖励点 Guid"})
     private _rewardPuzzleGuid: string = "";
+
+    @mw.Property({displayName: "Magma explode", group: "Sound", tooltip: "岩浆爆炸 音效 Id"})
+    private _explodeSoundId: number = 0;
+
+    @mw.Property({displayName: "Magma destroy", group: "Sound", tooltip: "岩浆净化 音效 Id"})
+    private _destroyMagmaSoundId: number = 0;
+
+    @mw.Property({displayName: "Puzzle unlock", group: "Sound", tooltip: "谜题解锁 音效 Id"})
+    private _unlockSoundId: number = 0;
 
     @FireDragonQuest.required
     private _cacheInfo: FireDragonTaskInfo;
@@ -104,6 +114,7 @@ export default class FireDragonQuest extends Quest {
         this._eventListeners.push(Event.addServerListener(EventDefine.PlayerEnterFirePuzzleBlock, this.onPlayerEnterFirePuzzleBlock));
         this._eventListeners.push(Event.addServerListener(EventDefine.PlayerLeaveFirePuzzleBlock, this.onPlayerLeaveFirePuzzleBlock));
         this._eventListeners.push(Event.addServerListener(EventDefine.PlayerDestroyMagma, this.onPlayerDestroyMagma));
+        this._eventListeners.push(Event.addServerListener(EventDefine.PlayerHurtByMagma, this.onPlayerHurtByMagma));
 
         Enumerable
             .from(this._cacheInfo.blockTasks)
@@ -130,6 +141,7 @@ export default class FireDragonQuest extends Quest {
                 .count(info => info.complete)
             >= GameConfig.Task.getElement(this.taskId).count - 1,
         );
+        this._rewardPuzzle.initSound(this._unlockSoundId);
         this._rewardPuzzle.onPlayerGetReward.add((param) => {
             this._cacheInfo.reward = true;
             this._rewardPuzzle.isOpened = false;
@@ -228,10 +240,10 @@ export default class FireDragonQuest extends Quest {
         if (info) {
             info.complete = true;
             block.switchType(FirePuzzleBlockTypes.Water);
+            AudioController.getInstance().play(this._destroyMagmaSoundId);
         } else {
             Log4Ts.log(FireDragonQuest, `cache info not found. guid: ${guid}`);
         }
-
 
         this._rewardPuzzle.updateProgress(
             this.taskId,
@@ -239,6 +251,10 @@ export default class FireDragonQuest extends Quest {
                 .from(this._cacheInfo.blockTasks)
                 .count(info => info.complete));
         this.updateTaskProgress(JSON.stringify(this._cacheInfo));
+    };
+
+    public onPlayerHurtByMagma = (guid: string) => {
+        AudioController.getInstance().play(this._explodeSoundId);
     };
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

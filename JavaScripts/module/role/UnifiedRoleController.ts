@@ -282,6 +282,11 @@ export default class UnifiedRoleController extends mw.Script {
                 .normalized
                 .multiply(force),
             true);
+
+        const player = Player.getPlayer(this.playerId);
+        if (player) {
+            Event.dispatchToClient(player, EventDefine.PlayerHurtByMagma);
+        }
     }
 
     @RemoteFunction(mw.Server)

@@ -1,47 +1,18 @@
 ﻿import { EventDefine } from "../../const/EventDefine";
+import { AuthModuleC } from "../../module/auth/AuthModule";
 import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
+import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import BagPanel from "../bag/BagPanel";
 import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
 import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
-import GToolkit from "../../util/GToolkit";
-import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
-import GlobalPromptPanel from "./GlobalPromptPanel";
-import AccountService = mw.AccountService;
 
-/**
- * 主界面 全局提示 参数.
- */
-interface ShowGlobalPromptEventArgs {
-    message: string;
-}
-
-/**
- * 主界面.
- * @desc 常驻的. 除游戏实例销毁 任何时机不应该 destroy 此 UI.
- * @desc 监听 {@link EventDefine.ShowGlobalPrompt} 事件. 事件参数 {@link ShowGlobalPromptEventArgs}.
- * @desc
- * @desc ---
- *
- * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
- * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
- * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
- * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
- * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
- * @author LviatYi
- * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
- * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- */
 @UIBind("")
 export default class MainPanel extends MainPanel_Generate {
     //#region Member
-    private _eventListeners: EventListener[] = [];
-
-    private _character: Character;
-    private _collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
-    private _sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
-    private _promptPanel: GlobalPromptPanel;
-
+    private character: Character;
+    private collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
+    private sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -50,28 +21,27 @@ export default class MainPanel extends MainPanel_Generate {
         this.canUpdate = true;
 
         //#region Member init
-        this._promptPanel = UIService.create(GlobalPromptPanel);
         this.btnJump.onPressed.add(() => {
-            if (this._character) {
-                this._character.jump();
+            if (this.character) {
+                if (this.character.jumpEnabled) this.character.jump();
             } else {
                 Player.asyncGetLocalPlayer().then((player) => {
-                    this._character = player.character;
-                    this._character.jump();
+                    this.character = player.character;
+                    if (this.character.jumpEnabled) this.character.jump();
                 });
             }
         });
-        this.btnBag.onPressed.add(showBag);
-        this.btnBook.onPressed.add(showHandbook);
-        this.btnCode.onPressed.add(showCode);
-        this.init();
+        this.setupCodeVerify();
+
+
+        // this.btnBag.onPressed.add(showBag);
+        // this.btnHandbook.onPressed.add(showHandbook);
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Widget bind
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event subscribe
-        this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -99,9 +69,6 @@ export default class MainPanel extends MainPanel_Generate {
      * 注意：这之后UI对象已经被销毁了，需要移除所有对该文件和UI相关对象以及子对象的引用
      */
     protected onDestroy() {
-//#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
-//#endregion ------------------------------------------------------------------------------------------
     }
 
     /**
@@ -201,66 +168,57 @@ export default class MainPanel extends MainPanel_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Init
-    public init() {
-        GToolkit.trySetVisibility(this.cnvProgressBar, false);
-        GToolkit.trySetVisibility(this.cnvDragonBall, false);
-        UIService.hideUI(this._promptPanel);
-
-        this.refreshAvatar();
-
-        //#region Exist for V1
-        GToolkit.trySetVisibility(this.btnMail, false);
-        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region UI Behavior
     public addCollectibleItemInteractor(syncKey: string) {
         const collectibleInteractor = UIService.create(CollectibleInteractorPanel);
         collectibleInteractor.init(syncKey);
-        this._collectibleInteractorMap.set(syncKey, collectibleInteractor);
+        this.collectibleInteractorMap.set(syncKey, collectibleInteractor);
         this.collectibleInteractorContainer.addChild(collectibleInteractor.uiObject);
     }
 
     public addSceneDragonInteractor(syncKey: string) {
         const sceneDragonInteractor = UIService.create(SceneDragonInteractorPanel);
         sceneDragonInteractor.init(syncKey);
-        this._sceneDragonInteractorMap.set(syncKey, sceneDragonInteractor);
+        this.sceneDragonInteractorMap.set(syncKey, sceneDragonInteractor);
         this.sceneDragonInteractorContainer.addChild(sceneDragonInteractor.uiObject);
     }
 
     public removeCollectibleItemInteractor(syncKey: string) {
-        const uis = this._collectibleInteractorMap.get(syncKey);
+        const uis = this.collectibleInteractorMap.get(syncKey);
         if (uis) {
             this.collectibleInteractorContainer.removeChild(uis.uiObject);
         }
-        this._collectibleInteractorMap.delete(syncKey);
+        this.collectibleInteractorMap.delete(syncKey);
     }
 
     public removeSceneDragonInteractor(syncKey: string) {
-        const uis = this._sceneDragonInteractorMap.get(syncKey);
+        const uis = this.sceneDragonInteractorMap.get(syncKey);
         if (uis) {
             this.sceneDragonInteractorContainer.removeChild(uis.uiObject);
         }
-        this._sceneDragonInteractorMap.delete(syncKey);
-    }
-
-    private showGlobalPrompt(message: string) {
-        this._promptPanel.showPrompt(message);
-    }
-
-    public refreshAvatar() {
-        AccountService.fillAvatar(this.imgUserAvatarIcon);
+        this.sceneDragonInteractorMap.delete(syncKey);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
-    private onShowGlobalPrompt = (args: ShowGlobalPromptEventArgs) => {
-        this.showGlobalPrompt(args.message);
-    };
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    /** 
+     * @description: 已经通过验证，隐藏code按钮
+     */
+    private async setupCodeVerify() {
+        await ModuleService.ready();
+        let res = ModuleService.getModule(AuthModuleC).canEnterGame();
+        if (res) {
+            this.btnCode.visibility = SlateVisibility.Hidden;
+        } else {
+            this.btnCode.onClicked.add(() => {
+                UIService.show(CodeVerifyPanel);
+            });
+        }
+    }
 }
 
 function showBag() {
@@ -269,8 +227,4 @@ function showBag() {
 
 function showHandbook() {
     UIService.show(HandbookPanel);
-}
-
-function showCode() {
-//TODO_LviatYi Show Code 验证页面.
 }
