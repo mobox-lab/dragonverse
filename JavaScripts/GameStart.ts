@@ -1,5 +1,7 @@
 import { GM } from "module_gm";
 import * as mwaction from "mwaction";
+import { KeyboardManager } from "./controller/KeyboardManager";
+import { PlayerController } from "./controller/PlayerController";
 import { TimeManager } from "./controller/TimeManager";
 import { VectorExt } from "./declaration/vectorext";
 import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
@@ -20,6 +22,7 @@ import { QuestModuleS } from "./module/quest/QuestModuleS";
 import RoleModuleData, { RoleModuleC, RoleModuleS } from "./module/role/RoleModule";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 import GMPanel from "./ui/gm/GmPanel";
+import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 
 @Component
@@ -86,8 +89,6 @@ export default class GameStart extends mw.Script {
      * @private
      */
     private initialize() {
-        this.registerModule();
-
         i18n.use(this.language);
 
         if (this.isRelease) {
@@ -102,6 +103,7 @@ export default class GameStart extends mw.Script {
         } else if (SystemUtil.isServer()) {
             this.initializeServer();
         }
+        this.registerModule();
 
         TimeManager.getInstance();
         VectorExt.initialize();
@@ -113,6 +115,10 @@ export default class GameStart extends mw.Script {
 
         this.isShowGMPanel && GM.start(GMPanel);
         VisualizeDebug.init(mw.Player.localPlayer);
+        KeyboardManager.getInstance();
+        PlayerController.getInstance();
+
+        UIService.showUI(UIService.getUI(MainPanel, true));
     }
 
     private initializeServer() {
