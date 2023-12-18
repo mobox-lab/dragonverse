@@ -80,6 +80,12 @@ export enum EventDefine {
      * 玩家消除岩浆.
      */
     PlayerDestroyMagma = "PLAYER_DESTROY_MAGMA",
+
+    /**
+     * 玩家被岩浆损伤.
+     */
+    PlayerHurtByMagma = "PLAYER_HURT_BY_MAGMA",
+
     /**
      * 玩家到达迷宫终点.
      */
