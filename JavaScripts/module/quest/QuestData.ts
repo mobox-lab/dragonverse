@@ -1,4 +1,5 @@
 import { GameConfig } from "../../config/GameConfig";
+import { RewardResultBuryInfo } from "../../controller/bury-point/bury-info/TsGameResultBuryInfo";
 import { QuestStateEnum } from "./Config";
 
 
@@ -21,6 +22,9 @@ export class QuestData extends mwext.Subdata implements Iterable<QuestProgressIn
 
     @Decorator.persistence()
     private _questProgressInfo: QuestProgressInfo[] = [];
+
+    @Decorator.persistence()
+    private _runningGameScore: number = 0;
 
     protected initDefaultData(): void {
         const tasks = GameConfig.Task.getAllElement();
@@ -61,6 +65,20 @@ export class QuestData extends mwext.Subdata implements Iterable<QuestProgressIn
             return value.questId === taskId;
         });
         return taskInfo;
+    }
+
+
+    /**
+     * 更新小游戏分数
+     * @param score 
+     * @returns 是否新纪录
+     */
+    public updateRunningGameScore(score: number): boolean {
+        if (score > this._runningGameScore) {
+            this._runningGameScore = score;
+            return true;
+        }
+        return false
     }
 
 

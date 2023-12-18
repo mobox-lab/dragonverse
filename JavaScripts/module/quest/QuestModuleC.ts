@@ -51,4 +51,16 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
         info.status = await this.server.net_UpdateTaskStatus(taskId, progress, customData);
         this._questMap.get(taskId).status = info.status;
     }
+
+
+    /**
+     * 更新小游戏分数
+     */
+    public updateRunningGameScore(score: number) {
+        const flag = this.data.updateRunningGameScore(score);
+        if (flag) {
+            this.server.net_UpdateRunningGameScore(score);
+        }
+        return flag;
+    }
 }
