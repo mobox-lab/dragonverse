@@ -1,4 +1,5 @@
 ﻿import { EventDefine } from "../../const/EventDefine";
+import { AuthModuleC } from "../../module/auth/AuthModule";
 import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import BagPanel from "../bag/BagPanel";
@@ -30,7 +31,9 @@ export default class MainPanel extends MainPanel_Generate {
                 });
             }
         });
-        this.btnCode.onClicked.add(this.showCodeVerify.bind(this));
+        this.setupCodeVerify();
+
+
         // this.btnBag.onPressed.add(showBag);
         // this.btnHandbook.onPressed.add(showHandbook);
         //#endregion ------------------------------------------------------------------------------------------
@@ -202,8 +205,20 @@ export default class MainPanel extends MainPanel_Generate {
 
     //#region Event Callback
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-    private showCodeVerify() {
-        UIService.show(CodeVerifyPanel);
+    /** 
+     * @description: 已经通过验证，隐藏code按钮
+     */
+    private async setupCodeVerify() {
+        await ModuleService.ready().then(() => {
+            let res = ModuleService.getModule(AuthModuleC).canEnterGame();
+            if (res) {
+                this.btnCode.visibility = SlateVisibility.Hidden;
+            } else {
+                this.btnCode.onClicked.add(() => {
+                    UIService.show(CodeVerifyPanel);
+                });
+            }
+        })
     }
 }
 
