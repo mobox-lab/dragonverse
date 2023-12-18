@@ -101,20 +101,6 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnMail_Internal
 	}
-	private cnvScrollPrompt_Internal: mw.Canvas
-	public get cnvScrollPrompt(): mw.Canvas {
-		if(!this.cnvScrollPrompt_Internal&&this.uiWidgetBase) {
-			this.cnvScrollPrompt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvScrollPrompt') as mw.Canvas
-		}
-		return this.cnvScrollPrompt_Internal
-	}
-	private txtScrollPrompt_Internal: mw.TextBlock
-	public get txtScrollPrompt(): mw.TextBlock {
-		if(!this.txtScrollPrompt_Internal&&this.uiWidgetBase) {
-			this.txtScrollPrompt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvScrollPrompt/txtScrollPrompt') as mw.TextBlock
-		}
-		return this.txtScrollPrompt_Internal
-	}
 	private cnvProgressBar_Internal: mw.Canvas
 	public get cnvProgressBar(): mw.Canvas {
 		if(!this.cnvProgressBar_Internal&&this.uiWidgetBase) {
