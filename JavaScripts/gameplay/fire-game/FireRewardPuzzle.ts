@@ -4,6 +4,7 @@ import { Delegate } from "../../depend/delegate/Delegate";
 import SimpleDelegate = Delegate.SimpleDelegate;
 import { GameConfig } from "../../config/GameConfig";
 import { QuestStateEnum } from "../../module/quest/Config";
+import AudioController from "../../controller/audio/AudioController";
 
 /**
  * 火龙任务 奖励谜题.
@@ -31,6 +32,8 @@ export default class FireRewardPuzzle extends Puzzle {
     @mw.Property({displayName: "特效缩放"})
     public effectScale: Vector = Vector.one;
 
+    private _unlockSoundId: number;
+
     private _isOpened: boolean = false;
 
     private _trigger: mw.Trigger;
@@ -45,6 +48,10 @@ export default class FireRewardPuzzle extends Puzzle {
         super.setup(lockState);
         this._isOpened = isOpened;
         this.onStart();
+    }
+
+    public initSound(unlockSoundId: number) {
+        this._unlockSoundId = unlockSoundId;
     }
 
     public get isOpened() {
@@ -92,6 +99,7 @@ export default class FireRewardPuzzle extends Puzzle {
     }
 
     private doGetAnimation() {
+        AudioController.getInstance().play(this._unlockSoundId);
         mw.EffectService.playAtPosition(this.effectId,
             this.isEffectPlayerLocationRelative ?
                 this.gameObject.worldTransform.position.clone().add(this.effectPlayerLocation) :
