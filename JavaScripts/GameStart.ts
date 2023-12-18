@@ -21,6 +21,7 @@ import RoleModuleData, { RoleModuleC, RoleModuleS } from "./module/role/RoleModu
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 import GMPanel from "./ui/gm/GmPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
+import MainPanel from "./ui/main/MainPanel";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -28,28 +29,28 @@ export default class GameStart extends mw.Script {
 
     //region Dev Config
 
-    @mw.Property({ displayName: "是否发布", group: "发布" })
+    @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
-    @mw.Property({ displayName: "语言", group: "发布", enumType: LanguageTypes })
+    @mw.Property({displayName: "语言", group: "发布", enumType: LanguageTypes})
     public language: LanguageTypes = LanguageTypes.English;
 
-    @mw.Property({ displayName: "线上存储", group: "发布" })
+    @mw.Property({displayName: "线上存储", group: "发布"})
     public isOnline: boolean = false;
 
-    @mw.Property({ displayName: "是否 GM", group: "调试" })
+    @mw.Property({displayName: "是否 GM", group: "调试"})
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({ displayName: "服务端日志等级", group: "调试", enumType: LanguageTypes })
+    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: LanguageTypes})
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "客户端日志等级", group: "调试", enumType: LanguageTypes })
+    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: LanguageTypes})
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "上帝模式 冲刺速度倍率", group: "调试" })
+    @mw.Property({displayName: "上帝模式 冲刺速度倍率", group: "调试"})
     public godModeSprintRatio: number = 10;
 
-    @mw.Property({ displayName: "上帝模式 闪现位移距离", group: "调试" })
+    @mw.Property({displayName: "上帝模式 闪现位移距离", group: "调试"})
     public godModeFlashDist: number = 1000;
 
     private _godMode: boolean = false;
@@ -86,8 +87,6 @@ export default class GameStart extends mw.Script {
      * @private
      */
     private initialize() {
-        this.registerModule();
-
         i18n.use(this.language);
 
         if (this.isRelease) {
@@ -102,6 +101,7 @@ export default class GameStart extends mw.Script {
         } else if (SystemUtil.isServer()) {
             this.initializeServer();
         }
+        this.registerModule();
 
         TimeManager.getInstance();
         VectorExt.initialize();
@@ -113,6 +113,8 @@ export default class GameStart extends mw.Script {
 
         this.isShowGMPanel && GM.start(GMPanel);
         VisualizeDebug.init(mw.Player.localPlayer);
+
+        UIService.showUI(UIService.getUI(MainPanel, true));
     }
 
     private initializeServer() {
