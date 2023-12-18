@@ -2,24 +2,31 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-14 10:22:32
+ * @LastEditTime : 2023-12-18 13:45:02
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
 
 import { EventDefine } from "../../const/EventDefine";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { CompanionHelper } from "../../module/companion/CompanionHelper";
+import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 import { QuestModuleC } from "../../module/quest/QuestModuleC";
 
 @Component
 export default class CloudEffect extends mw.Script {
-    private _clouds: GameObject[] = [];
+    //云朵
+    private _clouds: Map<GameObject, Vector> = new Map();
+
+    //云朵锚点
     private _cloudsParents: GameObject[] = [];
     private _startPoint: GameObject;
     private _endPoint: GameObject;
     private _trigger: Trigger;
     private _isInCloudsRange: boolean = false;
     private _isFiring: boolean = false;
+
+
     protected onStart(): void {
 
         this.gameObject.getChildren().forEach(element => {
@@ -27,7 +34,7 @@ export default class CloudEffect extends mw.Script {
                 this._cloudsParents.push(element);
 
                 element.getChildren().forEach(cloud => {
-                    this._clouds.push(cloud);
+                    this._clouds.set(cloud, cloud.localTransform.scale.clone());
                 });
 
             }
@@ -58,7 +65,7 @@ export default class CloudEffect extends mw.Script {
 
         //任务如果完成了云就都销毁
         Event.addLocalListener(EventDefine.WaterDragonTaskComplete, () => {
-            this._clouds.length = 0;
+            this._clouds.clear();
             this._cloudsParents.length = 0;
             this.gameObject?.destroy();
         });
@@ -66,30 +73,36 @@ export default class CloudEffect extends mw.Script {
 
 
     protected onUpdate(dt: number): void {
-        this._clouds.forEach(element => {
-            let pos = element.localTransform.position.x;
+        this._clouds.forEach((scale, obj) => {
+            let pos = obj.localTransform.position.x;
             let endPos = this._endPoint.localTransform.position.x;
             let startPos = this._startPoint.localTransform.position.x;
             let distance = endPos - pos;
 
             if (distance < 50) {
-                element.worldTransform.scale = new Vector(distance / 50, distance / 50, distance / 50);
+                obj.worldTransform.scale = scale.clone().multiply(distance / 50);
             }
 
             if (distance > Math.abs(endPos - startPos) - 50) {
-                element.worldTransform.scale = new Vector((pos - startPos) / 50, (pos - startPos) / 50, (pos - startPos) / 50);
+                obj.worldTransform.scale = scale.clone().multiply((pos - startPos) / 50);
+                // element.worldTransform.scale = new Vector((pos - startPos) / 50, (pos - startPos) / 50, (pos - startPos) / 50);
             }
 
             //改变位置
             if (distance < 1) {
-                element.localTransform.position = new Vector(startPos, element.localTransform.position.y, element.localTransform.position.z);
+                obj.localTransform.position = new Vector(startPos, obj.localTransform.position.y, obj.localTransform.position.z);
             } else {
                 let speed = 1;
-                element.localTransform.position = new Vector(pos + speed, element.localTransform.position.y, element.localTransform.position.z);
+                obj.localTransform.position = new Vector(pos + speed, obj.localTransform.position.y, obj.localTransform.position.z);
             }
         });
 
         if (this._isInCloudsRange && !this._isFiring) {
+            // let id = ModuleService.getModule(CompanionModule_C).getCurrentShowupBagId();
+            // if (id == null) return;
+            // let type = CompanionHelper.getCompanionType(id);
+            // if (!type && type !== CompanionHelper.DragonType.Fire) return;
+
             this._isFiring = true;
 
             let anchorGuid = this.getCanDestroyClouds();
@@ -147,9 +160,9 @@ export default class CloudEffect extends mw.Script {
                 new mw.Tween(element.worldTransform.scale.clone()).to(new Vector(0, 0, 0), 500).onUpdate((value) => {
                     element.worldTransform.scale = value;
                 }).onComplete(() => {
-                    this._clouds.splice(this._clouds.indexOf(element), 1);
+                    this._clouds.delete(element);
                     element.destroy();
-                    if (this._clouds.length === 0 && this._cloudsParents.length === 0) {
+                    if (this._clouds.size === 0 && this._cloudsParents.length === 0) {
                         //全部销毁
                         this.gameObject.destroy();
 
