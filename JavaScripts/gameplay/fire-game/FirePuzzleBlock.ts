@@ -34,7 +34,7 @@ export enum FirePuzzleBlockTypes {
 @Component
 export default class FirePuzzleBlock extends mw.Script {
 //#region Constant
-    private static readonly BLOCK_MAGMA_MATERIAL_ASSET_ID = "101100";
+    private static readonly BLOCK_MAGMA_MATERIAL_ASSET_ID = "6EAB7AFB42853BE6F1B1989C46D3ED77";
 
     private static readonly BLOCK_WATER_MATERIAL_ASSET_ID = "197999";
 
