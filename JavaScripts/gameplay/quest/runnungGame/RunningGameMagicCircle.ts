@@ -2,7 +2,7 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-15 15:57:26
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-18 14:03:48
+ * @LastEditTime: 2023-12-18 14:13:49
  * @FilePath: \DragonVerse\JavaScripts\gameplay\quest\runnungGame\RunningGameMagicCircle.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -11,6 +11,7 @@ import { Bubble } from "module_bubble";
 import { EventDefine } from "../../../const/EventDefine";
 import { CompanionHelper } from "../../../module/companion/CompanionHelper";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
+import { GameConfig } from "../../../config/GameConfig";
 
 
 /**
@@ -57,15 +58,15 @@ export class RunningGameMagicCircle {
                 } else {
                     let str: string;
                     if (this._type === 1) {
-                        str = "火";
+                        str = GameConfig.Language.ElementalName0001.Value;
                     } else if (this._type === 2) {
-                        str = "水";
+                        str = GameConfig.Language.ElementalName0002.Value;
                     } else if (this._type === 3) {
-                        str = "木";
+                        str = GameConfig.Language.ElementalName0003.Value;
                     } else if (this._type === 4) {
-                        str = "土";
+                        str = GameConfig.Language.ElementalName0004.Value;
                     }
-                    Bubble.showBubble(0, `需要${str}元素龙才能解开该法阵！`);
+                    Bubble.showBubble(0, GameConfig.Language.Dragontip_Content_0001.Value.replace("*", str));
 
                 }
 
