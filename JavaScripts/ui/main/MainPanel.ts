@@ -7,7 +7,6 @@ import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractor
 import HandbookPanel from "../handbook/HandbookPanel";
 import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
 
-@UIBind("")
 export default class MainPanel extends MainPanel_Generate {
     //#region Member
     private character: Character;
@@ -36,9 +35,16 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnCode.onClicked.add(() => {
             UIService.show(CodeVerifyPanel);
         });
-        Event.addLocalListener(EventDefine.PlayerEnableEnter, () => {
-            this.btnCode.visibility = SlateVisibility.Hidden;
+
+        ModuleService.ready().then(() => {
+            let res = ModuleService.getModule(AuthModuleC).canEnterGame();
+            if (!res) {
+                this.cnvDragonBall.visibility = SlateVisibility.Hidden;
+            } else {
+                this.btnCode.visibility = SlateVisibility.Hidden;
+            }
         });
+
 
         // this.btnBag.onPressed.add(showBag);
         // this.btnHandbook.onPressed.add(showHandbook);
