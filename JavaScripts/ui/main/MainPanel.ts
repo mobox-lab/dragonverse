@@ -209,16 +209,15 @@ export default class MainPanel extends MainPanel_Generate {
      * @description: 已经通过验证，隐藏code按钮
      */
     private async setupCodeVerify() {
-        await ModuleService.ready().then(() => {
-            let res = ModuleService.getModule(AuthModuleC).canEnterGame();
-            if (res) {
-                this.btnCode.visibility = SlateVisibility.Hidden;
-            } else {
-                this.btnCode.onClicked.add(() => {
-                    UIService.show(CodeVerifyPanel);
-                });
-            }
-        })
+        await ModuleService.ready();
+        let res = ModuleService.getModule(AuthModuleC).canEnterGame();
+        if (res) {
+            this.btnCode.visibility = SlateVisibility.Hidden;
+        } else {
+            this.btnCode.onClicked.add(() => {
+                UIService.show(CodeVerifyPanel);
+            });
+        }
     }
 }
 
