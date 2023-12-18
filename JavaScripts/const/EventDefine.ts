@@ -1,15 +1,27 @@
-/*
- * @Author: 余泓 hong.yu@appshahe.com
- * @Date: 2023-12-10 14:01:08
- * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-15 10:16:52
- * @FilePath: \DragonVerse\JavaScripts\const\EventDefine.ts
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+/**
+ * 全局事件 定义.
+ *
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export enum EventDefine {
     //#region Auth
     PlayerEnableEnter = "PLAYER_ENABLE_ENTER",
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region MainPanel
+    /**
+     * 主界面 显示 信息.
+     */
+    ShowGlobalPrompt = "SHOW_GLOBAL_PROMPT",
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region CollectibleItem
     EnterCollectibleItemRange = "ENTER_COLLECTIBLE_ITEM_RANGE",
@@ -22,7 +34,13 @@ export enum EventDefine {
 
     //#region Npc
     EnterNpcInteractRange = "ENTER_NPC_INTERACT_RANGE",
+
     LeaveNpcInteractRange = "LEAVE_NPC_INTERACT_RANGE",
+
+    /**
+     * Npc 动作.
+     */
+    ShowNpcAction = "SHOW_NPC_ACTION",
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Dialogue
@@ -39,32 +57,6 @@ export enum EventDefine {
      * 玩家按下交互按钮.
      */
     PlayerPressedInterActive = "PLAYER_PRESSED_INTERACTIVE",
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-    /**玩家触发冰块触发器 */
-    PlayerEnterIceTrigger = "PLAYER_ENTER_ICE_TRIGGER",
-    /**玩家进入触发跑酷游戏的圈 */
-    PlayerEnterCircleTrigger = "PLAYER_ENTER_CIRCLE_TRIGGER",
-    /**跑酷游戏时间变化 */
-    OnRunningGameTimeChange = "On_RunningGame_Time_Change",
-    /**跑酷游戏积分变化 */
-    OnRunningGameScoreChange = "On_RunningGame_Score_Change",
-    /**当跑酷游戏信息变化 */
-    OnRunningGameInfoChange = "On_RunningGame_Info_Change",
-    /**当跑酷游戏正式开始 */
-    OnRunningGameStart = "On_RuningGame_Start",
-    /**当跑酷游戏结束 */
-    OnRuningGameEnd = "On_RuningGame_End",
-    /**退出跑酷游戏 */
-    OnRunningGameBack = "On_RuningGame_Back",
-    /**重开跑酷游戏 */
-    OnRunningGameAgain = "On_RuningGame_Again",
-
-
-    /**
-     * npc 动作.
-     */
-    ShowNpcAction = "SHOW_NPC_ACTION",
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Tiny Game Fire
@@ -91,6 +83,42 @@ export enum EventDefine {
      * 水龙任务完成
      */
     WaterDragonTaskComplete = "WATER_DRAGON_TASK_COMPLETE",
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    //#region Tiny Game Water
+    /**玩家触发冰块触发器 */
+    PlayerEnterIceTrigger = "PLAYER_ENTER_ICE_TRIGGER",
+
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    //#region Tiny Game Parkour
+    /**玩家进入触发跑酷游戏的圈 */
+    PlayerEnterCircleTrigger = "PLAYER_ENTER_CIRCLE_TRIGGER",
+
+    /**跑酷游戏时间变化 */
+    OnRunningGameTimeChange = "On_RunningGame_Time_Change",
+
+    /**跑酷游戏积分变化 */
+    OnRunningGameScoreChange = "On_RunningGame_Score_Change",
+
+    /**当跑酷游戏信息变化 */
+    OnRunningGameInfoChange = "On_RunningGame_Info_Change",
+
+    /**当跑酷游戏正式开始 */
+    OnRunningGameStart = "On_RuningGame_Start",
+
+    /**当跑酷游戏结束 */
+    OnRuningGameEnd = "On_RuningGame_End",
+
+    /**退出跑酷游戏 */
+    OnRunningGameBack = "On_RuningGame_Back",
+
+    /**重开跑酷游戏 */
+    OnRunningGameAgain = "On_RuningGame_Again",
+
+    /**当跑酷游戏解锁魔法阵 */
+    OnRunningGameUnlockMagicCircle = "On_RuningGame_Unlock_MagicCircle",
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 }

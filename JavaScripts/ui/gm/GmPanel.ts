@@ -7,6 +7,7 @@ import GMHUD_Generate from "../../ui-generate/gm/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
 import GameObject = mw.GameObject;
 import FunctionOption = mw.FunctionOption;
+import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 
 /**
  * GM.
@@ -74,10 +75,12 @@ AddGMCommand("输出当前角色旋转",
 
 
 AddGMCommand("设置宠物为参战(输入bagId)",
-    undefined,
+    (player, index: string) => {
+        let module = mwext.ModuleService.getModule(CompanionModule_C);
+        module.showUpCompanion(Number(index), true);
+    },
     (player: mw.Player, index: string) => {
-        let module = mwext.ModuleService.getModule(CompanionModule_S);
-        module.net_switchCompanionShowup(Number(index), true, player.playerId);
+
     },
     "宠物龙");
 

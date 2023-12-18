@@ -1,6 +1,7 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EventDefine } from "../../../const/EventDefine";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import { RoleModuleC } from "../../../module/role/RoleModule";
 
 export class RunningGameController {
 
@@ -65,6 +66,14 @@ export class RunningGameController {
 
     private _fovValue: number;
 
+    /**碰撞触发器 */
+    private _collisionTrigger: mw.Trigger;
+    /**碰撞特效 */
+    private _collisionEffect: mw.Effect;
+    /**获取玩家的前向量 */
+    private get fowardVec(): mw.Vector {
+        return this._character.worldTransform.getForwardVector();
+    }
 
     /**设置玩家当前fov */
     public set curFov(value: number) {
@@ -109,11 +118,72 @@ export class RunningGameController {
         this.maxSpeed = this._defaultMaxSpeed;
         //初始化定时器
         this._intervalHander = TimeUtil.setInterval(this.onUpdateInterval, 0.01);
+
+        GameObjPool.asyncSpawn("Trigger").then(val => {
+            this._collisionTrigger = val as mw.Trigger;
+            this._collisionTrigger.worldTransform.scale = new mw.Vector(0.6, 0.8, 1.75);
+            this._character.attachToSlot(this._collisionTrigger, mw.HumanoidSlotType.Head);
+            this._collisionTrigger.localTransform.position = new mw.Vector(0, 0, -40);
+            this._collisionTrigger.localTransform.rotation = new mw.Rotation(0, 0, 0);
+
+            this._collisionTrigger.onEnter.add(this.onEnterCollision);
+        });
+
+        GameObjPool.asyncSpawn("153046").then(val => {
+            this._collisionEffect = val as mw.Effect;
+        });
+    }
+
+    /**碰撞标志位时间，代表刚碰撞 */
+    private _collisionFlagTime: number;
+
+    private _collisionFlag: boolean;
+
+
+    private onEnterCollision = (obj: mw.GameObject) => {
+        if (obj instanceof mw.Effect || obj instanceof mw.Trigger) {
+            return;
+        }
+
+        const speed = this.speed;
+        //当玩家速度大于等于默认最大速度的一半时，撞击碰撞体会反弹
+        if (!this._collisionFlagTime && speed >= this._defaultMaxSpeed / 2) {
+            this._collisionFlagTime = Date.now();
+            const forwa = this.fowardVec.clone();
+            const fowardVec = this.fowardVec.clone().normalize().multiply(-1700);
+            this.maxSpeed = 0;
+            this.curFov = this._defaultFov;
+            Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "撞击碰撞体");
+            ModuleService.getModule(RoleModuleC).controller.addImpulse(this._character, fowardVec);
+            mw.TimeUtil.delayExecute(() => {
+                this.maxSpeed = this._defaultMaxSpeed
+            }, 10);
+            //播放撞击特效
+            this._collisionEffect.worldTransform.position = this._collisionTrigger.worldTransform.position;
+            this._collisionEffect.play();
+        } else {
+
+
+        }
+
     }
 
     private onUpdateInterval = () => {
         this.onSpeedUpdate();
         this.setCurFov();
+        this.onCollionUpdate();
+    }
+
+    private onCollionUpdate() {
+        if (this._collisionFlagTime) {
+            //如果当前处于碰撞状态，不用管fov
+            const curTime = Date.now();
+            if ((curTime - this._collisionFlagTime) > 2 * 1000) {
+                Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "碰撞保护到期");
+                this._collisionFlagTime = null;
+            }
+        }
+
     }
 
     /**
@@ -121,6 +191,8 @@ export class RunningGameController {
      */
     private setCurFov() {
         //根据当前速度来设置fov
+
+
         const speed = this.speed;
         let fov: number;
         if (speed <= this._defaultMaxSpeed) {
@@ -217,13 +289,27 @@ export class RunningGameController {
         }, 10)
     }
 
+    private clear() {
+        TimeUtil.clearInterval(this._intervalHander);
+        this._intervalHander = null;
+
+        this._collisionTrigger.onEnter.clear();
+        GameObjPool.despawn(this._collisionTrigger);
+        this._collisionTrigger = null;
+
+        this._collisionEffect.stop();
+        GameObjPool.despawn(this._collisionEffect);
+        this._collisionEffect = null;
+
+    }
+
 
     public onEnd() {
+        this.clear();
+
         this.curFov = this._defaultFov;
         this.acceleration = this._oriAcceleration;
         this.maxSpeed = this._oriMaxSpeed;
-        TimeUtil.clearInterval(this._intervalHander);
-        this._intervalHander = null;
         this._character = null;
     }
 
