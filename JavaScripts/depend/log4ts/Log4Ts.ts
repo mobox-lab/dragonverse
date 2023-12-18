@@ -246,7 +246,7 @@ export class Log4TsConfig {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.1.0
+ * @version 1.2.0
  */
 class Log4Ts {
 //#region Config
@@ -259,26 +259,18 @@ class Log4Ts {
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    public log(announcer: Announcer, ...messages: (LogString | string)[]): void;
-
-    public log(announcer: Announcer, ...messages: unknown[]): void;
-
     /**
      * debug log.
      * @param announcer announcer with name.
      *      when null or undefined, will print as second indent.
      * @param messages text.
      */
-    public log(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
+    public log = (announcer: Announcer, ...messages: (LogString | string | unknown)[]): void => {
         if (this.debugLevel !== DebugLevels.Dev || !this._config.checkAnnouncer(announcer)) return;
         const logFunc: LogFunc = this._config.logFunc;
 
         this.print(logFunc, announcer, ...messages);
-    }
-
-    public warn(announcer: Announcer, ...messages: (LogString | string)[]): void;
-
-    public warn(announcer: Announcer, ...messages: unknown[]): void;
+    };
 
     /**
      * debug warn.
@@ -286,16 +278,12 @@ class Log4Ts {
      *      when null or undefined, will print as second indent.
      * @param messages text.
      */
-    public warn(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
+    public warn = (announcer: Announcer, ...messages: (LogString | string | unknown)[]): void => {
         if (this.debugLevel === DebugLevels.Silent || !this._config.checkAnnouncer(announcer)) return;
         const logFunc: LogFunc = this._config.logFunc;
 
         this.print(logFunc, announcer, ...messages);
-    }
-
-    public error(announcer: Announcer, ...messages: (LogString | string)[]): void;
-
-    public error(announcer: Announcer, ...messages: unknown[]): void;
+    };
 
     /**
      * debug error.
@@ -303,12 +291,12 @@ class Log4Ts {
      *      when null or undefined, will print as second indent.
      * @param messages text.
      */
-    public error(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
+    public error = (announcer: Announcer, ...messages: (LogString | string | unknown)[]): void => {
         if (this.debugLevel === DebugLevels.Silent || !this._config.checkAnnouncer(announcer)) return;
         const logFunc: LogFunc = this._config.errorFunc;
 
         this.print(logFunc, announcer, ...messages);
-    }
+    };
 
     /**
      * 设置配置.
