@@ -45,26 +45,33 @@ export default class CodePanel_Generate extends UIScript {
 		}
 		return this.codeImage_2_Internal
 	}
-	private codeInputBox_Internal: mw.InputBox
-	public get codeInputBox(): mw.InputBox {
-		if(!this.codeInputBox_Internal&&this.uiWidgetBase) {
-			this.codeInputBox_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/codeInputBox') as mw.InputBox
+	private contantCanvas_Internal: mw.Canvas
+	public get contantCanvas(): mw.Canvas {
+		if(!this.contantCanvas_Internal&&this.uiWidgetBase) {
+			this.contantCanvas_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/contantCanvas') as mw.Canvas
 		}
-		return this.codeInputBox_Internal
-	}
-	private codeImage_3_Internal: mw.Image
-	public get codeImage_3(): mw.Image {
-		if(!this.codeImage_3_Internal&&this.uiWidgetBase) {
-			this.codeImage_3_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/codeImage_3') as mw.Image
-		}
-		return this.codeImage_3_Internal
+		return this.contantCanvas_Internal
 	}
 	private codeButtonVerify_Internal: mw.StaleButton
 	public get codeButtonVerify(): mw.StaleButton {
 		if(!this.codeButtonVerify_Internal&&this.uiWidgetBase) {
-			this.codeButtonVerify_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/codeButtonVerify') as mw.StaleButton
+			this.codeButtonVerify_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/contantCanvas/codeButtonVerify') as mw.StaleButton
 		}
 		return this.codeButtonVerify_Internal
+	}
+	private codeImage_3_Internal: mw.Image
+	public get codeImage_3(): mw.Image {
+		if(!this.codeImage_3_Internal&&this.uiWidgetBase) {
+			this.codeImage_3_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/contantCanvas/codeImage_3') as mw.Image
+		}
+		return this.codeImage_3_Internal
+	}
+	private codeInputBox_Internal: mw.InputBox
+	public get codeInputBox(): mw.InputBox {
+		if(!this.codeInputBox_Internal&&this.uiWidgetBase) {
+			this.codeInputBox_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/contantCanvas/codeInputBox') as mw.InputBox
+		}
+		return this.codeInputBox_Internal
 	}
 	private codeNum_Internal: mw.TextBlock
 	public get codeNum(): mw.TextBlock {

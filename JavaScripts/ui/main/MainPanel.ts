@@ -1,5 +1,6 @@
 ﻿import { EventDefine } from "../../const/EventDefine";
 import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
+import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import BagPanel from "../bag/BagPanel";
 import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
@@ -29,6 +30,7 @@ export default class MainPanel extends MainPanel_Generate {
                 });
             }
         });
+        this.btnCode.onClicked.add(this.showCodeVerify.bind(this));
         // this.btnBag.onPressed.add(showBag);
         // this.btnHandbook.onPressed.add(showHandbook);
         //#endregion ------------------------------------------------------------------------------------------
@@ -200,6 +202,9 @@ export default class MainPanel extends MainPanel_Generate {
 
     //#region Event Callback
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    private showCodeVerify() {
+        UIService.show(CodeVerifyPanel);
+    }
 }
 
 function showBag() {
