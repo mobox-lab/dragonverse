@@ -31,8 +31,14 @@ export default class MainPanel extends MainPanel_Generate {
                 });
             }
         });
-        this.setupCodeVerify();
 
+
+        this.btnCode.onClicked.add(() => {
+            UIService.show(CodeVerifyPanel);
+        });
+        Event.addLocalListener(EventDefine.PlayerEnableEnter, () => {
+            this.btnCode.visibility = SlateVisibility.Hidden;
+        });
 
         // this.btnBag.onPressed.add(showBag);
         // this.btnHandbook.onPressed.add(showHandbook);
@@ -205,20 +211,6 @@ export default class MainPanel extends MainPanel_Generate {
 
     //#region Event Callback
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-    /** 
-     * @description: 已经通过验证，隐藏code按钮
-     */
-    private async setupCodeVerify() {
-        await ModuleService.ready();
-        let res = ModuleService.getModule(AuthModuleC).canEnterGame();
-        if (res) {
-            this.btnCode.visibility = SlateVisibility.Hidden;
-        } else {
-            this.btnCode.onClicked.add(() => {
-                UIService.show(CodeVerifyPanel);
-            });
-        }
-    }
 }
 
 function showBag() {
