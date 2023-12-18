@@ -47,7 +47,9 @@ let languageDefault = {
 
     TinyGameLanKey0002: "放下",
 
-
+    verifyCodeTooFrequently: "Code verify request too frequently.",
+    verifyCodeFail: "Verification failed, please try again!",
+    isVerifying: "Verifying now, please wait."
     //#region TinyGame/Interactive
 
 };
