@@ -1,3 +1,5 @@
+import i18n from "../../language/i18n";
+import { ProximityPrompts } from "../../ui/common/ProximityPrompts";
 import GToolkit from "../../util/GToolkit";
 import { InitializeCheckerScript } from "../archtype/base/InitializeCheckScript";
 import { KeyItem } from "./KeyItemPuzzel";
@@ -8,13 +10,13 @@ const tempUseVector = new mw.Vector();
 export abstract class PickableItem extends InitializeCheckerScript implements KeyItem {
 
 
-    @mw.Property({displayName: "放置物类型"})
+    @mw.Property({ displayName: "放置物类型" })
     type: number = 0;
 
     public storage: string = "";
 
 
-    @mw.Property({displayName: "初始位置"})
+    @mw.Property({ displayName: "初始位置" })
     public initializePosition: mw.Vector = new mw.Vector();
 
     public detectionCollisionWhenPutdown = true;
@@ -63,7 +65,9 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
         if (!this._beenPicked) {
             this._trigger.onEnter.add(this.onTriggerIn);
             this._trigger.onLeave.add(this.onTriggerOut);
-            this.holder = null;
+            if (this.holder) {
+                this.addCandidate(this.holder);
+            }
             this.onBeenLand();
         } else {
 
@@ -71,18 +75,26 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
             this._trigger.onLeave.remove(this.onTriggerOut);
             this.removeCandidate();
             this.onBeenPicked();
-            this.addCandidate(this.holder);
+
+            ProximityPrompts.show([{
+                keyBoard: "Z",
+                text: i18n.lan('TinyGameLanKey0002'),
+                enabled: true,
+                onSelected: () => {
+                    this.holder.putdown();
+                }
+            }]);
         }
     }
 
 
-    private removeCandidate(target?: IPickerController) {
+    protected removeCandidate(target?: IPickerController) {
 
         if (!target) {
-            this._candidates.forEach((value) => {
-                value.onPressedInteractive.remove(this.controllerTryPickupSelf, this);
-            });
+
+            this._candidates.length > 0 && ProximityPrompts.close();
             this._candidates.length = 0;
+
             return;
         }
 
@@ -91,19 +103,25 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
             if (target === candidate) {
 
                 this._candidates.splice(i, 1);
-                target.onPressedInteractive.remove(this.controllerTryPickupSelf, this);
-
+                ProximityPrompts.close();
             }
         }
     }
 
-    private addCandidate(target: IPickerController) {
+    protected addCandidate(target: IPickerController) {
 
         if (this._candidates.indexOf(target) !== -1) {
             return;
         }
         this._candidates.push(target);
-        target.onPressedInteractive.add(this.controllerTryPickupSelf, this);
+        ProximityPrompts.show([{
+            keyBoard: "F",
+            text: i18n.lan('TinyGameLanKey0001'),
+            enabled: true,
+            onSelected: () => {
+                this.controllerTryPickupSelf(target);
+            }
+        }]);
 
     }
 
@@ -125,6 +143,10 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
         let picker: IPickerController = GToolkit.getFirstScriptIs(go, "pick");
         if (!picker) {
+            return;
+        }
+
+        if (!picker.canPick) {
             return;
         }
 
@@ -175,9 +197,8 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
             this.resetGameObject(position);
         }
-
-        this.holder = null;
         this.pickStatus = false;
+        this.holder = null;
         return true;
 
     }

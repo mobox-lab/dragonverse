@@ -78,6 +78,7 @@ export default class Stone extends PickableItem {
         if (this.storage) {
 
             this.onBeenPutInStorage.call(this);
+            this.removeCandidate();
             return;
         }
 
@@ -85,6 +86,7 @@ export default class Stone extends PickableItem {
 
             if (!this.storage) {
 
+                this.removeCandidate();
                 this.resetGameObject();
             }
 

@@ -13,10 +13,13 @@ export interface IPickerController extends mw.Script {
 
     onPressedInteractive: mw.Action;
 
+    canPick: boolean
 
     pickType: number[];
 
     pick(item: PickableItem): Promise<boolean>
+
+    putdown();
 
 
 
@@ -37,6 +40,11 @@ export default class PickerController extends mw.Script implements IPickerContro
     onPressedInteractive: mw.Action1<PickerController> = new mw.Action1();
 
     private _currentPickupItem: PickableItem;
+
+
+    get canPick(): boolean {
+        return !this._currentPickupItem;
+    }
 
     protected onStart(): void {
         mw.Event.addLocalListener(EventDefine.PlayerPressedInterActive, this.onPlayerPressedInterActive);
@@ -89,5 +97,7 @@ export default class PickerController extends mw.Script implements IPickerContro
     private onCurPickItemDestroyed() {
         this._currentPickupItem = null;
     }
+
+
 
 }
