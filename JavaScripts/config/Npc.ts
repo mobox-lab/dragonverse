@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","characterId","position","rotation","greetNodeId","npcAction","basicActions"],["","","","","","",""],[1,1,new mw.Vector(4620,-18620,1500),new mw.Vector(0,0,175),2,[1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29],["14601","14624"]]];
+const EXCELDATA:Array<Array<any>> = [["id","characterId","position","rotation","greetNodeId","npcAction","basicActions"],["","","","","","",""],[1,2,new mw.Vector(4620,-18620,1500),new mw.Vector(0,0,175),2,[1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29],["14601","14624"]]];
 export interface INpcElement extends IElementBase{
  	/**ID*/
 	id:number
