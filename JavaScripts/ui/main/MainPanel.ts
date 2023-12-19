@@ -1,17 +1,56 @@
 ﻿import { EventDefine } from "../../const/EventDefine";
-import { AuthModuleC } from "../../module/auth/AuthModule";
 import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
-import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import BagPanel from "../bag/BagPanel";
 import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
 import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
+import GToolkit from "../../util/GToolkit";
+import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
+import GlobalPromptPanel from "./GlobalPromptPanel";
+import AccountService = mw.AccountService;
+import Waterween from "../../depend/waterween/Waterween";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import CodeVerifyPanel from "../auth/CodeVerifyPanel";
+import { AuthModuleC } from "../../module/auth/AuthModule";
 
+/**
+ * 主界面 全局提示 参数.
+ */
+interface ShowGlobalPromptEventArgs {
+    message: string;
+}
+
+/**
+ * 主界面.
+ * @desc 常驻的. 除游戏实例销毁 任何时机不应该 destroy 此 UI.
+ * @desc 监听 {@link EventDefine.ShowGlobalPrompt} 事件. 事件参数 {@link ShowGlobalPromptEventArgs}.
+ * @desc
+ * @desc ---
+ *
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+ */
 export default class MainPanel extends MainPanel_Generate {
     //#region Member
-    private character: Character;
-    private collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
-    private sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
+    private _eventListeners: EventListener[] = [];
+
+    private _character: Character;
+    private _collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
+    private _sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
+    private _promptPanel: GlobalPromptPanel;
+
+    private _catchResult: boolean = false;
+
+    private _progressTask: AdvancedTweenTask<number>;
+
+    private _pointerTask: AdvancedTweenTask<number>;
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -20,38 +59,64 @@ export default class MainPanel extends MainPanel_Generate {
         this.canUpdate = true;
 
         //#region Member init
+        this._promptPanel = UIService.create(GlobalPromptPanel);
         this.btnJump.onPressed.add(() => {
-            if (this.character) {
-                if (this.character.jumpEnabled) this.character.jump();
+            if (this._character) {
+                this._character.jump();
             } else {
                 Player.asyncGetLocalPlayer().then((player) => {
-                    this.character = player.character;
-                    if (this.character.jumpEnabled) this.character.jump();
+                    this._character = player.character;
+                    this._character.jump();
                 });
             }
         });
 
 
-        this.btnCode.onClicked.add(() => {
-            UIService.show(CodeVerifyPanel);
+        this.btnBag.onPressed.add(showBag);
+        this.btnBook.onPressed.add(showHandbook);
+        this.btnCode.onPressed.add(showCode);
+        this.btnDragonBall.onPressed.add(this.onCatchClick);
+        this._progressTask =
+            Waterween
+                .to(
+                    () => this.progressBar.percent,
+                    (val) => this.progressBar.percent = val,
+                    1,
+                    2e3,
+                    0,
+                ).restart(true);
+        this._progressTask.onDone.add((param) => {
+            if (param) return;
+            this.onProgressDone();
+
         });
 
+        this._pointerTask =
+            Waterween
+                .to(
+                    () => this.cnvPointer.renderTransformAngle,
+                    (val) => this.cnvPointer.renderTransformAngle = val,
+                    45,
+                    0.5e3,
+                    -45,
+                )
+                .restart(true)
+                .pingPong();
 
-        Event.addLocalListener(EventDefine.PlayerEnableEnter, () => {
-            this.btnCode.visibility = SlateVisibility.Hidden;
-        });
-        Event.addLocalListener(EventDefine.PlayerDisableEnter, () => {
-            this.cnvDragonBall.visibility = SlateVisibility.Hidden;
-        });
-
-        // this.btnBag.onPressed.add(showBag);
-        // this.btnHandbook.onPressed.add(showHandbook);
+        this.init();
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Widget bind
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event subscribe
+        this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, this.onPlayerTryCatch));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, this.onPlayerEndCatch));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatchSuccess, this.onPlayerEndCatch));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatchFail, this.onPlayerEndCatch));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -79,6 +144,9 @@ export default class MainPanel extends MainPanel_Generate {
      * 注意：这之后UI对象已经被销毁了，需要移除所有对该文件和UI相关对象以及子对象的引用
      */
     protected onDestroy() {
+        //#region Event Unsubscribe
+        this._eventListeners.forEach(value => value.disconnect());
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     /**
@@ -178,42 +246,131 @@ export default class MainPanel extends MainPanel_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Init
+    public init() {
+        GToolkit.trySetVisibility(this.cnvProgressBar, false);
+        GToolkit.trySetVisibility(this.cnvDragonBall, false);
+        UIService.hideUI(this._promptPanel);
+
+        this.refreshAvatar();
+
+        //#region Exist for V1
+        GToolkit.trySetVisibility(this.btnMail, false);
+        GToolkit.trySetVisibility(this.btnBook, false);
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region UI Behavior
     public addCollectibleItemInteractor(syncKey: string) {
         const collectibleInteractor = UIService.create(CollectibleInteractorPanel);
         collectibleInteractor.init(syncKey);
-        this.collectibleInteractorMap.set(syncKey, collectibleInteractor);
+        this._collectibleInteractorMap.set(syncKey, collectibleInteractor);
         this.collectibleInteractorContainer.addChild(collectibleInteractor.uiObject);
     }
 
     public addSceneDragonInteractor(syncKey: string) {
         const sceneDragonInteractor = UIService.create(SceneDragonInteractorPanel);
         sceneDragonInteractor.init(syncKey);
-        this.sceneDragonInteractorMap.set(syncKey, sceneDragonInteractor);
+        this._sceneDragonInteractorMap.set(syncKey, sceneDragonInteractor);
         this.sceneDragonInteractorContainer.addChild(sceneDragonInteractor.uiObject);
     }
 
     public removeCollectibleItemInteractor(syncKey: string) {
-        const uis = this.collectibleInteractorMap.get(syncKey);
+        const uis = this._collectibleInteractorMap.get(syncKey);
         if (uis) {
             this.collectibleInteractorContainer.removeChild(uis.uiObject);
         }
-        this.collectibleInteractorMap.delete(syncKey);
+        this._collectibleInteractorMap.delete(syncKey);
     }
 
     public removeSceneDragonInteractor(syncKey: string) {
-        const uis = this.sceneDragonInteractorMap.get(syncKey);
+        const uis = this._sceneDragonInteractorMap.get(syncKey);
         if (uis) {
             this.sceneDragonInteractorContainer.removeChild(uis.uiObject);
         }
-        this.sceneDragonInteractorMap.delete(syncKey);
+        this._sceneDragonInteractorMap.delete(syncKey);
+    }
+
+    private showGlobalPrompt(message: string) {
+        this._promptPanel.showPrompt(message);
+    }
+
+    /**
+     * 更新头像.
+     */
+    public refreshAvatar() {
+        AccountService.fillAvatar(this.imgUserAvatarIcon);
+    }
+
+    /**
+     * 待捕捉态.
+     */
+    public prepareCatch() {
+        this._catchResult = false;
+        GToolkit.trySetVisibility(this.cnvDragonBall, true);
+        this._pointerTask.restart();
+    }
+
+    /**
+     * 捕捉.
+     */
+    public catch() {
+        this._pointerTask.pause();
+        this._progressTask.restart();
+        Event.dispatchToLocal(EventDefine.DragonCatch);
+    }
+
+    /**
+     * 捕捉完成.
+     */
+    public endCatch() {
+        GToolkit.trySetVisibility(this.cnvDragonBall, false);
+    }
+
+    public playProgress() {
+        this._progressTask.restart();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
+    private onShowGlobalPrompt = (args: ShowGlobalPromptEventArgs) => {
+        this.showGlobalPrompt(args.message);
+    };
+
+    private onCatchClick = () => {
+        this.catch();
+    };
+
+    private onPlayerTryCatch = () => {
+        this.prepareCatch();
+    };
+
+    private onPlayerEndCatch = () => {
+        this.endCatch();
+    };
+
+    private onDragonCatchSuccess = () => {
+        this._catchResult = true;
+    };
+
+    private onDragonCatchFail = () => {
+        this.prepareCatch();
+    };
+
+    private onProgressDone = () => {
+        Log4Ts.log(MainPanel, `catch result: ${this._catchResult}`);
+        this.endCatch();
+    };
+
+    private onEnablePlayerEnter() {
+        this.btnCode.visibility = SlateVisibility.Hidden;
+    }
+
+    private onDisablePlayerEnter() {
+        this.cnvDragonBall.visibility = SlateVisibility.Hidden;
+    }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -223,4 +380,9 @@ function showBag() {
 
 function showHandbook() {
     UIService.show(HandbookPanel);
+}
+
+function showCode() {
+    //TODO_LviatYi Show Code 验证页面.
+    UIService.show(CodeVerifyPanel);
 }
