@@ -27,6 +27,9 @@ export default class StoneItemPuzzle extends KeyItemPuzzle {
 
 
 
+
+
+
     @mw.Property({ displayName: "解锁后球的浮动运动量" })
     private offset: mw.Vector = new mw.Vector(0, 0, 20);
 
