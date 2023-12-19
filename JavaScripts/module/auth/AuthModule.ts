@@ -1,13 +1,13 @@
-import GToolkit, { Expression, TimeFormatDimensionFlags } from "../../util/GToolkit";
-import { EventDefine } from "../../const/EventDefine";
-import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
-import GameStart from "../../GameStart";
 import CryptoJS from "crypto-js";
+import GameStart from "../../GameStart";
+import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Regulator from "../../depend/regulator/Regulator";
-import FixedQueue from "../../depend/queue/FixedQueue";
 import { SubGameTypes } from "../../const/SubGameTypes";
+import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
+import FixedQueue from "../../depend/queue/FixedQueue";
+import Regulator from "../../depend/regulator/Regulator";
 import i18n from "../../language/i18n";
+import GToolkit, { Expression, TimeFormatDimensionFlags } from "../../util/GToolkit";
 import ModuleS = mwext.ModuleS;
 import ModuleC = mwext.ModuleC;
 import SubData = mwext.Subdata;
@@ -526,7 +526,6 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     private async verifyEnterCode(code: string, uid: string): Promise<boolean> {
         //#region Exist for Test
-        if (code === "123456") return true;
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
         const codeSalt = `${code}-${Date.now()}`;
         const e = CryptoJS.AES.encrypt(

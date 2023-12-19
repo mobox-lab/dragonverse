@@ -1,13 +1,13 @@
 import ModuleService = mwext.ModuleService;
+import GameServiceConfig from "../../const/GameServiceConfig";
+import Easing from "../../depend/easing/Easing";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Regulator from "../../depend/regulator/Regulator";
+import SceneDragonBehavior from "../../module/scene-dragon/SceneDragonBehavior";
 import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
 import SceneDragonPanel_Generate from "../../ui-generate/scene-dragon/SceneDragonPanel_generate";
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
-import Easing from "../../depend/easing/Easing";
-import SceneDragonBehavior from "../../module/scene-dragon/SceneDragonBehavior";
 import Character = mw.Character;
-import GameServiceConfig from "../../const/GameServiceConfig";
-import Regulator from "../../depend/regulator/Regulator";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 /**
  * 玩家锁定 场景龙.
@@ -17,7 +17,7 @@ export interface DragonSyncKeyEventArgs {
 }
 
 export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
-//#region Member
+    //#region Member
     private _eventListeners: EventListener[] = [];
 
     public syncKey: string;
@@ -33,15 +33,15 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
     private _activityCheckRegulator: Regulator;
 
     private _character: Character;
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region MetaWorld UI Event
+    //#region MetaWorld UI Event
 
     protected onAwake(): void {
         super.onAwake();
         this.canUpdate = true;
 
-//#region Member init
+        //#region Member init
         this._module = ModuleService.getModule(SceneDragonModuleC);
         this._character = Player.localPlayer.character;
         this._activityCheckRegulator = new Regulator(GameServiceConfig.SCENE_DRAGON_UI_DORMANT_DETECT_INTERVAL);
@@ -51,13 +51,14 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
                 this._activityBehavior.delegate.add(this.activityDistanceDetect);
                 this._activityBehavior.delegate.add(this.renderPosition);
             });
-//#endregion ------------------------------------------------------------------------------------------
+        this.uiObject.visibility = mw.SlateVisibility.Collapsed;
+        //#endregion ------------------------------------------------------------------------------------------
 
-//#region Widget bind
-//#endregion ------------------------------------------------------------------------------------------
+        //#region Widget bind
+        //#endregion ------------------------------------------------------------------------------------------
 
-//#region Event subscribe
-//#endregion ------------------------------------------------------------------------------------------
+        //#region Event subscribe
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onUpdate() {
@@ -75,25 +76,27 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
 
     protected onDestroy() {
         Log4Ts.log(SceneDragonInteractorPanel, `destroyed`);
-//#region Event Unsubscribe
+        //#region Event Unsubscribe
         this._eventListeners.forEach(value => value.disconnect());
-//#endregion ------------------------------------------------------------------------------------------
+        //#endregion ------------------------------------------------------------------------------------------
         this._activityBehavior.destroy();
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Init
+    //#region Init
     public init(syncKey: string) {
         this.syncKey = syncKey;
         this.behavior = this._module.syncItemMap.get(this.syncKey).behavior;
         this._obj = this._module.syncItemMap.get(this.syncKey).object;
         this.btnCatch.onClicked.add(this.lockOnMe);
+        this.renderPosition();
+
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region UI Behavior
+    //#region UI Behavior
     private renderPosition = () => {
         const v = new Vector2();
         ScreenUtil.projectWorldPositionToWidgetPosition(
@@ -102,6 +105,12 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
             v,
             true);
 
+        if (v.x <= 0 && v.y <= 0) {
+            this.uiObject.visibility = mw.SlateVisibility.Collapsed;
+        } else {
+            this.uiObject.visibility = mw.SlateVisibility.Visible;
+
+        }
         v.x -= this.uiObject.size.x / 2;
         v.y -= this.uiObject.size.y / 2;
 
@@ -130,7 +139,11 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
             return;
         }
         if (this.currentDistanceSqr <= GameServiceConfig.SQR_SCENE_DRAGON_UI_ACTIVITY_DISTANCE) {
+            this.uiObject.visibility = mw.SlateVisibility.Visible;
             this._activityBehavior.run();
+        } else {
+            this.uiObject.visibility = mw.SlateVisibility.Collapsed;
+
         }
     };
 
@@ -152,8 +165,8 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
         this._module.lock(this.syncKey);
     };
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Event Callback
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#region Event Callback
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
