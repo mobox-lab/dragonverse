@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-11 17:50:24
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-13 16:36:23
+ * @LastEditTime : 2023-12-19 21:23:50
  * @FilePath     : \dragon-verse\JavaScripts\ui\npc-interaction\NpcInteractionPanel.ts
  * @Description  : npc动作交互面板
  */
@@ -35,7 +35,7 @@ export default class NpcInteractionPanel extends NPCActionPanel_Generate {
 
 
     private createActionItem(npcId: number): void {
-        let config = GameConfig.Npc.getElement(npcId);
+        let config = GameConfig.Npc.findElement("characterId", npcId);
         for (let i = 0; i < config.npcAction.length; i++) {
             let actionConfig = GameConfig.NPCAction.getElement(config.npcAction[i]);
             let item = UIService.create(NPCBigItem_Generate);
