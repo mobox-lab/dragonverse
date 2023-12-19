@@ -36,15 +36,13 @@ export default class MainPanel extends MainPanel_Generate {
             UIService.show(CodeVerifyPanel);
         });
 
-        ModuleService.ready().then(() => {
-            let res = ModuleService.getModule(AuthModuleC).canEnterGame();
-            if (!res) {
-                this.cnvDragonBall.visibility = SlateVisibility.Hidden;
-            } else {
-                this.btnCode.visibility = SlateVisibility.Hidden;
-            }
-        });
 
+        Event.addLocalListener(EventDefine.PlayerEnableEnter, () => {
+            this.btnCode.visibility = SlateVisibility.Hidden;
+        });
+        Event.addLocalListener(EventDefine.PlayerDisableEnter, () => {
+            this.cnvDragonBall.visibility = SlateVisibility.Hidden;
+        });
 
         // this.btnBag.onPressed.add(showBag);
         // this.btnHandbook.onPressed.add(showHandbook);
