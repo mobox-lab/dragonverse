@@ -6,6 +6,7 @@ import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleS } from "./QuestModuleS";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { EventDefine } from "../../const/EventDefine";
 
 export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements QuestReporter {
 
@@ -50,5 +51,35 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
 
         info.status = await this.server.net_UpdateTaskStatus(taskId, progress, customData);
         this._questMap.get(taskId).status = info.status;
+
+        if (info.status === QuestStateEnum.Complete) {
+            Event.dispatchToLocal(EventDefine.OnDragonQuestsComplete);
+        }
+    }
+
+
+    /**
+     * 获取元素龙任务解锁情况
+     */
+    public getDragonsQuestIscomplete(): { configId: number, isComplete: boolean }[] {
+        let res: { configId: number, isComplete: boolean }[] = [];
+        for (const task of this.data) {
+            if (task.questCfgId <= 4) {
+                res.push({ configId: task.questCfgId, isComplete: task.status === QuestStateEnum.Complete });
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * 更新小游戏分数
+     */
+    public updateRunningGameScore(score: number) {
+        const flag = this.data.updateRunningGameScore(score);
+        if (flag) {
+            this.server.net_UpdateRunningGameScore(score);
+        }
+        return flag;
     }
 }

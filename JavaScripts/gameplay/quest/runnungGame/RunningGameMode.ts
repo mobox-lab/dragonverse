@@ -1,6 +1,7 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EventDefine } from "../../../const/EventDefine";
 import { UI } from "../../../edtors/DragonInfo";
+import { QuestModuleC } from "../../../module/quest/QuestModuleC";
 import { RunningGameData, RunningGameEndPanel } from "../../../ui/runningGame/RunningGameEndPanel";
 import { RunningGameGamingPanel } from "../../../ui/runningGame/RunningGameGamingPanel";
 import { RunningGamePreparePanel } from "../../../ui/runningGame/RunningGamePreparePanel";
@@ -161,7 +162,8 @@ export class RunningGameMode {
             //出现结算UI
             Player.localPlayer.character.movementEnabled = false;
             const data = new RunningGameData();
-            data.isNewRecord = true;
+            const flag = ModuleService.getModule(QuestModuleC).updateRunningGameScore(this._playScore);
+            data.isNewRecord = flag;
             data.trans = this._enterTransTime;
             data.speedUp = this._enterSpeedUpTime;
             data.time = this._playTime;
