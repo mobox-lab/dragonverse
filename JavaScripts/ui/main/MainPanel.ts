@@ -19,6 +19,7 @@ import { GenerableTypes } from "../../const/GenerableTypes";
 import i18n from "../../language/i18n";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
+import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
 
 /**
  * 主界面 全局提示 参数.
@@ -59,6 +60,15 @@ export default class MainPanel extends MainPanel_Generate {
             this._sceneDragonModule = ModuleService.getModule(SceneDragonModuleC) ?? null;
         }
         return this._sceneDragonModule;
+    }
+
+    private _collectibleItemModule: CollectibleItemModuleC = null;
+
+    public get collectibleItemModule(): CollectibleItemModuleC | null {
+        if (!this._collectibleItemModule) {
+            this._collectibleItemModule = ModuleService.getModule(CollectibleItemModuleC) ?? null;
+        }
+        return this._collectibleItemModule;
     }
 
     private _bagModule: BagModuleC = null;
@@ -107,7 +117,10 @@ export default class MainPanel extends MainPanel_Generate {
         if (this.bagModule) {
             bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
         } else {
-            Event.addLocalListener(EventDefine.BagModuleClientReady, () => bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString()));
+            const listener = Event.addLocalListener(EventDefine.BagModuleClientReady, () => {
+                bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
+                listener.disconnect();
+            });
         }
 
         this._progressTask =
@@ -196,6 +209,7 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, this.onPlayerEndCatch));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.TryCollectCollectibleItem, this.onCollectClick));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -405,6 +419,15 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     /**
+     * 收集.
+     */
+    public tryCollect(syncKey: string) {
+        if (this.collectibleItemModule?.isCollecting ?? true) return;
+        this.collectibleItemModule?.tryCollect(syncKey);
+        this.playProgress();
+    }
+
+    /**
      * 捕捉完成.
      */
     public endCatch() {
@@ -452,9 +475,9 @@ export default class MainPanel extends MainPanel_Generate {
         this.showGlobalPrompt(args.message);
     };
 
-    private onCatchClick = () => {
-        this.tryCatch();
-    };
+    private onCatchClick = () => this.tryCatch();
+
+    private onCollectClick = (syncKey: string) => this.tryCollect(syncKey);
 
     private onPlayerTryCatch = () => {
         Log4Ts.log(MainPanel, `try catch`);
@@ -468,9 +491,9 @@ export default class MainPanel extends MainPanel_Generate {
 
     private onProgressDone = () => {
         this._progressShowTask.backward();
-        const result = !GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
-        Log4Ts.log(MainPanel, `catch result: ${result}`);
-        if (result) {
+        const catchResult = !GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
+        Log4Ts.log(MainPanel, `catch result: ${catchResult}`);
+        if (catchResult) {
             GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
             this.sceneDragonModule?.acceptCatch();
             this.endCatch();
@@ -478,6 +501,15 @@ export default class MainPanel extends MainPanel_Generate {
         } else {
             this.prepareCatch();
             this.showResult(false, GenerableTypes.SceneDragon);
+        }
+        const collectResult = !GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
+        Log4Ts.log(MainPanel, `collect result: ${collectResult}`);
+        if (collectResult) {
+            GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
+            this.collectibleItemModule?.acceptCollect();
+            this.showResult(true, GenerableTypes.CollectibleItem);
+        } else {
+            this.showResult(false, GenerableTypes.CollectibleItem);
         }
     };
 

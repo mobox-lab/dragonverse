@@ -4,6 +4,7 @@ import CollectiblePanel_Generate from "../../ui-generate/collectible-item/Collec
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
 import ModuleService = mwext.ModuleService;
 import Script = mw.Script;
+import { EventDefine } from "../../const/EventDefine";
 
 export class CollectibleInteractorPanel extends CollectiblePanel_Generate {
     //#region Member
@@ -61,7 +62,7 @@ export class CollectibleInteractorPanel extends CollectiblePanel_Generate {
         this.syncKey = syncKey;
         this._obj = this._module.syncItemMap.get(this.syncKey).object;
         this.btnCollect.onClicked.add(() => {
-            this._module.collect(this.syncKey);
+            Event.dispatchToLocal(EventDefine.TryCollectCollectibleItem, this.syncKey);
         });
         this.renderPosition();
     }

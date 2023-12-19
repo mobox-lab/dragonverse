@@ -1,5 +1,4 @@
 import ModuleService = mwext.ModuleService;
-import GToolkit from "../../util/GToolkit";
 import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
 import SceneDragonPanel_Generate from "../../ui-generate/scene-dragon/SceneDragonPanel_generate";
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
@@ -9,7 +8,6 @@ import Character = mw.Character;
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Regulator from "../../depend/regulator/Regulator";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { EventDefine } from "../../const/EventDefine";
 
 /**
  * 玩家锁定 场景龙.

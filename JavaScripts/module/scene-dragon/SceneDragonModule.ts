@@ -208,7 +208,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             return;
         }
 
-        Log4Ts.log(SceneDragonModuleC, `catch success. last collect count: ${item.hitPoint}`);
         this.keepLockWithView();
         this.server.net_tryCatch(syncKey).then(
             (value) => {
@@ -237,7 +236,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             return;
         }
         Log4Ts.log(SceneDragonModuleC, "item accepted catch.", item.info());
-
         if (!item.isCatchable) {
             Log4Ts.warn(SceneDragonModuleC, `item un catchable. waiting for delete.`);
             return;
@@ -587,8 +585,9 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             Log4Ts.error(SceneDragonModuleS, `destroy item is null`);
             return;
         }
-        Log4Ts.log(SceneDragonModuleS, () => `try destroy item, itemId: ${item.id}.`);
-        Log4Ts.log(SceneDragonModuleS, () => `    reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
+        Log4Ts.log(SceneDragonModuleS,
+            () => `try destroy item, itemId: ${item.id}.`,
+            () => `reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
@@ -604,6 +603,8 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         item.destroy();
         Log4Ts.log(SceneDragonModuleS, `destroy item success. syncKey: ${syncKey}`);
 
+        this.syncItemMap.delete(syncKey);
+        this._syncLocker.delete(syncKey);
         this.getClient(playerId).net_destroy(syncKey);
     }
 

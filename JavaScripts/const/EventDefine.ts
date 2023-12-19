@@ -31,6 +31,12 @@ export enum EventDefine {
     //#region CollectibleItem
     EnterCollectibleItemRange = "ENTER_COLLECTIBLE_ITEM_RANGE",
     LeaveCollectibleItemRange = "LEAVE_COLLECTIBLE_ITEM_RANGE",
+
+    /**
+     * 尝试收集 可收集物品.
+     * <code>{ syncKey:string }</code>
+     */
+    TryCollectCollectibleItem = "TRY_COLLECT_COLLECTIBLE_ITEM",
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Dragon
