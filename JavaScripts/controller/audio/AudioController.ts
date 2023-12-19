@@ -22,9 +22,14 @@ export enum SoundIDEnum {
      */
     JumpButtonClick = 4,
 
-
-
-
+    /**
+     * 发射火球
+     */
+    shootFireball = 14,
+    /**
+     * 火球命中云朵
+     */
+    hitCloud = 15,
 }
 
 /**
@@ -40,7 +45,7 @@ export enum SoundIDEnum {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.1.7a
+ * @version 1.1.8a
  */
 export default class AudioController extends Singleton<AudioController>() {
     //region Member
@@ -193,7 +198,7 @@ export default class AudioController extends Singleton<AudioController>() {
                 holdId = SoundService.play3DSound(
                     config.soundGuid,
                     target,
-                    config.loopPlayBack,
+                    config.loopCount,
                     config.volume,
                     {
                         radius: config.innerRadius,
@@ -203,7 +208,7 @@ export default class AudioController extends Singleton<AudioController>() {
             } else {
                 holdId = SoundService.playSound(
                     config.soundGuid,
-                    config.loopPlayBack,
+                    config.loopCount,
                     config.volume,
                 );
             }
