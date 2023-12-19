@@ -115,8 +115,8 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, this.onPlayerEndCatch));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatchSuccess, this.onPlayerEndCatch));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatchFail, this.onPlayerEndCatch));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
         //#endregion ------------------------------------------------------------------------------------------
     }
 

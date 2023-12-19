@@ -91,7 +91,7 @@ export default class BeginnerGuard extends mw.Script {
 
 
         Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onPlayerEnableEnter);
-        Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onPlayerDisableEnter);
+        Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onPlayerDisableEnter.bind(this));
         //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -128,7 +128,8 @@ export default class BeginnerGuard extends mw.Script {
     };
 
     private onPlayerEnableEnter = () => {
-        this._blockEffect.setColor("Color", new LinearColor(101 / 255, 191 / 255, 214 / 255));
+        this._blockEffect.setColor("Color", LinearColor.colorToLinearColor(101, 191, 214));
+        this._forbiddenArea.addPassableTarget(Player.localPlayer.character);
     };
 
     private onPlayerDisableEnter() {
