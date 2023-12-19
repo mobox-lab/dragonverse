@@ -411,6 +411,26 @@ UNKNOWN INCLUDE ALL.
 
 行为树模块，用于定义可复用 AI。
 
+动态切换
+。采集。相关的动态组件默认全部隐藏
+。采集成功时: MainPanel界面的图片控件OperationSuccessful显示出来，文本控件OperationalFeedback显示的文字内容为
+Collection 002。1秒后开始渐隐，1.5秒消失。
+。采失败时: MainPane界面的图片控件OperationFfailed显示出来，文本控件OperationalFeedback显示的文字内容为Collection_003，1
+秒后开始渐隐，1.5秒消失。
+。捕捉龙娘。相关的动态组件默认全部隐藏
+。捕捉成功时: MainPane界面的图片控件OperationSuccesful显示出来，文本控件OperationalFeedback显示的文字内容为Catch 002。1
+秒后开始渐隐，1.5秒消失。
+捕捉失败时: MainPane界面的图片控件OperationFailed显示出来，文本控件OperationalFeedback显示的文字内容为Catch 003。1秒后
+0
+开始渐隐，1.5秒消失。
+。按下捕捉按钮指针停在黄色焦点区域时: 飘字提示Catch 005，飘字表现效果待美术同事上传。
+按下捕捉按钮指针停在非黄色焦点区域时:飘字提示Catch 006，飘字表现效果待美术同事上传
+。龙娘跟随状态切换。在没有选中龙娘的情况下，相关的动态组件默认全部隐藏.
+若选中的龙娘已经是跟随状态，则“休息"按钮显示，"跟随“按钮保持隐藏。即BagMain界面的mtnOpt1 2按钮(文本为Bag 005)显示
+mBtnOpt1 1按钮(文本为Bag 004)隐藏
+选中的龙娘是休息状态，则"跟随”按纽显示，"休息”按钮保持隐藏。即BaqMain界面的mBtnOpt1 1按钮(文本为Bag 004)显示，mBtnOpt1.2
+按钮(文本为Bag_005)隐藏
+
 [JetbrainsMonoNerdFont]: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip@fallbackFont
 [SarasaMonoSC]: https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
 [dragon-verse-case]: https://brainvat.sg.larksuite.com/wiki/JhMbw2RmjiNDGPkL7fglaojrgEc
