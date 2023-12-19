@@ -152,11 +152,11 @@ export class Log4TsConfig {
     }
 
     private inWhiteList(announcer: Announcer): boolean {
-        return this._whiteList.size === 0 || this._whiteList.has(announcer.name);
+        return this._whiteList.size === 0 || (announcer.name ? this._whiteList.has(announcer.name) : false);
     }
 
     private inBlackList(announcer: Announcer): boolean {
-        return this._blackList.has(announcer.name);
+        return announcer.name ? this._blackList.has(announcer.name) : false;
     }
 
     /**
@@ -165,7 +165,7 @@ export class Log4TsConfig {
      */
     public checkAnnouncer(announcer: Announcer): boolean {
         return this._filter ?
-            this._filter(announcer.name) :
+            this._filter(announcer?.name ?? "") :
             this.inWhiteList(announcer) && !this.inBlackList(announcer);
     }
 
@@ -246,7 +246,7 @@ export class Log4TsConfig {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.2.0
+ * @version 1.2.1
  */
 class Log4Ts {
 //#region Config

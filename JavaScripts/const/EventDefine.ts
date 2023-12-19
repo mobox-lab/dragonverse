@@ -30,9 +30,40 @@ export enum EventDefine {
 
     //#region Dragon
     DragonOutOfAliveRange = "DRAGON_OUT_OF_ALIVE_RANGE",
+
+    /**
+     * 玩家锁定 龙.
+     * {@link DragonSyncKeyEventArgs}
+     */
+    DragonOnLock = "DRAGON_ON_LOCK",
+
+    /**
+     * 玩家解除锁定 龙.
+     * {@link DragonSyncKeyEventArgs}
+     */
+    DragonOnUnlock = "DRAGON_ON_UNLOCK",
+
+    /**
+     * 玩家 抓捕 龙 成功.
+     * {@link DragonSyncKeyEventArgs}
+     */
+    DragonCatchSuccess = "DRAGON_CATCH_SUCCESS",
+
+    /**
+     * 玩家 抓捕 龙 成功.
+     * {@link DragonSyncKeyEventArgs}
+     */
+    DragonCatchFail = "DRAGON_CATCH_FAIL",
+
+    /**
+     * 玩家 抓捕 龙.
+     */
+    DragonCatch = "DRAGON_CATCH",
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Npc
+
     EnterNpcInteractRange = "ENTER_NPC_INTERACT_RANGE",
 
     LeaveNpcInteractRange = "LEAVE_NPC_INTERACT_RANGE",
@@ -74,6 +105,12 @@ export enum EventDefine {
      * 玩家消除岩浆.
      */
     PlayerDestroyMagma = "PLAYER_DESTROY_MAGMA",
+
+    /**
+     * 玩家被岩浆损伤.
+     */
+    PlayerHurtByMagma = "PLAYER_HURT_BY_MAGMA",
+
     /**
      * 玩家到达迷宫终点.
      */
@@ -119,6 +156,6 @@ export enum EventDefine {
     /**当跑酷游戏解锁魔法阵 */
     OnRunningGameUnlockMagicCircle = "On_RuningGame_Unlock_MagicCircle",
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 }
