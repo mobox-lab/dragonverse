@@ -10,38 +10,45 @@
 
 @UIBind('UI/bag/BagMain.ui')
 export default class BagMain_Generate extends UIScript {
-		private btn1_Internal: mw.StaleButton
+		private cnvTags_Internal: mw.Canvas
+	public get cnvTags(): mw.Canvas {
+		if(!this.cnvTags_Internal&&this.uiWidgetBase) {
+			this.cnvTags_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/cnvTags') as mw.Canvas
+		}
+		return this.cnvTags_Internal
+	}
+	private btn1_Internal: mw.StaleButton
 	public get btn1(): mw.StaleButton {
 		if(!this.btn1_Internal&&this.uiWidgetBase) {
-			this.btn1_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/MWCanvas_1/btn1') as mw.StaleButton
+			this.btn1_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/cnvTags/btn1') as mw.StaleButton
 		}
 		return this.btn1_Internal
 	}
 	private btn2_Internal: mw.StaleButton
 	public get btn2(): mw.StaleButton {
 		if(!this.btn2_Internal&&this.uiWidgetBase) {
-			this.btn2_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/MWCanvas_1/btn2') as mw.StaleButton
+			this.btn2_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/cnvTags/btn2') as mw.StaleButton
 		}
 		return this.btn2_Internal
 	}
 	private btn3_Internal: mw.StaleButton
 	public get btn3(): mw.StaleButton {
 		if(!this.btn3_Internal&&this.uiWidgetBase) {
-			this.btn3_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/MWCanvas_1/btn3') as mw.StaleButton
+			this.btn3_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/cnvTags/btn3') as mw.StaleButton
 		}
 		return this.btn3_Internal
 	}
 	private btn4_Internal: mw.StaleButton
 	public get btn4(): mw.StaleButton {
 		if(!this.btn4_Internal&&this.uiWidgetBase) {
-			this.btn4_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/MWCanvas_1/btn4') as mw.StaleButton
+			this.btn4_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/cnvTags/btn4') as mw.StaleButton
 		}
 		return this.btn4_Internal
 	}
 	private btn5_Internal: mw.StaleButton
 	public get btn5(): mw.StaleButton {
 		if(!this.btn5_Internal&&this.uiWidgetBase) {
-			this.btn5_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/MWCanvas_1/btn5') as mw.StaleButton
+			this.btn5_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/cnvTags/btn5') as mw.StaleButton
 		}
 		return this.btn5_Internal
 	}
@@ -58,69 +65,6 @@ export default class BagMain_Generate extends UIScript {
 			this.mContent_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mScrollBox/mContent') as mw.Canvas
 		}
 		return this.mContent_Internal
-	}
-	private mIconThum_1_1_Internal: mw.Image
-	public get mIconThum_1_1(): mw.Image {
-		if(!this.mIconThum_1_1_Internal&&this.uiWidgetBase) {
-			this.mIconThum_1_1_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_1') as mw.Image
-		}
-		return this.mIconThum_1_1_Internal
-	}
-	private mThumNum_Internal: mw.Image
-	public get mThumNum(): mw.Image {
-		if(!this.mThumNum_Internal&&this.uiWidgetBase) {
-			this.mThumNum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mThumNum') as mw.Image
-		}
-		return this.mThumNum_Internal
-	}
-	private mNumThum_Internal: mw.TextBlock
-	public get mNumThum(): mw.TextBlock {
-		if(!this.mNumThum_Internal&&this.uiWidgetBase) {
-			this.mNumThum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mNumThum') as mw.TextBlock
-		}
-		return this.mNumThum_Internal
-	}
-	private mIconThum_1_2_Internal: mw.Image
-	public get mIconThum_1_2(): mw.Image {
-		if(!this.mIconThum_1_2_Internal&&this.uiWidgetBase) {
-			this.mIconThum_1_2_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_2') as mw.Image
-		}
-		return this.mIconThum_1_2_Internal
-	}
-	private mIconThum_1_3_Internal: mw.Image
-	public get mIconThum_1_3(): mw.Image {
-		if(!this.mIconThum_1_3_Internal&&this.uiWidgetBase) {
-			this.mIconThum_1_3_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_3') as mw.Image
-		}
-		return this.mIconThum_1_3_Internal
-	}
-	private mIconThum_1_4_Internal: mw.Image
-	public get mIconThum_1_4(): mw.Image {
-		if(!this.mIconThum_1_4_Internal&&this.uiWidgetBase) {
-			this.mIconThum_1_4_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_4') as mw.Image
-		}
-		return this.mIconThum_1_4_Internal
-	}
-	private mIconThum_1_5_Internal: mw.Image
-	public get mIconThum_1_5(): mw.Image {
-		if(!this.mIconThum_1_5_Internal&&this.uiWidgetBase) {
-			this.mIconThum_1_5_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_5') as mw.Image
-		}
-		return this.mIconThum_1_5_Internal
-	}
-	private mIconThum_1_6_Internal: mw.Image
-	public get mIconThum_1_6(): mw.Image {
-		if(!this.mIconThum_1_6_Internal&&this.uiWidgetBase) {
-			this.mIconThum_1_6_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_6') as mw.Image
-		}
-		return this.mIconThum_1_6_Internal
-	}
-	private mIconThum_1_7_Internal: mw.Image
-	public get mIconThum_1_7(): mw.Image {
-		if(!this.mIconThum_1_7_Internal&&this.uiWidgetBase) {
-			this.mIconThum_1_7_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_7') as mw.Image
-		}
-		return this.mIconThum_1_7_Internal
 	}
 	private infoCanvas_Internal: mw.Canvas
 	public get infoCanvas(): mw.Canvas {
@@ -164,19 +108,12 @@ export default class BagMain_Generate extends UIScript {
 		}
 		return this.mDesc_Internal
 	}
-	private mBtnOpt1_2_Internal: mw.StaleButton
-	public get mBtnOpt1_2(): mw.StaleButton {
-		if(!this.mBtnOpt1_2_Internal&&this.uiWidgetBase) {
-			this.mBtnOpt1_2_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/mBtnOpt1_2') as mw.StaleButton
+	private mBtnOpt_Internal: mw.StaleButton
+	public get mBtnOpt(): mw.StaleButton {
+		if(!this.mBtnOpt_Internal&&this.uiWidgetBase) {
+			this.mBtnOpt_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/mBtnOpt') as mw.StaleButton
 		}
-		return this.mBtnOpt1_2_Internal
-	}
-	private mBtnOpt1_1_Internal: mw.StaleButton
-	public get mBtnOpt1_1(): mw.StaleButton {
-		if(!this.mBtnOpt1_1_Internal&&this.uiWidgetBase) {
-			this.mBtnOpt1_1_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/mBtnOpt1_1') as mw.StaleButton
-		}
-		return this.mBtnOpt1_1_Internal
+		return this.mBtnOpt_Internal
 	}
 	private mBtnClose_Internal: mw.StaleButton
 	public get mBtnClose(): mw.StaleButton {
