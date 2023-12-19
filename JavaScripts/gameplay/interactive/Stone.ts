@@ -91,7 +91,8 @@ export default class Stone extends PickableItem {
                 this.resetGameObject();
             }
 
-        }, 1000)
+        }, 1000);
+
     }
 
     private clearDelayCheck() {

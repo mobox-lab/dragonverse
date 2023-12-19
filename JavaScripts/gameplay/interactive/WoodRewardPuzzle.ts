@@ -1,3 +1,4 @@
+import AudioController from "../../controller/audio/AudioController";
 import { Puzzle } from "./Puzzle";
 
 
@@ -113,6 +114,9 @@ export default class WoodRewardPuzzle extends Puzzle {
         }
         this._isOpened = value;
 
+        if (this._isOpened) {
+            AudioController.getInstance().play(7, this.gameObject);
+        }
 
     }
 

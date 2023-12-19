@@ -1,3 +1,4 @@
+import AudioController from "../../controller/audio/AudioController";
 import { KeyItemPuzzle } from "./KeyItemPuzzel";
 
 
@@ -71,6 +72,8 @@ export default class StoneItemPuzzle extends KeyItemPuzzle {
                 position: end
             },).setTag("putan")
                 .start();
+
+            AudioController.getInstance().play(6);
         } else {
 
 
