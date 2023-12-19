@@ -164,6 +164,27 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.cnvOperationalFeedback_Internal
 	}
+	private txtOperationFeedback_Internal: mw.TextBlock
+	public get txtOperationFeedback(): mw.TextBlock {
+		if(!this.txtOperationFeedback_Internal&&this.uiWidgetBase) {
+			this.txtOperationFeedback_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback/txtOperationFeedback') as mw.TextBlock
+		}
+		return this.txtOperationFeedback_Internal
+	}
+	private imgOperationSuccess_Internal: mw.Image
+	public get imgOperationSuccess(): mw.Image {
+		if(!this.imgOperationSuccess_Internal&&this.uiWidgetBase) {
+			this.imgOperationSuccess_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback/imgOperationSuccess') as mw.Image
+		}
+		return this.imgOperationSuccess_Internal
+	}
+	private imgOperationFail_Internal: mw.Image
+	public get imgOperationFail(): mw.Image {
+		if(!this.imgOperationFail_Internal&&this.uiWidgetBase) {
+			this.imgOperationFail_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback/imgOperationFail') as mw.Image
+		}
+		return this.imgOperationFail_Internal
+	}
 
 
  

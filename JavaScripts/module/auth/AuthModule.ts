@@ -157,7 +157,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 
     private _lastVerifyCodeTime: number = null;
 
-    private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
+    // private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
 
     private _codeVerityGuard: RequestGuard = new RequestGuard();
 
@@ -183,7 +183,8 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
 
-        if (this._patrolRegulator.ready()) this.patrol();
+        //改到服务端处理，减少rpc调用
+        // if (this._patrolRegulator.ready()) this.patrol();
     }
 
     protected onEnterScene(sceneType: number): void {
@@ -385,16 +386,18 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     /**
      * 测试用 Code 验证 Url.
      */
-    private static readonly TEST_CODE_VERIFY_URL = "https://platform-api-test.p12.games";
+    private static readonly TEST_CODE_VERIFY_URL = "https://platform-api-test.p12.games/modragon/code/status";
 
     /**
      * 发布用 Code 验证 Url.
      */
-    private static readonly RELEASE_CODE_VERIFY_URL = "https://platform-api.p12.games";
+    private static readonly RELEASE_CODE_VERIFY_URL = "https://platform-api.p12.games/modragon/code/status";
 
     private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
 
     private static readonly CODE_VERIFY_AES_IV = this.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+
+    private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
 
     /**
      * encrypt token with time salt.
@@ -455,6 +458,13 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
+
+        //定时检测
+        if (this._patrolRegulator.ready()) {
+            Player.getAllPlayers().forEach(player => {
+                this.checkPlayerEnterEnable(player.playerId);
+            });
+        }
     }
 
     protected onDestroy(): void {
@@ -533,15 +543,24 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             userId: uid,
         };
 
+        const url = `${GameStart.instance.isRelease ?
+            AuthModuleS.RELEASE_CODE_VERIFY_URL :
+            AuthModuleS.TEST_CODE_VERIFY_URL}`;
+        console.log(url);
         const resp = await fetch(`${GameStart.instance.isRelease ?
             AuthModuleS.RELEASE_CODE_VERIFY_URL :
             AuthModuleS.TEST_CODE_VERIFY_URL}`,
             {
                 method: "POST",
+                headers: {
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
                 body: JSON.stringify(body),
             });
 
-        return (await resp.json<CodeVerifyResponse>()).data;
+        const respInJson = await resp.json<CodeVerifyResponse>();
+        return (respInJson?.code ?? null) === 200;
+        // return respInJson?.data ?? false;
     }
 
     /**
@@ -726,6 +745,22 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         this.reportSubGameInfo(this.currentPlayerId, subGameType, duration);
     }
 
+    /** 
+     * @description: 检测玩家是否有准入权限，没有且不在新手村就归位
+     * @param playerId 玩家id
+     */
+    private checkPlayerEnterEnable(playerId: number) {
+        if (this.getPlayerData(playerId).enterEnable) return;
+
+        //判断在不在新手村，不在就归位
+        let trigger = GameObject.findGameObjectByName("beginnerChecker") as Trigger;
+        let player = Player.getPlayer(playerId);
+        if (trigger && player) {
+            if (!trigger.checkInArea(player.character)) {
+                player.character.worldTransform.position = trigger.worldTransform.position;
+            }
+        }
+    }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 

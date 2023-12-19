@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 需求分析及设计文档
 
-v1.0.6  
+v1.0.7  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -410,6 +410,24 @@ UNKNOWN INCLUDE ALL.
 ### 行为树
 
 行为树模块，用于定义可复用 AI。
+
+动态切换
+
+- 采集。相关的动态组件默认全部隐藏.
+
+  - 采集成功时: MainPanel 界面的图片控件 OperationSuccessful 显示出来，文本控件 OperationalFeedback 显示的文字内容为 Collection_002。1 秒后开始渐隐，至 1.5 秒完全透明并消失。
+  - 采集失败时: MainPanel 界面的图片控件 OperationFailed 显示出来，文本控件 OperationalFeedback 显示的文字内容为 Collection_003，1 秒后开始渐隐，至 1.5 秒完全透明并消失。
+
+- 捕捉龙娘。相关的动态组件默认全部隐藏。
+
+  - 捕捉成功时: MainPanel 界面的图片控件 OperationSuccesful 显示出来，文本控件 OperationalFeedback 显示的文字内容为 Catch_002。1 秒后开始渐隐，至 1.5 秒完全透明并消失。
+  - 捕捉失败时: MainPanel 界面的图片控件 OperationFailed 显示出来，文本控件 OperationalFeedback 显示的文字内容为 Catch_003。1 秒后开始渐隐，至 1.5 秒完全透明并消失。
+  - 按下捕捉按钮指针停在黄色焦点区域时: 飘字提示 Catch_005，飘字表现效果待美术同事上传。
+  - 按下捕捉按钮指针停在非黄色焦点区域时:飘字提示 Catch_006，飘字表现效果待美术同事上传。
+
+- 龙娘跟随状态切换。在没有选中龙娘的情况下，相关的动态组件默认全部隐藏。
+  - 若选中的龙娘已经是跟随状态，则“休息"按钮显示，"跟随“按钮保持隐藏。即 BagMain 界面的 mtnOpt1_2 按钮(文本为 Bag_005)显示 mBtnOpt1_1 按钮(文本为 Bag_004)隐藏。
+  - 若选中的龙娘是休息状态，则"跟随”按纽显示，"休息”按钮保持隐藏。即 BaqMain 界面的 mBtnOpt1 1 按钮(文本为 Bag_004)显示，mBtnOpt1_2 按钮(文本为 Bag_005)隐藏。
 
 [JetbrainsMonoNerdFont]: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip@fallbackFont
 [SarasaMonoSC]: https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z

@@ -204,7 +204,7 @@ export default class NpcBehavior extends mw.Script {
      */
     public showNpcAction(actionId: number, npcId: number) {
         this.stopNpcAction();
-        if (this._config.id === npcId) {
+        if (this._config.characterId === npcId) {
             let config = GameConfig.NPCAction.getElement(actionId);
             if (config.type === 1) {
                 this._currentAni = this._npcCharacter.loadAnimation(config.actionGuid);
