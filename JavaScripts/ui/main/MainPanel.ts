@@ -71,18 +71,6 @@ export default class MainPanel extends MainPanel_Generate {
             }
         });
 
-        this.btnCode.onClicked.add(() => {
-            UIService.show(CodeVerifyPanel);
-        });
-
-        ModuleService.ready().then(() => {
-            let res = ModuleService.getModule(AuthModuleC).canEnterGame();
-            if (!res) {
-                this.cnvDragonBall.visibility = SlateVisibility.Hidden;
-            } else {
-                this.btnCode.visibility = SlateVisibility.Hidden;
-            }
-        });
 
         this.btnBag.onPressed.add(showBag);
         this.btnBook.onPressed.add(showHandbook);
@@ -100,19 +88,7 @@ export default class MainPanel extends MainPanel_Generate {
         this._progressTask.onDone.add((param) => {
             if (param) return;
             this.onProgressDone();
-        });
 
-        this.btnCode.onClicked.add(() => {
-            UIService.show(CodeVerifyPanel);
-        });
-
-        ModuleService.ready().then(() => {
-            let res = ModuleService.getModule(AuthModuleC).canEnterGame();
-            if (!res) {
-                this.cnvDragonBall.visibility = SlateVisibility.Hidden;
-            } else {
-                this.btnCode.visibility = SlateVisibility.Hidden;
-            }
         });
 
         this._pointerTask =
@@ -139,6 +115,8 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, this.onPlayerEndCatch));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatchSuccess, this.onPlayerEndCatch));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatchFail, this.onPlayerEndCatch));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -166,9 +144,9 @@ export default class MainPanel extends MainPanel_Generate {
      * 注意：这之后UI对象已经被销毁了，需要移除所有对该文件和UI相关对象以及子对象的引用
      */
     protected onDestroy() {
-//#region Event Unsubscribe
+        //#region Event Unsubscribe
         this._eventListeners.forEach(value => value.disconnect());
-//#endregion ------------------------------------------------------------------------------------------
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     /**
@@ -386,6 +364,13 @@ export default class MainPanel extends MainPanel_Generate {
         this.endCatch();
     };
 
+    private onEnablePlayerEnter() {
+        this.btnCode.visibility = SlateVisibility.Hidden;
+    }
+
+    private onDisablePlayerEnter() {
+        this.cnvDragonBall.visibility = SlateVisibility.Hidden;
+    }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -398,5 +383,6 @@ function showHandbook() {
 }
 
 function showCode() {
-//TODO_LviatYi Show Code 验证页面.
+    //TODO_LviatYi Show Code 验证页面.
+    UIService.show(CodeVerifyPanel);
 }
