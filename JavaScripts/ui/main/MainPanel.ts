@@ -85,6 +85,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnBook.onPressed.add(showHandbook);
         this.btnCode.onPressed.add(showCode);
         this.btnDragonBall.onPressed.add(this.onCatchClick);
+
         this._progressTask =
             Waterween
                 .to(
@@ -102,8 +103,8 @@ export default class MainPanel extends MainPanel_Generate {
         this._progressShowTask =
             Waterween
                 .to(
-                    () => this.cnvDragonBall.renderOpacity,
-                    (val) => this.cnvDragonBall.renderOpacity = val,
+                    () => this.cnvProgressBar.renderOpacity,
+                    (val) => this.cnvProgressBar.renderOpacity = val,
                     1,
                     0.5e3,
                     0,
@@ -120,9 +121,6 @@ export default class MainPanel extends MainPanel_Generate {
                 )
                 .restart(true)
                 .pingPong();
-        this.btnCode.onClicked.add(() => {
-            UIService.show(CodeVerifyPanel);
-        });
 
         ModuleService.ready().then(() => {
             let res = ModuleService.getModule(AuthModuleC).canEnterGame();
@@ -275,7 +273,6 @@ export default class MainPanel extends MainPanel_Generate {
 
     //#region Init
     public init() {
-        GToolkit.trySetVisibility(this.cnvProgressBar, false);
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
         UIService.hideUI(this._promptPanel);
 
@@ -335,6 +332,7 @@ export default class MainPanel extends MainPanel_Generate {
      * 待捕捉态.
      */
     public prepareCatch() {
+        this.btnDragonBall.enable = true;
         GToolkit.trySetVisibility(this.cnvDragonBall, true);
         this._pointerTask.restart();
     }
@@ -345,6 +343,7 @@ export default class MainPanel extends MainPanel_Generate {
     public tryCatch() {
         this._pointerTask.pause();
         this.sceneDragonModule?.tryCatch();
+        this.playProgress();
     }
 
     /**
@@ -355,6 +354,7 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     public playProgress() {
+        this._progressShowTask.forward();
         this._progressTask.restart();
     }
 
@@ -366,20 +366,23 @@ export default class MainPanel extends MainPanel_Generate {
     };
 
     private onCatchClick = () => {
+        this.btnDragonBall.enable = false;
         this.tryCatch();
     };
 
     private onPlayerTryCatch = () => {
+        Log4Ts.log(MainPanel, `try catch`);
         this.prepareCatch();
     };
 
     private onPlayerEndCatch = () => {
+        Log4Ts.log(MainPanel, `end catch`);
         this.endCatch();
     };
 
     private onProgressDone = () => {
         this._progressShowTask.backward();
-        const result = GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
+        const result = !GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
         Log4Ts.log(MainPanel, `catch result: ${result}`);
         if (result) {
             GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);

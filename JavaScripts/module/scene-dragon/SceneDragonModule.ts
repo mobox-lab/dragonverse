@@ -182,7 +182,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 this.unlockWithView();
             },
             GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION);
-        if (!isSame) Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        if (!isSame) {
+            Log4Ts.log(SceneDragonModuleC, `dispatch on lock event.`);
+            Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        }
     }
 
     /**
@@ -209,6 +212,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         }
 
         Log4Ts.log(SceneDragonModuleC, `catch success. last collect count: ${item.hitPoint}`);
+        this.keepLockWithView();
         this.server.net_tryCatch(syncKey).then(
             (value) => {
                 if (value) {
@@ -239,6 +243,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             Log4Ts.warn(SceneDragonModuleC, `item un catchable. waiting for delete.`);
             return;
         }
+
+        this.unlockWithView();
         item.catch();
         this.server.net_acceptCatch(this._currentCatchResultSyncKey);
         this._currentCatchResultSyncKey = null;
@@ -272,7 +278,15 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     }
 
     private unlockWithView() {
+        this._lockingSyncKey = null;
         Event.dispatchToLocal(EventDefine.DragonOnUnlock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        if (this._lockTimerId) {
+            clearTimeout(this._lockTimerId);
+            this._lockTimerId = null;
+        }
+    }
+
+    private keepLockWithView() {
         if (this._lockTimerId) {
             clearTimeout(this._lockTimerId);
             this._lockTimerId = null;
