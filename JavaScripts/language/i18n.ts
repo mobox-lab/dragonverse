@@ -47,6 +47,8 @@ let languageDefault = {
 
     TinyGameLanKey0002: "放下",
 
+    TinyGameLanKey0003: "喷火",
+
     verifyCodeTooFrequently: "Code verify request too frequently.",
     verifyCodeFail: "Verification failed, please try again!",
     isVerifying: "Verifying now, please wait."

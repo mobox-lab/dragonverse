@@ -65,9 +65,10 @@ export default class Stone extends PickableItem {
         this._stance.play();
 
         gameObject.attachToSlot(this.gameObject, this.slotName);
-
         (this.gameObject as mw.Model).setCollision(mw.CollisionStatus.QueryOnly);
         this.gameObject.localTransform.position = this.slotOffset;
+        this.gameObject.localTransform.rotation = mw.Rotation.zero;
+        this.gameObject.localTransform.scale = mw.Vector.one;
     }
 
     protected onBeenLand(): void {
@@ -90,7 +91,8 @@ export default class Stone extends PickableItem {
                 this.resetGameObject();
             }
 
-        }, 1000)
+        }, 1000);
+
     }
 
     private clearDelayCheck() {
