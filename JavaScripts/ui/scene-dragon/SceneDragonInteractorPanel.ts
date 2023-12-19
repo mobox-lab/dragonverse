@@ -9,9 +9,19 @@ import Character = mw.Character;
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Regulator from "../../depend/regulator/Regulator";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { EventDefine } from "../../const/EventDefine";
+
+/**
+ * 玩家锁定 场景龙.
+ */
+export interface DragonSyncKeyEventArgs {
+    syncKey: string;
+}
 
 export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
 //#region Member
+    private _eventListeners: EventListener[] = [];
+
     public syncKey: string;
 
     public behavior: SceneDragonBehavior;
@@ -67,6 +77,9 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
 
     protected onDestroy() {
         Log4Ts.log(SceneDragonInteractorPanel, `destroyed`);
+//#region Event Unsubscribe
+        this._eventListeners.forEach(value => value.disconnect());
+//#endregion ------------------------------------------------------------------------------------------
         this._activityBehavior.destroy();
     }
 
@@ -77,9 +90,7 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
         this.syncKey = syncKey;
         this.behavior = this._module.syncItemMap.get(this.syncKey).behavior;
         this._obj = this._module.syncItemMap.get(this.syncKey).object;
-        this.btnCatch.onClicked.add(() => {
-            this._module.catch(this.syncKey);
-        });
+        this.btnCatch.onClicked.add(this.lockOnMe);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -138,6 +149,10 @@ export class SceneDragonInteractorPanel extends SceneDragonPanel_Generate {
     private get currentDistanceSqr() {
         return Vector.squaredDistance(this.behavior.gameObject.worldTransform.position, this._character.worldTransform.position);
     }
+
+    private lockOnMe = () => {
+        this._module.lock(this.syncKey);
+    };
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
