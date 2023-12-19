@@ -10,6 +10,8 @@ import GlobalPromptPanel from "./GlobalPromptPanel";
 import AccountService = mw.AccountService;
 import Waterween from "../../depend/waterween/Waterween";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import CodeVerifyPanel from "../auth/CodeVerifyPanel";
+import { AuthModuleC } from "../../module/auth/AuthModule";
 
 /**
  * 主界面 全局提示 参数.
@@ -84,6 +86,19 @@ export default class MainPanel extends MainPanel_Generate {
         this._progressTask.onDone.add((param) => {
             if (param) return;
             this.onProgressDone();
+
+        });
+        this.btnCode.onClicked.add(() => {
+            UIService.show(CodeVerifyPanel);
+        });
+
+        ModuleService.ready().then(() => {
+            let res = ModuleService.getModule(AuthModuleC).canEnterGame();
+            if (!res) {
+                this.cnvDragonBall.visibility = SlateVisibility.Hidden;
+            } else {
+                this.btnCode.visibility = SlateVisibility.Hidden;
+            }
         });
 
         this._pointerTask =
