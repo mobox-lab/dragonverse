@@ -47,6 +47,11 @@ export default class GameServiceConfig {
 
 //#region Scene Dragon
     /**
+     * 场景龙 最长准备捕捉时间.
+     */
+    public static readonly SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION = 8e3;
+
+    /**
      * 场景龙 最远存活距离.
      */
     public static readonly SCENE_DRAGON_MAX_LIVE_DISTANCE = 100000;

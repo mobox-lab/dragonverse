@@ -1,3 +1,4 @@
+import AudioController from "../../controller/audio/AudioController";
 import { RoleModuleC } from "../../module/role/RoleModule";
 
 /**
@@ -61,6 +62,7 @@ export default class MushRoom extends mw.Script {
     private onEnter = (obj: mw.GameObject) => {
         if (obj instanceof mw.Character) {
             if (obj === Player.localPlayer.character) {
+                AudioController.getInstance().play(9);
                 ModuleService
                     .getModule(RoleModuleC)
                     .controller

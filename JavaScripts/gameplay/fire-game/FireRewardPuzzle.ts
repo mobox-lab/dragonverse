@@ -4,6 +4,7 @@ import { Delegate } from "../../depend/delegate/Delegate";
 import SimpleDelegate = Delegate.SimpleDelegate;
 import { GameConfig } from "../../config/GameConfig";
 import { QuestStateEnum } from "../../module/quest/Config";
+import AudioController from "../../controller/audio/AudioController";
 
 /**
  * 火龙任务 奖励谜题.
@@ -22,6 +23,17 @@ export default class FireRewardPuzzle extends Puzzle {
     @mw.Property({displayName: "播放的特效"})
     public effectId: string = "14329";
 
+    @mw.Property({displayName: "是否 相对坐标", tooltip: "偏移将基于根节点."})
+    public isEffectPlayerLocationRelative: boolean = true;
+
+    @mw.Property({displayName: "特效位置", tooltip: "若使用相对坐标 坐标偏移将基于根节点."})
+    public effectPlayerLocation: Vector = Vector.zero;
+
+    @mw.Property({displayName: "特效缩放"})
+    public effectScale: Vector = Vector.one;
+
+    private _unlockSoundId: number;
+
     private _isOpened: boolean = false;
 
     private _trigger: mw.Trigger;
@@ -36,6 +48,10 @@ export default class FireRewardPuzzle extends Puzzle {
         super.setup(lockState);
         this._isOpened = isOpened;
         this.onStart();
+    }
+
+    public initSound(unlockSoundId: number) {
+        this._unlockSoundId = unlockSoundId;
     }
 
     public get isOpened() {
@@ -83,7 +99,14 @@ export default class FireRewardPuzzle extends Puzzle {
     }
 
     private doGetAnimation() {
-        mw.EffectService.playAtPosition(this.effectId, this.gameObject.worldTransform.position);
+        AudioController.getInstance().play(this._unlockSoundId);
+        mw.EffectService.playAtPosition(this.effectId,
+            this.isEffectPlayerLocationRelative ?
+                this.gameObject.worldTransform.position.clone().add(this.effectPlayerLocation) :
+                this.effectPlayerLocation,
+            {
+                scale: this.effectScale,
+            });
     }
 
     public updateProgress(taskId: number, progress: number) {

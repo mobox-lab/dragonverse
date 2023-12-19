@@ -2,16 +2,19 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-18 13:45:02
+ * @LastEditTime : 2023-12-19 13:19:46
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
 
 import { EventDefine } from "../../const/EventDefine";
+import AudioController, { SoundIDEnum } from "../../controller/audio/AudioController";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import i18n from "../../language/i18n";
 import { CompanionHelper } from "../../module/companion/CompanionHelper";
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 import { QuestModuleC } from "../../module/quest/QuestModuleC";
+import { ProximityPrompts } from "../../ui/common/ProximityPrompts";
 
 @Component
 export default class CloudEffect extends mw.Script {
@@ -23,8 +26,6 @@ export default class CloudEffect extends mw.Script {
     private _startPoint: GameObject;
     private _endPoint: GameObject;
     private _trigger: Trigger;
-    private _isInCloudsRange: boolean = false;
-    private _isFiring: boolean = false;
 
 
     protected onStart(): void {
@@ -45,13 +46,21 @@ export default class CloudEffect extends mw.Script {
         this._trigger.onEnter.add((go) => {
             if (((go) instanceof mw.Character) && go.player.playerId === Player.localPlayer.playerId) {
                 Log4Ts.log(this, "进入云朵区域");
-                this._isInCloudsRange = true;
+
+                // let id = ModuleService.getModule(CompanionModule_C).getCurrentShowupBagId();
+                // if (id == null) return;
+                // let type = CompanionHelper.getCompanionType(id);
+                // if (!type && type !== CompanionHelper.DragonType.Fire) return;
+
+                if (this.getCanDestroyClouds()) {
+                    this.showFireBtn();
+                }
             }
         });
         this._trigger.onLeave.add((go) => {
             if (((go) instanceof mw.Character) && go.player.playerId === Player.localPlayer.playerId) {
                 Log4Ts.log(this, "离开云朵区域");
-                this._isInCloudsRange = false;
+                ProximityPrompts.close();
             }
         });
 
@@ -96,37 +105,6 @@ export default class CloudEffect extends mw.Script {
                 obj.localTransform.position = new Vector(pos + speed, obj.localTransform.position.y, obj.localTransform.position.z);
             }
         });
-
-        if (this._isInCloudsRange && !this._isFiring) {
-            // let id = ModuleService.getModule(CompanionModule_C).getCurrentShowupBagId();
-            // if (id == null) return;
-            // let type = CompanionHelper.getCompanionType(id);
-            // if (!type && type !== CompanionHelper.DragonType.Fire) return;
-
-            this._isFiring = true;
-
-            let anchorGuid = this.getCanDestroyClouds();
-            if (!anchorGuid) return;
-            SoundService.playSound("162446");
-            SoundService.playSound("201831");
-            GameObject.asyncSpawn("160357", {
-                replicates: false,
-                transform: new Transform(Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)),
-                    Player.localPlayer.character.worldTransform.rotation,
-                    Vector.one)
-            }).then((go) => {
-                // (go as Effect).play();
-                let target = GameObject.findGameObjectById(anchorGuid).getChildren()[0];
-                new Tween(go.worldTransform.position.clone()).to(target.worldTransform.position.clone(), 1000).onUpdate((pos) => {
-                    go.worldTransform.position = pos;
-                }).onComplete(() => {
-                    EffectService.playAtPosition("89080", target.worldTransform.position, { loopCount: 1 });
-                    (go as Effect).forceStop();
-                    this.destroyClouds(anchorGuid);
-                    this._isFiring = false;
-                }).start();
-            });
-        }
     }
 
 
@@ -173,5 +151,39 @@ export default class CloudEffect extends mw.Script {
             });
             this._cloudsParents.splice(this._cloudsParents.indexOf(cloudsParent), 1);
         }
+    }
+
+    private showFireBtn() {
+        ProximityPrompts.show([{
+            keyBoard: "F",
+            text: i18n.lan('TinyGameLanKey0003'),
+            enabled: true,
+            onSelected: () => {
+                let anchorGuid = this.getCanDestroyClouds();
+                if (!anchorGuid) return;
+
+                let target = GameObject.findGameObjectById(anchorGuid).getChildren()[0];
+                AudioController.getInstance().play(SoundIDEnum.shootFireball, Player.localPlayer.character);
+                AudioController.getInstance().play(SoundIDEnum.hitCloud, target);
+                GameObject.asyncSpawn("160357", {
+                    replicates: false,
+                    transform: new Transform(Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)),
+                        Player.localPlayer.character.worldTransform.rotation,
+                        Vector.one)
+                }).then((go) => {
+                    new Tween(go.worldTransform.position.clone()).to(target.worldTransform.position.clone(), 1000).onUpdate((pos) => {
+                        go.worldTransform.position = pos;
+                    }).onComplete(() => {
+                        EffectService.playAtPosition("89080", target.worldTransform.position, { loopCount: 1 });
+                        (go as Effect).forceStop();
+                        this.destroyClouds(anchorGuid);
+                        if (this.getCanDestroyClouds()) {
+                            //如果还有云朵，继续显示按钮
+                            this.showFireBtn();
+                        }
+                    }).start();
+                });
+            }
+        }]);
     }
 }

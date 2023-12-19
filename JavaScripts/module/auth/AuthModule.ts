@@ -1,7 +1,4 @@
 import GToolkit, { Expression, TimeFormatDimensionFlags } from "../../util/GToolkit";
-import ModuleS = mwext.ModuleS;
-import ModuleC = mwext.ModuleC;
-import SubData = mwext.Subdata;
 import { EventDefine } from "../../const/EventDefine";
 import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
 import GameStart from "../../GameStart";
@@ -9,8 +6,12 @@ import CryptoJS from "crypto-js";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Regulator from "../../depend/regulator/Regulator";
 import FixedQueue from "../../depend/queue/FixedQueue";
-import noReply = mwext.Decorator.noReply;
 import { SubGameTypes } from "../../const/SubGameTypes";
+import i18n from "../../language/i18n";
+import ModuleS = mwext.ModuleS;
+import ModuleC = mwext.ModuleC;
+import SubData = mwext.Subdata;
+import noReply = mwext.Decorator.noReply;
 
 /**
  * Salt Token.
@@ -78,9 +79,21 @@ export default class AuthModuleData extends SubData {
     public codeVerifyReqData: number[] = [];
 }
 
+/**
+ * 请求频率守卫.
+ *
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+ */
 class RequestGuard {
     private _q: FixedQueue<number> = new FixedQueue<number>(GameServiceConfig.DAILY_MAX_TRIAL_COUNT);
-    private _p: number = 0;
+    private _p: number = -1;
 
     public req(time: number = undefined): boolean {
         const now = time ?? Date.now();
@@ -89,16 +102,16 @@ class RequestGuard {
             return false;
         }
 
-        this._q.shiftAll(item => now - item > GToolkit.timeConvert(1, TimeFormatDimensionFlags.Day, TimeFormatDimensionFlags.Millisecond));
+        this._p -= this._q.shiftAll(item => now - item > GToolkit.timeConvert(1, TimeFormatDimensionFlags.Day, TimeFormatDimensionFlags.Millisecond));
+        let p = this._p;
         while (true) {
-            const item = this._q.get(this._p);
-            if (item === null || now - item < GToolkit.timeConvert(1, TimeFormatDimensionFlags.Hour, TimeFormatDimensionFlags.Millisecond)) break;
-            ++this._p;
+            const item = this._q.get(++p);
+            if (item === null || now - item <= GToolkit.timeConvert(1, TimeFormatDimensionFlags.Hour, TimeFormatDimensionFlags.Millisecond)) break;
         }
+        this._p = p - 1;
 
-        if (this._q.empty() || this._q.length - this._p < GameServiceConfig.HOUR_MAX_TRIAL_COUNT) {
+        if (this._q.length - this._p - 1 < 3) {
             this._q.push(time);
-            ++this._p;
             return true;
         }
 
@@ -139,7 +152,7 @@ class RequestGuard {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
-//#region Member
+    //#region Member
     private _originToken: string = null;
 
     private _lastVerifyCodeTime: number = null;
@@ -150,9 +163,9 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 
     private _lastSubGameReportTime: number = 0;
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region MetaWorld Event
+    //#region MetaWorld Event
     protected onAwake(): void {
         super.onAwake();
     }
@@ -160,11 +173,11 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     protected onStart(): void {
         super.onStart();
 
-//#region Member init
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#region Member init
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Event Subscribe
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#region Event Subscribe
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
     protected onUpdate(dt: number): void {
@@ -179,23 +192,28 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
         this.server.net_getToken().then((value) => {
             this._originToken = value;
         });
-        if (this.data.enterEnable) this.releasePlayer();
+        if (this.data.enterEnable) {
+            this.releasePlayer();
+        } else {
+            this.forbiddenPlayer();
+        }
+
     }
 
     protected onDestroy(): void {
         super.onDestroy();
-//#region Event Unsubscribe
+        //#region Event Unsubscribe
         //TODO_LviatYi 
-//#endregion ------------------------------------------------------------------------------------------
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onExecute(type: number, ...params: any[]): void {
         super.onExecute(type, ...params);
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Method
+    //#region Method
     /**
      * 验证 Code.
      * @param code
@@ -214,14 +232,15 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 
         if (this.isVerifyCodeRunning()) {
             Log4Ts.log(
-                undefined,
+                AuthModuleC,
                 `player is verifying code.`);
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("isVerifying")});
             return;
         }
 
         if (this.data.enterEnable) {
             Log4Ts.log(
-                undefined,
+                AuthModuleC,
                 `player already enable enter.`,
                 `try patrol in server.`);
 
@@ -235,7 +254,8 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             this._lastVerifyCodeTime = now;
             this.server.net_verifyCode(this.generateSaltToken(), code);
         } else {
-            Log4Ts.warn(undefined, `code verify request too frequently.`);
+            Log4Ts.warn(AuthModuleC, `code verify request too frequently.`);
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeTooFrequently")});
         }
     }
 
@@ -273,6 +293,18 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     }
 
     /**
+     * @description: 玩家禁止进入
+     */
+    private forbiddenPlayer() {
+        logState(
+            AuthModuleC,
+            "log",
+            `release player. enjoy!`,
+            true, Player.localPlayer.playerId);
+        Event.dispatchToLocal(EventDefine.PlayerDisableEnter);
+    }
+
+    /**
      * 巡逻.
      */
     public patrol() {
@@ -303,11 +335,12 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
         }
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Net Method
+    //#region Net Method
     public net_verifyFail() {
         this._lastVerifyCodeTime = null;
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeFail")});
     }
 
     public net_enableEnter() {
@@ -325,11 +358,23 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
         this.releasePlayer();
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    /**
+     * 是否 通过验证.
+     */
+    public canEnterGame(): boolean {
+        let res = this.data.enterEnable;
+        if (res) {
+            //去服务端校验一下，不一样会踢下线
+            this.patrol();
+        }
+        return res;
+    }
+
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
-//#region Constant
+    //#region Constant
     /**
      * 验证时间容差.
      * 容差范围内的时间允许通过验证.
@@ -385,15 +430,15 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         return timeStr === saltTime.toString() ? token : null;
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Member
+    //#region Member
     private _codeVerifyMap: Map<number, RequestGuard> = new Map<number, RequestGuard>();
 
     private _subGameReportMap: Map<number, number> = new Map<number, number>();
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region MetaWorld Event
+    //#region MetaWorld Event
     protected onAwake(): void {
         super.onAwake();
     }
@@ -401,11 +446,11 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     protected onStart(): void {
         super.onStart();
 
-//#region Member init     
-//#endregion ------------------------------------------------------------------------------------------ 
+        //#region Member init     
+        //#endregion ------------------------------------------------------------------------------------------ 
 
-//#region Event Subscribe
-//#endregion ------------------------------------------------------------------------------------------
+        //#region Event Subscribe
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onUpdate(dt: number): void {
@@ -414,9 +459,9 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     protected onDestroy(): void {
         super.onDestroy();
-//#region Event Unsubscribe
+        //#region Event Unsubscribe
         //TODO_LviatYi 
-//#endregion ------------------------------------------------------------------------------------------
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onExecute(type: number, ...params: any[]): void {
@@ -446,9 +491,9 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         super.onPlayerJoined(player);
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Method
+    //#region Method
     private timeVerify(reqTime: number): boolean {
         const serverNow = Date.now();
         return Math.abs(serverNow - reqTime) < AuthModuleS.TIME_TOLERATE;
@@ -465,7 +510,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             return false;
         }
 
-//TODO_LviatYi 与现存 token 进行比对.
+        //TODO_LviatYi 与现存 token 进行比对.
         return true;
     }
 
@@ -543,9 +588,9 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         }
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Net Method
+    //#region Net Method
     public net_getToken(): Promise<string> {
         const playerId = this.currentPlayerId;
         const uid = this.currentPlayer.userId;
@@ -682,7 +727,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         this.reportSubGameInfo(this.currentPlayerId, subGameType, duration);
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 function logState(

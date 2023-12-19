@@ -52,4 +52,9 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
             mwext.ModuleService.getModule(BagModuleS).addItem(playerId, bagId, count);
         }
     }
+
+    public net_UpdateRunningGameScore(score: number) {
+        this.currentData.updateRunningGameScore(score);
+        this.currentData.save(false);
+    }
 }

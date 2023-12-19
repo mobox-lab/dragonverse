@@ -8,6 +8,8 @@ import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
 import GameObject = mw.GameObject;
 import FunctionOption = mw.FunctionOption;
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
+import { EventDefine } from "../../const/EventDefine";
+import { AuthModuleC, AuthModuleS } from "../../module/auth/AuthModule";
 
 /**
  * GM.
@@ -42,6 +44,11 @@ AddGMCommand("Hello world", () => {
 },
     null,
     "CHello");
+AddGMCommand("Prompt", () => {
+    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: "Hello world" });
+},
+    null,
+    "MainPanel");
 
 AddGMCommand("返回出生点",
     null,
@@ -73,7 +80,6 @@ AddGMCommand("输出当前角色旋转",
     "探针");
 
 
-
 AddGMCommand("设置宠物为参战(输入bagId)",
     (player, index: string) => {
         let module = mwext.ModuleService.getModule(CompanionModule_C);
@@ -83,7 +89,6 @@ AddGMCommand("设置宠物为参战(输入bagId)",
 
     },
     "宠物龙");
-
 
 
 AddGMCommand("增加物品",
@@ -105,3 +110,11 @@ AddGMCommand("进入对话",
     undefined,
     "对话");
 
+AddGMCommand("通过验证", (player, value) => {
+
+    ModuleService.getModule(AuthModuleC).net_enableEnter();
+
+}, (player) => {
+    ModuleService.getModule(AuthModuleS).recordPlayer(player);
+
+})
