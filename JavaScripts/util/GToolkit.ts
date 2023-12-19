@@ -15,7 +15,7 @@ import Log4Ts, { Announcer, DebugLevels, LogString } from "../depend/log4ts/Log4
  * @author minjia.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.9.0b
+ * @version 0.9.1b
  * @alpha
  */
 class GToolkit {
@@ -525,8 +525,9 @@ class GToolkit {
         if (from === to) {
             return val;
         }
-        if (this.hammingWeight(from) > 0 || this.hammingWeight(to) > 0) {
+        if (this.hammingWeight(from) !== 1 || this.hammingWeight(to) !== 1) {
             Log4Ts.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
+            return null;
         }
 
         if (
@@ -750,8 +751,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScript<T extends mw.Script>(object: GameObject,
-                                               scriptCls: (new (...args: unknown[]) => T) | Function,
-                                               traverse: number = 0): T | null {
+        scriptCls: (new (...args: unknown[]) => T) | Function,
+        traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -817,8 +818,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScriptIs<T extends mw.Script>(object: GameObject,
-                                                 method: string | ((instance: object) => boolean),
-                                                 traverse: number = 0): T | null {
+        method: string | ((instance: object) => boolean),
+        traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -1040,10 +1041,10 @@ class GToolkit {
      * @profession
      */
     public rotateCharacterMesh(character: mw.Character,
-                               pitch: number,
-                               yaw: number,
-                               roll: number,
-                               origin: mw.Vector = mw.Vector.zero) {
+        pitch: number,
+        yaw: number,
+        roll: number,
+        origin: mw.Vector = mw.Vector.zero) {
         const component: UE.SceneComponent = character["ueCharacter"].mesh as unknown as UE.SceneComponent;
         const originRotator = component.RelativeRotation;
 
@@ -1101,9 +1102,9 @@ class GToolkit {
      * @param disableGuid
      */
     public setButtonGuid(button: mw.Button,
-                         normalGuid: string,
-                         pressedGuid: string = undefined,
-                         disableGuid: string = undefined) {
+        normalGuid: string,
+        pressedGuid: string = undefined,
+        disableGuid: string = undefined) {
         if (!pressedGuid) {
             pressedGuid = normalGuid;
         }
@@ -1183,10 +1184,10 @@ class GToolkit {
      * @return hitPoint 命中首个点的命中信息 当未命中时返回 null.
      */
     public detectVerticalTerrain(startPoint: mw.Vector,
-                                 length: number = 1000,
-                                 self: mw.GameObject = null,
-                                 ignoreObjectGuids: string[] = [],
-                                 debug: boolean = false) {
+        length: number = 1000,
+        self: mw.GameObject = null,
+        ignoreObjectGuids: string[] = [],
+        debug: boolean = false) {
         return QueryUtil.lineTrace(
             startPoint,
             this.newWithZ(startPoint, startPoint.z - length),
