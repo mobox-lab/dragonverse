@@ -8,6 +8,8 @@ import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
 import GameObject = mw.GameObject;
 import FunctionOption = mw.FunctionOption;
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
+import { EventDefine } from "../../const/EventDefine";
+import GToolkit from "../../util/GToolkit";
 
 /**
  * GM.
@@ -38,10 +40,15 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
 }
 
 AddGMCommand("Hello world", () => {
-    Log4Ts.log(GMPanel, `Hello world`);
-},
+        Log4Ts.log(GMPanel, `Hello world`);
+    },
     null,
     "CHello");
+AddGMCommand("Prompt", (player, value) => {
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: GToolkit.isNullOrEmpty(value) ? "Hello world" : value});
+    },
+    null,
+    "MainPanel");
 
 AddGMCommand("返回出生点",
     null,
@@ -73,7 +80,6 @@ AddGMCommand("输出当前角色旋转",
     "探针");
 
 
-
 AddGMCommand("设置宠物为参战(输入bagId)",
     (player, index: string) => {
         let module = mwext.ModuleService.getModule(CompanionModule_C);
@@ -83,7 +89,6 @@ AddGMCommand("设置宠物为参战(输入bagId)",
 
     },
     "宠物龙");
-
 
 
 AddGMCommand("增加物品",
