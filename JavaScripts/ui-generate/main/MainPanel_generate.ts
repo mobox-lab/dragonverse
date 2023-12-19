@@ -143,12 +143,26 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnDragon_Internal
 	}
+	private btnReset_Internal: mw.StaleButton
+	public get btnReset(): mw.StaleButton {
+		if(!this.btnReset_Internal&&this.uiWidgetBase) {
+			this.btnReset_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnReset') as mw.StaleButton
+		}
+		return this.btnReset_Internal
+	}
 	private miniMap_Internal: mw.Image
 	public get miniMap(): mw.Image {
 		if(!this.miniMap_Internal&&this.uiWidgetBase) {
 			this.miniMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/miniMap') as mw.Image
 		}
 		return this.miniMap_Internal
+	}
+	private cnvOperationalFeedback_Internal: mw.Canvas
+	public get cnvOperationalFeedback(): mw.Canvas {
+		if(!this.cnvOperationalFeedback_Internal&&this.uiWidgetBase) {
+			this.cnvOperationalFeedback_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback') as mw.Canvas
+		}
+		return this.cnvOperationalFeedback_Internal
 	}
 
 

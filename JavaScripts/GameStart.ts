@@ -1,5 +1,7 @@
 import { GM } from "module_gm";
 import * as mwaction from "mwaction";
+import { EventDefine } from "./const/EventDefine";
+import { HeadUIController } from "./controller/HeadUIController";
 import { KeyboardManager } from "./controller/KeyboardManager";
 import { PlayerController } from "./controller/PlayerController";
 import { TimeManager } from "./controller/TimeManager";
@@ -24,7 +26,6 @@ import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from ".
 import GMPanel from "./ui/gm/GmPanel";
 import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
-import { EventDefine } from "./const/EventDefine";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -32,28 +33,28 @@ export default class GameStart extends mw.Script {
 
     //region Dev Config
 
-    @mw.Property({displayName: "是否发布", group: "发布"})
+    @mw.Property({ displayName: "是否发布", group: "发布" })
     public isRelease: boolean = false;
 
-    @mw.Property({displayName: "语言", group: "发布", enumType: LanguageTypes})
+    @mw.Property({ displayName: "语言", group: "发布", enumType: LanguageTypes })
     public language: LanguageTypes = LanguageTypes.English;
 
-    @mw.Property({displayName: "线上存储", group: "发布"})
+    @mw.Property({ displayName: "线上存储", group: "发布" })
     public isOnline: boolean = false;
 
-    @mw.Property({displayName: "是否 GM", group: "调试"})
+    @mw.Property({ displayName: "是否 GM", group: "调试" })
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: LanguageTypes})
+    @mw.Property({ displayName: "服务端日志等级", group: "调试", enumType: LanguageTypes })
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: LanguageTypes})
+    @mw.Property({ displayName: "客户端日志等级", group: "调试", enumType: LanguageTypes })
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({displayName: "上帝模式 冲刺速度倍率", group: "调试"})
+    @mw.Property({ displayName: "上帝模式 冲刺速度倍率", group: "调试" })
     public godModeSprintRatio: number = 10;
 
-    @mw.Property({displayName: "上帝模式 闪现位移距离", group: "调试"})
+    @mw.Property({ displayName: "上帝模式 闪现位移距离", group: "调试" })
     public godModeFlashDist: number = 1000;
 
     private _godMode: boolean = false;
@@ -106,6 +107,7 @@ export default class GameStart extends mw.Script {
         }
         this.registerModule();
 
+        HeadUIController.getInstance().initialize();
         TimeManager.getInstance();
         VectorExt.initialize();
         mwaction;
@@ -144,7 +146,7 @@ export default class GameStart extends mw.Script {
     private registerTestKeyT() {
         InputUtil.onKeyDown(mw.Keys.T, () => {
             Log4Ts.log(GameStart, `Key T pressed`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: "Hello world"});
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: "Hello world" });
         });
     }
 

@@ -1,13 +1,13 @@
-import GToolkit, { Expression, TimeFormatDimensionFlags } from "../../util/GToolkit";
-import { EventDefine } from "../../const/EventDefine";
-import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
-import GameStart from "../../GameStart";
 import CryptoJS from "crypto-js";
+import GameStart from "../../GameStart";
+import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Regulator from "../../depend/regulator/Regulator";
-import FixedQueue from "../../depend/queue/FixedQueue";
 import { SubGameTypes } from "../../const/SubGameTypes";
+import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
+import FixedQueue from "../../depend/queue/FixedQueue";
+import Regulator from "../../depend/regulator/Regulator";
 import i18n from "../../language/i18n";
+import GToolkit, { Expression, TimeFormatDimensionFlags } from "../../util/GToolkit";
 import ModuleS = mwext.ModuleS;
 import ModuleC = mwext.ModuleC;
 import SubData = mwext.Subdata;
@@ -234,7 +234,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             Log4Ts.log(
                 AuthModuleC,
                 `player is verifying code.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("isVerifying")});
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("isVerifying") });
             return;
         }
 
@@ -255,7 +255,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             this.server.net_verifyCode(this.generateSaltToken(), code);
         } else {
             Log4Ts.warn(AuthModuleC, `code verify request too frequently.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeTooFrequently")});
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("verifyCodeTooFrequently") });
         }
     }
 
@@ -340,7 +340,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     //#region Net Method
     public net_verifyFail() {
         this._lastVerifyCodeTime = null;
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeFail")});
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("verifyCodeFail") });
     }
 
     public net_enableEnter() {
@@ -403,7 +403,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
+            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -501,12 +501,12 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
+            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
+            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
             return false;
         }
 
@@ -516,7 +516,6 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     private async verifyEnterCode(code: string, uid: string): Promise<boolean> {
         //#region Exist for Test
-        if (code === "123456") return true;
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
         const codeSalt = `${code}-${Date.now()}`;
         const e = CryptoJS.AES.encrypt(
@@ -535,8 +534,8 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         };
 
         const resp = await fetch(`${GameStart.instance.isRelease ?
-                AuthModuleS.RELEASE_CODE_VERIFY_URL :
-                AuthModuleS.TEST_CODE_VERIFY_URL}`,
+            AuthModuleS.RELEASE_CODE_VERIFY_URL :
+            AuthModuleS.TEST_CODE_VERIFY_URL}`,
             {
                 method: "POST",
                 body: JSON.stringify(body),
@@ -638,21 +637,21 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         this
             .verifyEnterCode(code, uid)
             .then((value) => {
-                    if (!value) {
-                        logState(
-                            AuthModuleS,
-                            "log",
-                            `verify failed.`,
-                            true,
-                            currPlayerId,
-                            uid,
-                        );
-                        this.getClient(currPlayerId)?.net_verifyFail();
-                        return;
-                    }
-                    this.recordPlayer(currPlayerId);
-                    if (value) this.getClient(currPlayerId)?.net_enableEnter();
-                },
+                if (!value) {
+                    logState(
+                        AuthModuleS,
+                        "log",
+                        `verify failed.`,
+                        true,
+                        currPlayerId,
+                        uid,
+                    );
+                    this.getClient(currPlayerId)?.net_verifyFail();
+                    return;
+                }
+                this.recordPlayer(currPlayerId);
+                if (value) this.getClient(currPlayerId)?.net_enableEnter();
+            },
             )
             .catch((reason) => {
                 this.getClient(currPlayerId)?.net_verifyFail();

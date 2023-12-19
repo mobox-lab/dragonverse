@@ -1,3 +1,4 @@
+import i18n from "../../../language/i18n";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
 import GToolkit from "../../../util/GToolkit";
 import { SyncRootEntity } from "../base/SyncRootEntity";
@@ -103,6 +104,7 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
                 value.controller = new CompanionViewController();
                 value.controller.target = character;
                 value.controller.owner = prefab
+                value.nickName = i18n.lan(this.nickName)
                 value.setHosted(this);
             })
 

@@ -1,17 +1,16 @@
 ﻿import { EventDefine } from "../../const/EventDefine";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Waterween from "../../depend/waterween/Waterween";
+import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
+import GToolkit from "../../util/GToolkit";
+import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import BagPanel from "../bag/BagPanel";
 import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
 import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
-import GToolkit from "../../util/GToolkit";
-import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import GlobalPromptPanel from "./GlobalPromptPanel";
 import AccountService = mw.AccountService;
-import Waterween from "../../depend/waterween/Waterween";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
-import CodeVerifyPanel from "../auth/CodeVerifyPanel";
-import { AuthModuleC } from "../../module/auth/AuthModule";
 
 /**
  * 主界面 全局提示 参数.

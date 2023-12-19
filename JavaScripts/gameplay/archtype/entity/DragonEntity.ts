@@ -1,3 +1,4 @@
+import { HeadUIController, HeadUIType } from "../../../controller/HeadUIController";
 import GToolkit from "../../../util/GToolkit";
 import { TalkAction } from "../action/TalkAction";
 import ClientDisplayEntity from "../base/ClientDisplayEntity";
@@ -17,6 +18,7 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
     @DragonEntity.required
     public controller: CompanionViewController
 
+    public nickName: string = ''
 
     private _talkAction: TalkAction = new TalkAction(['test_tips_1'])
 
@@ -32,6 +34,7 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
 
         }
         this._talkAction.coolDown = GToolkit.random(60, 120) * 100
+        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, this.nickName)
     }
 
 
