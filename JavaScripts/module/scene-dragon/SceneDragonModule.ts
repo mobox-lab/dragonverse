@@ -177,11 +177,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             }
         }
 
-        this._lockingSyncKey = syncKey;
-        this._lockTimerId = setTimeout(() => {
-                this.unlockWithView();
-            },
-            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION);
+        this.lockWithView(syncKey);
+
         if (!isSame) {
             Log4Ts.log(SceneDragonModuleC, `dispatch on lock event.`);
             Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
@@ -217,6 +214,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             (value) => {
                 if (value) {
                     this._currentCatchResultSyncKey = syncKey;
+                } else {
+                    this.lock(syncKey);
                 }
             },
         );
@@ -280,10 +279,21 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     private unlockWithView() {
         this._lockingSyncKey = null;
         Event.dispatchToLocal(EventDefine.DragonOnUnlock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
-        if (this._lockTimerId) {
+        if (this._lockTimerId !== null) {
             clearTimeout(this._lockTimerId);
             this._lockTimerId = null;
         }
+    }
+
+    private lockWithView(syncKey: string) {
+        if (this._lockTimerId !== null) {
+            this.unlockWithView();
+        }
+        this._lockingSyncKey = syncKey;
+        this._lockTimerId = setTimeout(
+            () => this.unlockWithView(),
+            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
+        );
     }
 
     private keepLockWithView() {

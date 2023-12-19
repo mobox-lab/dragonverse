@@ -13,6 +13,9 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import { AuthModuleC } from "../../module/auth/AuthModule";
 import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
+import { BagModuleC, BagModuleS } from "../../module/bag/BagModule";
+import { Yoact } from "../../depend/yoact/Yoact";
+import bindYoact = Yoact.bindYoact;
 
 /**
  * 主界面 全局提示 参数.
@@ -55,6 +58,15 @@ export default class MainPanel extends MainPanel_Generate {
         return this._sceneDragonModule;
     }
 
+    private _bagModule: BagModuleC = null;
+
+    public get bagModule(): BagModuleC | null {
+        if (!this._bagModule) {
+            this._bagModule = ModuleService.getModule(BagModuleC) ?? null;
+        }
+        return this._bagModule;
+    }
+
     private _progressTask: AdvancedTweenTask<number>;
 
     private _progressShowTask: AdvancedTweenTask<number>;
@@ -80,11 +92,16 @@ export default class MainPanel extends MainPanel_Generate {
                 });
             }
         });
-
         this.btnBag.onPressed.add(showBag);
         this.btnBook.onPressed.add(showHandbook);
         this.btnCode.onPressed.add(showCode);
         this.btnDragonBall.onPressed.add(this.onCatchClick);
+
+        if (this.bagModule) {
+            bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
+        } else {
+            Event.addLocalListener(EventDefine.BagModuleClientReady, () => bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString()));
+        }
 
         this._progressTask =
             Waterween
