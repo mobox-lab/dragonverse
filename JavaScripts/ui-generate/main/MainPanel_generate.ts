@@ -143,12 +143,47 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnDragon_Internal
 	}
+	private btnReset_Internal: mw.StaleButton
+	public get btnReset(): mw.StaleButton {
+		if(!this.btnReset_Internal&&this.uiWidgetBase) {
+			this.btnReset_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnReset') as mw.StaleButton
+		}
+		return this.btnReset_Internal
+	}
 	private miniMap_Internal: mw.Image
 	public get miniMap(): mw.Image {
 		if(!this.miniMap_Internal&&this.uiWidgetBase) {
 			this.miniMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/miniMap') as mw.Image
 		}
 		return this.miniMap_Internal
+	}
+	private cnvOperationalFeedback_Internal: mw.Canvas
+	public get cnvOperationalFeedback(): mw.Canvas {
+		if(!this.cnvOperationalFeedback_Internal&&this.uiWidgetBase) {
+			this.cnvOperationalFeedback_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback') as mw.Canvas
+		}
+		return this.cnvOperationalFeedback_Internal
+	}
+	private txtOperationFeedback_Internal: mw.TextBlock
+	public get txtOperationFeedback(): mw.TextBlock {
+		if(!this.txtOperationFeedback_Internal&&this.uiWidgetBase) {
+			this.txtOperationFeedback_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback/txtOperationFeedback') as mw.TextBlock
+		}
+		return this.txtOperationFeedback_Internal
+	}
+	private imgOperationSuccess_Internal: mw.Image
+	public get imgOperationSuccess(): mw.Image {
+		if(!this.imgOperationSuccess_Internal&&this.uiWidgetBase) {
+			this.imgOperationSuccess_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback/imgOperationSuccess') as mw.Image
+		}
+		return this.imgOperationSuccess_Internal
+	}
+	private imgOperationFail_Internal: mw.Image
+	public get imgOperationFail(): mw.Image {
+		if(!this.imgOperationFail_Internal&&this.uiWidgetBase) {
+			this.imgOperationFail_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback/imgOperationFail') as mw.Image
+		}
+		return this.imgOperationFail_Internal
 	}
 
 

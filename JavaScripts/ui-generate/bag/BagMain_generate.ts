@@ -31,6 +31,20 @@ export default class BagMain_Generate extends UIScript {
 		}
 		return this.btn3_Internal
 	}
+	private btn4_Internal: mw.StaleButton
+	public get btn4(): mw.StaleButton {
+		if(!this.btn4_Internal&&this.uiWidgetBase) {
+			this.btn4_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/MWCanvas_1/btn4') as mw.StaleButton
+		}
+		return this.btn4_Internal
+	}
+	private btn5_Internal: mw.StaleButton
+	public get btn5(): mw.StaleButton {
+		if(!this.btn5_Internal&&this.uiWidgetBase) {
+			this.btn5_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/MWCanvas_1/btn5') as mw.StaleButton
+		}
+		return this.btn5_Internal
+	}
 	private mScrollBox_Internal: mw.ScrollBox
 	public get mScrollBox(): mw.ScrollBox {
 		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
@@ -44,6 +58,69 @@ export default class BagMain_Generate extends UIScript {
 			this.mContent_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mScrollBox/mContent') as mw.Canvas
 		}
 		return this.mContent_Internal
+	}
+	private mIconThum_1_1_Internal: mw.Image
+	public get mIconThum_1_1(): mw.Image {
+		if(!this.mIconThum_1_1_Internal&&this.uiWidgetBase) {
+			this.mIconThum_1_1_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_1') as mw.Image
+		}
+		return this.mIconThum_1_1_Internal
+	}
+	private mThumNum_Internal: mw.Image
+	public get mThumNum(): mw.Image {
+		if(!this.mThumNum_Internal&&this.uiWidgetBase) {
+			this.mThumNum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mThumNum') as mw.Image
+		}
+		return this.mThumNum_Internal
+	}
+	private mNumThum_Internal: mw.TextBlock
+	public get mNumThum(): mw.TextBlock {
+		if(!this.mNumThum_Internal&&this.uiWidgetBase) {
+			this.mNumThum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mNumThum') as mw.TextBlock
+		}
+		return this.mNumThum_Internal
+	}
+	private mIconThum_1_2_Internal: mw.Image
+	public get mIconThum_1_2(): mw.Image {
+		if(!this.mIconThum_1_2_Internal&&this.uiWidgetBase) {
+			this.mIconThum_1_2_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_2') as mw.Image
+		}
+		return this.mIconThum_1_2_Internal
+	}
+	private mIconThum_1_3_Internal: mw.Image
+	public get mIconThum_1_3(): mw.Image {
+		if(!this.mIconThum_1_3_Internal&&this.uiWidgetBase) {
+			this.mIconThum_1_3_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_3') as mw.Image
+		}
+		return this.mIconThum_1_3_Internal
+	}
+	private mIconThum_1_4_Internal: mw.Image
+	public get mIconThum_1_4(): mw.Image {
+		if(!this.mIconThum_1_4_Internal&&this.uiWidgetBase) {
+			this.mIconThum_1_4_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_4') as mw.Image
+		}
+		return this.mIconThum_1_4_Internal
+	}
+	private mIconThum_1_5_Internal: mw.Image
+	public get mIconThum_1_5(): mw.Image {
+		if(!this.mIconThum_1_5_Internal&&this.uiWidgetBase) {
+			this.mIconThum_1_5_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_5') as mw.Image
+		}
+		return this.mIconThum_1_5_Internal
+	}
+	private mIconThum_1_6_Internal: mw.Image
+	public get mIconThum_1_6(): mw.Image {
+		if(!this.mIconThum_1_6_Internal&&this.uiWidgetBase) {
+			this.mIconThum_1_6_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_6') as mw.Image
+		}
+		return this.mIconThum_1_6_Internal
+	}
+	private mIconThum_1_7_Internal: mw.Image
+	public get mIconThum_1_7(): mw.Image {
+		if(!this.mIconThum_1_7_Internal&&this.uiWidgetBase) {
+			this.mIconThum_1_7_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mIconThum_1_7') as mw.Image
+		}
+		return this.mIconThum_1_7_Internal
 	}
 	private infoCanvas_Internal: mw.Canvas
 	public get infoCanvas(): mw.Canvas {
@@ -73,6 +150,13 @@ export default class BagMain_Generate extends UIScript {
 		}
 		return this.mNum_Internal
 	}
+	private mDescBack_Internal: mw.Image
+	public get mDescBack(): mw.Image {
+		if(!this.mDescBack_Internal&&this.uiWidgetBase) {
+			this.mDescBack_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/mDescBack') as mw.Image
+		}
+		return this.mDescBack_Internal
+	}
 	private mDesc_Internal: mw.TextBlock
 	public get mDesc(): mw.TextBlock {
 		if(!this.mDesc_Internal&&this.uiWidgetBase) {
@@ -80,12 +164,12 @@ export default class BagMain_Generate extends UIScript {
 		}
 		return this.mDesc_Internal
 	}
-	private mBtnOpt1_Internal: mw.StaleButton
-	public get mBtnOpt1(): mw.StaleButton {
-		if(!this.mBtnOpt1_Internal&&this.uiWidgetBase) {
-			this.mBtnOpt1_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/mBtnOpt1') as mw.StaleButton
+	private mBtnOpt1_2_Internal: mw.StaleButton
+	public get mBtnOpt1_2(): mw.StaleButton {
+		if(!this.mBtnOpt1_2_Internal&&this.uiWidgetBase) {
+			this.mBtnOpt1_2_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/mBtnOpt1_2') as mw.StaleButton
 		}
-		return this.mBtnOpt1_Internal
+		return this.mBtnOpt1_2_Internal
 	}
 	private mBtnOpt1_1_Internal: mw.StaleButton
 	public get mBtnOpt1_1(): mw.StaleButton {
@@ -93,13 +177,6 @@ export default class BagMain_Generate extends UIScript {
 			this.mBtnOpt1_1_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/mBtnOpt1_1') as mw.StaleButton
 		}
 		return this.mBtnOpt1_1_Internal
-	}
-	private mBtnOpt1_2_Internal: mw.StaleButton
-	public get mBtnOpt1_2(): mw.StaleButton {
-		if(!this.mBtnOpt1_2_Internal&&this.uiWidgetBase) {
-			this.mBtnOpt1_2_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/mBtnOpt1_2') as mw.StaleButton
-		}
-		return this.mBtnOpt1_2_Internal
 	}
 	private mBtnClose_Internal: mw.StaleButton
 	public get mBtnClose(): mw.StaleButton {

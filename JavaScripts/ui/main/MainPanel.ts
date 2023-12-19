@@ -97,7 +97,6 @@ export default class MainPanel extends MainPanel_Generate {
         this._progressTask.onDone.add((param) => {
             if (param) return;
             this.onProgressDone();
-
         });
 
         this._progressShowTask =
@@ -398,6 +397,7 @@ export default class MainPanel extends MainPanel_Generate {
     private onDisablePlayerEnter() {
         this.cnvDragonBall.visibility = SlateVisibility.Hidden;
     }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
