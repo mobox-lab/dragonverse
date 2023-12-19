@@ -89,17 +89,9 @@ export default class BeginnerGuard extends mw.Script {
 
         this._blockEffect = this.gameObject.getChildByName("blockEffect") as Effect;
 
-        ModuleService.ready().then(() => {
-            let res = ModuleService.getModule(AuthModuleC).canEnterGame();
-            if (res) {
-                this._forbiddenArea.addPassableTarget(Player.localPlayer.character);
-            } else {
-                this._blockEffect.setColor("Color", LinearColor.red);
-            }
-        })
 
-
-        // Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onPlayerEnableEnter);
+        Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onPlayerEnableEnter);
+        Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onPlayerDisableEnter.bind(this));
         //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -135,10 +127,14 @@ export default class BeginnerGuard extends mw.Script {
         DialogueManager.getInstance().chat(this.guardContentId, true);
     };
 
-    // private onPlayerEnableEnter = () => {
-    //     this._blockEffect.setColor("Color", new LinearColor(101 / 255, 191 / 255, 214 / 255));
-    //     
-    // };
+    private onPlayerEnableEnter = () => {
+        this._blockEffect.setColor("Color", LinearColor.colorToLinearColor(101, 191, 214));
+        this._forbiddenArea.addPassableTarget(Player.localPlayer.character);
+    };
+
+    private onPlayerDisableEnter() {
+        this._blockEffect.setColor("Color", LinearColor.red);
+    }
 
     //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

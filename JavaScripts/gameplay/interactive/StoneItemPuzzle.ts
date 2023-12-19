@@ -1,3 +1,4 @@
+import AudioController from "../../controller/audio/AudioController";
 import { KeyItemPuzzle } from "./KeyItemPuzzel";
 
 
@@ -63,16 +64,18 @@ export default class StoneItemPuzzle extends KeyItemPuzzle {
         if (isAccepted) {
 
             this._ball.setVisibility(mw.PropertyStatus.On);
-            this._ball.worldTransform.position = keyItem.worldTransform.position.clone();
-            const end = keyItem.worldTransform.position;
-            end.z -= 250;
+            this._ball.localTransform.position = this.unlockBallPos;
+            const end = this._ball.localTransform.position;
+            end.z -= 450;
 
-            actions.tween(this._ball.worldTransform).to(500, {
+            actions.tween(this._ball.localTransform).to(500, {
                 position: end
             },).setTag("putan")
                 .start();
 
+            AudioController.getInstance().play(6);
         } else {
+
 
 
 

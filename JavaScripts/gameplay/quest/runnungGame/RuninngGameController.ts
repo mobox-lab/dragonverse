@@ -1,7 +1,9 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EventDefine } from "../../../const/EventDefine";
+import AudioController from "../../../controller/audio/AudioController";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import { RoleModuleC } from "../../../module/role/RoleModule";
+import { arrayToRot, arrayToVec } from "../../../util/CommonUtil";
 
 export class RunningGameController {
 
@@ -90,6 +92,8 @@ export class RunningGameController {
 
     private _character: mw.Character;
 
+    private _streakingEffect: mw.Effect;
+
     private _intervalHander: number;
 
     constructor(character: mw.Character) {
@@ -132,6 +136,18 @@ export class RunningGameController {
         GameObjPool.asyncSpawn("153046").then(val => {
             this._collisionEffect = val as mw.Effect;
         });
+
+        const config = GameConfig.Global.RG_Streaking_Effect;
+        GameObjPool.asyncSpawn(config.strVal).then(val => {
+            this._streakingEffect = val as mw.Effect;
+            this._streakingEffect.worldTransform.scale = arrayToVec(config.array2d[1]);
+            this._character.attachToSlot(this._streakingEffect, config.value);
+            this._streakingEffect.localTransform.position = arrayToVec(config.array2d[0]);
+            this._streakingEffect.localTransform.rotation = arrayToRot(config.array2d[2]);
+            this._streakingEffect.loop = true;
+            this._streakingEffect.play();
+        });
+
     }
 
     /**碰撞标志位时间，代表刚碰撞 */
@@ -148,6 +164,7 @@ export class RunningGameController {
         const speed = this.speed;
         //当玩家速度大于等于默认最大速度的一半时，撞击碰撞体会反弹
         if (!this._collisionFlagTime && speed >= this._defaultMaxSpeed / 2) {
+            AudioController.getInstance().play(22);
             this._collisionFlagTime = Date.now();
             const forwa = this.fowardVec.clone();
             const fowardVec = this.fowardVec.clone().normalize().multiply(-1700);
@@ -252,6 +269,7 @@ export class RunningGameController {
      */
     public enterSpeedUp() {
         //刷新加速标志位时间,重设置加速度
+        AudioController.getInstance().play(24);
 
         Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "通过加速圈:" + Math.floor(this.speed));
 
@@ -300,6 +318,10 @@ export class RunningGameController {
         this._collisionEffect.stop();
         GameObjPool.despawn(this._collisionEffect);
         this._collisionEffect = null;
+
+        this._streakingEffect.stop();
+        GameObjPool.despawn(this._streakingEffect);
+        this._streakingEffect = null;
 
     }
 

@@ -6,13 +6,13 @@ import HandbookPanel from "../handbook/HandbookPanel";
 import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
 import GToolkit from "../../util/GToolkit";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
+import GlobalPromptPanel from "./GlobalPromptPanel";
 import AccountService = mw.AccountService;
 import Waterween from "../../depend/waterween/Waterween";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import { AuthModuleC } from "../../module/auth/AuthModule";
 import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
-import GlobalPromptPanel from "./GlobalPromptPanel";
 
 /**
  * 主界面 全局提示 参数.
@@ -80,6 +80,7 @@ export default class MainPanel extends MainPanel_Generate {
                 });
             }
         });
+
         this.btnBag.onPressed.add(showBag);
         this.btnBook.onPressed.add(showHandbook);
         this.btnCode.onPressed.add(showCode);
@@ -96,6 +97,7 @@ export default class MainPanel extends MainPanel_Generate {
         this._progressTask.onDone.add((param) => {
             if (param) return;
             this.onProgressDone();
+
         });
 
         this._progressShowTask =
@@ -107,6 +109,18 @@ export default class MainPanel extends MainPanel_Generate {
                     0.5e3,
                     0,
                 ).restart(true);
+
+        this._pointerTask =
+            Waterween
+                .to(
+                    () => this.cnvPointer.renderTransformAngle,
+                    (val) => this.cnvPointer.renderTransformAngle = val,
+                    45,
+                    0.5e3,
+                    -45,
+                )
+                .restart(true)
+                .pingPong();
         this.btnCode.onClicked.add(() => {
             UIService.show(CodeVerifyPanel);
         });
@@ -120,18 +134,6 @@ export default class MainPanel extends MainPanel_Generate {
             }
         });
 
-        this._pointerTask =
-            Waterween
-                .to(
-                    () => this.cnvPointer.renderTransformAngle,
-                    (val) => this.cnvPointer.renderTransformAngle = val,
-                    45,
-                    0.5e3,
-                    -45,
-                )
-                .restart(true)
-                .pingPong();
-
         this.init();
         //#endregion ------------------------------------------------------------------------------------------
 
@@ -142,6 +144,8 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, this.onPlayerTryCatch));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, this.onPlayerEndCatch));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -352,7 +356,6 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     public playProgress() {
-        this._progressShowTask.forward();
         this._progressTask.restart();
     }
 
@@ -388,6 +391,13 @@ export default class MainPanel extends MainPanel_Generate {
         }
     };
 
+    private onEnablePlayerEnter() {
+        this.btnCode.visibility = SlateVisibility.Hidden;
+    }
+
+    private onDisablePlayerEnter() {
+        this.cnvDragonBall.visibility = SlateVisibility.Hidden;
+    }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -400,5 +410,5 @@ function showHandbook() {
 }
 
 function showCode() {
-//TODO_LviatYi Show Code 验证页面.
+    UIService.show(CodeVerifyPanel);
 }

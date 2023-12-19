@@ -192,7 +192,12 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
         this.server.net_getToken().then((value) => {
             this._originToken = value;
         });
-        if (this.data.enterEnable) this.releasePlayer();
+        if (this.data.enterEnable) {
+            this.releasePlayer();
+        } else {
+            this.forbiddenPlayer();
+        }
+
     }
 
     protected onDestroy(): void {
@@ -288,6 +293,18 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     }
 
     /**
+     * @description: 玩家禁止进入
+     */
+    private forbiddenPlayer() {
+        logState(
+            AuthModuleC,
+            "log",
+            `release player. enjoy!`,
+            true, Player.localPlayer.playerId);
+        Event.dispatchToLocal(EventDefine.PlayerDisableEnter);
+    }
+
+    /**
      * 巡逻.
      */
     public patrol() {
@@ -342,7 +359,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     }
 
     /**
-     * @desc 获取是否通过验证
+     * 是否 通过验证.
      */
     public canEnterGame(): boolean {
         let res = this.data.enterEnable;
