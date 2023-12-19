@@ -368,12 +368,12 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     /**
      * 测试用 Code 验证 Url.
      */
-    private static readonly TEST_CODE_VERIFY_URL = "https://platform-api-test.p12.games";
+    private static readonly TEST_CODE_VERIFY_URL = "https://platform-api-test.p12.games/modragon/code/status";
 
     /**
      * 发布用 Code 验证 Url.
      */
-    private static readonly RELEASE_CODE_VERIFY_URL = "https://platform-api.p12.games";
+    private static readonly RELEASE_CODE_VERIFY_URL = "https://platform-api.p12.games/modragon/code/status";
 
     private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
 
@@ -501,7 +501,8 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         //#region Exist for Test
         if (code === "123456") return true;
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-        const codeSalt = `${code}-${Date.now()}`;
+        // const codeSalt = `${code}-${Date.now()}`;
+        const codeSalt = `12AFSD-1701677180`;
         const e = CryptoJS.AES.encrypt(
             codeSalt,
             CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
@@ -517,6 +518,10 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             userId: uid,
         };
 
+        const url = `${GameStart.instance.isRelease ?
+            AuthModuleS.RELEASE_CODE_VERIFY_URL :
+            AuthModuleS.TEST_CODE_VERIFY_URL}`;
+        console.log(url);
         const resp = await fetch(`${GameStart.instance.isRelease ?
                 AuthModuleS.RELEASE_CODE_VERIFY_URL :
                 AuthModuleS.TEST_CODE_VERIFY_URL}`,

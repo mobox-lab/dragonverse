@@ -43,23 +43,6 @@ export enum EventDefine {
      */
     DragonOnUnlock = "DRAGON_ON_UNLOCK",
 
-    /**
-     * 玩家 抓捕 龙 成功.
-     * {@link DragonSyncKeyEventArgs}
-     */
-    DragonCatchSuccess = "DRAGON_CATCH_SUCCESS",
-
-    /**
-     * 玩家 抓捕 龙 成功.
-     * {@link DragonSyncKeyEventArgs}
-     */
-    DragonCatchFail = "DRAGON_CATCH_FAIL",
-
-    /**
-     * 玩家 抓捕 龙.
-     */
-    DragonCatch = "DRAGON_CATCH",
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Npc

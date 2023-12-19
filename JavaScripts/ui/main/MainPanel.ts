@@ -6,12 +6,13 @@ import HandbookPanel from "../handbook/HandbookPanel";
 import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
 import GToolkit from "../../util/GToolkit";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
-import GlobalPromptPanel from "./GlobalPromptPanel";
 import AccountService = mw.AccountService;
 import Waterween from "../../depend/waterween/Waterween";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import { AuthModuleC } from "../../module/auth/AuthModule";
+import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
+import GlobalPromptPanel from "./GlobalPromptPanel";
 
 /**
  * 主界面 全局提示 参数.
@@ -45,9 +46,18 @@ export default class MainPanel extends MainPanel_Generate {
     private _sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
     private _promptPanel: GlobalPromptPanel;
 
-    private _catchResult: boolean = false;
+    private _sceneDragonModule: SceneDragonModuleC = null;
+
+    public get sceneDragonModule(): SceneDragonModuleC | null {
+        if (!this._sceneDragonModule) {
+            this._sceneDragonModule = ModuleService.getModule(SceneDragonModuleC) ?? null;
+        }
+        return this._sceneDragonModule;
+    }
 
     private _progressTask: AdvancedTweenTask<number>;
+
+    private _progressShowTask: AdvancedTweenTask<number>;
 
     private _pointerTask: AdvancedTweenTask<number>;
 
@@ -86,8 +96,17 @@ export default class MainPanel extends MainPanel_Generate {
         this._progressTask.onDone.add((param) => {
             if (param) return;
             this.onProgressDone();
-
         });
+
+        this._progressShowTask =
+            Waterween
+                .to(
+                    () => this.cnvDragonBall.renderOpacity,
+                    (val) => this.cnvDragonBall.renderOpacity = val,
+                    1,
+                    0.5e3,
+                    0,
+                ).restart(true);
         this.btnCode.onClicked.add(() => {
             UIService.show(CodeVerifyPanel);
         });
@@ -123,8 +142,6 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, this.onPlayerTryCatch));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, this.onPlayerEndCatch));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatchSuccess, this.onPlayerEndCatch));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatchFail, this.onPlayerEndCatch));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -315,7 +332,6 @@ export default class MainPanel extends MainPanel_Generate {
      * 待捕捉态.
      */
     public prepareCatch() {
-        this._catchResult = false;
         GToolkit.trySetVisibility(this.cnvDragonBall, true);
         this._pointerTask.restart();
     }
@@ -323,10 +339,9 @@ export default class MainPanel extends MainPanel_Generate {
     /**
      * 捕捉.
      */
-    public catch() {
+    public tryCatch() {
         this._pointerTask.pause();
-        this._progressTask.restart();
-        Event.dispatchToLocal(EventDefine.DragonCatch);
+        this.sceneDragonModule?.tryCatch();
     }
 
     /**
@@ -337,6 +352,7 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     public playProgress() {
+        this._progressShowTask.forward();
         this._progressTask.restart();
     }
 
@@ -348,7 +364,7 @@ export default class MainPanel extends MainPanel_Generate {
     };
 
     private onCatchClick = () => {
-        this.catch();
+        this.tryCatch();
     };
 
     private onPlayerTryCatch = () => {
@@ -359,17 +375,17 @@ export default class MainPanel extends MainPanel_Generate {
         this.endCatch();
     };
 
-    private onDragonCatchSuccess = () => {
-        this._catchResult = true;
-    };
-
-    private onDragonCatchFail = () => {
-        this.prepareCatch();
-    };
-
     private onProgressDone = () => {
-        Log4Ts.log(MainPanel, `catch result: ${this._catchResult}`);
-        this.endCatch();
+        this._progressShowTask.backward();
+        const result = GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
+        Log4Ts.log(MainPanel, `catch result: ${result}`);
+        if (result) {
+            GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
+            this.sceneDragonModule?.acceptCatch();
+            this.endCatch();
+        } else {
+            this.prepareCatch();
+        }
     };
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
