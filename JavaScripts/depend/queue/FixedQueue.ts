@@ -97,10 +97,13 @@ export default class FixedQueue<T> {
         return this._q.shift();
     }
 
-    public shiftAll(pred: Predicate<T>) {
+    public shiftAll(pred: Predicate<T>): number {
+        let count = 0;
         while (!this.empty() && pred(this.front())) {
+            ++count;
             this.shift();
         }
+        return count;
     }
 
     /**
