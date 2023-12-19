@@ -1,4 +1,5 @@
 import { KeyboardManager } from "../../controller/KeyboardManager";
+import AudioController from "../../controller/audio/AudioController";
 import PromotItem_Generate from "../../ui-generate/prompt/PromotItem_generate";
 import ProximityPrompts_Generate from "../../ui-generate/prompt/ProximityPrompts_generate";
 
@@ -86,6 +87,7 @@ export module ProximityPrompts {
         private onSelected() {
 
             let currentData = this.data[this._selectedIndex];
+            AudioController.getInstance().play(5);
             close();
             currentData.onSelected();
 

@@ -1,8 +1,8 @@
 import SoundService = mw.SoundService;
-import { Singleton } from "../../depend/singleton/Singleton";
-import { ISoundElement } from "../../config/Sound";
 import { GameConfig } from "../../config/GameConfig";
+import { ISoundElement } from "../../config/Sound";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { Singleton } from "../../depend/singleton/Singleton";
 
 export enum SoundIDEnum {
     /**
@@ -186,7 +186,7 @@ export default class AudioController extends Singleton<AudioController>() {
      * @return 返回 声音播放 id 或 guid.
      *      ig 二象性 源自 SoundService 的精妙设计.
      */
-    public play(soundId: SoundIDEnum,
+    public play(soundId: SoundIDEnum | number,
         target: mw.Vector | mw.GameObject | string = mw.Vector.zero): string | number {
         const config: ISoundElement = this.getConfig(soundId);
         let holdId: number | string;

@@ -2,12 +2,13 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-12 13:26:06
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-18 14:04:10
+ * @LastEditTime: 2023-12-19 16:08:09
  * @FilePath: \DragonVerse\JavaScripts\gameplay\quest\runnungGame\RunningGameQuest.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import { GameConfig } from "../../../config/GameConfig";
 import { EventDefine } from "../../../const/EventDefine";
+import AudioController from "../../../controller/audio/AudioController";
 import { CircleType } from "../../interactive/CircleTrigger";
 import { Quest } from "../Quest";
 import { RunningGameController } from "./RuninngGameController";
@@ -178,6 +179,8 @@ export default class RunningGameQuest extends Quest {
     private onGameGuide() {
         if (!this._gameMode) {
             this._gameMode = new RunningGameMode();
+            AudioController.getInstance().play(18);
+
         }
     }
 
@@ -191,6 +194,7 @@ export default class RunningGameQuest extends Quest {
         //     this._gameMode.onEnd();
         //     this._gameMode = null;
         // }
+        AudioController.getInstance().play(1);
 
         this.runningGameEnd();
         Player.localPlayer.character.switchToWalking();
@@ -248,6 +252,8 @@ export default class RunningGameQuest extends Quest {
     }
 
     private runningGameBack = () => {
+        AudioController.getInstance().play(1);
+
         const character = Player.localPlayer.character;
         character.movementEnabled = true;
         character.switchToWalking();
