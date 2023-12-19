@@ -1,5 +1,6 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EventDefine } from "../../../const/EventDefine";
+import AudioController from "../../../controller/audio/AudioController";
 import { UI } from "../../../edtors/DragonInfo";
 import { QuestModuleC } from "../../../module/quest/QuestModuleC";
 import { RunningGameData, RunningGameEndPanel } from "../../../ui/runningGame/RunningGameEndPanel";
@@ -114,10 +115,13 @@ export class RunningGameMode {
             const character = Player.localPlayer.character;
             character.switchToFlying();
             this._gameController = new RunningGameController(character);
+
         }
     }
 
     private onReady() {
+        AudioController.getInstance().play(23);
+
         UIService.show(RunningGamePreparePanel).showReady();
         let delayTime = GameConfig.Global.RG_Ready_Time.value + GameConfig.Global.RG_Interval_Time.value;
         setTimeout(() => {
@@ -160,6 +164,7 @@ export class RunningGameMode {
             //关闭游戏UI
             UIService.hide(RunningGameGamingPanel);
             //出现结算UI
+            AudioController.getInstance().play(25);
             Player.localPlayer.character.movementEnabled = false;
             const data = new RunningGameData();
             const flag = ModuleService.getModule(QuestModuleC).updateRunningGameScore(this._playScore);
@@ -186,22 +191,30 @@ export class RunningGameMode {
     }
 
     public enterSpeedUp() {
+        AudioController.getInstance().play(20);
+
         this._enterSpeedUpTime++;
         this.addScore(this._speedScore)
         this._gameController?.enterSpeedUp();
     }
 
     public enterSpeedDown() {
+        AudioController.getInstance().play(21);
+
         this._enterSpeedDownTime++;
         this._gameController?.enterSpeedDown();
     }
 
     public enterTransStart() {
+        AudioController.getInstance().play(16);
+
         this.addScore(this._transStartScore)
         this.addGameTime(4);
     }
 
     public enterTransEnd() {
+        AudioController.getInstance().play(16);
+
         this._enterTransTime++;
         this.addScore(this._transEndScore);
         this._gameController?.enterSpeedUp();
@@ -209,6 +222,8 @@ export class RunningGameMode {
     }
 
     public enterPoint() {
+        AudioController.getInstance().play(19);
+
         this.addGameTime(2);
         this.addScore(this._timeScore);
     }

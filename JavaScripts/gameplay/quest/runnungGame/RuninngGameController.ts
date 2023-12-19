@@ -1,5 +1,6 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EventDefine } from "../../../const/EventDefine";
+import AudioController from "../../../controller/audio/AudioController";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import { RoleModuleC } from "../../../module/role/RoleModule";
 
@@ -148,6 +149,7 @@ export class RunningGameController {
         const speed = this.speed;
         //当玩家速度大于等于默认最大速度的一半时，撞击碰撞体会反弹
         if (!this._collisionFlagTime && speed >= this._defaultMaxSpeed / 2) {
+            AudioController.getInstance().play(22);
             this._collisionFlagTime = Date.now();
             const forwa = this.fowardVec.clone();
             const fowardVec = this.fowardVec.clone().normalize().multiply(-1700);
@@ -252,6 +254,7 @@ export class RunningGameController {
      */
     public enterSpeedUp() {
         //刷新加速标志位时间,重设置加速度
+        AudioController.getInstance().play(24);
 
         Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "通过加速圈:" + Math.floor(this.speed));
 
