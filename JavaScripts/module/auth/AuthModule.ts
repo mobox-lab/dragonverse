@@ -518,8 +518,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         //#region Exist for Test
         if (code === "123456") return true;
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-        // const codeSalt = `${code}-${Date.now()}`;
-        const codeSalt = `12AFSD-1701677180`;
+        const codeSalt = `${code}-${Date.now()}`;
         const e = CryptoJS.AES.encrypt(
             codeSalt,
             CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
@@ -547,7 +546,9 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
                 body: JSON.stringify(body),
             });
 
-        return (await resp.json<CodeVerifyResponse>()).data;
+        const respInJson = await resp.json<CodeVerifyResponse>();
+        return (respInJson?.code ?? null) === 200;
+        // return respInJson?.data ?? false;
     }
 
     /**
