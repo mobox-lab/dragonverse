@@ -471,7 +471,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         }
 
         Enumerable
-            .from(GameConfig.Dragon.getAllElement())
+            .from(GameConfig.CharacterfulDragon.getAllElement())
             .forEach((item) => {
                 for (let i = 0;
                      i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
@@ -657,9 +657,10 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
                 `request locker: ${syncKey}.`);
             return;
         }
+        this._syncLocker.delete(syncKey);
 
         item.catch();
-        this._bagModuleS.addItem(currPlayerId, SceneDragon.bagId(item.id), 1);
+        this._bagModuleS.addItem(currPlayerId, item.getBagConfig().id, 1);
         if (!item.isCatchable) {
             this.destroy(currPlayerId, syncKey);
         }

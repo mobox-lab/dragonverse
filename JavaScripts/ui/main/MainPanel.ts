@@ -17,9 +17,9 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
 import i18n from "../../language/i18n";
 import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
+import { GenerableTypes } from "../../const/GenerableTypes";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
-import { GenerableTypes } from "../../const/GenerableTypes";
 
 /**
  * 主界面 全局提示 参数.
@@ -426,7 +426,7 @@ export default class MainPanel extends MainPanel_Generate {
      * 收集.
      */
     public tryCollect(syncKey: string) {
-        if (this._currentInteractType) return;
+        if (this._currentInteractType !== GenerableTypes.Null) return;
         if (this.collectibleItemModule?.isCollecting ?? true) return;
 
         this._currentInteractType = GenerableTypes.CollectibleItem;

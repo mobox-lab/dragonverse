@@ -68,9 +68,9 @@ export default class BagPanel extends BagMain_Generate {
             if (ForeignKeyIndexer.getInstance().isBagItemType(data.id, BagTypes.Dragon)) {
                 GToolkit.trySetVisibility(this.mBtnOpt, true);
                 if (this._dragonModule.getCurrentShowupBagId() === data.id) {
-                    this.showRestBtn(data.id);
+                    this.showRestBtn(data.id, true);
                 } else {
-                    this.showFollowBtn(data.id);
+                    this.showFollowBtn(data.id, true);
                 }
             } else {
                 GToolkit.trySetVisibility(this.mBtnOpt, false);
@@ -101,8 +101,14 @@ export default class BagPanel extends BagMain_Generate {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region UI Behavior
-    private showRestBtn(id: number) {
-        if (this.mBtnOpt.normalImageGuid === BagPanel.REST_BTN_IMG_GUID) return;
+    /**
+     *
+     * @param id
+     * @param force 是否 执行强制刷新 否则将根据当前按钮图片 guid 判断是否需要刷新.
+     * @private
+     */
+    private showRestBtn(id: number, force: boolean = false) {
+        if (!force && this.mBtnOpt.normalImageGuid === BagPanel.REST_BTN_IMG_GUID) return;
         GToolkit.setButtonGuid(this.mBtnOpt, BagPanel.REST_BTN_IMG_GUID);
         this.mBtnOpt.text = i18n.lan(i18n.keyTable.Bag_005);
         this.mBtnOpt.onClicked.clear();
@@ -121,8 +127,14 @@ export default class BagPanel extends BagMain_Generate {
         );
     }
 
-    private showFollowBtn(id: number) {
-        if (this.mBtnOpt.normalImageGuid === BagPanel.FOLLOW_BTN_IMG_GUID) return;
+    /**
+     *
+     * @param id
+     * @param force 是否 执行强制刷新 否则将根据当前按钮图片 guid 判断是否需要刷新.
+     * @private
+     */
+    private showFollowBtn(id: number, force: boolean = false) {
+        if (!force && this.mBtnOpt.normalImageGuid === BagPanel.FOLLOW_BTN_IMG_GUID) return;
         this.mBtnOpt.text = i18n.lan(i18n.keyTable.Bag_004);
         GToolkit.setButtonGuid(this.mBtnOpt, BagPanel.FOLLOW_BTN_IMG_GUID);
         this.mBtnOpt.onClicked.clear();
