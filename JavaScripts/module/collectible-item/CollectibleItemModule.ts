@@ -171,7 +171,11 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 
         this.server.net_tryCollectItem(syncKey).then(
             (value) => {
-                if (value) this._currentCollectResultSyncKey = syncKey;
+                if (value) {
+                    this._currentCollectResultSyncKey = syncKey;
+                } else {
+                    this._isCollecting = false;
+                }
             },
         );
     }
@@ -562,10 +566,12 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             return Promise.resolve(false);
         }
         Log4Ts.log(CollectibleItemModuleS, `try collect item. ${item.info()}`);
-        if (this._syncLocker.get(syncKey) !== null) {
-            Log4Ts.log(CollectibleItemModuleS, `item already locked.`);
+        const locker = this._syncLocker.get(syncKey);
+        if (locker === null || locker !== currPlayerId) {
+            Log4Ts.log(CollectibleItemModuleS, `locker of item illegal.`);
             return Promise.resolve(false);
         }
+
 
         const success: boolean = GToolkit.randomWeight([CollectibleItem.successRate(item.id)], 1) === 0;
         if (!success) {
