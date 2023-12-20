@@ -13,6 +13,7 @@ import Nolan from "../../depend/nolan/Nolan";
 import { ChatBuff } from "../../buffs/ChatBuff";
 import { GameConfig } from "../../config/GameConfig";
 import { MoveForbiddenBuff } from "../../buffs/MoveForbiddenBuff";
+import AreaManager from "../../gameplay/area/AreaManager";
 
 /**
  * Unified Role State Controller.
@@ -166,6 +167,12 @@ export default class UnifiedRoleController extends mw.Script {
     @mw.RemoteFunction(mw.Client)
     public lookAtNpc(position: Vector) {
         this._nolan.lookAt(position);
+    }
+
+    @mw.RemoteFunction(mw.Server)
+    public respawn() {
+        const position = GToolkit.randomArrayItem(AreaManager.getInstance().getRespawnArea());
+        this.character.worldTransform.position = new Vector(position.x, position.y, position.z);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

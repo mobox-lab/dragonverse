@@ -3,6 +3,9 @@ import { BagModuleS } from "../bag/BagModule";
 import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleC } from "./QuestModuleC";
+import Enum = UE.Enum;
+import Enumerable from "linq";
+import GToolkit from "../../util/GToolkit";
 
 export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
 
@@ -42,10 +45,17 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
      */
     private onTaskStatusComplete(taskId: number, playerId: number) {
 
-        let reward = GameConfig.Task.getElement(taskId).reward;
+        let rewards = GameConfig.Task.getElement(taskId).reward;
 
+        const reward = rewards[
+            GToolkit.randomWeight(
+                Enumerable
+                    .from(rewards)
+                    .select(reward => reward[reward.length - 1] ?? 0)
+                    .toArray(),
+            )];
 
-        for (let i = 0; i < reward.length; i += 2) {
+        for (let i = 0; i < reward.length - 1; i += 2) {
             let bagId = reward[i];
             let count = reward[i + 1];
 

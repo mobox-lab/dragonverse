@@ -22,10 +22,14 @@ export default class AreaManager extends Singleton<AreaManager>() {
     private static readonly POINTS_3D_AREA_HOLDER_TAG = "points-3d-area-holder-tag";
     private static readonly SHAPE_2D_AREA_HOLDER_TAG = "shape-2d-area-holder-tag";
     public static readonly AREA_ID_TAG_PREFIX = "area-id-tag-";
+    public static readonly RESPAWN_AREA_ID = 13;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
     private _areaMap: Map<number, AnyShape[]> = new Map<number, AnyShape[]>();
 
     private _injected: boolean = false;
+
+    private _respawnPointsCache: IPoint3[] = null;
 
     protected onConstruct(): void {
         super.onConstruct();
@@ -148,6 +152,21 @@ export default class AreaManager extends Singleton<AreaManager>() {
             }
         });
         return areas;
+    }
+
+    /**
+     * 获取重生点集合.
+     * memoize.
+     */
+    public getRespawnArea(): IPoint3[] {
+        if (this._respawnPointsCache) return this._respawnPointsCache;
+
+        const points: IPoint3[] = [];
+        for (let shape of this.getArea(AreaManager.RESPAWN_AREA_ID)) {
+            if (GToolkit.is<IShape3>(shape, "boundingBoxVolume")) points.push(...shape.points());
+        }
+        this._respawnPointsCache = points;
+        return points;
     }
 
     /**
