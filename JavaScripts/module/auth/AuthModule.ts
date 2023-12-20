@@ -12,6 +12,7 @@ import ModuleS = mwext.ModuleS;
 import ModuleC = mwext.ModuleC;
 import SubData = mwext.Subdata;
 import noReply = mwext.Decorator.noReply;
+import { TimeManager } from "../../controller/TimeManager";
 
 /**
  * Salt Token.
@@ -96,7 +97,7 @@ class RequestGuard {
     private _p: number = -1;
 
     public req(time: number = undefined): boolean {
-        const now = time ?? Date.now();
+        const now = time ?? TimeManager.getInstance().currentTime;
         if (now < this._q.back()) {
             // 失序.
             return false;
@@ -156,8 +157,6 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     private _originToken: string = null;
 
     private _lastVerifyCodeTime: number = null;
-
-    // private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
 
     private _codeVerityGuard: RequestGuard = new RequestGuard();
 
@@ -235,7 +234,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             Log4Ts.log(
                 AuthModuleC,
                 `player is verifying code.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("isVerifying") });
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("isVerifying")});
             return;
         }
 
@@ -250,13 +249,13 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             return;
         }
 
-        const now = Date.now();
+        const now = TimeManager.getInstance().currentTime;
         if (this._codeVerityGuard.req(now)) {
             this._lastVerifyCodeTime = now;
             this.server.net_verifyCode(this.generateSaltToken(), code);
         } else {
             Log4Ts.warn(AuthModuleC, `code verify request too frequently.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("verifyCodeTooFrequently") });
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeTooFrequently")});
         }
     }
 
@@ -264,7 +263,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
      * 是否 仍在验证过程.
      */
     public isVerifyCodeRunning(): boolean {
-        if (this._lastVerifyCodeTime === null || Date.now() - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME) {
+        if (this._lastVerifyCodeTime === null || TimeManager.getInstance().currentTime - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME) {
             this._lastVerifyCodeTime = null;
             return false;
         }
@@ -273,7 +272,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     }
 
     private generateSaltToken(): SaltToken {
-        const time = Date.now();
+        const time = TimeManager.getInstance().currentTime;
         return new SaltToken(
             AuthModuleS.encryptToken(this._originToken, time),
             time);
@@ -320,7 +319,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
      * @private
      */
     private isVerityCodeEnable(): boolean {
-        return this._lastVerifyCodeTime === null || Date.now() - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME;
+        return this._lastVerifyCodeTime === null || TimeManager.getInstance().currentTime - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME;
     }
 
     /**
@@ -329,9 +328,10 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
      * @param duration
      */
     public reportSubGameInfo(subGameType: SubGameTypes, duration: number) {
-        const thanLastReport = Date.now() - this._lastSubGameReportTime;
+        const now = TimeManager.getInstance().currentTime;
+        const thanLastReport = now - this._lastSubGameReportTime;
         if (thanLastReport > GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL && thanLastReport > duration) {
-            this._lastSubGameReportTime = Date.now();
+            this._lastSubGameReportTime = now;
             this.server.net_reportSubGameInfo(subGameType, duration);
         }
     }
@@ -341,7 +341,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     //#region Net Method
     public net_verifyFail() {
         this._lastVerifyCodeTime = null;
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("verifyCodeFail") });
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeFail")});
     }
 
     public net_enableEnter() {
@@ -406,7 +406,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
+            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -511,12 +511,12 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
+            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
+            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
             return false;
         }
 
@@ -548,12 +548,12 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.TEST_CODE_VERIFY_URL}`;
         console.log(url);
         const resp = await fetch(`${GameStart.instance.isRelease ?
-            AuthModuleS.RELEASE_CODE_VERIFY_URL :
-            AuthModuleS.TEST_CODE_VERIFY_URL}`,
+                AuthModuleS.RELEASE_CODE_VERIFY_URL :
+                AuthModuleS.TEST_CODE_VERIFY_URL}`,
             {
                 method: "POST",
                 headers: {
-                    'Content-Type': 'application/json;charset=UTF-8'
+                    "Content-Type": "application/json;charset=UTF-8",
                 },
                 body: JSON.stringify(body),
             });
@@ -656,21 +656,21 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         this
             .verifyEnterCode(code, uid)
             .then((value) => {
-                if (!value) {
-                    logState(
-                        AuthModuleS,
-                        "log",
-                        `verify failed.`,
-                        true,
-                        currPlayerId,
-                        uid,
-                    );
-                    this.getClient(currPlayerId)?.net_verifyFail();
-                    return;
-                }
-                this.recordPlayer(currPlayerId);
-                if (value) this.getClient(currPlayerId)?.net_enableEnter();
-            },
+                    if (!value) {
+                        logState(
+                            AuthModuleS,
+                            "log",
+                            `verify failed.`,
+                            true,
+                            currPlayerId,
+                            uid,
+                        );
+                        this.getClient(currPlayerId)?.net_verifyFail();
+                        return;
+                    }
+                    this.recordPlayer(currPlayerId);
+                    if (value) this.getClient(currPlayerId)?.net_enableEnter();
+                },
             )
             .catch((reason) => {
                 this.getClient(currPlayerId)?.net_verifyFail();
@@ -745,7 +745,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         this.reportSubGameInfo(this.currentPlayerId, subGameType, duration);
     }
 
-    /** 
+    /**
      * @description: 检测玩家是否有准入权限，没有且不在新手村就归位
      * @param playerId 玩家id
      */
@@ -761,6 +761,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             }
         }
     }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
