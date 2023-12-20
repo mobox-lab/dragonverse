@@ -315,14 +315,6 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     }
 
     /**
-     * 是否 允许请求 code 验证.
-     * @private
-     */
-    private isVerityCodeEnable(): boolean {
-        return this._lastVerifyCodeTime === null || TimeManager.getInstance().currentTime - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME;
-    }
-
-    /**
      * 上报子游戏信息.
      * @param subGameType
      * @param duration
