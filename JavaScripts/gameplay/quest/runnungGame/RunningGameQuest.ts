@@ -1,8 +1,8 @@
 /*
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-12 13:26:06
- * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-19 16:08:09
+ * @LastEditors: haoran.zhang haoran.zhang@appshahe.com
+ * @LastEditTime: 2023-12-20 16:58:11
  * @FilePath: \DragonVerse\JavaScripts\gameplay\quest\runnungGame\RunningGameQuest.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -262,7 +262,7 @@ export default class RunningGameQuest extends Quest {
 
     private runningGameAgain = () => {
         const character = Player.localPlayer.character;
-        character.switchToWalking();
+        //character.switchToWalking();
         character.movementEnabled = true;
         character.worldTransform.position = GameConfig.Global.RG_Start_Loc.vec;
     }
