@@ -20,6 +20,7 @@ import { CollectibleItemModuleC } from "../../module/collectible-item/Collectibl
 import { GenerableTypes } from "../../const/GenerableTypes";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
+import { RoleModuleC } from "../../module/role/RoleModule";
 
 /**
  * 主界面 全局提示 参数.
@@ -114,6 +115,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnBag.onPressed.add(showBag);
         this.btnBook.onPressed.add(showHandbook);
         this.btnCode.onPressed.add(showCode);
+        this.btnReset.onPressed.add(respawn);
         this.btnDragonBall.onPressed.add(this.onCatchClick);
 
         if (this.bagModule) {
@@ -211,6 +213,9 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.TryCollectCollectibleItem, this.onCollectClick));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, () => {
+            Log4Ts.log(MainPanel, `Player reset.`);
+        }));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -559,4 +564,10 @@ function showHandbook() {
 
 function showCode() {
     UIService.show(CodeVerifyPanel);
+}
+
+function respawn() {
+    Event.dispatchToLocal(EventDefine.PlayerReset);
+    Event.dispatchToServer(EventDefine.PlayerReset);
+    ModuleService.getModule(RoleModuleC)?.controller.respawn();
 }
