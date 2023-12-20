@@ -10,12 +10,12 @@
 
 @UIBind('UI/bag/BagItemIcon.ui')
 export default class BagItemIcon_Generate extends UIScript {
-		private mImgBG_Internal: mw.Image
-	public get mImgBG(): mw.Image {
-		if(!this.mImgBG_Internal&&this.uiWidgetBase) {
-			this.mImgBG_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mImgBG') as mw.Image
+		private mImgSelect_Internal: mw.Image
+	public get mImgSelect(): mw.Image {
+		if(!this.mImgSelect_Internal&&this.uiWidgetBase) {
+			this.mImgSelect_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mImgSelect') as mw.Image
 		}
-		return this.mImgBG_Internal
+		return this.mImgSelect_Internal
 	}
 	private mImgIcon_Internal: mw.Image
 	public get mImgIcon(): mw.Image {
@@ -38,12 +38,12 @@ export default class BagItemIcon_Generate extends UIScript {
 		}
 		return this.mItemNum_Internal
 	}
-	private mImgSelect_Internal: mw.Image
-	public get mImgSelect(): mw.Image {
-		if(!this.mImgSelect_Internal&&this.uiWidgetBase) {
-			this.mImgSelect_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mImgSelect') as mw.Image
+	private mItemNumBG_Internal: mw.Image
+	public get mItemNumBG(): mw.Image {
+		if(!this.mItemNumBG_Internal&&this.uiWidgetBase) {
+			this.mItemNumBG_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mItemNumBG') as mw.Image
 		}
-		return this.mImgSelect_Internal
+		return this.mItemNumBG_Internal
 	}
 
 
