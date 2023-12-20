@@ -499,6 +499,7 @@ export default class MainPanel extends MainPanel_Generate {
 
     private onProgressDone = () => {
         this._progressShowTask.backward();
+        let isReCatch: boolean = false;
 
         switch (this._currentInteractType) {
             case GenerableTypes.Null:
@@ -513,7 +514,7 @@ export default class MainPanel extends MainPanel_Generate {
                     this.endCatch();
                     this.showResult(true, GenerableTypes.SceneDragon);
                 } else {
-                    this.prepareCatch();
+                    isReCatch = true;
                     this.showResult(false, GenerableTypes.SceneDragon);
                 }
                 break;
@@ -532,6 +533,9 @@ export default class MainPanel extends MainPanel_Generate {
                 Log4Ts.warn(MainPanel, `type not supported.`);
         }
         this._currentInteractType = GenerableTypes.Null;
+        if (isReCatch) {
+            this.prepareCatch();
+        }
     };
 
     private onEnablePlayerEnter() {
