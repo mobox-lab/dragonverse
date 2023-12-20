@@ -1,13 +1,15 @@
+import { GameConfig } from "../../config/GameConfig";
+import { INpcElement } from "../../config/Npc";
 import { EventDefine } from "../../const/EventDefine";
-import PlayerInteractNpcEventArgs from "./trigger/PlayerInteractNpcEventArgs";
-import { INpcElement, NpcConfig } from "../../config/Npc";
+import { HeadUIController, HeadUIType } from "../../controller/HeadUIController";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 import DialogueManager, {
     isDialogueContentNodeHasNextId,
     validDialogueContentNodeId,
 } from "../../gameplay/dialogue/DialogueManager";
-import { GameConfig } from "../../config/GameConfig";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import i18n from "../../language/i18n";
 import GToolkit from "../../util/GToolkit";
+import PlayerInteractNpcEventArgs from "./trigger/PlayerInteractNpcEventArgs";
 
 /**
  * Npc.
@@ -76,6 +78,7 @@ export default class NpcBehavior extends mw.Script {
         //#endregion ------------------------------------------------------------------------------------------
 
         this._npcCharacter = this.gameObject.getChildByName("mesh") as Character;
+
         this._oriPos = this._npcCharacter.worldTransform.position;
         this._oriRot = this._npcCharacter.worldTransform.rotation;
         //随机放一个动作
@@ -86,6 +89,9 @@ export default class NpcBehavior extends mw.Script {
             this._npcBasicAni.loop = 0;
             this._npcBasicAni.play();
         }
+
+        HeadUIController.getInstance().registerHeadUI(this._npcCharacter, HeadUIType.NPC, i18n.lan(GameConfig.Character.getElement(this._config.characterId)?.name ?? 'null'))
+
 
 
     }
@@ -198,7 +204,7 @@ export default class NpcBehavior extends mw.Script {
      */
     public showNpcAction(actionId: number, npcId: number) {
         this.stopNpcAction();
-        if (this._config.id === npcId) {
+        if (this._config.characterId === npcId) {
             let config = GameConfig.NPCAction.getElement(actionId);
             if (config.type === 1) {
                 this._currentAni = this._npcCharacter.loadAnimation(config.actionGuid);

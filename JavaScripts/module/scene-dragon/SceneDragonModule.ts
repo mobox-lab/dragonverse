@@ -14,7 +14,7 @@ import AreaManager from "../../gameplay/area/AreaManager";
 import GameObject = mw.GameObject;
 import noReply = mwext.Decorator.noReply;
 import { IPoint3 } from "../../util/area/Shape";
-import { BagTypes } from "../bag/BagItemCluster";
+import { BagTypes } from "../../const/ForeignKeyIndexer";
 import { DragonSyncKeyEventArgs } from "../../ui/scene-dragon/SceneDragonInteractorPanel";
 
 /**
@@ -49,6 +49,7 @@ export default class SceneDragonModuleData extends Subdata {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonModuleData> {
+
 //#region Constant
     public static readonly PREFAB_MAP: Map<number, string> = new Map();
 
@@ -94,11 +95,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
      */
     public syncItemMap: Map<string, SceneDragonExistInfo> = new Map();
 
-    /**
-     * 待场景龙映射.
-     */
-    public collectCandidates: string[] = [];
-
     private _mainPanel: MainPanel;
 
     private _eventListeners: EventListener[] = [];
@@ -106,6 +102,15 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     private _lockingSyncKey: string = null;
 
     private _lockTimerId: number = null;
+
+    private _currentCatchResultSyncKey: string = null;
+
+    /**
+     * 当前捕捉结果.
+     */
+    public get currentCatchResultSyncKey(): string {
+        return this._currentCatchResultSyncKey;
+    }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -123,7 +128,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
 //#region Event Subscribe
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOutOfAliveRange, this.onDragonOutOfAliveRange));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatch, this.onDragonCatch));
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -157,13 +161,15 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             return;
         }
 
+        let isSame = false;
         Log4Ts.log(SceneDragonModuleC, `lock on SceneDragon. syncKey: ${syncKey}`);
         if (this._lockingSyncKey) {
             if (this._lockingSyncKey !== syncKey) {
                 Log4Ts.log(SceneDragonModuleC, `already lock on another SceneDragon. origin syncKey: ${this._lockingSyncKey}`);
                 this.unlockWithView();
             } else {
-                Log4Ts.log(SceneDragonModuleC, `already lock on SceneDragon.`);
+                Log4Ts.log(SceneDragonModuleC, `already lock on same SceneDragon.`);
+                isSame = true;
                 if (this._lockTimerId) {
                     clearTimeout(this._lockTimerId);
                     this._lockTimerId = null;
@@ -171,51 +177,74 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             }
         }
 
-        this._lockingSyncKey = syncKey;
-        this._lockTimerId = setTimeout(() => {
-                this.unlockWithView();
-            },
-            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION);
+        this.lockWithView(syncKey);
 
-        Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        if (!isSame) {
+            Log4Ts.log(SceneDragonModuleC, `dispatch on lock event.`);
+            Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        }
     }
 
     /**
-     * 客户端 捕捉.
-     * @param syncKey
+     * 尝试捕捉.
      */
-    public catch(syncKey: string) {
-        Log4Ts.log(SceneDragonModuleC, `try collect item.`);
-        if (!this.syncItemMap.has(syncKey)) {
+    public tryCatch() {
+        const syncKey = this._lockingSyncKey;
+        if (GToolkit.isNullOrEmpty(syncKey)) {
+            Log4Ts.warn(SceneDragonModuleC, `current locking sync key is null.`);
+            return;
+        }
+        Log4Ts.log(SceneDragonModuleC, `try catch item.`);
+        this._currentCatchResultSyncKey = null;
+
+        const item: SceneDragon = this.getSceneDragonBySyncKey(syncKey);
+        if (!item) {
             Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${syncKey}`);
             return;
         }
-
-        const item: SceneDragon = this.syncItemMap.get(syncKey).behavior.data;
         Log4Ts.log(SceneDragonModuleC, item.info());
         if (!item.isCatchable) {
-            Log4Ts.warn(SceneDragonModuleC, `item un collectible. waiting for delete.`);
+            Log4Ts.warn(SceneDragonModuleC, `item un catchable. waiting for delete.`);
             return;
         }
 
-        const success: boolean = GToolkit.randomWeight([SceneDragon.successRateAlgo(item.id)()], 1) === 0;
-        if (!success) {
-            Log4Ts.log(SceneDragonModuleC, `collect fail`);
-            return;
-        }
-
-        Log4Ts.log(SceneDragonModuleC, `collect success. last collect count: ${item.hitPoint}`);
-        item.catch();
-        this.server.net_catch(syncKey).then(
+        this.keepLockWithView();
+        this.server.net_tryCatch(syncKey).then(
             (value) => {
                 if (value) {
-                    this.unlockWithView();
-                    Event.dispatchToLocal(EventDefine.DragonCatchSuccess, syncKey);
+                    this._currentCatchResultSyncKey = syncKey;
                 } else {
-                    Event.dispatchToLocal(EventDefine.DragonCatchFail, syncKey);
+                    this.lock(syncKey);
                 }
             },
         );
+    }
+
+    /**
+     * 接受捕捉.
+     */
+    public acceptCatch(): boolean {
+        this.unlockWithView();
+        if (GToolkit.isNullOrEmpty(this._currentCatchResultSyncKey)) {
+            Log4Ts.warn(SceneDragonModuleC, `current catch result is null or wrong when accept catch.`);
+            return;
+        }
+
+        const item: SceneDragon = this.getSceneDragonBySyncKey(this._currentCatchResultSyncKey);
+        if (!item) {
+            Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${this._currentCatchResultSyncKey}`);
+            return;
+        }
+        Log4Ts.log(SceneDragonModuleC, "item accepted catch.", item.info());
+        if (!item.isCatchable) {
+            Log4Ts.warn(SceneDragonModuleC, `item un catchable. waiting for delete.`);
+            return;
+        }
+
+        this.unlockWithView();
+        item.catch();
+        this.server.net_acceptCatch(this._currentCatchResultSyncKey);
+        this._currentCatchResultSyncKey = null;
     }
 
     private generate(syncKey: string, item: SceneDragon) {
@@ -246,11 +275,34 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     }
 
     private unlockWithView() {
+        this._lockingSyncKey = null;
         Event.dispatchToLocal(EventDefine.DragonOnUnlock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        if (this._lockTimerId !== null) {
+            clearTimeout(this._lockTimerId);
+            this._lockTimerId = null;
+        }
+    }
+
+    private lockWithView(syncKey: string) {
+        if (this._lockTimerId !== null) {
+            this.unlockWithView();
+        }
+        this._lockingSyncKey = syncKey;
+        this._lockTimerId = setTimeout(
+            () => this.unlockWithView(),
+            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
+        );
+    }
+
+    private keepLockWithView() {
         if (this._lockTimerId) {
             clearTimeout(this._lockTimerId);
             this._lockTimerId = null;
         }
+    }
+
+    private getSceneDragonBySyncKey(syncKey: string): SceneDragon | null {
+        return this.syncItemMap.get(syncKey)?.behavior?.data ?? null;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -282,16 +334,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         this.server.net_destroy(syncKey);
     };
 
-    private onDragonCatch = () => {
-        if (!this._lockingSyncKey) {
-            Log4Ts.warn(SceneDragonModuleC, `player wanna catch dragon. current lock syncKey not exist.`);
-            return;
-        }
-        Log4Ts.log(SceneDragonModuleC, `player wanna catch dragon. current lock syncKey: ${this._lockingSyncKey}`);
-
-        this.catch(this._lockingSyncKey);
-    };
-
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -316,6 +358,14 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      *  - value SceneDragon.
      */
     public syncItemMap: Map<string, SceneDragon> = new Map();
+
+    /**
+     * 全场景龙 资源锁.
+     *  - key sync key.
+     *  - value playerId.
+     *      - 未上锁时为 null.
+     */
+    private _syncLocker: Map<string, number> = new Map();
 
     private _generateRegulator: Regulator = new Regulator(GameServiceConfig.TRY_GENERATE_INTERVAL);
 
@@ -378,7 +428,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
-        this.removePlayerRecord(player.playerId);
+        this.removePrivateRecord(player.playerId);
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -438,10 +488,16 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     }
 
     /**
-     * 移除玩家.
+     * 移除私有记录.
      * @param playerId
      */
-    private removePlayerRecord(playerId: number): void {
+    private removePrivateRecord(playerId: number): void {
+        Enumerable
+            .from(this.existenceItemMap.get(playerId))
+            .forEach(key => {
+                this.syncItemMap.delete(key);
+                this._syncLocker.delete(key);
+            });
         this.existenceItemMap.delete(playerId);
     }
 
@@ -498,6 +554,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         array.push(syncKey);
         this.syncItemMap.set(syncKey, item);
+        this._syncLocker.set(syncKey, null);
 
         Log4Ts.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
 
@@ -528,8 +585,9 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             Log4Ts.error(SceneDragonModuleS, `destroy item is null`);
             return;
         }
-        Log4Ts.log(SceneDragonModuleS, () => `try destroy item, itemId: ${item.id}.`);
-        Log4Ts.log(SceneDragonModuleS, () => `    reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
+        Log4Ts.log(SceneDragonModuleS,
+            () => `try destroy item, itemId: ${item.id}.`,
+            () => `reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
@@ -545,35 +603,91 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         item.destroy();
         Log4Ts.log(SceneDragonModuleS, `destroy item success. syncKey: ${syncKey}`);
 
+        this.syncItemMap.delete(syncKey);
+        this._syncLocker.delete(syncKey);
         this.getClient(playerId).net_destroy(syncKey);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
-    public net_catch(syncKey: string): Promise<boolean> {
+    public net_tryCatch(syncKey: string): Promise<boolean> {
+        const currPlayerId = this.currentPlayerId;
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            Log4Ts.error(SceneDragonModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
+            Log4Ts.error(SceneDragonModuleS, `item not exist in server when catch. syncKey: ${syncKey} `);
             return Promise.resolve(false);
         }
-        Log4Ts.log(SceneDragonModuleS, `try collect item. ${item.info()}`);
-        item.catch();
-        this._bagModuleS.addItem(this.currentPlayerId, SceneDragon.bagId(item.id), 1);
-        if (!item.isCatchable) {
-            this.destroy(this.currentPlayerId, syncKey);
+        Log4Ts.log(SceneDragonModuleS,
+            `try catch item.`,
+            `syncKey: ${syncKey}`,
+            `${item.info()}`);
+        if (this._syncLocker.get(syncKey) !== null) {
+            Log4Ts.log(SceneDragonModuleS, `item already locked.`);
+            return Promise.resolve(false);
         }
-        return Promise.resolve(true);
+
+        const success: boolean = GToolkit.randomWeight([SceneDragon.successRateAlgo(item.id)()], 1) === 0;
+        if (!success) {
+            Log4Ts.log(SceneDragonModuleC, `catch fail. failed the success rate check.`);
+            return Promise.resolve(false);
+        } else {
+            Log4Ts.log(SceneDragonModuleS, `item locked.`);
+            this._syncLocker.set(syncKey, currPlayerId);
+            return Promise.resolve(true);
+        }
+    }
+
+    @noReply()
+    public net_acceptCatch(syncKey: string) {
+        const currPlayerId = this.currentPlayerId;
+        const item = this.syncItemMap.get(syncKey);
+        if (!item) {
+            Log4Ts.error(SceneDragonModuleS, `item not exist in server when catch. syncKey: ${syncKey} `);
+            return;
+        }
+        Log4Ts.log(SceneDragonModuleS,
+            `accept catch item.`,
+            `syncKey: ${syncKey}`,
+            `${item.info()}`);
+        if (this._syncLocker.get(syncKey) !== currPlayerId) {
+            Log4Ts.log(SceneDragonModuleS,
+                `item locker illegal.`,
+                `current locker: ${this._syncLocker.get(syncKey)}.`,
+                `request locker: ${syncKey}.`);
+            return;
+        }
+
+        item.catch();
+        this._bagModuleS.addItem(currPlayerId, SceneDragon.bagId(item.id), 1);
+        if (!item.isCatchable) {
+            this.destroy(currPlayerId, syncKey);
+        }
+        return;
     }
 
     @noReply()
     public net_destroy(syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            Log4Ts.error(SceneDragonModuleS, `item not exist in server when destroy. syncKey: ${syncKey} `);
+            Log4Ts.error(SceneDragonModuleS, `
+            item;
+            not;
+            exist in server;
+            when;
+            destroy.syncKey;
+        : ${syncKey}
+            `);
             return;
         }
-        Log4Ts.log(SceneDragonModuleS, `try destroy item. ${item.info()}`);
+        Log4Ts.log(SceneDragonModuleS, `;
+            try
+            destroy;
+            item.$;
+            {
+                item.info();
+            }
+            `);
         this.destroy(this.currentPlayerId, syncKey);
     }
 

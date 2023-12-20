@@ -2,17 +2,25 @@ import BagMain_Generate from "../../ui-generate/bag/BagMain_generate";
 import ScrollView from "../../depend/scroll-view/ScrollView";
 import { BagItemUnique, BagModuleC } from "../../module/bag/BagModule";
 import BagPanelItem from "./BagPanelItem";
-import ModuleService = mwext.ModuleService;
 import GToolkit from "../../util/GToolkit";
 import { GameConfig } from "../../config/GameConfig";
 import i18n from "../../language/i18n";
 import { Yoact } from "../../depend/yoact/Yoact";
+import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
+import ModuleService = mwext.ModuleService;
 import bindYoact = Yoact.bindYoact;
 import stopEffect = Yoact.stopEffect;
+import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 
 export default class BagPanel extends BagMain_Generate {
+//#region Constant
+    public static readonly FOLLOW_BTN_IMG_GUID = "250170";
+    public static readonly REST_BTN_IMG_GUID = "250175";
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 //#region Member
     private _bagModule: BagModuleC;
+    private _dragonModule: CompanionModule_C;
     private _scrollView: ScrollView<BagItemUnique, BagPanelItem>;
 
     private _selectEffects: Yoact.Effect[] = [];
@@ -29,6 +37,7 @@ export default class BagPanel extends BagMain_Generate {
             () => UIService.hide(BagPanel),
         );
         this._bagModule = ModuleService.getModule(BagModuleC);
+        this._dragonModule = ModuleService.getModule(CompanionModule_C);
         this._scrollView = new ScrollView<BagItemUnique, BagPanelItem>(
             this._bagModule.bagItemYoact,
             BagPanelItem,
@@ -55,6 +64,17 @@ export default class BagPanel extends BagMain_Generate {
             this._selectEffects.push(bindYoact(() => {
                 this.mNum.text = i18n.lan("数量") + `${data.count}`;
             }));
+
+            if (ForeignKeyIndexer.getInstance().isBagItemType(data.id, BagTypes.Dragon)) {
+                GToolkit.trySetVisibility(this.mBtnOpt, true);
+                if (this._dragonModule.getCurrentShowupBagId() === data.id) {
+                    this.showRestBtn(data.id);
+                } else {
+                    this.showFollowBtn(data.id);
+                }
+            } else {
+                GToolkit.trySetVisibility(this.mBtnOpt, false);
+            }
         });
 //#endregion ------------------------------------------------------------------------------------------
 
@@ -81,6 +101,45 @@ export default class BagPanel extends BagMain_Generate {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region UI Behavior
+    private showRestBtn(id: number) {
+        if (this.mBtnOpt.normalImageGuid === BagPanel.REST_BTN_IMG_GUID) return;
+        GToolkit.setButtonGuid(this.mBtnOpt, BagPanel.REST_BTN_IMG_GUID);
+        this.mBtnOpt.text = i18n.lan(i18n.keyTable.Bag_005);
+        this.mBtnOpt.onClicked.clear();
+        this.mBtnOpt.onClicked.add(
+            () => {
+                this._dragonModule.showUpCompanion(id, false).then((value) => {
+                        if (this._scrollView.currentSelectId === value) {
+                            this.showRestBtn(this._scrollView.currentSelectId);
+                        } else {
+                            this.showFollowBtn(this._scrollView.currentSelectId);
+                        }
+                    },
+                );
+                this.showFollowBtn(id);
+            },
+        );
+    }
+
+    private showFollowBtn(id: number) {
+        if (this.mBtnOpt.normalImageGuid === BagPanel.FOLLOW_BTN_IMG_GUID) return;
+        this.mBtnOpt.text = i18n.lan(i18n.keyTable.Bag_004);
+        GToolkit.setButtonGuid(this.mBtnOpt, BagPanel.FOLLOW_BTN_IMG_GUID);
+        this.mBtnOpt.onClicked.clear();
+        this.mBtnOpt.onClicked.add(
+            () => {
+                this._dragonModule.showUpCompanion(id, true).then((value) => {
+                    if (this._scrollView.currentSelectId === value) {
+                        this.showRestBtn(this._scrollView.currentSelectId);
+                    } else {
+                        this.showFollowBtn(this._scrollView.currentSelectId);
+                    }
+                });
+                this.showRestBtn(id);
+            },
+        );
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Callback

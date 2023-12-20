@@ -7,11 +7,19 @@ import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteracto
 import GToolkit from "../../util/GToolkit";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import GlobalPromptPanel from "./GlobalPromptPanel";
-import AccountService = mw.AccountService;
 import Waterween from "../../depend/waterween/Waterween";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import { AuthModuleC } from "../../module/auth/AuthModule";
+import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
+import { BagModuleC } from "../../module/bag/BagModule";
+import { Yoact } from "../../depend/yoact/Yoact";
+import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
+import i18n from "../../language/i18n";
+import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
+import AccountService = mw.AccountService;
+import bindYoact = Yoact.bindYoact;
+import { GenerableTypes } from "../../const/GenerableTypes";
 
 /**
  * 主界面 全局提示 参数.
@@ -45,11 +53,44 @@ export default class MainPanel extends MainPanel_Generate {
     private _sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
     private _promptPanel: GlobalPromptPanel;
 
-    private _catchResult: boolean = false;
+    private _sceneDragonModule: SceneDragonModuleC = null;
+
+    public get sceneDragonModule(): SceneDragonModuleC | null {
+        if (!this._sceneDragonModule) {
+            this._sceneDragonModule = ModuleService.getModule(SceneDragonModuleC) ?? null;
+        }
+        return this._sceneDragonModule;
+    }
+
+    private _collectibleItemModule: CollectibleItemModuleC = null;
+
+    public get collectibleItemModule(): CollectibleItemModuleC | null {
+        if (!this._collectibleItemModule) {
+            this._collectibleItemModule = ModuleService.getModule(CollectibleItemModuleC) ?? null;
+        }
+        return this._collectibleItemModule;
+    }
+
+    private _bagModule: BagModuleC = null;
+
+    public get bagModule(): BagModuleC | null {
+        if (!this._bagModule) {
+            this._bagModule = ModuleService.getModule(BagModuleC) ?? null;
+        }
+        return this._bagModule;
+    }
 
     private _progressTask: AdvancedTweenTask<number>;
 
+    private _progressShowTask: AdvancedTweenTask<number>;
+
     private _pointerTask: AdvancedTweenTask<number>;
+
+    private _successTask: TweenTaskGroup;
+
+    private _failTask: TweenTaskGroup;
+
+    private _currentInteractType: GenerableTypes = GenerableTypes.Null;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -70,12 +111,20 @@ export default class MainPanel extends MainPanel_Generate {
                 });
             }
         });
-
-
         this.btnBag.onPressed.add(showBag);
         this.btnBook.onPressed.add(showHandbook);
         this.btnCode.onPressed.add(showCode);
         this.btnDragonBall.onPressed.add(this.onCatchClick);
+
+        if (this.bagModule) {
+            bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
+        } else {
+            const listener = Event.addLocalListener(EventDefine.BagModuleClientReady, () => {
+                bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
+                listener.disconnect();
+            });
+        }
+
         this._progressTask =
             Waterween
                 .to(
@@ -88,8 +137,17 @@ export default class MainPanel extends MainPanel_Generate {
         this._progressTask.onDone.add((param) => {
             if (param) return;
             this.onProgressDone();
-
         });
+
+        this._progressShowTask =
+            Waterween
+                .to(
+                    () => this.cnvProgressBar.renderOpacity,
+                    (val) => this.cnvProgressBar.renderOpacity = val,
+                    1,
+                    0.5e3,
+                    0,
+                ).restart(true);
 
         this._pointerTask =
             Waterween
@@ -103,6 +161,43 @@ export default class MainPanel extends MainPanel_Generate {
                 .restart(true)
                 .pingPong();
 
+        this._successTask = Waterween.group(
+            () => {
+                return this.imgOperationSuccess.renderOpacity;
+            },
+            (val) => {
+                this.imgOperationSuccess.renderOpacity = val;
+                this.txtOperationFeedback.renderOpacity = val;
+            },
+            [
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
+            ],
+            1);
+
+        this._failTask = Waterween.group(
+            () => {
+                return this.imgOperationFail.renderOpacity;
+            },
+            (val) => {
+                this.imgOperationFail.renderOpacity = val;
+                this.txtOperationFeedback.renderOpacity = val;
+            },
+            [
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
+            ],
+            1);
+
+        ModuleService.ready().then(() => {
+            let res = ModuleService.getModule(AuthModuleC).canEnterGame();
+            if (!res) {
+                this.cnvDragonBall.visibility = SlateVisibility.Hidden;
+            } else {
+                this.btnCode.visibility = SlateVisibility.Hidden;
+            }
+        });
+
         this.init();
         //#endregion ------------------------------------------------------------------------------------------
 
@@ -113,10 +208,9 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, this.onPlayerTryCatch));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, this.onPlayerEndCatch));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatchSuccess, this.onPlayerEndCatch));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonCatchFail, this.onPlayerEndCatch));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.TryCollectCollectibleItem, this.onCollectClick));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -144,9 +238,9 @@ export default class MainPanel extends MainPanel_Generate {
      * 注意：这之后UI对象已经被销毁了，需要移除所有对该文件和UI相关对象以及子对象的引用
      */
     protected onDestroy() {
-        //#region Event Unsubscribe
+//#region Event Unsubscribe
         this._eventListeners.forEach(value => value.disconnect());
-        //#endregion ------------------------------------------------------------------------------------------
+//#endregion ------------------------------------------------------------------------------------------
     }
 
     /**
@@ -247,9 +341,12 @@ export default class MainPanel extends MainPanel_Generate {
 
     //#region Init
     public init() {
-        GToolkit.trySetVisibility(this.cnvProgressBar, false);
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
         UIService.hideUI(this._promptPanel);
+        this.imgOperationFail.renderOpacity = 0;
+        this.imgOperationSuccess.renderOpacity = 0;
+        this.txtOperationFeedback.renderOpacity = 0;
+        this.btnDragonBall.enable = false;
 
         this.refreshAvatar();
 
@@ -307,7 +404,10 @@ export default class MainPanel extends MainPanel_Generate {
      * 待捕捉态.
      */
     public prepareCatch() {
-        this._catchResult = false;
+        if (this._currentInteractType !== GenerableTypes.Null) return;
+
+        this._currentInteractType = GenerableTypes.SceneDragon;
+        this.btnDragonBall.enable = true;
         GToolkit.trySetVisibility(this.cnvDragonBall, true);
         this._pointerTask.restart();
     }
@@ -315,21 +415,65 @@ export default class MainPanel extends MainPanel_Generate {
     /**
      * 捕捉.
      */
-    public catch() {
+    public tryCatch() {
+        this.btnDragonBall.enable = false;
         this._pointerTask.pause();
-        this._progressTask.restart();
-        Event.dispatchToLocal(EventDefine.DragonCatch);
+        this.sceneDragonModule?.tryCatch();
+        this.playProgress();
+    }
+
+    /**
+     * 收集.
+     */
+    public tryCollect(syncKey: string) {
+        if (this._currentInteractType) return;
+        if (this.collectibleItemModule?.isCollecting ?? true) return;
+
+        this._currentInteractType = GenerableTypes.CollectibleItem;
+        this.collectibleItemModule?.tryCollect(syncKey);
+        this.playProgress();
     }
 
     /**
      * 捕捉完成.
      */
     public endCatch() {
+        this._currentInteractType = GenerableTypes.Null;
+        this.btnDragonBall.enable = false;
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
     }
 
+    /**
+     * 播放 Progress 动画.
+     */
     public playProgress() {
+        this._progressShowTask.forward();
         this._progressTask.restart();
+    }
+
+    public showResult(isSuccess: boolean, type: GenerableTypes) {
+        const focusTask = isSuccess ? this._successTask : this._failTask;
+        const anotherTask = isSuccess ? this._failTask : this._successTask;
+
+        if (!anotherTask.isPause) {
+            anotherTask.restart(true);
+            if (isSuccess) {
+                this.imgOperationFail.renderOpacity = 0;
+            } else {
+                this.imgOperationSuccess.renderOpacity = 0;
+            }
+        }
+        switch (type) {
+            case GenerableTypes.SceneDragon:
+                this.txtOperationFeedback.text = i18n.lan(isSuccess ? i18n.keyTable.Catch_002 : i18n.keyTable.Catch_003);
+                break;
+            case GenerableTypes.CollectibleItem:
+                this.txtOperationFeedback.text = i18n.lan(isSuccess ? i18n.keyTable.Collection_002 : i18n.keyTable.Collection_003);
+                break;
+            default:
+                break;
+        }
+        focusTask.restart();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -339,29 +483,55 @@ export default class MainPanel extends MainPanel_Generate {
         this.showGlobalPrompt(args.message);
     };
 
-    private onCatchClick = () => {
-        this.catch();
-    };
+    private onCatchClick = () => this.tryCatch();
+
+    private onCollectClick = (syncKey: string) => this.tryCollect(syncKey);
 
     private onPlayerTryCatch = () => {
+        Log4Ts.log(MainPanel, `try catch`);
         this.prepareCatch();
     };
 
     private onPlayerEndCatch = () => {
+        Log4Ts.log(MainPanel, `end catch`);
         this.endCatch();
-    };
-
-    private onDragonCatchSuccess = () => {
-        this._catchResult = true;
-    };
-
-    private onDragonCatchFail = () => {
-        this.prepareCatch();
     };
 
     private onProgressDone = () => {
-        Log4Ts.log(MainPanel, `catch result: ${this._catchResult}`);
-        this.endCatch();
+        this._progressShowTask.backward();
+
+        switch (this._currentInteractType) {
+            case GenerableTypes.Null:
+                Log4Ts.warn(MainPanel, `there is no interact behavior.`);
+                break;
+            case GenerableTypes.SceneDragon:
+                const catchResult = !GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
+                Log4Ts.log(MainPanel, `catch result: ${catchResult}`);
+                if (catchResult) {
+                    GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
+                    this.sceneDragonModule?.acceptCatch();
+                    this.endCatch();
+                    this.showResult(true, GenerableTypes.SceneDragon);
+                } else {
+                    this.prepareCatch();
+                    this.showResult(false, GenerableTypes.SceneDragon);
+                }
+                break;
+            case GenerableTypes.CollectibleItem:
+                const collectResult = !GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
+                Log4Ts.log(MainPanel, `collect result: ${collectResult}`);
+                if (collectResult) {
+                    GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
+                    this.collectibleItemModule?.acceptCollect();
+                    this.showResult(true, GenerableTypes.CollectibleItem);
+                } else {
+                    this.showResult(false, GenerableTypes.CollectibleItem);
+                }
+                break;
+            default:
+                Log4Ts.warn(MainPanel, `type not supported.`);
+        }
+        this._currentInteractType = GenerableTypes.Null;
     };
 
     private onEnablePlayerEnter() {
@@ -371,6 +541,7 @@ export default class MainPanel extends MainPanel_Generate {
     private onDisablePlayerEnter() {
         this.cnvDragonBall.visibility = SlateVisibility.Hidden;
     }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -383,6 +554,5 @@ function showHandbook() {
 }
 
 function showCode() {
-    //TODO_LviatYi Show Code 验证页面.
     UIService.show(CodeVerifyPanel);
 }

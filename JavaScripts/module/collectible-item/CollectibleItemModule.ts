@@ -17,7 +17,9 @@ import GameObject = mw.GameObject;
 import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import EventListener = mw.EventListener;
 import { IPoint3 } from "../../util/area/Shape";
-import { BagTypes } from "../bag/BagItemCluster";
+import { BagTypes } from "../../const/ForeignKeyIndexer";
+import SceneDragon from "../scene-dragon/SceneDragon";
+import Enum = UE.Enum;
 
 export default class CollectibleItemModuleData extends Subdata {
     //@Decorator.persistence()
@@ -87,6 +89,22 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
     private _mainPanel: MainPanel;
 
     private _eventListeners: EventListener[] = [];
+
+    private _currentCollectResultSyncKey: string = null;
+
+    /**
+     * 当前采集结果.
+     */
+    public get currentCollectResultSyncKey(): string {
+        return this._currentCollectResultSyncKey;
+    }
+
+    private _isCollecting: boolean = false;
+
+    public get isCollecting(): boolean {
+        return this._isCollecting;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -131,15 +149,16 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 
 //#region Method
     /**
-     * 客户端 采集.
+     * 尝试采集.
      * @param syncKey
      */
-    public collect(syncKey: string) {
+    public tryCollect(syncKey: string) {
         Log4Ts.log(CollectibleItemModuleC, `try collect item.`);
         if (!this.syncItemMap.has(syncKey)) {
             Log4Ts.log(CollectibleItemModuleC, `item not exist in client when collect. syncKey: ${syncKey}`);
             return;
         }
+        this._currentCollectResultSyncKey = null;
 
         const item = this.syncItemMap.get(syncKey).item;
         Log4Ts.log(CollectibleItemModuleC, item.info());
@@ -148,15 +167,34 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
             return;
         }
 
-        const success: boolean = GToolkit.randomWeight([CollectibleItem.successRate(item.id)], 1) === 0;
-        if (!success) {
-            Log4Ts.log(CollectibleItemModuleC, `collect fail`);
+        this._isCollecting = true;
+
+        this.server.net_tryCollectItem(syncKey).then(
+            (value) => {
+                if (value) this._currentCollectResultSyncKey = syncKey;
+            },
+        );
+    }
+
+    /**
+     * 接受采集.
+     */
+    public acceptCollect(): boolean {
+        if (GToolkit.isNullOrEmpty(this._currentCollectResultSyncKey)) {
+            Log4Ts.warn(CollectibleItemModuleC, `current collect result is null or wrong when accept catch.`);
             return;
         }
 
-        Log4Ts.log(CollectibleItemModuleC, `collect success. last collect count: ${item.hitPoint}`);
-        this.server.net_collectItem(syncKey);
+        const item = this.syncItemMap.get(this._currentCollectResultSyncKey).item;
+        Log4Ts.log(CollectibleItemModuleC, item.info());
+        if (!item.isCollectible) {
+            Log4Ts.warn(CollectibleItemModuleC, `item un collectible. waiting for delete.`);
+            return;
+        }
         item.collect();
+        this._isCollecting = false;
+        this.server.net_acceptCollect(this._currentCollectResultSyncKey);
+        this._currentCollectResultSyncKey = null;
     }
 
     private generate(syncKey: string, item: CollectibleItem) {
@@ -246,6 +284,14 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      */
     public syncItemMap: Map<string, CollectibleItem> = new Map();
 
+    /**
+     * 全采集物 资源锁.
+     *  - key sync key.
+     *  - value playerId.
+     *      - 未上锁时为 null.
+     */
+    private _syncLocker: Map<string, number> = new Map();
+
     private _generateRegulator: Regulator = new Regulator(GameServiceConfig.TRY_GENERATE_INTERVAL);
 
     /**
@@ -305,7 +351,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
         this._generateLocationsMap.delete(player.playerId);
-        this.removePlayerRecord(player.playerId);
+        this.removePrivateRecord(player.playerId);
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -378,10 +424,16 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     }
 
     /**
-     * 移除玩家.
+     * 移除私有记录.
      * @param playerId
      */
-    private removePlayerRecord(playerId: number): void {
+    private removePrivateRecord(playerId: number): void {
+        Enumerable
+            .from(this.existenceItemMap.get(playerId))
+            .forEach(key => {
+                this.syncItemMap.delete(key);
+                this._syncLocker.delete(key);
+            });
         this.existenceItemMap.delete(playerId);
     }
 
@@ -467,10 +519,11 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             Log4Ts.error(CollectibleItemModuleS, `destroy item is null`);
             return;
         }
-        Log4Ts.log(CollectibleItemModuleS, `try destroy item, itemId: ${item.id}.`,
-            () => `  reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`,
-            () => `  current count: ${this.getItemExistenceCount(playerId, item.id)}.`,
-            () => `  max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
+        Log4Ts.log(CollectibleItemModuleS,
+            `try destroy item, itemId: ${item.id}.`,
+            () => `reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`,
+            () => `current count: ${this.getItemExistenceCount(playerId, item.id)}.`,
+            () => `max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
@@ -493,25 +546,65 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         item.destroy();
         Log4Ts.log(CollectibleItemModuleS, `destroy item success. syncKey: ${syncKey}`);
 
+        this.syncItemMap.delete(syncKey);
+        this._syncLocker.delete(syncKey);
         this.getClient(playerId).net_destroy(syncKey);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
-    @noReply()
-    public net_collectItem(syncKey: string) {
+    public net_tryCollectItem(syncKey: string): Promise<boolean> {
+        const currPlayerId = this.currentPlayerId;
+        const item = this.syncItemMap.get(syncKey);
+        if (!item) {
+            Log4Ts.error(CollectibleItemModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
+            return Promise.resolve(false);
+        }
+        Log4Ts.log(CollectibleItemModuleS, `try collect item. ${item.info()}`);
+        const locker = this._syncLocker.get(syncKey);
+        if (locker === null || locker !== currPlayerId) {
+            Log4Ts.log(CollectibleItemModuleS, `locker of item illegal.`);
+            return Promise.resolve(false);
+        }
+
+
+        const success: boolean = GToolkit.randomWeight([CollectibleItem.successRate(item.id)], 1) === 0;
+        if (!success) {
+            Log4Ts.log(CollectibleItemModuleC, `collect fail. failed the success rate check.`);
+            return Promise.resolve(false);
+        } else {
+            Log4Ts.log(CollectibleItemModuleS, `item locked.`);
+            this._syncLocker.set(syncKey, currPlayerId);
+            return Promise.resolve(true);
+        }
+    }
+
+    public net_acceptCollect(syncKey: string) {
+        const currPlayerId = this.currentPlayerId;
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
             Log4Ts.error(CollectibleItemModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
             return;
         }
-        Log4Ts.log(CollectibleItemModuleS, `try collect item. ${item.info()}`);
-        item.collect();
-        this._bagModuleS.addItem(this.currentPlayerId, CollectibleItem.bagId(item.id), 1);
-        if (!item.isCollectible) {
-            this.destroy(this.currentPlayerId, syncKey);
+        Log4Ts.log(CollectibleItemModuleS,
+            `accept collect item.`,
+            `syncKey: ${syncKey}`,
+            `${item.info()}`);
+        if (this._syncLocker.get(syncKey) !== currPlayerId) {
+            Log4Ts.log(CollectibleItemModuleS,
+                `item locker illegal.`,
+                `current locker: ${this._syncLocker.get(syncKey)}.`,
+                `request locker: ${syncKey}.`);
+            return;
         }
+
+        item.collect();
+        this._bagModuleS.addItem(currPlayerId, SceneDragon.bagId(item.id), 1);
+        if (!item.isCollectible) {
+            this.destroy(currPlayerId, syncKey);
+        }
+        return;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

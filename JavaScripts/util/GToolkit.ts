@@ -15,7 +15,7 @@ import Log4Ts, { Announcer, DebugLevels, LogString } from "../depend/log4ts/Log4
  * @author minjia.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.9.0b
+ * @version 0.9.2b
  * @alpha
  */
 class GToolkit {
@@ -525,8 +525,9 @@ class GToolkit {
         if (from === to) {
             return val;
         }
-        if (this.hammingWeight(from) > 0 || this.hammingWeight(to) > 0) {
+        if (this.hammingWeight(from) !== 1 || this.hammingWeight(to) !== 1) {
             Log4Ts.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
+            return null;
         }
 
         if (
@@ -1100,7 +1101,7 @@ class GToolkit {
      * @param pressedGuid
      * @param disableGuid
      */
-    public setButtonGuid(button: mw.Button,
+    public setButtonGuid(button: mw.Button | mw.StaleButton,
                          normalGuid: string,
                          pressedGuid: string = undefined,
                          disableGuid: string = undefined) {

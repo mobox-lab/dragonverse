@@ -1,9 +1,5 @@
 export default class GameServiceConfig {
 //#region Auth
-    /**
-     * P12 通信 最短 Code 验证间隔.
-     */
-    public static readonly MIN_CODE_INTERVAL = 0.5e3;
 
     /**
      * P12 通信 最短 子游戏信息上传 间隔.

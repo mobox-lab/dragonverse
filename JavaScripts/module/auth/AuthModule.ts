@@ -1,17 +1,18 @@
-import GToolkit, { Expression, TimeFormatDimensionFlags } from "../../util/GToolkit";
-import { EventDefine } from "../../const/EventDefine";
-import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
-import GameStart from "../../GameStart";
 import CryptoJS from "crypto-js";
+import GameStart from "../../GameStart";
+import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Regulator from "../../depend/regulator/Regulator";
-import FixedQueue from "../../depend/queue/FixedQueue";
 import { SubGameTypes } from "../../const/SubGameTypes";
+import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
+import FixedQueue from "../../depend/queue/FixedQueue";
+import Regulator from "../../depend/regulator/Regulator";
 import i18n from "../../language/i18n";
+import GToolkit, { Expression, TimeFormatDimensionFlags } from "../../util/GToolkit";
 import ModuleS = mwext.ModuleS;
 import ModuleC = mwext.ModuleC;
 import SubData = mwext.Subdata;
 import noReply = mwext.Decorator.noReply;
+import { TimeManager } from "../../controller/TimeManager";
 
 /**
  * Salt Token.
@@ -96,7 +97,7 @@ class RequestGuard {
     private _p: number = -1;
 
     public req(time: number = undefined): boolean {
-        const now = time ?? Date.now();
+        const now = time ?? TimeManager.getInstance().currentTime;
         if (now < this._q.back()) {
             // 失序.
             return false;
@@ -157,8 +158,6 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 
     private _lastVerifyCodeTime: number = null;
 
-    private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
-
     private _codeVerityGuard: RequestGuard = new RequestGuard();
 
     private _lastSubGameReportTime: number = 0;
@@ -183,7 +182,8 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
 
-        if (this._patrolRegulator.ready()) this.patrol();
+        //改到服务端处理，减少rpc调用
+        // if (this._patrolRegulator.ready()) this.patrol();
     }
 
     protected onEnterScene(sceneType: number): void {
@@ -249,7 +249,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             return;
         }
 
-        const now = Date.now();
+        const now = TimeManager.getInstance().currentTime;
         if (this._codeVerityGuard.req(now)) {
             this._lastVerifyCodeTime = now;
             this.server.net_verifyCode(this.generateSaltToken(), code);
@@ -263,7 +263,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
      * 是否 仍在验证过程.
      */
     public isVerifyCodeRunning(): boolean {
-        if (this._lastVerifyCodeTime === null || Date.now() - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME) {
+        if (this._lastVerifyCodeTime === null || TimeManager.getInstance().currentTime - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME) {
             this._lastVerifyCodeTime = null;
             return false;
         }
@@ -272,7 +272,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     }
 
     private generateSaltToken(): SaltToken {
-        const time = Date.now();
+        const time = TimeManager.getInstance().currentTime;
         return new SaltToken(
             AuthModuleS.encryptToken(this._originToken, time),
             time);
@@ -315,22 +315,15 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     }
 
     /**
-     * 是否 允许请求 code 验证.
-     * @private
-     */
-    private isVerityCodeEnable(): boolean {
-        return this._lastVerifyCodeTime === null || Date.now() - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME;
-    }
-
-    /**
      * 上报子游戏信息.
      * @param subGameType
      * @param duration
      */
     public reportSubGameInfo(subGameType: SubGameTypes, duration: number) {
-        const thanLastReport = Date.now() - this._lastSubGameReportTime;
+        const now = TimeManager.getInstance().currentTime;
+        const thanLastReport = now - this._lastSubGameReportTime;
         if (thanLastReport > GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL && thanLastReport > duration) {
-            this._lastSubGameReportTime = Date.now();
+            this._lastSubGameReportTime = now;
             this.server.net_reportSubGameInfo(subGameType, duration);
         }
     }
@@ -385,16 +378,18 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     /**
      * 测试用 Code 验证 Url.
      */
-    private static readonly TEST_CODE_VERIFY_URL = "https://platform-api-test.p12.games";
+    private static readonly TEST_CODE_VERIFY_URL = "https://platform-api-test.p12.games/modragon/code/status";
 
     /**
      * 发布用 Code 验证 Url.
      */
-    private static readonly RELEASE_CODE_VERIFY_URL = "https://platform-api.p12.games";
+    private static readonly RELEASE_CODE_VERIFY_URL = "https://platform-api.p12.games/modragon/code/status";
 
     private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
 
     private static readonly CODE_VERIFY_AES_IV = this.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+
+    private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
 
     /**
      * encrypt token with time salt.
@@ -455,6 +450,13 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
+
+        //定时检测
+        if (this._patrolRegulator.ready()) {
+            Player.getAllPlayers().forEach(player => {
+                this.checkPlayerEnterEnable(player.playerId);
+            });
+        }
     }
 
     protected onDestroy(): void {
@@ -516,7 +518,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     private async verifyEnterCode(code: string, uid: string): Promise<boolean> {
         //#region Exist for Test
-        if (code === "123456") return true;
+        if (!GameStart.instance.isRelease && code === "123456") return Promise.resolve(true);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
         const codeSalt = `${code}-${Date.now()}`;
         const e = CryptoJS.AES.encrypt(
@@ -534,15 +536,24 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             userId: uid,
         };
 
+        const url = `${GameStart.instance.isRelease ?
+            AuthModuleS.RELEASE_CODE_VERIFY_URL :
+            AuthModuleS.TEST_CODE_VERIFY_URL}`;
+        console.log(url);
         const resp = await fetch(`${GameStart.instance.isRelease ?
                 AuthModuleS.RELEASE_CODE_VERIFY_URL :
                 AuthModuleS.TEST_CODE_VERIFY_URL}`,
             {
                 method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                },
                 body: JSON.stringify(body),
             });
 
-        return (await resp.json<CodeVerifyResponse>()).data;
+        const respInJson = await resp.json<CodeVerifyResponse>();
+        return (respInJson?.code ?? null) === 200;
+        // return respInJson?.data ?? false;
     }
 
     /**
@@ -725,6 +736,23 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     @noReply()
     public net_reportSubGameInfo(subGameType: SubGameTypes, duration: number) {
         this.reportSubGameInfo(this.currentPlayerId, subGameType, duration);
+    }
+
+    /**
+     * @description: 检测玩家是否有准入权限，没有且不在新手村就归位
+     * @param playerId 玩家id
+     */
+    private checkPlayerEnterEnable(playerId: number) {
+        if (this.getPlayerData(playerId).enterEnable) return;
+
+        //判断在不在新手村，不在就归位
+        let trigger = GameObject.findGameObjectByName("beginnerChecker") as Trigger;
+        let player = Player.getPlayer(playerId);
+        if (trigger && player) {
+            if (!trigger.checkInArea(player.character)) {
+                player.character.worldTransform.position = trigger.worldTransform.position;
+            }
+        }
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

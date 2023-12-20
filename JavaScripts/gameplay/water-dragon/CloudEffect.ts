@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-19 13:19:46
+ * @LastEditTime : 2023-12-20 10:07:17
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
@@ -156,7 +156,7 @@ export default class CloudEffect extends mw.Script {
     private showFireBtn() {
         ProximityPrompts.show([{
             keyBoard: "F",
-            text: i18n.lan('TinyGameLanKey0003'),
+            text: i18n.lan(i18n.keyTable.TinyGameLanKey0003),
             enabled: true,
             onSelected: () => {
                 let anchorGuid = this.getCanDestroyClouds();

@@ -92,7 +92,8 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
             if (!config) {
                 throw new Error(`can not find dragon config with id ${dragonId}`);
             }
-            controller.createCompanion(config.avatar.toString(), bagId.toString());
+            let nickName = GameConfig.BagItem.getElement(bagId).name;
+            controller.createCompanion(config.avatar.toString(), bagId.toString(), nickName);
         } else {
             controller.removeCompanionWithSign(bagId.toString());
         }

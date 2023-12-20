@@ -82,13 +82,14 @@ export class CompanionController {
     }
 
 
-    public async createCompanion(prefab: string, sign: string) {
+    public async createCompanion(prefab: string, sign: string, nickName: string) {
 
         let player = mw.Player.getPlayer(this.playerId).character;
         let script = await mw.Script.spawnScript(CompanionRoot, true, player)
         script.displayGuid = prefab;
         script.sign = sign;
         script.playerId = this.playerId;
+        script.nickName = nickName;
         script.initializeComplete();
         this.registerCompanion(script);
     };

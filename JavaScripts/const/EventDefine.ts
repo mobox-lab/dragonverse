@@ -16,6 +16,10 @@ export enum EventDefine {
     PlayerDisableEnter = "PLAYER_DISABLE_ENTER",
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+    //#region Bag
+    BagModuleClientReady = "BAG_MODULE_CLIENT_READY",
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
     //#region MainPanel
     /**
      * 主界面 显示 信息.
@@ -27,6 +31,12 @@ export enum EventDefine {
     //#region CollectibleItem
     EnterCollectibleItemRange = "ENTER_COLLECTIBLE_ITEM_RANGE",
     LeaveCollectibleItemRange = "LEAVE_COLLECTIBLE_ITEM_RANGE",
+
+    /**
+     * 尝试收集 可收集物品.
+     * <code>{ syncKey:string }</code>
+     */
+    TryCollectCollectibleItem = "TRY_COLLECT_COLLECTIBLE_ITEM",
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Dragon
@@ -43,23 +53,6 @@ export enum EventDefine {
      * {@link DragonSyncKeyEventArgs}
      */
     DragonOnUnlock = "DRAGON_ON_UNLOCK",
-
-    /**
-     * 玩家 抓捕 龙 成功.
-     * {@link DragonSyncKeyEventArgs}
-     */
-    DragonCatchSuccess = "DRAGON_CATCH_SUCCESS",
-
-    /**
-     * 玩家 抓捕 龙 成功.
-     * {@link DragonSyncKeyEventArgs}
-     */
-    DragonCatchFail = "DRAGON_CATCH_FAIL",
-
-    /**
-     * 玩家 抓捕 龙.
-     */
-    DragonCatch = "DRAGON_CATCH",
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
