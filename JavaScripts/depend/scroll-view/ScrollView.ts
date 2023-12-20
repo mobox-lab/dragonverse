@@ -180,7 +180,7 @@ export default class ScrollView<
 
         yoactArray.onItemAdd.add((item) => {
             const uiItem = UIService.create(uiItemConstr);
-            if (uiItem) {
+            if (!uiItem) {
                 Log4Ts.error(ScrollView, `Scroll View Item is null. please check is the ui item attach on a script.`);
                 return;
             }

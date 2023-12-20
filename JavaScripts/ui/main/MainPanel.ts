@@ -166,7 +166,6 @@ export default class MainPanel extends MainPanel_Generate {
                 return this.imgOperationSuccess.renderOpacity;
             },
             (val) => {
-                Log4Ts.log(MainPanel, `val: ${val}`);
                 this.imgOperationSuccess.renderOpacity = val;
                 this.txtOperationFeedback.renderOpacity = val;
             },
