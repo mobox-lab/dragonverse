@@ -15,11 +15,11 @@ import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule"
 import { BagModuleC } from "../../module/bag/BagModule";
 import { Yoact } from "../../depend/yoact/Yoact";
 import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
-import { GenerableTypes } from "../../const/GenerableTypes";
 import i18n from "../../language/i18n";
 import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
+import { GenerableTypes } from "../../const/GenerableTypes";
 
 /**
  * 主界面 全局提示 参数.
