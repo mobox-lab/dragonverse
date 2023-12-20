@@ -17,9 +17,9 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
 import { GenerableTypes } from "../../const/GenerableTypes";
 import i18n from "../../language/i18n";
+import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
-import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
 
 /**
  * 主界面 全局提示 参数.
@@ -89,6 +89,8 @@ export default class MainPanel extends MainPanel_Generate {
     private _successTask: TweenTaskGroup;
 
     private _failTask: TweenTaskGroup;
+
+    private _currentInteractType: GenerableTypes = GenerableTypes.Null;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -403,6 +405,9 @@ export default class MainPanel extends MainPanel_Generate {
      * 待捕捉态.
      */
     public prepareCatch() {
+        if (this._currentInteractType !== GenerableTypes.Null) return;
+
+        this._currentInteractType = GenerableTypes.SceneDragon;
         this.btnDragonBall.enable = true;
         GToolkit.trySetVisibility(this.cnvDragonBall, true);
         this._pointerTask.restart();
@@ -422,7 +427,10 @@ export default class MainPanel extends MainPanel_Generate {
      * 收集.
      */
     public tryCollect(syncKey: string) {
+        if (this._currentInteractType) return;
         if (this.collectibleItemModule?.isCollecting ?? true) return;
+
+        this._currentInteractType = GenerableTypes.CollectibleItem;
         this.collectibleItemModule?.tryCollect(syncKey);
         this.playProgress();
     }
@@ -431,6 +439,7 @@ export default class MainPanel extends MainPanel_Generate {
      * 捕捉完成.
      */
     public endCatch() {
+        this._currentInteractType = GenerableTypes.Null;
         this.btnDragonBall.enable = false;
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
     }
@@ -491,26 +500,39 @@ export default class MainPanel extends MainPanel_Generate {
 
     private onProgressDone = () => {
         this._progressShowTask.backward();
-        const catchResult = !GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
-        Log4Ts.log(MainPanel, `catch result: ${catchResult}`);
-        if (catchResult) {
-            GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
-            this.sceneDragonModule?.acceptCatch();
-            this.endCatch();
-            this.showResult(true, GenerableTypes.SceneDragon);
-        } else {
-            this.prepareCatch();
-            this.showResult(false, GenerableTypes.SceneDragon);
+
+        switch (this._currentInteractType) {
+            case GenerableTypes.Null:
+                Log4Ts.warn(MainPanel, `there is no interact behavior.`);
+                break;
+            case GenerableTypes.SceneDragon:
+                const catchResult = !GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
+                Log4Ts.log(MainPanel, `catch result: ${catchResult}`);
+                if (catchResult) {
+                    GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
+                    this.sceneDragonModule?.acceptCatch();
+                    this.endCatch();
+                    this.showResult(true, GenerableTypes.SceneDragon);
+                } else {
+                    this.prepareCatch();
+                    this.showResult(false, GenerableTypes.SceneDragon);
+                }
+                break;
+            case GenerableTypes.CollectibleItem:
+                const collectResult = !GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
+                Log4Ts.log(MainPanel, `collect result: ${collectResult}`);
+                if (collectResult) {
+                    GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
+                    this.collectibleItemModule?.acceptCollect();
+                    this.showResult(true, GenerableTypes.CollectibleItem);
+                } else {
+                    this.showResult(false, GenerableTypes.CollectibleItem);
+                }
+                break;
+            default:
+                Log4Ts.warn(MainPanel, `type not supported.`);
         }
-        const collectResult = !GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
-        Log4Ts.log(MainPanel, `collect result: ${collectResult}`);
-        if (collectResult) {
-            GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
-            this.collectibleItemModule?.acceptCollect();
-            this.showResult(true, GenerableTypes.CollectibleItem);
-        } else {
-            this.showResult(false, GenerableTypes.CollectibleItem);
-        }
+        this._currentInteractType = GenerableTypes.Null;
     };
 
     private onEnablePlayerEnter() {
