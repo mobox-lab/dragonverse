@@ -14,7 +14,7 @@ import AreaManager from "../../gameplay/area/AreaManager";
 import GameObject = mw.GameObject;
 import noReply = mwext.Decorator.noReply;
 import { IPoint3 } from "../../util/area/Shape";
-import { BagTypes } from "../bag/BagItemCluster";
+import { BagTypes } from "../../const/ForeignKeyIndexer";
 import { DragonSyncKeyEventArgs } from "../../ui/scene-dragon/SceneDragonInteractorPanel";
 
 /**

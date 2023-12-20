@@ -17,7 +17,7 @@ import GameObject = mw.GameObject;
 import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import EventListener = mw.EventListener;
 import { IPoint3 } from "../../util/area/Shape";
-import { BagTypes } from "../bag/BagItemCluster";
+import { BagTypes } from "../../const/ForeignKeyIndexer";
 import SceneDragon from "../scene-dragon/SceneDragon";
 import Enum = UE.Enum;
 

@@ -10,7 +10,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import IUnique from "../../depend/yoact/IUnique";
 import { Yoact } from "../../depend/yoact/Yoact";
 import YoactArray from "../../depend/yoact/YoactArray";
-import BagItemCluster, { BagTypes } from "./BagItemCluster";
+import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import { EventDefine } from "../../const/EventDefine";
 
 export class BagItemUnique implements IUnique {
@@ -578,7 +578,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
      *      default {@link BagTypes.Null}. 不进行检查
      */
     public hasItem(playerId: number, bagId: number, asType: BagTypes = BagTypes.Null): boolean {
-        if (asType) return BagItemCluster.getInstance().isType(bagId, asType);
+        if (asType) return ForeignKeyIndexer.getInstance().isBagItemType(bagId, asType);
 
         const playerData = this.getPlayerData(playerId);
         return playerData.hasItem(bagId);

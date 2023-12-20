@@ -14,7 +14,7 @@ import Enumerable from "linq";
 import { ConfigBase } from "../../config/ConfigBase";
 import { ICollectibleItemElement } from "../../config/CollectibleItem";
 import { IDragonElement } from "../../config/Dragon";
-import { BagTypes } from "../../module/bag/BagItemCluster";
+import { BagTypes } from "../../const/ForeignKeyIndexer";
 import CollectibleItem from "../../module/collectible-item/CollectibleItem";
 
 export default class AreaManager extends Singleton<AreaManager>() {

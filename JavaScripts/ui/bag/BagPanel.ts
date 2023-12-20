@@ -6,7 +6,7 @@ import GToolkit from "../../util/GToolkit";
 import { GameConfig } from "../../config/GameConfig";
 import i18n from "../../language/i18n";
 import { Yoact } from "../../depend/yoact/Yoact";
-import BagItemCluster, { BagTypes } from "../../module/bag/BagItemCluster";
+import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import ModuleService = mwext.ModuleService;
 import bindYoact = Yoact.bindYoact;
 import stopEffect = Yoact.stopEffect;
@@ -65,7 +65,7 @@ export default class BagPanel extends BagMain_Generate {
                 this.mNum.text = i18n.lan("数量") + `${data.count}`;
             }));
 
-            if (BagItemCluster.getInstance().isType(data.id, BagTypes.Dragon)) {
+            if (ForeignKeyIndexer.getInstance().isBagItemType(data.id, BagTypes.Dragon)) {
                 GToolkit.trySetVisibility(this.mBtnOpt, true);
                 if (this._dragonModule.getCurrentShowupBagId() === data.id) {
                     this.showRestBtn(data.id);
