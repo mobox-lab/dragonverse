@@ -171,7 +171,11 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 
         this.server.net_tryCollectItem(syncKey).then(
             (value) => {
-                if (value) this._currentCollectResultSyncKey = syncKey;
+                if (value) {
+                    this._currentCollectResultSyncKey = syncKey;
+                } else {
+                    this._isCollecting = false;
+                }
             },
         );
     }
@@ -563,8 +567,8 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         }
         Log4Ts.log(CollectibleItemModuleS, `try collect item. ${item.info()}`);
         const locker = this._syncLocker.get(syncKey);
-        if (locker === null || locker !== currPlayerId) {
-            Log4Ts.log(CollectibleItemModuleS, `locker of item illegal.`);
+        if (locker !== undefined) {
+            Log4Ts.log(CollectibleItemModuleS, `item is already locked.`);
             return Promise.resolve(false);
         }
 
@@ -598,9 +602,10 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
                 `request locker: ${syncKey}.`);
             return;
         }
+        this._syncLocker.delete(syncKey);
 
         item.collect();
-        this._bagModuleS.addItem(currPlayerId, SceneDragon.bagId(item.id), 1);
+        this._bagModuleS.addItem(currPlayerId, item.getBagConfig().id, 1);
         if (!item.isCollectible) {
             this.destroy(currPlayerId, syncKey);
         }

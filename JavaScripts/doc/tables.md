@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.9.4  
+v0.9.6  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -260,12 +260,25 @@ by LviatYi
 |      名称       | Name            | string  | 备注用 无需填入 lan_key |
 |    子项目数     | Count           | int     | 完成所达成数量          |
 |    可重复性     | Repeat          | boolean | 可否重复完成            |
-|    完成奖励     | Reward          | int[]   |                         |
+|    完成奖励     | Reward          | int[][] |                         |
 | Quest 物体 Guid | QuestObjectGuid | string  |                         |
 
 - 完成奖励
-  - `[int,int]`
-  - 含义为：[**背包物品 id**,数量]
+  - `[(int,int)*,int][]`
+  - 如 `10|1|1||11|1|12|10|2`
+    - 这意味着有两组任务奖励。
+    - A 组 为 1 个物品 10
+    - B 组 为 1 个物品 11 与 10 个物品 12
+    - 选择 A 组的概率 **权重** 为 1
+    - 选择 B 组的概率 **权重** 为 2
+  - 元素含义为：[(**背包物品 id**,数量),权重]
+  - 其中 **背包物品 id** 与其对应的数量可以包含多个。
+  - **权重 (weight)** 用于计算任务奖励的选择概率。具体选择 $k$ 元素概率为：
+
+$$
+\frac{\text{weight}_k}{(\sum_{i=1}^n \text{weight}_i)}
+$$
+
 - Quest 物体 Guid
   - 构建场景时 需将 Quest 预制体拖入场景，并填入其 Guid。
 
