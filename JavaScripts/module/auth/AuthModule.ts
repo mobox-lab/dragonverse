@@ -518,7 +518,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     private async verifyEnterCode(code: string, uid: string): Promise<boolean> {
         //#region Exist for Test
-        if (code === "123456") return Promise.resolve(true);
+        if (!GameStart.instance.isRelease && code === "123456") return Promise.resolve(true);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
         const codeSalt = `${code}-${Date.now()}`;
         const e = CryptoJS.AES.encrypt(
