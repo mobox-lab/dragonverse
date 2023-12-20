@@ -171,7 +171,11 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 
         this.server.net_tryCollectItem(syncKey).then(
             (value) => {
-                if (value) this._currentCollectResultSyncKey = syncKey;
+                if (value) {
+                    this._currentCollectResultSyncKey = syncKey;
+                } else {
+                    this._isCollecting = false;
+                }
             },
         );
     }
