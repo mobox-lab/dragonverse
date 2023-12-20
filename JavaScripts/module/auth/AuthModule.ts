@@ -234,7 +234,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             Log4Ts.log(
                 AuthModuleC,
                 `player is verifying code.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("isVerifying")});
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("isVerifying") });
             return;
         }
 
@@ -255,7 +255,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             this.server.net_verifyCode(this.generateSaltToken(), code);
         } else {
             Log4Ts.warn(AuthModuleC, `code verify request too frequently.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeTooFrequently")});
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("verifyCodeTooFrequently") });
         }
     }
 
@@ -299,7 +299,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
         logState(
             AuthModuleC,
             "log",
-            `release player. enjoy!`,
+            `forbidden player`,
             true, Player.localPlayer.playerId);
         Event.dispatchToLocal(EventDefine.PlayerDisableEnter);
     }
@@ -333,7 +333,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     //#region Net Method
     public net_verifyFail() {
         this._lastVerifyCodeTime = null;
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeFail")});
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("verifyCodeFail") });
     }
 
     public net_enableEnter() {
@@ -346,7 +346,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
                 true, Player.localPlayer.playerId);
             return;
         }
-
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan(i18n.keyTable.verifyCodeSuccess) });
         this.data.enterEnable = true;
         this.releasePlayer();
     }
@@ -398,7 +398,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
+            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -503,12 +503,12 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
+            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
+            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
             return false;
         }
 
@@ -541,8 +541,8 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.TEST_CODE_VERIFY_URL}`;
         console.log(url);
         const resp = await fetch(`${GameStart.instance.isRelease ?
-                AuthModuleS.RELEASE_CODE_VERIFY_URL :
-                AuthModuleS.TEST_CODE_VERIFY_URL}`,
+            AuthModuleS.RELEASE_CODE_VERIFY_URL :
+            AuthModuleS.TEST_CODE_VERIFY_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -649,21 +649,21 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         this
             .verifyEnterCode(code, uid)
             .then((value) => {
-                    if (!value) {
-                        logState(
-                            AuthModuleS,
-                            "log",
-                            `verify failed.`,
-                            true,
-                            currPlayerId,
-                            uid,
-                        );
-                        this.getClient(currPlayerId)?.net_verifyFail();
-                        return;
-                    }
-                    this.recordPlayer(currPlayerId);
-                    if (value) this.getClient(currPlayerId)?.net_enableEnter();
-                },
+                if (!value) {
+                    logState(
+                        AuthModuleS,
+                        "log",
+                        `verify failed.`,
+                        true,
+                        currPlayerId,
+                        uid,
+                    );
+                    this.getClient(currPlayerId)?.net_verifyFail();
+                    return;
+                }
+                this.recordPlayer(currPlayerId);
+                if (value) this.getClient(currPlayerId)?.net_enableEnter();
+            },
             )
             .catch((reason) => {
                 this.getClient(currPlayerId)?.net_verifyFail();
