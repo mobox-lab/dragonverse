@@ -17,9 +17,9 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
 import i18n from "../../language/i18n";
 import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
+import { GenerableTypes } from "../../const/GenerableTypes";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
-import { GenerableTypes } from "../../const/GenerableTypes";
 
 /**
  * 主界面 全局提示 参数.
@@ -426,7 +426,7 @@ export default class MainPanel extends MainPanel_Generate {
      * 收集.
      */
     public tryCollect(syncKey: string) {
-        if (this._currentInteractType) return;
+        if (this._currentInteractType !== GenerableTypes.Null) return;
         if (this.collectibleItemModule?.isCollecting ?? true) return;
 
         this._currentInteractType = GenerableTypes.CollectibleItem;
@@ -499,6 +499,7 @@ export default class MainPanel extends MainPanel_Generate {
 
     private onProgressDone = () => {
         this._progressShowTask.backward();
+        let isReCatch: boolean = false;
 
         switch (this._currentInteractType) {
             case GenerableTypes.Null:
@@ -513,7 +514,7 @@ export default class MainPanel extends MainPanel_Generate {
                     this.endCatch();
                     this.showResult(true, GenerableTypes.SceneDragon);
                 } else {
-                    this.prepareCatch();
+                    isReCatch = true;
                     this.showResult(false, GenerableTypes.SceneDragon);
                 }
                 break;
@@ -532,6 +533,9 @@ export default class MainPanel extends MainPanel_Generate {
                 Log4Ts.warn(MainPanel, `type not supported.`);
         }
         this._currentInteractType = GenerableTypes.Null;
+        if (isReCatch) {
+            this.prepareCatch();
+        }
     };
 
     private onEnablePlayerEnter() {

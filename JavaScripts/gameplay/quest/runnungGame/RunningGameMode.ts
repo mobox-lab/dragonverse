@@ -225,6 +225,7 @@ export class RunningGameMode {
         AudioController.getInstance().play(19);
 
         this.addGameTime(2);
+        this._gameController?.enterSpeedUp();
         this.addScore(this._timeScore);
     }
 

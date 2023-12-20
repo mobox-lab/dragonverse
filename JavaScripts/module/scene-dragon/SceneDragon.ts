@@ -49,7 +49,7 @@ export default class SceneDragon {
     private _id: number;
 
     /**
-     * ID.
+     * 个性龙 ID.
      */
     public get id(): number {
         return this._id;
