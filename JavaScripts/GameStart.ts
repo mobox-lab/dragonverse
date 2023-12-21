@@ -26,6 +26,8 @@ import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from ".
 import GMPanel from "./ui/gm/GmPanel";
 import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
+import { MapManager } from "./gameplay/map/MapManager";
+import { MapPanel } from "./ui/map/MapPanel";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -122,6 +124,7 @@ export default class GameStart extends mw.Script {
         PlayerController.getInstance();
 
         UIService.show(MainPanel);
+        MapManager.instance.showMap();
     }
 
     private initializeServer() {

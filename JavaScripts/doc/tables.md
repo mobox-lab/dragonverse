@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.9.4  
+v0.9.7  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -27,17 +27,28 @@ by LviatYi
 
 - **2D 形状**
 - 即当配表数据形为 $a_1|a_2|...|a_m||b_1|b_2|...|b_n$ ，其中 $m,n$ 皆为偶数时。
+  - 设区域 $A$ 由 2D 形状 $S_1$ $S_2$ 构成，则:
+  - $S_1$ 所包含点的数量为 $\frac m2$
+  - $S_2$ 所包含点的数量为 $\frac n2$
+  - $a_i,a_{i+1}$ 分别表示 $S_1$ 中第 $k$ 点 $(i=2k-1)$ 的 x、y 坐标值。
 - 暂时不支持用于随机点生成.
 
 ![points-example](./pic/generationRange.png)
 
 ```json
 // in json
+
 [
     [x11,y11,x12,y12,x13,y13...x1m,y1m],
     [x21,y21,x22,y22,x23,y23...x2n,y2n],
     ...
 ]
+```
+
+```yaml
+// in config
+
+x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 ```
 
 - **3D 点集合**
@@ -260,12 +271,25 @@ by LviatYi
 |      名称       | Name            | string  | 备注用 无需填入 lan_key |
 |    子项目数     | Count           | int     | 完成所达成数量          |
 |    可重复性     | Repeat          | boolean | 可否重复完成            |
-|    完成奖励     | Reward          | int[]   |                         |
+|    完成奖励     | Reward          | int[][] |                         |
 | Quest 物体 Guid | QuestObjectGuid | string  |                         |
 
 - 完成奖励
-  - `[int,int]`
-  - 含义为：[**背包物品 id**,数量]
+  - `[(int,int)*,int][]`
+  - 如 `10|1|1||11|1|12|10|2`
+    - 这意味着有两组任务奖励。
+    - A 组 为 1 个物品 10
+    - B 组 为 1 个物品 11 与 10 个物品 12
+    - 选择 A 组的概率 **权重** 为 1
+    - 选择 B 组的概率 **权重** 为 2
+  - 元素含义为：[(**背包物品 id**,数量),权重]
+  - 其中 **背包物品 id** 与其对应的数量可以包含多个。
+  - **权重 (weight)** 用于计算任务奖励的选择概率。具体选择 $k$ 元素概率为：
+
+$$
+\frac{\text{weight}_k}{(\sum_{i=1}^n \text{weight}_i)}
+$$
+
 - Quest 物体 Guid
   - 构建场景时 需将 Quest 预制体拖入场景，并填入其 Guid。
 

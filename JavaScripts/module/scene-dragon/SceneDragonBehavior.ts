@@ -151,7 +151,6 @@ export default class SceneDragonBehavior extends mw.Script {
 
         this._machine?.update(dt);
         this.state.idleStamina += dt * SceneDragonBehaviorState.IDLE_STAMINA_RECOVERY;
-
     }
 
     protected onDestroy(): void {
