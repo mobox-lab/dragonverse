@@ -8,7 +8,6 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Regulator from "../../depend/regulator/Regulator";
 import AreaManager from "../../gameplay/area/AreaManager";
 import MainPanel from "../../ui/main/MainPanel";
-import { DragonSyncKeyEventArgs } from "../../ui/scene-dragon/SceneDragonInteractorPanel";
 import GToolkit from "../../util/GToolkit";
 import { IPoint3 } from "../../util/area/Shape";
 import { BagModuleS } from "../bag/BagModule";
@@ -16,6 +15,14 @@ import SceneDragon from "./SceneDragon";
 import SceneDragonBehavior from "./SceneDragonBehavior";
 import GameObject = mw.GameObject;
 import noReply = mwext.Decorator.noReply;
+import Enum = UE.Enum;
+
+/**
+ * 场景龙 相关事件.
+ */
+export interface DragonSyncKeyEventArgs {
+    syncKey: string;
+}
 
 /**
  * 场景龙存在数据.
@@ -51,9 +58,6 @@ export default class SceneDragonModuleData extends Subdata {
 export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonModuleData> {
 
     //#region Constant
-
-
-
     public static async sceneDragonPrefabFactory(
         syncKey: string,
         item: SceneDragon) {
@@ -61,17 +65,16 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             Log4Ts.error(SceneDragonModuleC, `generate item param location invalid.`);
             return null;
         }
-        const characterInfo = GameConfig.CharacterfulDragon.getElement(item.id);
-        const dragonInfo = GameConfig.Dragon.getElement(characterInfo.dragonId)
+        const dragonInfo = item.getDragonConfig();
         let assetId = dragonInfo.avatar;
         if (GToolkit.isNullOrEmpty(assetId)) {
             Log4Ts.error(SceneDragonModuleC, `prefab not set. id: ${item.id}`);
             return null;
         }
-        const obj: mw.Character = await GameObjPool.asyncSpawn(
-            assetId,
-            GameObjPoolSourceType.Prefab,
-        );
+
+        let obj = await mw.GameObject.asyncSpawn('Character') as mw.Character;
+        obj.setDescription([assetId]);
+
 
         let behavior: SceneDragonBehavior = await mw.Script.spawnScript(SceneDragonBehavior, false);
         behavior.gameObject = obj;
@@ -107,6 +110,17 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     private _currentCatchResultSyncKey: string = null;
 
+    private _candidate: string = null;
+
+    private _character: Character;
+
+    private get character() {
+        if (!this._character) {
+            this._character = Player.localPlayer.character;
+        }
+        return this._character;
+    }
+
     /**
      * 当前捕捉结果.
      */
@@ -135,6 +149,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
+
+        this.chooseCandidate();
     }
 
     protected onEnterScene(sceneType: number): void {
@@ -156,17 +172,21 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
-    public lock(syncKey: string) {
+    public lock() {
         Log4Ts.log(SceneDragonModuleC, `try lock on item`);
-        if (!this.syncItemMap.has(syncKey)) {
-            Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${syncKey}`);
+        if (GToolkit.isNullOrEmpty(this._candidate)) {
+            Log4Ts.warn(SceneDragonModuleC, `candidate is null.`);
+            return;
+        }
+        if (!this.syncItemMap.has(this._candidate)) {
+            Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${this._candidate}`);
             return;
         }
 
         let isSame = false;
-        Log4Ts.log(SceneDragonModuleC, `lock on SceneDragon. syncKey: ${syncKey}`);
+        Log4Ts.log(SceneDragonModuleC, `lock on SceneDragon. syncKey: ${this._candidate}`);
         if (this._lockingSyncKey) {
-            if (this._lockingSyncKey !== syncKey) {
+            if (this._lockingSyncKey !== this._candidate) {
                 Log4Ts.log(SceneDragonModuleC, `already lock on another SceneDragon. origin syncKey: ${this._lockingSyncKey}`);
                 this.unlockWithView();
             } else {
@@ -179,11 +199,11 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             }
         }
 
-        this.lockWithView(syncKey);
+        this.lockWithView(this._candidate);
 
         if (!isSame) {
             Log4Ts.log(SceneDragonModuleC, `dispatch on lock event.`);
-            Event.dispatchToLocal(EventDefine.DragonOnLock, { syncKey: this._lockingSyncKey } as DragonSyncKeyEventArgs);
+            Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
         }
     }
 
@@ -216,7 +236,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 if (value) {
                     this._currentCatchResultSyncKey = syncKey;
                 } else {
-                    this.lock(syncKey);
+                    this.lock();
                 }
             },
         );
@@ -263,7 +283,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             if (!value) return;
 
             this.syncItemMap.set(syncKey, value);
-            this._mainPanel.addSceneDragonInteractor(syncKey);
+            // this._mainPanel.addSceneDragonInteractor(syncKey);
         });
     }
 
@@ -273,12 +293,12 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         this.syncItemMap.get(syncKey)?.object.destroy();
         this.syncItemMap.delete(syncKey);
 
-        this._mainPanel.removeSceneDragonInteractor(syncKey);
+        // this._mainPanel.removeSceneDragonInteractor(syncKey);
     }
 
     private unlockWithView() {
         this._lockingSyncKey = null;
-        Event.dispatchToLocal(EventDefine.DragonOnUnlock, { syncKey: this._lockingSyncKey } as DragonSyncKeyEventArgs);
+        Event.dispatchToLocal(EventDefine.DragonOnUnlock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
         if (this._lockTimerId !== null) {
             clearTimeout(this._lockTimerId);
             this._lockTimerId = null;
@@ -307,14 +327,51 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         return this.syncItemMap.get(syncKey)?.behavior?.data ?? null;
     }
 
+    private chooseCandidate() {
+        if (!this.character) return;
+        if (!GToolkit.isNullOrEmpty(this._lockingSyncKey)) return;
+        const sceneDragonCatchableDistance = GameServiceConfig.SCENE_DRAGON_CATCHABLE_DISTANCE;
+        const sceneDragonCatchableDistanceSqr = sceneDragonCatchableDistance * sceneDragonCatchableDistance;
+        const charPosition = this.character.worldTransform.position;
+
+        let candidate: string = Enumerable
+            .from(Array.from(this.syncItemMap.entries()))
+            .where(item => {
+                const itemPosition = item[1].object.worldTransform.position;
+                return itemPosition.x - charPosition.x < sceneDragonCatchableDistance &&
+                    itemPosition.y - charPosition.y < sceneDragonCatchableDistance &&
+                    itemPosition.z - charPosition.z < sceneDragonCatchableDistance;
+            })
+            .select((item) => {
+                const itemPosition = item[1].object.worldTransform.position;
+                return {
+                    syncKey: item[0],
+                    existInfo: item[1],
+                    distSqr: GToolkit.squaredEuclideanDistance(
+                        [itemPosition.x, itemPosition.y, itemPosition.z],
+                        [charPosition.x, charPosition.y, charPosition.z],
+                    ),
+                };
+            })
+            .where(item => item.distSqr < sceneDragonCatchableDistanceSqr)
+            .minBy(item => item.distSqr)
+            .syncKey ?? null;
+
+        if (this._candidate !== candidate) {
+            this.syncItemMap.get(this._candidate)?.behavior.unElected();
+            Event.dispatchToLocal(EventDefine.DragonOnCandidateChange, {syncKey: candidate} as DragonSyncKeyEventArgs);
+            this._candidate = candidate;
+        }
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
     public net_generate(syncKey: string,
-        id: number,
-        hitPoint: number,
-        generateTime: number,
-        location: Vector) {
+                        id: number,
+                        hitPoint: number,
+                        generateTime: number,
+                        location: Vector) {
         this.generate(
             syncKey,
             new SceneDragon()
@@ -455,7 +512,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             .from(this.existenceItemMap.get(playerId))
             .select((syncKey) => this.syncItemMap.get(syncKey))
             .where((item) => item ? item.id === id : false)
-            .defaultIfEmpty({ generateTime: 0 } as SceneDragon)
+            .defaultIfEmpty({generateTime: 0} as SceneDragon)
             .max((item) => item.generateTime);
     }
 
@@ -476,9 +533,9 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             .from(GameConfig.CharacterfulDragon.getAllElement())
             .forEach((item) => {
                 for (let i = 0;
-                    i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
-                    this.isGenerateEnable(playerId, item.id);
-                    i++) {
+                     i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
+                     this.isGenerateEnable(playerId, item.id);
+                     i++) {
                     Log4Ts.log(SceneDragonModuleS,
                         `checking generate.`,
                         () => `playerId: ${playerId}.`,
@@ -561,8 +618,8 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         Log4Ts.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
 
         item.autoDestroyTimerId = setTimeout(() => {
-            this.destroy(playerId, syncKey);
-        },
+                this.destroy(playerId, syncKey);
+            },
             SceneDragon.maxExistenceTime(itemId),
         );
 

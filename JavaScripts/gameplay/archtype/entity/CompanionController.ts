@@ -55,6 +55,8 @@ class BaseCompanionState extends State<CompanionStateEnum> {
 
 class CompanionFollowState extends BaseCompanionState {
 
+
+
     constructor() {
         super(false);
     }
