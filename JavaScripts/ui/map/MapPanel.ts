@@ -44,7 +44,7 @@ export class MapPanel extends MapPanel_Generate {
     private _mapSize: mw.Vector2;
 
     protected onAwake(): void {
-
+        super.onAwake();
         this._length_X = Math.abs(LeftTopPos.x - RightTopPos.x);
         this._length_Y = Math.abs(LeftTopPos.y - LeftDownPos.y);
 
@@ -101,7 +101,7 @@ export class MapPanel extends MapPanel_Generate {
             this._smallMapPos.set(this._durX, this._durY);
             this.mSmallMapCanvas.position = this._smallMapPos;
             //计算指针旋转
-            this.mSmallMineCanvas.renderTransformAngle=this._character.worldTransform.rotation.z-90;
+            this.mSmallMineCanvas.renderTransformAngle = this._character.worldTransform.rotation.z - 90;
         }
     }
 

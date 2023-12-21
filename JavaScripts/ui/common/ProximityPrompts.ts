@@ -32,7 +32,7 @@ export module ProximityPrompts {
 
 
         protected onAwake(): void {
-
+            super.onAwake();
 
         }
 
