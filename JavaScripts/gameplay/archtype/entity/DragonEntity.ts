@@ -20,15 +20,21 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
 
     public nickName: string = ''
 
-    private _talkAction: TalkAction = new TalkAction(['test_tips_1'])
+    private _talkAction: TalkAction = new TalkAction(['test_tips_1', "test_tips_2"])
 
 
 
     protected onInitialize(): void {
         super.onInitialize();
-        this.controller.context = this.state;
-        this.controller.init();
-        this.useUpdate = true;
+        if (this.isDisplayForLocal()) {
+
+            this.useUpdate = false;
+        } else {
+            this.controller.context = this.state;
+            this.controller.init();
+            this.useUpdate = true;
+        }
+
         if (this.state) {
             this.postLogicStateChange(this.state);
 
@@ -49,6 +55,7 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
 
 
     public onUpdate(dt: number): void {
+
         this.controller.context = this.state;
         this.controller.logic();
         this.checkTalkAction();
@@ -61,13 +68,18 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
 
     protected postLogicStateChange(state: CompanionState): void {
 
+        if (this.isDisplayForLocal()) {
+            return;
+        }
         this.gameObject.worldTransform.position = (state.start);
         this.controller.requestStateChange(state.stateName, false);
     }
 
     public onDestroy(): void {
         super.onDestroy();
-        this.controller.exit();
+        if (!this.isDisplayForLocal()) {
+            this.controller.exit();
+        }
     }
 
 }
