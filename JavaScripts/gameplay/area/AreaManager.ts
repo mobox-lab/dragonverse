@@ -187,6 +187,9 @@ export default class AreaManager extends Singleton<AreaManager>() {
         return areas;
     }
 
+    /**
+     * 获取新手村 2D 区域.
+     */
     public getSafeHouseArea(): IShape2[] {
         if (!this._safeHouseAreaCache) {
             this._safeHouseAreaCache = this.getArea2D(AreaManager.SAFE_HOUSE_AREA_ID);
