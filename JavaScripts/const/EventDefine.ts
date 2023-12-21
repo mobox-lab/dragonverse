@@ -48,6 +48,12 @@ export enum EventDefine {
     DragonOutOfAliveRange = "DRAGON_OUT_OF_ALIVE_RANGE",
 
     /**
+     * 龙 候选者变化.
+     * {@link DragonSyncKeyEventArgs}
+     */
+    DragonOnCandidateChange = "DRAGON_ON_CANDIDATE_CHANGE",
+
+    /**
      * 玩家锁定 龙.
      * {@link DragonSyncKeyEventArgs}
      */

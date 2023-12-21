@@ -3,7 +3,6 @@ import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
 import BagPanel from "../bag/BagPanel";
 import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
-import { DragonSyncKeyEventArgs, SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
 import GToolkit from "../../util/GToolkit";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import GlobalPromptPanel from "./GlobalPromptPanel";
@@ -11,7 +10,7 @@ import Waterween from "../../depend/waterween/Waterween";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import { AuthModuleC } from "../../module/auth/AuthModule";
-import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
+import { DragonSyncKeyEventArgs, SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
 import { BagModuleC } from "../../module/bag/BagModule";
 import { Yoact } from "../../depend/yoact/Yoact";
 import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
@@ -51,7 +50,7 @@ export default class MainPanel extends MainPanel_Generate {
 
     private _character: Character;
     private _collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
-    private _sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
+    // private _sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
     private _promptPanel: GlobalPromptPanel;
 
     private _sceneDragonModule: SceneDragonModuleC = null;
@@ -116,8 +115,8 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnBook.onPressed.add(showHandbook);
         this.btnCode.onPressed.add(showCode);
         this.btnReset.onPressed.add(respawn);
-        this.btnDragonBall.onPressed.add(this.onCatchClick);
-        this.btnCatch.onPressed.add(this.onLockClick);
+        this.btnDragonBall.onPressed.add(() => this.tryCatch());
+        this.btnCatch.onPressed.add(() => this._sceneDragonModule.lock());
 
         if (this.bagModule) {
             bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
@@ -374,12 +373,12 @@ export default class MainPanel extends MainPanel_Generate {
         this.collectibleInteractorContainer.addChild(collectibleInteractor.uiObject);
     }
 
-    public addSceneDragonInteractor(syncKey: string) {
-        const sceneDragonInteractor = UIService.create(SceneDragonInteractorPanel);
-        sceneDragonInteractor.init(syncKey);
-        this._sceneDragonInteractorMap.set(syncKey, sceneDragonInteractor);
-        this.sceneDragonInteractorContainer.addChild(sceneDragonInteractor.uiObject);
-    }
+    // public addSceneDragonInteractor(syncKey: string) {
+    //     const sceneDragonInteractor = UIService.create(SceneDragonInteractorPanel);
+    //     sceneDragonInteractor.init(syncKey);
+    //     this._sceneDragonInteractorMap.set(syncKey, sceneDragonInteractor);
+    //     this.sceneDragonInteractorContainer.addChild(sceneDragonInteractor.uiObject);
+    // }
 
     public removeCollectibleItemInteractor(syncKey: string) {
         const uis = this._collectibleInteractorMap.get(syncKey);
@@ -389,13 +388,13 @@ export default class MainPanel extends MainPanel_Generate {
         this._collectibleInteractorMap.delete(syncKey);
     }
 
-    public removeSceneDragonInteractor(syncKey: string) {
-        const uis = this._sceneDragonInteractorMap.get(syncKey);
-        if (uis) {
-            this.sceneDragonInteractorContainer.removeChild(uis.uiObject);
-        }
-        this._sceneDragonInteractorMap.delete(syncKey);
-    }
+    // public removeSceneDragonInteractor(syncKey: string) {
+    //     const uis = this._sceneDragonInteractorMap.get(syncKey);
+    //     if (uis) {
+    //         this.sceneDragonInteractorContainer.removeChild(uis.uiObject);
+    //     }
+    //     this._sceneDragonInteractorMap.delete(syncKey);
+    // }
 
     private showGlobalPrompt(message: string) {
         this._promptPanel.showPrompt(message);
@@ -500,7 +499,7 @@ export default class MainPanel extends MainPanel_Generate {
     };
 
     private onLockClick = () => {
-        this._sceneDragonModule.lock();
+
     };
 
     private onCatchClick = () => this.tryCatch();
