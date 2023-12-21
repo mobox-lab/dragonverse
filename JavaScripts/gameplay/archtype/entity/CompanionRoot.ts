@@ -1,3 +1,6 @@
+import { State } from "../../../depend/hfsm/State";
+import { StateMachine } from "../../../depend/hfsm/StateMachine";
+import Regulator from "../../../depend/regulator/Regulator";
 import i18n from "../../../language/i18n";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
 import GToolkit from "../../../util/GToolkit";
@@ -6,42 +9,139 @@ import { CompanionStateEnum, CompanionViewController } from "./CompanionControll
 import { CompanionState } from "./CompanionState";
 import DragonEntity from "./DragonEntity";
 
-export class CompanionLogicController {
+class BaseCompanionState extends State<CompanionStateEnum> {
 
-    private _follower: mw.GameObject;
 
-    private _reporter: CompanionRoot;
+    declare fsm: CompanionLogicController
 
-    private _target: mw.GameObject
+}
 
-    private _state: CompanionState;
+class InitializeState extends BaseCompanionState {
+
+    protected onEnter(): void {
+
+        TimeUtil.delaySecond(2).then((value) => {
+            this.fsm.requestStateChange(CompanionStateEnum.Follow, true)
+        })
+    }
+
+
+}
+
+class CompanionIdleState extends BaseCompanionState {
+    private location: mw.Vector = mw.Vector.zero;
+    private regulator = new Regulator(5);
+
+    protected onEnter(): void {
+        this.location.set(this.fsm.target.worldTransform.position);
+
+    }
+
+    protected onLogic(): void {
+        if (this.regulator.ready()) {
+            this.location.set(this.fsm.target.worldTransform.position);
+        }
+        let distance = this.fsm.follower.worldTransform.position.squaredDistanceTo(this.fsm.target.worldTransform.position);
+
+        if (distance >= 700 ** 2) {
+            this.fsm.target.worldTransform.position = this.location;
+            this.fsm.requestStateChange(CompanionStateEnum.Idle, true);
+        }
+        if (distance >= (this.fsm.state.offsetNum + GToolkit.random(-10, 10, true)) ** 2) {
+            this.fsm.requestStateChange(CompanionStateEnum.Follow, true);
+        }
+    }
+
+
+
+}
+
+
+class CompanionFollowState extends BaseCompanionState {
+
+
+
+
+
+
+    public onEnter(): void {
+
+        mw.Navigation.follow(this.fsm.target, this.fsm.follower, this.fsm.state.offsetNum, this.onStart, this.onFailed);
+    }
+
+    protected onLogic(): void {
+
+
+        let distance = this.fsm.follower.worldTransform.position.squaredDistanceTo(this.fsm.target.worldTransform.position);
+
+        if (distance < (this.fsm.state.offsetNum + GToolkit.random(-20, 20, true)) ** 2) {
+            this.fsm.requestStateChange(CompanionStateEnum.Idle, true);
+        }
+
+    }
+
+    private onStart = () => {
+
+    }
+
+    private onFailed = () => {
+
+        this.fsm.requestStateChange(CompanionStateEnum.Idle, true);
+    }
+
+    protected onExit(): void {
+        mw.Navigation.stopFollow(this.fsm.target);
+    }
+
+}
+
+
+
+export class CompanionLogicController extends StateMachine<void, CompanionStateEnum, string> {
+
+    public follower: mw.GameObject;
+
+    public reporter: CompanionRoot;
+
+    public target: mw.GameObject
+
+    public state: CompanionState;
+
 
 
     setup(follower: mw.GameObject, target: mw.GameObject, reporter: CompanionRoot) {
-        this._follower = follower;
-        this._target = target;
-        this._reporter = reporter;
-        this._state = new CompanionState();
-        this.initialize();
+
+        this.follower = follower;
+        this.target = target;
+        this.reporter = reporter;
+        this.state = new CompanionState();
+        this.addState(CompanionStateEnum.Initialize, new InitializeState());
+        this.addState(CompanionStateEnum.Follow, new CompanionFollowState());
+        this.addState(CompanionStateEnum.Idle, new CompanionIdleState());
+        this.setStartState(CompanionStateEnum.Initialize);
+        this.target.worldTransform.position = this.selectInitializePoint()
+        this.init();
     }
 
-    private initialize() {
-        this._target.worldTransform.position = this.selectInitializePoint()
-        this.quicklySampleState(CompanionStateEnum.Idle);
+
+
+    protected changeState(name: CompanionStateEnum): void {
+        super.changeState(name)
+        this.quicklySampleState();
         this.reportCompanionState();
     }
 
-    private quicklySampleState(stateName: CompanionStateEnum) {
+    private quicklySampleState() {
         let now = Date.now();
-        this._state.stateName = stateName;
-        this._state.seed = now;
-        this._state.switchTime = now;
-        this._state.start = this._target.worldTransform.position;
-        this._state.offsetNum = GToolkit.random(200, 300);
+        this.state.stateName = this.activeState;
+        this.state.seed = now;
+        this.state.switchTime = now;
+        this.state.start = this.target.worldTransform.position;
+        this.state.offsetNum = GToolkit.random(200, 300);
 
     }
 
-    private selectInitializePoint() {
+    public selectInitializePoint() {
 
         let cameraTransform = mw.Camera.currentCamera.worldTransform
         let behind = cameraTransform.getForwardVector().clone().multiply(-1);
@@ -49,31 +149,9 @@ export class CompanionLogicController {
         return location;
     }
 
-    update() {
-        let distance = this._target.worldTransform.position.squaredDistanceTo(this._follower.worldTransform.position);
-
-        if (this._state.stateName === CompanionStateEnum.Follow) {
-
-            if (distance <= this._state.offsetNum ** 2) {
-                this.quicklySampleState(CompanionStateEnum.Idle);
-                this.reportCompanionState();
-            }
-
-        } else {
-
-            if (distance > this._state.offsetNum ** 2) {
-                this.quicklySampleState(CompanionStateEnum.Follow);
-                this.reportCompanionState();
-            }
-        }
-
-    }
-
-
-
 
     private reportCompanionState() {
-        this._reporter.changeLogicState(this._state)
+        this.reporter.changeLogicState(this.state)
     }
 }
 
@@ -113,6 +191,6 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
     }
 
     protected onUpdate(dt: number): void {
-        this._logicController?.update();
+        this._logicController?.logic()
     }
 }

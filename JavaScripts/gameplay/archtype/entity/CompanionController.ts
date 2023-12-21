@@ -19,7 +19,7 @@ export enum CompanionStateEnum {
 /**
  * 伙伴控制器
  */
-export class CompanionViewController extends StateMachine<void, CompanionStateEnum, string>{
+export class CompanionViewController extends StateMachine<void, CompanionStateEnum, string> {
 
     public context: CompanionState
 
@@ -36,6 +36,7 @@ export class CompanionViewController extends StateMachine<void, CompanionStateEn
         this.addState(CompanionStateEnum.Idle, new CompanionIdleState());
         this.setStartState(CompanionStateEnum.Initialize);
     }
+
 
 }
 
