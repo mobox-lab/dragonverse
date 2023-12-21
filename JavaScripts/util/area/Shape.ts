@@ -1,5 +1,6 @@
 import { orient2d } from "robust-predicates";
 import GToolkit from "../GToolkit";
+import Enumerable from "linq";
 
 export type AnyShape = IShape2 | IShape3;
 
@@ -357,6 +358,22 @@ export function randomPointInShapes2(shapes: IShape2[], maxTrial: number = RANDO
     } else {
         return null;
     }
+}
+
+/**
+ * 是否 点在给定的任意一个 2D 形状中.
+ * @param shapes
+ * @param point
+ */
+export function isPointInShape2D(shapes: IShape2[], point: IPoint2) {
+    let result = false;
+    for (const shape of shapes) {
+        if (shape.inShape(point)) {
+            result = true;
+            break;
+        }
+    }
+    return result;
 }
 
 function pointsBoundingBoxIn2D(points: IPoint2[]): [IPoint2, IPoint2] {

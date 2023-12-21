@@ -5,7 +5,7 @@ import {
     PolygonShape,
     IShape3,
     Point3FromArray,
-    Point3SetShape,
+    Point3SetShape, IShape2,
 } from "../../util/area/Shape";
 import { GameConfig } from "../../config/GameConfig";
 import GToolkit from "../../util/GToolkit";
@@ -22,6 +22,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
     private static readonly POINTS_3D_AREA_HOLDER_TAG = "points-3d-area-holder-tag";
     private static readonly SHAPE_2D_AREA_HOLDER_TAG = "shape-2d-area-holder-tag";
     public static readonly AREA_ID_TAG_PREFIX = "area-id-tag-";
+    public static readonly SAFE_HOUSE_AREA_ID = 12;
     public static readonly RESPAWN_AREA_ID = 13;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -30,6 +31,8 @@ export default class AreaManager extends Singleton<AreaManager>() {
     private _injected: boolean = false;
 
     private _respawnPointsCache: IPoint3[] = null;
+
+    private _safeHouseAreaCache: IShape2[] = null;
 
     protected onConstruct(): void {
         super.onConstruct();
@@ -125,14 +128,44 @@ export default class AreaManager extends Singleton<AreaManager>() {
             });
 
         this._injected = true;
+        this._safeHouseAreaCache = null;
+        this._respawnPointsCache = null;
         return;
+    }
+
+    /**
+     * 获取区域中的 2D 形状.
+     * @param id
+     */
+    public getArea2D(id: number): IShape2[] {
+        const shapes: IShape2[] = [];
+        this.innerGetArea(id).forEach(
+            (shape) => {
+                if (GToolkit.is<IShape2>(shape, "boundingBoxArea")) shapes.push(shape);
+            },
+        );
+        return shapes;
+    }
+
+    /**
+     * 获取区域中的 3D 形状.
+     * @param id
+     */
+    public getArea3D(id: number): IShape3[] {
+        const shapes: IShape3[] = [];
+        this.innerGetArea(id).forEach(
+            (shape) => {
+                if (GToolkit.is<IShape3>(shape, "boundingBoxVolume")) shapes.push(shape);
+            },
+        );
+        return shapes;
     }
 
     /**
      * 获取区域.
      * @param id
      */
-    public getArea(id: number): AnyShape[] {
+    private innerGetArea(id: number): AnyShape[] {
         this.injectScenePoint();
         return this._areaMap.get(id) ?? [];
     }
@@ -141,17 +174,27 @@ export default class AreaManager extends Singleton<AreaManager>() {
      * 获取区域集合.
      * @param ids
      */
-    public getAreas(ids: number[]): AnyShape[] {
+    private innerGetAreas(ids: number[]): AnyShape[] {
         const areas: AnyShape[] = [];
         if (!ids) return areas;
 
         ids.forEach((value) => {
-            const area = this.getArea(value);
+            const area = this.innerGetArea(value);
             if (area && area.length > 0) {
                 areas.push(...area);
             }
         });
         return areas;
+    }
+
+    /**
+     * 获取新手村 2D 区域.
+     */
+    public getSafeHouseArea(): IShape2[] {
+        if (!this._safeHouseAreaCache) {
+            this._safeHouseAreaCache = this.getArea2D(AreaManager.SAFE_HOUSE_AREA_ID);
+        }
+        return this._safeHouseAreaCache;
     }
 
     /**
@@ -162,7 +205,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
         if (this._respawnPointsCache) return this._respawnPointsCache;
 
         const points: IPoint3[] = [];
-        for (let shape of this.getArea(AreaManager.RESPAWN_AREA_ID)) {
+        for (let shape of this.innerGetArea(AreaManager.RESPAWN_AREA_ID)) {
             if (GToolkit.is<IShape3>(shape, "boundingBoxVolume")) points.push(...shape.points());
         }
         this._respawnPointsCache = points;
@@ -181,7 +224,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
             case BagTypes.CollectibleItem:
                 GameConfig.CollectibleItem.getElement(id).areaIds.forEach(
                     (areaId) => {
-                        for (let shape of this.getArea(areaId)) {
+                        for (let shape of this.innerGetArea(areaId)) {
                             if (GToolkit.is<IShape3>(shape, "boundingBoxVolume")) points.push(...shape.points());
                         }
                     },
@@ -190,7 +233,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
             case BagTypes.Dragon:
                 GameConfig.Dragon.getElement(id).areaIds.forEach(
                     (areaId) => {
-                        for (let shape of this.getArea(areaId)) {
+                        for (let shape of this.innerGetArea(areaId)) {
                             if (GToolkit.is<IShape3>(shape, "boundingBoxVolume")) points.push(...shape.points());
                         }
                     },
@@ -235,6 +278,17 @@ export default class AreaManager extends Singleton<AreaManager>() {
             });
 
         return result;
+    }
+
+    /**
+     * 是否 一点在 2D 区域内.
+     * @param shapes
+     * @param pos
+     */
+    public in2DArea(shapes: IShape2[], pos: IPoint3): boolean {
+        return Enumerable
+            .from(shapes)
+            .any(shape => shape.inShape(pos));
     }
 }
 

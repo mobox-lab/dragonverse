@@ -13,6 +13,8 @@ import ModuleC = mwext.ModuleC;
 import SubData = mwext.Subdata;
 import noReply = mwext.Decorator.noReply;
 import { TimeManager } from "../../controller/TimeManager";
+import AreaManager from "../../gameplay/area/AreaManager";
+import { isPointInShape2D } from "../../util/area/Shape";
 
 /**
  * Salt Token.
@@ -153,6 +155,7 @@ class RequestGuard {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
+
     //#region Member
     private _originToken: string = null;
 
@@ -181,9 +184,6 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
-
-        //改到服务端处理，减少rpc调用
-        // if (this._patrolRegulator.ready()) this.patrol();
     }
 
     protected onEnterScene(sceneType: number): void {
@@ -234,7 +234,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             Log4Ts.log(
                 AuthModuleC,
                 `player is verifying code.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("isVerifying") });
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("isVerifying")});
             return;
         }
 
@@ -245,7 +245,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
                 `try patrol in server.`);
 
             this.releasePlayer();
-            this.server.net_patrol();
+            this.patrol();
             return;
         }
 
@@ -255,7 +255,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             this.server.net_verifyCode(this.generateSaltToken(), code);
         } else {
             Log4Ts.warn(AuthModuleC, `code verify request too frequently.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("verifyCodeTooFrequently") });
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeTooFrequently")});
         }
     }
 
@@ -305,13 +305,17 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     }
 
     /**
-     * 巡逻.
+     * 客户端 主动邀请巡逻.
+     * @desc 理论上当以下时机时需发起巡逻：
+     * @desc  - 客户端具有准入权限 但服务端可能没有准入权限.
+     * @desc
+     * @desc 主动邀请巡逻的 PRC 发起需要满足以下所有条件：
+     * @desc  - 客户端具有准入权限.
      */
     public patrol() {
-        //TODO_LviatYi 圈定新手村区域 进行区域检查
-
         if (!this.data.enterEnable) return;
-        this.server.net_patrol();
+
+        this.server.net_passivityPatrol();
     }
 
     /**
@@ -333,7 +337,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     //#region Net Method
     public net_verifyFail() {
         this._lastVerifyCodeTime = null;
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan("verifyCodeFail") });
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeFail")});
     }
 
     public net_enableEnter() {
@@ -346,7 +350,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
                 true, Player.localPlayer.playerId);
             return;
         }
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: i18n.lan(i18n.keyTable.verifyCodeSuccess) });
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan(i18n.keyTable.verifyCodeSuccess)});
         this.data.enterEnable = true;
         this.releasePlayer();
     }
@@ -398,7 +402,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
+            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -454,7 +458,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         //定时检测
         if (this._patrolRegulator.ready()) {
             Player.getAllPlayers().forEach(player => {
-                this.checkPlayerEnterEnable(player.playerId);
+                this.initiativePatrol(player.playerId);
             });
         }
     }
@@ -503,12 +507,12 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
+            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
+            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
             return false;
         }
 
@@ -541,8 +545,8 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.TEST_CODE_VERIFY_URL}`;
         console.log(url);
         const resp = await fetch(`${GameStart.instance.isRelease ?
-            AuthModuleS.RELEASE_CODE_VERIFY_URL :
-            AuthModuleS.TEST_CODE_VERIFY_URL}`,
+                AuthModuleS.RELEASE_CODE_VERIFY_URL :
+                AuthModuleS.TEST_CODE_VERIFY_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -649,21 +653,21 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         this
             .verifyEnterCode(code, uid)
             .then((value) => {
-                if (!value) {
-                    logState(
-                        AuthModuleS,
-                        "log",
-                        `verify failed.`,
-                        true,
-                        currPlayerId,
-                        uid,
-                    );
-                    this.getClient(currPlayerId)?.net_verifyFail();
-                    return;
-                }
-                this.recordPlayer(currPlayerId);
-                if (value) this.getClient(currPlayerId)?.net_enableEnter();
-            },
+                    if (!value) {
+                        logState(
+                            AuthModuleS,
+                            "log",
+                            `verify failed.`,
+                            true,
+                            currPlayerId,
+                            uid,
+                        );
+                        this.getClient(currPlayerId)?.net_verifyFail();
+                        return;
+                    }
+                    this.recordPlayer(currPlayerId);
+                    if (value) this.getClient(currPlayerId)?.net_enableEnter();
+                },
             )
             .catch((reason) => {
                 this.getClient(currPlayerId)?.net_verifyFail();
@@ -700,11 +704,11 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     }
 
     /**
-     * 有准入 C 巡逻 请求检查 S 端是否具有准入权限.
+     * 有准入 C 巡逻 请求 S 端被动检查是否具有准入权限.
      * 如无则踢出.
      */
     @noReply()
-    public net_patrol() {
+    public net_passivityPatrol() {
         logState(
             AuthModuleS,
             "log",
@@ -739,20 +743,37 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     }
 
     /**
-     * @description: 检测玩家是否有准入权限，没有且不在新手村就归位
+     * 主动巡逻.
+     * @desc 理论上当以下时机时需发起巡逻：
+     * @desc  - 服务端无准入权限 但客户端可能具有准入权限.
+     * @desc
+     * @desc 主动巡逻的判定前提：
+     * @desc  - 服务端具有准入权限.
+     * @desc 主动巡逻的判定条件：
+     * @desc  - 玩家不在新手区域 {@link AreaManager.getRespawnArea()} 内.
+     * @desc
      * @param playerId 玩家id
      */
-    private checkPlayerEnterEnable(playerId: number) {
+    private initiativePatrol(playerId: number) {
+        if (!GameStart.instance.isRelease) return;
         if (this.getPlayerData(playerId).enterEnable) return;
-
-        //判断在不在新手村，不在就归位
-        let trigger = GameObject.findGameObjectByName("beginnerChecker") as Trigger;
+        Log4Ts.log(AuthModuleS, `initiative patrol on player: ${playerId}.`);
         let player = Player.getPlayer(playerId);
-        if (trigger && player) {
-            if (!trigger.checkInArea(player.character)) {
-                player.character.worldTransform.position = trigger.worldTransform.position;
-            }
+        if (!player) return;
+        if (!isPointInShape2D(AreaManager.getInstance().getSafeHouseArea(), player.character.worldTransform.position)) {
+            Log4Ts.warn(AuthModuleS, `failed. player is not in safe house when patrol.`);
+            const respawnPoint = GToolkit.randomArrayItem(AreaManager.getInstance().getRespawnArea());
+            player.character.worldTransform.position = new Vector(respawnPoint.x, respawnPoint.y, respawnPoint.z);
+        } else {
+            Log4Ts.log(AuthModuleS, `success. player is in safe house when patrol.`);
         }
+        // //判断在不在新手村，不在就归位
+        // let trigger = GameObject.findGameObjectByName("beginnerChecker") as Trigger;
+        // if (trigger && player) {
+        //     if (!trigger.checkInArea(player.character)) {
+        //         player.character.worldTransform.position = trigger.worldTransform.position;
+        //     }
+        // }
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
