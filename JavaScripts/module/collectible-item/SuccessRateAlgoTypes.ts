@@ -9,7 +9,27 @@ export enum SuccessRateAlgoTypes {
     /**
      * 测试结果算法.
      */
-    TestAlgo
+    TestAlgo,
+    /**
+     * 机警.
+     */
+    Alert,
+    /**
+     * 暴躁.
+     */
+    Tigerish,
+    /**
+     * 胆小.
+     */
+    Coward,
+    /**
+     * 易怒.
+     */
+    Crank,
+    /**
+     * 温和.
+     */
+    Moderate,
 }
 
 /**
@@ -21,6 +41,16 @@ export function SuccessRateAlgoFactory(type: SuccessRateAlgoTypes): SuccessRateA
     switch (type) {
         case SuccessRateAlgoTypes.TestAlgo:
             return testAlgo;
+        case SuccessRateAlgoTypes.Alert :
+            return normalAlertAlgo;
+        case SuccessRateAlgoTypes.Tigerish :
+            return normalTigerishAlgo;
+        case SuccessRateAlgoTypes.Coward :
+            return normalCowardAlgo;
+        case SuccessRateAlgoTypes.Crank :
+            return normalCrankAlgo;
+        case SuccessRateAlgoTypes.Moderate :
+            return normalModerateAlgo;
         case SuccessRateAlgoTypes.Null:
         default:
             return normalAlgo;
@@ -32,5 +62,25 @@ export function normalAlgo(): number {
 }
 
 export function testAlgo(): number {
+    return 0.8;
+}
+
+export function normalAlertAlgo(): number {
+    return 0.3;
+}
+
+export function normalTigerishAlgo(): number {
+    return 0.4;
+}
+
+export function normalCowardAlgo(): number {
+    return 1;
+}
+
+export function normalCrankAlgo(): number {
+    return 0.6;
+}
+
+export function normalModerateAlgo(): number {
     return 0.8;
 }

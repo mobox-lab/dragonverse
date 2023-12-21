@@ -1,4 +1,4 @@
-import GToolkit, { Tf, TimeFormatDimensionFlags } from "../util/GToolkit";
+import GToolkit, { Tf } from "../util/GToolkit";
 
 export default class GameServiceConfig {
 //#region Auth
@@ -27,7 +27,6 @@ export default class GameServiceConfig {
      * 巡查时间间隔.
      */
     public static readonly GUARD_PATROL_INTERVAL = GToolkit.timeConvert(3, Tf.M, Tf.Ms);
-
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -75,9 +74,9 @@ export default class GameServiceConfig {
     public static readonly SCENE_DRAGON_UI_DORMANT_DETECT_INTERVAL = 3000;
 
     /**
-     * 场景龙 可捕捉距离.
+     * 场景龙 最远可捕捉距离.
      */
-    public static readonly SCENE_DRAGON_CATCHABLE_DISTANCE = 250;
+    public static readonly SCENE_DRAGON_CATCHABLE_DISTANCE = 5000;
 
     /**
      * 场景龙 最远存活距离平方.
