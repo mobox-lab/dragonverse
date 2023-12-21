@@ -2,7 +2,7 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-14 17:50:59
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-21 13:35:14
+ * @LastEditTime: 2023-12-21 14:33:41
  * @FilePath: \DragonVerse\JavaScripts\gameplay\interactive\CircleTrigger.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -70,7 +70,7 @@ export default class CircleTrigger extends mw.Script {
         this._trigger = this.gameObject.getChildByName("触发器") as mw.Trigger;
         this._trigger.onEnter.add(this.onEnter);
 
-        if (this._circleType === CircleType.Point) {
+        if (this._circleType === CircleType.Point || this._circleType === CircleType.SpeedUp) {
             this._obj = this.gameObject.getChildByName("场景__光圈");
         }
 
