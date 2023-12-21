@@ -12,11 +12,36 @@ ${Import}
 export default class ${ClassName}_Generate extends ${SuperClassName} {
 	${Fileds}
  
-	/**
-	* onStart 之前触发一次
-	*/
 	protected onAwake() {
+		//设置能否每帧触发onUpdate
+		this.canUpdate = false;
+		this.layer = mw.UILayerBottom;
+		this.initButtons();
 	}
+	protected initButtons() {
+		${StaleButton_Start}
+		this.initLanguage(this.${StaleButton});
+		${StaleButton_End}
+		//按钮多语言
+		${StaleButton_HideStart}
+		this.initLanguage(this.uiWidgetBase.findChildByPath("${StaleButton_Path}") as any);
+		${StaleButton_HideEnd}
+		//文本多语言
+		${TextBlock_Start}
+		this.initLanguage(this.${TextBlock})
+		${TextBlock_End}
+		//文本多语言
+		${TextBlock_HideStart}
+		this.initLanguage(this.uiWidgetBase.findChildByPath("${TextBlock_Path}") as any);
+		${TextBlock_HideEnd}
+
+	}
+	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let call = mw.UIScript.getBehavior("lan");
+        if (call && ui) {
+            call(ui);
+        }
+    }
 	 
 }
  

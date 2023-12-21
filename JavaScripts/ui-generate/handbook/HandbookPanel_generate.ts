@@ -69,11 +69,40 @@ export default class HandbookPanel_Generate extends UIScript {
 
 
  
-	/**
-	* onStart 之前触发一次
-	*/
 	protected onAwake() {
+		//设置能否每帧触发onUpdate
+		this.canUpdate = false;
+		this.layer = mw.UILayerBottom;
+		this.initButtons();
 	}
+	protected initButtons() {
+		
+		this.initLanguage(this.btnClose);
+		
+	
+		//按钮多语言
+		
+		//文本多语言
+		
+		this.initLanguage(this.mTextFound)
+		
+	
+		this.initLanguage(this.mTextCompletion)
+		
+	
+		this.initLanguage(this.mTittle)
+		
+	
+		//文本多语言
+		
+
+	}
+	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let call = mw.UIScript.getBehavior("lan");
+        if (call && ui) {
+            call(ui);
+        }
+    }
 	 
 }
  

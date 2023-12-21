@@ -125,11 +125,58 @@ export default class BagMain_Generate extends UIScript {
 
 
  
-	/**
-	* onStart 之前触发一次
-	*/
 	protected onAwake() {
+		//设置能否每帧触发onUpdate
+		this.canUpdate = false;
+		this.layer = mw.UILayerBottom;
+		this.initButtons();
 	}
+	protected initButtons() {
+		
+		this.initLanguage(this.btn1);
+		
+	
+		this.initLanguage(this.btn2);
+		
+	
+		this.initLanguage(this.btn3);
+		
+	
+		this.initLanguage(this.btn4);
+		
+	
+		this.initLanguage(this.btn5);
+		
+	
+		this.initLanguage(this.mBtnOpt);
+		
+	
+		this.initLanguage(this.mBtnClose);
+		
+	
+		//按钮多语言
+		
+		//文本多语言
+		
+		this.initLanguage(this.mName)
+		
+	
+		this.initLanguage(this.mNum)
+		
+	
+		this.initLanguage(this.mDesc)
+		
+	
+		//文本多语言
+		
+
+	}
+	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let call = mw.UIScript.getBehavior("lan");
+        if (call && ui) {
+            call(ui);
+        }
+    }
 	 
 }
  

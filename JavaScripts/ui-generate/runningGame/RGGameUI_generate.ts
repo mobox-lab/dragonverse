@@ -76,11 +76,49 @@ export default class RGGameUI_Generate extends UIScript {
 
 
  
-	/**
-	* onStart 之前触发一次
-	*/
 	protected onAwake() {
+		//设置能否每帧触发onUpdate
+		this.canUpdate = false;
+		this.layer = mw.UILayerBottom;
+		this.initButtons();
 	}
+	protected initButtons() {
+		
+		//按钮多语言
+		
+		//文本多语言
+		
+		this.initLanguage(this.mScoreText)
+		
+	
+		this.initLanguage(this.mScoreFly)
+		
+	
+		this.initLanguage(this.mCountDown)
+		
+	
+		this.initLanguage(this.mTimeFly)
+		
+	
+		this.initLanguage(this.info)
+		
+	
+		//文本多语言
+		
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mScoreCanvas/TextBlock") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mTimeCanvas/TextBlock_2") as any);
+		
+	
+
+	}
+	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let call = mw.UIScript.getBehavior("lan");
+        if (call && ui) {
+            call(ui);
+        }
+    }
 	 
 }
  
