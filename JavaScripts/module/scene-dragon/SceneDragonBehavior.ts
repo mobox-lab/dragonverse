@@ -12,6 +12,7 @@ import SceneDragon from "./SceneDragon";
 import Character = mw.Character;
 import createYoact = Yoact.createYoact;
 import bindYoact = Yoact.bindYoact;
+import { DragonSyncKeyEventArgs } from "./SceneDragonModule";
 
 class SceneDragonBehaviorState {
     //#region Constant
@@ -104,6 +105,8 @@ enum SceneDragonStates {
 @Component
 export default class SceneDragonBehavior extends mw.Script {
     //#region Member
+    private _eventListeners: EventListener[] = [];
+
     public data: SceneDragon;
 
     public syncKey: string;
@@ -133,9 +136,13 @@ export default class SceneDragonBehavior extends mw.Script {
         }
 
         let bagId = GameConfig.CharacterfulDragon.getElement(this.data.id).bagId;
-        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, i18n.lan(SceneDragon.nameStr(bagId)))
+        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, i18n.lan(SceneDragon.nameStr(bagId)));
 
         //#region Member init
+        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnCandidateChange, (eventArgs) => {
+            const eventArg = eventArgs as DragonSyncKeyEventArgs;
+            if (this.syncKey === eventArg.syncKey) this.elected();
+        }));
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Widget bind
@@ -164,8 +171,8 @@ export default class SceneDragonBehavior extends mw.Script {
         this.state.alive = false;
         this.gameObject.destroy();
 
-        //#region Event subscribe
-        //TODO_LviatYi 
+        //#region Event Unsubscribe
+        this._eventListeners.forEach(value => value.disconnect());
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -306,8 +313,23 @@ export default class SceneDragonBehavior extends mw.Script {
         );
     }
 
+    /**
+     * 参选.
+     */
+    public elected() {
+//TODO_LviatYi 参选.
+    }
+
+    /**
+     * 退选.
+     */
+    public unElected() {
+//TODO_LviatYi 退选.
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
