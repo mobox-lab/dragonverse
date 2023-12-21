@@ -59,6 +59,8 @@ export default class UnifiedRoleController extends mw.Script {
 
     private _buffs: BuffContainer<UnifiedRoleController> = null;
 
+    private _throwStance: Stance = null;
+
     public get buffs(): BuffContainer<UnifiedRoleController> {
         if (SystemUtil.isServer()) {
             return this._buffs;
@@ -104,6 +106,7 @@ export default class UnifiedRoleController extends mw.Script {
             if (!this._moduleS) Log4Ts.log(UnifiedRoleController, `Role Module S not valid.`);
             this._moduleS.addController(this.playerId, this);
             this._buffs = new BuffContainer();
+            this._throwStance = this.character?.loadStance(UnifiedRoleController.THROW_STANCE_GUID);
             this.onControllerReadyInServer();
         }
 //#endregion ------------------------------------------------------------------------------------------
@@ -179,7 +182,7 @@ export default class UnifiedRoleController extends mw.Script {
 
     @RemoteFunction(Server)
     public playerPlayThrow(target: Vector) {
-        this.character.loadStance(UnifiedRoleController.THROW_STANCE_GUID).play();
+        this._throwStance.play();
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

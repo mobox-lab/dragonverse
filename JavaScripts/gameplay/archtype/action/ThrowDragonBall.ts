@@ -1,30 +1,25 @@
 import GToolkit from "../../../util/GToolkit";
 
-const tags = 'ThrowDragonBall'
+const tags = "ThrowDragonBall";
 
 const mid1 = mw.Vector.zero;
-
 
 
 export class ThrowDragonBall {
 
 
-    public prefabId = ['265129', '265130'];
+    public prefabId = ["265129", "265130"];
 
 
-    private _instance: mw.GameObject
-
+    private _instance: mw.GameObject;
 
 
     public constructor(private owner: mw.Character, private target: mw.Vector, private duration: number) {
 
         let obj = this._instance = mwext.GameObjPool.spawn(GToolkit.randomArrayItem(this.prefabId));
         if (!obj) {
-            throw new Error(`无法创建预制体,请将该模型拖入到优先加载`)
+            throw new Error(`无法创建预制体,请将该模型拖入到优先加载`);
         }
-
-
-
 
 
     }
@@ -43,9 +38,7 @@ export class ThrowDragonBall {
     }
 
 
-
-
-    public next(result: boolean, duration: number = 1000, complete: () => void) {
+    public next(result: boolean, duration: number = 1000, complete: () => void = null) {
         if (!this._instance) {
             return;
         }
@@ -53,19 +46,19 @@ export class ThrowDragonBall {
 
         if (result) {
             let location = this.owner.getSlotWorldPosition(mw.HumanoidSlotType.RightHand);
-            actions.tween(this._instance.worldTransform).to(duration, { position: location }).setTag(tags).call(() => {
+            actions.tween(this._instance.worldTransform).to(duration, {position: location}).setTag(tags).call(() => {
                 this.clear();
             }).start();
         } else {
 
             let dir = mid1.set(GToolkit.random(-1, 1), GToolkit.random(-1, 1), 0).normalize();
-            dir.multiply(GToolkit.random(300, 500, true))
+            dir.multiply(GToolkit.random(300, 500, true));
             let end = dir.add(this._instance.worldTransform.position);
             let c1 = this.generateControllerPoint(this._instance.worldTransform.position, end, 300);
             actions.tween(this._instance.worldTransform).bezierTo(duration, c1, c1, end).setTag(tags).call(() => {
-                complete();
+                complete && complete();
                 this.clear();
-            }).start()
+            }).start();
         }
     }
 
@@ -73,7 +66,7 @@ export class ThrowDragonBall {
     private generateControllerPoint(start: mw.Vector, end: mw.Vector, height: number): mw.Vector {
         let mid = mw.Vector.lerp(start, end, 0.5, mid1);
         mid.z += height;
-        return mid
+        return mid;
     }
 
     public clear() {

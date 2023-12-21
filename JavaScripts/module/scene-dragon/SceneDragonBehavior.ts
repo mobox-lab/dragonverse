@@ -250,6 +250,9 @@ export default class SceneDragonBehavior extends mw.Script {
     private initStateMachine() {
         const idleWait = new State<SceneDragonBehaviorState>(SceneDragonStates.IdleWait)
             .aE(() => {
+                Log4Ts.log(SceneDragonBehavior,
+                    `enter ${idleWait.name} state.`,
+                    `key: ${this.syncKey}.`);
                 if (this.state.destination) {
                     this.state.destination = null;
                     Navigation.stopNavigateTo(this.gameObject);
@@ -258,6 +261,9 @@ export default class SceneDragonBehavior extends mw.Script {
             .aU((dt) => this.state.activeStamina += dt * SceneDragonBehaviorState.ACTIVE_STAMINA_RECOVERY_IN_IDLE);
         const idleMotion = new State<SceneDragonBehaviorState>(SceneDragonStates.IdleMotion)
             .aE(() => {
+                Log4Ts.log(SceneDragonBehavior,
+                    `enter ${idleMotion.name} state.`,
+                    `key: ${this.syncKey}.`);
                 if (this.state.destination) {
                     this.state.destination = null;
                     Navigation.stopNavigateTo(this.gameObject);
@@ -269,6 +275,9 @@ export default class SceneDragonBehavior extends mw.Script {
             });
         const walk = new State<SceneDragonBehaviorState>(SceneDragonStates.Walk)
             .aE(() => {
+                Log4Ts.log(SceneDragonBehavior,
+                    `enter ${walk.name} state.`,
+                    `key: ${this.syncKey}.`);
                 (this.gameObject as Character).maxWalkSpeed = SceneDragon.WALK_SPEED;
                 this.state.restless = Math.random() < SceneDragonBehaviorState.RESTLESS_RATIO;
             })
@@ -281,6 +290,9 @@ export default class SceneDragonBehavior extends mw.Script {
             });
         const run = new State<SceneDragonBehaviorState>(SceneDragonStates.Run)
             .aE(() => {
+                Log4Ts.log(SceneDragonBehavior,
+                    `enter ${run.name} state.`,
+                    `key: ${this.syncKey}.`);
                 (this.gameObject as Character).maxWalkSpeed = SceneDragon.RUN_SPEED;
                 this.state.restless = false;
             })
@@ -289,10 +301,18 @@ export default class SceneDragonBehavior extends mw.Script {
                 this.state.activeStamina += dt * SceneDragonBehaviorState.ACTIVE_STAMINA_RECOVERY_IN_RUNNING;
             });
         const fear = new State<SceneDragonBehaviorState>(SceneDragonStates.Fear)
-            .aE(() => this.fear(true))
+            .aE(() => {
+                Log4Ts.log(SceneDragonBehavior,
+                    `enter ${fear.name} state.`,
+                    `key: ${this.syncKey}.`);
+                this.fear(true);
+            })
             .aEx(() => this.fear(false));
         const laugh = new State<SceneDragonBehaviorState>(SceneDragonStates.Laugh)
             .aE(() => {
+                Log4Ts.log(SceneDragonBehavior,
+                    `enter ${laugh.name} state.`,
+                    `key: ${this.syncKey}.`);
                 this.state.laughStamina = 100;
                 this.laugh(true);
             })
@@ -302,7 +322,7 @@ export default class SceneDragonBehavior extends mw.Script {
         const death = new State<SceneDragonBehaviorState>(SceneDragonStates.Death)
             .aE(() => {
                 Log4Ts.log(SceneDragonBehavior,
-                    `enter death state.`,
+                    `enter ${death.name} state.`,
                     `key: ${this.syncKey}.`);
             });
 

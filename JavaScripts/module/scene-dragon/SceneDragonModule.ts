@@ -20,13 +20,8 @@ import { RoleModuleC } from "../role/RoleModule";
 import Waterween from "../../depend/waterween/Waterween";
 import Easing from "../../depend/easing/Easing";
 import EffectService = mw.EffectService;
-
-interface ThrowBall {
-
-    do(from: Vector, to: Vector): void;
-
-    next(): void;
-}
+import { ThrowDragonBall } from "../../gameplay/archtype/action/ThrowDragonBall";
+import GameplayCueSet = UE.GameplayCueSet;
 
 /**
  * 场景龙 相关事件.
@@ -115,6 +110,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     private _lockingSyncKey: string = null;
 
     private _lockTimerId: number = null;
+
+    private _currentBall: ThrowDragonBall = null;
 
     private _currentCatchResultSyncKey: string = null;
 
@@ -206,7 +203,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             return;
         }
 
-        let isSame = false;
         Log4Ts.log(SceneDragonModuleC, `lock on SceneDragon. syncKey: ${this._candidate}`);
         if (this._lockingSyncKey) {
             if (this._lockingSyncKey !== this._candidate) {
@@ -214,7 +210,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 this.unlockWithView();
             } else {
                 Log4Ts.log(SceneDragonModuleC, `already lock on same SceneDragon.`);
-                isSame = true;
                 if (this._lockTimerId) {
                     clearTimeout(this._lockTimerId);
                     this._lockTimerId = null;
@@ -224,33 +219,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             this.roleCtrl.addMoveForbiddenBuff();
         }
 
+        this._currentCatchResultSyncKey = null;
+
         this.lockWithView(this._candidate);
 
-        if (!isSame) {
-            Log4Ts.log(SceneDragonModuleC, `dispatch on lock event.`);
-            const position = this
-                .syncItemMap
-                .get(this._candidate)
-                .object
-                .worldTransform
-                .position
-                .clone();
-            this.roleCtrl.lookAt(position);
-            Waterween.to(
-                () => this.roleCtrl.character.worldTransform.rotation.toQuaternion(),
-                (val) => {
-                    this.roleCtrl.character.worldTransform.rotation = val.toRotation();
-                },
-                Quaternion.fromRotation(
-                    Rotation.fromVector(position
-                        .subtract(this.character.worldTransform.position))),
-                0.5e3,
-                undefined,
-                Easing.easeInOutSine,
-                Quaternion.slerp,
-            ).autoDestroy();
-            Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
-        }
     }
 
     /**
@@ -264,7 +236,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             return;
         }
         Log4Ts.log(SceneDragonModuleC, `try catch item.`);
-        this._currentCatchResultSyncKey = null;
 
         const item = this.syncItemMap.get(syncKey);
         if (!item?.behavior?.data) {
@@ -279,6 +250,14 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
         this.keepLockWithView();
         ModuleService.getModule(RoleModuleC).controller.playerPlayThrow(item.object.worldTransform.position);
+
+        this._currentBall = new ThrowDragonBall(
+            this.character,
+            item.object.worldTransform.position,
+            GameServiceConfig.DRAGON_BALL_THROW_DURATION,
+        );
+        this._currentBall.do();
+
         this.server.net_tryCatch(syncKey).then(
             (value) => {
                 if (value) {
@@ -295,6 +274,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
      */
     public acceptResult(): boolean {
         if (GToolkit.isNullOrEmpty(this._currentCatchResultSyncKey)) {
+            this._currentBall?.next(false);
             const item = this.syncItemMap.get(this._lockingSyncKey);
             if (!item) {
                 Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${this._lockingSyncKey}`);
@@ -305,6 +285,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             this.unlockWithView();
             return;
         } else {
+            this._currentBall?.next(true);
             this.unlockWithView();
             const item = this.syncItemMap.get(this._currentCatchResultSyncKey);
             const sceneDragon = item?.behavior?.data;
@@ -370,9 +351,48 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         if (this._lockTimerId !== null) {
             this.unlockWithView();
         }
+
+        const item = this.syncItemMap.get(syncKey);
+        if (!item) Log4Ts.log(SceneDragonModuleC, `lock item not exist in client. syncKey: ${syncKey}`);
+
+        if (this._lockingSyncKey !== syncKey) {
+            item.behavior.state.isFear = true;
+            const position = this
+                .syncItemMap
+                .get(syncKey)
+                .object
+                .worldTransform
+                .position
+                .clone();
+            this.roleCtrl.lookAt(position);
+            Waterween.to(
+                () => this.roleCtrl.character.worldTransform.rotation.toQuaternion(),
+                (val) => {
+                    this.roleCtrl.character.worldTransform.rotation = val.toRotation();
+                },
+                Quaternion.fromRotation(
+                    Rotation.fromVector(position
+                        .subtract(this.character.worldTransform.position))),
+                0.5e3,
+                undefined,
+                Easing.easeInOutSine,
+                Quaternion.slerp,
+            ).autoDestroy();
+            Log4Ts.log(SceneDragonModuleC, `
+        dispatch;
+        on;
+        lock;
+        event.`);
+            Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        }
+
+        if (this.syncItemMap.has(this._lockingSyncKey)) {
+            this.syncItemMap.get(this._lockingSyncKey).behavior.state.isFear = false;
+        }
+
         this._lockingSyncKey = syncKey;
         this._lockTimerId = setTimeout(
-            () => this.unlockWithView(),
+            () => this.acceptResult(),
             GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
         );
     }
@@ -459,7 +479,15 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     //#region Event Callback
     private onDragonOutOfAliveRange = (syncKey: string) => {
-        Log4Ts.log(SceneDragonModuleC, `knows dragon out of alive range. syncKey: ${syncKey}`);
+        Log4Ts.log(SceneDragonModuleC, `;
+        knows;
+        dragon;
+        out;
+        of;
+        alive;
+        range.syncKey;
+    : ${syncKey}
+        `);
         this.server.net_destroy(syncKey);
     };
 
@@ -607,10 +635,18 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
                      this.isGenerateEnable(playerId, item.id);
                      i++) {
                     Log4Ts.log(SceneDragonModuleS,
-                        `checking generate.`,
-                        () => `playerId: ${playerId}.`,
-                        () => `id: ${item.id}.`,
-                        () => `trial: ${i}.`);
+                        `;
+        checking;
+        generate.`,
+                        () => `;
+        playerId: ${playerId}.
+        `,
+                        () => `;
+        id: ${item.id}.
+        `,
+                        () => `;
+        trial: ${i}.
+        `);
                     this.generate(playerId, item.id);
                 }
             });
@@ -655,11 +691,21 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * @param itemId
      */
     private generate(playerId: number, itemId: number) {
-        Log4Ts.log(SceneDragonModuleS, `try generate item, itemId: ${itemId}.`);
+        Log4Ts.log(SceneDragonModuleS, `;
+        try
+        generate;
+        item, itemId;
+    : ${itemId}
+    .
+        `);
 
         let location = GToolkit.randomArrayItem(this.getValidGenerateLocation(itemId, playerId));
         if (location === null) {
-            Log4Ts.error(SceneDragonModuleS, `generate location is null.`);
+            Log4Ts.error(SceneDragonModuleS, `;
+        generate;
+        location;
+        is;
+        null.`);
             return;
         }
 
@@ -669,9 +715,19 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         const playerPosition = Player.getPlayer(playerId)?.character.worldTransform.position ?? null;
         if (playerPosition === null || Vector.squaredDistance(item.location, playerPosition) > GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE) {
-            Log4Ts.log(SceneDragonModuleS, `generate item skipped. player is too far.`);
-            Log4Ts.log(SceneDragonModuleS, `  id: ${item.id}.`);
-            Log4Ts.log(SceneDragonModuleS, `  location: ${item.location}.`);
+            Log4Ts.log(SceneDragonModuleS, `;
+        generate;
+        item;
+        skipped.player;
+        is;
+        too;
+        far.`);
+            Log4Ts.log(SceneDragonModuleS, `;
+        id: ${item.id}.
+        `);
+            Log4Ts.log(SceneDragonModuleS, `;
+        location: ${item.location}.
+        `);
             return;
         }
 
@@ -685,7 +741,12 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         this.syncItemMap.set(syncKey, item);
         this._syncLocker.set(syncKey, null);
 
-        Log4Ts.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
+        Log4Ts.log(SceneDragonModuleS, `;
+        generate;
+        item;
+        success.syncKey;
+    : ${syncKey}
+        `);
 
         item.autoDestroyTimerId = setTimeout(() => {
                 this.destroy(playerId, syncKey);
@@ -711,12 +772,24 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     private destroy(playerId: number, syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            Log4Ts.error(SceneDragonModuleS, `destroy item is null`);
+            Log4Ts.error(SceneDragonModuleS, `;
+        destroy;
+        item;
+        is;
+        null`);
             return;
         }
         Log4Ts.log(SceneDragonModuleS,
-            () => `try destroy item, itemId: ${item.id}.`,
-            () => `reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
+            () => `;
+        try
+        destroy;
+        item, itemId;
+    : ${item.id}
+    .
+        `,
+            () => `;
+        reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.
+        `);
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
@@ -725,12 +798,27 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         let array: string[] = this.existenceItemMap.get(playerId);
         if (!array || !GToolkit.remove(array, syncKey)) {
-            Log4Ts.log(SceneDragonModuleS, `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
-             but it not exist in server`);
+            Log4Ts.log(SceneDragonModuleS, `;
+        destroy;
+        Collectible;
+        Item; ${item.id}
+        whose;
+        generate;
+        time;
+        is ${item.generateTime},
+            but;
+        it;
+        not;
+        exist in server`);
         }
 
         item.destroy();
-        Log4Ts.log(SceneDragonModuleS, `destroy item success. syncKey: ${syncKey}`);
+        Log4Ts.log(SceneDragonModuleS, `;
+        destroy;
+        item;
+        success.syncKey;
+    : ${syncKey}
+        `);
 
         this.syncItemMap.delete(syncKey);
         this._syncLocker.delete(syncKey);
@@ -744,24 +832,44 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         const currPlayerId = this.currentPlayerId;
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            Log4Ts.error(SceneDragonModuleS, `item not exist in server when catch. syncKey: ${syncKey} `);
+            Log4Ts.error(SceneDragonModuleS, `;
+        item;
+        not;
+        exist in server;
+        when;
+    catch.
+        syncKey: ${syncKey} `);
             return Promise.resolve(false);
         }
         Log4Ts.log(SceneDragonModuleS,
-            `try catch item.`,
-            `syncKey: ${syncKey}`,
+            `;
+        try catch
+        item.`,
+            `;
+        syncKey: ${syncKey}`,
             `${item.info()}`);
         if (this._syncLocker.get(syncKey) !== null) {
-            Log4Ts.log(SceneDragonModuleS, `item already locked.`);
+            Log4Ts.log(SceneDragonModuleS, `;
+        item;
+        already;
+        locked.`);
             return Promise.resolve(false);
         }
 
         const success: boolean = GToolkit.randomWeight([SceneDragon.successRateAlgo(item.id)()], 1) === 0;
         if (!success) {
-            Log4Ts.log(SceneDragonModuleC, `catch fail. failed the success rate check.`);
+            Log4Ts.log(SceneDragonModuleC, `;
+    catch
+        fail.failed;
+        the;
+        success;
+        rate;
+        check.`);
             return Promise.resolve(false);
         } else {
-            Log4Ts.log(SceneDragonModuleS, `item locked.`);
+            Log4Ts.log(SceneDragonModuleS, `;
+        item;
+        locked.`);
             this._syncLocker.set(syncKey, currPlayerId);
             return Promise.resolve(true);
         }
@@ -772,18 +880,37 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         const currPlayerId = this.currentPlayerId;
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            Log4Ts.error(SceneDragonModuleS, `item not exist in server when catch. syncKey: ${syncKey} `);
+            Log4Ts.error(SceneDragonModuleS, `;
+        item;
+        not;
+        exist in server;
+        when;
+    catch.
+        syncKey: ${syncKey} `);
             return;
         }
         Log4Ts.log(SceneDragonModuleS,
-            `accept catch item.`,
-            `syncKey: ${syncKey}`,
+            `;
+        accept;
+    catch
+        item.`,
+            `;
+        syncKey: ${syncKey}`,
             `${item.info()}`);
         if (this._syncLocker.get(syncKey) !== currPlayerId) {
             Log4Ts.log(SceneDragonModuleS,
-                `item locker illegal.`,
-                `current locker: ${this._syncLocker.get(syncKey)}.`,
-                `request locker: ${syncKey}.`);
+                `;
+        item;
+        locker;
+        illegal.`,
+                `;
+        current;
+        locker: ${this._syncLocker.get(syncKey)}.
+        `,
+                `;
+        request;
+        locker: ${syncKey}.
+        `);
             return;
         }
         this._syncLocker.delete(syncKey);
@@ -800,24 +927,24 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     public net_destroy(syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            Log4Ts.error(SceneDragonModuleS, `
-            item;
-            not;
-            exist in server;
-            when;
-            destroy.syncKey;
-        : ${syncKey}
-            `);
+            Log4Ts.error(SceneDragonModuleS, `;
+        item;
+        not;
+        exist in server;
+        when;
+        destroy.syncKey;
+    : ${syncKey}
+        `);
             return;
         }
         Log4Ts.log(SceneDragonModuleS, `;
-            try
-            destroy;
-            item.$;
-            {
-                item.info();
-            }
-            `);
+        try
+        destroy;
+        item.$;
+        {
+            item.info();
+        }
+        `);
         this.destroy(this.currentPlayerId, syncKey);
     }
 
