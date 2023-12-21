@@ -7,7 +7,6 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Regulator from "../../depend/regulator/Regulator";
 import AreaManager from "../../gameplay/area/AreaManager";
-import MainPanel from "../../ui/main/MainPanel";
 import GToolkit from "../../util/GToolkit";
 import { IPoint3 } from "../../util/area/Shape";
 import { BagModuleS } from "../bag/BagModule";
@@ -15,7 +14,19 @@ import SceneDragon from "./SceneDragon";
 import SceneDragonBehavior from "./SceneDragonBehavior";
 import GameObject = mw.GameObject;
 import noReply = mwext.Decorator.noReply;
-import Enum = UE.Enum;
+import i18n from "../../language/i18n";
+import UnifiedRoleController from "../role/UnifiedRoleController";
+import { RoleModuleC } from "../role/RoleModule";
+import Waterween from "../../depend/waterween/Waterween";
+import Easing from "../../depend/easing/Easing";
+import EffectService = mw.EffectService;
+
+interface ThrowBall {
+
+    do(from: Vector, to: Vector): void;
+
+    next(): void;
+}
 
 /**
  * 场景龙 相关事件.
@@ -72,9 +83,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             return null;
         }
 
-        let obj = await mw.GameObject.asyncSpawn('Character') as mw.Character;
+        let obj = await mw.GameObject.asyncSpawn("Character") as mw.Character;
         obj.setDescription([assetId]);
-
 
         let behavior: SceneDragonBehavior = await mw.Script.spawnScript(SceneDragonBehavior, false);
         behavior.gameObject = obj;
@@ -100,8 +110,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
      */
     public syncItemMap: Map<string, SceneDragonExistInfo> = new Map();
 
-    private _mainPanel: MainPanel;
-
     private _eventListeners: EventListener[] = [];
 
     private _lockingSyncKey: string = null;
@@ -119,6 +127,22 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             this._character = Player.localPlayer.character;
         }
         return this._character;
+    }
+
+    private _roleCtrlCache: UnifiedRoleController;
+
+    private get roleCtrl(): UnifiedRoleController {
+        if (!this._roleCtrlCache) {
+            this._roleCtrlCache = ModuleService.getModule(RoleModuleC).controller;
+        }
+        return this._roleCtrlCache;
+    }
+
+    /**
+     * 当前参选者.
+     */
+    public get candidate(): string {
+        return this._candidate;
     }
 
     /**
@@ -139,7 +163,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         super.onStart();
 
         //#region Member init
-        this._mainPanel = UIService.getUI(MainPanel);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
@@ -197,12 +220,35 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                     this._lockTimerId = null;
                 }
             }
+        } else {
+            this.roleCtrl.addMoveForbiddenBuff();
         }
 
         this.lockWithView(this._candidate);
 
         if (!isSame) {
             Log4Ts.log(SceneDragonModuleC, `dispatch on lock event.`);
+            const position = this
+                .syncItemMap
+                .get(this._candidate)
+                .object
+                .worldTransform
+                .position
+                .clone();
+            this.roleCtrl.lookAt(position);
+            Waterween.to(
+                () => this.roleCtrl.character.worldTransform.rotation.toQuaternion(),
+                (val) => {
+                    this.roleCtrl.character.worldTransform.rotation = val.toRotation();
+                },
+                Quaternion.fromRotation(
+                    Rotation.fromVector(position
+                        .subtract(this.character.worldTransform.position))),
+                0.5e3,
+                undefined,
+                Easing.easeInOutSine,
+                Quaternion.slerp,
+            ).autoDestroy();
             Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
         }
     }
@@ -213,24 +259,26 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     public tryCatch() {
         const syncKey = this._lockingSyncKey;
         if (GToolkit.isNullOrEmpty(syncKey)) {
-            Log4Ts.warn(SceneDragonModuleC, `current locking sync key is null.`);
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.NonCandidateSceneDragon));
+            Log4Ts.log(SceneDragonModuleC, `current locking sync key is null.`);
             return;
         }
         Log4Ts.log(SceneDragonModuleC, `try catch item.`);
         this._currentCatchResultSyncKey = null;
 
-        const item: SceneDragon = this.getSceneDragonBySyncKey(syncKey);
-        if (!item) {
+        const item = this.syncItemMap.get(syncKey);
+        if (!item?.behavior?.data) {
             Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${syncKey}`);
             return;
         }
-        Log4Ts.log(SceneDragonModuleC, item.info());
-        if (!item.isCatchable) {
+        Log4Ts.log(SceneDragonModuleC, item.behavior.data.info());
+        if (!item.behavior.data.isCatchable) {
             Log4Ts.warn(SceneDragonModuleC, `item un catchable. waiting for delete.`);
             return;
         }
 
         this.keepLockWithView();
+        ModuleService.getModule(RoleModuleC).controller.playerPlayThrow(item.object.worldTransform.position);
         this.server.net_tryCatch(syncKey).then(
             (value) => {
                 if (value) {
@@ -245,28 +293,41 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     /**
      * 接受捕捉.
      */
-    public acceptCatch(): boolean {
-        this.unlockWithView();
+    public acceptResult(): boolean {
         if (GToolkit.isNullOrEmpty(this._currentCatchResultSyncKey)) {
-            Log4Ts.warn(SceneDragonModuleC, `current catch result is null or wrong when accept catch.`);
+            const item = this.syncItemMap.get(this._lockingSyncKey);
+            if (!item) {
+                Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${this._lockingSyncKey}`);
+                return;
+            }
+            Log4Ts.log(SceneDragonModuleC, `accept failed result.`);
+            item.behavior.state.isFear = false;
+            this.unlockWithView();
             return;
+        } else {
+            this.unlockWithView();
+            const item = this.syncItemMap.get(this._currentCatchResultSyncKey);
+            const sceneDragon = item?.behavior?.data;
+            if (!sceneDragon) {
+                Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${this._currentCatchResultSyncKey}`);
+                return;
+            }
+            Log4Ts.log(SceneDragonModuleC, `accept success result.`, sceneDragon.info());
+            if (!sceneDragon.isCatchable) {
+                Log4Ts.warn(SceneDragonModuleC, `item un catchable. waiting for delete.`);
+                return;
+            }
+            EffectService.playAtPosition(
+                GameServiceConfig.SMOKE_EFFECT_ID,
+                item.object.worldTransform.position,
+                {
+                    loopCount: 1,
+                },
+            );
+            sceneDragon.catch();
+            this.server.net_acceptCatch(this._currentCatchResultSyncKey);
+            this._currentCatchResultSyncKey = null;
         }
-
-        const item: SceneDragon = this.getSceneDragonBySyncKey(this._currentCatchResultSyncKey);
-        if (!item) {
-            Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${this._currentCatchResultSyncKey}`);
-            return;
-        }
-        Log4Ts.log(SceneDragonModuleC, "item accepted catch.", item.info());
-        if (!item.isCatchable) {
-            Log4Ts.warn(SceneDragonModuleC, `item un catchable. waiting for delete.`);
-            return;
-        }
-
-        this.unlockWithView();
-        item.catch();
-        this.server.net_acceptCatch(this._currentCatchResultSyncKey);
-        this._currentCatchResultSyncKey = null;
     }
 
     private generate(syncKey: string, item: SceneDragon) {
@@ -288,7 +349,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     }
 
     private destroy(syncKey: string) {
-        Log4Ts.log(SceneDragonModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).behavior.data.info() ?? "null"}`);
+        Log4Ts.log(SceneDragonModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).behavior.data.info() ?? "?null"}`);
 
         this.syncItemMap.get(syncKey)?.object.destroy();
         this.syncItemMap.delete(syncKey);
@@ -354,6 +415,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 };
             })
             .where(item => item.distSqr < sceneDragonCatchableDistanceSqr)
+            .defaultIfEmpty({syncKey: null, existInfo: null, distSqr: 0})
             .minBy(item => item.distSqr)
             .syncKey ?? null;
 
@@ -384,6 +446,14 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     public net_destroy(syncKey: string) {
         this.destroy(syncKey);
     }
+
+    // public net_createThrowBall(targetSyncKey: string, from: Vector, to: Vector) {
+    //
+    // }
+    //
+    // public net_nextThrowBall(targetSyncKey: string,result:boolean) {
+    //
+    // }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 

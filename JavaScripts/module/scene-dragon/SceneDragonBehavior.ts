@@ -9,10 +9,15 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import i18n from "../../language/i18n";
 import GToolkit from "../../util/GToolkit";
 import SceneDragon from "./SceneDragon";
+import { DragonSyncKeyEventArgs } from "./SceneDragonModule";
 import Character = mw.Character;
 import createYoact = Yoact.createYoact;
 import bindYoact = Yoact.bindYoact;
-import { DragonSyncKeyEventArgs } from "./SceneDragonModule";
+import HumanoidSlotType = mw.HumanoidSlotType;
+import Stance = mw.Stance;
+import EffectService = mw.EffectService;
+import Effect = Yoact.Effect;
+import stopEffect = Yoact.stopEffect;
 
 class SceneDragonBehaviorState {
     //#region Constant
@@ -42,6 +47,11 @@ class SceneDragonBehaviorState {
      * @desc 否则 {@link ACTIVE_STAMINA_RECOVERY_IN_WALKING} 作为负数使用.
      */
     public static readonly RESTLESS_RATIO = 0.5;
+
+    /**
+     * 大笑体力恢复速率. /s
+     */
+    public static readonly LAUGH_STAMINA_RECOVERY = -100;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     /**
@@ -59,6 +69,11 @@ class SceneDragonBehaviorState {
     public activeStamina: number;
 
     /**
+     * 是否 恐惧.
+     */
+    public isFear: boolean = false;
+
+    /**
      * 是否 存活.
      */
     public alive: boolean = true;
@@ -67,6 +82,11 @@ class SceneDragonBehaviorState {
      * 是否 好动的.
      */
     public restless: boolean = false;
+
+    /**
+     * 大笑体力.
+     */
+    public laughStamina: number = 0;
 
     /**
      * 寻路目的地.
@@ -97,6 +117,14 @@ enum SceneDragonStates {
      */
     Run = "run",
     /**
+     * 害怕.
+     */
+    Fear = "fear",
+    /**
+     * 大笑.
+     */
+    Laugh = "laugh",
+    /**
      * 死亡.
      */
     Death = "death"
@@ -104,6 +132,11 @@ enum SceneDragonStates {
 
 @Component
 export default class SceneDragonBehavior extends mw.Script {
+    //#region Constant
+    private static readonly SELECTED_EFFECT_ID = "128903";
+    private static readonly ASTOUNDED_EFFECT_ID = "11375";
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
     //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -114,7 +147,18 @@ export default class SceneDragonBehavior extends mw.Script {
     private regulator: Regulator = new Regulator(GameServiceConfig.SCENE_DRAGON_ALIVE_CHECK_INTERVAL);
 
     private _character: Character;
-    private get character() {
+
+    private _electEffectId: number = null;
+
+    private _fearEffectId: number = null;
+
+    private _isElected: boolean;
+
+    private _fearStance: Stance;
+
+    private _laughStance: Stance;
+
+    private get localCharacter() {
         if (!this._character) {
             this._character = Player.localPlayer.character;
         }
@@ -124,6 +168,8 @@ export default class SceneDragonBehavior extends mw.Script {
     public state: SceneDragonBehaviorState = createYoact(new SceneDragonBehaviorState());
 
     private _machine: FiniteStateMachine<unknown>;
+
+    private _machineEffect: Effect;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -169,6 +215,7 @@ export default class SceneDragonBehavior extends mw.Script {
 
         HeadUIController.getInstance().unregisterHeadUI(this.gameObject);
         this.state.alive = false;
+        stopEffect(this._machineEffect);
         this.gameObject.destroy();
 
         //#region Event Unsubscribe
@@ -183,6 +230,12 @@ export default class SceneDragonBehavior extends mw.Script {
         this.syncKey = syncKey;
         this.data = data;
 
+        const asCharacter = this.gameObject as Character;
+        if (asCharacter) {
+            this._fearStance = asCharacter.loadStance(GameServiceConfig.SCENE_DRAGON_FEAR_STANCE_ID);
+            this._laughStance = asCharacter.loadStance(GameServiceConfig.SCENE_DRAGON_LAUGH_STANCE_ID);
+        }
+
         this.initStateMachine();
     }
 
@@ -190,16 +243,13 @@ export default class SceneDragonBehavior extends mw.Script {
 
     //#region Method
     private checkAlive(): boolean {
-        return Vector.squaredDistance(this.gameObject.worldTransform.position, this.character.worldTransform.position) <
+        return Vector.squaredDistance(this.gameObject.worldTransform.position, this.localCharacter.worldTransform.position) <
             GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE;
     }
 
     private initStateMachine() {
         const idleWait = new State<SceneDragonBehaviorState>(SceneDragonStates.IdleWait)
             .aE(() => {
-                Log4Ts.log(SceneDragonBehavior,
-                    `enter idle wait state.`,
-                    `key: ${this.syncKey}.`);
                 if (this.state.destination) {
                     this.state.destination = null;
                     Navigation.stopNavigateTo(this.gameObject);
@@ -208,9 +258,6 @@ export default class SceneDragonBehavior extends mw.Script {
             .aU((dt) => this.state.activeStamina += dt * SceneDragonBehaviorState.ACTIVE_STAMINA_RECOVERY_IN_IDLE);
         const idleMotion = new State<SceneDragonBehaviorState>(SceneDragonStates.IdleMotion)
             .aE(() => {
-                Log4Ts.log(SceneDragonBehavior,
-                    `enter idle motion state.`,
-                    `key: ${this.syncKey}.`);
                 if (this.state.destination) {
                     this.state.destination = null;
                     Navigation.stopNavigateTo(this.gameObject);
@@ -222,9 +269,6 @@ export default class SceneDragonBehavior extends mw.Script {
             });
         const walk = new State<SceneDragonBehaviorState>(SceneDragonStates.Walk)
             .aE(() => {
-                Log4Ts.log(SceneDragonBehavior,
-                    `enter walk state.`,
-                    `key: ${this.syncKey}.`);
                 (this.gameObject as Character).maxWalkSpeed = SceneDragon.WALK_SPEED;
                 this.state.restless = Math.random() < SceneDragonBehaviorState.RESTLESS_RATIO;
             })
@@ -237,9 +281,6 @@ export default class SceneDragonBehavior extends mw.Script {
             });
         const run = new State<SceneDragonBehaviorState>(SceneDragonStates.Run)
             .aE(() => {
-                Log4Ts.log(SceneDragonBehavior,
-                    `enter run state.`,
-                    `key: ${this.syncKey}.`);
                 (this.gameObject as Character).maxWalkSpeed = SceneDragon.RUN_SPEED;
                 this.state.restless = false;
             })
@@ -247,6 +288,17 @@ export default class SceneDragonBehavior extends mw.Script {
                 this.tryMoveRandom();
                 this.state.activeStamina += dt * SceneDragonBehaviorState.ACTIVE_STAMINA_RECOVERY_IN_RUNNING;
             });
+        const fear = new State<SceneDragonBehaviorState>(SceneDragonStates.Fear)
+            .aE(() => this.fear(true))
+            .aEx(() => this.fear(false));
+        const laugh = new State<SceneDragonBehaviorState>(SceneDragonStates.Laugh)
+            .aE(() => {
+                this.state.laughStamina = 100;
+                this.laugh(true);
+            })
+            .aU(dt =>
+                this.state.laughStamina += dt * SceneDragonBehaviorState.LAUGH_STAMINA_RECOVERY)
+            .aEx(() => this.laugh(false));
         const death = new State<SceneDragonBehaviorState>(SceneDragonStates.Death)
             .aE(() => {
                 Log4Ts.log(SceneDragonBehavior,
@@ -257,17 +309,21 @@ export default class SceneDragonBehavior extends mw.Script {
         const idle = new Region<SceneDragonBehaviorState>("idle").include(idleWait, idleMotion);
         const active = new Region<SceneDragonBehaviorState>("active").include(walk, run);
         const alive = new Region<SceneDragonBehaviorState>("alive").include(idleWait, idleMotion, walk, run);
+        const unfear = new Region<SceneDragonBehaviorState>("unfear").include(idleWait, idleMotion, walk, run);
 
-        idleWait.when((arg) => arg.alive && arg.activeStamina < 100 && arg.idleStamina > 100).to(idleMotion);
+        idleWait.when((arg) => arg.alive && arg.activeStamina < 100 && arg.idleStamina > 100 && !arg.isFear && arg.laughStamina < 0).to(idleMotion);
         idleMotion.when((arg) => arg.idleStamina < 100).to(idleWait);
         idle.when(arg => arg.activeStamina > 50).to(walk);
         walk.when((arg) => arg.activeStamina > 100).to(run);
         run.when((arg) => arg.activeStamina < 0).to(idle);
         active.when(arg => arg.activeStamina < 0).to(idleWait);
+        unfear.when(arg => arg.isFear).to(fear);
+        fear.when(arg => !arg.isFear).to(laugh);
+        laugh.when(arg => arg.laughStamina < 0).to(unfear);
         alive.when(arg => !arg.alive).to(death);
 
         this._machine = new FiniteStateMachine<SceneDragonBehaviorState>(idleWait);
-        bindYoact(() => {
+        this._machineEffect = bindYoact(() => {
             this._machine.evaluate(this.state);
         });
     }
@@ -317,14 +373,59 @@ export default class SceneDragonBehavior extends mw.Script {
      * 参选.
      */
     public elected() {
-//TODO_LviatYi 参选.
+        if (this._isElected) return;
+        this._isElected = true;
+        this._electEffectId = EffectService.playOnGameObject(
+            SceneDragonBehavior.SELECTED_EFFECT_ID,
+            this.gameObject,
+            {
+                loopCount: 0,
+            });
     }
 
     /**
      * 退选.
      */
     public unElected() {
-//TODO_LviatYi 退选.
+        if (!this._isElected) return;
+        this._isElected = false;
+        if (this._electEffectId !== null) {
+            EffectService.stop(this._electEffectId);
+            this._electEffectId = null;
+        }
+    }
+
+    /**
+     * 恐惧.
+     * @param enable
+     */
+    public fear(enable: boolean) {
+        if (enable) {
+            this._fearStance?.play();
+            this._fearEffectId = EffectService.playOnGameObject(
+                SceneDragonBehavior.ASTOUNDED_EFFECT_ID,
+                this.gameObject,
+                {
+                    loopCount: 0,
+                });
+        } else {
+            this._fearStance?.stop();
+            if (this._fearEffectId) {
+                EffectService.stop(this._fearEffectId);
+                this._fearEffectId = null;
+            }
+        }
+    }
+
+    /**
+     * 大笑.
+     */
+    public laugh(enable: boolean) {
+        if (enable) {
+            this._laughStance?.play();
+        } else {
+            this._laughStance?.stop();
+        }
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

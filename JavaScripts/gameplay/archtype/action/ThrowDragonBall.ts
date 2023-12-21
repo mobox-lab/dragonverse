@@ -18,7 +18,7 @@ export class ThrowDragonBall {
 
     public constructor(private owner: mw.Character, private target: mw.Vector, private duration: number) {
 
-        let obj = this._instance = mwext.GameObjPool.spawn(GToolkit.randomArrayItem(this.prefabId));;
+        let obj = this._instance = mwext.GameObjPool.spawn(GToolkit.randomArrayItem(this.prefabId));
         if (!obj) {
             throw new Error(`无法创建预制体,请将该模型拖入到优先加载`)
         }
