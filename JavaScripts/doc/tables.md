@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.9.7  
+v0.9.8  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -92,18 +92,19 @@ x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 
 ## 采集物 CollectibleItem
 
-|       Name       | PropName           | Type  | Desc   |
-| :--------------: | :----------------- | ----- | ------ |
-|        ID        | Id                 | int   |        |
-|    背包物 ID     | BagId              | int   |        |
-|     品质 ID      | QualityId          | int   |        |
-| 生成区域 ID 集合 | AreaIds            | int[] |        |
-|   最大存在数量   | ExistenceCount     | int   |        |
-|     存在时间     | ExistenceTime      | int   | 秒 Sec |
-|     生成间隔     | GenerationInterval | int   | 秒 Sec |
-|    采集成功率    | SuccessRate        | int   | %      |
-|    可采集次数    | HitPoint           | int   |        |
-| 采集结果算法 ID  | ResultAlgoId       | int   |        |
+|       Name       | PropName           | Type   | Desc   |
+| :--------------: | :----------------- | ------ | ------ |
+|        ID        | Id                 | int    |        |
+|    背包物 ID     | BagId              | int    |        |
+|     品质 ID      | QualityId          | int    |        |
+| 生成区域 ID 集合 | AreaIds            | int[]  |        |
+|   预制体 Guid    | PrefabGuid         | string |        |
+|   最大存在数量   | ExistenceCount     | int    |        |
+|     存在时间     | ExistenceTime      | int    | 秒 Sec |
+|     生成间隔     | GenerationInterval | int    | 秒 Sec |
+|    采集成功率    | SuccessRate        | int    | %      |
+|    可采集次数    | HitPoint           | int    |        |
+| 采集结果算法 ID  | ResultAlgoId       | int    |        |
 
 ## 龙 Dragon
 

@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","bagId","qualityId","areaIds","existenceCount","existenceTime","generationInterval","successRate","hitPoint","resultAlgo"],["","","","","","","","","",""],[1,1,2,[1,2,3,4,5,6,7,8,9,10,11,12],12,100,120,75,1,1],[2,2,1,[1,2,3,4,5,6,7,8,9,10,11,12],12,100,120,75,1,1],[3,3,1,[1,2,3,4,5,6,7,8,9,10,11,12],12,100,120,75,1,1]];
+const EXCELDATA:Array<Array<any>> = [["id","bagId","qualityId","areaIds","prefabGuid","existenceCount","existenceTime","generationInterval","successRate","hitPoint","resultAlgo"],["","","","","","","","","","",""],[1,1,2,[1,2,3,4,5,6,7,8,9,10,11,12],null,12,100,120,75,1,1],[2,2,1,[1,2,3,4,5,6,7,8,9,10,11,12],null,12,100,120,75,1,1],[3,3,1,[1,2,3,4,5,6,7,8,9,10,11,12],null,12,100,120,75,1,1]];
 export interface ICollectibleItemElement extends IElementBase{
  	/**采集物品 ID*/
 	id:number
@@ -9,6 +9,8 @@ export interface ICollectibleItemElement extends IElementBase{
 	qualityId:number
 	/**生成区域 ID 集合*/
 	areaIds:Array<number>
+	/**预制体 Guid*/
+	prefabGuid:string
 	/**最大存在数量*/
 	existenceCount:number
 	/**存在时间（秒 Sec）*/
