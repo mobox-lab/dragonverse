@@ -20,11 +20,37 @@ export default class GameLoading_Generate extends UIScript {
 
 
  
-	/**
-	* onStart 之前触发一次
-	*/
 	protected onAwake() {
+		//设置能否每帧触发onUpdate
+		this.canUpdate = false;
+		this.layer = mw.UILayerBottom;
+		this.initButtons();
 	}
+	protected initButtons() {
+		
+		this.initLanguage(this.btnLogin);
+		
+	
+		//按钮多语言
+		
+		//文本多语言
+		
+		//文本多语言
+		
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock_1") as any);
+		
+	
+
+	}
+	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let call = mw.UIScript.getBehavior("lan");
+        if (call && ui) {
+            call(ui);
+        }
+    }
 	 
 }
  

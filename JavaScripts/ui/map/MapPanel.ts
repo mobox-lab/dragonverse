@@ -2,7 +2,7 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-20 16:43:56
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-20 17:46:24
+ * @LastEditTime: 2023-12-21 13:46:28
  * @FilePath: \DragonVerse\JavaScripts\ui\map\MapPanel.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -44,7 +44,7 @@ export class MapPanel extends MapPanel_Generate {
     private _mapSize: mw.Vector2;
 
     protected onAwake(): void {
-
+        super.onAwake();
         this._length_X = Math.abs(LeftTopPos.x - RightTopPos.x);
         this._length_Y = Math.abs(LeftTopPos.y - LeftDownPos.y);
 
@@ -61,7 +61,7 @@ export class MapPanel extends MapPanel_Generate {
         this._character = Player.localPlayer.character;
         this.canUpdate = true;
 
-        this.iconMove();
+        //this.iconMove();
     }
 
     private iconMove() {
@@ -94,11 +94,14 @@ export class MapPanel extends MapPanel_Generate {
 
     private caculateMapPos() {
         if (this._character) {
+            //计算背景地图位置
             this._curPos.set(this._character.worldTransform.position);
             this._durX = this._iconMidPos.x - (Math.abs(this._curPos.x - LeftTopPos.x) / this._length_X * (this._mapSize.x - this._iconSize.x));
             this._durY = this._iconMidPos.y - (Math.abs(this._curPos.y - LeftTopPos.y) / this._length_Y * (this._mapSize.y - this._iconSize.y));
             this._smallMapPos.set(this._durX, this._durY);
             this.mSmallMapCanvas.position = this._smallMapPos;
+            //计算指针旋转
+            this.mSmallMineCanvas.renderTransformAngle = this._character.worldTransform.rotation.z - 90;
         }
     }
 
