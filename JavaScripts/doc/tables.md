@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.9.6  
+v0.9.7  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -27,17 +27,28 @@ by LviatYi
 
 - **2D 形状**
 - 即当配表数据形为 $a_1|a_2|...|a_m||b_1|b_2|...|b_n$ ，其中 $m,n$ 皆为偶数时。
+  - 设区域 $A$ 由 2D 形状 $S_1$ $S_2$ 构成，则:
+  - $S_1$ 所包含点的数量为 $\frac m2$
+  - $S_2$ 所包含点的数量为 $\frac n2$
+  - $a_i,a_{i+1}$ 分别表示 $S_1$ 中第 $k$ 点 $(i=2k-1)$ 的 x、y 坐标值。
 - 暂时不支持用于随机点生成.
 
 ![points-example](./pic/generationRange.png)
 
 ```json
 // in json
+
 [
     [x11,y11,x12,y12,x13,y13...x1m,y1m],
     [x21,y21,x22,y22,x23,y23...x2n,y2n],
     ...
 ]
+```
+
+```yaml
+// in config
+
+x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 ```
 
 - **3D 点集合**
