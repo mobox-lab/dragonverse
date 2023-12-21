@@ -119,7 +119,7 @@ const HeadUIImageGuidLookTable = {
 
     [HeadUIType.Dragon]: "180133",
 
-    [HeadUIType.NPC]: "180115",
+    [HeadUIType.NPC]: "267115",
 }
 
 interface HeadUIWidget extends mw.UIWidget {
