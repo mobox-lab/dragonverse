@@ -10,38 +10,38 @@
 
 @UIBind('UI/prompt/PromotItem.ui')
 export default class PromotItem_Generate extends UIScript {
-		private tips_Internal: mw.Canvas
-	public get tips(): mw.Canvas {
-		if(!this.tips_Internal&&this.uiWidgetBase) {
-			this.tips_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/tips') as mw.Canvas
+		private bg_Internal: mw.Image
+	public get bg(): mw.Image {
+		if(!this.bg_Internal&&this.uiWidgetBase) {
+			this.bg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/bg') as mw.Image
 		}
-		return this.tips_Internal
+		return this.bg_Internal
 	}
 	private keyText_Internal: mw.TextBlock
 	public get keyText(): mw.TextBlock {
 		if(!this.keyText_Internal&&this.uiWidgetBase) {
-			this.keyText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/tips/keyText') as mw.TextBlock
+			this.keyText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/keyText') as mw.TextBlock
 		}
 		return this.keyText_Internal
 	}
 	private item_Internal: mw.Canvas
 	public get item(): mw.Canvas {
 		if(!this.item_Internal&&this.uiWidgetBase) {
-			this.item_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/item') as mw.Canvas
+			this.item_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/item') as mw.Canvas
 		}
 		return this.item_Internal
 	}
 	private selected_Internal: mw.Button
 	public get selected(): mw.Button {
 		if(!this.selected_Internal&&this.uiWidgetBase) {
-			this.selected_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/item/selected') as mw.Button
+			this.selected_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/item/selected') as mw.Button
 		}
 		return this.selected_Internal
 	}
 	private option_Internal: mw.TextBlock
 	public get option(): mw.TextBlock {
 		if(!this.option_Internal&&this.uiWidgetBase) {
-			this.option_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/item/Canvas_1/option') as mw.TextBlock
+			this.option_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/item/option') as mw.TextBlock
 		}
 		return this.option_Internal
 	}

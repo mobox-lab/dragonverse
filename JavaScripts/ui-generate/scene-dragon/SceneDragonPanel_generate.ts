@@ -10,26 +10,19 @@
 
 @UIBind('UI/scene-dragon/SceneDragonPanel.ui')
 export default class SceneDragonPanel_Generate extends UIScript {
-		private btnCatch_Internal: mw.StaleButton
+		private imgBoxingBG_Internal: mw.Image
+	public get imgBoxingBG(): mw.Image {
+		if(!this.imgBoxingBG_Internal&&this.uiWidgetBase) {
+			this.imgBoxingBG_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgBoxingBG') as mw.Image
+		}
+		return this.imgBoxingBG_Internal
+	}
+	private btnCatch_Internal: mw.StaleButton
 	public get btnCatch(): mw.StaleButton {
 		if(!this.btnCatch_Internal&&this.uiWidgetBase) {
 			this.btnCatch_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/btnCatch') as mw.StaleButton
 		}
 		return this.btnCatch_Internal
-	}
-	private imgIcon_Internal: mw.Image
-	public get imgIcon(): mw.Image {
-		if(!this.imgIcon_Internal&&this.uiWidgetBase) {
-			this.imgIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgIcon') as mw.Image
-		}
-		return this.imgIcon_Internal
-	}
-	private txtName_Internal: mw.TextBlock
-	public get txtName(): mw.TextBlock {
-		if(!this.txtName_Internal&&this.uiWidgetBase) {
-			this.txtName_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/txtName') as mw.TextBlock
-		}
-		return this.txtName_Internal
 	}
 
 
@@ -49,9 +42,6 @@ export default class SceneDragonPanel_Generate extends UIScript {
 		
 		//文本多语言
 		
-		this.initLanguage(this.txtName)
-		
-	
 		//文本多语言
 		
 
