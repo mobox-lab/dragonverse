@@ -10,7 +10,7 @@ import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
 import Character = mw.Character;
 
 /**
- * 玩家锁定 场景龙.
+ * 场景龙 相关事件.
  */
 export interface DragonSyncKeyEventArgs {
     syncKey: string;

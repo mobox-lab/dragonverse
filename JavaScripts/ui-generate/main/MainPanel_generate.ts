@@ -185,6 +185,48 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.imgOperationFail_Internal
 	}
+	private cnvCatchdragon_Internal: mw.Canvas
+	public get cnvCatchdragon(): mw.Canvas {
+		if(!this.cnvCatchdragon_Internal&&this.uiWidgetBase) {
+			this.cnvCatchdragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon') as mw.Canvas
+		}
+		return this.cnvCatchdragon_Internal
+	}
+	private catchBg_Internal: mw.Image
+	public get catchBg(): mw.Image {
+		if(!this.catchBg_Internal&&this.uiWidgetBase) {
+			this.catchBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/catchBg') as mw.Image
+		}
+		return this.catchBg_Internal
+	}
+	private catchBgBorder_Internal: mw.Image
+	public get catchBgBorder(): mw.Image {
+		if(!this.catchBgBorder_Internal&&this.uiWidgetBase) {
+			this.catchBgBorder_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/catchBgBorder') as mw.Image
+		}
+		return this.catchBgBorder_Internal
+	}
+	private catchIcon_Internal: mw.Image
+	public get catchIcon(): mw.Image {
+		if(!this.catchIcon_Internal&&this.uiWidgetBase) {
+			this.catchIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/catchIcon') as mw.Image
+		}
+		return this.catchIcon_Internal
+	}
+	private btnCatch_Internal: mw.Button
+	public get btnCatch(): mw.Button {
+		if(!this.btnCatch_Internal&&this.uiWidgetBase) {
+			this.btnCatch_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/btnCatch') as mw.Button
+		}
+		return this.btnCatch_Internal
+	}
+	private cnvKeyPrompt_Internal: mw.Canvas
+	public get cnvKeyPrompt(): mw.Canvas {
+		if(!this.cnvKeyPrompt_Internal&&this.uiWidgetBase) {
+			this.cnvKeyPrompt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/cnvKeyPrompt') as mw.Canvas
+		}
+		return this.cnvKeyPrompt_Internal
+	}
 
 
  
@@ -226,6 +268,9 @@ export default class MainPanel_Generate extends UIScript {
 	
 		//文本多语言
 		
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as any);
+		
+	
 
 	}
 	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

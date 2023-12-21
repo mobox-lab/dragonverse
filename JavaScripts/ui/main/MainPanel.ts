@@ -3,7 +3,7 @@ import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
 import BagPanel from "../bag/BagPanel";
 import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
-import { SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
+import { DragonSyncKeyEventArgs, SceneDragonInteractorPanel } from "../scene-dragon/SceneDragonInteractorPanel";
 import GToolkit from "../../util/GToolkit";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import GlobalPromptPanel from "./GlobalPromptPanel";
@@ -117,6 +117,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnCode.onPressed.add(showCode);
         this.btnReset.onPressed.add(respawn);
         this.btnDragonBall.onPressed.add(this.onCatchClick);
+        this.btnCatch.onPressed.add(this.onLockClick);
 
         if (this.bagModule) {
             bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
@@ -213,8 +214,10 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.TryCollectCollectibleItem, this.onCollectClick));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, () => {
-            Log4Ts.log(MainPanel, `Player reset.`);
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, () => Log4Ts.log(MainPanel, `Player reset.`)));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnCandidateChange, (eventArgs) => {
+            const eventArg = eventArgs as DragonSyncKeyEventArgs;
+            GToolkit.trySetVisibility(this.cnvCatchdragon, !!eventArg.syncKey);
         }));
         //#endregion ------------------------------------------------------------------------------------------
     }
@@ -494,6 +497,10 @@ export default class MainPanel extends MainPanel_Generate {
     //#region Event Callback
     private onShowGlobalPrompt = (args: ShowGlobalPromptEventArgs) => {
         this.showGlobalPrompt(args.message);
+    };
+
+    private onLockClick = () => {
+        this._sceneDragonModule.lock();
     };
 
     private onCatchClick = () => this.tryCatch();
