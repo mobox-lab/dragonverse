@@ -76,7 +76,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 最远可捕捉距离.
      */
-    public static readonly SCENE_DRAGON_CATCHABLE_DISTANCE = 5000;
+    public static readonly SCENE_DRAGON_CATCHABLE_DISTANCE = 300;
 
     /**
      * 场景龙 最远存活距离平方.
@@ -114,6 +114,22 @@ export default class GameServiceConfig {
             this.SCENE_DRAGON_UI_TRANSITION_START_DISTANCE_RATIO *
             this.SCENE_DRAGON_UI_TRANSITION_START_DISTANCE_RATIO;
     }
+
+    /**
+     * 场景龙 烟雾特效 guid.
+     */
+    public static readonly SMOKE_EFFECT_ID = "89589";
+
+    /**
+     * 场景龙 恐惧 姿态 guid.
+     * @private
+     */
+    public static readonly SCENE_DRAGON_FEAR_STANCE_ID = "86094";
+
+    /**
+     * 场景龙 大笑 姿态 guid.
+     */
+    public static readonly SCENE_DRAGON_LAUGH_STANCE_ID = "14598";
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
