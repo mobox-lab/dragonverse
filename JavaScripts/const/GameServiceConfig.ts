@@ -1,3 +1,5 @@
+import GToolkit, { Tf, TimeFormatDimensionFlags } from "../util/GToolkit";
+
 export default class GameServiceConfig {
 //#region Auth
 
@@ -24,7 +26,7 @@ export default class GameServiceConfig {
     /**
      * 巡查时间间隔.
      */
-    public static readonly GUARD_PATROL_INTERVAL = 5 * 60 * 1000;
+    public static readonly GUARD_PATROL_INTERVAL = GToolkit.timeConvert(3, Tf.M, Tf.Ms);
 
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-13 11:06:56
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-20 15:33:07
+ * @LastEditTime : 2023-12-20 17:48:35
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\quest\WaterDragonQuest.ts
  * @Description  : 获取水龙任务
  */
@@ -28,13 +28,15 @@ export default class WaterDragonQuest extends Quest {
     }
 
     protected onInitialize(): void {
-        super.onInitialize();
         Event.addLocalListener(EventDefine.PlayerEnterDestination, () => {
             this._cacheInfo.complete = true;
             this.updateTaskProgress(JSON.stringify(this._cacheInfo));
         });
         this._arrivedTrigger = GameObject.findGameObjectByName("arrivedTrigger") as Trigger;
+
+        super.onInitialize();
     }
+
     protected onSerializeCustomData(customData: string): void {
         if (customData) {
             this._cacheInfo = JSON.parse(customData);
@@ -59,6 +61,7 @@ export default class WaterDragonQuest extends Quest {
             });
         }
     }
+
     onComplete(): void {
         Log4Ts.log(this, "waterDragonTaskComplete");
         Event.dispatchToLocal(EventDefine.WaterDragonTaskComplete);
