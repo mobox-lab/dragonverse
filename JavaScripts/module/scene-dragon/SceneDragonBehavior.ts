@@ -1,9 +1,12 @@
+import { GameConfig } from "../../config/GameConfig";
 import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import { HeadUIController, HeadUIType } from "../../controller/HeadUIController";
 import FiniteStateMachine, { Region, State } from "../../depend/finite-state-machine/FiniteStateMachine";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Regulator from "../../depend/regulator/Regulator";
 import { Yoact } from "../../depend/yoact/Yoact";
+import i18n from "../../language/i18n";
 import GToolkit from "../../util/GToolkit";
 import SceneDragon from "./SceneDragon";
 import Character = mw.Character;
@@ -130,6 +133,8 @@ export default class SceneDragonBehavior extends mw.Script {
         }
 
         this.useUpdate = true;
+        let bagId = GameConfig.CharacterfulDragon.getElement(this.data.id).bagId;
+        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, i18n.lan(SceneDragon.nameStr(bagId)))
 
         //#region Member init
         //#endregion ------------------------------------------------------------------------------------------
@@ -156,6 +161,7 @@ export default class SceneDragonBehavior extends mw.Script {
     protected onDestroy(): void {
         super.onDestroy();
 
+        HeadUIController.getInstance().unregisterHeadUI(this.gameObject);
         this.state.alive = false;
         this.gameObject.destroy();
 
