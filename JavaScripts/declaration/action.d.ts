@@ -561,7 +561,7 @@ declare namespace actions.tweens {
     import FiniteTimeAction = actions.FiniteTimeAction;
     type EaseFunc = (k: number) => number;
     interface ITweenObject {
-        addition(target: ITweenObject, out?: ITweenObject): ITweenObject;
+        add(target: ITweenObject, out?: ITweenObject): ITweenObject;
         multiply(target: ITweenObject, out?: ITweenObject): ITweenObject;
         lerp(to: ITweenObject, ratio: number, out?: ITweenObject): ITweenObject;
         clone(): ITweenObject;
