@@ -63,7 +63,7 @@ export module ProximityPrompts {
                     this.onSelected()
                 });
                 item.selected.enable = v.enabled;
-                item.tips.visibility = mw.SlateVisibility.Hidden;
+                item.keyText.visibility = mw.SlateVisibility.Hidden;
                 this.options.addChild(item.rootCanvas);
                 this.usingPromptItems.push(item);
             }
@@ -80,7 +80,7 @@ export module ProximityPrompts {
                 let selected = i === this.selectedIndex;
 
                 let item = this.usingPromptItems[i];
-                item.tips.visibility = selected ? mw.SlateVisibility.Visible : mw.SlateVisibility.Hidden;
+                item.keyText.visibility = selected ? mw.SlateVisibility.Visible : mw.SlateVisibility.Hidden;
             }
         }
 
