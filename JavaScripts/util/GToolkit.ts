@@ -15,9 +15,10 @@ import Log4Ts, { Announcer, DebugLevels, LogString } from "../depend/log4ts/Log4
  * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
  * @author LviatYi
  * @author minjia.zhang
+ * @author zewei.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.9.5b
+ * @version 0.9.6b
  * @beta
  */
 class GToolkit {
@@ -60,25 +61,25 @@ class GToolkit {
      * 1 天 24 小时.
      * @private
      */
-    private static readonly HourInDay: 24;
+    private static readonly HourInDay = 24;
 
     /**
      * 1 小时 60 分钟.
      * @private
      */
-    private static readonly MinuteInHour: 60;
+    private static readonly MinuteInHour = 60;
 
     /**
      * 1 分钟 60 秒.
      * @private
      */
-    private static readonly SecondInMinute: 60;
+    private static readonly SecondInMinute = 60;
 
     /**
      * 1 秒 1000 毫秒.
      * @private
      */
-    private static readonly MillisecondInSecond: 1000;
+    private static readonly MillisecondInSecond = 1000;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MW Service
