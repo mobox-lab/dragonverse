@@ -1,6 +1,5 @@
 import { State } from "../../../depend/hfsm/State";
 import { StateMachine } from "../../../depend/hfsm/StateMachine";
-import Regulator from "../../../depend/regulator/Regulator";
 import i18n from "../../../language/i18n";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
 import GToolkit from "../../../util/GToolkit";
@@ -29,24 +28,16 @@ class InitializeState extends BaseCompanionState {
 }
 
 class CompanionIdleState extends BaseCompanionState {
-    private location: mw.Vector = mw.Vector.zero;
-    private regulator = new Regulator(5);
 
     protected onEnter(): void {
-        this.location.set(this.fsm.target.worldTransform.position);
+
 
     }
 
     protected onLogic(): void {
-        if (this.regulator.ready()) {
-            this.location.set(this.fsm.target.worldTransform.position);
-        }
+
         let distance = this.fsm.follower.worldTransform.position.squaredDistanceTo(this.fsm.target.worldTransform.position);
 
-        if (distance >= 700 ** 2) {
-            this.fsm.target.worldTransform.position = this.location;
-            this.fsm.requestStateChange(CompanionStateEnum.Idle, true);
-        }
         if (distance >= (this.fsm.state.offsetNum + GToolkit.random(-10, 10, true)) ** 2) {
             this.fsm.requestStateChange(CompanionStateEnum.Follow, true);
         }
@@ -61,22 +52,44 @@ class CompanionFollowState extends BaseCompanionState {
 
 
 
+    private printSampler: mw.Vector[] = [];
+
 
 
 
     public onEnter(): void {
 
+        this.printSampler = [];
         mw.Navigation.follow(this.fsm.target, this.fsm.follower, this.fsm.state.offsetNum, this.onStart, this.onFailed);
     }
 
     protected onLogic(): void {
 
+        let shift = this.printSampler.shift();
+        if (shift) {
+            this.printSampler.push(shift);
+        }
+        if (!shift || shift.squaredDistanceTo(this.fsm.follower.worldTransform.position) > 50 ** 2) {
+            this.printSampler.push(this.fsm.follower.worldTransform.position.clone());
 
-        let distance = this.fsm.follower.worldTransform.position.squaredDistanceTo(this.fsm.target.worldTransform.position);
+            if (this.printSampler.length > 3) {
+                this.printSampler.pop();
+            }
+        }
 
-        if (distance < (this.fsm.state.offsetNum + GToolkit.random(-20, 20, true)) ** 2) {
+
+        let distance = this.fsm.target.worldTransform.position.subtract(this.fsm.follower.worldTransform.position)
+        distance.z = 0;
+
+        if (distance.sqrLength >= 800 ** 2 && this.printSampler.length >= 3) {
+            this.fsm.target.worldTransform.position = this.printSampler.pop();
+        }
+
+        if (distance.sqrLength < (this.fsm.state.offsetNum + GToolkit.random(-20, 20, true)) ** 2) {
             this.fsm.requestStateChange(CompanionStateEnum.Idle, true);
         }
+
+
 
     }
 
@@ -91,6 +104,7 @@ class CompanionFollowState extends BaseCompanionState {
 
     protected onExit(): void {
         mw.Navigation.stopFollow(this.fsm.target);
+        this.printSampler.length = 0;
     }
 
 }

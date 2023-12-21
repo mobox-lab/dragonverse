@@ -132,7 +132,6 @@ export default class SceneDragonBehavior extends mw.Script {
             return;
         }
 
-        this.useUpdate = true;
         let bagId = GameConfig.CharacterfulDragon.getElement(this.data.id).bagId;
         HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, i18n.lan(SceneDragon.nameStr(bagId)))
 

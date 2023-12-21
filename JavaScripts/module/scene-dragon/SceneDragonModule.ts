@@ -68,10 +68,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             Log4Ts.error(SceneDragonModuleC, `prefab not set. id: ${item.id}`);
             return null;
         }
-        const obj: mw.Character = await GameObjPool.asyncSpawn(
-            assetId,
-            GameObjPoolSourceType.Prefab,
-        );
+
+        let obj = await mw.GameObject.asyncSpawn('Character') as mw.Character;
+        obj.setDescription([assetId]);
+
 
         let behavior: SceneDragonBehavior = await mw.Script.spawnScript(SceneDragonBehavior, false);
         behavior.gameObject = obj;
