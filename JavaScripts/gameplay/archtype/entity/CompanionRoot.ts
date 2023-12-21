@@ -69,7 +69,12 @@ class CompanionFollowState extends BaseCompanionState {
         if (shift) {
             this.printSampler.push(shift);
         }
-        if (!shift || shift.squaredDistanceTo(this.fsm.follower.worldTransform.position) > 50 ** 2) {
+
+        let follower: mw.Character = this.fsm.follower as mw.Character;
+
+
+        if ((!shift || shift.squaredDistanceTo(this.fsm.follower.worldTransform.position) > 50 ** 2) && (follower.isMoving && !follower.isJumping)) {
+
             this.printSampler.push(this.fsm.follower.worldTransform.position.clone());
 
             if (this.printSampler.length > 3) {
