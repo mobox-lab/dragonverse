@@ -2,7 +2,7 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-14 17:50:59
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-21 14:33:41
+ * @LastEditTime: 2023-12-21 16:30:39
  * @FilePath: \DragonVerse\JavaScripts\gameplay\interactive\CircleTrigger.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -95,7 +95,7 @@ export default class CircleTrigger extends mw.Script {
 
 
                 //加时圈做个cd
-                if (this._circleType === CircleType.Point || this._circleType === CircleType.SpeedUp) {
+                if (this._obj&&(this._circleType === CircleType.Point || this._circleType === CircleType.SpeedUp)) {
                     (this._obj as mw.Model).setCollision(mw.CollisionStatus.Off);
                     (this._obj as mw.Model).setVisibility(mw.PropertyStatus.Off);
                     this._trigger.setCollision(mw.CollisionStatus.Off);
