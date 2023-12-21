@@ -36,7 +36,7 @@ export class ChatBuff extends BuffBase<UnifiedRoleController> {
     }
 
     public onStart: () => void = () => {
-        this.target.lookAtNpc(this.casterLocation);
+        this.target.lookAt(this.casterLocation);
         this.target.addMoveForbiddenBuff();
         return;
     };

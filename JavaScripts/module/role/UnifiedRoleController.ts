@@ -7,13 +7,13 @@ import GameStart from "../../GameStart";
 import { EventDefine } from "../../const/EventDefine";
 import BuffBase from "../../depend/buff/Buff";
 import { BuffType } from "../../buffs/BuffType";
-import Rotation = mw.Rotation;
 import GToolkit from "../../util/GToolkit";
 import Nolan from "../../depend/nolan/Nolan";
 import { ChatBuff } from "../../buffs/ChatBuff";
-import { GameConfig } from "../../config/GameConfig";
 import { MoveForbiddenBuff } from "../../buffs/MoveForbiddenBuff";
 import AreaManager from "../../gameplay/area/AreaManager";
+import RemoteFunction = mw.RemoteFunction;
+import Server = mw.Server;
 
 /**
  * Unified Role State Controller.
@@ -40,6 +40,8 @@ export default class UnifiedRoleController extends mw.Script {
 
 
     private static readonly STEAM_EFFECT_GUID = "89589";
+
+    private static readonly THROW_STANCE_GUID = "20287";
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Member
@@ -151,7 +153,7 @@ export default class UnifiedRoleController extends mw.Script {
 
 //#region Role Controller
 
-    @mw.RemoteFunction(mw.Server)
+    @RemoteFunction(Server)
     public addImpulse(character: mw.Character, impulse: mw.Vector): void {
         character.addImpulse(impulse, true);
     }
@@ -164,21 +166,26 @@ export default class UnifiedRoleController extends mw.Script {
         }
     };
 
-    @mw.RemoteFunction(mw.Client)
-    public lookAtNpc(position: Vector) {
-        this._nolan.lookAt(position);
+    @RemoteFunction(Client)
+    public lookAt(position: Vector) {
+        this._nolan.lookAt(position, true, true);
     }
 
-    @mw.RemoteFunction(mw.Server)
+    @RemoteFunction(Server)
     public respawn() {
         const position = GToolkit.randomArrayItem(AreaManager.getInstance().getRespawnArea());
         this.character.worldTransform.position = new Vector(position.x, position.y, position.z);
     }
 
+    @RemoteFunction(Server)
+    public playerPlayThrow(target: Vector) {
+        this.character.loadStance(UnifiedRoleController.THROW_STANCE_GUID).play();
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Buff Controller
-    @RemoteFunction(mw.Server)
+    @RemoteFunction(Server)
     public addCheckMoveBuff() {
         Log4Ts.log(UnifiedRoleController, `${this.character.player.playerId} add check move buff.`);
         let buff = new CheckMoveBuff(
@@ -194,7 +201,7 @@ export default class UnifiedRoleController extends mw.Script {
      * 添加 湿润 buff.
      * @param duration 持续时间 ms.
      */
-    @RemoteFunction(mw.Server)
+    @RemoteFunction(Server)
     public addWetBuff(duration: number) {
         const result = this._buffs.addBuff(
             {
@@ -232,7 +239,7 @@ export default class UnifiedRoleController extends mw.Script {
      * @param guid
      * @return 是否 玩家带有 {@link BuffType.Wet}.
      */
-    @RemoteFunction(mw.Server)
+    @RemoteFunction(Server)
     public touchMagma(force: number, position: Vector, guid: string) {
         if (!this.character) {
             Log4Ts.error(UnifiedRoleController, `character is null.`);
