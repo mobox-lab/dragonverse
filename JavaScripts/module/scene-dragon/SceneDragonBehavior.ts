@@ -19,6 +19,7 @@ import EffectService = mw.EffectService;
 import Effect = Yoact.Effect;
 import stopEffect = Yoact.stopEffect;
 import Animation = mw.Animation;
+import Navigation = mw.Navigation;
 
 class SceneDragonBehaviorState {
     //#region Constant
@@ -282,7 +283,8 @@ export default class SceneDragonBehavior extends mw.Script {
                     dt
                     * (this.state.restless ? 1 : -1)
                     * (SceneDragonBehaviorState.ACTIVE_STAMINA_RECOVERY_IN_WALKING);
-            });
+            })
+            .aEx(() => this.pauseMove());
         const run = new State<SceneDragonBehaviorState>(SceneDragonStates.Run)
             .aE(() => {
                 Log4Ts.log(SceneDragonBehavior,
@@ -294,7 +296,8 @@ export default class SceneDragonBehavior extends mw.Script {
             .aU((dt) => {
                 this.tryMoveRandom();
                 this.state.activeStamina += dt * SceneDragonBehaviorState.ACTIVE_STAMINA_RECOVERY_IN_RUNNING;
-            });
+            })
+            .aEx(() => this.pauseMove());
         const fear = new State<SceneDragonBehaviorState>(SceneDragonStates.Fear)
             .aE(() => {
                 Log4Ts.log(SceneDragonBehavior,
@@ -326,11 +329,11 @@ export default class SceneDragonBehavior extends mw.Script {
         const alive = new Region<SceneDragonBehaviorState>("alive").include(idleWait, idleMotion, walk, run);
         const unfear = new Region<SceneDragonBehaviorState>("unfear").include(idleWait, idleMotion, walk, run);
 
-        idleWait.when((arg) => arg.alive && arg.activeStamina < 100 && arg.idleStamina > 100 && !arg.isFear && arg.laughStamina < 0).to(idleMotion);
-        idleMotion.when((arg) => arg.idleStamina < 100).to(idleWait);
+        idleWait.when(arg => arg.alive && arg.activeStamina < 100 && arg.idleStamina > 100 && !arg.isFear && arg.laughStamina < 0).to(idleMotion);
+        idleMotion.when(arg => arg.idleStamina < 100).to(idleWait);
         idle.when(arg => arg.activeStamina > 50).to(walk);
-        walk.when((arg) => arg.activeStamina > 100).to(run);
-        run.when((arg) => arg.activeStamina < 0).to(idle);
+        walk.when(arg => arg.activeStamina > 100).to(run);
+        run.when(arg => arg.activeStamina < 0).to(idle);
         active.when(arg => arg.activeStamina < 0).to(idleWait);
         unfear.when(arg => arg.isFear).to(fear);
         fear.when(arg => !arg.isFear).to(laugh);
@@ -362,14 +365,10 @@ export default class SceneDragonBehavior extends mw.Script {
     }
 
     private tryMoveRandom() {
-        if (this.state.destination) {
-            return;
-        }
+        if (this.state.destination) return;
 
         this.state.destination = this.getRandomDestination();
-        if (!this.state.destination) {
-            return;
-        }
+        if (!this.state.destination) return;
 
         Log4Ts.log(SceneDragonBehavior, `navigating now.`,
             `key: ${this.syncKey}`,
@@ -382,6 +381,12 @@ export default class SceneDragonBehavior extends mw.Script {
             () => Log4Ts.log(SceneDragonBehavior, `navigate success`),
             () => Log4Ts.log(SceneDragonBehavior, `navigate fail`),
         );
+    }
+
+    private pauseMove() {
+        if (!this.state.destination) return;
+        Navigation.stopNavigateTo(this.gameObject);
+        this.state.destination = null;
     }
 
     /**
