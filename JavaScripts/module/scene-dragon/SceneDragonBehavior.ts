@@ -185,7 +185,7 @@ export default class SceneDragonBehavior extends mw.Script {
             this._laughAnim.loop = 2;
         }
         let bagId = GameConfig.CharacterfulDragon.getElement(this.data.id).bagId;
-        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, i18n.lan(SceneDragon.nameStr(bagId)), new mw.Vector(0, 0, 115));
+        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.NPC, i18n.lan(SceneDragon.nameStr(bagId)), new mw.Vector(0, 0, 115));
 
         //#region Member init
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnCandidateChange, (eventArgs) => {

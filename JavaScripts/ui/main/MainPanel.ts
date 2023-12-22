@@ -21,6 +21,7 @@ import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
 import { RoleModuleC } from "../../module/role/RoleModule";
 import UnifiedRoleController from "../../module/role/UnifiedRoleController";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**
  * 主界面 全局提示 参数.
@@ -166,9 +167,9 @@ export default class MainPanel extends MainPanel_Generate {
                 .to(
                     () => this.cnvPointer.renderTransformAngle,
                     (val) => this.cnvPointer.renderTransformAngle = val,
-                    45,
-                    0.5e3,
-                    -45,
+                    GameServiceConfig.MAIN_PANEL_POINTER_END_ANGLE,
+                    GameServiceConfig.MAIN_PANEL_POINTER_HALF_DURATION,
+                    GameServiceConfig.MAIN_PANEL_POINTER_START_ANGLE,
                 )
                 .restart(true)
                 .pingPong();

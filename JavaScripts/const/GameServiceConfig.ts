@@ -179,5 +179,22 @@ export default class GameServiceConfig {
      * {@link DialoguePanel.cnvOptions} 最大选项容量.
      */
     public static readonly CNV_OPTIONS_MAX_CAPACITY = 4;
+
+    /**
+     * 主界面 指针 起始角度. °
+     */
+    public static readonly MAIN_PANEL_POINTER_START_ANGLE = -45;
+
+    /**
+     * 主界面 指针 终点角度. °
+     */
+    public static readonly MAIN_PANEL_POINTER_END_ANGLE = 45;
+
+    /**
+     * 主界面 指针 半周期时长. ms
+     */
+    public static readonly MAIN_PANEL_POINTER_HALF_DURATION = 0.5e3;
+
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

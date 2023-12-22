@@ -263,11 +263,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
         this.server.net_tryCatch(syncKey).then(
             (value) => {
-                if (value) {
-                    this._currentCatchResultSyncKey = syncKey;
-                } else {
-                    this.lock();
-                }
+                if (value) this._currentCatchResultSyncKey = syncKey;
             },
         );
     }
