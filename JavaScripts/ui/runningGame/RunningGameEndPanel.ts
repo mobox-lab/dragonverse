@@ -2,7 +2,7 @@
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-14 14:01:03
  * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-14 16:55:48
+ * @LastEditTime: 2023-12-22 13:20:32
  * @FilePath: \DragonVerse\JavaScripts\ui\runningGame\RunningGameEndPanel.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -25,6 +25,7 @@ export class RunningGameData {
 
 export class RunningGameEndPanel extends RGEndUI_Generate {
 
+    private _data: RunningGameData;
 
     protected onAwake(): void {
         super.onAwake();
@@ -54,31 +55,34 @@ export class RunningGameEndPanel extends RGEndUI_Generate {
         this.mDownCanvas.renderOpacity = 0;
         this.mDownCanvas.visibility = mw.SlateVisibility.Hidden;
 
-        this.mImage.visibility = mw.SlateVisibility.Hidden;
-        this.mImage.renderOpacity = 0.5;
+        // this.mImage.visibility = mw.SlateVisibility.Hidden;
+        // this.mImage.renderOpacity = 0.5;
 
         this.mInfoCanvas.visibility = mw.SlateVisibility.Hidden;
         this.mInfoCanvas.renderOpacity = 0.5;
 
         this.mScoreCanvas.renderOpacity = 0;
-        this.mScoreBg.renderOpacity = 1;
-        this.mScoreBg.position = this.mScore.position;
-        this.mScoreBg.size = this.mScore.size;
+        // this.mScoreBg.renderOpacity = 1;
+        // this.mScoreBg.position = this.mScore.position;
+        // this.mScoreBg.size = this.mScore.size;
+        this.mNew.renderOpacity = 0;
 
         this.mText.fontSize = 90;
         this.mText.renderOpacity = 0.5;
-        this.mTextBg.renderOpacity = 1;
+        //this.mTextBg.renderOpacity = 1;
 
         const windownSize = WindowUtil.getViewportSize();
         const canvasSize = this.mCanvas.size;
         this.mCanvas.position = new mw.Vector2((windownSize.x - canvasSize.x) / 2, (windownSize.y) / 2);
 
         this.mCanvas.visibility = mw.SlateVisibility.Hidden;
+
+        this._data = null;
     }
 
 
     onShow(data: RunningGameData) {
-
+        this._data = data;
         this.setData(data);
         this.showBg();
     }
@@ -116,17 +120,18 @@ export class RunningGameEndPanel extends RGEndUI_Generate {
         this.mCanvas.visibility = mw.SlateVisibility.SelfHitTestInvisible;
         //显示时间到！
 
-        new Tween({ bg: 1 })
-            .to({ bg: 0 })
-            .duration(700)
-            .onUpdate(val => {
-                this.mTextBg.renderOpacity = val.bg;
-                this.mTextBg_1.renderOpacity = val.bg;
-            })
-            .start();
+        //显示时间到，背景图的
+        // new Tween({ bg: 1 })
+        //     .to({ bg: 0 })
+        //     .duration(700)
+        //     .onUpdate(val => {
+        //         this.mTextBg.renderOpacity = val.bg;
+        //         this.mTextBg_1.renderOpacity = val.bg;
+        //     })
+        //     .start();
 
         new Tween({ opacity: 0.5, size: 100, bg: 1 })
-            .to({ opacity: 1, size: 75, bg: 0 })
+            .to({ opacity: 1, size: 30, bg: 0 })
             .duration(500)
             .onUpdate(val => {
                 this.mText.renderOpacity = val.opacity;
@@ -138,7 +143,7 @@ export class RunningGameEndPanel extends RGEndUI_Generate {
                 let pos = this.mCanvas.position.clone();
                 this.mInfoCanvas.visibility = mw.SlateVisibility.SelfHitTestInvisible;
                 new Tween({ y: pos.y, opacity: 0.5 })
-                    .to({ y: 300, opacity: 1 })
+                    .to({ y: 250, opacity: 1 })
                     .duration(800)
                     .onUpdate(val => {
                         pos.y = val.y;
@@ -157,22 +162,34 @@ export class RunningGameEndPanel extends RGEndUI_Generate {
                             .start()
                             .onComplete(() => {
                                 //this.mScoreBg.renderOpacity = 0;
-                                let pos = this.mScoreBg.position.clone();
-                                let size = this.mScoreBg.size.clone();
+                                this.showDownCanvas();
 
-                                new Tween({ posY: pos.y, sizeY: size.y })
-                                    .to({ posY: pos.y + size.y / 2, sizeY: 0 })
-                                    .duration(200)
-                                    .onUpdate(val => {
-                                        pos.y = val.posY;
-                                        size.y = val.sizeY;
-                                        this.mScoreBg.position = pos;
-                                        this.mScoreBg.size = size;
-                                    })
-                                    .start()
-                                    .onComplete(() => {
-                                        this.showImage();
-                                    })
+                                if (this._data.isNewRecord) {
+                                    new Tween({ opacity: 0 })
+                                        .to({ opacity: 1 })
+                                        .duration(300)
+                                        .onUpdate(val => {
+                                            this.mNew.renderOpacity = val.opacity;
+                                        })
+                                        .start()
+                                }
+                                //做最后得分的shining
+                                // let pos = this.mScoreBg.position.clone();
+                                // let size = this.mScoreBg.size.clone();
+
+                                // new Tween({ posY: pos.y, sizeY: size.y })
+                                //     .to({ posY: pos.y + size.y / 2, sizeY: 0 })
+                                //     .duration(200)
+                                //     .onUpdate(val => {
+                                //         pos.y = val.posY;
+                                //         size.y = val.sizeY;
+                                //         this.mScoreBg.position = pos;
+                                //         this.mScoreBg.size = size;
+                                //     })
+                                //     .start()
+                                //     .onComplete(() => {
+                                //         this.showImage();
+                                //     })
                             })
                     })
             })

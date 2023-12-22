@@ -176,8 +176,10 @@ export class RunningGameController {
                 this.maxSpeed = this._defaultMaxSpeed
             }, 10);
             //播放撞击特效
-            this._collisionEffect.worldTransform.position = this._collisionTrigger.worldTransform.position;
-            this._collisionEffect.play();
+            if (this._collisionEffect) {
+                this._collisionEffect.worldTransform.position = this._collisionTrigger.worldTransform.position;
+                this._collisionEffect.play();
+            }
         } else {
 
 
