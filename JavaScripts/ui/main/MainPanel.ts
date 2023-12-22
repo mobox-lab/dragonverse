@@ -10,17 +10,18 @@ import Waterween from "../../depend/waterween/Waterween";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import { AuthModuleC } from "../../module/auth/AuthModule";
-import { DragonSyncKeyEventArgs, SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
+import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
 import { BagModuleC } from "../../module/bag/BagModule";
 import { Yoact } from "../../depend/yoact/Yoact";
 import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
 import i18n from "../../language/i18n";
 import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
 import { GenerableTypes } from "../../const/GenerableTypes";
-import AccountService = mw.AccountService;
-import bindYoact = Yoact.bindYoact;
 import { RoleModuleC } from "../../module/role/RoleModule";
 import UnifiedRoleController from "../../module/role/UnifiedRoleController";
+import GameServiceConfig from "../../const/GameServiceConfig";
+import AccountService = mw.AccountService;
+import bindYoact = Yoact.bindYoact;
 
 /**
  * 主界面 全局提示 参数.
@@ -166,9 +167,9 @@ export default class MainPanel extends MainPanel_Generate {
                 .to(
                     () => this.cnvPointer.renderTransformAngle,
                     (val) => this.cnvPointer.renderTransformAngle = val,
-                    45,
-                    0.5e3,
-                    -45,
+                    GameServiceConfig.MAIN_PANEL_POINTER_END_ANGLE,
+                    GameServiceConfig.MAIN_PANEL_POINTER_HALF_DURATION,
+                    GameServiceConfig.MAIN_PANEL_POINTER_START_ANGLE,
                 )
                 .restart(true)
                 .pingPong();
@@ -224,11 +225,16 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, () => Log4Ts.log(MainPanel, `Player reset.`)));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnCandidateChange, this.onCatchDragonEnable));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onUpdate() {
+        const enableCatchBtn = this._currentInteractType === GenerableTypes.Null &&
+            !GToolkit.isNullOrEmpty(this._sceneDragonModule.candidate);
+
+        GToolkit.trySetVisibility(
+            this.cnvCatchdragon,
+            enableCatchBtn);
     }
 
     /**
@@ -505,11 +511,6 @@ export default class MainPanel extends MainPanel_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
-
-    private onCatchDragonEnable = (eventArg: DragonSyncKeyEventArgs): void => {
-        GToolkit.trySetVisibility(this.cnvCatchdragon, !!eventArg.syncKey);
-    };
-
     private onShowGlobalPrompt = (args: ShowGlobalPromptEventArgs) => this.showGlobalPrompt(args.message);
 
     private onProgressDone = () => {

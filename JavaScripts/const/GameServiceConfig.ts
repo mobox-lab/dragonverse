@@ -46,7 +46,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 最长准备捕捉时间.
      */
-    public static readonly SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION = 2e3;
+    public static readonly SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION = 8e3;
 
     /**
      * 场景龙 最远存活距离.
@@ -174,10 +174,34 @@ export default class GameServiceConfig {
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+//#region NPC
+    public static readonly NPC_PREFAB_GUID = "EF576168418ED3113B4C43800A36A451";
+
+    public static readonly NPC_MESH_OBJECT_NAME = "mesh";
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 //#region UI
     /**
      * {@link DialoguePanel.cnvOptions} 最大选项容量.
      */
     public static readonly CNV_OPTIONS_MAX_CAPACITY = 4;
+
+    /**
+     * 主界面 指针 起始角度. °
+     */
+    public static readonly MAIN_PANEL_POINTER_START_ANGLE = -110;
+
+    /**
+     * 主界面 指针 终点角度. °
+     */
+    public static readonly MAIN_PANEL_POINTER_END_ANGLE = 110;
+
+    /**
+     * 主界面 指针 半周期时长. ms
+     */
+    public static readonly MAIN_PANEL_POINTER_HALF_DURATION = 1e3;
+
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
