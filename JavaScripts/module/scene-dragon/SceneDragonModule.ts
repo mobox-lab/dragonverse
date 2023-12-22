@@ -367,8 +367,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 () => this.roleCtrl.character.worldTransform.rotation.toQuaternion(),
                 (val) => this.roleCtrl.character.worldTransform.rotation = val.toRotation(),
                 Quaternion.fromRotation(
-                    Rotation.fromVector(position
-                        .subtract(this.character.worldTransform.position))),
+                    Rotation.fromVector(
+                        GToolkit.newWithZ(
+                            position.subtract(this.character.worldTransform.position),
+                            0))),
                 0.5e3,
                 undefined,
                 Easing.easeInOutSine,
