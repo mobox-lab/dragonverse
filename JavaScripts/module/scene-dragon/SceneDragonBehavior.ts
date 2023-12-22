@@ -353,7 +353,7 @@ export default class SceneDragonBehavior extends mw.Script {
                 3000,
                 this.gameObject,
                 undefined,
-                true,
+                false,
             )?.position;
         if (randVec && GToolkit.hasValidPath(this.gameObject.worldTransform.position, randVec)) {
             return randVec;
