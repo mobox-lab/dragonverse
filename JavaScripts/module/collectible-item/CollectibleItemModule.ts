@@ -63,9 +63,13 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
             assetId,
             GameObjPoolSourceType.Prefab,
         );
-        const trigger = GToolkit.getFirstScript(obj, CollectibleItemTrigger);
-        trigger.init(syncKey);
         obj.worldTransform.position = location;
+        const trigger = GToolkit.getFirstScript(obj, CollectibleItemTrigger);
+        if (!trigger) {
+            Log4Ts.error(CollectibleItemModuleC, `there is no trigger in prefab. id: ${id}`);
+            return obj;
+        }
+        trigger.init(syncKey);
         return obj;
     }
 
@@ -214,7 +218,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         ).then((value) => {
             if (!value) return;
 
-            this.syncItemMap.set(syncKey, { item: item, object: value });
+            this.syncItemMap.set(syncKey, {item: item, object: value});
         });
     }
 
@@ -229,10 +233,10 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 
     //#region Net Method
     public net_generate(syncKey: string,
-        id: number,
-        hitPoint: number,
-        generateTime: number,
-        location: Vector) {
+                        id: number,
+                        hitPoint: number,
+                        generateTime: number,
+                        location: Vector) {
         this.generate(
             syncKey,
             new CollectibleItem()
@@ -380,7 +384,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             .from(this.existenceItemMap.get(playerId))
             .select((syncKey) => this.syncItemMap.get(syncKey))
             .where((item) => item ? item.id === id : false)
-            .defaultIfEmpty({ generateTime: 0 } as CollectibleItem)
+            .defaultIfEmpty({generateTime: 0} as CollectibleItem)
             .max((item) => item.generateTime);
     }
 
@@ -412,9 +416,9 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             .from(GameConfig.CollectibleItem.getAllElement())
             .forEach((item) => {
                 for (let i = 0;
-                    i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
-                    this.isGenerateEnable(playerId, item.id);
-                    i++) {
+                     i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
+                     this.isGenerateEnable(playerId, item.id);
+                     i++) {
                     Log4Ts.log(CollectibleItemModuleS, `checking generate.`,
                         `playerId: ${playerId}.`,
                         `id: ${item.id}.`,
@@ -496,8 +500,8 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             () => item.info());
 
         item.autoDestroyTimerId = setTimeout(() => {
-            this.destroy(playerId, syncKey);
-        },
+                this.destroy(playerId, syncKey);
+            },
             CollectibleItem.maxExistenceTime(itemId),
         );
 
