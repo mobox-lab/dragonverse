@@ -192,35 +192,68 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     //#region Method
     public lock() {
-        Log4Ts.log(SceneDragonModuleC, `try lock on item`);
-        if (GToolkit.isNullOrEmpty(this._candidate)) {
-            Log4Ts.warn(SceneDragonModuleC, `candidate is null.`);
-            return;
-        }
-        if (!this.syncItemMap.has(this._candidate)) {
-            Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${this._candidate}`);
-            return;
-        }
+        Log4Ts.log(SceneDragonModuleC, `try lock on item. candidate syncKey: ${this._candidate}`);
+        const item = this.syncItemMap.get(this._candidate);
+        if (!item) Log4Ts.warn(SceneDragonModuleC, `lock item not exist in client.`);
 
-        Log4Ts.log(SceneDragonModuleC, `lock on SceneDragon. syncKey: ${this._candidate}`);
-        if (this._lockingSyncKey) {
-            if (this._lockingSyncKey !== this._candidate) {
-                Log4Ts.log(SceneDragonModuleC, `already lock on another SceneDragon. origin syncKey: ${this._lockingSyncKey}`);
-                this.unlockWithView();
+        if (this._lockingSyncKey === this._candidate) {
+            if (this._lockTimerId) {
+                clearTimeout(this._lockTimerId);
+                this._lockTimerId = null;
+            }
+            if (this._candidate) {
+                this._lockTimerId = setTimeout(
+                    () => this.acceptResult(),
+                    GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
+                );
             } else {
-                Log4Ts.log(SceneDragonModuleC, `already lock on same SceneDragon.`);
-                if (this._lockTimerId) {
-                    clearTimeout(this._lockTimerId);
-                    this._lockTimerId = null;
-                }
+                this.unlockWithView();
             }
         } else {
-            this.roleCtrl.addMoveForbiddenBuff();
+            if (this._lockingSyncKey) {
+                Log4Ts.log(SceneDragonModuleC, `already lock on another SceneDragon. origin syncKey: ${this._lockingSyncKey}`);
+                if (this.syncItemMap.has(this._lockingSyncKey)) {
+                    this.syncItemMap.get(this._lockingSyncKey).behavior.state.isFear = false;
+                }
+                this.unlockWithView();
+            } else {
+                this.roleCtrl.addMoveForbiddenBuff();
+            }
+
+            if (item) {
+                Log4Ts.log(SceneDragonModuleC, `lock on SceneDragon. syncKey: ${this._candidate}`);
+                item.behavior.state.isFear = true;
+                this._currentCatchResultSyncKey = null;
+                const position = this
+                    .syncItemMap
+                    .get(this._candidate)
+                    .object
+                    .worldTransform
+                    .position
+                    .clone();
+                this.roleCtrl.lookAt(position);
+                Waterween.to(
+                    () => this.roleCtrl.character.worldTransform.rotation.toQuaternion(),
+                    (val) => this.roleCtrl.character.worldTransform.rotation = val.toRotation(),
+                    Quaternion.fromRotation(
+                        Rotation.fromVector(
+                            GToolkit.newWithZ(
+                                position.subtract(this.character.worldTransform.position),
+                                0))),
+                    0.5e3,
+                    undefined,
+                    Easing.easeInOutSine,
+                    Quaternion.slerp,
+                ).autoDestroy();
+                Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+                this._lockTimerId = setTimeout(
+                    () => this.acceptResult(),
+                    GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
+                );
+            }
         }
 
-        this._currentCatchResultSyncKey = null;
-
-        this.lockWithView(this._candidate);
+        this._lockingSyncKey = this._candidate;
     }
 
     /**
@@ -344,52 +377,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             clearTimeout(this._lockTimerId);
             this._lockTimerId = null;
         }
-    }
-
-    private lockWithView(syncKey: string) {
-        if (this._lockTimerId !== null) {
-            this.unlockWithView();
-        }
-
-        const item = this.syncItemMap.get(syncKey);
-        if (!item) Log4Ts.log(SceneDragonModuleC, `lock item not exist in client. syncKey: ${syncKey}`);
-
-        if (this._lockingSyncKey !== syncKey) {
-            item.behavior.state.isFear = true;
-            const position = this
-                .syncItemMap
-                .get(syncKey)
-                .object
-                .worldTransform
-                .position
-                .clone();
-            this.roleCtrl.lookAt(position);
-            Waterween.to(
-                () => this.roleCtrl.character.worldTransform.rotation.toQuaternion(),
-                (val) => this.roleCtrl.character.worldTransform.rotation = val.toRotation(),
-                Quaternion.fromRotation(
-                    Rotation.fromVector(
-                        GToolkit.newWithZ(
-                            position.subtract(this.character.worldTransform.position),
-                            0))),
-                0.5e3,
-                undefined,
-                Easing.easeInOutSine,
-                Quaternion.slerp,
-            ).autoDestroy();
-            Log4Ts.log(SceneDragonModuleC, `dispatch on lock event.`);
-            Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
-        }
-
-        if (this.syncItemMap.has(this._lockingSyncKey)) {
-            this.syncItemMap.get(this._lockingSyncKey).behavior.state.isFear = false;
-        }
-
-        this._lockingSyncKey = syncKey;
-        this._lockTimerId = setTimeout(
-            () => this.acceptResult(),
-            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
-        );
     }
 
     private keepLockWithView() {
