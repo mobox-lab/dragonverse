@@ -178,6 +178,7 @@ export default class SceneDragonBehavior extends mw.Script {
             return;
         }
         this.useUpdate = true;
+
         const asCharacter = this.gameObject as Character;
         if (asCharacter) {
             this._fearAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_FEAR_ANIM_ID);
@@ -185,6 +186,13 @@ export default class SceneDragonBehavior extends mw.Script {
             this._laughAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_LAUGH_ANIM_ID);
             this._laughAnim.loop = 2;
         }
+
+        HeadUIController.getInstance()
+            .registerHeadUI(
+                this.gameObject,
+                HeadUIType.NPC,
+                i18n.lan(SceneDragon.nameStr(this.data.id)),
+                new mw.Vector(0, 0, GameServiceConfig.HEAD_UI_HEIGHT));
 
         //#region Member init
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnCandidateChange, (eventArgs) => {
@@ -231,13 +239,6 @@ export default class SceneDragonBehavior extends mw.Script {
     public init(syncKey: string, data: SceneDragon) {
         this.syncKey = syncKey;
         this.data = data;
-
-        HeadUIController.getInstance()
-            .registerHeadUI(
-                this.gameObject,
-                HeadUIType.NPC,
-                i18n.lan(SceneDragon.nameStr(this.data.id)),
-                new mw.Vector(0, 0, GameServiceConfig.HEAD_UI_HEIGHT));
 
         this.initStateMachine();
     }
