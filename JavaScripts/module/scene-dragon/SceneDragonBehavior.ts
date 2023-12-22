@@ -184,8 +184,6 @@ export default class SceneDragonBehavior extends mw.Script {
             this._laughAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_LAUGH_ANIM_ID);
             this._laughAnim.loop = 2;
         }
-        let bagId = GameConfig.CharacterfulDragon.getElement(this.data.id).bagId;
-        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.NPC, i18n.lan(SceneDragon.nameStr(bagId)), new mw.Vector(0, 0, 115));
 
         //#region Member init
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnCandidateChange, (eventArgs) => {
@@ -232,6 +230,13 @@ export default class SceneDragonBehavior extends mw.Script {
     public init(syncKey: string, data: SceneDragon) {
         this.syncKey = syncKey;
         this.data = data;
+
+        HeadUIController.getInstance()
+            .registerHeadUI(
+                this.gameObject,
+                HeadUIType.NPC,
+                i18n.lan(SceneDragon.nameStr(this.data.id)),
+                new mw.Vector(0, 0, GameServiceConfig.HEAD_UI_HEIGHT));
 
         this.initStateMachine();
     }
@@ -401,9 +406,9 @@ export default class SceneDragonBehavior extends mw.Script {
             this.gameObject,
             {
                 loopCount: 0,
-                position:new Vector(0,0,150),
-                scale:new Vector(1.2,1.2,1.2),
-                rotation:new Rotation(180,0,0),
+                position: new Vector(0, 0, 150),
+                scale: new Vector(1.2, 1.2, 1.2),
+                rotation: new Rotation(180, 0, 0),
             });
     }
 
@@ -431,8 +436,8 @@ export default class SceneDragonBehavior extends mw.Script {
                 this.gameObject,
                 {
                     loopCount: 0,
-                    position:new Vector(0,0,100),
-                    scale:new Vector(2,2,2),
+                    position: new Vector(0, 0, 100),
+                    scale: new Vector(2, 2, 2),
                 });
         } else {
             this._fearAnim?.stop();

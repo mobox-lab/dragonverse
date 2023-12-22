@@ -357,7 +357,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             if (!value) return;
 
             this.syncItemMap.set(syncKey, value);
-            // this._mainPanel.addSceneDragonInteractor(syncKey);
         });
     }
 
