@@ -348,7 +348,6 @@ export default class Nolan {
         this._controllerRotateTask = Waterween.to(
             () => Player.getControllerRotation().toQuaternion(),
             (val) => {
-                console.log(val);
                 Player.setControllerRotation(GToolkit.newWithX(val.toRotation(), 0));
             },
             Rotation.fromVector(direction).toQuaternion(),

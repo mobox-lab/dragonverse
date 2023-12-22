@@ -513,7 +513,6 @@ export default class MainPanel extends MainPanel_Generate {
 
     private onProgressDone = () => {
         this._progressShowTask.backward();
-        let isReCatch: boolean = false;
 
         switch (this._currentInteractType) {
             case GenerableTypes.Null:
@@ -523,14 +522,8 @@ export default class MainPanel extends MainPanel_Generate {
                 const catchResult = !GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
                 Log4Ts.log(MainPanel, `catch result: ${catchResult}`);
                 this.sceneDragonModule?.acceptResult();
-                if (catchResult) {
-                    GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
-                    this.endCatch();
-                    this.showResult(true, GenerableTypes.SceneDragon);
-                } else {
-                    isReCatch = true;
-                    this.showResult(false, GenerableTypes.SceneDragon);
-                }
+                this.endCatch();
+                this.showResult(catchResult, GenerableTypes.SceneDragon);
                 break;
             case GenerableTypes.CollectibleItem:
                 const collectResult = !GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
@@ -547,9 +540,6 @@ export default class MainPanel extends MainPanel_Generate {
                 Log4Ts.warn(MainPanel, `type not supported.`);
         }
         this._currentInteractType = GenerableTypes.Null;
-        if (isReCatch) {
-            this.prepareCatch();
-        }
     };
 
     private onEnablePlayerEnter() {

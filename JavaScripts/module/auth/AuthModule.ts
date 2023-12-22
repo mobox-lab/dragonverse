@@ -540,10 +540,6 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             userId: uid,
         };
 
-        const url = `${GameStart.instance.isRelease ?
-            AuthModuleS.RELEASE_CODE_VERIFY_URL :
-            AuthModuleS.TEST_CODE_VERIFY_URL}`;
-        console.log(url);
         const resp = await fetch(`${GameStart.instance.isRelease ?
                 AuthModuleS.RELEASE_CODE_VERIFY_URL :
                 AuthModuleS.TEST_CODE_VERIFY_URL}`,

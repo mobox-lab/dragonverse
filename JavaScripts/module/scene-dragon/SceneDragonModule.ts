@@ -62,7 +62,6 @@ export default class SceneDragonModuleData extends Subdata {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonModuleData> {
-
     //#region Constant
     public static async sceneDragonPrefabFactory(
         syncKey: string,
@@ -222,7 +221,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         this._currentCatchResultSyncKey = null;
 
         this.lockWithView(this._candidate);
-
     }
 
     /**
@@ -256,7 +254,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             item.object.worldTransform.position,
             GameServiceConfig.DRAGON_BALL_THROW_DURATION,
         );
-        this._currentBall.do();
+        this._currentBall?.do();
 
         this.server.net_tryCatch(syncKey).then(
             (value) => {
@@ -367,9 +365,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             this.roleCtrl.lookAt(position);
             Waterween.to(
                 () => this.roleCtrl.character.worldTransform.rotation.toQuaternion(),
-                (val) => {
-                    this.roleCtrl.character.worldTransform.rotation = val.toRotation();
-                },
+                (val) => this.roleCtrl.character.worldTransform.rotation = val.toRotation(),
                 Quaternion.fromRotation(
                     Rotation.fromVector(position
                         .subtract(this.character.worldTransform.position))),
@@ -378,11 +374,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 Easing.easeInOutSine,
                 Quaternion.slerp,
             ).autoDestroy();
-            Log4Ts.log(SceneDragonModuleC, `
-        dispatch;
-        on;
-        lock;
-        event.`);
+            Log4Ts.log(SceneDragonModuleC, `dispatch on lock event.`);
             Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
         }
 

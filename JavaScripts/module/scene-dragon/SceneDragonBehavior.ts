@@ -132,11 +132,6 @@ enum SceneDragonStates {
 
 @Component
 export default class SceneDragonBehavior extends mw.Script {
-    //#region Constant
-    private static readonly SELECTED_EFFECT_ID = "128903";
-    private static readonly ASTOUNDED_EFFECT_ID = "11375";
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
     //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -396,7 +391,7 @@ export default class SceneDragonBehavior extends mw.Script {
         if (this._isElected) return;
         this._isElected = true;
         this._electEffectId = EffectService.playOnGameObject(
-            SceneDragonBehavior.SELECTED_EFFECT_ID,
+            GameServiceConfig.SELECTED_EFFECT_ID,
             this.gameObject,
             {
                 loopCount: 0,
@@ -423,7 +418,7 @@ export default class SceneDragonBehavior extends mw.Script {
         if (enable) {
             this._fearStance?.play();
             this._fearEffectId = EffectService.playOnGameObject(
-                SceneDragonBehavior.ASTOUNDED_EFFECT_ID,
+                GameServiceConfig.ASTOUNDED_EFFECT_ID,
                 this.gameObject,
                 {
                     loopCount: 0,
