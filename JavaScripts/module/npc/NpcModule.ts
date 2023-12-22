@@ -8,6 +8,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GToolkit from "../../util/GToolkit";
 import NpcBehavior from "./NpcBehavior";
 import NpcTrigger from "./trigger/NpcTrigger";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**
  * 场景龙存在数据.
@@ -41,8 +42,6 @@ export default class NpcModuleData extends Subdata {
  */
 export class NpcModuleC extends ModuleC<NpcModuleS, NpcModuleData> {
     //#region Constant
-    private static readonly NPC_PREFAB_GUID = "EF576168418ED3113B4C43800A36A451";
-
     public static async NpcPrefabFactory(
         config: INpcElement) {
         if (!config) {
@@ -54,7 +53,7 @@ export class NpcModuleC extends ModuleC<NpcModuleS, NpcModuleData> {
         }
 
         const obj = await GameObject.asyncSpawn(
-            NpcModuleC.NPC_PREFAB_GUID,
+            GameServiceConfig.NPC_PREFAB_GUID,
             {
                 replicates: false,
                 transform: new Transform(
@@ -64,7 +63,6 @@ export class NpcModuleC extends ModuleC<NpcModuleS, NpcModuleData> {
             },
         );
 
-        (obj as Character).setDescription([config.avatar]);
         GToolkit.getFirstScript(obj, NpcTrigger)?.init(config.id);
         const behavior = GToolkit.getFirstScript(obj, NpcBehavior)?.init(config);
         return new NpcExistInfo(behavior, obj);

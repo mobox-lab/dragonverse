@@ -10,6 +10,7 @@ import DialogueManager, {
 import i18n from "../../language/i18n";
 import GToolkit from "../../util/GToolkit";
 import PlayerInteractNpcEventArgs from "./trigger/PlayerInteractNpcEventArgs";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**
  * Npc.
@@ -77,7 +78,11 @@ export default class NpcBehavior extends mw.Script {
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowNpcAction, this.showNpcAction.bind(this)));
         //#endregion ------------------------------------------------------------------------------------------
 
-        this._npcCharacter = this.gameObject.getChildByName("mesh") as Character;
+        this._npcCharacter = (this.gameObject.getChildByName(GameServiceConfig.NPC_MESH_OBJECT_NAME) as Character);
+        if (!this._npcCharacter) {
+            Log4Ts.log(NpcBehavior, `there is no mesh object named ${GameServiceConfig.NPC_MESH_OBJECT_NAME} in prefab.`);
+            return;
+        }
 
         this._oriPos = this._npcCharacter.worldTransform.position;
         this._oriRot = this._npcCharacter.worldTransform.rotation;
@@ -90,10 +95,7 @@ export default class NpcBehavior extends mw.Script {
             this._npcBasicAni.play();
         }
 
-        HeadUIController.getInstance().registerHeadUI(this._npcCharacter, HeadUIType.NPC, i18n.lan(GameConfig.Character.getElement(this._config.characterId)?.name ?? 'null'))
-
-
-
+        HeadUIController.getInstance().registerHeadUI(this._npcCharacter, HeadUIType.NPC, i18n.lan(GameConfig.Character.getElement(this._config.characterId)?.name ?? "null"));
     }
 
     protected onUpdate(dt: number): void {
@@ -114,8 +116,7 @@ export default class NpcBehavior extends mw.Script {
     public init(config: INpcElement): this {
         this._config = config;
         this._communicable = validDialogueContentNodeId(config.greetNodeId);
-
-
+        this._npcCharacter?.setDescription(config.avatar);
 
         return this;
     }
@@ -169,7 +170,7 @@ export default class NpcBehavior extends mw.Script {
     };
 
 
-    /** 
+    /**
      * @description: 结束npc交互动作
      */
     public stopNpcAction() {
@@ -196,11 +197,11 @@ export default class NpcBehavior extends mw.Script {
         }
     }
 
-    /** 
+    /**
      * @description: 开始npc交互动作
      * @param actionId 动作id
      * @param npcId npc id
-     * @return 
+     * @return
      */
     public showNpcAction(actionId: number, npcId: number) {
         this.stopNpcAction();
