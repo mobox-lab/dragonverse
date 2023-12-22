@@ -55,12 +55,9 @@ export default class BagPanel extends BagMain_Generate {
                 stopEffect(effect);
             }
             this._selectEffects.length = 0;
-            this._selectEffects.push(bindYoact(() => {
-                this.mName.text = i18n.lan(GameConfig.BagItem.getElement(key).name);
-            }));
-            this._selectEffects.push(bindYoact(() => {
-                this.mDesc.text = i18n.lan(GameConfig.BagItem.getElement(key).desc);
-            }));
+            this.mName.text = i18n.lan(GameConfig.BagItem.getElement(key).name);
+            this.mDesc.text = i18n.lan(GameConfig.BagItem.getElement(key).desc);
+            this.mIcon.imageGuid = GameConfig.BagItem.getElement(key).icon;
             this._selectEffects.push(bindYoact(() => {
                 this.mNum.text = i18n.lan("数量") + `${data.count}`;
             }));
