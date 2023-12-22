@@ -176,6 +176,7 @@ export default class SceneDragonBehavior extends mw.Script {
             Log4Ts.log(SceneDragonBehavior, `SceneDragonBehavior is running on server, please check!`);
             return;
         }
+        this.useUpdate = true;
 
         let bagId = GameConfig.CharacterfulDragon.getElement(this.data.id).bagId;
         HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, i18n.lan(SceneDragon.nameStr(bagId)));
@@ -426,7 +427,7 @@ export default class SceneDragonBehavior extends mw.Script {
                 });
         } else {
             this._fearAnim?.stop();
-            if (this._fearEffectId) {
+            if (this._fearEffectId !== null) {
                 EffectService.stop(this._fearEffectId);
                 this._fearEffectId = null;
             }
