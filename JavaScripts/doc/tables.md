@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v0.9.8  
+v1.0.0  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -110,17 +110,17 @@ x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 
 ### 龙基 Dragon (Base)
 
-|       Name       | PropName           | Type    | Desc   |
-| :--------------: | :----------------- | ------- | ------ |
-|        ID        | Id                 | int     |        |
-|       形象       | Avatar             | UNKNOWN |        |
-|     元素 ID      | ElementalId        | int     |        |
-|     品质 ID      | QualityId          | int     |        |
-| 生成区域 ID 集合 | AreaIds            | int[]   |        |
-|     存在时间     | ExistenceTime      | int     | 秒 Sec |
-|     生成间隔     | GenerationInterval | int     | 秒 Sec |
-|    可捕捉次数    | HitPoint           | int     |        |
-|     捕捉消耗     | Cost               | int     |        |
+|       Name       | PropName           | Type   | Desc   |
+| :--------------: | :----------------- | ------ | ------ |
+|        ID        | Id                 | int    |        |
+|       形象       | Avatar             | string |        |
+|     元素 ID      | ElementalId        | int    |        |
+|     品质 ID      | QualityId          | int    |        |
+| 生成区域 ID 集合 | AreaIds            | int[]  |        |
+|     存在时间     | ExistenceTime      | int    | 秒 Sec |
+|     生成间隔     | GenerationInterval | int    | 秒 Sec |
+|    可捕捉次数    | HitPoint           | int    |        |
+|     捕捉消耗     | Cost               | int    |        |
 
 ### 个性龙 CharacterfulDragon
 
@@ -224,6 +224,7 @@ x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 | :-------------: | :---------- | -------- | --------------- |
 |       ID        | Id          | int      |                 |
 |     角色 ID     | CharacterId | int      |                 |
+|      形象       | Avatar      | string   |                 |
 |    初始位置     | Position    | vector3  |                 |
 |    初始旋转     | Rotation    | rotation |                 |
 |      招呼       | GreetNodeId | int      | 对话内容节点 Id |
