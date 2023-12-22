@@ -223,7 +223,7 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
             let end = origin.clone();
             end.z -= 300;
             origin.z += 300;
-            let traceResult = mw.QueryUtil.sphereTrace(origin, end, radius, false, true, ignore);
+            let traceResult = mw.QueryUtil.sphereTrace(origin, end, radius, false, false, ignore);
 
             if (traceResult.length > 0) {
 
