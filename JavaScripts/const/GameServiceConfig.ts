@@ -46,7 +46,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 最长准备捕捉时间.
      */
-    public static readonly SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION = 8e3;
+    public static readonly SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION = 2e3;
 
     /**
      * 场景龙 最远存活距离.
@@ -76,7 +76,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 最远可捕捉距离.
      */
-    public static readonly SCENE_DRAGON_CATCHABLE_DISTANCE = 300;
+    public static readonly SCENE_DRAGON_CATCHABLE_DISTANCE = 1000;
 
     /**
      * 场景龙 最远存活距离平方.
@@ -116,25 +116,61 @@ export default class GameServiceConfig {
     }
 
     /**
-     * 场景龙 烟雾特效 guid.
+     * 场景龙 烟雾特效 Guid.
      */
     public static readonly SMOKE_EFFECT_ID = "89589";
 
     /**
-     * 场景龙 恐惧 姿态 guid.
+     * 场景龙 恐惧 姿态 Guid.
      * @private
      */
-    public static readonly SCENE_DRAGON_FEAR_STANCE_ID = "86094";
+    public static readonly SCENE_DRAGON_FEAR_ANIM_ID = "86094";
 
     /**
-     * 场景龙 大笑 姿态 guid.
+     * 场景龙 大笑 姿态 Guid.
      */
-    public static readonly SCENE_DRAGON_LAUGH_STANCE_ID = "14598";
+    public static readonly SCENE_DRAGON_LAUGH_ANIM_ID = "14598";
 
     /**
      * Dragon Ball 飞翔时间.
      */
     public static readonly DRAGON_BALL_THROW_DURATION = 2e3;
+
+    /**
+     * 场景龙 选中 特效 Guid.
+     */
+    public static readonly SELECTED_EFFECT_ID = "128903";
+
+    /**
+     * 场景龙 惊讶 特效 Guid.
+     */
+    public static readonly ASTOUNDED_EFFECT_ID = "11375";
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Role
+    /**
+     * 角色 蒸气特效 Guid.
+     */
+    public static readonly STEAM_EFFECT_GUID = "89589";
+
+    /**
+     * 角色 丢弃姿态 Guid.
+     */
+    public static readonly THROW_STANCE_GUID = "20287";
+
+    /**
+     * 角色 爆炸特效 Guid.
+     */
+    public static readonly EXPLODE_EFFECT_GUID = "29393";
+
+    /**
+     * 角色 爆炸特效 缩放.
+     * @constructor
+     */
+    public static get EXPLODE_EFFECT_SCALE() {
+        return new Vector(2, 2, 2);
+    }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 

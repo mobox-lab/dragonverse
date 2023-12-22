@@ -12,6 +12,8 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import YoactArray from "../../depend/yoact/YoactArray";
 import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import { EventDefine } from "../../const/EventDefine";
+import { AuthModuleS } from "../auth/AuthModule";
+import GameStart from "../../GameStart";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -457,6 +459,10 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 }
 
 export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
+//#region Member
+    private _authModule: AuthModuleS;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 //#region MetaWorld Event
     protected onAwake(): void {
         super.onAwake();
@@ -465,8 +471,9 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
     protected onStart(): void {
         super.onStart();
 
-        //#region Member init     
-        //#endregion ------------------------------------------------------------------------------------------ 
+        //#region Member init
+        ModuleService.ready().then(() => this._authModule = ModuleService.getModule(AuthModuleS));
+        //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
         //#endregion ------------------------------------------------------------------------------------------
@@ -524,14 +531,21 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
      */
     public addItem(playerId: number, bagId: number, count: number, autoRemove: boolean = true) {
         const playerData = this.getPlayerData(playerId);
-        Log4Ts.log(BagModuleS, () => {
-            return `add item.
-    playerId: ${playerId}. 
-    id: ${bagId}. 
-    current count: ${playerData.getItemCount(bagId)}. 
-    target count: ${playerData.getItemCount(bagId) + count}.
-    autoRemove: ${autoRemove}.`;
-        });
+        Log4Ts.log(BagModuleS,
+            () => `add item. playerId: ${playerId}. `,
+            () => `id: ${bagId}. `,
+            () => `current count: ${playerData.getItemCount(bagId)}. `,
+            () => `target count: ${playerData.getItemCount(bagId) + count}.`,
+            () => `autoRemove: ${autoRemove}.`,
+        );
+
+        if (GameStart.instance.isRelease && (!this._authModule?.enableEnter(playerId) ?? true)) {
+            Log4Ts.warn(BagModuleS,
+                `has no auth permission when add item. rejected.`,
+                `playerId: ${playerId}`,
+            );
+            return;
+        }
 
         if (!playerData.getItemCount(bagId) &&
             count > 0 &&

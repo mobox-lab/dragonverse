@@ -1,4 +1,5 @@
 import GToolkit from "../../../util/GToolkit";
+import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 
 const tags = "ThrowDragonBall";
 
@@ -8,7 +9,7 @@ const mid1 = mw.Vector.zero;
 export class ThrowDragonBall {
 
 
-    public prefabId = ["265129", "265130"];
+    public prefabId = "33BCE32D4124AAFB9091F1A6CD90E3D6";
 
 
     private _instance: mw.GameObject;
@@ -16,7 +17,7 @@ export class ThrowDragonBall {
 
     public constructor(private owner: mw.Character, private target: mw.Vector, private duration: number) {
 
-        let obj = this._instance = mwext.GameObjPool.spawn(GToolkit.randomArrayItem(this.prefabId));
+        let obj = this._instance = mwext.GameObjPool.spawn(this.prefabId,GameObjPoolSourceType.Prefab);
         if (!obj) {
             throw new Error(`无法创建预制体,请将该模型拖入到优先加载`);
         }

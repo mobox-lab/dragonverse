@@ -1,6 +1,7 @@
 import { State } from "../../../depend/hfsm/State";
 import { StateMachine } from "../../../depend/hfsm/StateMachine";
 import { CompanionState } from "./CompanionState";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 export enum CompanionStateEnum {
 
@@ -13,7 +14,6 @@ export enum CompanionStateEnum {
     Idle,
 
 
-
 }
 
 /**
@@ -21,12 +21,11 @@ export enum CompanionStateEnum {
  */
 export class CompanionViewController extends StateMachine<void, CompanionStateEnum, string> {
 
-    public context: CompanionState
+    public context: CompanionState;
 
-    public owner: mw.GameObject
+    public owner: mw.GameObject;
 
-    public target: mw.GameObject
-
+    public target: mw.GameObject;
 
 
     constructor() {
@@ -41,20 +40,18 @@ export class CompanionViewController extends StateMachine<void, CompanionStateEn
 }
 
 
-
 class BaseCompanionState extends State<CompanionStateEnum> {
 
 
-    declare fsm: CompanionViewController
+    declare fsm: CompanionViewController;
 
     get context() {
-        return this.fsm.context
+        return this.fsm.context;
     }
 }
 
 
 class CompanionFollowState extends BaseCompanionState {
-
 
 
     constructor() {
@@ -67,12 +64,13 @@ class CompanionFollowState extends BaseCompanionState {
     }
 
     private onStart = () => {
-        console.log("start follow")
-    }
+        Log4Ts.log(CompanionFollowState, `start follow`);
+    };
 
     private onFailed = () => {
-        console.log("failed follow")
-    }
+        Log4Ts.log(CompanionFollowState, `failed follow`);
+    };
+
     protected onExit(): void {
         mw.Navigation.stopFollow(this.fsm.owner);
     }

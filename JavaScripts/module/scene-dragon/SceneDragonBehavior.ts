@@ -18,6 +18,7 @@ import Stance = mw.Stance;
 import EffectService = mw.EffectService;
 import Effect = Yoact.Effect;
 import stopEffect = Yoact.stopEffect;
+import Animation = mw.Animation;
 
 class SceneDragonBehaviorState {
     //#region Constant
@@ -132,11 +133,6 @@ enum SceneDragonStates {
 
 @Component
 export default class SceneDragonBehavior extends mw.Script {
-    //#region Constant
-    private static readonly SELECTED_EFFECT_ID = "128903";
-    private static readonly ASTOUNDED_EFFECT_ID = "11375";
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
     //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -154,9 +150,9 @@ export default class SceneDragonBehavior extends mw.Script {
 
     private _isElected: boolean;
 
-    private _fearStance: Stance;
+    private _fearAnim: Animation;
 
-    private _laughStance: Stance;
+    private _laughAnim: Animation;
 
     private get localCharacter() {
         if (!this._character) {
@@ -180,7 +176,12 @@ export default class SceneDragonBehavior extends mw.Script {
             Log4Ts.log(SceneDragonBehavior, `SceneDragonBehavior is running on server, please check!`);
             return;
         }
-
+        this.useUpdate = true;
+        const asCharacter = this.gameObject as Character;
+        if (asCharacter) {
+            this._fearAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_FEAR_ANIM_ID);
+            this._laughAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_LAUGH_ANIM_ID);
+        }
         let bagId = GameConfig.CharacterfulDragon.getElement(this.data.id).bagId;
         HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, i18n.lan(SceneDragon.nameStr(bagId)), new mw.Vector(0, 0, 180));
 
@@ -229,12 +230,6 @@ export default class SceneDragonBehavior extends mw.Script {
     public init(syncKey: string, data: SceneDragon) {
         this.syncKey = syncKey;
         this.data = data;
-
-        const asCharacter = this.gameObject as Character;
-        if (asCharacter) {
-            this._fearStance = asCharacter.loadStance(GameServiceConfig.SCENE_DRAGON_FEAR_STANCE_ID);
-            this._laughStance = asCharacter.loadStance(GameServiceConfig.SCENE_DRAGON_LAUGH_STANCE_ID);
-        }
 
         this.initStateMachine();
     }
@@ -396,7 +391,7 @@ export default class SceneDragonBehavior extends mw.Script {
         if (this._isElected) return;
         this._isElected = true;
         this._electEffectId = EffectService.playOnGameObject(
-            SceneDragonBehavior.SELECTED_EFFECT_ID,
+            GameServiceConfig.SELECTED_EFFECT_ID,
             this.gameObject,
             {
                 loopCount: 0,
@@ -421,16 +416,16 @@ export default class SceneDragonBehavior extends mw.Script {
      */
     public fear(enable: boolean) {
         if (enable) {
-            this._fearStance?.play();
+            this._fearAnim?.play();
             this._fearEffectId = EffectService.playOnGameObject(
-                SceneDragonBehavior.ASTOUNDED_EFFECT_ID,
+                GameServiceConfig.ASTOUNDED_EFFECT_ID,
                 this.gameObject,
                 {
                     loopCount: 0,
                 });
         } else {
-            this._fearStance?.stop();
-            if (this._fearEffectId) {
+            this._fearAnim?.stop();
+            if (this._fearEffectId !== null) {
                 EffectService.stop(this._fearEffectId);
                 this._fearEffectId = null;
             }
@@ -442,9 +437,9 @@ export default class SceneDragonBehavior extends mw.Script {
      */
     public laugh(enable: boolean) {
         if (enable) {
-            this._laughStance?.play();
+            this._laughAnim?.play();
         } else {
-            this._laughStance?.stop();
+            this._laughAnim?.stop();
         }
     }
 

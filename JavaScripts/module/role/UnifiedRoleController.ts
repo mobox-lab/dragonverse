@@ -14,6 +14,7 @@ import { MoveForbiddenBuff } from "../../buffs/MoveForbiddenBuff";
 import AreaManager from "../../gameplay/area/AreaManager";
 import RemoteFunction = mw.RemoteFunction;
 import Server = mw.Server;
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**
  * Unified Role State Controller.
@@ -31,19 +32,6 @@ import Server = mw.Server;
  */
 @Component
 export default class UnifiedRoleController extends mw.Script {
-//#region Constant
-    private static readonly EXPLODE_EFFECT_GUID = "29393";
-
-    private static get EXPLODE_EFFECT_SCALE() {
-        return new Vector(2, 2, 2);
-    }
-
-
-    private static readonly STEAM_EFFECT_GUID = "89589";
-
-    private static readonly THROW_STANCE_GUID = "20287";
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
 //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -59,7 +47,7 @@ export default class UnifiedRoleController extends mw.Script {
 
     private _buffs: BuffContainer<UnifiedRoleController> = null;
 
-    private _throwStance: Stance = null;
+    private _throwAnim: Animation = null;
 
     public get buffs(): BuffContainer<UnifiedRoleController> {
         if (SystemUtil.isServer()) {
@@ -106,7 +94,7 @@ export default class UnifiedRoleController extends mw.Script {
             if (!this._moduleS) Log4Ts.log(UnifiedRoleController, `Role Module S not valid.`);
             this._moduleS.addController(this.playerId, this);
             this._buffs = new BuffContainer();
-            this._throwStance = this.character?.loadStance(UnifiedRoleController.THROW_STANCE_GUID);
+            this._throwAnim = this.character?.loadAnimation(GameServiceConfig.THROW_STANCE_GUID);
             this.onControllerReadyInServer();
         }
 //#endregion ------------------------------------------------------------------------------------------
@@ -182,7 +170,7 @@ export default class UnifiedRoleController extends mw.Script {
 
     @RemoteFunction(Server)
     public playerPlayThrow(target: Vector) {
-        this._throwStance.play();
+        this._throwAnim.play();
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -254,7 +242,7 @@ export default class UnifiedRoleController extends mw.Script {
                 `player touch magma. player id: ${this.character.player.playerId}`,
                 `player is wet.`);
             EffectService.playAtPosition(
-                UnifiedRoleController.STEAM_EFFECT_GUID,
+                GameServiceConfig.STEAM_EFFECT_GUID,
                 position,
             );
 
@@ -280,10 +268,10 @@ export default class UnifiedRoleController extends mw.Script {
             false)[0] ?? null;
         if (hitResult) {
             EffectService.playAtPosition(
-                UnifiedRoleController.EXPLODE_EFFECT_GUID,
+                GameServiceConfig.EXPLODE_EFFECT_GUID,
                 hitResult.position,
                 {
-                    scale: UnifiedRoleController.EXPLODE_EFFECT_SCALE,
+                    scale: GameServiceConfig.EXPLODE_EFFECT_SCALE,
                 },
             );
         } else {
