@@ -77,7 +77,7 @@ class CompanionFollowState extends BaseCompanionState {
 
             this.printSampler.push(this.fsm.follower.worldTransform.position.clone());
 
-            if (this.printSampler.length > 3) {
+            if (this.printSampler.length > 5) {
                 this.printSampler.pop();
             }
         }
@@ -86,8 +86,8 @@ class CompanionFollowState extends BaseCompanionState {
         let distance = this.fsm.target.worldTransform.position.subtract(this.fsm.follower.worldTransform.position)
         distance.z = 0;
 
-        if (distance.sqrLength >= 800 ** 2 && this.printSampler.length >= 3) {
-            this.fsm.target.worldTransform.position = this.printSampler.pop();
+        if (distance.sqrLength >= 800 ** 2 && this.printSampler.length >= 5) {
+            this.fsm.target.worldTransform.position = this.printSampler.shift();
         }
 
         if (distance.sqrLength < (this.fsm.state.offsetNum + GToolkit.random(-20, 20, true)) ** 2) {
@@ -191,6 +191,7 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
             prefab.setDescription([this.displayGuid]);
             let character = mw.Player.getPlayer(this.playerId).character;
             prefab.addMovement(mw.Vector.forward);
+            prefab.maxWalkSpeed = 650;
             if (this.isLocalPlayer()) {
                 this._logicController = new CompanionLogicController();
                 this._logicController.setup(character, prefab, this);
