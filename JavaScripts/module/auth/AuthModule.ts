@@ -234,7 +234,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             Log4Ts.log(
                 AuthModuleC,
                 `player is verifying code.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("isVerifying")});
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan("isVerifying"));
             return;
         }
 
@@ -255,7 +255,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
             this.server.net_verifyCode(this.generateSaltToken(), code);
         } else {
             Log4Ts.warn(AuthModuleC, `code verify request too frequently.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeTooFrequently")});
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan("verifyCodeTooFrequently"));
         }
     }
 
@@ -337,7 +337,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     //#region Net Method
     public net_verifyFail() {
         this._lastVerifyCodeTime = null;
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan("verifyCodeFail")});
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan("verifyCodeFail"));
     }
 
     public net_enableEnter() {
@@ -350,7 +350,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
                 true, Player.localPlayer.playerId);
             return;
         }
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, {message: i18n.lan(i18n.keyTable.verifyCodeSuccess)});
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.verifyCodeSuccess));
         this.data.enterEnable = true;
         this.releasePlayer();
     }

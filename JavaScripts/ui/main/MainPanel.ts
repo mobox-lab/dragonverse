@@ -24,16 +24,9 @@ import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
 
 /**
- * 主界面 全局提示 参数.
- */
-interface ShowGlobalPromptEventArgs {
-    message: string;
-}
-
-/**
  * 主界面.
  * @desc 常驻的. 除游戏实例销毁 任何时机不应该 destroy 此 UI.
- * @desc 监听 {@link EventDefine.ShowGlobalPrompt} 事件. 事件参数 {@link ShowGlobalPromptEventArgs}.
+ * @desc 监听 {@link EventDefine.ShowGlobalPrompt} 事件. 事件参数 {@link string}.
  * @desc
  * @desc ---
  *
@@ -127,7 +120,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnCode.onPressed.add(showCode);
         this.btnReset.onPressed.add(respawn);
         this.btnDragonBall.onPressed.add(() => this.tryCatch());
-        this.btnCatch.onPressed.add(() => this.sceneDragonModule.lock());
+        this.btnCatch.onPressed.add(this.onTryCatchBtnClick);
 
         if (this.bagModule) {
             bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
@@ -230,8 +223,7 @@ export default class MainPanel extends MainPanel_Generate {
 
     protected onUpdate() {
         const enableCatchBtn = this._currentInteractType === GenerableTypes.Null &&
-            !GToolkit.isNullOrEmpty(this._sceneDragonModule.candidate);
-
+            !GToolkit.isNullOrEmpty(this.sceneDragonModule?.candidate ?? null);
         GToolkit.trySetVisibility(
             this.cnvCatchdragon,
             enableCatchBtn);
@@ -410,8 +402,8 @@ export default class MainPanel extends MainPanel_Generate {
     //     this._sceneDragonInteractorMap.delete(syncKey);
     // }
 
-    private showGlobalPrompt(message: string) {
-        this._promptPanel.showPrompt(message);
+    public showGlobalPrompt(message: string) {
+        this._promptPanel?.showPrompt(message);
     }
 
     /**
@@ -511,7 +503,7 @@ export default class MainPanel extends MainPanel_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
-    private onShowGlobalPrompt = (args: ShowGlobalPromptEventArgs) => this.showGlobalPrompt(args.message);
+    private onShowGlobalPrompt = (args: string) => this.showGlobalPrompt(args);
 
     private onProgressDone = () => {
         this._progressShowTask.backward();
@@ -551,6 +543,14 @@ export default class MainPanel extends MainPanel_Generate {
     private onDisablePlayerEnter() {
         this.cnvDragonBall.visibility = SlateVisibility.Hidden;
     }
+
+    private onTryCatchBtnClick = () => {
+        if (this.bagModule.hasDragonBall()) {
+            this.sceneDragonModule.lock();
+        } else {
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.Catch_004));
+        }
+    };
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
