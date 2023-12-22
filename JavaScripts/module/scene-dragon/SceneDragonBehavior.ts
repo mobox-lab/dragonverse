@@ -177,7 +177,11 @@ export default class SceneDragonBehavior extends mw.Script {
             return;
         }
         this.useUpdate = true;
-
+        const asCharacter = this.gameObject as Character;
+        if (asCharacter) {
+            this._fearAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_FEAR_ANIM_ID);
+            this._laughAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_LAUGH_ANIM_ID);
+        }
         let bagId = GameConfig.CharacterfulDragon.getElement(this.data.id).bagId;
         HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, i18n.lan(SceneDragon.nameStr(bagId)));
 
@@ -226,12 +230,6 @@ export default class SceneDragonBehavior extends mw.Script {
     public init(syncKey: string, data: SceneDragon) {
         this.syncKey = syncKey;
         this.data = data;
-
-        const asCharacter = this.gameObject as Character;
-        if (asCharacter) {
-            this._fearAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_FEAR_ANIM_ID);
-            this._laughAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_LAUGH_ANIM_ID);
-        }
 
         this.initStateMachine();
     }
