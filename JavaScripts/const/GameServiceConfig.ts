@@ -46,7 +46,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 最长准备捕捉时间.
      */
-    public static readonly SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION = 2e3;
+    public static readonly SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION = 8e3;
 
     /**
      * 场景龙 最远存活距离.
@@ -190,17 +190,17 @@ export default class GameServiceConfig {
     /**
      * 主界面 指针 起始角度. °
      */
-    public static readonly MAIN_PANEL_POINTER_START_ANGLE = -45;
+    public static readonly MAIN_PANEL_POINTER_START_ANGLE = -110;
 
     /**
      * 主界面 指针 终点角度. °
      */
-    public static readonly MAIN_PANEL_POINTER_END_ANGLE = 45;
+    public static readonly MAIN_PANEL_POINTER_END_ANGLE = 110;
 
     /**
      * 主界面 指针 半周期时长. ms
      */
-    public static readonly MAIN_PANEL_POINTER_HALF_DURATION = 0.5e3;
+    public static readonly MAIN_PANEL_POINTER_HALF_DURATION = 1e3;
 
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
