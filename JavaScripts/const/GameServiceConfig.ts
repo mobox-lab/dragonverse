@@ -124,12 +124,12 @@ export default class GameServiceConfig {
      * 场景龙 恐惧 姿态 Guid.
      * @private
      */
-    public static readonly SCENE_DRAGON_FEAR_STANCE_ID = "86094";
+    public static readonly SCENE_DRAGON_FEAR_ANIM_ID = "86094";
 
     /**
      * 场景龙 大笑 姿态 Guid.
      */
-    public static readonly SCENE_DRAGON_LAUGH_STANCE_ID = "14598";
+    public static readonly SCENE_DRAGON_LAUGH_ANIM_ID = "14598";
 
     /**
      * Dragon Ball 飞翔时间.
