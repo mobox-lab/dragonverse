@@ -249,12 +249,17 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         this.keepLockWithView();
         ModuleService.getModule(RoleModuleC).controller.playerPlayThrow(item.object.worldTransform.position);
 
-        this._currentBall = new ThrowDragonBall(
-            this.character,
-            item.object.worldTransform.position,
-            GameServiceConfig.DRAGON_BALL_THROW_DURATION,
-        );
+        try {
+            this._currentBall = new ThrowDragonBall(
+                this.character,
+                item.object.worldTransform.position,
+                GameServiceConfig.DRAGON_BALL_THROW_DURATION,
+            );
+        } catch (e) {
+            Log4Ts.error(SceneDragonModuleC, `prefab of dragon ball not set.`);
+        }
         this._currentBall?.do();
+
 
         this.server.net_tryCatch(syncKey).then(
             (value) => {
