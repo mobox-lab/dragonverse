@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-13 11:06:56
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-20 17:48:35
+ * @LastEditTime : 2023-12-21 18:34:14
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\quest\WaterDragonQuest.ts
  * @Description  : 获取水龙任务
  */
@@ -60,11 +60,16 @@ export default class WaterDragonQuest extends Quest {
                 }
             });
         }
+        let door = GameObject.findGameObjectById("1FC74C27");
+        if (door) door.worldTransform.rotation = new Rotation(-180, 0, -170);
+
     }
 
     onComplete(): void {
         Log4Ts.log(this, "waterDragonTaskComplete");
         Event.dispatchToLocal(EventDefine.WaterDragonTaskComplete);
+        let door = GameObject.findGameObjectById("1FC74C27");
+        if (door) door.worldTransform.rotation = new Rotation(-180, 0, -264);
         if (this._arrivedTrigger) this._arrivedTrigger.destroy();
     }
 

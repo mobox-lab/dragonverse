@@ -5,4 +5,5 @@ export enum BuffType {
     Explode,
     Chat,
     MoveForbidden,
+    TurnRound,
 }

@@ -7,13 +7,14 @@ import GameStart from "../../GameStart";
 import { EventDefine } from "../../const/EventDefine";
 import BuffBase from "../../depend/buff/Buff";
 import { BuffType } from "../../buffs/BuffType";
-import Rotation = mw.Rotation;
 import GToolkit from "../../util/GToolkit";
 import Nolan from "../../depend/nolan/Nolan";
 import { ChatBuff } from "../../buffs/ChatBuff";
-import { GameConfig } from "../../config/GameConfig";
 import { MoveForbiddenBuff } from "../../buffs/MoveForbiddenBuff";
 import AreaManager from "../../gameplay/area/AreaManager";
+import RemoteFunction = mw.RemoteFunction;
+import Server = mw.Server;
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**
  * Unified Role State Controller.
@@ -31,17 +32,6 @@ import AreaManager from "../../gameplay/area/AreaManager";
  */
 @Component
 export default class UnifiedRoleController extends mw.Script {
-//#region Constant
-    private static readonly EXPLODE_EFFECT_GUID = "29393";
-
-    private static get EXPLODE_EFFECT_SCALE() {
-        return new Vector(2, 2, 2);
-    }
-
-
-    private static readonly STEAM_EFFECT_GUID = "89589";
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
 //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -56,6 +46,8 @@ export default class UnifiedRoleController extends mw.Script {
     private _moduleS: RoleModuleS = null;
 
     private _buffs: BuffContainer<UnifiedRoleController> = null;
+
+    private _throwAnim: Animation = null;
 
     public get buffs(): BuffContainer<UnifiedRoleController> {
         if (SystemUtil.isServer()) {
@@ -102,6 +94,7 @@ export default class UnifiedRoleController extends mw.Script {
             if (!this._moduleS) Log4Ts.log(UnifiedRoleController, `Role Module S not valid.`);
             this._moduleS.addController(this.playerId, this);
             this._buffs = new BuffContainer();
+            this._throwAnim = this.character?.loadAnimation(GameServiceConfig.THROW_STANCE_GUID);
             this.onControllerReadyInServer();
         }
 //#endregion ------------------------------------------------------------------------------------------
@@ -151,7 +144,7 @@ export default class UnifiedRoleController extends mw.Script {
 
 //#region Role Controller
 
-    @mw.RemoteFunction(mw.Server)
+    @RemoteFunction(Server)
     public addImpulse(character: mw.Character, impulse: mw.Vector): void {
         character.addImpulse(impulse, true);
     }
@@ -164,21 +157,26 @@ export default class UnifiedRoleController extends mw.Script {
         }
     };
 
-    @mw.RemoteFunction(mw.Client)
-    public lookAtNpc(position: Vector) {
-        this._nolan.lookAt(position);
+    @RemoteFunction(Client)
+    public lookAt(position: Vector) {
+        this._nolan.lookAt(position, true, true);
     }
 
-    @mw.RemoteFunction(mw.Server)
+    @RemoteFunction(Server)
     public respawn() {
         const position = GToolkit.randomArrayItem(AreaManager.getInstance().getRespawnArea());
         this.character.worldTransform.position = new Vector(position.x, position.y, position.z);
     }
 
+    @RemoteFunction(Server)
+    public playerPlayThrow(target: Vector) {
+        this._throwAnim.play();
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Buff Controller
-    @RemoteFunction(mw.Server)
+    @RemoteFunction(Server)
     public addCheckMoveBuff() {
         Log4Ts.log(UnifiedRoleController, `${this.character.player.playerId} add check move buff.`);
         let buff = new CheckMoveBuff(
@@ -194,7 +192,7 @@ export default class UnifiedRoleController extends mw.Script {
      * 添加 湿润 buff.
      * @param duration 持续时间 ms.
      */
-    @RemoteFunction(mw.Server)
+    @RemoteFunction(Server)
     public addWetBuff(duration: number) {
         const result = this._buffs.addBuff(
             {
@@ -232,7 +230,7 @@ export default class UnifiedRoleController extends mw.Script {
      * @param guid
      * @return 是否 玩家带有 {@link BuffType.Wet}.
      */
-    @RemoteFunction(mw.Server)
+    @RemoteFunction(Server)
     public touchMagma(force: number, position: Vector, guid: string) {
         if (!this.character) {
             Log4Ts.error(UnifiedRoleController, `character is null.`);
@@ -244,7 +242,7 @@ export default class UnifiedRoleController extends mw.Script {
                 `player touch magma. player id: ${this.character.player.playerId}`,
                 `player is wet.`);
             EffectService.playAtPosition(
-                UnifiedRoleController.STEAM_EFFECT_GUID,
+                GameServiceConfig.STEAM_EFFECT_GUID,
                 position,
             );
 
@@ -270,10 +268,10 @@ export default class UnifiedRoleController extends mw.Script {
             false)[0] ?? null;
         if (hitResult) {
             EffectService.playAtPosition(
-                UnifiedRoleController.EXPLODE_EFFECT_GUID,
+                GameServiceConfig.EXPLODE_EFFECT_GUID,
                 hitResult.position,
                 {
-                    scale: UnifiedRoleController.EXPLODE_EFFECT_SCALE,
+                    scale: GameServiceConfig.EXPLODE_EFFECT_SCALE,
                 },
             );
         } else {

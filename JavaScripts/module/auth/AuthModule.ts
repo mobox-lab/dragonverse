@@ -540,10 +540,6 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             userId: uid,
         };
 
-        const url = `${GameStart.instance.isRelease ?
-            AuthModuleS.RELEASE_CODE_VERIFY_URL :
-            AuthModuleS.TEST_CODE_VERIFY_URL}`;
-        console.log(url);
         const resp = await fetch(`${GameStart.instance.isRelease ?
                 AuthModuleS.RELEASE_CODE_VERIFY_URL :
                 AuthModuleS.TEST_CODE_VERIFY_URL}`,
@@ -601,6 +597,14 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
             this._subGameReportMap.set(playerId, Date.now());
             //TODO_LviatYi 报告子游戏信息.
         }
+    }
+
+    /**
+     * 是否 具有准入权限.
+     * @param playerId
+     */
+    public enableEnter(playerId: number): boolean {
+        return this.getPlayerData(playerId)?.enterEnable ?? false;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

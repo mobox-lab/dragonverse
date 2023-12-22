@@ -20,6 +20,7 @@ import { GenerableTypes } from "../../const/GenerableTypes";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
 import { RoleModuleC } from "../../module/role/RoleModule";
+import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 
 /**
  * 主界面 全局提示 参数.
@@ -92,6 +93,15 @@ export default class MainPanel extends MainPanel_Generate {
 
     private _currentInteractType: GenerableTypes = GenerableTypes.Null;
 
+    private _roleCtrlCache: UnifiedRoleController;
+
+    private get roleCtrl(): UnifiedRoleController {
+        if (!this._roleCtrlCache) {
+            this._roleCtrlCache = ModuleService.getModule(RoleModuleC).controller;
+        }
+        return this._roleCtrlCache;
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -116,7 +126,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnCode.onPressed.add(showCode);
         this.btnReset.onPressed.add(respawn);
         this.btnDragonBall.onPressed.add(() => this.tryCatch());
-        this.btnCatch.onPressed.add(() => this._sceneDragonModule.lock());
+        this.btnCatch.onPressed.add(() => this.sceneDragonModule.lock());
 
         if (this.bagModule) {
             bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
@@ -208,16 +218,13 @@ export default class MainPanel extends MainPanel_Generate {
 
         //#region Event subscribe
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, this.onPlayerTryCatch));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, this.onPlayerEndCatch));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, () => this.prepareCatch()));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, () => this.endCatch()));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.TryCollectCollectibleItem, this.onCollectClick));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, () => Log4Ts.log(MainPanel, `Player reset.`)));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnCandidateChange, (eventArgs) => {
-            const eventArg = eventArgs as DragonSyncKeyEventArgs;
-            GToolkit.trySetVisibility(this.cnvCatchdragon, !!eventArg.syncKey);
-        }));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnCandidateChange, this.onCatchDragonEnable));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -349,12 +356,12 @@ export default class MainPanel extends MainPanel_Generate {
     //#region Init
     public init() {
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
+        GToolkit.trySetVisibility(this.cnvCatchdragon, !GToolkit.isNullOrEmpty(this.sceneDragonModule?.candidate ?? null));
         UIService.hideUI(this._promptPanel);
         this.imgOperationFail.renderOpacity = 0;
         this.imgOperationSuccess.renderOpacity = 0;
         this.txtOperationFeedback.renderOpacity = 0;
         this.btnDragonBall.enable = false;
-
         this.refreshAvatar();
 
         //#region Exist for V1
@@ -411,6 +418,7 @@ export default class MainPanel extends MainPanel_Generate {
      * 待捕捉态.
      */
     public prepareCatch() {
+        Log4Ts.log(MainPanel, `try catch`);
         if (this._currentInteractType !== GenerableTypes.Null) return;
 
         this._currentInteractType = GenerableTypes.SceneDragon;
@@ -445,6 +453,8 @@ export default class MainPanel extends MainPanel_Generate {
      * 捕捉完成.
      */
     public endCatch() {
+        Log4Ts.log(MainPanel, `end catch`);
+        this.roleCtrl.removeMoveForbiddenBuff();
         this._currentInteractType = GenerableTypes.Null;
         this.btnDragonBall.enable = false;
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
@@ -494,31 +504,15 @@ export default class MainPanel extends MainPanel_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
-    private onShowGlobalPrompt = (args: ShowGlobalPromptEventArgs) => {
-        this.showGlobalPrompt(args.message);
+
+    private onCatchDragonEnable = (eventArg: DragonSyncKeyEventArgs): void => {
+        GToolkit.trySetVisibility(this.cnvCatchdragon, !!eventArg.syncKey);
     };
 
-    private onLockClick = () => {
-
-    };
-
-    private onCatchClick = () => this.tryCatch();
-
-    private onCollectClick = (syncKey: string) => this.tryCollect(syncKey);
-
-    private onPlayerTryCatch = () => {
-        Log4Ts.log(MainPanel, `try catch`);
-        this.prepareCatch();
-    };
-
-    private onPlayerEndCatch = () => {
-        Log4Ts.log(MainPanel, `end catch`);
-        this.endCatch();
-    };
+    private onShowGlobalPrompt = (args: ShowGlobalPromptEventArgs) => this.showGlobalPrompt(args.message);
 
     private onProgressDone = () => {
         this._progressShowTask.backward();
-        let isReCatch: boolean = false;
 
         switch (this._currentInteractType) {
             case GenerableTypes.Null:
@@ -527,15 +521,9 @@ export default class MainPanel extends MainPanel_Generate {
             case GenerableTypes.SceneDragon:
                 const catchResult = !GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
                 Log4Ts.log(MainPanel, `catch result: ${catchResult}`);
-                if (catchResult) {
-                    GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
-                    this.sceneDragonModule?.acceptCatch();
-                    this.endCatch();
-                    this.showResult(true, GenerableTypes.SceneDragon);
-                } else {
-                    isReCatch = true;
-                    this.showResult(false, GenerableTypes.SceneDragon);
-                }
+                this.sceneDragonModule?.acceptResult();
+                this.endCatch();
+                this.showResult(catchResult, GenerableTypes.SceneDragon);
                 break;
             case GenerableTypes.CollectibleItem:
                 const collectResult = !GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
@@ -552,9 +540,6 @@ export default class MainPanel extends MainPanel_Generate {
                 Log4Ts.warn(MainPanel, `type not supported.`);
         }
         this._currentInteractType = GenerableTypes.Null;
-        if (isReCatch) {
-            this.prepareCatch();
-        }
     };
 
     private onEnablePlayerEnter() {

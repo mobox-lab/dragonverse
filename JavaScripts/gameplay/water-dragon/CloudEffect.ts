@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-20 10:07:17
+ * @LastEditTime : 2023-12-21 15:20:00
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
@@ -47,10 +47,10 @@ export default class CloudEffect extends mw.Script {
             if (((go) instanceof mw.Character) && go.player.playerId === Player.localPlayer.playerId) {
                 Log4Ts.log(this, "进入云朵区域");
 
-                // let id = ModuleService.getModule(CompanionModule_C).getCurrentShowupBagId();
-                // if (id == null) return;
-                // let type = CompanionHelper.getCompanionType(id);
-                // if (!type && type !== CompanionHelper.DragonType.Fire) return;
+                let id = ModuleService.getModule(CompanionModule_C).getCurrentShowupBagId();
+                if (id == null) return;
+                let type = CompanionHelper.getCompanionType(id);
+                if (!type && type !== CompanionHelper.DragonType.Fire) return;
 
                 if (this.getCanDestroyClouds()) {
                     this.showFireBtn();
