@@ -24,6 +24,13 @@ export default class RGEndUI_Generate extends UIScript {
 		}
 		return this.mCanvas_Internal
 	}
+	private mText_Internal: mw.TextBlock
+	public get mText(): mw.TextBlock {
+		if(!this.mText_Internal&&this.uiWidgetBase) {
+			this.mText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText') as mw.TextBlock
+		}
+		return this.mText_Internal
+	}
 	private mTextBg_1_Internal: mw.Image
 	public get mTextBg_1(): mw.Image {
 		if(!this.mTextBg_1_Internal&&this.uiWidgetBase) {
@@ -37,13 +44,6 @@ export default class RGEndUI_Generate extends UIScript {
 			this.mTextBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBg') as mw.Image
 		}
 		return this.mTextBg_Internal
-	}
-	private mText_Internal: mw.TextBlock
-	public get mText(): mw.TextBlock {
-		if(!this.mText_Internal&&this.uiWidgetBase) {
-			this.mText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText') as mw.TextBlock
-		}
-		return this.mText_Internal
 	}
 	private mInfoCanvas_Internal: mw.Canvas
 	public get mInfoCanvas(): mw.Canvas {
