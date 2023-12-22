@@ -181,6 +181,7 @@ export default class SceneDragonBehavior extends mw.Script {
         const asCharacter = this.gameObject as Character;
         if (asCharacter) {
             this._fearAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_FEAR_ANIM_ID);
+            this._fearAnim.loop = 0;
             this._laughAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_LAUGH_ANIM_ID);
             this._laughAnim.loop = 2;
         }
@@ -401,9 +402,9 @@ export default class SceneDragonBehavior extends mw.Script {
             this.gameObject,
             {
                 loopCount: 0,
-                position:new Vector(0,0,150),
-                scale:new Vector(1.2,1.2,1.2),
-                rotation:new Rotation(180,0,0),
+                position: new Vector(0, 0, 150),
+                scale: new Vector(1.2, 1.2, 1.2),
+                rotation: new Rotation(180, 0, 0),
             });
     }
 
@@ -431,8 +432,8 @@ export default class SceneDragonBehavior extends mw.Script {
                 this.gameObject,
                 {
                     loopCount: 0,
-                    position:new Vector(0,0,100),
-                    scale:new Vector(2,2,2),
+                    position: new Vector(0, 0, 100),
+                    scale: new Vector(2, 2, 2),
                 });
         } else {
             this._fearAnim?.stop();
