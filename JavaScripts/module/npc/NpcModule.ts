@@ -64,6 +64,7 @@ export class NpcModuleC extends ModuleC<NpcModuleS, NpcModuleData> {
             },
         );
 
+        (obj as Character).setDescription([config.avatar]);
         GToolkit.getFirstScript(obj, NpcTrigger)?.init(config.id);
         const behavior = GToolkit.getFirstScript(obj, NpcBehavior)?.init(config);
         return new NpcExistInfo(behavior, obj);
