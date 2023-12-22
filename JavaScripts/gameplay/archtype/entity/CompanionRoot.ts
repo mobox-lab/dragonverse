@@ -187,7 +187,8 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
         if (mw.SystemUtil.isClient()) {
 
             mwext.ModuleService.getModule(CompanionModule_C).getController().registerCompanion(this);
-            let prefab = this.displayObject = await mw.GameObject.asyncSpawn(this.displayGuid) as mw.Character;
+            let prefab = this.displayObject = await mw.GameObject.asyncSpawn('Character') as mw.Character;
+            prefab.setDescription([this.displayGuid]);
             let character = mw.Player.getPlayer(this.playerId).character;
             prefab.addMovement(mw.Vector.forward);
             if (this.isLocalPlayer()) {
