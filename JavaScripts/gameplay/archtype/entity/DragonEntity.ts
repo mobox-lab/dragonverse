@@ -40,7 +40,7 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
 
         }
         this._talkAction.coolDown = GToolkit.random(60, 120) * 100
-        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, this.nickName, new mw.Vector(0, 0, 180))
+        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, this.nickName, new mw.Vector(0, 0, 115))
     }
 
 
