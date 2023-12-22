@@ -76,7 +76,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 最远可捕捉距离.
      */
-    public static readonly SCENE_DRAGON_CATCHABLE_DISTANCE = 300;
+    public static readonly SCENE_DRAGON_CATCHABLE_DISTANCE = 1000;
 
     /**
      * 场景龙 最远存活距离平方.
