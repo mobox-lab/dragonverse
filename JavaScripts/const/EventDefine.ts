@@ -23,6 +23,7 @@ export enum EventDefine {
     //#region MainPanel
     /**
      * 主界面 显示 信息.
+     * <code> message:string </code>
      */
     ShowGlobalPrompt = "SHOW_GLOBAL_PROMPT",
 
@@ -39,7 +40,7 @@ export enum EventDefine {
 
     /**
      * 尝试收集 可收集物品.
-     * <code>{ syncKey:string }</code>
+     * <code> syncKey:string </code>
      */
     TryCollectCollectibleItem = "TRY_COLLECT_COLLECTIBLE_ITEM",
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

@@ -338,7 +338,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        //TODO_LviatYi 
+        //TODO_LviatYi
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -399,6 +399,13 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
      */
     public isAfford(price: number): boolean {
         return isAfford(this.data, price);
+    }
+
+    /**
+     * 是否 玩家背包中具有 DragonBall.
+     */
+    public hasDragonBall() {
+        return !GameStart.instance.isRelease || this.dragonBallYoact.count > 0;
     }
 
     /**
@@ -486,7 +493,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        //TODO_LviatYi 
+        //TODO_LviatYi
         //#endregion ------------------------------------------------------------------------------------------
     }
 

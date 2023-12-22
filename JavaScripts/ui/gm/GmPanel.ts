@@ -40,13 +40,13 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
 }
 
 AddGMCommand("Hello world", () => {
-    Log4Ts.log(GMPanel, `Hello world`);
-},
+        Log4Ts.log(GMPanel, `Hello world`);
+    },
     null,
     "CHello");
 AddGMCommand("Prompt", () => {
-    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, { message: "Hello world" });
-},
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
+    },
     null,
     "MainPanel");
 
@@ -117,4 +117,4 @@ AddGMCommand("通过验证", (player, value) => {
 }, (player) => {
     ModuleService.getModule(AuthModuleS).recordPlayer(player);
 
-})
+});
