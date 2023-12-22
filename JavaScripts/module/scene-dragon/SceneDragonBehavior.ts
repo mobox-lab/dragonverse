@@ -176,9 +176,14 @@ export default class SceneDragonBehavior extends mw.Script {
             Log4Ts.log(SceneDragonBehavior, `SceneDragonBehavior is running on server, please check!`);
             return;
         }
-
+        this.useUpdate = true;
+        const asCharacter = this.gameObject as Character;
+        if (asCharacter) {
+            this._fearAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_FEAR_ANIM_ID);
+            this._laughAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_LAUGH_ANIM_ID);
+        }
         let bagId = GameConfig.CharacterfulDragon.getElement(this.data.id).bagId;
-        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, i18n.lan(SceneDragon.nameStr(bagId)));
+        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, i18n.lan(SceneDragon.nameStr(bagId)), new mw.Vector(0, 0, 180));
 
         //#region Member init
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnCandidateChange, (eventArgs) => {
@@ -225,12 +230,6 @@ export default class SceneDragonBehavior extends mw.Script {
     public init(syncKey: string, data: SceneDragon) {
         this.syncKey = syncKey;
         this.data = data;
-
-        const asCharacter = this.gameObject as Character;
-        if (asCharacter) {
-            this._fearAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_FEAR_ANIM_ID);
-            this._laughAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_LAUGH_ANIM_ID);
-        }
 
         this.initStateMachine();
     }
@@ -426,7 +425,7 @@ export default class SceneDragonBehavior extends mw.Script {
                 });
         } else {
             this._fearAnim?.stop();
-            if (this._fearEffectId) {
+            if (this._fearEffectId !== null) {
                 EffectService.stop(this._fearEffectId);
                 this._fearEffectId = null;
             }
