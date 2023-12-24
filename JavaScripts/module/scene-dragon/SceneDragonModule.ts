@@ -222,7 +222,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
             if (item) {
                 Log4Ts.log(SceneDragonModuleC, `lock on SceneDragon. syncKey: ${this._candidate}`);
-                // item.behavior.state.isFear = true;
+                item.behavior.state.isFear = true;
                 this._currentCatchResultSyncKey = null;
                 const position = this
                     .syncItemMap
@@ -278,8 +278,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             Log4Ts.warn(SceneDragonModuleC, `item un catchable. waiting for delete.`);
             return;
         }
-        //龙娘在抛球时再恐惧
-        item.behavior.state.isFear = true;
         this.keepLockWithView();
         ModuleService.getModule(RoleModuleC).controller.playerPlayThrow(item.object.worldTransform.position);
 
@@ -358,7 +356,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             if (!value) return;
 
             this.syncItemMap.set(syncKey, value);
-            // this._mainPanel.addSceneDragonInteractor(syncKey);
         });
     }
 

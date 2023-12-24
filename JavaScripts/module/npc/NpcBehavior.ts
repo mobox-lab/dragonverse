@@ -83,6 +83,7 @@ export default class NpcBehavior extends mw.Script {
             Log4Ts.log(NpcBehavior, `there is no mesh object named ${GameServiceConfig.NPC_MESH_OBJECT_NAME} in prefab.`);
             return;
         }
+        this._npcCharacter?.setDescription([this._config.avatar]);
 
         this._oriPos = this._npcCharacter.worldTransform.position;
         this._oriRot = this._npcCharacter.worldTransform.rotation;
@@ -116,7 +117,6 @@ export default class NpcBehavior extends mw.Script {
     public init(config: INpcElement): this {
         this._config = config;
         this._communicable = validDialogueContentNodeId(config.greetNodeId);
-        this._npcCharacter?.setDescription(config.avatar);
 
         return this;
     }
