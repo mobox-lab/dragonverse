@@ -20,6 +20,11 @@ export default abstract class ClientDisplayEntity<T extends IState> extends Init
 
 
 
+    protected onStart(): void {
+        mwext.ModuleService.ready().then((value) => {
+            super.onStart();
+        })
+    }
 
 
     protected onInitialize(): void {
