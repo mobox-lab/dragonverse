@@ -45,7 +45,7 @@ export enum SoundIDEnum {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.1.8a
+ * @version 1.2.0
  */
 export default class AudioController extends Singleton<AudioController>() {
     //region Member
@@ -187,13 +187,15 @@ export default class AudioController extends Singleton<AudioController>() {
      *      ig 二象性 源自 SoundService 的精妙设计.
      */
     public play(soundId: SoundIDEnum | number,
-        target: mw.Vector | mw.GameObject | string = mw.Vector.zero): string | number {
+                target: mw.Vector | mw.GameObject | string = mw.Vector.zero): string | number {
         const config: ISoundElement = this.getConfig(soundId);
         let holdId: number | string;
         if (config.isEffect) {
             if (config.isStereo) {
                 if (target instanceof mw.Vector && target.equals(mw.Vector.zero)) {
-                    Log4Ts.log(AudioController, `传入立体声音效 但播放位置为 zero. 请检查是否传入正确的参数.`);
+                    Log4Ts.warn(AudioController,
+                        `传入立体声音效. id: ${soundId}`,
+                        `但播放位置为 zero. 请检查是否传入正确的参数.`);
                 }
                 holdId = SoundService.play3DSound(
                     config.soundGuid,

@@ -13,7 +13,7 @@ export abstract class InitializeCheckerScript extends mw.Script {
         let requireList = InitializeCheckerScript._requireMap.get(name);
         requireList.push(propertyKey);
 
-        mw.Property({replicated: true, onChanged: "onStart"})(target, propertyKey);
+        mw.Property({ replicated: true, onChanged: "onStart" })(target, propertyKey);
     }
 
     protected onStart(): void {
@@ -48,9 +48,12 @@ export abstract class InitializeCheckerScript extends mw.Script {
         if (this.isInitializeComplete) {
             return;
         }
-        this.onInitialize();
-        this.afterInitialize();
         this.isInitializeComplete = true;
+
+        mwext.ModuleService.ready().then((value) => {
+            this.onInitialize();
+            this.afterInitialize();
+        })
 
     }
 
