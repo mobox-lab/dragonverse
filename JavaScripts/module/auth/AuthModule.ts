@@ -387,7 +387,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     /**
      * 发布用 Code 验证 Url.
      */
-    private static readonly RELEASE_CODE_VERIFY_URL = "https://platform-api.p12.games/modragon/code/status";
+    private static readonly RELEASE_CODE_VERIFY_URL = "https://modragon-api.mobox.app/modragon/code/status";
 
     private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
 
@@ -402,7 +402,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
+            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -507,12 +507,12 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
+            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
+            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
             return false;
         }
 
@@ -541,8 +541,8 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         };
 
         const resp = await fetch(`${GameStart.instance.isRelease ?
-                AuthModuleS.RELEASE_CODE_VERIFY_URL :
-                AuthModuleS.TEST_CODE_VERIFY_URL}`,
+            AuthModuleS.RELEASE_CODE_VERIFY_URL :
+            AuthModuleS.TEST_CODE_VERIFY_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -657,21 +657,21 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         this
             .verifyEnterCode(code, uid)
             .then((value) => {
-                    if (!value) {
-                        logState(
-                            AuthModuleS,
-                            "log",
-                            `verify failed.`,
-                            true,
-                            currPlayerId,
-                            uid,
-                        );
-                        this.getClient(currPlayerId)?.net_verifyFail();
-                        return;
-                    }
-                    this.recordPlayer(currPlayerId);
-                    if (value) this.getClient(currPlayerId)?.net_enableEnter();
-                },
+                if (!value) {
+                    logState(
+                        AuthModuleS,
+                        "log",
+                        `verify failed.`,
+                        true,
+                        currPlayerId,
+                        uid,
+                    );
+                    this.getClient(currPlayerId)?.net_verifyFail();
+                    return;
+                }
+                this.recordPlayer(currPlayerId);
+                if (value) this.getClient(currPlayerId)?.net_enableEnter();
+            },
             )
             .catch((reason) => {
                 this.getClient(currPlayerId)?.net_verifyFail();
