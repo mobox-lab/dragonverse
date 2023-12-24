@@ -308,7 +308,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @private
      */
     private _generateLocationsMap: Map<number, IPoint3[]> = new Map();
-    private _generatedLocationsMap: Map<number, Set<number>> = null;
+    private _generatedLocationsMap: Map<number, Set<number>> = new Map();
 
     private getValidGenerateLocation(id: number, playerId: number): IPoint3 | null {
         return GToolkit.randomArrayItem(Enumerable.from(this._generateLocationsMap.get(id))
