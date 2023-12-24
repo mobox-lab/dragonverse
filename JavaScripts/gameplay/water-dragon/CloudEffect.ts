@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-21 15:20:00
+ * @LastEditTime : 2023-12-24 09:55:13
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
@@ -44,7 +44,7 @@ export default class CloudEffect extends mw.Script {
         this._endPoint = this.gameObject.getChildByName("endPoint");
         this._trigger = this.gameObject.getChildByName("trigger") as Trigger;
         this._trigger.onEnter.add((go) => {
-            if (((go) instanceof mw.Character) && go.player.playerId === Player.localPlayer.playerId) {
+            if (((go) instanceof mw.Character) && go.player && go.player.playerId === Player.localPlayer.playerId) {
                 Log4Ts.log(this, "进入云朵区域");
 
                 let id = ModuleService.getModule(CompanionModule_C).getCurrentShowupBagId();
