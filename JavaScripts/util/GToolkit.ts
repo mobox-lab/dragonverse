@@ -143,6 +143,7 @@ class GToolkit {
      * @returns boolean
      */
     public is<T extends object>(instance: object, method: string | ((instance: object) => boolean)): instance is T {
+        if (!instance) return false;
         if (typeof method === "string") {
             return method in instance;
         }
@@ -754,8 +755,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScript<T extends mw.Script>(object: GameObject,
-                                               scriptCls: (new (...args: unknown[]) => T) | Function,
-                                               traverse: number = 0): T | null {
+        scriptCls: (new (...args: unknown[]) => T) | Function,
+        traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -821,8 +822,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScriptIs<T extends mw.Script>(object: GameObject,
-                                                 method: string | ((instance: object) => boolean),
-                                                 traverse: number = 0): T | null {
+        method: string | ((instance: object) => boolean),
+        traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -1044,10 +1045,10 @@ class GToolkit {
      * @profession
      */
     public rotateCharacterMesh(character: mw.Character,
-                               pitch: number,
-                               yaw: number,
-                               roll: number,
-                               origin: mw.Vector = mw.Vector.zero) {
+        pitch: number,
+        yaw: number,
+        roll: number,
+        origin: mw.Vector = mw.Vector.zero) {
         const component: UE.SceneComponent = character["ueCharacter"].mesh as unknown as UE.SceneComponent;
         const originRotator = component.RelativeRotation;
 
@@ -1105,9 +1106,9 @@ class GToolkit {
      * @param disableGuid
      */
     public setButtonGuid(button: mw.Button | mw.StaleButton,
-                         normalGuid: string,
-                         pressedGuid: string = undefined,
-                         disableGuid: string = undefined) {
+        normalGuid: string,
+        pressedGuid: string = undefined,
+        disableGuid: string = undefined) {
         if (!pressedGuid) {
             pressedGuid = normalGuid;
         }
@@ -1187,10 +1188,10 @@ class GToolkit {
      * @return hitPoint 命中首个点的命中信息 当未命中时返回 null.
      */
     public detectVerticalTerrain(startPoint: mw.Vector,
-                                 length: number = 1000,
-                                 self: mw.GameObject = null,
-                                 ignoreObjectGuids: string[] = [],
-                                 debug: boolean = false) {
+        length: number = 1000,
+        self: mw.GameObject = null,
+        ignoreObjectGuids: string[] = [],
+        debug: boolean = false) {
         return QueryUtil.lineTrace(
             startPoint,
             this.newWithZ(startPoint, startPoint.z - length),

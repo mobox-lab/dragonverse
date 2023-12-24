@@ -60,7 +60,7 @@ class CompanionFollowState extends BaseCompanionState {
     public onEnter(): void {
 
         this.printSampler = [];
-        mw.Navigation.follow(this.fsm.target, this.fsm.follower, this.fsm.state.offsetNum, this.onStart, this.onFailed);
+        mw.Navigation.follow(this.fsm.target, this.fsm.follower, this.fsm.state.offsetNum / 2, this.OnSuccess, this.onFailed);
     }
 
     protected onLogic(): void {
@@ -90,7 +90,7 @@ class CompanionFollowState extends BaseCompanionState {
             this.fsm.target.worldTransform.position = this.printSampler.shift();
         }
 
-        if (distance.sqrLength < (this.fsm.state.offsetNum + GToolkit.random(-20, 20, true)) ** 2) {
+        if (distance.sqrLength < (this.fsm.state.offsetNum) ** 2) {
             this.fsm.requestStateChange(CompanionStateEnum.Idle, true);
         }
 
@@ -98,7 +98,7 @@ class CompanionFollowState extends BaseCompanionState {
 
     }
 
-    private onStart = () => {
+    private OnSuccess = () => {
 
     }
 
@@ -183,7 +183,6 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
 
 
     protected async onInitialize() {
-        await super.onInitialize();
         if (mw.SystemUtil.isClient()) {
 
             mwext.ModuleService.getModule(CompanionModule_C).getController().registerCompanion(this);
