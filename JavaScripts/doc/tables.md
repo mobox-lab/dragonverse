@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v1.0.0  
+v1.0.1  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -72,6 +72,7 @@ x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 | :--: | :------- | ------ | ---- |
 |  ID  | Id       | int    |      |
 | 名称 | Name     | string |      |
+| Icon | Name     | string |      |
 
 ## 品质 Quality
 
