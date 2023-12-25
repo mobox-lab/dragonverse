@@ -29,6 +29,7 @@ export enum EventDefine {
 
     /**
      * 玩家按下重置按钮.
+     * <code> playerId:number </code>
      */
     PlayerReset = "PLAYER_RESET",
 

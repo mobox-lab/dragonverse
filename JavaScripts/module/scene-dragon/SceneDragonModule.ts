@@ -292,7 +292,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         }
         this._currentBall?.do();
 
-
         this.server.net_tryCatch(syncKey).then(
             (value) => {
                 if (value) this._currentCatchResultSyncKey = syncKey;
