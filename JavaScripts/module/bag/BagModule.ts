@@ -14,6 +14,7 @@ import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import { EventDefine } from "../../const/EventDefine";
 import { AuthModuleS } from "../auth/AuthModule";
 import GameStart from "../../GameStart";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -295,10 +296,6 @@ export default class BagModuleData extends Subdata {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
-//#region Constant
-    public static readonly DRAGON_BALL_BAG_ID = 2;
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
 //#region Member
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
     public handbookYoact: YoactArray<HandbookItemUnique> = new YoactArray<HandbookItemUnique>();
@@ -436,8 +433,8 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
             this.bagItemYoact.addItem(new BagItemUnique(bagId, count));
         }
 
-        if (bagId === BagModuleC.DRAGON_BALL_BAG_ID) {
-            this.dragonBallYoact.count = this.getItemCount(BagModuleC.DRAGON_BALL_BAG_ID);
+        if (bagId === GameServiceConfig.DRAGON_BALL_BAG_ID) {
+            this.dragonBallYoact.count = this.getItemCount(GameServiceConfig.DRAGON_BALL_BAG_ID);
         }
     }
 
@@ -603,6 +600,13 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
 
         const playerData = this.getPlayerData(playerId);
         return playerData.hasItem(bagId);
+    }
+
+    /**
+     * 是否 玩家背包中具有 DragonBall.
+     */
+    public hasDragonBall(playerId: number) {
+        return !GameStart.instance.isRelease || this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

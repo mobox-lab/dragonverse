@@ -9,7 +9,7 @@ import Regulator from "../../depend/regulator/Regulator";
 import AreaManager from "../../gameplay/area/AreaManager";
 import GToolkit from "../../util/GToolkit";
 import { IPoint3 } from "../../util/area/Shape";
-import { BagModuleS } from "../bag/BagModule";
+import { BagModuleC, BagModuleS } from "../bag/BagModule";
 import SceneDragon from "./SceneDragon";
 import SceneDragonBehavior from "./SceneDragonBehavior";
 import GameObject = mw.GameObject;
@@ -677,19 +677,10 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         const playerPosition = Player.getPlayer(playerId)?.character.worldTransform.position ?? null;
         if (playerPosition === null || Vector.squaredDistance(item.location, playerPosition) > GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE) {
-            Log4Ts.log(SceneDragonModuleS, `;
-        generate;
-        item;
-        skipped.player;
-        is;
-        too;
-        far.`);
-            Log4Ts.log(SceneDragonModuleS, `;
-        id: ${item.id}.
-        `);
-            Log4Ts.log(SceneDragonModuleS, `;
-        location: ${item.location}.
-        `);
+            Log4Ts.log(SceneDragonModuleS,
+                `generate item skipped.player is too far.`,
+                `id: ${item.id}.`,
+                `location: ${item.location}.`);
             return;
         }
 
@@ -703,12 +694,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         this.syncItemMap.set(syncKey, item);
         this._syncLocker.set(syncKey, null);
 
-        Log4Ts.log(SceneDragonModuleS, `;
-        generate;
-        item;
-        success.syncKey;
-    : ${syncKey}
-        `);
+        Log4Ts.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
 
         item.autoDestroyTimerId = setTimeout(() => {
                 this.destroy(playerId, syncKey);
@@ -794,44 +780,32 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         const currPlayerId = this.currentPlayerId;
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            Log4Ts.error(SceneDragonModuleS, `;
-        item;
-        not;
-        exist in server;
-        when;
-    catch.
-        syncKey: ${syncKey} `);
+            Log4Ts.error(SceneDragonModuleS,
+                `item not exist in server when catch.`,
+                `syncKey: ${syncKey} `);
             return Promise.resolve(false);
         }
         Log4Ts.log(SceneDragonModuleS,
-            `;
-        try catch
-        item.`,
-            `;
-        syncKey: ${syncKey}`,
+            `try catch item.`,
+            `playerId: ${currPlayerId}`,
+            `syncKey: ${syncKey}`,
             `${item.info()}`);
+        if (!this._bagModuleS.hasDragonBall(currPlayerId)) {
+            Log4Ts.warn(SceneDragonModuleS, `dragon ball is not enough.`);
+            return Promise.resolve(false);
+        }
         if (this._syncLocker.get(syncKey) !== null) {
-            Log4Ts.log(SceneDragonModuleS, `;
-        item;
-        already;
-        locked.`);
+            Log4Ts.log(SceneDragonModuleS, `item already locked.`);
             return Promise.resolve(false);
         }
 
+        this._bagModuleS.addItem(currPlayerId, GameServiceConfig.DRAGON_BALL_BAG_ID, -1);
         const success: boolean = GToolkit.randomWeight([SceneDragon.successRateAlgo(item.id)()], 1) === 0;
         if (!success) {
-            Log4Ts.log(SceneDragonModuleC, `;
-    catch
-        fail.failed;
-        the;
-        success;
-        rate;
-        check.`);
+            Log4Ts.log(SceneDragonModuleC, `catch fail. failed the success rate check.`);
             return Promise.resolve(false);
         } else {
-            Log4Ts.log(SceneDragonModuleS, `;
-        item;
-        locked.`);
+            Log4Ts.log(SceneDragonModuleS, `item locked.`);
             this._syncLocker.set(syncKey, currPlayerId);
             return Promise.resolve(true);
         }
@@ -842,37 +816,20 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         const currPlayerId = this.currentPlayerId;
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            Log4Ts.error(SceneDragonModuleS, `;
-        item;
-        not;
-        exist in server;
-        when;
-    catch.
-        syncKey: ${syncKey} `);
+            Log4Ts.error(SceneDragonModuleS,
+                `item not exist in server when catch.`,
+                `syncKey: ${syncKey} `);
             return;
         }
         Log4Ts.log(SceneDragonModuleS,
-            `;
-        accept;
-    catch
-        item.`,
-            `;
-        syncKey: ${syncKey}`,
+            `accept catch item.`,
+            `syncKey: ${syncKey}`,
             `${item.info()}`);
         if (this._syncLocker.get(syncKey) !== currPlayerId) {
             Log4Ts.log(SceneDragonModuleS,
-                `;
-        item;
-        locker;
-        illegal.`,
-                `;
-        current;
-        locker: ${this._syncLocker.get(syncKey)}.
-        `,
-                `;
-        request;
-        locker: ${syncKey}.
-        `);
+                `item locker illegal.`,
+                `current locker: ${this._syncLocker.get(syncKey)}.`,
+                `request locker: ${syncKey}`);
             return;
         }
         this._syncLocker.delete(syncKey);
