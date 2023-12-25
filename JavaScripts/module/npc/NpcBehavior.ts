@@ -164,7 +164,7 @@ export default class NpcBehavior extends mw.Script {
         if (this._config.id !== args.id) return;
         if (!this._communicable) return;
 
-        this.dm.exit(this._config.greetNodeId);
+        this.dm.exit();
         this._npcBasicAni.play();
         if (this._currentAni) this._currentAni.stop();
     };

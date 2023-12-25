@@ -8,6 +8,7 @@ import Waterween from "../waterween/Waterween";
 import { FlowTweenTask } from "../waterween/tweenTask/FlowTweenTask";
 import GToolkit from "../../util/GToolkit";
 import { AdvancedTweenTask } from "../waterween/tweenTask/AdvancedTweenTask";
+import Log4Ts from "../log4ts/Log4Ts";
 
 /**
  * 相机配置参数.
@@ -196,8 +197,9 @@ export default class Nolan {
      *      - default false.
      */
     public lookToward(direction: Vector, isHorizontal: boolean = false, smooth: boolean = false) {
+        if (isHorizontal) direction.normalize().z = Player.getControllerRotation().rotateVector(Vector.forward).z;
         this.trySetControllerRotate(
-            isHorizontal ? GToolkit.newWithZ(direction, 0) : direction,
+            direction,
             smooth,
             1e3,
             Easing.easeInOutSine,
@@ -232,11 +234,12 @@ export default class Nolan {
      * 推进 / 拉远.
      * @remarks 补间调整 ArmLength.
      * @param dest 移动目标距离.
+     * @param smooth 是否 平滑移动.
      * @param duration 运镜时长 ms.
      *      - default 500ms.
      * @param easingFunction 补间函数. default {@link Easing.easeInOutSine}
      */
-    public zoom(dest: number, smooth: boolean, duration: number = undefined, easingFunction: EasingFunction | CubicBezierBase = undefined) {
+    public zoom(dest: number, smooth: boolean = false, duration: number = undefined, easingFunction: EasingFunction | CubicBezierBase = undefined) {
         this.trySetArmLength(dest, smooth, duration, easingFunction);
     }
 
@@ -345,6 +348,12 @@ export default class Nolan {
             return;
         }
 
+        Log4Ts.log(Nolan,
+            `dist direction:`,
+            `x: ${direction.x}`,
+            `y: ${direction.y}`,
+            `z: ${direction.z}`,
+        );
         this._controllerRotateTask = Waterween.to(
             () => Player.getControllerRotation().toQuaternion(),
             (val) => {
