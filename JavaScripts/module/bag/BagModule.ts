@@ -602,6 +602,13 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         return playerData.hasItem(bagId);
     }
 
+    /**
+     * 是否 玩家背包中具有 DragonBall.
+     */
+    public hasDragonBall(playerId: number) {
+        return !GameStart.instance.isRelease || this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
