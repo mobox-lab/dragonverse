@@ -9,7 +9,7 @@ import Regulator from "../../depend/regulator/Regulator";
 import AreaManager from "../../gameplay/area/AreaManager";
 import GToolkit from "../../util/GToolkit";
 import { IPoint3 } from "../../util/area/Shape";
-import { BagModuleS } from "../bag/BagModule";
+import { BagModuleC, BagModuleS } from "../bag/BagModule";
 import SceneDragon from "./SceneDragon";
 import SceneDragonBehavior from "./SceneDragonBehavior";
 import GameObject = mw.GameObject;
@@ -804,29 +804,18 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             return Promise.resolve(false);
         }
         Log4Ts.log(SceneDragonModuleS,
-            `;
-        try catch
-        item.`,
-            `;
-        syncKey: ${syncKey}`,
+            `try catch item.`,
+            `syncKey: ${syncKey}`,
             `${item.info()}`);
         if (this._syncLocker.get(syncKey) !== null) {
-            Log4Ts.log(SceneDragonModuleS, `;
-        item;
-        already;
-        locked.`);
+            Log4Ts.log(SceneDragonModuleS, `item already locked.`);
             return Promise.resolve(false);
         }
 
+        this._bagModuleS.addItem(currPlayerId, GameServiceConfig.DRAGON_BALL_BAG_ID, -1);
         const success: boolean = GToolkit.randomWeight([SceneDragon.successRateAlgo(item.id)()], 1) === 0;
         if (!success) {
-            Log4Ts.log(SceneDragonModuleC, `;
-    catch
-        fail.failed;
-        the;
-        success;
-        rate;
-        check.`);
+            Log4Ts.log(SceneDragonModuleC, `catch fail. failed the success rate check.`);
             return Promise.resolve(false);
         } else {
             Log4Ts.log(SceneDragonModuleS, `;
@@ -852,27 +841,14 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             return;
         }
         Log4Ts.log(SceneDragonModuleS,
-            `;
-        accept;
-    catch
-        item.`,
-            `;
-        syncKey: ${syncKey}`,
+            `accept catch item.`,
+            `syncKey: ${syncKey}`,
             `${item.info()}`);
         if (this._syncLocker.get(syncKey) !== currPlayerId) {
             Log4Ts.log(SceneDragonModuleS,
-                `;
-        item;
-        locker;
-        illegal.`,
-                `;
-        current;
-        locker: ${this._syncLocker.get(syncKey)}.
-        `,
-                `;
-        request;
-        locker: ${syncKey}.
-        `);
+                `item locker illegal.`,
+                `current locker: ${this._syncLocker.get(syncKey)}.`,
+                `request locker: ${syncKey}`);
             return;
         }
         this._syncLocker.delete(syncKey);
