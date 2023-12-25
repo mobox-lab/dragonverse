@@ -217,7 +217,9 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string)));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, () => Log4Ts.log(MainPanel, `Player reset.`)));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, (playerId) => {
+            if (playerId === this.roleCtrl.playerId) Log4Ts.log(MainPanel, `Player reset.`);
+        }));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -568,7 +570,7 @@ function showCode() {
 }
 
 function respawn() {
-    Event.dispatchToLocal(EventDefine.PlayerReset);
-    Event.dispatchToServer(EventDefine.PlayerReset);
+    Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
+    Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
     ModuleService.getModule(RoleModuleC)?.controller.respawn();
 }

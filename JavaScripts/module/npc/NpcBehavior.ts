@@ -168,8 +168,7 @@ export default class NpcBehavior extends mw.Script {
         this._npcBasicAni.play();
         if (this._currentAni) this._currentAni.stop();
     };
-
-
+    
     /**
      * @description: 结束npc交互动作
      */

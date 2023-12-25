@@ -156,6 +156,7 @@ export default class DialoguePanel extends DialoguePanel_Generate {
     /**
      * 隐藏此界面.
      * @param id 仅当当前 对话内容节点 {@link currentContentId} id 与参数相同时隐藏.
+     *      - undefined default. 任意 id.
      */
     public shutDown(id: number = undefined): boolean {
         if (!(id === undefined || id === this._currentContentId)) {
