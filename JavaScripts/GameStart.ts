@@ -28,58 +28,65 @@ import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 import { MapManager } from "./gameplay/map/MapManager";
 import { MapPanel } from "./ui/map/MapPanel";
+import ModuleC = mwext.ModuleC;
+import { Delegate } from "./depend/delegate/Delegate";
+import SystemUtil = mw.SystemUtil;
 
 @Component
 export default class GameStart extends mw.Script {
     public static instance: GameStart = null;
 
-    //region Dev Config
+//#region Dev Config
 
-    @mw.Property({ displayName: "是否发布", group: "发布" })
+    @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
-    @mw.Property({ displayName: "语言", group: "发布", enumType: LanguageTypes })
+    @mw.Property({displayName: "语言", group: "发布", enumType: LanguageTypes})
     public language: LanguageTypes = LanguageTypes.English;
 
-    @mw.Property({ displayName: "线上存储", group: "发布" })
+    @mw.Property({displayName: "线上存储", group: "发布"})
     public isOnline: boolean = false;
 
-    @mw.Property({ displayName: "是否 GM", group: "调试" })
+    @mw.Property({displayName: "是否 GM", group: "调试"})
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({ displayName: "服务端日志等级", group: "调试", enumType: DebugLevels })
+    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: DebugLevels})
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "客户端日志等级", group: "调试", enumType: DebugLevels })
+    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: DebugLevels})
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "上帝模式 冲刺速度倍率", group: "调试" })
+    @mw.Property({displayName: "上帝模式 冲刺速度倍率", group: "调试"})
     public godModeSprintRatio: number = 10;
 
-    @mw.Property({ displayName: "上帝模式 闪现位移距离", group: "调试" })
+    @mw.Property({displayName: "上帝模式 闪现位移距离", group: "调试"})
     public godModeFlashDist: number = 1000;
 
     private _godMode: boolean = false;
 
     private _godModeSprint: boolean = false;
 
-    //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    private _moduleReady: boolean = false;
 
-    protected onStart(): void {
+    private _moduleReadyWaitingPool: Delegate.SimpleDelegate<void> = new Delegate.SimpleDelegate<void>();
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    onStart(): void {
         Log4Ts.log(GameStart, `this is ${SystemUtil.isClient() ? "client" : "server"}`);
         this.useUpdate = true;
         GameStart.instance = this;
 
         this.initialize();
 
-        //#region GodMode
+//#region GodMode
         if (!this.isRelease) {
             this.registerTestKeyT();
             this.registerGodModeG();
             this.registerGodModeShift();
             this.registerGodModeF();
         }
-        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
     protected onUpdate(dt: number): void {
@@ -134,6 +141,18 @@ export default class GameStart extends mw.Script {
         DataStorage.setTemporaryStorage(!this.isOnline);
     }
 
+    private whenModuleReady(callback: Function) {
+        if (this._moduleReady) {
+            try {
+                callback();
+            } catch (e) {
+                Log4Ts.error(GameStart, e);
+            }
+        } else {
+
+        }
+    }
+
     private registerModule(): void {
         const moduleService = ModuleService;
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
@@ -145,7 +164,15 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(NpcModuleS, NpcModuleC, NpcModuleData);
         moduleService.registerModule(CompanionModule_S, CompanionModule_C, CompanionData);
         moduleService.registerModule(QuestModuleS, QuestModuleC, QuestData);
-
+        if (SystemUtil.isClient()) {
+            moduleService.getModule(RoleModuleC).delegateOnReady(() => {
+                this._moduleReady = true;
+                this._moduleReadyWaitingPool.invoke();
+            });
+        } else if (SystemUtil.isServer()) {
+            this._moduleReady = true;
+            this._moduleReadyWaitingPool.invoke();
+        }
     }
 
     private registerTestKeyT() {
