@@ -200,7 +200,7 @@ export default class MainPanel extends MainPanel_Generate {
             if (!res) {
                 this.cnvDragonBall.visibility = SlateVisibility.Hidden;
             } else {
-                this.btnCode.visibility = SlateVisibility.Hidden;
+                // this.btnCode.visibility = SlateVisibility.Hidden;
             }
         });
 
@@ -365,6 +365,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.refreshAvatar();
 
         //#region Exist for V1
+        GToolkit.trySetVisibility(this.btnCode, false);
         GToolkit.trySetVisibility(this.btnMail, false);
         GToolkit.trySetVisibility(this.btnBook, false);
         GToolkit.trySetVisibility(this.btnDragon, false);
