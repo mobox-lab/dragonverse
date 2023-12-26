@@ -42,6 +42,9 @@ export default class CollectibleItemTrigger extends mw.Script {
             if (trigger) {
                 trigger.onEnter.add(this.onObjectEnter);
                 trigger.onLeave.add(this.onObjectLeave);
+                if (trigger.checkInArea(Player.localPlayer.character)) {
+                    this.onObjectEnter(Player.localPlayer.character);
+                }
             } else {
                 Log4Ts.error(CollectibleItemTrigger, `there is no trigger under this game object.`);
             }
