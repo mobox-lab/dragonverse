@@ -1,6 +1,5 @@
 import SubData = mwext.Subdata;
 import UnifiedRoleController from "./UnifiedRoleController";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { JModuleC, JModuleS } from "../../depend/jibu-module/JModule";
 
 export default class RoleModuleData extends SubData {
@@ -96,7 +95,7 @@ export class RoleModuleS extends JModuleS<RoleModuleC, RoleModuleData> {
 //#region Member
     private _eventListeners: EventListener[] = [];
 
-    private _controllers: Map<number, UnifiedRoleController> = new Map<number, UnifiedRoleController>();
+    // private _controllers: Map<number, UnifiedRoleController> = new Map<number, UnifiedRoleController>();
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -132,18 +131,20 @@ export class RoleModuleS extends JModuleS<RoleModuleC, RoleModuleData> {
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
-        this.removeController(player.playerId);
+        // this.removeController(player.playerId);
     }
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
 
-        Script.spawnScript(UnifiedRoleController).then(
-            (controller) => {
-                this._controllers.set(0, controller as UnifiedRoleController);
-                controller.initInServer(player.playerId);
-            },
-        );
+        // Script.spawnScript(UnifiedRoleController).then(
+        //     (controller) => {
+        //         this._controllers.set(0, controller as UnifiedRoleController);
+        //         controller.initInServer(player.playerId);
+        //     },
+        // );
+
+        player.getPlayerState(UnifiedRoleController).initInServer(player.playerId);
     }
 
     protected onPlayerJoined(player: Player): void {
@@ -153,45 +154,45 @@ export class RoleModuleS extends JModuleS<RoleModuleC, RoleModuleData> {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Method
-    /**
-     * 新增 Controller.
-     * @param playerId
-     * @param controller
-     */
-    public addController(playerId: number, controller: UnifiedRoleController) {
-        const p = Player.getAllPlayers().find((player) => {
-            return player.playerId === playerId;
-        });
-        if (p) {
-            this._controllers.set(playerId, controller);
-        } else {
-            Log4Ts.warn(RoleModuleS,
-                `Player ${playerId} not found.`,
-                `maybe the player has quit`,
-            );
-        }
-    }
+//     /**
+//      * 新增 Controller.
+//      * @param playerId
+//      * @param controller
+//      */
+//     public addController(playerId: number, controller: UnifiedRoleController) {
+//         const p = Player.getAllPlayers().find((player) => {
+//             return player.playerId === playerId;
+//         });
+//         if (p) {
+//             this._controllers.set(playerId, controller);
+//         } else {
+//             Log4Ts.warn(RoleModuleS,
+//                 `Player ${playerId} not found.`,
+//                 `maybe the player has quit`,
+//             );
+//         }
+//     }
 
     /**
      * 查询 Controller.
      * @param playerId
      */
     public getController(playerId: number): UnifiedRoleController | null {
-        return this._controllers.get(playerId) ?? null;
+        return Player.getPlayer(playerId).getPlayerState(UnifiedRoleController) ?? null;
     }
 
-    /**
-     * 移除 Controller.
-     * @param playerId
-     */
-    public removeController(playerId: number): boolean {
-        const controller = this._controllers.get(playerId);
-        if (!this._controllers.delete(playerId)) return false;
-
-        controller.destroy();
-
-        return true;
-    }
+    // /**
+    //  * 移除 Controller.
+    //  * @param playerId
+    //  */
+    // public removeController(playerId: number): boolean {
+    //     const controller = this._controllers.get(playerId);
+    //     if (!this._controllers.delete(playerId)) return false;
+    //
+    //     controller.destroy();
+    //
+    //     return true;
+    // }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 

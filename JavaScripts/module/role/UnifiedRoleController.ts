@@ -31,11 +31,11 @@ import GameServiceConfig from "../../const/GameServiceConfig";
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 @Component
-export default class UnifiedRoleController extends mw.Script {
+export default class UnifiedRoleController extends mw.PlayerState {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.regist })
+    @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient})
     private _playerId: number;
 
     public get playerId(): number {
@@ -73,7 +73,7 @@ export default class UnifiedRoleController extends mw.Script {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Role State Member
-    @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove })
+    @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove})
     isMove: boolean = false;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -81,6 +81,7 @@ export default class UnifiedRoleController extends mw.Script {
     protected onStart(): void {
         super.onStart();
         this.useUpdate = true;
+
         //#region Member init
         //#endregion ------------------------------------------------------------------------------------------
 
@@ -116,30 +117,24 @@ export default class UnifiedRoleController extends mw.Script {
     //#endregion
 
     //#region Init
-    private regist() {
-        if (SystemUtil.isClient()) {
-            Player.asyncGetLocalPlayer().then(value => {
-                if (value.playerId !== this.playerId) {
-                    this.destroy();
-                } else {
-                    ModuleService.ready().then(() => {
-                        this._moduleC = ModuleService.getModule<RoleModuleC>(RoleModuleC);
-                        if (!this._moduleC) Log4Ts.log(UnifiedRoleController, `Role Module C not valid.`);
-                        else this._moduleC.initController(this);
-                        this._buffs = null;
-                        this._nolan = new Nolan();
-                        this.onControllerReadyInClient();
-                    })
-                }
-            });
-        } else if (SystemUtil.isServer()) {
-            this._moduleS = ModuleService.getModule<RoleModuleS>(RoleModuleS);
-            if (!this._moduleS) Log4Ts.log(UnifiedRoleController, `Role Module S not valid.`);
-            this._moduleS.addController(this.playerId, this);
-            this._buffs = new BuffContainer();
-            this._throwAnim = this.character?.loadAnimation(GameServiceConfig.THROW_STANCE_GUID);
-            this.onControllerReadyInServer();
+    private registerInClient() {
+        if (!SystemUtil.isClient()) {
+            return;
         }
+        Player.asyncGetLocalPlayer().then(value => {
+            if (value.playerId !== this._playerId) {
+                this.destroy();
+            } else {
+                ModuleService.ready().then(() => {
+                    this._moduleC = ModuleService.getModule<RoleModuleC>(RoleModuleC);
+                    if (!this._moduleC) Log4Ts.log(UnifiedRoleController, `Role Module C not valid.`);
+                    else this._moduleC.initController(this);
+                    this._buffs = null;
+                    this._nolan = new Nolan();
+                    this.onControllerReadyInClient();
+                });
+            }
+        });
     }
 
     /**
@@ -149,6 +144,12 @@ export default class UnifiedRoleController extends mw.Script {
      */
     public initInServer(playerId: number) {
         this._playerId = playerId;
+        // this._moduleS = ModuleService.getModule<RoleModuleS>(RoleModuleS);
+        // if (!this._moduleS) Log4Ts.log(UnifiedRoleController, `Role Module S not valid.`);
+        // this._moduleS.addController(this.playerId, this);
+        this._buffs = new BuffContainer();
+        this._throwAnim = this.character?.loadAnimation(GameServiceConfig.THROW_STANCE_GUID);
+        this.onControllerReadyInServer();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
