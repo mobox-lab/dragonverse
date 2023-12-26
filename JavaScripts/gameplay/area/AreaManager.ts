@@ -222,7 +222,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
         const points: IPoint3[] = [];
         switch (type) {
             case BagTypes.CollectibleItem:
-                GameConfig.CollectibleItem.getElement(id).areaIds.forEach(
+                GameConfig.CollectibleItem.getElement(id).areaIds?.forEach(
                     (areaId) => {
                         for (let shape of this.innerGetArea(areaId)) {
                             if (GToolkit.is<IShape3>(shape, "boundingBoxVolume")) points.push(...shape.points());
@@ -231,7 +231,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
                 );
                 break;
             case BagTypes.Dragon:
-                GameConfig.Dragon.getElement(id).areaIds.forEach(
+                GameConfig.Dragon.getElement(id).areaIds?.forEach(
                     (areaId) => {
                         for (let shape of this.innerGetArea(areaId)) {
                             if (GToolkit.is<IShape3>(shape, "boundingBoxVolume")) points.push(...shape.points());
