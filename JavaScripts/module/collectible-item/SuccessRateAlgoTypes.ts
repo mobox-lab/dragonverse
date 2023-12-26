@@ -66,21 +66,21 @@ export function testAlgo(): number {
 }
 
 export function normalAlertAlgo(): number {
-    return 0.3;
+    return 0.2;
 }
 
 export function normalTigerishAlgo(): number {
-    return 0.4;
+    return 0.3;
 }
 
 export function normalCowardAlgo(): number {
-    return 1;
+    return 0.4;
 }
 
 export function normalCrankAlgo(): number {
-    return 0.6;
+    return 0.5;
 }
 
 export function normalModerateAlgo(): number {
-    return 0.8;
+    return 0.6;
 }
