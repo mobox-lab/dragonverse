@@ -80,16 +80,17 @@ export default class HeadUIScript extends mw.Script {
         this.playerNickNames.forEach((value) => {
             temp.delete(value.playerId);
             this._cache.add(value.playerId);
-            let player = mw.Player.getPlayer(value.playerId);
-            if (!player) {
-                return;
-            }
-            let type = value.playerId === mw.Player.localPlayer.playerId ? HeadUIType.Self : HeadUIType.OtherPlayer;
-            HeadUIController.getInstance().registerHeadUI(player.character, type, value.nickName).then((info) => {
-                if (info) {
-                    info.sign = value.playerId.toString();
+            mw.Player.asyncGetPlayer(value.playerId).then((player) => {
+                if (!player) {
+                    return;
                 }
-            })
+                let type = value.playerId === mw.Player.localPlayer.playerId ? HeadUIType.Self : HeadUIType.OtherPlayer;
+                HeadUIController.getInstance().registerHeadUI(player.character, type, value.nickName).then((info) => {
+                    if (info) {
+                        info.sign = value.playerId.toString();
+                    }
+                })
+            });
         })
 
         temp.forEach((value) => {
