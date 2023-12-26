@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-24 09:55:13
+ * @LastEditTime : 2023-12-26 18:44:50
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
@@ -50,7 +50,7 @@ export default class CloudEffect extends mw.Script {
                 let id = ModuleService.getModule(CompanionModule_C).getCurrentShowupBagId();
                 if (id == null) return;
                 let type = CompanionHelper.getCompanionType(id);
-                if (!type && type !== CompanionHelper.DragonType.Fire) return;
+                if (!type || type !== CompanionHelper.DragonType.Fire) return;
 
                 if (this.getCanDestroyClouds()) {
                     this.showFireBtn();
