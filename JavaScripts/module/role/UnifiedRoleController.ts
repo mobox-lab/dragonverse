@@ -94,7 +94,7 @@ export default class UnifiedRoleController extends mw.Script {
 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
-        if (SystemUtil.isServer()) this._buffs.update(dt);
+        if (SystemUtil.isServer()) this._buffs?.update(dt);
     }
 
     protected onDestroy(): void {
@@ -133,12 +133,7 @@ export default class UnifiedRoleController extends mw.Script {
                 }
             });
         } else if (SystemUtil.isServer()) {
-            this._moduleS = ModuleService.getModule<RoleModuleS>(RoleModuleS);
-            if (!this._moduleS) Log4Ts.log(UnifiedRoleController, `Role Module S not valid.`);
-            this._moduleS.addController(this.playerId, this);
-            this._buffs = new BuffContainer();
-            this._throwAnim = this.character?.loadAnimation(GameServiceConfig.THROW_STANCE_GUID);
-            this.onControllerReadyInServer();
+
         }
     }
 
@@ -149,6 +144,12 @@ export default class UnifiedRoleController extends mw.Script {
      */
     public initInServer(playerId: number) {
         this._playerId = playerId;
+        this._moduleS = ModuleService.getModule<RoleModuleS>(RoleModuleS);
+        if (!this._moduleS) Log4Ts.log(UnifiedRoleController, `Role Module S not valid.`);
+        this._moduleS.addController(this.playerId, this);
+        this._buffs = new BuffContainer();
+        this._throwAnim = this.character?.loadAnimation(GameServiceConfig.THROW_STANCE_GUID);
+        this.onControllerReadyInServer();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
