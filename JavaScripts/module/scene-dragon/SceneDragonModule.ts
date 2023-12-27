@@ -593,7 +593,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         return Enumerable
             .from(this.existenceItemMap.get(playerId)?.dragonSyncKeys ?? [])
             .select((syncKey) => this.syncItemMap.get(syncKey))
-            .where((item) => item ? SceneDragon.dragonId(id) === SceneDragon.dragonId(id) : false)
+            .where((item) => item ? SceneDragon.dragonId(item.id) === SceneDragon.dragonId(id) : false)
             .defaultIfEmpty({generateTime: 0} as SceneDragon)
             .max((item) => item.generateTime);
     }
