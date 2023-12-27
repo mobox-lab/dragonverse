@@ -115,6 +115,7 @@ export enum EventDefine {
 
     /**
      * 玩家被岩浆损伤.
+     * <code> position:Vector </code>
      */
     PlayerHurtByMagma = "PLAYER_HURT_BY_MAGMA",
 

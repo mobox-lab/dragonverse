@@ -99,7 +99,7 @@ export default class FireRewardPuzzle extends Puzzle {
     }
 
     private doGetAnimation() {
-        AudioController.getInstance().play(this._unlockSoundId);
+        AudioController.getInstance().play(this._unlockSoundId, this.gameObject.worldTransform.position);
         mw.EffectService.playAtPosition(this.effectId,
             this.isEffectPlayerLocationRelative ?
                 this.gameObject.worldTransform.position.clone().add(this.effectPlayerLocation) :
