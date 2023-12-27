@@ -60,12 +60,10 @@ export class RoleModuleC extends JModuleC<RoleModuleS, RoleModuleData> {
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
         Player.getAllPlayers().forEach((player) => {
-            console.log(player.playerId, "enter scene")
             player.character.displayName = '';
         });
 
         Player.onPlayerJoin.add((player) => {
-            console.log(player.playerId, "onplayerjoin")
             player.character.displayName = '';
         })
     }
