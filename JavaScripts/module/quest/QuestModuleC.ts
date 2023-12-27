@@ -24,6 +24,13 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
         for (const task of this.data) {
             let config = GameConfig.Task.getElement(task.questId);
 
+            if (!config) {
+                Log4Ts.warn(QuestModuleC,
+                    `sub task not found.`,
+                    `questId: ${task.questId}`);
+                break;
+            }
+
             let go = await mw.GameObject.asyncSpawn(config.questObjectGuid);
 
             let script: Quest = GToolkit.getFirstScript(go, Quest);
@@ -65,7 +72,7 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
         let res: { configId: number, isComplete: boolean }[] = [];
         for (const task of this.data) {
             if (task.questCfgId <= 4) {
-                res.push({ configId: task.questCfgId, isComplete: task.status === QuestStateEnum.Complete });
+                res.push({configId: task.questCfgId, isComplete: task.status === QuestStateEnum.Complete});
             }
         }
         return res;
