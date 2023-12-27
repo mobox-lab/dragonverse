@@ -59,7 +59,7 @@ export default class BagPanel extends BagMain_Generate {
             this.mDesc.text = i18n.lan(GameConfig.BagItem.getElement(key).desc);
             this.mIcon.imageGuid = GameConfig.BagItem.getElement(key).icon;
             this._selectEffects.push(bindYoact(() => {
-                this.mNum.text = i18n.lan("数量") + `${data.count}`;
+                this.mNum.text = i18n.lan(i18n.keyTable.Bag_006) + ` ${data.count}`;
             }));
 
             if (ForeignKeyIndexer.getInstance().isBagItemType(data.id, BagTypes.Dragon)) {
