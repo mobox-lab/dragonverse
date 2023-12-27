@@ -62,7 +62,7 @@ export default class MushRoom extends mw.Script {
     private onEnter = (obj: mw.GameObject) => {
         if (obj instanceof mw.Character) {
             if (obj === Player.localPlayer.character) {
-                AudioController.getInstance().play(9);
+                AudioController.getInstance().play(9, this._trigger);
                 ModuleService
                     .getModule(RoleModuleC)
                     .controller
