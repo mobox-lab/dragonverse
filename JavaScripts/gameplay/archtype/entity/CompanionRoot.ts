@@ -156,7 +156,7 @@ export class CompanionLogicController extends StateMachine<void, CompanionStateE
         this.state.seed = now;
         this.state.switchTime = now;
         this.state.start = this.target.worldTransform.position;
-        this.state.offsetNum = GToolkit.random(200, 300);
+        this.state.offsetNum = GToolkit.random(480, 580);
 
     }
 
