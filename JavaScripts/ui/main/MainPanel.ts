@@ -200,7 +200,7 @@ export default class MainPanel extends MainPanel_Generate {
             if (!res) {
                 this.cnvDragonBall.visibility = SlateVisibility.Hidden;
             } else {
-                // this.btnCode.visibility = SlateVisibility.Hidden;
+                this.btnCode.visibility = SlateVisibility.Hidden;
             }
         });
 
@@ -220,6 +220,7 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, (playerId) => {
             if (playerId === this.roleCtrl.playerId) Log4Ts.log(MainPanel, `Player reset.`);
         }));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.OnDragonQuestsComplete, this.onFinishSubTask));
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -553,6 +554,10 @@ export default class MainPanel extends MainPanel_Generate {
         } else {
             Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.Catch_004));
         }
+    };
+
+    private onFinishSubTask = () => {
+        this.showGlobalPrompt(i18n.lan(i18n.keyTable.TinyGameLanKey0004));
     };
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
