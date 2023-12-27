@@ -195,8 +195,10 @@ export default class DialoguePanel extends DialoguePanel_Generate {
         options.forEach((interactNodeId) => {
             // if(this.showInteractOptions)
             let res = ModuleService.getModule(AuthModuleC).canEnterGame();
-            if (res && interactNodeId === DialogueFuncTypes.ShowCodePanel) return;
+            //不显示talk显示code的选项，待优化
+            if (res && interactNodeId === 1) return;
             const node = GameConfig.DialogueInteractNode.getElement(interactNodeId);
+
             if (!node) return;
 
             this.cnvOptions.addChild(UIService
