@@ -612,7 +612,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         }
 
         Enumerable
-            .from(GameConfig.CharacterfulDragon.getAllElement())
+            .from(GToolkit.randomShuffleArray(GameConfig.CharacterfulDragon.getAllElement()))
             .forEach((item) => {
                 if (GToolkit.isNullOrEmpty(SceneDragon.getDragonConfig(item.id).areaIds)) return;
                 for (let i = 0;
