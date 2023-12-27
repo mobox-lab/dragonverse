@@ -10,9 +10,10 @@ import { IDragonElement } from "../../config/Dragon";
 import { ICharacterfulDragonElement } from "../../config/CharacterfulDragon";
 
 /**
- * Scene Dragon.
+ * Scene Dragon instance.
  * 场景龙. (可捕捉龙).
- *
+ * @desc 该类型下 id 语义为场景龙 id.
+ * @desc ---
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
  * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
@@ -152,6 +153,7 @@ export default class SceneDragon {
     /**
      * 名称.
      * @config
+     * @param id
      */
     public static nameStr(id: number): string {
         return this.getBagConfig(id).name;
@@ -160,6 +162,7 @@ export default class SceneDragon {
     /**
      * 描述.
      * @config
+     * @param id
      */
     public static desc(id: number): string {
         return this.getBagConfig(id).desc;
@@ -168,17 +171,28 @@ export default class SceneDragon {
     /**
      * 品质.
      * @config
+     * @param id
      */
     public static quality(id: number): QualityTypes {
         return this.getDragonConfig(id).qualityId as QualityTypes;
     };
 
     /**
+     * 首次生成冷却. ms
+     * @config
+     * @param id
+     */
+    public static firstGenerateCd(id: number): number {
+        return this.getDragonConfig(id).firstGenerateCd * 1e3;
+    }
+
+    /**
      * 最大存在时间 ms.
      * @config
+     * @param id
      */
     public static maxExistenceTime(id: number): number {
-        return this.getDragonConfig(id).existenceTime * 1000;
+        return this.getDragonConfig(id).existenceTime * 1e3;
     }
 
     /**
@@ -186,7 +200,7 @@ export default class SceneDragon {
      * @param id
      */
     public static generationInterval(id: number): number {
-        return this.getDragonConfig(id).generationInterval * 1000;
+        return this.getDragonConfig(id).generationInterval * 1e3;
     }
 
     /**
@@ -205,18 +219,44 @@ export default class SceneDragon {
         return SuccessRateAlgoFactory(this.getConfig(id).successRateAlgoId as SuccessRateAlgoTypes);
     }
 
+    /**
+     * 背包 id.
+     * @config
+     * @param id
+     */
     public static bagId(id: number): number {
         return this.getConfig(id).bagId;
     }
 
+    /**
+     * 龙基 id.
+     * @config
+     * @param id
+     */
+    public static dragonId(id: number): number {
+        return this.getConfig(id).dragonId;
+    }
+
+    /**
+     * 个性龙 配置.
+     * @param id 个性龙 id.
+     */
     public static getConfig(id: number): ICharacterfulDragonElement {
         return GameConfig.CharacterfulDragon.getElement(id);
     }
 
+    /**
+     * 龙基 配置.
+     * @param id 个性龙 id.
+     */
     public static getDragonConfig(id: number): IDragonElement {
         return GameConfig.Dragon.getElement(this.getConfig(id).dragonId);
     }
 
+    /**
+     * 背包 配置.
+     * @param id 个性龙 id.
+     */
     public static getBagConfig(id: number): IBagItemElement {
         return GameConfig.BagItem.getElement(this.getConfig(id).bagId);
     }

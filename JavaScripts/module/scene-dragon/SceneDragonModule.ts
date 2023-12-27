@@ -458,19 +458,24 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     //#region Event Callback
     private onDragonOutOfAliveRange = (syncKey: string) => {
-        Log4Ts.log(SceneDragonModuleC, `;
-        knows;
-        dragon;
-        out;
-        of;
-        alive;
-        range.syncKey;
-    : ${syncKey}
-        `);
+        Log4Ts.log(SceneDragonModuleC, `knows dragon out of alive range.syncKey: ${syncKey}`);
         this.server.net_destroy(syncKey);
     };
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+/**
+ * 场景龙 玩家记录.
+ */
+class PlayerRecord {
+    public readonly enterTime: number;
+    public dragonSyncKeys: string[];
+
+    public constructor() {
+        this.enterTime = Date.now();
+        this.dragonSyncKeys = [];
+    }
 }
 
 export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonModuleData> {
@@ -486,7 +491,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      *  - key 玩家 PlayerId.
      *  - value 该玩家现存所有场景龙.
      */
-    public existenceItemMap: Map<number, string[]> = new Map();
+    public existenceItemMap: Map<number, PlayerRecord> = new Map();
 
     /**
      * 全场景龙映射.
@@ -580,15 +585,15 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
     //#region Method
     /**
-     * 指定玩家 与 id 的场景龙最新生成时间.
+     * 指定玩家 与个性龙 id 的同种龙基最新生成时间.
      * @param playerId
-     * @param id
+     * @param id 个性龙 id.
      */
     private lastItemGenerateTime(playerId: number, id: number): number {
         return Enumerable
-            .from(this.existenceItemMap.get(playerId))
+            .from(this.existenceItemMap.get(playerId)?.dragonSyncKeys ?? [])
             .select((syncKey) => this.syncItemMap.get(syncKey))
-            .where((item) => item ? item.id === id : false)
+            .where((item) => item ? SceneDragon.dragonId(id) === SceneDragon.dragonId(id) : false)
             .defaultIfEmpty({generateTime: 0} as SceneDragon)
             .max((item) => item.generateTime);
     }
@@ -630,7 +635,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      */
     private removePrivateRecord(playerId: number): void {
         Enumerable
-            .from(this.existenceItemMap.get(playerId))
+            .from(this.existenceItemMap.get(playerId)?.dragonSyncKeys ?? [])
             .forEach(key => {
                 this.syncItemMap.delete(key);
                 this._syncLocker.delete(key);
@@ -644,16 +649,17 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * @private
      */
     private addPlayerRecord(playerId: number): void {
-        this.existenceItemMap.set(playerId, []);
+        this.existenceItemMap.set(playerId, new PlayerRecord());
     }
 
     /**
      * 是否具备 生成条件.
      * @param playerId
-     * @param id
+     * @param id 个性龙 id.
      */
     private isGenerateEnable(playerId: number, id: number): boolean {
-        return this.lastItemGenerateTime(playerId, id) + SceneDragon.generationInterval(id) < Date.now();
+        return (Date.now() - this.existenceItemMap.get(playerId)?.enterTime ?? Number.MAX_VALUE) > SceneDragon.firstGenerateCd(id) &&
+            this.lastItemGenerateTime(playerId, id) + SceneDragon.generationInterval(id) < Date.now();
     }
 
     /**
@@ -684,13 +690,13 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             return;
         }
 
-        let array: string[] = this.existenceItemMap.get(playerId);
-        if (!array) {
-            array = [];
-            this.existenceItemMap.set(playerId, array);
+        const record = this.existenceItemMap.get(playerId);
+        if (!record) {
+            Log4Ts.error(SceneDragonModuleS, `player record not exist in server. playerId: ${playerId}`);
+            return;
         }
+        record.dragonSyncKeys.push(syncKey);
 
-        array.push(syncKey);
         this.syncItemMap.set(syncKey, item);
         this._syncLocker.set(syncKey, null);
 
@@ -720,53 +726,28 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     private destroy(playerId: number, syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            Log4Ts.error(SceneDragonModuleS, `;
-        destroy;
-        item;
-        is;
-        null`);
+            Log4Ts.error(SceneDragonModuleS, `destroy item is null`);
             return;
         }
         Log4Ts.log(SceneDragonModuleS,
-            () => `;
-        try
-        destroy;
-        item, itemId;
-    : ${item.id}
-    .
-        `,
-            () => `;
-        reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.
-        `);
-
+            () => `try destroy item, itemId : ${item.id}.`,
+            () => `reason: ${(Date.now() - item.generateTime) > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.`);
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
             item.autoDestroyTimerId = null;
         }
 
-        let array: string[] = this.existenceItemMap.get(playerId);
-        if (!array || !GToolkit.remove(array, syncKey)) {
-            Log4Ts.log(SceneDragonModuleS, `;
-        destroy;
-        Collectible;
-        Item; ${item.id}
-        whose;
-        generate;
-        time;
-        is ${item.generateTime},
-            but;
-        it;
-        not;
-        exist in server`);
+        let record = this.existenceItemMap.get(playerId);
+        if (!record) {
+            Log4Ts.error(SceneDragonModuleS, `player record not exist in server. playerId: ${playerId}`);
+            return;
+        }
+        if (!GToolkit.remove(record.dragonSyncKeys, syncKey)) {
+            Log4Ts.log(SceneDragonModuleS, `destroy Collectible Item; ${item.id} whose generate time is ${item.generateTime},but it not exist in server`);
         }
 
         item.destroy();
-        Log4Ts.log(SceneDragonModuleS, `;
-        destroy;
-        item;
-        success.syncKey;
-    : ${syncKey}
-        `);
+        Log4Ts.log(SceneDragonModuleS, `destroy item success.syncKey : ${syncKey}`);
 
         this.syncItemMap.delete(syncKey);
         this._syncLocker.delete(syncKey);
@@ -846,24 +827,10 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     public net_destroy(syncKey: string) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
-            Log4Ts.error(SceneDragonModuleS, `;
-        item;
-        not;
-        exist in server;
-        when;
-        destroy.syncKey;
-    : ${syncKey}
-        `);
+            Log4Ts.error(SceneDragonModuleS, `item not exist in server when destroy.syncKey: ${syncKey}`);
             return;
         }
-        Log4Ts.log(SceneDragonModuleS, `;
-        try
-        destroy;
-        item.$;
-        {
-            item.info();
-        }
-        `);
+        Log4Ts.log(SceneDragonModuleS, `try destroy item.${item.info()}`);
         this.destroy(this.currentPlayerId, syncKey);
     }
 
