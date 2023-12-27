@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-26 18:44:50
+ * @LastEditTime : 2023-12-27 10:54:12
  * @FilePath     : \dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
@@ -14,6 +14,7 @@ import i18n from "../../language/i18n";
 import { CompanionHelper } from "../../module/companion/CompanionHelper";
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 import { QuestModuleC } from "../../module/quest/QuestModuleC";
+import { PromotTips } from "../../ui/common/PromotTips";
 import { ProximityPrompts } from "../../ui/common/ProximityPrompts";
 
 @Component
@@ -50,7 +51,10 @@ export default class CloudEffect extends mw.Script {
                 let id = ModuleService.getModule(CompanionModule_C).getCurrentShowupBagId();
                 if (id == null) return;
                 let type = CompanionHelper.getCompanionType(id);
-                if (!type || type !== CompanionHelper.DragonType.Fire) return;
+                if (!type || type !== CompanionHelper.DragonType.Fire) {
+                    PromotTips.showTips(i18n.lan(i18n.keyTable.Need_fireDargon));
+                    return;
+                };
 
                 if (this.getCanDestroyClouds()) {
                     this.showFireBtn();
@@ -61,6 +65,7 @@ export default class CloudEffect extends mw.Script {
             if (((go) instanceof mw.Character) && go.player.playerId === Player.localPlayer.playerId) {
                 Log4Ts.log(this, "离开云朵区域");
                 ProximityPrompts.close();
+                PromotTips.hideTips();
             }
         });
 
