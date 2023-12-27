@@ -15,10 +15,10 @@ export abstract class KeyItemPuzzle extends Puzzle {
 
     private _storageInfo: KeyItem[] = [];
 
-    @mw.Property({displayName: "允许存储的类型"})
+    @mw.Property({ displayName: "允许存储的类型" })
     public allowStorageType: number[] = [0];
 
-    @mw.Property({displayName: "需要放置的数量"})
+    @mw.Property({ displayName: "需要放置的数量" })
     public requiredPutNum: number = 0;
 
 
@@ -78,9 +78,9 @@ export abstract class KeyItemPuzzle extends Puzzle {
 
 
         // 可以存储
-        let storageInfo = this._storageInfo;
+        //let storageInfo = this._storageInfo;
         storageItem.storage = this.guid;
-        storageInfo.push({
+        this._storageInfo.push({
             type: storageItem.type,
         });
         this.onPutInSomeGameObject(enter, true);
@@ -114,7 +114,10 @@ export abstract class KeyItemPuzzle extends Puzzle {
         } else {
             this.locked = true;
         }
-        this.onStorageProgressUpdate.call(this);
+
+        if (!this.locked) {
+            this.onStorageProgressUpdate.call(this);
+        }
     }
 
 }

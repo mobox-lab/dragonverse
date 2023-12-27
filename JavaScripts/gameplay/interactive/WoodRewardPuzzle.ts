@@ -11,20 +11,20 @@ export default class WoodRewardPuzzle extends Puzzle {
     private _progress: number = undefined;
 
 
-    @mw.Property({displayName: "播放的特效"})
+    @mw.Property({ displayName: "播放的特效" })
     public effectId: string = "89589";
 
-    @mw.Property({displayName: "龙娘初始位置"})
+    @mw.Property({ displayName: "龙娘初始位置" })
     public dragonInitializeLocation: mw.Vector = new mw.Vector(0, 0, -90);
 
-    @mw.Property({displayName: "龙娘初始位置"})
+    @mw.Property({ displayName: "龙娘初始位置" })
     public dragonShowUpLocation: mw.Vector = new mw.Vector(0, 0, 90);
 
-    @mw.Property({displayName: "奖励龙娘的guid"})
+    @mw.Property({ displayName: "奖励龙娘的guid" })
     public dragonGuid: string = "076C6B69";
 
 
-    @mw.Property({displayName: "奖励龙娘出来后播放的动作"})
+    @mw.Property({ displayName: "奖励龙娘出来后播放的动作" })
     public animationId: string = "8352";
 
     private _isOpened: boolean = false;
@@ -112,11 +112,11 @@ export default class WoodRewardPuzzle extends Puzzle {
             .call(() => {
                 this._effect.setVisibility(mw.PropertyStatus.On);
             })
-            .to(700, {scale: new mw.Vector(3, 1, 1)})
+            .to(700, { scale: new mw.Vector(3, 1, 1) })
             .call(() => {
                 this.createDragonThenFlyToPlayer();
             })
-            .to(700, {scale: new mw.Vector(0, 1, 1)})
+            .to(700, { scale: new mw.Vector(0, 1, 1) })
             .call((value) => {
                 this._effect.setVisibility(mw.PropertyStatus.FromParent);
             })
@@ -126,25 +126,27 @@ export default class WoodRewardPuzzle extends Puzzle {
 
 
     private createDragonThenFlyToPlayer() {
-        this._character.setVisibility(mw.PropertyStatus.On);
-        this._character.setCollision(mw.CollisionStatus.On);
+        if (this._character) {
+            this._character.setVisibility(mw.PropertyStatus.On);
+            this._character.setCollision(mw.CollisionStatus.On);
 
-        let dragonInitializeLocation = this.gameObject.worldTransform.transformPosition(this.dragonInitializeLocation);
-        let dragonShowUpLocation = this.gameObject.worldTransform.transformPosition(this.dragonShowUpLocation);
-        this._character.worldTransform.position = dragonInitializeLocation;
-        // 播放特效
-        mw.EffectService.playAtPosition(this.effectId, this.gameObject.worldTransform.position);
+            let dragonInitializeLocation = this.gameObject.worldTransform.transformPosition(this.dragonInitializeLocation);
+            let dragonShowUpLocation = this.gameObject.worldTransform.transformPosition(this.dragonShowUpLocation);
+            this._character.worldTransform.position = dragonInitializeLocation;
+            // 播放特效
+            mw.EffectService.playAtPosition(this.effectId, this.gameObject.worldTransform.position);
 
-        actions.tween(this._character.localTransform).to(500, {
-            position: dragonShowUpLocation,
-        }, {
-            onUpdate: () => {
-                this._character.lookAt(mw.Player.localPlayer.character.worldTransform.position);
+            actions.tween(this._character.localTransform).to(500, {
+                position: dragonShowUpLocation,
+            }, {
+                onUpdate: () => {
+                    this._character.lookAt(mw.Player.localPlayer.character.worldTransform.position);
 
-            },
-        }).call(() => {
-            this._character.loadAnimation(this.animationId).play();
-        }).start();
+                },
+            }).call(() => {
+                this._character.loadAnimation(this.animationId).play();
+            }).start();
+        }
 
     }
 
