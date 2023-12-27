@@ -305,7 +305,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
 
         const player = Player.getPlayer(this.playerId);
         if (player) {
-            Event.dispatchToClient(player, EventDefine.PlayerHurtByMagma);
+            Event.dispatchToClient(player, EventDefine.PlayerHurtByMagma,position);
         }
     }
 
