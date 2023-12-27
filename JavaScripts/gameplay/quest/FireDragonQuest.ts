@@ -240,7 +240,7 @@ export default class FireDragonQuest extends Quest {
         if (info) {
             info.complete = true;
             block.switchType(FirePuzzleBlockTypes.Water);
-            AudioController.getInstance().play(this._destroyMagmaSoundId);
+            AudioController.getInstance().play(this._destroyMagmaSoundId, block.gameObject.worldTransform.position);
         } else {
             Log4Ts.log(FireDragonQuest, `cache info not found. guid: ${guid}`);
         }
@@ -253,8 +253,8 @@ export default class FireDragonQuest extends Quest {
         this.updateTaskProgress(JSON.stringify(this._cacheInfo));
     };
 
-    public onPlayerHurtByMagma = (guid: string) => {
-        AudioController.getInstance().play(this._explodeSoundId);
+    public onPlayerHurtByMagma = (position: Vector) => {
+        AudioController.getInstance().play(this._explodeSoundId, position);
     };
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
