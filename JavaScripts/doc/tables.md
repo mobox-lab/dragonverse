@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v1.0.1  
+v1.0.3  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -118,6 +118,7 @@ x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 |     元素 ID      | ElementalId        | int    |        |
 |     品质 ID      | QualityId          | int    |        |
 | 生成区域 ID 集合 | AreaIds            | int[]  |        |
+|   首次生成冷却   | FirstGenerateCd    | int    | 秒 Sec |
 |     存在时间     | ExistenceTime      | int    | 秒 Sec |
 |     生成间隔     | GenerationInterval | int    | 秒 Sec |
 |    可捕捉次数    | HitPoint           | int    |        |
