@@ -145,6 +145,7 @@ export class RoleModuleS extends JModuleS<RoleModuleC, RoleModuleData> {
         // );
 
         player.getPlayerState(UnifiedRoleController).initInServer(player.playerId);
+        player.character.displayName = "";
     }
 
     protected onPlayerJoined(player: Player): void {
