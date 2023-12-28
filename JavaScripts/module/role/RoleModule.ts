@@ -1,6 +1,7 @@
 import SubData = mwext.Subdata;
 import UnifiedRoleController from "./UnifiedRoleController";
 import { JModuleC, JModuleS } from "../../depend/jibu-module/JModule";
+import HiddenNameUI_Generate from "../../ui-generate/head/HiddenNameUI_generate";
 
 export default class RoleModuleData extends SubData {
     //@Decorator.persistence()
@@ -55,17 +56,22 @@ export class RoleModuleC extends JModuleC<RoleModuleS, RoleModuleData> {
 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
+
+
     }
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
         Player.getAllPlayers().forEach((player) => {
-            player.character.displayName = '';
+            // player.character.displayName = '';
+            let ui = UIService.create(HiddenNameUI_Generate);
+            player.character.overheadUI.setTargetUIWidget(ui.uiWidgetBase);
         });
 
         Player.onPlayerJoin.add((player) => {
-            player.character.displayName = '';
-        })
+            let ui = UIService.create(HiddenNameUI_Generate);
+            player.character.overheadUI.setTargetUIWidget(ui.uiWidgetBase);
+        });
     }
 
 
@@ -140,6 +146,7 @@ export class RoleModuleS extends JModuleS<RoleModuleC, RoleModuleData> {
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
         // this.removeController(player.playerId);
+        player.getPlayerState(UnifiedRoleController).onDestroy();
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -152,7 +159,7 @@ export class RoleModuleS extends JModuleS<RoleModuleC, RoleModuleData> {
         //     },
         // );
 
-        player.character.displayName = '';
+        // player.character.displayName = '';
         player.getPlayerState(UnifiedRoleController).initInServer(player.playerId);
     }
 

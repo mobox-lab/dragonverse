@@ -98,7 +98,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
         if (SystemUtil.isServer()) this._buffs?.update(dt);
     }
 
-    protected onDestroy(): void {
+    public onDestroy(): void {
         super.onDestroy();
 
         //#region Event Unsubscribe
@@ -106,9 +106,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
         //#endregion ------------------------------------------------------------------------------------------
 
 
-        if (SystemUtil.isClient) {
+        if (SystemUtil.isClient()) {
             this.onControllerDestroyInClient();
-        } else if (SystemUtil.isServer) {
+        } else if (SystemUtil.isServer()) {
             this._buffs.destroy();
             this.onControllerDestroyInServer();
         }
@@ -305,7 +305,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
 
         const player = Player.getPlayer(this.playerId);
         if (player) {
-            Event.dispatchToClient(player, EventDefine.PlayerHurtByMagma,position);
+            Event.dispatchToClient(player, EventDefine.PlayerHurtByMagma, position);
         }
     }
 

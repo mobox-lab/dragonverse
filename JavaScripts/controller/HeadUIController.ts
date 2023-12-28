@@ -1,5 +1,6 @@
 import { Singleton } from "../depend/singleton/Singleton";
 import HeadUIPanel_Generate from "../ui-generate/head/HeadUIPanel_generate";
+import HiddenNameUI_Generate from "../ui-generate/head/HiddenNameUI_generate";
 
 
 @Serializable
@@ -24,10 +25,13 @@ export default class HeadUIScript extends mw.Script {
 
     protected onStart(): void {
         if (mw.SystemUtil.isServer()) {
-
             mw.Player.onPlayerLeave.add((player) => {
+                console.log('player leave', player.playerId);
                 this.removePlayerNickName(player.playerId);
             })
+            // mw.Player.onPlayerJoin.add((player) => {
+
+            // });
 
         } else {
 
@@ -36,6 +40,7 @@ export default class HeadUIScript extends mw.Script {
     }
 
     private registerLocalPlatformNickName() {
+
         let nickName = mw.AccountService.getNickName();
         if (!nickName) {
             nickName = 'PIE Player';
@@ -51,29 +56,45 @@ export default class HeadUIScript extends mw.Script {
             return value.playerId === playerId;
         })
 
-        let newEst = this.playerNickNames.concat();
+        // let newEst = this.playerNickNames.concat();
+        // if (index !== -1) {
+        //     newEst.splice(index, 1);
+        //     this.playerNickNames = newEst;
+        // }
         if (index !== -1) {
-            newEst.splice(index, 1);
-            this.playerNickNames = newEst;
+            this.playerNickNames.splice(index, 1)
         }
+        // this.asyncPlayerNickNames(this.playerNickNames);
     }
+
+    // @mw.RemoteFunction(mw.Client)
+    // private asyncPlayerNickNames(nickNames: PlayerPlatFormNickName[]) {
+    //     this.playerNickNames = nickNames;
+    //     this.onNickNameChanged();
+    // }
 
     @mw.RemoteFunction(mw.Server)
     private registerPlayerNickName(nickName: string, playerId: number) {
-
+        console.log('registerPlayerNickName', nickName, playerId);
         let data = new PlayerPlatFormNickName();
         data.playerId = playerId;
         data.nickName = nickName;
         this.playerNickNames.push(data)
+        // this.asyncPlayerNickNames(this.playerNickNames);
     }
 
     private removePlayerNickNameByPlayerId(playerId: number) {
+        console.log('removePlayerNickNameByPlayerId', playerId);
         HeadUIController.getInstance().unregisterHeadUI(playerId.toString());
     }
 
 
     private onNickNameChanged() {
-
+        let element = '';
+        for (let i = 0; i < this.playerNickNames.length; i++) {
+            element += this.playerNickNames[i].playerId.toString() + ' ';
+        }
+        console.log('onNickNameChanged', element);
 
         let temp = new Set(this._cache.values());
         this._cache.clear();
@@ -87,6 +108,7 @@ export default class HeadUIScript extends mw.Script {
                 let type = value.playerId === mw.Player.localPlayer.playerId ? HeadUIType.Self : HeadUIType.OtherPlayer;
                 HeadUIController.getInstance().registerHeadUI(player.character, type, value.nickName).then((info) => {
                     if (info) {
+                        console.log('registerHeadUI', info.sign);
                         info.sign = value.playerId.toString();
                     }
                 })
@@ -152,7 +174,6 @@ export class HeadUIController extends Singleton<HeadUIController>() {
 
     public initialize() {
         if (mw.SystemUtil.isServer()) {
-
             mw.Script.spawnScript(HeadUIScript, true);
         }
     }
@@ -208,7 +229,9 @@ export class HeadUIController extends Singleton<HeadUIController>() {
             offset = commonOffset
         }
         if (owner instanceof Character) {
-            owner.displayName = ''
+            // owner.displayName = ''
+            let ui = UIService.create(HiddenNameUI_Generate);
+            owner.overheadUI.setTargetUIWidget(ui.uiWidgetBase);
         }
         uiWidget.localTransform.position = offset;
         uiWidget.hideByDistanceEnable = true;
