@@ -61,7 +61,12 @@ export default class GameServiceConfig {
     /**
      * 伙伴龙 跟随终点 容纳偏移.
      */
-    public static readonly PARTNER_DRAGON_FOLLOW_OFFSET = 200;
+    public static readonly PARTNER_DRAGON_FOLLOW_OFFSET = 500;
+
+    /**
+     * 伙伴龙 跟随终点 容纳偏移 噪音.
+     */
+    public static readonly PARTNER_DRAGON_FOLLOW_NOISE = 50;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Scene Dragon

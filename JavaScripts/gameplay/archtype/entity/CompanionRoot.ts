@@ -149,8 +149,10 @@ export class CompanionLogicController extends StateMachine<void, CompanionStateE
         this.state.seed = now;
         this.state.switchTime = now;
         this.state.start = this.target.worldTransform.position;
-        this.state.offsetNum = GToolkit.random(480, 580);
-
+        this.state.offsetNum = GToolkit.random(
+            GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET - GameServiceConfig.PARTNER_DRAGON_FOLLOW_NOISE,
+            GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET + GameServiceConfig.PARTNER_DRAGON_FOLLOW_NOISE,
+        );
     }
 
     public selectInitializePoint() {
