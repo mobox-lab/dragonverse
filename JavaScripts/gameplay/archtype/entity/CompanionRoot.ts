@@ -8,6 +8,7 @@ import { CompanionStateEnum, CompanionViewController } from "./CompanionControll
 import { CompanionState } from "./CompanionState";
 import DragonEntity from "./DragonEntity";
 import GameServiceConfig from "../../../const/GameServiceConfig";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 class BaseCompanionState extends State<CompanionStateEnum> {
 
@@ -70,7 +71,8 @@ class CompanionFollowState extends BaseCompanionState {
         let follower: mw.Character = this.fsm.follower as mw.Character;
 
 
-        if ((!shift || shift.squaredDistanceTo(this.fsm.follower.worldTransform.position) > 50 ** 2) && (follower.isMoving && !follower.isJumping)) {
+        if ((!shift || shift.squaredDistanceTo(this.fsm.follower.worldTransform.position) > GameServiceConfig.PARTNER_DRAGON_FOLLOW_NOISE ** 2) &&
+            (follower.isMoving && !follower.isJumping)) {
 
             this.printSampler.push(this.fsm.follower.worldTransform.position.clone());
 
@@ -83,7 +85,7 @@ class CompanionFollowState extends BaseCompanionState {
         let distance = this.fsm.target.worldTransform.position.subtract(this.fsm.follower.worldTransform.position);
         distance.z = 0;
 
-        if (distance.sqrLength >= 800 ** 2 && this.printSampler.length >= 5) {
+        if (distance.sqrLength >= (GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET * 2) ** 2 && this.printSampler.length >= 5) {
             this.fsm.target.worldTransform.position = this.printSampler.shift();
         }
 
@@ -95,10 +97,14 @@ class CompanionFollowState extends BaseCompanionState {
     }
 
     private OnSuccess = () => {
-
+        Log4Ts.log(CompanionFollowState, `follow success.`);
     };
 
     private onFailed = () => {
+        Log4Ts.log(CompanionFollowState, `follow failed.`);
+        if (this.fsm.target.worldTransform.position.subtract(this.fsm.follower.worldTransform.position).sqrLength >= (GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET * 2) ** 2) {
+            this.fsm.target.worldTransform.position = this.fsm.selectInitializePoint();
+        }
 
         this.fsm.requestStateChange(CompanionStateEnum.Idle, true);
     };

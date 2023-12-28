@@ -51,7 +51,7 @@ export default class GameServiceConfig {
     /**
      * 伙伴龙 初始化时 对镜头世界坐标后向偏移最小路程.
      */
-    public static readonly PARTNER_DRAGON_MIN_INITIALIZE_DISTANCE = 300;
+    public static readonly PARTNER_DRAGON_MIN_INITIALIZE_DISTANCE = 400;
 
     /**
      * 伙伴龙 初始化时 对镜头世界坐标后向偏移最大路程.
