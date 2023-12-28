@@ -2,6 +2,8 @@ import seedrandom from "seedrandom";
 import { TimeManager } from "../../../controller/TimeManager";
 import { IState } from "../base/IState";
 import { CompanionStateEnum } from "./CompanionController";
+import GameServiceConfig from "../../../const/GameServiceConfig";
+
 @mw.Serializable
 export class CompanionState implements IState {
 
@@ -18,36 +20,36 @@ export class CompanionState implements IState {
     /**
      * 当前状态名
      */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     stateName: CompanionStateEnum = 0;
 
 
     /**
      * 当前状态进入时间
      */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     switchTime: number = 0;
 
 
     /**
      * 随机种子
      */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     public seed: number = 0;
 
 
     /**
      * 起始位置
      */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     public start: mw.Vector = mw.Vector.zero;
 
 
     /**
      * 起始位置
      */
-    @mw.Property({ replicated: true })
-    public offsetNum: number = 100;
+    @mw.Property({replicated: true})
+    public offsetNum: number = GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET;
 
 
     public static create(stateName: CompanionStateEnum) {

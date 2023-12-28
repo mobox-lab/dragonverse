@@ -7,11 +7,12 @@ import { SyncRootEntity } from "../base/SyncRootEntity";
 import { CompanionStateEnum, CompanionViewController } from "./CompanionController";
 import { CompanionState } from "./CompanionState";
 import DragonEntity from "./DragonEntity";
+import GameServiceConfig from "../../../const/GameServiceConfig";
 
 class BaseCompanionState extends State<CompanionStateEnum> {
 
 
-    declare fsm: CompanionLogicController
+    declare fsm: CompanionLogicController;
 
 }
 
@@ -20,8 +21,8 @@ class InitializeState extends BaseCompanionState {
     protected onEnter(): void {
 
         TimeUtil.delaySecond(2).then((value) => {
-            this.fsm.requestStateChange(CompanionStateEnum.Follow, true)
-        })
+            this.fsm.requestStateChange(CompanionStateEnum.Follow, true);
+        });
     }
 
 
@@ -44,17 +45,13 @@ class CompanionIdleState extends BaseCompanionState {
     }
 
 
-
 }
 
 
 class CompanionFollowState extends BaseCompanionState {
 
 
-
     private printSampler: mw.Vector[] = [];
-
-
 
 
     public onEnter(): void {
@@ -83,7 +80,7 @@ class CompanionFollowState extends BaseCompanionState {
         }
 
 
-        let distance = this.fsm.target.worldTransform.position.subtract(this.fsm.follower.worldTransform.position)
+        let distance = this.fsm.target.worldTransform.position.subtract(this.fsm.follower.worldTransform.position);
         distance.z = 0;
 
         if (distance.sqrLength >= 800 ** 2 && this.printSampler.length >= 5) {
@@ -95,17 +92,16 @@ class CompanionFollowState extends BaseCompanionState {
         }
 
 
-
     }
 
     private OnSuccess = () => {
 
-    }
+    };
 
     private onFailed = () => {
 
         this.fsm.requestStateChange(CompanionStateEnum.Idle, true);
-    }
+    };
 
     protected onExit(): void {
         mw.Navigation.stopFollow(this.fsm.target);
@@ -115,17 +111,15 @@ class CompanionFollowState extends BaseCompanionState {
 }
 
 
-
 export class CompanionLogicController extends StateMachine<void, CompanionStateEnum, string> {
 
     public follower: mw.GameObject;
 
     public reporter: CompanionRoot;
 
-    public target: mw.GameObject
+    public target: mw.GameObject;
 
     public state: CompanionState;
-
 
 
     setup(follower: mw.GameObject, target: mw.GameObject, reporter: CompanionRoot) {
@@ -138,14 +132,13 @@ export class CompanionLogicController extends StateMachine<void, CompanionStateE
         this.addState(CompanionStateEnum.Follow, new CompanionFollowState());
         this.addState(CompanionStateEnum.Idle, new CompanionIdleState());
         this.setStartState(CompanionStateEnum.Initialize);
-        this.target.worldTransform.position = this.selectInitializePoint()
+        this.target.worldTransform.position = this.selectInitializePoint();
         this.init();
     }
 
 
-
     protected changeState(name: CompanionStateEnum): void {
-        super.changeState(name)
+        super.changeState(name);
         this.quicklySampleState();
         this.reportCompanionState();
     }
@@ -156,21 +149,27 @@ export class CompanionLogicController extends StateMachine<void, CompanionStateE
         this.state.seed = now;
         this.state.switchTime = now;
         this.state.start = this.target.worldTransform.position;
-        this.state.offsetNum = GToolkit.random(480, 580);
-
+        this.state.offsetNum = GToolkit.random(
+            GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET - GameServiceConfig.PARTNER_DRAGON_FOLLOW_NOISE,
+            GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET + GameServiceConfig.PARTNER_DRAGON_FOLLOW_NOISE,
+        );
     }
 
     public selectInitializePoint() {
 
-        let cameraTransform = mw.Camera.currentCamera.worldTransform
-        let behind = cameraTransform.getForwardVector().clone().multiply(-1);
-        let location = behind.multiply(GToolkit.random(300, 600)).add(cameraTransform.position);
-        return location;
+        let behind = Player.getControllerRotation().rotateVector(Vector.forward).multiply(-1);
+        return behind
+            .multiply(
+                GToolkit.random(
+                    GameServiceConfig.PARTNER_DRAGON_MIN_INITIALIZE_DISTANCE,
+                    GameServiceConfig.PARTNER_DRAGON_MAX_INITIALIZE_DISTANCE,
+                ))
+            .add(Player.localPlayer.character.worldTransform.position);
     }
 
 
     private reportCompanionState() {
-        this.reporter.changeLogicState(this.state)
+        this.reporter.changeLogicState(this.state);
     }
 }
 
@@ -178,19 +177,18 @@ export class CompanionLogicController extends StateMachine<void, CompanionStateE
 export default class CompanionRoot extends SyncRootEntity<CompanionState> {
 
 
-
-    private _logicController: CompanionLogicController
+    private _logicController: CompanionLogicController;
 
 
     protected async onInitialize() {
         if (mw.SystemUtil.isClient()) {
 
             mwext.ModuleService.getModule(CompanionModule_C).getController().registerCompanion(this);
-            let prefab = this.displayObject = await mw.GameObject.asyncSpawn('Character') as mw.Character;
+            let prefab = this.displayObject = await mw.GameObject.asyncSpawn("Character") as mw.Character;
             prefab.setDescription([this.displayGuid]);
             let character = mw.Player.getPlayer(this.playerId).character;
             prefab.addMovement(mw.Vector.forward);
-            prefab.maxWalkSpeed = 650;
+            prefab.maxWalkSpeed = GameServiceConfig.PARTNER_DRAGON_MAX_WALK_SPEED;
             if (this.isLocalPlayer()) {
                 this._logicController = new CompanionLogicController();
                 this._logicController.setup(character, prefab, this);
@@ -201,16 +199,16 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
                 value.gameObject = prefab;
                 value.controller = new CompanionViewController();
                 value.controller.target = character;
-                value.controller.owner = prefab
-                value.nickName = i18n.lan(this.nickName)
+                value.controller.owner = prefab;
+                value.nickName = i18n.lan(this.nickName);
                 value.setHosted(this);
-            })
+            });
 
 
         }
     }
 
     protected onUpdate(dt: number): void {
-        this._logicController?.logic()
+        this._logicController?.logic();
     }
 }
