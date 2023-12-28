@@ -52,6 +52,7 @@ export default class ForeignKeyIndexer extends Singleton<ForeignKeyIndexer>() {
 
         this.initCollectibleItemIndexer();
         this.initDragonIndexer();
+        this.initNpcIndexer();
     }
 
     /**
