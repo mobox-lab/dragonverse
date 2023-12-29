@@ -18,7 +18,7 @@ import Log4Ts, { Announcer, DebugLevels, LogString } from "../depend/log4ts/Log4
  * @author zewei.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 0.9.9b
+ * @version 1.0.0b
  * @beta
  */
 class GToolkit {
@@ -285,8 +285,8 @@ class GToolkit {
 
     /**
      * random in range [min,max).
-     * @param min
-     * @param max
+     * @param min default 0.
+     * @param max default min + 1.
      * @param integer return a integer.
      */
     public random(min: number = undefined, max: number = undefined, integer: boolean = false): number {
