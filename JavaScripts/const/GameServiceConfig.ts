@@ -143,6 +143,36 @@ export default class GameServiceConfig {
     }
 
     /**
+     * 场景龙 出生特效 Guid.
+     */
+    public static readonly SCENE_DRAGON_BIRTH_EFFECT_ID = "107635";
+
+    /**
+     * 场景龙 出生特效 起始缩放.
+     */
+    public static get SCENE_DRAGON_BIRTH_EFFECT_START_SCALE() {
+        return new Vector(0, 0, 0);
+    }
+
+    /**
+     * 场景龙 出生特效 终止缩放.
+     */
+    public static get SCENE_DRAGON_BIRTH_EFFECT_END_SCALE() {
+        return new Vector(1, 1, 2);
+    }
+
+    /**
+     * 场景龙 出生特效 一段时长. ms
+     */
+    public static readonly SCENE_DRAGON_BIRTH_EFFECT_DURATION_1 = 1e3;
+
+    /**
+     * 场景龙 出生特效 二段时长. ms
+     */
+    public static readonly SCENE_DRAGON_BIRTH_EFFECT_DURATION_2 = 1e3;
+
+
+    /**
      * 场景龙 烟雾特效 Guid.
      */
     public static readonly SMOKE_EFFECT_ID = "89589";
