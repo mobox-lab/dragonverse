@@ -143,9 +143,29 @@ export default class GameServiceConfig {
     }
 
     /**
-     * 场景龙 出生特效 Guid.
+     * 场景龙 出生特效 一阶段时长. ms
      */
-    public static readonly SCENE_DRAGON_BIRTH_EFFECT_ID = "107635";
+    public static readonly SCENE_DRAGON_BIRTH_EFFECT_DURATION_1 = 1e3;
+
+    /**
+     * 场景龙 出生特效 二阶段时长. ms
+     */
+    public static readonly SCENE_DRAGON_BIRTH_EFFECT_DURATION_2 = 1e3;
+
+    /**
+     * 场景龙 出生特效 三阶段时长. ms
+     */
+    public static readonly SCENE_DRAGON_BIRTH_EFFECT_DURATION_3 = 0.2e3;
+
+    /**
+     * 场景龙 出生特效 四阶段时长. ms
+     */
+    public static readonly SCENE_DRAGON_BIRTH_EFFECT_DURATION_4 = 1e3;
+
+    /**
+     * 场景龙 出生光环特效 Guid.
+     */
+    public static readonly SCENE_DRAGON_BIRTH_LIGHT_EFFECT_ID = "132892";
 
     /**
      * 场景龙 出生特效 起始缩放.
@@ -155,22 +175,69 @@ export default class GameServiceConfig {
     }
 
     /**
-     * 场景龙 出生特效 终止缩放.
+     * 场景龙 出生特效 阶段 2 缩放.
      */
-    public static get SCENE_DRAGON_BIRTH_EFFECT_END_SCALE() {
-        return new Vector(1, 1, 2);
+    public static get SCENE_DRAGON_BIRTH_EFFECT_STAGE_1_SCALE() {
+        return new Vector(1, 1, 1);
     }
 
     /**
-     * 场景龙 出生特效 一段时长. ms
+     * 场景龙 出生特效 阶段 3 缩放.
      */
-    public static readonly SCENE_DRAGON_BIRTH_EFFECT_DURATION_1 = 1e3;
+    public static get SCENE_DRAGON_BIRTH_EFFECT_STAGE_3_SCALE() {
+        return new Vector(1.5, 1.5, 1.5);
+    }
 
     /**
-     * 场景龙 出生特效 二段时长. ms
+     * 场景龙 出生爆炸特效 Guid.
      */
-    public static readonly SCENE_DRAGON_BIRTH_EFFECT_DURATION_2 = 1e3;
+    public static readonly SCENE_DRAGON_BIRTH_EXPLODE_EFFECT_ID = "265661";
 
+    /**
+     * 场景龙 死亡上浮速度. m/s
+     */
+    public static readonly SCENE_DRAGON_DEATH_FLOAT_SPEED=5;
+
+    /**
+     * 场景龙 死亡等待 时长. s
+     */
+    public static readonly SCENE_DRAGON_DEATH_EFFECT_DURATION = 2;
+
+    /**
+     * 场景龙 死亡等待光环特效 Guid.
+     */
+    public static readonly SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_ID = "4397";
+
+    /**
+     * 场景龙 死亡等待光环特效 位置偏移.
+     * @constructor
+     */
+    public static get SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_LOCATION_OFFSET() {
+        return new Vector(0, 0, 0);
+    }
+
+    /**
+     * 场景龙 死亡销毁光环特效 Guid.
+     */
+    public static readonly SCENE_DRAGON_DEATH_DESTROY_LIGHT_EFFECT_ID = "142961";
+
+    /**
+     * 场景龙 死亡销毁光环特效 位置偏移.
+     * @constructor
+     */
+    public static get SCENE_DRAGON_DEATH_DESTROY_LIGHT_EFFECT_LOCATION_OFFSET() {
+        return new Vector(0, 0, 0);
+    }
+
+    /**
+     * 场景龙 死亡销毁爆炸特效 Guid.
+     */
+    public static readonly SCENE_DRAGON_DEATH_DESTROY_EXPLODE_EFFECT_ID = "265661";
+
+    /**
+     * 场景龙 死亡姿态.
+     */
+    public static readonly SCENE_DRAGON_DEATH_STANCE_ID = "47771";
 
     /**
      * 场景龙 烟雾特效 Guid.

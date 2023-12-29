@@ -7,7 +7,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Regulator from "../../depend/regulator/Regulator";
 import AreaManager from "../../gameplay/area/AreaManager";
-import GToolkit from "../../util/GToolkit";
+import GToolkit, { Expression } from "../../util/GToolkit";
 import { IPoint3 } from "../../util/area/Shape";
 import { BagModuleC, BagModuleS } from "../bag/BagModule";
 import SceneDragon from "./SceneDragon";
@@ -22,6 +22,7 @@ import Easing from "../../depend/easing/Easing";
 import EffectService = mw.EffectService;
 import { ThrowDragonBall } from "../../gameplay/archtype/action/ThrowDragonBall";
 import GameplayCueSet = UE.GameplayCueSet;
+import LinearColor = mw.LinearColor;
 
 /**
  * 场景龙 相关事件.
@@ -65,32 +66,88 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     //#region Constant
     public static async sceneDragonPrefabFactory(
         syncKey: string,
-        item: SceneDragon) {
+        item: SceneDragon): Promise<SceneDragonExistInfo> {
         if (!item.location) {
             Log4Ts.error(SceneDragonModuleC, `generate item param location invalid.`);
-            return null;
+            return Promise.resolve(null);
         }
         const dragonInfo = item.getDragonConfig();
         let assetId = dragonInfo.avatar;
         if (GToolkit.isNullOrEmpty(assetId)) {
             Log4Ts.error(SceneDragonModuleC, `prefab not set. id: ${item.id}`);
-            return null;
+            return Promise.resolve(null);
         }
 
-        let obj = await mw.GameObject.asyncSpawn("Character") as mw.Character;
-        obj.setDescription([assetId]);
+        const createSceneDragonExistInfo = async () => {
+            EffectService.playAtPosition(GameServiceConfig.SCENE_DRAGON_BIRTH_EXPLODE_EFFECT_ID, item.location);
+            const obj = await mw.GameObject.asyncSpawn("Character") as mw.Character;
+            obj.setDescription([assetId]);
 
-        let behavior: SceneDragonBehavior = await mw.Script.spawnScript(SceneDragonBehavior, false);
-        behavior.gameObject = obj;
-        behavior.init(syncKey, item);
-        item.location.z += 150;
-        obj.worldTransform.position = item.location;
-        obj.addMovement(mw.Vector.forward);
-        obj.tag = "SceneDragon";
-        return new SceneDragonExistInfo(
-            behavior,
-            obj,
+            const behavior = await mw.Script.spawnScript(SceneDragonBehavior, false);
+            behavior.gameObject = obj;
+            behavior.init(syncKey, item);
+            obj.worldTransform.position = item.location;
+            obj.addMovement(mw.Vector.forward);
+            obj.tag = "SceneDragon";
+
+            return Promise.resolve(new SceneDragonExistInfo(
+                behavior,
+                obj,
+            ));
+        };
+
+        const existInfo = await this.playBirthEffect(item.location, createSceneDragonExistInfo);
+        return Promise.resolve(existInfo);
+    }
+
+    private static async playBirthEffect(position: Vector, onBirth: Expression<Promise<SceneDragonExistInfo>>): Promise<SceneDragonExistInfo> {
+        const effect = await EffectService.getEffectById(
+            EffectService.playAtPosition(
+                GameServiceConfig.SCENE_DRAGON_BIRTH_LIGHT_EFFECT_ID,
+                position,
+                {
+                    scale: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_START_SCALE,
+                    loopCount: 0,
+                }),
         );
+
+        if (!effect) {
+            Log4Ts.warn(SceneDragonModuleC, `effect is invalid. generate directly.`);
+            return Promise.resolve(onBirth());
+        }
+
+        return await new Promise((resolve) => {
+            const task = Waterween
+                .group(
+                    () => effect.worldTransform.scale,
+                    (val) => effect.worldTransform.scale = new Vector(val.x, val.y, val.z),
+                    [
+                        {
+                            dist: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_STAGE_1_SCALE,
+                            duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_1,
+                            onDone: param => {
+                                if (!param) resolve(onBirth());
+                            },
+                        },
+                        {duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_2},
+                        {
+                            dist: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_STAGE_3_SCALE,
+                            duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_3,
+                        },
+                        {
+                            dist: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_START_SCALE,
+                            duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_3,
+                            onDone: param => {
+                                if (!param) effect.stop();
+                            },
+                        },
+                    ],
+                    GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_START_SCALE,
+                    Easing.linear,
+                )
+                .autoDestroy();
+            task.continue();
+        });
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -361,10 +418,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     private destroy(syncKey: string) {
         Log4Ts.log(SceneDragonModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).behavior.data.info() ?? "?null"}`);
 
-        this.syncItemMap.get(syncKey)?.object.destroy();
+        this.syncItemMap.get(syncKey)?.behavior.death();
         this.syncItemMap.delete(syncKey);
-
-        // this._mainPanel.removeSceneDragonInteractor(syncKey);
     }
 
     private unlockWithView() {

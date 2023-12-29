@@ -13,13 +13,12 @@ import { DragonSyncKeyEventArgs } from "./SceneDragonModule";
 import Character = mw.Character;
 import createYoact = Yoact.createYoact;
 import bindYoact = Yoact.bindYoact;
-import HumanoidSlotType = mw.HumanoidSlotType;
-import Stance = mw.Stance;
 import EffectService = mw.EffectService;
 import Effect = Yoact.Effect;
 import stopEffect = Yoact.stopEffect;
 import Animation = mw.Animation;
 import Navigation = mw.Navigation;
+import GameStart from "../../GameStart";
 
 class SceneDragonBehaviorState {
     //#region Constant
@@ -95,6 +94,11 @@ class SceneDragonBehaviorState {
      */
     public destination: Vector = null;
 
+    /**
+     * 死亡动画已等待时间.
+     */
+    public deathAnimWait: number = 0;
+
     constructor(idleStamina: number = 0, activeStamina: number = 0) {
         this.idleStamina = idleStamina;
         this.activeStamina = activeStamina;
@@ -155,6 +159,8 @@ export default class SceneDragonBehavior extends mw.Script {
 
     private _laughAnim: Animation;
 
+    private _deathStance: Stance;
+
     private get localCharacter() {
         if (!this._character) {
             this._character = Player.localPlayer.character;
@@ -185,6 +191,7 @@ export default class SceneDragonBehavior extends mw.Script {
             this._fearAnim.loop = 0;
             this._laughAnim = asCharacter.loadAnimation(GameServiceConfig.SCENE_DRAGON_LAUGH_ANIM_ID);
             this._laughAnim.loop = 2;
+            this._deathStance = asCharacter.loadStance(GameServiceConfig.SCENE_DRAGON_DEATH_STANCE_ID);
         }
 
         HeadUIController.getInstance()
@@ -222,15 +229,13 @@ export default class SceneDragonBehavior extends mw.Script {
 
     protected onDestroy(): void {
         super.onDestroy();
-
-        HeadUIController.getInstance().unregisterHeadUI(this.gameObject);
-        this.state.alive = false;
-        stopEffect(this._machineEffect);
-        this.gameObject.destroy();
-
         //#region Event Unsubscribe
         this._eventListeners.forEach(value => value.disconnect());
         //#endregion ------------------------------------------------------------------------------------------
+
+        stopEffect(this._machineEffect);
+        HeadUIController.getInstance().unregisterHeadUI(this.gameObject);
+        this.gameObject?.destroy();
     }
 
     //#endregion
@@ -241,14 +246,6 @@ export default class SceneDragonBehavior extends mw.Script {
         this.data = data;
 
         this.initStateMachine();
-    }
-
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-    //#region Method
-    private checkAlive(): boolean {
-        return Vector.squaredDistance(this.gameObject.worldTransform.position, this.localCharacter.worldTransform.position) <
-            GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE;
     }
 
     private initStateMachine() {
@@ -326,15 +323,63 @@ export default class SceneDragonBehavior extends mw.Script {
                 this.state.laughStamina += dt * SceneDragonBehaviorState.LAUGH_STAMINA_RECOVERY)
             .aEx(() => this.laugh(false));
         const death = new State<SceneDragonBehaviorState>(SceneDragonStates.Death)
-            .aE(() => {
-                Log4Ts.log(SceneDragonBehavior,
-                    `enter ${death.name} state.`,
-                    `key: ${this.syncKey}.`);
-            });
+                .aE(() => {
+                    Log4Ts.log(SceneDragonBehavior,
+                        `enter ${death.name} state.`,
+                        `key: ${this.syncKey}.`);
+                    // const obj = this.gameObject;
+                    // if (!obj) {
+                    this.destroy();
+                    // return;
+                    // }
+
+                    // this.state.deathAnimWait = 0;
+                    // this._deathStance.play();
+                    // EffectService.playAtPosition(
+                    //     GameServiceConfig.SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_ID,
+                    //     GToolkit.detectGameObjectVerticalTerrain(obj, undefined, undefined, !GameStart.instance.isRelease)?.position
+                    //     ?? obj.worldTransform.position.clone()
+                    //         .add(GameServiceConfig.SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_LOCATION_OFFSET),
+                    //     {
+                    //         duration: GameServiceConfig.SCENE_DRAGON_DEATH_EFFECT_DURATION,
+                    //     });
+                })
+            // .aU((dt) => {
+            //     this.state.deathAnimWait += dt;
+            //     const obj = this.gameObject;
+            //     if (!obj) {
+            //         this.destroy();
+            //         return;
+            //     }
+            //     obj.worldTransform.position = GToolkit.newWithZ(
+            //         obj.worldTransform.position,
+            //         obj.worldTransform.position.z + GameServiceConfig.SCENE_DRAGON_DEATH_FLOAT_SPEED * dt,
+            //     );
+            //     if (this.state.deathAnimWait > GameServiceConfig.SCENE_DRAGON_DEATH_EFFECT_DURATION) {
+            //         EffectService.playAtPosition(
+            //             GameServiceConfig.SCENE_DRAGON_DEATH_DESTROY_LIGHT_EFFECT_ID,
+            //             GToolkit.detectGameObjectVerticalTerrain(obj, undefined, [])?.position
+            //             ?? obj.worldTransform.position.clone()
+            //                 .add(GameServiceConfig.SCENE_DRAGON_DEATH_DESTROY_LIGHT_EFFECT_LOCATION_OFFSET),
+            //             {
+            //                 loopCount: 1,
+            //             },
+            //         );
+            //         EffectService.playAtPosition(
+            //             GameServiceConfig.SCENE_DRAGON_DEATH_DESTROY_EXPLODE_EFFECT_ID,
+            //             obj.worldTransform.position,
+            //             {
+            //                 loopCount: 1,
+            //             },
+            //         );
+            //         this.destroy();
+            //     }
+            // })
+        ;
 
         const idle = new Region<SceneDragonBehaviorState>("idle").include(idleWait, idleMotion);
         const active = new Region<SceneDragonBehaviorState>("active").include(walk, run);
-        const alive = new Region<SceneDragonBehaviorState>("alive").include(idleWait, idleMotion, walk, run);
+        const alive = new Region<SceneDragonBehaviorState>("alive").include(idleWait, idleMotion, walk, run, fear, laugh);
         const unfear = new Region<SceneDragonBehaviorState>("unfear").include(idleWait, idleMotion, walk, run);
 
         idleWait.when(arg => arg.alive && arg.activeStamina < 100 && arg.idleStamina > 100 && !arg.isFear && arg.laughStamina < 0).to(idleMotion);
@@ -352,6 +397,14 @@ export default class SceneDragonBehavior extends mw.Script {
         this._machineEffect = bindYoact(() => {
             this._machine.evaluate(this.state);
         });
+    }
+
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    //#region Method
+    private checkAlive(): boolean {
+        return Vector.squaredDistance(this.gameObject.worldTransform.position, this.localCharacter.worldTransform.position) <
+            GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE;
     }
 
     private getRandomDestination(): mw.Vector | undefined {
@@ -459,6 +512,13 @@ export default class SceneDragonBehavior extends mw.Script {
         } else {
             this._laughAnim?.stop();
         }
+    }
+
+    /**
+     * 死亡并销毁.
+     */
+    public death() {
+        this.state.alive = false;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

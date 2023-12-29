@@ -318,6 +318,7 @@ class GToolkit {
         }
 
         const r = this.random(0, stepWeight[stepWeight.length - 1]);
+        Log4Ts.log(GToolkit, `random r=${r}`);
         let start: number = 0;
         let end = stepWeight.length;
         while (start < end) {
@@ -1226,7 +1227,7 @@ class GToolkit {
                                  length: number = 1000,
                                  self: mw.GameObject = null,
                                  ignoreObjectGuids: string[] = [],
-                                 debug: boolean = false) {
+                                 debug: boolean = false): mw.HitResult | null {
         return QueryUtil.lineTrace(
             startPoint,
             this.newWithZ(startPoint, startPoint.z - length),
@@ -1235,6 +1236,27 @@ class GToolkit {
             [self.gameObjectId, ...ignoreObjectGuids],
             false,
             false)[0] ?? null;
+    }
+
+    /**
+     * 忽略自身的 GameObject 垂直地形侦测.
+     * @param self
+     * @param length
+     * @param ignoreObjectGuids
+     * @param debug
+     */
+    public detectGameObjectVerticalTerrain(self: GameObject,
+                                           length: number = 1000,
+                                           ignoreObjectGuids: string[] = [],
+                                           debug: boolean = false): mw.HitResult | null {
+        if (!self) return null;
+        return this.detectVerticalTerrain(
+            self.worldTransform.position,
+            length,
+            self,
+            ignoreObjectGuids,
+            debug,
+        );
     }
 
     /**
@@ -1261,7 +1283,6 @@ class GToolkit {
 
         return result;
     }
-
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
