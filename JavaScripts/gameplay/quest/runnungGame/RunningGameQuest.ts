@@ -1,8 +1,8 @@
 /*
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-12 13:26:06
- * @LastEditors: haoran.zhang haoran.zhang@appshahe.com
- * @LastEditTime: 2023-12-20 16:58:11
+ * @LastEditors: 余泓 hong.yu@appshahe.com
+ * @LastEditTime: 2023-12-29 13:36:11
  * @FilePath: \DragonVerse\JavaScripts\gameplay\quest\runnungGame\RunningGameQuest.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -106,9 +106,13 @@ export default class RunningGameQuest extends Quest {
         if (customData) {
             this._infos = JSON.parse(customData);
         } else {
-            this._infos = GameConfig.Dragon.getAllElement().map((val) => {
-                return { type: val.elementalId, complete: false }
-            })
+            this._infos = [];
+            for (let i = 1; i < 5; i++) {
+                this._infos.push({ type: i, complete: false });
+            }
+            // this._infos = GameConfig.Dragon.getAllElement().map((val) => {
+            //     return { type: val.elementalId, complete: false }
+            // })
 
         }
 
