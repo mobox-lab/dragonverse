@@ -415,10 +415,18 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         });
     }
 
-    private destroy(syncKey: string) {
+    private destroy(syncKey: string, natural: boolean = true) {
         Log4Ts.log(SceneDragonModuleC, `try destroy item. ${this.syncItemMap.get(syncKey).behavior.data.info() ?? "?null"}`);
-
-        this.syncItemMap.get(syncKey)?.behavior.death();
+        const item = this.syncItemMap.get(syncKey);
+        if (!item) {
+            Log4Ts.warn(SceneDragonModuleC, `item not exist in client when destroy. syncKey: ${syncKey}`);
+            return;
+        }
+        if (natural) {
+            item.behavior.death();
+        } else {
+            item.behavior.catch();
+        }
         this.syncItemMap.delete(syncKey);
     }
 
@@ -497,8 +505,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                     location));
     }
 
-    public net_destroy(syncKey: string) {
-        this.destroy(syncKey);
+    public net_destroy(syncKey: string, natural: boolean = true) {
+        this.destroy(syncKey, natural);
     }
 
     // public net_createThrowBall(targetSyncKey: string, from: Vector, to: Vector) {
@@ -514,7 +522,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     //#region Event Callback
     private onDragonOutOfAliveRange = (syncKey: string) => {
         Log4Ts.log(SceneDragonModuleC, `knows dragon out of alive range.syncKey: ${syncKey}`);
-        this.server.net_destroy(syncKey);
+        this.server.net_destroy(syncKey, false);
     };
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -758,7 +766,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         Log4Ts.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
 
         item.autoDestroyTimerId = setTimeout(() => {
-                this.destroy(playerId, syncKey);
+                this.destroy(playerId, syncKey, true);
             },
             SceneDragon.maxExistenceTime(itemId),
         );
@@ -776,9 +784,10 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * 注册 销毁场景龙.
      * @param playerId
      * @param syncKey
+     * @param natural 是否 因时间销毁.
      * @private
      */
-    private destroy(playerId: number, syncKey: string) {
+    private destroy(playerId: number, syncKey: string, natural: boolean = true) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
             Log4Ts.error(SceneDragonModuleS, `destroy item is null`);
@@ -806,7 +815,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         this.syncItemMap.delete(syncKey);
         this._syncLocker.delete(syncKey);
-        this.getClient(playerId).net_destroy(syncKey);
+        this.getClient(playerId).net_destroy(syncKey, natural);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -873,20 +882,20 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         item.catch();
         this._bagModuleS.addItem(currPlayerId, item.getBagConfig().id, 1);
         if (!item.isCatchable) {
-            this.destroy(currPlayerId, syncKey);
+            this.destroy(currPlayerId, syncKey, false);
         }
         return;
     }
 
     @noReply()
-    public net_destroy(syncKey: string) {
+    public net_destroy(syncKey: string, natural: boolean = true) {
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
             Log4Ts.error(SceneDragonModuleS, `item not exist in server when destroy.syncKey: ${syncKey}`);
             return;
         }
         Log4Ts.log(SceneDragonModuleS, `try destroy item.${item.info()}`);
-        this.destroy(this.currentPlayerId, syncKey);
+        this.destroy(this.currentPlayerId, syncKey, natural);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

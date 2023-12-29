@@ -99,6 +99,11 @@ class SceneDragonBehaviorState {
      */
     public deathAnimWait: number = 0;
 
+    /**
+     * 是否 自然死亡.
+     */
+    public naturalDeath: boolean = true;
+
     constructor(idleStamina: number = 0, activeStamina: number = 0) {
         this.idleStamina = idleStamina;
         this.activeStamina = activeStamina;
@@ -323,59 +328,63 @@ export default class SceneDragonBehavior extends mw.Script {
                 this.state.laughStamina += dt * SceneDragonBehaviorState.LAUGH_STAMINA_RECOVERY)
             .aEx(() => this.laugh(false));
         const death = new State<SceneDragonBehaviorState>(SceneDragonStates.Death)
-                .aE(() => {
-                    Log4Ts.log(SceneDragonBehavior,
-                        `enter ${death.name} state.`,
-                        `key: ${this.syncKey}.`);
-                    // const obj = this.gameObject;
-                    // if (!obj) {
-                    this.destroy();
-                    // return;
-                    // }
+            .aE(() => {
+                Log4Ts.log(SceneDragonBehavior,
+                    `enter ${death.name} state.`,
+                    `key: ${this.syncKey}.`);
 
-                    // this.state.deathAnimWait = 0;
-                    // this._deathStance.play();
-                    // EffectService.playAtPosition(
-                    //     GameServiceConfig.SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_ID,
-                    //     GToolkit.detectGameObjectVerticalTerrain(obj, undefined, undefined, !GameStart.instance.isRelease)?.position
-                    //     ?? obj.worldTransform.position.clone()
-                    //         .add(GameServiceConfig.SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_LOCATION_OFFSET),
-                    //     {
-                    //         duration: GameServiceConfig.SCENE_DRAGON_DEATH_EFFECT_DURATION,
-                    //     });
-                })
-            // .aU((dt) => {
-            //     this.state.deathAnimWait += dt;
-            //     const obj = this.gameObject;
-            //     if (!obj) {
-            //         this.destroy();
-            //         return;
-            //     }
-            //     obj.worldTransform.position = GToolkit.newWithZ(
-            //         obj.worldTransform.position,
-            //         obj.worldTransform.position.z + GameServiceConfig.SCENE_DRAGON_DEATH_FLOAT_SPEED * dt,
-            //     );
-            //     if (this.state.deathAnimWait > GameServiceConfig.SCENE_DRAGON_DEATH_EFFECT_DURATION) {
-            //         EffectService.playAtPosition(
-            //             GameServiceConfig.SCENE_DRAGON_DEATH_DESTROY_LIGHT_EFFECT_ID,
-            //             GToolkit.detectGameObjectVerticalTerrain(obj, undefined, [])?.position
-            //             ?? obj.worldTransform.position.clone()
-            //                 .add(GameServiceConfig.SCENE_DRAGON_DEATH_DESTROY_LIGHT_EFFECT_LOCATION_OFFSET),
-            //             {
-            //                 loopCount: 1,
-            //             },
-            //         );
-            //         EffectService.playAtPosition(
-            //             GameServiceConfig.SCENE_DRAGON_DEATH_DESTROY_EXPLODE_EFFECT_ID,
-            //             obj.worldTransform.position,
-            //             {
-            //                 loopCount: 1,
-            //             },
-            //         );
-            //         this.destroy();
-            //     }
-            // })
-        ;
+                if (!this.state.naturalDeath) {
+                    this.destroy();
+                    return;
+                }
+                const obj = this.gameObject;
+                if (!obj) {
+                    this.destroy();
+                    return;
+                }
+
+                this.state.deathAnimWait = 0;
+                this._deathStance.play();
+                EffectService.playAtPosition(
+                    GameServiceConfig.SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_ID,
+                    GToolkit.detectGameObjectVerticalTerrain(obj, undefined, undefined, GameStart.instance.isRelease)?.position
+                    ?? obj.worldTransform.position.clone()
+                        .add(GameServiceConfig.SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_LOCATION_OFFSET),
+                    {
+                        duration: GameServiceConfig.SCENE_DRAGON_DEATH_EFFECT_DURATION,
+                    });
+            })
+            .aU((dt) => {
+                this.state.deathAnimWait += dt;
+                const obj = this.gameObject;
+                if (!obj) {
+                    this.destroy();
+                    return;
+                }
+                obj.worldTransform.position = GToolkit.newWithZ(
+                    obj.worldTransform.position,
+                    obj.worldTransform.position.z + GameServiceConfig.SCENE_DRAGON_DEATH_FLOAT_SPEED * dt,
+                );
+                if (this.state.deathAnimWait > GameServiceConfig.SCENE_DRAGON_DEATH_EFFECT_DURATION) {
+                    EffectService.playAtPosition(
+                        GameServiceConfig.SCENE_DRAGON_DEATH_DESTROY_LIGHT_EFFECT_ID,
+                        GToolkit.detectGameObjectVerticalTerrain(obj, undefined)?.position
+                        ?? obj.worldTransform.position.clone()
+                            .add(GameServiceConfig.SCENE_DRAGON_DEATH_DESTROY_LIGHT_EFFECT_LOCATION_OFFSET),
+                        {
+                            loopCount: 1,
+                        },
+                    );
+                    EffectService.playAtPosition(
+                        GameServiceConfig.SCENE_DRAGON_DEATH_DESTROY_EXPLODE_EFFECT_ID,
+                        obj.worldTransform.position,
+                        {
+                            loopCount: 1,
+                        },
+                    );
+                    this.destroy();
+                }
+            });
 
         const idle = new Region<SceneDragonBehaviorState>("idle").include(idleWait, idleMotion);
         const active = new Region<SceneDragonBehaviorState>("active").include(walk, run);
@@ -521,9 +530,16 @@ export default class SceneDragonBehavior extends mw.Script {
         this.state.alive = false;
     }
 
+    /**
+     * 捕捉并销毁.
+     */
+    public catch() {
+        this.state.naturalDeath = false;
+        this.state.alive = false;
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
