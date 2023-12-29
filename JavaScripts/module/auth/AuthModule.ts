@@ -627,7 +627,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     @noReply()
     public net_verifyCode(token: SaltToken, code: string) {
         const currPlayerId = this.currentPlayerId;
-        if (!GameStart.instance.isRelease || !this._codeVerifyMap.get(currPlayerId).req()) {
+        if (GameStart.instance.isRelease ? !this._codeVerifyMap.get(currPlayerId).req() : false) {
             this.getClient(currPlayerId)?.net_verifyFail();
             return;
         }
