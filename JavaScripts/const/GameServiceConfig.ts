@@ -191,7 +191,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 出生爆炸特效 Guid.
      */
-    public static readonly SCENE_DRAGON_BIRTH_EXPLODE_EFFECT_ID = "265661";
+    public static readonly SCENE_DRAGON_BIRTH_EXPLODE_EFFECT_ID = "157117";
 
     /**
      * 场景龙 死亡上浮速度. m/s
