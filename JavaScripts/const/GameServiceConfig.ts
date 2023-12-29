@@ -46,17 +46,17 @@ export default class GameServiceConfig {
     /**
      * 伙伴龙 移动速度上限.
      */
-    public static readonly PARTNER_DRAGON_MAX_WALK_SPEED = 650;
+    public static readonly PARTNER_DRAGON_MAX_WALK_SPEED = 720;
 
     /**
      * 伙伴龙 初始化时 对镜头世界坐标后向偏移最小路程.
      */
-    public static readonly PARTNER_DRAGON_MIN_INITIALIZE_DISTANCE = 400;
+    public static readonly PARTNER_DRAGON_MIN_INITIALIZE_DISTANCE = 600;
 
     /**
      * 伙伴龙 初始化时 对镜头世界坐标后向偏移最大路程.
      */
-    public static readonly PARTNER_DRAGON_MAX_INITIALIZE_DISTANCE = 600;
+    public static readonly PARTNER_DRAGON_MAX_INITIALIZE_DISTANCE = 800;
 
     /**
      * 伙伴龙 跟随终点 容纳偏移.
