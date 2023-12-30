@@ -52,8 +52,32 @@ interface CodeVerifyRequest {
  */
 interface SubGameRequest {
     secret: string;
-    userId: string;
-    takeTime: number;
+}
+
+/**
+ * 子游戏信息.
+ */
+interface SubGameInfo {
+    /**
+     * 用户 uuid.
+     */
+    userId: string,
+    /**
+     * 闯关用了多长时间. s
+     */
+    duration: number,
+    /**
+     * 这是第几个小游戏，目前只能填 6.
+     */
+    gameNum: number,
+    /**
+     * 完成时间. unix
+     */
+    achievedAt: number,
+    /**
+     * 当前签名时间. unix
+     */
+    timestamp: number,
 }
 
 /**
@@ -155,7 +179,6 @@ class RequestGuard {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
-
     //#region Member
     private _originToken: string = null;
 
@@ -380,14 +403,54 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     private static readonly TIME_TOLERATE: number = 1e3 * 10;
 
     /**
+     * 测试用 P12 端 Url.
+     */
+    private static readonly TEST_P12_URL = "https://modragon-api-test.mobox.app";
+
+    /**
+     * 发布用 P12 端 Url.
+     */
+    private static readonly RELEASE_P12_URL = "https://modragon-api.mobox.app";
+
+    /**
+     * Code 验证 Url 后缀.
+     * @private
+     */
+    private static readonly CODE_VERIFY_URL_SUFFIX = "/modragon/code/status";
+
+    /**
+     * 子游戏信息汇报 Url 后缀.
+     * @private
+     */
+    private static readonly SUB_GAME_REPORT_URL_SUFFIX = "/modragon/achievement";
+
+    /**
      * 测试用 Code 验证 Url.
      */
-    private static readonly TEST_CODE_VERIFY_URL = "https://platform-api-test.p12.games/modragon/code/status";
+    private static get TEST_CODE_VERIFY_URL() {
+        return this.TEST_P12_URL + this.CODE_VERIFY_URL_SUFFIX;
+    }
 
     /**
      * 发布用 Code 验证 Url.
      */
-    private static readonly RELEASE_CODE_VERIFY_URL = "https://modragon-api.mobox.app/modragon/code/status";
+    private static get RELEASE_CODE_VERIFY_URL() {
+        return this.RELEASE_P12_URL + this.CODE_VERIFY_URL_SUFFIX;
+    }
+
+    /**
+     * 测试用 子游戏信息汇报 Url.
+     */
+    private static get TEST_SUB_GAME_REPORT_URL() {
+        return this.TEST_P12_URL + this.SUB_GAME_REPORT_URL_SUFFIX;
+    }
+
+    /**
+     * 发布用 子游戏信息汇报 Url.
+     */
+    private static get RELEASE_SUB_GAME_REPORT_URL() {
+        return this.RELEASE_P12_URL + this.SUB_GAME_REPORT_URL_SUFFIX;
+    }
 
     private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
 
@@ -525,16 +588,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         if (!GameStart.instance.isRelease && code === "123456") return Promise.resolve(true);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
         const codeSalt = `${code}-${Date.now()}`;
-        const e = CryptoJS.AES.encrypt(
-            codeSalt,
-            CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
-            {
-                iv: CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_IV),
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7,
-            },
-        );
-        const secret = e.ciphertext.toString(CryptoJS.enc.Base64);
+        const secret = this.getSecret(codeSalt);
         const body: CodeVerifyRequest = {
             secret: secret,
             userId: uid,
@@ -554,6 +608,20 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         const respInJson = await resp.json<CodeVerifyResponse>();
         return (respInJson?.code ?? null) === 200;
         // return respInJson?.data ?? false;
+    }
+
+    private getSecret(message: string) {
+        const codeSalt = `${message}-${Date.now()}`;
+        const e = CryptoJS.AES.encrypt(
+            codeSalt,
+            CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
+            {
+                iv: CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_IV),
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7,
+            },
+        );
+        return e.ciphertext.toString(CryptoJS.enc.Base64);
     }
 
     /**

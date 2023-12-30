@@ -6,6 +6,6 @@ export enum SubGameTypes {
     /**
      * 跑酷.
      */
-    Parkour,
+    Parkour=6,
 }
 
