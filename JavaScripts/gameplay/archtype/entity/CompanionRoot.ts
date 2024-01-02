@@ -200,16 +200,14 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
                 this._logicController.setup(character, prefab, this);
                 this.useUpdate = true;
             }
-
-            mw.Script.spawnScript(DragonEntity, false).then((value) => {
-                value.gameObject = prefab;
-                value.controller = new CompanionViewController();
-                value.controller.target = character;
-                value.controller.owner = prefab;
-                value.nickName = i18n.lan(this.nickName);
-                value.setHosted(this);
-            });
-
+            const component = prefab.addComponent(DragonEntity);
+            if (component) {
+                component.controller = new CompanionViewController();
+                component.controller.target = character;
+                component.controller.owner = prefab;
+                component.nickName = i18n.lan(this.nickName);
+                component.setHosted(this);
+            }
 
         }
     }

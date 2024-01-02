@@ -771,7 +771,7 @@ class GToolkit {
         do {
             for (const go of stack) {
                 cache.push(...go.getChildren());
-                result.push(...go.getScripts()
+                result.push(...go.getComponents()
                     .filter(script => script instanceof scriptCls)
                     .map((value) => (value as T)));
             }
@@ -802,7 +802,7 @@ class GToolkit {
         do {
             for (const go of stack) {
                 cache.push(...go.getChildren());
-                const script = go.getScripts().find((s) => {
+                const script = go.getComponents().find((s) => {
                     return s instanceof scriptCls;
                 });
                 if (script) return script as T;
@@ -838,7 +838,7 @@ class GToolkit {
         do {
             for (const go of stack) {
                 cache.push(...go.getChildren());
-                result.push(...go.getScripts()
+                result.push(...go.getComponents()
                     .filter(script => this.is(script, method))
                     .map((value) => (value as T)));
             }
@@ -869,7 +869,7 @@ class GToolkit {
         do {
             for (const go of stack) {
                 cache.push(...go.getChildren());
-                const script = go.getScripts().find((s) => {
+                const script = go.getComponents().find((s) => {
                     return this.is(s, method);
                 });
                 if (script) return script as T;

@@ -5,6 +5,7 @@ import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
 import ModuleService = mwext.ModuleService;
 import Script = mw.Script;
 import { EventDefine } from "../../const/EventDefine";
+import GameObject = mw.GameObject;
 
 export class CollectibleInteractorPanel extends CollectiblePanel_Generate {
     //#region Member
@@ -25,6 +26,7 @@ export class CollectibleInteractorPanel extends CollectiblePanel_Generate {
 
         //#region Member init
         this._module = ModuleService.getModule(CollectibleItemModuleC);
+        GameObject.findGameObjectById("ComponentRoot").addComponent(MwBehaviorDelegate)
         Script.spawnScript(MwBehaviorDelegate).then(value => {
             this._standardBehavior = value;
             this._standardBehavior.delegate.add(this.renderPosition);
