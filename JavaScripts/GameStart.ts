@@ -51,10 +51,10 @@ export default class GameStart extends mw.Script {
     })
     public language: LanguageTypes = LanguageTypes.English;
 
-    @mw.Property({ displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel })
+    @mw.Property({displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel})
     public graphicsLevel: GraphicsLevel = GraphicsLevel.Cinematic3;
 
-    @mw.Property({ displayName: "线上存储", group: "发布" })
+    @mw.Property({displayName: "线上存储", group: "发布"})
     public isOnline: boolean = false;
 
     @mw.Property({displayName: "是否 GM", group: "调试"})
@@ -178,7 +178,7 @@ export default class GameStart extends mw.Script {
         DataStorage.setTemporaryStorage(!this.isOnline);
     }
 
-    private whenModuleReady(callback: Function) {
+    private whenModuleReady(callback: Delegate.SimpleDelegateFunction<void>) {
         if (this._moduleReady) {
             try {
                 callback();
@@ -186,7 +186,7 @@ export default class GameStart extends mw.Script {
                 Log4Ts.error(GameStart, e);
             }
         } else {
-
+            this._moduleReadyWaitingPool.once(callback);
         }
     }
 
