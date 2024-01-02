@@ -36,30 +36,33 @@ import SystemUtil = mw.SystemUtil;
 export default class GameStart extends mw.Script {
     public static instance: GameStart = null;
 
-//#region Dev Config
+    //#region Dev Config
 
-    @mw.Property({displayName: "是否发布", group: "发布"})
+    @mw.Property({ displayName: "是否发布", group: "发布" })
     public isRelease: boolean = false;
 
-    @mw.Property({displayName: "语言", group: "发布", enumType: LanguageTypes})
+    @mw.Property({ displayName: "语言", group: "发布", enumType: LanguageTypes })
     public language: LanguageTypes = LanguageTypes.English;
 
-    @mw.Property({displayName: "线上存储", group: "发布"})
+    @mw.Property({ displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel })
+    public graphicsLevel: GraphicsLevel = GraphicsLevel.Cinematic3;
+
+    @mw.Property({ displayName: "线上存储", group: "发布" })
     public isOnline: boolean = false;
 
-    @mw.Property({displayName: "是否 GM", group: "调试"})
+    @mw.Property({ displayName: "是否 GM", group: "调试" })
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: DebugLevels})
+    @mw.Property({ displayName: "服务端日志等级", group: "调试", enumType: DebugLevels })
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: DebugLevels})
+    @mw.Property({ displayName: "客户端日志等级", group: "调试", enumType: DebugLevels })
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({displayName: "上帝模式 冲刺速度倍率", group: "调试"})
+    @mw.Property({ displayName: "上帝模式 冲刺速度倍率", group: "调试" })
     public godModeSprintRatio: number = 10;
 
-    @mw.Property({displayName: "上帝模式 闪现位移距离", group: "调试"})
+    @mw.Property({ displayName: "上帝模式 闪现位移距离", group: "调试" })
     public godModeFlashDist: number = 1000;
 
     private _godMode: boolean = false;
@@ -70,7 +73,7 @@ export default class GameStart extends mw.Script {
 
     private _moduleReadyWaitingPool: Delegate.SimpleDelegate<void> = new Delegate.SimpleDelegate<void>();
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     onStart(): void {
         Log4Ts.log(GameStart, `this is ${SystemUtil.isClient() ? "client" : "server"}`);
@@ -79,14 +82,14 @@ export default class GameStart extends mw.Script {
 
         this.initialize();
 
-//#region GodMode
+        //#region GodMode
         if (!this.isRelease) {
             this.registerTestKeyT();
             this.registerGodModeG();
             this.registerGodModeShift();
             this.registerGodModeF();
         }
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
     protected onUpdate(dt: number): void {
@@ -131,6 +134,9 @@ export default class GameStart extends mw.Script {
         VisualizeDebug.init(mw.Player.localPlayer);
         KeyboardManager.getInstance();
         PlayerController.getInstance();
+
+        GraphicsSettings.setGraphicsCPULevel(this.graphicsLevel);
+        GraphicsSettings.setGraphicsGPULevel(this.graphicsLevel);
 
         UIService.show(MainPanel);
         MapManager.instance.showMap();
