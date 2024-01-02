@@ -52,7 +52,7 @@ export default class CloudEffect extends mw.Script {
                 if (id == null) return;
                 let type = CompanionHelper.getCompanionType(id);
                 if (!type || type !== CompanionHelper.DragonType.Fire) {
-                    PromotTips.showTips(i18n.lan(i18n.keyTable.Need_fireDargon));
+                    PromotTips.showTips(i18n.lan(i18n.keyTable.Need_FireDargon));
                     return;
                 };
 
