@@ -74,7 +74,7 @@ let languageDefault = {
 
     NonCandidateSceneDragon: "没有可捕获的龙娘哦！",
 
-    Need_fireDargon: "You need to equip Fire Dragon",
+    Need_FireDargon: "You need to equip Fire Dragon",
 
     TinyGameLanKey0004: "恭喜通关小游戏，请在背包中查收奖励",
 
