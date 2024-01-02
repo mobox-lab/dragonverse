@@ -27,6 +27,8 @@ import GMPanel from "./ui/gm/GmPanel";
 import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 import { MapManager } from "./gameplay/map/MapManager";
+import { MapPanel } from "./ui/map/MapPanel";
+import ModuleC = mwext.ModuleC;
 import { Delegate } from "./depend/delegate/Delegate";
 import Enumerable from "linq";
 import GToolkit from "./util/GToolkit";
@@ -49,7 +51,10 @@ export default class GameStart extends mw.Script {
     })
     public language: LanguageTypes = LanguageTypes.English;
 
-    @mw.Property({displayName: "线上存储", group: "发布"})
+    @mw.Property({ displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel })
+    public graphicsLevel: GraphicsLevel = GraphicsLevel.Cinematic3;
+
+    @mw.Property({ displayName: "线上存储", group: "发布" })
     public isOnline: boolean = false;
 
     @mw.Property({displayName: "是否 GM", group: "调试"})
@@ -160,6 +165,9 @@ export default class GameStart extends mw.Script {
         VisualizeDebug.init(mw.Player.localPlayer);
         KeyboardManager.getInstance();
         PlayerController.getInstance();
+
+        GraphicsSettings.setGraphicsCPULevel(this.graphicsLevel);
+        GraphicsSettings.setGraphicsGPULevel(this.graphicsLevel);
 
         UIService.show(MainPanel);
         MapManager.instance.showMap();

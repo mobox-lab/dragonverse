@@ -1,6 +1,4 @@
 import { HeadUIController, HeadUIType } from "../../../controller/HeadUIController";
-import GToolkit from "../../../util/GToolkit";
-import { TalkAction } from "../action/TalkAction";
 import ClientDisplayEntity from "../base/ClientDisplayEntity";
 import { CompanionViewController } from "./CompanionController";
 import { CompanionState } from "./CompanionState";
@@ -20,7 +18,6 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
 
     public nickName: string = ''
 
-    private _talkAction: TalkAction = new TalkAction(['test_tips_1', "test_tips_2"])
 
 
 
@@ -38,7 +35,6 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
             this.postLogicStateChange(this.state);
 
         }
-        this._talkAction.coolDown = GToolkit.random(60, 120) * 100
         HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, this.nickName, new mw.Vector(0, 0, 115))
         super.onInitialize();
 
@@ -46,12 +42,7 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
 
 
     private checkTalkAction() {
-        if (!this._talkAction.inCoolDown) {
-            this._talkAction.execute({
-                ownerGuid: this.gameObject.gameObjectId
-            })
-            this._talkAction.coolDown = GToolkit.random(60, 120) * 100
-        }
+
     }
 
 
