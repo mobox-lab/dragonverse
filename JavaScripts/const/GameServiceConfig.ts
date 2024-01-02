@@ -196,7 +196,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 死亡上浮速度. m/s
      */
-    public static readonly SCENE_DRAGON_DEATH_FLOAT_SPEED=5;
+    public static readonly SCENE_DRAGON_DEATH_FLOAT_SPEED = 5;
 
     /**
      * 场景龙 死亡等待 时长. s
@@ -312,6 +312,26 @@ export default class GameServiceConfig {
     public static get EXPLODE_EFFECT_SCALE() {
         return new Vector(2, 2, 2);
     }
+
+    /**
+     * 镜头推进最近距离.
+     */
+    public static readonly CAMERA_ZOOM_MIN_DIST = 200;
+
+    /**
+     * 镜头拉远最远距离.
+     */
+    public static readonly CAMERA_ZOOM_MAX_DIST = 1200;
+
+    /**
+     * 单次滚轮缩放距离.
+     */
+    public static readonly CAMERA_ZOOM_PER_DIST = 200;
+
+    /**
+     * 镜头缩放 平滑动画时长. ms
+     */
+    public static readonly CAMERA_ZOOM_PER_DURATION = 0.5e3;
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 

@@ -33,6 +33,8 @@ import { Delegate } from "./depend/delegate/Delegate";
 import Enumerable from "linq";
 import GToolkit from "./util/GToolkit";
 import SystemUtil = mw.SystemUtil;
+import Nolan from "./depend/nolan/Nolan";
+import GameServiceConfig from "./const/GameServiceConfig";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -82,21 +84,14 @@ export default class GameStart extends mw.Script {
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+    private _nolan: Nolan;
+
     onStart(): void {
         Log4Ts.log(GameStart, `this is ${SystemUtil.isClient() ? "client" : "server"}`);
         this.useUpdate = true;
         GameStart.instance = this;
 
         this.initialize();
-
-//#region GodMode
-        if (!this.isRelease) {
-            this.registerTestKeyT();
-            this.registerGodModeG();
-            this.registerGodModeShift();
-            this.registerGodModeF();
-        }
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
     protected onUpdate(dt: number): void {
@@ -161,6 +156,26 @@ export default class GameStart extends mw.Script {
     private initializeClient() {
         Log4Ts.debugLevel = this.clientLogLevel;
 
+        this._nolan = Nolan.getInstance();
+
+//#region GodMode
+        if (!this.isRelease) {
+            this.registerTestKeyT();
+            this.registerGodModeG();
+            this.registerGodModeShift();
+            this.registerGodModeF();
+//#region Exist for Test
+//R <<<<<<
+//
+//  ------
+            this.registerKeyScrollUp();
+            this.registerKeyScrollDown();
+//T >>>>>>
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+        }
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
         this.isShowGMPanel && GM.start(GMPanel);
         VisualizeDebug.init(mw.Player.localPlayer);
         KeyboardManager.getInstance();
@@ -210,6 +225,32 @@ export default class GameStart extends mw.Script {
             this._moduleReady = true;
             this._moduleReadyWaitingPool.invoke();
         }
+    }
+
+    private registerKeyScrollUp() {
+        InputUtil.onKeyDown(mw.Keys.MouseScrollUp, () => {
+            Log4Ts.log(GameStart, `Mouse scroll up.`);
+            if (!this._nolan) {
+                Log4Ts.warn(GameStart, `nolan not ready.`);
+                return;
+            }
+
+            const dist = Math.max(GameServiceConfig.CAMERA_ZOOM_MIN_DIST, this._nolan.armLength - GameServiceConfig.CAMERA_ZOOM_PER_DIST);
+            this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
+        });
+    }
+
+    private registerKeyScrollDown() {
+        InputUtil.onKeyDown(mw.Keys.MouseScrollDown, () => {
+            Log4Ts.log(GameStart, `Mouse scroll down.`);
+            if (!this._nolan) {
+                Log4Ts.warn(GameStart, `nolan not ready.`);
+                return;
+            }
+
+            const dist = Math.min(GameServiceConfig.CAMERA_ZOOM_MAX_DIST, this._nolan.armLength + GameServiceConfig.CAMERA_ZOOM_PER_DIST);
+            this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
+        });
     }
 
     private registerTestKeyT() {
