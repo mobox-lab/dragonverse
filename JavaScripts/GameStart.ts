@@ -27,9 +27,9 @@ import GMPanel from "./ui/gm/GmPanel";
 import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 import { MapManager } from "./gameplay/map/MapManager";
-import { MapPanel } from "./ui/map/MapPanel";
-import ModuleC = mwext.ModuleC;
 import { Delegate } from "./depend/delegate/Delegate";
+import Enumerable from "linq";
+import GToolkit from "./util/GToolkit";
 import SystemUtil = mw.SystemUtil;
 
 @Component
@@ -41,7 +41,12 @@ export default class GameStart extends mw.Script {
     @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
-    @mw.Property({displayName: "语言", group: "发布", enumType: LanguageTypes})
+    @mw.Property({
+        displayName: "语言",
+        group: "发布",
+        enumType: LanguageTypes,
+        tooltip: "发布时语言 将依赖于 LocalUtil 获取本地化.",
+    })
     public language: LanguageTypes = LanguageTypes.English;
 
     @mw.Property({displayName: "线上存储", group: "发布"})
@@ -102,8 +107,7 @@ export default class GameStart extends mw.Script {
      * @private
      */
     private initialize() {
-        i18n.use(this.language);
-
+        this.initI18n();
         if (this.isRelease) {
             this.isOnline = true;
             this.isShowGMPanel = false;
@@ -122,6 +126,31 @@ export default class GameStart extends mw.Script {
         TimeManager.getInstance();
         VectorExt.initialize();
         mwaction;
+    }
+
+    private initI18n() {
+        if (!this.isRelease) {
+            i18n.use(this.language);
+            Log4Ts.log(GameStart, `i18n use default language: ${this.language} because is not release.`);
+            return;
+        }
+
+        const localStr = LocaleUtil.getDefaultLocale();
+        Log4Ts.log(GameStart, `current local: ${localStr}`);
+        let useType = this.language;
+        if (!GToolkit.isNullOrEmpty(localStr)) {
+            if (localStr.match(/[Zz][Hh]/)) {
+                useType = LanguageTypes.Chinese;
+            } else if (localStr.match(/[Ee][Nn]/)) {
+                useType = LanguageTypes.English;
+            } else if (localStr.match(/[Jj][Pp]/)) {
+                useType = LanguageTypes.Japanese;
+            } else if (localStr.match(/[Dd][Ee]/)) {
+                useType = LanguageTypes.German;
+            }
+        }
+        Log4Ts.log(GameStart, `use language: ${useType}`);
+        i18n.use(useType);
     }
 
     private initializeClient() {

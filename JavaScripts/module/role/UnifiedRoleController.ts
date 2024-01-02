@@ -131,7 +131,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
                     if (!this._moduleC) Log4Ts.log(UnifiedRoleController, `Role Module C not valid.`);
                     else this._moduleC.initController(this);
                     this._buffs = null;
-                    this._nolan = new Nolan();
+                    this._nolan =  Nolan.getInstance();
                     this.onControllerReadyInClient();
                 });
             }

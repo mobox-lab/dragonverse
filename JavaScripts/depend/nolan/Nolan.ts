@@ -9,6 +9,7 @@ import { FlowTweenTask } from "../waterween/tweenTask/FlowTweenTask";
 import GToolkit from "../../util/GToolkit";
 import { AdvancedTweenTask } from "../waterween/tweenTask/AdvancedTweenTask";
 import Log4Ts from "../log4ts/Log4Ts";
+import { Singleton } from "../singleton/Singleton";
 
 /**
  * 相机配置参数.
@@ -39,9 +40,9 @@ class NolanCameraParams {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  * @licence
  * @internal 仅供私人使用.
- * @version 0.4.1a
+ * @version 0.5.0a
  */
-export default class Nolan {
+export default class Nolan extends Singleton<Nolan>() {
 //region Constant
     public static readonly NORMAL_ARM_LENGTH_VELOCITY = 0.25;
 
@@ -112,19 +113,23 @@ export default class Nolan {
     }
 
 //region Init
-    constructor(defaultParams: NolanCameraParams = undefined) {
+    onConstruct(defaultParams: NolanCameraParams = undefined) {
         Player.asyncGetLocalPlayer().then((value) => {
             this._character = value.character;
             this.attach(Camera.currentCamera);
-            this.defaultParams = defaultParams === undefined ?
+            this.initNolanCameraParams(defaultParams === undefined ?
                 new NolanCameraParams(
                     this._main.springArm.length,
                     this._main.springArm.localTransform.position.y,
                 ) :
-                defaultParams;
+                defaultParams);
             this.init();
             this._ready = true;
         });
+    }
+
+    public initNolanCameraParams(defaultParams: NolanCameraParams) {
+        this.defaultParams = defaultParams;
     }
 
     private init() {
