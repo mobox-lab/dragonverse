@@ -35,7 +35,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient })
+    @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient})
     private _playerId: number;
 
     public get playerId(): number {
@@ -73,7 +73,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Role State Member
-    @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove })
+    @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove})
     isMove: boolean = false;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -131,7 +131,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
                     if (!this._moduleC) Log4Ts.log(UnifiedRoleController, `Role Module C not valid.`);
                     else this._moduleC.initController(this);
                     this._buffs = null;
-                    this._nolan =  Nolan.getInstance();
+                    this._nolan = Nolan.getInstance();
                     this.onControllerReadyInClient();
                 });
             }
@@ -164,7 +164,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
         character.addImpulse(impulse, true);
     }
 
-    private roleIsMove = (path: string[], value: unknown, oldVal: unknown): void => {
+    private roleIsMove = (path: string, value: unknown, oldVal: unknown): void => {
         if (value) {
             Log4Ts.log(UnifiedRoleController, `player is moving.`);
         } else {
