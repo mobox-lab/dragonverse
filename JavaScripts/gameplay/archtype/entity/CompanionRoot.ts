@@ -86,7 +86,7 @@ class CompanionFollowState extends BaseCompanionState {
         distance.z = 0;
 
         if (distance.sqrLength >= (GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET * 2) ** 2 && this.printSampler.length >= 5) {
-            this.fsm.target.worldTransform.position = this.printSampler.shift();
+            this.fsm.target.worldTransform.position = this.fsm.selectInitializePoint();
         }
 
         if (distance.sqrLength < (this.fsm.state.offsetNum) ** 2) {
