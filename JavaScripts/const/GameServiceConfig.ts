@@ -316,22 +316,22 @@ export default class GameServiceConfig {
     /**
      * 镜头推进最近距离.
      */
-    public static readonly CAMERA_ZOOM_MIN_DIST = 200;
+    public static readonly CAMERA_ZOOM_MIN_DIST = 150;
 
     /**
      * 镜头拉远最远距离.
      */
-    public static readonly CAMERA_ZOOM_MAX_DIST = 1200;
+    public static readonly CAMERA_ZOOM_MAX_DIST = 900;
 
     /**
      * 单次滚轮缩放距离.
      */
-    public static readonly CAMERA_ZOOM_PER_DIST = 200;
+    public static readonly CAMERA_ZOOM_PER_DIST = 100;
 
     /**
      * 镜头缩放 平滑动画时长. ms
      */
-    public static readonly CAMERA_ZOOM_PER_DURATION = 0.5e3;
+    public static readonly CAMERA_ZOOM_PER_DURATION = 0.8e3;
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
