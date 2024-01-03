@@ -360,7 +360,7 @@ export default class SceneDragonBehavior extends mw.Script {
                 this._deathStance.play();
                 EffectService.playAtPosition(
                     GameServiceConfig.SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_ID,
-                    GToolkit.detectGameObjectVerticalTerrain(obj, undefined, undefined, GameStart.instance.isRelease)?.position
+                    GToolkit.detectGameObjectVerticalTerrain(obj, undefined, undefined, !GameStart.instance.isRelease)?.position
                     ?? obj.worldTransform.position.clone()
                         .add(GameServiceConfig.SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_LOCATION_OFFSET),
                     {
