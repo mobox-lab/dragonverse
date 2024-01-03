@@ -16,37 +16,37 @@ import { Quest } from "./Quest";
 @mw.Component
 export default class LightDraknessDragonQuest extends Quest {
 
-    @mw.Property({ displayName: "火龙魔法阵guid" })
+    @mw.Property({displayName: "火龙魔法阵guid"})
     private _fireObjGuid: string = "";
 
     private _fireObj: mw.GameObject;
 
-    @mw.Property({ displayName: "水龙魔法阵guid" })
+    @mw.Property({displayName: "水龙魔法阵guid"})
     private _waterObjGuid: string = "";
 
     private _waterObj: mw.GameObject;
 
-    @mw.Property({ displayName: "木龙魔法阵guid" })
+    @mw.Property({displayName: "木龙魔法阵guid"})
     private _woodObjGuid: string = "";
 
     private _woodObj: mw.GameObject;
 
-    @mw.Property({ displayName: "土龙魔法阵guid" })
+    @mw.Property({displayName: "土龙魔法阵guid"})
     private _soilObjGuid: string = "";
 
     private _soilObj: mw.GameObject;
 
-    @mw.Property({ displayName: "终极魔法阵guid" })
+    @mw.Property({displayName: "终极魔法阵guid"})
     private _finalObjGuid: string = "";
 
     private _finalObj: mw.GameObject;
 
-    @mw.Property({ displayName: "终极魔法阵碰撞guid" })
+    @mw.Property({displayName: "终极魔法阵碰撞guid"})
     private _finalCollisionGuid: string = "";
 
     private _finalCollision: mw.GameObject;
 
-    @mw.Property({ displayName: "终极魔法阵触发器guid" })
+    @mw.Property({displayName: "终极魔法阵触发器guid"})
     private _finalTriggerGuid: string = "";
 
     private _finalTrigger: mw.Trigger;
@@ -61,7 +61,7 @@ export default class LightDraknessDragonQuest extends Quest {
         if (customData) {
             this._infos = JSON.parse(customData);
         } else {
-            this._infos = { isComplete: false }
+            this._infos = {isComplete: false};
         }
     }
 
@@ -69,15 +69,15 @@ export default class LightDraknessDragonQuest extends Quest {
         super.onInitialize();
         this.initObj();
 
-        // if (this._infos.isComplete) {
-        //     this.taskComplete();
-        // } else {
-        this.showMagicCircle();
-
-        Event.addLocalListener(EventDefine.OnDragonQuestsComplete, () => {
+        if (this._infos.isComplete) {
+            this.taskComplete();
+        } else {
             this.showMagicCircle();
-        })
-        //}
+
+            Event.addLocalListener(EventDefine.OnDragonQuestsComplete, () => {
+                this.showMagicCircle();
+            });
+        }
     }
 
     private initObj() {
@@ -86,22 +86,22 @@ export default class LightDraknessDragonQuest extends Quest {
         this._woodObj = mw.GameObject.findGameObjectById(this._woodObjGuid);
         this._soilObj = mw.GameObject.findGameObjectById(this._soilObjGuid);
         this._finalObj = mw.GameObject.findGameObjectById(this._finalObjGuid);
-        this._finalCollision = mw.GameObject.findGameObjectById(this._finalCollisionGuid)
-        // this._finalTrigger = mw.GameObject.findGameObjectById(this._finalTriggerGuid) as mw.Trigger;
+        this._finalCollision = mw.GameObject.findGameObjectById(this._finalCollisionGuid);
+        this._finalTrigger = mw.GameObject.findGameObjectById(this._finalTriggerGuid) as mw.Trigger;
 
     }
 
 
-    // private taskComplete() {
-    //     this._fireObj.setVisibility(mw.PropertyStatus.On);
-    //     this._waterObj.setVisibility(mw.PropertyStatus.On);
-    //     this._woodObj.setVisibility(mw.PropertyStatus.On);
-    //     this._soilObj.setVisibility(mw.PropertyStatus.On);
+    private taskComplete() {
+        this._fireObj.setVisibility(mw.PropertyStatus.On);
+        this._waterObj.setVisibility(mw.PropertyStatus.On);
+        this._woodObj.setVisibility(mw.PropertyStatus.On);
+        this._soilObj.setVisibility(mw.PropertyStatus.On);
 
-    //     this._finalObj.destroy();
-    //     //this._finalTrigger.destroy();
-    //     this._finalCollision.destroy();
-    // }
+        this._finalObj.destroy();
+        this._finalTrigger.destroy();
+        this._finalCollision.destroy();
+    }
 
     /**
      * 根据数据显示魔法阵
@@ -139,7 +139,8 @@ export default class LightDraknessDragonQuest extends Quest {
                         this._soilObj.setVisibility(mw.PropertyStatus.Off);
                     }
                     break;
-                default: break;
+                default:
+                    break;
             }
             if (!data.isComplete) {
                 isAllComplete = false;
@@ -161,7 +162,7 @@ export default class LightDraknessDragonQuest extends Quest {
                 this.updateTaskProgress(JSON.stringify(this._infos));
             }
         }
-    }
+    };
 
     onActivated(): void {
     }
