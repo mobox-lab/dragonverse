@@ -23,64 +23,64 @@ export const RunningGameGetParticle: string = "153617";
 @mw.Component
 export default class RunningGameQuest extends Quest {
 
-    @mw.Property({displayName: "起点碰撞体guid"})
+    @mw.Property({ displayName: "起点碰撞体guid" })
     private _startObjGuid: string = "";
 
-    @mw.Property({group: "火龙魔法阵", displayName: "魔法阵guid"})
+    @mw.Property({ group: "火龙魔法阵", displayName: "魔法阵guid" })
     private _fireObjGuid: string = "";
 
-    @mw.Property({group: "火龙魔法阵", displayName: "解封特效guid"})
+    @mw.Property({ group: "火龙魔法阵", displayName: "解封特效guid" })
     private _fireBreakGuid: string = "";
 
-    @mw.Property({group: "火龙魔法阵", displayName: "触发器guid"})
+    @mw.Property({ group: "火龙魔法阵", displayName: "触发器guid" })
     private _fireTriggerGuid: string = "";
 
-    @mw.Property({group: "火龙魔法阵", displayName: "火龙ID"})
+    @mw.Property({ group: "火龙魔法阵", displayName: "火龙ID" })
     private _fireId: number = 1;
 
-    @mw.Property({group: "水龙魔法阵", displayName: "魔法阵guid"})
+    @mw.Property({ group: "水龙魔法阵", displayName: "魔法阵guid" })
     private _waterObjGuid: string = "";
 
-    @mw.Property({group: "水龙魔法阵", displayName: "解封特效guid"})
+    @mw.Property({ group: "水龙魔法阵", displayName: "解封特效guid" })
     private _waterBreakGuid: string = "";
 
-    @mw.Property({group: "水龙魔法阵", displayName: "触发器guid"})
+    @mw.Property({ group: "水龙魔法阵", displayName: "触发器guid" })
     private _waterTriggerGuid: string = "";
 
-    @mw.Property({group: "水龙魔法阵", displayName: "水龙ID"})
+    @mw.Property({ group: "水龙魔法阵", displayName: "水龙ID" })
     private _waterId: number = 2;
 
-    @mw.Property({group: "木龙魔法阵", displayName: "魔法阵guid"})
+    @mw.Property({ group: "木龙魔法阵", displayName: "魔法阵guid" })
     private _woodObjGuid: string = "";
 
-    @mw.Property({group: "木龙魔法阵", displayName: "解封特效guid"})
+    @mw.Property({ group: "木龙魔法阵", displayName: "解封特效guid" })
     private _woodBreakGuid: string = "";
 
-    @mw.Property({group: "木龙魔法阵", displayName: "触发器guid"})
+    @mw.Property({ group: "木龙魔法阵", displayName: "触发器guid" })
     private _woodTriggerGuid: string = "";
 
-    @mw.Property({group: "木龙魔法阵", displayName: "木龙ID"})
+    @mw.Property({ group: "木龙魔法阵", displayName: "木龙ID" })
     private _woodId: number = 3;
 
-    @mw.Property({group: "土龙魔法阵", displayName: "魔法阵guid"})
+    @mw.Property({ group: "土龙魔法阵", displayName: "魔法阵guid" })
     private _soilObjGuid: string = "";
 
-    @mw.Property({group: "土龙魔法阵", displayName: "解封特效guid"})
+    @mw.Property({ group: "土龙魔法阵", displayName: "解封特效guid" })
     private _soilBreakjGuid: string = "";
 
-    @mw.Property({group: "土龙魔法阵", displayName: "触发器guid"})
+    @mw.Property({ group: "土龙魔法阵", displayName: "触发器guid" })
     private _soilTriggerGuid: string = "";
 
-    @mw.Property({group: "土龙魔法阵", displayName: "土龙ID"})
+    @mw.Property({ group: "土龙魔法阵", displayName: "土龙ID" })
     private _sildId: number = 4;
 
-    @mw.Property({group: "终极魔法阵", displayName: "魔法阵guid"})
+    @mw.Property({ group: "终极魔法阵", displayName: "魔法阵guid" })
     private _finalGuid: string = "";
 
-    @mw.Property({group: "终极魔法阵", displayName: "解封特效guid"})
+    @mw.Property({ group: "终极魔法阵", displayName: "解封特效guid" })
     private _finalBreakGuid: string = "";
 
-    @mw.Property({group: "终极魔法阵", displayName: "碰撞模型guid"})
+    @mw.Property({ group: "终极魔法阵", displayName: "碰撞模型guid" })
     private _finalCollision: string = "";
 
     private _finalObj: mw.GameObject;
@@ -109,7 +109,7 @@ export default class RunningGameQuest extends Quest {
         } else {
             this._infos = [];
             for (let i = 1; i < 5; i++) {
-                this._infos.push({type: i, complete: false});
+                this._infos.push({ type: i, complete: false });
             }
             // this._infos = GameConfig.Dragon.getAllElement().map((val) => {
             //     return { type: val.elementalId, complete: false }
@@ -201,7 +201,7 @@ export default class RunningGameQuest extends Quest {
         //     this._gameMode.onEnd();
         //     this._gameMode = null;
         // }
-        AudioController.getInstance().play(1);
+        // AudioController.getInstance().play(1);
 
         this.runningGameEnd();
         Player.localPlayer.character.switchToWalking();
@@ -260,7 +260,7 @@ export default class RunningGameQuest extends Quest {
     };
 
     private runningGameBack = () => {
-        AudioController.getInstance().play(1);
+        // AudioController.getInstance().play(1);
 
         const character = Player.localPlayer.character;
         character.movementEnabled = true;
