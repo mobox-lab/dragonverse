@@ -93,7 +93,15 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
                 throw new Error(`can not find dragon config with id ${dragonId}`);
             }
             let nickName = GameConfig.BagItem.getElement(bagId).name;
-            controller.createCompanion(config.avatar.toString(), bagId.toString(), nickName);
+            //翅膀信息读表
+            let wingGuid = config.wingGuid;
+            let wingTransform = config.wingTransform;
+            let transform = null;
+            if (wingTransform) {
+                transform = new Transform(new Vector(wingTransform[0][0], wingTransform[0][1], wingTransform[0][2]), new Rotation(wingTransform[1][0], wingTransform[1][1], wingTransform[1][2]), new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2]));
+            }
+
+            controller.createCompanion(config.avatar.toString(), bagId.toString(), nickName, wingGuid, transform);
         } else {
             controller.removeCompanionWithSign(bagId.toString());
         }

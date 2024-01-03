@@ -185,7 +185,7 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
 
     private _logicController: CompanionLogicController;
 
-
+    public _wing: mw.GameObject;
     protected async onInitialize() {
         if (mw.SystemUtil.isClient()) {
 
@@ -193,6 +193,19 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
             let prefab = this.displayObject = await mw.GameObject.asyncSpawn("Character") as mw.Character;
             prefab.setDescription([this.displayGuid]);
             let character = mw.Player.getPlayer(this.playerId).character;
+
+            //添加翅膀
+            if (this.wingGuid && this.wingTransform) {
+                this._wing = await mw.GameObject.asyncSpawn(this.wingGuid);
+
+                prefab.attachToSlot(this._wing, HumanoidSlotType.BackOrnamental);
+                TimeUtil.delayExecute(() => {
+                    (this._wing as Effect).play();
+                    this._wing.localTransform = this.wingTransform;
+                }, 1);
+            }
+
+
             prefab.addMovement(mw.Vector.forward);
             prefab.maxWalkSpeed = GameServiceConfig.PARTNER_DRAGON_MAX_WALK_SPEED;
             if (this.isLocalPlayer()) {
