@@ -80,7 +80,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
         const createSceneDragonExistInfo = async () => {
             EffectService.playAtPosition(GameServiceConfig.SCENE_DRAGON_BIRTH_EXPLODE_EFFECT_ID, item.location);
-            const obj = await mw.GameObject.asyncSpawn("Character") as mw.Character;
+            const obj: Character = await mw.GameObject.asyncSpawn("Character");
             obj.setDescription([assetId]);
 
             const behavior = await mw.Script.spawnScript(SceneDragonBehavior, false);

@@ -4,21 +4,24 @@ import { CompanionViewController } from "./CompanionController";
 import { CompanionState } from "./CompanionState";
 
 
-
-
 @mw.Component
 export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
 
 
-
-
-
     @DragonEntity.required
-    public controller: CompanionViewController
+    public controller: CompanionViewController;
 
-    public nickName: string = ''
+    public nickName: string = "";
 
+    private _gameObject: GameObject;
 
+    public get gameObject(): GameObject {
+        return this._gameObject;
+    }
+
+    public set gameObject(value: GameObject) {
+        this._gameObject = value;
+    }
 
 
     protected onInitialize(): void {
@@ -35,7 +38,7 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
             this.postLogicStateChange(this.state);
 
         }
-        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, this.nickName, new mw.Vector(0, 0, 115))
+        HeadUIController.getInstance().registerHeadUI(this.gameObject, HeadUIType.Dragon, this.nickName, new mw.Vector(0, 0, 115));
         super.onInitialize();
 
     }
