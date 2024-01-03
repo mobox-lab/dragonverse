@@ -202,11 +202,6 @@ export default class RunningGameQuest extends Quest {
         //     this._gameMode = null;
         // }
         AudioController.getInstance().play(1);
-        ModuleService.getModule(AuthModuleC).reportSubGameInfo(
-            TimeManager.getInstance().currentTime,
-            SubGameTypes.Parkour,
-            this._gameMode.playScore,
-        );
 
         this.runningGameEnd();
         Player.localPlayer.character.switchToWalking();

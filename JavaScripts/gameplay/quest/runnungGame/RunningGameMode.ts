@@ -6,6 +6,9 @@ import { RunningGameData, RunningGameEndPanel } from "../../../ui/runningGame/Ru
 import { RunningGameGamingPanel } from "../../../ui/runningGame/RunningGameGamingPanel";
 import { RunningGamePreparePanel } from "../../../ui/runningGame/RunningGamePreparePanel";
 import { RunningGameController } from "./RuninngGameController";
+import { AuthModuleC } from "../../../module/auth/AuthModule";
+import { TimeManager } from "../../../controller/TimeManager";
+import { SubGameTypes } from "../../../const/SubGameTypes";
 
 /**
  * 跑酷游戏状态
@@ -107,9 +110,15 @@ export class RunningGameMode {
                 this.onStart();
                 break;
             case RunningGameStatus.End:
+                ModuleService.getModule(AuthModuleC).reportSubGameInfo(
+                    TimeManager.getInstance().currentTime,
+                    SubGameTypes.Parkour,
+                    this.playScore,
+                );
                 Event.dispatchToLocal(EventDefine.OnRuningGameEnd);
                 break;
-            default: break;
+            default:
+                break;
         }
     }
 
@@ -151,7 +160,7 @@ export class RunningGameMode {
         if (this._gameTime <= 0) {
             this.setStatus(RunningGameStatus.End);
         }
-    }
+    };
 
     public onEnd() {
         if (this._hander) {
@@ -197,7 +206,7 @@ export class RunningGameMode {
         AudioController.getInstance().play(20);
 
         this._enterSpeedUpTime++;
-        this.addScore(this._speedScore)
+        this.addScore(this._speedScore);
         this._gameController?.enterSpeedUp();
     }
 
@@ -211,7 +220,7 @@ export class RunningGameMode {
     public enterTransStart() {
         AudioController.getInstance().play(16);
 
-        this.addScore(this._transStartScore)
+        this.addScore(this._transStartScore);
         this.addGameTime(4);
     }
 
@@ -231,10 +240,6 @@ export class RunningGameMode {
         this._gameController?.enterSpeedUp();
         this.addScore(this._timeScore);
     }
-
-
-
-
 
 
     // public clear() {
