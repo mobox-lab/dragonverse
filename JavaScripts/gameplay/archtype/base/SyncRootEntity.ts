@@ -47,7 +47,7 @@ export abstract class SyncRootEntity<T extends IState> extends InitializeChecker
 
         if (mw.SystemUtil.isClient()) {
             this.displayObject = await mw.GameObject.asyncSpawn(this.displayGuid);
-            let scripts = this.displayObject.getComponents();
+            let scripts = this.displayObject.getScripts();
             for (const script of scripts) {
                 if (script instanceof ClientDisplayEntity) {
                     script.setHosted(this);
