@@ -1,5 +1,6 @@
 import AudioController from "../../controller/audio/AudioController";
 import { RoleModuleC } from "../../module/role/RoleModule";
+import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 
 /**
  * 弹跳蘑菇
@@ -63,10 +64,10 @@ export default class MushRoom extends mw.Script {
         if (obj instanceof mw.Character) {
             if (obj === Player.localPlayer.character) {
                 AudioController.getInstance().play(9, this._trigger);
-                ModuleService
-                    .getModule(RoleModuleC)
-                    .controller
-                    .addImpulse(obj, new mw.Vector(0, 0, this._impulse));
+                obj
+                    .player
+                    .getPlayerState(UnifiedRoleController)
+                    ?.addImpulse(obj, new mw.Vector(0, 0, this._impulse));
                 this.mushRoomJump();
             }
         }

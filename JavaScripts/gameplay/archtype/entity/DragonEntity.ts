@@ -23,7 +23,6 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
         this._gameObject = value;
     }
 
-
     protected onInitialize(): void {
         if (this.isDisplayForLocal()) {
 

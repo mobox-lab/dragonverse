@@ -14,15 +14,16 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
     private _questMap: Map<number, Quest> = new Map();
 
     protected onStart(): void {
+        Log4Ts.log(QuestModuleC, `initialize tasks.`);
 
         this.initializeTasks();
     }
 
     private async initializeTasks() {
         let character = Player.localPlayer.character;
-        let roleController = Player.localPlayer.getPlayerState(UnifiedRoleController);
-        roleController.pickController = await mw.Script.spawnScript(PickerController);
+
         for (const task of this.data) {
+            Log4Ts.log(QuestModuleC, `initialize task.`, `task id: ${task.questId}`);
             let config = GameConfig.Task.getElement(task.questId);
             if (!config) {
                 Log4Ts.warn(QuestModuleC,

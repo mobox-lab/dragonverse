@@ -24,17 +24,6 @@ export class RoleModuleC extends JModuleC<RoleModuleS, RoleModuleData> {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    private _controller: UnifiedRoleController = null;
-
-    /**
-     * 本地玩家控制器.
-     * 可为 null.
-     * null 时本地模块服务未就绪 不可用.
-     */
-    public get controller(): UnifiedRoleController | null {
-        return this._controller;
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -63,7 +52,6 @@ export class RoleModuleC extends JModuleC<RoleModuleS, RoleModuleData> {
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
         Player.getAllPlayers().forEach((player) => {
-            // player.character.displayName = '';
             let ui = UIService.create(HiddenNameUI_Generate);
             player.character.overheadUI.setTargetUIWidget(ui.uiWidgetBase);
         });
@@ -90,15 +78,6 @@ export class RoleModuleC extends JModuleC<RoleModuleS, RoleModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
-    /**
-     * 初始化本地控制器.
-     * @param controller
-     * @friend {@link UnifiedRoleController}
-     */
-    public initController(controller: UnifiedRoleController) {
-        this._controller = controller;
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
@@ -145,21 +124,12 @@ export class RoleModuleS extends JModuleS<RoleModuleC, RoleModuleData> {
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
-        // this.removeController(player.playerId);
         player.getPlayerState(UnifiedRoleController).onDestroy();
     }
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
 
-        // Script.spawnScript(UnifiedRoleController).then(
-        //     (controller) => {
-        //         this._controllers.set(0, controller as UnifiedRoleController);
-        //         controller.initInServer(player.playerId);
-        //     },
-        // );
-
-        // player.character.displayName = '';
         player.getPlayerState(UnifiedRoleController).initInServer(player.playerId);
     }
 

@@ -11,75 +11,76 @@ import { EventDefine } from "../../../const/EventDefine";
 import AudioController from "../../../controller/audio/AudioController";
 import { CircleType } from "../../interactive/CircleTrigger";
 import { Quest } from "../Quest";
-import { RunningGameController } from "./RuninngGameController";
 import { RunningGameMagicCircle } from "./RunningGameMagicCircle";
 import { RunningGameMode, RunningGameStatus } from "./RunningGameMode";
-
-
+import { AuthModuleC } from "../../../module/auth/AuthModule";
+import { TimeManager } from "../../../controller/TimeManager";
+import { SubGameTypes } from "../../../const/SubGameTypes";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 
 export const RunningGameGetParticle: string = "153617";
 @mw.Component
 export default class RunningGameQuest extends Quest {
 
-    @mw.Property({ displayName: "起点碰撞体guid" })
+    @mw.Property({displayName: "起点碰撞体guid"})
     private _startObjGuid: string = "";
 
-    @mw.Property({ group: "火龙魔法阵", displayName: "魔法阵guid" })
+    @mw.Property({group: "火龙魔法阵", displayName: "魔法阵guid"})
     private _fireObjGuid: string = "";
 
-    @mw.Property({ group: "火龙魔法阵", displayName: "解封特效guid" })
+    @mw.Property({group: "火龙魔法阵", displayName: "解封特效guid"})
     private _fireBreakGuid: string = "";
 
-    @mw.Property({ group: "火龙魔法阵", displayName: "触发器guid" })
+    @mw.Property({group: "火龙魔法阵", displayName: "触发器guid"})
     private _fireTriggerGuid: string = "";
 
-    @mw.Property({ group: "火龙魔法阵", displayName: "火龙ID" })
+    @mw.Property({group: "火龙魔法阵", displayName: "火龙ID"})
     private _fireId: number = 1;
 
-    @mw.Property({ group: "水龙魔法阵", displayName: "魔法阵guid" })
+    @mw.Property({group: "水龙魔法阵", displayName: "魔法阵guid"})
     private _waterObjGuid: string = "";
 
-    @mw.Property({ group: "水龙魔法阵", displayName: "解封特效guid" })
+    @mw.Property({group: "水龙魔法阵", displayName: "解封特效guid"})
     private _waterBreakGuid: string = "";
 
-    @mw.Property({ group: "水龙魔法阵", displayName: "触发器guid" })
+    @mw.Property({group: "水龙魔法阵", displayName: "触发器guid"})
     private _waterTriggerGuid: string = "";
 
-    @mw.Property({ group: "水龙魔法阵", displayName: "水龙ID" })
+    @mw.Property({group: "水龙魔法阵", displayName: "水龙ID"})
     private _waterId: number = 2;
 
-    @mw.Property({ group: "木龙魔法阵", displayName: "魔法阵guid" })
+    @mw.Property({group: "木龙魔法阵", displayName: "魔法阵guid"})
     private _woodObjGuid: string = "";
 
-    @mw.Property({ group: "木龙魔法阵", displayName: "解封特效guid" })
+    @mw.Property({group: "木龙魔法阵", displayName: "解封特效guid"})
     private _woodBreakGuid: string = "";
 
-    @mw.Property({ group: "木龙魔法阵", displayName: "触发器guid" })
+    @mw.Property({group: "木龙魔法阵", displayName: "触发器guid"})
     private _woodTriggerGuid: string = "";
 
-    @mw.Property({ group: "木龙魔法阵", displayName: "木龙ID" })
+    @mw.Property({group: "木龙魔法阵", displayName: "木龙ID"})
     private _woodId: number = 3;
 
-    @mw.Property({ group: "土龙魔法阵", displayName: "魔法阵guid" })
+    @mw.Property({group: "土龙魔法阵", displayName: "魔法阵guid"})
     private _soilObjGuid: string = "";
 
-    @mw.Property({ group: "土龙魔法阵", displayName: "解封特效guid" })
+    @mw.Property({group: "土龙魔法阵", displayName: "解封特效guid"})
     private _soilBreakjGuid: string = "";
 
-    @mw.Property({ group: "土龙魔法阵", displayName: "触发器guid" })
+    @mw.Property({group: "土龙魔法阵", displayName: "触发器guid"})
     private _soilTriggerGuid: string = "";
 
-    @mw.Property({ group: "土龙魔法阵", displayName: "土龙ID" })
+    @mw.Property({group: "土龙魔法阵", displayName: "土龙ID"})
     private _sildId: number = 4;
 
-    @mw.Property({ group: "终极魔法阵", displayName: "魔法阵guid" })
+    @mw.Property({group: "终极魔法阵", displayName: "魔法阵guid"})
     private _finalGuid: string = "";
 
-    @mw.Property({ group: "终极魔法阵", displayName: "解封特效guid" })
+    @mw.Property({group: "终极魔法阵", displayName: "解封特效guid"})
     private _finalBreakGuid: string = "";
 
-    @mw.Property({ group: "终极魔法阵", displayName: "碰撞模型guid" })
+    @mw.Property({group: "终极魔法阵", displayName: "碰撞模型guid"})
     private _finalCollision: string = "";
 
     private _finalObj: mw.GameObject;
@@ -108,7 +109,7 @@ export default class RunningGameQuest extends Quest {
         } else {
             this._infos = [];
             for (let i = 1; i < 5; i++) {
-                this._infos.push({ type: i, complete: false });
+                this._infos.push({type: i, complete: false});
             }
             // this._infos = GameConfig.Dragon.getAllElement().map((val) => {
             //     return { type: val.elementalId, complete: false }
@@ -146,7 +147,8 @@ export default class RunningGameQuest extends Quest {
                 case 4:
                     new RunningGameMagicCircle(this._soilObjGuid, this._soilBreakjGuid, this._soilTriggerGuid, this._sildId, info.complete);
                     break;
-                default: break;
+                default:
+                    break;
             }
         }
         if (this.checkIsAllComplete()) {
@@ -158,6 +160,7 @@ export default class RunningGameQuest extends Quest {
 
 
     private initEvents() {
+        Log4Ts.log(RunningGameQuest, `init events`);
         mw.Event.addLocalListener(EventDefine.PlayerEnterCircleTrigger, this.onPlayerEnterCircleTrigger);
         mw.Event.addLocalListener(EventDefine.OnRuningGameEnd, this.runningGameEnd);
         mw.Event.addLocalListener(EventDefine.OnRunningGameBack, this.runningGameBack);
@@ -199,6 +202,11 @@ export default class RunningGameQuest extends Quest {
         //     this._gameMode = null;
         // }
         AudioController.getInstance().play(1);
+        ModuleService.getModule(AuthModuleC).reportSubGameInfo(
+            TimeManager.getInstance().currentTime,
+            SubGameTypes.Parkour,
+            this._gameMode.playScore,
+        );
 
         this.runningGameEnd();
         Player.localPlayer.character.switchToWalking();
@@ -235,16 +243,17 @@ export default class RunningGameQuest extends Quest {
             case CircleType.GameEnd:
                 this.onGameEnd();
                 break;
-            default: break;
+            default:
+                break;
         }
 
-    }
+    };
 
 
     private runningGameStart = () => {
         (this._startObj as mw.Model).setCollision(mw.CollisionStatus.Off);
         (this._startObj as mw.Model).setVisibility(mw.PropertyStatus.Off);
-    }
+    };
 
     private runningGameEnd = () => {
         if (this._gameMode) {
@@ -253,7 +262,7 @@ export default class RunningGameQuest extends Quest {
         }
         (this._startObj as mw.Model).setCollision(mw.CollisionStatus.On);
         (this._startObj as mw.Model).setVisibility(mw.PropertyStatus.On);
-    }
+    };
 
     private runningGameBack = () => {
         AudioController.getInstance().play(1);
@@ -262,14 +271,14 @@ export default class RunningGameQuest extends Quest {
         character.movementEnabled = true;
         character.switchToWalking();
         character.worldTransform.position = GameConfig.Global.RG_Back_Loc.vec;
-    }
+    };
 
     private runningGameAgain = () => {
         const character = Player.localPlayer.character;
         //character.switchToWalking();
         character.movementEnabled = true;
         character.worldTransform.position = GameConfig.Global.RG_Start_Loc.vec;
-    }
+    };
 
     private runningGameUnlockMagicCircle = (type: number) => {
         const info = this._infos.find((val) => {
@@ -287,7 +296,7 @@ export default class RunningGameQuest extends Quest {
                 this._finalBreakObj.destroy();
             });
         }
-    }
+    };
 
 
     private checkIsAllComplete() {
@@ -302,14 +311,11 @@ export default class RunningGameQuest extends Quest {
     }
 
 
-
     onActivated(): void {
     }
 
     onComplete(): void {
     }
-
-
 
 
 }

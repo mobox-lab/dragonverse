@@ -20,6 +20,7 @@ import { EventDefine } from "../../const/EventDefine";
 import { arrayToRot, arrayToVec } from "../../util/CommonUtil";
 import { RoleModuleC } from "../../module/role/RoleModule";
 import AudioController from "../../controller/audio/AudioController";
+import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 
 const IceGuid: string = "88BDBCEE422124B5D71B199F040FC9F5";
 const IceBombGuid: string = "89089";
@@ -71,10 +72,10 @@ export class IceBlock {
                 if (obj.velocity.z <= -this._config.triggerSpeedZ) {
                     AudioController.getInstance().play(8, this._trigger);
 
-                    ModuleService
-                        .getModule(RoleModuleC)
-                        .controller
-                        .addImpulse(obj, new mw.Vector(0, 0, this._config.impulse));
+                    obj
+                        .player
+                        .getPlayerState(UnifiedRoleController)
+                        ?.addImpulse(obj, new mw.Vector(0, 0, this._config.impulse));
                     GameObjPool.despawn(this._iceObj);
                     this._trigger.onEnter.clear();
                     GameObjPool.despawn(this._trigger);

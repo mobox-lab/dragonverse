@@ -10,6 +10,7 @@ import { QuestStateEnum } from "../../module/quest/Config";
 import GameObject = mw.GameObject;
 import { GameConfig } from "../../config/GameConfig";
 import AudioController from "../../controller/audio/AudioController";
+import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 
 interface FireBlockCompleteInfo {
     guid: string;
@@ -61,14 +62,6 @@ export default class FireDragonQuest extends Quest {
     private _blockMap: Map<string, FirePuzzleBlock> = new Map<string, FirePuzzleBlock>();
 
     private _rewardPuzzle: FireRewardPuzzle;
-
-    private _roleModule: RoleModuleC = null;
-
-    private get roleModule(): RoleModuleC | null {
-        if (!this._roleModule) this._roleModule = ModuleService.getModule(RoleModuleC) ?? null;
-
-        return this._roleModule;
-    }
 
     protected onSerializeCustomData(customData: string) {
         if (customData) {
@@ -162,14 +155,6 @@ export default class FireDragonQuest extends Quest {
         this._eventListeners.forEach(value => value.disconnect());
     }
 
-    private checkRoleModuleValid(): boolean {
-        if (!this.roleModule) {
-            Log4Ts.warn(FirePuzzleBlock, `role module is not ready.`);
-            return false;
-        }
-        return true;
-    }
-
     private tryGetBlock(guid: string): FirePuzzleBlock | null {
         const block = this._blockMap.get(guid);
         if (!block) {
@@ -193,14 +178,14 @@ export default class FireDragonQuest extends Quest {
     }
 
     private addWetBuff(duration: number) {
-        this.roleModule
-            .controller
+        Player
+            .localPlayer
+            .getPlayerState(UnifiedRoleController)
             ?.addWetBuff(duration * 1e3);
     }
 
 //#region Event Callback
     public onPlayerEnterFirePuzzleBlock = (guid: string, force: number, wetBuffDuration: number) => {
-        if (!this.checkRoleModuleValid()) return;
         const block = this.tryGetBlock(guid);
         if (!block) return;
         const completeInfo = this.tryGetCompleteInfo(guid);
@@ -208,8 +193,9 @@ export default class FireDragonQuest extends Quest {
         if (this.isWater(block, completeInfo)) {
             this.addWetBuff(wetBuffDuration);
         } else {
-            this.roleModule
-                .controller
+            Player
+                .localPlayer
+                .getPlayerState(UnifiedRoleController)
                 ?.touchMagma(
                     force,
                     block.gameObject.worldTransform.position,
@@ -218,7 +204,6 @@ export default class FireDragonQuest extends Quest {
     };
 
     public onPlayerLeaveFirePuzzleBlock = (guid: string, wetBuffDuration: number) => {
-        if (!this.checkRoleModuleValid()) return;
         const block = this.tryGetBlock(guid);
         if (!block) return;
         const completeInfo = this.tryGetCompleteInfo(guid);

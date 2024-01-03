@@ -17,6 +17,7 @@ export abstract class Quest extends InitializeCheckerScript {
     }
 
     public set gameObject(value: GameObject) {
+        super.gameObject = value;
         this._gameObject = value;
     }
 

@@ -201,7 +201,7 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
                 this.useUpdate = true;
             }
 
-            mw.Script.spawnScript(DragonEntity, false).then((value) => {
+            mw.Script.spawnScript(DragonEntity, false, prefab).then((value) => {
                 value.gameObject = prefab;
                 value.controller = new CompanionViewController();
                 value.controller.target = character;

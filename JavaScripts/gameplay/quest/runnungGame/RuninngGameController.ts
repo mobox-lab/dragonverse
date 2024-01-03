@@ -1,9 +1,8 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EventDefine } from "../../../const/EventDefine";
 import AudioController from "../../../controller/audio/AudioController";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
-import { RoleModuleC } from "../../../module/role/RoleModule";
 import { arrayToRot, arrayToVec } from "../../../util/CommonUtil";
+import UnifiedRoleController from "../../../module/role/UnifiedRoleController";
 
 export class RunningGameController {
 
@@ -171,7 +170,10 @@ export class RunningGameController {
             this.maxSpeed = 0;
             this.curFov = this._defaultFov;
             Event.dispatchToLocal(EventDefine.OnRunningGameInfoChange, "撞击碰撞体");
-            ModuleService.getModule(RoleModuleC).controller.addImpulse(this._character, fowardVec);
+            Player
+                .localPlayer
+                .getPlayerState(UnifiedRoleController)
+                ?.addImpulse(this._character, fowardVec);
             mw.TimeUtil.delayExecute(() => {
                 this.maxSpeed = this._defaultMaxSpeed
             }, 10);

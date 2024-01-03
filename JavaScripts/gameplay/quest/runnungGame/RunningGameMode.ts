@@ -1,7 +1,6 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EventDefine } from "../../../const/EventDefine";
 import AudioController from "../../../controller/audio/AudioController";
-import { UI } from "../../../edtors/DragonInfo";
 import { QuestModuleC } from "../../../module/quest/QuestModuleC";
 import { RunningGameData, RunningGameEndPanel } from "../../../ui/runningGame/RunningGameEndPanel";
 import { RunningGameGamingPanel } from "../../../ui/runningGame/RunningGameGamingPanel";
@@ -55,6 +54,10 @@ export class RunningGameMode {
     private _transEndScore: number;
 
     private _playScore: number;
+
+    public get playScore(): number {
+        return this._playScore;
+    }
 
 
     constructor() {

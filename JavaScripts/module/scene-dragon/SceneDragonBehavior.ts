@@ -169,12 +169,13 @@ export default class SceneDragonBehavior extends mw.Script {
     private _deathStance: Stance;
 
     private _gameObject: GameObject;
-    
+
     public get gameObject(): mw.GameObject {
         return this._gameObject;
     }
 
     public set gameObject(value: mw.GameObject) {
+        super.gameObject = value;
         this._gameObject = value;
     }
 

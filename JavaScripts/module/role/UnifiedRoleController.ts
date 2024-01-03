@@ -1,4 +1,3 @@
-import { RoleModuleC, RoleModuleS } from "./RoleModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { AddBuffResult, BuffContainer } from "../../depend/buff/BuffContainer";
 import { CheckMoveBuff } from "../../buffs/CheckMoveBuff";
@@ -43,10 +42,6 @@ export default class UnifiedRoleController extends mw.PlayerState {
         return this._playerId;
     }
 
-    private _moduleC: RoleModuleC = null;
-
-    private _moduleS: RoleModuleS = null;
-
     private _buffs: BuffContainer<UnifiedRoleController> = null;
 
     private _throwAnim: Animation = null;
@@ -59,10 +54,6 @@ export default class UnifiedRoleController extends mw.PlayerState {
      */
     public get pickController(): PickerController {
         return this._pickControllerInC;
-    }
-
-    public set pickController(value: PickerController) {
-        this._pickControllerInC = value;
     }
 
     public get buffs(): BuffContainer<UnifiedRoleController> {
@@ -137,18 +128,17 @@ export default class UnifiedRoleController extends mw.PlayerState {
         if (!SystemUtil.isClient()) {
             return;
         }
+        Log4Ts.log(UnifiedRoleController, `register in client.`);
         Player.asyncGetLocalPlayer().then(value => {
             if (value.playerId !== this._playerId) {
                 this.destroy();
             } else {
-                ModuleService.ready().then(() => {
-                    this._moduleC = ModuleService.getModule<RoleModuleC>(RoleModuleC);
-                    if (!this._moduleC) Log4Ts.log(UnifiedRoleController, `Role Module C not valid.`);
-                    else this._moduleC.initController(this);
-                    this._buffs = null;
-                    this._nolan = Nolan.getInstance();
-                    this.onControllerReadyInClient();
-                });
+                mw.Script.spawnScript(PickerController, false, this.character).then(
+                    (value) => this._pickControllerInC = value,
+                );
+                this._buffs = null;
+                this._nolan = Nolan.getInstance();
+                this.onControllerReadyInClient();
             }
         });
     }
@@ -159,11 +149,8 @@ export default class UnifiedRoleController extends mw.PlayerState {
      * @friend {@link RoleModuleS}
      */
     public initInServer(playerId: number) {
+        Log4Ts.log(UnifiedRoleController, `init in Server.`);
         this._playerId = playerId;
-
-        // this._moduleS = ModuleService.getModule<RoleModuleS>(RoleModuleS);
-        // if (!this._moduleS) Log4Ts.log(UnifiedRoleController, `Role Module S not valid.`);
-        // this._moduleS.addController(this.playerId, this);
 
         this._buffs = new BuffContainer();
         this._throwAnim = this.character?.loadAnimation(GameServiceConfig.THROW_STANCE_GUID);
@@ -179,7 +166,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
         character.addImpulse(impulse, true);
     }
 
-    private roleIsMove = (path: string[], value: unknown, oldVal: unknown): void => {
+    private roleIsMove = (path: unknown, value: unknown, oldVal: unknown): void => {
         if (value) {
             Log4Ts.log(UnifiedRoleController, `player is moving.`);
         } else {

@@ -182,15 +182,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         return this._character;
     }
 
-    private _roleCtrlCache: UnifiedRoleController;
-
-    private get roleCtrl(): UnifiedRoleController {
-        if (!this._roleCtrlCache) {
-            this._roleCtrlCache = ModuleService.getModule(RoleModuleC).controller;
-        }
-        return this._roleCtrlCache;
-    }
-
     /**
      * 当前参选者.
      */
@@ -274,7 +265,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 }
                 this.unlockWithView();
             } else {
-                this.roleCtrl.addMoveForbiddenBuff();
+                Player
+                    .localPlayer
+                    .getPlayerState(UnifiedRoleController)
+                    ?.addMoveForbiddenBuff();
             }
 
             if (item) {
@@ -288,10 +282,13 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                     .worldTransform
                     .position
                     .clone();
-                this.roleCtrl.lookAt(position);
+                Player
+                    .localPlayer
+                    .getPlayerState(UnifiedRoleController)
+                    ?.lookAt(position);
                 Waterween.to(
-                    () => this.roleCtrl.character.worldTransform.rotation.toQuaternion(),
-                    (val) => this.roleCtrl.character.worldTransform.rotation = val.toRotation(),
+                    () => this.character.worldTransform.rotation.toQuaternion(),
+                    (val) => this.character.worldTransform.rotation = val.toRotation(),
                     Quaternion.fromRotation(
                         Rotation.fromVector(
                             GToolkit.newWithZ(
@@ -336,7 +333,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             return;
         }
         this.keepLockWithView();
-        ModuleService.getModule(RoleModuleC).controller.playerPlayThrow(item.object.worldTransform.position);
+        Player
+            .localPlayer
+            .getPlayerState(UnifiedRoleController)
+            ?.playerPlayThrow(item.object.worldTransform.position);
 
         try {
             this._currentBall = new ThrowDragonBall(
