@@ -46,10 +46,10 @@ export default class LightDraknessDragonQuest extends Quest {
 
     private _finalCollision: mw.GameObject;
 
-    // @mw.Property({ displayName: "终极魔法阵触发器guid" })
-    // private _finalTriggerGuid: string = "";
+    @mw.Property({ displayName: "终极魔法阵触发器guid" })
+    private _finalTriggerGuid: string = "";
 
-    //private _finalTrigger: mw.Trigger;
+    private _finalTrigger: mw.Trigger;
 
     protected get progress(): number {
         return this._infos.isComplete ? 1 : 0;
@@ -149,19 +149,19 @@ export default class LightDraknessDragonQuest extends Quest {
         if (isAllComplete) {
             this._finalObj?.destroy();
             this._finalCollision?.destroy();
-            //this._finalTrigger.onEnter.clear();
-            //this._finalTrigger.onEnter.add(this.onEnter);
+            this._finalTrigger.onEnter.clear();
+            this._finalTrigger.onEnter.add(this.onEnter);
         }
     }
 
-    // private onEnter = (obj: mw.GameObject) => {
-    //     if (obj instanceof mw.Character) {
-    //         if (obj === Player.localPlayer.character) {
-    //             this._finalTrigger.destroy();
-    //             this.updateTaskProgress(JSON.stringify(this._infos));
-    //         }
-    //     }
-    // }
+    private onEnter = (obj: mw.GameObject) => {
+        if (obj instanceof mw.Character) {
+            if (obj === Player.localPlayer.character) {
+                this._finalTrigger.destroy();
+                this.updateTaskProgress(JSON.stringify(this._infos));
+            }
+        }
+    }
 
     onActivated(): void {
     }
