@@ -19,7 +19,7 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
 
     private async initializeTasks() {
         let character = Player.localPlayer.character;
-        let script = character.addComponent(PickerController);
+        let script = await mw.Script.spawnScript(PickerController);
         script.gameObject = character;
         for (const task of this.data) {
             let config = GameConfig.Task.getElement(task.questId);

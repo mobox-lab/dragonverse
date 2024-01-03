@@ -83,8 +83,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             const obj = await mw.GameObject.asyncSpawn("Character") as mw.Character;
             obj.setDescription([assetId]);
 
-
-            const behavior = obj.addComponent(SceneDragonBehavior,false);
+            const behavior = await mw.Script.spawnScript(SceneDragonBehavior, false);
             behavior.gameObject = obj;
             behavior.init(syncKey, item);
             obj.worldTransform.position = item.location;

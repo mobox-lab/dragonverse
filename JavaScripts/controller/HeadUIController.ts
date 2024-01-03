@@ -1,7 +1,6 @@
 import { Singleton } from "../depend/singleton/Singleton";
 import HeadUIPanel_Generate from "../ui-generate/head/HeadUIPanel_generate";
 import HiddenNameUI_Generate from "../ui-generate/head/HiddenNameUI_generate";
-import GameObject = mw.GameObject;
 
 
 @Serializable
