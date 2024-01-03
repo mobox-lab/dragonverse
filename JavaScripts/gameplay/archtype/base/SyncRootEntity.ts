@@ -20,6 +20,12 @@ export abstract class SyncRootEntity<T extends IState> extends InitializeChecker
     @SyncRootEntity.required
     public nickName: string;
 
+    @SyncRootEntity.required
+    public wingGuid: string;
+
+    @SyncRootEntity.required
+    public wingTransform: mw.Transform;
+
 
     @mw.Property({ replicated: true, onChanged: 'onLogicStateChanged' })
     private _logicState: T = null;
@@ -41,7 +47,7 @@ export abstract class SyncRootEntity<T extends IState> extends InitializeChecker
 
         if (mw.SystemUtil.isClient()) {
             this.displayObject = await mw.GameObject.asyncSpawn(this.displayGuid);
-            let scripts = this.displayObject.getScripts();
+            let scripts = this.displayObject.getComponents();
             for (const script of scripts) {
                 if (script instanceof ClientDisplayEntity) {
                     script.setHosted(this);
