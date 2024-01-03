@@ -612,9 +612,8 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private getSecret(message: string) {
-        const codeSalt = `${message}-${Date.now()}`;
         const e = CryptoJS.AES.encrypt(
-            codeSalt,
+            message,
             CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
             {
                 iv: CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_IV),
