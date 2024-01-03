@@ -63,9 +63,9 @@ interface SubGameInfo {
      */
     userId: string,
     /**
-     * 闯关用了多长时间. s
+     * 闯关的积分.
      */
-    duration: number,
+    point: number,
     /**
      * 这是第几个小游戏，目前只能填 6.
      */
@@ -343,16 +343,18 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
 
     /**
      * 上报子游戏信息.
+     * @param clientTimeStamp
      * @param subGameType
-     * @param duration
+     * @param value
      */
-    public reportSubGameInfo(subGameType: SubGameTypes, duration: number) {
+    public reportSubGameInfo(clientTimeStamp: number, subGameType: SubGameTypes, value: number) {
         const now = TimeManager.getInstance().currentTime;
         const thanLastReport = now - this._lastSubGameReportTime;
-        if (thanLastReport > GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL && thanLastReport > duration) {
-            this._lastSubGameReportTime = now;
-            this.server.net_reportSubGameInfo(subGameType, duration);
+        if (thanLastReport <= GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL) {
+            return;
         }
+        this._lastSubGameReportTime = now;
+        this.server.net_reportSubGameInfo(clientTimeStamp, subGameType, value);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -607,7 +609,6 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
         const respInJson = await resp.json<CodeVerifyResponse>();
         return (respInJson?.code ?? null) === 200;
-        // return respInJson?.data ?? false;
     }
 
     private getSecret(message: string) {
@@ -655,16 +656,48 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     /**
      * 上报子游戏信息.
-     * @param playerId
-     * @param subGameType
-     * @param duration
+     * @param playerId 玩家 Id.
+     * @param clientTimeStamp 客户端完成时间戳.
+     * @param subGameType 子游戏类型.
+     * @param value 汇报值.
      */
-    public reportSubGameInfo(playerId: number, subGameType: SubGameTypes, duration: number) {
-        const thanLastReport = Date.now() - this._subGameReportMap.get(playerId) ?? 0;
-        if (thanLastReport > GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL && thanLastReport > duration) {
-            this._subGameReportMap.set(playerId, Date.now());
-            //TODO_LviatYi 报告子游戏信息.
+    public async reportSubGameInfo(playerId: number, clientTimeStamp: number, subGameType: SubGameTypes, value: number) {
+        const thanLastReport = Date.now() - (this._subGameReportMap.get(playerId) ?? 0);
+        if (thanLastReport <= GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL) {
+            Log4Ts.log(AuthModuleS, `report sub game info too frequently.`);
+            return;
         }
+        this._subGameReportMap.set(playerId, Date.now());
+        const uid = Player.getPlayer(playerId)?.userId ?? null;
+        if (GToolkit.isNullOrEmpty(uid)) {
+            Log4Ts.error(AuthModuleS, `can't find player ${playerId} when report sub game info.`);
+            return;
+        }
+        const reportInfo: SubGameInfo = {
+            userId: uid,
+            point: value,
+            gameNum: subGameType,
+            achievedAt: clientTimeStamp,
+            timestamp: Date.now(),
+        };
+        const secret = this.getSecret(JSON.stringify(reportInfo));
+        const body: SubGameRequest = {
+            secret: secret,
+        };
+
+        const resp = await fetch(`${GameStart.instance.isRelease ?
+                AuthModuleS.RELEASE_SUB_GAME_REPORT_URL :
+                AuthModuleS.TEST_SUB_GAME_REPORT_URL}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                },
+                body: JSON.stringify(body),
+            });
+
+        const respInJson = await resp.json();
+        Log4Ts.log(AuthModuleS, `get resp when report sub game info. ${JSON.stringify(respInJson)}`);
     }
 
     /**
@@ -681,9 +714,7 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
     public net_getToken(): Promise<string> {
         const playerId = this.currentPlayerId;
         const uid = this.currentPlayer.userId;
-        return new Promise<string>((resolve, reject) => {
-            resolve(`token-${playerId}-${uid}`);
-        });
+        return Promise.resolve(`token-${playerId}-${uid}`);
     }
 
     /**
@@ -806,12 +837,13 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
 
     /**
      * 上报子游戏信息.
-     * @param subGameType
-     * @param duration
+     * @param clientTimeStamp 客户端完成时间戳.
+     * @param subGameType 子游戏类型.
+     * @param value 汇报值.
      */
     @noReply()
-    public net_reportSubGameInfo(subGameType: SubGameTypes, duration: number) {
-        this.reportSubGameInfo(this.currentPlayerId, subGameType, duration);
+    public net_reportSubGameInfo(clientTimeStamp: number, subGameType: SubGameTypes, value: number) {
+        this.reportSubGameInfo(this.currentPlayerId, clientTimeStamp, subGameType, value);
     }
 
     /**
@@ -855,7 +887,7 @@ function logState(
     announcer: Announcer,
     logType: "log" | "warn" | "error",
     messages: string[] | string | LogString,
-    showTime: boolean = true,
+    showTime: boolean,
     playerId: number,
     uid: string = undefined,
     code: string = undefined): void {

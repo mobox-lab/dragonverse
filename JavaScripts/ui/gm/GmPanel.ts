@@ -2,14 +2,13 @@ import { AddGMCommand, GMBasePanel } from "module_gm";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import DialogueManager from "../../gameplay/dialogue/DialogueManager";
 import { BagModuleC } from "../../module/bag/BagModule";
-import { CompanionModule_S } from "../../module/companion/CompanionModule_S";
 import GMHUD_Generate from "../../ui-generate/gm/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
-import GameObject = mw.GameObject;
-import FunctionOption = mw.FunctionOption;
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 import { EventDefine } from "../../const/EventDefine";
 import { AuthModuleC, AuthModuleS } from "../../module/auth/AuthModule";
+import { SubGameTypes } from "../../const/SubGameTypes";
+import GameObject = mw.GameObject;
 
 /**
  * GM.
@@ -110,11 +109,25 @@ AddGMCommand("进入对话",
     undefined,
     "对话");
 
-AddGMCommand("通过验证", (player, value) => {
+AddGMCommand(
+    "通过验证",
+    (player, value) => {
+        ModuleService.getModule(AuthModuleC).net_enableEnter();
+    },
+    (player) => {
+        ModuleService.getModule(AuthModuleS).recordPlayer(player);
+    },
+    "Root 权限");
 
-    ModuleService.getModule(AuthModuleC).net_enableEnter();
+AddGMCommand(
+    "上报跑酷信息",
+    (player, value) => {
+        ModuleService.getModule(AuthModuleC).reportSubGameInfo(
+            Date.now(),
+            SubGameTypes.Parkour,
+            Number(value) ?? 100,
+        );
+    },
+    undefined,
+    "Root 权限");
 
-}, (player) => {
-    ModuleService.getModule(AuthModuleS).recordPlayer(player);
-
-});

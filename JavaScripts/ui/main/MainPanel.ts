@@ -44,6 +44,12 @@ export default class MainPanel extends MainPanel_Generate {
     private _eventListeners: EventListener[] = [];
 
     private _character: Character;
+
+    private get character(): Character {
+        if (!this._character) this._character = Player.localPlayer.character;
+        return this._character;
+    }
+
     private _collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
     // private _sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
     private _promptPanel: GlobalPromptPanel;
@@ -86,16 +92,6 @@ export default class MainPanel extends MainPanel_Generate {
     private _failTask: TweenTaskGroup;
 
     private _currentInteractType: GenerableTypes = GenerableTypes.Null;
-
-    private _roleCtrlCache: UnifiedRoleController;
-
-    private get roleCtrl(): UnifiedRoleController {
-        if (!this._roleCtrlCache) {
-            this._roleCtrlCache = ModuleService.getModule(RoleModuleC).controller;
-        }
-        return this._roleCtrlCache;
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -218,7 +214,7 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string)));
         this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, (playerId) => {
-            if (playerId === this.roleCtrl.playerId) Log4Ts.log(MainPanel, `Player reset.`);
+            if (playerId === this.character.player.playerId) Log4Ts.log(MainPanel, `Player reset.`);
         }));
         this._eventListeners.push(Event.addLocalListener(EventDefine.OnDragonQuestsComplete, this.onFinishSubTask));
         //#endregion ------------------------------------------------------------------------------------------
@@ -457,7 +453,10 @@ export default class MainPanel extends MainPanel_Generate {
      */
     public endCatch() {
         Log4Ts.log(MainPanel, `end catch`);
-        this.roleCtrl.removeMoveForbiddenBuff();
+        Player
+            .localPlayer
+            .getPlayerState(UnifiedRoleController)
+            ?.removeMoveForbiddenBuff();
         this._currentInteractType = GenerableTypes.Null;
         this.btnDragonBall.enable = false;
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
@@ -578,5 +577,8 @@ function showCode() {
 function respawn() {
     Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
     Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
-    ModuleService.getModule(RoleModuleC)?.controller.respawn();
+    Player
+        .localPlayer
+        .getPlayerState(UnifiedRoleController)
+        ?.respawn();
 }
