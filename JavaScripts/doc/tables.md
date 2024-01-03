@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v1.0.3  
+v1.0.5  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -111,18 +111,23 @@ x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 
 ### 龙基 Dragon (Base)
 
-|       Name       | PropName           | Type   | Desc   |
-| :--------------: | :----------------- | ------ | ------ |
-|        ID        | Id                 | int    |        |
-|       形象       | Avatar             | string |        |
-|     元素 ID      | ElementalId        | int    |        |
-|     品质 ID      | QualityId          | int    |        |
-| 生成区域 ID 集合 | AreaIds            | int[]  |        |
-|   首次生成冷却   | FirstGenerateCd    | int    | 秒 Sec |
-|     存在时间     | ExistenceTime      | int    | 秒 Sec |
-|     生成间隔     | GenerationInterval | int    | 秒 Sec |
-|    可捕捉次数    | HitPoint           | int    |        |
-|     捕捉消耗     | Cost               | int    |        |
+|       Name       | PropName           | Type    | Desc   |
+| :--------------: | :----------------- | ------- | ------ |
+|        ID        | Id                 | int     |        |
+|       形象       | Avatar             | string  |        |
+|     元素 ID      | ElementalId        | int     |        |
+|     品质 ID      | QualityId          | int     |        |
+| 生成区域 ID 集合 | AreaIds            | int[]   |        |
+|   首次生成冷却   | FirstGenerateCd    | int     | 秒 Sec |
+|     存在时间     | ExistenceTime      | int     | 秒 Sec |
+|     生成间隔     | GenerationInterval | int     | 秒 Sec |
+|    可捕捉次数    | HitPoint           | int     |        |
+|    翅膀 Guid     | wingGuid           | string  |        |
+|  翅膀 Transform  | wingTransform      | int[][] |        |
+
+- 翅膀 Transform
+  - 为二维数组，长度为 3.
+  - 分别为 位置 旋转 缩放.
 
 ### 个性龙 CharacterfulDragon
 
@@ -222,15 +227,21 @@ x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 
 ### NPC NonPlayerCharacter
 
-|      Name       | PropName    | Type     | Desc            |
-| :-------------: | :---------- | -------- | --------------- |
-|       ID        | Id          | int      |                 |
-|     角色 ID     | CharacterId | int      |                 |
-|      形象       | Avatar      | string   |                 |
-|    初始位置     | Position    | vector3  |                 |
-|    初始旋转     | Rotation    | rotation |                 |
-|      招呼       | GreetNodeId | int      | 对话内容节点 Id |
-| 附属数据类型 ID | NpcDataId   | int      | Npc 附属数据 Id |
+|      Name       | PropName      | Type     | Desc            |
+| :-------------: | :------------ | -------- | --------------- |
+|       ID        | Id            | int      |                 |
+|     角色 ID     | CharacterId   | int      |                 |
+|      形象       | Avatar        | string   |                 |
+|    初始位置     | Position      | vector3  |                 |
+|    初始旋转     | Rotation      | rotation |                 |
+|      招呼       | GreetNodeId   | int      | 对话内容节点 Id |
+| 附属数据类型 ID | NpcDataId     | int      | Npc 附属数据 Id |
+|    翅膀 Guid    | wingGuid      | string   |                 |
+| 翅膀 Transform  | wingTransform | int[][]  |                 |
+
+- 翅膀 Transform
+  - 为二维数组，长度为 3.
+  - 分别为 位置 旋转 缩放.
 
 对于 GreetNodeId ，其指向一个 **对话内容节点** (DialogueContentNode)，且对于该节点的：
 
@@ -299,3 +310,4 @@ $$
 
 [JetbrainsMonoNerdFont]: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip@fallbackFont
 [SarasaMonoSC]: https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+
