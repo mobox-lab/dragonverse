@@ -7,6 +7,7 @@ import { QuestData } from "./QuestData";
 import { QuestModuleS } from "./QuestModuleS";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { EventDefine } from "../../const/EventDefine";
+import UnifiedRoleController from "../role/UnifiedRoleController";
 
 export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements QuestReporter {
 
@@ -19,11 +20,10 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
 
     private async initializeTasks() {
         let character = Player.localPlayer.character;
-        let script = await mw.Script.spawnScript(PickerController);
-        script.gameObject = character;
+        let roleController = Player.localPlayer.getPlayerState(UnifiedRoleController);
+        roleController.pickController = await mw.Script.spawnScript(PickerController);
         for (const task of this.data) {
             let config = GameConfig.Task.getElement(task.questId);
-
             if (!config) {
                 Log4Ts.warn(QuestModuleC,
                     `sub task not found.`,

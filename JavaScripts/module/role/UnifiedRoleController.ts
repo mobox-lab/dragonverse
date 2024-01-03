@@ -15,6 +15,7 @@ import AreaManager from "../../gameplay/area/AreaManager";
 import RemoteFunction = mw.RemoteFunction;
 import Server = mw.Server;
 import GameServiceConfig from "../../const/GameServiceConfig";
+import PickerController from "../../gameplay/interactive/PickerController";
 
 /**
  * Unified Role State Controller.
@@ -49,6 +50,20 @@ export default class UnifiedRoleController extends mw.PlayerState {
     private _buffs: BuffContainer<UnifiedRoleController> = null;
 
     private _throwAnim: Animation = null;
+
+    private _pickControllerInC: PickerController = null;
+
+    /**
+     * pick controller.
+     * only valid in client.
+     */
+    public get pickController(): PickerController {
+        return this._pickControllerInC;
+    }
+
+    public set pickController(value: PickerController) {
+        this._pickControllerInC = value;
+    }
 
     public get buffs(): BuffContainer<UnifiedRoleController> {
         if (SystemUtil.isServer()) {

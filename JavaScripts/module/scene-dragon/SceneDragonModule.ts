@@ -74,7 +74,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         const dragonInfo = item.getDragonConfig();
         let assetId = dragonInfo.avatar;
         if (GToolkit.isNullOrEmpty(assetId)) {
-            Log4Ts.error(SceneDragonModuleC, `prefab not set. id: ${item.id}`);
+            Log4Ts.error(SceneDragonModuleC, `avatar not set. id: ${item.id}`);
             return Promise.resolve(null);
         }
 

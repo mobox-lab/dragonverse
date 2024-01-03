@@ -4,19 +4,21 @@ import GToolkit from "../../util/GToolkit";
 import { InitializeCheckerScript } from "../archtype/base/InitializeCheckScript";
 import { KeyItem } from "./KeyItemPuzzel";
 import { IPickerController } from "./PickerController";
+import UnifiedRoleController from "../../module/role/UnifiedRoleController";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 const tempUseVector = new mw.Vector();
 
 export abstract class PickableItem extends InitializeCheckerScript implements KeyItem {
 
 
-    @mw.Property({ displayName: "放置物类型" })
+    @mw.Property({displayName: "放置物类型"})
     type: number = 0;
 
     public storage: string = "";
 
 
-    @mw.Property({ displayName: "初始位置" })
+    @mw.Property({displayName: "初始位置"})
     public initializePosition: mw.Vector = new mw.Vector();
 
     public detectionCollisionWhenPutdown = true;
@@ -78,11 +80,11 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
 
             ProximityPrompts.show([{
                 keyBoard: "Z",
-                text: i18n.lan('TinyGameLanKey0002'),
+                text: i18n.lan("TinyGameLanKey0002"),
                 enabled: true,
                 onSelected: () => {
                     this.holder.putdown();
-                }
+                },
             }]);
         }
     }
@@ -116,39 +118,37 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
         this._candidates.push(target);
         ProximityPrompts.show([{
             keyBoard: "F",
-            text: i18n.lan('TinyGameLanKey0001'),
+            text: i18n.lan("TinyGameLanKey0001"),
             enabled: true,
             onSelected: () => {
                 this.controllerTryPickupSelf(target);
-            }
+            },
         }]);
 
     }
 
     private onTriggerOut = (go: mw.GameObject) => {
-        let picker: IPickerController = GToolkit.getFirstScriptIs(go, "pick");
+        if (!GToolkit.isSelfCharacter(go)) return;
+        const picker = (go as Character)?.player?.getPlayerState(UnifiedRoleController)?.pickController ?? null;
         if (!picker) {
+            Log4Ts.log(PickableItem, `picker not found in player URC.`);
             return;
         }
 
-        if (this._candidates.indexOf(picker) === -1) {
-            return;
-        }
+        if (this._candidates.indexOf(picker) === -1) return;
 
         this.removeCandidate(picker);
 
     };
 
     private onTriggerIn = (go: mw.GameObject) => {
-
-        let picker: IPickerController = GToolkit.getFirstScriptIs(go, "pick");
+        if (!GToolkit.isSelfCharacter(go)) return;
+        const picker = (go as Character)?.player?.getPlayerState(UnifiedRoleController)?.pickController ?? null;
         if (!picker) {
+            Log4Ts.log(PickableItem, `picker not found in player URC.`);
             return;
         }
-
-        if (!picker.canPick) {
-            return;
-        }
+        if (!picker.canPick) return;
 
         this.addCandidate(picker);
     };

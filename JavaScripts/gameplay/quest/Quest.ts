@@ -1,5 +1,6 @@
 import { QuestStateEnum } from "../../module/quest/Config";
 import { InitializeCheckerScript } from "../archtype/base/InitializeCheckScript";
+import GameObject = mw.GameObject;
 
 export interface QuestReporter {
     tryToUpdateTaskInfo(id: number, progress: number, customData?: string): void;
@@ -8,6 +9,16 @@ export interface QuestReporter {
 export abstract class Quest extends InitializeCheckerScript {
     @Quest.required
     private _id: number;
+
+    private _gameObject;
+
+    public get gameObject() {
+        return this._gameObject;
+    }
+
+    public set gameObject(value: GameObject) {
+        this._gameObject = value;
+    }
 
     protected abstract get progress(): number ;
 
