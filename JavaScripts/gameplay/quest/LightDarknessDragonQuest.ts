@@ -99,7 +99,6 @@ export default class LightDraknessDragonQuest extends Quest {
         this._soilObj.setVisibility(mw.PropertyStatus.On);
 
         this._finalObj.destroy();
-        this._finalTrigger.destroy();
         this._finalCollision.destroy();
     }
 
