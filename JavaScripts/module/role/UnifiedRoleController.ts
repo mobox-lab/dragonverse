@@ -164,7 +164,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
         character.addImpulse(impulse, true);
     }
 
-    private roleIsMove = (path: string, value: unknown, oldVal: unknown): void => {
+    private roleIsMove = (path: string[], value: unknown, oldVal: unknown): void => {
         if (value) {
             Log4Ts.log(UnifiedRoleController, `player is moving.`);
         } else {
