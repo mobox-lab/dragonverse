@@ -94,6 +94,13 @@ export default class RGEndUI_Generate extends UIScript {
 		}
 		return this.mScore_Internal
 	}
+	private image_2_Internal: mw.Image
+	public get image_2(): mw.Image {
+		if(!this.image_2_Internal&&this.uiWidgetBase) {
+			this.image_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScoreCanvas/image_2') as mw.Image
+		}
+		return this.image_2_Internal
+	}
 	private mNew_Internal: mw.TextBlock
 	public get mNew(): mw.TextBlock {
 		if(!this.mNew_Internal&&this.uiWidgetBase) {

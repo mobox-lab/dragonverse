@@ -2,8 +2,8 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-27 10:54:12
- * @FilePath     : \dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
+ * @LastEditTime : 2024-01-03 16:43:50
+ * @FilePath     : \dragon027\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
 
@@ -176,6 +176,7 @@ export default class CloudEffect extends mw.Script {
                         Player.localPlayer.character.worldTransform.rotation,
                         Vector.one)
                 }).then((go) => {
+                    (go as Effect).play();
                     new Tween(go.worldTransform.position.clone()).to(target.worldTransform.position.clone(), 1000).onUpdate((pos) => {
                         go.worldTransform.position = pos;
                     }).onComplete(() => {

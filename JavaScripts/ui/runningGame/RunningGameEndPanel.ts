@@ -93,9 +93,18 @@ export class RunningGameEndPanel extends RGEndUI_Generate {
         this.mTime.text = data.time + "";
         this.mScore.text = data.score + "";
         if (data.isNewRecord) {
+            this.mNew.renderOpacity = 0;
+            this.image_2.renderOpacity = 0;
             this.mNew.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+            this.image_2.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+
+            actions.tween(this.mNew).to(300, { renderOpacity: 1 }).start();
+            actions.tween(this.image_2).to(300, { renderOpacity: 1 }).start();
+
+
         } else {
             this.mNew.visibility = mw.SlateVisibility.Hidden;
+            this.image_2.visibility = mw.SlateVisibility.Hidden;
         }
     }
 
