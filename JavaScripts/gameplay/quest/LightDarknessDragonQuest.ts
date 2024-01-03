@@ -158,6 +158,7 @@ export default class LightDraknessDragonQuest extends Quest {
         if (obj instanceof mw.Character) {
             if (obj === Player.localPlayer.character) {
                 this._finalTrigger.destroy();
+                this._infos.isComplete = true;
                 this.updateTaskProgress(JSON.stringify(this._infos));
             }
         }
