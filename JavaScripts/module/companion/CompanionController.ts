@@ -61,6 +61,8 @@ export class CompanionController {
             return;
         }
         this._companionInstance.delete(sign);
+        //销毁翅膀
+        entity._wing?.destroy();
         entity.destroy();
     }
 
@@ -69,6 +71,8 @@ export class CompanionController {
     private onEntityDestroyed(entity: CompanionRoot) {
 
         if (entity.playerId !== this.playerId) return;
+        //销毁翅膀
+        entity._wing?.destroy();
         this._companionInstance.delete(entity.sign);
     }
 
@@ -82,7 +86,7 @@ export class CompanionController {
     }
 
 
-    public async createCompanion(prefab: string, sign: string, nickName: string) {
+    public async createCompanion(prefab: string, sign: string, nickName: string, wingGuid: string, wingTransform: mw.Transform) {
 
         let player = mw.Player.getPlayer(this.playerId).character;
         let script = await mw.Script.spawnScript(CompanionRoot, true, player)
@@ -90,9 +94,12 @@ export class CompanionController {
         script.sign = sign;
         script.playerId = this.playerId;
         script.nickName = nickName;
+        script.wingGuid = wingGuid;
+        script.wingTransform = wingTransform;
         script.initializeComplete();
         this.registerCompanion(script);
     };
+
 
 
 

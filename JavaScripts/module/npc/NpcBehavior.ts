@@ -52,6 +52,8 @@ export default class NpcBehavior extends mw.Script {
     private _oriPos: Vector;
     /**npc初始旋转 */
     private _oriRot: Rotation;
+    /**翅膀特效 */
+    private _wing: Effect;
 
     private get dm() {
         if (!this._dialogueManager) {
@@ -84,6 +86,19 @@ export default class NpcBehavior extends mw.Script {
             return;
         }
         this._npcCharacter?.setDescription([this._config.avatar]);
+        //添加翅膀
+        let wingGuid = this._config.wingGuid;
+        let wingTransform = this._config.wingTransform;
+        if (wingGuid && wingTransform) {
+            mw.GameObject.asyncSpawn(wingGuid).then((go) => {
+                this._wing = go as Effect;
+                this._npcCharacter?.attachToSlot(this._wing, HumanoidSlotType.BackOrnamental);
+                TimeUtil.delayExecute(() => {
+                    this._wing.play();
+                    this._wing.localTransform = new Transform(new Vector(wingTransform[0][0], wingTransform[0][1], wingTransform[0][2]), new Rotation(wingTransform[1][0], wingTransform[1][1], wingTransform[1][2]), new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2]));
+                }, 1);
+            });
+        }
 
         this._oriPos = this._npcCharacter.worldTransform.position;
         this._oriRot = this._npcCharacter.worldTransform.rotation;
@@ -168,7 +183,7 @@ export default class NpcBehavior extends mw.Script {
         this._npcBasicAni.play();
         if (this._currentAni) this._currentAni.stop();
     };
-    
+
     /**
      * @description: 结束npc交互动作
      */

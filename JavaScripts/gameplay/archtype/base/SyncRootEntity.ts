@@ -20,6 +20,12 @@ export abstract class SyncRootEntity<T extends IState> extends InitializeChecker
     @SyncRootEntity.required
     public nickName: string;
 
+    @SyncRootEntity.required
+    public wingGuid: string;
+
+    @SyncRootEntity.required
+    public wingTransform: mw.Transform;
+
 
     @mw.Property({ replicated: true, onChanged: 'onLogicStateChanged' })
     private _logicState: T = null;
