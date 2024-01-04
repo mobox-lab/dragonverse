@@ -9,6 +9,10 @@
 import { EventDefine } from "../../const/EventDefine";
 import { QuestModuleC } from "../../module/quest/QuestModuleC";
 import { Quest } from "./Quest";
+import Trigger = mw.Trigger;
+import GToolkit from "../../util/GToolkit";
+import { Bubble } from "module_bubble";
+import { GameConfig } from "../../config/GameConfig";
 
 /**
  * 光暗龙任务
@@ -21,20 +25,40 @@ export default class LightDraknessDragonQuest extends Quest {
 
     private _fireObj: mw.GameObject;
 
+    @mw.Property({displayName: "火龙气泡触发器guid"})
+    private _fireBubbleTriggerGuid: string = "";
+
+    private _fireBubbleTrigger: mw.Trigger;
+
     @mw.Property({displayName: "水龙魔法阵guid"})
     private _waterObjGuid: string = "";
 
     private _waterObj: mw.GameObject;
+
+    @mw.Property({displayName: "水龙气泡触发器guid"})
+    private _waterBubbleTriggerGuid: string = "";
+
+    private _waterBubbleTrigger: mw.Trigger;
 
     @mw.Property({displayName: "木龙魔法阵guid"})
     private _woodObjGuid: string = "";
 
     private _woodObj: mw.GameObject;
 
+    @mw.Property({displayName: "木龙气泡触发器guid"})
+    private _woodBubbleTriggerGuid: string = "";
+
+    private _woodBubbleTrigger: mw.Trigger;
+
     @mw.Property({displayName: "土龙魔法阵guid"})
     private _soilObjGuid: string = "";
 
     private _soilObj: mw.GameObject;
+
+    @mw.Property({displayName: "土龙气泡触发器guid"})
+    private _soilBubbleTriggerGuid: string = "";
+
+    private _soilBubbleTrigger: mw.Trigger;
 
     @mw.Property({displayName: "终极魔法阵guid"})
     private _finalObjGuid: string = "";
@@ -82,9 +106,13 @@ export default class LightDraknessDragonQuest extends Quest {
 
     private initObj() {
         this._fireObj = mw.GameObject.findGameObjectById(this._fireObjGuid);
+        this._fireBubbleTrigger = mw.GameObject.findGameObjectById(this._fireBubbleTriggerGuid) as Trigger;
         this._waterObj = mw.GameObject.findGameObjectById(this._waterObjGuid);
+        this._waterBubbleTrigger = mw.GameObject.findGameObjectById(this._waterBubbleTriggerGuid) as Trigger;
         this._woodObj = mw.GameObject.findGameObjectById(this._woodObjGuid);
+        this._woodBubbleTrigger = mw.GameObject.findGameObjectById(this._woodBubbleTriggerGuid) as Trigger;
         this._soilObj = mw.GameObject.findGameObjectById(this._soilObjGuid);
+        this._soilBubbleTrigger = mw.GameObject.findGameObjectById(this._soilBubbleTriggerGuid) as Trigger;
         this._finalObj = mw.GameObject.findGameObjectById(this._finalObjGuid);
         this._finalCollision = mw.GameObject.findGameObjectById(this._finalCollisionGuid);
         this._finalTrigger = mw.GameObject.findGameObjectById(this._finalTriggerGuid) as mw.Trigger;
@@ -113,29 +141,53 @@ export default class LightDraknessDragonQuest extends Quest {
                 case 1:
                     if (data.isComplete) {
                         this._woodObj.setVisibility(mw.PropertyStatus.On);
+                        this._woodBubbleTrigger?.onEnter.clear();
                     } else {
                         this._woodObj.setVisibility(mw.PropertyStatus.Off);
+                        this._woodBubbleTrigger?.onEnter.clear();
+                        this._woodBubbleTrigger?.onEnter.add((gameObject) => {
+                            if (GToolkit.isSelfCharacter(gameObject))
+                                Bubble.showBubble(0,GameConfig.Language.Dragontip_Content_0001.Value.replace("*", GameConfig.Language.ElementalName0003.Value));
+                        });
                     }
                     break;
                 case 2:
                     if (data.isComplete) {
                         this._fireObj.setVisibility(mw.PropertyStatus.On);
+                        this._fireBubbleTrigger?.onEnter.clear();
                     } else {
                         this._fireObj.setVisibility(mw.PropertyStatus.Off);
+                        this._fireBubbleTrigger?.onEnter.clear();
+                        this._fireBubbleTrigger?.onEnter.add((gameObject) => {
+                            if (GToolkit.isSelfCharacter(gameObject))
+                                Bubble.showBubble(0,GameConfig.Language.Dragontip_Content_0001.Value.replace("*", GameConfig.Language.ElementalName0001.Value));
+                        });
                     }
                     break;
                 case 3:
                     if (data.isComplete) {
                         this._waterObj.setVisibility(mw.PropertyStatus.On);
+                        this._waterBubbleTrigger?.onEnter.clear();
                     } else {
                         this._waterObj.setVisibility(mw.PropertyStatus.Off);
+                        this._waterBubbleTrigger?.onEnter.clear();
+                        this._waterBubbleTrigger?.onEnter.add((gameObject) => {
+                            if (GToolkit.isSelfCharacter(gameObject))
+                                Bubble.showBubble(0,GameConfig.Language.Dragontip_Content_0001.Value.replace("*", GameConfig.Language.ElementalName0002.Value));
+                        });
                     }
                     break;
                 case 4:
                     if (data.isComplete) {
                         this._soilObj.setVisibility(mw.PropertyStatus.On);
+                        this._soilBubbleTrigger?.onEnter.clear();
                     } else {
                         this._soilObj.setVisibility(mw.PropertyStatus.Off);
+                        this._soilBubbleTrigger?.onEnter.clear();
+                        this._soilBubbleTrigger?.onEnter.add((gameObject) => {
+                            if (GToolkit.isSelfCharacter(gameObject))
+                                Bubble.showBubble(0,GameConfig.Language.Dragontip_Content_0001.Value.replace("*", GameConfig.Language.ElementalName0004.Value));
+                        });
                     }
                     break;
                 default:

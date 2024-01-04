@@ -66,7 +66,6 @@ export class RunningGameMagicCircle {
                     } else if (this._type === 4) {
                         str = GameConfig.Language.ElementalName0004.Value;
                     }
-                    Log4Ts.log(RunningGameMagicCircle, `want show bubble. string: ${GameConfig.Language.Dragontip_Content_0001.Value.replace("*", str)}`);
                     Bubble.showBubble(1, GameConfig.Language.Dragontip_Content_0001.Value.replace("*", str));
                 }
 
