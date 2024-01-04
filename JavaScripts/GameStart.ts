@@ -139,7 +139,7 @@ export default class GameStart extends mw.Script {
         Log4Ts.log(GameStart, `current local: ${localStr}`);
         let useType = this.language;
         if (!GToolkit.isNullOrEmpty(localStr)) {
-            if (localStr.match(/[Zz][Hh]/)) {
+            if (localStr.match(/([Zz][Hh])|([Tt][Ww])|([Hh][Kk])|([Mm][Oo])/)) {
                 useType = LanguageTypes.Chinese;
             } else if (localStr.match(/[Ee][Nn]/)) {
                 useType = LanguageTypes.English;
