@@ -132,16 +132,16 @@ export default class AudioController extends Singleton<AudioController>() {
     private _bgmSwitcherTimerId: number | null = null;
 
     /**
-     * Bgm 自动切换前间隔.
+     * Bgm 自动切换前间隔. s
      * @private
      */
-    private _bgmRestInterval: number = 10e3;
+    private _bgmRestInterval: number = 10;
     //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //region Volume Controller
 
     /**
-     * Bgm 自动切换前间隔.
+     * Bgm 自动切换前间隔. s
      * @private
      */
     public get bgmRestInterval(): number {
@@ -337,7 +337,7 @@ export default class AudioController extends Singleton<AudioController>() {
             }
         }
         const config: ISoundElement = this.getConfig(soundId);
-        const duration = BgmDurationRegisterArray[BgmRegisterArray.indexOf(soundId)] ?? 5e3;
+        const duration = BgmDurationRegisterArray[BgmRegisterArray.indexOf(soundId)] ?? 5;
         if (config.isEffect) {
             Log4Ts.warn(AudioController, `config is not bgm.`);
             return;
@@ -354,7 +354,7 @@ export default class AudioController extends Singleton<AudioController>() {
             case BgmPlayStrategy.Rnd:
                 this._bgmSwitcherTimerId = setTimeout(() => {
                     this.playBgm(undefined, playStrategy);
-                }, duration + this._bgmRestInterval);
+                }, (duration + this._bgmRestInterval) * 1e3);
                 break;
             case BgmPlayStrategy.Sng:
                 break;
