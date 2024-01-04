@@ -111,9 +111,9 @@ export default class MainPanel extends MainPanel_Generate {
                 });
             }
         });
-        this.btnBag.onPressed.add(showBag);
-        this.btnBook.onPressed.add(showHandbook);
-        this.btnCode.onPressed.add(showCode);
+        this.btnBag.onPressed.add(() => this.showBag());
+        this.btnBook.onPressed.add(() => this.showHandbook());
+        this.btnCode.onPressed.add(() => this.showCode());
         this.btnReset.onPressed.add(respawn);
         this.btnDragonBall.onPressed.add(() => this.tryCatch());
         this.btnCatch.onPressed.add(this.onTryCatchBtnClick);
@@ -503,6 +503,22 @@ export default class MainPanel extends MainPanel_Generate {
         GToolkit.trySetVisibility(this.btnReset, enable);
     }
 
+    public showBag() {
+        if (ModuleService.getModule(BagModuleC)?.isReady ?? false) {
+            UIService?.show(BagPanel);
+        }
+    }
+
+    public showHandbook() {
+        if (ModuleService.getModule(BagModuleC)?.isReady ?? false) {
+            UIService?.show(HandbookPanel);
+        }
+    }
+
+    public showCode() {
+        UIService?.show(CodeVerifyPanel);
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
@@ -560,18 +576,6 @@ export default class MainPanel extends MainPanel_Generate {
     };
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-}
-
-function showBag() {
-    UIService.show(BagPanel);
-}
-
-function showHandbook() {
-    UIService.show(HandbookPanel);
-}
-
-function showCode() {
-    UIService.show(CodeVerifyPanel);
 }
 
 function respawn() {
