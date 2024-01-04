@@ -62,7 +62,7 @@ export default class DragonEntity extends ClientDisplayEntity<CompanionState> {
 
     protected postLogicStateChange(state: CompanionState): void {
 
-        if (this.isDisplayForLocal()) {
+        if (this.isDisplayForLocal() || !state) {
             return;
         }
         this.gameObject.worldTransform.position = (state.start);

@@ -9,6 +9,7 @@ import { RunningGameController } from "./RuninngGameController";
 import { AuthModuleC } from "../../../module/auth/AuthModule";
 import { TimeManager } from "../../../controller/TimeManager";
 import { SubGameTypes } from "../../../const/SubGameTypes";
+import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
 
 /**
  * 跑酷游戏状态
@@ -57,6 +58,17 @@ export class RunningGameMode {
     private _transEndScore: number;
 
     private _playScore: number;
+
+    private _companionModuleCache: CompanionModule_C;
+
+    private get companionModule() {
+        if (!this._companionModuleCache) {
+            this._companionModuleCache = ModuleService.getModule(CompanionModule_C);
+        }
+        return this._companionModuleCache;
+    }
+
+    private _companionPairBagIdCache: number = 0;
 
     public get playScore(): number {
         return this._playScore;
@@ -126,6 +138,8 @@ export class RunningGameMode {
         if (!this._gameController) {
             const character = Player.localPlayer.character;
             character.switchToFlying();
+            this._companionPairBagIdCache = this.companionModule.getCurrentShowupBagId();
+            if (this._companionPairBagIdCache !== 0) this.companionModule.showUpCompanion(this._companionPairBagIdCache, false);
             this._gameController = new RunningGameController(character);
 
         }
@@ -172,6 +186,8 @@ export class RunningGameMode {
             this._gameController = null;
         }
 
+        if (this._companionPairBagIdCache !== 0) this.companionModule.showUpCompanion(this._companionPairBagIdCache, true);
+        this._companionPairBagIdCache = 0;
         if (this._status != RunningGameStatus.Guide) {
             //关闭游戏UI
             UIService.hide(RunningGameGamingPanel);

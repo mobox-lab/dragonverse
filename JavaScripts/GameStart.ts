@@ -158,6 +158,9 @@ export default class GameStart extends mw.Script {
 
         this._nolan = Nolan.getInstance();
 
+        this.registerKeyScrollUp();
+        this.registerKeyScrollDown();
+
 //#region GodMode
         if (!this.isRelease) {
             this.registerTestKeyT();
@@ -168,8 +171,6 @@ export default class GameStart extends mw.Script {
 //R <<<<<<
 //
 //  ------
-            this.registerKeyScrollUp();
-            this.registerKeyScrollDown();
 //T >>>>>>
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
