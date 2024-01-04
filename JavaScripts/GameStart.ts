@@ -143,10 +143,10 @@ export default class GameStart extends mw.Script {
                 useType = LanguageTypes.Chinese;
             } else if (localStr.match(/[Ee][Nn]/)) {
                 useType = LanguageTypes.English;
-            } else if (localStr.match(/[Jj][Pp]/)) {
-                useType = LanguageTypes.Japanese;
-            } else if (localStr.match(/[Dd][Ee]/)) {
-                useType = LanguageTypes.German;
+            // } else if (localStr.match(/[Jj][Pp]/)) {
+            //     useType = LanguageTypes.Japanese;
+            // } else if (localStr.match(/[Dd][Ee]/)) {
+            //     useType = LanguageTypes.German;
             }
         }
         Log4Ts.log(GameStart, `use language: ${useType}`);
