@@ -35,6 +35,7 @@ import GToolkit from "./util/GToolkit";
 import SystemUtil = mw.SystemUtil;
 import Nolan from "./depend/nolan/Nolan";
 import GameServiceConfig from "./const/GameServiceConfig";
+import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioController";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -143,10 +144,10 @@ export default class GameStart extends mw.Script {
                 useType = LanguageTypes.Chinese;
             } else if (RegExp(/[Ee][Nn]/).exec(localStr)) {
                 useType = LanguageTypes.English;
-            // } else if (localStr.match(/[Jj][Pp]/)) {
-            //     useType = LanguageTypes.Japanese;
-            // } else if (localStr.match(/[Dd][Ee]/)) {
-            //     useType = LanguageTypes.German;
+                // } else if (localStr.match(/[Jj][Pp]/)) {
+                //     useType = LanguageTypes.Japanese;
+                // } else if (localStr.match(/[Dd][Ee]/)) {
+                //     useType = LanguageTypes.German;
             }
         }
         Log4Ts.log(GameStart, `use language: ${useType}`);
@@ -187,6 +188,8 @@ export default class GameStart extends mw.Script {
 
         UIService.show(MainPanel);
         MapManager.instance.showMap();
+
+        AudioController.getInstance().playBgm(undefined, BgmPlayStrategy.Rnd);
     }
 
     private initializeServer() {
