@@ -1,7 +1,7 @@
 import tryGenerateTsWidgetTypeByUEObject = mw.tryGenerateTsWidgetTypeByUEObject;
 import Character = mw.Character;
 import GameObject = mw.GameObject;
-import Log4Ts, { Announcer, DebugLevels, LogString } from "../depend/log4ts/Log4Ts";
+import Log4Ts from "../depend/log4ts/Log4Ts";
 
 /**
  * GToolkit.
@@ -18,7 +18,7 @@ import Log4Ts, { Announcer, DebugLevels, LogString } from "../depend/log4ts/Log4
  * @author zewei.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.0.0b
+ * @version 1.0.3b
  * @beta
  */
 class GToolkit {
@@ -179,13 +179,24 @@ class GToolkit {
      * is the index safe.
      * @param index
      * @param arr
+     * @param safeStrategy 索引越界时的安全策略.
+     *      - "cut" default. 截断至合法索引.
+     *      - "cycle" 循环. 非法时对值取余.
+     * @return 当数组为空时返回 -1. 否则按策略返回合法索引.
      */
-    public safeIndex(index: number, arr: unknown[]): number {
-        return index < 0 ?
-            0 :
-            index >= arr.length ?
-                arr.length - 1 :
-                index;
+    public safeIndex(index: number, arr: unknown[], safeStrategy: "cut" | "cycle" = "cut"): number {
+        if (this.isNullOrEmpty(arr)) return -1;
+        if (index < 0) return 0;
+        if (index >= arr.length) {
+            switch (safeStrategy) {
+                case "cycle":
+                    return index % arr.length;
+                case "cut":
+                default:
+                    return arr.length - 1;
+            }
+        }
+        return index;
     }
 
     /**
@@ -234,8 +245,8 @@ class GToolkit {
     public unfold<F, UF>(data: F[], foldCount: number, func: (data: F) => UF[]): UF[] {
         const result: UF[] = [];
 
-        for (let i = 0; i < data.length; i++) {
-            result.push(...func(data[i]));
+        for (const element of data) {
+            result.push(...func(element));
         }
 
         return result;
@@ -756,9 +767,7 @@ class GToolkit {
      */
     public getScript<T extends mw.Script>(
         object: GameObject,
-        scriptCls: {
-            new(...param: unknown[]): T
-        },
+        scriptCls: new(...param: unknown[]) => T,
         traverse: number = 0): T[] {
         if (!object) return [];
 
@@ -998,11 +1007,13 @@ class GToolkit {
         }
         const self: Player = Player.localPlayer;
 
-        return typeof idOrObj === "number" ?
-            self.playerId === idOrObj :
-            typeof idOrObj === "string" ?
-                self.character.gameObjectId === idOrObj :
-                this.isCharacter(idOrObj) && idOrObj.player === self;
+        if (typeof idOrObj === "number") {
+            return self.playerId === idOrObj;
+        } else if (typeof idOrObj === "string") {
+            return self.character.gameObjectId === idOrObj;
+        } else {
+            return this.isCharacter(idOrObj) && idOrObj.player === self;
+        }
     }
 
     /**
@@ -1103,7 +1114,6 @@ class GToolkit {
             undefined,
             undefined,
             undefined);
-        return;
     }
 
     /**
@@ -1367,96 +1377,6 @@ class GToolkit {
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-    //#region Log
-    public log(announcer: Announcer, ...messages: (LogString | string)[]): void;
-
-    public log(announcer: Announcer, ...messages: unknown[]): void;
-
-    /**
-     * debug log.
-     * @param announcer announcer with name.
-     * @param messages text.
-     * @deprecated
-     */
-    public log(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
-        if (Log4Ts.debugLevel !== DebugLevels.Dev) return;
-
-        let title = true;
-        for (const msg of messages) {
-            let msgStr: string;
-            if (typeof msg === "string") {
-                msgStr = msg;
-            } else if (typeof msg === "function") {
-                msgStr = msg();
-            } else {
-                msgStr = msg.toString();
-            }
-
-            console.log(`${title ? announcer.name + ": " : `    `}${msgStr}`);
-            title = false;
-        }
-    }
-
-    public warn(announcer: Announcer, ...messages: (LogString | string)[]): void;
-
-    public warn(announcer: Announcer, ...messages: unknown[]): void;
-
-    /**
-     * debug warn.
-     * @param announcer announcer with name.
-     * @param messages text.
-     * @deprecated
-     */
-    public warn(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
-        if (Log4Ts.debugLevel === DebugLevels.Silent) return;
-
-        let title = true;
-        for (const msg of messages) {
-            let msgStr: string;
-            if (typeof msg === "string") {
-                msgStr = msg;
-            } else if (typeof msg === "function") {
-                msgStr = msg();
-            } else {
-                msgStr = msg.toString();
-            }
-
-            console.warn(`${title ? announcer.name + ": " : `    `}${msgStr}`);
-            title = false;
-        }
-    }
-
-    public error(announcer: Announcer, ...messages: (LogString | string)[]): void;
-
-    public error(announcer: Announcer, ...messages: unknown[]): void;
-
-    /**
-     * debug error.
-     * @param announcer announcer with name.
-     * @param messages text.
-     * @deprecated
-     */
-    public error(announcer: Announcer, ...messages: (LogString | string | unknown)[]): void {
-        if (Log4Ts.debugLevel === DebugLevels.Silent) return;
-
-        let title = true;
-        for (const msg of messages) {
-            let msgStr: string;
-            if (typeof msg === "string") {
-                msgStr = msg;
-            } else if (typeof msg === "function") {
-                msgStr = msg();
-            } else {
-                msgStr = msg.toString();
-            }
-
-            console.error(`${title ? announcer.name + ": " : `    `}${msgStr}`);
-            title = false;
-        }
-    }
-
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 //#region Type Guard
@@ -1637,12 +1557,12 @@ export class Switcher {
             }
 
             if (result) {
-                this._callbacks[i] && this._callbacks[i]();
+                this?._callbacks[i]?.();
                 return;
             }
         }
 
-        this._default && this._default();
+        this?._default();
     }
 }
 
