@@ -13,9 +13,6 @@ import { CircleType } from "../../interactive/CircleTrigger";
 import { Quest } from "../Quest";
 import { RunningGameMagicCircle } from "./RunningGameMagicCircle";
 import { RunningGameMode, RunningGameStatus } from "./RunningGameMode";
-import { AuthModuleC } from "../../../module/auth/AuthModule";
-import { TimeManager } from "../../../controller/TimeManager";
-import { SubGameTypes } from "../../../const/SubGameTypes";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 
@@ -265,6 +262,7 @@ export default class RunningGameQuest extends Quest {
         const character = Player.localPlayer.character;
         character.movementEnabled = true;
         character.switchToWalking();
+        //TODO_LviatYi walk
         character.worldTransform.position = GameConfig.Global.RG_Back_Loc.vec;
     };
 
