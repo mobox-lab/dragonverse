@@ -202,7 +202,7 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
                 TimeUtil.delayExecute(() => {
                     (this._wing as Effect).play();
                     this._wing.localTransform = this.wingTransform;
-                }, 1);
+                }, 10);
             }
 
 

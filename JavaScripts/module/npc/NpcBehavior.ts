@@ -96,7 +96,7 @@ export default class NpcBehavior extends mw.Script {
                 TimeUtil.delayExecute(() => {
                     this._wing.play();
                     this._wing.localTransform = new Transform(new Vector(wingTransform[0][0], wingTransform[0][1], wingTransform[0][2]), new Rotation(wingTransform[1][0], wingTransform[1][1], wingTransform[1][2]), new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2]));
-                }, 1);
+                }, 10);
             });
         }
 
