@@ -14,7 +14,7 @@
  * @version 2.1.3b
  */
 export namespace Delegate {
-    interface IDelegate<T, Func extends Function> {
+    interface IDelegate<P, Func extends Function> {
         /**
          * add a delegate.
          * @param func
@@ -48,7 +48,7 @@ export namespace Delegate {
          * @desc you should not rely on the add order.
          * @param param
          */
-        invoke(param: T): void;
+        invoke(param: P): void;
 
         /**
          * remove a delegate.
@@ -65,9 +65,9 @@ export namespace Delegate {
         clear(): void;
     }
 
-    export type SimpleDelegateFunction<T> = (param: T) => void;
+    export type SimpleDelegateFunction<P> = (param: P) => void;
 
-    export type ConditionDelegateFunction<T> = (param: T) => boolean;
+    export type ConditionDelegateFunction<P> = (param: P) => boolean;
 
     abstract class DelegateInfo {
         callback: Function;
@@ -109,26 +109,26 @@ export namespace Delegate {
      * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
      * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
      */
-    export class SimpleDelegate<T> implements IDelegate<T, SimpleDelegateFunction<T>> {
-        private _callbackInfo: SimpleDelegateInfo<T>[] = [];
+    export class SimpleDelegate<P> implements IDelegate<P, SimpleDelegateFunction<P>> {
+        private _callbackInfo: SimpleDelegateInfo<P>[] = [];
 
-        public add(func: SimpleDelegateFunction<T>, alive: number = -1): boolean {
+        public add(func: SimpleDelegateFunction<P>, alive: number = -1): boolean {
             if (this.getIndex(func) !== -1) {
                 return false;
             }
             this._callbackInfo.push(new SimpleDelegateInfo(func, alive));
         }
 
-        public once(func: SimpleDelegateFunction<T>): boolean {
+        public once(func: SimpleDelegateFunction<P>): boolean {
             return this.add(func, 1);
         }
 
-        public only(func: SimpleDelegateFunction<T>): boolean {
+        public only(func: SimpleDelegateFunction<P>): boolean {
             this.clear();
             return this.add(func);
         }
 
-        public invoke(param?: T): void {
+        public invoke(param?: P): void {
             for (let i = this._callbackInfo.length - 1; i >= 0; --i) {
                 const callbackInfo = this._callbackInfo[i];
 
@@ -144,7 +144,7 @@ export namespace Delegate {
             }
         }
 
-        public remove(func: SimpleDelegateFunction<T>): boolean {
+        public remove(func: SimpleDelegateFunction<P>): boolean {
             const index: number = this.getIndex(func);
             if (index !== -1) {
                 this._callbackInfo.splice(index, 1);
@@ -163,7 +163,7 @@ export namespace Delegate {
          * @return index func index. -1 not exist.
          * @private
          */
-        private getIndex(func: SimpleDelegateFunction<T>): number {
+        private getIndex(func: SimpleDelegateFunction<P>): number {
             return this._callbackInfo.findIndex(item => {
                 return item.callback === func;
             });
@@ -192,25 +192,25 @@ export namespace Delegate {
      * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
      * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
      */
-    export class ConditionDelegate<T> implements IDelegate<T, ConditionDelegateFunction<T>> {
-        private _callbackInfo: ConditionDelegateInfo<T>[] = [];
+    export class ConditionDelegate<P> implements IDelegate<P, ConditionDelegateFunction<P>> {
+        private _callbackInfo: ConditionDelegateInfo<P>[] = [];
 
-        public add(func: ConditionDelegateFunction<T>, alive: number = -1): boolean {
+        public add(func: ConditionDelegateFunction<P>, alive: number = -1): boolean {
             if (this.getIndex(func) !== -1) {
                 return false;
             }
             this._callbackInfo.push(new ConditionDelegateInfo(func, alive));
         }
 
-        public once(func: ConditionDelegateFunction<T>): boolean {
+        public once(func: ConditionDelegateFunction<P>): boolean {
             return this.add(func, 1);
         }
 
-        public only(func: ConditionDelegateFunction<T>): boolean {
+        public only(func: ConditionDelegateFunction<P>): boolean {
             throw new Error("Method not implemented.");
         }
 
-        public invoke(param: T): void {
+        public invoke(param: P): void {
             for (let i = this._callbackInfo.length - 1; i >= 0; --i) {
                 const callbackInfo = this._callbackInfo[i];
                 let ret: boolean;
@@ -228,7 +228,7 @@ export namespace Delegate {
             }
         }
 
-        public remove(func: ConditionDelegateFunction<T>): boolean {
+        public remove(func: ConditionDelegateFunction<P>): boolean {
             const index: number = this.getIndex(func);
             if (index !== -1) {
                 this._callbackInfo.splice(index, 1);
@@ -241,7 +241,7 @@ export namespace Delegate {
             this._callbackInfo.length = 0;
         }
 
-        private getIndex(func: ConditionDelegateFunction<T>): number {
+        private getIndex(func: ConditionDelegateFunction<P>): number {
             return this._callbackInfo.findIndex(item => {
                 return item.callback === func;
             });
