@@ -1,8 +1,8 @@
 /*
  * @Author: 余泓 hong.yu@appshahe.com
  * @Date: 2023-12-19 13:39:41
- * @LastEditors: 余泓 hong.yu@appshahe.com
- * @LastEditTime: 2023-12-19 15:12:02
+ * @LastEditors: haoran.zhang haoran.zhang@appshahe.com
+ * @LastEditTime: 2024-01-04 14:10:26
  * @FilePath: \DragonVerse\JavaScripts\gameplay\quest\LightDarknessDragonQuest.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -147,7 +147,7 @@ export default class LightDraknessDragonQuest extends Quest {
                         this._woodBubbleTrigger?.onEnter.clear();
                         this._woodBubbleTrigger?.onEnter.add((gameObject) => {
                             if (GToolkit.isSelfCharacter(gameObject))
-                                Bubble.showBubble(0,GameConfig.Language.Dragontip_Content_0001.Value.replace("*", GameConfig.Language.ElementalName0003.Value));
+                                Bubble.showBubble(2,GameConfig.Language.WoodMonolithTips003.Value.replace("*", GameConfig.Language.ElementalName0003.Value));
                         });
                     }
                     break;
@@ -160,7 +160,7 @@ export default class LightDraknessDragonQuest extends Quest {
                         this._fireBubbleTrigger?.onEnter.clear();
                         this._fireBubbleTrigger?.onEnter.add((gameObject) => {
                             if (GToolkit.isSelfCharacter(gameObject))
-                                Bubble.showBubble(0,GameConfig.Language.Dragontip_Content_0001.Value.replace("*", GameConfig.Language.ElementalName0001.Value));
+                                Bubble.showBubble(2,GameConfig.Language.FireMonolithTips001.Value.replace("*", GameConfig.Language.ElementalName0001.Value));
                         });
                     }
                     break;
@@ -173,7 +173,7 @@ export default class LightDraknessDragonQuest extends Quest {
                         this._waterBubbleTrigger?.onEnter.clear();
                         this._waterBubbleTrigger?.onEnter.add((gameObject) => {
                             if (GToolkit.isSelfCharacter(gameObject))
-                                Bubble.showBubble(0,GameConfig.Language.Dragontip_Content_0001.Value.replace("*", GameConfig.Language.ElementalName0002.Value));
+                                Bubble.showBubble(1,GameConfig.Language.WaterMonolithTips002.Value.replace("*", GameConfig.Language.ElementalName0002.Value));
                         });
                     }
                     break;
@@ -186,7 +186,7 @@ export default class LightDraknessDragonQuest extends Quest {
                         this._soilBubbleTrigger?.onEnter.clear();
                         this._soilBubbleTrigger?.onEnter.add((gameObject) => {
                             if (GToolkit.isSelfCharacter(gameObject))
-                                Bubble.showBubble(0,GameConfig.Language.Dragontip_Content_0001.Value.replace("*", GameConfig.Language.ElementalName0004.Value));
+                                Bubble.showBubble(2,GameConfig.Language.EarthMonolithTips004.Value.replace("*", GameConfig.Language.ElementalName0004.Value));
                         });
                     }
                     break;
