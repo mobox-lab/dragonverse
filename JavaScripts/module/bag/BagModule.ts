@@ -187,17 +187,19 @@ export default class BagModuleData extends Subdata {
     public checkVersion() {
         if (this.currentVersion === this.version) return;
 
-        Log4Ts.log(BagModuleData, () => {
-            return `数据准备升级.
-当前版本: ${this.currentVersion}.
-最新版本: ${this.version}.`;
-        });
+        Log4Ts.log(BagModuleData,
+            `数据准备升级`,
+            () => `当前版本: ${this.currentVersion}`,
+            () => `最新版本: ${this.version}.`,
+        );
 
         const startIndex = BagModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
         if (startIndex < 0) {
-            Log4Ts.error(BagModuleData, `数据号版本异常.
-不是已发布的版本号.
-当前版本: ${this.currentVersion}.`);
+            Log4Ts.error(
+                BagModuleData,
+                `数据号版本异常`,
+                `不是已发布的版本号`,
+                () => `当前版本: ${this.currentVersion}.`);
             return;
         }
 
@@ -365,14 +367,14 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     public addItem(bagId: number, count: number, autoRemove: boolean = true) {
         const currCount = this.getItemCount(bagId);
         const setCount = currCount + count;
-        Log4Ts.log(BagModuleC, () => {
-            return `add item.
-    playerId: ${this.localPlayerId}. 
-    id: ${bagId}. 
-    current count: ${this.getItemCount(bagId)}. 
-    target count: ${setCount}.
-    autoRemove: ${autoRemove}.`;
-        });
+        Log4Ts.log(BagModuleC,
+            `add item`,
+            () => `playerId: ${this.localPlayerId}`,
+            () => `id: ${bagId}`,
+            () => `current count: ${this.getItemCount(bagId)}`,
+            () => `target count: ${setCount}`,
+            () => `autoRemove: ${autoRemove}.`,
+        );
         this.selfSetItem(bagId, autoRemove && !setCount ? null : setCount);
         this.server.net_addItem(bagId, count, autoRemove);
     }
@@ -382,12 +384,12 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
      * @param bagId
      */
     public removeItem(bagId: number) {
-        Log4Ts.log(BagModuleC, () => {
-            return `remove item.
-    playerId: ${this.localPlayerId}. 
-    id: ${bagId}. 
-    current count: ${this.getItemCount(bagId)}.`;
-        });
+        Log4Ts.log(BagModuleC,
+            `remove item`,
+            () => `playerId: ${this.localPlayerId}`,
+            () => `id: ${bagId}`,
+            () => `current count: ${this.getItemCount(bagId)}.`,
+        );
         this.selfSetItem(bagId);
         this.server.net_removeItem(bagId);
     }
@@ -455,7 +457,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         const handbookItem = this.handbookYoact.getItem(bagId);
         if (!handbookItem) return;
         const v = value > 0;
-        if (!(handbookItem.collected !== v)) {
+        if (handbookItem.collected === v) {
             Log4Ts.log(BagModuleC, `${v ? "" : "un"}record item. id: ${bagId}.`);
             handbookItem.collected = v;
         }
@@ -580,12 +582,11 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
      */
     public removeItem(playerId: number, bagId: number) {
         const playerData = this.getPlayerData(playerId);
-        Log4Ts.log(BagModuleS, () => {
-            return `add item.
-    playerId: ${playerId}. 
-    id: ${bagId}. 
-    current count: ${playerData.getItemCount(bagId)}.`;
-        });
+        Log4Ts.log(BagModuleS, `add item`,
+            () => `playerId: ${playerId}`,
+            () => `id: ${bagId}`,
+            () => `current count: ${playerData.getItemCount(bagId)}.`,
+        );
         playerData.removeItem(bagId);
         playerData.save(false);
     }
