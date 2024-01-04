@@ -102,7 +102,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 TimeUtil.delayExecute(() => {
                     (wing as Effect).play();
                     wing.localTransform = transform;
-                }, 1);
+                }, 10);
             }
 
             return Promise.resolve(new SceneDragonExistInfo(

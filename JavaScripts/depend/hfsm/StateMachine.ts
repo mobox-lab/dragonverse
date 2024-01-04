@@ -24,7 +24,7 @@ const noTriggerTransitions = new Map();
  * 状态机实例
  */
 
-export class StateMachine<TOwnId = string, TStateId = string, TEvent = string> extends StateBase<TOwnId> implements ITriggerable<TEvent>, IStateMachine<TStateId>{
+export class StateMachine<TOwnId = string, TStateId = string, TEvent = string> extends StateBase<TOwnId> implements ITriggerable<TEvent>, IStateMachine<TStateId> {
 
 
 
@@ -99,7 +99,7 @@ export class StateMachine<TOwnId = string, TStateId = string, TEvent = string> e
      * @param forceInstantly 是否立即强制切换 
      */
     public requestStateChange(name: TStateId, forceInstantly: boolean) {
-        if (!this.currentState.needsExitTimes || forceInstantly) {
+        if (!this.currentState?.needsExitTimes || forceInstantly) {
             this.changeState(name);
         } else {
             this._pendingState.state = name;
@@ -534,7 +534,7 @@ export class StateMachine<TOwnId = string, TStateId = string, TEvent = string> e
 }
 
 
-class StateBundle<TStateId, TEvent>{
+class StateBundle<TStateId, TEvent> {
 
     /**
      * bundle对应的state
