@@ -17,7 +17,6 @@ import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
 import i18n from "../../language/i18n";
 import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
 import { GenerableTypes } from "../../const/GenerableTypes";
-import { RoleModuleC } from "../../module/role/RoleModule";
 import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import AccountService = mw.AccountService;

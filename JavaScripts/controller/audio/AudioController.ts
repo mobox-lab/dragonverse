@@ -132,10 +132,16 @@ export default class AudioController extends Singleton<AudioController>() {
     private _bgmSwitcherTimerId: number | null = null;
 
     /**
-     * Bgm 自动切换前间隔. s
+     * Bgm 自动播放计时器 id.
      * @private
      */
-    private _bgmRestInterval: number = 10;
+    private _bgmStartTimerId: number | null = null;
+
+    /**
+     * Bgm 自动切换前间隔. ms
+     * @private
+     */
+    private _bgmRestInterval: number = 10 * 1e3;
     //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //region Volume Controller
@@ -332,7 +338,7 @@ export default class AudioController extends Singleton<AudioController>() {
                 }
                 case BgmPlayStrategy.Rnd:
                 case BgmPlayStrategy.Sng:
-                    soundId = GToolkit.random(0, BgmRegisterArray.length, true);
+                    soundId = GToolkit.randomArrayItem(BgmRegisterArray);
                     break;
             }
         }
@@ -344,17 +350,20 @@ export default class AudioController extends Singleton<AudioController>() {
         }
 
         this.play(soundId);
-        if (this._bgmSwitcherTimerId !== null) {
-            clearTimeout(this._bgmSwitcherTimerId);
-            this._bgmSwitcherTimerId = null;
-        }
+
+        this.clearAutoSwitchTimer();
 
         switch (playStrategy) {
             case BgmPlayStrategy.Seq:
             case BgmPlayStrategy.Rnd:
                 this._bgmSwitcherTimerId = setTimeout(() => {
-                    this.playBgm(undefined, playStrategy);
-                }, (duration + this._bgmRestInterval) * 1e3);
+                        SoundService.stopBGM();
+                        this._bgmStartTimerId = setTimeout(
+                            () => this.playBgm(undefined, playStrategy),
+                            this._bgmRestInterval,
+                        );
+                    },
+                    duration * 1e3);
                 break;
             case BgmPlayStrategy.Sng:
                 break;
@@ -365,10 +374,7 @@ export default class AudioController extends Singleton<AudioController>() {
      * 停止 背景音.
      */
     public stopBgm() {
-        if (this._bgmSwitcherTimerId !== null) {
-            clearTimeout(this._bgmSwitcherTimerId);
-            this._bgmSwitcherTimerId = null;
-        }
+        this.clearAutoSwitchTimer();
         SoundService.stopBGM();
     }
 
@@ -398,6 +404,17 @@ export default class AudioController extends Singleton<AudioController>() {
             for (const removeCacheElement of removeCache) {
                 set.delete(removeCacheElement);
             }
+        }
+    }
+
+    private clearAutoSwitchTimer(): void {
+        if (this._bgmSwitcherTimerId !== null) {
+            clearTimeout(this._bgmSwitcherTimerId);
+            this._bgmSwitcherTimerId = null;
+        }
+        if (this._bgmStartTimerId !== null) {
+            clearTimeout(this._bgmStartTimerId);
+            this._bgmStartTimerId = null;
         }
     }
 
