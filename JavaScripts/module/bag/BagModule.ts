@@ -304,6 +304,13 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 
     public goldYoact: { count: number } = createYoact({count: 0});
     public dragonBallYoact: { count: number } = createYoact({count: 0});
+
+    private _isReady: boolean = false;
+
+    public get isReady() {
+        return this._isReady;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -319,6 +326,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         this.handbookYoact
             .setAll(HandbookItemUnique.arrayFromByteArray(this.data));
         this.dragonBallYoact.count = this.getItemCount(GameServiceConfig.DRAGON_BALL_BAG_ID);
+        this._isReady = true;
         // this.goldYoact.count=this.getItemCount(GameServiceConfig.GOLD_BAG_ID);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
