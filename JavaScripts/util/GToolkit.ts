@@ -18,7 +18,7 @@ import Log4Ts from "../depend/log4ts/Log4Ts";
  * @author zewei.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.0.3b
+ * @version 1.0.5b
  * @beta
  */
 class GToolkit {
@@ -80,6 +80,10 @@ class GToolkit {
      * @private
      */
     private static readonly MillisecondInSecond = 1000;
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    //#region Member
+    private _characterDescriptionLockers: Set<string> = new Set();
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MW Service
@@ -250,6 +254,40 @@ class GToolkit {
         }
 
         return result;
+    }
+
+    /**
+     * do callback until predicate return true.
+     * @param predicate
+     * @param callback
+     * @param interval ms.
+     *      100 default.
+     * @param instant test predicate at once.
+     * @return interval hold id.
+     */
+    public doUtilTrue(predicate: () => boolean,
+                      callback: () => void,
+                      interval: number = 100,
+                      instant: boolean = true): number | null {
+        if (instant && predicate()) {
+            callback();
+            return null;
+        }
+
+        const holdId = setInterval(() => {
+                if (!predicate()) {
+                    return;
+                }
+                try {
+                    callback();
+                } catch (e) {
+                } finally {
+                    clearInterval(holdId);
+                }
+            },
+            interval,
+        );
+        return holdId;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -1135,6 +1173,38 @@ class GToolkit {
         const component: UE.SceneComponent = character["ueCharacter"].mesh as unknown as UE.SceneComponent;
         const location = component.RelativeLocation;
         return new mw.Vector(location.X, location.Y, location.Z);
+    }
+
+    /**
+     * 安全设置 Character Description.
+     * @param character
+     * @param description
+     * @return set interval character state.
+     */
+    public safeSetDescription(character: mw.Character, description: string): boolean | null {
+        if (!character || this.isNullOrEmpty(character?.gameObjectId)) {
+            Log4Ts.error(GToolkit, `character is invalid`);
+            return false;
+        }
+        if (this._characterDescriptionLockers.has(character.gameObjectId)) {
+            Log4Ts.warn(GToolkit, `character desc locked.`, `somebody is waiting for set desc`);
+            return false;
+        }
+        this._characterDescriptionLockers.add(character.gameObjectId);
+        character
+            .asyncReady()
+            .then(
+                () => {
+                    this.doUtilTrue(
+                        () => character.isDescriptionReady,
+                        () => {
+                            character.setDescription([description]);
+                            this._characterDescriptionLockers.delete(character.gameObjectId);
+                        },
+                    );
+                },
+            );
+        return true;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
