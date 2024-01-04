@@ -327,7 +327,7 @@ export default class AudioController extends Singleton<AudioController>() {
             switch (this._currentBgmPlayStrategy) {
                 case BgmPlayStrategy.Seq: {
                     const currIndex = BgmRegisterArray.indexOf(this._currentBgmId);
-                    soundId = currIndex === -1 ? BgmRegisterArray[0] : (GToolkit.safeIndex(currIndex + 1, BgmRegisterArray, "cycle"));
+                    soundId = currIndex === -1 ? BgmRegisterArray[0] : BgmRegisterArray[GToolkit.safeIndex(currIndex + 1, BgmRegisterArray, "cycle")];
                     break;
                 }
                 case BgmPlayStrategy.Rnd:
