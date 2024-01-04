@@ -85,7 +85,10 @@ export default class NpcBehavior extends mw.Script {
             Log4Ts.log(NpcBehavior, `there is no mesh object named ${GameServiceConfig.NPC_MESH_OBJECT_NAME} in prefab.`);
             return;
         }
-        this._npcCharacter?.setDescription([this._config.avatar]);
+        GToolkit.safeSetDescription(
+            this._npcCharacter,
+            this._config.avatar,
+        );
         //添加翅膀
         let wingGuid = this._config.wingGuid;
         let wingTransform = this._config.wingTransform;
