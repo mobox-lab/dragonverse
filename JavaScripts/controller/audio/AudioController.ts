@@ -3,6 +3,8 @@ import { GameConfig } from "../../config/GameConfig";
 import { ISoundElement } from "../../config/Sound";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { Singleton } from "../../depend/singleton/Singleton";
+import Sound = mw.Sound;
+import GToolkit from "../../util/GToolkit";
 
 export enum SoundIDEnum {
     /**
@@ -30,13 +32,57 @@ export enum SoundIDEnum {
      * 火球命中云朵
      */
     hitCloud = 15,
+    /**
+     * 主 Bgm 1.
+     */
+    MainBgm1 = 26,
+    /**
+     * 主 Bgm 2.
+     */
+    MainBgm2 = 27,
+}
+
+/**
+ * Bgm SoundIDEnum 注册数组.
+ */
+const BgmRegisterArray: SoundIDEnum[] = [
+    SoundIDEnum.MainBgm1,
+    SoundIDEnum.MainBgm2,
+];
+
+/**
+ * Bgm 时长 注册数组. s
+ */
+const BgmDurationRegisterArray: number[] = [
+    144,
+    253,
+];
+
+/**
+ * Bgm 播放策略.
+ */
+export enum BgmPlayStrategy {
+    /**
+     * 顺序播放.
+     */
+    Seq,
+
+    /**
+     * 随机播放.
+     */
+    Rnd,
+
+    /**
+     * 单曲循环.
+     */
+    Sng,
 }
 
 /**
  * 声卡控制器.
  *
- * 提供听觉控制与配置接口.
- *
+ * @desc 提供听觉控制与配置接口.
+ * @desc //TODO_LviatYi 脱离依赖鸡肋的 SoundService.
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
  * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
@@ -59,10 +105,52 @@ export default class AudioController extends Singleton<AudioController>() {
      * 但不意味着所有声音 id 都是有效的.
      * @private
      */
-    private _soundMap: Map<SoundIDEnum, Set<number | string>> = new Map<SoundIDEnum, Set<number | string>>();
+    private _soundMap: Map<SoundIDEnum, Set<number | string>> = new Map();
+
+    /**
+     * Bgm SoundIdEnum 与 Bgm 实例的映射.
+     * @private
+     */
+    private _bgmSoundMap: Map<SoundIDEnum, Set<Sound>> = new Map();
+
+    /**
+     * 当前播放的 Bgm SoundIdEnum.
+     * @private
+     */
+    private _currentBgmId: SoundIDEnum | null = null;
+
+    /**
+     * 当前 Bgm 播放策略.
+     * @private
+     */
+    private _currentBgmPlayStrategy: BgmPlayStrategy = BgmPlayStrategy.Seq;
+
+    /**
+     * Bgm 自动切换计时器 id.
+     * @private
+     */
+    private _bgmSwitcherTimerId: number | null = null;
+
+    /**
+     * Bgm 自动切换前间隔.
+     * @private
+     */
+    private _bgmRestInterval: number = 10e3;
     //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //region Volume Controller
+
+    /**
+     * Bgm 自动切换前间隔.
+     * @private
+     */
+    public get bgmRestInterval(): number {
+        return this._bgmRestInterval;
+    }
+
+    public set bgmRestInterval(value: number) {
+        this._bgmRestInterval = value;
+    }
 
     /**
      * 音量缓存.
@@ -215,7 +303,6 @@ export default class AudioController extends Singleton<AudioController>() {
                 );
             }
         } else {
-            SoundService.stopBGM();
             SoundService.playBGM(
                 config.soundGuid,
                 config.volume,
@@ -231,9 +318,57 @@ export default class AudioController extends Singleton<AudioController>() {
     }
 
     /**
+     * 播放 背景音.
+     */
+    public playBgm(soundId: SoundIDEnum | number = undefined, playStrategy: BgmPlayStrategy = undefined) {
+        if (playStrategy !== undefined && this._currentBgmPlayStrategy !== playStrategy) this._currentBgmPlayStrategy = playStrategy;
+
+        if (soundId === undefined) {
+            switch (this._currentBgmPlayStrategy) {
+                case BgmPlayStrategy.Seq: {
+                    const currIndex = BgmRegisterArray.indexOf(this._currentBgmId);
+                    soundId = currIndex === -1 ? BgmRegisterArray[0] : (GToolkit.safeIndex(currIndex + 1, BgmRegisterArray, "cycle"));
+                    break;
+                }
+                case BgmPlayStrategy.Rnd:
+                case BgmPlayStrategy.Sng:
+                    soundId = GToolkit.random(0, BgmRegisterArray.length, true);
+                    break;
+            }
+        }
+        const config: ISoundElement = this.getConfig(soundId);
+        const duration = BgmDurationRegisterArray[BgmRegisterArray.indexOf(soundId)] ?? 5e3;
+        if (config.isEffect) {
+            Log4Ts.warn(AudioController, `config is not bgm.`);
+            return;
+        }
+
+        this.play(soundId);
+        if (this._bgmSwitcherTimerId !== null) {
+            clearTimeout(this._bgmSwitcherTimerId);
+            this._bgmSwitcherTimerId = null;
+        }
+
+        switch (playStrategy) {
+            case BgmPlayStrategy.Seq:
+            case BgmPlayStrategy.Rnd:
+                this._bgmSwitcherTimerId = setTimeout(() => {
+                    this.playBgm(undefined, playStrategy);
+                }, duration + this._bgmRestInterval);
+                break;
+            case BgmPlayStrategy.Sng:
+                break;
+        }
+    }
+
+    /**
      * 停止 背景音.
      */
     public stopBgm() {
+        if (this._bgmSwitcherTimerId !== null) {
+            clearTimeout(this._bgmSwitcherTimerId);
+            this._bgmSwitcherTimerId = null;
+        }
         SoundService.stopBGM();
     }
 
@@ -279,3 +414,217 @@ export default class AudioController extends Singleton<AudioController>() {
 
     //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
+
+// class SoundHolder {
+//     private _assetId: string;
+//     private _soundGo: Sound;
+//
+//     private _is3D: boolean;
+//     private _lastLoopCount: number;
+//     private _volumeScale: number;
+//
+//     private _isDone = true;
+//     private _isDestroy = false;
+//     private _isLoading = false;
+//
+//     private _onComplete: SimpleDelegate<void> = new SimpleDelegate();
+//     private _loadingWaitingPool: SimpleDelegate<void> = new SimpleDelegate();
+//
+//     public constructor(assetId: string) {
+//         this._assetId = assetId;
+//         this.loadAsset();
+//     }
+//
+//     private async loadAsset(): Promise<boolean> {
+//         if (SystemUtil.isClient()) {
+//             if (this._isLoading || this._soundGo !== null) return;
+//             this._isLoading = true;
+//             SoundHolder
+//                 .spawnAsset(this._assetId)
+//                 .then(go => {
+//                     this._isLoading = false;
+//                     if (go !== null && go instanceof Sound) this.initGo(go);
+//                     this._loadingWaitingPool.invoke();
+//                     return Promise.resolve(true);
+//                 });
+//         } else {
+//             Log4Ts.error(SoundHolder, `sound can't be created on server.`);
+//             return Promise.resolve(false);
+//         }
+//     }
+//
+//     private initGo(go: Sound) {
+//         if (this._isDestroy) {
+//             go.destroy();
+//             return;
+//         }
+//
+//         this._soundGo = go;
+//         this._soundGo.volume = 0;
+//         this._soundGo.stop();
+//         this._soundGo.onFinish.add(() => {
+//             if (this._isDone) return;
+//             this._lastLoopCount--;
+//             if (this._lastLoopCount == 0) {
+//                 this.stop();
+//                 this._onComplete.invoke();
+//             } else this._soundGo.play();
+//         });
+//         this._soundGo.onDestroyDelegate.add(() => {
+//             this._soundGo = null;
+//             this._isLoading = false;
+//             this._isDone = true;
+//         });
+//     }
+//
+//     public destroy() {
+//         if (this._isDestroy) return;
+//         this._isDestroy = true;
+//         this.stop();
+//         if (this._soundGo !== null) {
+//             try {
+//                 this._soundGo.destroy();
+//             } catch (e) {
+//             }
+//         }
+//     }
+//
+//     private setCommonParams(is3D: boolean, loopNum: number = 1, volumeScale = 1) {
+//         this._is3D = is3D;
+//         this._isDone = false;
+//         this._lastLoopCount = loopNum;
+//         this._volumeScale = volumeScale;
+//     }
+//
+//     play(volume: number, loopNum: number, volumeScale: number) {
+//         if (this._isDestroy) return;
+//
+//         this.setCommonParams(false, loopNum, volumeScale);
+//         this.doAsLoadDone(() => {
+//             if (this._isDone || !this._soundGo) return;
+//
+//             this._soundGo.isSpatialization = false;
+//             this._soundGo.isUISound = true;
+//             this._soundGo.isLoop = loopNum <= 0;
+//             this._soundGo.play();
+//             this._soundGo.volume = this.getPlayVolume();
+//         });
+//
+//     }
+//
+//     playInTarget(target, loopNum, volume, volumeScale, playParam) {
+//         this.showLog("playInTarget");
+//         if (this._isDestroy)
+//             return;
+//         this.setCommonParams(true, loopNum, volume, volumeScale);
+//         this.asyncGetGo().then((go) => {
+//             if (go == null || this._isDone)
+//                 return;
+//             go.parent = target;
+//             go.localTransform.position = Type16.Vector.zero;
+//             this.play3D(go, loopNum, playParam);
+//         });
+//     }
+//
+//     playInPos(pos, loopNum = 1, volume, volumeScale, playParam) {
+//         if (this._isDestroy)
+//             return;
+//         this.setCommonParams(true, loopNum, volume, volumeScale);
+//         this.asyncGetGo().then((go) => {
+//             if (go == null || this._isDone)
+//                 return;
+//             go.parent = null;
+//             go.worldTransform.position = pos;
+//             this.play3D(go, loopNum, playParam);
+//         });
+//     }
+//
+//     play3D(sound: Sound, loopNum: number = 1, playParam: {
+//         radius: number,
+//         falloffDistance: number
+//     } = undefined) {
+//         const radius = playParam?.radius ?? 200;
+//         const falloffDistance = playParam?.falloffDistance ?? 600;
+//         sound.isSpatialization = true;
+//         sound.isUISound = false;
+//         sound.isLoop = loopNum <= 0;
+//         sound.volume = this.getPlayVolume();
+//         sound.attenuationShape = AttenuationShape.Sphere;
+//         sound.attenuationShapeExtents = new Vector(radius, 0, 0);
+//         sound.falloffDistance = falloffDistance;
+//         sound.play();
+//     }
+//
+//     stop() {
+//         this._isDone = true;
+//         try {
+//             if (this._soundGo != null) {
+//                 this._soundGo.parent = null;
+//                 this._soundGo.stop();
+//             }
+//         } catch (e) {
+//             e;
+//         }
+//     }
+//
+//     getPlayVolume() {
+//         return this._volume * this.mVolumeScale;
+//     }
+//
+//     set volumeScale(value) {
+//         this.mVolumeScale = value;
+//         if (this._soundGo != null) {
+//             this._soundGo.volume = this.getPlayVolume();
+//         }
+//     }
+//
+//     set volume(value) {
+//         this._volume = value;
+//         if (this._soundGo != null) {
+//             this._soundGo.volume = this.getPlayVolume();
+//         }
+//     }
+//
+//     get assetId() {
+//         return this.mAssetId;
+//     }
+//
+//     get isDone() {
+//         return this._isDone;
+//     }
+//
+//     get is3D() {
+//         return this._is3D;
+//     }
+//
+//     clone() {
+//         return new SoundHolder(this._assetId);
+//     }
+//
+//     private doAsLoadDone(callback: SimpleDelegateFunction<void>) {
+//         if (this._isLoading) {
+//             try {
+//                 callback?.();
+//             } catch (e) {
+//             }
+//         } else {
+//             this._loadingWaitingPool.add(callback);
+//         }
+//     }
+//
+//     static async spawnAsset(assetId: string): Promise<Sound> {
+//         if (AssetUtil.assetLoaded(assetId)) return GameObject.spawn<Sound>(assetId);
+//         return new Promise((resolve) => {
+//             AssetUtil.asyncDownloadAsset(assetId).then((success) => {
+//                 if (success) {
+//                     GameObject.asyncSpawn<Sound>(assetId).then((go) => resolve(go));
+//                     return;
+//                 }
+//                 Log4Ts.log(SoundHolder,
+//                     `asset load fail.`,
+//                     `assetId: ${assetId}`);
+//                 resolve(null);
+//             });
+//         });
+//     }
+// }
