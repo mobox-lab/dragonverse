@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-03 16:43:50
+ * @LastEditTime : 2024-01-04 10:13:24
  * @FilePath     : \dragon027\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
@@ -28,6 +28,7 @@ export default class CloudEffect extends mw.Script {
     private _endPoint: GameObject;
     private _trigger: Trigger;
 
+    private _isFiring: boolean = false;
 
     protected onStart(): void {
 
@@ -164,6 +165,8 @@ export default class CloudEffect extends mw.Script {
             text: i18n.lan(i18n.keyTable.TinyGameLanKey0003),
             enabled: true,
             onSelected: () => {
+                if (this._isFiring) return;
+                this._isFiring = true;
                 let anchorGuid = this.getCanDestroyClouds();
                 if (!anchorGuid) return;
 
@@ -185,6 +188,7 @@ export default class CloudEffect extends mw.Script {
                         this.destroyClouds(anchorGuid);
                         if (this.getCanDestroyClouds()) {
                             //如果还有云朵，继续显示按钮
+                            this._isFiring = false;
                             this.showFireBtn();
                         }
                     }).start();
