@@ -171,8 +171,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1);
 
@@ -185,8 +185,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1);
 
@@ -223,6 +223,9 @@ export default class MainPanel extends MainPanel_Generate {
         const enableCatchBtn = this._currentInteractType === GenerableTypes.Null &&
             !GToolkit.isNullOrEmpty(this.sceneDragonModule?.candidate ?? null);
         GToolkit.trySetVisibility(
+            this.btnCatch,
+            enableCatchBtn);
+        GToolkit.trySetVisibility(
             this.cnvCatchdragon,
             enableCatchBtn);
     }
@@ -248,9 +251,9 @@ export default class MainPanel extends MainPanel_Generate {
      * 注意：这之后UI对象已经被销毁了，需要移除所有对该文件和UI相关对象以及子对象的引用
      */
     protected onDestroy() {
-//#region Event Unsubscribe
+        //#region Event Unsubscribe
         this._eventListeners.forEach(value => value.disconnect());
-//#endregion ------------------------------------------------------------------------------------------
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     /**

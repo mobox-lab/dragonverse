@@ -21,7 +21,7 @@ export class ThrowDragonBall {
         if (!this._instance) {
             return;
         }
-        actions.tweens.stopAllByTag(tags);
+        // actions.tweens.stopAllByTag(tags);
 
         let location = this.owner.getSlotWorldPosition(mw.HumanoidSlotType.RightHand);
         this._instance.worldTransform.position = location;
@@ -35,11 +35,11 @@ export class ThrowDragonBall {
         if (!this._instance) {
             return;
         }
-        actions.tweens.stopAllByTag(tags);
+        // actions.tweens.stopAllByTag(tags);
 
         if (result) {
             let location = this.owner.getSlotWorldPosition(mw.HumanoidSlotType.RightHand);
-            actions.tween(this._instance.worldTransform).to(duration, {position: location}).setTag(tags).call(() => {
+            actions.tween(this._instance.worldTransform).to(duration, { position: location }).setTag(tags).call(() => {
                 this.clear();
             }).start();
         } else {
@@ -65,7 +65,7 @@ export class ThrowDragonBall {
     public clear() {
         this.target = null;
         this.owner = null;
-        actions.tweens.stopAllByTag(tags);
+        // actions.tweens.stopAllByTag(tags);
         if (this._instance) {
             GameObjPool.despawn(this._instance);
             this._instance = null;

@@ -266,25 +266,25 @@ class GToolkit {
      * @return interval hold id.
      */
     public doUtilTrue(predicate: () => boolean,
-                      callback: () => void,
-                      interval: number = 100,
-                      instant: boolean = true): number | null {
+        callback: () => void,
+        interval: number = 100,
+        instant: boolean = true): number | null {
         if (instant && predicate()) {
             callback();
             return null;
         }
 
         const holdId = setInterval(() => {
-                if (!predicate()) {
-                    return;
-                }
-                try {
-                    callback();
-                } catch (e) {
-                } finally {
-                    clearInterval(holdId);
-                }
-            },
+            if (!predicate()) {
+                return;
+            }
+            try {
+                callback();
+            } catch (e) {
+            } finally {
+                clearInterval(holdId);
+            }
+        },
             interval,
         );
         return holdId;
@@ -805,7 +805,7 @@ class GToolkit {
      */
     public getScript<T extends mw.Script>(
         object: GameObject,
-        scriptCls: new(...param: unknown[]) => T,
+        scriptCls: new (...param: unknown[]) => T,
         traverse: number = 0): T[] {
         if (!object) return [];
 
@@ -838,8 +838,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScript<T extends mw.Script>(object: GameObject,
-                                               scriptCls: (new (...args: unknown[]) => T) | Function,
-                                               traverse: number = 0): T | null {
+        scriptCls: (new (...args: unknown[]) => T) | Function,
+        traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -905,8 +905,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScriptIs<T extends mw.Script>(object: GameObject,
-                                                 method: string | ((instance: object) => boolean),
-                                                 traverse: number = 0): T | null {
+        method: string | ((instance: object) => boolean),
+        traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -1130,10 +1130,10 @@ class GToolkit {
      * @profession
      */
     public rotateCharacterMesh(character: mw.Character,
-                               pitch: number,
-                               yaw: number,
-                               roll: number,
-                               origin: mw.Vector = mw.Vector.zero) {
+        pitch: number,
+        yaw: number,
+        roll: number,
+        origin: mw.Vector = mw.Vector.zero) {
         const component: UE.SceneComponent = character["ueCharacter"].mesh as unknown as UE.SceneComponent;
         const originRotator = component.RelativeRotation;
 
@@ -1222,9 +1222,9 @@ class GToolkit {
      * @param disableGuid
      */
     public setButtonGuid(button: mw.Button | mw.StaleButton,
-                         normalGuid: string,
-                         pressedGuid: string = undefined,
-                         disableGuid: string = undefined) {
+        normalGuid: string,
+        pressedGuid: string = undefined,
+        disableGuid: string = undefined) {
         if (!pressedGuid) {
             pressedGuid = normalGuid;
         }
@@ -1243,9 +1243,11 @@ class GToolkit {
      * @param ui
      * @param visibility
      *  当为 boolean 时 将按照常用策略将 true 映射为 {@link mw.SlateVisibility.Visible} 或 {@link mw.SlateVisibility.SelfHitTestInvisible}.
+     * @param syncEnable 是否同步设置 enable.
+     *      true default. 当 ui 为 {@link mw.Button} 或 {@link mw.StaleButton} 时 将根据 visibility 同步设置 enable.
      * @return 返回是否发生实际更改.
      */
-    public trySetVisibility(ui: mw.Widget, visibility: mw.SlateVisibility | boolean): boolean {
+    public trySetVisibility(ui: mw.Widget, visibility: mw.SlateVisibility | boolean, syncEnable: boolean = true): boolean {
         if (typeof visibility === "boolean") {
             if (ui instanceof mw.Button || ui instanceof mw.StaleButton) {
                 visibility = visibility ? mw.SlateVisibility.Visible : mw.SlateVisibility.Hidden;
@@ -1253,9 +1255,14 @@ class GToolkit {
                 visibility = visibility ? mw.SlateVisibility.SelfHitTestInvisible : mw.SlateVisibility.Hidden;
             }
         }
+
+        if (syncEnable && (ui instanceof mw.Button || ui instanceof mw.StaleButton)) {
+            ui.enable = visibility === mw.SlateVisibility.Visible;
+        }
         if (ui.visibility === visibility) {
             return false;
         }
+
         ui.visibility = visibility;
         return true;
     }
@@ -1304,10 +1311,10 @@ class GToolkit {
      * @return hitPoint 命中首个点的命中信息 当未命中时返回 null.
      */
     public detectVerticalTerrain(startPoint: mw.Vector,
-                                 length: number = 1000,
-                                 self: mw.GameObject = null,
-                                 ignoreObjectGuids: string[] = [],
-                                 debug: boolean = false): mw.HitResult | null {
+        length: number = 1000,
+        self: mw.GameObject = null,
+        ignoreObjectGuids: string[] = [],
+        debug: boolean = false): mw.HitResult | null {
         return QueryUtil.lineTrace(
             startPoint,
             this.newWithZ(startPoint, startPoint.z - length),
@@ -1326,9 +1333,9 @@ class GToolkit {
      * @param debug
      */
     public detectGameObjectVerticalTerrain(self: GameObject,
-                                           length: number = 1000,
-                                           ignoreObjectGuids: string[] = [],
-                                           debug: boolean = false): mw.HitResult | null {
+        length: number = 1000,
+        ignoreObjectGuids: string[] = [],
+        debug: boolean = false): mw.HitResult | null {
         if (!self) return null;
         return this.detectVerticalTerrain(
             self.worldTransform.position,
