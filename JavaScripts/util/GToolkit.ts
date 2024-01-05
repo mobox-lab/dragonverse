@@ -20,6 +20,7 @@ import Log4Ts from "../depend/log4ts/Log4Ts";
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  * @version 1.0.5b
  * @beta
+ *
  */
 class GToolkit {
     //#region Constant
