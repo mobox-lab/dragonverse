@@ -9,6 +9,7 @@ import { CompanionState } from "./CompanionState";
 import DragonEntity from "./DragonEntity";
 import GameServiceConfig from "../../../const/GameServiceConfig";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Plane = UE.Plane;
 
 class BaseCompanionState extends State<CompanionStateEnum> {
 
@@ -170,7 +171,7 @@ export class CompanionLogicController extends StateMachine<void, CompanionStateE
                     GameServiceConfig.PARTNER_DRAGON_MIN_INITIALIZE_DISTANCE,
                     GameServiceConfig.PARTNER_DRAGON_MAX_INITIALIZE_DISTANCE,
                 ))
-            .add(Player.localPlayer.character.worldTransform.position);
+            .add(Camera.currentCamera.worldTransform.position);
     }
 
 
