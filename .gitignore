@@ -21,6 +21,7 @@ TsBuilder.log
 
 # Meta world
 .mw/**/*
+.project
 DBCache/**/*
 AutoBackup/**/*
 Pictures/**/*
