@@ -8,9 +8,6 @@ import FixedQueue from "../../depend/queue/FixedQueue";
 import Regulator from "../../depend/regulator/Regulator";
 import i18n from "../../language/i18n";
 import GToolkit, { Expression, TimeFormatDimensionFlags } from "../../util/GToolkit";
-import ModuleS = mwext.ModuleS;
-import ModuleC = mwext.ModuleC;
-import SubData = mwext.Subdata;
 import noReply = mwext.Decorator.noReply;
 import { TimeManager } from "../../controller/TimeManager";
 import AreaManager from "../../gameplay/area/AreaManager";
@@ -89,9 +86,18 @@ interface CodeVerifyResponse {
     data: boolean;
 }
 
-export default class AuthModuleData extends SubData {
+export default class AuthModuleData extends mwext.Subdata {
     //@Decorator.saveProperty
     //public isSave: bool;
+
+    @Decorator.persistence()
+    public userId: string;
+
+    @Decorator.persistence()
+    public playerId: number;
+
+    @Decorator.persistence()
+    public nickName: string;
 
     /**
      * 玩家准入权限.
@@ -104,6 +110,14 @@ export default class AuthModuleData extends SubData {
      */
     @Decorator.persistence()
     public codeVerifyReqData: number[] = [];
+
+
+    protected initDefaultData(): void {
+        super.initDefaultData();
+        this.userId = null;
+        this.playerId = null;
+        this.nickName = null;
+    }
 }
 
 /**
@@ -178,7 +192,7 @@ class RequestGuard {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
+export class AuthModuleC extends mwext.ModuleC<AuthModuleS, AuthModuleData> {
     //#region Member
     private _originToken: string = null;
 
@@ -199,6 +213,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
         super.onStart();
 
         //#region Member init
+        this.server.net_initPlayerData(AccountService.getNickName());
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
@@ -395,7 +410,7 @@ export class AuthModuleC extends ModuleC<AuthModuleS, AuthModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
+export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
     //#region Constant
     /**
      * 验证时间容差.
@@ -707,6 +722,40 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         return this.getPlayerData(playerId)?.enterEnable ?? false;
     }
 
+    /**
+     * 主动巡逻.
+     * @desc 理论上当以下时机时需发起巡逻：
+     * @desc  - 服务端无准入权限 但客户端可能具有准入权限.
+     * @desc
+     * @desc 主动巡逻的判定前提：
+     * @desc  - 服务端具有准入权限.
+     * @desc 主动巡逻的判定条件：
+     * @desc  - 玩家不在新手区域 {@link AreaManager.getRespawnArea()} 内.
+     * @desc
+     * @param playerId 玩家id
+     */
+    private initiativePatrol(playerId: number) {
+        if (!GameStart.instance.isRelease) return;
+        if (this.getPlayerData(playerId).enterEnable) return;
+        Log4Ts.log(AuthModuleS, `initiative patrol on player: ${playerId}.`);
+        let player = Player.getPlayer(playerId);
+        if (!player) return;
+        if (!isPointInShape2D(AreaManager.getInstance().getSafeHouseArea(), player.character.worldTransform.position)) {
+            Log4Ts.warn(AuthModuleS, `failed. player is not in safe house when patrol.`);
+            const respawnPoint = GToolkit.randomArrayItem(AreaManager.getInstance().getRespawnArea());
+            player.character.worldTransform.position = new Vector(respawnPoint.x, respawnPoint.y, respawnPoint.z);
+        } else {
+            Log4Ts.log(AuthModuleS, `success. player is in safe house when patrol.`);
+        }
+        // //判断在不在新手村，不在就归位
+        // let trigger = GameObject.findGameObjectByName("beginnerChecker") as Trigger;
+        // if (trigger && player) {
+        //     if (!trigger.checkInArea(player.character)) {
+        //         player.character.worldTransform.position = trigger.worldTransform.position;
+        //     }
+        // }
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
@@ -845,38 +894,12 @@ export class AuthModuleS extends ModuleS<AuthModuleC, AuthModuleData> {
         this.reportSubGameInfo(this.currentPlayerId, clientTimeStamp, subGameType, value);
     }
 
-    /**
-     * 主动巡逻.
-     * @desc 理论上当以下时机时需发起巡逻：
-     * @desc  - 服务端无准入权限 但客户端可能具有准入权限.
-     * @desc
-     * @desc 主动巡逻的判定前提：
-     * @desc  - 服务端具有准入权限.
-     * @desc 主动巡逻的判定条件：
-     * @desc  - 玩家不在新手区域 {@link AreaManager.getRespawnArea()} 内.
-     * @desc
-     * @param playerId 玩家id
-     */
-    private initiativePatrol(playerId: number) {
-        if (!GameStart.instance.isRelease) return;
-        if (this.getPlayerData(playerId).enterEnable) return;
-        Log4Ts.log(AuthModuleS, `initiative patrol on player: ${playerId}.`);
-        let player = Player.getPlayer(playerId);
-        if (!player) return;
-        if (!isPointInShape2D(AreaManager.getInstance().getSafeHouseArea(), player.character.worldTransform.position)) {
-            Log4Ts.warn(AuthModuleS, `failed. player is not in safe house when patrol.`);
-            const respawnPoint = GToolkit.randomArrayItem(AreaManager.getInstance().getRespawnArea());
-            player.character.worldTransform.position = new Vector(respawnPoint.x, respawnPoint.y, respawnPoint.z);
-        } else {
-            Log4Ts.log(AuthModuleS, `success. player is in safe house when patrol.`);
-        }
-        // //判断在不在新手村，不在就归位
-        // let trigger = GameObject.findGameObjectByName("beginnerChecker") as Trigger;
-        // if (trigger && player) {
-        //     if (!trigger.checkInArea(player.character)) {
-        //         player.character.worldTransform.position = trigger.worldTransform.position;
-        //     }
-        // }
+    @noReply()
+    public net_initPlayerData(nickName: string) {
+        this.currentData.playerId = this.currentPlayerId;
+        this.currentData.userId = this.currentPlayer.userId;
+        this.currentData.nickName = nickName;
+        this.currentData.save(false);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
