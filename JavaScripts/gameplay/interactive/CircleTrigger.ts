@@ -17,21 +17,21 @@ import { RunningGameGetParticle } from "../quest/runnungGame/RunningGameQuest";
  */
 export enum CircleType {
     /**加速 */
-    SpeedUp = "1",
+    SpeedUp = 1,
     /**减速 */
-    SpeedDown = "2",
+    SpeedDown = 2,
     /**积分 */
-    Point = "3",
+    Point = 3,
     /**传送门起点 */
-    TransStart = "4",
+    TransStart = 4,
     /**传送门终点 */
-    TransEnd = "5",
+    TransEnd = 5,
     /**引导区域 */
-    Guide = "6",
+    Guide = 6,
     /**游戏准备开始区域 */
-    GameReady = "7",
+    GameReady = 7,
     /**游戏结束区域 */
-    GameEnd = "8",
+    GameEnd = 8,
 }
 
 /**
@@ -42,7 +42,7 @@ export default class CircleTrigger extends mw.Script {
 
     @mw.Property({
         displayName: "圈类别",
-        selectOptions: {
+        enumType: {
             "加速圈": CircleType.SpeedUp,
             "减速圈": CircleType.SpeedDown,
             "积分圈": CircleType.Point,
