@@ -47,6 +47,11 @@ export default class GameServiceConfig {
      * 伙伴龙 移动速度上限.
      */
     public static readonly PARTNER_DRAGON_MAX_WALK_SPEED = 720;
+    
+    /**
+     * 伙伴龙 游泳速度上限.
+     */
+    public static readonly PARTNER_DRAGON_MAX_SWIM_SPEED = 610;
 
     /**
      * 伙伴龙 初始化时 对镜头世界坐标后向偏移最小路程.

@@ -186,6 +186,7 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
     private _logicController: CompanionLogicController;
 
     public _wing: mw.GameObject;
+
     protected async onInitialize() {
         if (mw.SystemUtil.isClient()) {
 
@@ -195,6 +196,7 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
                 prefab,
                 this.displayGuid,
             );
+            prefab.maxSwimSpeed = GameServiceConfig.PARTNER_DRAGON_MAX_SWIM_SPEED;
             let character = mw.Player.getPlayer(this.playerId).character;
 
             //添加翅膀
