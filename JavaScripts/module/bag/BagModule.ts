@@ -95,16 +95,16 @@ export class HandbookItemUnique implements IUnique {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export default class BagModuleData extends Subdata {
-    //@Decorator.persistence()
-    //public isSave: bool;
+type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
 
+export default class BagModuleData extends Subdata {
     public static config(bagId: number): IBagItemElement {
         return GameConfig.BagItem.getElement(bagId);
     }
 
     /**
      * 已经发布的正式数据版本号.
+     * 以版本发布时间 升序排列.
      * RV.
      */
     public static readonly RELEASE_VERSIONS: number[] = [
@@ -115,8 +115,8 @@ export default class BagModuleData extends Subdata {
      * 版本升级办法.
      * UVM[n] : 从 RV[n] 升级到 RV[n+1] 的方法.
      */
-    public static readonly UPDATE_VERSION_METHOD: (() => void)[] = [
-        // () => {
+    public static readonly UPDATE_VERSION_METHOD: DataUpgradeMethod<BagModuleData>[] = [
+        // (data) => {
         // },
     ];
 
@@ -204,7 +204,7 @@ export default class BagModuleData extends Subdata {
         }
 
         for (let i = startIndex; i < BagModuleData.UPDATE_VERSION_METHOD.length - 1; ++i) {
-            BagModuleData.UPDATE_VERSION_METHOD[i]();
+            BagModuleData.UPDATE_VERSION_METHOD[i](this);
             this.currentVersion = BagModuleData.RELEASE_VERSIONS[i + 1];
         }
     }

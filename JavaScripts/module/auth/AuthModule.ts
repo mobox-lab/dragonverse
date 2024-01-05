@@ -13,6 +13,8 @@ import { TimeManager } from "../../controller/TimeManager";
 import AreaManager from "../../gameplay/area/AreaManager";
 import { isPointInShape2D } from "../../util/area/Shape";
 
+type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
+
 /**
  * Salt Token.
  *
@@ -87,8 +89,27 @@ interface CodeVerifyResponse {
 }
 
 export default class AuthModuleData extends mwext.Subdata {
-    //@Decorator.saveProperty
-    //public isSave: bool;
+    /**
+     * 已经发布的正式数据版本号.
+     * 以版本发布时间 升序排列.
+     * RV.
+     */
+    public static readonly RELEASE_VERSIONS: number[] = [
+        1,
+        202401051219,
+    ];
+
+    /**
+     * 版本升级办法.
+     * UVM[n] : 从 RV[n] 升级到 RV[n+1] 的方法.
+     */
+    public static readonly UPDATE_VERSION_METHOD: DataUpgradeMethod<AuthModuleData>[] = [
+        (data: AuthModuleData) => {
+            data.userId = null;
+            data.playerId = null;
+            data.nickName = null;
+        },
+    ];
 
     @Decorator.persistence()
     public userId: string;
@@ -111,12 +132,56 @@ export default class AuthModuleData extends mwext.Subdata {
     @Decorator.persistence()
     public codeVerifyReqData: number[] = [];
 
-
+//#region Sub data
     protected initDefaultData(): void {
         super.initDefaultData();
         this.userId = null;
         this.playerId = null;
         this.nickName = null;
+    }
+
+    protected onDataInit(): void {
+        super.onDataInit();
+        this.checkVersion();
+    }
+
+    /**
+     * 定义为最新版本号.
+     * 为什么不做成只读属性而是个 getter 呢.
+     */
+    public get version(): number {
+        return AuthModuleData.RELEASE_VERSIONS[AuthModuleData.RELEASE_VERSIONS.length - 1];
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+
+    /**
+     * 数据版本检查.
+     */
+    public checkVersion() {
+        if (this.currentVersion === this.version) return;
+
+        Log4Ts.log(AuthModuleData,
+            `数据准备升级`,
+            () => `当前版本: ${this.currentVersion}`,
+            () => `最新版本: ${this.version}.`,
+        );
+
+        const startIndex = AuthModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
+        if (startIndex < 0) {
+            Log4Ts.error(
+                AuthModuleData,
+                `数据号版本异常`,
+                `不是已发布的版本号`,
+                () => `当前版本: ${this.currentVersion}.`);
+            return;
+        }
+
+        for (let i = startIndex; i < AuthModuleData.UPDATE_VERSION_METHOD.length - 1; ++i) {
+            AuthModuleData.UPDATE_VERSION_METHOD[i](this);
+            this.currentVersion = AuthModuleData.RELEASE_VERSIONS[i + 1];
+        }
     }
 }
 

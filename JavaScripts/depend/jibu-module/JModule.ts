@@ -1,17 +1,79 @@
-import SubData = mwext.Subdata;
-import ModuleClient = mwext.ModuleC;
-import ModuleServer = mwext.ModuleS;
 import { Delegate } from "../delegate/Delegate";
 import SimpleDelegate = Delegate.SimpleDelegate;
 import Log4Ts from "../log4ts/Log4Ts";
 import SimpleDelegateFunction = Delegate.SimpleDelegateFunction;
 import { NoOverride } from "../../util/GToolkit";
 
+export type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
+
+export abstract class JModuleData extends mwext.Subdata {
+
+    /**
+     * 已经发布的正式数据版本号.
+     * @desc 以版本发布时间 升序排列.
+     * @desc 定义为符号 RV.
+     * @desc bitwise readonly.
+     */
+    protected get releasedVersions(): number[] {
+        return [
+            1,
+        ];
+    }
+
+    /**
+     * 版本升级办法.
+     * UVM[n] : 从 RV[n] 升级到 RV[n+1] 的方法.
+     */
+    protected get updateVersionMethod(): DataUpgradeMethod<this>[] {
+        return [
+            // (data) => {
+            // },
+        ];
+    }
+
+    /**
+     * 定义为最新版本号.
+     * 无需覆写.
+     * @protected
+     */
+    protected get version(): number {
+        return this.releasedVersions[this.releasedVersions.length - 1];
+    }
+
+    /**
+     * 数据版本检查器.
+     */
+    protected checkVersion() {
+        if (this.currentVersion === this.version) return;
+
+        Log4Ts.log(JModuleData,
+            `数据准备升级`,
+            () => `当前版本: ${this.currentVersion}`,
+            () => `最新版本: ${this.version}.`,
+        );
+
+        const startIndex = this.releasedVersions.indexOf(this.currentVersion);
+        if (startIndex < 0) {
+            Log4Ts.error(
+                JModuleData,
+                `数据号版本异常`,
+                `不是已发布的版本号`,
+                () => `当前版本: ${this.currentVersion}.`);
+            return;
+        }
+
+        for (let i = startIndex; i < this.updateVersionMethod.length - 1; ++i) {
+            this.updateVersionMethod[i](this);
+            this.currentVersion = this.releasedVersions[i + 1];
+        }
+    }
+}
+
 /**
  * Jibu Module
  * @desc 提供 Ready 回调与其他注入功能的 Module.
  */
-export abstract class JModuleC<S, D extends SubData> extends ModuleClient<S, D> {
+export abstract class JModuleC<S, D extends mwext.Subdata> extends mwext.ModuleC<S, D> {
     private _isReady: boolean = false;
 
     private _onReady: SimpleDelegate<void> = new SimpleDelegate<void>();
@@ -60,6 +122,6 @@ export abstract class JModuleC<S, D extends SubData> extends ModuleClient<S, D> 
     }
 }
 
-export abstract class JModuleS<C, D extends SubData> extends ModuleServer<C, D> {
+export abstract class JModuleS<C, D extends mwext.Subdata> extends mwext.ModuleS<C, D> {
 }
 

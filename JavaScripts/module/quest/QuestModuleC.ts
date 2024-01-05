@@ -23,12 +23,12 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
         let character = Player.localPlayer.character;
 
         for (const task of this.data) {
-            Log4Ts.log(QuestModuleC, `initialize task.`, `task id: ${task.questId}`);
-            let config = GameConfig.Task.getElement(task.questId);
+            Log4Ts.log(QuestModuleC, `initialize task.`, `task id: ${task.questCfgId}`);
+            let config = GameConfig.Task.getElement(task.questCfgId);
             if (!config) {
                 Log4Ts.warn(QuestModuleC,
                     `sub task not found.`,
-                    `questId: ${task.questId}`);
+                    `questCfgId: ${task.questCfgId}`);
                 break;
             }
 
@@ -41,8 +41,8 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
             }
 
             script.gameObject = character;
-            script.setUp(this, task.questId, task.status, task.customData);
-            this._questMap.set(task.questId, script);
+            script.setUp(this, task.questCfgId, task.status, task.customData);
+            this._questMap.set(task.questCfgId, script);
         }
     }
 

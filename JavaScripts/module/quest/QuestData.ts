@@ -5,7 +5,7 @@ import { QuestStateEnum } from "./Config";
 
 class QuestProgressInfo {
     /**任务id */
-    public questId: number = 0;
+    // public questId: number = 0;
 
     public questCfgId: number = 0;
 
@@ -30,7 +30,7 @@ export class QuestData extends mwext.Subdata implements Iterable<QuestProgressIn
         const tasks = GameConfig.Task.getAllElement();
         for (const task of tasks) {
             this._questProgressInfo.push({
-                questId: QuestData.QuestUnitId++,
+                // questId: QuestData.QuestUnitId++,
                 questCfgId: task.id,
                 progress: 0,
                 status: QuestStateEnum.Running,
@@ -62,7 +62,7 @@ export class QuestData extends mwext.Subdata implements Iterable<QuestProgressIn
 
     public getTaskInfo(taskId: number) {
         const taskInfo = this._questProgressInfo.find((value) => {
-            return value.questId === taskId;
+            return value.questCfgId === taskId;
         });
         return taskInfo;
     }
