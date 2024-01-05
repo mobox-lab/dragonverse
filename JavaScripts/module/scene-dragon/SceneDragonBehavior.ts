@@ -1,4 +1,3 @@
-import { GameConfig } from "../../config/GameConfig";
 import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { HeadUIController, HeadUIType } from "../../controller/HeadUIController";
@@ -7,7 +6,6 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Regulator from "../../depend/regulator/Regulator";
 import { Yoact } from "../../depend/yoact/Yoact";
 import i18n from "../../language/i18n";
-import GToolkit from "../../util/GToolkit";
 import SceneDragon from "./SceneDragon";
 import { DragonSyncKeyEventArgs } from "./SceneDragonModule";
 import Character = mw.Character;
@@ -20,6 +18,7 @@ import Animation = mw.Animation;
 import Navigation = mw.Navigation;
 import GameStart from "../../GameStart";
 import GameObject = mw.GameObject;
+import GToolkit from "../../util/GToolkit";
 
 class SceneDragonBehaviorState {
     //#region Constant

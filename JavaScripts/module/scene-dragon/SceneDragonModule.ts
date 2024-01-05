@@ -367,6 +367,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         this.server.net_tryCatch(syncKey).then(
             (value) => {
                 if (value) this._currentCatchResultSyncKey = syncKey;
+                else this.unlockWithView()
             },
         );
     }
@@ -374,7 +375,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     /**
      * 接受捕捉.
      */
-    public acceptResult(): boolean {
+    public acceptResult() {
         if (GToolkit.isNullOrEmpty(this._currentCatchResultSyncKey)) {
             this._currentBall?.next(false);
             const item = this.syncItemMap.get(this._lockingSyncKey);
@@ -385,7 +386,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             Log4Ts.log(SceneDragonModuleC, `accept failed result.`);
             item.behavior.state.isFear = false;
             this.unlockWithView();
-            return;
         } else {
             this._currentBall?.next(true);
             this.unlockWithView();
