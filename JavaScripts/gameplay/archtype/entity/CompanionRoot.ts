@@ -9,7 +9,6 @@ import { CompanionState } from "./CompanionState";
 import DragonEntity from "./DragonEntity";
 import GameServiceConfig from "../../../const/GameServiceConfig";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
-import Plane = UE.Plane;
 
 class BaseCompanionState extends State<CompanionStateEnum> {
 
