@@ -112,8 +112,6 @@ export default class GameStart extends mw.Script {
         if (this.isRelease) {
             this.isOnline = true;
             this.isShowGMPanel = false;
-            this.serverLogLevel = DebugLevels.Silent;
-            this.clientLogLevel = DebugLevels.Silent;
         }
 
         if (SystemUtil.isClient()) {

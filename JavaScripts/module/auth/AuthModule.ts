@@ -105,20 +105,20 @@ export default class AuthModuleData extends mwext.Subdata {
      */
     public static readonly UPDATE_VERSION_METHOD: DataUpgradeMethod<AuthModuleData>[] = [
         (data: AuthModuleData) => {
-            data.userId = null;
-            data.playerId = null;
-            data.nickName = null;
+            data.holdUserId = null;
+            data.holdPlayerId = null;
+            data.holdNickName = null;
         },
     ];
 
     @Decorator.persistence()
-    public userId: string;
+    public holdUserId: string;
 
     @Decorator.persistence()
-    public playerId: number;
+    public holdPlayerId: number;
 
     @Decorator.persistence()
-    public nickName: string;
+    public holdNickName: string;
 
     /**
      * 玩家准入权限.
@@ -135,9 +135,9 @@ export default class AuthModuleData extends mwext.Subdata {
 //#region Sub data
     protected initDefaultData(): void {
         super.initDefaultData();
-        this.userId = null;
-        this.playerId = null;
-        this.nickName = null;
+        this.holdUserId = null;
+        this.holdPlayerId = null;
+        this.holdNickName = null;
     }
 
     protected onDataInit(): void {
@@ -961,9 +961,9 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
 
     @noReply()
     public net_initPlayerData(nickName: string) {
-        this.currentData.playerId = this.currentPlayerId;
-        this.currentData.userId = this.currentPlayer.userId;
-        this.currentData.nickName = nickName;
+        this.currentData.holdUserId = this.currentPlayer.userId;
+        this.currentData.holdPlayerId = this.currentPlayerId;
+        this.currentData.holdNickName = nickName;
         this.currentData.save(false);
     }
 
