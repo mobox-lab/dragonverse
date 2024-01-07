@@ -81,6 +81,11 @@ export default class GameServiceConfig {
     public static readonly SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION = 8e3;
 
     /**
+     * 场景龙 捕捉进度条时长.
+     */
+    public static readonly SCENE_DRAGON_CATCH_PROGRESS_DURATION=2e3;
+
+    /**
      * 场景龙 最远存活距离.
      */
     public static readonly SCENE_DRAGON_MAX_LIVE_DISTANCE = 100000;
@@ -259,11 +264,6 @@ export default class GameServiceConfig {
      * 场景龙 大笑 姿态 Guid.
      */
     public static readonly SCENE_DRAGON_LAUGH_ANIM_ID = "14598";
-
-    /**
-     * Dragon Ball 飞翔时间.
-     */
-    public static readonly DRAGON_BALL_THROW_DURATION = 2e3;
 
     /**
      * 场景龙 选中 特效 Guid.

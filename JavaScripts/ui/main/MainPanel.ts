@@ -132,7 +132,7 @@ export default class MainPanel extends MainPanel_Generate {
                     () => this.progressBar.percent,
                     (val) => this.progressBar.percent = val,
                     1,
-                    2e3,
+                    GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION,
                     0,
                 ).restart(true);
         this._progressTask.onDone.add((param) => {
@@ -171,8 +171,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                { dist: null, duration: 1e3 },
-                { dist: 0, duration: 0.5e3 },
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
             ],
             1);
 
@@ -185,8 +185,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                { dist: null, duration: 1e3 },
-                { dist: 0, duration: 0.5e3 },
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
             ],
             1);
 
@@ -546,10 +546,8 @@ export default class MainPanel extends MainPanel_Generate {
                 if (collectResult) {
                     GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
                     this.collectibleItemModule?.acceptCollect();
-                    this.showResult(true, GenerableTypes.CollectibleItem);
-                } else {
-                    this.showResult(false, GenerableTypes.CollectibleItem);
                 }
+                this.showResult(collectResult, GenerableTypes.CollectibleItem);
                 break;
             default:
                 Log4Ts.warn(MainPanel, `type not supported.`);

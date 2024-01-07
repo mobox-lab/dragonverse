@@ -186,7 +186,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
     }
 
     @RemoteFunction(Server)
-    public playerPlayThrow(target: Vector) {
+    public playerPlayThrow() {
         this._throwAnim.play();
     }
 

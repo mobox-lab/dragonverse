@@ -186,6 +186,8 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     private _currentCatchResultSyncKey: string = null;
 
+    private _lastTryCatchTime: number = null;
+
     private _candidate: string = null;
 
     private _character: Character;
@@ -256,19 +258,12 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     //#region Method
     public lock() {
         Log4Ts.log(SceneDragonModuleC, `try lock on item. candidate syncKey: ${this._candidate}`);
-        const item = this.syncItemMap.get(this._candidate);
-        if (!item) Log4Ts.warn(SceneDragonModuleC, `lock item not exist in client.`);
+        if (this._lastTryCatchTime && Date.now() - this._lastTryCatchTime < GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION) return;
 
         if (this._lockingSyncKey === this._candidate) {
-            if (this._lockTimerId) {
-                clearTimeout(this._lockTimerId);
-                this._lockTimerId = null;
-            }
             if (this._candidate) {
-                this._lockTimerId = setTimeout(
-                    () => this.acceptResult(),
-                    GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
-                );
+                this.clearTimeOutForAutoCatch();
+                this.setTimeOutForAutoCatch();
             } else {
                 this.unlockWithView();
             }
@@ -286,49 +281,29 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                     ?.addMoveForbiddenBuff();
             }
 
-            if (item) {
-                Log4Ts.log(SceneDragonModuleC, `lock on SceneDragon. syncKey: ${this._candidate}`);
-                item.behavior.state.isFear = true;
-                this._currentCatchResultSyncKey = null;
-                const position = this
-                    .syncItemMap
-                    .get(this._candidate)
-                    .object
-                    .worldTransform
-                    .position
-                    .clone();
-                Player
-                    .localPlayer
-                    .getPlayerState(UnifiedRoleController)
-                    ?.lookAt(position);
-                Waterween.to(
-                    () => this.character.worldTransform.rotation.toQuaternion(),
-                    (val) => this.character.worldTransform.rotation = val.toRotation(),
-                    Quaternion.fromRotation(
-                        Rotation.fromVector(
-                            GToolkit.newWithZ(
-                                position.subtract(this.character.worldTransform.position),
-                                0))),
-                    0.5e3,
-                    undefined,
-                    Easing.easeInOutSine,
-                    Quaternion.slerp,
-                ).autoDestroy();
-                Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
-                this._lockTimerId = setTimeout(
-                    () => this.acceptResult(),
-                    GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
-                );
+            if (this._candidate) {
+                const item = this.syncItemMap.get(this._candidate);
+                if (!item) {
+                    Log4Ts.warn(SceneDragonModuleC, `lock item not exist in client.`);
+                } else {
+                    Log4Ts.log(SceneDragonModuleC, `lock on SceneDragon. syncKey: ${this._candidate}`);
+                    item.behavior.state.isFear = true;
+                    this.playLockViewToCandidateAnim();
+                    this.lockWithView(this._candidate);
+                    this.setTimeOutForAutoCatch();
+                }
             }
         }
-
-        this._lockingSyncKey = this._candidate;
     }
 
     /**
      * 尝试捕捉.
      */
     public tryCatch() {
+        const now = Date.now();
+        if (this._lastTryCatchTime && now - this._lastTryCatchTime < GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION) return;
+
+//#region Check
         const syncKey = this._lockingSyncKey;
         if (GToolkit.isNullOrEmpty(syncKey)) {
             Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.NonCandidateSceneDragon));
@@ -336,40 +311,48 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             return;
         }
         Log4Ts.log(SceneDragonModuleC, `try catch item.`);
-
         const item = this.syncItemMap.get(syncKey);
         if (!item?.behavior?.data) {
             Log4Ts.log(SceneDragonModuleC, `item not exist in client. syncKey: ${syncKey}`);
             return;
         }
+
         Log4Ts.log(SceneDragonModuleC, item.behavior.data.info());
+
         if (!item.behavior.data.isCatchable) {
             Log4Ts.warn(SceneDragonModuleC, `item un catchable. waiting for delete.`);
             return;
         }
-        this.keepLockWithView();
+//#endregion
+
+        this.clearTimeOutForAutoCatch();
+        this._lastTryCatchTime = now;
+        this._currentCatchResultSyncKey = null;
+
+//#region Throw Behavior
         Player
             .localPlayer
             .getPlayerState(UnifiedRoleController)
-            ?.playerPlayThrow(item.object.worldTransform.position);
-
+            ?.playerPlayThrow();
         try {
             this._currentBall = new ThrowDragonBall(
                 this.character,
-                item.object.worldTransform.position,
-                GameServiceConfig.DRAGON_BALL_THROW_DURATION,
+                item.object.worldTransform.position.clone(),
+                GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION,
             );
         } catch (e) {
             Log4Ts.error(SceneDragonModuleC, `prefab of dragon ball not set.`);
         }
         this._currentBall?.do();
+//#endregion
 
-        this.server.net_tryCatch(syncKey).then(
-            (value) => {
-                if (value) this._currentCatchResultSyncKey = syncKey;
-                else this.unlockWithView()
-            },
-        );
+        this.server
+            .net_tryCatch(syncKey)
+            .then(
+                (value) => {
+                    if (value) this._currentCatchResultSyncKey = syncKey;
+                },
+            );
     }
 
     /**
@@ -445,20 +428,15 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         this.syncItemMap.delete(syncKey);
     }
 
-    private unlockWithView() {
-        this._lockingSyncKey = null;
-        Event.dispatchToLocal(EventDefine.DragonOnUnlock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
-        if (this._lockTimerId !== null) {
-            clearTimeout(this._lockTimerId);
-            this._lockTimerId = null;
-        }
+    private lockWithView(candidate: string) {
+        this._lockingSyncKey = candidate;
+        Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
     }
 
-    private keepLockWithView() {
-        if (this._lockTimerId) {
-            clearTimeout(this._lockTimerId);
-            this._lockTimerId = null;
-        }
+    private unlockWithView() {
+        this._lockingSyncKey = null;
+        this.clearTimeOutForAutoCatch();
+        Event.dispatchToLocal(EventDefine.DragonOnUnlock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
     }
 
     private getSceneDragonBySyncKey(syncKey: string): SceneDragon | null {
@@ -501,6 +479,47 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             Event.dispatchToLocal(EventDefine.DragonOnCandidateChange, {syncKey: candidate} as DragonSyncKeyEventArgs);
             this._candidate = candidate;
         }
+    }
+
+    private setTimeOutForAutoCatch() {
+        this._lockTimerId = setTimeout(
+            () => this.acceptResult(),
+            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
+        );
+    }
+
+    private clearTimeOutForAutoCatch() {
+        if (this._lockTimerId) {
+            clearTimeout(this._lockTimerId);
+            this._lockTimerId = null;
+        }
+    }
+
+    private playLockViewToCandidateAnim() {
+        const position = this
+            .syncItemMap
+            .get(this._candidate)
+            .object
+            .worldTransform
+            .position
+            .clone();
+        Player
+            .localPlayer
+            .getPlayerState(UnifiedRoleController)
+            ?.lookAt(position);
+        Waterween.to(
+            () => this.character.worldTransform.rotation.toQuaternion(),
+            (val) => this.character.worldTransform.rotation = val.toRotation(),
+            Quaternion.fromRotation(
+                Rotation.fromVector(
+                    GToolkit.newWithZ(
+                        position.subtract(this.character.worldTransform.position),
+                        0))),
+            0.5e3,
+            undefined,
+            Easing.easeInOutSine,
+            Quaternion.slerp,
+        ).autoDestroy();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
