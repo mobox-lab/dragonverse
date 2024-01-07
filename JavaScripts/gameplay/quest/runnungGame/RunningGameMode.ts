@@ -128,7 +128,7 @@ export class RunningGameMode {
                     SubGameTypes.Parkour,
                     this.playScore,
                 );
-                UIService.getUI(MainPanel)?.enableReset(true);
+                // UIService.getUI(MainPanel)?.enableReset(true);
                 Event.dispatchToLocal(EventDefine.OnRuningGameEnd);
                 break;
             default:
@@ -191,6 +191,8 @@ export class RunningGameMode {
 
         if (this._companionPairBagIdCache !== 0) this.companionModule.showUpCompanion(this._companionPairBagIdCache, true);
         this._companionPairBagIdCache = 0;
+
+        UIService.getUI(MainPanel)?.enableReset(true);
         if (this._status != RunningGameStatus.Guide) {
             //关闭游戏UI
             UIService.hide(RunningGameGamingPanel);
