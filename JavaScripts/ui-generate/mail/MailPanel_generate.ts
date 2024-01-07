@@ -1,16 +1,20 @@
-﻿
-/**
- * AUTO GENERATE BY UI EDITOR.
+﻿/**
+ * Auto generate by ui editor.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
+
+ * Template Author
+ * @zewei.zhang
+ * @LviatYi
  * UI: UI/mail/MailPanel.ui
 */
 
+import UIScript = mw.UIScript;
 
 
 @UIBind('UI/mail/MailPanel.ui')
 export default class MailPanel_Generate extends UIScript {
-		private mailImage_1_Internal: mw.Image
+	private mailImage_1_Internal: mw.Image
 	public get mailImage_1(): mw.Image {
 		if(!this.mailImage_1_Internal&&this.uiWidgetBase) {
 			this.mailImage_1_Internal = this.uiWidgetBase.findChildByPath('MailCanvas/mailImage_1') as mw.Image
@@ -320,80 +324,78 @@ export default class MailPanel_Generate extends UIScript {
 	}
 
 
- 
-	protected onAwake() {
-		//设置能否每帧触发onUpdate
-		this.canUpdate = false;
-		this.layer = mw.UILayerBottom;
-		this.initButtons();
-	}
-	protected initButtons() {
-		
-		this.initLanguage(this.mailButtonDelete_1);
-		
-	
-		this.initLanguage(this.mailButtonReceive_1);
-		
-	
-		this.initLanguage(this.mailButtonReceive_2);
-		
-	
-		this.initLanguage(this.mailButtonDelete_2);
-		
-	
-		//按钮多语言
-		
-		//文本多语言
-		
-		this.initLanguage(this.mailPanelTitle)
-		
-	
-		this.initLanguage(this.mailTitle)
-		
-	
-		this.initLanguage(this.mailTime)
-		
-	
-		this.initLanguage(this.mailDetailTitle)
-		
-	
-		this.initLanguage(this.mailDetailTime)
-		
-	
-		this.initLanguage(this.mailBodyMain)
-		
-	
-		this.initLanguage(this.mailAnnex_1)
-		
-	
-		this.initLanguage(this.mailAnnex_2)
-		
-	
-		this.initLanguage(this.mailAnnex_3)
-		
-	
-		this.initLanguage(this.mailAnnex_4)
-		
-	
-		this.initLanguage(this.mailAnnex_5)
-		
-	
-		this.initLanguage(this.mailAnnex_6)
-		
-	
-		this.initLanguage(this.mailAnnex_7)
-		
-	
-		//文本多语言
-		
 
+	/**
+	* onStart 之前触发一次
+	*/
+	protected onAwake() {
+		this.initTextLan();
 	}
-	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
-        let call = mw.UIScript.getBehavior("lan");
-        if (call && ui) {
-            call(ui);
-        }
+
+    protected initTextLan() {
+        
+        this.initLanguage(this.mailButtonDelete_1);
+        
+	
+        this.initLanguage(this.mailButtonReceive_1);
+        
+	
+        this.initLanguage(this.mailButtonReceive_2);
+        
+	
+        this.initLanguage(this.mailButtonDelete_2);
+        
+	
+        //按钮多语言
+        
+        //文本多语言
+        
+        this.initLanguage(this.mailPanelTitle)
+        
+	
+        this.initLanguage(this.mailTitle)
+        
+	
+        this.initLanguage(this.mailTime)
+        
+	
+        this.initLanguage(this.mailDetailTitle)
+        
+	
+        this.initLanguage(this.mailDetailTime)
+        
+	
+        this.initLanguage(this.mailBodyMain)
+        
+	
+        this.initLanguage(this.mailAnnex_1)
+        
+	
+        this.initLanguage(this.mailAnnex_2)
+        
+	
+        this.initLanguage(this.mailAnnex_3)
+        
+	
+        this.initLanguage(this.mailAnnex_4)
+        
+	
+        this.initLanguage(this.mailAnnex_5)
+        
+	
+        this.initLanguage(this.mailAnnex_6)
+        
+	
+        this.initLanguage(this.mailAnnex_7)
+        
+	
+        //文本多语言
+        
     }
-	 
+
+    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let lanFunc = mw.UIScript.getBehavior("lan");
+        lanFunc && lanFunc(ui);
+    }
 }
  

@@ -1,16 +1,20 @@
-﻿
-/**
- * AUTO GENERATE BY UI EDITOR.
+﻿/**
+ * Auto generate by ui editor.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
+
+ * Template Author
+ * @zewei.zhang
+ * @LviatYi
  * UI: UI/main/MainPanel.ui
 */
 
+import UIScript = mw.UIScript;
 
 
 @UIBind('UI/main/MainPanel.ui')
 export default class MainPanel_Generate extends UIScript {
-		private btnJump_Internal: mw.Button
+	private btnJump_Internal: mw.Button
 	public get btnJump(): mw.Button {
 		if(!this.btnJump_Internal&&this.uiWidgetBase) {
 			this.btnJump_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/CnvFunctionHidden/btnJump') as mw.Button
@@ -38,19 +42,19 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.cnvSetting_Internal
 	}
-	private btnSetting_Internal: mw.Button
-	public get btnSetting(): mw.Button {
-		if(!this.btnSetting_Internal&&this.uiWidgetBase) {
-			this.btnSetting_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSetting/btnSetting') as mw.Button
-		}
-		return this.btnSetting_Internal
-	}
 	private imgUserAvatarIcon_Internal: mw.Image
 	public get imgUserAvatarIcon(): mw.Image {
 		if(!this.imgUserAvatarIcon_Internal&&this.uiWidgetBase) {
 			this.imgUserAvatarIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSetting/imgUserAvatarIcon') as mw.Image
 		}
 		return this.imgUserAvatarIcon_Internal
+	}
+	private btnSetting_Internal: mw.Button
+	public get btnSetting(): mw.Button {
+		if(!this.btnSetting_Internal&&this.uiWidgetBase) {
+			this.btnSetting_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSetting/btnSetting') as mw.Button
+		}
+		return this.btnSetting_Internal
 	}
 	private cnvDragonBall_Internal: mw.Canvas
 	public get cnvDragonBall(): mw.Canvas {
@@ -171,19 +175,19 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.txtOperationFeedback_Internal
 	}
-	private imgOperationSuccess_Internal: mw.Image
-	public get imgOperationSuccess(): mw.Image {
-		if(!this.imgOperationSuccess_Internal&&this.uiWidgetBase) {
-			this.imgOperationSuccess_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback/imgOperationSuccess') as mw.Image
-		}
-		return this.imgOperationSuccess_Internal
-	}
 	private imgOperationFail_Internal: mw.Image
 	public get imgOperationFail(): mw.Image {
 		if(!this.imgOperationFail_Internal&&this.uiWidgetBase) {
 			this.imgOperationFail_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback/imgOperationFail') as mw.Image
 		}
 		return this.imgOperationFail_Internal
+	}
+	private imgOperationSuccess_Internal: mw.Image
+	public get imgOperationSuccess(): mw.Image {
+		if(!this.imgOperationSuccess_Internal&&this.uiWidgetBase) {
+			this.imgOperationSuccess_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback/imgOperationSuccess') as mw.Image
+		}
+		return this.imgOperationSuccess_Internal
 	}
 	private cnvCatchdragon_Internal: mw.Canvas
 	public get cnvCatchdragon(): mw.Canvas {
@@ -229,56 +233,54 @@ export default class MainPanel_Generate extends UIScript {
 	}
 
 
- 
-	protected onAwake() {
-		//设置能否每帧触发onUpdate
-		this.canUpdate = false;
-		this.layer = mw.UILayerBottom;
-		this.initButtons();
-	}
-	protected initButtons() {
-		
-		this.initLanguage(this.btnCode);
-		
-	
-		this.initLanguage(this.btnMail);
-		
-	
-		this.initLanguage(this.btnBag);
-		
-	
-		this.initLanguage(this.btnBook);
-		
-	
-		this.initLanguage(this.btnDragon);
-		
-	
-		this.initLanguage(this.btnReset);
-		
-	
-		//按钮多语言
-		
-		//文本多语言
-		
-		this.initLanguage(this.txtDragonBallNum)
-		
-	
-		this.initLanguage(this.txtOperationFeedback)
-		
-	
-		//文本多语言
-		
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as any);
-		
-	
 
+	/**
+	* onStart 之前触发一次
+	*/
+	protected onAwake() {
+		this.initTextLan();
 	}
-	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
-        let call = mw.UIScript.getBehavior("lan");
-        if (call && ui) {
-            call(ui);
-        }
+
+    protected initTextLan() {
+        
+        this.initLanguage(this.btnCode);
+        
+	
+        this.initLanguage(this.btnMail);
+        
+	
+        this.initLanguage(this.btnBag);
+        
+	
+        this.initLanguage(this.btnBook);
+        
+	
+        this.initLanguage(this.btnDragon);
+        
+	
+        this.initLanguage(this.btnReset);
+        
+	
+        //按钮多语言
+        
+        //文本多语言
+        
+        this.initLanguage(this.txtDragonBallNum)
+        
+	
+        this.initLanguage(this.txtOperationFeedback)
+        
+	
+        //文本多语言
+        
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as any);
+        
+	
     }
-	 
+
+    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let lanFunc = mw.UIScript.getBehavior("lan");
+        lanFunc && lanFunc(ui);
+    }
 }
  

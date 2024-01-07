@@ -1,16 +1,20 @@
-﻿
-/**
- * AUTO GENERATE BY UI EDITOR.
+﻿/**
+ * Auto generate by ui editor.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
+
+ * Template Author
+ * @zewei.zhang
+ * @LviatYi
  * UI: UI/runningGame/RGGameUI.ui
 */
 
+import UIScript = mw.UIScript;
 
 
 @UIBind('UI/runningGame/RGGameUI.ui')
 export default class RGGameUI_Generate extends UIScript {
-		private mScoreCanvas_Internal: mw.Canvas
+	private mScoreCanvas_Internal: mw.Canvas
 	public get mScoreCanvas(): mw.Canvas {
 		if(!this.mScoreCanvas_Internal&&this.uiWidgetBase) {
 			this.mScoreCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mScoreCanvas') as mw.Canvas
@@ -75,50 +79,48 @@ export default class RGGameUI_Generate extends UIScript {
 	}
 
 
- 
-	protected onAwake() {
-		//设置能否每帧触发onUpdate
-		this.canUpdate = false;
-		this.layer = mw.UILayerBottom;
-		this.initButtons();
-	}
-	protected initButtons() {
-		
-		//按钮多语言
-		
-		//文本多语言
-		
-		this.initLanguage(this.mScoreText)
-		
-	
-		this.initLanguage(this.mScoreFly)
-		
-	
-		this.initLanguage(this.mCountDown)
-		
-	
-		this.initLanguage(this.mTimeFly)
-		
-	
-		this.initLanguage(this.info)
-		
-	
-		//文本多语言
-		
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mScoreCanvas/TextBlock") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mTimeCanvas/TextBlock_2") as any);
-		
-	
 
+	/**
+	* onStart 之前触发一次
+	*/
+	protected onAwake() {
+		this.initTextLan();
 	}
-	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
-        let call = mw.UIScript.getBehavior("lan");
-        if (call && ui) {
-            call(ui);
-        }
+
+    protected initTextLan() {
+        
+        //按钮多语言
+        
+        //文本多语言
+        
+        this.initLanguage(this.mScoreText)
+        
+	
+        this.initLanguage(this.mScoreFly)
+        
+	
+        this.initLanguage(this.mCountDown)
+        
+	
+        this.initLanguage(this.mTimeFly)
+        
+	
+        this.initLanguage(this.info)
+        
+	
+        //文本多语言
+        
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mScoreCanvas/TextBlock") as any);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mTimeCanvas/TextBlock_2") as any);
+        
+	
     }
-	 
+
+    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let lanFunc = mw.UIScript.getBehavior("lan");
+        lanFunc && lanFunc(ui);
+    }
 }
  

@@ -1,16 +1,20 @@
-﻿
-/**
- * AUTO GENERATE BY UI EDITOR.
+﻿/**
+ * Auto generate by ui editor.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
+
+ * Template Author
+ * @zewei.zhang
+ * @LviatYi
  * UI: UI/code/CodePanel.ui
 */
 
+import UIScript = mw.UIScript;
 
 
 @UIBind('UI/code/CodePanel.ui')
 export default class CodePanel_Generate extends UIScript {
-		private codeImage_1_Internal: mw.Image
+	private codeImage_1_Internal: mw.Image
 	public get codeImage_1(): mw.Image {
 		if(!this.codeImage_1_Internal&&this.uiWidgetBase) {
 			this.codeImage_1_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/codeImage_1') as mw.Image
@@ -152,56 +156,54 @@ export default class CodePanel_Generate extends UIScript {
 	}
 
 
- 
-	protected onAwake() {
-		//设置能否每帧触发onUpdate
-		this.canUpdate = false;
-		this.layer = mw.UILayerBottom;
-		this.initButtons();
-	}
-	protected initButtons() {
-		
-		this.initLanguage(this.codeButtonVerify);
-		
-	
-		//按钮多语言
-		
-		//文本多语言
-		
-		this.initLanguage(this.codeTitle)
-		
-	
-		this.initLanguage(this.codeMainBody)
-		
-	
-		this.initLanguage(this.codeNum)
-		
-	
-		this.initLanguage(this.codePaste)
-		
-	
-		this.initLanguage(this.codeRule)
-		
-	
-		this.initLanguage(this.codeCondition1)
-		
-	
-		this.initLanguage(this.codeCondition2)
-		
-	
-		this.initLanguage(this.codeCondition3)
-		
-	
-		//文本多语言
-		
 
+	/**
+	* onStart 之前触发一次
+	*/
+	protected onAwake() {
+		this.initTextLan();
 	}
-	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
-        let call = mw.UIScript.getBehavior("lan");
-        if (call && ui) {
-            call(ui);
-        }
+
+    protected initTextLan() {
+        
+        this.initLanguage(this.codeButtonVerify);
+        
+	
+        //按钮多语言
+        
+        //文本多语言
+        
+        this.initLanguage(this.codeTitle)
+        
+	
+        this.initLanguage(this.codeMainBody)
+        
+	
+        this.initLanguage(this.codeNum)
+        
+	
+        this.initLanguage(this.codePaste)
+        
+	
+        this.initLanguage(this.codeRule)
+        
+	
+        this.initLanguage(this.codeCondition1)
+        
+	
+        this.initLanguage(this.codeCondition2)
+        
+	
+        this.initLanguage(this.codeCondition3)
+        
+	
+        //文本多语言
+        
     }
-	 
+
+    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let lanFunc = mw.UIScript.getBehavior("lan");
+        lanFunc && lanFunc(ui);
+    }
 }
  

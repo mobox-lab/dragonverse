@@ -1,28 +1,32 @@
-﻿
-/**
- * AUTO GENERATE BY UI EDITOR.
+﻿/**
+ * Auto generate by ui editor.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
+
+ * Template Author
+ * @zewei.zhang
+ * @LviatYi
  * UI: UI/bag/BagItemIcon.ui
 */
 
+import UIScript = mw.UIScript;
 
 
 @UIBind('UI/bag/BagItemIcon.ui')
 export default class BagItemIcon_Generate extends UIScript {
-		private mImgSelect_Internal: mw.Image
-	public get mImgSelect(): mw.Image {
-		if(!this.mImgSelect_Internal&&this.uiWidgetBase) {
-			this.mImgSelect_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mImgSelect') as mw.Image
-		}
-		return this.mImgSelect_Internal
-	}
 	private mImgIcon_Internal: mw.Image
 	public get mImgIcon(): mw.Image {
 		if(!this.mImgIcon_Internal&&this.uiWidgetBase) {
 			this.mImgIcon_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mImgIcon') as mw.Image
 		}
 		return this.mImgIcon_Internal
+	}
+	private mImgSelect_Internal: mw.Image
+	public get mImgSelect(): mw.Image {
+		if(!this.mImgSelect_Internal&&this.uiWidgetBase) {
+			this.mImgSelect_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mImgSelect') as mw.Image
+		}
+		return this.mImgSelect_Internal
 	}
 	private mItemBtn_Internal: mw.StaleButton
 	public get mItemBtn(): mw.StaleButton {
@@ -47,35 +51,33 @@ export default class BagItemIcon_Generate extends UIScript {
 	}
 
 
- 
-	protected onAwake() {
-		//设置能否每帧触发onUpdate
-		this.canUpdate = false;
-		this.layer = mw.UILayerBottom;
-		this.initButtons();
-	}
-	protected initButtons() {
-		
-		this.initLanguage(this.mItemBtn);
-		
-	
-		//按钮多语言
-		
-		//文本多语言
-		
-		this.initLanguage(this.mItemNum)
-		
-	
-		//文本多语言
-		
 
+	/**
+	* onStart 之前触发一次
+	*/
+	protected onAwake() {
+		this.initTextLan();
 	}
-	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
-        let call = mw.UIScript.getBehavior("lan");
-        if (call && ui) {
-            call(ui);
-        }
+
+    protected initTextLan() {
+        
+        this.initLanguage(this.mItemBtn);
+        
+	
+        //按钮多语言
+        
+        //文本多语言
+        
+        this.initLanguage(this.mItemNum)
+        
+	
+        //文本多语言
+        
     }
-	 
+
+    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let lanFunc = mw.UIScript.getBehavior("lan");
+        lanFunc && lanFunc(ui);
+    }
 }
  

@@ -1,16 +1,27 @@
-﻿
-/**
- * AUTO GENERATE BY UI EDITOR.
+﻿/**
+ * Auto generate by ui editor.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
+
+ * Template Author
+ * @zewei.zhang
+ * @LviatYi
  * UI: UI/bag/BagMain.ui
 */
 
+import UIScript = mw.UIScript;
 
 
 @UIBind('UI/bag/BagMain.ui')
 export default class BagMain_Generate extends UIScript {
-		private cnvTags_Internal: mw.Canvas
+	private imgMaskBg_Internal: mw.Image
+	public get imgMaskBg(): mw.Image {
+		if(!this.imgMaskBg_Internal&&this.uiWidgetBase) {
+			this.imgMaskBg_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/imgMaskBg') as mw.Image
+		}
+		return this.imgMaskBg_Internal
+	}
+	private cnvTags_Internal: mw.Canvas
 	public get cnvTags(): mw.Canvas {
 		if(!this.cnvTags_Internal&&this.uiWidgetBase) {
 			this.cnvTags_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/cnvTags') as mw.Canvas
@@ -124,59 +135,57 @@ export default class BagMain_Generate extends UIScript {
 	}
 
 
- 
-	protected onAwake() {
-		//设置能否每帧触发onUpdate
-		this.canUpdate = false;
-		this.layer = mw.UILayerBottom;
-		this.initButtons();
-	}
-	protected initButtons() {
-		
-		this.initLanguage(this.btn1);
-		
-	
-		this.initLanguage(this.btn2);
-		
-	
-		this.initLanguage(this.btn3);
-		
-	
-		this.initLanguage(this.btn4);
-		
-	
-		this.initLanguage(this.btn5);
-		
-	
-		this.initLanguage(this.mBtnOpt);
-		
-	
-		this.initLanguage(this.mBtnClose);
-		
-	
-		//按钮多语言
-		
-		//文本多语言
-		
-		this.initLanguage(this.mName)
-		
-	
-		this.initLanguage(this.mNum)
-		
-	
-		this.initLanguage(this.mDesc)
-		
-	
-		//文本多语言
-		
 
+	/**
+	* onStart 之前触发一次
+	*/
+	protected onAwake() {
+		this.initTextLan();
 	}
-	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
-        let call = mw.UIScript.getBehavior("lan");
-        if (call && ui) {
-            call(ui);
-        }
+
+    protected initTextLan() {
+        
+        this.initLanguage(this.btn1);
+        
+	
+        this.initLanguage(this.btn2);
+        
+	
+        this.initLanguage(this.btn3);
+        
+	
+        this.initLanguage(this.btn4);
+        
+	
+        this.initLanguage(this.btn5);
+        
+	
+        this.initLanguage(this.mBtnOpt);
+        
+	
+        this.initLanguage(this.mBtnClose);
+        
+	
+        //按钮多语言
+        
+        //文本多语言
+        
+        this.initLanguage(this.mName)
+        
+	
+        this.initLanguage(this.mNum)
+        
+	
+        this.initLanguage(this.mDesc)
+        
+	
+        //文本多语言
+        
     }
-	 
+
+    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let lanFunc = mw.UIScript.getBehavior("lan");
+        lanFunc && lanFunc(ui);
+    }
 }
  
