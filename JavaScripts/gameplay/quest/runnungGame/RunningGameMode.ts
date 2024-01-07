@@ -10,6 +10,7 @@ import { AuthModuleC } from "../../../module/auth/AuthModule";
 import { TimeManager } from "../../../controller/TimeManager";
 import { SubGameTypes } from "../../../const/SubGameTypes";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
+import MainPanel from "../../../ui/main/MainPanel";
 
 /**
  * 跑酷游戏状态
@@ -127,6 +128,7 @@ export class RunningGameMode {
                     SubGameTypes.Parkour,
                     this.playScore,
                 );
+                UIService.getUI(MainPanel)?.enableReset(true);
                 Event.dispatchToLocal(EventDefine.OnRuningGameEnd);
                 break;
             default:
@@ -137,6 +139,7 @@ export class RunningGameMode {
     public onGuide() {
         if (!this._gameController) {
             const character = Player.localPlayer.character;
+            UIService.getUI(MainPanel)?.enableReset(false);
             character.switchToFlying();
             this._companionPairBagIdCache = this.companionModule.getCurrentShowupBagId();
             if (this._companionPairBagIdCache !== 0) this.companionModule.showUpCompanion(this._companionPairBagIdCache, false);
