@@ -65,7 +65,6 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
         }
     }
 
-
     /**
      * 获取元素龙任务解锁情况
      */
