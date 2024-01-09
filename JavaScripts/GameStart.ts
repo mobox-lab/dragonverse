@@ -133,7 +133,6 @@ export default class GameStart extends mw.Script {
             Log4Ts.log(GameStart, `i18n use default language: ${this.language} because is not release.`);
             return;
         }
-
         const localStr = LocaleUtil.getDefaultLocale();
         Log4Ts.log(GameStart, `current local: ${localStr}`);
         let useType = this.language;
