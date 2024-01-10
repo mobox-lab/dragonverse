@@ -21,13 +21,6 @@ export default class BagItemIcon_Generate extends UIScript {
 		}
 		return this.mImgIcon_Internal
 	}
-	private mImgSelect_Internal: mw.Image
-	public get mImgSelect(): mw.Image {
-		if(!this.mImgSelect_Internal&&this.uiWidgetBase) {
-			this.mImgSelect_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mImgSelect') as mw.Image
-		}
-		return this.mImgSelect_Internal
-	}
 	private mItemBtn_Internal: mw.StaleButton
 	public get mItemBtn(): mw.StaleButton {
 		if(!this.mItemBtn_Internal&&this.uiWidgetBase) {
@@ -48,6 +41,13 @@ export default class BagItemIcon_Generate extends UIScript {
 			this.mItemNum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mItemNum') as mw.TextBlock
 		}
 		return this.mItemNum_Internal
+	}
+	private mImgSelect_Internal: mw.Image
+	public get mImgSelect(): mw.Image {
+		if(!this.mImgSelect_Internal&&this.uiWidgetBase) {
+			this.mImgSelect_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mImgSelect') as mw.Image
+		}
+		return this.mImgSelect_Internal
 	}
 
 

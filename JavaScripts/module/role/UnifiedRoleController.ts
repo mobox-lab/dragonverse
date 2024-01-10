@@ -15,6 +15,11 @@ import RemoteFunction = mw.RemoteFunction;
 import Server = mw.Server;
 import GameServiceConfig from "../../const/GameServiceConfig";
 import PickerController from "../../gameplay/interactive/PickerController";
+import FiniteStateMachine, { State } from "../../depend/finite-state-machine/FiniteStateMachine";
+import { Yoact } from "../../depend/yoact/Yoact";
+import Effect = Yoact.Effect;
+import bindYoact = Yoact.bindYoact;
+import createYoact = Yoact.createYoact;
 
 /**
  * Unified Role State Controller.
@@ -32,7 +37,8 @@ import PickerController from "../../gameplay/interactive/PickerController";
  */
 @Component
 export default class UnifiedRoleController extends mw.PlayerState {
-    //#region Member
+
+//#region Member
     private _eventListeners: EventListener[] = [];
 
     @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient})
@@ -76,27 +82,40 @@ export default class UnifiedRoleController extends mw.PlayerState {
 
     private _nolan: Nolan = null;
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    private _movementStateMachine: FiniteStateMachine<RoleMovementState>;
 
-    //#region Role State Member
+    private _movementStateMachineEffect: Effect;
+
+    private _movementState: RoleMovementState;
+
+    /**
+     * 移动速率状态.
+     */
+    public get movementState(): RoleMovementState {
+        return this._movementState;
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Role State Member
     @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove})
     isMove: boolean = false;
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region MetaWorld Event
+//#region MetaWorld Event
     protected onStart(): void {
         super.onStart();
         this.useUpdate = true;
 
-        //#region Member init
-        //#endregion ------------------------------------------------------------------------------------------
+//#region Member init
+//#endregion ------------------------------------------------------------------------------------------
 
-        //#region Widget bind
-        //#endregion ------------------------------------------------------------------------------------------
+//#region Widget bind
+//#endregion ------------------------------------------------------------------------------------------
 
-        //#region Event Subscribe
+//#region Event Subscribe
         // this._eventListeners.push(Event.addLocalListener(EventDefine.EVENT_NAME, CALLBACK));
-        //#endregion ------------------------------------------------------------------------------------------
+//#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onUpdate(dt: number): void {
@@ -107,9 +126,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
     public onDestroy(): void {
         super.onDestroy();
 
-        //#region Event Unsubscribe
+//#region Event Unsubscribe
         this._eventListeners.forEach(value => value.disconnect());
-        //#endregion ------------------------------------------------------------------------------------------
+//#endregion ------------------------------------------------------------------------------------------
 
 
         if (SystemUtil.isClient()) {
@@ -120,9 +139,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
         }
     }
 
-    //#endregion
+//#endregion
 
-    //#region Init
+//#region Init
 
     private registerInClient() {
         if (!SystemUtil.isClient()) {
@@ -157,9 +176,38 @@ export default class UnifiedRoleController extends mw.PlayerState {
         this.onControllerReadyInServer();
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    /**
+     * 初始化移动管理状态机.
+     */
+    public initMovementStateMachine() {
+        this._movementState = createYoact(new RoleMovementState());
+        const walk = new State<RoleMovementState>(RoleMovementStates.Walk)
+            .aE(() => {
+                this.character.maxWalkSpeed = GameServiceConfig.ROLE_MAX_WALK_SPEED;
+            })
+            .aU((dt) => {
+                this._movementState.stamina += RoleMovementState.STAMINA_RECOVERY * dt;
+            });
+        const sprint = new State<RoleMovementState>(RoleMovementStates.Sprint)
+            .aE(() => {
+                this.character.maxWalkSpeed = GameServiceConfig.ROLE_MAX_SPRINT_SPEED;
+            })
+            .aU((dt) => {
+                this._movementState.stamina -= RoleMovementState.STAMINA_CONSUME * dt;
+            });
 
-    //#region Role Controller
+        walk.when(arg => arg.isSprint && arg.stamina > 0);
+        sprint.when(arg => !arg.isSprint || arg.stamina <= 0);
+
+        this._movementStateMachine = new FiniteStateMachine<RoleMovementState>(walk);
+        this._movementStateMachineEffect = bindYoact(() => {
+            this._movementStateMachine.evaluate(this._movementState);
+        });
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Role Controller
 
     @RemoteFunction(Server)
     public addImpulse(character: mw.Character, impulse: mw.Vector): void {
@@ -190,9 +238,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
         this._throwAnim.play();
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region Buff Controller
+//#region Buff Controller
     @RemoteFunction(Server)
     public addCheckMoveBuff() {
         Log4Ts.log(UnifiedRoleController, `${this.character.player.playerId} add check move buff.`);
@@ -333,9 +381,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
         this._buffs.removeBuff(BuffType.MoveForbidden);
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region Event Callback
+//#region Event Callback
 
     /**
      * 当 控制器于 Client 端就绪时 调用.
@@ -362,5 +410,52 @@ export default class UnifiedRoleController extends mw.PlayerState {
     protected onControllerDestroyInServer = (): void => {
     };
 
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+enum RoleMovementStates {
+    /**
+     * 正常行走.
+     */
+    Walk = "walk",
+    /**
+     * 冲刺.
+     */
+    Sprint = "sprint",
+}
+
+class RoleMovementState {
+    //#region Constant
+    /**
+     * 体力恢复速率. /s
+     */
+    public static readonly STAMINA_RECOVERY = 10;
+
+    /**
+     * 体力消耗速率. /s
+     */
+    public static readonly STAMINA_CONSUME = 20;
+
+    /**
+     * 体力最大值.
+     */
+    public static readonly STAMINA_MAX_COUNT = 100;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    /**
+     * 体力.
+     * @desc 随时间回复.
+     * @desc 决定待机动作.
+     */
+    public stamina: number;
+
+    /**
+     * 是否 冲刺.
+     */
+    public isSprint: boolean;
+
+    constructor(idleStamina: number = RoleMovementState.STAMINA_MAX_COUNT) {
+        this.stamina = idleStamina;
+        this.isSprint = false;
+    }
 }
