@@ -47,7 +47,7 @@ export default class GameServiceConfig {
      * 伙伴龙 移动速度上限.
      */
     public static readonly PARTNER_DRAGON_MAX_WALK_SPEED = 720;
-    
+
     /**
      * 伙伴龙 游泳速度上限.
      */
@@ -83,7 +83,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 捕捉进度条时长.
      */
-    public static readonly SCENE_DRAGON_CATCH_PROGRESS_DURATION=2e3;
+    public static readonly SCENE_DRAGON_CATCH_PROGRESS_DURATION = 2e3;
 
     /**
      * 场景龙 最远存活距离.
@@ -295,6 +295,17 @@ export default class GameServiceConfig {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Role
+
+    /**
+     * 角色 最大行走速度.
+     */
+    public static readonly ROLE_MAX_WALK_SPEED = 750;
+
+    /**
+     * 角色 最大冲刺速度.
+     */
+    public static readonly ROLE_MAX_SPRINT_SPEED = 3000;
+
     /**
      * 角色 蒸气特效 Guid.
      */
