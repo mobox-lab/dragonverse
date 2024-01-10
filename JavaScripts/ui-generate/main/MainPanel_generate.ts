@@ -154,6 +154,13 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnReset_Internal
 	}
+	private btnRunning_Internal: mw.StaleButton
+	public get btnRunning(): mw.StaleButton {
+		if(!this.btnRunning_Internal&&this.uiWidgetBase) {
+			this.btnRunning_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnRunning') as mw.StaleButton
+		}
+		return this.btnRunning_Internal
+	}
 	private miniMap_Internal: mw.Image
 	public get miniMap(): mw.Image {
 		if(!this.miniMap_Internal&&this.uiWidgetBase) {
@@ -261,6 +268,9 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.btnReset);
         
 	
+        this.initLanguage(this.btnRunning);
+        
+	
         //按钮多语言
         
         //文本多语言
@@ -273,6 +283,12 @@ export default class MainPanel_Generate extends UIScript {
 	
         //文本多语言
         
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1") as any);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1_1") as any);
+        
+	
         this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as any);
         
 	
