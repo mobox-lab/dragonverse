@@ -9,7 +9,7 @@ export class PlayerController extends Singleton<PlayerController>() {
     private _velocity: mw.Vector = mw.Vector.zero;
 
     protected onConstruct(): void {
-        Log4Ts.debugLevel = DebugLevels.Silent;
+
         let swimArea1 = GameObject.findGameObjectById("0431AECB") as SwimmingVolume;
         let swimArea2 = GameObject.findGameObjectById("2A9D1832") as SwimmingVolume;
         swimArea1.onEnter.add((go) => {
