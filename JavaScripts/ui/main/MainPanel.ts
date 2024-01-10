@@ -116,6 +116,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnReset.onPressed.add(respawn);
         this.btnDragonBall.onPressed.add(() => this.tryCatch());
         this.btnCatch.onPressed.add(this.onTryCatchBtnClick);
+        this.btnRunning
 
         if (this.bagModule) {
             bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());

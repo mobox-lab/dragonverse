@@ -147,19 +147,19 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnDragon_Internal
 	}
+	private btnSprint_Internal: mw.StaleButton
+	public get btnSprint(): mw.StaleButton {
+		if(!this.btnSprint_Internal&&this.uiWidgetBase) {
+			this.btnSprint_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnSprint') as mw.StaleButton
+		}
+		return this.btnSprint_Internal
+	}
 	private btnReset_Internal: mw.StaleButton
 	public get btnReset(): mw.StaleButton {
 		if(!this.btnReset_Internal&&this.uiWidgetBase) {
 			this.btnReset_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnReset') as mw.StaleButton
 		}
 		return this.btnReset_Internal
-	}
-	private btnRunning_Internal: mw.StaleButton
-	public get btnRunning(): mw.StaleButton {
-		if(!this.btnRunning_Internal&&this.uiWidgetBase) {
-			this.btnRunning_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnRunning') as mw.StaleButton
-		}
-		return this.btnRunning_Internal
 	}
 	private miniMap_Internal: mw.Image
 	public get miniMap(): mw.Image {
@@ -265,10 +265,10 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.btnDragon);
         
 	
-        this.initLanguage(this.btnReset);
+        this.initLanguage(this.btnSprint);
         
 	
-        this.initLanguage(this.btnRunning);
+        this.initLanguage(this.btnReset);
         
 	
         //按钮多语言
