@@ -25,6 +25,7 @@ import MainPanel from "../../ui/main/MainPanel";
 import Waterween from "../../depend/waterween/Waterween";
 import { KeyboardManager } from "../../controller/KeyboardManager";
 import AudioController from "../../controller/audio/AudioController";
+import { RoleModuleS } from "./RoleModule";
 
 /**
  * Unified Role State Controller.
@@ -46,7 +47,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient })
+    @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient})
     private _playerId: number;
 
     public get playerId(): number {
@@ -60,6 +61,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
     private _pickControllerInC: PickerController = null;
 
     private _velocity: mw.Vector = mw.Vector.zero;
+
     /**
      * pick controller.
      * only valid in client.
@@ -105,7 +107,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Role State Member
-    @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove })
+    @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove})
     isMove: boolean = false;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -136,7 +138,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
     private _lastOnLandFoot: number = -1;
 
     private onEnterFrame(dt: number): void {
-        this._velocity.set(0, 0, 0)
+        this._velocity.set(0, 0, 0);
 
         const keyBoard = KeyboardManager.getInstance();
 
@@ -187,6 +189,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
+        if (SystemUtil.isClient()) this._movementStateMachine?.update(dt);
         if (SystemUtil.isServer()) this._buffs?.update(dt);
     }
 
@@ -266,7 +269,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
                 this.character.maxAcceleration = GameServiceConfig.ROLE_MAX_WALK_ACCURATE;
             })
             .aU((dt) => {
-                this._movementState.stamina += RoleMovementState.STAMINA_RECOVERY * dt;
+                this._movementState.stamina = Math.min(this._movementState.stamina + RoleMovementState.STAMINA_RECOVERY * dt, RoleMovementState.STAMINA_MAX_COUNT);
             });
         const sprint = new State<RoleMovementState>(RoleMovementStates.Sprint)
             .aE(() => {
@@ -277,11 +280,11 @@ export default class UnifiedRoleController extends mw.PlayerState {
                 this._movementState.sprintEffectId = EffectService.playOnGameObject(
                     GameServiceConfig.ROLE_SPRINT_EFFECT_GUID,
                     this.character, {
-                    slotType: GameServiceConfig.ROLE_SPRINT_EFFECT_SLOT_TYPE,
-                    loopCount: 0,
-                    scale: GameServiceConfig.ROLE_SPRINT_EFFECT_SCALE,
-                    position: GameServiceConfig.ROLE_SPRINT_EFFECT_POSITION_OFFSET,
-                });
+                        slotType: GameServiceConfig.ROLE_SPRINT_EFFECT_SLOT_TYPE,
+                        loopCount: 0,
+                        scale: GameServiceConfig.ROLE_SPRINT_EFFECT_SCALE,
+                        position: GameServiceConfig.ROLE_SPRINT_EFFECT_POSITION_OFFSET,
+                    });
                 UIService.getUI(MainPanel)?.showSprintUiEffect(true);
             })
             .aU((dt) => {
@@ -302,7 +305,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
                 UIService.getUI(MainPanel)?.showSprintUiEffect(false);
             });
 
-        walk.when(arg => arg.stamina > 0 && arg.isSprint).to(sprint);
+        walk.when(arg => arg.stamina > GameServiceConfig.ROLE_SPRINT_STAMINA_THRESHOLD && arg.isSprint).to(sprint);
         sprint.when(arg => !arg.isSprint || arg.stamina <= 0).to(walk);
 
         this._movementStateMachine = new FiniteStateMachine<RoleMovementState>(walk);
@@ -520,13 +523,13 @@ export default class UnifiedRoleController extends mw.PlayerState {
                     mw.Player.localPlayer.character.jump();
                 } else {
                     actions.tween(Player.localPlayer.character.worldTransform).to(10,
-                        { position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)) },).call(() => {
-                            Player.localPlayer.character.jump();
-                        }).start();
+                        {position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100))}).call(() => {
+                        Player.localPlayer.character.jump();
+                    }).start();
                 }
             }
-        })
-        TimeUtil.onEnterFrame.add(this.onEnterFrame, this)
+        });
+        TimeUtil.onEnterFrame.add(this.onEnterFrame, this);
     };
 
     /**

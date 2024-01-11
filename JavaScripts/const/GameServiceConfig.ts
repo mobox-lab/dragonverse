@@ -317,6 +317,11 @@ export default class GameServiceConfig {
     public static readonly ROLE_MAX_SPRINT_ACCURATE = 2400;
 
     /**
+     * 角色 冲刺耐力门槛.
+     */
+    public static readonly ROLE_SPRINT_STAMINA_THRESHOLD = 50;
+
+    /**
      * 角色 冲刺特效 Guid.
      */
     public static readonly ROLE_SPRINT_EFFECT_GUID = "145496";
@@ -339,7 +344,7 @@ export default class GameServiceConfig {
     /**
      * 角色 冲刺特效 残留时长.
      */
-    public static readonly ROLE_SPRINT_EFFECT_RESIDUAL_DURATION=0.5e3
+    public static readonly ROLE_SPRINT_EFFECT_RESIDUAL_DURATION = 0.5e3;
 
     /**
      * 角色 蒸气特效 Guid.
