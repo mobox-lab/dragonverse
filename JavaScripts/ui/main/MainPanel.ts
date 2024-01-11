@@ -21,6 +21,9 @@ import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
+import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
+import Easing from "../../depend/easing/Easing";
+import off = Puerts.off;
 
 /**
  * 主界面.
@@ -39,7 +42,7 @@ import bindYoact = Yoact.bindYoact;
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export default class MainPanel extends MainPanel_Generate {
-    //#region Member
+//#region Member
     private _eventListeners: EventListener[] = [];
 
     private _character: Character;
@@ -49,9 +52,15 @@ export default class MainPanel extends MainPanel_Generate {
         return this._character;
     }
 
+    private get roleController(): UnifiedRoleController | null {
+        return this.character?.player?.getPlayerState(UnifiedRoleController) ?? null;
+    }
+
     private _collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
-    // private _sceneDragonInteractorMap: Map<string, SceneDragonInteractorPanel> = new Map();
+
     private _promptPanel: GlobalPromptPanel;
+
+    private _imgSprintEffects: Image[] = [];
 
     private _sceneDragonModule: SceneDragonModuleC = null;
 
@@ -90,23 +99,34 @@ export default class MainPanel extends MainPanel_Generate {
 
     private _failTask: TweenTaskGroup;
 
-    private _currentInteractType: GenerableTypes = GenerableTypes.Null;
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    private _effectCnvTask: AdvancedTweenTask<number>;
 
-    //#region MetaWorld UI Event
+    private _effectImgTasks: TweenTaskGroup[] = [];
+
+    private _currentInteractType: GenerableTypes = GenerableTypes.Null;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region MetaWorld UI Event
     protected onAwake(): void {
         super.onAwake();
         this.canUpdate = true;
 
-        //#region Member init
+//#region Member init
         this._promptPanel = UIService.create(GlobalPromptPanel);
+        this._imgSprintEffects = [
+            this.imgSprintEffect1,
+            this.imgSprintEffect2,
+            this.imgSprintEffect3,
+        ];
         this.btnJump.onPressed.add(() => {
             if (this._character) {
                 this._character.jump();
+                this.roleController?.trySprint(false);
             } else {
                 Player.asyncGetLocalPlayer().then((player) => {
                     this._character = player.character;
                     this._character.jump();
+                    this.roleController?.trySprint(false);
                 });
             }
         });
@@ -116,7 +136,12 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnReset.onPressed.add(respawn);
         this.btnDragonBall.onPressed.add(() => this.tryCatch());
         this.btnCatch.onPressed.add(this.onTryCatchBtnClick);
-        this.btnRunning
+        InputUtil.onKeyDown(mw.Keys.LeftShift, () => {
+            this.roleController?.trySprint(true);
+        });
+        InputUtil.onKeyUp(mw.Keys.LeftShift, () => {
+            this.roleController?.trySprint(false);
+        });
 
         if (this.bagModule) {
             bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
@@ -191,6 +216,37 @@ export default class MainPanel extends MainPanel_Generate {
             ],
             1);
 
+        this._effectCnvTask = Waterween.to(
+            () => this.cnvSprintEffect.renderOpacity,
+            (val) => this.cnvSprintEffect.renderOpacity = val,
+            1,
+            GameServiceConfig.MAIN_PANEL_CNV_SPRINT_EFFECT_DURATION,
+            0)
+            .restart(true);
+        this._effectCnvTask.onDone.add(
+            (param) => {
+                if (param) this._effectImgTasks.forEach((value) => value.pause());
+            },
+        );
+
+        let offset = 0;
+        for (const imgSprintEffect of this._imgSprintEffects) {
+            this._effectImgTasks.push(
+                Waterween
+                    .group(
+                        () => imgSprintEffect.renderOpacity,
+                        (val) => imgSprintEffect.renderOpacity = val,
+                        [
+                            {dist: (offset + 0.4) < 1 ? (offset + 0.4) : (offset + 0.4) - 1, duration: 0.1e3},
+                            {dist: (offset + 0.6) < 1 ? (offset + 0.6) : (offset + 0.6) - 1, duration: 0.1e3},
+                            {dist: (offset + 0.2) < 1 ? (offset + 0.2) : (offset + 0.2) - 1, duration: 0.1e3},
+                            {dist: (offset + 0.8) < 1 ? (offset + 0.8) : (offset + 0.8) - 1, duration: 0.1e3},
+                            {dist: (offset + 0.4) < 1 ? (offset + 0.4) : (offset + 0.4) - 1, duration: 0.1e3},
+                        ])
+                    .repeat());
+            offset += 0.2;
+        }
+
         ModuleService.ready().then(() => {
             let res = ModuleService.getModule(AuthModuleC).canEnterGame();
             if (!res) {
@@ -201,12 +257,12 @@ export default class MainPanel extends MainPanel_Generate {
         });
 
         this.init();
-        //#endregion ------------------------------------------------------------------------------------------
+//#endregion ------------------------------------------------------------------------------------------
 
-        //#region Widget bind
-        //#endregion ------------------------------------------------------------------------------------------
+//#region Widget bind
+//#endregion ------------------------------------------------------------------------------------------
 
-        //#region Event subscribe
+//#region Event subscribe
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, () => this.prepareCatch()));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, () => this.endCatch()));
@@ -217,7 +273,7 @@ export default class MainPanel extends MainPanel_Generate {
             if (playerId === this.character.player.playerId) Log4Ts.log(MainPanel, `Player reset.`);
         }));
         this._eventListeners.push(Event.addLocalListener(EventDefine.OnDragonQuestsComplete, this.onFinishSubTask));
-        //#endregion ------------------------------------------------------------------------------------------
+//#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onUpdate() {
@@ -252,9 +308,9 @@ export default class MainPanel extends MainPanel_Generate {
      * 注意：这之后UI对象已经被销毁了，需要移除所有对该文件和UI相关对象以及子对象的引用
      */
     protected onDestroy() {
-        //#region Event Unsubscribe
+//#region Event Unsubscribe
         this._eventListeners.forEach(value => value.disconnect());
-        //#endregion ------------------------------------------------------------------------------------------
+//#endregion ------------------------------------------------------------------------------------------
     }
 
     /**
@@ -351,30 +407,31 @@ export default class MainPanel extends MainPanel_Generate {
     protected onHide() {
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region Init
+//#region Init
     public init() {
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
         GToolkit.trySetVisibility(this.cnvCatchdragon, !GToolkit.isNullOrEmpty(this.sceneDragonModule?.candidate ?? null));
         UIService.hideUI(this._promptPanel);
+        this.cnvSprintEffect.renderOpacity = 0;
         this.imgOperationFail.renderOpacity = 0;
         this.imgOperationSuccess.renderOpacity = 0;
         this.txtOperationFeedback.renderOpacity = 0;
         this.btnDragonBall.enable = false;
         this.refreshAvatar();
 
-        //#region Exist for V1
+//#region Exist for V1
         GToolkit.trySetVisibility(this.btnCode, false);
         GToolkit.trySetVisibility(this.btnMail, false);
         GToolkit.trySetVisibility(this.btnBook, false);
         GToolkit.trySetVisibility(this.btnDragon, false);
-        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region UI Behavior
+//#region UI Behavior
     public addCollectibleItemInteractor(syncKey: string) {
         const collectibleInteractor = UIService.create(CollectibleInteractorPanel);
         collectibleInteractor.init(syncKey);
@@ -456,10 +513,7 @@ export default class MainPanel extends MainPanel_Generate {
      */
     public endCatch() {
         Log4Ts.log(MainPanel, `end catch`);
-        Player
-            .localPlayer
-            .getPlayerState(UnifiedRoleController)
-            ?.removeMoveForbiddenBuff();
+        this.roleController?.removeMoveForbiddenBuff();
         this._currentInteractType = GenerableTypes.Null;
         this.btnDragonBall.enable = false;
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
@@ -522,9 +576,20 @@ export default class MainPanel extends MainPanel_Generate {
         UIService?.show(CodeVerifyPanel);
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    public showSprintUiEffect(enable: boolean = true) {
+        if (enable) {
+            this._effectCnvTask.forward().continue();
+            this._effectImgTasks.forEach(
+                item => item.continue(),
+            );
+        } else {
+            this._effectCnvTask.backward().continue();
+        }
+    }
 
-    //#region Event Callback
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Event Callback
     private onShowGlobalPrompt = (args: string) => this.showGlobalPrompt(args);
 
     private onProgressDone = () => {
@@ -576,7 +641,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.showGlobalPrompt(i18n.lan(i18n.keyTable.TinyGameLanKey0004));
     };
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 function respawn() {

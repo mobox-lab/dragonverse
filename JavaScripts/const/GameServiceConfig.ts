@@ -302,9 +302,39 @@ export default class GameServiceConfig {
     public static readonly ROLE_MAX_WALK_SPEED = 750;
 
     /**
+     * 角色 最大行走加速度.
+     */
+    public static readonly ROLE_MAX_WALK_ACCURATE = 750;
+
+    /**
      * 角色 最大冲刺速度.
      */
-    public static readonly ROLE_MAX_SPRINT_SPEED = 3000;
+    public static readonly ROLE_MAX_SPRINT_SPEED = 1200;
+
+    /**
+     * 角色 最大冲刺加速度.
+     */
+    public static readonly ROLE_MAX_SPRINT_ACCURATE = 2400;
+
+    /**
+     * 角色 冲刺特效 Guid.
+     */
+    public static readonly ROLE_SPRINT_EFFECT_GUID = "145496";
+
+    /**
+     * 角色 冲刺特效 SlotType.
+     */
+    public static readonly ROLE_SPRINT_EFFECT_SLOT_TYPE = mw.HumanoidSlotType.Buttocks;
+
+    /**
+     * 角色 冲刺特效 缩放.
+     */
+    public static readonly ROLE_SPRINT_EFFECT_SCALE = new Vector(1, 1, 1);
+
+    /**
+     * 角色 冲刺特效 残留时长.
+     */
+    public static readonly ROLE_SPRINT_EFFECT_RESIDUAL_DURATION=0.5e3
 
     /**
      * 角色 蒸气特效 Guid.
@@ -378,6 +408,11 @@ export default class GameServiceConfig {
      * 主界面 指针 半周期时长. ms
      */
     public static readonly MAIN_PANEL_POINTER_HALF_DURATION = 1e3;
+
+    /**
+     * 主界面 冲刺 ui 特效显隐动画时长. ms
+     */
+    public static readonly MAIN_PANEL_CNV_SPRINT_EFFECT_DURATION = 0.5e3;
 
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

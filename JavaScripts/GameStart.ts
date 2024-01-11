@@ -254,10 +254,13 @@ export default class GameStart extends mw.Script {
         });
     }
 
+    private show: boolean = false;
+
     private registerTestKeyT() {
         InputUtil.onKeyDown(mw.Keys.T, () => {
             Log4Ts.log(GameStart, `Key T pressed`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
+            this.show = !this.show;
+            UIService.getUI(MainPanel).showSprintUiEffect(this.show);
         });
     }
 

@@ -28,6 +28,41 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.collectibleInteractorContainer_Internal
 	}
+	private bar_physical_power_Internal: mw.ProgressBar
+	public get bar_physical_power(): mw.ProgressBar {
+		if(!this.bar_physical_power_Internal&&this.uiWidgetBase) {
+			this.bar_physical_power_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Physical/bar_physical_power') as mw.ProgressBar
+		}
+		return this.bar_physical_power_Internal
+	}
+	private cnvSprintEffect_Internal: mw.Canvas
+	public get cnvSprintEffect(): mw.Canvas {
+		if(!this.cnvSprintEffect_Internal&&this.uiWidgetBase) {
+			this.cnvSprintEffect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect') as mw.Canvas
+		}
+		return this.cnvSprintEffect_Internal
+	}
+	private imgSprintEffect1_Internal: mw.Image
+	public get imgSprintEffect1(): mw.Image {
+		if(!this.imgSprintEffect1_Internal&&this.uiWidgetBase) {
+			this.imgSprintEffect1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect1') as mw.Image
+		}
+		return this.imgSprintEffect1_Internal
+	}
+	private imgSprintEffect2_Internal: mw.Image
+	public get imgSprintEffect2(): mw.Image {
+		if(!this.imgSprintEffect2_Internal&&this.uiWidgetBase) {
+			this.imgSprintEffect2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect2') as mw.Image
+		}
+		return this.imgSprintEffect2_Internal
+	}
+	private imgSprintEffect3_Internal: mw.Image
+	public get imgSprintEffect3(): mw.Image {
+		if(!this.imgSprintEffect3_Internal&&this.uiWidgetBase) {
+			this.imgSprintEffect3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect3') as mw.Image
+		}
+		return this.imgSprintEffect3_Internal
+	}
 	private sceneDragonInteractorContainer_Internal: mw.Canvas
 	public get sceneDragonInteractorContainer(): mw.Canvas {
 		if(!this.sceneDragonInteractorContainer_Internal&&this.uiWidgetBase) {
@@ -147,19 +182,19 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnDragon_Internal
 	}
-	private btnSprint_Internal: mw.StaleButton
-	public get btnSprint(): mw.StaleButton {
-		if(!this.btnSprint_Internal&&this.uiWidgetBase) {
-			this.btnSprint_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnSprint') as mw.StaleButton
-		}
-		return this.btnSprint_Internal
-	}
 	private btnReset_Internal: mw.StaleButton
 	public get btnReset(): mw.StaleButton {
 		if(!this.btnReset_Internal&&this.uiWidgetBase) {
 			this.btnReset_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnReset') as mw.StaleButton
 		}
 		return this.btnReset_Internal
+	}
+	private btnRunning_Internal: mw.StaleButton
+	public get btnRunning(): mw.StaleButton {
+		if(!this.btnRunning_Internal&&this.uiWidgetBase) {
+			this.btnRunning_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnRunning') as mw.StaleButton
+		}
+		return this.btnRunning_Internal
 	}
 	private miniMap_Internal: mw.Image
 	public get miniMap(): mw.Image {
@@ -265,10 +300,10 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.btnDragon);
         
 	
-        this.initLanguage(this.btnSprint);
+        this.initLanguage(this.btnReset);
         
 	
-        this.initLanguage(this.btnReset);
+        this.initLanguage(this.btnRunning);
         
 	
         //按钮多语言
