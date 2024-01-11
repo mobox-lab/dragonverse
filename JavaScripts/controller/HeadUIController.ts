@@ -94,7 +94,6 @@ export default class HeadUIScript extends mw.Script {
         for (let i = 0; i < this.playerNickNames.length; i++) {
             element += this.playerNickNames[i].playerId.toString() + ' ';
         }
-        console.log('onNickNameChanged', element);
 
         let temp = new Set(this._cache.values());
         this._cache.clear();

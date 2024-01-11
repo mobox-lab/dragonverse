@@ -23,6 +23,7 @@ import createYoact = Yoact.createYoact;
 import stopEffect = Yoact.stopEffect;
 import MainPanel from "../../ui/main/MainPanel";
 import Waterween from "../../depend/waterween/Waterween";
+import { KeyboardManager } from "../../controller/KeyboardManager";
 
 /**
  * Unified Role State Controller.
@@ -40,10 +41,11 @@ import Waterween from "../../depend/waterween/Waterween";
  */
 @Component
 export default class UnifiedRoleController extends mw.PlayerState {
+
 //#region Member
     private _eventListeners: EventListener[] = [];
 
-    @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient})
+    @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient })
     private _playerId: number;
 
     public get playerId(): number {
@@ -56,6 +58,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
 
     private _pickControllerInC: PickerController = null;
 
+    private _velocity: mw.Vector = mw.Vector.zero;
     /**
      * pick controller.
      * only valid in client.
@@ -90,6 +93,8 @@ export default class UnifiedRoleController extends mw.PlayerState {
 
     private _movementState: RoleMovementState;
 
+    private _rightFootGo: GameObject = null;
+
     /**
      * 移动速率状态.
      * 仅客户端.
@@ -110,8 +115,39 @@ export default class UnifiedRoleController extends mw.PlayerState {
         super.onStart();
         this.useUpdate = true;
 
-//#region Member init
-//#endregion ------------------------------------------------------------------------------------------
+
+        if (SystemUtil.isClient()) {
+            KeyboardManager.getInstance().onKeyDown.add((key) => {
+
+                if (key === mw.Keys.SpaceBar) {
+                    if (!(Player.localPlayer.character.movementMode === MovementMode.Swim)) {
+                        mw.Player.localPlayer.character.jump();
+                    } else {
+                        actions.tween(Player.localPlayer.character.worldTransform).to(10,
+                            { position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)) },).call(() => {
+                                Player.localPlayer.character.jump();
+                            }).start();
+                    }
+                }
+            })
+            // //给脚上一个go，就能得到脚的旋转
+            // GameObject.asyncSpawn("197386", {
+            //     replicates: false
+            // }).then((go) => {
+            //     this._rightFootGo = go;
+            //     go.worldTransform.scale = new Vector(0.001, 0.001, 0.001);
+            //     let model = go as Model;
+            //     model.setCollision(CollisionStatus.Off);
+            //     Player.asyncGetLocalPlayer().then(player => {
+            //         player.character.attachToSlot(go, HumanoidSlotType.RightFoot);
+            //     })
+
+            // })
+            TimeUtil.onEnterFrame.add(this.onEnterFrame, this)
+        }
+
+        //#region Member init
+        //#endregion ------------------------------------------------------------------------------------------
 
 //#region Widget bind
 //#endregion ------------------------------------------------------------------------------------------
@@ -119,6 +155,57 @@ export default class UnifiedRoleController extends mw.PlayerState {
 //#region Event Subscribe
         // this._eventListeners.push(Event.addLocalListener(EventDefine.EVENT_NAME, CALLBACK));
 //#endregion ------------------------------------------------------------------------------------------
+    }
+
+    private _footOnLand: boolean = true;
+    private _canExcute: boolean = false;
+    private _canExcute1: boolean = false;
+    private onEnterFrame(dt: number): void {
+        this._velocity.set(0, 0, 0)
+
+        const keyBoard = KeyboardManager.getInstance();
+
+        keyBoard.isKewDown(mw.Keys.W) && this._velocity.x++;
+        keyBoard.isKewDown(mw.Keys.S) && this._velocity.x--;
+        keyBoard.isKewDown(mw.Keys.A) && this._velocity.y--;
+        keyBoard.isKewDown(mw.Keys.D) && this._velocity.y++;
+
+        // console.log(Player.localPlayer.character.isMoving)
+
+        mw.Player.localPlayer.character.addMovement(this._velocity);
+        // let go: GameObject;
+        // if (Player.localPlayer.character.isMoving) {
+        //     // if (this._rightFootGo) {
+        //     //     console.log(this._rightFootGo.worldTransform.getForwardVector());
+        //     // }
+
+        //     let rightFootWorldPos = Player.localPlayer.character.getSlotWorldPosition(HumanoidSlotType.RightFoot);
+        //     let results = QueryUtil.lineTrace(rightFootWorldPos, rightFootWorldPos.clone().add(new Vector(0, 0, -100)), true, true, null, null, false, Player.localPlayer.character);
+
+        //     if (results[0] && results[0].distance < 10) {
+        //         this._footOnLand = true;
+        //         go = results[0].gameObject;
+        //         this._canExcute1 = true;
+        //     } else {
+        //         this._footOnLand = false;
+        //         //可以执行
+        //         this._canExcute = true;
+        //     }
+        // }
+
+        // if (this._canExcute && this._footOnLand) {
+        //     console.log("踩到地了");
+        //     this._canExcute = false;
+        //     // console.log(go.name);
+
+        //     SoundService.playSound("287414");
+        // }
+
+        // if (this._canExcute1 && !this._footOnLand) {
+        //     console.log("离地了")
+        //     this._canExcute1 = false;
+        // }
+
     }
 
     protected onUpdate(dt: number): void {

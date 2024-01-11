@@ -3,7 +3,6 @@ import * as mwaction from "mwaction";
 import { EventDefine } from "./const/EventDefine";
 import { HeadUIController } from "./controller/HeadUIController";
 import { KeyboardManager } from "./controller/KeyboardManager";
-import { PlayerController } from "./controller/PlayerController";
 import { TimeManager } from "./controller/TimeManager";
 import { VectorExt } from "./declaration/vectorext";
 import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
@@ -41,9 +40,9 @@ import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioContro
 export default class GameStart extends mw.Script {
     public static instance: GameStart = null;
 
-//#region Dev Config
+    //#region Dev Config
 
-    @mw.Property({displayName: "是否发布", group: "发布"})
+    @mw.Property({ displayName: "是否发布", group: "发布" })
     public isRelease: boolean = false;
 
     @mw.Property({
@@ -54,25 +53,25 @@ export default class GameStart extends mw.Script {
     })
     public language: LanguageTypes = LanguageTypes.English;
 
-    @mw.Property({displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel})
+    @mw.Property({ displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel })
     public graphicsLevel: GraphicsLevel = GraphicsLevel.Cinematic3;
 
-    @mw.Property({displayName: "线上存储", group: "发布"})
+    @mw.Property({ displayName: "线上存储", group: "发布" })
     public isOnline: boolean = false;
 
-    @mw.Property({displayName: "是否 GM", group: "调试"})
+    @mw.Property({ displayName: "是否 GM", group: "调试" })
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: DebugLevels})
+    @mw.Property({ displayName: "服务端日志等级", group: "调试", enumType: DebugLevels })
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: DebugLevels})
+    @mw.Property({ displayName: "客户端日志等级", group: "调试", enumType: DebugLevels })
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({displayName: "上帝模式 冲刺速度倍率", group: "调试"})
+    @mw.Property({ displayName: "上帝模式 冲刺速度倍率", group: "调试" })
     public godModeSprintRatio: number = 10;
 
-    @mw.Property({displayName: "上帝模式 闪现位移距离", group: "调试"})
+    @mw.Property({ displayName: "上帝模式 闪现位移距离", group: "调试" })
     public godModeFlashDist: number = 1000;
 
     private _godMode: boolean = false;
@@ -83,7 +82,7 @@ export default class GameStart extends mw.Script {
 
     private _moduleReadyWaitingPool: Delegate.SimpleDelegate<void> = new Delegate.SimpleDelegate<void>();
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     private _nolan: Nolan;
 
@@ -159,26 +158,26 @@ export default class GameStart extends mw.Script {
         this.registerKeyScrollUp();
         this.registerKeyScrollDown();
 
-//#region GodMode
+        //#region GodMode
         if (!this.isRelease) {
             this.registerTestKeyT();
             this.registerGodModeG();
             this.registerGodModeShift();
             this.registerGodModeF();
-//#region Exist for Test
-//R <<<<<<
-//
-//  ------
-//T >>>>>>
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+            //#region Exist for Test
+            //R <<<<<<
+            //
+            //  ------
+            //T >>>>>>
+            //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         }
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         this.isShowGMPanel && GM.start(GMPanel);
         VisualizeDebug.init(mw.Player.localPlayer);
         KeyboardManager.getInstance();
-        PlayerController.getInstance();
+
 
         GraphicsSettings.setGraphicsCPULevel(this.graphicsLevel);
         GraphicsSettings.setGraphicsGPULevel(this.graphicsLevel);
