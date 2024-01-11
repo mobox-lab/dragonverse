@@ -42,7 +42,7 @@ import off = Puerts.off;
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export default class MainPanel extends MainPanel_Generate {
-//#region Member
+    //#region Member
     private _eventListeners: EventListener[] = [];
 
     private _character: Character;
@@ -104,14 +104,14 @@ export default class MainPanel extends MainPanel_Generate {
     private _effectImgTasks: TweenTaskGroup[] = [];
 
     private _currentInteractType: GenerableTypes = GenerableTypes.Null;
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region MetaWorld UI Event
+    //#region MetaWorld UI Event
     protected onAwake(): void {
         super.onAwake();
         this.canUpdate = true;
 
-//#region Member init
+        //#region Member init
         this._promptPanel = UIService.create(GlobalPromptPanel);
         this._imgSprintEffects = [
             this.imgSprintEffect1,
@@ -197,8 +197,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1);
 
@@ -211,8 +211,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1);
 
@@ -230,21 +230,23 @@ export default class MainPanel extends MainPanel_Generate {
         );
 
         let offset = 0;
+        const dists = [
+            { dist: 0.4, duration: 0.1e3 },
+            { dist: 0.6, duration: 0.1e3 },
+            { dist: 0.2, duration: 0.1e3 },
+            { dist: 0.8, duration: 0.1e3 },
+            { dist: 0.4, duration: 0.1e3 },
+        ]
         for (const imgSprintEffect of this._imgSprintEffects) {
             this._effectImgTasks.push(
                 Waterween
                     .group(
                         () => imgSprintEffect.renderOpacity,
                         (val) => imgSprintEffect.renderOpacity = val,
-                        [
-                            {dist: (offset + 0.4) < 1 ? (offset + 0.4) : (offset + 0.4) - 1, duration: 0.1e3},
-                            {dist: (offset + 0.6) < 1 ? (offset + 0.6) : (offset + 0.6) - 1, duration: 0.1e3},
-                            {dist: (offset + 0.2) < 1 ? (offset + 0.2) : (offset + 0.2) - 1, duration: 0.1e3},
-                            {dist: (offset + 0.8) < 1 ? (offset + 0.8) : (offset + 0.8) - 1, duration: 0.1e3},
-                            {dist: (offset + 0.4) < 1 ? (offset + 0.4) : (offset + 0.4) - 1, duration: 0.1e3},
-                        ])
+                        [...dists.slice(offset, dists.length), ...dists.slice(0, offset)]
+                    )
                     .repeat());
-            offset += 0.2;
+            offset += 1;
         }
 
         ModuleService.ready().then(() => {
@@ -257,12 +259,12 @@ export default class MainPanel extends MainPanel_Generate {
         });
 
         this.init();
-//#endregion ------------------------------------------------------------------------------------------
+        //#endregion ------------------------------------------------------------------------------------------
 
-//#region Widget bind
-//#endregion ------------------------------------------------------------------------------------------
+        //#region Widget bind
+        //#endregion ------------------------------------------------------------------------------------------
 
-//#region Event subscribe
+        //#region Event subscribe
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, () => this.prepareCatch()));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, () => this.endCatch()));
@@ -273,7 +275,7 @@ export default class MainPanel extends MainPanel_Generate {
             if (playerId === this.character.player.playerId) Log4Ts.log(MainPanel, `Player reset.`);
         }));
         this._eventListeners.push(Event.addLocalListener(EventDefine.OnDragonQuestsComplete, this.onFinishSubTask));
-//#endregion ------------------------------------------------------------------------------------------
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onUpdate() {
@@ -308,9 +310,9 @@ export default class MainPanel extends MainPanel_Generate {
      * 注意：这之后UI对象已经被销毁了，需要移除所有对该文件和UI相关对象以及子对象的引用
      */
     protected onDestroy() {
-//#region Event Unsubscribe
+        //#region Event Unsubscribe
         this._eventListeners.forEach(value => value.disconnect());
-//#endregion ------------------------------------------------------------------------------------------
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     /**
@@ -407,9 +409,9 @@ export default class MainPanel extends MainPanel_Generate {
     protected onHide() {
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Init
+    //#region Init
     public init() {
         GToolkit.trySetVisibility(this.cnvDragonBall, false);
         GToolkit.trySetVisibility(this.cnvCatchdragon, !GToolkit.isNullOrEmpty(this.sceneDragonModule?.candidate ?? null));
@@ -421,17 +423,17 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnDragonBall.enable = false;
         this.refreshAvatar();
 
-//#region Exist for V1
+        //#region Exist for V1
         GToolkit.trySetVisibility(this.btnCode, false);
         GToolkit.trySetVisibility(this.btnMail, false);
         GToolkit.trySetVisibility(this.btnBook, false);
         GToolkit.trySetVisibility(this.btnDragon, false);
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region UI Behavior
+    //#region UI Behavior
     public addCollectibleItemInteractor(syncKey: string) {
         const collectibleInteractor = UIService.create(CollectibleInteractorPanel);
         collectibleInteractor.init(syncKey);
@@ -587,9 +589,9 @@ export default class MainPanel extends MainPanel_Generate {
         }
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Event Callback
+    //#region Event Callback
     private onShowGlobalPrompt = (args: string) => this.showGlobalPrompt(args);
 
     private onProgressDone = () => {
@@ -641,7 +643,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.showGlobalPrompt(i18n.lan(i18n.keyTable.TinyGameLanKey0004));
     };
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 function respawn() {
