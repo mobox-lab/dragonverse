@@ -136,10 +136,10 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnReset.onPressed.add(respawn);
         this.btnDragonBall.onPressed.add(() => this.tryCatch());
         this.btnCatch.onPressed.add(this.onTryCatchBtnClick);
-        InputUtil.onKeyDown(mw.Keys.LeftShift, () => {
+        InputUtil.onKeyDown(mw.Keys.RightMouseButton, () => {
             this.roleController?.trySprint(true);
         });
-        InputUtil.onKeyUp(mw.Keys.LeftShift, () => {
+        InputUtil.onKeyUp(mw.Keys.RightMouseButton, () => {
             this.roleController?.trySprint(false);
         });
 
