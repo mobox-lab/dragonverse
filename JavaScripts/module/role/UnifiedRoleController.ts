@@ -20,6 +20,9 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import Effect = Yoact.Effect;
 import bindYoact = Yoact.bindYoact;
 import createYoact = Yoact.createYoact;
+import stopEffect = Yoact.stopEffect;
+import MainPanel from "../../ui/main/MainPanel";
+import Waterween from "../../depend/waterween/Waterween";
 import { KeyboardManager } from "../../controller/KeyboardManager";
 import AudioController from "../../controller/audio/AudioController";
 
@@ -40,7 +43,7 @@ import AudioController from "../../controller/audio/AudioController";
 @Component
 export default class UnifiedRoleController extends mw.PlayerState {
 
-    //#region Member
+//#region Member
     private _eventListeners: EventListener[] = [];
 
     @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient })
@@ -95,19 +98,20 @@ export default class UnifiedRoleController extends mw.PlayerState {
 
     /**
      * 移动速率状态.
+     * 仅客户端.
      */
     public get movementState(): RoleMovementState {
         return this._movementState;
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region Role State Member
-    @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove })
+//#region Role State Member
+    @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove})
     isMove: boolean = false;
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region MetaWorld Event
+//#region MetaWorld Event
     protected onStart(): void {
         super.onStart();
         this.useUpdate = true;
@@ -120,12 +124,12 @@ export default class UnifiedRoleController extends mw.PlayerState {
         //#region Member init
         //#endregion ------------------------------------------------------------------------------------------
 
-        //#region Widget bind
-        //#endregion ------------------------------------------------------------------------------------------
+//#region Widget bind
+//#endregion ------------------------------------------------------------------------------------------
 
-        //#region Event Subscribe
+//#region Event Subscribe
         // this._eventListeners.push(Event.addLocalListener(EventDefine.EVENT_NAME, CALLBACK));
-        //#endregion ------------------------------------------------------------------------------------------
+//#endregion ------------------------------------------------------------------------------------------
     }
 
     private _rightfootOnLand: boolean = true;
@@ -194,10 +198,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
     public onDestroy(): void {
         super.onDestroy();
 
-        //#region Event Unsubscribe
+//#region Event Unsubscribe
         this._eventListeners.forEach(value => value.disconnect());
-        //#endregion ------------------------------------------------------------------------------------------
-
+//#endregion ------------------------------------------------------------------------------------------
 
         if (SystemUtil.isClient()) {
             this.onControllerDestroyInClient();
@@ -207,9 +210,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
         }
     }
 
-    //#endregion
+//#endregion
 
-    //#region Init
+//#region Init
 
     private registerInClient() {
         if (!SystemUtil.isClient()) {
@@ -220,14 +223,25 @@ export default class UnifiedRoleController extends mw.PlayerState {
             if (value.playerId !== this._playerId) {
                 this.destroy();
             } else {
-                mw.Script.spawnScript(PickerController, false, this.character).then(
-                    (value) => this._pickControllerInC = value,
-                );
+                this._pickControllerInC = this.character.addComponent(PickerController, false);
                 this._buffs = null;
                 this._nolan = Nolan.getInstance();
                 this.onControllerReadyInClient();
             }
         });
+        this.initMovementStateMachine();
+        this.character.onMovementModeChange.add(
+            mode => {
+                switch (mode) {
+                    case mw.MovementMode.Walk:
+                        break;
+                    case mw.MovementMode.Swim:
+                    case mw.MovementMode.Fly:
+                        this._movementState.isSprint = false;
+                        break;
+                }
+            },
+        );
     }
 
     /**
@@ -247,25 +261,53 @@ export default class UnifiedRoleController extends mw.PlayerState {
     /**
      * 初始化移动管理状态机.
      */
-    public initMovementStateMachine() {
+    private initMovementStateMachine() {
         this._movementState = createYoact(new RoleMovementState());
         const walk = new State<RoleMovementState>(RoleMovementStates.Walk)
             .aE(() => {
+                if (!this.character) return;
+                Log4Ts.log(UnifiedRoleController, `enter ${walk.name} state.`);
                 this.character.maxWalkSpeed = GameServiceConfig.ROLE_MAX_WALK_SPEED;
+                this.character.maxAcceleration = GameServiceConfig.ROLE_MAX_WALK_ACCURATE;
             })
             .aU((dt) => {
                 this._movementState.stamina += RoleMovementState.STAMINA_RECOVERY * dt;
             });
         const sprint = new State<RoleMovementState>(RoleMovementStates.Sprint)
             .aE(() => {
+                if (!this.character) return;
+                Log4Ts.log(UnifiedRoleController, `enter ${sprint.name} state.`);
                 this.character.maxWalkSpeed = GameServiceConfig.ROLE_MAX_SPRINT_SPEED;
+                this.character.maxAcceleration = GameServiceConfig.ROLE_MAX_SPRINT_ACCURATE;
+                this._movementState.sprintEffectId = EffectService.playOnGameObject(
+                    GameServiceConfig.ROLE_SPRINT_EFFECT_GUID,
+                    this.character, {
+                        slotType: GameServiceConfig.ROLE_SPRINT_EFFECT_SLOT_TYPE,
+                        loopCount: 0,
+                        scale: GameServiceConfig.ROLE_SPRINT_EFFECT_SCALE,
+                    });
+                UIService.getUI(MainPanel)?.showSprintUiEffect(true);
             })
             .aU((dt) => {
                 this._movementState.stamina -= RoleMovementState.STAMINA_CONSUME * dt;
+            })
+            .aEx(() => {
+                const effectId = this._movementState.sprintEffectId;
+                EffectService.getEffectById(effectId).then(
+                    (effect) =>
+                        Waterween.to(
+                            () => effect.worldTransform.scale,
+                            (val) => effect.worldTransform.scale = new Vector(val.x, val.y, val.z),
+                            Vector.zero,
+                            GameServiceConfig.ROLE_SPRINT_EFFECT_RESIDUAL_DURATION)
+                            .autoDestroy()
+                            .onDone.add(arr => EffectService.stop(effectId)),
+                );
+                UIService.getUI(MainPanel)?.showSprintUiEffect(false);
             });
 
-        walk.when(arg => arg.isSprint && arg.stamina > 0);
-        sprint.when(arg => !arg.isSprint || arg.stamina <= 0);
+        walk.when(arg => arg.stamina > 0 && arg.isSprint).to(sprint);
+        sprint.when(arg => !arg.isSprint || arg.stamina <= 0).to(walk);
 
         this._movementStateMachine = new FiniteStateMachine<RoleMovementState>(walk);
         this._movementStateMachineEffect = bindYoact(() => {
@@ -273,9 +315,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
         });
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region Role Controller
+//#region Role Controller
 
     @RemoteFunction(Server)
     public addImpulse(character: mw.Character, impulse: mw.Vector): void {
@@ -306,9 +348,26 @@ export default class UnifiedRoleController extends mw.PlayerState {
         this._throwAnim.play();
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    /**
+     * 尝试冲刺.
+     * @param enable
+     */
+    public trySprint(enable: boolean = true) {
+        this._movementState.isSprint = enable && this.isSprintAble();
+    }
 
-    //#region Buff Controller
+    /**
+     * 是否允许冲刺.
+     * {@link UnifiedRoleController.character} not null && {@link MovementMode.Walk} && 非跳跃 && 非蹲伏
+     * @private
+     */
+    private isSprintAble() {
+        return this.character && this.character.movementMode === MovementMode.Walk && !this.character.isJumping && !this.character.isCrouching;
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Buff Controller
     @RemoteFunction(Server)
     public addCheckMoveBuff() {
         Log4Ts.log(UnifiedRoleController, `${this.character.player.playerId} add check move buff.`);
@@ -449,9 +508,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
         this._buffs.removeBuff(BuffType.MoveForbidden);
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region Event Callback
+//#region Event Callback
 
     /**
      * 当 控制器于 Client 端就绪时 调用.
@@ -484,6 +543,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
      * 当 控制器于 Client 端销毁时 调用.
      */
     protected onControllerDestroyInClient = (): void => {
+        stopEffect(this._movementStateMachineEffect);
     };
 
     /**
@@ -492,7 +552,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
     protected onControllerDestroyInServer = (): void => {
     };
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 enum RoleMovementStates {
@@ -516,7 +576,7 @@ class RoleMovementState {
     /**
      * 体力消耗速率. /s
      */
-    public static readonly STAMINA_CONSUME = 20;
+    public static readonly STAMINA_CONSUME = 5;
 
     /**
      * 体力最大值.
@@ -534,10 +594,14 @@ class RoleMovementState {
     /**
      * 是否 冲刺.
      */
-    public isSprint: boolean;
+    public isSprint: boolean = false;
+
+    /**
+     * 冲刺特效 id.
+     */
+    public sprintEffectId: number = null;
 
     constructor(idleStamina: number = RoleMovementState.STAMINA_MAX_COUNT) {
         this.stamina = idleStamina;
-        this.isSprint = false;
     }
 }

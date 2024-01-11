@@ -28,6 +28,41 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.collectibleInteractorContainer_Internal
 	}
+	private bar_physical_power_Internal: mw.ProgressBar
+	public get bar_physical_power(): mw.ProgressBar {
+		if(!this.bar_physical_power_Internal&&this.uiWidgetBase) {
+			this.bar_physical_power_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Physical/bar_physical_power') as mw.ProgressBar
+		}
+		return this.bar_physical_power_Internal
+	}
+	private cnvSprintEffect_Internal: mw.Canvas
+	public get cnvSprintEffect(): mw.Canvas {
+		if(!this.cnvSprintEffect_Internal&&this.uiWidgetBase) {
+			this.cnvSprintEffect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect') as mw.Canvas
+		}
+		return this.cnvSprintEffect_Internal
+	}
+	private imgSprintEffect1_Internal: mw.Image
+	public get imgSprintEffect1(): mw.Image {
+		if(!this.imgSprintEffect1_Internal&&this.uiWidgetBase) {
+			this.imgSprintEffect1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect1') as mw.Image
+		}
+		return this.imgSprintEffect1_Internal
+	}
+	private imgSprintEffect2_Internal: mw.Image
+	public get imgSprintEffect2(): mw.Image {
+		if(!this.imgSprintEffect2_Internal&&this.uiWidgetBase) {
+			this.imgSprintEffect2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect2') as mw.Image
+		}
+		return this.imgSprintEffect2_Internal
+	}
+	private imgSprintEffect3_Internal: mw.Image
+	public get imgSprintEffect3(): mw.Image {
+		if(!this.imgSprintEffect3_Internal&&this.uiWidgetBase) {
+			this.imgSprintEffect3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect3') as mw.Image
+		}
+		return this.imgSprintEffect3_Internal
+	}
 	private sceneDragonInteractorContainer_Internal: mw.Canvas
 	public get sceneDragonInteractorContainer(): mw.Canvas {
 		if(!this.sceneDragonInteractorContainer_Internal&&this.uiWidgetBase) {
