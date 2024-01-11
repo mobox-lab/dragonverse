@@ -21,6 +21,7 @@ import Effect = Yoact.Effect;
 import bindYoact = Yoact.bindYoact;
 import createYoact = Yoact.createYoact;
 import { KeyboardManager } from "../../controller/KeyboardManager";
+import AudioController from "../../controller/audio/AudioController";
 
 /**
  * Unified Role State Controller.
@@ -113,33 +114,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
 
 
         if (SystemUtil.isClient()) {
-            KeyboardManager.getInstance().onKeyDown.add((key) => {
 
-                if (key === mw.Keys.SpaceBar) {
-                    if (!(Player.localPlayer.character.movementMode === MovementMode.Swim)) {
-                        mw.Player.localPlayer.character.jump();
-                    } else {
-                        actions.tween(Player.localPlayer.character.worldTransform).to(10,
-                            { position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)) },).call(() => {
-                                Player.localPlayer.character.jump();
-                            }).start();
-                    }
-                }
-            })
-            // //给脚上一个go，就能得到脚的旋转
-            // GameObject.asyncSpawn("197386", {
-            //     replicates: false
-            // }).then((go) => {
-            //     this._rightFootGo = go;
-            //     go.worldTransform.scale = new Vector(0.001, 0.001, 0.001);
-            //     let model = go as Model;
-            //     model.setCollision(CollisionStatus.Off);
-            //     Player.asyncGetLocalPlayer().then(player => {
-            //         player.character.attachToSlot(go, HumanoidSlotType.RightFoot);
-            //     })
-
-            // })
-            TimeUtil.onEnterFrame.add(this.onEnterFrame, this)
         }
 
         //#region Member init
@@ -153,9 +128,13 @@ export default class UnifiedRoleController extends mw.PlayerState {
         //#endregion ------------------------------------------------------------------------------------------
     }
 
-    private _footOnLand: boolean = true;
-    private _canExcute: boolean = false;
-    private _canExcute1: boolean = false;
+    private _rightfootOnLand: boolean = true;
+    private _canRightExcute: boolean = false;
+    private _leftfootOnLand: boolean = true;
+    private _canLeftExcute: boolean = false;
+    //0左脚，1右脚
+    private _lastOnLandFoot: number = -1;
+
     private onEnterFrame(dt: number): void {
         this._velocity.set(0, 0, 0)
 
@@ -166,42 +145,45 @@ export default class UnifiedRoleController extends mw.PlayerState {
         keyBoard.isKewDown(mw.Keys.A) && this._velocity.y--;
         keyBoard.isKewDown(mw.Keys.D) && this._velocity.y++;
 
-        // console.log(Player.localPlayer.character.isMoving)
-
         mw.Player.localPlayer.character.addMovement(this._velocity);
-        // let go: GameObject;
-        // if (Player.localPlayer.character.isMoving) {
-        //     // if (this._rightFootGo) {
-        //     //     console.log(this._rightFootGo.worldTransform.getForwardVector());
-        //     // }
 
-        //     let rightFootWorldPos = Player.localPlayer.character.getSlotWorldPosition(HumanoidSlotType.RightFoot);
-        //     let results = QueryUtil.lineTrace(rightFootWorldPos, rightFootWorldPos.clone().add(new Vector(0, 0, -100)), true, true, null, null, false, Player.localPlayer.character);
+        //判断脚步是否落地
+        if (Player.localPlayer.character.isMoving) {
+            let rightFootWorldPos = Player.localPlayer.character.getSlotWorldPosition(HumanoidSlotType.RightFoot);
+            let leftFootWorldPos = Player.localPlayer.character.getSlotWorldPosition(HumanoidSlotType.LeftFoot);
+            let rightResults = QueryUtil.lineTrace(rightFootWorldPos, rightFootWorldPos.clone().add(new Vector(0, 0, -100)), true, false, null, null, false, Player.localPlayer.character);
+            let leftResults = QueryUtil.lineTrace(leftFootWorldPos, leftFootWorldPos.clone().add(new Vector(0, 0, -100)), true, false, null, null, false, Player.localPlayer.character);
+            //找到排除触发器的第一个射到的go
+            rightResults = rightResults.filter(result => !(result.gameObject instanceof Trigger));
+            if (rightResults[0] && rightResults[0].distance < 10) {
+                this._rightfootOnLand = true;
+            } else {
+                this._rightfootOnLand = false;
+                //可以执行
+                this._canRightExcute = true;
+            }
 
-        //     if (results[0] && results[0].distance < 10) {
-        //         this._footOnLand = true;
-        //         go = results[0].gameObject;
-        //         this._canExcute1 = true;
-        //     } else {
-        //         this._footOnLand = false;
-        //         //可以执行
-        //         this._canExcute = true;
-        //     }
-        // }
+            leftResults = leftResults.filter(result => !(result.gameObject instanceof Trigger));
+            if (leftResults[0] && leftResults[0].distance < 10) {
+                this._leftfootOnLand = true;
+            } else {
+                this._leftfootOnLand = false;
+                //可以执行
+                this._canLeftExcute = true;
+            }
+        }
 
-        // if (this._canExcute && this._footOnLand) {
-        //     console.log("踩到地了");
-        //     this._canExcute = false;
-        //     // console.log(go.name);
+        if (this._canRightExcute && this._rightfootOnLand && this._lastOnLandFoot !== 1) {
+            this._canRightExcute = false;
+            AudioController.getInstance().play(28);
+            this._lastOnLandFoot = 1;
+        }
+        if (this._canLeftExcute && this._leftfootOnLand && this._lastOnLandFoot !== 0) {
 
-        //     SoundService.playSound("287414");
-        // }
-
-        // if (this._canExcute1 && !this._footOnLand) {
-        //     console.log("离地了")
-        //     this._canExcute1 = false;
-        // }
-
+            this._canLeftExcute = false;
+            AudioController.getInstance().play(28);
+            this._lastOnLandFoot = 0;
+        }
     }
 
     protected onUpdate(dt: number): void {
@@ -476,6 +458,20 @@ export default class UnifiedRoleController extends mw.PlayerState {
      */
     protected onControllerReadyInClient = (): void => {
         this.addCheckMoveBuff();
+        //绑定移动输入
+        KeyboardManager.getInstance().onKeyDown.add((key) => {
+            if (key === mw.Keys.SpaceBar) {
+                if (!(Player.localPlayer.character.movementMode === MovementMode.Swim)) {
+                    mw.Player.localPlayer.character.jump();
+                } else {
+                    actions.tween(Player.localPlayer.character.worldTransform).to(10,
+                        { position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)) },).call(() => {
+                            Player.localPlayer.character.jump();
+                        }).start();
+                }
+            }
+        })
+        TimeUtil.onEnterFrame.add(this.onEnterFrame, this)
     };
 
     /**
