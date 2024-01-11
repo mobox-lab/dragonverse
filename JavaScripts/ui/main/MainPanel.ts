@@ -231,11 +231,11 @@ export default class MainPanel extends MainPanel_Generate {
 
         let offset = 0;
         const dists = [
+            { dist: 0.3, duration: 0.1e3 },
             { dist: 0.4, duration: 0.1e3 },
-            { dist: 0.6, duration: 0.1e3 },
             { dist: 0.2, duration: 0.1e3 },
-            { dist: 0.8, duration: 0.1e3 },
-            { dist: 0.4, duration: 0.1e3 },
+            { dist: 0.5, duration: 0.1e3 },
+            { dist: 0.3, duration: 0.1e3 },
         ]
         for (const imgSprintEffect of this._imgSprintEffects) {
             this._effectImgTasks.push(
