@@ -324,12 +324,17 @@ export default class GameServiceConfig {
     /**
      * 角色 冲刺特效 SlotType.
      */
-    public static readonly ROLE_SPRINT_EFFECT_SLOT_TYPE = mw.HumanoidSlotType.Buttocks;
+    public static readonly ROLE_SPRINT_EFFECT_SLOT_TYPE = mw.HumanoidSlotType.RightFoot;
 
     /**
      * 角色 冲刺特效 缩放.
      */
-    public static readonly ROLE_SPRINT_EFFECT_SCALE = new Vector(1, 1, 1);
+    public static readonly ROLE_SPRINT_EFFECT_SCALE = new Vector(0.8, 0.8, 0.8);
+
+    /**
+     * 角色 冲刺特效 位置偏移.
+     */
+    public static readonly ROLE_SPRINT_EFFECT_POSITION_OFFSET = new Vector(0, -5, 0);
 
     /**
      * 角色 冲刺特效 残留时长.
