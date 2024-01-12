@@ -57,6 +57,20 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.imgSprintEffect1_Internal
 	}
+	private imgSprintEffect2_Internal: mw.Image
+	public get imgSprintEffect2(): mw.Image {
+		if(!this.imgSprintEffect2_Internal&&this.uiWidgetBase) {
+			this.imgSprintEffect2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect2') as mw.Image
+		}
+		return this.imgSprintEffect2_Internal
+	}
+	private imgSprintEffect3_Internal: mw.Image
+	public get imgSprintEffect3(): mw.Image {
+		if(!this.imgSprintEffect3_Internal&&this.uiWidgetBase) {
+			this.imgSprintEffect3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect3') as mw.Image
+		}
+		return this.imgSprintEffect3_Internal
+	}
 	private sceneDragonInteractorContainer_Internal: mw.Canvas
 	public get sceneDragonInteractorContainer(): mw.Canvas {
 		if(!this.sceneDragonInteractorContainer_Internal&&this.uiWidgetBase) {
@@ -266,6 +280,13 @@ export default class MainPanel_Generate extends UIScript {
 			this.cnvKeyPrompt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/cnvKeyPrompt') as mw.Canvas
 		}
 		return this.cnvKeyPrompt_Internal
+	}
+	private blackbg_Internal: mw.Image
+	public get blackbg(): mw.Image {
+		if(!this.blackbg_Internal&&this.uiWidgetBase) {
+			this.blackbg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/blackbg') as mw.Image
+		}
+		return this.blackbg_Internal
 	}
 
 
