@@ -108,6 +108,8 @@ type LanguageTable = {
  * @desc     i18n.lan(i18n.keyTable.UI_Common_Tips);
  * @desc </code>
  * @desc ---
+ * @desc register {@link UIScript.addBehavior} "lan" "register".
+ * @desc ---
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
  * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
  * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
@@ -116,7 +118,7 @@ type LanguageTable = {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.5.1b
+ * @version 1.5.3b
  */
 class i18n {
     /**
@@ -125,6 +127,12 @@ class i18n {
     public keyTable: LanguageTable;
 
     private _languageType: LanguageTypes = 0;
+
+    /**
+     * 静态 lan key 持有映射.
+     * @private
+     */
+    private _staticUiLanKeyMap: Map<mw.StaleButton | mw.TextBlock, string> = new Map();
 
     /**
      * i18n 本地化.
@@ -154,12 +162,19 @@ class i18n {
     public constructor() {
         mw.UIScript.addBehavior("lan", (ui: mw.StaleButton | mw.TextBlock) => {
             if (!ui || !("text" in ui)) return;
-
-            let keyOrString: string = ui.text;
-            if (isNullOrEmpty(keyOrString)) return;
+            let keyOrString: string;
+            if (this._staticUiLanKeyMap.has(ui)) {
+                keyOrString = this._staticUiLanKeyMap.get(ui);
+            } else {
+                keyOrString = ui.text;
+                if (isNullOrEmpty(keyOrString)) return;
+                this._staticUiLanKeyMap.set(ui, keyOrString);
+            }
 
             ui.text = this.lan(keyOrString);
-            return;
+        });
+        mw.UIScript.addBehavior("unregister", (ui: mw.StaleButton | mw.TextBlock) => {
+            this._staticUiLanKeyMap.delete(ui);
         });
     }
 
@@ -181,6 +196,9 @@ class i18n {
     public use(languageType: LanguageTypes = 0): this {
         this._languageType = languageType;
         GameConfig.initLanguage(languageType, defaultGetLanguage);
+        for (const [ui, lanKey] of this._staticUiLanKeyMap) {
+            if (ui) ui.text = this.lan(lanKey);
+        }
         return this;
     }
 
@@ -193,7 +211,8 @@ class i18n {
 
     /**
      * 发布版本时请调用.
-     * 用于清空 DefaultLanguage 表 以检查是否所有的 DL 条目都完成配表.
+     * @desc 用于清空 DefaultLanguage 表 以检查是否所有的 DL 条目都完成配表.
+     * @profession
      */
     public release(isRelease: boolean = true): this {
         if (!isRelease) {
@@ -210,9 +229,7 @@ class i18n {
  */
 export function defaultGetLanguage(key: number | string) {
     const config = GameConfig.Language.getElement(key);
-    if (!config) {
-        return "unknown_" + key;
-    }
+    if (!config) return "unknown_" + key;
 
     return config.Value;
 }
