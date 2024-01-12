@@ -327,6 +327,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
             Log4Ts.log(UnifiedRoleController, `player is moving.`);
         } else {
             Log4Ts.log(UnifiedRoleController, `player stop moving.`);
+            if (this.movementState) {
+                this.movementState.isSprint = false;
+            }
         }
     };
 
