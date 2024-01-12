@@ -361,7 +361,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
      * @private
      */
     private isSprintAble() {
-        return this.character && this.character.movementMode === MovementMode.Walk && !this.character.isJumping && !this.character.isCrouching;
+        return this.character && this.character.velocity.length > 0 && this.character.movementMode === MovementMode.Walk && !this.character.isJumping && !this.character.isCrouching;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
