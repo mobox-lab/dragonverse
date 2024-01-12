@@ -40,7 +40,7 @@ export default class Regulator {
     }
 
     /**
-     * @param updateInterval 更新间隔.
+     * @param updateInterval 更新间隔. ms
      */
     constructor(updateInterval?: number) {
         this.updateInterval = updateInterval || 1000;

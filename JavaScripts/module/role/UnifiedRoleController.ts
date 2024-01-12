@@ -565,7 +565,7 @@ enum RoleMovementStates {
     Sprint = "sprint",
 }
 
-class RoleMovementState {
+export class RoleMovementState {
     //#region Constant
     /**
      * 体力恢复速率. /s

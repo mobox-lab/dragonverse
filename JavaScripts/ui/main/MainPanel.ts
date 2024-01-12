@@ -17,13 +17,14 @@ import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
 import i18n from "../../language/i18n";
 import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
 import { GenerableTypes } from "../../const/GenerableTypes";
-import UnifiedRoleController from "../../module/role/UnifiedRoleController";
+import UnifiedRoleController, { RoleMovementState } from "../../module/role/UnifiedRoleController";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
 import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
-import Easing from "../../depend/easing/Easing";
+import Easing, { CubicBezier } from "../../depend/easing/Easing";
 import off = Puerts.off;
+import Regulator from "../../depend/regulator/Regulator";
 
 /**
  * 主界面.
@@ -59,8 +60,6 @@ export default class MainPanel extends MainPanel_Generate {
     private _collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
 
     private _promptPanel: GlobalPromptPanel;
-
-    private _imgSprintEffects: Image[] = [];
 
     private _sceneDragonModule: SceneDragonModuleC = null;
 
@@ -104,6 +103,16 @@ export default class MainPanel extends MainPanel_Generate {
     private _effectImgTasks: TweenTaskGroup[] = [];
 
     private _currentInteractType: GenerableTypes = GenerableTypes.Null;
+
+    private _staminaShownTask: AdvancedTweenTask<number>;
+
+    private _staminaValueTask: FlowTweenTask<number>;
+
+    private _staminaShown: boolean = false;
+
+    private _staminaValueUpdateRegulator: Regulator = new Regulator(1e3);
+
+    private _staminaScaleTask: FlowTweenTask<number>;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -113,11 +122,6 @@ export default class MainPanel extends MainPanel_Generate {
 
         //#region Member init
         this._promptPanel = UIService.create(GlobalPromptPanel);
-        this._imgSprintEffects = [
-            this.imgSprintEffect1,
-            this.imgSprintEffect2,
-            this.imgSprintEffect3,
-        ];
         this.btnJump.onPressed.add(() => {
             if (this._character) {
                 this._character.jump();
@@ -160,7 +164,8 @@ export default class MainPanel extends MainPanel_Generate {
                     1,
                     GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION,
                     0,
-                ).restart(true);
+                )
+                .restart(true);
         this._progressTask.onDone.add((param) => {
             if (param) return;
             this.onProgressDone();
@@ -229,25 +234,50 @@ export default class MainPanel extends MainPanel_Generate {
             },
         );
 
-        let offset = 0;
-        const dists = [
+        const dist = [
             {dist: 0.3, duration: 0.1e3},
             {dist: 0.4, duration: 0.1e3},
             {dist: 0.2, duration: 0.1e3},
             {dist: 0.5, duration: 0.1e3},
             {dist: 0.3, duration: 0.1e3},
         ];
-        for (const imgSprintEffect of this._imgSprintEffects) {
-            this._effectImgTasks.push(
-                Waterween
-                    .group(
-                        () => imgSprintEffect.renderOpacity,
-                        (val) => imgSprintEffect.renderOpacity = val,
-                        [...dists.slice(offset, dists.length), ...dists.slice(0, offset)],
-                    )
-                    .repeat());
-            offset += 1;
-        }
+        this._effectImgTasks.push(
+            Waterween
+                .group(
+                    () => this.imgSprintEffect1.renderOpacity,
+                    (val) => this.imgSprintEffect1.renderOpacity = val,
+                    dist,
+                )
+                .repeat());
+
+        this._staminaShownTask = Waterween
+            .to(
+                () => this.cnvStamina.renderOpacity,
+                (val) => this.cnvStamina.renderOpacity = val,
+                1,
+                GameServiceConfig.MAIN_PANEL_CNV_STAMINA_SHOWN_DURATION,
+                0)
+            .restart(true);
+
+        this._staminaValueTask = Waterween
+            .flow(
+                () => this.barStamina.percent,
+                (val) => this.barStamina.percent = val,
+                1e3,
+                new CubicBezier(0.5, 0, 0.5, 1),
+                undefined,
+                true,
+            );
+
+        this._staminaScaleTask = Waterween
+            .flow(
+                () => this.cnvStamina.renderScale.x,
+                val => this.cnvStamina.renderScale = new Vector(val, val),
+                1e3,
+                new CubicBezier(0.5, 0, 0.5, 1),
+                undefined,
+                true,
+            );
 
         ModuleService.ready().then(() => {
             let res = ModuleService.getModule(AuthModuleC).canEnterGame();
@@ -279,6 +309,22 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     protected onUpdate() {
+        if (this._staminaValueUpdateRegulator.ready()) {
+            const currValue = this.roleController?.movementState.stamina ?? 0;
+            const shown = currValue !== RoleMovementState.STAMINA_MAX_COUNT;
+
+            if (this._staminaShown !== shown) {
+                this.showStamina(shown);
+                this._staminaShown = shown;
+            }
+            this._staminaValueTask.to(currValue / RoleMovementState.STAMINA_MAX_COUNT);
+        }
+
+        if (this._staminaShown) {
+            this.updateStaminaLocation();
+            this.updateStaminaScale();
+        }
+
         const enableCatchBtn = this._currentInteractType === GenerableTypes.Null &&
             !GToolkit.isNullOrEmpty(this.sceneDragonModule?.candidate ?? null);
         GToolkit.trySetVisibility(
@@ -441,13 +487,6 @@ export default class MainPanel extends MainPanel_Generate {
         this.collectibleInteractorContainer.addChild(collectibleInteractor.uiObject);
     }
 
-    // public addSceneDragonInteractor(syncKey: string) {
-    //     const sceneDragonInteractor = UIService.create(SceneDragonInteractorPanel);
-    //     sceneDragonInteractor.init(syncKey);
-    //     this._sceneDragonInteractorMap.set(syncKey, sceneDragonInteractor);
-    //     this.sceneDragonInteractorContainer.addChild(sceneDragonInteractor.uiObject);
-    // }
-
     public removeCollectibleItemInteractor(syncKey: string) {
         const uis = this._collectibleInteractorMap.get(syncKey);
         if (uis) {
@@ -455,14 +494,6 @@ export default class MainPanel extends MainPanel_Generate {
         }
         this._collectibleInteractorMap.delete(syncKey);
     }
-
-    // public removeSceneDragonInteractor(syncKey: string) {
-    //     const uis = this._sceneDragonInteractorMap.get(syncKey);
-    //     if (uis) {
-    //         this.sceneDragonInteractorContainer.removeChild(uis.uiObject);
-    //     }
-    //     this._sceneDragonInteractorMap.delete(syncKey);
-    // }
 
     public showGlobalPrompt(message: string) {
         this._promptPanel?.showPrompt(message);
@@ -590,7 +621,40 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     private showStamina(enable: boolean = true) {
+        if (enable) {
+            this._staminaShownTask.forward().continue();
+        } else {
+            this._staminaShownTask.backward().continue();
+        }
+    }
 
+    private updateStaminaLocation() {
+        if (!this.character) return;
+        const v = new Vector2();
+        ScreenUtil.projectWorldPositionToWidgetPosition(
+            this.character.player,
+            this
+                .character
+                .worldTransform
+                .position
+                .add(
+                    Player
+                        .getControllerRotation()
+                        .rotateVector(new Vector(
+                            0,
+                            GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Y,
+                            GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z))),
+            v,
+            true,
+        );
+
+        this.cnvStamina.position = v.set(v);
+    }
+
+    private updateStaminaScale() {
+        this._staminaScaleTask.to(
+            GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE /
+            Camera.currentCamera.springArm.length);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

@@ -151,7 +151,7 @@ export class FlowTweenTask<T> extends TweenTaskBase<T> implements IFlowTweenTask
               duration: number = undefined,
               easingOrBezier: EasingFunction | CubicBezierBase = undefined,
               isLazy: boolean = undefined,
-              isSmooth: boolean = undefined): this {
+              isSmooth: boolean = true): this {
         if (this._isBroken) return;
         if (this.isPause) this.continue();
 
@@ -188,12 +188,17 @@ export class FlowTweenTask<T> extends TweenTaskBase<T> implements IFlowTweenTask
 
                 const newDuration = duration || this._fixedDuration;
 
-                this.regenerateEasingList(currentValue,
-                    dist,
-                    this._startValue,
-                    this._endValue,
-                    targetEasing,
-                    newDuration);
+                if (isSmooth !== undefined ? isSmooth : this._isSmooth) {
+                    this.regenerateEasingList(currentValue,
+                        dist,
+                        this._startValue,
+                        this._endValue,
+                        targetEasing,
+                        newDuration);
+                } else {
+                    this.regenerateEasingListDefault(dist);
+                }
+
                 this._duration = newDuration;
             }
 
@@ -210,7 +215,7 @@ export class FlowTweenTask<T> extends TweenTaskBase<T> implements IFlowTweenTask
                     easingOrBezier,
                     isLazy,
                     isSmooth,
-                    );
+                );
             }, this._duration * this.sensitivityRatio);
         }
 
@@ -280,19 +285,20 @@ export class FlowTweenTask<T> extends TweenTaskBase<T> implements IFlowTweenTask
         return index;
     }
 
-    private regenerateEasingListDefault(value: T, index = 0): number {
+    private regenerateEasingListDefault(value: T, easingFunction: CubicBezierBase | EasingFunction = undefined, index = 0): number {
         if (index === 0 && this._defaultEasingLength !== null) {
             this._currEasingFuncList.length = this._defaultEasingLength;
+            if (easingFunction === undefined) easingFunction = this._waterEasing;
             for (let i = 0; i < this._defaultEasingLength; i++) {
-                this._currEasingFuncList[i] = this._waterEasing;
+                this._currEasingFuncList[i] = easingFunction;
             }
         } else {
             if (TweenDataUtil.isObject(value)) {
                 Object.keys(value).forEach((key) => {
-                    index = this.regenerateEasingListDefault(value[key], index);
+                    index = this.regenerateEasingListDefault(value[key], easingFunction, index);
                 });
             } else {
-                this._currEasingFuncList[index] = this._waterEasing;
+                this._currEasingFuncList[index] = easingFunction ?? this._waterEasing;
                 ++index;
             }
 
