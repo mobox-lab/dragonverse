@@ -59,7 +59,7 @@ export default class BagItemIcon_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.mItemBtn);
         

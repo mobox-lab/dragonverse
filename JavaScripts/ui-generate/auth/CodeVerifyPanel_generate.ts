@@ -45,7 +45,7 @@ export default class CodeVerifyPanel_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.btnCancel);
         

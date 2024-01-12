@@ -164,7 +164,7 @@ export default class CodePanel_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.codeButtonVerify);
         

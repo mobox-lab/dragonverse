@@ -80,7 +80,7 @@ export default class HandbookPanel_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.btnClose);
         

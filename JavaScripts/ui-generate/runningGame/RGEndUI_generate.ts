@@ -150,7 +150,7 @@ export default class RGEndUI_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.mBackButton);
         

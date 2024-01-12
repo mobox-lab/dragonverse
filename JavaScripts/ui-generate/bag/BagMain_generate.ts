@@ -143,7 +143,7 @@ export default class BagMain_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.btn1);
         

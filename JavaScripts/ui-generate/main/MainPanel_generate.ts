@@ -283,7 +283,7 @@ export default class MainPanel_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.btnCode);
         

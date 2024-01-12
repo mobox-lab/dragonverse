@@ -23,7 +23,7 @@ ${Fileds}
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         ${StaleButton_Start}
         this.initLanguage(this.${StaleButton});
         ${StaleButton_End}

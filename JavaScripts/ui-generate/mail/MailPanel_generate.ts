@@ -332,7 +332,7 @@ export default class MailPanel_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.mailButtonDelete_1);
         

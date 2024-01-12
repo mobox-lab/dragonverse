@@ -66,7 +66,7 @@ export default class DialoguePanel_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         //按钮多语言
         

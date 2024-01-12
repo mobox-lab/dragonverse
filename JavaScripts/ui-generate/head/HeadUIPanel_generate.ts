@@ -38,7 +38,7 @@ export default class HeadUIPanel_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         //按钮多语言
         

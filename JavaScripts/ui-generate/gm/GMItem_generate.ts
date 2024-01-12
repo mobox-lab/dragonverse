@@ -31,7 +31,7 @@ export default class GMItem_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.button);
         

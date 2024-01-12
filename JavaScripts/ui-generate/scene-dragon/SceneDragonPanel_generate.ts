@@ -38,7 +38,7 @@ export default class SceneDragonPanel_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.btnCatch);
         

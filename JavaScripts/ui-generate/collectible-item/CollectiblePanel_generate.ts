@@ -38,7 +38,7 @@ export default class CollectiblePanel_Generate extends UIScript {
 		this.initTextLan();
 	}
 
-    protected initTextLan() {
+    public initTextLan() {
         
         this.initLanguage(this.btnCollect);
         
