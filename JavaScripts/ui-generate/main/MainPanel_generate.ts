@@ -29,12 +29,19 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.collectibleInteractorContainer_Internal
 	}
-	private bar_physical_power_Internal: mw.ProgressBar
-	public get bar_physical_power(): mw.ProgressBar {
-		if(!this.bar_physical_power_Internal&&this.uiWidgetBase) {
-			this.bar_physical_power_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Physical/bar_physical_power') as mw.ProgressBar
+	private cnvStamina_Internal: mw.Canvas
+	public get cnvStamina(): mw.Canvas {
+		if(!this.cnvStamina_Internal&&this.uiWidgetBase) {
+			this.cnvStamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvStamina') as mw.Canvas
 		}
-		return this.bar_physical_power_Internal
+		return this.cnvStamina_Internal
+	}
+	private barStamina_Internal: mw.ProgressBar
+	public get barStamina(): mw.ProgressBar {
+		if(!this.barStamina_Internal&&this.uiWidgetBase) {
+			this.barStamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvStamina/barStamina') as mw.ProgressBar
+		}
+		return this.barStamina_Internal
 	}
 	private cnvSprintEffect_Internal: mw.Canvas
 	public get cnvSprintEffect(): mw.Canvas {
@@ -49,20 +56,6 @@ export default class MainPanel_Generate extends UIScript {
 			this.imgSprintEffect1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect1') as mw.Image
 		}
 		return this.imgSprintEffect1_Internal
-	}
-	private imgSprintEffect2_Internal: mw.Image
-	public get imgSprintEffect2(): mw.Image {
-		if(!this.imgSprintEffect2_Internal&&this.uiWidgetBase) {
-			this.imgSprintEffect2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect2') as mw.Image
-		}
-		return this.imgSprintEffect2_Internal
-	}
-	private imgSprintEffect3_Internal: mw.Image
-	public get imgSprintEffect3(): mw.Image {
-		if(!this.imgSprintEffect3_Internal&&this.uiWidgetBase) {
-			this.imgSprintEffect3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvSprintEffect/imgSprintEffect3') as mw.Image
-		}
-		return this.imgSprintEffect3_Internal
 	}
 	private sceneDragonInteractorContainer_Internal: mw.Canvas
 	public get sceneDragonInteractorContainer(): mw.Canvas {

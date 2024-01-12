@@ -424,6 +424,25 @@ export default class GameServiceConfig {
      */
     public static readonly MAIN_PANEL_CNV_SPRINT_EFFECT_DURATION = 0.5e3;
 
+    /**
+     * 主界面 体力条 ui 显隐动画时长. ms
+     */
+    public static readonly MAIN_PANEL_CNV_STAMINA_SHOWN_DURATION = 0.5e3;
+
+    /**
+     * 主界面 体力条 ui 世界坐标 y 偏移.
+     */
+    public static readonly MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Y = 100;
+
+    /**
+     * 主界面 体力条 ui 世界坐标 z 偏移.
+     */
+    public static readonly MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z = 100;
+
+    /**
+     * 主界面 体力条 ui scale 计算基数.
+     */
+    public static readonly MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE = 300;
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

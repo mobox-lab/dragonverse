@@ -232,7 +232,6 @@ export default class GameStart extends mw.Script {
 
     private registerKeyScrollUp() {
         InputUtil.onKeyDown(mw.Keys.MouseScrollUp, () => {
-            Log4Ts.log(GameStart, `Mouse scroll up.`);
             if (!this._nolan) {
                 Log4Ts.warn(GameStart, `nolan not ready.`);
                 return;
@@ -245,7 +244,6 @@ export default class GameStart extends mw.Script {
 
     private registerKeyScrollDown() {
         InputUtil.onKeyDown(mw.Keys.MouseScrollDown, () => {
-            Log4Ts.log(GameStart, `Mouse scroll down.`);
             if (!this._nolan) {
                 Log4Ts.warn(GameStart, `nolan not ready.`);
                 return;
