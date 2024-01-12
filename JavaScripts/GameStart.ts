@@ -1,6 +1,5 @@
 import { GM } from "module_gm";
 import * as mwaction from "mwaction";
-import { EventDefine } from "./const/EventDefine";
 import { HeadUIController } from "./controller/HeadUIController";
 import { KeyboardManager } from "./controller/KeyboardManager";
 import { TimeManager } from "./controller/TimeManager";
@@ -26,16 +25,12 @@ import GMPanel from "./ui/gm/GmPanel";
 import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 import { MapManager } from "./gameplay/map/MapManager";
-import { MapPanel } from "./ui/map/MapPanel";
-import ModuleC = mwext.ModuleC;
 import { Delegate } from "./depend/delegate/Delegate";
-import Enumerable from "linq";
 import GToolkit from "./util/GToolkit";
 import SystemUtil = mw.SystemUtil;
 import Nolan from "./depend/nolan/Nolan";
 import GameServiceConfig from "./const/GameServiceConfig";
 import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioController";
-import Typeface = UE.Typeface;
 
 @Component
 export default class GameStart extends mw.Script {
@@ -185,7 +180,6 @@ export default class GameStart extends mw.Script {
         GraphicsSettings.setGraphicsCPULevel(this.graphicsLevel);
         GraphicsSettings.setGraphicsGPULevel(this.graphicsLevel);
 
-        UIService.show(MainPanel);
         MapManager.instance.showMap();
 
         AudioController.getInstance().playBgm(undefined, BgmPlayStrategy.Rnd);
