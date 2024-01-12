@@ -197,8 +197,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                { dist: null, duration: 1e3 },
-                { dist: 0, duration: 0.5e3 },
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
             ],
             1);
 
@@ -211,8 +211,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                { dist: null, duration: 1e3 },
-                { dist: 0, duration: 0.5e3 },
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
             ],
             1);
 
@@ -231,19 +231,19 @@ export default class MainPanel extends MainPanel_Generate {
 
         let offset = 0;
         const dists = [
-            { dist: 0.3, duration: 0.1e3 },
-            { dist: 0.4, duration: 0.1e3 },
-            { dist: 0.2, duration: 0.1e3 },
-            { dist: 0.5, duration: 0.1e3 },
-            { dist: 0.3, duration: 0.1e3 },
-        ]
+            {dist: 0.3, duration: 0.1e3},
+            {dist: 0.4, duration: 0.1e3},
+            {dist: 0.2, duration: 0.1e3},
+            {dist: 0.5, duration: 0.1e3},
+            {dist: 0.3, duration: 0.1e3},
+        ];
         for (const imgSprintEffect of this._imgSprintEffects) {
             this._effectImgTasks.push(
                 Waterween
                     .group(
                         () => imgSprintEffect.renderOpacity,
                         (val) => imgSprintEffect.renderOpacity = val,
-                        [...dists.slice(offset, dists.length), ...dists.slice(0, offset)]
+                        [...dists.slice(offset, dists.length), ...dists.slice(0, offset)],
                     )
                     .repeat());
             offset += 1;
@@ -587,6 +587,10 @@ export default class MainPanel extends MainPanel_Generate {
         } else {
             this._effectCnvTask.backward().continue();
         }
+    }
+
+    private showStamina(enable: boolean = true) {
+
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
