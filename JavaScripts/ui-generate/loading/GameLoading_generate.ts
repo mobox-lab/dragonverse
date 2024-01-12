@@ -6,6 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
+ * @version 1.0.8
  * UI: UI/loading/GameLoading.ui
 */
 
@@ -24,35 +25,63 @@ export default class GameLoading_Generate extends UIScript {
 
 
 
-	/**
-	* onStart 之前触发一次
-	*/
 	protected onAwake() {
 		this.initTextLan();
 	}
 
-    public initTextLan() {
+    public destroy(): void {
+        this.unregisterTextLan();
+        super.destroy();
+    }
+
+    protected initTextLan() {
+        // 文本按钮多语言
         
         this.initLanguage(this.btnLogin);
         
 	
-        //按钮多语言
+        // 静态文本按钮多语言
         
-        //文本多语言
+        // 文本多语言
         
-        //文本多语言
+        // 静态文本多语言
         
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock") as any);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock") as mw.TextBlock);
         
 	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock_1") as any);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock_1") as mw.TextBlock);
+        
+	
+    }
+
+    protected unregisterTextLan(){
+        // 文本按钮多语言
+        
+        this.unregisterLanKey(this.btnLogin);
+        
+	
+        // 隐藏文本按钮多语言
+        
+        // 文本多语言
+        
+        // 隐藏文本多语言
+        
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock_1") as mw.TextBlock);
         
 	
     }
 
     private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
         let lanFunc = mw.UIScript.getBehavior("lan");
-        lanFunc && lanFunc(ui);
+        lanFunc?.(ui);
+    }
+
+    private unregisterLanKey(ui: mw.StaleButton | mw.TextBlock) {
+        let unregisterFunc = mw.UIScript.getBehavior("unregister");
+        unregisterFunc?.(ui);
     }
 }
  

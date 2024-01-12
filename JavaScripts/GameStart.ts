@@ -108,10 +108,10 @@ export default class GameStart extends mw.Script {
      * @private
      */
     private initialize() {
-        this.initI18n();
         if (this.isRelease) {
             this.isOnline = true;
             this.isShowGMPanel = false;
+            i18n.release();
         }
 
         if (SystemUtil.isClient()) {
@@ -130,7 +130,6 @@ export default class GameStart extends mw.Script {
     private initI18n() {
         if (this.language !== LanguageTypes.English) {
             i18n.use(this.language);
-            UIService.getUI(MainPanel)?.initTextLan();
             Log4Ts.log(GameStart, `i18n use default language: ${this.language} because using specified non-English language.`);
             return;
         }
@@ -150,7 +149,6 @@ export default class GameStart extends mw.Script {
         }
         Log4Ts.log(GameStart, `use language: ${useType}`);
         i18n.use(useType);
-        UIService.getUI(MainPanel)?.initTextLan();
     }
 
     private initializeClient() {
@@ -167,6 +165,7 @@ export default class GameStart extends mw.Script {
             this.registerGodModeG();
             this.registerGodModeShift();
             this.registerGodModeF();
+
             //#region Exist for Test
             //R <<<<<<
             //
@@ -177,6 +176,7 @@ export default class GameStart extends mw.Script {
         }
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+        this.initI18n();
         this.isShowGMPanel && GM.start(GMPanel);
         VisualizeDebug.init(mw.Player.localPlayer);
         KeyboardManager.getInstance();

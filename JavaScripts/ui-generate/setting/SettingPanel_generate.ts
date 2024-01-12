@@ -6,6 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
+ * @version 1.0.8
  * UI: UI/setting/SettingPanel.ui
 */
 
@@ -17,47 +18,87 @@ export default class SettingPanel_Generate extends UIScript {
 
 
 
-	/**
-	* onStart 之前触发一次
-	*/
 	protected onAwake() {
 		this.initTextLan();
 	}
 
-    public initTextLan() {
+    public destroy(): void {
+        this.unregisterTextLan();
+        super.destroy();
+    }
+
+    protected initTextLan() {
+        // 文本按钮多语言
         
-        //按钮多语言
+        // 静态文本按钮多语言
         
-        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonRename") as any);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonLanguage") as any);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonLogout") as any);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonModify") as any);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonRename") as mw.StaleButton);
         
 	
-        //文本多语言
-        
-        //文本多语言
-        
-        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingTitle") as any);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonLanguage") as mw.StaleButton);
         
 	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingDescrition") as any);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonLogout") as mw.StaleButton);
         
 	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingName") as any);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonModify") as mw.StaleButton);
+        
+	
+        // 文本多语言
+        
+        // 静态文本多语言
+        
+        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingTitle") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingDescrition") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingName") as mw.TextBlock);
+        
+	
+    }
+
+    protected unregisterTextLan(){
+        // 文本按钮多语言
+        
+        // 隐藏文本按钮多语言
+        
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonRename") as mw.StaleButton);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonLanguage") as mw.StaleButton);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonLogout") as mw.StaleButton);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingButtonModify") as mw.StaleButton);
+        
+	
+        // 文本多语言
+        
+        // 隐藏文本多语言
+        
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingTitle") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingDescrition") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("SettingCanvas/SettingName") as mw.TextBlock);
         
 	
     }
 
     private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
         let lanFunc = mw.UIScript.getBehavior("lan");
-        lanFunc && lanFunc(ui);
+        lanFunc?.(ui);
+    }
+
+    private unregisterLanKey(ui: mw.StaleButton | mw.TextBlock) {
+        let unregisterFunc = mw.UIScript.getBehavior("unregister");
+        unregisterFunc?.(ui);
     }
 }
  

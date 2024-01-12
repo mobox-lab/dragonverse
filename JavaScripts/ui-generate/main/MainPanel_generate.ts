@@ -6,6 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
+ * @version 1.0.8
  * UI: UI/main/MainPanel.ui
 */
 
@@ -276,14 +277,17 @@ export default class MainPanel_Generate extends UIScript {
 
 
 
-	/**
-	* onStart 之前触发一次
-	*/
 	protected onAwake() {
 		this.initTextLan();
 	}
 
-    public initTextLan() {
+    public destroy(): void {
+        this.unregisterTextLan();
+        super.destroy();
+    }
+
+    protected initTextLan() {
+        // 文本按钮多语言
         
         this.initLanguage(this.btnCode);
         
@@ -306,9 +310,9 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.btnRunning);
         
 	
-        //按钮多语言
+        // 静态文本按钮多语言
         
-        //文本多语言
+        // 文本多语言
         
         this.initLanguage(this.txtDragonBallNum)
         
@@ -316,22 +320,74 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.txtOperationFeedback)
         
 	
-        //文本多语言
+        // 静态文本多语言
         
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1") as any);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1_1") as any);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1") as mw.TextBlock);
         
 	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as any);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1_1") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as mw.TextBlock);
+        
+	
+    }
+
+    protected unregisterTextLan(){
+        // 文本按钮多语言
+        
+        this.unregisterLanKey(this.btnCode);
+        
+	
+        this.unregisterLanKey(this.btnMail);
+        
+	
+        this.unregisterLanKey(this.btnBag);
+        
+	
+        this.unregisterLanKey(this.btnBook);
+        
+	
+        this.unregisterLanKey(this.btnDragon);
+        
+	
+        this.unregisterLanKey(this.btnReset);
+        
+	
+        this.unregisterLanKey(this.btnRunning);
+        
+	
+        // 隐藏文本按钮多语言
+        
+        // 文本多语言
+        
+        this.unregisterLanKey(this.txtDragonBallNum)
+        
+	
+        this.unregisterLanKey(this.txtOperationFeedback)
+        
+	
+        // 隐藏文本多语言
+        
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1_1") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as mw.TextBlock);
         
 	
     }
 
     private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
         let lanFunc = mw.UIScript.getBehavior("lan");
-        lanFunc && lanFunc(ui);
+        lanFunc?.(ui);
+    }
+
+    private unregisterLanKey(ui: mw.StaleButton | mw.TextBlock) {
+        let unregisterFunc = mw.UIScript.getBehavior("unregister");
+        unregisterFunc?.(ui);
     }
 }
  
