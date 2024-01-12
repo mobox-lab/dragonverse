@@ -35,6 +35,7 @@ import SystemUtil = mw.SystemUtil;
 import Nolan from "./depend/nolan/Nolan";
 import GameServiceConfig from "./const/GameServiceConfig";
 import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioController";
+import Typeface = UE.Typeface;
 
 @Component
 export default class GameStart extends mw.Script {
@@ -127,14 +128,14 @@ export default class GameStart extends mw.Script {
     }
 
     private initI18n() {
-        // if (!this.isRelease) {
-        //     i18n.use(this.language);
-        //     Log4Ts.log(GameStart, `i18n use default language: ${this.language} because is not release.`);
-        //     return;
-        // }
+        if (this.language !== LanguageTypes.English) {
+            i18n.use(this.language);
+            Log4Ts.log(GameStart, `i18n use default language: ${this.language} because using specified non-English language.`);
+            return;
+        }
         const localStr = LocaleUtil.getDefaultLocale();
         Log4Ts.log(GameStart, `current local: ${localStr}`);
-        let useType = this.language;
+        let useType: LanguageTypes = this.language;
         if (!GToolkit.isNullOrEmpty(localStr)) {
             if (RegExp(/([Zz][Hh])|([Tt][Ww])|([Hh][Kk])|([Mm][Oo])/).exec(localStr)) {
                 useType = LanguageTypes.Chinese;
