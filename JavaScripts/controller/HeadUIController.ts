@@ -26,15 +26,11 @@ export default class HeadUIScript extends mw.Script {
     protected onStart(): void {
         if (mw.SystemUtil.isServer()) {
             mw.Player.onPlayerLeave.add((player) => {
-                console.log('player leave', player.playerId);
                 this.removePlayerNickName(player.playerId);
             })
-            // mw.Player.onPlayerJoin.add((player) => {
-
-            // });
 
         } else {
-
+            HeadUIController.getInstance().setLocalHeadUIScript(this);
             this.registerLocalPlatformNickName();
         }
     }
@@ -46,6 +42,7 @@ export default class HeadUIScript extends mw.Script {
             nickName = 'PIE Player';
         }
         let playerId = mw.Player.localPlayer.playerId;
+
         this.registerPlayerNickName(nickName, playerId);
         this.onNickNameChanged();
     }
@@ -56,22 +53,11 @@ export default class HeadUIScript extends mw.Script {
             return value.playerId === playerId;
         })
 
-        // let newEst = this.playerNickNames.concat();
-        // if (index !== -1) {
-        //     newEst.splice(index, 1);
-        //     this.playerNickNames = newEst;
-        // }
         if (index !== -1) {
             this.playerNickNames.splice(index, 1)
         }
-        // this.asyncPlayerNickNames(this.playerNickNames);
     }
 
-    // @mw.RemoteFunction(mw.Client)
-    // private asyncPlayerNickNames(nickNames: PlayerPlatFormNickName[]) {
-    //     this.playerNickNames = nickNames;
-    //     this.onNickNameChanged();
-    // }
 
     @mw.RemoteFunction(mw.Server)
     private registerPlayerNickName(nickName: string, playerId: number) {
@@ -80,12 +66,20 @@ export default class HeadUIScript extends mw.Script {
         data.playerId = playerId;
         data.nickName = nickName;
         this.playerNickNames.push(data)
-        // this.asyncPlayerNickNames(this.playerNickNames);
     }
 
     private removePlayerNickNameByPlayerId(playerId: number) {
         console.log('removePlayerNickNameByPlayerId', playerId);
         HeadUIController.getInstance().unregisterHeadUI(playerId.toString());
+    }
+
+    public getPlayerNickName(playerId: number): string {
+        for (let i = 0; i <= this.playerNickNames.length; i++) {
+            if (this.playerNickNames[i].playerId === playerId) {
+                return this.playerNickNames[i].nickName;
+            }
+        }
+        return null;
     }
 
 
@@ -170,6 +164,7 @@ export class HeadUIController extends Singleton<HeadUIController>() {
 
     private _activeInfos: HeadUIInfo[] = [];
 
+    private _headUIScript: HeadUIScript;
 
     public initialize() {
         if (mw.SystemUtil.isServer()) {
@@ -177,6 +172,21 @@ export class HeadUIController extends Singleton<HeadUIController>() {
         }
     }
 
+    public setLocalHeadUIScript(headUIScript: HeadUIScript) {
+        this._headUIScript = headUIScript;
+    }
+
+    /** 
+     * @description: 根据id获取名字
+     * @param playerId 玩家id
+     * @return nickname
+     */
+    public getNickNameByPlayerId(playerId: number): string {
+        if (this._headUIScript) {
+            return this._headUIScript.getPlayerNickName(playerId);
+        }
+        return null;
+    }
 
     private async getHeadUIComponent() {
         let ret = this._pools.pop();

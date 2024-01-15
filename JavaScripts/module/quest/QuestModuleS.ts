@@ -86,13 +86,15 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
      * @description: 发跑酷奖励龙
      * @param score 分数
      */
-    public net_getRunningGameReward(score: number) {
+    public net_getRunningGameReward(score: number): Promise<boolean> {
         //分数大于2800且没发过，再发奖励
         if (score >= GameConfig.Global.RG_REWARD_SCORE.value && !this.currentData.hasRunningGameReward) {
             this.net_giveLightOrDarkDragonGift();
             this.currentData.hasRunningGameReward = true;
             this.currentData.save(false);
+            return Promise.resolve(true);
         }
+        return Promise.resolve(false);
     }
 
     /** 
@@ -175,7 +177,6 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
             let item = GToolkit.randomArrayItem(bagIds.where(item => item.type === DragonElemental.Dark).toArray());
             ModuleService.getModule(BagModuleS).addItem(this.currentPlayerId, item.bagId, 1);
             //通知客户端
-
         } else if (hasLightDragonCount === 0 && hasDarkDragonCount === 2) {
             //之前重复做了光暗图腾，扣一条暗龙变成光龙
             let deleteItem = GToolkit.randomArrayItem([...darkDragonMap]);
