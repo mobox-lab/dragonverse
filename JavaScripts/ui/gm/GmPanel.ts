@@ -10,7 +10,13 @@ import { SubGameTypes } from "../../const/SubGameTypes";
 import GameObject = mw.GameObject;
 import { QuestModuleS } from "../../module/quest/QuestModuleS";
 import { QuestModuleC } from "../../module/quest/QuestModuleC";
+
 import { HeadUIController } from "../../controller/HeadUIController";
+
+import GToolkit from "../../util/GToolkit";
+import MainCurtainPanel from "../main/MainCurtainPanel";
+import UIScript = mw.UIScript;
+
 
 /**
  * GM.
@@ -34,8 +40,7 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
     }
 
     public show(): void {
-        super.show();
-
+        UIService.showUI(this["_view"], mw.UILayerSystem);
         Log4Ts.warn(GMPanel, `GMPanel show`);
     }
 }
@@ -47,6 +52,13 @@ AddGMCommand("Hello world", () => {
     "CHello");
 AddGMCommand("Prompt", () => {
     Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
+},
+    null,
+    "MainPanel");
+
+AddGMCommand("Show Curtain", (player, value) => {
+    if (GToolkit.isNullOrEmpty(value)) Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
+    else Event.dispatchToLocal(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME);
 },
     null,
     "MainPanel");
@@ -125,7 +137,7 @@ AddGMCommand("测试背包龙", (player, value) => {
     // ModuleService.getModule(QuestModuleC).updateRunningGameScore(Number(value));
 }, () => {
 
-})
+});
 
 AddGMCommand("加或删光暗龙", (player, value) => {
 
@@ -133,8 +145,6 @@ AddGMCommand("加或删光暗龙", (player, value) => {
 
     // ModuleService.getModule(QuestModuleS).testAddOrDeleteLightDarkDragon(player.playerId, Number(value));
 }, "龙");
-
-
 
 
 AddGMCommand(

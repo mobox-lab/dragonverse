@@ -260,13 +260,6 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.cnvKeyPrompt_Internal
 	}
-	private cnvCurtain_Internal: mw.Canvas
-	public get cnvCurtain(): mw.Canvas {
-		if(!this.cnvCurtain_Internal&&this.uiWidgetBase) {
-			this.cnvCurtain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCurtain') as mw.Canvas
-		}
-		return this.cnvCurtain_Internal
-	}
 
 
 

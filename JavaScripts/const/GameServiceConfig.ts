@@ -405,9 +405,14 @@ export default class GameServiceConfig {
     public static readonly CNV_OPTIONS_MAX_CAPACITY = 4;
 
     /**
-     * 主界面 幕布 显隐动画时长. ms
+     * 主界面 幕布 显示动画时长. ms
      */
-    public static readonly MAIN_PANEL_CURTAIN_SHOWN_DURATION = 0.5e3;
+    public static readonly MAIN_PANEL_CURTAIN_SHOWN_DURATION = 1e3;
+
+    /**
+     * 主界面 幕布 隐藏动画时长. ms
+     */
+    public static readonly MAIN_PANEL_CURTAIN_HIDDEN_DURATION = 0.5e3;
 
     /**
      * 主界面 指针 起始角度. °
@@ -448,6 +453,16 @@ export default class GameServiceConfig {
      * 主界面 体力条 ui scale 计算基数.
      */
     public static readonly MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE = 300;
+
+    /**
+     * 地图界面 小地图左下点的世界坐标.
+     */
+    public static readonly MAP_SCENE_AS_MAP_LEFT_DOWN_POS: mw.Vector = new mw.Vector(-25191, -26447, 0);
+
+    /**
+     * 地图界面 小地图右上点的世界坐标.
+     */
+    public static readonly MAP_SCENE_AS_MAP_RIGHT_TOP_POS: mw.Vector = new mw.Vector(25598, 35552, 0);
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

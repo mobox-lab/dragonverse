@@ -24,7 +24,7 @@ import TweenTaskBase from "./tweenTask/TweenTaskBase";
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 2.1.9b
+ * @version 2.2.0b
  */
 class Waterween implements IAccessorTween {
     private _tasks: TweenTaskBase<unknown>[] = [];
@@ -294,6 +294,7 @@ class Waterween implements IAccessorTween {
      */
     public update() {
         const doneCacheIndex: number[] = [];
+        const now = Date.now();
         for (let i = 0; i < this._tasks.length; i++) {
             const task = this._tasks[i];
             if (task.needDestroy) {
@@ -301,12 +302,12 @@ class Waterween implements IAccessorTween {
             } else if (task.isDone) {
                 if (task.elapsed < 1) {
                     task.isDone = false;
-                    task.call();
+                    task.call(now);
                 } else if (task.isAutoDestroy) {
                     doneCacheIndex.push(i);
                 }
             } else {
-                task.call();
+                task.call(now);
             }
         }
 

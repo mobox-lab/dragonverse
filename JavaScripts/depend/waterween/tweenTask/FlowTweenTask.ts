@@ -188,7 +188,7 @@ export class FlowTweenTask<T> extends TweenTaskBase<T> implements IFlowTweenTask
 
                 const newDuration = duration || this._fixedDuration;
 
-                if (isSmooth !== undefined ? isSmooth : this._isSmooth) {
+                if (isSmooth ?? this._isSmooth) {
                     this.regenerateEasingList(currentValue,
                         dist,
                         this._startValue,

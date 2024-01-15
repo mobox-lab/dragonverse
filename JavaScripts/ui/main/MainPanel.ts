@@ -22,9 +22,9 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
 import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
-import Easing, { CubicBezier } from "../../depend/easing/Easing";
-import off = Puerts.off;
+import  { CubicBezier } from "../../depend/easing/Easing";
 import Regulator from "../../depend/regulator/Regulator";
+import MainCurtainPanel from "./MainCurtainPanel";
 
 /**
  * 主界面.
@@ -88,6 +88,8 @@ export default class MainPanel extends MainPanel_Generate {
         return this._bagModule;
     }
 
+    private _curtain: MainCurtainPanel;
+
     private _progressTask: AdvancedTweenTask<number>;
 
     private _progressShowTask: AdvancedTweenTask<number>;
@@ -113,8 +115,6 @@ export default class MainPanel extends MainPanel_Generate {
     private _staminaValueUpdateRegulator: Regulator = new Regulator(1e3);
 
     private _staminaScaleTask: FlowTweenTask<number>;
-
-    private _curtainTask: AdvancedTweenTask<number>;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -123,7 +123,15 @@ export default class MainPanel extends MainPanel_Generate {
         this.canUpdate = true;
 
         //#region Member init
+        this.layer = 0;
+
         this._promptPanel = UIService.create(GlobalPromptPanel);
+
+        this._curtain = UIService.create(MainCurtainPanel);
+        this._curtain.layer = mw.UILayerTop;
+        this._curtain = UIService.show(MainCurtainPanel);
+        this._curtain.showCurtain(false);
+
         this.btnJump.onPressed.add(() => {
             if (this._character) {
                 this._character.jump();
@@ -281,15 +289,6 @@ export default class MainPanel extends MainPanel_Generate {
                 true,
             );
 
-        this._curtainTask = Waterween
-            .to(
-                () => this.cnvCurtain.renderOpacity,
-                (val) => this.cnvCurtain.renderOpacity = val,
-                1,
-                GameServiceConfig.MAIN_PANEL_CURTAIN_SHOWN_DURATION,
-                0,
-            );
-
         ModuleService.ready().then(() => {
             let res = ModuleService.getModule(AuthModuleC).canEnterGame();
             if (!res) {
@@ -321,7 +320,7 @@ export default class MainPanel extends MainPanel_Generate {
 
     protected onUpdate() {
         if (this._staminaValueUpdateRegulator.ready()) {
-            const currValue = this.roleController?.movementState.stamina ?? 0;
+            const currValue = this.roleController?.movementState?.stamina ?? 0;
             const shown = currValue !== RoleMovementState.STAMINA_MAX_COUNT;
 
             if (this._staminaShown !== shown) {
@@ -461,11 +460,9 @@ export default class MainPanel extends MainPanel_Generate {
     //}
 
     protected onShow() {
-        this.showCurtain(false);
     }
 
     protected onHide() {
-        this.showCurtain(true);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -668,14 +665,6 @@ export default class MainPanel extends MainPanel_Generate {
         this._staminaScaleTask.to(
             GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE /
             Camera.currentCamera.springArm.length);
-    }
-
-    public showCurtain(enable: boolean = true) {
-        if (enable) {
-            this._curtainTask.forward().continue();
-        } else {
-            this._curtainTask.backward().continue();
-        }
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
