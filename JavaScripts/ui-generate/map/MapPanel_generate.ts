@@ -15,26 +15,54 @@ import UIScript = mw.UIScript;
 
 @UIBind('UI/map/MapPanel.ui')
 export default class MapPanel_Generate extends UIScript {
+	private cnvMap_Internal: mw.Canvas
+	public get cnvMap(): mw.Canvas {
+		if(!this.cnvMap_Internal&&this.uiWidgetBase) {
+			this.cnvMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap') as mw.Canvas
+		}
+		return this.cnvMap_Internal
+	}
+	private cnvMapMain_Internal: mw.Canvas
+	public get cnvMapMain(): mw.Canvas {
+		if(!this.cnvMapMain_Internal&&this.uiWidgetBase) {
+			this.cnvMapMain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapMain') as mw.Canvas
+		}
+		return this.cnvMapMain_Internal
+	}
+	private cnvMiniMap_Internal: mw.Canvas
+	public get cnvMiniMap(): mw.Canvas {
+		if(!this.cnvMiniMap_Internal&&this.uiWidgetBase) {
+			this.cnvMiniMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMiniMap') as mw.Canvas
+		}
+		return this.cnvMiniMap_Internal
+	}
 	private mSmallCanvas_Internal: mw.Canvas
 	public get mSmallCanvas(): mw.Canvas {
 		if(!this.mSmallCanvas_Internal&&this.uiWidgetBase) {
-			this.mSmallCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSmallCanvas') as mw.Canvas
+			this.mSmallCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMiniMap/mSmallCanvas') as mw.Canvas
 		}
 		return this.mSmallCanvas_Internal
 	}
 	private mSmallMapCanvas_Internal: mw.Canvas
 	public get mSmallMapCanvas(): mw.Canvas {
 		if(!this.mSmallMapCanvas_Internal&&this.uiWidgetBase) {
-			this.mSmallMapCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSmallCanvas/mSmallMapCanvas') as mw.Canvas
+			this.mSmallMapCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMiniMap/mSmallCanvas/mSmallMapCanvas') as mw.Canvas
 		}
 		return this.mSmallMapCanvas_Internal
 	}
 	private mSmallMineCanvas_Internal: mw.Canvas
 	public get mSmallMineCanvas(): mw.Canvas {
 		if(!this.mSmallMineCanvas_Internal&&this.uiWidgetBase) {
-			this.mSmallMineCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSmallCanvas/mSmallMineCanvas') as mw.Canvas
+			this.mSmallMineCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMiniMap/mSmallCanvas/mSmallMineCanvas') as mw.Canvas
 		}
 		return this.mSmallMineCanvas_Internal
+	}
+	private btnMiniMap_Internal: mw.Button
+	public get btnMiniMap(): mw.Button {
+		if(!this.btnMiniMap_Internal&&this.uiWidgetBase) {
+			this.btnMiniMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMiniMap/mSmallCanvas/btnMiniMap') as mw.Button
+		}
+		return this.btnMiniMap_Internal
 	}
 
 
@@ -57,6 +85,33 @@ export default class MapPanel_Generate extends UIScript {
         
         // 静态文本多语言
         
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtChangeCamera") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/W/TextBlock") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/A/TextBlock") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/S/TextBlock") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/D/TextBlock") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtZoomMap") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/Mouse/TextBlock") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtCloseMap") as mw.TextBlock);
+        
+	
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/ESC/TextBlock") as mw.TextBlock);
+        
+	
     }
 
     protected unregisterTextLan(){
@@ -68,6 +123,33 @@ export default class MapPanel_Generate extends UIScript {
         
         // 隐藏文本多语言
         
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtChangeCamera") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/W/TextBlock") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/A/TextBlock") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/S/TextBlock") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/D/TextBlock") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtZoomMap") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/Mouse/TextBlock") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtCloseMap") as mw.TextBlock);
+        
+	
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/ESC/TextBlock") as mw.TextBlock);
+        
+	
     }
 
     private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

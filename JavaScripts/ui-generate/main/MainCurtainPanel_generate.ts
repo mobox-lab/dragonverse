@@ -7,20 +7,20 @@
  * @zewei.zhang
  * @LviatYi
  * @version 1.0.8
- * UI: UI/map/playerpoint.ui
+ * UI: UI/main/MainCurtainPanel.ui
 */
 
 import UIScript = mw.UIScript;
 
 
-@UIBind('UI/map/playerpoint.ui')
-export default class playerpoint_Generate extends UIScript {
-	private playerpoint_Internal: mw.Image
-	public get playerpoint(): mw.Image {
-		if(!this.playerpoint_Internal&&this.uiWidgetBase) {
-			this.playerpoint_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/playerpoint') as mw.Image
+@UIBind('UI/main/MainCurtainPanel.ui')
+export default class MainCurtainPanel_Generate extends UIScript {
+	private cnvCurtain_Internal: mw.Canvas
+	public get cnvCurtain(): mw.Canvas {
+		if(!this.cnvCurtain_Internal&&this.uiWidgetBase) {
+			this.cnvCurtain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCurtain') as mw.Canvas
 		}
-		return this.playerpoint_Internal
+		return this.cnvCurtain_Internal
 	}
 
 
