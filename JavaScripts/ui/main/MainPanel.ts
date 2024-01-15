@@ -113,6 +113,8 @@ export default class MainPanel extends MainPanel_Generate {
     private _staminaValueUpdateRegulator: Regulator = new Regulator(1e3);
 
     private _staminaScaleTask: FlowTweenTask<number>;
+
+    private _curtainTask: AdvancedTweenTask<number>;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -277,6 +279,15 @@ export default class MainPanel extends MainPanel_Generate {
                 new CubicBezier(0.5, 0, 0.5, 1),
                 undefined,
                 true,
+            );
+
+        this._curtainTask = Waterween
+            .to(
+                () => this.cnvCurtain.renderOpacity,
+                (val) => this.cnvCurtain.renderOpacity = val,
+                1,
+                GameServiceConfig.MAIN_PANEL_CURTAIN_SHOWN_DURATION,
+                0,
             );
 
         ModuleService.ready().then(() => {
@@ -450,9 +461,11 @@ export default class MainPanel extends MainPanel_Generate {
     //}
 
     protected onShow() {
+        this.showCurtain(false);
     }
 
     protected onHide() {
+        this.showCurtain(true);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -655,6 +668,14 @@ export default class MainPanel extends MainPanel_Generate {
         this._staminaScaleTask.to(
             GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE /
             Camera.currentCamera.springArm.length);
+    }
+
+    public showCurtain(enable: boolean = true) {
+        if (enable) {
+            this._curtainTask.forward().continue();
+        } else {
+            this._curtainTask.backward().continue();
+        }
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

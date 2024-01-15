@@ -405,6 +405,11 @@ export default class GameServiceConfig {
     public static readonly CNV_OPTIONS_MAX_CAPACITY = 4;
 
     /**
+     * 主界面 幕布 显隐动画时长. ms
+     */
+    public static readonly MAIN_PANEL_CURTAIN_SHOWN_DURATION = 0.5e3;
+
+    /**
      * 主界面 指针 起始角度. °
      */
     public static readonly MAIN_PANEL_POINTER_START_ANGLE = -110;

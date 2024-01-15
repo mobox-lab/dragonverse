@@ -190,13 +190,6 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnRunning_Internal
 	}
-	private miniMap_Internal: mw.Image
-	public get miniMap(): mw.Image {
-		if(!this.miniMap_Internal&&this.uiWidgetBase) {
-			this.miniMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/miniMap') as mw.Image
-		}
-		return this.miniMap_Internal
-	}
 	private cnvOperationalFeedback_Internal: mw.Canvas
 	public get cnvOperationalFeedback(): mw.Canvas {
 		if(!this.cnvOperationalFeedback_Internal&&this.uiWidgetBase) {
@@ -267,12 +260,12 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.cnvKeyPrompt_Internal
 	}
-	private blackbg_Internal: mw.Image
-	public get blackbg(): mw.Image {
-		if(!this.blackbg_Internal&&this.uiWidgetBase) {
-			this.blackbg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/blackbg') as mw.Image
+	private cnvCurtain_Internal: mw.Canvas
+	public get cnvCurtain(): mw.Canvas {
+		if(!this.cnvCurtain_Internal&&this.uiWidgetBase) {
+			this.cnvCurtain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCurtain') as mw.Canvas
 		}
-		return this.blackbg_Internal
+		return this.cnvCurtain_Internal
 	}
 
 
