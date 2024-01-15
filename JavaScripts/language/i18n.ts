@@ -57,7 +57,7 @@ let languageDefault = {
 
     verifyCodeTooFrequently: "Code verify request too frequently.",
     verifyCodeFail: "Verification failed, please try again!",
-    verifyCodeSuccess: "Verification success!",
+    verifyCodeSuccess: "Verification Success!",
     isVerifying: "Verifying now, please wait.",
     //#endregion
 

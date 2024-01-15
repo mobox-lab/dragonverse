@@ -5,7 +5,7 @@ import { QuestStateEnum } from "./Config";
 
 class QuestProgressInfo {
     /**任务id */
-        // public questId: number = 0;
+    // public questId: number = 0;
 
     public questCfgId: number = 0;
 
@@ -25,6 +25,9 @@ export class QuestData extends mwext.Subdata implements Iterable<QuestProgressIn
 
     @Decorator.persistence()
     private _runningGameScore: number = 0;
+
+    @Decorator.persistence()
+    public hasRunningGameReward: boolean = false;
 
     protected initDefaultData(): void {
         const tasks = GameConfig.Task.getAllElement();
@@ -84,7 +87,13 @@ export class QuestData extends mwext.Subdata implements Iterable<QuestProgressIn
         return taskInfo;
     }
 
+    public isNewRecord(score: number): boolean {
+        if (score > this._runningGameScore) {
 
+            return true;
+        }
+        return false;
+    }
     /**
      * 更新小游戏分数
      * @param score
@@ -101,5 +110,10 @@ export class QuestData extends mwext.Subdata implements Iterable<QuestProgressIn
 
     [Symbol.iterator](): Iterator<QuestProgressInfo, any, undefined> {
         return this._questProgressInfo[Symbol.iterator]();
+    }
+
+    get runningGameScore(): number {
+
+        return this._runningGameScore;
     }
 }

@@ -72,7 +72,7 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
         let res: { configId: number, isComplete: boolean }[] = [];
         for (const task of this.data) {
             if (task.questCfgId <= 4) {
-                res.push({configId: task.questCfgId, isComplete: task.status === QuestStateEnum.Complete});
+                res.push({ configId: task.questCfgId, isComplete: task.status === QuestStateEnum.Complete });
             }
         }
         return res;
@@ -83,7 +83,9 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
      * 更新小游戏分数
      */
     public updateRunningGameScore(score: number) {
-        const flag = this.data.updateRunningGameScore(score);
+        //获取龙奖励
+        this.server.net_getRunningGameReward(score);
+        const flag = this.data.isNewRecord(score);
         if (flag) {
             this.server.net_UpdateRunningGameScore(score);
         }

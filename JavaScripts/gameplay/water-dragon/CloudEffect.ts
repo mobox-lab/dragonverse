@@ -2,11 +2,12 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-04 10:13:24
+ * @LastEditTime : 2024-01-12 13:10:45
  * @FilePath     : \dragon027\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
 
+import { DragonElemental } from "../../const/DragonElemental";
 import { EventDefine } from "../../const/EventDefine";
 import AudioController, { SoundIDEnum } from "../../controller/audio/AudioController";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
@@ -52,7 +53,7 @@ export default class CloudEffect extends mw.Script {
                 let id = ModuleService.getModule(CompanionModule_C).getCurrentShowupBagId();
                 if (id == null) return;
                 let type = CompanionHelper.getCompanionType(id);
-                if (!type || type !== CompanionHelper.DragonType.Fire) {
+                if (!type || type !== DragonElemental.Fire) {
                     PromotTips.showTips(i18n.lan(i18n.keyTable.Need_FireDargon));
                     return;
                 };

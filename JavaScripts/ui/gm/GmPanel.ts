@@ -9,6 +9,8 @@ import { EventDefine } from "../../const/EventDefine";
 import { AuthModuleC, AuthModuleS } from "../../module/auth/AuthModule";
 import { SubGameTypes } from "../../const/SubGameTypes";
 import GameObject = mw.GameObject;
+import { QuestModuleS } from "../../module/quest/QuestModuleS";
+import { QuestModuleC } from "../../module/quest/QuestModuleC";
 
 /**
  * GM.
@@ -39,13 +41,13 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
 }
 
 AddGMCommand("Hello world", () => {
-        Log4Ts.log(GMPanel, `Hello world`);
-    },
+    Log4Ts.log(GMPanel, `Hello world`);
+},
     null,
     "CHello");
 AddGMCommand("Prompt", () => {
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
-    },
+    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
+},
     null,
     "MainPanel");
 
@@ -118,6 +120,22 @@ AddGMCommand(
         ModuleService.getModule(AuthModuleS).recordPlayer(player);
     },
     "Root 权限");
+
+AddGMCommand("测试背包龙", (player, value) => {
+    // ModuleService.getModule(QuestModuleC).updateRunningGameScore(Number(value));
+}, () => {
+
+})
+
+AddGMCommand("加或删光暗龙", (player, value) => {
+
+}, (player, value) => {
+
+    // ModuleService.getModule(QuestModuleS).testAddOrDeleteLightDarkDragon(player.playerId, Number(value));
+}, "龙");
+
+
+
 
 AddGMCommand(
     "上报跑酷信息",

@@ -68,13 +68,4 @@ export module CompanionHelper {
 
         return null;
     }
-
-    export enum DragonType {
-        Fire = 1,
-        Water = 2,
-        Wood = 3,
-        Earth = 4,
-        Light = 5,
-        Dark = 6,
-    }
 }
