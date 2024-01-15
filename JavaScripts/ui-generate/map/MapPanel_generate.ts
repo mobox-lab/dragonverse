@@ -29,6 +29,13 @@ export default class MapPanel_Generate extends UIScript {
 		}
 		return this.cnvMapMain_Internal
 	}
+	private btnMapClose_Internal: mw.Button
+	public get btnMapClose(): mw.Button {
+		if(!this.btnMapClose_Internal&&this.uiWidgetBase) {
+			this.btnMapClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/btnMapClose') as mw.Button
+		}
+		return this.btnMapClose_Internal
+	}
 	private cnvMiniMap_Internal: mw.Canvas
 	public get cnvMiniMap(): mw.Canvas {
 		if(!this.cnvMiniMap_Internal&&this.uiWidgetBase) {
@@ -63,13 +70,6 @@ export default class MapPanel_Generate extends UIScript {
 			this.btnMiniMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMiniMap/mSmallCanvas/btnMiniMap') as mw.Button
 		}
 		return this.btnMiniMap_Internal
-	}
-	private btnMapClose_Internal: mw.Button
-	public get btnMapClose(): mw.Button {
-		if(!this.btnMapClose_Internal&&this.uiWidgetBase) {
-			this.btnMapClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMiniMap/btnMapClose') as mw.Button
-		}
-		return this.btnMapClose_Internal
 	}
 
 

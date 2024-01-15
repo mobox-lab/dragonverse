@@ -2,9 +2,10 @@ import MainCurtainPanel_Generate from "../../ui-generate/main/MainCurtainPanel_g
 import Waterween from "../../depend/waterween/Waterween";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
-import Easing, { CubicBezierBase } from "../../depend/easing/Easing";
+import Easing from "../../depend/easing/Easing";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { Expression } from "../../util/GToolkit";
+import GToolkit, { Expression } from "../../util/GToolkit";
+import SlateVisibility = mw.SlateVisibility;
 
 export default class MainCurtainPanel extends MainCurtainPanel_Generate {
 //#region Constant
@@ -67,6 +68,7 @@ export default class MainCurtainPanel extends MainCurtainPanel_Generate {
 //#region UI Behavior
     public showCurtain(enable: boolean = true, callback?: Expression<void>) {
         if (enable) {
+            GToolkit.trySetVisibility(this.cnvCurtain, SlateVisibility.Visible);
             this._curtainTask
                 .to(1, GameServiceConfig.MAIN_PANEL_CURTAIN_SHOWN_DURATION)
                 .onDone
@@ -75,6 +77,7 @@ export default class MainCurtainPanel extends MainCurtainPanel_Generate {
                     callback?.();
                 });
         } else {
+            GToolkit.trySetVisibility(this.cnvCurtain, SlateVisibility.SelfHitTestInvisible);
             this._curtainTask
                 .to(0, GameServiceConfig.MAIN_PANEL_CURTAIN_HIDDEN_DURATION)
                 .onDone

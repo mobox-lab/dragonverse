@@ -14,6 +14,7 @@ import { QuestModuleC } from "../../module/quest/QuestModuleC";
 import GToolkit from "../../util/GToolkit";
 import MainCurtainPanel from "../main/MainCurtainPanel";
 import UIScript = mw.UIScript;
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**
  * GM.
@@ -60,6 +61,20 @@ AddGMCommand("Show Curtain", (player, value) => {
     null,
     "MainPanel");
 
+AddGMCommand("传送至地图左下点.",
+    undefined,
+    (player, value) => {
+        player.character.worldTransform.position = GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS;
+    },
+    "MainPanel");
+
+AddGMCommand("传送至地图右上点.",
+    undefined,
+    (player, value) => {
+        player.character.worldTransform.position = GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS;
+    },
+    "MainPanel");
+
 AddGMCommand("返回出生点",
     null,
     (player) => {
@@ -89,7 +104,6 @@ AddGMCommand("输出当前角色旋转",
     null,
     "探针");
 
-
 AddGMCommand("设置宠物为参战(输入bagId)",
     (player, index: string) => {
         let module = mwext.ModuleService.getModule(CompanionModule_C);
@@ -99,7 +113,6 @@ AddGMCommand("设置宠物为参战(输入bagId)",
 
     },
     "宠物龙");
-
 
 AddGMCommand("增加物品",
     (player, value) => {
@@ -142,7 +155,6 @@ AddGMCommand("加或删光暗龙", (player, value) => {
 
     // ModuleService.getModule(QuestModuleS).testAddOrDeleteLightDarkDragon(player.playerId, Number(value));
 }, "龙");
-
 
 AddGMCommand(
     "上报跑酷信息",

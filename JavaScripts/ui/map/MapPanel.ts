@@ -7,10 +7,10 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import MapPanel_Generate from "../../ui-generate/map/MapPanel_generate";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import MainCurtainPanel from "../main/MainCurtainPanel";
 import GToolkit from "../../util/GToolkit";
+import { KeyboardManager } from "../../controller/KeyboardManager";
 
 /**
  * 小地图 Panel.
@@ -34,11 +34,13 @@ export class MapPanel extends MapPanel_Generate {
 
     private _oriMiniMapSize: mw.Vector2;
 
+    private _positionInMap: mw.Vector2 = mw.Vector2.zero;
+
     protected onAwake(): void {
         super.onAwake();
         this._sceneSize =
             new Vector2(
-                GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.x - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x,
+                GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x - GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.x,
                 GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y);
 
         this._iconSize = this.mSmallMineCanvas.size;
@@ -53,12 +55,14 @@ export class MapPanel extends MapPanel_Generate {
         this
             .btnMiniMap
             .onClicked
-            .add(() => Event.dispatchToLocal(
-                MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME,
-                () => {
-                    this.showBigMap();
-                    Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
-                }));
+            .add(() => {
+                Event.dispatchToLocal(
+                    MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME,
+                    () => {
+                        this.showBigMap();
+                        Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
+                    });
+            });
 
         this.btnMapClose
             .onClicked
@@ -76,6 +80,9 @@ export class MapPanel extends MapPanel_Generate {
     }
 
     onUpdate() {
+        if (!this._character) return;
+        this._curPos.set(this._character.worldTransform.position);
+        this.calculatePositionRatioInMap();
         this.calculateMapPos();
     }
 
@@ -90,14 +97,18 @@ export class MapPanel extends MapPanel_Generate {
     }
 
     private calculateMapPos() {
-        if (this._character) {
-            this._curPos.set(this._character.worldTransform.position);
-            this._smallMapPos.set(
-                this._cnvOffsetSize.x - (Math.abs(this._curPos.x - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x) / this._sceneSize.x * (this._oriMiniMapSize.x - this._iconSize.x)),
-                this._cnvOffsetSize.y - (Math.abs(this._curPos.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y) / this._sceneSize.y * (this._oriMiniMapSize.y - this._iconSize.y)),
-            );
-            this.mSmallMapCanvas.position = this._smallMapPos;
-            this.mSmallMineCanvas.renderTransformAngle = this._character.worldTransform.rotation.z - 90;
-        }
+        this._smallMapPos.set(
+            -this._positionInMap.x * this._oriMiniMapSize.x + this.mSmallCanvas.size.x / 2,
+            (this._positionInMap.y - 1) * this._oriMiniMapSize.y + this.mSmallCanvas.size.y / 2,
+        );
+        this.mSmallMapCanvas.position = this._smallMapPos;
+        this.mSmallMineCanvas.renderTransformAngle = Player.getControllerRotation().z - 90;
+    }
+
+    private calculatePositionRatioInMap() {
+        this._positionInMap.set(
+            (GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x - this._curPos.x) / this._sceneSize.x,
+            (this._curPos.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y) / this._sceneSize.y,
+        );
     }
 }
