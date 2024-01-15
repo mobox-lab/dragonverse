@@ -22,8 +22,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
 import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
-import Easing, { CubicBezier } from "../../depend/easing/Easing";
-import off = Puerts.off;
+import  { CubicBezier } from "../../depend/easing/Easing";
 import Regulator from "../../depend/regulator/Regulator";
 import MainCurtainPanel from "./MainCurtainPanel";
 

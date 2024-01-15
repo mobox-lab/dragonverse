@@ -4,11 +4,14 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
 import Easing, { CubicBezierBase } from "../../depend/easing/Easing";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { Expression } from "../../util/GToolkit";
 
 export default class MainCurtainPanel extends MainCurtainPanel_Generate {
 //#region Constant
     public static readonly MAIN_SHOW_CURTAIN_EVENT_NAME = "__MAIN_SHOW_CURTAIN__";
     public static readonly MAIN_HIDE_CURTAIN_EVENT_NAME = "__MAIN_HIDE_CURTAIN__";
+    public static readonly MAIN_SHOW_CURTAIN_FINISH_EVENT_NAME = "__MAIN_SHOW_CURTAIN_FINISH__";
+    public static readonly MAIN_HIDE_CURTAIN_FINISH_EVENT_NAME = "__MAIN_HIDE_CURTAIN_FINISH__";
 //#endregion
 
 //#region Member
@@ -39,8 +42,8 @@ export default class MainCurtainPanel extends MainCurtainPanel_Generate {
 //#endregion ------------------------------------------------------------------------------------------
 
 //#region Widget bind
-        Event.addLocalListener(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME, () => this.showCurtain(true));
-        Event.addLocalListener(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME, () => this.showCurtain(false));
+        Event.addLocalListener(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME, (cb: Expression<void>) => this.showCurtain(true, cb));
+        Event.addLocalListener(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME, (cb: Expression<void>) => this.showCurtain(false, cb));
 //#endregion ------------------------------------------------------------------------------------------
 
 //#region Event subscribe
@@ -62,12 +65,23 @@ export default class MainCurtainPanel extends MainCurtainPanel_Generate {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region UI Behavior
-    public showCurtain(enable: boolean = true) {
+    public showCurtain(enable: boolean = true, callback?: Expression<void>) {
         if (enable) {
-            this._curtainTask.to(1, GameServiceConfig.MAIN_PANEL_CURTAIN_SHOWN_DURATION);
+            this._curtainTask
+                .to(1, GameServiceConfig.MAIN_PANEL_CURTAIN_SHOWN_DURATION)
+                .onDone
+                .once(() => {
+                    Event.dispatchToLocal(MainCurtainPanel.MAIN_SHOW_CURTAIN_FINISH_EVENT_NAME);
+                    callback?.();
+                });
         } else {
-            this._curtainTask.to(0, GameServiceConfig.MAIN_PANEL_CURTAIN_HIDDEN_DURATION);
-            Log4Ts.log(MainCurtainPanel, `curtain hide at ${Date.now()}`);
+            this._curtainTask
+                .to(0, GameServiceConfig.MAIN_PANEL_CURTAIN_HIDDEN_DURATION)
+                .onDone
+                .once(() => {
+                    Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_FINISH_EVENT_NAME);
+                    callback?.();
+                });
         }
     }
 
