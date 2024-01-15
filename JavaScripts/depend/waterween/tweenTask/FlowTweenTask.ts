@@ -6,6 +6,7 @@ import TweenDataUtil from "../dateUtil/TweenDataUtil";
 import { Setter } from "../../accessor/Setter";
 import { Delegate } from "../../delegate/Delegate";
 import SimpleDelegate = Delegate.SimpleDelegate;
+import Log4Ts from "../../log4ts/Log4Ts";
 
 /**
  * FlowTweenTask.
@@ -188,7 +189,7 @@ export class FlowTweenTask<T> extends TweenTaskBase<T> implements IFlowTweenTask
 
                 const newDuration = duration || this._fixedDuration;
 
-                if (isSmooth !== undefined ? isSmooth : this._isSmooth) {
+                if (isSmooth ?? this._isSmooth) {
                     this.regenerateEasingList(currentValue,
                         dist,
                         this._startValue,
