@@ -15,6 +15,7 @@ import { EventDefine } from "../../const/EventDefine";
 import { AuthModuleS } from "../auth/AuthModule";
 import GameStart from "../../GameStart";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import GlobalProperty from "../../GlobalProperty";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -414,7 +415,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall() {
-        return !GameStart.instance.isRelease || this.dragonBallYoact.count > 0;
+        return !GlobalProperty.getInstance().isRelease || this.dragonBallYoact.count > 0;
     }
 
     /**
@@ -555,7 +556,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
             () => `autoRemove: ${autoRemove}.`,
         );
 
-        if (GameStart.instance.isRelease && (!this._authModule?.enableEnter(playerId) ?? true)) {
+        if (GlobalProperty.getInstance().isRelease && (!this._authModule?.enableEnter(playerId) ?? true)) {
             Log4Ts.warn(BagModuleS,
                 `has no auth permission when add item. rejected.`,
                 `playerId: ${playerId}`,
@@ -623,7 +624,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall(playerId: number) {
-        return !GameStart.instance.isRelease || this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
+        return !GlobalProperty.getInstance().isRelease || this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

@@ -1,11 +1,11 @@
-import Log4Ts from "../../depend/log4ts/Log4Ts";
-import CodeVerifyPanel from "../auth/CodeVerifyPanel";
-import NpcInteractionPanel from "../npc-interaction/NpcInteractionPanel";
+import CodeVerifyPanel from "../../../ui/auth/CodeVerifyPanel";
+import NpcInteractionPanel from "../../../ui/npc-interaction/NpcInteractionPanel";
+import Log4Ts from "../../log4ts/Log4Ts";
 
 /**
  * 对话节点功能 enum.
  */
-export enum DialogueFuncTypes {
+export enum DialogueNodeFuncTypes {
     /**
      * 空置.
      */
@@ -26,15 +26,15 @@ export enum DialogueFuncTypes {
 
 export type DialogueFunc = () => void;
 
-export function DialogueFuncFactory(type: DialogueFuncTypes): DialogueFunc {
+export function DialogueFuncFactory(type: DialogueNodeFuncTypes): DialogueFunc {
     switch (type) {
-        case DialogueFuncTypes.TestFunc:
+        case DialogueNodeFuncTypes.TestFunc:
             return testFunc;
-        case DialogueFuncTypes.ShowCodePanel:
+        case DialogueNodeFuncTypes.ShowCodePanel:
             return showCodePanel;
-        case DialogueFuncTypes.Action:
+        case DialogueNodeFuncTypes.Action:
             return showActionPanel;
-        case DialogueFuncTypes.Null:
+        case DialogueNodeFuncTypes.Null:
         default:
             return normalDialogueFunc;
     }

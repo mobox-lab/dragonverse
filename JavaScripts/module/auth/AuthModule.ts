@@ -12,6 +12,7 @@ import noReply = mwext.Decorator.noReply;
 import { TimeManager } from "../../controller/TimeManager";
 import AreaManager from "../../gameplay/area/AreaManager";
 import { isPointInShape2D } from "../../util/area/Shape";
+import GlobalProperty from "../../GlobalProperty";
 
 type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
 
@@ -132,7 +133,7 @@ export default class AuthModuleData extends mwext.Subdata {
     @Decorator.persistence()
     public codeVerifyReqData: number[] = [];
 
-//#region Sub data
+    //#region Sub data
     protected initDefaultData(): void {
         super.initDefaultData();
         this.holdUserId = null;
@@ -153,7 +154,7 @@ export default class AuthModuleData extends mwext.Subdata {
         return AuthModuleData.RELEASE_VERSIONS[AuthModuleData.RELEASE_VERSIONS.length - 1];
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     /**
      * 数据版本检查.
@@ -352,7 +353,7 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, AuthModuleData> {
         }
 
         const now = TimeManager.getInstance().currentTime;
-        if (!GameStart.instance.isRelease || this._codeVerityGuard.req(now)) {
+        if (!GlobalProperty.getInstance().isRelease || this._codeVerityGuard.req(now)) {
             this._lastVerifyCodeTime = now;
             this.server.net_verifyCode(this.generateSaltToken(), code);
         } else {
@@ -546,7 +547,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
+            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -651,12 +652,12 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
+            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
+            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
             return false;
         }
 
@@ -666,7 +667,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
 
     private async verifyEnterCode(code: string, uid: string): Promise<boolean> {
         //#region Exist for Test
-        if (!GameStart.instance.isRelease && code === "123456") return Promise.resolve(true);
+        if (!GlobalProperty.getInstance().isRelease && code === "123456") return Promise.resolve(true);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
         const codeSalt = `${code}-${Date.now()}`;
         const secret = this.getSecret(codeSalt);
@@ -675,9 +676,9 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
             userId: uid,
         };
 
-        const resp = await fetch(`${GameStart.instance.isRelease ?
-                AuthModuleS.RELEASE_CODE_VERIFY_URL :
-                AuthModuleS.TEST_CODE_VERIFY_URL}`,
+        const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
+            AuthModuleS.RELEASE_CODE_VERIFY_URL :
+            AuthModuleS.TEST_CODE_VERIFY_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -763,9 +764,9 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
             secret: secret,
         };
 
-        const resp = await fetch(`${GameStart.instance.isRelease ?
-                AuthModuleS.RELEASE_SUB_GAME_REPORT_URL :
-                AuthModuleS.TEST_SUB_GAME_REPORT_URL}`,
+        const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
+            AuthModuleS.RELEASE_SUB_GAME_REPORT_URL :
+            AuthModuleS.TEST_SUB_GAME_REPORT_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -799,7 +800,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
      * @param playerId 玩家id
      */
     private initiativePatrol(playerId: number) {
-        if (!GameStart.instance.isRelease) return;
+        if (!GlobalProperty.getInstance().isRelease) return;
         if (this.getPlayerData(playerId).enterEnable) return;
         Log4Ts.log(AuthModuleS, `initiative patrol on player: ${playerId}.`);
         let player = Player.getPlayer(playerId);
@@ -838,7 +839,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
     @noReply()
     public net_verifyCode(token: SaltToken, code: string) {
         const currPlayerId = this.currentPlayerId;
-        if (GameStart.instance.isRelease ? !this._codeVerifyMap.get(currPlayerId).req() : false) {
+        if (GlobalProperty.getInstance().isRelease ? !this._codeVerifyMap.get(currPlayerId).req() : false) {
             this.getClient(currPlayerId)?.net_verifyFail();
             return;
         }
@@ -868,21 +869,21 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
         this
             .verifyEnterCode(code, uid)
             .then((value) => {
-                    if (!value) {
-                        logState(
-                            AuthModuleS,
-                            "log",
-                            `verify failed.`,
-                            true,
-                            currPlayerId,
-                            uid,
-                        );
-                        this.getClient(currPlayerId)?.net_verifyFail();
-                        return;
-                    }
-                    this.recordPlayer(currPlayerId);
-                    if (value) this.getClient(currPlayerId)?.net_enableEnter();
-                },
+                if (!value) {
+                    logState(
+                        AuthModuleS,
+                        "log",
+                        `verify failed.`,
+                        true,
+                        currPlayerId,
+                        uid,
+                    );
+                    this.getClient(currPlayerId)?.net_verifyFail();
+                    return;
+                }
+                this.recordPlayer(currPlayerId);
+                if (value) this.getClient(currPlayerId)?.net_enableEnter();
+            },
             )
             .catch((reason) => {
                 this.getClient(currPlayerId)?.net_verifyFail();

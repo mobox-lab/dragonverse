@@ -1,6 +1,5 @@
 import { AddGMCommand, GMBasePanel } from "module_gm";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import DialogueManager from "../../gameplay/dialogue/DialogueManager";
 import { BagModuleC } from "../../module/bag/BagModule";
 import GMHUD_Generate from "../../ui-generate/gm/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
@@ -11,6 +10,7 @@ import { SubGameTypes } from "../../const/SubGameTypes";
 import GameObject = mw.GameObject;
 import { QuestModuleS } from "../../module/quest/QuestModuleS";
 import { QuestModuleC } from "../../module/quest/QuestModuleC";
+import { HeadUIController } from "../../controller/HeadUIController";
 
 /**
  * GM.
@@ -106,7 +106,7 @@ AddGMCommand("增加物品",
 AddGMCommand("进入对话",
     (player, value) => {
         Log4Ts.log(GMPanel, `进入对话 ${value}`);
-        DialogueManager.getInstance().chat(1);
+        // DialogueManager.getInstance().chat(1);
     },
     undefined,
     "对话");
@@ -148,4 +148,10 @@ AddGMCommand(
     },
     undefined,
     "Root 权限");
+
+AddGMCommand("获取名字", (player, value) => {
+    console.log(HeadUIController.getInstance().getNickNameByPlayerId(Number(value)));
+}, () => {
+
+})
 
