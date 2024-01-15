@@ -454,5 +454,15 @@ export default class GameServiceConfig {
      */
     public static readonly MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE = 300;
 
+    /**
+     * 地图界面 小地图左下点的世界坐标.
+     */
+    public static readonly MAP_SCENE_AS_MAP_LEFT_DOWN_POS: mw.Vector = new mw.Vector(-25191, -26447, 0);
+
+    /**
+     * 地图界面 小地图右上点的世界坐标.
+     */
+    public static readonly MAP_SCENE_AS_MAP_RIGHT_TOP_POS: mw.Vector = new mw.Vector(25598, 35552, 0);
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
