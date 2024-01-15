@@ -1,12 +1,6 @@
-import GToolkit from "../../../util/GToolkit";
+
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
-import Character = mw.Character;
-import NpcBehavior from "../../npc/NpcBehavior";
 import { EventDefine } from "../../../const/EventDefine";
-import { NpcModuleC } from "../../npc/NpcModule";
-import DialogueManager from "../../../gameplay/dialogue/DialogueManager";
-import MainPanel from "../../../ui/main/MainPanel";
-import { AuthModuleC } from "../AuthModule";
 
 /**
  * 新手村 守卫.

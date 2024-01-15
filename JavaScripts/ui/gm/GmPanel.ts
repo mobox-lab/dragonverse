@@ -1,6 +1,5 @@
 import { AddGMCommand, GMBasePanel } from "module_gm";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import DialogueManager from "../../gameplay/dialogue/DialogueManager";
 import { BagModuleC } from "../../module/bag/BagModule";
 import GMHUD_Generate from "../../ui-generate/gm/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/gm/GMItem_generate";
@@ -11,10 +10,14 @@ import { SubGameTypes } from "../../const/SubGameTypes";
 import GameObject = mw.GameObject;
 import { QuestModuleS } from "../../module/quest/QuestModuleS";
 import { QuestModuleC } from "../../module/quest/QuestModuleC";
+
+import { HeadUIController } from "../../controller/HeadUIController";
+
 import GToolkit from "../../util/GToolkit";
 import MainCurtainPanel from "../main/MainCurtainPanel";
 import UIScript = mw.UIScript;
 import GameServiceConfig from "../../const/GameServiceConfig";
+
 
 /**
  * GM.
@@ -44,20 +47,20 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
 }
 
 AddGMCommand("Hello world", () => {
-        Log4Ts.log(GMPanel, `Hello world`);
-    },
+    Log4Ts.log(GMPanel, `Hello world`);
+},
     null,
     "CHello");
 AddGMCommand("Prompt", () => {
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
-    },
+    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
+},
     null,
     "MainPanel");
 
 AddGMCommand("Show Curtain", (player, value) => {
-        if (GToolkit.isNullOrEmpty(value)) Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
-        else Event.dispatchToLocal(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME);
-    },
+    if (GToolkit.isNullOrEmpty(value)) Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
+    else Event.dispatchToLocal(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME);
+},
     null,
     "MainPanel");
 
@@ -128,7 +131,7 @@ AddGMCommand("增加物品",
 AddGMCommand("进入对话",
     (player, value) => {
         Log4Ts.log(GMPanel, `进入对话 ${value}`);
-        DialogueManager.getInstance().chat(1);
+        // DialogueManager.getInstance().chat(1);
     },
     undefined,
     "对话");
@@ -167,4 +170,10 @@ AddGMCommand(
     },
     undefined,
     "Root 权限");
+
+AddGMCommand("获取名字", (player, value) => {
+    console.log(HeadUIController.getInstance().getNickNameByPlayerId(Number(value)));
+}, () => {
+
+})
 

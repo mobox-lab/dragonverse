@@ -43,12 +43,12 @@ export default class DialoguePanel_Generate extends UIScript {
 		}
 		return this.imgNext_Internal
 	}
-	private btnDialogueContent_Internal: mw.Button
-	public get btnDialogueContent(): mw.Button {
-		if(!this.btnDialogueContent_Internal&&this.uiWidgetBase) {
-			this.btnDialogueContent_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvContentNode/btnDialogueContent') as mw.Button
+	private btnNext_Internal: mw.Button
+	public get btnNext(): mw.Button {
+		if(!this.btnNext_Internal&&this.uiWidgetBase) {
+			this.btnNext_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvContentNode/btnNext') as mw.Button
 		}
-		return this.btnDialogueContent_Internal
+		return this.btnNext_Internal
 	}
 	private cnvOptions_Internal: mw.Canvas
 	public get cnvOptions(): mw.Canvas {

@@ -3,14 +3,18 @@ import { INpcElement } from "../../config/Npc";
 import { EventDefine } from "../../const/EventDefine";
 import { HeadUIController, HeadUIType } from "../../controller/HeadUIController";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import DialogueManager, {
-    isDialogueContentNodeHasNextId,
-    validDialogueContentNodeId,
-} from "../../gameplay/dialogue/DialogueManager";
+
 import i18n from "../../language/i18n";
 import GToolkit from "../../util/GToolkit";
 import PlayerInteractNpcEventArgs from "./trigger/PlayerInteractNpcEventArgs";
 import GameServiceConfig from "../../const/GameServiceConfig";
+
+
+import DialoguePanel_Generate from "../../ui-generate/dialogue/DialoguePanel_generate";
+import DialogifyManager from "../../depend/dialogify/DialogifyManager";
+import { isDialogueContentNodeHasNextId, isValidDialogueContentNodeId } from "../../depend/dialogify/dialogify-config-reader/ADialogifyConfigReader";
+import DialoguePanelController from "../../depend/dialogify/dialogue-panel-controller/DialoguePanelController";
+
 
 /**
  * Npc.
@@ -34,7 +38,7 @@ export default class NpcBehavior extends mw.Script {
 
     private _communicable: boolean = false;
 
-    private _dialogueManager: DialogueManager;
+    private _dialogifyManager: DialogifyManager;
 
     /**npc基础动画 */
     private _npcBasicAni: Animation;
@@ -56,10 +60,10 @@ export default class NpcBehavior extends mw.Script {
     private _wing: Effect;
 
     private get dm() {
-        if (!this._dialogueManager) {
-            this._dialogueManager = DialogueManager.getInstance();
+        if (!this._dialogifyManager) {
+            this._dialogifyManager = DialogifyManager.getInstance();
         }
-        return this._dialogueManager;
+        return this._dialogifyManager;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -114,7 +118,7 @@ export default class NpcBehavior extends mw.Script {
             this._npcBasicAni.play();
         }
 
-        HeadUIController.getInstance().registerHeadUI(this._npcCharacter, HeadUIType.NPC, i18n.lan(GameConfig.Character.getElement(this._config.characterId)?.name ?? "null"));
+        HeadUIController.getInstance().registerHeadUI(this._npcCharacter, HeadUIType.NPC, i18n.lan(GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null"));
     }
 
     protected onUpdate(dt: number): void {
@@ -134,7 +138,7 @@ export default class NpcBehavior extends mw.Script {
     //#region Init
     public init(config: INpcElement): this {
         this._config = config;
-        this._communicable = validDialogueContentNodeId(config.greetNodeId);
+        this._communicable = isValidDialogueContentNodeId(config.greetNodeId);
 
         return this;
     }

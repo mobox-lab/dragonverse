@@ -15,12 +15,12 @@ import UIScript = mw.UIScript;
 
 @UIBind('UI/dialogue/InteractNode.ui')
 export default class InteractNode_Generate extends UIScript {
-	private button_Internal: mw.Button
-	public get button(): mw.Button {
-		if(!this.button_Internal&&this.uiWidgetBase) {
-			this.button_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/button') as mw.Button
+	private btnMain_Internal: mw.Button
+	public get btnMain(): mw.Button {
+		if(!this.btnMain_Internal&&this.uiWidgetBase) {
+			this.btnMain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/btnMain') as mw.Button
 		}
-		return this.button_Internal
+		return this.btnMain_Internal
 	}
 	private txtContent_Internal: mw.TextBlock
 	public get txtContent(): mw.TextBlock {

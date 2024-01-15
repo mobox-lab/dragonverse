@@ -129,7 +129,7 @@ export class NpcModuleC extends ModuleC<NpcModuleS, NpcModuleData> {
                             Log4Ts.log(NpcModuleC,
                                 `generate npc ${value.behavior ? "success" : "fail"}.`,
                                 `id: ${config.id}`,
-                                `name: ${GameConfig.Character.getElement(config.characterId)?.name ?? "null"}`);
+                                `name: ${GameConfig.RelateEntity.getElement(config.characterId)?.name ?? "null"}`);
                             if (!value.behavior) {
                                 return;
                             } else {

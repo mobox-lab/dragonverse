@@ -2,8 +2,8 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-11 17:50:24
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2023-12-19 21:23:50
- * @FilePath     : \dragon-verse\JavaScripts\ui\npc-interaction\NpcInteractionPanel.ts
+ * @LastEditTime : 2024-01-15 16:24:09
+ * @FilePath     : \dragon027\JavaScripts\ui\npc-interaction\NpcInteractionPanel.ts
  * @Description  : npc动作交互面板
  */
 
@@ -11,7 +11,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { INPCActionElement, NPCActionConfig } from "../../config/NPCAction";
 import { INpcElement } from "../../config/Npc";
 import { EventDefine } from "../../const/EventDefine";
-import DialogueManager from "../../gameplay/dialogue/DialogueManager";
+import DialogifyManager from "../../depend/dialogify/DialogifyManager";
 import NPCActionPanel_Generate from "../../ui-generate/dialogue/NPCActionPanel_generate";
 import NPCBigItem_Generate from "../../ui-generate/dialogue/NPCBigItem_generate";
 
@@ -21,7 +21,7 @@ export default class NpcInteractionPanel extends NPCActionPanel_Generate {
         this.closeBtn3.onClicked.add(() => {
             this.destroy();
         });
-        let currentNpcId = DialogueManager.getInstance().currentDialogueNpcId;
+        let currentNpcId = DialogifyManager.getInstance().talkingDialogueEntityId;
         if (currentNpcId) {
             this.createActionItem(currentNpcId);
         }
