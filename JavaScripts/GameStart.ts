@@ -1,6 +1,5 @@
 import { GM } from "module_gm";
 import * as mwaction from "mwaction";
-import { EventDefine } from "./const/EventDefine";
 import { HeadUIController } from "./controller/HeadUIController";
 import { KeyboardManager } from "./controller/KeyboardManager";
 import { TimeManager } from "./controller/TimeManager";
@@ -26,16 +25,12 @@ import GMPanel from "./ui/gm/GmPanel";
 import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 import { MapManager } from "./gameplay/map/MapManager";
-import { MapPanel } from "./ui/map/MapPanel";
-import ModuleC = mwext.ModuleC;
 import { Delegate } from "./depend/delegate/Delegate";
-import Enumerable from "linq";
 import GToolkit from "./util/GToolkit";
 import SystemUtil = mw.SystemUtil;
 import Nolan from "./depend/nolan/Nolan";
 import GameServiceConfig from "./const/GameServiceConfig";
 import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioController";
-import Typeface = UE.Typeface;
 
 @Component
 export default class GameStart extends mw.Script {
@@ -43,7 +38,7 @@ export default class GameStart extends mw.Script {
 
     //#region Dev Config
 
-    @mw.Property({ displayName: "是否发布", group: "发布" })
+    @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
     @mw.Property({
@@ -54,25 +49,25 @@ export default class GameStart extends mw.Script {
     })
     public language: LanguageTypes = LanguageTypes.English;
 
-    @mw.Property({ displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel })
+    @mw.Property({displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel})
     public graphicsLevel: GraphicsLevel = GraphicsLevel.Cinematic3;
 
-    @mw.Property({ displayName: "线上存储", group: "发布" })
+    @mw.Property({displayName: "线上存储", group: "发布"})
     public isOnline: boolean = false;
 
-    @mw.Property({ displayName: "是否 GM", group: "调试" })
+    @mw.Property({displayName: "是否 GM", group: "调试"})
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({ displayName: "服务端日志等级", group: "调试", enumType: DebugLevels })
+    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: DebugLevels})
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "客户端日志等级", group: "调试", enumType: DebugLevels })
+    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: DebugLevels})
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "上帝模式 冲刺速度倍率", group: "调试" })
+    @mw.Property({displayName: "上帝模式 冲刺速度倍率", group: "调试"})
     public godModeSprintRatio: number = 10;
 
-    @mw.Property({ displayName: "上帝模式 闪现位移距离", group: "调试" })
+    @mw.Property({displayName: "上帝模式 闪现位移距离", group: "调试"})
     public godModeFlashDist: number = 1000;
 
     private _godMode: boolean = false;
@@ -108,14 +103,13 @@ export default class GameStart extends mw.Script {
      * @private
      */
     private initialize() {
-
         if (this.isRelease) {
             this.isOnline = true;
             this.isShowGMPanel = false;
+            i18n.release();
         }
 
         if (SystemUtil.isClient()) {
-            this.initI18n();
             this.initializeClient();
         } else if (SystemUtil.isServer()) {
             this.initializeServer();
@@ -131,7 +125,6 @@ export default class GameStart extends mw.Script {
     private initI18n() {
         if (this.language !== LanguageTypes.English) {
             i18n.use(this.language);
-            // UIService.getUI(MainPanel)?.initTextLan();
             Log4Ts.log(GameStart, `i18n use default language: ${this.language} because using specified non-English language.`);
             return;
         }
@@ -151,7 +144,6 @@ export default class GameStart extends mw.Script {
         }
         Log4Ts.log(GameStart, `use language: ${useType}`);
         i18n.use(useType);
-        // UIService.getUI(MainPanel)?.initTextLan();
     }
 
     private initializeClient() {
@@ -168,6 +160,7 @@ export default class GameStart extends mw.Script {
             this.registerGodModeG();
             this.registerGodModeShift();
             this.registerGodModeF();
+
             //#region Exist for Test
             //R <<<<<<
             //
@@ -178,6 +171,7 @@ export default class GameStart extends mw.Script {
         }
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+        this.initI18n();
         this.isShowGMPanel && GM.start(GMPanel);
         VisualizeDebug.init(mw.Player.localPlayer);
         KeyboardManager.getInstance();
@@ -186,7 +180,6 @@ export default class GameStart extends mw.Script {
         GraphicsSettings.setGraphicsCPULevel(this.graphicsLevel);
         GraphicsSettings.setGraphicsGPULevel(this.graphicsLevel);
 
-        UIService.show(MainPanel);
         MapManager.instance.showMap();
 
         AudioController.getInstance().playBgm(undefined, BgmPlayStrategy.Rnd);
@@ -233,7 +226,6 @@ export default class GameStart extends mw.Script {
 
     private registerKeyScrollUp() {
         InputUtil.onKeyDown(mw.Keys.MouseScrollUp, () => {
-            Log4Ts.log(GameStart, `Mouse scroll up.`);
             if (!this._nolan) {
                 Log4Ts.warn(GameStart, `nolan not ready.`);
                 return;
@@ -246,7 +238,6 @@ export default class GameStart extends mw.Script {
 
     private registerKeyScrollDown() {
         InputUtil.onKeyDown(mw.Keys.MouseScrollDown, () => {
-            Log4Ts.log(GameStart, `Mouse scroll down.`);
             if (!this._nolan) {
                 Log4Ts.warn(GameStart, `nolan not ready.`);
                 return;
