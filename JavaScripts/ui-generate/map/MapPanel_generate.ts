@@ -29,6 +29,13 @@ export default class MapPanel_Generate extends UIScript {
 		}
 		return this.cnvMapMain_Internal
 	}
+	private btnMapClose_Internal: mw.Image
+	public get btnMapClose(): mw.Image {
+		if(!this.btnMapClose_Internal&&this.uiWidgetBase) {
+			this.btnMapClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/btnMapClose') as mw.Image
+		}
+		return this.btnMapClose_Internal
+	}
 	private cnvMiniMap_Internal: mw.Canvas
 	public get cnvMiniMap(): mw.Canvas {
 		if(!this.cnvMiniMap_Internal&&this.uiWidgetBase) {
