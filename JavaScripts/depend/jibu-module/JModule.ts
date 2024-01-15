@@ -41,6 +41,21 @@ export abstract class JModuleData extends mwext.Subdata {
     }
 
     /**
+     * 你不应重写此方法.
+     * @desc 当需要 覆写 {@link mwext.Subdata.onDataInit} 时 请覆写 {@link JModuleData.onJDataInit}.
+     * @sealed
+     */
+    protected onDataInit(): NoOverride {
+        super.onDataInit();
+        this.onJDataInit();
+        this.checkVersion();
+        return;
+    }
+
+    protected onJDataInit(): void {
+    }
+
+    /**
      * 数据版本检查器.
      */
     protected checkVersion() {
@@ -84,8 +99,8 @@ export abstract class JModuleC<S, D extends mwext.Subdata> extends mwext.ModuleC
 
     /**
      * 你不应重写此方法.
-     * @desc 当需要 覆写 onStart 时 请覆写 {@link JModuleC.onJStart}.
-     * @protected
+     * @desc 当需要 覆写 {@link mwext.ModuleC.onStart} 时 请覆写 {@link JModuleC.onJStart}.
+     * @sealed
      */
     protected onStart(): NoOverride {
         super.onStart();
