@@ -7,20 +7,50 @@
 
 
 @UIBind('UI/common/GM/GMHUD.ui')
-export default class GMHUD_Generate extends mw.UIScript {
-	@UIWidgetBind('MWCanvas_2147482460/argText')
-    public argText: mw.InputBox=undefined;
-    @UIWidgetBind('MWCanvas_2147482460/groupButton')
-    public groupButton: mw.StaleButton=undefined;
-    @UIWidgetBind('MWCanvas_2147482460/cmdButton')
-    public cmdButton: mw.StaleButton=undefined;
-    @UIWidgetBind('MWCanvas_2147482460/okButton')
-    public okButton: mw.Button=undefined;
-    @UIWidgetBind('MWCanvas_2147482460/dropList/cmdPanel')
-    public cmdPanel: mw.Canvas=undefined;
-    @UIWidgetBind('MWCanvas_2147482460/dropList')
-    public dropList: mw.ScrollBox=undefined;
-    
+export default class GMHUD_Generate extends UIScript {
+		private argText_Internal: mw.InputBox
+	public get argText(): mw.InputBox {
+		if(!this.argText_Internal&&this.uiWidgetBase) {
+			this.argText_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/argText') as mw.InputBox
+		}
+		return this.argText_Internal
+	}
+	private groupButton_Internal: mw.StaleButton
+	public get groupButton(): mw.StaleButton {
+		if(!this.groupButton_Internal&&this.uiWidgetBase) {
+			this.groupButton_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/groupButton') as mw.StaleButton
+		}
+		return this.groupButton_Internal
+	}
+	private cmdButton_Internal: mw.StaleButton
+	public get cmdButton(): mw.StaleButton {
+		if(!this.cmdButton_Internal&&this.uiWidgetBase) {
+			this.cmdButton_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/cmdButton') as mw.StaleButton
+		}
+		return this.cmdButton_Internal
+	}
+	private okButton_Internal: mw.Button
+	public get okButton(): mw.Button {
+		if(!this.okButton_Internal&&this.uiWidgetBase) {
+			this.okButton_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/okButton') as mw.Button
+		}
+		return this.okButton_Internal
+	}
+	private dropList_Internal: mw.ScrollBox
+	public get dropList(): mw.ScrollBox {
+		if(!this.dropList_Internal&&this.uiWidgetBase) {
+			this.dropList_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/dropList') as mw.ScrollBox
+		}
+		return this.dropList_Internal
+	}
+	private cmdPanel_Internal: mw.Canvas
+	public get cmdPanel(): mw.Canvas {
+		if(!this.cmdPanel_Internal&&this.uiWidgetBase) {
+			this.cmdPanel_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/dropList/cmdPanel') as mw.Canvas
+		}
+		return this.cmdPanel_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

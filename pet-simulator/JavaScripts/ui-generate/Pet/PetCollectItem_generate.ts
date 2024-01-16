@@ -7,14 +7,29 @@
 
 
 @UIBind('UI/Pet/PetCollectItem.ui')
-export default class PetCollectItem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/mPetImage')
-    public mPetImage: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mPic_Heart')
-    public mPic_Heart: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mPic_Rainbow')
-    public mPic_Rainbow: mw.Image=undefined;
-    
+export default class PetCollectItem_Generate extends UIScript {
+		private mPetImage_Internal: mw.Image
+	public get mPetImage(): mw.Image {
+		if(!this.mPetImage_Internal&&this.uiWidgetBase) {
+			this.mPetImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mPetImage') as mw.Image
+		}
+		return this.mPetImage_Internal
+	}
+	private mPic_Heart_Internal: mw.Image
+	public get mPic_Heart(): mw.Image {
+		if(!this.mPic_Heart_Internal&&this.uiWidgetBase) {
+			this.mPic_Heart_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mPic_Heart') as mw.Image
+		}
+		return this.mPic_Heart_Internal
+	}
+	private mPic_Rainbow_Internal: mw.Image
+	public get mPic_Rainbow(): mw.Image {
+		if(!this.mPic_Rainbow_Internal&&this.uiWidgetBase) {
+			this.mPic_Rainbow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mPic_Rainbow') as mw.Image
+		}
+		return this.mPic_Rainbow_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

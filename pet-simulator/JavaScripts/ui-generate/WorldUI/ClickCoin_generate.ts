@@ -7,7 +7,7 @@
 
 
 @UIBind('UI/WorldUI/ClickCoin.ui')
-export default class ClickCoin_Generate extends mw.UIScript {
+export default class ClickCoin_Generate extends UIScript {
 	
 
 

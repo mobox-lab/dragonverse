@@ -7,14 +7,29 @@
 
 
 @UIBind('UI/common/RewardUI.ui')
-export default class RewardUI_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas/mCanvas_1')
-    public mCanvas_1: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_2')
-    public mCanvas_2: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    
+export default class RewardUI_Generate extends UIScript {
+		private mCanvas_1_Internal: mw.Canvas
+	public get mCanvas_1(): mw.Canvas {
+		if(!this.mCanvas_1_Internal&&this.uiWidgetBase) {
+			this.mCanvas_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_1') as mw.Canvas
+		}
+		return this.mCanvas_1_Internal
+	}
+	private mCanvas_2_Internal: mw.Canvas
+	public get mCanvas_2(): mw.Canvas {
+		if(!this.mCanvas_2_Internal&&this.uiWidgetBase) {
+			this.mCanvas_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_2') as mw.Canvas
+		}
+		return this.mCanvas_2_Internal
+	}
+	private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

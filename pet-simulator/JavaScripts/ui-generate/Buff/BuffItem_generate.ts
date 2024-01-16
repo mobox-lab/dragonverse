@@ -7,14 +7,29 @@
 
 
 @UIBind('UI/Buff/BuffItem.ui')
-export default class BuffItem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/mIcon')
-    public mIcon: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mName')
-    public mName: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mTime')
-    public mTime: mw.TextBlock=undefined;
-    
+export default class BuffItem_Generate extends UIScript {
+		private mIcon_Internal: mw.Image
+	public get mIcon(): mw.Image {
+		if(!this.mIcon_Internal&&this.uiWidgetBase) {
+			this.mIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mIcon') as mw.Image
+		}
+		return this.mIcon_Internal
+	}
+	private mName_Internal: mw.TextBlock
+	public get mName(): mw.TextBlock {
+		if(!this.mName_Internal&&this.uiWidgetBase) {
+			this.mName_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mName') as mw.TextBlock
+		}
+		return this.mName_Internal
+	}
+	private mTime_Internal: mw.TextBlock
+	public get mTime(): mw.TextBlock {
+		if(!this.mTime_Internal&&this.uiWidgetBase) {
+			this.mTime_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mTime') as mw.TextBlock
+		}
+		return this.mTime_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

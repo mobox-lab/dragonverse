@@ -7,16 +7,36 @@
 
 
 @UIBind('UI/WorldUI/EggInfo.ui')
-export default class EggInfo_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mImage')
-    public mImage: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mText')
-    public mText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mPic_Heart')
-    public mPic_Heart: mw.Image=undefined;
-    
+export default class EggInfo_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mImage_Internal: mw.Image
+	public get mImage(): mw.Image {
+		if(!this.mImage_Internal&&this.uiWidgetBase) {
+			this.mImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage') as mw.Image
+		}
+		return this.mImage_Internal
+	}
+	private mText_Internal: mw.TextBlock
+	public get mText(): mw.TextBlock {
+		if(!this.mText_Internal&&this.uiWidgetBase) {
+			this.mText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText') as mw.TextBlock
+		}
+		return this.mText_Internal
+	}
+	private mPic_Heart_Internal: mw.Image
+	public get mPic_Heart(): mw.Image {
+		if(!this.mPic_Heart_Internal&&this.uiWidgetBase) {
+			this.mPic_Heart_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mPic_Heart') as mw.Image
+		}
+		return this.mPic_Heart_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

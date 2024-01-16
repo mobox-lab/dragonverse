@@ -7,16 +7,36 @@
 
 
 @UIBind('UI/Achievement/AchievementMain.ui')
-export default class AchievementMain_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/mScrollBox')
-    public mScrollBox: mw.ScrollBox=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mScrollBox/mContentCanvas')
-    public mContentCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mCloseButton')
-    public mCloseButton: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mRecycleCanvas')
-    public mRecycleCanvas: mw.Canvas=undefined;
-    
+export default class AchievementMain_Generate extends UIScript {
+		private mScrollBox_Internal: mw.ScrollBox
+	public get mScrollBox(): mw.ScrollBox {
+		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
+			this.mScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mScrollBox') as mw.ScrollBox
+		}
+		return this.mScrollBox_Internal
+	}
+	private mContentCanvas_Internal: mw.Canvas
+	public get mContentCanvas(): mw.Canvas {
+		if(!this.mContentCanvas_Internal&&this.uiWidgetBase) {
+			this.mContentCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mScrollBox/mContentCanvas') as mw.Canvas
+		}
+		return this.mContentCanvas_Internal
+	}
+	private mCloseButton_Internal: mw.Button
+	public get mCloseButton(): mw.Button {
+		if(!this.mCloseButton_Internal&&this.uiWidgetBase) {
+			this.mCloseButton_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCloseButton') as mw.Button
+		}
+		return this.mCloseButton_Internal
+	}
+	private mRecycleCanvas_Internal: mw.Canvas
+	public get mRecycleCanvas(): mw.Canvas {
+		if(!this.mRecycleCanvas_Internal&&this.uiWidgetBase) {
+			this.mRecycleCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mRecycleCanvas') as mw.Canvas
+		}
+		return this.mRecycleCanvas_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

@@ -7,18 +7,43 @@
 
 
 @UIBind('UI/Trade/MsgPanel.ui')
-export default class MsgPanel_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas_Msg')
-    public mCanvas_Msg: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Msg/mList_Msg')
-    public mList_Msg: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Msg/mList_Msg/mScrollBox')
-    public mScrollBox: mw.ScrollBox=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Msg/mInputBox_Msg')
-    public mInputBox_Msg: mw.InputBox=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Msg/mBtn_Send')
-    public mBtn_Send: mw.StaleButton=undefined;
-    
+export default class MsgPanel_Generate extends UIScript {
+		private mCanvas_Msg_Internal: mw.Canvas
+	public get mCanvas_Msg(): mw.Canvas {
+		if(!this.mCanvas_Msg_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Msg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Msg') as mw.Canvas
+		}
+		return this.mCanvas_Msg_Internal
+	}
+	private mList_Msg_Internal: mw.Canvas
+	public get mList_Msg(): mw.Canvas {
+		if(!this.mList_Msg_Internal&&this.uiWidgetBase) {
+			this.mList_Msg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Msg/mList_Msg') as mw.Canvas
+		}
+		return this.mList_Msg_Internal
+	}
+	private mScrollBox_Internal: mw.ScrollBox
+	public get mScrollBox(): mw.ScrollBox {
+		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
+			this.mScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Msg/mList_Msg/mScrollBox') as mw.ScrollBox
+		}
+		return this.mScrollBox_Internal
+	}
+	private mInputBox_Msg_Internal: mw.InputBox
+	public get mInputBox_Msg(): mw.InputBox {
+		if(!this.mInputBox_Msg_Internal&&this.uiWidgetBase) {
+			this.mInputBox_Msg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Msg/mInputBox_Msg') as mw.InputBox
+		}
+		return this.mInputBox_Msg_Internal
+	}
+	private mBtn_Send_Internal: mw.StaleButton
+	public get mBtn_Send(): mw.StaleButton {
+		if(!this.mBtn_Send_Internal&&this.uiWidgetBase) {
+			this.mBtn_Send_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Msg/mBtn_Send') as mw.StaleButton
+		}
+		return this.mBtn_Send_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

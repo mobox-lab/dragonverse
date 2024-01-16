@@ -7,12 +7,22 @@
 
 
 @UIBind('UI/PetVIP/VIPBuy.ui')
-export default class VIPBuy_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/mBtn_Close')
-    public mBtn_Close: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mBtn_Yes')
-    public mBtn_Yes: mw.Button=undefined;
-    
+export default class VIPBuy_Generate extends UIScript {
+		private mBtn_Close_Internal: mw.Button
+	public get mBtn_Close(): mw.Button {
+		if(!this.mBtn_Close_Internal&&this.uiWidgetBase) {
+			this.mBtn_Close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Close') as mw.Button
+		}
+		return this.mBtn_Close_Internal
+	}
+	private mBtn_Yes_Internal: mw.Button
+	public get mBtn_Yes(): mw.Button {
+		if(!this.mBtn_Yes_Internal&&this.uiWidgetBase) {
+			this.mBtn_Yes_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Yes') as mw.Button
+		}
+		return this.mBtn_Yes_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

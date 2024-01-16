@@ -7,20 +7,50 @@
 
 
 @UIBind('UI/Fuse/Fusepanel.ui')
-export default class Fusepanel_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/ScrollBox/mListCanvas')
-    public mListCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mBtn_Fuse')
-    public mBtn_Fuse: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mText_Number')
-    public mText_Number: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mText_Money')
-    public mText_Money: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mBtn_Close')
-    public mBtn_Close: mw.Button=undefined;
-    
+export default class Fusepanel_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mListCanvas_Internal: mw.Canvas
+	public get mListCanvas(): mw.Canvas {
+		if(!this.mListCanvas_Internal&&this.uiWidgetBase) {
+			this.mListCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/ScrollBox/mListCanvas') as mw.Canvas
+		}
+		return this.mListCanvas_Internal
+	}
+	private mBtn_Fuse_Internal: mw.Button
+	public get mBtn_Fuse(): mw.Button {
+		if(!this.mBtn_Fuse_Internal&&this.uiWidgetBase) {
+			this.mBtn_Fuse_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBtn_Fuse') as mw.Button
+		}
+		return this.mBtn_Fuse_Internal
+	}
+	private mText_Number_Internal: mw.TextBlock
+	public get mText_Number(): mw.TextBlock {
+		if(!this.mText_Number_Internal&&this.uiWidgetBase) {
+			this.mText_Number_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Number') as mw.TextBlock
+		}
+		return this.mText_Number_Internal
+	}
+	private mText_Money_Internal: mw.TextBlock
+	public get mText_Money(): mw.TextBlock {
+		if(!this.mText_Money_Internal&&this.uiWidgetBase) {
+			this.mText_Money_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Money') as mw.TextBlock
+		}
+		return this.mText_Money_Internal
+	}
+	private mBtn_Close_Internal: mw.Button
+	public get mBtn_Close(): mw.Button {
+		if(!this.mBtn_Close_Internal&&this.uiWidgetBase) {
+			this.mBtn_Close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBtn_Close') as mw.Button
+		}
+		return this.mBtn_Close_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

@@ -7,34 +7,99 @@
 
 
 @UIBind('UI/Pet/PetHud.ui')
-export default class PetHud_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_pet')
-    public mCanvas_pet: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_pet/mPic_petchoose')
-    public mPic_petchoose: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_pet/mBtn_pet')
-    public mBtn_pet: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_collect')
-    public mCanvas_collect: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_collect/mPic_collectchoose')
-    public mPic_collectchoose: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_collect/mBtn_collect')
-    public mBtn_collect: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_Trade')
-    public mCanvas_Trade: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_Trade/mPic_TradeIcon')
-    public mPic_TradeIcon: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_Trade/mBtn_Trade')
-    public mBtn_Trade: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_achve')
-    public mCanvas_achve: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_achve/mPic_achve')
-    public mPic_achve: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_achve/mBtn_achve')
-    public mBtn_achve: mw.Button=undefined;
-    
+export default class PetHud_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mCanvas_pet_Internal: mw.Canvas
+	public get mCanvas_pet(): mw.Canvas {
+		if(!this.mCanvas_pet_Internal&&this.uiWidgetBase) {
+			this.mCanvas_pet_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_pet') as mw.Canvas
+		}
+		return this.mCanvas_pet_Internal
+	}
+	private mPic_petchoose_Internal: mw.Image
+	public get mPic_petchoose(): mw.Image {
+		if(!this.mPic_petchoose_Internal&&this.uiWidgetBase) {
+			this.mPic_petchoose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_pet/mPic_petchoose') as mw.Image
+		}
+		return this.mPic_petchoose_Internal
+	}
+	private mBtn_pet_Internal: mw.Button
+	public get mBtn_pet(): mw.Button {
+		if(!this.mBtn_pet_Internal&&this.uiWidgetBase) {
+			this.mBtn_pet_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_pet/mBtn_pet') as mw.Button
+		}
+		return this.mBtn_pet_Internal
+	}
+	private mCanvas_collect_Internal: mw.Canvas
+	public get mCanvas_collect(): mw.Canvas {
+		if(!this.mCanvas_collect_Internal&&this.uiWidgetBase) {
+			this.mCanvas_collect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_collect') as mw.Canvas
+		}
+		return this.mCanvas_collect_Internal
+	}
+	private mPic_collectchoose_Internal: mw.Image
+	public get mPic_collectchoose(): mw.Image {
+		if(!this.mPic_collectchoose_Internal&&this.uiWidgetBase) {
+			this.mPic_collectchoose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_collect/mPic_collectchoose') as mw.Image
+		}
+		return this.mPic_collectchoose_Internal
+	}
+	private mBtn_collect_Internal: mw.Button
+	public get mBtn_collect(): mw.Button {
+		if(!this.mBtn_collect_Internal&&this.uiWidgetBase) {
+			this.mBtn_collect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_collect/mBtn_collect') as mw.Button
+		}
+		return this.mBtn_collect_Internal
+	}
+	private mCanvas_Trade_Internal: mw.Canvas
+	public get mCanvas_Trade(): mw.Canvas {
+		if(!this.mCanvas_Trade_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Trade_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Trade') as mw.Canvas
+		}
+		return this.mCanvas_Trade_Internal
+	}
+	private mPic_TradeIcon_Internal: mw.Image
+	public get mPic_TradeIcon(): mw.Image {
+		if(!this.mPic_TradeIcon_Internal&&this.uiWidgetBase) {
+			this.mPic_TradeIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Trade/mPic_TradeIcon') as mw.Image
+		}
+		return this.mPic_TradeIcon_Internal
+	}
+	private mBtn_Trade_Internal: mw.Button
+	public get mBtn_Trade(): mw.Button {
+		if(!this.mBtn_Trade_Internal&&this.uiWidgetBase) {
+			this.mBtn_Trade_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Trade/mBtn_Trade') as mw.Button
+		}
+		return this.mBtn_Trade_Internal
+	}
+	private mCanvas_achve_Internal: mw.Canvas
+	public get mCanvas_achve(): mw.Canvas {
+		if(!this.mCanvas_achve_Internal&&this.uiWidgetBase) {
+			this.mCanvas_achve_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_achve') as mw.Canvas
+		}
+		return this.mCanvas_achve_Internal
+	}
+	private mPic_achve_Internal: mw.Image
+	public get mPic_achve(): mw.Image {
+		if(!this.mPic_achve_Internal&&this.uiWidgetBase) {
+			this.mPic_achve_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_achve/mPic_achve') as mw.Image
+		}
+		return this.mPic_achve_Internal
+	}
+	private mBtn_achve_Internal: mw.Button
+	public get mBtn_achve(): mw.Button {
+		if(!this.mBtn_achve_Internal&&this.uiWidgetBase) {
+			this.mBtn_achve_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_achve/mBtn_achve') as mw.Button
+		}
+		return this.mBtn_achve_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

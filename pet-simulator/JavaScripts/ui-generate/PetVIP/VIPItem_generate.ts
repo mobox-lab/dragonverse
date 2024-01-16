@@ -7,28 +7,78 @@
 
 
 @UIBind('UI/PetVIP/VIPItem.ui')
-export default class VIPItem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mBtn_Buy')
-    public mBtn_Buy: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mTextBlock_Level')
-    public mTextBlock_Level: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mTextBlock_StarNeed')
-    public mTextBlock_StarNeed: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mTextBlock_Number')
-    public mTextBlock_Number: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mTextBlock_Lock')
-    public mTextBlock_Lock: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mImage_Star')
-    public mImage_Star: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mImage_Icon')
-    public mImage_Icon: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mImage_Get')
-    public mImage_Get: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mImage_Up')
-    public mImage_Up: mw.Image=undefined;
-    
+export default class VIPItem_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mBtn_Buy_Internal: mw.Button
+	public get mBtn_Buy(): mw.Button {
+		if(!this.mBtn_Buy_Internal&&this.uiWidgetBase) {
+			this.mBtn_Buy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBtn_Buy') as mw.Button
+		}
+		return this.mBtn_Buy_Internal
+	}
+	private mTextBlock_Level_Internal: mw.TextBlock
+	public get mTextBlock_Level(): mw.TextBlock {
+		if(!this.mTextBlock_Level_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_Level_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_Level') as mw.TextBlock
+		}
+		return this.mTextBlock_Level_Internal
+	}
+	private mTextBlock_StarNeed_Internal: mw.TextBlock
+	public get mTextBlock_StarNeed(): mw.TextBlock {
+		if(!this.mTextBlock_StarNeed_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_StarNeed_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_StarNeed') as mw.TextBlock
+		}
+		return this.mTextBlock_StarNeed_Internal
+	}
+	private mTextBlock_Lock_Internal: mw.TextBlock
+	public get mTextBlock_Lock(): mw.TextBlock {
+		if(!this.mTextBlock_Lock_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_Lock_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_Lock') as mw.TextBlock
+		}
+		return this.mTextBlock_Lock_Internal
+	}
+	private mImage_Star_Internal: mw.Image
+	public get mImage_Star(): mw.Image {
+		if(!this.mImage_Star_Internal&&this.uiWidgetBase) {
+			this.mImage_Star_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage_Star') as mw.Image
+		}
+		return this.mImage_Star_Internal
+	}
+	private mImage_Icon_Internal: mw.Image
+	public get mImage_Icon(): mw.Image {
+		if(!this.mImage_Icon_Internal&&this.uiWidgetBase) {
+			this.mImage_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage_Icon') as mw.Image
+		}
+		return this.mImage_Icon_Internal
+	}
+	private mImage_Get_Internal: mw.Image
+	public get mImage_Get(): mw.Image {
+		if(!this.mImage_Get_Internal&&this.uiWidgetBase) {
+			this.mImage_Get_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage_Get') as mw.Image
+		}
+		return this.mImage_Get_Internal
+	}
+	private mImage_Up_Internal: mw.Image
+	public get mImage_Up(): mw.Image {
+		if(!this.mImage_Up_Internal&&this.uiWidgetBase) {
+			this.mImage_Up_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage_Up') as mw.Image
+		}
+		return this.mImage_Up_Internal
+	}
+	private mTextBlock_Number_Internal: mw.TextBlock
+	public get mTextBlock_Number(): mw.TextBlock {
+		if(!this.mTextBlock_Number_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_Number_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_Number') as mw.TextBlock
+		}
+		return this.mTextBlock_Number_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();
@@ -63,10 +113,10 @@ export default class VIPItem_Generate extends mw.UIScript {
 		this.initLanguage(this.mTextBlock_StarNeed)
 		
 	
-		this.initLanguage(this.mTextBlock_Number)
+		this.initLanguage(this.mTextBlock_Lock)
 		
 	
-		this.initLanguage(this.mTextBlock_Lock)
+		this.initLanguage(this.mTextBlock_Number)
 		
 	
 		//文本多语言

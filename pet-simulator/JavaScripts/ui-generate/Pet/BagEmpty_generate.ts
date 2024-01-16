@@ -7,10 +7,15 @@
 
 
 @UIBind('UI/Pet/BagEmpty.ui')
-export default class BagEmpty_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mPic_Empty')
-    public mPic_Empty: mw.Image=undefined;
-    
+export default class BagEmpty_Generate extends UIScript {
+		private mPic_Empty_Internal: mw.Image
+	public get mPic_Empty(): mw.Image {
+		if(!this.mPic_Empty_Internal&&this.uiWidgetBase) {
+			this.mPic_Empty_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_Empty') as mw.Image
+		}
+		return this.mPic_Empty_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

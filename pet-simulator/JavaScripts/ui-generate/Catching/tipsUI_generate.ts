@@ -6,25 +6,16 @@
 
 
 
-@UIBind('UI/Fuse/FuseItem.ui')
-export default class FuseItem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mButton_Equip')
-    public mButton_Equip: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mPic_Equip')
-    public mPic_Equip: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mPic_Equip_3')
-    public mPic_Equip_3: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mPic_Peticon')
-    public mPic_Peticon: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mText_Value')
-    public mText_Value: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mPic_Rainbow')
-    public mPic_Rainbow: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mPic_Heart')
-    public mPic_Heart: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mPic_Equip_2')
-    public mPic_Equip_2: mw.Image=undefined;
-    
+@UIBind('UI/Catching/tipsUI.ui')
+export default class tipsUI_Generate extends UIScript {
+		private mTipsCanvas_Internal: mw.Canvas
+	public get mTipsCanvas(): mw.Canvas {
+		if(!this.mTipsCanvas_Internal&&this.uiWidgetBase) {
+			this.mTipsCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTipsCanvas') as mw.Canvas
+		}
+		return this.mTipsCanvas_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();
@@ -42,22 +33,16 @@ export default class FuseItem_Generate extends mw.UIScript {
 		
 		//按钮添加点击
 		
-		this.mButton_Equip.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mButton_Equip");
-		})
-		this.mButton_Equip.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
 
 		//按钮多语言
 		
 		//文本多语言
 		
-		this.initLanguage(this.mText_Value)
-		
-	
 		//文本多语言
 		
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mTipsCanvas/TextBlock") as any);
+		
+	
 
 	}
 	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

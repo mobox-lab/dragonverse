@@ -1,6 +1,18 @@
 import GToolkit, { Tf } from "../util/GToolkit";
 
 export default class GameServiceConfig {
+//#region Sub Game
+    /**
+     * 跳子游戏 进度条时长.
+     */
+    public static readonly SUB_GAME_SCENE_JUMP_PROGRESS_DURATION = 3e3;
+    /**
+     * 宠物模拟器 GameID
+     */
+    public static readonly SUB_GAME_PET_SIMULATOR_GAME_ID = "P_7ed509fb0f6d6fce8923e29942c5ce8c766e7742";
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 //#region Auth
 
     /**
@@ -457,7 +469,7 @@ export default class GameServiceConfig {
     /**
      * 地图界面 小地图左下点的世界坐标.
      */
-    public static readonly MAP_SCENE_AS_MAP_LEFT_DOWN_POS: mw.Vector = new mw.Vector(25898, -24566, 0);
+    public static readonly MAP_SCENE_AS_MAP_LEFT_DOWN_POS: mw.Vector = new mw.Vector(27000, -26000, 0);
 
     /**
      * 地图界面 小地图右上点的世界坐标.

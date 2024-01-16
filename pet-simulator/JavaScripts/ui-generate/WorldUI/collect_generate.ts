@@ -7,14 +7,29 @@
 
 
 @UIBind('UI/WorldUI/collect.ui')
-export default class collect_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/undefImage')
-    public undefImage: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/curPetText')
-    public curPetText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/curPercentText')
-    public curPercentText: mw.TextBlock=undefined;
-    
+export default class collect_Generate extends UIScript {
+		private undefImage_Internal: mw.Image
+	public get undefImage(): mw.Image {
+		if(!this.undefImage_Internal&&this.uiWidgetBase) {
+			this.undefImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/undefImage') as mw.Image
+		}
+		return this.undefImage_Internal
+	}
+	private curPetText_Internal: mw.TextBlock
+	public get curPetText(): mw.TextBlock {
+		if(!this.curPetText_Internal&&this.uiWidgetBase) {
+			this.curPetText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/curPetText') as mw.TextBlock
+		}
+		return this.curPetText_Internal
+	}
+	private curPercentText_Internal: mw.TextBlock
+	public get curPercentText(): mw.TextBlock {
+		if(!this.curPercentText_Internal&&this.uiWidgetBase) {
+			this.curPercentText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/curPercentText') as mw.TextBlock
+		}
+		return this.curPercentText_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

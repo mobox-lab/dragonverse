@@ -177,3 +177,8 @@ AddGMCommand("获取名字", (player, value) => {
 
 })
 
+AddGMCommand("跳宠物模拟器", () => {
+    RouteService.enterNewGame(GameServiceConfig.SUB_GAME_PET_SIMULATOR_GAME_ID);
+}, (player) => {
+});
+

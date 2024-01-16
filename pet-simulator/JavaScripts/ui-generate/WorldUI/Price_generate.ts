@@ -7,12 +7,22 @@
 
 
 @UIBind('UI/WorldUI/Price.ui')
-export default class Price_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/mPic_Coin')
-    public mPic_Coin: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mText_Price')
-    public mText_Price: mw.TextBlock=undefined;
-    
+export default class Price_Generate extends UIScript {
+		private mPic_Coin_Internal: mw.Image
+	public get mPic_Coin(): mw.Image {
+		if(!this.mPic_Coin_Internal&&this.uiWidgetBase) {
+			this.mPic_Coin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mPic_Coin') as mw.Image
+		}
+		return this.mPic_Coin_Internal
+	}
+	private mText_Price_Internal: mw.TextBlock
+	public get mText_Price(): mw.TextBlock {
+		if(!this.mText_Price_Internal&&this.uiWidgetBase) {
+			this.mText_Price_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_Price') as mw.TextBlock
+		}
+		return this.mText_Price_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

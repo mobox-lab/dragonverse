@@ -3,6 +3,7 @@
     "module_bubble": "^5.1.1",
     "module_gm": "^5.0.3",
     "module_leaderboard": "^4.0.10",
-    "odin": "^5.0.5"
+    "odin": "^5.0.5",
+    "mwaction": "^1.0.8"
   }
 }

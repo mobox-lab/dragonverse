@@ -7,30 +7,85 @@
 
 
 @UIBind('UI/Pet/PetCollectPanel.ui')
-export default class PetCollectPanel_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mProgressCanvas')
-    public mProgressCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mProgressCanvas/mbar_hp')
-    public mbar_hp: mw.ProgressBar=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mProgressCanvas/mHasText')
-    public mHasText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mProgressCanvas/mALLText')
-    public mALLText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mProgressCanvas/mText_level')
-    public mText_level: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mProgressCanvas/mText_Get')
-    public mText_Get: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mScrollBox')
-    public mScrollBox: mw.ScrollBox=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mScrollBox/mListCanvas')
-    public mListCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mBtn_unlock')
-    public mBtn_unlock: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCloseBtn')
-    public mCloseBtn: mw.Button=undefined;
-    
+export default class PetCollectPanel_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mProgressCanvas_Internal: mw.Canvas
+	public get mProgressCanvas(): mw.Canvas {
+		if(!this.mProgressCanvas_Internal&&this.uiWidgetBase) {
+			this.mProgressCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mProgressCanvas') as mw.Canvas
+		}
+		return this.mProgressCanvas_Internal
+	}
+	private mbar_hp_Internal: mw.ProgressBar
+	public get mbar_hp(): mw.ProgressBar {
+		if(!this.mbar_hp_Internal&&this.uiWidgetBase) {
+			this.mbar_hp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mProgressCanvas/mbar_hp') as mw.ProgressBar
+		}
+		return this.mbar_hp_Internal
+	}
+	private mHasText_Internal: mw.TextBlock
+	public get mHasText(): mw.TextBlock {
+		if(!this.mHasText_Internal&&this.uiWidgetBase) {
+			this.mHasText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mProgressCanvas/mHasText') as mw.TextBlock
+		}
+		return this.mHasText_Internal
+	}
+	private mALLText_Internal: mw.TextBlock
+	public get mALLText(): mw.TextBlock {
+		if(!this.mALLText_Internal&&this.uiWidgetBase) {
+			this.mALLText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mProgressCanvas/mALLText') as mw.TextBlock
+		}
+		return this.mALLText_Internal
+	}
+	private mText_level_Internal: mw.TextBlock
+	public get mText_level(): mw.TextBlock {
+		if(!this.mText_level_Internal&&this.uiWidgetBase) {
+			this.mText_level_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mProgressCanvas/mText_level') as mw.TextBlock
+		}
+		return this.mText_level_Internal
+	}
+	private mText_Get_Internal: mw.TextBlock
+	public get mText_Get(): mw.TextBlock {
+		if(!this.mText_Get_Internal&&this.uiWidgetBase) {
+			this.mText_Get_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mProgressCanvas/mText_Get') as mw.TextBlock
+		}
+		return this.mText_Get_Internal
+	}
+	private mScrollBox_Internal: mw.ScrollBox
+	public get mScrollBox(): mw.ScrollBox {
+		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
+			this.mScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox') as mw.ScrollBox
+		}
+		return this.mScrollBox_Internal
+	}
+	private mListCanvas_Internal: mw.Canvas
+	public get mListCanvas(): mw.Canvas {
+		if(!this.mListCanvas_Internal&&this.uiWidgetBase) {
+			this.mListCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox/mListCanvas') as mw.Canvas
+		}
+		return this.mListCanvas_Internal
+	}
+	private mBtn_unlock_Internal: mw.Button
+	public get mBtn_unlock(): mw.Button {
+		if(!this.mBtn_unlock_Internal&&this.uiWidgetBase) {
+			this.mBtn_unlock_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBtn_unlock') as mw.Button
+		}
+		return this.mBtn_unlock_Internal
+	}
+	private mCloseBtn_Internal: mw.Button
+	public get mCloseBtn(): mw.Button {
+		if(!this.mCloseBtn_Internal&&this.uiWidgetBase) {
+			this.mCloseBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCloseBtn') as mw.Button
+		}
+		return this.mCloseBtn_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

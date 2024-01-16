@@ -7,26 +7,71 @@
 
 
 @UIBind('UI/hud/HUDpetGift.ui')
-export default class HUDpetGift_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas_Pet')
-    public mCanvas_Pet: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Pet/mBtn_Pet')
-    public mBtn_Pet: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Pet/mBtn_Pet/mText_Pet')
-    public mText_Pet: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Pet/mCanvas_Point')
-    public mCanvas_Point: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Pet/mCanvas_Point/mText_Point')
-    public mText_Point: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Gift')
-    public mCanvas_Gift: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Gift/mBtn_Gift')
-    public mBtn_Gift: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Gift/mMaskPrograss_Gift')
-    public mMaskPrograss_Gift: mw.MaskButton=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Gift/mText_Gift')
-    public mText_Gift: mw.TextBlock=undefined;
-    
+export default class HUDpetGift_Generate extends UIScript {
+		private mCanvas_Pet_Internal: mw.Canvas
+	public get mCanvas_Pet(): mw.Canvas {
+		if(!this.mCanvas_Pet_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Pet_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Pet') as mw.Canvas
+		}
+		return this.mCanvas_Pet_Internal
+	}
+	private mBtn_Pet_Internal: mw.Button
+	public get mBtn_Pet(): mw.Button {
+		if(!this.mBtn_Pet_Internal&&this.uiWidgetBase) {
+			this.mBtn_Pet_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Pet/mBtn_Pet') as mw.Button
+		}
+		return this.mBtn_Pet_Internal
+	}
+	private mText_Pet_Internal: mw.TextBlock
+	public get mText_Pet(): mw.TextBlock {
+		if(!this.mText_Pet_Internal&&this.uiWidgetBase) {
+			this.mText_Pet_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Pet/mBtn_Pet/mText_Pet') as mw.TextBlock
+		}
+		return this.mText_Pet_Internal
+	}
+	private mCanvas_Point_Internal: mw.Canvas
+	public get mCanvas_Point(): mw.Canvas {
+		if(!this.mCanvas_Point_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Point_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Pet/mCanvas_Point') as mw.Canvas
+		}
+		return this.mCanvas_Point_Internal
+	}
+	private mText_Point_Internal: mw.TextBlock
+	public get mText_Point(): mw.TextBlock {
+		if(!this.mText_Point_Internal&&this.uiWidgetBase) {
+			this.mText_Point_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Pet/mCanvas_Point/mText_Point') as mw.TextBlock
+		}
+		return this.mText_Point_Internal
+	}
+	private mCanvas_Gift_Internal: mw.Canvas
+	public get mCanvas_Gift(): mw.Canvas {
+		if(!this.mCanvas_Gift_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Gift_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Gift') as mw.Canvas
+		}
+		return this.mCanvas_Gift_Internal
+	}
+	private mBtn_Gift_Internal: mw.Button
+	public get mBtn_Gift(): mw.Button {
+		if(!this.mBtn_Gift_Internal&&this.uiWidgetBase) {
+			this.mBtn_Gift_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Gift/mBtn_Gift') as mw.Button
+		}
+		return this.mBtn_Gift_Internal
+	}
+	private mMaskPrograss_Gift_Internal: mw.MaskButton
+	public get mMaskPrograss_Gift(): mw.MaskButton {
+		if(!this.mMaskPrograss_Gift_Internal&&this.uiWidgetBase) {
+			this.mMaskPrograss_Gift_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Gift/mMaskPrograss_Gift') as mw.MaskButton
+		}
+		return this.mMaskPrograss_Gift_Internal
+	}
+	private mText_Gift_Internal: mw.TextBlock
+	public get mText_Gift(): mw.TextBlock {
+		if(!this.mText_Gift_Internal&&this.uiWidgetBase) {
+			this.mText_Gift_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Gift/mText_Gift') as mw.TextBlock
+		}
+		return this.mText_Gift_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

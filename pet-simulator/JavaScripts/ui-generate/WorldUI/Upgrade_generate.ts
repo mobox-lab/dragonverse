@@ -7,7 +7,7 @@
 
 
 @UIBind('UI/WorldUI/Upgrade.ui')
-export default class Upgrade_Generate extends mw.UIScript {
+export default class Upgrade_Generate extends UIScript {
 	
 
 

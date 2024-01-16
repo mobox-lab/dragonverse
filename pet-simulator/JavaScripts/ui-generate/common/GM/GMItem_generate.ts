@@ -7,10 +7,15 @@
 
 
 @UIBind('UI/common/GM/GMItem.ui')
-export default class GMItem_Generate extends mw.UIScript {
-	@UIWidgetBind('MWCanvas_2147482460/button')
-    public button: mw.StaleButton=undefined;
-    
+export default class GMItem_Generate extends UIScript {
+		private button_Internal: mw.StaleButton
+	public get button(): mw.StaleButton {
+		if(!this.button_Internal&&this.uiWidgetBase) {
+			this.button_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/button') as mw.StaleButton
+		}
+		return this.button_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

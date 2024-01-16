@@ -7,22 +7,57 @@
 
 
 @UIBind('UI/Catching/ControlUI.ui')
-export default class ControlUI_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas_1')
-    public mCanvas_1: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/Canvas/mButton_Up')
-    public mButton_Up: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/Canvas/mButton_Left')
-    public mButton_Left: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/Canvas/mButton_Right')
-    public mButton_Right: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/Canvas/mButton_Down')
-    public mButton_Down: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mButton_Catch')
-    public mButton_Catch: mw.Button=undefined;
-    
+export default class ControlUI_Generate extends UIScript {
+		private mCanvas_1_Internal: mw.Canvas
+	public get mCanvas_1(): mw.Canvas {
+		if(!this.mCanvas_1_Internal&&this.uiWidgetBase) {
+			this.mCanvas_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_1') as mw.Canvas
+		}
+		return this.mCanvas_1_Internal
+	}
+	private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mButton_Up_Internal: mw.Button
+	public get mButton_Up(): mw.Button {
+		if(!this.mButton_Up_Internal&&this.uiWidgetBase) {
+			this.mButton_Up_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/Canvas/mButton_Up') as mw.Button
+		}
+		return this.mButton_Up_Internal
+	}
+	private mButton_Left_Internal: mw.Button
+	public get mButton_Left(): mw.Button {
+		if(!this.mButton_Left_Internal&&this.uiWidgetBase) {
+			this.mButton_Left_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/Canvas/mButton_Left') as mw.Button
+		}
+		return this.mButton_Left_Internal
+	}
+	private mButton_Right_Internal: mw.Button
+	public get mButton_Right(): mw.Button {
+		if(!this.mButton_Right_Internal&&this.uiWidgetBase) {
+			this.mButton_Right_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/Canvas/mButton_Right') as mw.Button
+		}
+		return this.mButton_Right_Internal
+	}
+	private mButton_Down_Internal: mw.Button
+	public get mButton_Down(): mw.Button {
+		if(!this.mButton_Down_Internal&&this.uiWidgetBase) {
+			this.mButton_Down_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/Canvas/mButton_Down') as mw.Button
+		}
+		return this.mButton_Down_Internal
+	}
+	private mButton_Catch_Internal: mw.Button
+	public get mButton_Catch(): mw.Button {
+		if(!this.mButton_Catch_Internal&&this.uiWidgetBase) {
+			this.mButton_Catch_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mButton_Catch') as mw.Button
+		}
+		return this.mButton_Catch_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

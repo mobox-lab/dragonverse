@@ -7,10 +7,15 @@
 
 
 @UIBind('UI/Buff/P_Game_Buff.ui')
-export default class P_Game_Buff_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mBuffCanvas')
-    public mBuffCanvas: mw.Canvas=undefined;
-    
+export default class P_Game_Buff_Generate extends UIScript {
+		private mBuffCanvas_Internal: mw.Canvas
+	public get mBuffCanvas(): mw.Canvas {
+		if(!this.mBuffCanvas_Internal&&this.uiWidgetBase) {
+			this.mBuffCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBuffCanvas') as mw.Canvas
+		}
+		return this.mBuffCanvas_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

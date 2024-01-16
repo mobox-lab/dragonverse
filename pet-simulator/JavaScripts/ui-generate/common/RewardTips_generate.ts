@@ -7,14 +7,29 @@
 
 
 @UIBind('UI/common/RewardTips.ui')
-export default class RewardTips_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mTipsCanvas/mImage')
-    public mImage: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mTipsCanvas/mValText')
-    public mValText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mTipsCanvas')
-    public mTipsCanvas: mw.Canvas=undefined;
-    
+export default class RewardTips_Generate extends UIScript {
+		private mImage_Internal: mw.Image
+	public get mImage(): mw.Image {
+		if(!this.mImage_Internal&&this.uiWidgetBase) {
+			this.mImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTipsCanvas/mImage') as mw.Image
+		}
+		return this.mImage_Internal
+	}
+	private mValText_Internal: mw.TextBlock
+	public get mValText(): mw.TextBlock {
+		if(!this.mValText_Internal&&this.uiWidgetBase) {
+			this.mValText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTipsCanvas/mValText') as mw.TextBlock
+		}
+		return this.mValText_Internal
+	}
+	private mTipsCanvas_Internal: mw.Canvas
+	public get mTipsCanvas(): mw.Canvas {
+		if(!this.mTipsCanvas_Internal&&this.uiWidgetBase) {
+			this.mTipsCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTipsCanvas') as mw.Canvas
+		}
+		return this.mTipsCanvas_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

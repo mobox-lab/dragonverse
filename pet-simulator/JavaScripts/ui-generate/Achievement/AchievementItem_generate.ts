@@ -7,30 +7,85 @@
 
 
 @UIBind('UI/Achievement/AchievementItem.ui')
-export default class AchievementItem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/DetailCanvas/mText_AMdetial')
-    public mText_AMdetial: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/DetailCanvas/mText_Award')
-    public mText_Award: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/DetailCanvas/mImage_AwardType')
-    public mImage_AwardType: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mImage_GradeBG')
-    public mImage_GradeBG: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mProgressBar')
-    public mProgressBar: mw.ProgressBar=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mText_Grade')
-    public mText_Grade: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mText_AMname')
-    public mText_AMname: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mCanvas_Pointto')
-    public mCanvas_Pointto: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mCanvas_Pointto/mText_NextLevel')
-    public mText_NextLevel: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mCanvas_Pointto/mImage_Point')
-    public mImage_Point: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mText_lording')
-    public mText_lording: mw.TextBlock=undefined;
-    
+export default class AchievementItem_Generate extends UIScript {
+		private mText_AMdetial_Internal: mw.TextBlock
+	public get mText_AMdetial(): mw.TextBlock {
+		if(!this.mText_AMdetial_Internal&&this.uiWidgetBase) {
+			this.mText_AMdetial_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/DetailCanvas/mText_AMdetial') as mw.TextBlock
+		}
+		return this.mText_AMdetial_Internal
+	}
+	private mText_Award_Internal: mw.TextBlock
+	public get mText_Award(): mw.TextBlock {
+		if(!this.mText_Award_Internal&&this.uiWidgetBase) {
+			this.mText_Award_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/DetailCanvas/mText_Award') as mw.TextBlock
+		}
+		return this.mText_Award_Internal
+	}
+	private mImage_AwardType_Internal: mw.Image
+	public get mImage_AwardType(): mw.Image {
+		if(!this.mImage_AwardType_Internal&&this.uiWidgetBase) {
+			this.mImage_AwardType_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/DetailCanvas/mImage_AwardType') as mw.Image
+		}
+		return this.mImage_AwardType_Internal
+	}
+	private mImage_GradeBG_Internal: mw.Image
+	public get mImage_GradeBG(): mw.Image {
+		if(!this.mImage_GradeBG_Internal&&this.uiWidgetBase) {
+			this.mImage_GradeBG_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mImage_GradeBG') as mw.Image
+		}
+		return this.mImage_GradeBG_Internal
+	}
+	private mProgressBar_Internal: mw.ProgressBar
+	public get mProgressBar(): mw.ProgressBar {
+		if(!this.mProgressBar_Internal&&this.uiWidgetBase) {
+			this.mProgressBar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mProgressBar') as mw.ProgressBar
+		}
+		return this.mProgressBar_Internal
+	}
+	private mText_Grade_Internal: mw.TextBlock
+	public get mText_Grade(): mw.TextBlock {
+		if(!this.mText_Grade_Internal&&this.uiWidgetBase) {
+			this.mText_Grade_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_Grade') as mw.TextBlock
+		}
+		return this.mText_Grade_Internal
+	}
+	private mText_AMname_Internal: mw.TextBlock
+	public get mText_AMname(): mw.TextBlock {
+		if(!this.mText_AMname_Internal&&this.uiWidgetBase) {
+			this.mText_AMname_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_AMname') as mw.TextBlock
+		}
+		return this.mText_AMname_Internal
+	}
+	private mCanvas_Pointto_Internal: mw.Canvas
+	public get mCanvas_Pointto(): mw.Canvas {
+		if(!this.mCanvas_Pointto_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Pointto_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_Pointto') as mw.Canvas
+		}
+		return this.mCanvas_Pointto_Internal
+	}
+	private mText_NextLevel_Internal: mw.TextBlock
+	public get mText_NextLevel(): mw.TextBlock {
+		if(!this.mText_NextLevel_Internal&&this.uiWidgetBase) {
+			this.mText_NextLevel_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_Pointto/mText_NextLevel') as mw.TextBlock
+		}
+		return this.mText_NextLevel_Internal
+	}
+	private mImage_Point_Internal: mw.Image
+	public get mImage_Point(): mw.Image {
+		if(!this.mImage_Point_Internal&&this.uiWidgetBase) {
+			this.mImage_Point_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_Pointto/mImage_Point') as mw.Image
+		}
+		return this.mImage_Point_Internal
+	}
+	private mText_lording_Internal: mw.TextBlock
+	public get mText_lording(): mw.TextBlock {
+		if(!this.mText_lording_Internal&&this.uiWidgetBase) {
+			this.mText_lording_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_lording') as mw.TextBlock
+		}
+		return this.mText_lording_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

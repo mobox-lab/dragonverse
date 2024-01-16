@@ -7,7 +7,7 @@
 
 
 @UIBind('UI/WorldUI/Newguide.ui')
-export default class Newguide_Generate extends mw.UIScript {
+export default class Newguide_Generate extends UIScript {
 	
 
 

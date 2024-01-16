@@ -7,10 +7,15 @@
 
 
 @UIBind('UI/UserHead.ui')
-export default class UserHead_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mUserName')
-    public mUserName: mw.TextBlock=undefined;
-    
+export default class UserHead_Generate extends UIScript {
+		private mUserName_Internal: mw.TextBlock
+	public get mUserName(): mw.TextBlock {
+		if(!this.mUserName_Internal&&this.uiWidgetBase) {
+			this.mUserName_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mUserName') as mw.TextBlock
+		}
+		return this.mUserName_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

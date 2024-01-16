@@ -7,14 +7,29 @@
 
 
 @UIBind('UI/hud/HudPet2.ui')
-export default class HudPet2_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas_Pet/mBtn_Pet/mText_Pet')
-    public mText_Pet: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Pet/mBtn_Pet')
-    public mBtn_Pet: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Pet')
-    public mCanvas_Pet: mw.Canvas=undefined;
-    
+export default class HudPet2_Generate extends UIScript {
+		private mCanvas_Pet_Internal: mw.Canvas
+	public get mCanvas_Pet(): mw.Canvas {
+		if(!this.mCanvas_Pet_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Pet_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Pet') as mw.Canvas
+		}
+		return this.mCanvas_Pet_Internal
+	}
+	private mBtn_Pet_Internal: mw.Button
+	public get mBtn_Pet(): mw.Button {
+		if(!this.mBtn_Pet_Internal&&this.uiWidgetBase) {
+			this.mBtn_Pet_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Pet/mBtn_Pet') as mw.Button
+		}
+		return this.mBtn_Pet_Internal
+	}
+	private mText_Pet_Internal: mw.TextBlock
+	public get mText_Pet(): mw.TextBlock {
+		if(!this.mText_Pet_Internal&&this.uiWidgetBase) {
+			this.mText_Pet_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Pet/mBtn_Pet/mText_Pet') as mw.TextBlock
+		}
+		return this.mText_Pet_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

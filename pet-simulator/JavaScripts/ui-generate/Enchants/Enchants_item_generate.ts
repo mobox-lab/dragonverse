@@ -7,14 +7,29 @@
 
 
 @UIBind('UI/Enchants/Enchants_item.ui')
-export default class Enchants_item_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mButton_Entry')
-    public mButton_Entry: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mTextBlock_Entry')
-    public mTextBlock_Entry: mw.TextBlock=undefined;
-    
+export default class Enchants_item_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mButton_Entry_Internal: mw.Button
+	public get mButton_Entry(): mw.Button {
+		if(!this.mButton_Entry_Internal&&this.uiWidgetBase) {
+			this.mButton_Entry_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mButton_Entry') as mw.Button
+		}
+		return this.mButton_Entry_Internal
+	}
+	private mTextBlock_Entry_Internal: mw.TextBlock
+	public get mTextBlock_Entry(): mw.TextBlock {
+		if(!this.mTextBlock_Entry_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_Entry_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_Entry') as mw.TextBlock
+		}
+		return this.mTextBlock_Entry_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();
