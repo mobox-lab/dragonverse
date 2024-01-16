@@ -392,7 +392,7 @@ export default class GameServiceConfig {
     public static readonly CAMERA_ZOOM_MAX_DIST = 900;
 
     /**
-     * 单次滚轮缩放距离.
+     * 角色 镜头单次滚轮缩放距离.
      */
     public static readonly CAMERA_ZOOM_PER_DIST = 100;
 
@@ -411,11 +411,6 @@ export default class GameServiceConfig {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region UI
-    /**
-     * {@link DialoguePanel.cnvOptions} 最大选项容量.
-     */
-    public static readonly CNV_OPTIONS_MAX_CAPACITY = 4;
-
     /**
      * 主界面 幕布 显示动画时长. ms
      */
@@ -484,12 +479,27 @@ export default class GameServiceConfig {
     /**
      * 地图界面 地图缩放最大值.
      */
-    public static readonly MAP_BIG_MAP_MAX_SCALE = 4;
+    public static readonly MAP_BIG_MAP_MAX_ZOOM = 6;
 
     /**
      * 地图界面 地图缩放最小值.
      */
-    public static readonly MAP_BIG_MAP_MIN_SCALE = 0.5;
+    public static readonly MAP_BIG_MAP_MIN_ZOOM = 1;
+
+    /**
+     * 地图界面 地图缩放动画时长. ms
+     */
+    public static readonly MAP_ZOOM_DURATION = 0.25e3;
+
+    /**
+     * 地图界面 地图单次滚轮缩放距离.
+     */
+    public static readonly MAP_ZOOM_PER_DIST = 1;
+
+    /**
+     * 地图界面 地图按键位移距离.
+     */
+    public static readonly MAP_MOVE_PER_DIST = 40;
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

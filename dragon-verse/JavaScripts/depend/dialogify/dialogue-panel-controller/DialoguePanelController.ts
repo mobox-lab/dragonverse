@@ -7,7 +7,6 @@ import ADialogifyConfigReader, {
 import DialoguePanel_Generate from "../../../ui-generate/dialogue/DialoguePanel_generate";
 import InteractNode_Generate from "../../../ui-generate/dialogue/InteractNode_generate";
 
-
 export default class DialoguePanelController extends ADialoguePanelController<
     DialoguePanel_Generate,
     InteractNode_Generate,

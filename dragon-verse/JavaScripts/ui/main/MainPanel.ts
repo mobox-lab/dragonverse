@@ -22,7 +22,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
 import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
-import  { CubicBezier } from "../../depend/easing/Easing";
+import { CubicBezier } from "../../depend/easing/Easing";
 import Regulator from "../../depend/regulator/Regulator";
 import MainCurtainPanel from "./MainCurtainPanel";
 
@@ -48,8 +48,8 @@ export default class MainPanel extends MainPanel_Generate {
 
     private _character: Character;
 
-    private get character(): Character {
-        if (!this._character) this._character = Player.localPlayer.character;
+    private get character(): Character | null {
+        if (!this._character) this._character = Player.localPlayer?.character ?? null;
         return this._character;
     }
 
