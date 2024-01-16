@@ -74,7 +74,7 @@ export default class HeadUIScript extends mw.Script {
     }
 
     public getPlayerNickName(playerId: number): string {
-        for (let i = 0; i <= this.playerNickNames.length; i++) {
+        for (let i = 0; i < this.playerNickNames.length; i++) {
             if (this.playerNickNames[i].playerId === playerId) {
                 return this.playerNickNames[i].nickName;
             }
