@@ -1,0 +1,69 @@
+import { ConfigBase, IElementBase } from "./ConfigBase";
+const EXCELDATA:Array<Array<any>> = [["id","Grade","Name","AMdetail","Judge","NextId","TragetNum","CoinType","CoinAward","DMAward","BagAward","PetAward"],["","","Language","Language","","","","","","","",""],[1,1,"Achievement_Name_1","Achievement_Detail_1",1,2,3,1,500,0,0,0],[2,1,"Achievement_Name_2","Achievement_Detail_1",1,3,5,1,1500,0,0,0],[3,2,"Achievement_Name_3","Achievement_Detail_1",1,4,10,1,5000,0,0,0],[4,2,"Achievement_Name_4","Achievement_Detail_1",1,5,20,0,0,750,0,0],[5,2,"Achievement_Name_5","Achievement_Detail_1",1,6,35,0,0,1750,0,0],[6,2,"Achievement_Name_6","Achievement_Detail_1",1,7,50,0,0,3250,0,0],[7,3,"Achievement_Name_7","Achievement_Detail_1",1,8,75,0,0,5000,0,0],[8,3,"Achievement_Name_8","Achievement_Detail_1",1,9,100,0,0,7500,0,0],[9,3,"Achievement_Name_9","Achievement_Detail_1",1,10,150,0,0,12500,0,0],[10,3,"Achievement_Name_10","Achievement_Detail_1",1,11,200,0,0,15000,0,0],[11,4,"Achievement_Name_11","Achievement_Detail_1",1,12,350,0,0,22500,0,0],[12,4,"Achievement_Name_12","Achievement_Detail_1",1,13,500,0,0,50000,0,0],[13,4,"Achievement_Name_13","Achievement_Detail_1",1,14,750,0,0,80000,0,0],[14,4,"Achievement_Name_14","Achievement_Detail_1",1,15,1250,0,0,0,5,0],[15,5,"Achievement_Name_15","Achievement_Detail_1",1,0,2500,0,0,0,10,0],[16,1,"Achievement_Name_16","Achievement_Detail_2",2,17,20,0,0,100,0,0],[17,1,"Achievement_Name_17","Achievement_Detail_2",2,18,50,0,0,250,0,0],[18,2,"Achievement_Name_18","Achievement_Detail_2",2,19,100,0,0,500,0,0],[19,2,"Achievement_Name_19","Achievement_Detail_2",2,20,250,0,0,1250,0,0],[20,2,"Achievement_Name_20","Achievement_Detail_2",2,21,500,0,0,3000,0,0],[21,2,"Achievement_Name_21","Achievement_Detail_2",2,22,750,0,0,5250,0,0],[22,3,"Achievement_Name_22","Achievement_Detail_2",2,23,1000,0,0,7500,0,0],[23,3,"Achievement_Name_23","Achievement_Detail_2",2,24,1500,0,0,9500,0,0],[24,3,"Achievement_Name_24","Achievement_Detail_2",2,25,2000,0,0,12500,0,0],[25,3,"Achievement_Name_25","Achievement_Detail_2",2,26,2500,0,0,15000,0,0],[26,4,"Achievement_Name_26","Achievement_Detail_2",2,27,5000,0,0,22500,0,0],[27,4,"Achievement_Name_27","Achievement_Detail_2",2,28,7500,0,0,27500,0,0],[28,4,"Achievement_Name_28","Achievement_Detail_2",2,29,10000,0,0,42500,0,0],[29,4,"Achievement_Name_29","Achievement_Detail_2",2,30,25000,0,0,125000,0,0],[30,5,"Achievement_Name_30","Achievement_Detail_2",2,0,50000,0,0,225000,0,0],[31,2,"Achievement_Name_31","Achievement_Detail_3",3,32,3,0,0,200,0,0],[32,2,"Achievement_Name_32","Achievement_Detail_3",3,33,10,0,0,500,0,0],[33,2,"Achievement_Name_33","Achievement_Detail_3",3,34,25,0,0,1350,0,0],[34,2,"Achievement_Name_34","Achievement_Detail_3",3,35,50,0,0,2500,0,0],[35,3,"Achievement_Name_35","Achievement_Detail_3",3,36,100,0,0,6000,0,0],[36,3,"Achievement_Name_36","Achievement_Detail_3",3,37,250,0,0,12500,0,0],[37,4,"Achievement_Name_37","Achievement_Detail_3",3,38,500,0,0,25000,0,0],[38,4,"Achievement_Name_38","Achievement_Detail_3",3,39,750,0,0,35000,0,0],[39,4,"Achievement_Name_39","Achievement_Detail_3",3,40,1000,0,0,50000,0,0],[40,4,"Achievement_Name_40","Achievement_Detail_3",3,41,1500,0,0,85000,0,0],[41,5,"Achievement_Name_41","Achievement_Detail_3",3,42,2500,0,0,1250000,0,0],[42,5,"Achievement_Name_42","Achievement_Detail_3",3,43,5000,0,0,250000,0,0],[43,5,"Achievement_Name_43","Achievement_Detail_3",3,0,10000,0,0,500000,0,0],[44,2,"Achievement_Name_44","Achievement_Detail_4",4,45,10,0,0,250,0,0],[45,2,"Achievement_Name_45","Achievement_Detail_4",4,46,25,0,0,900,0,0],[46,2,"Achievement_Name_46","Achievement_Detail_4",4,47,50,0,0,1500,0,0],[47,2,"Achievement_Name_47","Achievement_Detail_4",4,48,100,0,0,3250,0,0],[48,3,"Achievement_Name_48","Achievement_Detail_4",4,49,250,0,0,10000,0,0],[49,3,"Achievement_Name_49","Achievement_Detail_4",4,50,500,0,0,16500,0,0],[50,4,"Achievement_Name_50","Achievement_Detail_4",4,51,750,0,0,22500,0,0],[51,4,"Achievement_Name_51","Achievement_Detail_4",4,0,1000,0,0,35000,0,0],[52,2,"Achievement_Name_52","Achievement_Detail_5",6,53,3,0,0,500,0,0],[53,2,"Achievement_Name_53","Achievement_Detail_5",6,54,5,0,0,2000,0,0],[54,3,"Achievement_Name_54","Achievement_Detail_5",6,0,10,0,0,5000,0,0],[55,2,"Achievement_Name_55","Achievement_Detail_6",7,56,1,0,0,200,0,0],[56,2,"Achievement_Name_56","Achievement_Detail_6",7,57,5,0,0,750,0,0],[57,3,"Achievement_Name_57","Achievement_Detail_6",7,58,25,0,0,2500,0,0],[58,4,"Achievement_Name_58","Achievement_Detail_6",7,0,100,0,0,8500,0,0],[59,2,"Achievement_Name_59","Achievement_Detail_7",8,60,1,0,0,350,0,0],[60,2,"Achievement_Name_60","Achievement_Detail_7",8,61,5,0,0,1500,0,0],[61,3,"Achievement_Name_61","Achievement_Detail_7",8,62,25,0,0,4500,0,0],[62,4,"Achievement_Name_62","Achievement_Detail_7",8,0,100,0,0,13500,0,0],[63,2,"Achievement_Name_63","Achievement_Detail_8",9,64,1,0,0,200,0,0],[64,2,"Achievement_Name_64","Achievement_Detail_8",9,65,5,0,0,750,0,0],[65,3,"Achievement_Name_65","Achievement_Detail_8",9,66,25,0,0,2500,0,0],[66,4,"Achievement_Name_66","Achievement_Detail_8",9,0,100,0,0,8500,0,0],[67,2,"Achievement_Name_67","Achievement_Detail_9",10,68,5,0,0,750,0,0],[68,3,"Achievement_Name_68","Achievement_Detail_9",10,69,50,0,0,5000,0,0],[69,3,"Achievement_Name_69","Achievement_Detail_9",10,0,200,0,0,17500,0,0],[70,3,"Achievement_Name_70","Achievement_Detail_10",11,71,1,0,0,1500,0,0],[71,3,"Achievement_Name_71","Achievement_Detail_10",11,72,5,0,0,7500,0,0],[72,4,"Achievement_Name_72","Achievement_Detail_10",11,73,20,0,0,25000,0,0],[73,4,"Achievement_Name_73","Achievement_Detail_10",11,74,100,0,0,25000,0,0],[74,5,"Achievement_Name_74","Achievement_Detail_10",11,0,250,0,0,25000,0,0],[75,2,"Achievement_Name_75","Achievement_Detail_11",12,76,3,0,0,10000,0,0],[76,3,"Achievement_Name_76","Achievement_Detail_12",12,0,3,0,0,20000,0,0],[77,2,"Achievement_Name_77","Achievement_Detail_13",13,0,1,0,0,1000,0,0],[78,3,"Achievement_Name_78","Achievement_Detail_14",14,0,1,0,0,2000,0,0],[79,4,"Achievement_Name_79","Achievement_Detail_15",15,0,1,0,0,10000,0,0],[80,5,"Achievement_Name_80","Achievement_Detail_16",16,0,1,0,0,50000,0,0],[81,2,"Achievement_Name_81","Achievement_Detail_17",17,0,1,0,0,750,0,0],[82,4,"Achievement_Name_82","Achievement_Detail_18",18,0,1,0,0,0,5,0],[83,3,"Achievement_Name_83","Achievement_Detail_19",19,0,1,0,0,750,0,0],[84,4,"Achievement_Name_84","Achievement_Detail_20",20,0,1,0,0,0,5,0],[85,4,"Achievement_Name_85","Achievement_Detail_21",21,0,1,0,0,0,5,0],[86,4,"Achievement_Name_86","Achievement_Detail_22",22,0,1,0,0,20000,0,0],[87,3,"Achievement_Name_87","Achievement_Detail_23",23,0,1,0,0,0,0,36],[88,4,"Achievement_Name_88","Achievement_Detail_24",24,0,1,0,0,0,0,87],[89,3,"Achievement_Name_89","Achievement_Detail_25",25,0,1,2,1000,0,0,0],[90,3,"Achievement_Name_90","Achievement_Detail_26",26,0,1,3,1000,0,0,0]];
+export interface IAchievementsElement extends IElementBase{
+ 	/**成就id*/
+	id:number
+	/**难度
+1=容易
+2=简单
+3=中等
+4=困难
+5=疯狂*/
+	Grade:number
+	/**成就名字*/
+	Name:string
+	/**成就详细信息*/
+	AMdetail:string
+	/**判断条件：
+1=开蛋次数
+2=破坏金币数
+3=破坏宝箱数
+4=破坏礼物箱数
+5=破坏钻石数
+6=升级次数
+7=爱心转化成功数
+8=彩虹转化成功数
+9=融合成功数
+10=爱心化失败数
+11=宠物附魔数
+12=区域开放数
+13=孵化出稀有宠物
+14=孵化出史诗宠物
+15=孵化出传说宠物
+16=孵化出神话宠物
+17= 使用一只宠物爱心化成功
+18=使用一只传说宠物爱心化成功
+19=使用五只宠物爱心化失败
+20=融合出了传奇宠物
+21=使用一只传奇宠物彩虹化成功
+22=宠物附魔独特的标签成功
+23=击破沙漠大宝箱
+24=击破天堂大宝箱
+25=到达幻想世界
+26=到达科技世界
+*/
+	Judge:number
+	/**下一阶段的成就ID*/
+	NextId:number
+	/**目标数*/
+	TragetNum:number
+	/**对应金币
+1=第一世界
+2=第二世界
+3=第三世界*/
+	CoinType:number
+	/**金币*/
+	CoinAward:number
+	/**钻石*/
+	DMAward:number
+	/**背包扩充数*/
+	BagAward:number
+	/**宠物GUID*/
+	PetAward:number
+ } 
+export class AchievementsConfig extends ConfigBase<IAchievementsElement>{
+	constructor(){
+		super(EXCELDATA);
+	}
+
+}

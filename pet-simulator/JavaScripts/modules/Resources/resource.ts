@@ -1,0 +1,929 @@
+import { GeneralManager, } from '../../Modified027Editor/ModifiedStaticAPI';
+import { IEffectElement } from "../../config/Effect";
+import { GameConfig } from "../../config/GameConfig";
+import { ISceneUnitElement } from "../../config/SceneUnit";
+import { GlobalEnum } from "../../const/Enum";
+import { cubicBezier } from "../../utils/MoveUtil";
+import { SoundManager } from "../../utils/SoundManager";
+import { utils } from "../../utils/uitls";
+import AchievementModuleC from "../AchievementModule/AchievementModuleC";
+import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
+import { EnchantBuff } from "../PetBag/EnchantBuff";
+import { DropManager } from "./DropResouce";
+import { BonusUI, ResourceUIPool } from "./scenceUnitUI";
+import { GlobalData } from '../../const/GlobalData';
+import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
+import { PlayerManagerExtesion } from '../../Modified027Editor/ModifiedPlayer';
+;
+export class Resource {
+
+    private static _instance: Resource;
+    public static get instance(): Resource {
+        if (!this._instance) {
+            this._instance = new Resource();
+        }
+        return this._instance;
+    }
+
+    public async getResource(cfgId: number): Promise<mw.GameObject> {
+        let info = GameConfig.SceneUnit.getElement(cfgId);
+        let res = await SpawnManager.modifyPoolAsyncSpawn(info.Guid, GameObjPoolSourceType.Prefab);
+        if (info.meshArr && info.meshArr.length > 0) {
+
+            info.meshArr.forEach((item, index) => {
+                let name = index + 1;
+                let obj = res.getChildByName(name.toString());
+                if (obj) {
+                    let mesh = obj as mw.Model;
+                    mesh.setMaterial(item);
+                } else {
+                    console.error(`lwj 未找到资源cfg${cfgId}的indedx${index}}`);
+                }
+            })
+        }
+        return res;
+    }
+
+    public returnResource(res: mw.GameObject) {
+        GameObjPool.despawn(res);
+    }
+
+}
+
+/**破坏阶段 */
+enum ScaleLevel {
+    /**最小 */
+    Min,
+    /**中等 */
+    Middle,
+    /**最大 */
+    Max,
+}
+
+
+/**伤害记录 */
+export class DamageRecode {
+    constructor(public playerId: number, public damage: number) { }
+}
+/**场景资源Arr */
+export const SceneResourceMap: Map<number, resourceScript[]> = new Map<number, resourceScript[]>();
+
+@Component
+export default class resourceScript extends mw.Script {
+
+    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
+    public curHp: number = 0;
+    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
+    private scenePointId: string = "";
+
+    @mw.Property({ replicated: true })
+    public isbigBox: boolean = false;
+
+    /**伤害记录 */
+    @mw.Property({ replicated: true })
+    private damageArr: DamageRecode[] = [];
+
+    private _rate: number = 1;
+    private rateEff: number;
+    public get rate(): number {
+        return this._rate;
+    }
+
+    //----------------------------server-----------------------------------
+
+    /**死亡回调 */
+    public onDead: mw.Action = new mw.Action();
+
+    public initServer(pointId: number, cfgId: number, isbigBox: boolean = false) {
+        this.isbigBox = isbigBox;
+        this.randomRate(cfgId);
+        this.damageArr.length = 0;
+
+        this.scenePointId = cfgId + "_" + pointId + "_" + this._rate;
+        let unitInfo = GameConfig.SceneUnit.getElement(cfgId);
+        this.curHp = unitInfo.HP;
+        this.cfg = unitInfo;
+        this.onDead.clear();
+    }
+
+    @RemoteFunction(mw.Server)
+    private net_injured(playerID: number, damage: number) {
+
+        let damageInfoIndex = this.damageArr.findIndex((item) => {
+            return item.playerId == playerID
+        })
+        if (damageInfoIndex == -1) {
+            this.damageArr.push(new DamageRecode(playerID, damage));
+        } else {
+            this.damageArr[damageInfoIndex] = new DamageRecode(
+                playerID,
+                this.damageArr[damageInfoIndex].damage + damage
+            )
+        }
+        if (this.curHp <= 0) {
+            return;
+        }
+
+        this.curHp -= damage;
+        if (this.curHp <= 0) {
+            this.curHp = 0;
+            this.net_dead(playerID);
+            this.getDamageRate();
+            return;
+        }
+
+        let player = Player.getPlayer(playerID);
+        this.client_injured(player, this.curHp, this._rate);
+
+    }
+
+    //根据伤害几率获取每个玩家伤害的比率
+    private getDamageRate() {
+
+        let player: mw.Player = null;
+
+        for (let i = 0; i < this.damageArr.length; i++) {
+            player = Player.getPlayer(this.damageArr[i].playerId);
+            this.overGetReward(player)
+        }
+    }
+
+    /**随机倍率 */
+    private randomRate(cfgId: number): void {
+        let sceneInfo = GameConfig.SceneUnit.getElement(cfgId);
+        let brunsRate = sceneInfo.BrunsRate;//倍率出现概率
+        if (brunsRate == null) return;
+        let rates = sceneInfo.Rate;//出现概率
+        let random = MathUtil.randomFloat(0, 100);
+        for (let i = 0; i < brunsRate.length; i++) {
+            let end = brunsRate[i + 1] || 0;
+            if (random <= brunsRate[i] && random > end) {
+                this._rate = rates[i];
+                break;
+            }
+        }
+    }
+
+    private async net_dead(playerId: number) {
+        await TimeUtil.delaySecond(3);
+        if (this.isbigBox) {
+            this.onDead.call(this.scenePointId, playerId);
+        }
+        else
+            this.onDead.call(playerId);
+        this.scenePointId = "";
+        this._rate = 1;
+
+    }
+
+    //----------------------------only client-----------------------------------
+    private attInterval: any;
+    /**该客户端玩家造成伤害 */
+    @RemoteFunction(mw.Client)
+    private client_injured(player: mw.Player, curHp: number, rate: number) {
+
+        if (this.attInterval) {
+            clearTimeout(this.attInterval);
+            this.attInterval = null;
+        }
+        this.attInterval = setTimeout(() => {
+            this.stopGuaSha();
+        }, 2000)
+
+        this.getCurHpRateC(curHp);
+        if (this.resObj == null || this._cfgId == 0) return;
+        ResourceUIPool.instance.getUI(this.resObj.gameObjectId, this._cfgId, curHp, rate);
+    }
+
+    /**结算奖励 */
+    @RemoteFunction(mw.Client)
+    private overGetReward(player: mw.Player) {
+        this.getCurHpRateC(0);
+        Event.dispatchToLocal(GlobalEnum.EventName.AttackDestroy)
+    }
+
+
+    //----------------------------client-----------------------------------
+    private resObj: mw.GameObject = null;
+    /**所有子物体 */
+    private allChild: mw.GameObject[] = [];
+    private isStart: boolean = false;
+    /**当前坐标 */
+    private curPos: mw.Vector = new mw.Vector();
+    private _cfgId: number = 0;
+    private cfg: ISceneUnitElement = null;
+    private _ResourceType: number;
+    /**是否暴击 */
+    private isCrit: boolean = false;
+    /**上一次伤害 */
+    private lastDamage: number = 0;
+    /**金币砖石奖励 */
+    private rewardGold: number = 0;
+    private rewardGem: number = 0;
+
+    /**阶段金币钻石奖励 */
+    private levelGold: number = 0;
+    private levelGem: number = 0;
+
+    /**刮痧奖励金币钻石 */
+    private guaShaRewardGold: number = 0;
+    private guaShaRewardGem: number = 0;
+
+    /**资源阶段 */
+    private scaleLevel: ScaleLevel = ScaleLevel.Max;
+    /**刮痧回调 */
+    public onGuaSha: mw.Action = new mw.Action();
+
+    /**当前坐标id */
+    private _pointId: number = 0;
+    public get pointId(): number {
+        return this._pointId;
+    }
+    public get location(): mw.Vector {
+        return this.curPos;
+    }
+    public get cfgId(): number {
+        return this._cfgId;
+    }
+    public get Obj() {
+        return this.resObj
+    }
+
+    private async onHpChanged(): Promise<void> {
+
+        if (this.curHp <= 0) {
+            this.onGuaSha.call(false);
+            this.curHp = 0;
+            this.lastDamage = 0;
+            this._cfgId = 0;
+            this._pointId = 0;
+            if (this.cfg) {
+                this.removeScenceResource(this.cfg.AreaID, this);
+                this.cfg = null;
+            }
+            if (this.toiletMan) {
+                this.toiletManDead(this.recycleResourceModel.bind(this, true))
+            } else
+                this.recycleResourceModel(true);
+            return;
+        }
+        if (this.resObj == null && !this.isStart && this.cfg) {
+            this.createPassiveObj();
+        }
+    }
+
+    /**获取自己打的血量比 */
+    public getMyDamageRate(): number {
+        for (let i = 0; i < this.damageArr.length; i++) {
+            if (!this.damageArr[i]) continue;
+            if (this.damageArr[i].playerId == Player.localPlayer.playerId)
+                return this.damageArr[i].damage / this.cfg.HP;
+        }
+    }
+
+    /**刮痧interval */
+    private interval: any;
+    /**开始刮痧计时 */
+    public startGuaSha() {
+        if (this.interval) return;
+
+        if (this.isbigBox) {
+            this.interval = TimeUtil.setInterval(() => {
+                let rate = this.getMyDamageRate();
+                this.onGuaSha.call(true);
+
+                let goldVal = Math.ceil((this.rewardGold * rate) / 3 - this.guaShaRewardGold);
+                this.guaShaRewardGold += goldVal;
+                this.playReward(GlobalEnum.ResourceAttackStage.GuaSha, this.ResourceType, goldVal, 0);
+                let gemVal = Math.ceil((this.rewardGem * rate) / 3 - this.guaShaRewardGem);
+                this.guaShaRewardGem += gemVal;
+                this.playReward(GlobalEnum.ResourceAttackStage.GuaSha, this.ResourceType, 0, gemVal);
+            }, GlobalData.SceneResource.guaShaTime)
+            return;
+        }
+
+        this.interval = TimeUtil.setInterval(() => {
+            let rate = this.getMyDamageRate();
+
+            if (this.ResourceType > 2) {
+                let goldVal = Math.ceil((this.rewardGold * rate) / 3 - this.guaShaRewardGold);
+                this.guaShaRewardGold += goldVal;
+                this.playReward(GlobalEnum.ResourceAttackStage.GuaSha, this.ResourceType, goldVal, 0);
+            }
+            else {
+                let gemVal = Math.ceil((this.rewardGem * rate) / 3 - this.guaShaRewardGem);
+                this.guaShaRewardGold += gemVal;
+                this.playReward(GlobalEnum.ResourceAttackStage.GuaSha, this.ResourceType, 0, gemVal);
+            }
+        }, GlobalData.SceneResource.guaShaTime)
+    }
+    /**停止刮痧计时 */
+    public stopGuaSha() {
+        if (!this.interval) return;
+        TimeUtil.clearInterval(this.interval);
+        this.interval = null;
+    }
+
+    /**通过血量判断攻击阶段 */
+    private getCurHpRateC(curHp: number) {
+
+        if (this.resObj == null || this._cfgId == 0 || !this.cfg) return;
+        this.startGuaSha();
+        this.toiletManHit();
+        this.playProcessEffect();
+        if (curHp <= 0 && this.resObj != null) {
+            ResourceUIPool.instance.recycleUI(this.resObj.gameObjectId);
+            if (this.cfg == null && this._cfgId != 0) {
+                this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
+            }
+
+            if (curHp <= this.cfg.HP * 1 / 3 && this.scaleLevel != ScaleLevel.Min) {
+
+                this.stopGuaSha();
+
+                this.playCritEffectByLevel();
+                this.scaleLevel = ScaleLevel.Min;
+
+                this.levelGold += Math.ceil((this.rewardGold * 1 / 3));
+                this.levelGem += Math.ceil((this.rewardGem * 1 / 3));
+                this.playReward(GlobalEnum.ResourceAttackStage.OneThird, this.ResourceType, (this.rewardGold * 1 / 3), (this.rewardGem * 1 / 3));
+
+                this.resObj.getChildByName("2")?.setVisibility(mw.PropertyStatus.Off);
+
+            } else if (curHp <= this.cfg.HP * 2 / 3 && curHp > this.cfg.HP * 1 / 3 && this.scaleLevel != ScaleLevel.Middle) {
+                this.stopGuaSha();
+
+                this.playCritEffectByLevel();
+                this.scaleLevel = ScaleLevel.Middle;
+
+                this.levelGold += Math.ceil((this.rewardGold * 1 / 3));
+                this.levelGem += Math.ceil(this.rewardGem * 1 / 3);
+                this.playReward(GlobalEnum.ResourceAttackStage.OneThird, this.ResourceType, (this.rewardGold * 1 / 3), (this.rewardGem * 1 / 3));
+
+                this.resObj.getChildByName("1")?.setVisibility(mw.PropertyStatus.Off);
+
+            } else if (curHp <= this.cfg.HP && curHp > this.cfg.HP * 2 / 3 && this.scaleLevel != ScaleLevel.Max) {
+                this.scaleLevel = ScaleLevel.Max;
+            }
+            if (curHp <= 0) {
+                //没血了
+                let myRate = this.getMyDamageRate();
+                this.playCritEffectByLast();
+                this.playReward(GlobalEnum.ResourceAttackStage.Destroy, this.ResourceType, (this.rewardGold - this.levelGold - this.guaShaRewardGold) * myRate,
+                    (this.rewardGem - this.levelGem - this.guaShaRewardGem) * myRate);
+                this.stopGuaSha();
+                ModuleService.getModule(AchievementModuleC).broadcastAchievement_destory(this.ResourceType);
+                this.guaShaRewardGem = 0;
+                this.guaShaRewardGold = 0;
+            }
+        }
+    }
+
+    /**奖励掉落物 
+     * @param state 攻击阶段
+     * @param resType 资源类型
+     * @param goldval 金币价值
+     * @param gemVal 钻石价值
+    */
+    private playReward(state: GlobalEnum.ResourceAttackStage, resType: number, goldVal: number, gemVal: number) {
+
+        let rewardArr = this.getDropCountByLevel(state, resType);
+        let goldCount = Math.ceil(rewardArr[0]);
+        let gemCount = Math.ceil(rewardArr[1]);
+        if (goldCount > 0) {
+            DropManager.getInstance().createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox);
+        }
+        if (gemCount > 0) {
+            DropManager.getInstance().createDrop(this.resObj.worldTransform.position, GlobalEnum.CoinType.Diamond, gemVal, gemCount, this.isbigBox);
+        }
+    }
+    /**判断几世界的金币 */
+    private judgeGold(): GlobalEnum.CoinType {
+        let coinType = GlobalEnum.CoinType;
+
+        let goldType = coinType.FirstWorldGold;
+
+        if (this.cfg.AreaID < 2000) {
+            goldType = coinType.FirstWorldGold;
+        } else if (this.cfg.AreaID < 3000) {
+            goldType = coinType.SecondWorldGold;
+        } else if (this.cfg.AreaID < 4000) {
+            goldType = coinType.ThirdWorldGold;
+        }
+        return goldType;
+    }
+    /**根据攻击阶段、类型返回掉落个数 */
+    private getDropCountByLevel(state: GlobalEnum.ResourceAttackStage, type: number): number[] {
+        let cfgID: number = 0;
+        switch (type) {
+            case 1:
+                cfgID = 7;
+                break;
+
+            case 2:
+                cfgID = 8;
+                break;
+            case 3:
+                cfgID = 1;
+                break;
+            case 4:
+                cfgID = 2;
+                break;
+            case 5:
+                cfgID = 3;
+                break;
+            case 6:
+                cfgID = 4;
+                break;
+            case 7:
+                cfgID = 5;
+                break;
+            case 8:
+                cfgID = 6;
+                break;
+            default:
+                break;
+        }
+
+        if (this.isbigBox) {
+            cfgID = 9;
+        }
+
+        let cfg = GameConfig.Coindown.getElement(cfgID);
+        let allRate: number = 1;
+        switch (this.rate) {
+            case 3:
+                allRate = cfg.Stagetimes[0]
+                break;
+            case 5:
+                allRate = cfg.Stagetimes[1]
+                break;
+            case 25:
+                allRate = cfg.Stagetimes[2]
+                break;
+            case 100:
+                allRate = cfg.Stagetimes[3]
+                break;
+            default:
+                break;
+        }
+
+
+        let goldcount: number = 0;
+        let gemcount: number = 0;
+        switch (state) {
+            case GlobalEnum.ResourceAttackStage.GuaSha:
+                if (cfgID == 7 || cfgID == 8)
+                    gemcount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]) * allRate;
+                else if (cfgID < 7)
+                    goldcount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]) * allRate;
+                else if (cfgID == 9) {
+                    goldcount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]) * allRate;
+                    gemcount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]) * allRate;
+                }
+                break;
+            case GlobalEnum.ResourceAttackStage.OneThird:
+                goldcount = cfg.Stepcoin * allRate;
+                gemcount = cfg.Stepdiamond * allRate;
+                break;
+            case GlobalEnum.ResourceAttackStage.Destroy:
+
+                if (this.isCrit) {
+                    goldcount = cfg.Lastcoin * cfg.Crittimes * allRate;
+                    gemcount = cfg.Lastdaimond * cfg.Crittimes * allRate;
+                } else {
+                    goldcount = cfg.Lastcoin * allRate;
+                    gemcount = cfg.Lastdaimond * allRate;
+                }
+                break;
+            default:
+                break;
+        }
+        return [goldcount, gemcount]
+    }
+
+    private onSceneChanged() {
+        if (this.scenePointId == "") return;
+
+        let arr = this.scenePointId.split("_");
+        this._cfgId = Number(arr[0]);
+        this._pointId = Number(arr[1]);
+        this._rate = Number(arr[2]);
+        this.guaShaRewardGem = 0;
+        this.guaShaRewardGold = 0;
+        this.levelGem = 0;
+        this.levelGold = 0;
+        this.onGuaSha.clear();
+        this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
+        let point = GameConfig.DropPoint.getElement(this._pointId).areaPoints;
+
+        this.curPos.set(point.x, point.y, point.z);
+
+        //先存起来，等玩家进入范围后，再遍历 一点点得到出现
+        this.addScenceResource(this.cfg.AreaID);
+        if (this.isbigBox && GlobalData.Notice.bigBoxTips.includes(this.cfgId)) {
+            this.onGuaSha.add((isLife: boolean) => {
+                Event.dispatchToLocal(GlobalEnum.EventName.GuaShaNotice, this.cfgId, isLife);
+            });
+        }
+
+        //一二世界  默认显示区域，与玩家当前位置进行判断 是否显示
+        const ignoreAreaArr = GlobalData.SceneResource.ignoreAreaArr;
+        let curAreaId = AreaDivideManager.instance.CurAreaId;
+        if (ignoreAreaArr.includes(this.cfg.AreaID) && ignoreAreaArr.includes(curAreaId)) {
+            this.createDefaultObj();
+            return;
+        }
+        this.createObjANDStart();
+    }
+    /**创建默认资源*/
+    public async createDefaultObj(): Promise<boolean> {
+        if (!this.cfg || this.isStart || this.resObj != null) {
+            return false;
+        }
+        this.isStart = true;
+        this.resObj = await Resource.instance.getResource(this.cfgId);
+
+        if (!this.isbigBox) {
+            let randomZ = MathUtil.randomInt(0, 360);
+            this.resObj.worldTransform.rotation = new mw.Rotation(0, 0, randomZ);
+        } else
+            this.resObj.worldTransform.position = this.curPos;
+        this.clientStart();
+        this.endTween?.stop();
+        this.order = 0;
+        this.tweenInit();
+        this.switchVisible(true);
+        this.objState(this.curHp);
+
+        return true;
+    }
+    /**创建正常区域资源 */
+    public async createObjANDStart(): Promise<boolean> {
+        if (this.cfg?.AreaID != AreaDivideManager.instance.CurAreaId) {
+            return false;
+        }
+        return await this.createDefaultObj();
+    }
+
+    /**被动显示的资源 */
+    public createPassiveObj(): void {
+        let curAreaId = AreaDivideManager.instance.CurAreaId;
+        if (this.cfg.AreaID == curAreaId || this.cfg.AreaID == curAreaId - 1 || this.cfg.AreaID == curAreaId + 1) {
+            this.createDefaultObj();
+        }
+    }
+
+    private order: number = 0;
+    private endTween: mw.Tween<{ z: number }> = null;
+
+    private tweenInit(): void {
+        if (utils.frameCount < 20) {
+            this.tweenEnd();
+            return;
+        }
+        const endInfos = GlobalData.ResourceAni.dropTween;
+        const bezier = GlobalData.ResourceAni.dropTweenBezier[this.order];
+        const time = GlobalData.ResourceAni.dropTweenTime[this.order];
+        let start = endInfos[this.order];
+        let end = endInfos[this.order + 1];
+        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
+            this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
+        }).onComplete(() => {
+            this.order++;
+            if (this.order >= endInfos.length - 1) {
+                this.tweenEnd();
+                return;
+            }
+            this.tweenInit();
+        }).start().easing(cubicBezier(bezier[0], bezier[1], bezier[2], bezier[3]));
+    }
+
+    private tweenEnd(): void {
+        this.order = 0;
+        this.endTween = null;
+        this.resObj.worldTransform.position = this.curPos;
+        this.switchCollider(true);
+        this.initToiletMan();
+        setTimeout(() => {
+            if (this.resObj == null) return;
+            let dis = mw.Vector.squaredDistance(this.curPos, this.Obj.worldTransform.position);
+            if (dis > 90000) {
+                this.Obj.worldTransform.position = this.curPos;
+            }
+        }, 2000);
+    }
+    /**攻击
+     * @param playerId 玩家id
+     * @param damage 伤害
+     * @param key 宠物key
+     */
+    public injured(playerId: number, damage: number, key: number): boolean {
+        if (isNaN(damage))
+            damage = 0;
+        if (this.cfgId == 0) return true;
+        if (this.isbigBox) {
+            damage *= GlobalData.Buff.damageBuff * (1 + EnchantBuff.getPetBuff(key).boxDamageAdd / 100);
+        } else
+            damage *= GlobalData.Buff.damageBuff;
+        this.getRewardByAttack(damage, key);
+
+        let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
+        if (damage > allHp / 3) {
+            damage = allHp / 3;
+        }
+        let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate
+        if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
+            damage = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate - allHp * 2 / 3;
+        }
+        this.net_injured(playerId, damage);
+        SoundManager.instance.playAtkSound(GlobalData.Music.resourceDestroy, GameConfig.DropPoint.getElement(this._pointId).areaPoints);
+        if (this.curHp <= 0) return true;
+        if (this.curHp - damage <= 0) return true;
+        return false;
+    }
+    /**显示模型状态 */
+    private objState(curHp: number) {
+        if (!this.cfg && this._cfgId)
+            this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
+        if (!this.cfg) return;
+
+        if (curHp < this.cfg.HP && curHp > this.cfg.HP * 1 / 3) {
+            this.resObj.getChildByName("1")?.setVisibility(mw.PropertyStatus.Off);
+        }
+        if (curHp <= this.cfg.HP * 1 / 3) {
+            this.resObj.getChildByName("1")?.setVisibility(mw.PropertyStatus.Off);
+            this.resObj.getChildByName("2")?.setVisibility(mw.PropertyStatus.Off);
+        }
+    }
+
+    protected clientStart(): void {
+        //if (this.isStart) return;
+        this.allChild = this.resObj.getChildren();
+        this.switchCollider(false);
+        this.switchVisible(false);
+        this.isStart = true;
+        this.playEffect();
+        this.critByCreate();
+    }
+
+    /**开关子物体所有碰撞 */
+    private switchCollider(isOpen: boolean) {
+        if (this.allChild.length == 0) {
+            this.allChild = this.resObj.getChildren();
+        }
+        for (let i = 0; i < this.allChild.length; i++) {
+            const element = this.allChild[i];
+            element.setCollision(isOpen ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
+        }
+    }
+
+    /**开关子物体所有显影 */
+    private switchVisible(isOpen: boolean) {
+        if (this.allChild.length == 0) {
+            this.allChild = this.resObj?.getChildren();
+        }
+        for (let i = 0; i < this.allChild.length; i++) {
+            const element = this.allChild[i];
+            element.setVisibility(isOpen ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
+        }
+    }
+
+    /**判断资源类型 C&S */
+    public get ResourceType(): number {
+        if (!this.cfg) return 3;
+        this._ResourceType = this.cfg.resType
+        return this._ResourceType;
+    }
+
+    /**生成是否暴击 */
+    private critByCreate() {
+        let random = MathUtil.randomInt(0, 100);
+        let critRate = GlobalData.SceneResource.critWeight;
+        if (random <= critRate) {
+            this.isCrit = true;
+        } else {
+            this.isCrit = false;
+        }
+    }
+
+    /**根据攻击力计算总价值 */
+    private getRewardByAttack(attack: number, key: number): number {
+        if (this.lastDamage >= attack) return;
+        this.lastDamage = attack;
+
+        //指数
+        let pow = 0;
+
+        if (this.cfg.AreaID < 2000) {
+            pow = 0.28
+        } else if (this.cfg.AreaID > 2000) {
+            pow = 0.23;
+        }
+
+        let temp = utils.GetRandomNum(0, 10) % 2 == 0 ? 1 : -1;
+
+        this.cfg.Type.forEach((item, index) => {
+
+            let crit: number = 0;
+
+            if (this.isCrit) {
+                crit = this.cfg.Critreward;
+            } else {
+                crit = 1;
+            }
+
+            if (item != 2) {
+                let temp2 = this.cfg.WaveValue[index] + Math.log(attack)
+                let random = utils.GetRandomNum(0, temp2)
+
+                if (this.rate == 1) {
+                    this.rewardGold = (100 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
+                        * (1 + EnchantBuff.getPetBuff(key).goldAdd / 100);
+                } else {
+                    this.rewardGold = (100 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
+                        * (1 + EnchantBuff.getPetBuff(key).goldAdd / 100) * (1 + EnchantBuff.getPetBuff(key).rateGoldAdd / 100);
+                }
+                this.rewardGold = Number(this.rewardGold.toFixed(1));
+            } else {
+                //  let random = utils.GetRandomNum(0, this.cfg.WaveValue[index])
+                this.rewardGem = Number((this.cfg.DiamondReward * crit * this.rate).toFixed(1));
+            }
+        })
+        if (this.ResourceType == GlobalEnum.DestructorType.Gold4) {
+            this.rewardGold *= (1 + EnchantBuff.getPetBuff(key).fourGoldAdd / 100);
+            this.rewardGem *= (1 + EnchantBuff.getPetBuff(key).fourGoldAdd / 100);
+        }
+
+        //oTraceError('lwj 奖励 ' + this.rewardGem + " " + this.rewardGold);
+
+    }
+
+
+
+
+    /**播放资源倍率特效 */
+    private playEffect() {
+        if (this._rate == 1) return;
+
+        let cfg: IEffectElement = null;
+        if (this.ResourceType == 1 || this.ResourceType == 2) {
+            cfg = GameConfig.Effect.getElement(3);
+        } else {
+            cfg = GameConfig.Effect.getElement(2);
+        }
+        this.rateEff = GeneralManager.rpcPlayEffectAtLocation(cfg.EffectID, this.curPos, cfg.EffectTime, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
+
+    }
+    /**击打过程中特效 */
+    private playProcessEffect() {
+        let random = MathUtil.randomInt(0, 100);
+        let critRate = GlobalData.SceneResource.normalWeight;
+        if (random > critRate) {
+            return;
+        }
+        let cfg = GameConfig.Effect.getElement(1);
+        GeneralManager.rpcPlayEffectOnGameObject(cfg.EffectID, this.resObj, cfg.EffectTime, cfg.EffectLocation, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
+    }
+    /**阶段特效 */
+    private playCritEffectByLevel() {
+        let cfg = GameConfig.Effect.getElement(13);
+        GeneralManager.rpcPlayEffectOnGameObject(cfg.EffectID, this.resObj, cfg.EffectTime, cfg.EffectLocation, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
+        if (this.ResourceType > 2) {
+            cfg = GameConfig.Effect.getElement(9);
+            GeneralManager.rpcPlayEffectOnGameObject(cfg.EffectID, this.resObj, cfg.EffectTime, cfg.EffectLocation, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
+        }
+    }
+    /**最后一击暴击特效 */
+    private playCritEffectByLast() {
+        if (!this.isCrit) return;
+        BonusUI.instance.showBonusUI(this);
+        let cfg = GameConfig.Effect.getElement(10);
+        GeneralManager.rpcPlayEffectAtLocation(cfg.EffectID, this.resObj.worldTransform.position, cfg.EffectTime, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
+
+    }
+    /**添加场景资源 */
+    private addScenceResource(areaID: number) {
+        if (areaID == 0) return;
+        let arr = SceneResourceMap.get(areaID);
+        if (!arr) {
+            arr = [];
+            SceneResourceMap.set(areaID, arr);
+        }
+        if (arr.includes(this)) {
+            return;
+        }
+        arr.push(this);
+    }
+    /**移除场景资源 */
+    private removeScenceResource(areaID: number, resourceScript: resourceScript) {
+        let arr = SceneResourceMap.get(areaID);
+        if (!arr) return;
+        let index = arr.findIndex((item) => {
+            return item == resourceScript;
+        })
+        if (index != -1) {
+            arr.splice(index, 1);
+        }
+    }
+    /**回收破坏物模型 */
+    public async recycleResourceModel(isAwait: boolean = false) {
+        if (this.endTween) {
+            console.error('lwj tween is playing');
+            this.endTween.stop();
+            this.endTween = null;
+        }
+        if (this.resObj) {
+            this.switchVisible(false);
+            this.switchCollider(false);
+            this.isStart = false;
+            this.toiletManDestroy();
+            if (isAwait) {
+                await TimeUtil.delaySecond(3);
+                Resource.instance.returnResource(this.resObj);
+            } else
+                Resource.instance.returnResource(this.resObj);
+            this.resObj = null;
+        }
+
+        if (this.rateEff) {
+            EffectService.stop(this.rateEff);
+            this.rateEff = null;
+        }
+    }
+
+
+    /*************马桶人 **********/
+
+    private toiletMan: mw.Character = null;
+
+    /**受击死亡动画数组 */
+    private hitAniArr: string[] = GlobalData.SceneResource.toiletDieAni;
+    /**马桶人受击动画 */
+    private toiletManAnima: mw.Animation = null;
+
+    /**初始化马桶人 */
+    private initToiletMan() {
+        if (this._cfgId && !this.cfg)
+            this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
+        if (this.ResourceType == GlobalEnum.DestructorType.Gold5) {
+            let toilet = this.resObj.getChildByName("马桶人.asset");
+            if (toilet) {
+                this.toiletMan = toilet as mw.Character;
+                this.toiletMan.displayName = "";
+                this.toiletMan.complexMovementEnabled = (false);
+                let actor = this.resObj.getChildByName("空锚点");
+                this.toiletMan.worldTransform.position = actor.worldTransform.position;
+                this.toiletMan.worldTransform.rotation = actor.worldTransform.rotation;
+            }
+        }
+    }
+    /**马桶人受击动画 */
+    private toiletManHit() {
+        if (!this.toiletMan) return;
+        if (this.toiletManAnima && this.toiletManAnima.isPlaying) return;
+        //随机01两个数
+        let random = MathUtil.randomInt(0, 2);
+        let aniGuid = this.hitAniArr[random];
+        this.toiletManAnima = PlayerManagerExtesion.loadAnimationExtesion(this.toiletMan, aniGuid, false);
+        this.toiletManAnima.play();
+    }
+    /**马桶人死亡动画 */
+    private toiletManDead(fun: () => {}) {
+        if (!this.toiletMan) return;
+        if (this.toiletManAnima) {
+            this.toiletManAnima.stop();
+        }
+        this.toiletManAnima = PlayerManagerExtesion.loadAnimationExtesion(this.toiletMan, this.hitAniArr[2], false);
+        this.toiletManAnima.speed = GlobalData.SceneResource.dieAniRate;
+        this.toiletManAnima.play();
+        this.toiletManAnima.onFinish.add(() => {
+            fun();
+        })
+    }
+    /**马桶人销毁 */
+    private toiletManDestroy() {
+        if (!this.toiletMan) return;
+        this.toiletMan.worldTransform.position = new mw.Vector(555, -66, -300)
+        this.toiletMan = null;
+        this.toiletManAnima?.onFinish.clear();
+        this.toiletManAnima = null;
+    }
+
+
+    //----------------------------life cycle-----------------------------------
+
+    protected onStart(): void {
+        //if (SystemUtil.isClient()) this.clientStart();
+    }
+
+    protected onDestroy(): void {
+
+    }
+
+    protected onUpdate(dt: number): void {
+
+    }
+
+
+}

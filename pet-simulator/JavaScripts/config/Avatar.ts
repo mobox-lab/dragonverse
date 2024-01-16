@@ -1,0 +1,74 @@
+import { ConfigBase, IElementBase } from "./ConfigBase";
+const EXCELDATA:Array<Array<any>> = [["id","characterHeight","headScale","breastScale","neckWidth","neckThick","shoulderWidth","shoulderThick","ribWidth","waistWidth","waistThick","neckStretch","breastStretch","waistStretch","groinWidth","groinThick","shoulderArmWidth","shoulderArmThick","upperArmsWidth","upperArmsThick","lowerArmsWidth","lowerArmsThick","upperArmsStreth","lowerArmsStreth","handScale","thighStreth","thighThicknessX","thighThicknessZ","shankStreth","shankScaleX","shankScaleZ","footScale"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""],[1,1,1.1,0.8,0.8,0.8,0.9,0.8,1.1,1,1,0.8,0.9,0.85,0.95,1,0.95,0.8,0.9,1,0.9,1.2,0.9,0.9,0.9,0.7,0.9,0.9,0.95,1.1,0.9,0.95]];
+export interface IAvatarElement extends IElementBase{
+ 	/**唯一id*/
+	id:number
+	/**身高*/
+	characterHeight:number
+	/**头部整体缩放*/
+	headScale:number
+	/**胸部整体缩放*/
+	breastScale:number
+	/**脖子左右缩放*/
+	neckWidth:number
+	/**脖子前后缩放*/
+	neckThick:number
+	/**胸腔左右缩放*/
+	shoulderWidth:number
+	/**胸腔前后缩放*/
+	shoulderThick:number
+	/**肋部左右缩放*/
+	ribWidth:number
+	/**腰部左右缩放*/
+	waistWidth:number
+	/**腰部前后缩放*/
+	waistThick:number
+	/**脖子上下缩放*/
+	neckStretch:number
+	/**胸腔上下缩放*/
+	breastStretch:number
+	/**腰部上下缩放 */
+	waistStretch:number
+	/**胯左右缩放*/
+	groinWidth:number
+	/**胯前后缩放*/
+	groinThick:number
+	/**肩臂左右缩放*/
+	shoulderArmWidth:number
+	/**肩臂前后缩放*/
+	shoulderArmThick:number
+	/**大臂左右缩放*/
+	upperArmsWidth:number
+	/**大臂前后缩放*/
+	upperArmsThick:number
+	/**小臂左右缩放*/
+	lowerArmsWidth:number
+	/**小臂前后缩放*/
+	lowerArmsThick:number
+	/**大臂上下缩放*/
+	upperArmsStreth:number
+	/**小臂上下缩放*/
+	lowerArmsStreth:number
+	/**手掌缩放*/
+	handScale:number
+	/**大腿上下缩放*/
+	thighStreth:number
+	/**大腿左右缩放*/
+	thighThicknessX:number
+	/**大腿前后缩放*/
+	thighThicknessZ:number
+	/**小腿上下缩放*/
+	shankStreth:number
+	/**小腿左右缩放*/
+	shankScaleX:number
+	/**小腿前后缩放*/
+	shankScaleZ:number
+	/**脚掌缩放*/
+	footScale:number
+ } 
+export class AvatarConfig extends ConfigBase<IAvatarElement>{
+	constructor(){
+		super(EXCELDATA);
+	}
+
+}
