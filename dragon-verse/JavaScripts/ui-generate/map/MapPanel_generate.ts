@@ -22,12 +22,26 @@ export default class MapPanel_Generate extends UIScript {
 		}
 		return this.cnvMap_Internal
 	}
-	private cnvMapMain_Internal: mw.Canvas
-	public get cnvMapMain(): mw.Canvas {
-		if(!this.cnvMapMain_Internal&&this.uiWidgetBase) {
-			this.cnvMapMain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapMain') as mw.Canvas
+	private cnvMapHolder_Internal: mw.Canvas
+	public get cnvMapHolder(): mw.Canvas {
+		if(!this.cnvMapHolder_Internal&&this.uiWidgetBase) {
+			this.cnvMapHolder_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder') as mw.Canvas
 		}
-		return this.cnvMapMain_Internal
+		return this.cnvMapHolder_Internal
+	}
+	private cnvMapMesh_Internal: mw.Canvas
+	public get cnvMapMesh(): mw.Canvas {
+		if(!this.cnvMapMesh_Internal&&this.uiWidgetBase) {
+			this.cnvMapMesh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapMesh') as mw.Canvas
+		}
+		return this.cnvMapMesh_Internal
+	}
+	private cnvMapPlayerArrowContainer_Internal: mw.Canvas
+	public get cnvMapPlayerArrowContainer(): mw.Canvas {
+		if(!this.cnvMapPlayerArrowContainer_Internal&&this.uiWidgetBase) {
+			this.cnvMapPlayerArrowContainer_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapPlayerArrowContainer') as mw.Canvas
+		}
+		return this.cnvMapPlayerArrowContainer_Internal
 	}
 	private btnMapClose_Internal: mw.Button
 	public get btnMapClose(): mw.Button {

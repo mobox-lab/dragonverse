@@ -10,7 +10,7 @@ import MapPanel_Generate from "../../ui-generate/map/MapPanel_generate";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import MainCurtainPanel from "../main/MainCurtainPanel";
 import GToolkit from "../../util/GToolkit";
-import { KeyboardManager } from "../../controller/KeyboardManager";
+import BigMapPlayerArrow from "../main/BigMapPlayerArrowPanel";
 
 /**
  * 小地图 Panel.
@@ -26,15 +26,17 @@ export class MapPanel extends MapPanel_Generate {
      */
     private _curPos: mw.Vector = mw.Vector.zero;
 
-    private _smallMapPos: mw.Vector2 = mw.Vector2.zero;
+    private _miniMapPosCache: mw.Vector2 = mw.Vector2.zero;
 
-    private _iconSize: mw.Vector2;
-
-    private _cnvOffsetSize: mw.Vector2 = mw.Vector2.zero;
+    private _mapPosCache: mw.Vector2 = mw.Vector2.zero;
 
     private _oriMiniMapSize: mw.Vector2;
 
-    private _positionInMap: mw.Vector2 = mw.Vector2.zero;
+    private _positionRatioInMap: mw.Vector2 = mw.Vector2.zero;
+
+    private _myArrow: BigMapPlayerArrow;
+
+    private _otherArrows: BigMapPlayerArrow[] = [];
 
     protected onAwake(): void {
         super.onAwake();
@@ -43,15 +45,7 @@ export class MapPanel extends MapPanel_Generate {
                 GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x - GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.x,
                 GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y);
 
-        this._iconSize = this.mSmallMineCanvas.size;
         this._oriMiniMapSize = this.mSmallMapCanvas.size;
-
-        let cnvSize = this.mSmallCanvas.size;
-        this._cnvOffsetSize.set(
-            (cnvSize.x - this._iconSize.x) / 2,
-            (cnvSize.y - this._iconSize.y) / 2,
-        );
-
         this
             .btnMiniMap
             .onClicked
@@ -72,6 +66,8 @@ export class MapPanel extends MapPanel_Generate {
                     this.showMiniMap();
                     Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
                 }));
+
+        this._myArrow = UIService.create(BigMapPlayerArrow).init(Player.localPlayer.playerId);
     }
 
     onShow() {
@@ -83,7 +79,7 @@ export class MapPanel extends MapPanel_Generate {
         if (!this._character) return;
         this._curPos.set(this._character.worldTransform.position);
         this.calculatePositionRatioInMap();
-        this.calculateMapPos();
+        this.calculateMiniMapPos();
     }
 
     public showBigMap() {
@@ -96,17 +92,26 @@ export class MapPanel extends MapPanel_Generate {
         GToolkit.trySetVisibility(this.cnvMiniMap, true);
     }
 
-    private calculateMapPos() {
-        this._smallMapPos.set(
-            -this._positionInMap.x * this._oriMiniMapSize.x + this.mSmallCanvas.size.x / 2,
-            (this._positionInMap.y - 1) * this._oriMiniMapSize.y + this.mSmallCanvas.size.y / 2,
+    private calculateMiniMapPos() {
+        this._miniMapPosCache.set(
+            -this._positionRatioInMap.x * this._oriMiniMapSize.x + this.mSmallCanvas.size.x / 2,
+            (this._positionRatioInMap.y - 1) * this._oriMiniMapSize.y + this.mSmallCanvas.size.y / 2,
         );
-        this.mSmallMapCanvas.position = this._smallMapPos;
+        this.mSmallMapCanvas.position = this._miniMapPosCache;
+        this.mSmallMineCanvas.renderTransformAngle = Player.getControllerRotation().z - 90;
+    }
+
+    private calculateMapPos() {
+        this._mapPosCache.set(
+            -this._positionRatioInMap.x * this._oriMiniMapSize.x + this.mSmallCanvas.size.x / 2,
+            (this._positionRatioInMap.y - 1) * this._oriMiniMapSize.y + this.mSmallCanvas.size.y / 2,
+        );
+        this.mSmallMapCanvas.position = this._miniMapPosCache;
         this.mSmallMineCanvas.renderTransformAngle = Player.getControllerRotation().z - 90;
     }
 
     private calculatePositionRatioInMap() {
-        this._positionInMap.set(
+        this._positionRatioInMap.set(
             (GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x - this._curPos.x) / this._sceneSize.x,
             (this._curPos.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y) / this._sceneSize.y,
         );

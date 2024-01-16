@@ -1,6 +1,7 @@
 import GToolkit from "../../util/GToolkit";
 import LinearColor = mw.LinearColor;
 import BigMapPlayerArrow_Generate from "../../ui-generate/map/BigMapPlayerArrow_generate";
+import { HeadUIController } from "../../controller/HeadUIController";
 
 export default class BigMapPlayerArrow extends BigMapPlayerArrow_Generate {
 //#region Member
@@ -37,15 +38,17 @@ export default class BigMapPlayerArrow extends BigMapPlayerArrow_Generate {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Init
-    public init(playerId: number) {
+    public init(playerId: number): this {
         GToolkit.trySetVisibility(this.cnvPlayerInfo, false);
         this.holdId = playerId;
 //TODO_LviatYi nick name.
         this.imgPlayerPointArrow.imageColor
             = LinearColor.colorHexToLinearColor(
-            Player.localPlayer.playerId === this.holdId ?
+            this.holdId === Player.localPlayer.playerId ?
                 "#FFFFFFFF" :
                 "#00FFE7FF");
+        this.txtPlayerName.text = HeadUIController.getInstance().getNickNameByPlayerId(playerId);
+        return this;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
