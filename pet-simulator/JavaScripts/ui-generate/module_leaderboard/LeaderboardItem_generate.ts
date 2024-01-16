@@ -7,10 +7,15 @@
 
 
 @UIBind('UI/module_leaderboard/LeaderboardItem.ui')
-export default class LeaderboardItem_Generate extends mw.UIScript {
-	@UIWidgetBind('Canvas/mContent')
-    public mContent: mw.Canvas=undefined;
-    
+export default class LeaderboardItem_Generate extends UIScript {
+		private mContent_Internal: mw.Canvas
+	public get mContent(): mw.Canvas {
+		if(!this.mContent_Internal&&this.uiWidgetBase) {
+			this.mContent_Internal = this.uiWidgetBase.findChildByPath('Canvas/mContent') as mw.Canvas
+		}
+		return this.mContent_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

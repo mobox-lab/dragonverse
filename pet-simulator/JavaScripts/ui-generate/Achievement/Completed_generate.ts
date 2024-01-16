@@ -7,18 +7,43 @@
 
 
 @UIBind('UI/Achievement/Completed.ui')
-export default class Completed_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mText_AMname')
-    public mText_AMname: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mProgressBar')
-    public mProgressBar: mw.ProgressBar=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mText_Target')
-    public mText_Target: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mText_Finish')
-    public mText_Finish: mw.TextBlock=undefined;
-    
+export default class Completed_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mText_AMname_Internal: mw.TextBlock
+	public get mText_AMname(): mw.TextBlock {
+		if(!this.mText_AMname_Internal&&this.uiWidgetBase) {
+			this.mText_AMname_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_AMname') as mw.TextBlock
+		}
+		return this.mText_AMname_Internal
+	}
+	private mProgressBar_Internal: mw.ProgressBar
+	public get mProgressBar(): mw.ProgressBar {
+		if(!this.mProgressBar_Internal&&this.uiWidgetBase) {
+			this.mProgressBar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mProgressBar') as mw.ProgressBar
+		}
+		return this.mProgressBar_Internal
+	}
+	private mText_Target_Internal: mw.TextBlock
+	public get mText_Target(): mw.TextBlock {
+		if(!this.mText_Target_Internal&&this.uiWidgetBase) {
+			this.mText_Target_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Target') as mw.TextBlock
+		}
+		return this.mText_Target_Internal
+	}
+	private mText_Finish_Internal: mw.TextBlock
+	public get mText_Finish(): mw.TextBlock {
+		if(!this.mText_Finish_Internal&&this.uiWidgetBase) {
+			this.mText_Finish_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Finish') as mw.TextBlock
+		}
+		return this.mText_Finish_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

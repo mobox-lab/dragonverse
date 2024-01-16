@@ -7,7 +7,7 @@
 
 
 @UIBind('UI/WorldUI/Fuse.ui')
-export default class Fuse_Generate extends mw.UIScript {
+export default class Fuse_Generate extends UIScript {
 	
 
 

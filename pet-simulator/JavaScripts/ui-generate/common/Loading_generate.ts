@@ -7,16 +7,36 @@
 
 
 @UIBind('UI/common/Loading.ui')
-export default class Loading_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mPic_load')
-    public mPic_load: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mPic_load_1')
-    public mPic_load_1: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mText_world')
-    public mText_world: mw.TextBlock=undefined;
-    
+export default class Loading_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mPic_load_Internal: mw.Image
+	public get mPic_load(): mw.Image {
+		if(!this.mPic_load_Internal&&this.uiWidgetBase) {
+			this.mPic_load_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mPic_load') as mw.Image
+		}
+		return this.mPic_load_Internal
+	}
+	private mPic_load_1_Internal: mw.Image
+	public get mPic_load_1(): mw.Image {
+		if(!this.mPic_load_1_Internal&&this.uiWidgetBase) {
+			this.mPic_load_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mPic_load_1') as mw.Image
+		}
+		return this.mPic_load_1_Internal
+	}
+	private mText_world_Internal: mw.TextBlock
+	public get mText_world(): mw.TextBlock {
+		if(!this.mText_world_Internal&&this.uiWidgetBase) {
+			this.mText_world_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_world') as mw.TextBlock
+		}
+		return this.mText_world_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

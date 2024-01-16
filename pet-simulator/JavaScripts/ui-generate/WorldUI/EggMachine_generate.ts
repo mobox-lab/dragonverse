@@ -7,7 +7,7 @@
 
 
 @UIBind('UI/WorldUI/EggMachine.ui')
-export default class EggMachine_Generate extends mw.UIScript {
+export default class EggMachine_Generate extends UIScript {
 	
 
 

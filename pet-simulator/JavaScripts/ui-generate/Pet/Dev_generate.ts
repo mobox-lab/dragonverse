@@ -7,30 +7,85 @@
 
 
 @UIBind('UI/Pet/Dev.ui')
-export default class Dev_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mScrollBox')
-    public mScrollBox: mw.ScrollBox=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mScrollBox/mCanvas_List')
-    public mCanvas_List: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mButton_Close')
-    public mButton_Close: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_Left')
-    public mCanvas_Left: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Rate')
-    public mTextBlock_Rate: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Intro')
-    public mTextBlock_Intro: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Diamond')
-    public mTextBlock_Diamond: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Explain')
-    public mTextBlock_Explain: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_Left/mStaleButton_Ok')
-    public mStaleButton_Ok: mw.StaleButton=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Worn')
-    public mTextBlock_Worn: mw.TextBlock=undefined;
-    
+export default class Dev_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mScrollBox_Internal: mw.ScrollBox
+	public get mScrollBox(): mw.ScrollBox {
+		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
+			this.mScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox') as mw.ScrollBox
+		}
+		return this.mScrollBox_Internal
+	}
+	private mCanvas_List_Internal: mw.Canvas
+	public get mCanvas_List(): mw.Canvas {
+		if(!this.mCanvas_List_Internal&&this.uiWidgetBase) {
+			this.mCanvas_List_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox/mCanvas_List') as mw.Canvas
+		}
+		return this.mCanvas_List_Internal
+	}
+	private mButton_Close_Internal: mw.Button
+	public get mButton_Close(): mw.Button {
+		if(!this.mButton_Close_Internal&&this.uiWidgetBase) {
+			this.mButton_Close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mButton_Close') as mw.Button
+		}
+		return this.mButton_Close_Internal
+	}
+	private mCanvas_Left_Internal: mw.Canvas
+	public get mCanvas_Left(): mw.Canvas {
+		if(!this.mCanvas_Left_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Left_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Left') as mw.Canvas
+		}
+		return this.mCanvas_Left_Internal
+	}
+	private mTextBlock_Rate_Internal: mw.TextBlock
+	public get mTextBlock_Rate(): mw.TextBlock {
+		if(!this.mTextBlock_Rate_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_Rate_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Rate') as mw.TextBlock
+		}
+		return this.mTextBlock_Rate_Internal
+	}
+	private mTextBlock_Intro_Internal: mw.TextBlock
+	public get mTextBlock_Intro(): mw.TextBlock {
+		if(!this.mTextBlock_Intro_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_Intro_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Intro') as mw.TextBlock
+		}
+		return this.mTextBlock_Intro_Internal
+	}
+	private mTextBlock_Diamond_Internal: mw.TextBlock
+	public get mTextBlock_Diamond(): mw.TextBlock {
+		if(!this.mTextBlock_Diamond_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_Diamond_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Diamond') as mw.TextBlock
+		}
+		return this.mTextBlock_Diamond_Internal
+	}
+	private mTextBlock_Explain_Internal: mw.TextBlock
+	public get mTextBlock_Explain(): mw.TextBlock {
+		if(!this.mTextBlock_Explain_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_Explain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Explain') as mw.TextBlock
+		}
+		return this.mTextBlock_Explain_Internal
+	}
+	private mStaleButton_Ok_Internal: mw.StaleButton
+	public get mStaleButton_Ok(): mw.StaleButton {
+		if(!this.mStaleButton_Ok_Internal&&this.uiWidgetBase) {
+			this.mStaleButton_Ok_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Left/mStaleButton_Ok') as mw.StaleButton
+		}
+		return this.mStaleButton_Ok_Internal
+	}
+	private mTextBlock_Worn_Internal: mw.TextBlock
+	public get mTextBlock_Worn(): mw.TextBlock {
+		if(!this.mTextBlock_Worn_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_Worn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Worn') as mw.TextBlock
+		}
+		return this.mTextBlock_Worn_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

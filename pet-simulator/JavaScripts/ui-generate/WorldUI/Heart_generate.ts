@@ -7,7 +7,7 @@
 
 
 @UIBind('UI/WorldUI/Heart.ui')
-export default class Heart_Generate extends mw.UIScript {
+export default class Heart_Generate extends UIScript {
 	
 
 

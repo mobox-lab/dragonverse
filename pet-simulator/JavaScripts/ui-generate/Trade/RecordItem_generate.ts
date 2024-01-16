@@ -7,18 +7,43 @@
 
 
 @UIBind('UI/Trade/RecordItem.ui')
-export default class RecordItem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mBtn_RecordDetail/mText_Count')
-    public mText_Count: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mBtn_RecordDetail/mText_Time')
-    public mText_Time: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mBtn_RecordDetail')
-    public mBtn_RecordDetail: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mBtn_Good')
-    public mBtn_Good: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mBtn_Bad')
-    public mBtn_Bad: mw.Button=undefined;
-    
+export default class RecordItem_Generate extends UIScript {
+		private mText_Count_Internal: mw.TextBlock
+	public get mText_Count(): mw.TextBlock {
+		if(!this.mText_Count_Internal&&this.uiWidgetBase) {
+			this.mText_Count_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_RecordDetail/mText_Count') as mw.TextBlock
+		}
+		return this.mText_Count_Internal
+	}
+	private mText_Time_Internal: mw.TextBlock
+	public get mText_Time(): mw.TextBlock {
+		if(!this.mText_Time_Internal&&this.uiWidgetBase) {
+			this.mText_Time_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_RecordDetail/mText_Time') as mw.TextBlock
+		}
+		return this.mText_Time_Internal
+	}
+	private mBtn_RecordDetail_Internal: mw.Button
+	public get mBtn_RecordDetail(): mw.Button {
+		if(!this.mBtn_RecordDetail_Internal&&this.uiWidgetBase) {
+			this.mBtn_RecordDetail_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_RecordDetail') as mw.Button
+		}
+		return this.mBtn_RecordDetail_Internal
+	}
+	private mBtn_Good_Internal: mw.Button
+	public get mBtn_Good(): mw.Button {
+		if(!this.mBtn_Good_Internal&&this.uiWidgetBase) {
+			this.mBtn_Good_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_Good') as mw.Button
+		}
+		return this.mBtn_Good_Internal
+	}
+	private mBtn_Bad_Internal: mw.Button
+	public get mBtn_Bad(): mw.Button {
+		if(!this.mBtn_Bad_Internal&&this.uiWidgetBase) {
+			this.mBtn_Bad_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_Bad') as mw.Button
+		}
+		return this.mBtn_Bad_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

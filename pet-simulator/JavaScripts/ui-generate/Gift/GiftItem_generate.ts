@@ -7,14 +7,29 @@
 
 
 @UIBind('UI/Gift/GiftItem.ui')
-export default class GiftItem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mBtn_gift')
-    public mBtn_gift: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mPic_done')
-    public mPic_done: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mText_Time')
-    public mText_Time: mw.TextBlock=undefined;
-    
+export default class GiftItem_Generate extends UIScript {
+		private mBtn_gift_Internal: mw.Button
+	public get mBtn_gift(): mw.Button {
+		if(!this.mBtn_gift_Internal&&this.uiWidgetBase) {
+			this.mBtn_gift_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_gift') as mw.Button
+		}
+		return this.mBtn_gift_Internal
+	}
+	private mPic_done_Internal: mw.Image
+	public get mPic_done(): mw.Image {
+		if(!this.mPic_done_Internal&&this.uiWidgetBase) {
+			this.mPic_done_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_done') as mw.Image
+		}
+		return this.mPic_done_Internal
+	}
+	private mText_Time_Internal: mw.TextBlock
+	public get mText_Time(): mw.TextBlock {
+		if(!this.mText_Time_Internal&&this.uiWidgetBase) {
+			this.mText_Time_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_Time') as mw.TextBlock
+		}
+		return this.mText_Time_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

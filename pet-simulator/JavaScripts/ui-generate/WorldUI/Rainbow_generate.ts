@@ -7,7 +7,7 @@
 
 
 @UIBind('UI/WorldUI/Rainbow.ui')
-export default class Rainbow_Generate extends mw.UIScript {
+export default class Rainbow_Generate extends UIScript {
 	
 
 

@@ -7,12 +7,22 @@
 
 
 @UIBind('UI/PetVIP/VIPKeyitem.ui')
-export default class VIPKeyitem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mImage_Icon')
-    public mImage_Icon: mw.Image=undefined;
-    
+export default class VIPKeyitem_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mImage_Icon_Internal: mw.Image
+	public get mImage_Icon(): mw.Image {
+		if(!this.mImage_Icon_Internal&&this.uiWidgetBase) {
+			this.mImage_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage_Icon') as mw.Image
+		}
+		return this.mImage_Icon_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

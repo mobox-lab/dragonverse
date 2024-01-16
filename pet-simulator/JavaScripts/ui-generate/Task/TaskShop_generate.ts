@@ -7,18 +7,43 @@
 
 
 @UIBind('UI/Task/TaskShop.ui')
-export default class TaskShop_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mScrollBox')
-    public mScrollBox: mw.ScrollBox=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mScrollBox/mCanvas_List')
-    public mCanvas_List: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mText_Point')
-    public mText_Point: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mBtn_close')
-    public mBtn_close: mw.Button=undefined;
-    
+export default class TaskShop_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mScrollBox_Internal: mw.ScrollBox
+	public get mScrollBox(): mw.ScrollBox {
+		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
+			this.mScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox') as mw.ScrollBox
+		}
+		return this.mScrollBox_Internal
+	}
+	private mCanvas_List_Internal: mw.Canvas
+	public get mCanvas_List(): mw.Canvas {
+		if(!this.mCanvas_List_Internal&&this.uiWidgetBase) {
+			this.mCanvas_List_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox/mCanvas_List') as mw.Canvas
+		}
+		return this.mCanvas_List_Internal
+	}
+	private mText_Point_Internal: mw.TextBlock
+	public get mText_Point(): mw.TextBlock {
+		if(!this.mText_Point_Internal&&this.uiWidgetBase) {
+			this.mText_Point_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Point') as mw.TextBlock
+		}
+		return this.mText_Point_Internal
+	}
+	private mBtn_close_Internal: mw.Button
+	public get mBtn_close(): mw.Button {
+		if(!this.mBtn_close_Internal&&this.uiWidgetBase) {
+			this.mBtn_close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBtn_close') as mw.Button
+		}
+		return this.mBtn_close_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

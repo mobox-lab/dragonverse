@@ -7,12 +7,22 @@
 
 
 @UIBind('UI/Trade/MsgItem.ui')
-export default class MsgItem_Generate extends mw.UIScript {
-	@UIWidgetBind('Canvas/mImage_Back')
-    public mImage_Back: mw.Image=undefined;
-    @UIWidgetBind('Canvas/mText_Msg')
-    public mText_Msg: mw.TextBlock=undefined;
-    
+export default class MsgItem_Generate extends UIScript {
+		private mImage_Back_Internal: mw.Image
+	public get mImage_Back(): mw.Image {
+		if(!this.mImage_Back_Internal&&this.uiWidgetBase) {
+			this.mImage_Back_Internal = this.uiWidgetBase.findChildByPath('Canvas/mImage_Back') as mw.Image
+		}
+		return this.mImage_Back_Internal
+	}
+	private mText_Msg_Internal: mw.TextBlock
+	public get mText_Msg(): mw.TextBlock {
+		if(!this.mText_Msg_Internal&&this.uiWidgetBase) {
+			this.mText_Msg_Internal = this.uiWidgetBase.findChildByPath('Canvas/mText_Msg') as mw.TextBlock
+		}
+		return this.mText_Msg_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

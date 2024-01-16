@@ -7,32 +7,92 @@
 
 
 @UIBind('UI/Task/Task3D.ui')
-export default class Task3D_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas_task')
-    public mCanvas_task: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_task/mCanvas_TaskItem1')
-    public mCanvas_TaskItem1: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_task/mCanvas_TaskItem1/mPic_startandstatus1')
-    public mPic_startandstatus1: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_task/mCanvas_TaskItem1/mText_mission1')
-    public mText_mission1: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_task/mCanvas_TaskItem2')
-    public mCanvas_TaskItem2: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_task/mCanvas_TaskItem2/mPic_startandstatus2')
-    public mPic_startandstatus2: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_task/mCanvas_TaskItem2/mText_mission2')
-    public mText_mission2: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_task/mCanvas_TaskItem3')
-    public mCanvas_TaskItem3: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_task/mCanvas_TaskItem3/mPic_startandstatus3')
-    public mPic_startandstatus3: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_task/mCanvas_TaskItem3/mText_mission3')
-    public mText_mission3: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_shop')
-    public mCanvas_shop: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_shop/mBtn_shop')
-    public mBtn_shop: mw.Button=undefined;
-    
+export default class Task3D_Generate extends UIScript {
+		private mCanvas_task_Internal: mw.Canvas
+	public get mCanvas_task(): mw.Canvas {
+		if(!this.mCanvas_task_Internal&&this.uiWidgetBase) {
+			this.mCanvas_task_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_task') as mw.Canvas
+		}
+		return this.mCanvas_task_Internal
+	}
+	private mCanvas_TaskItem1_Internal: mw.Canvas
+	public get mCanvas_TaskItem1(): mw.Canvas {
+		if(!this.mCanvas_TaskItem1_Internal&&this.uiWidgetBase) {
+			this.mCanvas_TaskItem1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_task/mCanvas_TaskItem1') as mw.Canvas
+		}
+		return this.mCanvas_TaskItem1_Internal
+	}
+	private mPic_startandstatus1_Internal: mw.Image
+	public get mPic_startandstatus1(): mw.Image {
+		if(!this.mPic_startandstatus1_Internal&&this.uiWidgetBase) {
+			this.mPic_startandstatus1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_task/mCanvas_TaskItem1/mPic_startandstatus1') as mw.Image
+		}
+		return this.mPic_startandstatus1_Internal
+	}
+	private mText_mission1_Internal: mw.TextBlock
+	public get mText_mission1(): mw.TextBlock {
+		if(!this.mText_mission1_Internal&&this.uiWidgetBase) {
+			this.mText_mission1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_task/mCanvas_TaskItem1/mText_mission1') as mw.TextBlock
+		}
+		return this.mText_mission1_Internal
+	}
+	private mCanvas_TaskItem2_Internal: mw.Canvas
+	public get mCanvas_TaskItem2(): mw.Canvas {
+		if(!this.mCanvas_TaskItem2_Internal&&this.uiWidgetBase) {
+			this.mCanvas_TaskItem2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_task/mCanvas_TaskItem2') as mw.Canvas
+		}
+		return this.mCanvas_TaskItem2_Internal
+	}
+	private mPic_startandstatus2_Internal: mw.Image
+	public get mPic_startandstatus2(): mw.Image {
+		if(!this.mPic_startandstatus2_Internal&&this.uiWidgetBase) {
+			this.mPic_startandstatus2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_task/mCanvas_TaskItem2/mPic_startandstatus2') as mw.Image
+		}
+		return this.mPic_startandstatus2_Internal
+	}
+	private mText_mission2_Internal: mw.TextBlock
+	public get mText_mission2(): mw.TextBlock {
+		if(!this.mText_mission2_Internal&&this.uiWidgetBase) {
+			this.mText_mission2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_task/mCanvas_TaskItem2/mText_mission2') as mw.TextBlock
+		}
+		return this.mText_mission2_Internal
+	}
+	private mCanvas_TaskItem3_Internal: mw.Canvas
+	public get mCanvas_TaskItem3(): mw.Canvas {
+		if(!this.mCanvas_TaskItem3_Internal&&this.uiWidgetBase) {
+			this.mCanvas_TaskItem3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_task/mCanvas_TaskItem3') as mw.Canvas
+		}
+		return this.mCanvas_TaskItem3_Internal
+	}
+	private mPic_startandstatus3_Internal: mw.Image
+	public get mPic_startandstatus3(): mw.Image {
+		if(!this.mPic_startandstatus3_Internal&&this.uiWidgetBase) {
+			this.mPic_startandstatus3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_task/mCanvas_TaskItem3/mPic_startandstatus3') as mw.Image
+		}
+		return this.mPic_startandstatus3_Internal
+	}
+	private mText_mission3_Internal: mw.TextBlock
+	public get mText_mission3(): mw.TextBlock {
+		if(!this.mText_mission3_Internal&&this.uiWidgetBase) {
+			this.mText_mission3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_task/mCanvas_TaskItem3/mText_mission3') as mw.TextBlock
+		}
+		return this.mText_mission3_Internal
+	}
+	private mCanvas_shop_Internal: mw.Canvas
+	public get mCanvas_shop(): mw.Canvas {
+		if(!this.mCanvas_shop_Internal&&this.uiWidgetBase) {
+			this.mCanvas_shop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_shop') as mw.Canvas
+		}
+		return this.mCanvas_shop_Internal
+	}
+	private mBtn_shop_Internal: mw.Button
+	public get mBtn_shop(): mw.Button {
+		if(!this.mBtn_shop_Internal&&this.uiWidgetBase) {
+			this.mBtn_shop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_shop/mBtn_shop') as mw.Button
+		}
+		return this.mBtn_shop_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

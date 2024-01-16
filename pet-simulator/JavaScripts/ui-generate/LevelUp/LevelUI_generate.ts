@@ -7,12 +7,22 @@
 
 
 @UIBind('UI/LevelUp/LevelUI.ui')
-export default class LevelUI_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas_1/ScrollBox_1/mCanvas_Type')
-    public mCanvas_Type: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/Canvas_1/mBtn_Close')
-    public mBtn_Close: mw.Button=undefined;
-    
+export default class LevelUI_Generate extends UIScript {
+		private mCanvas_Type_Internal: mw.Canvas
+	public get mCanvas_Type(): mw.Canvas {
+		if(!this.mCanvas_Type_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Type_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/ScrollBox_1/mCanvas_Type') as mw.Canvas
+		}
+		return this.mCanvas_Type_Internal
+	}
+	private mBtn_Close_Internal: mw.Button
+	public get mBtn_Close(): mw.Button {
+		if(!this.mBtn_Close_Internal&&this.uiWidgetBase) {
+			this.mBtn_Close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/mBtn_Close') as mw.Button
+		}
+		return this.mBtn_Close_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

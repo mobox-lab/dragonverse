@@ -7,56 +7,176 @@
 
 
 @UIBind('UI/hud/Hud.ui')
-export default class Hud_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mVirtualJoystickPanel')
-    public mVirtualJoystickPanel: mw.VirtualJoystickPanel=undefined;
-    @UIWidgetBind('RootCanvas/mTouchPad')
-    public mTouchPad: mw.TouchPad=undefined;
-    @UIWidgetBind('RootCanvas/mAtk_Canvas')
-    public mAtk_Canvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mAtk_Canvas/mJump_Btn')
-    public mJump_Btn: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mAtk_Canvas/mBtn_petspeed')
-    public mBtn_petspeed: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_coin')
-    public mCanvas_coin: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_coin/mCanvas_diamond')
-    public mCanvas_diamond: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_coin/mCanvas_diamond/mPic_diamond')
-    public mPic_diamond: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_coin/mCanvas_diamond/mText_diamond')
-    public mText_diamond: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_coin/mCanvas_specailcoin')
-    public mCanvas_specailcoin: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_coin/mCanvas_specailcoin/mPic_coin')
-    public mPic_coin: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_coin/mCanvas_specailcoin/mText_coin')
-    public mText_coin: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Transmit')
-    public mCanvas_Transmit: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Transmit/mBtn_Transmit')
-    public mBtn_Transmit: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_buff')
-    public mCanvas_buff: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_fasttran')
-    public mCanvas_fasttran: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_fasttran/mBtn_FastTran')
-    public mBtn_FastTran: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Camera')
-    public mCanvas_Camera: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Camera/mBtn_long')
-    public mBtn_long: mw.StaleButton=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Camera/mBtn_near')
-    public mBtn_near: mw.StaleButton=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_Camera/mBtn_nomal')
-    public mBtn_nomal: mw.StaleButton=undefined;
-    @UIWidgetBind('RootCanvas/mGM')
-    public mGM: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_skid')
-    public mCanvas_skid: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas_skid/mBtn_skid')
-    public mBtn_skid: mw.Button=undefined;
-    
+export default class Hud_Generate extends UIScript {
+		private mVirtualJoystickPanel_Internal: mw.VirtualJoystickPanel
+	public get mVirtualJoystickPanel(): mw.VirtualJoystickPanel {
+		if(!this.mVirtualJoystickPanel_Internal&&this.uiWidgetBase) {
+			this.mVirtualJoystickPanel_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mVirtualJoystickPanel') as mw.VirtualJoystickPanel
+		}
+		return this.mVirtualJoystickPanel_Internal
+	}
+	private mTouchPad_Internal: mw.TouchPad
+	public get mTouchPad(): mw.TouchPad {
+		if(!this.mTouchPad_Internal&&this.uiWidgetBase) {
+			this.mTouchPad_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTouchPad') as mw.TouchPad
+		}
+		return this.mTouchPad_Internal
+	}
+	private mAtk_Canvas_Internal: mw.Canvas
+	public get mAtk_Canvas(): mw.Canvas {
+		if(!this.mAtk_Canvas_Internal&&this.uiWidgetBase) {
+			this.mAtk_Canvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mAtk_Canvas') as mw.Canvas
+		}
+		return this.mAtk_Canvas_Internal
+	}
+	private mJump_Btn_Internal: mw.Button
+	public get mJump_Btn(): mw.Button {
+		if(!this.mJump_Btn_Internal&&this.uiWidgetBase) {
+			this.mJump_Btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mAtk_Canvas/mJump_Btn') as mw.Button
+		}
+		return this.mJump_Btn_Internal
+	}
+	private mBtn_petspeed_Internal: mw.Button
+	public get mBtn_petspeed(): mw.Button {
+		if(!this.mBtn_petspeed_Internal&&this.uiWidgetBase) {
+			this.mBtn_petspeed_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mAtk_Canvas/mBtn_petspeed') as mw.Button
+		}
+		return this.mBtn_petspeed_Internal
+	}
+	private mCanvas_coin_Internal: mw.Canvas
+	public get mCanvas_coin(): mw.Canvas {
+		if(!this.mCanvas_coin_Internal&&this.uiWidgetBase) {
+			this.mCanvas_coin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin') as mw.Canvas
+		}
+		return this.mCanvas_coin_Internal
+	}
+	private mCanvas_diamond_Internal: mw.Canvas
+	public get mCanvas_diamond(): mw.Canvas {
+		if(!this.mCanvas_diamond_Internal&&this.uiWidgetBase) {
+			this.mCanvas_diamond_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_diamond') as mw.Canvas
+		}
+		return this.mCanvas_diamond_Internal
+	}
+	private mPic_diamond_Internal: mw.Image
+	public get mPic_diamond(): mw.Image {
+		if(!this.mPic_diamond_Internal&&this.uiWidgetBase) {
+			this.mPic_diamond_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_diamond/mPic_diamond') as mw.Image
+		}
+		return this.mPic_diamond_Internal
+	}
+	private mText_diamond_Internal: mw.TextBlock
+	public get mText_diamond(): mw.TextBlock {
+		if(!this.mText_diamond_Internal&&this.uiWidgetBase) {
+			this.mText_diamond_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_diamond/mText_diamond') as mw.TextBlock
+		}
+		return this.mText_diamond_Internal
+	}
+	private mCanvas_specailcoin_Internal: mw.Canvas
+	public get mCanvas_specailcoin(): mw.Canvas {
+		if(!this.mCanvas_specailcoin_Internal&&this.uiWidgetBase) {
+			this.mCanvas_specailcoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_specailcoin') as mw.Canvas
+		}
+		return this.mCanvas_specailcoin_Internal
+	}
+	private mPic_coin_Internal: mw.Image
+	public get mPic_coin(): mw.Image {
+		if(!this.mPic_coin_Internal&&this.uiWidgetBase) {
+			this.mPic_coin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_specailcoin/mPic_coin') as mw.Image
+		}
+		return this.mPic_coin_Internal
+	}
+	private mText_coin_Internal: mw.TextBlock
+	public get mText_coin(): mw.TextBlock {
+		if(!this.mText_coin_Internal&&this.uiWidgetBase) {
+			this.mText_coin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_specailcoin/mText_coin') as mw.TextBlock
+		}
+		return this.mText_coin_Internal
+	}
+	private mCanvas_Transmit_Internal: mw.Canvas
+	public get mCanvas_Transmit(): mw.Canvas {
+		if(!this.mCanvas_Transmit_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Transmit_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Transmit') as mw.Canvas
+		}
+		return this.mCanvas_Transmit_Internal
+	}
+	private mBtn_Transmit_Internal: mw.Button
+	public get mBtn_Transmit(): mw.Button {
+		if(!this.mBtn_Transmit_Internal&&this.uiWidgetBase) {
+			this.mBtn_Transmit_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Transmit/mBtn_Transmit') as mw.Button
+		}
+		return this.mBtn_Transmit_Internal
+	}
+	private mCanvas_buff_Internal: mw.Canvas
+	public get mCanvas_buff(): mw.Canvas {
+		if(!this.mCanvas_buff_Internal&&this.uiWidgetBase) {
+			this.mCanvas_buff_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_buff') as mw.Canvas
+		}
+		return this.mCanvas_buff_Internal
+	}
+	private mCanvas_fasttran_Internal: mw.Canvas
+	public get mCanvas_fasttran(): mw.Canvas {
+		if(!this.mCanvas_fasttran_Internal&&this.uiWidgetBase) {
+			this.mCanvas_fasttran_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_fasttran') as mw.Canvas
+		}
+		return this.mCanvas_fasttran_Internal
+	}
+	private mBtn_FastTran_Internal: mw.Button
+	public get mBtn_FastTran(): mw.Button {
+		if(!this.mBtn_FastTran_Internal&&this.uiWidgetBase) {
+			this.mBtn_FastTran_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_fasttran/mBtn_FastTran') as mw.Button
+		}
+		return this.mBtn_FastTran_Internal
+	}
+	private mCanvas_Camera_Internal: mw.Canvas
+	public get mCanvas_Camera(): mw.Canvas {
+		if(!this.mCanvas_Camera_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Camera_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Camera') as mw.Canvas
+		}
+		return this.mCanvas_Camera_Internal
+	}
+	private mBtn_long_Internal: mw.StaleButton
+	public get mBtn_long(): mw.StaleButton {
+		if(!this.mBtn_long_Internal&&this.uiWidgetBase) {
+			this.mBtn_long_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Camera/mBtn_long') as mw.StaleButton
+		}
+		return this.mBtn_long_Internal
+	}
+	private mBtn_near_Internal: mw.StaleButton
+	public get mBtn_near(): mw.StaleButton {
+		if(!this.mBtn_near_Internal&&this.uiWidgetBase) {
+			this.mBtn_near_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Camera/mBtn_near') as mw.StaleButton
+		}
+		return this.mBtn_near_Internal
+	}
+	private mBtn_nomal_Internal: mw.StaleButton
+	public get mBtn_nomal(): mw.StaleButton {
+		if(!this.mBtn_nomal_Internal&&this.uiWidgetBase) {
+			this.mBtn_nomal_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Camera/mBtn_nomal') as mw.StaleButton
+		}
+		return this.mBtn_nomal_Internal
+	}
+	private mGM_Internal: mw.Button
+	public get mGM(): mw.Button {
+		if(!this.mGM_Internal&&this.uiWidgetBase) {
+			this.mGM_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mGM') as mw.Button
+		}
+		return this.mGM_Internal
+	}
+	private mCanvas_skid_Internal: mw.Canvas
+	public get mCanvas_skid(): mw.Canvas {
+		if(!this.mCanvas_skid_Internal&&this.uiWidgetBase) {
+			this.mCanvas_skid_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_skid') as mw.Canvas
+		}
+		return this.mCanvas_skid_Internal
+	}
+	private mBtn_skid_Internal: mw.Button
+	public get mBtn_skid(): mw.Button {
+		if(!this.mBtn_skid_Internal&&this.uiWidgetBase) {
+			this.mBtn_skid_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_skid/mBtn_skid') as mw.Button
+		}
+		return this.mBtn_skid_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

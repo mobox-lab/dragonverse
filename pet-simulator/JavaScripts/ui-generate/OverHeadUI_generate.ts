@@ -7,16 +7,36 @@
 
 
 @UIBind('UI/OverHeadUI.ui')
-export default class OverHeadUI_Generate extends mw.UIScript {
-	@UIWidgetBind('Canvas/mCanvas_1')
-    public mCanvas_1: mw.Canvas=undefined;
-    @UIWidgetBind('Canvas/mCanvas_1/mTex_name')
-    public mTex_name: mw.TextBlock=undefined;
-    @UIWidgetBind('Canvas/mCanvas_1/mTex_count')
-    public mTex_count: mw.TextBlock=undefined;
-    @UIWidgetBind('Canvas/mCanvas_1/Canvas_1/mTex_speed')
-    public mTex_speed: mw.TextBlock=undefined;
-    
+export default class OverHeadUI_Generate extends UIScript {
+		private mCanvas_1_Internal: mw.Canvas
+	public get mCanvas_1(): mw.Canvas {
+		if(!this.mCanvas_1_Internal&&this.uiWidgetBase) {
+			this.mCanvas_1_Internal = this.uiWidgetBase.findChildByPath('Canvas/mCanvas_1') as mw.Canvas
+		}
+		return this.mCanvas_1_Internal
+	}
+	private mTex_name_Internal: mw.TextBlock
+	public get mTex_name(): mw.TextBlock {
+		if(!this.mTex_name_Internal&&this.uiWidgetBase) {
+			this.mTex_name_Internal = this.uiWidgetBase.findChildByPath('Canvas/mCanvas_1/mTex_name') as mw.TextBlock
+		}
+		return this.mTex_name_Internal
+	}
+	private mTex_count_Internal: mw.TextBlock
+	public get mTex_count(): mw.TextBlock {
+		if(!this.mTex_count_Internal&&this.uiWidgetBase) {
+			this.mTex_count_Internal = this.uiWidgetBase.findChildByPath('Canvas/mCanvas_1/mTex_count') as mw.TextBlock
+		}
+		return this.mTex_count_Internal
+	}
+	private mTex_speed_Internal: mw.TextBlock
+	public get mTex_speed(): mw.TextBlock {
+		if(!this.mTex_speed_Internal&&this.uiWidgetBase) {
+			this.mTex_speed_Internal = this.uiWidgetBase.findChildByPath('Canvas/mCanvas_1/Canvas_1/mTex_speed') as mw.TextBlock
+		}
+		return this.mTex_speed_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

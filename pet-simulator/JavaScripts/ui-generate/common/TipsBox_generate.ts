@@ -7,12 +7,22 @@
 
 
 @UIBind('UI/common/TipsBox.ui')
-export default class TipsBox_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/mBtn_OK')
-    public mBtn_OK: mw.StaleButton=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mText_message')
-    public mText_message: mw.TextBlock=undefined;
-    
+export default class TipsBox_Generate extends UIScript {
+		private mBtn_OK_Internal: mw.StaleButton
+	public get mBtn_OK(): mw.StaleButton {
+		if(!this.mBtn_OK_Internal&&this.uiWidgetBase) {
+			this.mBtn_OK_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_OK') as mw.StaleButton
+		}
+		return this.mBtn_OK_Internal
+	}
+	private mText_message_Internal: mw.TextBlock
+	public get mText_message(): mw.TextBlock {
+		if(!this.mText_message_Internal&&this.uiWidgetBase) {
+			this.mText_message_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_message') as mw.TextBlock
+		}
+		return this.mText_message_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

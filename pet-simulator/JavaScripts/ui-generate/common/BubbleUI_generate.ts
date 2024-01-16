@@ -7,16 +7,36 @@
 
 
 @UIBind('UI/common/BubbleUI.ui')
-export default class BubbleUI_Generate extends mw.UIScript {
-	@UIWidgetBind('MWCanvas_2147482460/array')
-    public array: mw.Image=undefined;
-    @UIWidgetBind('MWCanvas_2147482460/border')
-    public border: mw.Image=undefined;
-    @UIWidgetBind('MWCanvas_2147482460/bg')
-    public bg: mw.Image=undefined;
-    @UIWidgetBind('MWCanvas_2147482460/text')
-    public text: mw.TextBlock=undefined;
-    
+export default class BubbleUI_Generate extends UIScript {
+		private array_Internal: mw.Image
+	public get array(): mw.Image {
+		if(!this.array_Internal&&this.uiWidgetBase) {
+			this.array_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/array') as mw.Image
+		}
+		return this.array_Internal
+	}
+	private border_Internal: mw.Image
+	public get border(): mw.Image {
+		if(!this.border_Internal&&this.uiWidgetBase) {
+			this.border_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/border') as mw.Image
+		}
+		return this.border_Internal
+	}
+	private bg_Internal: mw.Image
+	public get bg(): mw.Image {
+		if(!this.bg_Internal&&this.uiWidgetBase) {
+			this.bg_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/bg') as mw.Image
+		}
+		return this.bg_Internal
+	}
+	private text_Internal: mw.TextBlock
+	public get text(): mw.TextBlock {
+		if(!this.text_Internal&&this.uiWidgetBase) {
+			this.text_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/text') as mw.TextBlock
+		}
+		return this.text_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

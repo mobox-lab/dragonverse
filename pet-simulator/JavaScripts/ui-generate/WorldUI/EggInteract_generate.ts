@@ -7,7 +7,7 @@
 
 
 @UIBind('UI/WorldUI/EggInteract.ui')
-export default class EggInteract_Generate extends mw.UIScript {
+export default class EggInteract_Generate extends UIScript {
 	
 
 

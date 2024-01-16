@@ -7,12 +7,22 @@
 
 
 @UIBind('UI/WorldUI/LockWall.ui')
-export default class LockWall_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mPic_coins')
-    public mPic_coins: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mText_Coin')
-    public mText_Coin: mw.TextBlock=undefined;
-    
+export default class LockWall_Generate extends UIScript {
+		private mPic_coins_Internal: mw.Image
+	public get mPic_coins(): mw.Image {
+		if(!this.mPic_coins_Internal&&this.uiWidgetBase) {
+			this.mPic_coins_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_coins') as mw.Image
+		}
+		return this.mPic_coins_Internal
+	}
+	private mText_Coin_Internal: mw.TextBlock
+	public get mText_Coin(): mw.TextBlock {
+		if(!this.mText_Coin_Internal&&this.uiWidgetBase) {
+			this.mText_Coin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_Coin') as mw.TextBlock
+		}
+		return this.mText_Coin_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

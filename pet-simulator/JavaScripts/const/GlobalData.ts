@@ -61,6 +61,14 @@ export namespace GlobalData {
         public static isSameGoBack: boolean = false;
         /**是否开启收集图鉴机器 */
         public static isOpenCollectMachine: boolean = false;
+        /**
+         * 主游戏gameid
+         */
+        public static dragonverseGameId: string = "P_409846";
+        /**
+         * 跳子游戏 进度条时长.
+         */
+        public static readonly jumpGameProgressDuration = 3e3;
     }
 
     export class worldUI {

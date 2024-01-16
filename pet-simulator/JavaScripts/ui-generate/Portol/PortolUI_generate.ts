@@ -7,12 +7,29 @@
 
 
 @UIBind('UI/Portol/PortolUI.ui')
-export default class PortolUI_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/mImage_Icon')
-    public mImage_Icon: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mText_Money')
-    public mText_Money: mw.TextBlock=undefined;
-    
+export default class PortolUI_Generate extends UIScript {
+		private mImage_Icon_Internal: mw.Image
+	public get mImage_Icon(): mw.Image {
+		if(!this.mImage_Icon_Internal&&this.uiWidgetBase) {
+			this.mImage_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mImage_Icon') as mw.Image
+		}
+		return this.mImage_Icon_Internal
+	}
+	private mText_Money_Internal: mw.TextBlock
+	public get mText_Money(): mw.TextBlock {
+		if(!this.mText_Money_Internal&&this.uiWidgetBase) {
+			this.mText_Money_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_Money') as mw.TextBlock
+		}
+		return this.mText_Money_Internal
+	}
+	private mText_Need_Internal: mw.TextBlock
+	public get mText_Need(): mw.TextBlock {
+		if(!this.mText_Need_Internal&&this.uiWidgetBase) {
+			this.mText_Need_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_Need') as mw.TextBlock
+		}
+		return this.mText_Need_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();
@@ -38,11 +55,11 @@ export default class PortolUI_Generate extends mw.UIScript {
 		this.initLanguage(this.mText_Money)
 		
 	
-		//文本多语言
-		
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/TextBlock") as any);
+		this.initLanguage(this.mText_Need)
 		
 	
+		//文本多语言
+		
 
 	}
 	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

@@ -7,10 +7,15 @@
 
 
 @UIBind('UI/WorldUI/WorldtipsUI.ui')
-export default class WorldtipsUI_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mText_Worldname')
-    public mText_Worldname: mw.TextBlock=undefined;
-    
+export default class WorldtipsUI_Generate extends UIScript {
+		private mText_Worldname_Internal: mw.TextBlock
+	public get mText_Worldname(): mw.TextBlock {
+		if(!this.mText_Worldname_Internal&&this.uiWidgetBase) {
+			this.mText_Worldname_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_Worldname') as mw.TextBlock
+		}
+		return this.mText_Worldname_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

@@ -7,18 +7,43 @@
 
 
 @UIBind('UI/common/Guide.ui')
-export default class Guide_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/mBtn_cat')
-    public mBtn_cat: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mBtn_dog')
-    public mBtn_dog: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mPic_check')
-    public mPic_check: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mPic_check2')
-    public mPic_check2: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mBtn_OK')
-    public mBtn_OK: mw.StaleButton=undefined;
-    
+export default class Guide_Generate extends UIScript {
+		private mBtn_cat_Internal: mw.Button
+	public get mBtn_cat(): mw.Button {
+		if(!this.mBtn_cat_Internal&&this.uiWidgetBase) {
+			this.mBtn_cat_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_cat') as mw.Button
+		}
+		return this.mBtn_cat_Internal
+	}
+	private mBtn_dog_Internal: mw.Button
+	public get mBtn_dog(): mw.Button {
+		if(!this.mBtn_dog_Internal&&this.uiWidgetBase) {
+			this.mBtn_dog_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_dog') as mw.Button
+		}
+		return this.mBtn_dog_Internal
+	}
+	private mPic_check_Internal: mw.Image
+	public get mPic_check(): mw.Image {
+		if(!this.mPic_check_Internal&&this.uiWidgetBase) {
+			this.mPic_check_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mPic_check') as mw.Image
+		}
+		return this.mPic_check_Internal
+	}
+	private mPic_check2_Internal: mw.Image
+	public get mPic_check2(): mw.Image {
+		if(!this.mPic_check2_Internal&&this.uiWidgetBase) {
+			this.mPic_check2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mPic_check2') as mw.Image
+		}
+		return this.mPic_check2_Internal
+	}
+	private mBtn_OK_Internal: mw.StaleButton
+	public get mBtn_OK(): mw.StaleButton {
+		if(!this.mBtn_OK_Internal&&this.uiWidgetBase) {
+			this.mBtn_OK_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_OK') as mw.StaleButton
+		}
+		return this.mBtn_OK_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

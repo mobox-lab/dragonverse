@@ -40,7 +40,7 @@ import { RankModuleS } from "./modules/Rank/RankModuleS";
 import { RankModuleC } from "./modules/Rank/RankModuleC";
 import { DollMachineModuleC } from "./modules/DollMachine/DollMachineModuleC";
 import { DollMachineModuleS } from "./modules/DollMachine/DollMachineModuleS";
-
+import * as mwaction from "mwaction";
 
 declare global {
     var UE: any;
@@ -115,7 +115,7 @@ export default class GameStart extends mw.Script {
         GlobalData.Global.isUseAvatar = this.isUseAvatar;
         GlobalData.Global.isOverSea = this.isOverSea;
         this.onRegisterModule();
-
+        mwaction;
         DataStorage.setTemporaryStorage(!this.isOnline);
         if (mw.SystemUtil.isClient()) {
             if (GlobalData.Global.selectedLanguageIndex == -1) {
@@ -176,6 +176,7 @@ export default class GameStart extends mw.Script {
     }
     onUpdate(dt: number): void {
         mw.TweenUtil.TWEEN.update();
+        actions.AcitonMgr.update(dt * 1000);
     }
 
     protected onRegisterModule(): void {

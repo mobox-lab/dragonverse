@@ -7,18 +7,43 @@
 
 
 @UIBind('UI/Pet/PetGet.ui')
-export default class PetGet_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas/mImage')
-    public mImage: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mNameText')
-    public mNameText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mQualityText')
-    public mQualityText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mPic_Flash')
-    public mPic_Flash: mw.Image=undefined;
-    
+export default class PetGet_Generate extends UIScript {
+		private mImage_Internal: mw.Image
+	public get mImage(): mw.Image {
+		if(!this.mImage_Internal&&this.uiWidgetBase) {
+			this.mImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage') as mw.Image
+		}
+		return this.mImage_Internal
+	}
+	private mNameText_Internal: mw.TextBlock
+	public get mNameText(): mw.TextBlock {
+		if(!this.mNameText_Internal&&this.uiWidgetBase) {
+			this.mNameText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mNameText') as mw.TextBlock
+		}
+		return this.mNameText_Internal
+	}
+	private mQualityText_Internal: mw.TextBlock
+	public get mQualityText(): mw.TextBlock {
+		if(!this.mQualityText_Internal&&this.uiWidgetBase) {
+			this.mQualityText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mQualityText') as mw.TextBlock
+		}
+		return this.mQualityText_Internal
+	}
+	private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mPic_Flash_Internal: mw.Image
+	public get mPic_Flash(): mw.Image {
+		if(!this.mPic_Flash_Internal&&this.uiWidgetBase) {
+			this.mPic_Flash_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_Flash') as mw.Image
+		}
+		return this.mPic_Flash_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

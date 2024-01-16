@@ -7,16 +7,36 @@
 
 
 @UIBind('UI/Trade/UserItem.ui')
-export default class UserItem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas/mbtn_Trade')
-    public mbtn_Trade: mw.Button=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mtext_State')
-    public mtext_State: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mtext_Username')
-    public mtext_Username: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/Canvas/mImage_Go')
-    public mImage_Go: mw.Image=undefined;
-    
+export default class UserItem_Generate extends UIScript {
+		private mbtn_Trade_Internal: mw.Button
+	public get mbtn_Trade(): mw.Button {
+		if(!this.mbtn_Trade_Internal&&this.uiWidgetBase) {
+			this.mbtn_Trade_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mbtn_Trade') as mw.Button
+		}
+		return this.mbtn_Trade_Internal
+	}
+	private mtext_State_Internal: mw.TextBlock
+	public get mtext_State(): mw.TextBlock {
+		if(!this.mtext_State_Internal&&this.uiWidgetBase) {
+			this.mtext_State_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mtext_State') as mw.TextBlock
+		}
+		return this.mtext_State_Internal
+	}
+	private mtext_Username_Internal: mw.TextBlock
+	public get mtext_Username(): mw.TextBlock {
+		if(!this.mtext_Username_Internal&&this.uiWidgetBase) {
+			this.mtext_Username_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mtext_Username') as mw.TextBlock
+		}
+		return this.mtext_Username_Internal
+	}
+	private mImage_Go_Internal: mw.Image
+	public get mImage_Go(): mw.Image {
+		if(!this.mImage_Go_Internal&&this.uiWidgetBase) {
+			this.mImage_Go_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mImage_Go') as mw.Image
+		}
+		return this.mImage_Go_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

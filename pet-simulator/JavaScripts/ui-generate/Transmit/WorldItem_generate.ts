@@ -7,10 +7,15 @@
 
 
 @UIBind('UI/Transmit/WorldItem.ui')
-export default class WorldItem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mBtn_World')
-    public mBtn_World: mw.StaleButton=undefined;
-    
+export default class WorldItem_Generate extends UIScript {
+		private mBtn_World_Internal: mw.StaleButton
+	public get mBtn_World(): mw.StaleButton {
+		if(!this.mBtn_World_Internal&&this.uiWidgetBase) {
+			this.mBtn_World_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_World') as mw.StaleButton
+		}
+		return this.mBtn_World_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

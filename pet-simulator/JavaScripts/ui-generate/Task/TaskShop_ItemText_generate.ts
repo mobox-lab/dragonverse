@@ -7,10 +7,15 @@
 
 
 @UIBind('UI/Task/TaskShop_ItemText.ui')
-export default class TaskShop_ItemText_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mText_title')
-    public mText_title: mw.TextBlock=undefined;
-    
+export default class TaskShop_ItemText_Generate extends UIScript {
+		private mText_title_Internal: mw.TextBlock
+	public get mText_title(): mw.TextBlock {
+		if(!this.mText_title_Internal&&this.uiWidgetBase) {
+			this.mText_title_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_title') as mw.TextBlock
+		}
+		return this.mText_title_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

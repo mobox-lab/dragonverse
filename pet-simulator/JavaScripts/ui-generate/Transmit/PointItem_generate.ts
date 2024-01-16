@@ -7,12 +7,22 @@
 
 
 @UIBind('UI/Transmit/PointItem.ui')
-export default class PointItem_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mBtn_Point')
-    public mBtn_Point: mw.StaleButton=undefined;
-    @UIWidgetBind('RootCanvas/mPic_type')
-    public mPic_type: mw.Image=undefined;
-    
+export default class PointItem_Generate extends UIScript {
+		private mBtn_Point_Internal: mw.StaleButton
+	public get mBtn_Point(): mw.StaleButton {
+		if(!this.mBtn_Point_Internal&&this.uiWidgetBase) {
+			this.mBtn_Point_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_Point') as mw.StaleButton
+		}
+		return this.mBtn_Point_Internal
+	}
+	private mPic_type_Internal: mw.Image
+	public get mPic_type(): mw.Image {
+		if(!this.mPic_type_Internal&&this.uiWidgetBase) {
+			this.mPic_type_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_type') as mw.Image
+		}
+		return this.mPic_type_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

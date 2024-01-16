@@ -7,16 +7,36 @@
 
 
 @UIBind('UI/Trade/TradeChoose.ui')
-export default class TradeChoose_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/Canvas_1/mHistory_Btn')
-    public mHistory_Btn: mw.StaleButton=undefined;
-    @UIWidgetBind('RootCanvas/Canvas_1/mOpen_Btn')
-    public mOpen_Btn: mw.StaleButton=undefined;
-    @UIWidgetBind('RootCanvas/Canvas_1/ScrollBox/mUserCanvas')
-    public mUserCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/Canvas_1/mBtn_Close')
-    public mBtn_Close: mw.Button=undefined;
-    
+export default class TradeChoose_Generate extends UIScript {
+		private mHistory_Btn_Internal: mw.StaleButton
+	public get mHistory_Btn(): mw.StaleButton {
+		if(!this.mHistory_Btn_Internal&&this.uiWidgetBase) {
+			this.mHistory_Btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/mHistory_Btn') as mw.StaleButton
+		}
+		return this.mHistory_Btn_Internal
+	}
+	private mOpen_Btn_Internal: mw.StaleButton
+	public get mOpen_Btn(): mw.StaleButton {
+		if(!this.mOpen_Btn_Internal&&this.uiWidgetBase) {
+			this.mOpen_Btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/mOpen_Btn') as mw.StaleButton
+		}
+		return this.mOpen_Btn_Internal
+	}
+	private mUserCanvas_Internal: mw.Canvas
+	public get mUserCanvas(): mw.Canvas {
+		if(!this.mUserCanvas_Internal&&this.uiWidgetBase) {
+			this.mUserCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/ScrollBox/mUserCanvas') as mw.Canvas
+		}
+		return this.mUserCanvas_Internal
+	}
+	private mBtn_Close_Internal: mw.Button
+	public get mBtn_Close(): mw.Button {
+		if(!this.mBtn_Close_Internal&&this.uiWidgetBase) {
+			this.mBtn_Close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/mBtn_Close') as mw.Button
+		}
+		return this.mBtn_Close_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

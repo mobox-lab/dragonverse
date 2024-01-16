@@ -7,10 +7,15 @@
 
 
 @UIBind('UI/common/GameIngo.ui')
-export default class GameIngo_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mText')
-    public mText: mw.TextBlock=undefined;
-    
+export default class GameIngo_Generate extends UIScript {
+		private mText_Internal: mw.TextBlock
+	public get mText(): mw.TextBlock {
+		if(!this.mText_Internal&&this.uiWidgetBase) {
+			this.mText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText') as mw.TextBlock
+		}
+		return this.mText_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

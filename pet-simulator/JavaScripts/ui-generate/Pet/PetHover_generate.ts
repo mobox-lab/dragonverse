@@ -7,34 +7,99 @@
 
 
 @UIBind('UI/Pet/PetHover.ui')
-export default class PetHover_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mCanvas')
-    public mCanvas: mw.Canvas=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mFrameImg')
-    public mFrameImg: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mNameText')
-    public mNameText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mNiknameText')
-    public mNiknameText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mBackImage')
-    public mBackImage: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mValueText')
-    public mValueText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mQualityText')
-    public mQualityText: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mImage')
-    public mImage: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mPic_SpecialTips')
-    public mPic_SpecialTips: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mBuffText_1')
-    public mBuffText_1: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mText_SpecialTips')
-    public mText_SpecialTips: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mBuffText_2')
-    public mBuffText_2: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mCanvas/mBuffText_3')
-    public mBuffText_3: mw.TextBlock=undefined;
-    
+export default class PetHover_Generate extends UIScript {
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+		}
+		return this.mCanvas_Internal
+	}
+	private mFrameImg_Internal: mw.Image
+	public get mFrameImg(): mw.Image {
+		if(!this.mFrameImg_Internal&&this.uiWidgetBase) {
+			this.mFrameImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mFrameImg') as mw.Image
+		}
+		return this.mFrameImg_Internal
+	}
+	private mNameText_Internal: mw.TextBlock
+	public get mNameText(): mw.TextBlock {
+		if(!this.mNameText_Internal&&this.uiWidgetBase) {
+			this.mNameText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mNameText') as mw.TextBlock
+		}
+		return this.mNameText_Internal
+	}
+	private mNiknameText_Internal: mw.TextBlock
+	public get mNiknameText(): mw.TextBlock {
+		if(!this.mNiknameText_Internal&&this.uiWidgetBase) {
+			this.mNiknameText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mNiknameText') as mw.TextBlock
+		}
+		return this.mNiknameText_Internal
+	}
+	private mBackImage_Internal: mw.Image
+	public get mBackImage(): mw.Image {
+		if(!this.mBackImage_Internal&&this.uiWidgetBase) {
+			this.mBackImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBackImage') as mw.Image
+		}
+		return this.mBackImage_Internal
+	}
+	private mValueText_Internal: mw.TextBlock
+	public get mValueText(): mw.TextBlock {
+		if(!this.mValueText_Internal&&this.uiWidgetBase) {
+			this.mValueText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mValueText') as mw.TextBlock
+		}
+		return this.mValueText_Internal
+	}
+	private mQualityText_Internal: mw.TextBlock
+	public get mQualityText(): mw.TextBlock {
+		if(!this.mQualityText_Internal&&this.uiWidgetBase) {
+			this.mQualityText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mQualityText') as mw.TextBlock
+		}
+		return this.mQualityText_Internal
+	}
+	private mImage_Internal: mw.Image
+	public get mImage(): mw.Image {
+		if(!this.mImage_Internal&&this.uiWidgetBase) {
+			this.mImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage') as mw.Image
+		}
+		return this.mImage_Internal
+	}
+	private mPic_SpecialTips_Internal: mw.Image
+	public get mPic_SpecialTips(): mw.Image {
+		if(!this.mPic_SpecialTips_Internal&&this.uiWidgetBase) {
+			this.mPic_SpecialTips_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mPic_SpecialTips') as mw.Image
+		}
+		return this.mPic_SpecialTips_Internal
+	}
+	private mBuffText_1_Internal: mw.TextBlock
+	public get mBuffText_1(): mw.TextBlock {
+		if(!this.mBuffText_1_Internal&&this.uiWidgetBase) {
+			this.mBuffText_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBuffText_1') as mw.TextBlock
+		}
+		return this.mBuffText_1_Internal
+	}
+	private mText_SpecialTips_Internal: mw.TextBlock
+	public get mText_SpecialTips(): mw.TextBlock {
+		if(!this.mText_SpecialTips_Internal&&this.uiWidgetBase) {
+			this.mText_SpecialTips_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_SpecialTips') as mw.TextBlock
+		}
+		return this.mText_SpecialTips_Internal
+	}
+	private mBuffText_2_Internal: mw.TextBlock
+	public get mBuffText_2(): mw.TextBlock {
+		if(!this.mBuffText_2_Internal&&this.uiWidgetBase) {
+			this.mBuffText_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBuffText_2') as mw.TextBlock
+		}
+		return this.mBuffText_2_Internal
+	}
+	private mBuffText_3_Internal: mw.TextBlock
+	public get mBuffText_3(): mw.TextBlock {
+		if(!this.mBuffText_3_Internal&&this.uiWidgetBase) {
+			this.mBuffText_3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBuffText_3') as mw.TextBlock
+		}
+		return this.mBuffText_3_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();

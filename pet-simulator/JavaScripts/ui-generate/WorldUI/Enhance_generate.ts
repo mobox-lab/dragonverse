@@ -7,7 +7,7 @@
 
 
 @UIBind('UI/WorldUI/Enhance.ui')
-export default class Enhance_Generate extends mw.UIScript {
+export default class Enhance_Generate extends UIScript {
 	
 
 

@@ -73,7 +73,7 @@ export default class HeadUIScript extends mw.Script {
         HeadUIController.getInstance().unregisterHeadUI(playerId.toString());
     }
 
-    public getPlayerNickName(playerId: number): string {
+    public getPlayerNickName(playerId: number): string | null {
         for (let i = 0; i < this.playerNickNames.length; i++) {
             if (this.playerNickNames[i].playerId === playerId) {
                 return this.playerNickNames[i].nickName;

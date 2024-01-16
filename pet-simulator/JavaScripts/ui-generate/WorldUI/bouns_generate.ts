@@ -7,7 +7,7 @@
 
 
 @UIBind('UI/WorldUI/bouns.ui')
-export default class bouns_Generate extends mw.UIScript {
+export default class bouns_Generate extends UIScript {
 	
 
 

@@ -7,16 +7,36 @@
 
 
 @UIBind('UI/Rank/Rankmain.ui')
-export default class Rankmain_Generate extends mw.UIScript {
-	@UIWidgetBind('RootCanvas/mText_Title')
-    public mText_Title: mw.TextBlock=undefined;
-    @UIWidgetBind('RootCanvas/mImage_iconchange1')
-    public mImage_iconchange1: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mImage_iconchange2')
-    public mImage_iconchange2: mw.Image=undefined;
-    @UIWidgetBind('RootCanvas/mBtn_refresh')
-    public mBtn_refresh: mw.MaskButton=undefined;
-    
+export default class Rankmain_Generate extends UIScript {
+		private mText_Title_Internal: mw.TextBlock
+	public get mText_Title(): mw.TextBlock {
+		if(!this.mText_Title_Internal&&this.uiWidgetBase) {
+			this.mText_Title_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_Title') as mw.TextBlock
+		}
+		return this.mText_Title_Internal
+	}
+	private mImage_iconchange1_Internal: mw.Image
+	public get mImage_iconchange1(): mw.Image {
+		if(!this.mImage_iconchange1_Internal&&this.uiWidgetBase) {
+			this.mImage_iconchange1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImage_iconchange1') as mw.Image
+		}
+		return this.mImage_iconchange1_Internal
+	}
+	private mImage_iconchange2_Internal: mw.Image
+	public get mImage_iconchange2(): mw.Image {
+		if(!this.mImage_iconchange2_Internal&&this.uiWidgetBase) {
+			this.mImage_iconchange2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImage_iconchange2') as mw.Image
+		}
+		return this.mImage_iconchange2_Internal
+	}
+	private mBtn_refresh_Internal: mw.MaskButton
+	public get mBtn_refresh(): mw.MaskButton {
+		if(!this.mBtn_refresh_Internal&&this.uiWidgetBase) {
+			this.mBtn_refresh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_refresh') as mw.MaskButton
+		}
+		return this.mBtn_refresh_Internal
+	}
+
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();
