@@ -457,7 +457,7 @@ export default class GameServiceConfig {
     /**
      * 地图界面 小地图左下点的世界坐标.
      */
-    public static readonly MAP_SCENE_AS_MAP_LEFT_DOWN_POS: mw.Vector = new mw.Vector(25898, -24566, 0);
+    public static readonly MAP_SCENE_AS_MAP_LEFT_DOWN_POS: mw.Vector = new mw.Vector(27000, -26000, 0);
 
     /**
      * 地图界面 小地图右上点的世界坐标.
