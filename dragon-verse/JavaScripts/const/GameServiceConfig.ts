@@ -407,12 +407,12 @@ export default class GameServiceConfig {
     /**
      * 主界面 幕布 显示动画时长. ms
      */
-    public static readonly MAIN_PANEL_CURTAIN_SHOWN_DURATION = 1e3;
+    public static readonly MAIN_PANEL_CURTAIN_SHOWN_DURATION = 0.5e3;
 
     /**
      * 主界面 幕布 隐藏动画时长. ms
      */
-    public static readonly MAIN_PANEL_CURTAIN_HIDDEN_DURATION = 0.5e3;
+    public static readonly MAIN_PANEL_CURTAIN_HIDDEN_DURATION = 0.25e3;
 
     /**
      * 主界面 指针 起始角度. °
@@ -463,6 +463,21 @@ export default class GameServiceConfig {
      * 地图界面 小地图右上点的世界坐标.
      */
     public static readonly MAP_SCENE_AS_MAP_RIGHT_TOP_POS: mw.Vector = new mw.Vector(-25969, 35397, 0);
+
+    /**
+     * 地图界面 玩家细节 显隐动画时长. ms
+     */
+    public static readonly MAP_PLAYER_DETAIL_SHOWN_DURATION = 0.5e3;
+
+    /**
+     * 地图界面 地图缩放最大值.
+     */
+    public static readonly MAP_BIG_MAP_MAX_SCALE = 4;
+
+    /**
+     * 地图界面 地图缩放最小值.
+     */
+    public static readonly MAP_BIG_MAP_MIN_SCALE = 0.5;
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
