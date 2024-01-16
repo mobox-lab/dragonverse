@@ -15,7 +15,7 @@ import BigMapPlayerArrow from "../main/BigMapPlayerArrowPanel";
 /**
  * 小地图 Panel.
  */
-export class MapPanel extends MapPanel_Generate {
+export class MapPanel extends MapPanel_Generate  {
 
     private _sceneSize: mw.Vector2 = mw.Vector2.zero;
 
@@ -103,11 +103,10 @@ export class MapPanel extends MapPanel_Generate {
 
     private calculateMapPos() {
         this._mapPosCache.set(
-            -this._positionRatioInMap.x * this._oriMiniMapSize.x + this.mSmallCanvas.size.x / 2,
-            (this._positionRatioInMap.y - 1) * this._oriMiniMapSize.y + this.mSmallCanvas.size.y / 2,
+            -this._positionRatioInMap.x * this.cnvMapMesh.size.x,
+            (this._positionRatioInMap.y - 1) * this.cnvMapMesh.size.y,
         );
-        this.mSmallMapCanvas.position = this._miniMapPosCache;
-        this.mSmallMineCanvas.renderTransformAngle = Player.getControllerRotation().z - 90;
+        this._myArrow.setLocation(this._mapPosCache);
     }
 
     private calculatePositionRatioInMap() {
