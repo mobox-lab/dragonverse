@@ -32,7 +32,7 @@ export default class JumpGameTrigger extends Script {
     onProgressDone() {
         //跳游戏
         Log4Ts.log(this, "跳游戏");
-        RouteService.enterNewGame(GameServiceConfig.PET_SIMULATOR_GAME_ID);
+        RouteService.enterNewGame(GameServiceConfig.SUB_GAME_PET_SIMULATOR_GAME_ID);
     }
 
 
@@ -68,7 +68,7 @@ export default class JumpGameTrigger extends Script {
     * 播放 Progress 动画.
     */
     public playProgress() {
-        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SCENE_JUMP_TO_SUBGAME_PROGRESS_DURATION, { percent: 1 }).call(() => {
+        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, { percent: 1 }).call(() => {
             this.onProgressDone();
         });
 
