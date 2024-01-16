@@ -11,6 +11,7 @@ import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { BuffModuleC } from "../buff/BuffModuleC";
 import { Task_ModuleC } from "../Task/TaskModuleC";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
+import { DebugConsole } from "debug_console";
 
 
 //主面板
@@ -404,6 +405,7 @@ AddGMCommand("白天到黄昏", (player: mw.Player, value: string) => {
 }, "环境");
 
 
+
 AddGMCommand("黄昏到黑夜", (player: mw.Player, value: string) => {
 
     console.warn("黄昏到黑夜");
@@ -563,6 +565,17 @@ AddGMCommand("黑夜到白天", (player: mw.Player, value: string) => {
 }, (player: mw.Player, value: string) => {
 
 }, "环境");
+
+AddGMCommand("跳主游戏", () => {
+    RouteService.enterNewGame(GlobalData.Global.dragonverseGameId);
+});
+
+AddGMCommand("Show Debug log", () => {
+    DebugConsole.start(false);
+})
+AddGMCommand("Hide Debug log", () => {
+    DebugConsole.stop();
+})
 
 /**颜色改变tween */
 function colorTween(fromColor: mw.LinearColor, toColor: mw.LinearColor, tweenDuration: number, obj: mw.LinearColor) {
