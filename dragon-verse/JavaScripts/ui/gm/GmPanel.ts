@@ -182,3 +182,8 @@ AddGMCommand("跳宠物模拟器", () => {
 }, (player) => {
 });
 
+AddGMCommand("跳Battle World", () => {
+    RouteService.enterNewGame(GameServiceConfig.SUB_GAME_BATTLE_WORLD_GAME_ID);
+}, (player) => {
+});
+

@@ -566,8 +566,12 @@ AddGMCommand("黑夜到白天", (player: mw.Player, value: string) => {
 
 }, "环境");
 
-AddGMCommand("跳主游戏", () => {
+AddGMCommand("跳DragonVerse", () => {
     RouteService.enterNewGame(GlobalData.Global.dragonverseGameId);
+});
+
+AddGMCommand("跳BattleWorld", () => {
+    RouteService.enterNewGame(GlobalData.Global.battleworldGameId);
 });
 
 AddGMCommand("Show Debug log", () => {
