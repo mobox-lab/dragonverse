@@ -87,44 +87,49 @@ export class State_Dive_S extends PlayerState_S {
                         return;
                     }
 
-                    if (chara.isJumping == false) {
-                        this.reset_player();
-
-
-                        // 重置胶囊体位置
-                        let chara = player.character;
-                        let curRotation = chara.worldTransform.rotation;
-                        Globaldata.tmpRotation1.x = 0;
-                        Globaldata.tmpRotation1.y = 0;
-                        Globaldata.tmpRotation1.z = curRotation.z;
-                        chara.worldTransform.rotation = Globaldata.tmpRotation1;
-
-                        let playerLoc = chara.worldTransform.position;
-                        let extentZ = chara.collisionExtent.z / 2;
-                        Globaldata.tmpVector2.x = playerLoc.x;
-                        Globaldata.tmpVector2.y = playerLoc.y;
-                        Globaldata.tmpVector2.z = playerLoc.z - extentZ;
-                        EffectService.playAtPosition(Globaldata.diveGroundEffectGuid, Globaldata.tmpVector2);
-                        util.playSoundByConfig(Globaldata.diveGroundSoundId, Globaldata.tmpVector2);
-                        this.groundAnim.play();
-                        this.diveState = EDiveState.none;
-                        this.playerProxy.changeState(EPlayerState.Idle);
-                    }
-
-                    // let results = QueryUtil.lineTrace(chara.worldTransform.position, Globaldata.tmpVector2, true, false, null, false, false, chara);
-                    // if (results.length > 0) {
-
+                    // if (chara.isJumping == false) {
                     //     this.reset_player();
 
+
+                    //     // 重置胶囊体位置
+                    //     let chara = player.character;
+                    //     let curRotation = chara.worldTransform.rotation;
+                    //     Globaldata.tmpRotation1.x = 0;
+                    //     Globaldata.tmpRotation1.y = 0;
+                    //     Globaldata.tmpRotation1.z = curRotation.z;
+                    //     chara.worldTransform.rotation = Globaldata.tmpRotation1;
+
+                    //     let playerLoc = chara.worldTransform.position;
+                    //     let extentZ = chara.collisionExtent.z / 2;
+                    //     Globaldata.tmpVector2.x = playerLoc.x;
+                    //     Globaldata.tmpVector2.y = playerLoc.y;
                     //     Globaldata.tmpVector2.z = playerLoc.z - extentZ;
                     //     EffectService.playAtPosition(Globaldata.diveGroundEffectGuid, Globaldata.tmpVector2);
-
                     //     util.playSoundByConfig(Globaldata.diveGroundSoundId, Globaldata.tmpVector2);
                     //     this.groundAnim.play();
-
                     //     this.diveState = EDiveState.none;
                     //     this.playerProxy.changeState(EPlayerState.Idle);
                     // }
+
+                    let playerLoc = chara.worldTransform.position;
+                    let extentZ = chara.collisionExtent.z / 2;
+                    Globaldata.tmpVector2.x = playerLoc.x;
+                    Globaldata.tmpVector2.y = playerLoc.y;
+                    Globaldata.tmpVector2.z = playerLoc.z - extentZ;
+                    let results = QueryUtil.lineTrace(chara.worldTransform.position, Globaldata.tmpVector2, true, false, null, false, false, chara);
+                    if (results.length > 0) {
+
+                        this.reset_player();
+
+                        Globaldata.tmpVector2.z = playerLoc.z - extentZ;
+                        EffectService.playAtPosition(Globaldata.diveGroundEffectGuid, Globaldata.tmpVector2);
+
+                        util.playSoundByConfig(Globaldata.diveGroundSoundId, Globaldata.tmpVector2);
+                        this.groundAnim.play();
+
+                        this.diveState = EDiveState.none;
+                        this.playerProxy.changeState(EPlayerState.Idle);
+                    }
 
                 }
                 break;

@@ -151,7 +151,7 @@ export default class SceneUnit extends Script implements IUnitBase {
         }
         if (this.gameObject instanceof mw.Character) {
             this.gameObject.complexMovementEnabled = true;
-            this.gameObject.setVisibility(true);
+            this.gameObject.setVisibility(PropertyStatus.On);
             this.gameObject.setCollision(mw.PropertyStatus.On);
             this.gameObject.gravityScale = Globaldata.npc_gravityScale;
         }
@@ -246,7 +246,7 @@ export default class SceneUnit extends Script implements IUnitBase {
 
         if (this.gameObject instanceof mw.Character) {
             this.gameObject.complexMovementEnabled = false;
-            this.gameObject.setVisibility(false);
+            this.gameObject.setVisibility(PropertyStatus.Off);
             this.gameObject.setCollision(mw.PropertyStatus.Off);
         }
 

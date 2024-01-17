@@ -74,7 +74,8 @@ export class TalkModuleC extends ModuleC<TalkModuleS, null> {
                 }
                 if (StringUtil.isEmpty(ele.name)) ele.name = "";
                 obj.displayName = ele.name;
-
+                // ts报错兼容
+                await obj.asyncReady();
                 // 关闭npc复杂移动
                 obj.complexMovementEnabled = false;
             }

@@ -86,6 +86,9 @@ export class EquipManager {
 
 
         let newPendant = await SpawnManager.asyncSpawn({ guid: pendantCfg.assetGuid });
+        //ts报错兼容
+        if (!newPendant) return;
+        await newPendant.asyncReady();
         newPendant.setCollision(mw.PropertyStatus.Off);
 
         character.attachToSlot(newPendant, pendantCfg.slot);

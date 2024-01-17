@@ -128,6 +128,8 @@ export class Edit_BulletData {
     flyEffectGuid: string
     /**子弹飞行模型的世界缩放*/
     flyEffectScale: Array<number>
+    /**子弹飞行模型的相对方向 */
+    flyRelativeRot: mw.Vector
     /**子弹trigger的相对位置*/
     triggerRelativePos: Array<number>
     /**子弹trigger的相对朝向*/

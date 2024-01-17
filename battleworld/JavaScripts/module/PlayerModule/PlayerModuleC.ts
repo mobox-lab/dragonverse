@@ -1214,6 +1214,13 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
         if (deadAnim) {
             deadAnim.play();
         }
+
+        // let gasExplosion = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.gasExplosion);
+        // if (gasExplosion == 1) {
+        //     return;
+        // }
+        //ToDO  服务器设置后 为啥不会同步 需要排查下
+        //EventManager.instance.call(EAttributeEvents_C.Attribute_SetAttribute_C,Attribute.EnumAttributeType.gasExplosion, 0, this.localPlayerId, true);
     }
 
 

@@ -58,39 +58,39 @@ export class ModifiedCameraSystem {
         ModifiedCameraSystem.followEnable = false;
     }
 
-    public static getCurrentSettings(): CameraSystemData {
-        if (!SystemUtil.isClient()) return;
-        cameraSystemConfig.cameraRelativeTransform = Camera.currentCamera.localTransform;
-        cameraSystemConfig.cameraWorldTransform = Camera.currentCamera.worldTransform;
-        cameraSystemConfig.targetArmLength = Camera.currentCamera.springArm.length;
-        cameraSystemConfig.enableCameraLocationLag = Camera.currentCamera.positionLagEnabled;
-        cameraSystemConfig.cameraLocationLagSpeed = Camera.currentCamera.positionLagSpeed;
-        cameraSystemConfig.enableCameraRotationLag = Camera.currentCamera.rotationLagEnabled;
-        cameraSystemConfig.cameraRotationLagSpeed = Camera.currentCamera.rotationLagSpeed;
-        cameraSystemConfig.cameraFOV = Camera.currentCamera.fov;
-        cameraSystemConfig.cameraLocationMode = Camera.currentCamera.positionMode;
-        cameraSystemConfig.cameraRotationMode = Camera.currentCamera.rotationMode;
-        cameraSystemConfig.enableCameraCollision = Camera.currentCamera.springArm.collisionEnabled;
-        cameraSystemConfig.cameraUpLimitAngle = Camera.currentCamera.upAngleLimit;
-        cameraSystemConfig.cameraDownLimitAngle = Camera.currentCamera.downAngleLimit;
-        return cameraSystemConfig;
-    }
+    // public static getCurrentSettings(): CameraSystemData {
+    //     if (!SystemUtil.isClient()) return;
+    //     cameraSystemConfig.cameraRelativeTransform = Camera.currentCamera.localTransform;
+    //     cameraSystemConfig.cameraWorldTransform = Camera.currentCamera.worldTransform;
+    //     cameraSystemConfig.targetArmLength = Camera.currentCamera.springArm.length;
+    //     cameraSystemConfig.enableCameraLocationLag = Camera.currentCamera.positionLagEnabled;
+    //     cameraSystemConfig.cameraLocationLagSpeed = Camera.currentCamera.positionLagSpeed;
+    //     cameraSystemConfig.enableCameraRotationLag = Camera.currentCamera.rotationLagEnabled;
+    //     cameraSystemConfig.cameraRotationLagSpeed = Camera.currentCamera.rotationLagSpeed;
+    //     cameraSystemConfig.cameraFOV = Camera.currentCamera.fov;
+    //     cameraSystemConfig.cameraLocationMode = Camera.currentCamera.positionMode;
+    //     cameraSystemConfig.cameraRotationMode = Camera.currentCamera.rotationMode;
+    //     cameraSystemConfig.enableCameraCollision = Camera.currentCamera.springArm.collisionEnabled;
+    //     cameraSystemConfig.cameraUpLimitAngle = Camera.currentCamera.upAngleLimit;
+    //     cameraSystemConfig.cameraDownLimitAngle = Camera.currentCamera.downAngleLimit;
+    //     return cameraSystemConfig;
+    // }
 
-    public static applySettings(CameraSetting: CameraSystemData): void {
-        if (!SystemUtil.isClient()) return;
-        Camera.currentCamera.localTransform = CameraSetting.cameraRelativeTransform;
-        Camera.currentCamera.springArm.length = CameraSetting.targetArmLength;
-        Camera.currentCamera.positionLagEnabled = CameraSetting.enableCameraLocationLag;
-        Camera.currentCamera.positionLagSpeed = CameraSetting.cameraLocationLagSpeed;
-        Camera.currentCamera.rotationLagEnabled = CameraSetting.enableCameraRotationLag;
-        Camera.currentCamera.rotationLagSpeed = CameraSetting.cameraRotationLagSpeed;
-        Camera.currentCamera.fov = CameraSetting.cameraFOV;
-        ModifiedCameraSystem.cameraLocationMode = CameraSetting.cameraLocationMode;
-        Camera.currentCamera.rotationMode = CameraSetting.cameraRotationMode;
-        Camera.currentCamera.springArm.collisionEnabled = CameraSetting.enableCameraCollision;
-        Camera.currentCamera.upAngleLimit = CameraSetting.cameraUpLimitAngle;
-        Camera.currentCamera.downAngleLimit = CameraSetting.cameraDownLimitAngle;
-    }
+    // public static applySettings(CameraSetting: CameraSystemData): void {
+    //     if (!SystemUtil.isClient()) return;
+    //     Camera.currentCamera.localTransform = CameraSetting.cameraRelativeTransform;
+    //     Camera.currentCamera.springArm.length = CameraSetting.targetArmLength;
+    //     Camera.currentCamera.positionLagEnabled = CameraSetting.enableCameraLocationLag;
+    //     Camera.currentCamera.positionLagSpeed = CameraSetting.cameraLocationLagSpeed;
+    //     Camera.currentCamera.rotationLagEnabled = CameraSetting.enableCameraRotationLag;
+    //     Camera.currentCamera.rotationLagSpeed = CameraSetting.cameraRotationLagSpeed;
+    //     Camera.currentCamera.fov = CameraSetting.cameraFOV;
+    //     ModifiedCameraSystem.cameraLocationMode = CameraSetting.cameraLocationMode;
+    //     Camera.currentCamera.rotationMode = CameraSetting.cameraRotationMode;
+    //     Camera.currentCamera.springArm.collisionEnabled = CameraSetting.enableCameraCollision;
+    //     Camera.currentCamera.upAngleLimit = CameraSetting.cameraUpLimitAngle;
+    //     Camera.currentCamera.downAngleLimit = CameraSetting.cameraDownLimitAngle;
+    // }
 
     public static cameraFocusing(targetArmLength: number, targetOffset: Vector, timeInterval = 20): void {
         if (!SystemUtil.isClient()) return;
@@ -182,46 +182,31 @@ export type CameraSystemData = {
 
     cameraRelativeTransform?: Transform,
 
-    cameraWorldTransform?: Transform,
 
-    cameraProjectionMode?: CameraProjectionMode,
 
-    targetArmLength?: number,
+    springArmLen?: number,
 
-    enableCameraLocationLag?: boolean,
+    fov?: number,
 
-    cameraLocationLagSpeed?: number,
-
-    enableCameraRotationLag?: boolean,
-
-    cameraRotationLagSpeed?: number,
-
-    cameraFOV?: number,
-
-    cameraLocationMode?: CameraPositionMode,
-
-    cameraRotationMode?: CameraRotationMode,
 
     enableCameraCollision?: boolean,
 
-    cameraUpLimitAngle?: number,
 
-    cameraDownLimitAngle?: number,
 
 }
 
-const cameraSystemConfig: CameraSystemData = {
-    cameraRelativeTransform: Transform.identity,
-    cameraWorldTransform: Transform.identity,
-    targetArmLength: 400,
-    enableCameraLocationLag: false,
-    cameraLocationLagSpeed: 10,
-    enableCameraRotationLag: false,
-    cameraRotationLagSpeed: 10,
-    cameraFOV: 90,
-    cameraLocationMode: CameraPositionMode.PositionFollow,
-    cameraRotationMode: CameraRotationMode.RotationControl,
-    enableCameraCollision: true,
-    cameraUpLimitAngle: 40,
-    cameraDownLimitAngle: -40,
-};
+// const cameraSystemConfig: CameraSystemData = {
+//     cameraRelativeTransform: Transform.identity,
+//     cameraWorldTransform: Transform.identity,
+//     targetArmLength: 400,
+//     enableCameraLocationLag: false,
+//     cameraLocationLagSpeed: 10,
+//     enableCameraRotationLag: false,
+//     cameraRotationLagSpeed: 10,
+//     cameraFOV: 90,
+//     cameraLocationMode: CameraPositionMode.PositionFollow,
+//     cameraRotationMode: CameraRotationMode.RotationControl,
+//     enableCameraCollision: true,
+//     cameraUpLimitAngle: 40,
+//     cameraDownLimitAngle: -40,
+// };

@@ -119,6 +119,10 @@ export enum EAttributeEvents_C {
     Attribute_RankShow_C = "Attribute_RankShow_C",
     /**玩家显示隐藏状态 */
     Attribute_PlayerVisible_C = "Attribute_PlayerVisible_C",
+    /**玩家怒气值 */
+    Attribute_AngerValue_C = "Attribute_AngerValue_C",
+    /**玩家爆气状态 */
+    Attribute_gasExplosion_C = "Attribute_gasExplosion_C",
 }
 
 export enum EAttributeEvents_S {
@@ -136,6 +140,8 @@ export enum EMotionEvents_C {
     motion_addPrestore = "motion_addPrestore",
     /**技能预缓存 */
     motion_invokePrestore = "motion_invokePrestore",
+    /**释放终极大招 */
+    MotionEvent_ReleaseFinalSkill_C = "MotionEvent_ReleaseFinalSkill_C",
 }
 
 /**模块通信 */
@@ -781,6 +787,16 @@ export enum GlobalAttributeType {
      * 初始化
      */
     Init = 0,
+}
+
+/**
+ * 换装资源类型
+ */
+export enum EDressUpType {
+    /**v1 */
+    v1 = 1,
+    /**v2 */
+    v2 = 2,
 }
 
 /**

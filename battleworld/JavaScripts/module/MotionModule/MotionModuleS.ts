@@ -1,4 +1,4 @@
-import { EModule_Events_S, EPlayerEvents_S } from "../../const/Enum";
+import { EAttributeEvents_S, EModule_Events_S, EPlayerEvents_S } from "../../const/Enum";
 import { MotionDataManager } from "../../editors/motionEditor/MotionDataManager";
 import { Constants } from "../../tool/Constants";
 import { EventManager } from "../../tool/EventManager";
@@ -12,11 +12,14 @@ import { PlayerManager } from "../PlayerModule/PlayerManager";
 import { MascotModuleS } from "../npc/mascotNpc/MascotModuleS";
 import { GameConfig } from "../../config/GameConfig";
 import { MotionProxyS } from "./MotionProxyS";
+import { AttributeModuleS } from "../AttributeModule/AttributeModuleS";
+import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 
 
 export class MotionModuleS extends ModuleS<MotionModuleC, null>{
 
     private mPlayer: PlayerModuleS = null;
+    private mAttr: AttributeModuleS = null;
 
     private recycleQueue: ServerMotion[]
     private stageMotion: Set<ServerMotion>
@@ -32,6 +35,7 @@ export class MotionModuleS extends ModuleS<MotionModuleC, null>{
     onStart() {
 
         this.mPlayer = ModuleService.getModule(PlayerModuleS);
+        this.mAttr = ModuleService.getModule(AttributeModuleS);
 
         this.motionPool = new Set()
         this.stageMotion = new Set()
@@ -65,6 +69,8 @@ export class MotionModuleS extends ModuleS<MotionModuleC, null>{
         if (this.mMotionProxyS.has(player.playerId) == false) {
             return;
         }
+        let motionProxy = this.mMotionProxyS.get(player.playerId);
+        motionProxy.onDestroy();
         this.mMotionProxyS.delete(player.playerId);
     }
 
@@ -302,6 +308,34 @@ export class MotionModuleS extends ModuleS<MotionModuleC, null>{
         }
 
         client.net_room_player_invoke_motion(motionId, pId, 0);
+    }
+
+    /**玩家释放终极大招 */
+    @Decorator.noReply()
+    public net_releaseFinalSkill() {
+        // 判断下怒气值
+        let maxAngerValue = this.mAttr.getAttrValue(this.currentPlayerId, Attribute.EnumAttributeType.maxAngerValue);
+        let curAngerValue = this.mAttr.getAttrValue(this.currentPlayerId, Attribute.EnumAttributeType.angerValue);
+        if (curAngerValue < maxAngerValue) {
+            return;
+        }
+        // 释放成功
+        //EventManager.instance.call(EAttributeEvents_S.attr_change_s, this.currentPlayerId, Attribute.EnumAttributeType.angerValue, 0);
+
+        if (this.mMotionProxyS.has(this.currentPlayerId)) {
+            this.mMotionProxyS.get(this.currentPlayerId).releaseFinalSkill();
+        }
+
+
+    }
+
+    /**是否爆气状态 */
+    public isExplosiveGas(pId: number) {
+        if (this.mMotionProxyS.has(pId) == false) {
+            return false;
+        }
+
+        return this.mMotionProxyS.get(pId).isExplosiveGas();
     }
 
 }

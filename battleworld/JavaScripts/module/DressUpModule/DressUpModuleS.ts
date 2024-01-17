@@ -1,4 +1,4 @@
-import { EModule_Events, EModule_Events_S, EPlayerEvents_S } from "../../const/Enum";
+import { EDressUpType, EModule_Events, EModule_Events_S, EPlayerEvents_S } from "../../const/Enum";
 import { Globaldata } from "../../const/Globaldata";
 import { EventManager } from "../../tool/EventManager";
 import { DressUpInfo } from "../LandModule/PickUp/PickUpDressUp";
@@ -94,7 +94,7 @@ export default class DressUpModuleS extends ModuleS<DressUpModuleC, null> {
         this.handleAddAttr(playerId, dressUpInfo);
         if (dressUpInfo.descGuid) {
             //修改外观
-            sync?.server_setDescGuid(dressUpInfo.descGuid);
+            sync?.server_setDescGuid(dressUpInfo.descGuid, dressUpInfo.stance, dressUpInfo.descType);
         }
         if (dressUpInfo.pendantId) {
             //修改挂件

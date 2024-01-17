@@ -29,6 +29,7 @@ import { MascotModuleS } from '../npc/mascotNpc/MascotModuleS';
 import { ShopModuleS } from '../ShopModule/ShopModuleS';
 import { EquipModuleS } from '../EquipModule/EquipModuleS';
 import { ERankNoticeType } from './UI/rank/RankNotice';
+import { MotionModuleS } from '../MotionModule/MotionModuleS';
 
 
 /**玩家伤害信息 */
@@ -68,6 +69,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     private mWeapon: WeaponModuleS = null;
     /**商店模块 */
     private _shopS: ShopModuleS = null;
+    private mMotion: MotionModuleS = null;
+
+
     onStart() {
         this.mAttribute = ModuleService.getModule(AttributeModuleS);
         this.mSkill = ModuleService.getModule(SkillModuleS);
@@ -75,6 +79,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
 
         this.buffModuleS = ModuleService.getModule(BuffModuleS);
         this._shopS = ModuleService.getModule(ShopModuleS);
+        this.mMotion = ModuleService.getModule(MotionModuleS);
 
         TimeUtil.setInterval(this.onLogicUpdate.bind(this), Constants.LogicFrameInterval);
 
@@ -1157,6 +1162,21 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
                     if (skillEffectConfig) {
                         damageData.effectId = skillEffectConfig.hitEffectId;
                         damageData.soundId = skillEffectConfig.hitSountId;
+
+
+                        // 增加怒气
+                        if (skillEffectConfig.angerAdd1 > 0 && this.mMotion.isExplosiveGas(sceneID) == false) {
+
+                            // 释放该技能的增加怒气
+                            let angleValue = defVal * skillEffectConfig.angerAdd1;
+                            EventManager.instance.call(EAttributeEvents_S.AttrEvent_CalculateAttr_S, sceneID, Attribute.EnumAttributeType.angerValue, angleValue);
+                        }
+
+                        if (skillEffectConfig.angerAdd2 > 0 && this.mMotion.isExplosiveGas(playerID) == false) {
+                            // 受到该技能伤害的增加怒气
+                            let angleValue = defVal * skillEffectConfig.angerAdd2;
+                            EventManager.instance.call(EAttributeEvents_S.AttrEvent_CalculateAttr_S, playerID, Attribute.EnumAttributeType.angerValue, angleValue);
+                        }
                     }
                 }
 
@@ -1774,7 +1794,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         this.listen_setMovement(playerID, false, false);
 
         // 隐藏
-        PlayerManagerExtesion.rpcPlayAnimation(player.character, Globaldata.player_deadAnim)
+        PlayerManagerExtesion.rpcPlayAnimation(player.character, Globaldata.player_deadAnim);
+        // 怒气值清除
+        EventManager.instance.call(EAttributeEvents_S.attr_change_s, playerID, Attribute.EnumAttributeType.angerValue, 0);
 
         this.stop_recover_Hp(playerID);
         this.deadPlayer.add(playerID);

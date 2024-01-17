@@ -88,7 +88,6 @@ export class NoticeModuleC extends ModuleC<NoticeModuleS, null>
             AnalyticsTool.send_ts_action_kill(beKillerId);
         }
 
-        // 击杀数量表里配置的才会执行下面逻辑
         let killCfg = GameConfig.KillTip.getElement(killerCount);
         if (killCfg == null) {
             return;

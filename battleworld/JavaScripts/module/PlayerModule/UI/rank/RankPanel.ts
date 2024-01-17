@@ -11,7 +11,6 @@ import { GameConfig } from "../../../../config/GameConfig";
 import { IRankElement } from "../../../../config/Rank";
 import Rank_main_Generate from "../../../../ui-generate/Rank/Rank_main_generate";
 import { AnalyticsTool, EClickEvent, EPageName } from "../../../AnalyticsModule/AnalyticsTool";
-import { RedDotManager, RedDotName } from "../../../HudModule/RedDot";
 import { PlayerHeadUIModuleC } from "../../../PlayerHeadUIModule/PlayerHeadUIModuleC";
 import { PlayerModuleC } from "../../PlayerModuleC";
 import { Attribute } from "../../sub_attribute/AttributeValueObject";
@@ -52,7 +51,6 @@ export class RankPanel extends Rank_main_Generate {
             headUIC.setRankVis(1);
             //埋点
             AnalyticsTool.send_ts_action_click(EClickEvent.rankset);
-            RedDotManager.instance.removeRedDotNode(RedDotName.RankSwitch, this.mBtn_Rank);
         })
         //段位隐藏按钮
         this.mBtn_Rank_On.onClicked.add(() => {
@@ -63,9 +61,6 @@ export class RankPanel extends Rank_main_Generate {
         let isshowRank = ModuleService.getModule(PlayerModuleC).getAttr(Attribute.EnumAttributeType.isShowRank);
         this.mBtn_Rank_On.visibility = isshowRank ? SlateVisibility.Visible : SlateVisibility.Collapsed;
         this.mBtn_Rank.visibility = isshowRank ? SlateVisibility.Collapsed : SlateVisibility.Visible;
-        if (!isshowRank) {
-            RedDotManager.instance.addRedDotEvent(RedDotName.RankSwitch, this.mBtn_Rank);
-        }
     }
 
     protected onShow(): void {

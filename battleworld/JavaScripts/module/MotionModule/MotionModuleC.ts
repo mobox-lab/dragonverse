@@ -1,6 +1,6 @@
 import { LogManager, oTraceError } from "odin";
 import { GameConfig } from "../../config/GameConfig";
-import { EAreaId, EBagSkillEvents, EBagSkillEvents_C, ELogName, EModule_Events, EMotionEvents_C, EPlayerEvents_C, EWeaponEvent_C } from "../../const/Enum";
+import { EAreaId, EAttributeEvents_C, EBagSkillEvents, EBagSkillEvents_C, ELogName, EModule_Events, EMotionEvents_C, EPlayerEvents_C, EWeaponEvent_C } from "../../const/Enum";
 import { EMotion_Events } from "../../const/Enum";
 import { MotionDataManager } from "../../editors/motionEditor/MotionDataManager";
 import { EventManager } from "../../tool/EventManager";
@@ -24,6 +24,10 @@ import { THurtData } from "../PlayerModule/PlayerModuleS";
 import { MascotModuleC } from "../npc/mascotNpc/MascotModuleC";
 import { UnitManager } from "../npc/UnitManager";
 import DamageManger from "../../tool/DamageManger";
+import { EventSyncTool } from "../../tool/EventSyncTool";
+import { MotionProxyC } from "./MotionProxyC";
+import { AttributeModuleC } from "../AttributeModule/AttributeModuleC";
+import ActionUI from "../PlayerModule/UI/ActionUI";
 
 
 export class MotionModuleC extends ModuleC<MotionModuleS, null>{
@@ -31,6 +35,7 @@ export class MotionModuleC extends ModuleC<MotionModuleS, null>{
     // private mAreaNpc: AreaNpcModuleC = null;
     private mPlayer: PlayerModuleC = null;
     private mArea: AreaModuleC = null;
+    private mAttr: AttributeModuleC = null;
 
     private mMascot: MascotModuleC = null;
 
@@ -50,9 +55,42 @@ export class MotionModuleC extends ModuleC<MotionModuleS, null>{
 
     private _lockUnits: mw.GameObject[] = [];
 
+    /**玩家动效代理 */
+    private moitionProxyMap: Map<number, MotionProxyC> = new Map();
+
     protected onAwake(): void {
         MotionDataManager.instance.init();
 
+        // 初始化角色
+        let players = mw.Player.getAllPlayers();
+        for (let index = 0; index < players.length; index++) {
+            const tmpPlayer = players[index];
+            this.listen_playerJoin(tmpPlayer.playerId, null, null);
+        }
+
+        EventManager.instance.add(EPlayerEvents_C.player_syncPlayerid_c, this.listen_playerJoin, this);
+        mw.Player.onPlayerLeave.add(this.listen_playerLeave.bind(this));
+    }
+
+    private listen_playerLeave(player: mw.Player) {
+        if (this.moitionProxyMap.has(player.playerId) == false) {
+            return;
+        }
+
+        let proxy = this.moitionProxyMap.get(player.playerId);
+        proxy.onDestroy();
+
+        this.moitionProxyMap.delete(player.playerId);
+    }
+
+    /**监听玩家进入游戏 */
+    private listen_playerJoin(pId: number, name: string, lv: number) {
+
+        if (this.moitionProxyMap.has(pId)) {
+            return;
+        }
+
+        this.moitionProxyMap.set(pId, new MotionProxyC(pId));
     }
 
     async onStart() {
@@ -60,6 +98,7 @@ export class MotionModuleC extends ModuleC<MotionModuleS, null>{
         // this.mAreaNpc = ModuleService.getModule(AreaNpcModuleC);
         this.mPlayer = ModuleService.getModule(PlayerModuleC);
         this.mMascot = ModuleService.getModule(MascotModuleC);
+        this.mAttr = ModuleService.getModule(AttributeModuleC);
 
         this.mArea = ModuleService.getModule(AreaModuleC);
 
@@ -71,6 +110,7 @@ export class MotionModuleC extends ModuleC<MotionModuleS, null>{
         NpcProcess.instance.init();
 
         TimeUtil.setInterval(this.process.updateLogic.bind(this.process), Constants.LogicFrameInterval);
+
 
         EventManager.instance.add(EMotion_Events.MotionInvokeMotionId, this.listen_MotionInvokeMotionId.bind(this));
 
@@ -90,10 +130,72 @@ export class MotionModuleC extends ModuleC<MotionModuleS, null>{
         EventManager.instance.add(EBagSkillEvents.change_bagSkill, this.listen_change_bagSkill, this);
 
         EventManager.instance.add(EPlayerEvents_C.player_stop_sprintEffect, this.stopSprint, this);
+        /**释放终极大招 */
+        EventManager.instance.add(EMotionEvents_C.MotionEvent_ReleaseFinalSkill_C, this.listen_releaseFinalSkill, this);
 
+
+        EventManager.instance.add(EAttributeEvents_C.Attribute_gasExplosion_C, this.listen_gasExplosion, this);
+
+        // 监听到玩家死亡了
+        EventManager.instance.add(EPlayerEvents_C.Player_ChangeDeadState_C,
+            this.listen_playerDead, this);
         Player.onPlayerLeave.add(this.listen_playerLeft.bind(this));
 
     }
+
+    /**
+    * 监听玩家爆气状态 
+    * @param pId 玩家id
+    * @param state 爆气状态 0未爆气 1爆气中
+    * @returns 
+    */
+    private listen_gasExplosion(pId: number, state: number) {
+        if (this.moitionProxyMap.has(pId) == false) {
+            this.moitionProxyMap.get(this.localPlayerId).clear_finalSkillKey();
+            return;
+        }
+
+        this.moitionProxyMap.get(pId).refresh_gasExplosion(state);
+    }
+
+    /**玩家死亡 */
+    private listen_playerDead() {
+        if (this.moitionProxyMap.has(this.localPlayerId) == false) {
+            return;
+        }
+        this.moitionProxyMap.get(this.localPlayerId).clear_finalSkillKey();
+    }
+
+    /**释放终极大招 */
+    private async listen_releaseFinalSkill() {
+
+        let weaponId = this.mAttr.getAttributeValue(Attribute.EnumAttributeType.weaponId);
+        let weaponCfg = GameConfig.Weapon.getElement(weaponId);
+        if (weaponCfg == null) {
+            return;
+        }
+
+        let result = await this.invoke_motion(weaponCfg.ultimateSkillId, () => {
+
+        });
+
+        if (result == false) {
+            return;
+        }
+
+        let actionUI = UIService.getUI(ActionUI, false);
+        if (actionUI) {
+            actionUI.showVisibleFinalSkill(false);
+        }
+
+        this.server.net_releaseFinalSkill();
+
+        if (this.moitionProxyMap.has(this.localPlayerId)) {
+            this.moitionProxyMap.get(this.localPlayerId).releaseFinalSkill();
+        }
+    }
+
+
 
     /**技能切换 清理下缓存技能*/
     private listen_change_bagSkill(bagSkillId: number) {
@@ -619,5 +721,6 @@ export class MotionModuleC extends ModuleC<MotionModuleS, null>{
 
         this.process.abortMotion(this.localPlayerId);
     }
+
 
 }

@@ -91,6 +91,22 @@ export class AttributeModuleS extends ModuleS<AttributeModuleC, null> {
             return;
         }
 
+        // 属性值修改前做一次校验
+        switch (attrType) {
+            case Attribute.EnumAttributeType.angerValue:
+                {
+                    if (typeof (value) == "number") {
+                        // 该值不得超过最大怒气值
+                        let maxAngerValue = this.getAttrValue(pId, Attribute.EnumAttributeType.maxAngerValue);
+                        value = MathUtil.clamp(value, 0, maxAngerValue);
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
         // 判断是否为定向同步属性
         if (Attribute.IsPlayStateAttribute(attrType)) {
             let player = mw.Player.getPlayer(pId);

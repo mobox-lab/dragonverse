@@ -401,7 +401,12 @@ export class BulletMgrC extends BulletMgr<BulletC> {
             //获取子弹的模型
             let bulletGo = await this.getBulletEntry(modeGuid);
             bulletGo.worldTransform.position = bullet.launchPos;
-            bulletGo.worldTransform.rotation = bullet.targetPos.clone().subtract(bullet.launchPos).toRotation();
+
+            mw.Vector.subtract(bullet.targetPos, bullet.launchPos, this.tmpVector);
+            let endRotation = this.tmpVector.toRotation();
+            // 根据表修改下X轴旋转 避免多次创建预制体 进行差异化
+            endRotation.x = bullet.staticConfig.flyRelativeRot.x;
+            bulletGo.worldTransform.rotation = endRotation;// bullet.targetPos.clone().subtract(bullet.launchPos).toRotation();
             bulletGo.worldTransform.scale = modeScale;
             //  oTrace("get bullet go : name: " + bulletGo.name + "  bulletGoGuid: " + modeGuid + " pos: " + bullet.launchPos + " scale: " + modeScale);
             await bullet.initBulletMode(bulletGo);

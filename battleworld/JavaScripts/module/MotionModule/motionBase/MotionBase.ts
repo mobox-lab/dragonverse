@@ -1063,42 +1063,38 @@ export abstract class AbstractMotion {
     // 摄像机缓动
     private motoin_easeTranslateCamera(sheet: MotionFrameNode_Camera) {
 
+        /**
+         * 一个motion可能存在播放多个相机动画情况
+         * 1.只记录第一次相机重置信息
+         * 2.播放第二次暂停第一次的动画
+         */
         if (this._initCameraData == null) {
             this._initCameraData = CameraManger.instance.saveCamera();
         }
 
         this._cameraTranKeepCount = sheet.camrea_keepFrame;
 
-        if (this.cameraEaseTween == null) {
-            this.cameraEaseTween = new Tween({ x: 0 })
-                .to({ x: 1 })
-                .onUpdate(obj => {
-                    let transform = this.camera.worldTransform.clone().clone();
-                    transform.position = mw.Vector.lerp(this.cameraEaseStartPosition, this.cameraEaseEndPosition, obj.x)
-                    transform.rotation = mw.Rotation.lerp(this.cameraEaseStartRotation, this.cameraEaseEndRotation, obj.x)
-                    this.camera.worldTransform = transform
-                })
-        }
-
-        if (this.cameraEaseTween.isPlaying()) {
-            this.cameraEaseTween.stop();
-        }
         // 停止相机 重置动画
         CameraManger.instance.stopCameraTween();
-
-        ModifiedCameraSystem.followTargetEnable = false;
-
-        let currentCameraPosition = this.camera.worldTransform.clone().position.clone();
-        let currentCameraRotation = this.camera.worldTransform.clone().rotation.clone();
+        if (this.cameraEaseTween && this.cameraEaseTween.isPlaying()) {
+            this.cameraEaseTween.stop();
+        }
+        this.cameraEaseTween = null;
+        this.cameraEaseTween = new Tween({ x: 0 }).to({ x: 1 }).onUpdate(obj => {
+            mw.Vector.lerp(this.cameraEaseStartPosition, this.cameraEaseEndPosition, obj.x, Globaldata.tmpVector);
+            let tmpRot = mw.Rotation.lerp(this.cameraEaseStartRotation, this.cameraEaseEndRotation, obj.x)
+            this.camera.worldTransform.position = Globaldata.tmpVector;
+            this.camera.worldTransform.rotation = tmpRot;
+        })
 
         let playerTran = this.currentPlayer.character.localTransform;
 
-        this.cameraEaseStartPosition = currentCameraPosition;
+        this.cameraEaseStartPosition = this.camera.worldTransform.position.clone();
         this.cameraEaseEndPosition = playerTran.transformPosition(sheet.camrea_offsetPos);
-        this.cameraEaseStartRotation = currentCameraRotation;
+        this.cameraEaseStartRotation = this.camera.worldTransform.rotation.clone();
         let worldDir = playerTran.transformDirection(sheet.camrea_offsetRotation);
         this.cameraEaseEndRotation = worldDir.toRotation();
-
+        this.camera.rotationMode = mw.CameraRotationMode.RotationFixed;
         this.cameraEaseTween.duration(sheet.camrea_during * 1000);
         this.cameraEaseTween.start();
 

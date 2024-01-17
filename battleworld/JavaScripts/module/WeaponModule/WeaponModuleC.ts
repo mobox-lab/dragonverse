@@ -72,7 +72,7 @@ export class WeaponModuleC extends ModuleC<WeaponModuleS, WeaponModuleData>{
         if (weaponProxy.isHasBackWeapon()) {
             // 编辑器问题，已经提单子了
             // setTimeout(() => {
-                weaponProxy.setVisible(false);
+            weaponProxy.setVisible(false);
             // }, 1000);
         }
     }
@@ -307,8 +307,15 @@ export class WeaponModuleC extends ModuleC<WeaponModuleS, WeaponModuleData>{
         if (this.weaponProxyMap.has(pId) == false) {
             return;
         }
-
         return this.weaponProxyMap.get(pId).getVisible();
+    }
+
+    /**武器是否在背部 */
+    public isWeaponInBack(pId: number = this.localPlayerId) {
+        if (this.weaponProxyMap.has(pId) == false) {
+            return;
+        }
+        return this.weaponProxyMap.get(pId).isBack();
     }
 
 

@@ -3,12 +3,14 @@ import { EventManager } from "../../tool/EventManager";
 import { LoginModuleS } from "./LoginModuleS";
 import { PlayerModuleData } from '../PlayerModule/PlayerModuleData';
 import { GuideDataHelper } from "module_guide";
+import { CameraManger } from "../../tool/CameraManger";
 
 
 export class LoginModuleC extends ModuleC<LoginModuleS, null> {
 
 
     protected onEnterScene(sceneType: number): void {
+        CameraManger.instance.init();
 
         this.startGame();
     }

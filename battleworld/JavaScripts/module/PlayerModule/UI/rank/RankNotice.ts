@@ -1,9 +1,5 @@
-﻿import { GameConfig } from "../../../../config/GameConfig";
-import { Globaldata } from "../../../../const/Globaldata";
+﻿import { Globaldata } from "../../../../const/Globaldata";
 import RankEnterTip_Generate from "../../../../ui-generate/notice/RankEnterTip_generate";
-import { AttributeModuleC } from "../../../AttributeModule/AttributeModuleC";
-import { PlayerManager } from "../../PlayerManager";
-import { Attribute } from "../../sub_attribute/AttributeValueObject";
 
 /**
  * 公告类型
@@ -39,7 +35,7 @@ export class RankNotice extends RankEnterTip_Generate {
             })
             .onComplete(() => {
                 this._noticeArr.shift();
-                if(this._noticeArr.length > 0) {
+                if (this._noticeArr.length > 0) {
                     this.noticeTween(this._noticeArr[0]);
                 }
                 else {

@@ -323,14 +323,18 @@ AddGMCommand("调整头顶UI偏移", (player: mw.Player, value: string) => {
 }, (player: mw.Player, value: string) => {
 
 }, "玩家");
+AddGMCommand("增加怒气值", (player: mw.Player, value: string) => {
+
+}, (player: mw.Player, value: string) => {
+    EventManager.instance.call(EAttributeEvents_S.AttrEvent_CalculateAttr_S, player.playerId, Attribute.EnumAttributeType.angerValue, Number(value));
+}, "玩家");
+
 
 AddGMCommand("装备武器id", (player: mw.Player, value: string) => {
 
 }, (player: mw.Player, value: string) => {
     ModuleService.getModule(WeaponModuleS).changeWeaponId(player.playerId, Number(value));
 }, "武器");
-
-
 
 AddGMCommand("创建拾取物:类型(1血量 2钱 3技能)|地形id", (player: mw.Player, value: string) => {
 }, (player: mw.Player, value: string) => {

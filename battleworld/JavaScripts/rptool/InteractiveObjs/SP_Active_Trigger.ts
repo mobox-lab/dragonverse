@@ -45,7 +45,9 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         chara.movementEnabled = false;
         const playerC = ModuleService.getModule(PlayerModuleC);
         let [rank] = playerC.getRank();
-        let rankCost = GameConfig.Rank.getElement(rank).rankTicket;
+        let rankCfg = GameConfig.Rank.getElement(rank);
+        if (!rankCfg) return;
+        let rankCost = rankCfg.rankTicket;
         if (rankCost && playerC.rankTicket) {
             let content = StringUtil.format(GameConfig.Language.Tips_rank_3.Value, rankCost);
             MessageBox.showTwoBtnMessage("", content, (res) => {

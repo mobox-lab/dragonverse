@@ -70,6 +70,11 @@ export default class RankSync extends Script {
         //数据
         this._modelMap.set(ranking, modelInfo);
         this._animationMap.set(ranking,ani);
+        //体型变化，重新设置位置
+        modelInfo.model.onDescriptionComplete.clear();
+        modelInfo.model.onDescriptionComplete.add(() => {
+            modelInfo.model.worldTransform.position = Globaldata.npc_modelPos.clone().add(new Vector(0, 0, modelInfo.model.collisionExtent.z));
+        })
     }
 
     /**
@@ -100,6 +105,7 @@ export default class RankSync extends Script {
                 return;
             }
             mw.AccountService.setUserData(modelInfo.model, data, () => {
+
                 this._animationMap.get(ranking).play();
             });
         });
