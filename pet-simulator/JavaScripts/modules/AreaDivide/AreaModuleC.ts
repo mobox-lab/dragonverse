@@ -92,9 +92,9 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData>{
         text = ui.getTargetUIWidget().rootContent.findChildByPath("TextBlock_1") as mw.TextBlock;
         text.text = GameConfig.Language.World_3D_5.Value;
         //传送交易广场
-        ui = await GameObject.asyncFindGameObjectById("0784B261") as mw.UIWidget;
-        text = ui.getTargetUIWidget().rootContent.findChildByPath("TextBlock") as mw.TextBlock;
-        text.text = GameConfig.Language.Page_Title_12.Value;
+        // ui = await GameObject.asyncFindGameObjectById("0784B261") as mw.UIWidget;
+        // text = ui.getTargetUIWidget().rootContent.findChildByPath("TextBlock") as mw.TextBlock;
+        // text.text = GameConfig.Language.Page_Title_12.Value;
 
     }
 
