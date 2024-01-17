@@ -18,7 +18,7 @@ import Log4Ts from "../depend/log4ts/Log4Ts";
  * @author zewei.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.0.6b
+ * @version 1.0.9b
  * @beta
  *
  */
@@ -80,6 +80,11 @@ class GToolkit {
      * @private
      */
     private static readonly MillisecondInSecond = 1000;
+
+    /**
+     * Tag of Root GameObject.
+     */
+    public static readonly ROOT_GAME_OBJECT_GUID = "ComponentRoot";
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Member
@@ -266,25 +271,25 @@ class GToolkit {
      * @return interval hold id.
      */
     public doUtilTrue(predicate: () => boolean,
-        callback: () => void,
-        interval: number = 100,
-        instant: boolean = true): number | null {
+                      callback: () => void,
+                      interval: number = 100,
+                      instant: boolean = true): number | null {
         if (instant && predicate()) {
             callback();
             return null;
         }
 
         const holdId = setInterval(() => {
-            if (!predicate()) {
-                return;
-            }
-            try {
-                callback();
-            } catch (e) {
-            } finally {
-                clearInterval(holdId);
-            }
-        },
+                if (!predicate()) {
+                    return;
+                }
+                try {
+                    callback();
+                } catch (e) {
+                } finally {
+                    clearInterval(holdId);
+                }
+            },
             interval,
         );
         return holdId;
@@ -838,8 +843,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScript<T extends mw.Script>(object: GameObject,
-        scriptCls: (new (...args: unknown[]) => T) | Function,
-        traverse: number = 0): T | null {
+                                               scriptCls: (new (...args: unknown[]) => T) | Function,
+                                               traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -905,8 +910,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScriptIs<T extends mw.Script>(object: GameObject,
-        method: string | ((instance: object) => boolean),
-        traverse: number = 0): T | null {
+                                                 method: string | ((instance: object) => boolean),
+                                                 traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -994,6 +999,20 @@ class GToolkit {
         }
 
         return result;
+    }
+
+    /**
+     * 获取场景中的根 GameObject.
+     */
+    public getRootGameObject(): mw.GameObject {
+        return mw.GameObject.findGameObjectById(GToolkit.ROOT_GAME_OBJECT_GUID);
+    }
+
+    /**
+     * 在场景中的根 GameObject 上挂载脚本.
+     */
+    public addRootScript<T extends mw.Script>(scriptCls: Constructor<T>): T {
+        return this.getRootGameObject().addComponent(scriptCls);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -1130,10 +1149,10 @@ class GToolkit {
      * @profession
      */
     public rotateCharacterMesh(character: mw.Character,
-        pitch: number,
-        yaw: number,
-        roll: number,
-        origin: mw.Vector = mw.Vector.zero) {
+                               pitch: number,
+                               yaw: number,
+                               roll: number,
+                               origin: mw.Vector = mw.Vector.zero) {
         const component: UE.SceneComponent = character["ueCharacter"].mesh as unknown as UE.SceneComponent;
         const originRotator = component.RelativeRotation;
 
@@ -1222,9 +1241,9 @@ class GToolkit {
      * @param disableGuid
      */
     public setButtonGuid(button: mw.Button | mw.StaleButton,
-        normalGuid: string,
-        pressedGuid: string = undefined,
-        disableGuid: string = undefined) {
+                         normalGuid: string,
+                         pressedGuid: string = undefined,
+                         disableGuid: string = undefined) {
         if (!pressedGuid) {
             pressedGuid = normalGuid;
         }
@@ -1297,6 +1316,21 @@ class GToolkit {
         return result;
     }
 
+    /**
+     * 是否 给定平台绝对坐标 在 UI 控件内.
+     * @param ui
+     * @param position
+     */
+    public isPlatformAbsoluteInWidget(position: mw.Vector2, ui: Widget) {
+        const absPos = ui.cachedGeometry.getAbsolutePosition();
+        const absSize = ui.cachedGeometry.getAbsoluteSize();
+
+        return position.x >= absPos.x &&
+            position.x <= absPos.x + absSize.x &&
+            position.y >= absPos.y &&
+            position.y <= absPos.y + absSize.y;
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Sensor
@@ -1311,10 +1345,10 @@ class GToolkit {
      * @return hitPoint 命中首个点的命中信息 当未命中时返回 null.
      */
     public detectVerticalTerrain(startPoint: mw.Vector,
-        length: number = 1000,
-        self: mw.GameObject = null,
-        ignoreObjectGuids: string[] = [],
-        debug: boolean = false): mw.HitResult | null {
+                                 length: number = 1000,
+                                 self: mw.GameObject = null,
+                                 ignoreObjectGuids: string[] = [],
+                                 debug: boolean = false): mw.HitResult | null {
         return QueryUtil.lineTrace(
             startPoint,
             this.newWithZ(startPoint, startPoint.z - length),
@@ -1333,9 +1367,9 @@ class GToolkit {
      * @param debug
      */
     public detectGameObjectVerticalTerrain(self: GameObject,
-        length: number = 1000,
-        ignoreObjectGuids: string[] = [],
-        debug: boolean = false): mw.HitResult | null {
+                                           length: number = 1000,
+                                           ignoreObjectGuids: string[] = [],
+                                           debug: boolean = false): mw.HitResult | null {
         if (!self) return null;
         return this.detectVerticalTerrain(
             self.worldTransform.position,

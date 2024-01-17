@@ -2,10 +2,21 @@ import GToolkit from "../../util/GToolkit";
 import LinearColor = mw.LinearColor;
 import BigMapPlayerArrow_Generate from "../../ui-generate/map/BigMapPlayerArrow_generate";
 import { HeadUIController } from "../../controller/HeadUIController";
+import { calculatePositionRatioInMap } from "../map/MapPanel";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
+import Waterween from "../../depend/waterween/Waterween";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 export default class BigMapPlayerArrow extends BigMapPlayerArrow_Generate {
 //#region Member
     public holdId: number = null;
+
+    private _character: mw.Character;
+
+    private _mapPosCache: mw.Vector2 = mw.Vector2.zero;
+
+    private _showDetailTask: AdvancedTweenTask<number>;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld UI Event
@@ -15,8 +26,15 @@ export default class BigMapPlayerArrow extends BigMapPlayerArrow_Generate {
         this.canUpdate = true;
 
 //#region Member init
-        this.btnPlayerPointArrow.onHovered.add(() => GToolkit.trySetVisibility(this.cnvPlayerInfo, true));
-        this.btnPlayerPointArrow.onUnhovered.add(() => GToolkit.trySetVisibility(this.cnvPlayerInfo, false));
+        this._showDetailTask = Waterween
+            .to(() => this.cnvPlayerInfo.renderOpacity,
+                (val) => this.cnvPlayerInfo.renderOpacity = val,
+                1,
+                GameServiceConfig.MAP_PLAYER_DETAIL_SHOWN_DURATION,
+                0)
+            .restart(true);
+        this.btnPlayerPointArrow.onHovered.add(() => this.showDetail(true));
+        this.btnPlayerPointArrow.onUnhovered.add(() => this.showDetail(false));
 //#endregion ------------------------------------------------------------------------------------------
 
 //#region Widget bind
@@ -39,9 +57,8 @@ export default class BigMapPlayerArrow extends BigMapPlayerArrow_Generate {
 
 //#region Init
     public init(playerId: number): this {
-        GToolkit.trySetVisibility(this.cnvPlayerInfo, false);
         this.holdId = playerId;
-//TODO_LviatYi nick name.
+        this._character = Player.getPlayer(this.holdId).character;
         this.imgPlayerPointArrow.imageColor
             = LinearColor.colorHexToLinearColor(
             this.holdId === Player.localPlayer.playerId ?
@@ -54,12 +71,32 @@ export default class BigMapPlayerArrow extends BigMapPlayerArrow_Generate {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region UI Behavior
-    public setAngle(angle: number) {
-        this.cnvPlayerPointArrow.renderTransformAngle = angle;
+    public update(cnvMapMeshSize: Vector2, offset: Vector2): boolean {
+        if (!this._character) return false;
+        try {
+            this.cnvPlayerPointArrow.renderTransformAngle =
+                GToolkit.isSelfCharacter(this.holdId) ?
+                    Player.getControllerRotation().z - 90 :
+                    this._character.worldTransform.rotation.z - 90;
+            const positionRatioInMap = calculatePositionRatioInMap(this._character.worldTransform.position);
+            this._mapPosCache.set(
+                offset.x + positionRatioInMap.x * cnvMapMeshSize.x,
+                offset.y + (1 - positionRatioInMap.y) * cnvMapMeshSize.y,
+            );
+            this.rootCanvas.position = this._mapPosCache;
+        } catch (error) {
+            Log4Ts.error(BigMapPlayerArrow, `error`);
+            return false;
+        }
+
     }
 
-    public setLocation(location: Vector2) {
-        this.rootCanvas.position = location;
+    private showDetail(enable: boolean) {
+        if (enable) {
+            this._showDetailTask.forward();
+        } else {
+            this._showDetailTask.backward();
+        }
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

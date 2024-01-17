@@ -11,13 +11,20 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import MainCurtainPanel from "../main/MainCurtainPanel";
 import GToolkit from "../../util/GToolkit";
 import BigMapPlayerArrow from "../main/BigMapPlayerArrowPanel";
+import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
+import Waterween from "../../depend/waterween/Waterween";
+import Easing, { CubicBezier, CubicBezierBase } from "../../depend/easing/Easing";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import MWUpdateDelegate = UE.MWUpdateDelegate;
+import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
+import off = Puerts.off;
+
+const sceneSize: mw.Vector2 = mw.Vector2.zero;
 
 /**
  * 小地图 Panel.
  */
-export class MapPanel extends MapPanel_Generate  {
-
-    private _sceneSize: mw.Vector2 = mw.Vector2.zero;
+export class MapPanel extends MapPanel_Generate {
 
     private _character: mw.Character;
 
@@ -28,24 +35,50 @@ export class MapPanel extends MapPanel_Generate  {
 
     private _miniMapPosCache: mw.Vector2 = mw.Vector2.zero;
 
-    private _mapPosCache: mw.Vector2 = mw.Vector2.zero;
-
     private _oriMiniMapSize: mw.Vector2;
 
-    private _positionRatioInMap: mw.Vector2 = mw.Vector2.zero;
+    private _arrowMap: Map<number, BigMapPlayerArrow> = new Map();
 
-    private _myArrow: BigMapPlayerArrow;
+    private _mapScaleTask: FlowTweenTask<number>;
 
-    private _otherArrows: BigMapPlayerArrow[] = [];
+    private _mapScaleCache: mw.Vector2 = mw.Vector2.zero;
+
+    private _mapPosTask: FlowTweenTask<{ x: number, y: number }>;
+
+    private _mapPositionCache: mw.Vector2 = mw.Vector2.zero;
+
+    private _updateDelegate: MwBehaviorDelegate;
 
     protected onAwake(): void {
         super.onAwake();
-        this._sceneSize =
-            new Vector2(
-                GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x - GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.x,
-                GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y);
+        sceneSize.set(
+            GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x - GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.x,
+            GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y);
 
         this._oriMiniMapSize = this.mSmallMapCanvas.size;
+
+        this._mapScaleTask = Waterween
+            .flow(
+                () => this.cnvMapMesh.renderScale.x,
+                (val) => this.cnvMapMesh.renderScale = this._mapScaleCache.set(val, val),
+                GameServiceConfig.MAP_ZOOM_DURATION,
+                new CubicBezier(0.2, 0, 0.8, 1),
+                undefined,
+                true,
+                true,
+            );
+
+        this._mapPosTask = Waterween
+            .flow(
+                () => ({x: this.cnvMapMesh.position.x, y: this.cnvMapMesh.position.y}),
+                (val) => this.cnvMapMesh.position = this._mapPositionCache.set(val.x, val.y),
+                GameServiceConfig.MAP_ZOOM_DURATION,
+                new CubicBezier(0.2, 0, 0.8, 1),
+                undefined,
+                true,
+                true,
+            );
+
         this
             .btnMiniMap
             .onClicked
@@ -67,7 +100,40 @@ export class MapPanel extends MapPanel_Generate  {
                     Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
                 }));
 
-        this._myArrow = UIService.create(BigMapPlayerArrow).init(Player.localPlayer.playerId);
+        this.showMiniMap();
+
+        InputUtil.onKeyDown(mw.Keys.MouseScrollUp, () => {
+            this.zoom(this.cnvMapMesh.renderScale.x + GameServiceConfig.MAP_ZOOM_PER_DIST, mw.getMousePositionOnPlatform());
+        });
+        InputUtil.onKeyDown(mw.Keys.MouseScrollDown, () => {
+            this.zoom(this.cnvMapMesh.renderScale.x - GameServiceConfig.MAP_ZOOM_PER_DIST, mw.getMousePositionOnPlatform());
+        });
+        InputUtil.onKeyDown(mw.Keys.R, () => {
+            this.cnvMapMesh.renderTransformPivot = new Vector2(0, 0);
+            this.cnvMapMesh.renderScale = new Vector2(1, 1);
+            this.cnvMapMesh.position = new Vector2(0, 0);
+        });
+        InputUtil.onKeyDown(mw.Keys.W, () => {
+            this.move(0, GameServiceConfig.MAP_MOVE_PER_DIST);
+        });
+        InputUtil.onKeyDown(mw.Keys.A, () => {
+            this.move(GameServiceConfig.MAP_MOVE_PER_DIST, 0);
+        });
+        InputUtil.onKeyDown(mw.Keys.S, () => {
+            this.move(0, -GameServiceConfig.MAP_MOVE_PER_DIST);
+        });
+        InputUtil.onKeyDown(mw.Keys.D, () => {
+            this.move(-GameServiceConfig.MAP_MOVE_PER_DIST, 0);
+        });
+
+        this._updateDelegate = GToolkit.addRootScript(MwBehaviorDelegate);
+        this._updateDelegate.delegate.add(() => {
+            if (!this._character) return;
+            this._curPos.set(this._character.worldTransform.position);
+            this.calculateMiniMapPos();
+            this.calculateMapPos();
+        });
+        this._updateDelegate.run();
     }
 
     onShow() {
@@ -76,10 +142,6 @@ export class MapPanel extends MapPanel_Generate  {
     }
 
     onUpdate() {
-        if (!this._character) return;
-        this._curPos.set(this._character.worldTransform.position);
-        this.calculatePositionRatioInMap();
-        this.calculateMiniMapPos();
     }
 
     public showBigMap() {
@@ -93,26 +155,88 @@ export class MapPanel extends MapPanel_Generate  {
     }
 
     private calculateMiniMapPos() {
+        const positionRatioInMap = calculatePositionRatioInMap(this._character.worldTransform.position);
         this._miniMapPosCache.set(
-            -this._positionRatioInMap.x * this._oriMiniMapSize.x + this.mSmallCanvas.size.x / 2,
-            (this._positionRatioInMap.y - 1) * this._oriMiniMapSize.y + this.mSmallCanvas.size.y / 2,
+            -positionRatioInMap.x * this._oriMiniMapSize.x + this.mSmallCanvas.size.x / 2,
+            (positionRatioInMap.y - 1) * this._oriMiniMapSize.y + this.mSmallCanvas.size.y / 2,
         );
         this.mSmallMapCanvas.position = this._miniMapPosCache;
         this.mSmallMineCanvas.renderTransformAngle = Player.getControllerRotation().z - 90;
     }
 
     private calculateMapPos() {
-        this._mapPosCache.set(
-            -this._positionRatioInMap.x * this.cnvMapMesh.size.x,
-            (this._positionRatioInMap.y - 1) * this.cnvMapMesh.size.y,
-        );
-        this._myArrow.setLocation(this._mapPosCache);
+        if (this.cnvMap.renderOpacity === 0) return;
+
+        const allPlayers = Player.getAllPlayers();
+
+        for (const player of allPlayers) {
+            const id = player.playerId;
+            let ui = this._arrowMap.get(id);
+            if (!ui) {
+                ui = UIService.create(BigMapPlayerArrow).init(id);
+                this.cnvMapPlayerArrowContainer.addChild(ui.uiObject);
+                this._arrowMap.set(id, ui);
+            }
+            if (ui.update(
+                this.cnvMapMesh.size.multiply(this.cnvMapMesh.renderScale),
+                this.cnvMapMesh.position,
+            )) {
+                this._arrowMap.delete(id);
+            }
+        }
+        for (const key of this._arrowMap.keys()) {
+            if (allPlayers.findIndex(item => item.playerId === key) < 0) {
+                this._arrowMap.get(key).destroy();
+                this._arrowMap.delete(key);
+            }
+        }
     }
 
-    private calculatePositionRatioInMap() {
-        this._positionRatioInMap.set(
-            (GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x - this._curPos.x) / this._sceneSize.x,
-            (this._curPos.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y) / this._sceneSize.y,
+    private move(offsetX: number, offsetY: number) {
+        const currentPos = this.cnvMapMesh.position.clone();
+        const target = currentPos.set(currentPos.x + offsetX, currentPos.y + offsetY);
+        target.set(
+            Easing.clamp(target.x, this.cnvMapMesh.size.x * (1 - this.cnvMapMesh.renderScale.x), 0),
+            Easing.clamp(target.y, this.cnvMapMesh.size.y * (1 - this.cnvMapMesh.renderScale.x), 0),
         );
+        this._mapPosTask.to(target);
     }
+
+    private zoom(scale: number, mouseAbsPos: mw.Vector2) {
+        if (!GToolkit.isPlatformAbsoluteInWidget(mouseAbsPos, this.cnvMapHolder)) return;
+        scale = Easing.clamp(
+            scale,
+            GameServiceConfig.MAP_BIG_MAP_MIN_ZOOM,
+            GameServiceConfig.MAP_BIG_MAP_MAX_ZOOM);
+        if (this.cnvMapMesh.renderScale.x === scale) return;
+
+        Log4Ts.log(MapPanel, `map zoom to ${scale}, current: ${this.cnvMapMesh.renderScale.x}`);
+        const mouseInMapRatio = mouseAbsPos
+            .subtract(
+                this.cnvMapMesh
+                    .cachedGeometry
+                    .getAbsolutePosition())
+            .divide(getViewportScale())
+            .divide(this.cnvMapMesh.size.multiply(this.cnvMapMesh.renderScale));
+        const originScale = this.cnvMapMesh.renderScale;
+        const mouseOffset = mouseInMapRatio.clone().multiply(originScale)
+            .subtract(mouseInMapRatio.multiply(scale))
+            .multiply(this.cnvMapMesh.size);
+        const targetPos = this.cnvMapMesh.position.clone().add(mouseOffset);
+        targetPos.x = Easing.clamp(targetPos.x, this.cnvMapMesh.size.x * (1 - scale), 0);
+        targetPos.y = Easing.clamp(targetPos.y, this.cnvMapMesh.size.y * (1 - scale), 0);
+
+        this._mapPosTask.to(targetPos);
+        this._mapScaleTask.to(scale);
+    }
+}
+
+const positionRatioInMap: mw.Vector2 = mw.Vector2.zero;
+
+export function calculatePositionRatioInMap(currentPosition: mw.Vector): Vector2 {
+    positionRatioInMap.set(
+        (GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x - currentPosition.x) / sceneSize.x,
+        (currentPosition.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y) / sceneSize.y,
+    );
+    return positionRatioInMap;
 }
