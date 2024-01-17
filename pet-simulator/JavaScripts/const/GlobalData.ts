@@ -62,9 +62,14 @@ export namespace GlobalData {
         /**是否开启收集图鉴机器 */
         public static isOpenCollectMachine: boolean = false;
         /**
-         * 主游戏gameid
+         * DragonVerse游戏gameid
          */
         public static dragonverseGameId: string = "P_409846";
+        /**
+         * battleworld游戏gameid
+         */
+        public static battleworldGameId: string = "";
+
         /**
          * 跳子游戏 进度条时长.
          */
