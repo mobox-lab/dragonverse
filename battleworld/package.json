@@ -1,0 +1,21 @@
+{
+  "name": "testsg",
+  "version": "1.0.0",
+  "description": "手感测试",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://gitlab.appshahe.com/pengfei.sun/testsg.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "module_buff": "^5.0.3",
+    "module_gm": "^5.0.4",
+    "module_guide": "^5.0.8",
+    "odin": "^5.0.5"
+  }
+}
