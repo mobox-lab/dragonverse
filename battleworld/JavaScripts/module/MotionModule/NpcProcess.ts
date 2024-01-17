@@ -1,24 +1,13 @@
-import { MotionDataManager } from "../../editors/motionEditor/MotionDataManager";
 import { Constants } from "../../tool/Constants";
 import { Singleton } from "../../tool/FunctionUtil";
 import { MotionRegister } from "./MotionModule";
 import { ServerMotion } from "./motionBase/MotionBase";
 import { MotionModuleC } from "./MotionModuleC";
-// import { ISceneUnitBase } from "../SceneUnitModule/model/ISceneUnitBase";
-
-
-
-
-
-
-
 
 
 /**
  * 单端npc攻击 motion
  */
-
-
 @Singleton()
 export class NpcProcess {
     public static instance: NpcProcess = null;

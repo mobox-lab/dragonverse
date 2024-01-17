@@ -239,4 +239,4 @@ export function calculatePositionRatioInMap(currentPosition: mw.Vector): Vector2
         (currentPosition.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y) / sceneSize.y,
     );
     return positionRatioInMap;
-}
+} 

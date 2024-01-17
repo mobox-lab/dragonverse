@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 麇沓
+ * AUTHOR: 一只黄鹂鸣翠柳
  * UI: UI/Main/Main_action.ui
- * TIME: 2023.11.28-09.43.45
+ * TIME: 2024.01.07-13.57.15
  */
 
  
@@ -60,6 +60,27 @@
 		}
 		return this.mCanvasSkill6_Internal
 	}
+	private mFireCanvas_Internal: mw.Canvas
+	public get mFireCanvas(): mw.Canvas {
+		if(!this.mFireCanvas_Internal&&this.uiWidgetBase) {
+			this.mFireCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mFireCanvas') as mw.Canvas
+		}
+		return this.mFireCanvas_Internal
+	}
+	private mBackImg_Internal: mw.Image
+	public get mBackImg(): mw.Image {
+		if(!this.mBackImg_Internal&&this.uiWidgetBase) {
+			this.mBackImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mFireCanvas/mBackImg') as mw.Image
+		}
+		return this.mBackImg_Internal
+	}
+	private mFinalSkill_Internal: mw.StaleButton
+	public get mFinalSkill(): mw.StaleButton {
+		if(!this.mFinalSkill_Internal&&this.uiWidgetBase) {
+			this.mFinalSkill_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mFireCanvas/mFinalSkill') as mw.StaleButton
+		}
+		return this.mFinalSkill_Internal
+	}
 
 
  
@@ -72,6 +93,13 @@
 	protected initButtons() {
 		//按钮添加点击
 		
+		this.mFinalSkill.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mFinalSkill");
+		})
+		this.initLanguage(this.mFinalSkill);
+		//this.mFinalSkill.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 		//按钮添加点击
 		
 

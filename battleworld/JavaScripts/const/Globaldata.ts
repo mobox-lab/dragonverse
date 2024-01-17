@@ -31,6 +31,9 @@ export class Globaldata {
         this.tmpVector.y = loc.y;
         this.tmpVector.z = loc.z;
     }
+
+    public static tmpUIVector: mw.Vector2 = mw.Vector2.zero;
+
     /**飘字最远剔除距离 */
     public static headUIMaxVisibleDistance: number = 5000;
     public static distanceScaleFactor: number = 300;
@@ -215,7 +218,7 @@ export class Globaldata {
     /**可破坏物刷新 破坏物数量 */
     public static land_destroy_count: number = 0;
     /**变装道具刷新 数量 */
-    public static land_dressup_count: number = 2;
+    public static land_dressup_count: number = 5;
     /**拾取换装掉落物后持续的时间 */
     public static land_dressup_duration = 60;
     /**地形 Buff随机数量*/
@@ -311,6 +314,8 @@ export class Globaldata {
     public static npc_modelGuid: string = "0F38CF89";
     /** 展示npc动作 */
     public static npc_modelAnim: string = "232755";
+    /** 展示npc位置 */
+    public static npc_modelPos: Vector = new Vector(209877.88, 20959.30, 2642.37);
 
     /**----------------------------------其他----------------------------------------- */
     /**满星数量TODO*/
@@ -449,12 +454,24 @@ export class Globaldata {
 
     /**-------------------------冲刺相关配置------------------------------- */
     /**冲刺后的地面增加最大速度值 */
-    public static sprintAddSpeed: number = 450;
+    public static sprintAddSpeed: number = 350;
     /**冲刺重置时间（秒）*/
     public static sptintRestTime: number = 1;
     /**每0.1秒衰减速度 */
     public static sptintReduceValue: number = 60;
     /**玩家疾跑状态特效*/
     public static sprintEffectId: number[] = [66, 67];
+
+
+    /**------------------------------怒气----------------------------------- */
+
+    /**怒气值增长间隔 单位 秒 */
+    public static anger_addValueInterval: number = 0.25;
+    /**怒气增长值 列：每秒增加10 */
+    public static anger_addValue: number = 1;
+
+    /**怒气衰减间隔 单位 秒 */
+    public static anger_cutBackInterval: number = 0.25;
+
 
 }

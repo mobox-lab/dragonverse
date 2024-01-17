@@ -112,8 +112,11 @@ export default class petBehiver {
             this.isReady = true;
             utils.setClipDistance(this.pet, this.clipDis);
             utils.addOutlineExcept(this.pet, true);
-            if (this.owner.worldTransform)
-                setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
+            if (this.owner.worldTransform && owner.worldTransform.position)
+                try {
+                    setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
+                } catch (error) {
+                }
             if (this.petInfo.PetEffect) {
                 this.petInfo.PetEffect.forEach((id: number) => {
                     this.currentEffectIds.push(EffectManager.instance.playEffOnObjScene(id, this.pet, this.clipDis));

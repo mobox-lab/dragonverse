@@ -629,6 +629,52 @@ export namespace util {
         return id
     }
 
+    export function playEffectByConfig(configId: number, target: mw.Character) {
+        if (target == null) {
+            return 0;
+        }
+        let effectcfg = GameConfig.Effect.getElement(configId);
+        if (effectcfg == null) {
+            return 0;
+        }
+
+        Globaldata.tmpRotation.x = effectcfg.EffectRotate.x;
+        Globaldata.tmpRotation.y = effectcfg.EffectRotate.y;
+        Globaldata.tmpRotation.z = effectcfg.EffectRotate.z;
+
+
+        let playEffectId = 0;
+        if (effectcfg.EffectPoint > 0) {
+            playEffectId = EffectService.playOnGameObject(effectcfg.EffectID, target, {
+                slotType: effectcfg.EffectPoint,
+                position: effectcfg.EffectLocation,
+                rotation: Globaldata.tmpRotation,
+                scale: effectcfg.EffectLarge,
+                loopCount: effectcfg.EffectTime,
+            });
+        } else {
+            playEffectId = EffectService.playAtPosition(effectcfg.EffectID, target.worldTransform.position, {
+
+                rotation: Globaldata.tmpRotation,
+                scale: effectcfg.EffectLarge,
+            });
+        }
+
+        if (StringUtil.isEmpty(effectcfg.ColorValue) == false) {
+            EffectService.getEffectById(playEffectId).then((effect) => {
+                if (effect) {
+                    effect.setColor("Color", mw.LinearColor.colorHexToLinearColor(effectcfg.ColorValue));
+                } else {
+                    console.error("utils:playEffectAtLocation ", playEffectId, effectcfg.EffectID);
+                }
+
+            });
+        }
+
+        return playEffectId;
+    }
+
+
     /**播放特效在某个位置 */
     export function playEffectAtLocation(effectId: number, location: mw.Vector, rot: mw.Rotation = null) {
 

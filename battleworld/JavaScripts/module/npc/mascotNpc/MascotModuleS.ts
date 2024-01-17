@@ -2,7 +2,7 @@
  * @Author       : fengqi.han
  * @Date         : 2023-11-30 17:44:50
  * @LastEditors  : fengqi.han
- * @LastEditTime : 2023-12-26 14:52:23
+ * @LastEditTime : 2024-01-09 16:29:41
  * @FilePath     : \battleworld\JavaScripts\module\npc\mascotNpc\MascotModuleS.ts
  * @Description  : 修改描述
  */
@@ -59,9 +59,9 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
         let posArr = ModuleService.getModule(LandModuleS).noRunRandom(num);
         while (num--) {
             let npc = await GameObjPool.asyncSpawn("Character") as mw.Character;
-            npc.worldTransform.position = posArr[num];
-            npc.clearDescription();
+            await npc.asyncReady();
             npc.setDescription([cfg.Appearance]);
+            npc.worldTransform.position = posArr[num];
             npc.maxWalkSpeed = cfg.DefaultSpeed;
             //npc 生成特效
             let effId = cfg.CreaEff;

@@ -1,8 +1,5 @@
-import { LogManager } from "odin";
 import { GameConfig } from "../../config/GameConfig";
-import { ELogName, EModule_Events, EModule_Events_S } from "../../const/Enum";
-import { util } from "../../tool/Utils";
-import { Globaldata } from "../../const/Globaldata";
+import { EDressUpType, EModule_Events, EModule_Events_S } from "../../const/Enum";
 import { EventManager } from "../../tool/EventManager";
 import { EquipManager } from "../EquipModule/EquipManager";
 
@@ -40,6 +37,15 @@ export default class DressUpSync extends mw.Script {
 
     /** 在变身前，玩家指定部位的挂件 */
     private _beforeDressUpPendantIdMap: Map<number, number[]> = new Map();
+
+    /** 当前换装类型 */
+    private _dressUpType: EDressUpType = EDressUpType.v2;
+
+    /** 默认姿态 */
+    private _defaultStance: Stance = null;
+
+    /** 变身对应的姿态 */
+    private _stanceMap: Map<string, Stance> = new Map();
 
     protected onStart(): void {
         this.useUpdate = SystemUtil.isServer();
@@ -153,25 +159,23 @@ export default class DressUpSync extends mw.Script {
         }
         let character = player.character;
         await character.asyncReady();
-        character.onDescriptionComplete.add(() => {
-            character.clearDescription(false, true);
-            this._defaultDesc = character.getDescription();
-        });
+        this._defaultDesc = character.getDescription();
+        this._defaultStance = character.currentStance;
     }
 
     /**
      * 服务器设置玩家的形象id
      * @param descGuid 新的形象id
      */
-    public server_setDescGuid(descGuid: string) {
+    public server_setDescGuid(descGuid: string, stance: string = "", descType: EDressUpType = EDressUpType.v2) {
         this.curDescGuid = descGuid;
-        this.refresh_appearance();
+        this.refresh_appearance(stance, descType);
     }
 
     /**
      * 刷新玩家外观
      */
-    private async refresh_appearance() {
+    private async refresh_appearance(stance: string = "", descType: EDressUpType = EDressUpType.v2) {
         let player = await Player.asyncGetPlayer(this.currentPlayerId);
         if (player == null) {
             return;
@@ -187,18 +191,40 @@ export default class DressUpSync extends mw.Script {
                 if (character) {
                     await character?.asyncReady();
                     character?.clearDescription(true, true);
-                    character?.setDescription(this._defaultDesc);
+                    if (this._dressUpType == EDressUpType.v2) {
+                        character?.setDescription(this._defaultDesc);
+                    }
+                    else {
+                        character.description.base.wholeBody = this._defaultDesc.base.wholeBody;
+                    }
+                    this._defaultStance.play();
                 }
             }
             return;
         }
         this._preDescGuid = this.curDescGuid;
+        this._dressUpType = descType;
         let character = player.character;
         if (character) {
             await character?.asyncReady();
             //刷新外观
             character?.clearDescription(true, true);
-            character?.setDescription([this.curDescGuid]);
+            if (descType == EDressUpType.v2) {
+                character?.setDescription([this.curDescGuid]);
+            }
+            else {
+                character.description.base.wholeBody = this.curDescGuid;
+            }
+            if (!stance) return;
+            if (this._stanceMap.has(stance)) {
+                this._stanceMap.get(stance).play();
+            }
+            else {
+                let tmp = character.loadStance(stance);
+                tmp.play();
+                this._stanceMap.set(stance, tmp);
+            }
+
         }
     }
 

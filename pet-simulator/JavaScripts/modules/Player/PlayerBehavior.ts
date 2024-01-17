@@ -460,7 +460,10 @@ export default class PlayerBehavior extends mw.Script {
             return;
         }
         if (!this.owner.worldTransform) return;
-        this.currentTransform = this.owner.worldTransform.clone();
+        try {
+            this.currentTransform = this.owner.worldTransform.clone();
+        } catch (error) {
+        }
         if (this.owner == this.currentChar) {
             this.monterUpdate(dt);
         } else {

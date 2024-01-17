@@ -11,7 +11,7 @@ import { PlayerModuleData } from "../PlayerModule/PlayerModuleData";
 export class AttributeModuleC extends ModuleC<AttributeModuleS, null> {
 
     onAwake() {
-        EventManager.instance.add(EAttributeEvents_C.Attribute_SetAttribute_C, this.listen_setAttribute);
+        EventManager.instance.add(EAttributeEvents_C.Attribute_SetAttribute_C, this.listen_setAttribute, this);
     }
 
     protected onStart(): void {
@@ -33,8 +33,9 @@ export class AttributeModuleC extends ModuleC<AttributeModuleS, null> {
      * @param value 属性值
      * @param pId 对象id
      */
-    private listen_setAttribute(attrType: Attribute.EnumAttributeType, value: number | string, pId: number = this.localPlayerId) {
-        this.setAttrValue(attrType, value, pId);
+    private listen_setAttribute(attrType: Attribute.EnumAttributeType,
+        value: number | string, pId: number = this.localPlayerId, callOnChange: boolean = false) {
+        this.setAttrValue(attrType, value, pId, callOnChange);
     }
 
 
@@ -71,7 +72,8 @@ export class AttributeModuleC extends ModuleC<AttributeModuleS, null> {
      * @param attrType 属性类型
      * @param value 属性值
      */
-    public setAttrValue(attrType: Attribute.EnumAttributeType, value: number | string, pId: number = this.localPlayerId) {
+    public setAttrValue(attrType: Attribute.EnumAttributeType, value: number | string,
+        pId: number = this.localPlayerId, callOnChange: boolean = false) {
 
         // 判断是否为定向同步属性
         if (Attribute.IsPlayStateAttribute(attrType)) {
@@ -84,7 +86,7 @@ export class AttributeModuleC extends ModuleC<AttributeModuleS, null> {
             if (attrPlayerState == null) {
                 return
             }
-            attrPlayerState.setAttrValue(attrType, value);
+            attrPlayerState.setAttrValue(attrType, value, callOnChange);
             return;
         }
 
@@ -94,7 +96,7 @@ export class AttributeModuleC extends ModuleC<AttributeModuleS, null> {
         }
 
         let attrSync = AttributeSync.AttributeMap.get(pId);
-        attrSync.setAttrValue(attrType, value);
+        attrSync.setAttrValue(attrType, value, callOnChange);
     }
 
 }

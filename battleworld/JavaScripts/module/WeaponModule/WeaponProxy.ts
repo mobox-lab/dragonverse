@@ -294,17 +294,20 @@ export class WeaponProxy {
         return true;
     }
 
+    public isBack() {
+        return this._isBack;
+    }
+
     /**
      * 设置背部武器显示隐藏
      * @param visible true显示 false隐藏
      */
     public setBackVisible(visible: boolean) {
-
         let visibility = visible ? mw.PropertyStatus.On : mw.PropertyStatus.Off;
 
         for (let index = 0; index < this.curBackWeapons.length; index++) {
             const weaponObj = this.curBackWeapons[index];
-            weaponObj.setVisibility(visibility);
+            weaponObj.setVisibility(visibility, true);
         }
 
     }

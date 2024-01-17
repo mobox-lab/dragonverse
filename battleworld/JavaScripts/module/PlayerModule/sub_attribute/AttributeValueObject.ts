@@ -156,6 +156,14 @@ export namespace Attribute {
         massacreValue = 83,
         /**玩家显示隐藏状态 0显示状态 1隐藏状态 */
         playerVisible = 85,
+        /**玩家怒气值 */
+        angerValue = 86,
+        /**玩家最大怒气值 */
+        maxAngerValue = 87,
+        /**爆气状态  0未爆气 1爆气 */
+        gasExplosion = 88,
+        /**玩家霸体状态，0无霸体，1霸体 */
+        bodyHold = 89,
     }
 
     // 存储属性
@@ -251,6 +259,10 @@ export namespace Attribute {
         Attribute.EnumAttributeType.money,
         /**今日玩家已获取段位分 */
         Attribute.EnumAttributeType.dayRankScore,
+        /**玩家怒气值 */
+        Attribute.EnumAttributeType.angerValue,
+        /**玩家最大怒气值 */
+        Attribute.EnumAttributeType.maxAngerValue,
     ]);
     // 此属性是否为定向同步属性
     export function IsPlayStateAttribute(type: Attribute.EnumAttributeType): boolean {

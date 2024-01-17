@@ -52,6 +52,8 @@ export abstract class BulletMgr<T extends Bullet> {
         return this._onDestroyEvent;
     }
 
+    /**主要用来参与计算，不参与存储 */
+    protected tmpVector: mw.Vector = mw.Vector.zero;
 
     /**
     * 子弹管理器进行初始化

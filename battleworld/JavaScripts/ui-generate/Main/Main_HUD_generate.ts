@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 冷风吹
+ * AUTHOR: 一只黄鹂鸣翠柳
  * UI: UI/Main/Main_HUD.ui
- * TIME: 2024.01.03-13.57.30
+ * TIME: 2024.01.09-11.07.48
  */
 
  
@@ -136,6 +136,13 @@
 			this.mIcon_Kill_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/hpCanvas/mIcon_Kill') as mw.Image
 		}
 		return this.mIcon_Kill_Internal
+	}
+	private mBar_Fire_Internal: mw.ProgressBar
+	public get mBar_Fire(): mw.ProgressBar {
+		if(!this.mBar_Fire_Internal&&this.uiWidgetBase) {
+			this.mBar_Fire_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/hpCanvas/mBar_Fire') as mw.ProgressBar
+		}
+		return this.mBar_Fire_Internal
 	}
 	private mBtn_Setting_Internal: mw.Button
 	public get mBtn_Setting(): mw.Button {
@@ -354,6 +361,27 @@
 		}
 		return this.mPoint_Internal
 	}
+	private socialCanvas_Internal: mw.Canvas
+	public get socialCanvas(): mw.Canvas {
+		if(!this.socialCanvas_Internal&&this.uiWidgetBase) {
+			this.socialCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/socialCanvas') as mw.Canvas
+		}
+		return this.socialCanvas_Internal
+	}
+	private mSocialBtn_Internal: mw.Button
+	public get mSocialBtn(): mw.Button {
+		if(!this.mSocialBtn_Internal&&this.uiWidgetBase) {
+			this.mSocialBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/socialCanvas/mSocialBtn') as mw.Button
+		}
+		return this.mSocialBtn_Internal
+	}
+	private mSocialImg_Internal: mw.Image
+	public get mSocialImg(): mw.Image {
+		if(!this.mSocialImg_Internal&&this.uiWidgetBase) {
+			this.mSocialImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/socialCanvas/mSocialImg') as mw.Image
+		}
+		return this.mSocialImg_Internal
+	}
 
 
  
@@ -422,6 +450,12 @@
 		
 		
 	
+		this.mSocialBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mSocialBtn");
+		})
+		
+		
+	
 
 		//按钮多语言
 		
@@ -478,6 +512,9 @@
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/rankCanvas/mBtn_Rank/TextBlock_1") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/socialCanvas/TextBlock_2") as any);
 		
 	
 

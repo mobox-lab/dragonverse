@@ -24,8 +24,6 @@ import { NoticeModuleS } from "./module/NoticeModule/NoticeModuleS";
 import { NoticeModuleC } from "./module/NoticeModule/NoticeModuleC";
 import { AreaModuleS } from "./module/AreaModule/AreaModuleS";
 import { AreaModuleC } from "./module/AreaModule/AreaModuleC";
-import { RedPointModuleC } from "./module/RedPointModule/RedPointModuleC";
-import { RedPointModuleS } from "./module/RedPointModule/RedPointModuleS";
 import { AnalyticsModuleS } from "./module/AnalyticsModule/AnalyticsModuleS";
 import { AnalyticsModuleC } from "./module/AnalyticsModule/AnalyticsModuleC";
 import { AnalyticsModuleData } from "./module/AnalyticsModule/AnalyticsModuleData";
@@ -66,6 +64,7 @@ import { GuideModuleS2 } from "./module/GuideModule/GuideModuleS2";
 import { GuideDataHelper, GuideModuleC, GuideModuleS } from "module_guide";
 import { InteractiveModuleS } from "./module/InteractiveModule/InteractiveModuleS";
 import { InteractiveModuleC } from "./module/InteractiveModule/InteractiveModuleC";
+import { AntiCheatSystem } from "./tool/AntiCheatSystem";
 
 declare global {
     var UE: any;
@@ -111,6 +110,8 @@ export default class GameLauncher extends mw.Script {
 
         Globaldata.isOpenGm = this.gmSwitch;
 
+        // 开启作弊检测
+        //this.checkCheat();
 
         // 测试 看看能不能降低游戏进入时间
         if (SystemUtil.isClient()) {
@@ -158,7 +159,7 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(NoticeModuleS, NoticeModuleC, null);
         ModuleService.registerModule(LoginModuleS, LoginModuleC, null);
         ModuleService.registerModule(AreaModuleS, AreaModuleC, null);
-        ModuleService.registerModule(RedPointModuleS, RedPointModuleC, null);
+        // ModuleService.registerModule(RedPointModuleS, RedPointModuleC, null);
         ModuleService.registerModule(AnalyticsModuleS, AnalyticsModuleC, AnalyticsModuleData);
         ModuleService.registerModule(ActionModuleS, ActionModuleC, null);
         ModuleService.registerModule(GlobalAttrModuleS, GlobalAttrModuleC, null);
@@ -173,6 +174,25 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
         ModuleService.registerModule(GuideModuleS2, GuideModuleC2, null);
         ModuleService.registerModule(InteractiveModuleS, InteractiveModuleC, null);
+    }
+
+
+    //开启作弊检测
+    private checkCheat() {
+        // 开启作弊检测
+        AntiCheatSystem.checkAccelerator();
+
+
+        if (SystemUtil.isServer()) {
+
+
+            return;
+        }
+
+        AntiCheatSystem.registerCheatDetectionCallback((fieldName: string, cheatValue: any, originalValue: any) => {
+            console.error("===registerCheatDetectionCallback ", fieldName, cheatValue, originalValue)
+        });
+
     }
 
 }

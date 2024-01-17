@@ -121,6 +121,18 @@ export default class AttributeSync extends mw.Script {
         let visible = this.attr85 == 0 ? true : false;
         EventSyncTool.dispatchToLocal(EAttributeEvents_C.Attribute_PlayerVisible_C, this.pId, visible);
     }
+
+
+    /**爆气状态  0未爆气 1爆气状态*/
+    @mw.Property({
+        replicated: true,
+        onChanged: `client_call_attr_${Attribute.EnumAttributeType.gasExplosion}`
+    })
+    private attr88: number = 0;
+    private async client_call_attr_88() {
+        EventSyncTool.dispatchToLocal(EAttributeEvents_C.Attribute_gasExplosion_C, this.pId, this.attr88);
+    }
+
     /**--------------------------------------------服务器--------------------------------------------------- */
 
 
@@ -130,7 +142,7 @@ export default class AttributeSync extends mw.Script {
 
 
     /**更新属性 */
-    public setAttrValue(attrType: Attribute.EnumAttributeType, value: number | string) {
+    public setAttrValue(attrType: Attribute.EnumAttributeType, value: number | string, callOnChange: boolean = false) {
         let funcStr = `attr${attrType}`;
 
         if (this[funcStr] == null) {
@@ -139,6 +151,13 @@ export default class AttributeSync extends mw.Script {
         }
 
         this[funcStr] = value;
+
+        if (SystemUtil.isClient() && callOnChange) {
+            let onChangeCall = `client_call_attr_${attrType}`;
+            if (this[onChangeCall] != null) {
+                this[onChangeCall]();
+            }
+        }
     }
 
     /**获取属性值 */

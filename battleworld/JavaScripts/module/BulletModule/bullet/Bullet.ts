@@ -1,4 +1,4 @@
-import { SpawnManager,SpawnInfo, } from '../../../Modified027Editor/ModifiedSpawn';
+import { SpawnManager, SpawnInfo, } from '../../../Modified027Editor/ModifiedSpawn';
 /** 
 * @Author       : MengYao.Zhao
 * @Date         : 2022/07/01 10:06:56
@@ -57,6 +57,8 @@ export class InnerBulletData {
     flyEffectGuid: string
     /** 1次性的*/
     flyEffectScale: Array<number>
+    /**子弹飞行模型的旋转方向 */
+    flyRelativeRot: mw.Vector
     /**开火音效的音量比例(0-1)*/
     triggerRelativePos: Array<number>
     /**子弹飞行用的模型/特效，约定朝向看向+X*/

@@ -24,6 +24,19 @@ export class WeaponModuleS extends ModuleS<WeaponModuleC, WeaponModuleData>{
         // 武器加成
         EventManager.instance.call(EPlayerEvents_S.PlayerEvent_WeaponAdd_S, pId, true);
 
+        let weaponId = pData.getEquipWeaponId();
+        this.update_anger(pId, weaponId);
+    }
+
+    /**更新玩家怒气值 */
+    private update_anger(pId: number, weaponId: number) {
+        let weaponCfg = GameConfig.Weapon.getElement(weaponId);
+        if (weaponCfg == null) {
+            return;
+        }
+        // 更新最大怒气值
+        EventManager.instance.call(EAttributeEvents_S.attr_change_s, pId, Attribute.EnumAttributeType.maxAngerValue, weaponCfg.maxAngerValue);
+        EventManager.instance.call(EAttributeEvents_S.attr_change_s, pId, Attribute.EnumAttributeType.angerValue, 0);
     }
 
     /**
@@ -61,6 +74,8 @@ export class WeaponModuleS extends ModuleS<WeaponModuleC, WeaponModuleData>{
 
         // 通知其它模块 武器修改
         EventManager.instance.call(EWeaponEvent_S.WeaponEvent_WeaponChange_S, pId, weaponId);
+
+        this.update_anger(pId, weaponId);
     }
 
     /**

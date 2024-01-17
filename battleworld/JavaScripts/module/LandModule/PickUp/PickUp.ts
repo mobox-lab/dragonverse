@@ -17,7 +17,7 @@ export default class PickUp extends Script {
     public landParcesid: number = -1; //fix:bug 设置为null 不会继续同步了？
 
     /**拾取物类型*/
-    @mw.Property({ replicated: true, onChanged: "onChange_pickUpType" })
+    @mw.Property({ replicated: true })
     public pickUpType: EPickUpType = EPickUpType.None; //设置为EPickUpType.None 不会继续同步了？
 
     /**需要生成的预制体 */
@@ -47,42 +47,10 @@ export default class PickUp extends Script {
     public dropId: number = 0;
 
 
-
-    /**初级丹药的预制体guid，脚本 */
-    private static pillPrefabGuidInfo: string[] = [
-        "986105E84C483273F2A5E09ACDF2FA41",
-        "A97431DE41AFDD8113C9B4BE2245036F",
-        "77B3466B4299EEB7FAB627A6E8B7AA5E",
-        "9C82E15B4D7AC08F2AE87690A4A738A5"
-    ];
-
-    private static scriptNameMap: Map<string, string> = new Map([
-        ["5BA0F2F74122E218BA6564B648CF5704", "PickUpMoney"],
-        ["147DCB9A4B7FDB75926F50B33104E415", "PickUpSkill"],
-        ["8CF8131D4242A8BAB5BE31BE751E23B8", "PickUpHp"],
-        ["7AB4F8694A94CEFB2FA21989A0E3E3D2", "PickUpHp"],
-        ["8315C75149E8E4B5DE2E38ACADDC1967", "PickUpDressUp"],
-        ["986105E84C483273F2A5E09ACDF2FA41", "PickUpPill"],
-        ["A97431DE41AFDD8113C9B4BE2245036F", "PickUpPill"],
-        ["77B3466B4299EEB7FAB627A6E8B7AA5E", "PickUpPill"],
-        ["9C82E15B4D7AC08F2AE87690A4A738A5", "PickUpPill"]
-    ]);
-
     protected onStart(): void {
 
     }
 
-    private async onChange_pickUpType(): Promise<void> {
-        if (this.pickUpType == EPickUpType.attribute) return;   //交给onChange_pickUpPrefabInfo处理
-        if (this.creatType == EPickUpCreType.npc) return;   //交给onChange_pickUpPrefabInfo处理
-        if (this.landParcesid_old_pickUpType == this.pickUpType) {
-            return;
-        }
-        this.landParcesid_old_pickUpType = this.pickUpType;
-
-
-        this.creatPickup();
-    }
 
     private onChange_pickUpPrefabInfo() {
 
@@ -101,9 +69,10 @@ export default class PickUp extends Script {
      * @param prefabGuid 预制体GUID
      * @param scritpName 脚本名
      */
-    private async create(prefabGuid: string, scritpName: string) {
+    private async create(prefabGuid: string) {
         let prefab: GameObject = await GameObjPool.asyncSpawn(prefabGuid, GameObjPoolSourceType.Prefab);
-        this.pickUp = prefab.getScriptByName(scritpName) as PickUpBase;
+        if (!prefab) return;
+        this.pickUp = prefab.getComponent(PickUpBase);
         this.pickUp.dropId = this.dropId;
         if (this.pickUp == null) {
             console.error("creatPickUp script == null ")
@@ -125,63 +94,6 @@ export default class PickUp extends Script {
         this.pickUp.onEnterAction.add(this.listen_onEnter, this);
     }
 
-
-
-    /**
-     * 创建&&销毁拾取物  
-     */
-    private async creatPickup() {
-
-        if (this.pickUpType == -1) {
-            this.romvePickUp();
-            return;
-        }
-
-        let pickUpType = this.pickUpType
-        let prefabguid = "";
-        let scritpName = "";
-        switch (pickUpType) {
-            case EPickUpType.skill:
-                {
-                    prefabguid = "147DCB9A4B7FDB75926F50B33104E415";
-                    scritpName = "PickUpSkill";
-                }
-                break;
-            case EPickUpType.hp:
-                {
-                    prefabguid = "8CF8131D4242A8BAB5BE31BE751E23B8";
-                    scritpName = "PickUpHp";
-                }
-                break;
-            case EPickUpType.money:
-                {
-                    prefabguid = "5BA0F2F74122E218BA6564B648CF5704";
-                    scritpName = "PickUpMoney";
-                }
-                break;
-            case EPickUpType.attribute:
-                {
-                    //随机创一个丹药
-                    prefabguid = PickUp.pillPrefabGuidInfo[MathUtil.randomInt(0, PickUp.pillPrefabGuidInfo.length)];
-                    scritpName = "PickUpPill";
-                }
-                break;
-            case EPickUpType.dressUp:
-                {
-                    prefabguid = "8315C75149E8E4B5DE2E38ACADDC1967";
-                    scritpName = "PickUpDressUp";
-                }
-                break;
-            default:
-                break;
-        }
-
-        this.romvePickUp();
-
-        this.create(prefabguid, scritpName);
-
-    }
-
     /**
      * 创建&&销毁指定预制体的拾取物  
      */
@@ -192,11 +104,8 @@ export default class PickUp extends Script {
             return;
         }
         if (this.pickUpPrefabInfo && this.pickUpPrefabInfo != "") {
-            const val = PickUp.scriptNameMap.get(this.pickUpPrefabInfo);
-            if (val) {
-                this.romvePickUp();
-                this.create(this.pickUpPrefabInfo, val);
-            }
+            this.romvePickUp();
+            this.create(this.pickUpPrefabInfo);
         }
     }
 
@@ -249,11 +158,33 @@ export default class PickUp extends Script {
     public creat(landParcesid: number, pickUpType: EPickUpType) {
         this.landParcesid = landParcesid;
         this.pickUpType = pickUpType;
-        if (pickUpType == EPickUpType.attribute) {
-            //随机预制体
-            this.pickUpPrefabInfo = PickUp.pillPrefabGuidInfo[MathUtil.randomInt(0, PickUp.pillPrefabGuidInfo.length)];
-        }
+        this.pickUpPrefabInfo = this.getPickUpByType(pickUpType);
         this.creatType = EPickUpCreType.land;
+    }
+
+    /**
+     * 根据类型获取掉落物guid
+     */
+    public getPickUpByType(pickUpType: EPickUpType) {
+        let cfgArr = GameConfig.PropDrop.getAllElement();
+        //随机预制体
+        if (pickUpType == EPickUpType.attribute || pickUpType == EPickUpType.dressUp) {
+            let guidArr: string[] = [];
+            for (let i = 0; i < cfgArr.length; i++) {
+                if (cfgArr[i].dropType == pickUpType) {
+                    guidArr.push(cfgArr[i].dropGuid);
+                }
+            }
+            return guidArr[MathUtil.randomInt(0, guidArr.length)];
+        }
+        else {
+            let cfg = cfgArr.find((element) => {
+                return element.dropType == pickUpType;
+            })
+            if (!cfg) return "";
+            return cfg.dropGuid;
+        }
+
     }
 
 

@@ -316,6 +316,8 @@ export class GuideModuleC2 extends ModuleC<GuideModuleS2, null> {
 
     private async create_npc() {
         this.prefabNpc = await mw.Script.spawnScript(WoodUnit);
+        //ts报错兼容
+        if (!this.prefabNpc) return;
         await this.prefabNpc.initUnit(Globaldata.guide_npcId, Globaldata.guide_woodPrefabGuid);
         this.prefabNpc.setModelLocation(Globaldata.guide_npcBorn);
     }

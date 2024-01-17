@@ -118,7 +118,7 @@ export class State_Idle extends PlyerState {
     private async playAni() {
 
 
-        if (this.mWeapon.getHandWeaponVisible() == false) {
+        if (this.mWeapon.isWeaponInBack()) {
             this.stopAni();
             return;
         }

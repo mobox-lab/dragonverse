@@ -1,10 +1,9 @@
 import { GeneralManager, } from '../../Modified027Editor/ModifiedStaticAPI';
-import { ModifiedCameraSystem, CameraModifid, CameraSystemData, } from '../../Modified027Editor/ModifiedCamera';
-import { CameraManger } from "../../tool/CameraManger";
-import { EventManager } from "../../tool/EventManager";
+import { ModifiedCameraSystem } from '../../Modified027Editor/ModifiedCamera';
+import { CameraManger, CameraSystemData } from "../../tool/CameraManger";
 import { Singleton } from "../../tool/FunctionUtil";
 import MotionEditorWindow_Generate from "../../ui-generate/editor_motion/MotionEditorWindow_generate";
-import { UIEvent_editMotion } from "./UIEvent_editMotion";
+
 
 @Singleton()
 export class MotionDisplay {
@@ -200,6 +199,7 @@ export class MotionDisplay {
             this.camera.rotationMode = mw.CameraRotationMode.RotationControl
 
             ModifiedCameraSystem.followTargetEnable = true;
+
 
             if (this._initCameraData) {
                 CameraManger.instance.resetCamera(this._initCameraData);
