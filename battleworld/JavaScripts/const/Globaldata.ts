@@ -2,6 +2,19 @@ import { GameConfig } from "../config/GameConfig";
 
 export class Globaldata {
 
+    /**
+     * DragonVerse 游戏id
+     */
+    public static dragonverseGameId = "";
+    /**
+     * 宠物模拟器游戏id
+     */
+    public static petSimulatorGameId = "";
+    /**
+     * 跳游戏进度时长
+     */
+    public static jumpGameProgressDuration = 3e3;
+
     /**--------------------------------------系统--------------------------------- */
     /**所选择的语言索引(-1:系统 0:英语 1:汉语 2:日语 3:德语)*/
     public static selectedLanguageIndex: number = -1;
