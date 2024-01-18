@@ -15,6 +15,8 @@ import PlayerBehavior from "./PlayerBehavior";
 import { GlobalEnum } from "../../const/Enum";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
+import GToolkit from '../../utils/GToolkit';
+import Log4Ts from '../../depend/log4ts/Log4Ts';
 
 /**宠物状态 */
 export enum PetState {
@@ -26,11 +28,11 @@ export enum PetState {
     Attack = 2,
 }
 
-export default class petBehiver {
+export default class PetBehaviour {
 
     public petName: string = "";
     private petTitle: string = "";
-    private pet: mw.GameObject = null;
+    private pet: mw.Character = null;
     /**头顶UI */
     private headUI: HUDInfo = null;
     private _state: PetState = PetState.Idle;
@@ -44,7 +46,7 @@ export default class petBehiver {
     /**宠物信息 */
     private petInfo: IPetARRElement = null;
     public isReady: boolean = false;
-    private hight: number = GlobalData.pet.petHeight;
+    // private hight: number = GlobalData.pet.petHeight;
     /**当前特效 */
     private currentEffectIds: mw.Effect[] = [];
     /**主人行为脚本 */
@@ -99,10 +101,13 @@ export default class petBehiver {
         this.chaseSpeed = this.petInfo.PetChase;
         let ModelGuid = this.petInfo.ModelGuid;
         let type = GameObjPoolSourceType.Prefab;
-        SpawnManager.modifyPoolAsyncSpawn(ModelGuid, type).then(obj => {
+
+        SpawnManager.modifyPoolAsyncSpawn("Character").then(cha => {
             if (!this.owner || !this.owner.worldTransform) this.destory();
-            this.pet = obj;
-            this.pet.setCollision(mw.PropertyStatus.Off);
+            this.pet = cha as Character;
+            this.pet.collisionWithOtherCharacterEnabled = false;
+            GToolkit.safeSetDescription(this.pet, "94B734CF46BA50791443758138B2EA21")
+
             SoundManager.instance.play3DSound(GlobalData.Music.petEquip, this.pet);
             this.petName = name;
             this.setQuality(this.petInfo.QualityType);
@@ -123,6 +128,30 @@ export default class petBehiver {
                 });
             }
         })
+        // SpawnManager.modifyPoolAsyncSpawn(ModelGuid, type).then(obj => {
+        //     if (!this.owner || !this.owner.worldTransform) this.destory();
+        //     this.pet = obj;
+        //     this.pet.setCollision(mw.PropertyStatus.Off);
+        //     SoundManager.instance.play3DSound(GlobalData.Music.petEquip, this.pet);
+        //     this.petName = name;
+        //     this.setQuality(this.petInfo.QualityType);
+        //     this._state = PetState.Idle;
+        //     this.lastMoveState = true;
+        //     this.onInfoChange();
+        //     this.isReady = true;
+        //     utils.setClipDistance(this.pet, this.clipDis);
+        //     utils.addOutlineExcept(this.pet, true);
+        //     if (this.owner.worldTransform && owner.worldTransform.position)
+        //         try {
+        //             setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
+        //         } catch (error) {
+        //         }
+        //     if (this.petInfo.PetEffect) {
+        //         this.petInfo.PetEffect.forEach((id: number) => {
+        //             this.currentEffectIds.push(EffectManager.instance.playEffOnObjScene(id, this.pet, this.clipDis));
+        //         });
+        //     }
+        // })
     }
     private setQuality(type: number) {
         const quality = GlobalEnum.PetQuality
@@ -192,15 +221,18 @@ export default class petBehiver {
         pos = this.keepOnGround(pos, ownerTransform.position);
         pos.z += 20;
         let rot = ownerTransform.rotation;
-        rot.z += 180;
+        // rot.z += 180;
         petTransform.position = pos;
         petTransform.rotation = rot;
         setTransform(this.pet, petTransform);
     }
 
     private ownerTransform: Transform = null;
-
+    private _isPlayingAni: boolean = false;
+    private _ani: Animation;
+    private _petArrived: boolean = true;
     public update(dt: number, transform: Transform): void {
+        // Log4Ts.log(PetBehaviour, this.pet.description.advance.bodyFeatures.body.height);
         this.ownerTransform = transform.clone();
         if (!this.owner || !this.pet) return;
         if (this.accelerateNum > 0) {
@@ -222,6 +254,17 @@ export default class petBehiver {
                 break;
         }
         this.movetoUpdate(dt);
+
+        //isMove到了终点就是true，没到就是false
+        if (!this._petArrived && !this._isPlayingAni) {
+            this._ani = this.pet.loadAnimation("272622")
+            this._ani.loop = 0;
+            this._ani.play();
+            this._isPlayingAni = true;
+        } else if (this._petArrived && this._isPlayingAni) {
+            this._ani.stop();
+            this._isPlayingAni = false;
+        }
     }
 
     //上一帧玩家移动状态
@@ -279,13 +322,15 @@ export default class petBehiver {
             this.arrow = null;
         }
         this.isStop = false;
+
+        this._petArrived = false;
         let ownerTransform = this.ownerTransform;
         if (!ownerTransform) return;
         let petTransform = getTransform(this.pet);//TODO：大消耗点 pc端100次调用耗时10ms
         let endPos = ownerTransform.transformPosition(this.disPos);
         petTransform.lookAt(endPos);
         let endRot = petTransform.rotation;
-        endRot.set(0, 0, endRot.z + 180);
+        endRot.set(0, 0, endRot.z);
 
         if (!this.movetoOwnerUpdate(dt, petTransform, new mw.Transform(endPos, endRot, petTransform.scale))) return;
 
@@ -294,13 +339,14 @@ export default class petBehiver {
         if (this.lastMoveState && !currentMoveState) {  // 上次移动，这次不移动时
             this.lastMoveState = false;
             endPos = this.keepOnGround(endPos, ownerTransform.position);
-            endPos.z += this.hight;
+            // endPos.z += this.pet.description.advance.bodyFeatures.;
             this.moveto(endPos, endRot);
             return;
         }
         this.isMove = false;
         this.chanegToPos(dt, petTransform, endPos, endRot);
         this.lastMoveState = this.owner.isMoving;
+
     }
 
     /**移动至玩家身后 */
@@ -314,9 +360,9 @@ export default class petBehiver {
         if (dis <= speed) {
             this.isMove = false;
             endRot = this.ownerTransform.rotation;
-            endRot.set(0, 0, endRot.z + 180);
+            endRot.set(0, 0, endRot.z);
             endPos = this.keepOnGround(endPos);
-            endPos.z += this.hight;
+            // endPos.z += this.hight;
             if (this.owner.isMoving) {
                 this.chanegToPos(dt, startTransform, endPos, endRot);
             } else {
@@ -339,8 +385,8 @@ export default class petBehiver {
             this.attackTween = null;
         }
         endPos = this.keepOnGround(endPos);
-        endPos.z += this.hight;
-        this.jump(dt, endPos, endRot);
+        // endPos.z += this.hight;
+        // this.jump(dt, endPos, endRot);
         if (GlobalData.pet.isSmoothLerp) {
             const t = GlobalData.pet.smoothValue;
             //耗时2-3ms
@@ -417,6 +463,7 @@ export default class petBehiver {
     }
 
 
+
     //移动到资源点
     private moveToRes(dt: number): void {
         if (!this.targetPos) return;
@@ -424,7 +471,7 @@ export default class petBehiver {
         petTransform.lookAt(this.resPos);
         let endPos = petTransform.position;
         let endRot = petTransform.rotation;
-        endRot.z += 180;
+        // endRot.z += 180;
         endRot.x = 0;
         endRot.y = 0;
         //根据宠物移动速度向资源点移动
@@ -434,7 +481,7 @@ export default class petBehiver {
         if (dis < moveDis) {
             this.arrow?.update(this.targetPos, this.resPos);
             this._state = PetState.Attack;
-            this.moveto(new mw.Vector(this.targetPos.x, this.targetPos.y, this.targetPos.z + this.hight), endRot);
+            this.moveto(new mw.Vector(this.targetPos.x, this.targetPos.y, this.targetPos.z), endRot);
             this.stopMove();
             return;
         }
@@ -444,9 +491,10 @@ export default class petBehiver {
         let move = mw.Vector.multiply(dir, moveDis);
         endPos.x += move.x;
         endPos.y += move.y;
+
         endPos = this.keepOnGround(endPos);
         this.arrow?.update(this.position, this.resPos);
-        this.jump(dt, endPos, endRot);
+        // this.jump(dt, endPos, endRot);
         if (GlobalData.pet.isSmoothLerp) {
             const t = GlobalData.pet.smoothValue;
             mw.Vector.lerp(petTransform.position, endPos, t, endPos);
@@ -455,6 +503,7 @@ export default class petBehiver {
         petTransform.position = endPos;
         petTransform.rotation = endRot;
         setTransform(this.pet, petTransform);
+        this._petArrived = false;
     }
 
     private endPos: mw.Vector = mw.Vector.zero;
@@ -468,6 +517,7 @@ export default class petBehiver {
         this.endPos = endPos;
         this.endRot = endRot;
         this.isMove = true;
+        this._petArrived = true;
     }
 
     /**移动至endPos和endRot */
@@ -481,7 +531,7 @@ export default class petBehiver {
             petTransform.rotation = this.endRot;
             if (this._state == PetState.Idle) {
                 petTransform.rotation = this.owner.worldTransform.rotation;
-                petTransform.rotation.z += 180;
+                // petTransform.rotation.z += 180;
             }
             setTransform(this.pet, petTransform);
             return;
@@ -491,6 +541,7 @@ export default class petBehiver {
         petTransform.position = endPos;
         petTransform.rotation = endRot;
         setTransform(this.pet, petTransform);
+
     }
 
     private _attackPrivot: mw.GameObject = null;
@@ -597,10 +648,10 @@ export default class petBehiver {
     /**宠物坐标保持在地面 大消耗点 100次调用7ms */
     private keepOnGround(endPos: mw.Vector, currentPos?: mw.Vector): mw.Vector {
         if (!currentPos) currentPos = this.ownerTransform.position;
-        if (utils.frameCount < GlobalData.pet.gravityFrame && (this.owner != this.currentChar)) {
-            endPos.z = currentPos.z - this.owner.collisionExtent.z;
-            return endPos;
-        }
+        // if (utils.frameCount < GlobalData.pet.gravityFrame && (this.owner != this.currentChar)) {
+        //     endPos.z = currentPos.z - this.owner.collisionExtent.z;
+        //     return endPos;
+        // }
         let start = new mw.Vector(endPos.x, endPos.y, endPos.z + 1000);
         let end = new mw.Vector(endPos.x, endPos.y, endPos.z - 1000);
         let hitResults = QueryUtil.lineTrace(start, end, true, false);
@@ -615,8 +666,8 @@ export default class petBehiver {
                 break;
             }
         }
-        if (!isSuccess) endPos.z = currentPos.z - this.owner.collisionExtent.z;
-        return endPos;
+        // if (!isSuccess) endPos.z = currentPos.z - this.owner.collisionExtent.z;
+        return endPos.add(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * 100));
     }
 
     private async onInfoChange(): Promise<void> {
