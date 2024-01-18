@@ -34,6 +34,9 @@ TsBuilder.log
 NAVDATA.bin
 #       Prefab 编辑时临时文件
 **/Prefabs/EditingTemplate.cfg
+# Meta world Project
+**/Project/ExternalData/BuildSetting
+**/Project/ExternalData/Levels
 ## UNDETERMINED LviatYi 强烈建议您对 ui-generate 文件采取以下策略（二选一）
 ## - 修改 uig 的生成模板，去除 ${Date} 与 ${Author} 等鸡肋字段 且 不要让 git 跟踪 ui-generate 的 meta 文件.
 ## - 不要让 git 跟踪 ui-generate 的文件.
