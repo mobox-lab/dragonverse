@@ -9,11 +9,11 @@ export default class GameServiceConfig {
     /**
      * 宠物模拟器 GameID
      */
-    public static readonly SUB_GAME_PET_SIMULATOR_GAME_ID = "P_7ed509fb0f6d6fce8923e29942c5ce8c766e7742";
+    public static readonly SUB_GAME_PET_SIMULATOR_GAME_ID = "P_01da004d7f22f9eedeabe5e2a837a9e2fb8ca2b9";
     /**
      * Battle World GameID
      */
-    public static readonly SUB_GAME_BATTLE_WORLD_GAME_ID = "";
+    public static readonly SUB_GAME_BATTLE_WORLD_GAME_ID = "P_1d5df556504cf0bdc14a367a23fd65174f6ce6cb";
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
