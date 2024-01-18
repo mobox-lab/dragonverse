@@ -25,7 +25,7 @@ import { PlayerHeadUIModuleC } from "../PlayerHeadUIModule/PlayerHeadUIModuleC";
 
 
 
-export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate>{
+export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
 
     constructor() {
         super(GMHUD_Generate, GMItem_Generate);
@@ -46,7 +46,7 @@ export class GMModuleData extends Subdata {
 
 }
 
-export class GMModuleC extends ModuleC<GMModuleS, GMModuleData>{
+export class GMModuleC extends ModuleC<GMModuleS, GMModuleData> {
 
     protected onEnterScene(sceneType: number): void {
 
@@ -71,7 +71,7 @@ export class GMModuleC extends ModuleC<GMModuleS, GMModuleData>{
 
 }
 
-export class GMModuleS extends ModuleS<GMModuleC, GMModuleData>{
+export class GMModuleS extends ModuleS<GMModuleC, GMModuleData> {
 
     protected onPlayerEnterGame(player: mw.Player): void {
         let pData = this.getPlayerData(player);
@@ -502,4 +502,12 @@ AddGMCommand("击杀提示：数量", null, (player: mw.Player, value: string) =
     }
     EventManager.instance.call(ENotice_Events_S.NoticeEvent_KillTip_S, killId, 0, beKillId, Number(value));
 }, "击杀提示")
+
+AddGMCommand("跳DragonVerse", () => {
+    RouteService.enterNewGame(Globaldata.dragonverseGameId);
+})
+
+AddGMCommand("跳PetSimulator", () => {
+    RouteService.enterNewGame(Globaldata.petSimulatorGameId);
+})
 

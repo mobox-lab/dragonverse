@@ -65,6 +65,7 @@ import { GuideDataHelper, GuideModuleC, GuideModuleS } from "module_guide";
 import { InteractiveModuleS } from "./module/InteractiveModule/InteractiveModuleS";
 import { InteractiveModuleC } from "./module/InteractiveModule/InteractiveModuleC";
 import { AntiCheatSystem } from "./tool/AntiCheatSystem";
+import * as mwaction from "mwaction";
 
 declare global {
     var UE: any;
@@ -109,7 +110,7 @@ export default class GameLauncher extends mw.Script {
     async onStart() {
 
         Globaldata.isOpenGm = this.gmSwitch;
-
+        mwaction;
         // 开启作弊检测
         //this.checkCheat();
 
@@ -140,6 +141,7 @@ export default class GameLauncher extends mw.Script {
     onUpdate(dt: number) {
         update()
         mw.TweenUtil.TWEEN.update()
+        actions.AcitonMgr.update(dt * 1000);
     }
 
     protected onRegisterModule(): void {

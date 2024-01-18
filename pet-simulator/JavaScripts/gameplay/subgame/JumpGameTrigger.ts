@@ -3,7 +3,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-16 14:42:38
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-16 17:07:53
+ * @LastEditTime : 2024-01-17 17:32:08
  * @FilePath     : \DragonVerse\pet-simulator\JavaScripts\gameplay\subgame\JumpGameTrigger.ts
  * @Description  : 跳游戏触发器
  */
@@ -12,11 +12,16 @@ import { GlobalData } from "../../const/GlobalData";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
 
 const progressTag = "JumpProgress";
+
+
 @Component
 export default class JumpGameTrigger extends Script {
     private _trigger: Trigger;
     private _progressBar: ProgressBar;
     private _cnvProgressBar: Canvas;
+
+    @mw.Property({ displayName: "要跳转的游戏", selectOptions: { "DragonVerse": GlobalData.Global.dragonverseGameId, "BattleWorld": GlobalData.Global.battleworldGameId } })
+    private _jumpGameId: string = GlobalData.Global.dragonverseGameId;
 
     protected onStart(): void {
         if (SystemUtil.isClient()) {
@@ -30,7 +35,7 @@ export default class JumpGameTrigger extends Script {
     onProgressDone() {
         //跳游戏
         console.log(this, "跳游戏");
-        RouteService.enterNewGame(GlobalData.Global.dragonverseGameId);
+        RouteService.enterNewGame(this._jumpGameId);
     }
 
 
