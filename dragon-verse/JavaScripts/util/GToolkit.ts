@@ -1,6 +1,7 @@
 import tryGenerateTsWidgetTypeByUEObject = mw.tryGenerateTsWidgetTypeByUEObject;
 import Character = mw.Character;
 import GameObject = mw.GameObject;
+import UIScript = mw.UIScript;
 import Log4Ts from "../depend/log4ts/Log4Ts";
 
 /**
@@ -13,14 +14,14 @@ import Log4Ts from "../depend/log4ts/Log4Ts";
  * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
  * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
  * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author G.S.C. GTk Standards committee. GTk 标准委员会.
  * @author LviatYi
  * @author minjia.zhang
  * @author zewei.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.0.9b
+ * @version 1.1.0b
  * @beta
- *
  */
 class GToolkit {
     //#region Constant
@@ -1329,6 +1330,25 @@ class GToolkit {
             position.x <= absPos.x + absSize.x &&
             position.y >= absPos.y &&
             position.y <= absPos.y + absSize.y;
+    }
+
+    /**
+     * 获取指定 uiScript 列表下的 最上层 ui.
+     * @desc 仅当
+     * @param uis
+     */
+    public getTopUi(uis: UIScript[]): UIScript | null {
+        if (this.isNullOrEmpty(uis)) return null;
+        let topUi: UIScript = uis[0];
+        if (!(topUi?.uiObject ?? null)) return null;
+        for (let i = 1; i < uis.length; ++i) {
+            const ui = uis[i];
+            if (!(ui?.uiObject ?? null)) continue;
+            if (ui.layer > topUi.layer ||
+                (ui.uiObject["slot"]?.zOrder ?? -1) > (topUi.uiObject["slot"]?.zOrder ?? -1)) topUi = ui;
+        }
+
+        return topUi ?? null;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
