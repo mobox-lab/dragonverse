@@ -5,11 +5,11 @@ export class Globaldata {
     /**
      * DragonVerse 游戏id
      */
-    public static dragonverseGameId = "";
+    public static dragonverseGameId = "P_bf83f6a1f880460bc61d3e1e41e810487db4ce18";
     /**
      * 宠物模拟器游戏id
      */
-    public static petSimulatorGameId = "";
+    public static petSimulatorGameId = "P_01da004d7f22f9eedeabe5e2a837a9e2fb8ca2b9";
     /**
      * 跳游戏进度时长
      */
