@@ -17,6 +17,7 @@ import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
 import GToolkit from '../../utils/GToolkit';
 import Log4Ts from '../../depend/log4ts/Log4Ts';
+import { EnergyModuleC } from '../Energy/EnergyModule';
 
 /**宠物状态 */
 export enum PetState {
@@ -632,14 +633,25 @@ export default class PetBehaviour {
             this.changeToIdle();
             return true;
         } else {
-            if (this.targetRes.injured(this.owner.player.playerId,
-                this.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(this.key).damageAdd / 100), this.key)) {
-                this._targetRes = null;
-                this.targetPos = null;
-                this.resPos = null;
-                if (this.attackPrivot) this.attackPrivot.localTransform.rotation = mw.Rotation.zero;
-                this.changeToIdle();
-                return true;
+            let energyModuleC = ModuleService.getModule(EnergyModuleC);
+            if (energyModuleC.isAfford()) {
+                let res = this.targetRes.injured(this.owner.player.playerId,
+                    this.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(this.key).damageAdd / 100), this.key);
+                if (res) {
+                    this._targetRes = null;
+                    this.targetPos = null;
+                    this.resPos = null;
+                    if (this.attackPrivot) this.attackPrivot.localTransform.rotation = mw.Rotation.zero;
+                    this.changeToIdle();
+                    energyModuleC.consume(0, true);
+                    Log4Ts.error(PetBehaviour, "挖完了！");
+                    return true;
+                } else {
+                    energyModuleC.consume();
+                    Log4Ts.error(PetBehaviour, "扣1体力");
+                }
+            } else {
+                Log4Ts.error(PetBehaviour, "体力不足！");
             }
         }
         return false;
