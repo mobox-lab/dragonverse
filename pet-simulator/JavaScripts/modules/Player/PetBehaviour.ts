@@ -511,7 +511,7 @@ export default class PetBehaviour {
     private endRot: mw.Rotation = mw.Rotation.zero;
     private isMove: boolean = false;
 
-    private isStop: boolean = false;
+    public isStop: boolean = false;
 
     private moveto(endPos: mw.Vector, endRot: mw.Rotation): void {
         this.stopMove();
