@@ -29,11 +29,16 @@ export enum PetState {
     Attack = 2,
 }
 
+enum PetCharacterType {
+    GameObject = 0,
+    Character = 1
+}
+
 export default class PetBehaviour {
 
     public petName: string = "";
     private petTitle: string = "";
-    private pet: mw.Character = null;
+    private pet: mw.Character | GameObject = null;
     /**头顶UI */
     private headUI: HUDInfo = null;
     private _state: PetState = PetState.Idle;
@@ -47,7 +52,7 @@ export default class PetBehaviour {
     /**宠物信息 */
     private petInfo: IPetARRElement = null;
     public isReady: boolean = false;
-    // private hight: number = GlobalData.pet.petHeight;
+    private height: number = GlobalData.pet.petHeight;
     /**当前特效 */
     private currentEffectIds: mw.Effect[] = [];
     /**主人行为脚本 */
@@ -100,59 +105,67 @@ export default class PetBehaviour {
         this.clipDis = owner == currentChar ? GlobalData.Global.selfPetCutDistance : GlobalData.Global.otherPetCutDistance;
         this.speed = this.petInfo.PetSpeed * (1 + EnchantBuff.getPetBuff(this.key).moveSpeedAdd / 100);
         this.chaseSpeed = this.petInfo.PetChase;
-        let ModelGuid = this.petInfo.ModelGuid;
-        let type = GameObjPoolSourceType.Prefab;
-
-        SpawnManager.modifyPoolAsyncSpawn("Character").then(cha => {
-            if (!this.owner || !this.owner.worldTransform) this.destory();
-            this.pet = cha as Character;
-            this.pet.collisionWithOtherCharacterEnabled = false;
-            GToolkit.safeSetDescription(this.pet, "94B734CF46BA50791443758138B2EA21")
-            this.pet.displayName = "";
-            SoundManager.instance.play3DSound(GlobalData.Music.petEquip, this.pet);
-            this.petName = name;
-            this.setQuality(this.petInfo.QualityType);
-            this._state = PetState.Idle;
-            this.lastMoveState = true;
-            this.onInfoChange();
-            this.isReady = true;
-            utils.setClipDistance(this.pet, this.clipDis);
-            // utils.addOutlineExcept(this.pet, true);
-            if (this.owner.worldTransform && owner.worldTransform.position)
-                try {
-                    setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
-                } catch (error) {
+        if (this.petInfo.CharacterType === PetCharacterType.Character) {
+            SpawnManager.modifyPoolAsyncSpawn("Character").then(cha => {
+                if (!this.owner || !this.owner.worldTransform) this.destory();
+                this.pet = cha as Character;
+                if (!(this.pet instanceof Character)) return;
+                this.pet.collisionWithOtherCharacterEnabled = false;
+                GToolkit.safeSetDescription(this.pet, "94B734CF46BA50791443758138B2EA21")
+                this.pet.displayName = "";
+                SoundManager.instance.play3DSound(GlobalData.Music.petEquip, this.pet);
+                this.petName = name;
+                this.setQuality(this.petInfo.QualityType);
+                this._state = PetState.Idle;
+                this.lastMoveState = true;
+                this.onInfoChange();
+                this.isReady = true;
+                utils.setClipDistance(this.pet, this.clipDis);
+                // utils.addOutlineExcept(this.pet, true);
+                if (this.owner.worldTransform && owner.worldTransform.position)
+                    try {
+                        setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
+                    } catch (error) {
+                    }
+                if (this.petInfo.PetEffect) {
+                    this.petInfo.PetEffect.forEach((id: number) => {
+                        this.currentEffectIds.push(EffectManager.instance.playEffOnObjScene(id, this.pet, this.clipDis));
+                    });
                 }
-            if (this.petInfo.PetEffect) {
-                this.petInfo.PetEffect.forEach((id: number) => {
-                    this.currentEffectIds.push(EffectManager.instance.playEffOnObjScene(id, this.pet, this.clipDis));
-                });
-            }
-        })
-        // SpawnManager.modifyPoolAsyncSpawn(ModelGuid, type).then(obj => {
-        //     if (!this.owner || !this.owner.worldTransform) this.destory();
-        //     this.pet = obj;
-        //     this.pet.setCollision(mw.PropertyStatus.Off);
-        //     SoundManager.instance.play3DSound(GlobalData.Music.petEquip, this.pet);
-        //     this.petName = name;
-        //     this.setQuality(this.petInfo.QualityType);
-        //     this._state = PetState.Idle;
-        //     this.lastMoveState = true;
-        //     this.onInfoChange();
-        //     this.isReady = true;
-        //     utils.setClipDistance(this.pet, this.clipDis);
-        //     utils.addOutlineExcept(this.pet, true);
-        //     if (this.owner.worldTransform && owner.worldTransform.position)
-        //         try {
-        //             setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
-        //         } catch (error) {
-        //         }
-        //     if (this.petInfo.PetEffect) {
-        //         this.petInfo.PetEffect.forEach((id: number) => {
-        //             this.currentEffectIds.push(EffectManager.instance.playEffOnObjScene(id, this.pet, this.clipDis));
-        //         });
-        //     }
-        // })
+            })
+        } else if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+            let ModelGuid = this.petInfo.ModelGuid;
+            let type = GameObjPoolSourceType.Prefab;
+            SpawnManager.modifyPoolAsyncSpawn(ModelGuid, type).then(obj => {
+                if (!this.owner || !this.owner.worldTransform) this.destory();
+                this.pet = obj;
+                this.pet.setCollision(mw.PropertyStatus.Off);
+                SoundManager.instance.play3DSound(GlobalData.Music.petEquip, this.pet);
+                this.petName = name;
+                this.setQuality(this.petInfo.QualityType);
+                this._state = PetState.Idle;
+                this.lastMoveState = true;
+                this.onInfoChange();
+                this.isReady = true;
+                utils.setClipDistance(this.pet, this.clipDis);
+                utils.addOutlineExcept(this.pet, true);
+                if (this.owner.worldTransform && owner.worldTransform.position)
+                    try {
+                        setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
+                    } catch (error) {
+                    }
+                if (this.petInfo.PetEffect) {
+                    this.petInfo.PetEffect.forEach((id: number) => {
+                        this.currentEffectIds.push(EffectManager.instance.playEffOnObjScene(id, this.pet, this.clipDis));
+                    });
+                }
+            })
+        }
+
+
+
+
+
     }
     private setQuality(type: number) {
         const quality = GlobalEnum.PetQuality
@@ -222,7 +235,9 @@ export default class PetBehaviour {
         pos = this.keepOnGround(pos, ownerTransform.position);
         pos.z += 20;
         let rot = ownerTransform.rotation;
-        // rot.z += 180;
+        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+            rot.z += 180;
+        }
         petTransform.position = pos;
         petTransform.rotation = rot;
         setTransform(this.pet, petTransform);
@@ -233,7 +248,6 @@ export default class PetBehaviour {
     private _ani: Animation;
     private _petArrived: boolean = false;
     public update(dt: number, transform: Transform): void {
-        // Log4Ts.log(PetBehaviour, this.pet.description.advance.bodyFeatures.body.height);
         this.ownerTransform = transform.clone();
         if (!this.owner || !this.pet) return;
         if (this.accelerateNum > 0) {
@@ -257,7 +271,7 @@ export default class PetBehaviour {
         this.movetoUpdate(dt);
 
         //播走路动画逻辑
-        if (!this._petArrived && !this._isPlayingAni) {
+        if (!this._petArrived && !this._isPlayingAni && this.pet instanceof Character) {
             this._ani = this.pet.loadAnimation("272622")
             this._ani.loop = 0;
             this._ani.play();
@@ -331,7 +345,11 @@ export default class PetBehaviour {
         let endPos = ownerTransform.transformPosition(this.disPos);
         petTransform.lookAt(endPos);
         let endRot = petTransform.rotation;
-        endRot.set(0, 0, endRot.z);
+        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+            endRot.set(0, 0, endRot.z + 180);
+        } else if (this.petInfo.CharacterType === PetCharacterType.Character) {
+            endRot.set(0, 0, endRot.z);
+        }
 
         if (!this.movetoOwnerUpdate(dt, petTransform, new mw.Transform(endPos, endRot, petTransform.scale))) return;
 
@@ -340,7 +358,9 @@ export default class PetBehaviour {
         if (this.lastMoveState && !currentMoveState) {  // 上次移动，这次不移动时
             this.lastMoveState = false;
             endPos = this.keepOnGround(endPos, ownerTransform.position);
-            // endPos.z += this.pet.description.advance.bodyFeatures.;
+            if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+                endPos.z += this.height;
+            }
             this.moveto(endPos, endRot);
             return;
         }
@@ -361,9 +381,15 @@ export default class PetBehaviour {
         if (dis <= speed) {
             this.isMove = false;
             endRot = this.ownerTransform.rotation;
-            endRot.set(0, 0, endRot.z);
             endPos = this.keepOnGround(endPos);
-            // endPos.z += this.hight;
+
+            if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+                endPos.z += this.height;
+                endRot.set(0, 0, endRot.z + 180);
+            } else if (this.petInfo.CharacterType === PetCharacterType.Character) {
+                endRot.set(0, 0, endRot.z);
+            }
+
             if (this.owner.isMoving) {
                 this.chanegToPos(dt, startTransform, endPos, endRot);
             } else {
@@ -386,8 +412,11 @@ export default class PetBehaviour {
             this.attackTween = null;
         }
         endPos = this.keepOnGround(endPos);
-        // endPos.z += this.hight;
-        // this.jump(dt, endPos, endRot);
+        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+            endPos.z += this.height;
+            this.jump(dt, endPos, endRot);
+        }
+
         if (GlobalData.pet.isSmoothLerp) {
             const t = GlobalData.pet.smoothValue;
             //耗时2-3ms
@@ -468,11 +497,19 @@ export default class PetBehaviour {
     //移动到资源点
     private moveToRes(dt: number): void {
         if (!this.targetPos) return;
+        if (!ModuleService.getModule(EnergyModuleC).isAfford()) {
+            Log4Ts.error(PetBehaviour, "体力不足！");
+            this.changeToIdle();
+            this.attackRotY = 0;
+            return;
+        }
         let petTransform = getTransform(this.pet);
         petTransform.lookAt(this.resPos);
         let endPos = petTransform.position;
         let endRot = petTransform.rotation;
-        // endRot.z += 180;
+        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+            endRot.z += 180;
+        }
         endRot.x = 0;
         endRot.y = 0;
         //根据宠物移动速度向资源点移动
@@ -482,7 +519,12 @@ export default class PetBehaviour {
         if (dis < moveDis) {
             this.arrow?.update(this.targetPos, this.resPos);
             this._state = PetState.Attack;
-            this.moveto(new mw.Vector(this.targetPos.x, this.targetPos.y, this.targetPos.z), endRot);
+            if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+                this.moveto(new mw.Vector(this.targetPos.x, this.targetPos.y, this.targetPos.z + this.height), endRot);
+            } else if (this.petInfo.CharacterType === PetCharacterType.Character) {
+                this.moveto(new mw.Vector(this.targetPos.x, this.targetPos.y, this.targetPos.z), endRot);
+            }
+
             this.stopMove();
             return;
         }
@@ -495,7 +537,9 @@ export default class PetBehaviour {
 
         endPos = this.keepOnGround(endPos);
         this.arrow?.update(this.position, this.resPos);
-        // this.jump(dt, endPos, endRot);
+        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+            this.jump(dt, endPos, endRot);
+        }
         if (GlobalData.pet.isSmoothLerp) {
             const t = GlobalData.pet.smoothValue;
             mw.Vector.lerp(petTransform.position, endPos, t, endPos);
@@ -532,7 +576,9 @@ export default class PetBehaviour {
             petTransform.rotation = this.endRot;
             if (this._state == PetState.Idle) {
                 petTransform.rotation = this.owner.worldTransform.rotation;
-                // petTransform.rotation.z += 180;
+                if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+                    petTransform.rotation.z += 180;
+                }
             }
             setTransform(this.pet, petTransform);
             return;
@@ -652,6 +698,7 @@ export default class PetBehaviour {
                 }
             } else {
                 Log4Ts.error(PetBehaviour, "体力不足！");
+                return true;
             }
         }
         return false;
@@ -660,10 +707,10 @@ export default class PetBehaviour {
     /**宠物坐标保持在地面 大消耗点 100次调用7ms */
     private keepOnGround(endPos: mw.Vector, currentPos?: mw.Vector): mw.Vector {
         if (!currentPos) currentPos = this.ownerTransform.position;
-        // if (utils.frameCount < GlobalData.pet.gravityFrame && (this.owner != this.currentChar)) {
-        //     endPos.z = currentPos.z - this.owner.collisionExtent.z;
-        //     return endPos;
-        // }
+        if (this.petInfo.CharacterType === PetCharacterType.GameObject && utils.frameCount < GlobalData.pet.gravityFrame && (this.owner != this.currentChar)) {
+            endPos.z = currentPos.z - this.owner.collisionExtent.z;
+            return endPos;
+        }
         let start = new mw.Vector(endPos.x, endPos.y, endPos.z + 1000);
         let end = new mw.Vector(endPos.x, endPos.y, endPos.z - 1000);
         let hitResults = QueryUtil.lineTrace(start, end, true, false);
@@ -678,8 +725,9 @@ export default class PetBehaviour {
                 break;
             }
         }
-        // if (!isSuccess) endPos.z = currentPos.z - this.owner.collisionExtent.z;
-        return endPos.add(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * 100));
+        if (!isSuccess && this.petInfo.CharacterType === PetCharacterType.GameObject) endPos.z = currentPos.z - this.owner.collisionExtent.z;
+        if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) endPos = endPos.add(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * 100));
+        return endPos;
     }
 
     private async onInfoChange(): Promise<void> {
