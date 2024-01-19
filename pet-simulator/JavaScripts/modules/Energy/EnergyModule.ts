@@ -128,6 +128,10 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData
         return real;
     }
 
+    /**
+     * 当前体力值.
+     * @return {number}
+     */
     public currEnergy(): number {
         return this.data.energy;
     }
@@ -190,7 +194,6 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
-
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -213,7 +216,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
                 timeout = GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS - duration;
             } else {
                 if (d.energy < GlobalData.Energy.ENERGY_MAX) {
-                    d.energy += Math.min(
+                    Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.energy}`);
+                    d.energy = Math.min(
                         GlobalData.Energy.ENERGY_MAX,
                         d.energy + (this.petBagModule().getPlayerEnergyRecoveryCoefficient(playerId))
                         * Math.max(

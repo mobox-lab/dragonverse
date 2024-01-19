@@ -41,6 +41,7 @@ import { RankModuleC } from "./modules/Rank/RankModuleC";
 import { DollMachineModuleC } from "./modules/DollMachine/DollMachineModuleC";
 import { DollMachineModuleS } from "./modules/DollMachine/DollMachineModuleS";
 import * as mwaction from "mwaction";
+import EnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./modules/Energy/EnergyModule";
 
 // declare global {
 //     var UE: any;
@@ -64,22 +65,30 @@ export default class GameStart extends mw.Script {
     @mw.Property()
     private isOnline: boolean = false;
 
-    @mw.Property({ displayName: "是否开启主页GM开关按钮" })
+    @mw.Property({displayName: "是否开启主页GM开关按钮"})
     private isOpenGm = false;
-    @mw.Property({ displayName: "是否免费送滑板" })
+    @mw.Property({displayName: "是否免费送滑板"})
     private isFreeSkateboard = false;
-    @mw.Property({ displayName: "是否使用平台形象" })
+    @mw.Property({displayName: "是否使用平台形象"})
     private isUseAvatar = true;
-    @mw.Property({ displayName: "是否使海外发布" })
+    @mw.Property({displayName: "是否使海外发布"})
     private isOverSea = true;
-    @mw.Property({ displayName: "是否同去同回" })
+    @mw.Property({displayName: "是否同去同回"})
     private isSameGoBack = false;
-    @mw.Property({ displayName: "是否开启收集图鉴机器" })
+    @mw.Property({displayName: "是否开启收集图鉴机器"})
     private isOpenCollectMachine = true;
-    @mw.Property({ displayName: "语言类型", group: "Odin设置", selectOptions: { "系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3" } })
+    @mw.Property({
+        displayName: "语言类型",
+        group: "Odin设置",
+        selectOptions: {"系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3"},
+    })
     private selectedLanguageIndex: string = "-1";
 
-    @mw.Property({ displayName: "Log级别", group: "Odin设置", selectOptions: { "None": "0", "Error": "1", "Warn": "2", "Log": "3" } })
+    @mw.Property({
+        displayName: "Log级别",
+        group: "Odin设置",
+        selectOptions: {"None": "0", "Error": "1", "Warn": "2", "Log": "3"},
+    })
     private logLevel: string = "0";
 
     /**下载资源 */
@@ -152,12 +161,13 @@ export default class GameStart extends mw.Script {
                 if (res) {
                     GM.start(GMBasePanelUI);
                 }
-            })
+            });
             GameObjectFactory.instance;
         } else {
             Resource.instance;
         }
     }
+
     //获取系统语言索引
     private getSystemLanguageIndex(): number {
         let language = mw.LocaleUtil.getDefaultLocale().toString().toLowerCase();
@@ -175,6 +185,7 @@ export default class GameStart extends mw.Script {
         }
         return 0;
     }
+
     onUpdate(dt: number): void {
         mw.TweenUtil.TWEEN.update();
         actions.AcitonMgr.update(dt * 1000);
@@ -182,7 +193,7 @@ export default class GameStart extends mw.Script {
 
     protected onRegisterModule(): void {
         ModuleService.registerModule(HudModuleS, HudModuleC, null);
-        ModuleService.registerModule(AreaModuleS, AreaModuleC, AreaModuleData)
+        ModuleService.registerModule(AreaModuleS, AreaModuleC, AreaModuleData);
         ModuleService.registerModule(InputModuleS, InputModuleC, null);
         ModuleService.registerModule(ResourceModuleS, ResourceModuleC, null);
         ModuleService.registerModule(CollectModuleS, CollectModuleC, CollectModuleData);
@@ -195,6 +206,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(DollMachineModuleS, DollMachineModuleC, null);
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerModuleData);
         ModuleService.registerModule(PetBagModuleS, PetBagModuleC, PetBagModuleData);
+        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, EnergyModuleData);
     }
 
     /**
