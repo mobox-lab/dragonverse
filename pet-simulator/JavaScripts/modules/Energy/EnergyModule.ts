@@ -19,6 +19,17 @@ export default class EnergyModuleData extends mwext.Subdata {
         return this.energy > 0;
     }
 
+    public consume(count: number = 1): number {
+        const curr = this.energy;
+        if (curr < count) {
+            this.energy = 0;
+            return curr;
+        } else {
+            this.energy -= count;
+            return count;
+        }
+    }
+
     protected onDataInit(): void {
         super.onDataInit();
         this.energy = GlobalData.Energy.ENERGY_MAX;
@@ -91,33 +102,25 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData
      *  - 1 default.
      * @return {boolean}
      */
-    public isAfford(cost?: number) {
+    public isAfford(cost?: number): boolean {
         return this.data.isAfford(cost);
     }
 
     /**
      * 消耗.
      * @param {number} count
-     * @return {boolean} 是否成功消耗.
-     *   - true 完全按照 count 进行扣除.
-     *   - false 不足以消耗 count, 扣除至 0.
+     * @param {boolean} syncInstant  是否 立即同步.
+     * @return {number} 实际扣除数量.
      */
-    public consume(count: number = 1): boolean {
-        const curr = this.data.energy;
-        let res = true;
-        if (curr < count) {
-            res = false;
-            this.data.energy = 0;
-        } else {
-            this.data.energy -= count;
+    public consume(count: number = 1, syncInstant: boolean = false): number {
+        const real = this.data.consume(count);
+        this._ctr += real;
+
+        if (syncInstant || this._ctr > GlobalData.Energy.ENERGY_PATCH_RPC_COUNT) {
+            this.server.net_consume(real);
+            this._ctr = 0;
         }
-        ++this._ctr;
-
-        if (this._ctr > GlobalData.Energy.ENERGY_PATCH_RPC_COUNT) {
-
-        }
-
-        return res;
+        return real;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -218,19 +221,20 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Method
-    public isAfford(playerId: number, cost: number): boolean {
-        return (this.getPlayerData(playerId)?.energy ?? 0) >= cost;
-    }
 
     public consume(playerId: number, count: number) {
         const d = this.getPlayerData(playerId);
         if (!d) return;
-        d.energy -= count;
-        d.save(true);
+        d.consume(count);
+        d.save(false);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
+    public net_consume(count: number) {
+        this.consume(this.currentPlayerId, count);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
