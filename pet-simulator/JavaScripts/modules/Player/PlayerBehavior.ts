@@ -429,6 +429,9 @@ export default class PlayerBehavior extends mw.Script {
             pet.init(petInfo.key, petInfo.attack, petInfo.name, this.owner, this.currentChar, this);
             this.myFollowPets.push(pet);
         });
+
+        this.myFollowPets.forEach(pet => pet.isStop = false);
+
     }
 
     private idlePets: PetBehaviour[] = [];

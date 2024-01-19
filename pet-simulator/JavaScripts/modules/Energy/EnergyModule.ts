@@ -4,6 +4,7 @@ import setTimeout = mw.setTimeout;
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import ModuleService = mwext.ModuleService;
 import GToolkit, { Tf } from "../../utils/GToolkit";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export default class EnergyModuleData extends mwext.Subdata {
     //@Decorator.persistence()
@@ -33,7 +34,8 @@ export default class EnergyModuleData extends mwext.Subdata {
     protected onDataInit(): void {
         super.onDataInit();
         this.energy = GlobalData.Energy.ENERGY_MAX;
-        this.lastRecoveryTime = Date.now();
+        const now = Date.now();
+        this.lastRecoveryTime = now;
     }
 }
 
@@ -53,6 +55,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData
 //#region Member
     private _eventListeners: EventListener[] = [];
     private _ctr: number = 0;
+    private _ctrAliveTime: number = 0;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -114,18 +117,28 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData
      */
     public consume(count: number = 1, syncInstant: boolean = false): number {
         const real = this.data.consume(count);
+        if (this._ctr === 0) this._ctrAliveTime = Date.now();
         this._ctr += real;
+        Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${this.data.energy}`);
 
         if (syncInstant || this._ctr > GlobalData.Energy.ENERGY_PATCH_RPC_COUNT) {
-            this.server.net_consume(real);
+            this.server.net_consume(real, this._ctrAliveTime);
             this._ctr = 0;
         }
         return real;
     }
 
+    public currEnergy(): number {
+        return this.data.energy;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
+    public net_recovery(currVal: number) {
+        this.data.energy = currVal - this._ctr;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -175,6 +188,11 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
         super.onExecute(type, ...params);
     }
 
+    protected onPlayerJoined(player: Player): void {
+        super.onPlayerJoined(player);
+
+    }
+
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
         const d = this.getPlayerData(player);
@@ -186,30 +204,34 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
                     playerId,
                     setTimeout(recovery, GlobalData.Energy.ENERGY_INVALID_RE_ALIVE_DURATION),
                 );
-            } else {
-                const now = Date.now();
-                d.energy += (this.petBagModule().getPlayerEnergyRecoveryCoefficient(playerId))
-                    * Math.max(
-                        ((now - d.lastRecoveryTime) /
-                            GToolkit.timeConvert(
-                                GlobalData.Energy.ENERGY_RECOVERY_INTERVAL,
-                                Tf.M,
-                                Tf.Ms)) | 0,
-                        0);
-                d.lastRecoveryTime = now;
-                d.save(true);
-                this._intervalHolder.set(
-                    playerId,
-                    setTimeout(recovery, GlobalData.Energy.ENERGY_RECOVERY_INTERVAL * 60 * 1000),
-                );
+                return;
             }
+            const now = Date.now();
+            const duration = now - d.lastRecoveryTime;
+            let timeout: number;
+            if (duration < GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS) {
+                timeout = GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS - duration;
+            } else {
+                if (d.energy < GlobalData.Energy.ENERGY_MAX) {
+                    d.energy += Math.min(
+                        GlobalData.Energy.ENERGY_MAX,
+                        d.energy + (this.petBagModule().getPlayerEnergyRecoveryCoefficient(playerId))
+                        * Math.max(
+                            ((now - d.lastRecoveryTime) /
+                                GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS) | 0,
+                            0));
+                }
+                d.lastRecoveryTime = now;
+                timeout = GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS;
+                this.getClient(playerId).net_recovery(d.energy);
+                d.save(false);
+            }
+            this._intervalHolder.set(
+                playerId,
+                setTimeout(recovery, timeout),
+            );
         };
         recovery();
-    }
-
-    protected onPlayerJoined(player: Player): void {
-        super.onPlayerJoined(player);
-
     }
 
     protected onPlayerLeft(player: Player): void {
@@ -222,18 +244,20 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
 
 //#region Method
 
-    public consume(playerId: number, count: number) {
+    public consume(playerId: number, count: number, firstTime: number) {
         const d = this.getPlayerData(playerId);
         if (!d) return;
+        if (d.energy >= GlobalData.Energy.ENERGY_MAX) d.lastRecoveryTime = firstTime;
         d.consume(count);
         d.save(false);
+        Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${d.energy}`);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
-    public net_consume(count: number) {
-        this.consume(this.currentPlayerId, count);
+    public net_consume(count: number, firstTime: number) {
+        this.consume(this.currentPlayerId, count, firstTime);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
