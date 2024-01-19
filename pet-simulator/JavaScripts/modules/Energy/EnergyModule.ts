@@ -31,8 +31,8 @@ export default class EnergyModuleData extends mwext.Subdata {
         }
     }
 
-    protected onDataInit(): void {
-        super.onDataInit();
+    protected initDefaultData(): void {
+        super.initDefaultData();
         this.energy = GlobalData.Energy.ENERGY_MAX;
         const now = Date.now();
         this.lastRecoveryTime = now;
@@ -122,7 +122,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData
         Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${this.data.energy}`);
 
         if (syncInstant || this._ctr > GlobalData.Energy.ENERGY_PATCH_RPC_COUNT) {
-            this.server.net_consume(real, this._ctrAliveTime);
+            this.server.net_consume(this._ctr, this._ctrAliveTime);
             this._ctr = 0;
         }
         return real;
