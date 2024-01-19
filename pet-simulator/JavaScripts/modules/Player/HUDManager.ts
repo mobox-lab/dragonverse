@@ -102,8 +102,13 @@ export class HUDInfo {
         this.uiObj.worldTransform.position = mw.Vector.zero;
         this.uiObj.drawSize = GlobalData.worldUI.petHeadUISize;
         this.uiObj.widgetSpace = mw.WidgetSpaceMode.OverheadUI;
+        //是玩家
         if (PlayerManagerExtesion.isCharacter(obj)) {
             this.uiObj.localTransform.position = (new mw.Vector(0, 0, 85));
+        } else if (obj instanceof Character) {
+            //是npc
+            this.uiObj.parent = obj;
+            this.uiObj.localTransform.position = (new mw.Vector(0, 0, 150));
         } else {
             this.uiObj.parent = obj;
             let offset = GlobalData.worldUI.petHeadUIOffset;

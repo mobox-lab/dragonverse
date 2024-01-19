@@ -107,7 +107,7 @@ export default class PetBehaviour {
             this.pet = cha as Character;
             this.pet.collisionWithOtherCharacterEnabled = false;
             GToolkit.safeSetDescription(this.pet, "94B734CF46BA50791443758138B2EA21")
-
+            this.pet.displayName = "";
             SoundManager.instance.play3DSound(GlobalData.Music.petEquip, this.pet);
             this.petName = name;
             this.setQuality(this.petInfo.QualityType);
@@ -116,7 +116,7 @@ export default class PetBehaviour {
             this.onInfoChange();
             this.isReady = true;
             utils.setClipDistance(this.pet, this.clipDis);
-            utils.addOutlineExcept(this.pet, true);
+            // utils.addOutlineExcept(this.pet, true);
             if (this.owner.worldTransform && owner.worldTransform.position)
                 try {
                     setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
@@ -230,7 +230,7 @@ export default class PetBehaviour {
     private ownerTransform: Transform = null;
     private _isPlayingAni: boolean = false;
     private _ani: Animation;
-    private _petArrived: boolean = true;
+    private _petArrived: boolean = false;
     public update(dt: number, transform: Transform): void {
         // Log4Ts.log(PetBehaviour, this.pet.description.advance.bodyFeatures.body.height);
         this.ownerTransform = transform.clone();
@@ -255,7 +255,7 @@ export default class PetBehaviour {
         }
         this.movetoUpdate(dt);
 
-        //isMove到了终点就是true，没到就是false
+        //播走路动画逻辑
         if (!this._petArrived && !this._isPlayingAni) {
             this._ani = this.pet.loadAnimation("272622")
             this._ani.loop = 0;
