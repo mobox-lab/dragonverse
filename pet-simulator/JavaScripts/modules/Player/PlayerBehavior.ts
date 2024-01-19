@@ -6,7 +6,7 @@ import { VectorUtil } from "../../utils/VectorUtil";
 import { petItemDataNew } from "../PetBag/PetBagModuleData";
 import resourceScript from "../Resources/resource";
 import { Accelerate, LongPress, rateEff } from "./Accelerate";
-import petBehiver, { PetState } from "./petBehiver";
+import PetBehaviour, { PetState } from "./PetBehaviour";
 import { PlayerModuleC } from "./PlayerModuleC";
 import { Skateboard } from "./Skateboard";
 
@@ -49,12 +49,12 @@ export default class PlayerBehavior extends mw.Script {
     public skateboardState: boolean = false;
 
     /**当前自己已跟随宠物数组 只能客户端获取 */
-    private myFollowPets: petBehiver[] = [];
+    private myFollowPets: PetBehaviour[] = [];
     /**当前装备的滑板 只能客户端获取*/
     private mySkateboard: Skateboard = null;
 
     /**获取宠物行为 */
-    public get PetArr(): petBehiver[] {
+    public get PetArr(): PetBehaviour[] {
         return this.myFollowPets;
     }
 
@@ -284,8 +284,8 @@ export default class PlayerBehavior extends mw.Script {
             }
         }
         let dis = 0;
-        let nPet: petBehiver = null;
-        let pets: petBehiver[] = [];
+        let nPet: PetBehaviour = null;
+        let pets: PetBehaviour[] = [];
         /**遍历所有宠物，寻找最近的一个 */
         for (let pet of this.myFollowPets) {
             if (pet.targetRes && pet.targetRes == res) {
@@ -307,7 +307,7 @@ export default class PlayerBehavior extends mw.Script {
     }
 
     /**多个宠物回归正常状态 */
-    public onPetsBackNormal(pets: petBehiver[]): void {
+    public onPetsBackNormal(pets: PetBehaviour[]): void {
         let keys: string[] = [];
         for (let pet of pets) {
             keys.push(pet.petId);
@@ -316,7 +316,7 @@ export default class PlayerBehavior extends mw.Script {
     }
 
     /**宠物回归正常状态 */
-    public onPetBackNormal(pet: petBehiver): void {
+    public onPetBackNormal(pet: PetBehaviour): void {
         this.changePetTarget(pet.petId, 0);
     }
 
@@ -395,7 +395,7 @@ export default class PlayerBehavior extends mw.Script {
             return;
         }
         let arr = stringToArray(this.pets);
-        let destorys: petBehiver[] = [];
+        let destorys: PetBehaviour[] = [];
         for (let i = 0; i < this.myFollowPets.length; i++) {
             let pet = this.myFollowPets[i];
             let id = pet.petId;
@@ -425,13 +425,13 @@ export default class PlayerBehavior extends mw.Script {
         //剩下的就是需要创建的宠物
 
         arr.forEach(petInfo => {
-            let pet = new petBehiver();
+            let pet = new PetBehaviour();
             pet.init(petInfo.key, petInfo.attack, petInfo.name, this.owner, this.currentChar, this);
             this.myFollowPets.push(pet);
         });
     }
 
-    private idlePets: petBehiver[] = [];
+    private idlePets: PetBehaviour[] = [];
 
     /**改变跟随宠物相对坐标 */
     private changeFollowDis(): void {

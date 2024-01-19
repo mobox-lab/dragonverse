@@ -2,18 +2,18 @@ import { SpawnManager, SpawnInfo, } from '../../Modified027Editor/ModifiedSpawn'
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
 import { cubicBezier } from "../../utils/MoveUtil";
-import petBehiver from "./petBehiver";
+import PetBehaviour from "./PetBehaviour";
 
 export class rateEff {
 
     /**目标宠物 */
-    protected targetPet: petBehiver = null;
+    protected targetPet: PetBehaviour = null;
     /**当前玩家 */
     protected char: mw.Character = null;
     /**是否销毁 */
     public isDestroy: boolean = false;
 
-    constructor(targetPet: petBehiver, char: mw.Character) {
+    constructor(targetPet: PetBehaviour, char: mw.Character) {
         this.targetPet = targetPet;
         this.char = char;
     }

@@ -42,10 +42,10 @@ import { DollMachineModuleC } from "./modules/DollMachine/DollMachineModuleC";
 import { DollMachineModuleS } from "./modules/DollMachine/DollMachineModuleS";
 import * as mwaction from "mwaction";
 
-declare global {
-    var UE: any;
-    var puerts: any;
-}
+// declare global {
+//     var UE: any;
+//     var puerts: any;
+// }
 // 监听玩家数据初始化失败
 if (SystemUtil.isClient()) {
 
