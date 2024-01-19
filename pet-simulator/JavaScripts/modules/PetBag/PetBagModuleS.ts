@@ -10,7 +10,7 @@ import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
 
-export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData>{
+export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
     /**玩家id、 true:装备 false: 卸下 、宠物数据*/
     public onEquipChangeAC: Action3<number, boolean, petItemDataNew[]> = new Action3();
@@ -40,7 +40,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData>{
                 arr.push(data);
             }
             this.onEquipChangeAC.call(player.playerId, isEquip, arr);
-        })
+        });
     }
 
     /**获取玩家已经装备宠物数组 */
@@ -81,18 +81,19 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData>{
 
         this.petNotice(playerID, id);
     }
+
     /**根据id添加宠物 自动计算名字*/
     public addPetById(playerID: number, id: number, type?: GlobalEnum.PetGetType) {
         let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
 
         let atk: number = 0;
         if (atkArr.length > 1)
-            atk = utils.GetRandomNum(atkArr[0], atkArr[1])
+            atk = utils.GetRandomNum(atkArr[0], atkArr[1]);
         else
             atk = atkArr[0];
 
         let nameId = utils.GetRandomNum(1, 200);
-        let name = GameConfig.Language.getElement(nameId).Value
+        let name = GameConfig.Language.getElement(nameId).Value;
         this.addPet(playerID, id, atk, name, type);
     }
 
@@ -219,7 +220,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData>{
 
             this.currentData.PetTrainChangeAC.call();
         } else {
-            oTraceError('lwj 找不到训练中的宠物' + key);
+            oTraceError("lwj 找不到训练中的宠物" + key);
         }
     }
 
@@ -227,6 +228,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData>{
     net_equipPet(keys: string) {
         this.currentData.equipPet(stringToNumberArr(keys));
     }
+
     net_unEquipPet(keys: string) {
         this.currentData.unEquipPet(stringToNumberArr(keys));
     }
@@ -248,6 +250,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData>{
 
         this.enchantNotice(this.currentPlayerId, enchantIds);
     }
+
     /**公告 */
     private enchantNotice(playerId: number, enchantIds: string[]) {
         let id: number[] = [];
@@ -258,7 +261,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData>{
                     id.push(element);
                 }
             });
-        })
+        });
         if (id.length > 0)
             this.getAllClient().net_enchantNotice(playerId, id);
     }
@@ -275,6 +278,15 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData>{
             }
         }
         this.currentData.save(true);
+    }
+
+    /**
+     * 获取指定玩家的体力系数.
+     * @param {number} playerId
+     * @return {number}
+     */
+    public getPlayerEnergyRecoveryCoefficient(playerId: number) {
+        return this.getPlayerData(playerId)?.getEnergyRecoveryCoefficient() ?? 0;
     }
 
 }

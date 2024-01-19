@@ -21,6 +21,7 @@ export class EggEndInfo {
     }
 
 }
+
 export class endInfo {
     /**地面跳跃时的当前高度 */
     public jumpHeight: number = 0;
@@ -105,7 +106,7 @@ export namespace GlobalData {
             [new mw.Vector(-100, 150, 0), new mw.Vector(-100, 0, 0), new mw.Vector(-100, -150, 0), new mw.Vector(-300, 90, 0), new mw.Vector(-300, -90, 0)],
             [new mw.Vector(-100, 150, 0), new mw.Vector(-100, 0, 0), new mw.Vector(-100, -150, 0), new mw.Vector(-300, 150, 0), new mw.Vector(-300, 0, 0), new mw.Vector(-300, -150, 0)],
             [new mw.Vector(-100, 150, 0), new mw.Vector(-100, 0, 0), new mw.Vector(-100, -150, 0), new mw.Vector(-300, 150, 0), new mw.Vector(-300, 0, 0), new mw.Vector(-300, -150, 0), new mw.Vector(-500, 0, 0)],
-        ]
+        ];
 
         /**宠物重力模拟的帧数（只有高于该帧数才会模拟重力） */
         public static gravityFrame: number = 25;
@@ -115,7 +116,7 @@ export namespace GlobalData {
 
         /**
          * 地面跳跃顺序移动数组
-         * 地面跳跃时坐标z轴和旋转y轴的变化  
+         * 地面跳跃时坐标z轴和旋转y轴的变化
          */
         public static jumpOrder: endInfo[] = [
             new endInfo(0, 0),
@@ -174,19 +175,19 @@ export namespace GlobalData {
                 [new mw.Vector(0, 0, 0), new mw.Vector(0, 0, 0), new mw.Vector(-200, 0, 0), new mw.Vector(0, 0, 0), new mw.Vector(0, 0, 0)],
                 //飞行
                 [new mw.Vector(0, 0, 90), new mw.Vector(0, 0, 90), new mw.Vector(-200, 0, 0), new mw.Vector(0, 0, 90), new mw.Vector(0, 0, 90)],
-            ]
+            ];
         /**攻击特效相对宠物旋转 */
         public static attackEffectRotation: mw.Rotation[][] =
             [
                 [new mw.Rotation(0, 0, 90), new mw.Rotation(0, 0, 180), new mw.Rotation(0, 0, 0), new mw.Rotation(0, 0, 180), new mw.Rotation(0, 0, 180)],
-                [new mw.Rotation(0, 0, 90), new mw.Rotation(0, 0, 180), new mw.Rotation(0, 0, 0), new mw.Rotation(0, 0, 180), new mw.Rotation(0, 0, 180)]
-            ]
+                [new mw.Rotation(0, 0, 90), new mw.Rotation(0, 0, 180), new mw.Rotation(0, 0, 0), new mw.Rotation(0, 0, 180), new mw.Rotation(0, 0, 180)],
+            ];
         /**攻击特效相对宠物缩放 */
         public static attackEffectScale: mw.Vector[][] =
             [
                 [new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1)],
-                [new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1)]
-            ]
+                [new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1)],
+            ];
     }
 
     /**主控UI */
@@ -263,7 +264,6 @@ export namespace GlobalData {
         /**相对人物 X 距离开始销毁 */
         public static playerDistance: number = 6000;
     }
-
 
 
     /**场景可破坏资源 */
@@ -343,7 +343,7 @@ export namespace GlobalData {
             200,//弹跳高度
             0,//回归正常高度
             50,//弹跳高度
-            0//回归正常高度
+            0,//回归正常高度
         ];
 
         /**落地tween 时间 */
@@ -352,7 +352,7 @@ export namespace GlobalData {
             200,//弹跳时间
             200,//回归正常时间
             100,//弹跳时间
-            100//回归正常时间
+            100,//回归正常时间
         ];
 
         /**落地tween 贝塞尔 */
@@ -361,7 +361,7 @@ export namespace GlobalData {
             [0.61, 1, 0.88, 1],//弹跳贝塞尔
             [0.12, 0, 0.39, 0],//回归正常贝塞尔
             [0.61, 1, 0.88, 1],//弹跳贝塞尔
-            [0.12, 0, 0.39, 0]//回归正常贝塞尔
+            [0.12, 0, 0.39, 0],//回归正常贝塞尔
         ];
 
     }
@@ -426,14 +426,14 @@ export namespace GlobalData {
             new EggEndInfo(0, -360, 1),//往左转
             new EggEndInfo(0, -360, 1),//等在原地
             new EggEndInfo(-200, -360, 1),//回归到正常位置
-        ]
+        ];
 
         /**宠物tween贝塞尔数组 */
         public static petTweenBezier: number[][] = [
             [0.25, 1, 0.5, 1],
             [0, 0, 1, 1],
             [0.68, -1.45, 0.32, 1.6],
-        ]
+        ];
 
         /**宠物单个tween耗时 */
         public static petTweenTime: number[] = [1000, 1000, 800];
@@ -453,7 +453,7 @@ export namespace GlobalData {
 
         /**单个tween耗时数组 毫秒 */
         public static tweenTime: number[] = [
-            500, 200, 300, 200, 300, 200, 300, 250, 200
+            500, 200, 300, 200, 300, 200, 300, 250, 200,
         ];
 
         /**闪屏Tween耗时 */
@@ -503,7 +503,7 @@ export namespace GlobalData {
             "#FFD800",
             "#AEFFA0",
             "#FF8F8F",
-        ]
+        ];
     }
 
     /**背包 */
@@ -514,9 +514,9 @@ export namespace GlobalData {
         public static bagMaxCapacity: number = 100;
 
         /**背包详情UI 稀有度 普通 稀有 史诗 传说 神话 底板颜色 */
-        public static rareColor: string[] = ["#94999DFF", "#59F43EFF", "#FFD864FF", "#B442EDFF", "#FF3B08FF"]
+        public static rareColor: string[] = ["#94999DFF", "#59F43EFF", "#FFD864FF", "#B442EDFF", "#FF3B08FF"];
         /**背包详情UI 特殊化 爱心、彩虹 颜色 */
-        public static specialColor: string[] = ["#F04798FF", "#BA7FFFFF"]
+        public static specialColor: string[] = ["#F04798FF", "#BA7FFFFF"];
 
         /**背景板颜色 正常、蓝色*/
         public static bgColors: string[] = ["#FFFFFFFF", "#3FB0FEFF"];
@@ -546,20 +546,21 @@ export namespace GlobalData {
         /**背包item 大小 */
         public static itemSize: mw.Vector2 = new mw.Vector2(200, 200);
     }
+
     /**收集图鉴 */
     export class Collect {
         /**图鉴等级个数数组 */
         public static levelCount: number[] = [80, 200];
         /**图鉴机器位置数组 一世界、三世界*/
-        public static CollectPos: mw.Vector[] = [new mw.Vector(3547, 903, 157), new mw.Vector(112190, -29460, 9812)]
+        public static CollectPos: mw.Vector[] = [new mw.Vector(3547, 903, 157), new mw.Vector(112190, -29460, 9812)];
         /**图鉴机器旋转数组 */
-        public static CollectRot: mw.Rotation[] = [new mw.Rotation(0, 0, -83), new mw.Rotation(0, 0, 0)]
+        public static CollectRot: mw.Rotation[] = [new mw.Rotation(0, 0, -83), new mw.Rotation(0, 0, 0)];
     }
 
     /**大宝箱 */
     export class BigBox {
         /**宝箱位置 DropPoint表id*/
-        public static boxLocationId: number[] = [750, 751, 752, 1018, 1019, 1020, 1021, 1022, 1023, 1210, 1335]
+        public static boxLocationId: number[] = [750, 751, 752, 1018, 1019, 1020, 1021, 1022, 1023, 1210, 1335];
         /**宝箱id SceneUnit表Id*/
         public static boxId: number[] = [65, 66, 67, 124, 125, 126, 127, 128, 129, 154, 171];
         /**X秒后 再次出现 */
@@ -657,6 +658,7 @@ export namespace GlobalData {
         /**倒计时颜色 */
         public static countDownColor: string = "#FFFFFFFF";
     }
+
     /**聊天 */
     export class Chat {
         /**自己的item相对CanvasX偏移 */
@@ -671,6 +673,7 @@ export namespace GlobalData {
         /**聊天背景框颜色 我|他 */
         public static chatBgColor: string[] = ["#68FF6ACC", "#FF9AC8"];
     }
+
     /**buff */
     export class Buff {
         /**金币buff */
@@ -816,6 +819,7 @@ export namespace GlobalData {
         /**Tips显示时间 (单位：s)*/
         public static tipShowTime: number = 2;
     }
+
     /**词条悬浮窗 UI */
     export class BuffUI {
         /**ui Y轴长度 0,1,2,3个词条 不用改 */
@@ -825,13 +829,13 @@ export namespace GlobalData {
         public static textHeightLimit: number = 49 * 2;
 
         /**拥有数量 图片、字 ui 距离底部距离 */
-        public static hasUIDis = [15, 29]
+        public static hasUIDis = [15, 29];
     }
 
     /**滑板 */
     export class Ripstik {
         /**没有滑板提示 */
-        public static btnBgGuid: string = "未拥有滑板，通过任务商店购买"
+        public static btnBgGuid: string = "未拥有滑板，通过任务商店购买";
         /**滑板Icon */
         public static unLockIcon: string[] = ["174802", "174807"];  //图标 ， 锁图标
         /**滑板Guid */
@@ -845,7 +849,7 @@ export namespace GlobalData {
         /**滑板相对缩放 */
         public static relativeScale: mw.Vector = new mw.Vector(2, 2, 2);
         /**滑板特效数组 */
-        public static effectIds: string[] = ['151527', '4399', '145505'];
+        public static effectIds: string[] = ["151527", "4399", "145505"];
         /**特效相对偏移 */
         public static effectrelativeLoc: mw.Vector = new mw.Vector(-80, 0, 0);
         /**装备动画 */
@@ -861,6 +865,7 @@ export namespace GlobalData {
         /**摄像机弹簧臂位置偏移 */
         public static cameraRelativeLoc: mw.Vector = new mw.Vector(0, 0, 130);
     }
+
     /**附魔 */
     export class Enchant {
         /**附魔触发器guid */
@@ -908,6 +913,7 @@ export namespace GlobalData {
         public static petAutoBuffKeys: number[] = [];
 
     }
+
     /**任务相关 */
     export class Task {
         /**任务世界UI及区域 */
@@ -963,6 +969,7 @@ export namespace GlobalData {
         /**贝塞尔曲线数据 */
         public static tweenBezier: number[] = [0.25, 1, 0.5, 1];
     }
+
     /**排行榜 */
     export class Rank {
         /**排行刷新时间 /s */
@@ -984,7 +991,7 @@ export namespace GlobalData {
         /**排行榜item的图标guid  */
         public static itemImageGuids: Map<string, string> = new Map([
             [RankType.Collect, "175740"],
-            [RankType.Diamond, "175740"]
+            [RankType.Diamond, "175740"],
         ]);
 
         /**排行榜世界uiGuid */
@@ -994,12 +1001,13 @@ export namespace GlobalData {
         /**1-3名字颜色 */
         public static nameColors: string = "#FFD800FF";
         /**排行榜ui的位置数组 一世界、三世界*/
-        public static rankUIPos: mw.Vector[] = [new mw.Vector(4315, -24, 607), new mw.Vector(112113, -30727, 10287)]
+        public static rankUIPos: mw.Vector[] = [new mw.Vector(4315, -24, 607), new mw.Vector(112113, -30727, 10287)];
         /**排行榜ui的旋转数组 */
-        public static rankUIRot: mw.Rotation[] = [new mw.Rotation(0, 0, -180), new mw.Rotation(0, 0, 0)]
+        public static rankUIRot: mw.Rotation[] = [new mw.Rotation(0, 0, -180), new mw.Rotation(0, 0, 0)];
         /**排行榜ui的缩放数组 */
-        public static rankUIScale: mw.Vector[] = [new mw.Vector(2.75, 2.75, 2.75), new mw.Vector(2.41, 2.41, 2.41)]
+        public static rankUIScale: mw.Vector[] = [new mw.Vector(2.75, 2.75, 2.75), new mw.Vector(2.41, 2.41, 2.41)];
     }
+
     /**娃娃机 */
     export class DollMachine {
         /**使用一次用时 时间/s */
@@ -1016,7 +1024,7 @@ export namespace GlobalData {
         public static ClawArrRota: mw.Rotation[][] = [
             [new mw.Rotation(-90, -40, 90), new mw.Rotation(90, 40, 90), new mw.Rotation(0, 0, 50), new mw.Rotation(180, 0, 130)],
             [new mw.Rotation(-90, 0, 90), new mw.Rotation(90, 0, 90), new mw.Rotation(0, 0, 90), new mw.Rotation(180, 0, 90)],
-        ]
+        ];
         /**爪子向下运动时间、爪子抓动作完成、返回初始点 时间 ms/s */
         public static ClawDownTime: number[] = [1000, 800, 1000];
 
@@ -1025,7 +1033,7 @@ export namespace GlobalData {
 
         /**娃娃相对爪子位置 */
         public static DollRelativeClawLoc: mw.Vector[] = [new mw.Vector(0, 24, 0), new mw.Vector(0, 35, 0),
-        new mw.Vector(1.35, 30, 0), new mw.Vector(-1.35, 30, 0), new mw.Vector(0, 35, 0), new mw.Vector(0, 24, 0), new mw.Vector(0, 24, 0)]
+            new mw.Vector(1.35, 30, 0), new mw.Vector(-1.35, 30, 0), new mw.Vector(0, 35, 0), new mw.Vector(0, 24, 0), new mw.Vector(0, 24, 0)];
 
         /**钩子左右下上晃动 */
         public static HookShaking: number[][] = [[0, 3], [0, -3], [0, -3], [0, 3], [90, 93], [90, 87], [90, 87], [90, 93]];
@@ -1059,6 +1067,7 @@ export namespace GlobalData {
         /**大宝箱刮痧Tips */
         public static bigBoxTips: number[] = [65, 66, 67, 129];
     }
+
     /**全局tips */
     export class GlobalTips {
         /**显示背景时间  ms*/
@@ -1066,11 +1075,13 @@ export namespace GlobalData {
         /**显示文字时间 */
         public static showTextTime: number = 5500;
     }
+
     /**货币交易 */
     export class CurrencyExchange {
         /**钻石与夏日币比值 */
         public static diamondToCoin: number = 100000;
     }
+
     /**通行证任务 */
     export class PassTask {
 
@@ -1088,7 +1099,7 @@ export namespace GlobalData {
         /**红点缩放时间 */
         public static renderScaleTime: number = 0.2;
         /**红点贝塞尔曲线值 */
-        public static renderScaleBezier: number[] = [0.25, 0.1, 0.25, 1]
+        public static renderScaleBezier: number[] = [0.25, 0.1, 0.25, 1];
 
 
         /**未解锁背景颜色 */
@@ -1196,5 +1207,40 @@ export namespace GlobalData {
         public static duskToNightDuration: number = 25;
         /**黑夜到白天过渡时间(秒) */
         public static nightToDayDuration: number = 50;
+    }
+
+    /**
+     * 体力.
+     */
+    export class Energy {
+        /**
+         * 体力容量.
+         * @type {number}
+         */
+        public static readonly ENERGY_MAX: number = 240;
+
+        /**
+         * 体力系数采样数量.
+         * @type {number}
+         */
+        public static readonly ENERGY_RECOVERY_SAMPLE_COUNT: number = 5;
+
+        /**
+         * 体力 恢复间隔. min
+         * @type {number}
+         */
+        public static readonly ENERGY_RECOVERY_INTERVAL: number = 30;
+
+        /**
+         * 体力 失效再唤醒间隔.
+         * @type {number}
+         */
+        public static readonly ENERGY_INVALID_RE_ALIVE_DURATION: number = 100;
+
+        /**
+         * 体力 修改合批次数.
+         * @type {number}
+         */
+        public static readonly ENERGY_PATCH_RPC_COUNT = 10;
     }
 }
