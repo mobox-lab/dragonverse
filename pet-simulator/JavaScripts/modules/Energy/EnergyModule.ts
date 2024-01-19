@@ -102,7 +102,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData
      *   - true 完全按照 count 进行扣除.
      *   - false 不足以消耗 count, 扣除至 0.
      */
-    public consume(count: number): boolean {
+    public consume(count: number = 1): boolean {
         const curr = this.data.energy;
         let res = true;
         if (curr < count) {
