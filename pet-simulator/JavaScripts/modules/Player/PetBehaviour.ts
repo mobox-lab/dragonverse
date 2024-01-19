@@ -121,7 +121,6 @@ export default class PetBehaviour {
                 this.onInfoChange();
                 this.isReady = true;
                 utils.setClipDistance(this.pet, this.clipDis);
-                // utils.addOutlineExcept(this.pet, true);
                 if (this.owner.worldTransform && owner.worldTransform.position)
                     try {
                         setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
@@ -161,11 +160,6 @@ export default class PetBehaviour {
                 }
             })
         }
-
-
-
-
-
     }
     private setQuality(type: number) {
         const quality = GlobalEnum.PetQuality
@@ -450,6 +444,12 @@ export default class PetBehaviour {
 
     /**增加目标 */
     public addTarget(resPoint: number): void {
+        if (!ModuleService.getModule(EnergyModuleC).isAfford()) {
+            Log4Ts.error(PetBehaviour, "体力不足！");
+            this.changeToIdle();
+            this.attackRotY = 0;
+            return;
+        }
         if (!this.pet) return;
         if (this.attackTween) {
             this.attackTween.stop();
@@ -497,12 +497,6 @@ export default class PetBehaviour {
     //移动到资源点
     private moveToRes(dt: number): void {
         if (!this.targetPos) return;
-        if (!ModuleService.getModule(EnergyModuleC).isAfford()) {
-            Log4Ts.error(PetBehaviour, "体力不足！");
-            this.changeToIdle();
-            this.attackRotY = 0;
-            return;
-        }
         let petTransform = getTransform(this.pet);
         petTransform.lookAt(this.resPos);
         let endPos = petTransform.position;
