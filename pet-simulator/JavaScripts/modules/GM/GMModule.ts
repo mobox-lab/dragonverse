@@ -12,6 +12,7 @@ import { BuffModuleC } from "../buff/BuffModuleC";
 import { Task_ModuleC } from "../Task/TaskModuleC";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { DebugConsole } from "debug_console";
+import { EnergyModuleC, EnergyModuleS } from "../Energy/EnergyModule";
 
 
 //主面板
@@ -22,7 +23,7 @@ export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> 
 }
 
 AddGMCommand("成就", (player: mw.Player, value: string) => {
-    let str = value.split('|');
+    let str = value.split("|");
     let achievementType = Number(str[0]);
     let count = Number(str[1]);
     ModuleService.getModule(AchievementModuleC).onExecuteAchievementAction.call(achievementType, count);
@@ -84,7 +85,7 @@ AddGMCommand("跳跃高度", (player: mw.Player, value: string) => {
     if (!id) id = 80;
     GlobalData.pet.jumpOrder.forEach(end => {
         end.jumpHeight != 0 ? end.jumpHeight = id : end.jumpHeight = 0;
-    })
+    });
 }, (player: mw.Player, value: string) => {
 
 }, "宠物");
@@ -93,7 +94,7 @@ AddGMCommand("旋转角度", (player: mw.Player, value: string) => {
     if (!id) id = 30;
     GlobalData.pet.jumpOrder.forEach(end => {
         end.yRot < 0 ? end.yRot = -id : end.yRot = id;
-    })
+    });
 }, (player: mw.Player, value: string) => {
 
 }, "宠物");
@@ -331,7 +332,6 @@ AddGMCommand("添加星星币", (player: mw.Player, value: string) => {
 }, "通行证&任务");
 
 
-
 AddGMCommand("白天到黄昏", (player: mw.Player, value: string) => {
 
     console.log("白天到黄昏");
@@ -385,7 +385,7 @@ AddGMCommand("白天到黄昏", (player: mw.Player, value: string) => {
     // 改变环境光强度
     let dayLightingIntensity = GlobalData.Environment.dayLightingIntensity;
     let duskLightingIntensity = GlobalData.Environment.duskLightingIntensity;
-    new mw.Tween({ intensity: dayLightingIntensity }).to({ intensity: duskLightingIntensity }, dayToDuskDuration)
+    new mw.Tween({intensity: dayLightingIntensity}).to({intensity: duskLightingIntensity}, dayToDuskDuration)
         .onUpdate((o) => {
             Lighting.brightness = o.intensity;
         })
@@ -394,7 +394,7 @@ AddGMCommand("白天到黄昏", (player: mw.Player, value: string) => {
     // 改变天空盒明度
     let daySkyBoxBrightness = GlobalData.Environment.daySkyBoxIntensity;
     let duskSkyBoxBrightness = GlobalData.Environment.duskSkyBoxIntensity;
-    new mw.Tween({ intensity: daySkyBoxBrightness }).to({ intensity: duskSkyBoxBrightness }, dayToDuskDuration)
+    new mw.Tween({intensity: daySkyBoxBrightness}).to({intensity: duskSkyBoxBrightness}, dayToDuskDuration)
         .onUpdate((o) => {
             Skybox.skyDomeIntensity = o.intensity;
         })
@@ -405,7 +405,6 @@ AddGMCommand("白天到黄昏", (player: mw.Player, value: string) => {
 }, "环境");
 
 
-
 AddGMCommand("黄昏到黑夜", (player: mw.Player, value: string) => {
 
     console.warn("黄昏到黑夜");
@@ -414,7 +413,7 @@ AddGMCommand("黄昏到黑夜", (player: mw.Player, value: string) => {
     // 改变环境光强度
     let duskLightingIntensity = GlobalData.Environment.duskLightingIntensity;
     let nightLightingIntensity = GlobalData.Environment.nightLightingIntensity;
-    new mw.Tween({ intensity: duskLightingIntensity }).to({ intensity: nightLightingIntensity }, duskToNightDuration)
+    new mw.Tween({intensity: duskLightingIntensity}).to({intensity: nightLightingIntensity}, duskToNightDuration)
         .onUpdate((o) => {
             Lighting.brightness = o.intensity;
             console.log(Lighting.brightness);
@@ -424,7 +423,7 @@ AddGMCommand("黄昏到黑夜", (player: mw.Player, value: string) => {
     // 改变天空盒明度
     let duskSkyBoxBrightness = GlobalData.Environment.duskSkyBoxIntensity;
     let nightSkyBoxBrightness = GlobalData.Environment.nightSkyBoxIntensity;
-    new mw.Tween({ intensity: duskSkyBoxBrightness }).to({ intensity: nightSkyBoxBrightness }, duskToNightDuration)
+    new mw.Tween({intensity: duskSkyBoxBrightness}).to({intensity: nightSkyBoxBrightness}, duskToNightDuration)
         .onUpdate((o) => {
             Skybox.skyDomeIntensity = o.intensity;
             console.log(Skybox.skyDomeIntensity);
@@ -432,7 +431,7 @@ AddGMCommand("黄昏到黑夜", (player: mw.Player, value: string) => {
         .start();
 
     // 云渐隐
-    new mw.Tween({ opcity: 1 }).to({ opcity: 0 }, duskToNightDuration)
+    new mw.Tween({opcity: 1}).to({opcity: 0}, duskToNightDuration)
         .onUpdate((o) => {
             Skybox.cloudOpacity = o.opcity;
         })
@@ -443,14 +442,14 @@ AddGMCommand("黄昏到黑夜", (player: mw.Player, value: string) => {
 
     // 星渐出
     Skybox.starVisible = true;
-    new mw.Tween({ intensity: 0 }).to({ intensity: 0.6 }, duskToNightDuration)
+    new mw.Tween({intensity: 0}).to({intensity: 0.6}, duskToNightDuration)
         .onUpdate((o) => {
             Skybox.starIntensity = o.intensity;
         })
         .start();
     // 月渐出
     Skybox.moonVisible = true;
-    new mw.Tween({ intensity: 0.5 }).to({ intensity: 2 }, duskToNightDuration)
+    new mw.Tween({intensity: 0.5}).to({intensity: 2}, duskToNightDuration)
         .onUpdate((o) => {
             Skybox.moonIntensity = o.intensity;
         })
@@ -513,7 +512,7 @@ AddGMCommand("黑夜到白天", (player: mw.Player, value: string) => {
     // 改变环境光强度
     let dayLightingIntensity = GlobalData.Environment.dayLightingIntensity;
     let nightLightingIntensity = GlobalData.Environment.nightLightingIntensity;
-    new mw.Tween({ intensity: nightLightingIntensity }).to({ intensity: dayLightingIntensity }, nightToDayDuration)
+    new mw.Tween({intensity: nightLightingIntensity}).to({intensity: dayLightingIntensity}, nightToDayDuration)
         .onUpdate((o) => {
             Lighting.brightness = o.intensity;
         })
@@ -522,7 +521,7 @@ AddGMCommand("黑夜到白天", (player: mw.Player, value: string) => {
     // 改变天空盒明度
     let daySkyBoxBrightness = GlobalData.Environment.daySkyBoxIntensity;
     let nightSkyBoxIntensity = GlobalData.Environment.nightSkyBoxIntensity;
-    new mw.Tween({ intensity: nightSkyBoxIntensity }).to({ intensity: daySkyBoxBrightness }, nightToDayDuration)
+    new mw.Tween({intensity: nightSkyBoxIntensity}).to({intensity: daySkyBoxBrightness}, nightToDayDuration)
         .onUpdate((o) => {
             Skybox.skyDomeIntensity = o.intensity;
         })
@@ -531,14 +530,14 @@ AddGMCommand("黑夜到白天", (player: mw.Player, value: string) => {
 
     // 云渐出
     Skybox.cloudVisible = true;
-    new mw.Tween({ opcity: 0 }).to({ opcity: 1 }, nightToDayDuration)
+    new mw.Tween({opcity: 0}).to({opcity: 1}, nightToDayDuration)
         .onUpdate((o) => {
             Skybox.cloudOpacity = o.opcity;
         })
         .start();
 
     // 星渐隐
-    new mw.Tween({ intensity: 0.6 }).to({ intensity: 0 }, nightToDayDuration)
+    new mw.Tween({intensity: 0.6}).to({intensity: 0}, nightToDayDuration)
         .onUpdate((o) => {
             Skybox.starIntensity = o.intensity;
         })
@@ -548,7 +547,7 @@ AddGMCommand("黑夜到白天", (player: mw.Player, value: string) => {
         .start();
 
     // 月渐隐
-    new mw.Tween({ intensity: 2 }).to({ intensity: 0.5 }, nightToDayDuration / 2)
+    new mw.Tween({intensity: 2}).to({intensity: 0.5}, nightToDayDuration / 2)
         .onUpdate((o) => {
             Skybox.moonIntensity = o.intensity;
         })
@@ -576,10 +575,19 @@ AddGMCommand("跳BattleWorld", () => {
 
 AddGMCommand("Show Debug log", () => {
     DebugConsole.start(false);
-})
+});
 AddGMCommand("Hide Debug log", () => {
     DebugConsole.stop();
-})
+});
+
+AddGMCommand(
+    "恢复满体力",
+    undefined,
+    (p, v) => {
+        ModuleService.getModule(EnergyModuleS).addEnergy(p.playerId, 100);
+    },
+    "体力",
+);
 
 /**颜色改变tween */
 function colorTween(fromColor: mw.LinearColor, toColor: mw.LinearColor, tweenDuration: number, obj: mw.LinearColor) {
@@ -592,19 +600,12 @@ function colorTween(fromColor: mw.LinearColor, toColor: mw.LinearColor, tweenDur
 
 /**光照强度改变tween */
 function intensityTween(fromIntensity: number, toIntensity: number, tweenDuration, obj: number) {
-    new mw.Tween({ intensity: fromIntensity }).to({ intensity: toIntensity }, tweenDuration)
+    new mw.Tween({intensity: fromIntensity}).to({intensity: toIntensity}, tweenDuration)
         .onUpdate((o) => {
             obj = o.intensity;
         })
         .start();
 }
-
-
-
-
-
-
-
 
 
 async function getPoints(arr: AreaData[], guid: string) {
@@ -614,7 +615,7 @@ async function getPoints(arr: AreaData[], guid: string) {
         const element = obj.getChildren()[i];
         let a: AreaData = {
             id: 0,
-            areaPoints: []
+            areaPoints: [],
         };
         a.id = i + 1;
         let loc = element.worldTransform.position.clone();
