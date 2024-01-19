@@ -653,6 +653,9 @@ export default class PetBehaviour {
         } else if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character && (!this._attackAni || !this._attackAni.isPlaying)) {
             this._attackAni = this.pet.loadAnimation("217865");
             this._attackAni.loop = 1;
+            let time = GlobalData.pet.attackTime;
+            if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
+            this._attackAni.speed = this._attackAni.length * 1000 / time;
             this._attackAni.onFinish.add(() => {
                 if (this.attack()) {
                     this.changeToIdle();
@@ -660,7 +663,7 @@ export default class PetBehaviour {
                     this._ani.stop();
                     return;
                 }
-                this._attackAni.play();
+                // this._attackAni.play();
                 //播放特效
                 this.playAttackEffect();
             });
