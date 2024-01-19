@@ -188,7 +188,10 @@ export default class PetBehaviour {
 
     public get position(): mw.Vector {
         if (!this.pet) return null;
-        if (!this.pet.tempLocation) this.pet.tempLocation = this.pet.worldTransform.position;
+        if (!this.pet.tempLocation) {
+            this.pet.tempLocation = this.pet.worldTransform.position;
+
+        };
         return this.pet.tempLocation;
     }
 
@@ -511,11 +514,17 @@ export default class PetBehaviour {
         let dis = dir.length;
         let moveDis = this.chaseSpeed * dt;
         if (dis < moveDis) {
-            this.arrow?.update(this.targetPos, this.resPos);
+            if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) {
+                let pos = this.targetPos.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight))
+                this.arrow?.update(pos, this.resPos);
+            } else {
+                this.arrow?.update(this.targetPos, this.resPos);
+            }
+
             this._state = PetState.Attack;
             if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
                 this.moveto(new mw.Vector(this.targetPos.x, this.targetPos.y, this.targetPos.z + this.height), endRot);
-            } else if (this.petInfo.CharacterType === PetCharacterType.Character) {
+            } else if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) {
                 this.moveto(new mw.Vector(this.targetPos.x, this.targetPos.y, this.targetPos.z), endRot);
             }
 
@@ -530,7 +539,13 @@ export default class PetBehaviour {
         endPos.y += move.y;
 
         endPos = this.keepOnGround(endPos);
-        this.arrow?.update(this.position, this.resPos);
+        if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) {
+            let pos = this.position.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight))
+            this.arrow?.update(pos, this.resPos);
+        } else {
+            this.arrow?.update(this.position, this.resPos);
+        }
+
         if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
             this.jump(dt, endPos, endRot);
         }
@@ -613,25 +628,44 @@ export default class PetBehaviour {
         }
     }
 
+    private _attackAni: Animation;
     private attackTweenInit(): void {
-        const bezier = GlobalData.pet.attackBezier;
-        let time = GlobalData.pet.attackTime;
-        if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
-        this.attackTween = new mw.Tween<{ y: number }>({ y: 0 }).to({
-            y: [-30, 0]
-        }, time).onUpdate((obj) => {
-            this.attackRotY = obj.y;
-        }).onComplete(() => {
-            if (this.attack()) {
-                this.changeToIdle();
-                this.attackRotY = 0;
-                return;
-            }
-            this.attackTweenInit();
-            //播放特效
-            this.playAttackEffect();
 
-        }).start().easing(cubicBezier(bezier[0], bezier[1], bezier[2], bezier[3]));
+        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+            const bezier = GlobalData.pet.attackBezier;
+            let time = GlobalData.pet.attackTime;
+            if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
+            this.attackTween = new mw.Tween<{ y: number }>({ y: 0 }).to({
+                y: [-30, 0]
+            }, time).onUpdate((obj) => {
+                this.attackRotY = obj.y;
+            }).onComplete(() => {
+                if (this.attack()) {
+                    this.changeToIdle();
+                    this.attackRotY = 0;
+                    return;
+                }
+                this.attackTweenInit();
+                //播放特效
+                this.playAttackEffect();
+
+            }).start().easing(cubicBezier(bezier[0], bezier[1], bezier[2], bezier[3]));
+        } else if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character && (!this._attackAni || !this._attackAni.isPlaying)) {
+            this._attackAni = this.pet.loadAnimation("217865");
+            this._attackAni.loop = 1;
+            this._attackAni.onFinish.add(() => {
+                if (this.attack()) {
+                    this.changeToIdle();
+                    this.attackRotY = 0;
+                    this._ani.stop();
+                    return;
+                }
+                this._attackAni.play();
+                //播放特效
+                this.playAttackEffect();
+            });
+            this._attackAni.play();
+        }
     }
 
     /**播放攻击特效 */
@@ -720,7 +754,7 @@ export default class PetBehaviour {
             }
         }
         if (!isSuccess && this.petInfo.CharacterType === PetCharacterType.GameObject) endPos.z = currentPos.z - this.owner.collisionExtent.z;
-        if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) endPos = endPos.add(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * 100));
+        if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) endPos.z += this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight;
         return endPos;
     }
 
