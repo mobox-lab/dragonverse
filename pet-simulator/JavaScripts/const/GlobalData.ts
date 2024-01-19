@@ -1225,11 +1225,29 @@ export namespace GlobalData {
          */
         public static readonly ENERGY_RECOVERY_SAMPLE_COUNT: number = 5;
 
+//#region Exist for Test
+//R <<<<<<
+        // /**
+        //  * 体力 恢复间隔. min
+        //  * @type {number}
+        //  */
+        // public static readonly ENERGY_RECOVERY_INTERVAL: number = 30;
+//  ------
         /**
          * 体力 恢复间隔. min
          * @type {number}
          */
-        public static readonly ENERGY_RECOVERY_INTERVAL: number = 30;
+        public static readonly ENERGY_RECOVERY_INTERVAL: number = 0.1;
+//T >>>>>>
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+        /**
+         * 体力 恢复间隔. ms
+         * @type {number}
+         */
+        public static get ENERGY_RECOVERY_INTERVAL_MS(): number {
+            return this.ENERGY_RECOVERY_INTERVAL * 60 * 1000;
+        };
 
         /**
          * 体力 失效再唤醒间隔.

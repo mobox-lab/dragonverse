@@ -1220,6 +1220,18 @@ class GToolkit {
     }
 
     /**
+     * 尝试设置 UI 文本性.
+     * @param {mw.Text} ui
+     * @param {string} text
+     * @return {boolean}
+     */
+    public trySetText(ui: mw.TextBlock, text: string): boolean {
+        if (ui.text === text) return false;
+        ui.text = text;
+        return true;
+    }
+
+    /**
      * 是否 给定平台绝对坐标 在 UI 控件内.
      * @param ui
      * @param position

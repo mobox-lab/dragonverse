@@ -4,6 +4,8 @@ import Hud_Generate from "../../ui-generate/hud/Hud_generate";
 import { cubicBezier } from "../../utils/MoveUtil";
 import { utils } from "../../utils/uitls";
 import { P_SummerCoin } from "../DollMachine/P_DollMachine";
+import { EnergyModuleC } from "../Energy/EnergyModule";
+import GToolkit from "../../utils/GToolkit";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -35,6 +37,13 @@ export class P_HudUI extends Hud_Generate {
     /**装卸滑板action */
     public onSkateboardAction: Action = new Action();
 
+    private _energyModuleC: EnergyModuleC;
+
+    private energyModuleC(): EnergyModuleC | null {
+        if (!this._energyModuleC) this._energyModuleC = ModuleService.getModule(EnergyModuleC);
+        return this._energyModuleC;
+    }
+
     protected onStart() {
         this.layer = mw.UILayerScene;
         this.mJump_Btn.onClicked.add(() => {
@@ -65,7 +74,7 @@ export class P_HudUI extends Hud_Generate {
         let isTouch: boolean = false;
         this.mBtn_petspeed.onPressed.add(() => {
             if (!isEnable) return;
-            isTouch = false
+            isTouch = false;
             if (timer) {
                 clearTimeout(timer);
                 timer = null;
@@ -74,7 +83,7 @@ export class P_HudUI extends Hud_Generate {
                 isTouch = true;
                 this.mLongPressAction.call();
             }, GlobalData.SpeedUp.longPressTime);
-        })
+        });
         this.mBtn_petspeed.onReleased.add(() => {
             if (!isEnable) return;
             if (timer) {
@@ -100,10 +109,11 @@ export class P_HudUI extends Hud_Generate {
             this.mCanvas_coin.renderScale = value;
         }).easing(cubicBezier(bezier[0], bezier[1], bezier[2], bezier[3])).yoyo(true).repeat(1);
         this.mBtn_Transmit.touchMethod = (mw.ButtonTouchMethod.DownAndUp);
-
+        this.mText_stamina2.text = GlobalData.Energy.ENERGY_MAX.toString();
         this.setGMBtn();
         this.startFastTranBtnTween();
     }
+
     /**设置GM按钮 */
     private setGMBtn() {
         if (GlobalData.Global.isShowGM) {
@@ -120,6 +130,7 @@ export class P_HudUI extends Hud_Generate {
             this.mGM.visibility = mw.SlateVisibility.Collapsed;
         }
     }
+
     /**设置快捷按钮显示 */
     public setShortcutBtnShow(isShow: boolean): void {
         if (this.mCanvas_fasttran.visible && !isShow) {
@@ -133,13 +144,14 @@ export class P_HudUI extends Hud_Generate {
     private leftToRightTween: mw.Tween<any> = null;
     /**从右到左的Tween */
     private rightToLeftTween: mw.Tween<any> = null;
+
     /**开始FastTranBtn */
     public startFastTranBtnTween() {
         let bezierData = GlobalData.TweenFastTranBtn.tweenBezier;
         let startAngle = GlobalData.TweenFastTranBtn.startAngle;
         let endAngle = GlobalData.TweenFastTranBtn.endAngle;
         let time = GlobalData.TweenFastTranBtn.tweenTime;
-        this.leftToRightTween = new mw.Tween({ angle: startAngle }).to({ angle: endAngle }, time * 1000)
+        this.leftToRightTween = new mw.Tween({angle: startAngle}).to({angle: endAngle}, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -149,7 +161,7 @@ export class P_HudUI extends Hud_Generate {
                 }
             })
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
-        this.rightToLeftTween = new mw.Tween({ angle: endAngle }).to({ angle: startAngle }, time * 1000)
+        this.rightToLeftTween = new mw.Tween({angle: endAngle}).to({angle: startAngle}, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -161,6 +173,7 @@ export class P_HudUI extends Hud_Generate {
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
         this.leftToRightTween.start();
     }
+
     /**停止FastTranBtn */
     public stopFastTranBtnTween(): void {
         if (this.leftToRightTween) {
@@ -231,7 +244,10 @@ export class P_HudUI extends Hud_Generate {
         if (isChange) {
             if (!this.mTween.isPlaying()) this.mTween.start();
         }
+
+        GToolkit.trySetText(this.mText_stamina, this.energyModuleC() ? `${this.energyModuleC().currEnergy()}` : "0");
     }
+
     protected onShow(...params: any[]): void {
         this.mVirtualJoystickPanel.resetJoyStick();
         mw.UIService.getUI(P_SummerCoin).show();
