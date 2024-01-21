@@ -65,6 +65,8 @@ export default class PetBehaviour {
     public key: number;
     /**当前裁剪距离 */
     private clipDis: number = 2000;
+    /**翅膀特效 */
+    private _wing: Effect;
 
     public get PetGameObj(): mw.GameObject {
         return this.pet;
@@ -111,7 +113,7 @@ export default class PetBehaviour {
                 this.pet = cha as Character;
                 if (!(this.pet instanceof Character)) return;
                 this.pet.collisionWithOtherCharacterEnabled = false;
-                GToolkit.safeSetDescription(this.pet, "94B734CF46BA50791443758138B2EA21")
+                GToolkit.safeSetDescription(this.pet, this.petInfo.ModelGuid);
                 this.pet.displayName = "";
                 SoundManager.instance.play3DSound(GlobalData.Music.petEquip, this.pet);
                 this.petName = name;
@@ -131,7 +133,21 @@ export default class PetBehaviour {
                         this.currentEffectIds.push(EffectManager.instance.playEffOnObjScene(id, this.pet, this.clipDis));
                     });
                 }
-            })
+                //添加翅膀
+                let wingGuid = this.petInfo.wingGuid;
+                let wingTransform = this.petInfo.wingTransform;
+                if (wingGuid && wingTransform) {
+                    mw.GameObject.asyncSpawn(wingGuid).then((go) => {
+                        this._wing = go as Effect;
+                        if (!(this.pet instanceof Character)) return;
+                        this.pet.attachToSlot(this._wing, HumanoidSlotType.BackOrnamental);
+                        TimeUtil.delayExecute(() => {
+                            this._wing.play();
+                            this._wing.localTransform = new Transform(new Vector(wingTransform[0][0], wingTransform[0][1], wingTransform[0][2]), new Rotation(wingTransform[1][0], wingTransform[1][1], wingTransform[1][2]), new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2]));
+                        }, 10);
+                    });
+                }
+            });
         } else if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
             let ModelGuid = this.petInfo.ModelGuid;
             let type = GameObjPoolSourceType.Prefab;
@@ -212,7 +228,10 @@ export default class PetBehaviour {
         this.attackTween?.stop();
         this.attackTween = null;
         this.stopMove();
-
+        if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) {
+            this.pet.detachFromSlot(this._wing);
+            this._wing.destroy();
+        }
         HUDManager.instance.recHUDInfo(this.pet.gameObjectId);
         GameObjPool.despawn(this.pet);
         this.pet = null;
@@ -651,7 +670,7 @@ export default class PetBehaviour {
 
             }).start().easing(cubicBezier(bezier[0], bezier[1], bezier[2], bezier[3]));
         } else if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character && (!this._attackAni || !this._attackAni.isPlaying)) {
-            this._attackAni = this.pet.loadAnimation("217865");
+            this._attackAni = this.pet.loadAnimation(GlobalData.pet.chaAttackAnimGuid);
             this._attackAni.loop = 1;
             let time = GlobalData.pet.attackTime;
             if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
