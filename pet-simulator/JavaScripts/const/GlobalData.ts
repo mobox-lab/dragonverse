@@ -94,7 +94,7 @@ export namespace GlobalData {
     /**宠物 */
     export class pet {
 
-        public static chaAttackAnimGuid: string = "217865";
+        public static chaAttackAnimGuid: string = "121561";
 
         /**宠物移动的最大帧数（超过该值不动了） */
         public static maxMoveFrame: number = 20;
