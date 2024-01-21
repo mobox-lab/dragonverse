@@ -159,7 +159,7 @@ export namespace GlobalData {
         /**宠物攻击时的y轴旋转角度 */
         public static attackRotationY: number = -30;
         /**宠物完成一次攻击的时间从0到-30再到0 */
-        public static attackTime: number = 500;
+        public static attackTime: number = 1200;
         /**宠物一次攻击的贝塞尔 */
         public static attackBezier: number[] = [0.26, 0.59, 0.61, 0.28];
         /**宠物可站立地面tag */
