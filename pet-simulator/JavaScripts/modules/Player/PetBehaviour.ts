@@ -111,7 +111,7 @@ export default class PetBehaviour {
                 this.pet = cha as Character;
                 if (!(this.pet instanceof Character)) return;
                 this.pet.collisionWithOtherCharacterEnabled = false;
-                GToolkit.safeSetDescription(this.pet, "94B734CF46BA50791443758138B2EA21")
+                GToolkit.safeSetDescription(this.pet, this.petInfo.ModelGuid)
                 this.pet.displayName = "";
                 SoundManager.instance.play3DSound(GlobalData.Music.petEquip, this.pet);
                 this.petName = name;
@@ -651,7 +651,7 @@ export default class PetBehaviour {
 
             }).start().easing(cubicBezier(bezier[0], bezier[1], bezier[2], bezier[3]));
         } else if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character && (!this._attackAni || !this._attackAni.isPlaying)) {
-            this._attackAni = this.pet.loadAnimation("217865");
+            this._attackAni = this.pet.loadAnimation(GlobalData.pet.chaAttackAnimGuid);
             this._attackAni.loop = 1;
             let time = GlobalData.pet.attackTime;
             if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
