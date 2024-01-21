@@ -55,6 +55,12 @@ class P_levelItem extends TypeItem_Generate {
         this.mBtn_Levelup.onClicked.add(() => {
             this.upgrade();
         })
+        //ui控件导出改了，get的时候才会去找控件对象，先提前get下
+        this.mImage_Piece_0;
+        this.mImage_Piece_1;
+        this.mImage_Piece_2;
+        this.mImage_Piece_3;
+        this.mImage_Piece_4;
     }
 
     private upgrade(): void {

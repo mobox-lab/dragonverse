@@ -47,7 +47,7 @@ export class P_TaskShop extends TaskShop_Generate {
     /**购买达到上限 */
     public arrayUpper(id: number): void {
         let item = this.uiItemArr.get(id);
-        if (item) {     
+        if (item) {
             item.btnDisable();
         }
     }
@@ -107,6 +107,11 @@ class P_TaskBigItem extends TaskShop_Itembig_Generate implements P_TaskShop_Item
         commonInit(data, this, shopUI);
         this.mPic_icon.imageGuid = data.Icon;
         data.Award ? this.petInit(data) : this.boardInit(data);
+        //ui控件导出改了，get的时候才会去找控件对象，先提前get下
+        this.mPic_pet1;
+        this.mPic_pet2;
+        this.mText_rate1;
+        this.mText_rate2;
     }
 
     private petInit(data: ITaskShopElement) {
@@ -185,11 +190,11 @@ function commonInit(data: ITaskShopElement, item: P_TaskMiniItem | P_TaskMidItem
     item.mPic_Base.imageGuid = data.BaseIcon;
     item.mCanvas_undo.visibility = mw.SlateVisibility.Collapsed;
     item.mBtn.onClicked.add(() => {
-        if(data.Price == 0){
+        if (data.Price == 0) {
             TipsManager.instance.showTip(GameConfig.Language.Task_shop_15.Value);
             return;
         }
-        if(!item.isBtnEnable){
+        if (!item.isBtnEnable) {
             return;
         }
         shopUI.buyAction.call(data.id);
