@@ -69,10 +69,10 @@ export class P_Pet_Dev extends Dev_Generate {
             petIds.push(item.I);
         });
         //计算最早的获取时间
-        let earliestObtainTime = this.curSelectPets[0].ObtainTime;
+        let earliestObtainTime = this.curSelectPets[0].obtainTime;
         this.curSelectPets.forEach(item => {
-            if (item.ObtainTime < earliestObtainTime) {
-                earliestObtainTime = item.ObtainTime;
+            if (item.obtainTime < earliestObtainTime) {
+                earliestObtainTime = item.obtainTime;
             }
         });
 

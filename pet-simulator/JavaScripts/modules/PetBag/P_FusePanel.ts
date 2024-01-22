@@ -234,10 +234,10 @@ export class P_FusePanel extends Fusepanel_Generate {
             keys.push(item.k);
         })
 
-        this._earliestObtainTime = this.curSelectPets[0].ObtainTime;
+        this._earliestObtainTime = this.curSelectPets[0].obtainTime;
         this.curSelectPets.forEach(item => {
-            if (item.ObtainTime < this._earliestObtainTime) {
-                this._earliestObtainTime = item.ObtainTime;
+            if (item.obtainTime < this._earliestObtainTime) {
+                this._earliestObtainTime = item.obtainTime;
             }
         });
         return await ModuleService.getModule(PetBagModuleC).fuseEvent(keys);
