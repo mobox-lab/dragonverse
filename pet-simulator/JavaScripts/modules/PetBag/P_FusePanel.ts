@@ -180,7 +180,7 @@ export class P_FusePanel extends Fusepanel_Generate {
         let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
         AnalyticsTool.action_buy_pet(allLength, endPetId);
         this.achievementModuleC.broadcastAchievementBlendType(endPetId);
-        await ModuleService.getModule(PetBagModuleC).addPet(endPetId, GlobalEnum.PetGetType.Fusion);
+        await ModuleService.getModule(PetBagModuleC).addPet(endPetId, GlobalEnum.PetGetType.Fusion, this._earliestObtainTime);
     }
 
     /**根据各宠物攻击力权重获得宠物 */
@@ -226,13 +226,20 @@ export class P_FusePanel extends Fusepanel_Generate {
         }
         return 2;
     }
-
+    private _earliestObtainTime: number = 0;
     /**删除选中宠物 */
     private async delSelectPet() {
         let keys = [];
         this.curSelectPets.forEach(item => {
             keys.push(item.k);
         })
+
+        this._earliestObtainTime = this.curSelectPets[0].ObtainTime;
+        this.curSelectPets.forEach(item => {
+            if (item.ObtainTime < this._earliestObtainTime) {
+                this._earliestObtainTime = item.ObtainTime;
+            }
+        });
         return await ModuleService.getModule(PetBagModuleC).fuseEvent(keys);
     }
 

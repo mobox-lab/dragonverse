@@ -56,14 +56,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return arr;
     }
 
-    net_addPet(id: number, atk: number, name: string, type?: GlobalEnum.PetGetType) {
-        this.addPet(this.currentPlayerId, id, atk, name, type);
+    net_addPet(id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
+        this.addPet(this.currentPlayerId, id, atk, name, type, addTime);
     }
 
 
-    public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType) {
+    public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
         let data = this.getPlayerData(playerID);
-        data.addBagItem(id, atk, name);
+        data.addBagItem(id, atk, name, addTime);
         this.taskMS.getPet(Player.getPlayer(playerID), id, type);
         ModuleService.getModule(CollectModuleS).addPet(playerID, id, type);
         this.onGetPetAC.call(type, playerID);

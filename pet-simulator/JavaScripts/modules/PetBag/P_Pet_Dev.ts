@@ -68,6 +68,14 @@ export class P_Pet_Dev extends Dev_Generate {
             keys.push(item.k);
             petIds.push(item.I);
         });
+        //计算最早的获取时间
+        let earliestObtainTime = this.curSelectPets[0].ObtainTime;
+        this.curSelectPets.forEach(item => {
+            if (item.ObtainTime < earliestObtainTime) {
+                earliestObtainTime = item.ObtainTime;
+            }
+        });
+
         let isCanDel = await ModuleService.getModule(PetBagModuleC).fuseEvent(keys);
         this.curSelectPets.length = 0;
         if (!isCanDel) {
@@ -80,7 +88,7 @@ export class P_Pet_Dev extends Dev_Generate {
         if (random <= this.curRate) {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
             await ModuleService.getModule(PetBagModuleC).addPet(endPetId,
-                this.isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow);
+                this.isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow, earliestObtainTime);
         } else {
             isSucc = false;
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
