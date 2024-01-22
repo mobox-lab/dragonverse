@@ -788,7 +788,7 @@ export namespace GlobalData {
     /**成就系统相关参数 */
     export class Achievement {
         /**Item的位置间隔大小 例如间隔260 则item1的位置是0，item2的位置就是260……520…… */
-        public static itemPositionInterval: number = 260;
+        public static itemPositionInterval: number = 130;
         /**---------------------------------------------------------------------- */
         /**第一世界金币Icon */
         public static firstWorldCoinImageIcon: string = "176088";
