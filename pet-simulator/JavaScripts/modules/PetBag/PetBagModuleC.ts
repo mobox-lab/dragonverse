@@ -18,7 +18,7 @@ import { EnchantBuff } from "./EnchantBuff";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
 
-export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData>{
+export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     private achievementModuleC: AchievementModuleC = null;
     private bagUI: P_Bag;
     private devUI: P_Pet_Dev;
@@ -238,7 +238,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData>{
      * @param atk 宠物攻击力
      * @param name 宠物名字
     */
-    public async addPet(id: number, type?: GlobalEnum.PetGetType) {
+    public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
         let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
 
         let atk: number = 0;
@@ -249,7 +249,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData>{
 
         let nameId = utils.GetRandomNum(1, 200);
         let name = utils.GetUIText(nameId)
-        await this.server.net_addPet(id, atk, name, type);
+        await this.server.net_addPet(id, atk, name, type, addTime);
     }
 
     /**宠物公告 */

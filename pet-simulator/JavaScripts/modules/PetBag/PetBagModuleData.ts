@@ -31,12 +31,15 @@ export class petItemDataNew {
     I: number;
     /**petInfo */
     p: petInfoNew;
+    /**首次获得宠物时间，合成的宠物用合成项最早获得的时间 */
+    obtainTime: number;
 
     constructor(key: number, id: number) {
         this.k = key;
         this.I = id;
         this.p = new petInfoNew();
     }
+
 }
 
 /**宠物训练 */
@@ -192,7 +195,7 @@ export class PetBagModuleData extends Subdata {
      * @param atk 宠物战力
      * @param name 宠物名字
      */
-    public addBagItem(id: number, atk: number, name: string): boolean {
+    public addBagItem(id: number, atk: number, name: string, addTime?: number): boolean {
 
         // let index = this.getFirstEmptyIndex();
         // if (index == -1) {
@@ -207,6 +210,11 @@ export class PetBagModuleData extends Subdata {
         }
         if (name) {
             this.bagContainerNew[index].p.n = name;
+        }
+        if (addTime) {
+            this.bagContainerNew[index].obtainTime = addTime;
+        } else {
+            this.bagContainerNew[index].obtainTime = Date.now();
         }
         let type = GameConfig.PetARR.getElement(id).QualityType;
         this.randomEnchant(this.bagContainerNew[index], type);
