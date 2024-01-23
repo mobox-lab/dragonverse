@@ -164,6 +164,9 @@ export default class MainPanel extends MainPanel_Generate {
         KeyOperationManager.getInstance().onKeyPress(Keys.D, this, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(1);
         })
+        KeyOperationManager.getInstance().onKeyDown(Keys.SpaceBar, this, () => {
+            Player.localPlayer.getPlayerState(UnifiedRoleController).playerJump();
+        })
 
         this.setCanSprint(true);
 
@@ -748,6 +751,7 @@ export default class MainPanel extends MainPanel_Generate {
     private onFinishSubTask = () => {
         this.showGlobalPrompt(i18n.lan(i18n.keyTable.TinyGameLanKey0004));
     };
+
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

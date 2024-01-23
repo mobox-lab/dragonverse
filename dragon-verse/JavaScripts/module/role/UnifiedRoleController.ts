@@ -23,7 +23,6 @@ import createYoact = Yoact.createYoact;
 import stopEffect = Yoact.stopEffect;
 import MainPanel from "../../ui/main/MainPanel";
 import Waterween from "../../depend/waterween/Waterween";
-import { KeyboardManager } from "../../controller/KeyboardManager";
 import AudioController from "../../controller/audio/AudioController";
 import { RoleModuleS } from "./RoleModule";
 import GlobalProperty from "../../GlobalProperty";
@@ -519,21 +518,19 @@ export default class UnifiedRoleController extends mw.PlayerState {
      */
     protected onControllerReadyInClient = (): void => {
         this.addCheckMoveBuff();
-        //绑定移动输入
-        KeyboardManager.getInstance().onKeyDown.add((key) => {
-            if (key === mw.Keys.SpaceBar) {
-                if (!(Player.localPlayer.character.movementMode === MovementMode.Swim)) {
-                    mw.Player.localPlayer.character.jump();
-                } else {
-                    actions.tween(Player.localPlayer.character.worldTransform).to(10,
-                        { position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)) }).call(() => {
-                            Player.localPlayer.character.jump();
-                        }).start();
-                }
-            }
-        });
         TimeUtil.onEnterFrame.add(this.onEnterFrame, this);
     };
+
+    public playerJump() {
+        if (!(Player.localPlayer.character.movementMode === MovementMode.Swim)) {
+            mw.Player.localPlayer.character.jump();
+        } else {
+            actions.tween(Player.localPlayer.character.worldTransform).to(10,
+                { position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)) }).call(() => {
+                    Player.localPlayer.character.jump();
+                }).start();
+        }
+    }
 
     /**
      * 当 控制器于 Server 端就绪时 调用.
