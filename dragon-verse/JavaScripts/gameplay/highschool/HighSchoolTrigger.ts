@@ -7,6 +7,7 @@
 
 import { GameConfig } from "../../config/GameConfig";
 import { EventDefine } from "../../const/EventDefine";
+import MainPanel from "../../ui/main/MainPanel";
 import GToolkit from "../../util/GToolkit";
 import { RunningGameGetParticle } from "../quest/runnungGame/RunningGameQuest";
 
@@ -62,6 +63,7 @@ export default class HighSchoolTrigger extends mw.Script {
                     obj.maxJumpHeight = 100;
                     obj.jumpMaxCount = 1;
                     obj.maxWalkSpeed = 100;
+                    UIService.getUI(MainPanel).setCanSprint(false);
                 }
 
             }
