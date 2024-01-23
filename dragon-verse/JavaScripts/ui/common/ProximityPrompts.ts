@@ -1,5 +1,6 @@
 import { KeyboardManager } from "../../controller/KeyboardManager";
 import AudioController from "../../controller/audio/AudioController";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import PromotItem_Generate from "../../ui-generate/prompt/PromotItem_generate";
 import ProximityPrompts_Generate from "../../ui-generate/prompt/ProximityPrompts_generate";
 
@@ -40,14 +41,35 @@ export module ProximityPrompts {
 
             this.reset();
             this.data = infos;
-            KeyboardManager.getInstance().onKeyDown.add(this.onKeyDown, this);
-            KeyboardManager.getInstance().onKeyUp.add(this.onKeyUp, this);
+            // KeyboardManager.getInstance().onKeyDown.add(this.onKeyDown, this);
+            // KeyboardManager.getInstance().onKeyUp.add(this.onKeyUp, this);
+
+            KeyOperationManager.getInstance().onKeyDown(Keys.Up, this, () => {
+                this.handlerIndex(-1);
+            });
+            KeyOperationManager.getInstance().onKeyDown(Keys.Down, this, () => {
+                this.handlerIndex(1);
+            });
+
+            for (const item of this.data) {
+                KeyOperationManager.getInstance().onKeyDown(item.keyBoard as Keys, this, () => {
+                    this.onSelected();
+                });
+            }
+
+
             this.initializeConfigureDetail(infos);
         }
 
         onHide() {
-            KeyboardManager.getInstance().onKeyDown.remove(this.onKeyDown, this);
-            KeyboardManager.getInstance().onKeyUp.remove(this.onKeyUp, this);
+            // KeyboardManager.getInstance().onKeyDown.remove(this.onKeyDown, this);
+            // KeyboardManager.getInstance().onKeyUp.remove(this.onKeyUp, this);
+
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Up);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Down);
+            for (const item of this.data) {
+                KeyOperationManager.getInstance().unregisterKey(this, item.keyBoard as Keys);
+            }
             this.reset();
         }
 
