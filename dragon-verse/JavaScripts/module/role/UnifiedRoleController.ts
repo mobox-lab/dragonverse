@@ -28,6 +28,7 @@ import AudioController from "../../controller/audio/AudioController";
 import { RoleModuleS } from "./RoleModule";
 import GlobalProperty from "../../GlobalProperty";
 
+
 /**
  * Unified Role State Controller.
  * 统一角色状态控制器.
@@ -127,27 +128,26 @@ export default class UnifiedRoleController extends mw.PlayerState {
     }
 
     /**右脚是否落地 */
-    private _rightfootOnLand: boolean = true;
+    private _rightFootOnLand: boolean = true;
     /**执行一次标识符 */
-    private _canRightExcute: boolean = false;
+    private _canRightExecute: boolean = false;
     /**左脚是否落地 */
-    private _leftfootOnLand: boolean = true;
+    private _leftFootOnLand: boolean = true;
     /**执行一次标识符 */
-    private _canLeftExcute: boolean = false;
+    private _canLeftExecute: boolean = false;
     /**上次落地的脚 0左脚，1右脚*/
     private _lastOnLandFoot: number = -1;
 
     private onEnterFrame(dt: number): void {
-        this._velocity.set(0, 0, 0);
 
-        const keyBoard = KeyboardManager.getInstance();
 
-        keyBoard.isKewDown(mw.Keys.W) && this._velocity.x++;
-        keyBoard.isKewDown(mw.Keys.S) && this._velocity.x--;
-        keyBoard.isKewDown(mw.Keys.A) && this._velocity.y--;
-        keyBoard.isKewDown(mw.Keys.D) && this._velocity.y++;
+        // const keyBoard = KeyboardManager.getInstance();
 
-        mw.Player.localPlayer.character.addMovement(this._velocity);
+        // keyBoard.isKewDown(mw.Keys.W) && this._velocity.x++;
+        // keyBoard.isKewDown(mw.Keys.S) && this._velocity.x--;
+        // keyBoard.isKewDown(mw.Keys.A) && this._velocity.y--;
+        // keyBoard.isKewDown(mw.Keys.D) && this._velocity.y++;
+        // mw.Player.localPlayer.character.addMovement(this._velocity);w
 
         //判断脚步是否落地
         if (Player.localPlayer.character.isMoving && Player.localPlayer.character.movementMode == MovementMode.Walk) {
@@ -158,30 +158,30 @@ export default class UnifiedRoleController extends mw.PlayerState {
             //找到排除触发器的第一个射到的go
             rightResults = rightResults.filter(result => !(result.gameObject instanceof Trigger));
             if (rightResults[0] && rightResults[0].distance < 10) {
-                this._rightfootOnLand = true;
+                this._rightFootOnLand = true;
             } else {
-                this._rightfootOnLand = false;
+                this._rightFootOnLand = false;
                 //可以执行
-                this._canRightExcute = true;
+                this._canRightExecute = true;
             }
 
             leftResults = leftResults.filter(result => !(result.gameObject instanceof Trigger));
             if (leftResults[0] && leftResults[0].distance < 10) {
-                this._leftfootOnLand = true;
+                this._leftFootOnLand = true;
             } else {
-                this._leftfootOnLand = false;
+                this._leftFootOnLand = false;
                 //可以执行
-                this._canLeftExcute = true;
+                this._canLeftExecute = true;
             }
         }
 
-        if (this._canRightExcute && this._rightfootOnLand && this._lastOnLandFoot !== 1) {
-            this._canRightExcute = false;
+        if (this._canRightExecute && this._rightFootOnLand && this._lastOnLandFoot !== 1) {
+            this._canRightExecute = false;
             AudioController.getInstance().play(28);
             this._lastOnLandFoot = 1;
         }
-        if (this._canLeftExcute && this._leftfootOnLand && this._lastOnLandFoot !== 0) {
-            this._canLeftExcute = false;
+        if (this._canLeftExecute && this._leftFootOnLand && this._lastOnLandFoot !== 0) {
+            this._canLeftExecute = false;
             AudioController.getInstance().play(28);
             this._lastOnLandFoot = 0;
         }
@@ -553,6 +553,18 @@ export default class UnifiedRoleController extends mw.PlayerState {
      */
     protected onControllerDestroyInServer = (): void => {
     };
+
+    public changeVelocityX(x: number) {
+        this._velocity.set(0, 0, 0);
+        this._velocity.x += x;
+        mw.Player.localPlayer.character.addMovement(this._velocity);
+    }
+
+    public changeVelocityY(y: number) {
+        this._velocity.set(0, 0, 0);
+        this._velocity.y += y;
+        mw.Player.localPlayer.character.addMovement(this._velocity);
+    }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

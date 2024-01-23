@@ -25,6 +25,7 @@ import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
 import { CubicBezier } from "../../depend/easing/Easing";
 import Regulator from "../../depend/regulator/Regulator";
 import MainCurtainPanel from "./MainCurtainPanel";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 /**
  * 主界面.
@@ -150,12 +151,21 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnReset.onPressed.add(respawn);
         this.btnDragonBall.onPressed.add(() => this.tryCatch());
         this.btnCatch.onPressed.add(this.onTryCatchBtnClick);
-        InputUtil.onKeyDown(mw.Keys.RightMouseButton, () => {
-            this.roleController?.trySprint(true);
-        });
-        InputUtil.onKeyUp(mw.Keys.RightMouseButton, () => {
-            this.roleController?.trySprint(false);
-        });
+
+        KeyOperationManager.getInstance().onKeyPress(Keys.W, this, () => {
+            Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(1);
+        })
+        KeyOperationManager.getInstance().onKeyPress(Keys.S, this, () => {
+            Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(-1);
+        })
+        KeyOperationManager.getInstance().onKeyPress(Keys.A, this, () => {
+            Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(-1);
+        })
+        KeyOperationManager.getInstance().onKeyPress(Keys.D, this, () => {
+            Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(1);
+        })
+
+        this.setCanSprint(true);
 
         if (this.bagModule) {
             bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
@@ -212,8 +222,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1);
 
@@ -226,8 +236,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1);
 
@@ -245,11 +255,11 @@ export default class MainPanel extends MainPanel_Generate {
         );
 
         const dist = [
-            {dist: 0.3, duration: 0.1e3},
-            {dist: 0.4, duration: 0.1e3},
-            {dist: 0.2, duration: 0.1e3},
-            {dist: 0.5, duration: 0.1e3},
-            {dist: 0.3, duration: 0.1e3},
+            { dist: 0.3, duration: 0.1e3 },
+            { dist: 0.4, duration: 0.1e3 },
+            { dist: 0.2, duration: 0.1e3 },
+            { dist: 0.5, duration: 0.1e3 },
+            { dist: 0.3, duration: 0.1e3 },
         ];
         this._effectImgTasks.push(
             Waterween
@@ -485,6 +495,24 @@ export default class MainPanel extends MainPanel_Generate {
         GToolkit.trySetVisibility(this.btnBook, false);
         GToolkit.trySetVisibility(this.btnDragon, false);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    }
+
+    /** 
+     * @description: 设置是否可以冲刺
+     * @param canSprint 是否可以冲刺
+     */
+    public setCanSprint(canSprint: boolean) {
+        if (canSprint) {
+            KeyOperationManager.getInstance().onKeyDown(mw.Keys.RightMouseButton, this, () => {
+                this.roleController?.trySprint(true);
+            });
+            KeyOperationManager.getInstance().onKeyUp(mw.Keys.RightMouseButton, this, () => {
+                this.roleController?.trySprint(false);
+            });
+        } else {
+            this.roleController?.trySprint(false);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.RightMouseButton);
+        }
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
