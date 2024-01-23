@@ -42,6 +42,7 @@ export class endInfo {
 export namespace GlobalData {
 
     export class Global {
+        public static isRelease: boolean = false;
         /**是否显示GM */
         public static isShowGM: boolean = false;
         /**所选择的语言索引(-1:系统 0:英语 1:汉语 2:日语 3:德语)*/
