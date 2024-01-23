@@ -42,6 +42,7 @@ import { DollMachineModuleC } from "./modules/DollMachine/DollMachineModuleC";
 import { DollMachineModuleS } from "./modules/DollMachine/DollMachineModuleS";
 import * as mwaction from "mwaction";
 import EnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./modules/Energy/EnergyModule";
+import AuthModuleData, { AuthModuleC, AuthModuleS } from "./modules/auth/AuthModule";
 
 // declare global {
 //     var UE: any;
@@ -195,6 +196,7 @@ export default class GameStart extends mw.Script {
     }
 
     protected onRegisterModule(): void {
+        ModuleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         ModuleService.registerModule(HudModuleS, HudModuleC, null);
         ModuleService.registerModule(AreaModuleS, AreaModuleC, AreaModuleData);
         ModuleService.registerModule(InputModuleS, InputModuleC, null);

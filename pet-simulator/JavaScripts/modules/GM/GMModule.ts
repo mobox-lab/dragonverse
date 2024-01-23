@@ -13,6 +13,7 @@ import { Task_ModuleC } from "../Task/TaskModuleC";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { DebugConsole } from "debug_console";
 import { EnergyModuleC, EnergyModuleS } from "../Energy/EnergyModule";
+import { AuthModuleS } from "../auth/AuthModule";
 
 
 //主面板
@@ -587,6 +588,14 @@ AddGMCommand(
         ModuleService.getModule(EnergyModuleS).addEnergy(p.playerId, 100);
     },
     "体力",
+);
+
+AddGMCommand(
+    "刷新货币",
+    undefined,
+    (player, value) => {
+        ModuleService.getModule(AuthModuleS)["queryCurrency"](player.playerId);
+    },
 );
 
 /**颜色改变tween */

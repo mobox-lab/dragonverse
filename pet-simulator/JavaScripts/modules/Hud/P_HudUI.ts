@@ -6,6 +6,11 @@ import { utils } from "../../utils/uitls";
 import { P_SummerCoin } from "../DollMachine/P_DollMachine";
 import { EnergyModuleC } from "../Energy/EnergyModule";
 import GToolkit from "../../utils/GToolkit";
+import { Yoact } from "../../depend/yoact/Yoact";
+import bindYoact = Yoact.bindYoact;
+import ModuleService = mwext.ModuleService;
+import { ConsumeModuleC } from "../consume/ConsumeModule";
+import { AuthModuleC } from "../auth/AuthModule";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -39,9 +44,16 @@ export class P_HudUI extends Hud_Generate {
 
     private _energyModuleC: EnergyModuleC;
 
-    private energyModuleC(): EnergyModuleC | null {
+    private get energyModuleC(): EnergyModuleC | null {
         if (!this._energyModuleC) this._energyModuleC = ModuleService.getModule(EnergyModuleC);
         return this._energyModuleC;
+    }
+
+    private _authModuleC: AuthModuleC;
+
+    private get authModuleC(): AuthModuleC | null {
+        if (!this._authModuleC) this._authModuleC = ModuleService.getModule(AuthModuleC);
+        return this._authModuleC;
     }
 
     protected onStart() {
@@ -67,6 +79,7 @@ export class P_HudUI extends Hud_Generate {
         this.mBtn_skid.onClicked.add(() => {
             this.onSkateboardAction.call();
         });
+        this.mRefresh_Btn.onClicked.add(() => this.authModuleC?.queryCurrency());
         this.mBtn_petspeed.visibility = mw.SlateVisibility.Visible;
         let isEnable: boolean = true;
         this.mBtn_petspeed.touchMethod = (mw.ButtonTouchMethod.DownAndUp);
@@ -112,6 +125,9 @@ export class P_HudUI extends Hud_Generate {
         this.mText_stamina2.text = GlobalData.Energy.ENERGY_MAX.toString();
         this.setGMBtn();
         this.startFastTranBtnTween();
+        bindYoact(() => {
+            GToolkit.trySetText(this.mText_Mcoin, (((this.authModuleC?.currency.count ?? 0) * 100 | 0) / 100).toString());
+        });
     }
 
     /**设置GM按钮 */
@@ -245,7 +261,7 @@ export class P_HudUI extends Hud_Generate {
             if (!this.mTween.isPlaying()) this.mTween.start();
         }
 
-        GToolkit.trySetText(this.mText_stamina, this.energyModuleC() ? `${this.energyModuleC().currEnergy()}` : "0");
+        GToolkit.trySetText(this.mText_stamina, this.energyModuleC ? `${this.energyModuleC.currEnergy()}` : "0");
     }
 
     protected onShow(...params: any[]): void {

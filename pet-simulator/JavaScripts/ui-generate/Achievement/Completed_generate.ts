@@ -15,12 +15,12 @@ export default class Completed_Generate extends UIScript {
 		}
 		return this.mCanvas_Internal
 	}
-	private mText_AMname_Internal: mw.TextBlock
-	public get mText_AMname(): mw.TextBlock {
-		if(!this.mText_AMname_Internal&&this.uiWidgetBase) {
-			this.mText_AMname_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_AMname') as mw.TextBlock
+	private mText_Target_Internal: mw.TextBlock
+	public get mText_Target(): mw.TextBlock {
+		if(!this.mText_Target_Internal&&this.uiWidgetBase) {
+			this.mText_Target_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Target') as mw.TextBlock
 		}
-		return this.mText_AMname_Internal
+		return this.mText_Target_Internal
 	}
 	private mProgressBar_Internal: mw.ProgressBar
 	public get mProgressBar(): mw.ProgressBar {
@@ -29,12 +29,12 @@ export default class Completed_Generate extends UIScript {
 		}
 		return this.mProgressBar_Internal
 	}
-	private mText_Target_Internal: mw.TextBlock
-	public get mText_Target(): mw.TextBlock {
-		if(!this.mText_Target_Internal&&this.uiWidgetBase) {
-			this.mText_Target_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Target') as mw.TextBlock
+	private mText_AMname_Internal: mw.TextBlock
+	public get mText_AMname(): mw.TextBlock {
+		if(!this.mText_AMname_Internal&&this.uiWidgetBase) {
+			this.mText_AMname_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_AMname') as mw.TextBlock
 		}
-		return this.mText_Target_Internal
+		return this.mText_AMname_Internal
 	}
 	private mText_Finish_Internal: mw.TextBlock
 	public get mText_Finish(): mw.TextBlock {
@@ -66,10 +66,10 @@ export default class Completed_Generate extends UIScript {
 		
 		//文本多语言
 		
-		this.initLanguage(this.mText_AMname)
+		this.initLanguage(this.mText_Target)
 		
 	
-		this.initLanguage(this.mText_Target)
+		this.initLanguage(this.mText_AMname)
 		
 	
 		this.initLanguage(this.mText_Finish)
