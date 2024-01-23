@@ -8,6 +8,7 @@ import { ObjectPoolServices } from "../../../Tools/ObjectPool";
 import { IAchievementsElement } from "../../../config/Achievements";
 import { GameConfig } from "../../../config/GameConfig";
 import { GlobalData } from "../../../const/GlobalData";
+import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import AchievementMain_Generate from "../../../ui-generate/Achievement/AchievementMain_generate";
 import { oTraceError } from "../../../utils/LogManager";
 import { utils } from "../../../utils/uitls";
@@ -40,6 +41,7 @@ export default class AchievementPanel extends AchievementMain_Generate {
 		this.mCloseButton.onClicked.add(() => {
 			this.hide();
 		});
+
 	}
 
 	protected onShow(...params: any[]): void {
@@ -47,11 +49,15 @@ export default class AchievementPanel extends AchievementMain_Generate {
 		AnalyticsTool.page(Page.achieve);
 		this.updatePanelData();
 		utils.showUITween(this);
+		KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+			this.hide();
+		})
 	}
 
 	protected onHide(): void {
 		oTraceError("[AchievementPanel--onHide]");
 		this.recycleAchievementItems();
+		KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
 	}
 
 	private achievementItems: AchievementItem[] = [];

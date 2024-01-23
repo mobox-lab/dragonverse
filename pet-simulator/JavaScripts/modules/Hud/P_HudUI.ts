@@ -11,6 +11,7 @@ import bindYoact = Yoact.bindYoact;
 import ModuleService = mwext.ModuleService;
 import { ConsumeModuleC } from "../consume/ConsumeModule";
 import { AuthModuleC } from "../auth/AuthModule";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -128,6 +129,32 @@ export class P_HudUI extends Hud_Generate {
         bindYoact(() => {
             GToolkit.trySetText(this.mText_Mcoin, (((this.authModuleC?.currency.count ?? 0) * 100 | 0) / 100).toString());
         });
+
+
+        KeyOperationManager.getInstance().onKeyPress(Keys.W, this, () => {
+            this.changeVelocityX(1);
+        })
+        KeyOperationManager.getInstance().onKeyPress(Keys.S, this, () => {
+            this.changeVelocityX(-1);
+        })
+        KeyOperationManager.getInstance().onKeyPress(Keys.A, this, () => {
+            this.changeVelocityY(-1);
+        })
+        KeyOperationManager.getInstance().onKeyPress(Keys.D, this, () => {
+            this.changeVelocityY(1);
+        })
+    }
+    private _velocity: Vector = new Vector();
+    public changeVelocityX(x: number) {
+        this._velocity.set(0, 0, 0);
+        this._velocity.x += x;
+        mw.Player.localPlayer.character.addMovement(this._velocity);
+    }
+
+    public changeVelocityY(y: number) {
+        this._velocity.set(0, 0, 0);
+        this._velocity.y += y;
+        mw.Player.localPlayer.character.addMovement(this._velocity);
     }
 
     /**设置GM按钮 */
@@ -167,7 +194,7 @@ export class P_HudUI extends Hud_Generate {
         let startAngle = GlobalData.TweenFastTranBtn.startAngle;
         let endAngle = GlobalData.TweenFastTranBtn.endAngle;
         let time = GlobalData.TweenFastTranBtn.tweenTime;
-        this.leftToRightTween = new mw.Tween({angle: startAngle}).to({angle: endAngle}, time * 1000)
+        this.leftToRightTween = new mw.Tween({ angle: startAngle }).to({ angle: endAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -177,7 +204,7 @@ export class P_HudUI extends Hud_Generate {
                 }
             })
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
-        this.rightToLeftTween = new mw.Tween({angle: endAngle}).to({angle: startAngle}, time * 1000)
+        this.rightToLeftTween = new mw.Tween({ angle: endAngle }).to({ angle: startAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })

@@ -4,8 +4,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import EventListener = mw.EventListener;
 import Keys = mw.Keys;
 import TimeUtil = mw.TimeUtil;
-import GToolkit from "../../util/GToolkit";
-
+import GToolkit from "../../utils/GToolkit";
 
 /**
  * KeyOperationManager.

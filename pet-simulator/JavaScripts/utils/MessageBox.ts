@@ -5,6 +5,7 @@
  */
 
 import { GameConfig } from "../config/GameConfig";
+import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 import MessageBox_Generate from "../ui-generate/common/MessageBox_generate";
 import TipsBox_Generate from "../ui-generate/common/TipsBox_generate";
 import { utils } from "./uitls";
@@ -91,8 +92,20 @@ export default class MessageBox extends MessageBox_Generate {
 
     protected onShow(...params: any[]): void {
         utils.showUITween(this);
+
     }
 
+    public show(...param: any[]): void {
+        super.show(...param);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, null, () => {
+            this.hide();
+        });
+    }
+
+    public hide(): void {
+        super.hide();
+        KeyOperationManager.getInstance().unregisterKey(null, Keys.Escape);
+    }
 }
 
 export class MessageOneBox extends TipsBox_Generate {
@@ -110,5 +123,17 @@ export class MessageOneBox extends TipsBox_Generate {
         this.mText_message.text = content;
         this.resListener = resListener;
         this.show();
+    }
+
+    public show(...param: any[]): void {
+        super.show(...param);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, null, () => {
+            this.hide();
+        });
+    }
+
+    public hide(): void {
+        super.hide();
+        KeyOperationManager.getInstance().unregisterKey(null, Keys.Escape);
     }
 }
