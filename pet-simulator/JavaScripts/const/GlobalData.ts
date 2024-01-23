@@ -1038,7 +1038,7 @@ export namespace GlobalData {
 
         /**娃娃相对爪子位置 */
         public static DollRelativeClawLoc: mw.Vector[] = [new mw.Vector(0, 24, 0), new mw.Vector(0, 35, 0),
-        new mw.Vector(1.35, 30, 0), new mw.Vector(-1.35, 30, 0), new mw.Vector(0, 35, 0), new mw.Vector(0, 24, 0), new mw.Vector(0, 24, 0)];
+            new mw.Vector(1.35, 30, 0), new mw.Vector(-1.35, 30, 0), new mw.Vector(0, 35, 0), new mw.Vector(0, 24, 0), new mw.Vector(0, 24, 0)];
 
         /**钩子左右下上晃动 */
         public static HookShaking: number[][] = [[0, 3], [0, -3], [0, -3], [0, 3], [90, 93], [90, 87], [90, 87], [90, 93]];
@@ -1265,5 +1265,16 @@ export namespace GlobalData {
          * @type {number}
          */
         public static readonly ENERGY_PATCH_RPC_COUNT = 10;
+    }
+
+    /**
+     * Auth 及 通信.
+     */
+    export class Auth {
+        /**
+         * 最小访问间隔. ms
+         * @type {number}
+         */
+        public static readonly MIN_ACCESS_INTERVAL = 0.5e3;
     }
 }

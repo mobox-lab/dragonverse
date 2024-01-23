@@ -1,6 +1,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import PetGet_Generate from "../../ui-generate/Pet/PetGet_generate";
 import EggInfo_Generate from "../../ui-generate/WorldUI/EggInfo_generate";
 import { cubicBezier } from "../../utils/MoveUtil";
@@ -174,6 +175,10 @@ export class InterBtn {
         this.clear();
         this.inter = TimeUtil.setInterval(this.update.bind(this), 0.05);
         this.root.visibility = (mw.SlateVisibility.SelfHitTestInvisible);
+
+        KeyOperationManager.getInstance().onKeyUp(Keys.F, null, () => {
+            this.callBack();
+        })
     }
 
     private update() {
@@ -189,5 +194,6 @@ export class InterBtn {
     public hide(): void {
         this.clear();
         this.root.visibility = (mw.SlateVisibility.Collapsed);
+        KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
     }
 }

@@ -43,12 +43,12 @@ export default class AchievementItem_Generate extends UIScript {
 		}
 		return this.mProgressBar_Internal
 	}
-	private mText_Grade_Internal: mw.TextBlock
-	public get mText_Grade(): mw.TextBlock {
-		if(!this.mText_Grade_Internal&&this.uiWidgetBase) {
-			this.mText_Grade_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_Grade') as mw.TextBlock
+	private mText_lording_Internal: mw.TextBlock
+	public get mText_lording(): mw.TextBlock {
+		if(!this.mText_lording_Internal&&this.uiWidgetBase) {
+			this.mText_lording_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_lording') as mw.TextBlock
 		}
-		return this.mText_Grade_Internal
+		return this.mText_lording_Internal
 	}
 	private mText_AMname_Internal: mw.TextBlock
 	public get mText_AMname(): mw.TextBlock {
@@ -57,19 +57,19 @@ export default class AchievementItem_Generate extends UIScript {
 		}
 		return this.mText_AMname_Internal
 	}
+	private mText_Grade_Internal: mw.TextBlock
+	public get mText_Grade(): mw.TextBlock {
+		if(!this.mText_Grade_Internal&&this.uiWidgetBase) {
+			this.mText_Grade_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_Grade') as mw.TextBlock
+		}
+		return this.mText_Grade_Internal
+	}
 	private mCanvas_Pointto_Internal: mw.Canvas
 	public get mCanvas_Pointto(): mw.Canvas {
 		if(!this.mCanvas_Pointto_Internal&&this.uiWidgetBase) {
 			this.mCanvas_Pointto_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_Pointto') as mw.Canvas
 		}
 		return this.mCanvas_Pointto_Internal
-	}
-	private mText_NextLevel_Internal: mw.TextBlock
-	public get mText_NextLevel(): mw.TextBlock {
-		if(!this.mText_NextLevel_Internal&&this.uiWidgetBase) {
-			this.mText_NextLevel_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_Pointto/mText_NextLevel') as mw.TextBlock
-		}
-		return this.mText_NextLevel_Internal
 	}
 	private mImage_Point_Internal: mw.Image
 	public get mImage_Point(): mw.Image {
@@ -78,12 +78,12 @@ export default class AchievementItem_Generate extends UIScript {
 		}
 		return this.mImage_Point_Internal
 	}
-	private mText_lording_Internal: mw.TextBlock
-	public get mText_lording(): mw.TextBlock {
-		if(!this.mText_lording_Internal&&this.uiWidgetBase) {
-			this.mText_lording_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_lording') as mw.TextBlock
+	private mText_NextLevel_Internal: mw.TextBlock
+	public get mText_NextLevel(): mw.TextBlock {
+		if(!this.mText_NextLevel_Internal&&this.uiWidgetBase) {
+			this.mText_NextLevel_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_Pointto/mText_NextLevel') as mw.TextBlock
 		}
-		return this.mText_lording_Internal
+		return this.mText_NextLevel_Internal
 	}
 
 
@@ -114,16 +114,16 @@ export default class AchievementItem_Generate extends UIScript {
 		this.initLanguage(this.mText_Award)
 		
 	
-		this.initLanguage(this.mText_Grade)
+		this.initLanguage(this.mText_lording)
 		
 	
 		this.initLanguage(this.mText_AMname)
 		
 	
-		this.initLanguage(this.mText_NextLevel)
+		this.initLanguage(this.mText_Grade)
 		
 	
-		this.initLanguage(this.mText_lording)
+		this.initLanguage(this.mText_NextLevel)
 		
 	
 		//文本多语言

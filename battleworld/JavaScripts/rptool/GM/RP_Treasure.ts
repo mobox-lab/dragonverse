@@ -63,7 +63,7 @@ export default class RP_Treasure extends InteractObject {
     @mw.Property({ displayName: "旋转目标时间", group: "宝箱动画" })
     public targetRotateTime: number = 1;
     @mw.Property({ displayName: "旋转目标延迟时间", group: "宝箱动画" })
-    public targetRotateDelayTime: number = 1;;
+    public targetRotateDelayTime: number = 1;
 
     @mw.Property({ displayName: "奖励物品", group: "奖励" })
     public goodInfors: goodInfor[] = [new goodInfor()];

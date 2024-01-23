@@ -22,19 +22,19 @@ export default class Guide_Generate extends UIScript {
 		}
 		return this.mBtn_dog_Internal
 	}
-	private mPic_check_Internal: mw.Image
-	public get mPic_check(): mw.Image {
-		if(!this.mPic_check_Internal&&this.uiWidgetBase) {
-			this.mPic_check_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mPic_check') as mw.Image
-		}
-		return this.mPic_check_Internal
-	}
 	private mPic_check2_Internal: mw.Image
 	public get mPic_check2(): mw.Image {
 		if(!this.mPic_check2_Internal&&this.uiWidgetBase) {
 			this.mPic_check2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mPic_check2') as mw.Image
 		}
 		return this.mPic_check2_Internal
+	}
+	private mPic_check_Internal: mw.Image
+	public get mPic_check(): mw.Image {
+		if(!this.mPic_check_Internal&&this.uiWidgetBase) {
+			this.mPic_check_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mPic_check') as mw.Image
+		}
+		return this.mPic_check_Internal
 	}
 	private mBtn_OK_Internal: mw.StaleButton
 	public get mBtn_OK(): mw.StaleButton {

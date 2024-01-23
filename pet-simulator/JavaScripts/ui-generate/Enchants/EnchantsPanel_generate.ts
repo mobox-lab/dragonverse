@@ -15,6 +15,20 @@ export default class EnchantsPanel_Generate extends UIScript {
 		}
 		return this.mCanvas_Internal
 	}
+	private mTextBlock_1_Internal: mw.TextBlock
+	public get mTextBlock_1(): mw.TextBlock {
+		if(!this.mTextBlock_1_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_1') as mw.TextBlock
+		}
+		return this.mTextBlock_1_Internal
+	}
+	private mTextBlock_Cost_Internal: mw.TextBlock
+	public get mTextBlock_Cost(): mw.TextBlock {
+		if(!this.mTextBlock_Cost_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_Cost_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_Cost') as mw.TextBlock
+		}
+		return this.mTextBlock_Cost_Internal
+	}
 	private mScrollBox_Internal: mw.ScrollBox
 	public get mScrollBox(): mw.ScrollBox {
 		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
@@ -49,20 +63,6 @@ export default class EnchantsPanel_Generate extends UIScript {
 			this.mTextBlock_Enchant_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mButton_Enchant/mTextBlock_Enchant') as mw.TextBlock
 		}
 		return this.mTextBlock_Enchant_Internal
-	}
-	private mTextBlock_1_Internal: mw.TextBlock
-	public get mTextBlock_1(): mw.TextBlock {
-		if(!this.mTextBlock_1_Internal&&this.uiWidgetBase) {
-			this.mTextBlock_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_1') as mw.TextBlock
-		}
-		return this.mTextBlock_1_Internal
-	}
-	private mTextBlock_Cost_Internal: mw.TextBlock
-	public get mTextBlock_Cost(): mw.TextBlock {
-		if(!this.mTextBlock_Cost_Internal&&this.uiWidgetBase) {
-			this.mTextBlock_Cost_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_Cost') as mw.TextBlock
-		}
-		return this.mTextBlock_Cost_Internal
 	}
 	private mCanvas_Entry_Internal: mw.Canvas
 	public get mCanvas_Entry(): mw.Canvas {
@@ -127,13 +127,13 @@ export default class EnchantsPanel_Generate extends UIScript {
 		
 		//文本多语言
 		
-		this.initLanguage(this.mTextBlock_Enchant)
-		
-	
 		this.initLanguage(this.mTextBlock_1)
 		
 	
 		this.initLanguage(this.mTextBlock_Cost)
+		
+	
+		this.initLanguage(this.mTextBlock_Enchant)
 		
 	
 		this.initLanguage(this.mTextBlock_2)

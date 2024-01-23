@@ -13,8 +13,8 @@ export class TimeManager extends Singleton<TimeManager>() {
             mw.Event.addServerListener("onSyncServerTime", (time: number) => {
 
                 let curClientTime = Date.now()
-                let networdDelay = curClientTime - this._preRequestServerTime
-                let curServerTime = time - (networdDelay >> 1);
+                let networkDelay = curClientTime - this._preRequestServerTime
+                let curServerTime = time - (networkDelay >> 1);
                 this._timeDiff = curServerTime - curClientTime;
             })
 

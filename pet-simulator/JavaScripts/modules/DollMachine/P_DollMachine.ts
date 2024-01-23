@@ -1,3 +1,4 @@
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import CoinUI_Generate from "../../ui-generate/Catching/CoinUI_generate";
 import ControlUI_Generate from "../../ui-generate/Catching/ControlUI_generate";
 import { utils } from "../../utils/uitls";
@@ -47,6 +48,45 @@ export class P_DollMachine extends ControlUI_Generate {
             this.catchAc.call(this.machineId);
             console.log("MachineId = " + this.machineId)
         })
+
+        this.showAction.add(() => {
+            KeyOperationManager.getInstance().onKeyDown(Keys.Up, this, () => {
+                this.onMoveAc.call(MoveType.Up, true, this.machineId);
+            });
+            KeyOperationManager.getInstance().onKeyDown(Keys.Down, this, () => {
+                this.onMoveAc.call(MoveType.Down, true, this.machineId);
+            });
+            KeyOperationManager.getInstance().onKeyDown(Keys.Left, this, () => {
+                this.onMoveAc.call(MoveType.Left, true, this.machineId);
+            });
+            KeyOperationManager.getInstance().onKeyDown(Keys.Right, this, () => {
+                this.onMoveAc.call(MoveType.Right, true, this.machineId);
+            });
+            KeyOperationManager.getInstance().onKeyUp(Keys.Up, this, () => {
+                this.onMoveAc.call(MoveType.Up, false, this.machineId);
+            });
+            KeyOperationManager.getInstance().onKeyUp(Keys.Down, this, () => {
+                this.onMoveAc.call(MoveType.Down, false, this.machineId);
+            });
+            KeyOperationManager.getInstance().onKeyUp(Keys.Left, this, () => {
+                this.onMoveAc.call(MoveType.Left, false, this.machineId);
+            });
+            KeyOperationManager.getInstance().onKeyUp(Keys.Right, this, () => {
+                this.onMoveAc.call(MoveType.Right, false, this.machineId);
+            });
+            KeyOperationManager.getInstance().onKeyUp(Keys.F, this, () => {
+                this.catchAc.call(this.machineId);
+                console.log("MachineId = " + this.machineId);
+            });
+        })
+        this.hideAction.add(() => {
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Up);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Down);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Left);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Right);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.F);
+        })
+
 
     }
 }

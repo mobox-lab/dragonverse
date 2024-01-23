@@ -92,26 +92,47 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.mText_coin_Internal
 	}
+	private mCanvas_Mcoin_Internal: mw.Canvas
+	public get mCanvas_Mcoin(): mw.Canvas {
+		if(!this.mCanvas_Mcoin_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Mcoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_Mcoin') as mw.Canvas
+		}
+		return this.mCanvas_Mcoin_Internal
+	}
+	private mText_Mcoin_Internal: mw.TextBlock
+	public get mText_Mcoin(): mw.TextBlock {
+		if(!this.mText_Mcoin_Internal&&this.uiWidgetBase) {
+			this.mText_Mcoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_Mcoin/mText_Mcoin') as mw.TextBlock
+		}
+		return this.mText_Mcoin_Internal
+	}
+	private mAdd_Btn_Internal: mw.Button
+	public get mAdd_Btn(): mw.Button {
+		if(!this.mAdd_Btn_Internal&&this.uiWidgetBase) {
+			this.mAdd_Btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_Mcoin/mAdd_Btn') as mw.Button
+		}
+		return this.mAdd_Btn_Internal
+	}
+	private mRefresh_Btn_Internal: mw.Button
+	public get mRefresh_Btn(): mw.Button {
+		if(!this.mRefresh_Btn_Internal&&this.uiWidgetBase) {
+			this.mRefresh_Btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_Mcoin/mRefresh_Btn') as mw.Button
+		}
+		return this.mRefresh_Btn_Internal
+	}
+	private mPic_Mcoin_Internal: mw.Image
+	public get mPic_Mcoin(): mw.Image {
+		if(!this.mPic_Mcoin_Internal&&this.uiWidgetBase) {
+			this.mPic_Mcoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_Mcoin/mPic_Mcoin') as mw.Image
+		}
+		return this.mPic_Mcoin_Internal
+	}
 	private mCanvas_stamina_Internal: mw.Canvas
 	public get mCanvas_stamina(): mw.Canvas {
 		if(!this.mCanvas_stamina_Internal&&this.uiWidgetBase) {
 			this.mCanvas_stamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_stamina') as mw.Canvas
 		}
 		return this.mCanvas_stamina_Internal
-	}
-	private mPic_stamina_Internal: mw.Image
-	public get mPic_stamina(): mw.Image {
-		if(!this.mPic_stamina_Internal&&this.uiWidgetBase) {
-			this.mPic_stamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_stamina/mPic_stamina') as mw.Image
-		}
-		return this.mPic_stamina_Internal
-	}
-	private mText_stamina_Internal: mw.TextBlock
-	public get mText_stamina(): mw.TextBlock {
-		if(!this.mText_stamina_Internal&&this.uiWidgetBase) {
-			this.mText_stamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_stamina/mText_stamina') as mw.TextBlock
-		}
-		return this.mText_stamina_Internal
 	}
 	private mText_Interval_Internal: mw.TextBlock
 	public get mText_Interval(): mw.TextBlock {
@@ -127,40 +148,19 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.mText_stamina2_Internal
 	}
-	private mCanvas_Mcoin_Internal: mw.Canvas
-	public get mCanvas_Mcoin(): mw.Canvas {
-		if(!this.mCanvas_Mcoin_Internal&&this.uiWidgetBase) {
-			this.mCanvas_Mcoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_Mcoin') as mw.Canvas
+	private mPic_stamina_Internal: mw.Image
+	public get mPic_stamina(): mw.Image {
+		if(!this.mPic_stamina_Internal&&this.uiWidgetBase) {
+			this.mPic_stamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_stamina/mPic_stamina') as mw.Image
 		}
-		return this.mCanvas_Mcoin_Internal
+		return this.mPic_stamina_Internal
 	}
-	private mPic_Mcoin_Internal: mw.Image
-	public get mPic_Mcoin(): mw.Image {
-		if(!this.mPic_Mcoin_Internal&&this.uiWidgetBase) {
-			this.mPic_Mcoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_Mcoin/mPic_Mcoin') as mw.Image
+	private mText_stamina_Internal: mw.TextBlock
+	public get mText_stamina(): mw.TextBlock {
+		if(!this.mText_stamina_Internal&&this.uiWidgetBase) {
+			this.mText_stamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_stamina/mText_stamina') as mw.TextBlock
 		}
-		return this.mPic_Mcoin_Internal
-	}
-	private mText_Mcoin_Internal: mw.TextBlock
-	public get mText_Mcoin(): mw.TextBlock {
-		if(!this.mText_Mcoin_Internal&&this.uiWidgetBase) {
-			this.mText_Mcoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_Mcoin/mText_Mcoin') as mw.TextBlock
-		}
-		return this.mText_Mcoin_Internal
-	}
-	private mRefresh_Btn_Internal: mw.Button
-	public get mRefresh_Btn(): mw.Button {
-		if(!this.mRefresh_Btn_Internal&&this.uiWidgetBase) {
-			this.mRefresh_Btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_Mcoin/mRefresh_Btn') as mw.Button
-		}
-		return this.mRefresh_Btn_Internal
-	}
-	private mAdd_Btn_Internal: mw.Button
-	public get mAdd_Btn(): mw.Button {
-		if(!this.mAdd_Btn_Internal&&this.uiWidgetBase) {
-			this.mAdd_Btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_Mcoin/mAdd_Btn') as mw.Button
-		}
-		return this.mAdd_Btn_Internal
+		return this.mText_stamina_Internal
 	}
 	private mCanvas_Transmit_Internal: mw.Canvas
 	public get mCanvas_Transmit(): mw.Canvas {
@@ -297,16 +297,16 @@ export default class Hud_Generate extends UIScript {
 		this.mBtn_petspeed.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
-		this.mRefresh_Btn.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mRefresh_Btn");
-		})
-		this.mRefresh_Btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
 		this.mAdd_Btn.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mAdd_Btn");
 		})
 		this.mAdd_Btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.mRefresh_Btn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mRefresh_Btn");
+		})
+		this.mRefresh_Btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		this.mBtn_Transmit.onClicked.add(()=>{
@@ -344,7 +344,7 @@ export default class Hud_Generate extends UIScript {
 		this.initLanguage(this.mText_coin)
 		
 	
-		this.initLanguage(this.mText_stamina)
+		this.initLanguage(this.mText_Mcoin)
 		
 	
 		this.initLanguage(this.mText_Interval)
@@ -353,7 +353,7 @@ export default class Hud_Generate extends UIScript {
 		this.initLanguage(this.mText_stamina2)
 		
 	
-		this.initLanguage(this.mText_Mcoin)
+		this.initLanguage(this.mText_stamina)
 		
 	
 		//文本多语言
