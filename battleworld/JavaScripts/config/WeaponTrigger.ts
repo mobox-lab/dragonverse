@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","name1","weaponId","triggerGuid","worldUIGuid","sellValue"],["","","","","",""],[1,"近战单手剑",2,"17BEFE91","307BEDEB",10000],[2,"法杖",3,"1F58D9F4","0692B870",2500],[3,"双手剑",4,"2E8BD119","1EA81627",20000]];
+const EXCELDATA:Array<Array<any>> = [["id","name1","weaponId","triggerGuid","worldUIGuid","sellValue"],["","","","","",""],[1,"近战单手剑",2,"17BEFE91","307BEDEB",20000],[2,"法杖",3,"1F58D9F4","0692B870",10000],[3,"双手剑",4,"2E8BD119","1EA81627",30000]];
 export interface IWeaponTriggerElement extends IElementBase{
  	/**唯一id*/
 	id:number

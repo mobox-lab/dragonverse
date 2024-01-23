@@ -1,5 +1,4 @@
 import CryptoJS from "crypto-js";
-import GameStart from "../../GameStart";
 import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { SubGameTypes } from "../../const/SubGameTypes";
