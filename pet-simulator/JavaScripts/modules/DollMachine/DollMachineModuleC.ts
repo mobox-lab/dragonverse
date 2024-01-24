@@ -2,6 +2,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import MessageBox from "../../utils/MessageBox";
 import { utils } from "../../utils/uitls";
 import { AnalyticsTool, ButtonAnaly } from "../Analytics/AnalyticsTool";
@@ -85,10 +86,11 @@ class DollMachineC {
         // 初始化倒计时任务id为null
         this.timeCountIntervalId = null;
     }
-
+    private _worldUIPos: Vector = new Vector();
     /**初始化开始抓娃娃世界UI点击事件 */
     private initStartUI(conf: IDollMachineElement) {
         let startBtnObj = GameObject.findGameObjectById(conf.Control) as mw.UIWidget;
+        this._worldUIPos = startBtnObj.worldTransform.position;
         this.startBtn = startBtnObj.getTargetUIWidget().rootContent.findChildByPath("mCanvas/mButton_Catch") as mw.Button;
         this.startBtn.onClicked.add(() => {
             this.onClickStartBtnAction.call(this.id);
@@ -97,6 +99,17 @@ class DollMachineC {
         // 设置为未抓娃娃UI
         this.defaultCanvas.visibility = mw.SlateVisibility.SelfHitTestInvisible;
         this.useCanvas.visibility = mw.SlateVisibility.Collapsed;
+
+        this.setStartShortcutKey();
+    }
+
+    public setStartShortcutKey() {
+        KeyOperationManager.getInstance().onKeyUp(Keys.F, null, () => {
+            let distance = Vector.squaredDistance(Player.localPlayer.character.worldTransform.position, this._worldUIPos);
+            if (distance < 270000) {
+                this.onClickStartBtnAction.call(this.id);
+            }
+        })
     }
 
     /**初始化gameObject */
@@ -165,6 +178,8 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
         }
     }
 
+
+
     /**添加开始抓娃娃事件 */
     private addStartBtnListener() {
         let len = this.machineList.length;
@@ -172,6 +187,12 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
             this.machineList[machineId].onClickStartBtnAction.add((id) => {
                 this.startBtnClick(id);
             })
+        }
+    }
+
+    public setDollMachineShortcutKey() {
+        for (let machineId = 1; machineId < this.machineList.length; machineId++) {
+            this.machineList[machineId].setStartShortcutKey()
         }
     }
 

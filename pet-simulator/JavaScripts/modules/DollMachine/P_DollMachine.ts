@@ -2,6 +2,7 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import CoinUI_Generate from "../../ui-generate/Catching/CoinUI_generate";
 import ControlUI_Generate from "../../ui-generate/Catching/ControlUI_generate";
 import { utils } from "../../utils/uitls";
+import { DollMachineModuleC } from "./DollMachineModuleC";
 
 
 export enum MoveType {
@@ -74,6 +75,8 @@ export class P_DollMachine extends ControlUI_Generate {
             KeyOperationManager.getInstance().onKeyUp(Keys.Right, this, () => {
                 this.onMoveAc.call(MoveType.Right, false, this.machineId);
             });
+            //先把开始抓娃娃的f键取消注册
+            KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
             KeyOperationManager.getInstance().onKeyUp(Keys.F, this, () => {
                 this.catchAc.call(this.machineId);
                 console.log("MachineId = " + this.machineId);
@@ -85,6 +88,8 @@ export class P_DollMachine extends ControlUI_Generate {
             KeyOperationManager.getInstance().unregisterKey(this, Keys.Left);
             KeyOperationManager.getInstance().unregisterKey(this, Keys.Right);
             KeyOperationManager.getInstance().unregisterKey(this, Keys.F);
+            //结束了抓娃娃的f键注册上
+            ModuleService.getModule(DollMachineModuleC).setDollMachineShortcutKey();
         })
 
 

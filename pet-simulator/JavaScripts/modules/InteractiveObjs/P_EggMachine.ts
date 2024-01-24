@@ -4,8 +4,10 @@ import { GlobalData } from "../../const/GlobalData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import PetGet_Generate from "../../ui-generate/Pet/PetGet_generate";
 import EggInfo_Generate from "../../ui-generate/WorldUI/EggInfo_generate";
+import EggInteract_Generate from "../../ui-generate/WorldUI/EggInteract_generate";
 import { cubicBezier } from "../../utils/MoveUtil";
 import { Singleton } from "../../utils/uitls";
+import { DollMachineModuleC } from "../DollMachine/DollMachineModuleC";
 import { P_HudUI } from "../Hud/P_HudUI";
 
 
@@ -175,10 +177,12 @@ export class InterBtn {
         this.clear();
         this.inter = TimeUtil.setInterval(this.update.bind(this), 0.05);
         this.root.visibility = (mw.SlateVisibility.SelfHitTestInvisible);
-
+        //挂null上的key是全局的，先把娃娃机的取消掉
+        KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
         KeyOperationManager.getInstance().onKeyUp(Keys.F, null, () => {
             this.callBack();
-        })
+        });
+
     }
 
     private update() {
@@ -195,5 +199,7 @@ export class InterBtn {
         this.clear();
         this.root.visibility = (mw.SlateVisibility.Collapsed);
         KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
+        //由于都是f键绑在null上，需要把娃娃机的f键再注册上
+        ModuleService.getModule(DollMachineModuleC).setDollMachineShortcutKey();
     }
 }
