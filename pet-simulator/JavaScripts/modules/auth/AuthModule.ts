@@ -573,16 +573,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             pool_id: 2,
             round: 1,
             sign: "",
-            ts: Date.now(),
+            ts: (Date.now() / 1e3) | 0,
         };
 
         p.sign = this.getSign(p);
         return p;
     }
 
-    public async reportPetRankData(petName: string, rarity: PetQuality, attack: number, obtainTime: number) {
-        const playerId = this.currentPlayerId;
-        const userId = Player.getPlayer(playerId).userId;
+    public async reportPetRankData(playerId: number, petName: string, rarity: PetQuality, attack: number, obtainTime: number) {
+        const userId = Player.getPlayer(playerId)?.userId ?? null;
+        if (GToolkit.isNullOrUndefined(userId)) {
+            Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
+            return;
+        }
 
         const param: UpdatePetSimulatorRankDataParam = {
             mwGameId: userId,
