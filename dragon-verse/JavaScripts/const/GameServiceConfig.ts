@@ -513,5 +513,55 @@ export default class GameServiceConfig {
      * @type {number}
      */
     public static readonly RAGDOLL_SUSTAIN_DURATION = 2e3;
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    /**
+     * 角色 最大行走速度.
+     */
+    public static readonly ROLE_MAX_WALK_SPEED_OBBY = 400;
+
+    /**
+     * 角色 最大行走加速度.
+     */
+    public static readonly ROLE_MAX_WALK_ACCURATE_OBBY = 5000;
+
+    /**
+     * 角色 不可跨越高度.
+     */
+    public static readonly ROLE_MAX_STEP_HEIGHT_OBBY = 80;
+
+    /**
+     * 角色 最大站稳角度.
+     */
+    public static readonly ROLE_WALKABLE_FLOOR_ANGLE_OBBY = 30;
+
+    /**
+     * 角色 最大转向速度.
+     */
+    public static readonly ROLE_ROTATE_RATE_OBBY = 2048;
+
+    /**
+     * 角色 地面摩擦力.
+     */
+    public static readonly ROLE_GROUND_FRICTION_OBBY = 6;
+
+    /**
+     * 角色 下落速度.
+     */
+    public static readonly ROLE_FALLING_SPEED_OBBY = 2000;
+
+    /**
+     * 角色 重力倍率.
+     */
+    public static readonly ROLE_GRAVITY_SCALE_OBBY = 2.4;
+
+    /**
+     * 角色 最大跳跃高度.
+     */
+    public static readonly ROLE_JUMP_HEIGHT_OBBY = 200;
+
+    /**
+     * 角色 最大跳跃次数.
+     */
+    public static readonly ROLE_JUMP_MAX_COUNT_OBBY = 1;
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ //#region Role
 }
