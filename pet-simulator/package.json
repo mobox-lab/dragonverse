@@ -8,6 +8,8 @@
     "odin": "^5.0.5",
     "@types/crypto-js": "^4.2.1",
     "crypto-js": "^4.2.0",
-    "linq": "^4.0.2"
+    "linq": "^4.0.2",
+    "@types/uuid": "^9.0.7",
+    "pure-uuid": "^1.8.1"
   }
 }
