@@ -7,6 +7,8 @@
 
 import { GameConfig } from "../../config/GameConfig";
 import { EventDefine } from "../../const/EventDefine";
+import GameServiceConfig from "../../const/GameServiceConfig";
+import Nolan from "../../depend/nolan/Nolan";
 import MainPanel from "../../ui/main/MainPanel";
 import GToolkit from "../../util/GToolkit";
 import { RunningGameGetParticle } from "../quest/runnungGame/RunningGameQuest";
@@ -37,25 +39,11 @@ export default class HighSchoolTrigger extends mw.Script {
     })
     private _circleType: HighSchoolType = HighSchoolType.TransStart;
 
-    @mw.Property({ displayName: "跑酷最大速度" })
-    public walkMaxSpeed: number = 1;
-    @mw.Property({ displayName: "跑酷最大跳跃次数" })
-    public jumpMaxCount: number = 1;
-    @mw.Property({ displayName: "不可跨越高度" })
-    public jumpMaxHeight: number = 1;
-
     private _trigger: mw.Trigger;
 
-    private maxWalkSpeedOld = 0; //地面最大速度
-    private maxAccelerationOld = 0;//地面最大加速度
-    // private maxJumpHeight = 0; //不可跨越高度
-    // private maxJumpHeight = 0; //最大站稳角度
-    private rotateRateOld = 0; //最大转向速度
-    // private maxJumpHeightOld = 0; //地面摩擦力
-    // private maxJumpHeight = 0; //下落速度
-    // private maxJumpHeight = 0; //重力倍率
-    private maxJumpHeightOld = 0; //最大跳跃高度
-    private jumpMaxCountOld = 0; //最大跳跃次数
+    private _hander: number;
+
+    public static startTran:Transform;
 
     protected onStart(): void {
         if (mw.SystemUtil.isServer()) {
@@ -72,37 +60,40 @@ export default class HighSchoolTrigger extends mw.Script {
 
     }
 
+    protected onUpdate(dt: number): void {
+        super.onUpdate(dt);
+
+    }
+
     private onEnter = (obj: mw.GameObject) => {
         if (obj instanceof mw.Character) {
             if (GToolkit.isSelfCharacter(obj)) {
                 if (this._circleType == HighSchoolType.TransStart) {
-                    this.recordOldValue(obj);
-                    obj.maxJumpHeight = this.jumpMaxHeight;
-                    obj.jumpMaxCount = this.jumpMaxCount;
-                    obj.maxWalkSpeed = this.walkMaxSpeed;
-                    
+                    HighSchoolTrigger.startTran = obj.worldTransform;
                     UIService.getUI(MainPanel).setCanSprint(false);
                 }else if (this._circleType == HighSchoolType.DeadBackGround) {
-                    
+                    this._hander = TimeUtil.setInterval(this.onCountDown, 2);
+                    //锁定摄像头
+
                 }else if (this._circleType == HighSchoolType.DeadRed) {
-
+                    obj.ragdollEnabled = true;
+                    this._hander = TimeUtil.setInterval(this.onCountDown, 2);
                 }
-
             }
         }
     };
 
-    private recordOldValue(obj:Character){
-        this.maxWalkSpeedOld = obj.maxWalkSpeed;
-        this.maxAccelerationOld = obj.maxAcceleration;
-        this.rotateRateOld = obj.rotateRate;
-        this.maxJumpHeightOld = obj.maxJumpHeight;
-        this.jumpMaxCountOld = obj.jumpMaxCount;
-    }
+    private onCountDown = () => {
+        if (this._hander) {
+            TimeUtil.clearInterval(this._hander);
+            this._hander = null;
+        }
+        this.reborn();
+    };
 
     private reborn(){
-
+        Player.localPlayer.character.worldTransform = HighSchoolTrigger.startTran;
+        Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
     }
-
 
 }
