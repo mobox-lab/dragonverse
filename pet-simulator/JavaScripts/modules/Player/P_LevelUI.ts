@@ -1,5 +1,6 @@
 ﻿import { GameConfig } from "../../config/GameConfig";
 import { IUpgradeElement } from "../../config/Upgrade";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import LevelUI_Generate from "../../ui-generate/LevelUp/LevelUI_generate";
 import TypeItem_Generate from "../../ui-generate/LevelUp/TypeItem_generate";
 import { utils } from "../../utils/uitls";
@@ -34,6 +35,17 @@ export class P_LevelUI extends LevelUI_Generate {
         if (item) {
             item.setLevel(grade);
         }
+    }
+
+    protected onShow(...params: any[]): void {
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.hide();
+        });
+    }
+
+    public hide(): void {
+        super.hide();
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
 }

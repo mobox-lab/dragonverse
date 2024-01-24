@@ -8,12 +8,12 @@
 
 @UIBind('UI/LevelUp/TypeItem.ui')
 export default class TypeItem_Generate extends UIScript {
-		private mBtn_Levelup_Internal: mw.Button
-	public get mBtn_Levelup(): mw.Button {
-		if(!this.mBtn_Levelup_Internal&&this.uiWidgetBase) {
-			this.mBtn_Levelup_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Levelup') as mw.Button
+		private mImg_Icon_Internal: mw.Image
+	public get mImg_Icon(): mw.Image {
+		if(!this.mImg_Icon_Internal&&this.uiWidgetBase) {
+			this.mImg_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mImg_Icon') as mw.Image
 		}
-		return this.mBtn_Levelup_Internal
+		return this.mImg_Icon_Internal
 	}
 	private mText_DiaNum_Internal: mw.TextBlock
 	public get mText_DiaNum(): mw.TextBlock {
@@ -21,6 +21,13 @@ export default class TypeItem_Generate extends UIScript {
 			this.mText_DiaNum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_DiaNum') as mw.TextBlock
 		}
 		return this.mText_DiaNum_Internal
+	}
+	private mBtn_Levelup_Internal: mw.Button
+	public get mBtn_Levelup(): mw.Button {
+		if(!this.mBtn_Levelup_Internal&&this.uiWidgetBase) {
+			this.mBtn_Levelup_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Levelup') as mw.Button
+		}
+		return this.mBtn_Levelup_Internal
 	}
 	private canvas_tupian_Internal: mw.Canvas
 	public get canvas_tupian(): mw.Canvas {
@@ -105,13 +112,6 @@ export default class TypeItem_Generate extends UIScript {
 			this.mImage_Piece_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_Schedule/mImage_Piece_4') as mw.Image
 		}
 		return this.mImage_Piece_4_Internal
-	}
-	private mImg_Icon_Internal: mw.Image
-	public get mImg_Icon(): mw.Image {
-		if(!this.mImg_Icon_Internal&&this.uiWidgetBase) {
-			this.mImg_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mImg_Icon') as mw.Image
-		}
-		return this.mImg_Icon_Internal
 	}
 	private mTxt_Itro_Internal: mw.TextBlock
 	public get mTxt_Itro(): mw.TextBlock {

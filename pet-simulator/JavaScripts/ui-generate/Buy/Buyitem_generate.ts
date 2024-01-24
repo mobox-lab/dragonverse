@@ -6,8 +6,8 @@
 
 
 
-@UIBind('UI/Pet/PetGet.ui')
-export default class PetGet_Generate extends UIScript {
+@UIBind('UI/Buy/Buyitem.ui')
+export default class Buyitem_Generate extends UIScript {
 		private mCanvas_Internal: mw.Canvas
 	public get mCanvas(): mw.Canvas {
 		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
@@ -15,33 +15,12 @@ export default class PetGet_Generate extends UIScript {
 		}
 		return this.mCanvas_Internal
 	}
-	private mImage_Internal: mw.Image
-	public get mImage(): mw.Image {
-		if(!this.mImage_Internal&&this.uiWidgetBase) {
-			this.mImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage') as mw.Image
+	private mImage_Icon_Internal: mw.Image
+	public get mImage_Icon(): mw.Image {
+		if(!this.mImage_Icon_Internal&&this.uiWidgetBase) {
+			this.mImage_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage_Icon') as mw.Image
 		}
-		return this.mImage_Internal
-	}
-	private mNameText_Internal: mw.TextBlock
-	public get mNameText(): mw.TextBlock {
-		if(!this.mNameText_Internal&&this.uiWidgetBase) {
-			this.mNameText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mNameText') as mw.TextBlock
-		}
-		return this.mNameText_Internal
-	}
-	private mQualityText_Internal: mw.TextBlock
-	public get mQualityText(): mw.TextBlock {
-		if(!this.mQualityText_Internal&&this.uiWidgetBase) {
-			this.mQualityText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mQualityText') as mw.TextBlock
-		}
-		return this.mQualityText_Internal
-	}
-	private mPic_Flash_Internal: mw.Image
-	public get mPic_Flash(): mw.Image {
-		if(!this.mPic_Flash_Internal&&this.uiWidgetBase) {
-			this.mPic_Flash_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_Flash') as mw.Image
-		}
-		return this.mPic_Flash_Internal
+		return this.mImage_Icon_Internal
 	}
 
 
@@ -66,12 +45,6 @@ export default class PetGet_Generate extends UIScript {
 		
 		//文本多语言
 		
-		this.initLanguage(this.mNameText)
-		
-	
-		this.initLanguage(this.mQualityText)
-		
-	
 		//文本多语言
 		
 

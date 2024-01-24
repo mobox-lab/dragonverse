@@ -71,19 +71,19 @@ export default class Dev_Generate extends UIScript {
 		}
 		return this.mTextBlock_Explain_Internal
 	}
-	private mStaleButton_Ok_Internal: mw.StaleButton
-	public get mStaleButton_Ok(): mw.StaleButton {
-		if(!this.mStaleButton_Ok_Internal&&this.uiWidgetBase) {
-			this.mStaleButton_Ok_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Left/mStaleButton_Ok') as mw.StaleButton
-		}
-		return this.mStaleButton_Ok_Internal
-	}
 	private mTextBlock_Worn_Internal: mw.TextBlock
 	public get mTextBlock_Worn(): mw.TextBlock {
 		if(!this.mTextBlock_Worn_Internal&&this.uiWidgetBase) {
 			this.mTextBlock_Worn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Left/mTextBlock_Worn') as mw.TextBlock
 		}
 		return this.mTextBlock_Worn_Internal
+	}
+	private mStaleButton_Ok_Internal: mw.StaleButton
+	public get mStaleButton_Ok(): mw.StaleButton {
+		if(!this.mStaleButton_Ok_Internal&&this.uiWidgetBase) {
+			this.mStaleButton_Ok_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Left/mStaleButton_Ok') as mw.StaleButton
+		}
+		return this.mStaleButton_Ok_Internal
 	}
 
 

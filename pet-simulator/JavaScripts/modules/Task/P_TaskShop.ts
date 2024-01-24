@@ -8,6 +8,7 @@ import TaskShop_Itemmin_Generate from "../../ui-generate/Task/TaskShop_Itemmin_g
 import TaskShop_ItemText_Generate from "../../ui-generate/Task/TaskShop_ItemText_generate";
 import { utils } from "../../utils/uitls";
 import { TipsManager } from "../Hud/P_TipUI";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 export class P_TaskShop extends TaskShop_Generate {
 
@@ -24,6 +25,9 @@ export class P_TaskShop extends TaskShop_Generate {
             this.init(taskShopData);
         }
         super.show(...param);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.hide();
+        });
     }
 
     private init(taskShopData: MapEx.MapExClass<number>) {
@@ -71,6 +75,11 @@ export class P_TaskShop extends TaskShop_Generate {
         item.init(data, this);
         this.uiItemArr.set(data.id, item);
         return item;
+    }
+
+    public hide(): void {
+        super.hide();
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
 }

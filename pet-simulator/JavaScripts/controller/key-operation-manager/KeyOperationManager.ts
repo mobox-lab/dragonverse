@@ -69,7 +69,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
     }
 
     /**
-     * register {@link InputUtil.OnKeyUp} for ui.
+     * register {@link InputUtil.onKeyUp} for ui.
      * @param key
      * @param ui
      *      - undefined or null. will unregister as a global key operation.
