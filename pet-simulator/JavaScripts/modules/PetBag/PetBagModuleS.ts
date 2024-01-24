@@ -75,7 +75,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             let pet = data.bagItemsByKey(petKey);
             let petConfig = GameConfig.PetARR.getElement(pet.I);
             if (petConfig) {
-                ModuleService.getModule(AuthModuleS).reportPetRankData(playerID, pet.p.n, petConfig.DevType, pet.p.a, pet.obtainTime, currRound);
+                ModuleService.getModule(AuthModuleS).reportPetRankData(playerID, pet.p.n, petConfig.QualityType, pet.p.a, pet.obtainTime, currRound);
             }
         }
 
