@@ -1276,5 +1276,7 @@ export namespace GlobalData {
          * @type {number}
          */
         public static readonly MIN_ACCESS_INTERVAL = 0.5e3;
+
+        public static readonly MAX_ORDER_LOG_COUNT = 50;
     }
 }

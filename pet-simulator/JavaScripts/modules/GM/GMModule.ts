@@ -596,6 +596,16 @@ AddGMCommand(
     (player, value) => {
         ModuleService.getModule(AuthModuleS)["queryCurrency"](player.playerId);
     },
+    "Auth",
+);
+
+AddGMCommand(
+    "消费货币",
+    undefined,
+    (player, value) => {
+        ModuleService.getModule(AuthModuleS)["pay"](player.playerId, Number(value));
+    },
+    "Auth",
 );
 
 /**颜色改变tween */

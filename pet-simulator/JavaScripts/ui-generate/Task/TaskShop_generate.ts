@@ -15,6 +15,13 @@ export default class TaskShop_Generate extends UIScript {
 		}
 		return this.mCanvas_Internal
 	}
+	private mText_Point_Internal: mw.TextBlock
+	public get mText_Point(): mw.TextBlock {
+		if(!this.mText_Point_Internal&&this.uiWidgetBase) {
+			this.mText_Point_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Point') as mw.TextBlock
+		}
+		return this.mText_Point_Internal
+	}
 	private mScrollBox_Internal: mw.ScrollBox
 	public get mScrollBox(): mw.ScrollBox {
 		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
@@ -28,13 +35,6 @@ export default class TaskShop_Generate extends UIScript {
 			this.mCanvas_List_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox/mCanvas_List') as mw.Canvas
 		}
 		return this.mCanvas_List_Internal
-	}
-	private mText_Point_Internal: mw.TextBlock
-	public get mText_Point(): mw.TextBlock {
-		if(!this.mText_Point_Internal&&this.uiWidgetBase) {
-			this.mText_Point_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Point') as mw.TextBlock
-		}
-		return this.mText_Point_Internal
 	}
 	private mBtn_close_Internal: mw.Button
 	public get mBtn_close(): mw.Button {

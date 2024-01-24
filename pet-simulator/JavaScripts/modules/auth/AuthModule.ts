@@ -8,10 +8,28 @@ import PetQuality = GlobalEnum.PetQuality;
 import { GlobalData } from "../../const/GlobalData";
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
+import UUID from "pure-uuid";
 
 export default class AuthModuleData extends JModuleData {
     //@Decorator.persistence()
     //public isSave: bool;
+
+    public orderLogs: string[] = [];
+
+    /**
+     * 记录一个订单.
+     * 自带 save.
+     * @server 仅服务端
+     * @param {ConsumeParam} order
+     */
+    public serverSaveOrder(order: ConsumeParam) {
+        const str = JSON.stringify(order);
+        if (this.orderLogs.length >= GlobalData.Auth.MAX_ORDER_LOG_COUNT) {
+            this.orderLogs.shift();
+        }
+        this.orderLogs.push(str);
+        this.save(false);
+    }
 }
 
 interface GetTokenParam {
@@ -43,6 +61,66 @@ interface QueryCurrencyResponse {
     data?: { balance: number };
 }
 
+interface ConsumeParam {
+    /**
+     * 分配的client_id.
+     */
+    client_id: string;
+    /**
+     * 订单id, 相同订单id, 不能重复提交.
+     */
+    order_id: string;
+    /**
+     * 币种类型.
+     */
+    symbol: string;
+    /**
+     * 当前轮次.
+     */
+    round: number;
+    /**
+     * 消费要进入的奖池Id, 2表示赛季奖励池, 20表示暂存池(主要用户擂台, 交易等不入消费池).
+     */
+    pool_id: number;
+    /**
+     * 数量.
+     */
+    amount: number;
+    /**
+     * 扣款类型75000 - 79999.
+     */
+    action: number;
+    /**
+     * 发起时间.
+     */
+    ts: number;
+    /**
+     * 签名, 根据参数的字母序拼接之后, 用Hmac-sha256 client_secret加密.
+     */
+    sign: string;
+}
+
+interface PoolInfo {
+    pool_id: number,
+    balance: string,
+    coin: string
+}
+
+interface ConsumeData {
+    order_id: string,
+    /**
+     * 余额.
+     */
+    balance: number,
+    pools: PoolInfo[]
+}
+
+interface ConsumeResponse {
+    code: number;
+    info?: string;
+    data?: ConsumeData;
+}
+
 interface UpdatePetSimulatorRankDataParam {
     mwGameId: string;
     petName: string;
@@ -50,6 +128,22 @@ interface UpdatePetSimulatorRankDataParam {
     petAttack: string;
     petObtainTime: number;
     round: number;
+}
+
+/**
+ * 消费类型.
+ */
+export enum ConsumeTypes {
+    /**
+     * 空置.
+     * @type {ConsumeTypes.Null}
+     */
+    Null = 0,
+    /**
+     * 娃娃机.
+     * @type {ConsumeTypes.DollMachine}
+     */
+    DollMachine = 75000,
 }
 
 /**
@@ -122,6 +216,12 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
         }
     }
 
+    public payFor(cost: number): boolean {
+        if (this.currency.count < cost) {
+            return false;
+        }
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
@@ -166,6 +266,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly GET_CURRENCY_URL_SUFFIX = "/user/symbol/balance";
 
     /**
+     * 消费货币后缀.
+     * @type {string}
+     */
+    private static readonly CONSUME_URL_SUFFIX = "/payment/app/pool/consume";
+
+    /**
      * 更新宠物模拟器排行榜数据后缀.
      * @type {string}
      * @private
@@ -201,6 +307,20 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     /**
+     * 测试用 消费货币 Url.
+     */
+    private static get TEST_CONSUME_URL() {
+        return this.TEST_MOBOX_URL + this.CONSUME_URL_SUFFIX;
+    }
+
+    /**
+     * 发布用 消费货币 Url.
+     */
+    private static get RELEASE_CONSUME_URL() {
+        return this.RELEASE_MOBOX_URL + this.CONSUME_URL_SUFFIX;
+    }
+
+    /**
      * 测试用 更新宠物模拟器排行榜数据 Url.
      */
     private static get TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL() {
@@ -219,6 +339,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
 
     private static readonly CODE_VERIFY_AES_IV = this.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+
+    private static readonly CLIENT_ID = "12000169457322200012";
+
+    private static readonly SECRET = "6430d2d6497e136df763b572377361678f303f4d624be7ca9ee9b3b28985fe60";
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -289,8 +413,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private getSecret(message: string) {
-        // CryptoJS.HmacSHA256("hello","world")
-
         const e = CryptoJS.AES.encrypt(
             message,
             CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
@@ -301,6 +423,16 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             },
         );
         return e.ciphertext.toString(CryptoJS.enc.Base64);
+    }
+
+    private getSign(params: object) {
+        let paramStr = Object
+            .keys(params)
+            .sort()
+            .reduce((x, y) => {
+                return `${x}${params[y]}`;
+            }, "");
+        return CryptoJS.HmacSHA256(paramStr, AuthModuleS.SECRET).toString(CryptoJS.enc.Hex);
     }
 
     private async getToken(playerId: number) {
@@ -343,7 +475,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             Log4Ts.error(AuthModuleS, `get token failed. ${JSON.stringify(respInJson)}`);
         } else {
             if (this._tokenMap.has(playerId)) {
-                this._tokenMap.set(playerId, respInJson.data?.mToken);
+                //#region Exist for Test
+                //R <<<<<<
+                //
+                // this._tokenMap.set(playerId, respInJson.data?.mToken);
+                //  ------
+                this._tokenMap.set(playerId, "19dce05a6d90cbfa09f157c20a33a525fa2c5d827940ee8b31fc88fc76db9f83989683");
+                //T >>>>>>
+                //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
                 this.onRefreshToken(playerId);
             } else {
                 this.logPlayerNotExist(playerId);
@@ -355,15 +494,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.queryCurrency(playerId);
     }
 
+    private onTokenExpired(playerId: number) {
+        Log4Ts.warn(AuthModuleS, `token expired. refreshing... playerId: ${playerId}`);
+        this.getToken(playerId);
+    }
+
     private async queryCurrency(playerId: number) {
-        //#region Exist for Test
-        //R <<<<<<
-        //
-        // const token = this._tokenMap.get(playerId);
-        //  ------
-        const token = "19dce05a6d90cbfa09f157c20a33a525fa2c5d827940ee8b31fc88fc76db9f83989683";
-        //T >>>>>>
-        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        const token = this._tokenMap.get(playerId);
         if (GToolkit.isNullOrUndefined(token)) {
             this.logPlayerTokenInvalid(playerId);
             return;
@@ -389,10 +526,103 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             respInJson.code !== 200 ||
             GToolkit.isNullOrUndefined(respInJson?.data?.balance ?? undefined)) {
             Log4Ts.error(AuthModuleS, `query currency failed. ${JSON.stringify(respInJson)}`);
-            return Promise.resolve(null);
+            if (respInJson.code === 401) this.onTokenExpired(playerId);
+            return;
+        }
+
+
+        this.getClient(playerId).net_setCurrency(respInJson.data.balance);
+    }
+
+    private async pay(playerId: number, cost: number): Promise<boolean> {
+        const token = this._tokenMap.get(playerId);
+        if (GToolkit.isNullOrUndefined(token)) {
+            this.logPlayerTokenInvalid(playerId);
+            return Promise.resolve(false);
+        }
+
+        Log4Ts.log(AuthModuleS, `player paid. playerId: ${playerId}, cost: ${cost}`);
+        const order = this.generateOrder(cost, ConsumeTypes.DollMachine);
+        this.getPlayerData(playerId)?.serverSaveOrder(order);
+
+        const resp = await fetch(`${GlobalData.Global.isRelease ?
+                AuthModuleS.RELEASE_CONSUME_URL :
+                AuthModuleS.TEST_CONSUME_URL}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                    [AuthModuleS.HEADER_TOKEN]: token,
+                },
+                body: JSON.stringify(order),
+            });
+
+        const respInJson = await resp.json<ConsumeResponse>();
+
+        if (GToolkit.isNullOrUndefined(respInJson.code) ||
+            respInJson.code !== 200 ||
+            GToolkit.isNullOrUndefined(respInJson?.data?.balance ?? undefined)) {
+            Log4Ts.error(AuthModuleS, `consume failed. ${JSON.stringify(respInJson)}`);
+            if (respInJson.code === 401) this.onTokenExpired(playerId);
+            return Promise.resolve(false);
         }
 
         this.getClient(playerId).net_setCurrency(respInJson.data.balance);
+        return Promise.resolve(true);
+    }
+
+    private generateOrder(cost: number, action: ConsumeTypes): ConsumeParam {
+        const p = {
+            client_id: AuthModuleS.CLIENT_ID,
+            order_id: new UUID(4).toString(),
+            symbol: "mbox",
+            action: action,
+            amount: cost,
+            pool_id: 2,
+            round: 1,
+            sign: "",
+            ts: (Date.now() / 1e3) | 0,
+        };
+
+        p.sign = this.getSign(p);
+        return p;
+    }
+
+    public async reportPetRankData(playerId: number, petName: string, rarity: PetQuality, attack: number, obtainTime: number) {
+        const userId = Player.getPlayer(playerId)?.userId ?? null;
+        if (GToolkit.isNullOrUndefined(userId)) {
+            Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
+            return;
+        }
+
+        const param: UpdatePetSimulatorRankDataParam = {
+            mwGameId: userId,
+            petName: petName,
+            petRarity: rarity,
+            petAttack: attack.toString(),
+            petObtainTime: obtainTime,
+            round: this.calRound(obtainTime),
+        };
+        const body: EncryptedRequest = {
+            encryptData: this.getSecret(JSON.stringify(param)),
+        };
+        const resp = await fetch(`${GlobalData.Global.isRelease ?
+                AuthModuleS.RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL :
+                AuthModuleS.TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                },
+                body: JSON.stringify(body),
+            });
+
+        const respInJson = await resp.json();
+        Log4Ts.log(AuthModuleS, `get resp when report sub game info. ${JSON.stringify(respInJson)}`);
+    }
+
+    private calRound(obtainTime: number): number {
+        return 1;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

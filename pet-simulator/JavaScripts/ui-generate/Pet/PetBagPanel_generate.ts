@@ -22,19 +22,19 @@ export default class PetBagPanel_Generate extends UIScript {
 		}
 		return this.mListCanvas_Internal
 	}
-	private mCloseBtn_Internal: mw.Button
-	public get mCloseBtn(): mw.Button {
-		if(!this.mCloseBtn_Internal&&this.uiWidgetBase) {
-			this.mCloseBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCloseBtn') as mw.Button
-		}
-		return this.mCloseBtn_Internal
-	}
 	private mTextBlock_Num_Internal: mw.TextBlock
 	public get mTextBlock_Num(): mw.TextBlock {
 		if(!this.mTextBlock_Num_Internal&&this.uiWidgetBase) {
 			this.mTextBlock_Num_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_Num') as mw.TextBlock
 		}
 		return this.mTextBlock_Num_Internal
+	}
+	private mCloseBtn_Internal: mw.Button
+	public get mCloseBtn(): mw.Button {
+		if(!this.mCloseBtn_Internal&&this.uiWidgetBase) {
+			this.mCloseBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCloseBtn') as mw.Button
+		}
+		return this.mCloseBtn_Internal
 	}
 	private mReNameBtn_Internal: mw.Button
 	public get mReNameBtn(): mw.Button {
