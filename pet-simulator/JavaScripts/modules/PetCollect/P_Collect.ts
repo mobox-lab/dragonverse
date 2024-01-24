@@ -3,6 +3,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { IPetARRElement } from "../../config/PetARR";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import PetCollectItem_Generate from "../../ui-generate/Pet/PetCollectItem_generate";
 import PetCollectPanel_Generate from "../../ui-generate/Pet/PetCollectPanel_generate";
 import PetHover_Generate from "../../ui-generate/Pet/PetHover_generate";
@@ -108,9 +109,19 @@ export class P_Collect extends PetCollectPanel_Generate {
     protected onShow(...params: any[]): void {
         //this.playColorTween();
         utils.showUITween(this);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.mCloseBtn.onClicked.broadcast();
+        });
     }
 
+    public hide(): void {
+        super.hide();
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+    }
+
+
     protected onHide() {
+
     }
 
     public setLevel(level: number) {

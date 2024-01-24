@@ -1,5 +1,6 @@
 import { GameConfig } from "../../config/GameConfig";
 import { ITimeRewardElement } from "../../config/TimeReward";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import GiftItem_Generate from "../../ui-generate/Gift/GiftItem_generate";
 import GiftMain_Generate from "../../ui-generate/Gift/GiftMain_generate";
 import { utils } from "../../utils/uitls";
@@ -43,11 +44,15 @@ export class P_RewardPanel extends GiftMain_Generate {
         this.itemArr.forEach((item) => {
             item.setCount(true);
         })
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.mBtn_Close.onClicked.broadcast();
+        });
     }
     onHide() {
         this.itemArr.forEach((item) => {
             item.setCount(false);
         })
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
 }

@@ -17,6 +17,7 @@ import { PetBagItem } from "./P_Bag";
 
 
 import { PetBag_Item } from "./P_BagItem";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 export class P_Enchants extends EnchantsPanel_Generate {
 
@@ -415,9 +416,17 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.petItems.forEach((element) => {
             element.clearPressedInterval()
         })
+
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
     protected onShow(...params: any[]): void {
         this.isCanClickBtn();
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            if (this.isEnchanting) {
+                this.stopEnchant();
+            }
+            this.hide();
+        });
     }
 
 }

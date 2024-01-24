@@ -15,6 +15,7 @@ import { petItemDataNew } from "./PetBagModuleData";
 
 
 import { PetBag_Item } from "./P_BagItem";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 export class P_FusePanel extends Fusepanel_Generate {
     private achievementModuleC: AchievementModuleC = null;
 
@@ -56,6 +57,14 @@ export class P_FusePanel extends Fusepanel_Generate {
         this.curSelectPets.length = 0;
         this.changeCost();
         super.show(...param);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.hide();
+        });
+    }
+
+    public hide(): void {
+        super.hide();
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
     /**获取当前是否可继续点击 */

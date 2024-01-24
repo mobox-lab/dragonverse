@@ -9,6 +9,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { TipsManager } from "../Hud/P_TipUI";
 import { PetBagItem } from "../PetBag/P_Bag";
 import { PetBag_Item } from "../PetBag/P_BagItem";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 
 /**历史记录主页 */
@@ -79,6 +80,18 @@ export class P_historyRecord extends HistoryRecord_Generate {
 
     private comment(is: boolean, data: tradeRecord) {
         this.onCommentAC.call(is, data)
+    }
+
+    public show(...param: any[]): void {
+        super.show(...param);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.hide();
+        });
+    }
+
+    public hide(): void {
+        super.hide();
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 }
 

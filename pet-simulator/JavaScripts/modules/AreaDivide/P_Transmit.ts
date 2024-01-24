@@ -3,6 +3,7 @@ import { IAreaWorldElement } from "../../config/AreaWorld";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import TransmitMain_Generate from "../../ui-generate/Transmit/TransmitMain_generate";
 import WorldtipsUI_Generate from "../../ui-generate/WorldUI/WorldtipsUI_generate";
 import { cubicBezier } from "../../utils/MoveUtil";
@@ -36,6 +37,9 @@ export class P_Transmit extends TransmitMain_Generate {
             this.isFirst = false;
         }
         utils.showUITween(this);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.hide();
+        });
     }
 
     //创建左边的世界item
@@ -110,7 +114,10 @@ export class P_Transmit extends TransmitMain_Generate {
 
         ui?.setLock(id, level);
     }
-
+    public hide(): void {
+        super.hide();
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+    }
 }
 
 /**传送tips */
