@@ -36,13 +36,6 @@ export default class PetCollectPanel_Generate extends UIScript {
 		}
 		return this.mHasText_Internal
 	}
-	private mALLText_Internal: mw.TextBlock
-	public get mALLText(): mw.TextBlock {
-		if(!this.mALLText_Internal&&this.uiWidgetBase) {
-			this.mALLText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mProgressCanvas/mALLText') as mw.TextBlock
-		}
-		return this.mALLText_Internal
-	}
 	private mText_level_Internal: mw.TextBlock
 	public get mText_level(): mw.TextBlock {
 		if(!this.mText_level_Internal&&this.uiWidgetBase) {
@@ -56,6 +49,13 @@ export default class PetCollectPanel_Generate extends UIScript {
 			this.mText_Get_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mProgressCanvas/mText_Get') as mw.TextBlock
 		}
 		return this.mText_Get_Internal
+	}
+	private mALLText_Internal: mw.TextBlock
+	public get mALLText(): mw.TextBlock {
+		if(!this.mALLText_Internal&&this.uiWidgetBase) {
+			this.mALLText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mProgressCanvas/mALLText') as mw.TextBlock
+		}
+		return this.mALLText_Internal
 	}
 	private mScrollBox_Internal: mw.ScrollBox
 	public get mScrollBox(): mw.ScrollBox {
@@ -123,13 +123,13 @@ export default class PetCollectPanel_Generate extends UIScript {
 		this.initLanguage(this.mHasText)
 		
 	
-		this.initLanguage(this.mALLText)
-		
-	
 		this.initLanguage(this.mText_level)
 		
 	
 		this.initLanguage(this.mText_Get)
+		
+	
+		this.initLanguage(this.mALLText)
 		
 	
 		//文本多语言

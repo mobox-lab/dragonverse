@@ -36,13 +36,6 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.mJump_Btn_Internal
 	}
-	private mBtn_petspeed_Internal: mw.Button
-	public get mBtn_petspeed(): mw.Button {
-		if(!this.mBtn_petspeed_Internal&&this.uiWidgetBase) {
-			this.mBtn_petspeed_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mAtk_Canvas/mBtn_petspeed') as mw.Button
-		}
-		return this.mBtn_petspeed_Internal
-	}
 	private mCanvas_coin_Internal: mw.Canvas
 	public get mCanvas_coin(): mw.Canvas {
 		if(!this.mCanvas_coin_Internal&&this.uiWidgetBase) {
@@ -289,12 +282,6 @@ export default class Hud_Generate extends UIScript {
 			Event.dispatchToLocal("PlayButtonClick", "mJump_Btn");
 		})
 		this.mJump_Btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
-		this.mBtn_petspeed.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_petspeed");
-		})
-		this.mBtn_petspeed.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		this.mAdd_Btn.onClicked.add(()=>{
