@@ -122,12 +122,34 @@ interface ConsumeResponse {
 }
 
 interface UpdatePetSimulatorRankDataParam {
-    mwGameId: string;
+    userId: string;
     petName: string;
     petRarity: number;
     petAttack: string;
     petObtainTime: number;
     round: number;
+}
+
+interface MoboxDragonData {
+    tokenId: number,
+    prototype: number,
+    attribute: number,
+    elements: number,
+    star: number,
+    level: number,
+    expr: number,
+    mating: number,
+    shareCd: number,
+    parent0: number,
+    parent1: number,
+    personality: number,
+    skills: number
+}
+
+interface QueryMoboxDragonDataResponse {
+    code: number;
+    message?: string;
+    data?: MoboxDragonData[];
 }
 
 /**
@@ -596,7 +618,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         }
 
         const param: UpdatePetSimulatorRankDataParam = {
-            mwGameId: userId,
+            userId: userId,
             petName: petName,
             petRarity: rarity,
             petAttack: attack.toString(),
@@ -625,6 +647,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return 1;
     }
 
+    public async getMoboxDragonAbility(playerId: number): Promise<number> {
+        return Promise.resolve(0);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
@@ -640,7 +666,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                                           petObtainTime: number,
                                           round: number = 1) {
         const p: UpdatePetSimulatorRankDataParam = {
-            mwGameId: userId,
+            userId: userId,
             petName: petName,
             petRarity: petRarity,
             petAttack: petAttack.toString(),
