@@ -608,6 +608,17 @@ AddGMCommand(
     "Auth",
 );
 
+AddGMCommand(
+    "查询龙能力值",
+    undefined,
+    (player, value) => {
+        ModuleService.getModule(AuthModuleS)
+            .getMoboxDragonAbility(player.playerId)
+            .then(value => console.log("ability: " + value));
+    },
+    "Auth",
+);
+
 /**颜色改变tween */
 function colorTween(fromColor: mw.LinearColor, toColor: mw.LinearColor, tweenDuration: number, obj: mw.LinearColor) {
     new mw.Tween(fromColor).to(toColor, tweenDuration)

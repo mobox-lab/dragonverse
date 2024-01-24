@@ -632,7 +632,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return p;
     }
 
-    public async reportPetRankData(playerId: number, petName: string, rarity: PetQuality, attack: number, obtainTime: number,round:number) {
+    public async reportPetRankData(playerId: number, petName: string, rarity: PetQuality, attack: number, obtainTime: number, round: number) {
         const userId = Player.getPlayer(playerId)?.userId ?? null;
         if (GToolkit.isNullOrUndefined(userId)) {
             Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
@@ -674,6 +674,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const param: QueryP12Param = {
             userId: userId,
         };
+        const body: EncryptedRequest = {
+            encryptData: this.getSecret(JSON.stringify(param)),
+        };
+
         const resp = await fetch(`${GlobalData.Global.isRelease ?
                 AuthModuleS.RELEASE_GET_CURRENCY_URL :
                 AuthModuleS.TEST_GET_CURRENCY_URL}`,
@@ -682,7 +686,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
                 },
-                body: JSON.stringify(param),
+                body: JSON.stringify(body),
             });
 
         const respInJson = await resp.json<QueryMoboxDragonDataResponse>();
