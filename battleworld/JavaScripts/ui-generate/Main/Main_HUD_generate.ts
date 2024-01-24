@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 一只黄鹂鸣翠柳
+ * AUTHOR: 安妮熊
  * UI: UI/Main/Main_HUD.ui
- * TIME: 2024.01.09-11.07.48
+ * TIME: 2024.01.24-15.12.21
  */
 
  
@@ -158,6 +158,20 @@
 		}
 		return this.mActionBtn_Internal
 	}
+	private actionimage_Internal: mw.Image
+	public get actionimage(): mw.Image {
+		if(!this.actionimage_Internal&&this.uiWidgetBase) {
+			this.actionimage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/actionimage') as mw.Image
+		}
+		return this.actionimage_Internal
+	}
+	private actiontext_Internal: mw.TextBlock
+	public get actiontext(): mw.TextBlock {
+		if(!this.actiontext_Internal&&this.uiWidgetBase) {
+			this.actiontext_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/actiontext') as mw.TextBlock
+		}
+		return this.actiontext_Internal
+	}
 	private mBtn_Reborn_Internal: mw.Button
 	public get mBtn_Reborn(): mw.Button {
 		if(!this.mBtn_Reborn_Internal&&this.uiWidgetBase) {
@@ -241,6 +255,69 @@
 			this.mGold_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasMoney/mGold') as mw.TextBlock
 		}
 		return this.mGold_Internal
+	}
+	private mCanvasBattle_Internal: mw.Canvas
+	public get mCanvasBattle(): mw.Canvas {
+		if(!this.mCanvasBattle_Internal&&this.uiWidgetBase) {
+			this.mCanvasBattle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle') as mw.Canvas
+		}
+		return this.mCanvasBattle_Internal
+	}
+	private mBattle_Internal: mw.TextBlock
+	public get mBattle(): mw.TextBlock {
+		if(!this.mBattle_Internal&&this.uiWidgetBase) {
+			this.mBattle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBattle') as mw.TextBlock
+		}
+		return this.mBattle_Internal
+	}
+	private mBattle_1_Internal: mw.TextBlock
+	public get mBattle_1(): mw.TextBlock {
+		if(!this.mBattle_1_Internal&&this.uiWidgetBase) {
+			this.mBattle_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBattle_1') as mw.TextBlock
+		}
+		return this.mBattle_1_Internal
+	}
+	private mBattle_2_Internal: mw.TextBlock
+	public get mBattle_2(): mw.TextBlock {
+		if(!this.mBattle_2_Internal&&this.uiWidgetBase) {
+			this.mBattle_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBattle_2') as mw.TextBlock
+		}
+		return this.mBattle_2_Internal
+	}
+	private mBtn_Battle_Add_Internal: mw.Button
+	public get mBtn_Battle_Add(): mw.Button {
+		if(!this.mBtn_Battle_Add_Internal&&this.uiWidgetBase) {
+			this.mBtn_Battle_Add_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBtn_Battle_Add') as mw.Button
+		}
+		return this.mBtn_Battle_Add_Internal
+	}
+	private mCanvasMCoin_Internal: mw.Canvas
+	public get mCanvasMCoin(): mw.Canvas {
+		if(!this.mCanvasMCoin_Internal&&this.uiWidgetBase) {
+			this.mCanvasMCoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasMCoin') as mw.Canvas
+		}
+		return this.mCanvasMCoin_Internal
+	}
+	private mMCoin_Internal: mw.TextBlock
+	public get mMCoin(): mw.TextBlock {
+		if(!this.mMCoin_Internal&&this.uiWidgetBase) {
+			this.mMCoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasMCoin/mMCoin') as mw.TextBlock
+		}
+		return this.mMCoin_Internal
+	}
+	private mBtn_MCoin_Add_Internal: mw.Button
+	public get mBtn_MCoin_Add(): mw.Button {
+		if(!this.mBtn_MCoin_Add_Internal&&this.uiWidgetBase) {
+			this.mBtn_MCoin_Add_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasMCoin/mBtn_MCoin_Add') as mw.Button
+		}
+		return this.mBtn_MCoin_Add_Internal
+	}
+	private mBtn_MCoin_Refresh_Internal: mw.Button
+	public get mBtn_MCoin_Refresh(): mw.Button {
+		if(!this.mBtn_MCoin_Refresh_Internal&&this.uiWidgetBase) {
+			this.mBtn_MCoin_Refresh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasMCoin/mBtn_MCoin_Refresh') as mw.Button
+		}
+		return this.mBtn_MCoin_Refresh_Internal
 	}
 	private mCanvasPills_Internal: mw.Canvas
 	public get mCanvasPills(): mw.Canvas {
@@ -382,6 +459,27 @@
 		}
 		return this.mSocialImg_Internal
 	}
+	private eventsCanvas_Internal: mw.Canvas
+	public get eventsCanvas(): mw.Canvas {
+		if(!this.eventsCanvas_Internal&&this.uiWidgetBase) {
+			this.eventsCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/eventsCanvas') as mw.Canvas
+		}
+		return this.eventsCanvas_Internal
+	}
+	private mEventsBtn_Internal: mw.Button
+	public get mEventsBtn(): mw.Button {
+		if(!this.mEventsBtn_Internal&&this.uiWidgetBase) {
+			this.mEventsBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/eventsCanvas/mEventsBtn') as mw.Button
+		}
+		return this.mEventsBtn_Internal
+	}
+	private mEventsImg_Internal: mw.Image
+	public get mEventsImg(): mw.Image {
+		if(!this.mEventsImg_Internal&&this.uiWidgetBase) {
+			this.mEventsImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/eventsCanvas/mEventsImg') as mw.Image
+		}
+		return this.mEventsImg_Internal
+	}
 
 
  
@@ -438,6 +536,24 @@
 		
 		
 	
+		this.mBtn_Battle_Add.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Battle_Add");
+		})
+		
+		
+	
+		this.mBtn_MCoin_Add.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_MCoin_Add");
+		})
+		
+		
+	
+		this.mBtn_MCoin_Refresh.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_MCoin_Refresh");
+		})
+		
+		
+	
 		this.mBtn_Trans.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_Trans");
 		})
@@ -452,6 +568,12 @@
 	
 		this.mSocialBtn.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mSocialBtn");
+		})
+		
+		
+	
+		this.mEventsBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mEventsBtn");
 		})
 		
 		
@@ -473,6 +595,9 @@
 		this.initLanguage(this.mText_Magic)
 		
 	
+		this.initLanguage(this.actiontext)
+		
+	
 		this.initLanguage(this.mAttackNum)
 		
 	
@@ -486,6 +611,18 @@
 		
 	
 		this.initLanguage(this.mGold)
+		
+	
+		this.initLanguage(this.mBattle)
+		
+	
+		this.initLanguage(this.mBattle_1)
+		
+	
+		this.initLanguage(this.mBattle_2)
+		
+	
+		this.initLanguage(this.mMCoin)
 		
 	
 		this.initLanguage(this.mText_Long_Num)
@@ -508,13 +645,22 @@
 	
 		//文本多语言
 		
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSkillSelectBox/TextBlock_4_1") as any);
+		
+	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/backCanvas/TextBlock") as any);
 		
 	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/rankCanvas/mBtn_Rank/TextBlock_1") as any);
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock_4") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/rankCanvas/TextBlock_1") as any);
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/socialCanvas/TextBlock_2") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/eventsCanvas/TextBlock_3") as any);
 		
 	
 
