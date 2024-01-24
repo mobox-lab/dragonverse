@@ -494,6 +494,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.queryCurrency(playerId);
     }
 
+    private onTokenExpired(playerId: number) {
+        Log4Ts.warn(AuthModuleS, `token expired. refreshing... playerId: ${playerId}`);
+        this.getToken(playerId);
+    }
+
     private async queryCurrency(playerId: number) {
         const token = this._tokenMap.get(playerId);
         if (GToolkit.isNullOrUndefined(token)) {
@@ -521,8 +526,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             respInJson.code !== 200 ||
             GToolkit.isNullOrUndefined(respInJson?.data?.balance ?? undefined)) {
             Log4Ts.error(AuthModuleS, `query currency failed. ${JSON.stringify(respInJson)}`);
+            if (respInJson.code === 401) this.onTokenExpired(playerId);
             return;
         }
+
 
         this.getClient(playerId).net_setCurrency(respInJson.data.balance);
     }
@@ -556,6 +563,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             respInJson.code !== 200 ||
             GToolkit.isNullOrUndefined(respInJson?.data?.balance ?? undefined)) {
             Log4Ts.error(AuthModuleS, `consume failed. ${JSON.stringify(respInJson)}`);
+            if (respInJson.code === 401) this.onTokenExpired(playerId);
             return Promise.resolve(false);
         }
 
