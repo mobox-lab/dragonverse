@@ -738,10 +738,10 @@ export default class resourceScript extends mw.Script {
                 let random = utils.GetRandomNum(0, temp2)
 
                 if (this.rate == 1) {
-                    this.rewardGold = (100 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
+                    this.rewardGold = (50 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
                         * (1 + EnchantBuff.getPetBuff(key).goldAdd / 100);
                 } else {
-                    this.rewardGold = (100 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
+                    this.rewardGold = (50 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
                         * (1 + EnchantBuff.getPetBuff(key).goldAdd / 100) * (1 + EnchantBuff.getPetBuff(key).rateGoldAdd / 100);
                 }
                 this.rewardGold = Number(this.rewardGold.toFixed(1));

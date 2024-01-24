@@ -6,6 +6,7 @@ import { stringToNumberArr, utils } from "../../utils/uitls";
 import PetQuality = GlobalEnum.PetQuality;
 import PetDevType = GlobalEnum.PetDevType;
 import Energy = GlobalData.Energy;
+import { AuthModuleS } from "../auth/AuthModule";
 
 export enum BagItemKey {
     itemStart = 100
@@ -219,9 +220,32 @@ export class PetBagModuleData extends Subdata {
         let type = GameConfig.PetARR.getElement(id).QualityType;
         this.randomEnchant(this.bagContainerNew[index], type);
 
+
         this.save(true);
         this.BagItemChangeAC.call(true, id, index);
         return true;
+    }
+
+    /**
+     * @description: 根据赛季获取拥有的最高战力的宠物
+     * @param round 赛季
+     * @return 宠物id
+     */
+    public getMaxAttackPet(currRound: number): number {
+        let maxAttack = 0;
+        let petKey = 0;
+        for (let key in this.bagContainerNew) {
+            //筛出这个赛季获取的
+            if (this.calRound(this.bagContainerNew[key].obtainTime) === currRound && this.bagContainerNew[key].p.a > maxAttack) {
+                maxAttack = this.bagContainerNew[key].p.a;
+                petKey = this.bagContainerNew[key].k;
+            }
+        }
+        return petKey;
+    }
+
+    public calRound(obtainTime: number): number {
+        return 1;
     }
 
     public addBagItemByPetData(petData: petItemDataNew): boolean {

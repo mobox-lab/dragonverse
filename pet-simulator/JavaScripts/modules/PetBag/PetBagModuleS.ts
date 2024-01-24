@@ -6,6 +6,7 @@ import { stringToNumberArr, utils } from "../../utils/uitls";
 import { CollectModuleS } from "../PetCollect/CollectModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { petInfo } from "../Trading/TradingScript";
+import { AuthModuleS } from "../auth/AuthModule";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
@@ -67,6 +68,16 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         this.taskMS.getPet(Player.getPlayer(playerID), id, type);
         ModuleService.getModule(CollectModuleS).addPet(playerID, id, type);
         this.onGetPetAC.call(type, playerID);
+        //找到最高的战力
+        const currRound = data.calRound(Date.now());
+        let petKey = data.getMaxAttackPet(currRound);
+        if (petKey != 0) {
+            let pet = data.bagItemsByKey(petKey);
+            let petConfig = GameConfig.PetARR.getElement(pet.I);
+            if (petConfig) {
+                ModuleService.getModule(AuthModuleS).reportPetRankData(playerID, pet.p.n, petConfig.QualityType, pet.p.a, pet.obtainTime, currRound);
+            }
+        }
 
         // if (type > 1000) {
         //     //扭蛋
@@ -81,6 +92,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
         this.petNotice(playerID, id);
     }
+
 
     /**根据id添加宠物 自动计算名字*/
     public addPetById(playerID: number, id: number, type?: GlobalEnum.PetGetType) {
@@ -277,6 +289,17 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 item.p.a = atk;
             }
         }
+        //找到最高的战力
+        let petKey = this.currentData.getMaxAttackPet(1);
+        if (petKey != 0) {
+            let pet = this.currentData.bagItemsByKey(petKey);
+            let petConfig = GameConfig.PetARR.getElement(pet.I);
+            if (petConfig) {
+                const currRound = this.currentData.calRound(Date.now());
+                ModuleService.getModule(AuthModuleS).reportPetRankData(this.currentPlayerId, pet.p.n, petConfig.DevType, pet.p.a, pet.obtainTime, currRound);
+            }
+        }
+
         this.currentData.save(true);
     }
 
