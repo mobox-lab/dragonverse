@@ -9,6 +9,7 @@ import { GlobalData } from "../../const/GlobalData";
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import UUID from "pure-uuid";
+import Enumerable from "linq";
 
 export default class AuthModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -32,8 +33,9 @@ export default class AuthModuleData extends JModuleData {
     }
 }
 
-interface GetTokenParam {
-    userId: string;
+interface QueryP12Param {
+    userId?: string;
+    walletAddress?: string;
 }
 
 interface EncryptedRequest {
@@ -301,6 +303,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX = "/modragon/mo-rank/pet/update";
 
     /**
+     * 查询 Mobox 龙信息后缀.
+     * @type {string}
+     * @private
+     */
+    private static readonly QUERY_MOBOX_DRAGON_URL_SUFFIX = "/modragon/mo-assets/dragon";
+
+    /**
      * 测试用 getToken Url.
      */
     private static get TEST_GET_TOKEN_URL() {
@@ -354,6 +363,20 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     private static get RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL() {
         return this.RELEASE_P12_URL + this.UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX;
+    }
+
+    /**
+     * 测试用 更新宠物模拟器排行榜数据 Url.
+     */
+    private static get TEST_QUERY_MOBOX_DRAGON_URL() {
+        return this.TEST_P12_URL + this.QUERY_MOBOX_DRAGON_URL_SUFFIX;
+    }
+
+    /**
+     * 发布用 更新宠物模拟器排行榜数据 Url.
+     */
+    private static get RELEASE_QUERY_MOBOX_DRAGON_URL() {
+        return this.RELEASE_P12_URL + this.QUERY_MOBOX_DRAGON_URL_SUFFIX;
     }
 
     private static readonly HEADER_TOKEN = "x-bits-token";
@@ -466,19 +489,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         //     this.logPlayerNotExist(playerId);
         //     return;
         // }
-        // const getTokenParam: GetTokenParam = {
+        // const param: QueryP12Param = {
         //     userId: player.userId,
         // };
 //
 //  ------
-        const getTokenParam: GetTokenParam = {
+        const param: QueryP12Param = {
             userId: "1026061",
         };
 //T >>>>>>
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         const body: EncryptedRequest = {
-            encryptData: this.getSecret(JSON.stringify(getTokenParam)),
+            encryptData: this.getSecret(JSON.stringify(param)),
         };
         const resp = await fetch(`${GlobalData.Global.isRelease ?
                 AuthModuleS.RELEASE_GET_TOKEN_URL :
@@ -552,7 +575,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return;
         }
 
-
         this.getClient(playerId).net_setCurrency(respInJson.data.balance);
     }
 
@@ -610,7 +632,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return p;
     }
 
-    public async reportPetRankData(playerId: number, petName: string, rarity: PetQuality, attack: number, obtainTime: number) {
+    public async reportPetRankData(playerId: number, petName: string, rarity: PetQuality, attack: number, obtainTime: number,round:number) {
         const userId = Player.getPlayer(playerId)?.userId ?? null;
         if (GToolkit.isNullOrUndefined(userId)) {
             Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
@@ -623,7 +645,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             petRarity: rarity,
             petAttack: attack.toString(),
             petObtainTime: obtainTime,
-            round: this.calRound(obtainTime),
+            round: round,
         };
         const body: EncryptedRequest = {
             encryptData: this.getSecret(JSON.stringify(param)),
@@ -643,12 +665,54 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         Log4Ts.log(AuthModuleS, `get resp when report sub game info. ${JSON.stringify(respInJson)}`);
     }
 
-    private calRound(obtainTime: number): number {
-        return 1;
-    }
-
     public async getMoboxDragonAbility(playerId: number): Promise<number> {
-        return Promise.resolve(0);
+        const userId = Player.getPlayer(playerId)?.userId ?? null;
+        if (GToolkit.isNullOrUndefined(userId)) {
+            this.logPlayerTokenInvalid(playerId);
+            return;
+        }
+        const param: QueryP12Param = {
+            userId: userId,
+        };
+        const resp = await fetch(`${GlobalData.Global.isRelease ?
+                AuthModuleS.RELEASE_GET_CURRENCY_URL :
+                AuthModuleS.TEST_GET_CURRENCY_URL}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                },
+                body: JSON.stringify(param),
+            });
+
+        const respInJson = await resp.json<QueryMoboxDragonDataResponse>();
+
+        if (GToolkit.isNullOrUndefined(respInJson.code) ||
+            respInJson.code !== 200 ||
+            GToolkit.isNullOrUndefined(respInJson?.data ?? undefined)) {
+            Log4Ts.error(AuthModuleS, `query mobox dragon ability failed. ${JSON.stringify(respInJson)}`);
+            if (respInJson.code === 401) this.onTokenExpired(playerId);
+            return Promise.resolve(0);
+        }
+
+        return Promise.resolve(Enumerable
+            .from(respInJson.data)
+            .defaultIfEmpty({
+                attribute: 0,
+                elements: 0,
+                expr: 0,
+                level: 0,
+                mating: 0,
+                parent0: 0,
+                parent1: 0,
+                personality: 0,
+                prototype: 0,
+                shareCd: 0,
+                skills: 0,
+                star: 0,
+                tokenId: 0,
+            })
+            .sum(item => item?.attribute ?? 0));
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
