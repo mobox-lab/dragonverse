@@ -6,6 +6,7 @@ import { GameConfig } from "../../config/GameConfig";
 import MessageBox from "../../utils/MessageBox";
 import { utils } from "../../utils/uitls";
 import { GlobalEnum } from "../../const/Enum";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 
 /**玩家item页 */
@@ -172,6 +173,12 @@ export class P_TradingChooseMain extends TradeChoose_Generate {
 
     protected onShow(...params: any[]): void {
         utils.showUITween(this);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.hide();
+        });
     }
-
+    public hide(): void {
+        super.hide();
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+    }
 }

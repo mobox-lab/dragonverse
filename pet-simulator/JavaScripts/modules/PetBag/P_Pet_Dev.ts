@@ -13,6 +13,7 @@ import { petItemDataNew } from "./PetBagModuleData";
 
 
 import { PetBag_Item } from "./P_BagItem";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 export class P_Pet_Dev extends Dev_Generate {
     private achievementModuleC: AchievementModuleC = null;
     /**当前容器中的所有item */
@@ -127,6 +128,9 @@ export class P_Pet_Dev extends Dev_Generate {
         this.curCount = 0;
         this.changeCost(this.curCount, 0);
         super.show(...param);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.hide();
+        });
     }
 
     /**改变目前容器展示 */
@@ -189,5 +193,9 @@ export class P_Pet_Dev extends Dev_Generate {
         utils.showUITween(this);
     }
 
+    public hide(): void {
+        super.hide();
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+    }
 }
 

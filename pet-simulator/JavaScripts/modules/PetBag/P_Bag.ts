@@ -12,6 +12,7 @@ import { P_PetHover } from "../PetCollect/P_Collect";
 import { PetBagModuleData, petItemDataNew, } from "./PetBagModuleData";
 
 import { PetBag_Item } from "./P_BagItem";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 
 export class P_Bag extends PetBagPanel_Generate {
@@ -475,6 +476,10 @@ export class P_Bag extends PetBagPanel_Generate {
             this.delArr.length = 0;
         }
         utils.showUITween(this);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.hide();
+        });
+
     }
     protected onHide(): void {
         console.log("OnHide");
@@ -499,6 +504,8 @@ export class P_Bag extends PetBagPanel_Generate {
         this.itemTweenArr.length = 0;
 
         mw.UIService.getUI(P_PetHover).hide();
+
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
     /**悬浮UI */
     private showHoverUI(isShow: boolean, item: PetBag_Item) {
