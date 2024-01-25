@@ -578,7 +578,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.getClient(playerId).net_setCurrency(respInJson.data.balance);
     }
 
-    private async pay(playerId: number, cost: number): Promise<boolean> {
+    public async pay(playerId: number, cost: number): Promise<boolean> {
         const token = this._tokenMap.get(playerId);
         if (GToolkit.isNullOrUndefined(token)) {
             this.logPlayerTokenInvalid(playerId);

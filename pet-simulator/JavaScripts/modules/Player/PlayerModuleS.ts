@@ -10,9 +10,10 @@ import { PlayerModuleData } from "./PlayerModuleData";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
+import { AuthModuleS } from "../auth/AuthModule";
 
 
-export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData>{
+export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
 
     /**宠物背包模块 */
     public petBagModule: PetBagModuleS = null;
@@ -233,6 +234,20 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData>{
     /**增加金币 */
     public net_addGold(value: number, coinType: GlobalEnum.CoinType): void {
         this.currentData.addGold(value, coinType);
+    }
+
+    public async net_buyDollCoin(configId: number): Promise<boolean> {
+        let config = GameConfig.GoodsTable.getElement(configId);
+        if (!config) return false;
+        let playerId = this.currentPlayerId;
+        let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, 1);
+        if (res) {
+            this.getPlayerData(playerId).addGold(config.buyCount, GlobalEnum.CoinType.SummerGold);
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     /**增加钻石 */

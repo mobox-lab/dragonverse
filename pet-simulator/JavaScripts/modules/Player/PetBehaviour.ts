@@ -687,6 +687,7 @@ export default class PetBehaviour {
                 this.playAttackEffect();
             });
             this._attackAni.play();
+
         }
     }
 
@@ -698,14 +699,28 @@ export default class PetBehaviour {
             this.currentEffect = null;
         }
         let index = this.petInfo.MoveWay == 1 ? 0 : 1;
-        this.currentEffect = GeneralManager.rpcPlayEffectOnGameObject(
-            GlobalData.pet.qualityEffArr[this.petInfo.QualityType - 1],
-            this.pet,
-            1,
-            GlobalData.pet.attackEffectOffset[index][this.petInfo.QualityType - 1],
-            GlobalData.pet.attackEffectRotation[index][this.petInfo.QualityType - 1],
-            GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1]
-        )
+        this.petInfo.QualityType = 3;
+        if (this.petInfo.CharacterType === 0) {
+            this.currentEffect = GeneralManager.rpcPlayEffectOnGameObject(
+                GlobalData.pet.qualityEffArr[this.petInfo.QualityType - 1],
+                this.pet,
+                1,
+                GlobalData.pet.attackEffectOffset[index][this.petInfo.QualityType - 1],
+                GlobalData.pet.attackEffectRotation[index][this.petInfo.QualityType - 1],
+                GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1]
+            )
+        } else {
+
+            this.currentEffect = GeneralManager.rpcPlayEffectOnGameObject(
+                GlobalData.pet.qualityEffArr[this.petInfo.QualityType - 1],
+                this.pet,
+                1,
+                GlobalData.pet.chaAttackEffectOffset[index][this.petInfo.QualityType - 1],
+                GlobalData.pet.chaAttackEffectRotation[index][this.petInfo.QualityType - 1],
+                GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1]
+            )
+        }
+
     }
 
     /**判断资源是否还活着 */
