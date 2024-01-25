@@ -76,6 +76,8 @@ export namespace GlobalData {
          * 跳子游戏 进度条时长.
          */
         public static readonly jumpGameProgressDuration = 3e3;
+
+        public static copyUrl = "https://www.mobox.io";
     }
 
     export class worldUI {
@@ -192,6 +194,19 @@ export namespace GlobalData {
             [
                 [new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1)],
                 [new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1), new mw.Vector(1, 1, 1)],
+            ];
+        /**攻击特效相对宠物旋转 */
+        public static chaAttackEffectRotation: mw.Rotation[][] =
+            [
+                [new mw.Rotation(0, 0, 270), new mw.Rotation(0, 0, 0), new mw.Rotation(0, 0, 180), new mw.Rotation(0, 0, 0), new mw.Rotation(0, 0, 0)],
+                [new mw.Rotation(0, 0, 270), new mw.Rotation(0, 0, 0), new mw.Rotation(0, 0, 180), new mw.Rotation(0, 0, 0), new mw.Rotation(0, 0, 0)],
+            ];
+        /**攻击特效相对宠物坐标偏移 */
+        public static chaAttackEffectOffset: mw.Vector[][] =
+            [   //地面
+                [new mw.Vector(0, 0, 0), new mw.Vector(0, 0, 0), new mw.Vector(200, 0, 0), new mw.Vector(0, 0, 0), new mw.Vector(0, 0, 0)],
+                //飞行
+                [new mw.Vector(0, 0, 90), new mw.Vector(0, 0, 90), new mw.Vector(200, 0, 0), new mw.Vector(0, 0, 90), new mw.Vector(0, 0, 90)],
             ];
     }
 
@@ -1038,7 +1053,7 @@ export namespace GlobalData {
 
         /**娃娃相对爪子位置 */
         public static DollRelativeClawLoc: mw.Vector[] = [new mw.Vector(0, 24, 0), new mw.Vector(0, 35, 0),
-            new mw.Vector(1.35, 30, 0), new mw.Vector(-1.35, 30, 0), new mw.Vector(0, 35, 0), new mw.Vector(0, 24, 0), new mw.Vector(0, 24, 0)];
+        new mw.Vector(1.35, 30, 0), new mw.Vector(-1.35, 30, 0), new mw.Vector(0, 35, 0), new mw.Vector(0, 24, 0), new mw.Vector(0, 24, 0)];
 
         /**钩子左右下上晃动 */
         public static HookShaking: number[][] = [[0, 3], [0, -3], [0, -3], [0, 3], [90, 93], [90, 87], [90, 87], [90, 93]];
