@@ -151,7 +151,7 @@ export class OnlineMoudleS extends ModuleS<OnlineMoudleC, OnlineModuleData>{
         this.getClient(playerId).net_showTips(numberArrToString(tipsArr), numberArrToString(rewardCount));
 
         if (cfg.buff.length == 0) return;
-        this.getClient(playerId).net_getBuff(id);
+        // this.getClient(playerId).net_getBuff(id);
     }
 
     //判断金币类型

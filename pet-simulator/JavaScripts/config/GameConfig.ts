@@ -4,6 +4,7 @@ import {AreaDivideConfig} from "./AreaDivide";
 import {AreaWorldConfig} from "./AreaWorld";
 import {AssetsConfig} from "./Assets";
 import {AvatarConfig} from "./Avatar";
+import {BuffDragonAbilityConfig} from "./BuffDragonAbility";
 import {BuffConfig} from "./Buff";
 import {CoindownConfig} from "./Coindown";
 import {CoinsConfig} from "./Coins";
@@ -53,6 +54,7 @@ export class GameConfig{
 	public static get AreaWorld():AreaWorldConfig{ return this.getConfig(AreaWorldConfig) };
 	public static get Assets():AssetsConfig{ return this.getConfig(AssetsConfig) };
 	public static get Avatar():AvatarConfig{ return this.getConfig(AvatarConfig) };
+	public static get BuffDragonAbility():BuffDragonAbilityConfig{ return this.getConfig(BuffDragonAbilityConfig) };
 	public static get Buff():BuffConfig{ return this.getConfig(BuffConfig) };
 	public static get Coindown():CoindownConfig{ return this.getConfig(CoindownConfig) };
 	public static get Coins():CoinsConfig{ return this.getConfig(CoinsConfig) };

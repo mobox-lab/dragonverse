@@ -290,9 +290,9 @@ AddGMCommand("掉落测试", (player: mw.Player, value: string) => {
 
 }, "掉落", mw.Keys.K);
 
-AddGMCommand("增加buff(buff类型,时间(s))", (player: mw.Player, value: string) => {
+AddGMCommand("增加buff(buff类型)", (player: mw.Player, value: string) => {
     let sps = value.split(",");
-    ModuleService.getModule(BuffModuleC).addBuff(Number(sps[0]), Number(sps[1]));
+    ModuleService.getModule(BuffModuleC).addBuff(Number(sps[0]));
 }, (player: mw.Player, value: string) => {
 
 }, "buff");
