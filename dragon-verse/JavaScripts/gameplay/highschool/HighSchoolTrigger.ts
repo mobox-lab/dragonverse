@@ -35,6 +35,9 @@ export default class HighSchoolTrigger extends mw.Script {
         displayName: "圈类别",
         enumType: {
             "起点": HighSchoolType.TransStart,
+            "坠落死亡区": HighSchoolType.DeadBackGround,
+            "红色死亡区": HighSchoolType.DeadRed,
+            "得分点": HighSchoolType.ScorePoint,
         }
     })
     private _circleType: HighSchoolType = HighSchoolType.TransStart;
