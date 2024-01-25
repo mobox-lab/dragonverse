@@ -5,6 +5,7 @@ import { DollMachineModuleC, DollType } from "./DollMachineModuleC";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { IDollMachineElement } from "../../config/DollMachine";
 import { GlobalData } from "../../const/GlobalData";
+import GToolkit from "../../utils/GToolkit";
 
 
 
@@ -331,6 +332,12 @@ class DollMachineS {
             }).start();
     }
 
+    public reset() {
+        this.clearTimeCountDown();
+        this.hook.worldTransform.position = this.hookPrimaryPos;
+        this.isCatching = false;
+    }
+
     /**判断当前是否可用 */
     public isUse(): boolean {
         return this.curPlayer == null;
@@ -552,6 +559,13 @@ export class DollMachineModuleS extends ModuleS<DollMachineModuleC, null> {
         let cfg = GameConfig.EggMachine.getElement(cfgId);
         let index = BagTool.calculateWeight(cfg.Weight);
         return cfg.petArr[index];
+    }
+
+    public net_randomGivePet(machineId: number) {
+        let machine = this.dollMachineList[machineId];
+        machine.reset();
+        let obj = GToolkit.randomArrayItem([...machine.eggSet]);
+        this.onDollDrop(obj, machineId);
     }
 
 

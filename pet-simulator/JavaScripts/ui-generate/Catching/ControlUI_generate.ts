@@ -8,12 +8,12 @@
 
 @UIBind('UI/Catching/ControlUI.ui')
 export default class ControlUI_Generate extends UIScript {
-		private mCanvas_1_Internal: mw.Canvas
-	public get mCanvas_1(): mw.Canvas {
-		if(!this.mCanvas_1_Internal&&this.uiWidgetBase) {
-			this.mCanvas_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_1') as mw.Canvas
+		private skipBtn_Internal: mw.StaleButton
+	public get skipBtn(): mw.StaleButton {
+		if(!this.skipBtn_Internal&&this.uiWidgetBase) {
+			this.skipBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/skipBtn') as mw.StaleButton
 		}
-		return this.mCanvas_1_Internal
+		return this.skipBtn_Internal
 	}
 	private mCanvas_Internal: mw.Canvas
 	public get mCanvas(): mw.Canvas {
@@ -73,6 +73,13 @@ export default class ControlUI_Generate extends UIScript {
 	protected initButtons() {
 		//按钮添加点击
 		
+		this.skipBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "skipBtn");
+		})
+		this.initLanguage(this.skipBtn);
+		this.skipBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 		//按钮添加点击
 		
 		this.mButton_Up.onClicked.add(()=>{
