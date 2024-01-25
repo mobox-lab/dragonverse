@@ -240,7 +240,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         let config = GameConfig.GoodsTable.getElement(configId);
         if (!config) return false;
         let playerId = this.currentPlayerId;
-        let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, 1);
+        let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, config.price);
         if (res) {
             this.getPlayerData(playerId).addGold(config.buyCount, GlobalEnum.CoinType.SummerGold);
             return true;

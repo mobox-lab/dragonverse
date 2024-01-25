@@ -709,7 +709,7 @@ export default class PetBehaviour {
                 GlobalData.pet.attackEffectRotation[index][this.petInfo.QualityType - 1],
                 GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1]
             )
-        } else {
+        } else if (this.petInfo.CharacterType === 1) {
 
             this.currentEffect = GeneralManager.rpcPlayEffectOnGameObject(
                 GlobalData.pet.qualityEffArr[this.petInfo.QualityType - 1],
