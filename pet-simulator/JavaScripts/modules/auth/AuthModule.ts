@@ -666,27 +666,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     public async getMoboxDragonAbility(playerId: number): Promise<number> {
-        const userId = Player.getPlayer(playerId)?.userId ?? null;
+        let userId = Player.getPlayer(playerId)?.userId ?? null;
         if (GToolkit.isNullOrUndefined(userId)) {
             this.logPlayerTokenInvalid(playerId);
             return;
         }
-        const param: QueryP12Param = {
-            userId: userId,
-        };
-        const body: EncryptedRequest = {
-            encryptData: this.getSecret(JSON.stringify(param)),
-        };
+
+        userId = "1234567";
 
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-                AuthModuleS.RELEASE_GET_CURRENCY_URL :
-                AuthModuleS.TEST_GET_CURRENCY_URL}`,
+                AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
+                AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL}?userId=${userId}`,
             {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charset=UTF-8",
-                },
-                body: JSON.stringify(body),
+                method: "GET",
             });
 
         const respInJson = await resp.json<QueryMoboxDragonDataResponse>();
