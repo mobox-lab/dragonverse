@@ -112,6 +112,7 @@ AddGMCommand("发射子弹id", (player: mw.Player, value: string) => {
 
 
 
+
 AddGMCommand("id|旋转x|旋转y|z", (player: mw.Player, value: string) => {
 
     let values = value.split("|");

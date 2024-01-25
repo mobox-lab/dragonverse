@@ -3,6 +3,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import BuyCoinPanel from "../../ui/BuyCoinPanel";
 import MessageBox from "../../utils/MessageBox";
 import { utils } from "../../utils/uitls";
 import { AnalyticsTool, ButtonAnaly } from "../Analytics/AnalyticsTool";
@@ -355,16 +356,17 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
     /**花费钻石购买夏日币 */
     public async buySummerCoin() {
 
-        let str = utils.Format(GameConfig.Language.Claw_Tips_9.Value, GlobalData.CurrencyExchange.diamondToCoin);
-        MessageBox.showTwoBtnMessage(str, async (res) => {
+        // let str = utils.Format(GameConfig.Language.Claw_Tips_9.Value, GlobalData.CurrencyExchange.diamondToCoin);
+        MessageBox.showTwoBtnMessage(GameConfig.Language.DollCoinNotEnough_Text_1.Value, async (res) => {
             if (res) {
-                let isSuccess = await this.playerMC.reduceDiamond(GlobalData.CurrencyExchange.diamondToCoin);
-                if (!isSuccess) {
-                    MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
-                    return;
-                }
-                this.playerMC.addGold(1, GlobalEnum.CoinType.SummerGold);
-                MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_1.Value);
+                // let isSuccess = await this.playerMC.reduceDiamond(GlobalData.CurrencyExchange.diamondToCoin);
+                // if (!isSuccess) {
+                //     MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
+                //     return;
+                // }
+                //  this.playerMC.addGold(1, GlobalEnum.CoinType.SummerGold);
+                // MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_1.Value);
+                UIService.show(BuyCoinPanel);
             }
         })
     }

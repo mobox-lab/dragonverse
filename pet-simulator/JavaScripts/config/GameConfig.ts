@@ -13,6 +13,7 @@ import {DropPointConfig} from "./DropPoint";
 import {EffectConfig} from "./Effect";
 import {EggMachineConfig} from "./EggMachine";
 import {EnchantsConfig} from "./Enchants";
+import {GoodsTableConfig} from "./GoodsTable";
 import {GradientConfig} from "./Gradient";
 import {LanguageConfig} from "./Language";
 import {MusicConfig} from "./Music";
@@ -61,6 +62,7 @@ export class GameConfig{
 	public static get Effect():EffectConfig{ return this.getConfig(EffectConfig) };
 	public static get EggMachine():EggMachineConfig{ return this.getConfig(EggMachineConfig) };
 	public static get Enchants():EnchantsConfig{ return this.getConfig(EnchantsConfig) };
+	public static get GoodsTable():GoodsTableConfig{ return this.getConfig(GoodsTableConfig) };
 	public static get Gradient():GradientConfig{ return this.getConfig(GradientConfig) };
 	public static get Language():LanguageConfig{ return this.getConfig(LanguageConfig) };
 	public static get Music():MusicConfig{ return this.getConfig(MusicConfig) };

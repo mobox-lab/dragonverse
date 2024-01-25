@@ -29,6 +29,13 @@ export default class CoinUI_Generate extends UIScript {
 		}
 		return this.mText_coin_Internal
 	}
+	private mAdd_Btn_Internal: mw.Button
+	public get mAdd_Btn(): mw.Button {
+		if(!this.mAdd_Btn_Internal&&this.uiWidgetBase) {
+			this.mAdd_Btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Clawcoin/mAdd_Btn') as mw.Button
+		}
+		return this.mAdd_Btn_Internal
+	}
 
 
 
@@ -47,6 +54,12 @@ export default class CoinUI_Generate extends UIScript {
 		
 		//按钮添加点击
 		
+		this.mAdd_Btn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mAdd_Btn");
+		})
+		this.mAdd_Btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 
 		//按钮多语言
 		
