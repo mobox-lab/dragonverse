@@ -93,6 +93,9 @@ export class P_DollMachine extends ControlUI_Generate {
             ModuleService.getModule(DollMachineModuleC).setDollMachineShortcutKey();
         })
 
+        this.skipBtn.onClicked.add(() => {
+            ModuleService.getModule(DollMachineModuleC).skipPlay(this.machineId);
+        });
 
     }
 }

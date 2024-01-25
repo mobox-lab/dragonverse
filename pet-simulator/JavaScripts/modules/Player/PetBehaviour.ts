@@ -699,7 +699,7 @@ export default class PetBehaviour {
             this.currentEffect = null;
         }
         let index = this.petInfo.MoveWay == 1 ? 0 : 1;
-        this.petInfo.QualityType = 3;
+
         if (this.petInfo.CharacterType === 0) {
             this.currentEffect = GeneralManager.rpcPlayEffectOnGameObject(
                 GlobalData.pet.qualityEffArr[this.petInfo.QualityType - 1],

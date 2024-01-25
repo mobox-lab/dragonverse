@@ -1058,9 +1058,9 @@ export namespace GlobalData {
         /**钩子左右下上晃动 */
         public static HookShaking: number[][] = [[0, 3], [0, -3], [0, -3], [0, 3], [90, 93], [90, 87], [90, 87], [90, 93]];
         /**宠物蛋生成的时间间隔 */
-        public static EggGenerateInterval: number = 1;
+        public static EggGenerateInterval: number = 0.5;
         /**宠物蛋生成的最大数量 */
-        public static EggMaxNumber: number = 30;
+        public static EggMaxNumber: number = 40;
     }
 
     /**rolePlay模块 */

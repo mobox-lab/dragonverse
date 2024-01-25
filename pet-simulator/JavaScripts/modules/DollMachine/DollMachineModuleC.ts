@@ -93,6 +93,8 @@ class DollMachineC {
         let startBtnObj = GameObject.findGameObjectById(conf.Control) as mw.UIWidget;
         this._worldUIPos = startBtnObj.worldTransform.position;
         this.startBtn = startBtnObj.getTargetUIWidget().rootContent.findChildByPath("mCanvas/mButton_Catch") as mw.Button;
+        let skipBtn = startBtnObj.getTargetUIWidget().rootContent.findChildByPath("skipBtn") as mw.Button;
+        if (skipBtn) skipBtn.visibility = SlateVisibility.Hidden;
         this.startBtn.onClicked.add(() => {
             this.onClickStartBtnAction.call(this.id);
             console.log("点击按钮: " + this.id);
@@ -135,11 +137,11 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
         this.initMachines();
         this.setGettingItemState();
         this.addStartBtnListener();
-        this.contrlUI = mw.UIService.getUI(P_DollMachine);
+        this.controlUI = mw.UIService.getUI(P_DollMachine);
         let coinUI = mw.UIService.getUI(P_SummerCoin);
 
-        this.contrlUI.onMoveAc.add(this.onMoveAc.bind(this));
-        this.contrlUI.catchAc.add(this.onCatchAc.bind(this));
+        this.controlUI.onMoveAc.add(this.onMoveAc.bind(this));
+        this.controlUI.catchAc.add(this.onCatchAc.bind(this));
         this.playerMC = ModuleService.getModule(PlayerModuleC);
         coinUI.setValue(this.playerMC.SummerCoin);
         this.playerMC.onGoldChange.add((type, num) => {
@@ -150,7 +152,7 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
     }
 
     /**抓娃娃屏幕UI */
-    private contrlUI: P_DollMachine;
+    private controlUI: P_DollMachine;
     /**是否交互中 */
     private isInteract: boolean = false;
     /**是否在领取奖励 */
@@ -255,8 +257,6 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
         });
     }
 
-
-
     /**设置当前玩家名，开始倒计时 */
     public net_setCurPlayerName(name: string, machineId: number, playerId: number) {
         if (name == "") {
@@ -303,6 +303,10 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
             return this.playerCD <= 0;
         })
         // this.server.net_cancelPhysics(machineId)
+    }
+
+    public skipPlay(machineId: number) {
+        this.server.net_randomGivePet(machineId);
     }
 
     /**移动操作 */
@@ -425,11 +429,11 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
     /**设置ui显示 */
     private setUI(isShow: boolean, machineId?: number) {
         if (isShow) {
-            this.contrlUI.machineId = machineId;
-            this.contrlUI.show();
+            this.controlUI.machineId = machineId;
+            this.controlUI.show();
         }
         else
-            this.contrlUI.hide();
+            this.controlUI.hide();
     }
 
     /**退出交互 */
