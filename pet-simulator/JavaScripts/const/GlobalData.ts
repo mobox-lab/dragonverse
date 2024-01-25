@@ -76,6 +76,8 @@ export namespace GlobalData {
          * 跳子游戏 进度条时长.
          */
         public static readonly jumpGameProgressDuration = 3e3;
+
+        public static copyUrl = "https://www.mobox.io";
     }
 
     export class worldUI {
@@ -1038,7 +1040,7 @@ export namespace GlobalData {
 
         /**娃娃相对爪子位置 */
         public static DollRelativeClawLoc: mw.Vector[] = [new mw.Vector(0, 24, 0), new mw.Vector(0, 35, 0),
-            new mw.Vector(1.35, 30, 0), new mw.Vector(-1.35, 30, 0), new mw.Vector(0, 35, 0), new mw.Vector(0, 24, 0), new mw.Vector(0, 24, 0)];
+        new mw.Vector(1.35, 30, 0), new mw.Vector(-1.35, 30, 0), new mw.Vector(0, 35, 0), new mw.Vector(0, 24, 0), new mw.Vector(0, 24, 0)];
 
         /**钩子左右下上晃动 */
         public static HookShaking: number[][] = [[0, 3], [0, -3], [0, -3], [0, 3], [90, 93], [90, 87], [90, 87], [90, 93]];
