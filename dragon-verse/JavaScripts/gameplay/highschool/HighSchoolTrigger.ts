@@ -72,11 +72,15 @@ export default class HighSchoolTrigger extends mw.Script {
         if (obj instanceof mw.Character) {
             if (GToolkit.isSelfCharacter(obj)) {
                 if (this._circleType == HighSchoolType.TransStart) {
-                    HighSchoolTrigger.startTran = obj.worldTransform;
+                    console.log("isstart ddddddddddddddddddddddddddddddddd");
+                    HighSchoolTrigger.startTran = this._trigger.worldTransform;
+                    this.setProps(obj);
                     UIService.getUI(MainPanel).setCanSprint(false);
                 }else if (this._circleType == HighSchoolType.DeadBackGround) {
-                    this._hander = TimeUtil.setInterval(this.onCountDown, 2);
+                    console.log("isdead ddddddddddddddddddddddddddddddddd");
                     //锁定摄像头
+                    obj.ragdollEnabled = true;
+                    this._hander = TimeUtil.setInterval(this.onCountDown, 2);
 
                 }else if (this._circleType == HighSchoolType.DeadRed) {
                     obj.ragdollEnabled = true;
@@ -85,6 +89,19 @@ export default class HighSchoolTrigger extends mw.Script {
             }
         }
     };
+
+    private setProps(obj: mw.Character){
+        obj.maxWalkSpeed = GameServiceConfig.ROLE_MAX_WALK_SPEED_OBBY;
+        obj.maxAcceleration = GameServiceConfig.ROLE_MAX_WALK_ACCURATE_OBBY;
+        obj.maxStepHeight = GameServiceConfig.ROLE_MAX_STEP_HEIGHT_OBBY;
+        obj.walkableFloorAngle = GameServiceConfig.ROLE_WALKABLE_FLOOR_ANGLE_OBBY;
+        obj.rotateRate = GameServiceConfig.ROLE_ROTATE_RATE_OBBY;
+        obj.groundFriction = GameServiceConfig.ROLE_GROUND_FRICTION_OBBY;
+        obj.maxFallingSpeed = GameServiceConfig.ROLE_FALLING_SPEED_OBBY;
+        obj.gravityScale = GameServiceConfig.ROLE_GRAVITY_SCALE_OBBY;
+        obj.maxJumpHeight = GameServiceConfig.ROLE_JUMP_HEIGHT_OBBY;
+        obj.jumpMaxCount = GameServiceConfig.ROLE_JUMP_MAX_COUNT_OBBY;
+    }
 
     private onCountDown = () => {
         if (this._hander) {
@@ -95,6 +112,7 @@ export default class HighSchoolTrigger extends mw.Script {
     };
 
     private reborn(){
+        Player.localPlayer.character.ragdollEnabled = false;
         Player.localPlayer.character.worldTransform = HighSchoolTrigger.startTran;
         Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
     }
