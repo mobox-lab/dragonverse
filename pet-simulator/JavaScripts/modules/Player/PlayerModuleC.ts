@@ -24,7 +24,7 @@ import { PlayerModuleS } from "./PlayerModuleS";
 import { IGradientElement } from "../../config/Gradient";
 
 /**玩家模块 */
-export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData>{
+export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
     private achievementModuleC: AchievementModuleC = null;
     private hudUI: P_HudUI = null;
     private curBehavior: PlayerBehavior;
@@ -337,6 +337,10 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData>{
         if (gold1 > 0 || gold2 > 0 || gold3 > 0 || diamond > 0) {
             this.server.net_addGoldAndDiamond(gold1, gold2, gold3, diamond);
         }
+    }
+
+    public async buyDollCoin(configId: number): Promise<boolean> {
+        return await this.server.net_buyDollCoin(configId);
     }
 
     /**增加金币 */

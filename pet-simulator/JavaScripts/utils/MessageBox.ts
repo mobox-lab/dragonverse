@@ -77,9 +77,20 @@ export default class MessageBox extends MessageBox_Generate {
         let noStr = GameConfig.Language.button_13.Value;
         MessageBox.instance.showMsg2(content, resListener, yesStr, noStr);
     }
+    /**
+     * 显示消息框（单个按钮）
+     * @param title 标题
+     * @param content 内容
+     * @param confirmListener 确认回调
+     * @param okStr 确认按钮文字
+     */
+    public static showOneBtnMessageWithStr(content: string, resListener: () => void, okStr: string) {
+        MessageBox.instance.hide()
+        MessageBox.instance.showMsg1(content, resListener, okStr);
+    }
 
     private showMsg1(content: string, resListener: () => void, okStr: string) {
-        MessageBox._oneMess.showMsg(content, resListener);
+        MessageBox._oneMess.showMsg(content, resListener, okStr);
     }
 
     private showMsg2(content: string, resListener: (res: boolean) => void, yesStr: string, noStr: string) {
@@ -119,9 +130,11 @@ export class MessageOneBox extends TipsBox_Generate {
         })
     }
 
-    public showMsg(content: string, resListener: (res: boolean) => void) {
+    public showMsg(content: string, resListener: (res: boolean) => void, okStr?: string) {
         this.mText_message.text = content;
         this.resListener = resListener;
+        if (okStr) this.mBtn_OK.text = okStr;
+
         this.show();
     }
 

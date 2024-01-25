@@ -12,6 +12,9 @@ import ModuleService = mwext.ModuleService;
 import { ConsumeModuleC } from "../consume/ConsumeModule";
 import { AuthModuleC } from "../auth/AuthModule";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import MessageBox from "../../utils/MessageBox";
+import { GameConfig } from "../../config/GameConfig";
+import { TipsManager } from "./P_TipUI";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -143,6 +146,13 @@ export class P_HudUI extends Hud_Generate {
         KeyOperationManager.getInstance().onKeyPress(Keys.D, this, () => {
             this.changeVelocityY(1);
         })
+
+        this.mAdd_Btn.onClicked.add(() => {
+            MessageBox.showOneBtnMessageWithStr(GameConfig.Language.Deposit_1.Value, () => {
+                StringUtil.clipboardCopy(GlobalData.Global.copyUrl);
+                TipsManager.instance.showTip(GameConfig.Language.Copy_Success_Text_1.Value);
+            }, GameConfig.Language.Deposit_2.Value)
+        });
     }
     private _velocity: Vector = new Vector();
     public changeVelocityX(x: number) {

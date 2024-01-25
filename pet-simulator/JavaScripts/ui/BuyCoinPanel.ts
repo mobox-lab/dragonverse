@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-24 17:39:11
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-25 10:32:26
+ * @LastEditTime : 2024-01-25 13:40:35
  * @FilePath     : \DragonVerse\pet-simulator\JavaScripts\ui\BuyCoinPanel.ts
  * @Description  : 商店界面
  */
@@ -15,12 +15,15 @@ import { BuffItem } from "../modules/buff/ui/BuffItem";
 import MessageBox from "../utils/MessageBox";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 import BuyItem_Generate from "../ui-generate/Buy/BuyItem_generate";
+import { AuthModuleC } from "../modules/auth/AuthModule";
+import { PlayerModuleC } from "../modules/Player/PlayerModuleC";
+import { TipsManager } from "../modules/Hud/P_TipUI";
 
 
 
 export default class BuyCoinPanel extends BuyUI_Generate {
     onStart() {
-        this.mCanvas_undo.visibility = SlateVisibility.Hidden;
+
         GameConfig.GoodsTable.getAllElement().forEach(item => {
             let buyItem = UIService.create(BuyCoinItem);
             buyItem.initUI(item.title, item.buyCount, item.price, () => {
@@ -28,7 +31,16 @@ export default class BuyCoinPanel extends BuyUI_Generate {
                     if (res) {
                         this.mCanvas_undo.visibility = SlateVisibility.HitTestInvisible;
                         //请求
-                        console.log(item.buyCount);
+                        ModuleService.getModule(PlayerModuleC).buyDollCoin(item.id).then((res) => {
+                            if (res) {
+                                //购买成功
+                                TipsManager.instance.showTip(GameConfig.Language.BuyDollCoin_Success_Text_1.Value);
+
+                            } else {
+                                TipsManager.instance.showTip(GameConfig.Language.BuyDollCoin_Fail_Text_1.Value);
+                            }
+                            this.hide();
+                        });
                     }
                 });
             });
@@ -42,6 +54,11 @@ export default class BuyCoinPanel extends BuyUI_Generate {
         KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
             this.hide();
         })
+    }
+
+    protected onShow(...params: any[]): void {
+        super.onShow(...params);
+        this.mCanvas_undo.visibility = SlateVisibility.Hidden;
     }
 
     public hide(): void {
