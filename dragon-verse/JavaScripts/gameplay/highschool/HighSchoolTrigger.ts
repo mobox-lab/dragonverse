@@ -86,7 +86,7 @@ export default class HighSchoolTrigger extends mw.Script {
                 }else if (this._circleType == HighSchoolType.ScorePoint) {
                     HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
                     // PromotTips.showTips(i18n.lan(i18n.keyTable.Need_FireDargon));
-                    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan("isVerifying"));
+                    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.Obby_GoldReward));
                     //记录是第几关 改变进度条
                     
                 }
