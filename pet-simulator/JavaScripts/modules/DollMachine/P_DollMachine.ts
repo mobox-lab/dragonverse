@@ -1,6 +1,7 @@
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import CoinUI_Generate from "../../ui-generate/Catching/CoinUI_generate";
 import ControlUI_Generate from "../../ui-generate/Catching/ControlUI_generate";
+import BuyCoinPanel from "../../ui/BuyCoinPanel";
 import { utils } from "../../utils/uitls";
 import { DollMachineModuleC } from "./DollMachineModuleC";
 
@@ -100,7 +101,9 @@ export class P_SummerCoin extends CoinUI_Generate {
 
 
     onStart() {
-
+        this.mAdd_Btn.onClicked.add(() => {
+            UIService.show(BuyCoinPanel);
+        })
     }
 
     public setValue(value: number) {

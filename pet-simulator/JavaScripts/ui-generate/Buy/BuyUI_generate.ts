@@ -8,54 +8,40 @@
 
 @UIBind('UI/Buy/BuyUI.ui')
 export default class BuyUI_Generate extends UIScript {
-		private mBtn_Close_Internal: mw.Button
-	public get mBtn_Close(): mw.Button {
-		if(!this.mBtn_Close_Internal&&this.uiWidgetBase) {
-			this.mBtn_Close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Close') as mw.Button
+		private mCanvas_Internal: mw.Canvas
+	public get mCanvas(): mw.Canvas {
+		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
 		}
-		return this.mBtn_Close_Internal
+		return this.mCanvas_Internal
 	}
-	private mBtn_Yes_Internal: mw.Button
-	public get mBtn_Yes(): mw.Button {
-		if(!this.mBtn_Yes_Internal&&this.uiWidgetBase) {
-			this.mBtn_Yes_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Yes') as mw.Button
+	private mScrollBox_Internal: mw.ScrollBox
+	public get mScrollBox(): mw.ScrollBox {
+		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
+			this.mScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox') as mw.ScrollBox
 		}
-		return this.mBtn_Yes_Internal
+		return this.mScrollBox_Internal
 	}
-	private mBtn_Buy_1_Internal: mw.Button
-	public get mBtn_Buy_1(): mw.Button {
-		if(!this.mBtn_Buy_1_Internal&&this.uiWidgetBase) {
-			this.mBtn_Buy_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Buy_1') as mw.Button
+	private mCanvas_List_Internal: mw.Canvas
+	public get mCanvas_List(): mw.Canvas {
+		if(!this.mCanvas_List_Internal&&this.uiWidgetBase) {
+			this.mCanvas_List_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox/mCanvas_List') as mw.Canvas
 		}
-		return this.mBtn_Buy_1_Internal
+		return this.mCanvas_List_Internal
 	}
-	private mBtn_Buy_2_Internal: mw.Button
-	public get mBtn_Buy_2(): mw.Button {
-		if(!this.mBtn_Buy_2_Internal&&this.uiWidgetBase) {
-			this.mBtn_Buy_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Buy_2') as mw.Button
+	private mBtn_close_Internal: mw.Button
+	public get mBtn_close(): mw.Button {
+		if(!this.mBtn_close_Internal&&this.uiWidgetBase) {
+			this.mBtn_close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBtn_close') as mw.Button
 		}
-		return this.mBtn_Buy_2_Internal
+		return this.mBtn_close_Internal
 	}
-	private mBtn_Buy_3_Internal: mw.Button
-	public get mBtn_Buy_3(): mw.Button {
-		if(!this.mBtn_Buy_3_Internal&&this.uiWidgetBase) {
-			this.mBtn_Buy_3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Buy_3') as mw.Button
+	private mCanvas_undo_Internal: mw.Canvas
+	public get mCanvas_undo(): mw.Canvas {
+		if(!this.mCanvas_undo_Internal&&this.uiWidgetBase) {
+			this.mCanvas_undo_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_undo') as mw.Canvas
 		}
-		return this.mBtn_Buy_3_Internal
-	}
-	private mBtn_Buy_4_Internal: mw.Button
-	public get mBtn_Buy_4(): mw.Button {
-		if(!this.mBtn_Buy_4_Internal&&this.uiWidgetBase) {
-			this.mBtn_Buy_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Buy_4') as mw.Button
-		}
-		return this.mBtn_Buy_4_Internal
-	}
-	private mBtn_Buy_5_Internal: mw.Button
-	public get mBtn_Buy_5(): mw.Button {
-		if(!this.mBtn_Buy_5_Internal&&this.uiWidgetBase) {
-			this.mBtn_Buy_5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Buy_5') as mw.Button
-		}
-		return this.mBtn_Buy_5_Internal
+		return this.mCanvas_undo_Internal
 	}
 
 
@@ -75,46 +61,10 @@ export default class BuyUI_Generate extends UIScript {
 		
 		//按钮添加点击
 		
-		this.mBtn_Close.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Close");
+		this.mBtn_close.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_close");
 		})
-		this.mBtn_Close.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
-		this.mBtn_Yes.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Yes");
-		})
-		this.mBtn_Yes.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
-		this.mBtn_Buy_1.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Buy_1");
-		})
-		this.mBtn_Buy_1.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
-		this.mBtn_Buy_2.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Buy_2");
-		})
-		this.mBtn_Buy_2.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
-		this.mBtn_Buy_3.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Buy_3");
-		})
-		this.mBtn_Buy_3.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
-		this.mBtn_Buy_4.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Buy_4");
-		})
-		this.mBtn_Buy_4.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
-		this.mBtn_Buy_5.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Buy_5");
-		})
-		this.mBtn_Buy_5.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.mBtn_close.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 
@@ -124,31 +74,7 @@ export default class BuyUI_Generate extends UIScript {
 		
 		//文本多语言
 		
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/mBtn_Yes/TextBlock_3") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/TextBlock_1") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/TextBlock_2") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/TextBlock") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/mBtn_Buy_1/TextBlock_4") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/mBtn_Buy_2/TextBlock_5") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/mBtn_Buy_3/TextBlock_6") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/mBtn_Buy_4/TextBlock_7") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/mBtn_Buy_5/TextBlock_8") as any);
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvas/TextBlock") as any);
 		
 	
 

@@ -6,21 +6,56 @@
 
 
 
-@UIBind('UI/Buy/Buyitem.ui')
-export default class Buyitem_Generate extends UIScript {
-		private mCanvas_Internal: mw.Canvas
-	public get mCanvas(): mw.Canvas {
-		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
-			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
+@UIBind('UI/Buy/BuyItem.ui')
+export default class BuyItem_Generate extends UIScript {
+		private mPic_Base_Internal: mw.Image
+	public get mPic_Base(): mw.Image {
+		if(!this.mPic_Base_Internal&&this.uiWidgetBase) {
+			this.mPic_Base_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_Base') as mw.Image
 		}
-		return this.mCanvas_Internal
+		return this.mPic_Base_Internal
 	}
-	private mImage_Icon_Internal: mw.Image
-	public get mImage_Icon(): mw.Image {
-		if(!this.mImage_Icon_Internal&&this.uiWidgetBase) {
-			this.mImage_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mImage_Icon') as mw.Image
+	private mPic_Icon_Internal: mw.Image
+	public get mPic_Icon(): mw.Image {
+		if(!this.mPic_Icon_Internal&&this.uiWidgetBase) {
+			this.mPic_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_Icon') as mw.Image
 		}
-		return this.mImage_Icon_Internal
+		return this.mPic_Icon_Internal
+	}
+	private mText_Name_Internal: mw.TextBlock
+	public get mText_Name(): mw.TextBlock {
+		if(!this.mText_Name_Internal&&this.uiWidgetBase) {
+			this.mText_Name_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_Name') as mw.TextBlock
+		}
+		return this.mText_Name_Internal
+	}
+	private mText_Info_Internal: mw.TextBlock
+	public get mText_Info(): mw.TextBlock {
+		if(!this.mText_Info_Internal&&this.uiWidgetBase) {
+			this.mText_Info_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_Info') as mw.TextBlock
+		}
+		return this.mText_Info_Internal
+	}
+	private mText_Price_Internal: mw.TextBlock
+	public get mText_Price(): mw.TextBlock {
+		if(!this.mText_Price_Internal&&this.uiWidgetBase) {
+			this.mText_Price_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_Price') as mw.TextBlock
+		}
+		return this.mText_Price_Internal
+	}
+	private mBtn_Internal: mw.Button
+	public get mBtn(): mw.Button {
+		if(!this.mBtn_Internal&&this.uiWidgetBase) {
+			this.mBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn') as mw.Button
+		}
+		return this.mBtn_Internal
+	}
+	private mCanvas_undo_Internal: mw.Canvas
+	public get mCanvas_undo(): mw.Canvas {
+		if(!this.mCanvas_undo_Internal&&this.uiWidgetBase) {
+			this.mCanvas_undo_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_undo') as mw.Canvas
+		}
+		return this.mCanvas_undo_Internal
 	}
 
 
@@ -40,13 +75,31 @@ export default class Buyitem_Generate extends UIScript {
 		
 		//按钮添加点击
 		
+		this.mBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn");
+		})
+		this.mBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 
 		//按钮多语言
 		
 		//文本多语言
 		
+		this.initLanguage(this.mText_Name)
+		
+	
+		this.initLanguage(this.mText_Info)
+		
+	
+		this.initLanguage(this.mText_Price)
+		
+	
 		//文本多语言
 		
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvas_undo/TextBlock") as any);
+		
+	
 
 	}
 	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
