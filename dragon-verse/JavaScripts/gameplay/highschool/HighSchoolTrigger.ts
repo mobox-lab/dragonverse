@@ -4,14 +4,13 @@
  * @LastEditors: steven
  * @LastEditTime: 2023-12-21 16:30:39
  */
-
-import { GameConfig } from "../../config/GameConfig";
 import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Nolan from "../../depend/nolan/Nolan";
+import i18n from "../../language/i18n";
+import { PromotTips } from "../../ui/common/PromotTips";
 import MainPanel from "../../ui/main/MainPanel";
 import GToolkit from "../../util/GToolkit";
-import { RunningGameGetParticle } from "../quest/runnungGame/RunningGameQuest";
 
 
 /**
@@ -42,11 +41,14 @@ export default class HighSchoolTrigger extends mw.Script {
     })
     private _circleType: HighSchoolType = HighSchoolType.TransStart;
 
+    @mw.Property({ displayName: "关卡叙述，用来表示是第几个检查点" })
+    private _checkPointIdx: number = 0;
+
     private _trigger: mw.Trigger;
 
     private _hander: number;
 
-    public static startTran:Transform;
+    public static lastPos:mw.Vector;
 
     protected onStart(): void {
         if (mw.SystemUtil.isServer()) {
@@ -57,10 +59,8 @@ export default class HighSchoolTrigger extends mw.Script {
 
 
     private initTrigger() {
-        console.log("initTrigger iiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
         this._trigger =  this.gameObject as mw.Trigger;
         this._trigger.onEnter.add(this.onEnter);
-
     }
 
     protected onUpdate(dt: number): void {
@@ -72,12 +72,10 @@ export default class HighSchoolTrigger extends mw.Script {
         if (obj instanceof mw.Character) {
             if (GToolkit.isSelfCharacter(obj)) {
                 if (this._circleType == HighSchoolType.TransStart) {
-                    console.log("isstart ddddddddddddddddddddddddddddddddd");
-                    HighSchoolTrigger.startTran = this._trigger.worldTransform;
+                    HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
                     this.setProps(obj);
                     UIService.getUI(MainPanel).setCanSprint(false);
                 }else if (this._circleType == HighSchoolType.DeadBackGround) {
-                    console.log("isdead ddddddddddddddddddddddddddddddddd");
                     //锁定摄像头
                     obj.ragdollEnabled = true;
                     this._hander = TimeUtil.setInterval(this.onCountDown, 2);
@@ -85,6 +83,12 @@ export default class HighSchoolTrigger extends mw.Script {
                 }else if (this._circleType == HighSchoolType.DeadRed) {
                     obj.ragdollEnabled = true;
                     this._hander = TimeUtil.setInterval(this.onCountDown, 2);
+                }else if (this._circleType == HighSchoolType.ScorePoint) {
+                    HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
+                    // PromotTips.showTips(i18n.lan(i18n.keyTable.Need_FireDargon));
+                    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan("isVerifying"));
+                    //记录是第几关 改变进度条
+                    
                 }
             }
         }
@@ -113,7 +117,7 @@ export default class HighSchoolTrigger extends mw.Script {
 
     private reborn(){
         Player.localPlayer.character.ragdollEnabled = false;
-        Player.localPlayer.character.worldTransform = HighSchoolTrigger.startTran;
+        Player.localPlayer.character.worldTransform.position = HighSchoolTrigger.lastPos;
         Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
     }
 
