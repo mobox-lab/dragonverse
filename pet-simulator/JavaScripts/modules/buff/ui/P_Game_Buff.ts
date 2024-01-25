@@ -10,14 +10,11 @@ export class P_Game_Buff extends P_Game_Buff_Generate {
 	public onBuffEndAction: Action = new Action();
 
 	onStart() {
-		this.canUpdate = true;
+ 
 	}
 
 	onUpdate(dt: number) {
-		if (this.buffItemList == null || this.buffItemList.length <= 0) return;
-		for (let i = 0; i < this.buffItemList.length; i++) {
-			this.buffItemList[i].update(dt);
-		}
+ 
 	}
 
 	/**
@@ -38,35 +35,15 @@ export class P_Game_Buff extends P_Game_Buff_Generate {
 	/**
 	 * 移除一个Buff
 	 */
-	private removeBuff(buffType: GlobalEnum.BuffType) {
-		let item = this.buffItemList.find(a => a.data != null && a.data.type == buffType);
+	private removeBuff(buffId:number) {
+		let item = this.buffItemList.find(a => a.data != null && a.data.id == buffId);
 		if (item != null) {
 			item.uiObject.visibility = mw.SlateVisibility.Collapsed;
 			item.onBuffEnd.clear();
 			item.setData(null);
 		}
 	}
-
-	/**
-	 * 增加一个BUFF时间
-	 */
-	public addBuffTime(type: GlobalEnum.BuffType, addTime: number) {
-		let item = this.buffItemList.find(a => a.data && a.data.type == type);
-		if (item != null) {
-			item.addBuffTime(addTime);
-		}
-	}
-
-	/**
-	 * 设置一个BUFF时间
-	 */
-	public setBuffTime(type: GlobalEnum.BuffType, time: number) {
-		let item = this.buffItemList.find(a => a.data && a.data.type == type);
-		if (item != null) {
-			item.setBuffTime(time);
-		}
-	}
-
+ 
 	/**
 	 * buff结束
 	 */
