@@ -59,8 +59,8 @@ import RankListModuleS from "./module/RankListModule/RankListModuleS";
 import RankListModuleC from "./module/RankListModule/RankListModuleC";
 import DressUpModuleS from "./module/DressUpModule/DressUpModuleS";
 import DressUpModuleC from "./module/DressUpModule/DressUpModuleC";
-import { GuideModuleC2 } from "./module/GuideModule/GuideModuleC2";
-import { GuideModuleS2 } from "./module/GuideModule/GuideModuleS2";
+// import { GuideModuleC2 } from "./module/GuideModule/GuideModuleC2";
+// import { GuideModuleS2 } from "./module/GuideModule/GuideModuleS2";
 import { GuideDataHelper, GuideModuleC, GuideModuleS } from "module_guide";
 import { InteractiveModuleS } from "./module/InteractiveModule/InteractiveModuleS";
 import { InteractiveModuleC } from "./module/InteractiveModule/InteractiveModuleC";
@@ -173,8 +173,8 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(MascotModuleS, MascotModuleC, null);
         ModuleService.registerModule(RankListModuleS, RankListModuleC, null);
         ModuleService.registerModule(DressUpModuleS, DressUpModuleC, null);
-        ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
-        ModuleService.registerModule(GuideModuleS2, GuideModuleC2, null);
+        // ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
+        // ModuleService.registerModule(GuideModuleS2, GuideModuleC2, null);
         ModuleService.registerModule(InteractiveModuleS, InteractiveModuleC, null);
     }
 
