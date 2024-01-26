@@ -115,31 +115,31 @@ export class OnlineMoudleC extends ModuleC<OnlineMoudleS, OnlineModuleData>{
         })
 
     }
-    net_getBuff(id: number) {
-        let cfg = GameConfig.TimeReward.getElement(id);
-        if (cfg.buff.length == 0) return;
+    // net_getBuff(id: number) {
+    //     let cfg = GameConfig.TimeReward.getElement(id);
+    //     if (cfg.buff.length == 0) return;
 
-        let buffMC = ModuleService.getModule(BuffModuleC);
+    //     let buffMC = ModuleService.getModule(BuffModuleC);
 
-        cfg.buff.forEach((element, index) => {
-            if (element == GlobalEnum.BuffType.ThreeTimesGold) {
-                buffMC.addBuff(element, cfg.buffTime[index])
-                TipsManager.instance.showTip(utils.GetUIText(283));
-            }
-            if (element == GlobalEnum.BuffType.ThreeTimesDamage) {
-                buffMC.addBuff(element, cfg.buffTime[index])
-                TipsManager.instance.showTip(utils.GetUIText(282));
-            }
-            if (element == GlobalEnum.BuffType.LuckyPotion) {
-                buffMC.addBuff(element, cfg.buffTime[index])
-                TipsManager.instance.showTip(utils.GetUIText(284));
-            }
-            if (element == GlobalEnum.BuffType.SuperLuckyPotion) {
-                TipsManager.instance.showTip(utils.GetUIText(285));
-                buffMC.addBuff(element, cfg.buffTime[index])
-            }
-        })
-    }
+    //     cfg.buff.forEach((element, index) => {
+    //         if (element == GlobalEnum.BuffType.ThreeTimesGold) {
+    //             buffMC.addBuff(element, cfg.buffTime[index])
+    //             TipsManager.instance.showTip(utils.GetUIText(283));
+    //         }
+    //         if (element == GlobalEnum.BuffType.ThreeTimesDamage) {
+    //             buffMC.addBuff(element, cfg.buffTime[index])
+    //             TipsManager.instance.showTip(utils.GetUIText(282));
+    //         }
+    //         if (element == GlobalEnum.BuffType.LuckyPotion) {
+    //             buffMC.addBuff(element, cfg.buffTime[index])
+    //             TipsManager.instance.showTip(utils.GetUIText(284));
+    //         }
+    //         if (element == GlobalEnum.BuffType.SuperLuckyPotion) {
+    //             TipsManager.instance.showTip(utils.GetUIText(285));
+    //             buffMC.addBuff(element, cfg.buffTime[index])
+    //         }
+    //     })
+    // }
 
 }
 
