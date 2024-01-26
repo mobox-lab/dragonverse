@@ -118,7 +118,7 @@ export default class NpcBehavior extends mw.Script {
             this._npcBasicAni.play();
         }
 
-        HeadUIController.getInstance().registerHeadUI(this._npcCharacter, HeadUIType.NPC, i18n.lan(GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null"));
+        HeadUIController.getInstance().registerHeadUI(this._npcCharacter, HeadUIType.NPC, i18n.lan(GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null"), null, GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null");
     }
 
     protected onUpdate(dt: number): void {

@@ -9,7 +9,6 @@ import GToolkit from "../../utils/GToolkit";
 import { Yoact } from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
 import ModuleService = mwext.ModuleService;
-import { ConsumeModuleC } from "../consume/ConsumeModule";
 import { AuthModuleC } from "../auth/AuthModule";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import MessageBox from "../../utils/MessageBox";
