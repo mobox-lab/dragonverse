@@ -14,6 +14,7 @@ import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { DebugConsole } from "debug_console";
 import { EnergyModuleC, EnergyModuleS } from "../Energy/EnergyModule";
 import { AuthModuleS } from "../auth/AuthModule";
+import { BuffModuleS } from "../buff/BuffModuleS";
 
 
 //主面板
@@ -290,12 +291,13 @@ AddGMCommand("掉落测试", (player: mw.Player, value: string) => {
 
 }, "掉落", mw.Keys.K);
 
-AddGMCommand("增加buff(buff类型)", (player: mw.Player, value: string) => {
-    let sps = value.split(",");
-    ModuleService.getModule(BuffModuleC).addBuff(Number(sps[0]));
-}, (player: mw.Player, value: string) => {
-
-}, "buff");
+AddGMCommand("增加buff(buff类型)", undefined,
+    (player: mw.Player, value: string) => {
+        let sps = value.split(",").map(str => Number(str));
+        for (const sp of sps) {
+            ModuleService.getModule(BuffModuleS).addBuff(player.playerId, sp);
+        }
+    }, "buff");
 
 type AreaData = {
     id: number,
