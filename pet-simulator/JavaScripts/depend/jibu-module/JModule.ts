@@ -125,7 +125,6 @@ export abstract class JModuleC<S, D extends mwext.Subdata> extends mwext.ModuleC
      */
     public delegateOnReady(callback: SimpleDelegateFunction<void>) {
         if (this._isReady) {
-            DataStorage.asyncGetOtherGameData("123456","Key")
             try {
                 callback();
             } catch (e) {
