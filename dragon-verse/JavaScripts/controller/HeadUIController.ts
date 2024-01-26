@@ -1,4 +1,5 @@
 import { Singleton } from "../depend/singleton/Singleton";
+import i18n from "../language/i18n";
 import HeadUIPanel_Generate from "../ui-generate/head/HeadUIPanel_generate";
 import HiddenNameUI_Generate from "../ui-generate/head/HiddenNameUI_generate";
 
@@ -208,7 +209,7 @@ export class HeadUIController extends Singleton<HeadUIController>() {
      * @param offset 边距
      * @returns 存储的头顶UI信息
      */
-    public async registerHeadUI(owner: mw.GameObject, type: HeadUIType, name: string, offset?: mw.Vector) {
+    public async registerHeadUI(owner: mw.GameObject, type: HeadUIType, name: string, offset?: mw.Vector, lanKey?: string) {
         let uiWidget = await this.getHeadUIComponent();
 
         let index = this._activeInfos.findIndex((value) => {
@@ -231,6 +232,8 @@ export class HeadUIController extends Singleton<HeadUIController>() {
 
         let guid = HeadUIImageGuidLookTable[type];
         uiWidget.uiBehavior.title.text = name;
+        if (lanKey) i18n.bind(uiWidget.uiBehavior.title, lanKey);
+
         uiWidget.uiBehavior.bg.imageGuid = guid;
 
         uiWidget.parent = owner;

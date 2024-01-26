@@ -48,7 +48,7 @@ export default class HighSchoolTrigger extends mw.Script {
 
     private _hander: number;
 
-    public static lastPos:mw.Vector;
+    public static lastPos: mw.Vector;
 
     protected onStart(): void {
         if (mw.SystemUtil.isServer()) {
@@ -59,7 +59,7 @@ export default class HighSchoolTrigger extends mw.Script {
 
 
     private initTrigger() {
-        this._trigger =  this.gameObject as mw.Trigger;
+        this._trigger = this.gameObject as mw.Trigger;
         this._trigger.onEnter.add(this.onEnter);
     }
 
@@ -75,26 +75,26 @@ export default class HighSchoolTrigger extends mw.Script {
                     HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
                     this.setProps(obj);
                     UIService.getUI(MainPanel).setCanSprint(false);
-                }else if (this._circleType == HighSchoolType.DeadBackGround) {
+                } else if (this._circleType == HighSchoolType.DeadBackGround) {
                     //锁定摄像头
                     obj.ragdollEnabled = true;
                     this._hander = TimeUtil.setInterval(this.onCountDown, 2);
 
-                }else if (this._circleType == HighSchoolType.DeadRed) {
+                } else if (this._circleType == HighSchoolType.DeadRed) {
                     obj.ragdollEnabled = true;
                     this._hander = TimeUtil.setInterval(this.onCountDown, 2);
-                }else if (this._circleType == HighSchoolType.ScorePoint) {
+                } else if (this._circleType == HighSchoolType.ScorePoint) {
                     HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
-                    // PromotTips.showTips(i18n.lan(i18n.keyTable.Need_FireDargon));
-                    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.Obby_GoldReward));
+                    // PromotTips.showTips(i18n.lan(i18n.lankey.Need_FireDargon));
+                    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_GoldReward));
                     //记录是第几关 改变进度条
-                    
+
                 }
             }
         }
     };
 
-    private setProps(obj: mw.Character){
+    private setProps(obj: mw.Character) {
         obj.maxWalkSpeed = GameServiceConfig.ROLE_MAX_WALK_SPEED_OBBY;
         obj.maxAcceleration = GameServiceConfig.ROLE_MAX_WALK_ACCURATE_OBBY;
         obj.maxStepHeight = GameServiceConfig.ROLE_MAX_STEP_HEIGHT_OBBY;
@@ -115,7 +115,7 @@ export default class HighSchoolTrigger extends mw.Script {
         this.reborn();
     };
 
-    private reborn(){
+    private reborn() {
         Player.localPlayer.character.ragdollEnabled = false;
         Player.localPlayer.character.worldTransform.position = HighSchoolTrigger.lastPos;
         Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
