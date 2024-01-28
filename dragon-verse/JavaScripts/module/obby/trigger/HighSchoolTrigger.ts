@@ -4,13 +4,12 @@
  * @LastEditors: steven
  * @LastEditTime: 2023-12-21 16:30:39
  */
-import { EventDefine } from "../../const/EventDefine";
-import GameServiceConfig from "../../const/GameServiceConfig";
-import Nolan from "../../depend/nolan/Nolan";
-import i18n from "../../language/i18n";
-import { PromotTips } from "../../ui/common/PromotTips";
-import MainPanel from "../../ui/main/MainPanel";
-import GToolkit from "../../util/GToolkit";
+import { EventDefine } from "../../../const/EventDefine";
+import GameServiceConfig from "../../../const/GameServiceConfig";
+import Nolan from "../../../depend/nolan/Nolan";
+import i18n from "../../../language/i18n";
+import MainPanel from "../../../ui/main/MainPanel";
+import GToolkit from "../../../util/GToolkit";
 
 
 /**
