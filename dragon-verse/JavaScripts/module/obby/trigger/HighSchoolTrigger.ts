@@ -10,6 +10,7 @@ import Nolan from "../../../depend/nolan/Nolan";
 import i18n from "../../../language/i18n";
 import MainPanel from "../../../ui/main/MainPanel";
 import GToolkit from "../../../util/GToolkit";
+import { ObbyModuleC } from "../ObbyModule";
 
 
 /**
@@ -71,14 +72,17 @@ export default class HighSchoolTrigger extends mw.Script {
         if (obj instanceof mw.Character) {
             if (GToolkit.isSelfCharacter(obj)) {
                 if (this._circleType == HighSchoolType.TransStart) {
-                    HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
-                    this.setProps(obj);
-                    UIService.getUI(MainPanel).setCanSprint(false);
+                    let obby =  ModuleService.getModule(ObbyModuleC);
+                    if(!obby.isInGame){
+                        obby.enterGame();
+                        HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
+                        this.setProps(obj);
+                        UIService.getUI(MainPanel).setCanSprint(false);
+                    }
                 }else if (this._circleType == HighSchoolType.DeadBackGround) {
                     //锁定摄像头
                     obj.ragdollEnabled = true;
                     this._hander = TimeUtil.setInterval(this.onCountDown, 2);
-
                 }else if (this._circleType == HighSchoolType.DeadRed) {
                     obj.ragdollEnabled = true;
                     this._hander = TimeUtil.setInterval(this.onCountDown, 2);
@@ -87,7 +91,8 @@ export default class HighSchoolTrigger extends mw.Script {
                     // PromotTips.showTips(i18n.lan(i18n.keyTable.Need_FireDargon));
                     Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.Obby_GoldReward));
                     //记录是第几关 改变进度条
-                    
+                    let obby =  ModuleService.getModule(ObbyModuleC);
+                    obby.net_updateLv(this._checkPointIdx);
                 }
             }
         }

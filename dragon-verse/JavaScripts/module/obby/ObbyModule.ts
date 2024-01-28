@@ -16,6 +16,7 @@ import GameObject = mw.GameObject;
 import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import EventListener = mw.EventListener;
 import Enum = UE.Enum;
+import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
 
 export default class ObbyModuleData extends Subdata {
     //@Decorator.persistence()
@@ -37,24 +38,12 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     //#region Member
 
     private _mainPanel: MainPanel;
-
+    private _obbyPanel: ObbyInteractorPanel;
+    private _curLv:number;
+    private _maxLv:number;
+    private _isStart:boolean;
+    private _isInGame:boolean;
     private _eventListeners: EventListener[] = [];
-
-    private _currentCollectResultSyncKey: string = null;
-
-    /**
-     * 当前采集结果.
-     */
-    public get currentCollectResultSyncKey(): string {
-        return this._currentCollectResultSyncKey;
-    }
-
-    private _isCollecting: boolean = false;
-
-    public get isCollecting(): boolean {
-        return this._isCollecting;
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -67,6 +56,9 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
         //#region Member init
         this._mainPanel = UIService.getUI(MainPanel);
+        this._obbyPanel = UIService.create(ObbyInteractorPanel);
+        this._maxLv = 100;//这里要读取配置表 知道最大的关卡数
+        console.log("obbyModuleC onStart================")
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
@@ -81,9 +73,11 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
+        console.log("obbyModuleC onEnterScene================")
     }
 
     protected onDestroy(): void {
+        console.log("obbyModuleC onDestroy================")
         super.onDestroy();
 
         //#region Event Unsubscribe
@@ -96,13 +90,66 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#region Method
+        /**
+         * 是否在游戏中
+         */
+        public isInGame():boolean {
+            return this._isInGame;
+        }
 
+        /**
+         * 进入游戏
+         */
+        public enterGame() {
+            //拉取当前的进度
+            this._isStart = false;
+            this._isInGame = true;
+            this._curLv = 0;
+            this.server.net_getLv();
+        }
+
+        
+        /**
+         * 通过检查点
+         * @param playerId
+         */
+        public enterCheckPoint(checkPointId:number) {
+            //拉取当前的进度
+            if(checkPointId <= this._curLv){
+                return;
+            }
+            this.server.net_saveLv(checkPointId);
+        }
+
+        
+        /**
+         * 离开游戏
+         * @param playerId
+         */
+        public exitGame() {
+            this._isStart = false;
+            this._curLv = 0;
+            this._isInGame = false;
+        }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
 
-    public net_destroy(syncKey: string) {
+    public net_updateLv(curLv: number) {
+        if(!this._isStart){
+            this._isStart = true;
+            if(curLv > this._curLv){
+                //需要传送到之前的关卡 需要读取关卡的配置位置
+                
+            }
+        }else if(curLv > this._curLv && this._isStart){
+            //播放粒子特效
+            // EffectService.playOnGameObject()
+        }
+        this._curLv = curLv;
+        this._obbyPanel.setProValue(this._curLv/this._maxLv);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -126,37 +173,13 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
 export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
     //#region Constant
-    // private static readonly GENERATION_HOLDER_TAG = "collectible-item-points";
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
     //#region Member
-    private _bagModuleS: BagModuleS;
-
-
-    private _generateRegulator: Regulator = new Regulator(GameServiceConfig.TRY_GENERATE_INTERVAL);
-
-    /**
-     * 生成位置表.
-     * @desc key id.
-     * @desc value 生成位置.
-     * @private
-     */
-    private _generateLocationsMap: Map<number, IPoint3[]> = new Map();
-    private _generatedLocationsMap: Map<number, Set<number>> = new Map();
-
-    private getValidGenerateLocation(id: number, playerId: number): IPoint3 | null {
-        return GToolkit.randomArrayItem(Enumerable.from(this._generateLocationsMap.get(id))
-            .where(
-                point => !this._generatedLocationsMap.get(playerId).has(this.getHash(point))
-            )
-            .toArray())
-
-    }
-
-    private getHash(point: IPoint3): number {
-        return point.x * 10000 + point.y * 100 + point.z;
-    }
-
+        /**
+         * 玩家进度 key为玩家playerId value为通过的checkPoint数.
+         */
+        private _playerProMap: Map<number, number> = new Map();
+        private _maxLv = 100; //最大关卡数
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -169,9 +192,9 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
 
     protected onStart(): void {
         super.onStart();
+        console.log("obbyModules onStart================")
 
         //#region Member init
-        this._bagModuleS = ModuleService.getModule(BagModuleS);
         //#endregion ------------------------------------------------------------------------------------------ 
 
         //#region Event Subscribe
@@ -191,21 +214,42 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
 
     protected onExecute(type: number, ...params: any[]): void {
         super.onExecute(type, ...params);
+        console.log("obbyModules onExecute================")
     }
 
     protected onPlayerLeft(player: Player): void {
+        console.log("obbyModules onPlayerLeft================")
     }
 
     protected onPlayerEnterGame(player: Player): void {
+        console.log("obbyModules onPlayerEnterGame================")
     }
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
+        console.log("obbyModules onPlayerJoined================")
     }
-
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+     //#region Net Method
+     public net_saveLv(checkLv: number) {
+        const currPlayerId = this.currentPlayerId;
+        if(checkLv > this._maxLv){
+            checkLv = this._maxLv;
+        }
+        this._playerProMap.set(currPlayerId,checkLv);
+        return;
+    }
 
+    
+    public net_getLv() {
+        const currPlayerId = this.currentPlayerId;
+        let lv = 0;
+        if(this._playerProMap.get(currPlayerId)){
+            lv = this._playerProMap.get(currPlayerId);
+        }
+        this.getClient(currPlayerId).net_updateLv(lv);
+        return;
+    }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
