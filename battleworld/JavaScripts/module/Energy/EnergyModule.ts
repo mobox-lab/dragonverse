@@ -1,10 +1,7 @@
-import { GlobalData } from "../../const/GlobalData";
-import Regulator from "../../depend/regulator/Regulator";
 import setTimeout = mw.setTimeout;
-import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import ModuleService = mwext.ModuleService;
-import GToolkit, { Tf } from "../../utils/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { Globaldata } from "../../const/Globaldata";
 
 export default class EnergyModuleData extends mwext.Subdata {
     //@Decorator.persistence()
@@ -33,7 +30,7 @@ export default class EnergyModuleData extends mwext.Subdata {
 
     protected initDefaultData(): void {
         super.initDefaultData();
-        this.energy = GlobalData.Energy.ENERGY_MAX;
+        this.energy = Globaldata.ENERGY_MAX;
         const now = Date.now();
         this.lastRecoveryTime = now;
     }
@@ -121,7 +118,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData
         this._ctr += real;
         Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${this.data.energy}`);
 
-        if (syncInstant || this._ctr > GlobalData.Energy.ENERGY_PATCH_RPC_COUNT) {
+        if (syncInstant || this._ctr > Globaldata.ENERGY_PATCH_RPC_COUNT) {
             this.server.net_consume(this._ctr, this._ctrAliveTime);
             this._ctr = 0;
         }
@@ -151,14 +148,6 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
     private _eventListeners: EventListener[] = [];
 
     private _intervalHolder: Map<number, number> = new Map();
-
-    private _petBagModule: PetBagModuleS;
-
-    private petBagModule(): PetBagModuleS | null {
-        if (!this._petBagModule) this._petBagModule = ModuleService.getModule(PetBagModuleS);
-        return this._petBagModule;
-    }
-
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -202,30 +191,16 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
         const playerId = player.playerId;
 
         const recovery = () => {
-            if (!this.petBagModule()) {
-                this._intervalHolder.set(
-                    playerId,
-                    setTimeout(recovery, GlobalData.Energy.ENERGY_INVALID_RE_ALIVE_DURATION),
-                );
-                return;
-            }
-
-            const energyRecoveryIntervalMs = GlobalData.Global.isRelease ? GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS : 30 * 1e3;
+            const energyRecoveryIntervalMs = Globaldata.isRelease ? Globaldata.ENERGY_RECOVERY_INTERVAL_MS : 60 * 1e3;
             const now = Date.now();
             const duration = now - d.lastRecoveryTime;
             let timeout: number;
             if (duration < energyRecoveryIntervalMs) {
                 timeout = energyRecoveryIntervalMs - duration;
             } else {
-                if (d.energy < GlobalData.Energy.ENERGY_MAX) {
+                if (d.energy < Globaldata.ENERGY_MAX) {
                     Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.energy}`);
-                    d.energy = Math.min(
-                        GlobalData.Energy.ENERGY_MAX,
-                        d.energy + (this.petBagModule().getPlayerEnergyRecoveryCoefficient(playerId))
-                        * Math.max(
-                            ((now - d.lastRecoveryTime) /
-                                energyRecoveryIntervalMs) | 0,
-                            0));
+                    d.energy += Globaldata.ENERGY_RECOVERY_COUNT;
                 }
                 d.lastRecoveryTime = now;
                 timeout = energyRecoveryIntervalMs;
@@ -253,7 +228,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
     public consume(playerId: number, count: number, firstTime: number) {
         const d = this.getPlayerData(playerId);
         if (!d) return;
-        if (d.energy >= GlobalData.Energy.ENERGY_MAX) d.lastRecoveryTime = firstTime;
+        if (d.energy >= Globaldata.ENERGY_MAX) d.lastRecoveryTime = firstTime;
         d.consume(count);
         d.save(false);
         Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${d.energy}`);
