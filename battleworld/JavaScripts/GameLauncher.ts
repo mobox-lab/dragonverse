@@ -66,6 +66,7 @@ import { InteractiveModuleS } from "./module/InteractiveModule/InteractiveModule
 import { InteractiveModuleC } from "./module/InteractiveModule/InteractiveModuleC";
 import { AntiCheatSystem } from "./tool/AntiCheatSystem";
 import * as mwaction from "mwaction";
+import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
 
 declare global {
     var UE: any;
@@ -82,15 +83,15 @@ export default class GameLauncher extends mw.Script {
         displayName: "语言l", selectOptions: {
             "默认": "-1",
             "英文": "0",
-            "中文": "1"
-        }
+            "中文": "1",
+        },
     })
     languageType1: string = "-1";
 
-    @mw.Property({ displayName: "gm开关" })
+    @mw.Property({displayName: "gm开关"})
     gmSwitch: boolean = true;
 
-    @mw.Property({ displayName: "是否支持技能编辑器" })
+    @mw.Property({displayName: "是否支持技能编辑器"})
     isMotionEdit: boolean = true;
 
     @mw.Property({
@@ -98,18 +99,21 @@ export default class GameLauncher extends mw.Script {
             "全部": 0,
             "Error&Warning": 1,
             "Error": 2,
-        }
+        },
     })
     public logLevel = 0;
 
+    @mw.Property({displayName: "是否发布", group: "发布"})
+    public isRelease: boolean = false;
 
 
-    @mw.Property({ displayName: "是否开启RPC统计" })
+    @mw.Property({displayName: "是否开启RPC统计"})
     public isRecordRPC: boolean = false;
 
     async onStart() {
 
         Globaldata.isOpenGm = this.gmSwitch;
+        Globaldata.isRelease = this.isRelease;
         mwaction;
         // 开启作弊检测
         //this.checkCheat();
@@ -139,13 +143,14 @@ export default class GameLauncher extends mw.Script {
     }
 
     onUpdate(dt: number) {
-        update()
-        mw.TweenUtil.TWEEN.update()
+        update();
+        mw.TweenUtil.TWEEN.update();
         actions.AcitonMgr.update(dt * 1000);
     }
 
     protected onRegisterModule(): void {
         PlayerManagerExtesion.init();
+        ModuleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         ModuleService.registerModule(AttributeModuleS, AttributeModuleC, null);
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerModuleData);
         ModuleService.registerModule(WeaponModuleS, WeaponModuleC, WeaponModuleData);
@@ -192,7 +197,7 @@ export default class GameLauncher extends mw.Script {
         }
 
         AntiCheatSystem.registerCheatDetectionCallback((fieldName: string, cheatValue: any, originalValue: any) => {
-            console.error("===registerCheatDetectionCallback ", fieldName, cheatValue, originalValue)
+            console.error("===registerCheatDetectionCallback ", fieldName, cheatValue, originalValue);
         });
 
     }

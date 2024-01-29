@@ -270,25 +270,25 @@ class GToolkit {
      * @return interval hold id.
      */
     public doUtilTrue(predicate: () => boolean,
-        callback: () => void,
-        interval: number = 100,
-        instant: boolean = true): number | null {
+                      callback: () => void,
+                      interval: number = 100,
+                      instant: boolean = true): number | null {
         if (instant && predicate()) {
             callback();
             return null;
         }
 
         const holdId = setInterval(() => {
-            if (!predicate()) {
-                return;
-            }
-            try {
-                callback();
-            } catch (e) {
-            } finally {
-                clearInterval(holdId);
-            }
-        },
+                if (!predicate()) {
+                    return;
+                }
+                try {
+                    callback();
+                } catch (e) {
+                } finally {
+                    clearInterval(holdId);
+                }
+            },
             interval,
         );
         return holdId;
@@ -838,8 +838,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScript<T extends mw.Script>(object: GameObject,
-        scriptCls: (new (...args: unknown[]) => T) | Function,
-        traverse: number = 0): T | null {
+                                               scriptCls: (new (...args: unknown[]) => T) | Function,
+                                               traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -905,8 +905,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstScriptIs<T extends mw.Script>(object: GameObject,
-        method: string | ((instance: object) => boolean),
-        traverse: number = 0): T | null {
+                                                 method: string | ((instance: object) => boolean),
+                                                 traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -1174,9 +1174,9 @@ class GToolkit {
      * @param disableGuid
      */
     public setButtonGuid(button: mw.Button | mw.StaleButton,
-        normalGuid: string,
-        pressedGuid: string = undefined,
-        disableGuid: string = undefined) {
+                         normalGuid: string,
+                         pressedGuid: string = undefined,
+                         disableGuid: string = undefined) {
         if (!pressedGuid) {
             pressedGuid = normalGuid;
         }
@@ -1279,10 +1279,10 @@ class GToolkit {
      * @return hitPoint 命中首个点的命中信息 当未命中时返回 null.
      */
     public detectVerticalTerrain(startPoint: mw.Vector,
-        length: number = 1000,
-        self: mw.GameObject = null,
-        ignoreObjectGuids: string[] = [],
-        debug: boolean = false): mw.HitResult | null {
+                                 length: number = 1000,
+                                 self: mw.GameObject = null,
+                                 ignoreObjectGuids: string[] = [],
+                                 debug: boolean = false): mw.HitResult | null {
         return QueryUtil.lineTrace(
             startPoint,
             this.newWithZ(startPoint, startPoint.z - length),
@@ -1301,9 +1301,9 @@ class GToolkit {
      * @param debug
      */
     public detectGameObjectVerticalTerrain(self: GameObject,
-        length: number = 1000,
-        ignoreObjectGuids: string[] = [],
-        debug: boolean = false): mw.HitResult | null {
+                                           length: number = 1000,
+                                           ignoreObjectGuids: string[] = [],
+                                           debug: boolean = false): mw.HitResult | null {
         if (!self) return null;
         return this.detectVerticalTerrain(
             self.worldTransform.position,
