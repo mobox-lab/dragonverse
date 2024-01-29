@@ -407,13 +407,65 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private static readonly HEADER_TOKEN = "x-bits-token";
 
-    private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
+    private static CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
 
-    private static readonly CODE_VERIFY_AES_IV = this.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+    private static CODE_VERIFY_AES_IV = "";
 
-    private static readonly CLIENT_ID = "12000169457322200012";
+    private static CLIENT_ID = "12000169457322200012";
 
-    private static readonly SECRET = "6430d2d6497e136df763b572377361678f303f4d624be7ca9ee9b3b28985fe60";
+    private static SECRET = "6430d2d6497e136df763b572377361678f303f4d624be7ca9ee9b3b28985fe60";
+
+    private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
+
+    private static readonly CLIENT_ID_STORAGE_KEY = "CLIENT_ID_STORAGE_KEY";
+
+    private static readonly SECRET_STORAGE_KEY = "SECRET_STORAGE_KEY";
+
+    private static getSensitiveData() {
+        this.getCodeVerifyAesKey();
+        this.getClientId();
+        this.getSecret();
+    }
+
+    private static getCodeVerifyAesKey() {
+        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
+            (value) => {
+                if (value.code === 200) AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
+                else {
+                    this.logGetDataError();
+                    this.getCodeVerifyAesKey();
+                }
+            },
+        );
+    }
+
+    private static getClientId() {
+        DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
+            (value) => {
+                if (value.code === 200) AuthModuleS.CLIENT_ID = value.data;
+                else {
+                    this.logGetDataError();
+                    this.getClientId();
+                }
+            },
+        );
+    }
+
+    private static getSecret() {
+        DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
+            (value) => {
+                if (value.code === 200) AuthModuleS.SECRET = value.data;
+                else {
+                    this.logGetDataError();
+                    this.getSecret();
+                }
+            },
+        );
+    }
+
+    private static logGetDataError() {
+        Log4Ts.error(AuthModuleS, `get data failed.`, `refreshing.`);
+    }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -436,6 +488,16 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     protected onJStart(): void {
 //#region Member init
+
+        if (GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_KEY)) {
+            AuthModuleS.getSensitiveData();
+        } else {
+            DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.CODE_VERIFY_AES_KEY);
+            DataStorage.asyncSetData(AuthModuleS.CLIENT_ID_STORAGE_KEY, AuthModuleS.CLIENT_ID);
+            DataStorage.asyncSetData(AuthModuleS.SECRET_STORAGE_KEY, AuthModuleS.SECRET);
+        }
+
+        AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
 //#endregion ------------------------------------------------------------------------------------------
 
 //#region Event Subscribe
