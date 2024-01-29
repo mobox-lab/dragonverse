@@ -17,10 +17,95 @@ import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import EventListener = mw.EventListener;
 import Enum = UE.Enum;
 import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
+import { DataUpgradeMethod } from "../../depend/jibu-module/JModule";
 
 export default class ObbyModuleData extends Subdata {
-    //@Decorator.persistence()
-    //public isSave: bool;
+
+    /**
+     * 已经发布的正式数据版本号.
+     * 以版本发布时间 升序排列.
+     * RV.
+     */
+    public static readonly RELEASE_VERSIONS: number[] = [
+        202401291339,
+    ];
+
+    /**
+     * 版本升级办法.
+     * UVM[n] : 从 RV[n] 升级到 RV[n+1] 的方法.
+     */
+    public static readonly UPDATE_VERSION_METHOD: DataUpgradeMethod<ObbyModuleData>[] = [
+        // (data) => {
+        // },
+    ];
+
+    @Decorator.persistence()
+    public lv: number = 0;
+
+    //#region Sub data
+    protected initDefaultData(): void {
+        this.currentVersion = this.version;
+        this.lv = 0;
+    }
+
+    protected onDataInit(): void {
+        super.onDataInit();
+        this.checkVersion();
+    }
+
+    public save(syncToClient: boolean): this {
+        return super.save(syncToClient);
+    }
+
+    /**
+     * 定义为最新版本号.
+     * 为什么不做成只读属性而是个 getter 呢.
+     */
+    public get version(): number {
+        return ObbyModuleData.RELEASE_VERSIONS[ObbyModuleData.RELEASE_VERSIONS.length - 1];
+    }
+
+    
+    /**
+     * 数据版本检查.
+     */
+    public checkVersion() {
+        if (this.currentVersion === this.version) return;
+
+        Log4Ts.log(ObbyModuleData,
+            `数据准备升级`,
+            () => `当前版本: ${this.currentVersion}`,
+            () => `最新版本: ${this.version}.`,
+        );
+
+        const startIndex = ObbyModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
+        if (startIndex < 0) {
+            Log4Ts.error(
+                ObbyModuleData,
+                `数据号版本异常`,
+                `不是已发布的版本号`,
+                () => `当前版本: ${this.currentVersion}.`);
+            return;
+        }
+
+        for (let i = startIndex; i < ObbyModuleData.UPDATE_VERSION_METHOD.length - 1; ++i) {
+            ObbyModuleData.UPDATE_VERSION_METHOD[i](this);
+            this.currentVersion = ObbyModuleData.RELEASE_VERSIONS[i + 1];
+        }
+    }
+
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    public updateLv(lv: number): boolean {
+        if(lv > this.lv){
+            return true
+        }else{
+            return false;
+        }
+    }
+
+    public getLv() {
+        return this.lv;
+    }
 }
 
 /**
@@ -44,6 +129,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     private _isStart:boolean;
     private _isInGame:boolean;
     private _eventListeners: EventListener[] = [];
+    private _checkPointCfg = {}
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -57,7 +143,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         //#region Member init
         this._mainPanel = UIService.getUI(MainPanel);
         this._obbyPanel = UIService.create(ObbyInteractorPanel);
-        this._maxLv = 100;//这里要读取配置表 知道最大的关卡数
+        this.initCheckPoint();
         console.log("obbyModuleC onStart================")
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -91,6 +177,13 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     //#region Method
+
+        private initCheckPoint(){
+            
+            this._maxLv = 100;//这里要读取配置表 知道最大的关卡数
+            this._checkPointCfg["0"] = new mw.Vector(393000,13359,24668);
+            this._checkPointCfg["1"] = new mw.Vector(393500,13359,24668);
+        }
         /**
          * 是否在游戏中
          */
@@ -175,10 +268,6 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
     //#region Constant
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     //#region Member
-        /**
-         * 玩家进度 key为玩家playerId value为通过的checkPoint数.
-         */
-        private _playerProMap: Map<number, number> = new Map();
         private _maxLv = 100; //最大关卡数
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -231,23 +320,41 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
     }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+
+    //#region Method
+    /**
+     * 更新等级并持久化
+     */
+    public updateLv(playerId: number, lv: number) {
+        const playerData = this.getPlayerData(playerId);
+        playerData.updateLv(lv);
+        playerData.save(false);
+        this.getClient(playerId).net_updateLv(lv);
+    }
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
      //#region Net Method
      public net_saveLv(checkLv: number) {
         const currPlayerId = this.currentPlayerId;
+        const playerData = this.getPlayerData(currPlayerId);
+        let lv = playerData.getLv();
+        if(checkLv<=lv){
+            return;
+        }
+
         if(checkLv > this._maxLv){
             checkLv = this._maxLv;
         }
-        this._playerProMap.set(currPlayerId,checkLv);
+    
+        this.updateLv(currPlayerId,checkLv)
         return;
     }
 
     
     public net_getLv() {
         const currPlayerId = this.currentPlayerId;
-        let lv = 0;
-        if(this._playerProMap.get(currPlayerId)){
-            lv = this._playerProMap.get(currPlayerId);
-        }
+        const playerData = this.getPlayerData(currPlayerId);
+        let lv = playerData.getLv();
         this.getClient(currPlayerId).net_updateLv(lv);
         return;
     }
