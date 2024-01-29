@@ -5,8 +5,16 @@ import { PlayerModuleData } from "../PlayerModule/PlayerModuleData";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { WeaponModuleC } from "./WeaponModuleC";
 import { WeaponModuleData } from "./WeaponModuleData";
+import { AuthModuleS } from "../auth/AuthModule";
+import GToolkit from "../../utils/GToolkit";
 
-export class WeaponModuleS extends ModuleS<WeaponModuleC, WeaponModuleData>{
+export class WeaponModuleS extends ModuleS<WeaponModuleC, WeaponModuleData> {
+    private _authModuleS: AuthModuleS;
+
+    private get authModuleS(): AuthModuleS | null {
+        if (!this._authModuleS) this._authModuleS = ModuleService.getModule(AuthModuleS);
+        return this._authModuleS;
+    }
 
 
     protected onStart(): void {
@@ -20,12 +28,55 @@ export class WeaponModuleS extends ModuleS<WeaponModuleC, WeaponModuleData>{
             return;
         }
 
+        this.initPlayerWeapon(player);
+
         EventManager.instance.call(EAttributeEvents_S.attr_change_s, pId, Attribute.EnumAttributeType.weaponId, pData.getEquipWeaponId());
         // 武器加成
         EventManager.instance.call(EPlayerEvents_S.PlayerEvent_WeaponAdd_S, pId, true);
 
         let weaponId = pData.getEquipWeaponId();
         this.update_anger(pId, weaponId);
+    }
+
+    public async initPlayerWeapon(player: mw.Player) {
+        const pData = this.getPlayerData(player.playerId);
+        if (!pData) {
+            console.error("get player data failed.");
+            return;
+        }
+
+        pData.clearGift();
+
+        let value = await ModuleService.getModule(AuthModuleS)?.getMoboxDragonAbility(player.playerId) ?? null;
+        if (value == null || value < 0) {
+            console.error("initPlayerWeapon getMoboxDragonAbility fail");
+            pData.save(true);
+            return;
+        }
+
+        const cfgs = GameConfig.WeaponDragonAbility.getAllElement();
+        for (let i = 0; i < cfgs.length; i++) {
+            const config = cfgs[i];
+            let dragonAbilityRange = config.dragonAbilityRange;
+            let addWeapon = config.addWeapon;
+            if (GToolkit.isNullOrEmpty(dragonAbilityRange) || dragonAbilityRange.length < 2 || GToolkit.isNullOrEmpty(addWeapon)) {
+                console.error("initPlayerBuff cfg is null");
+                continue;
+            }
+            if ((value >= dragonAbilityRange[0] && value <= dragonAbilityRange[1]) || (i === cfgs.length - 1 && value >= dragonAbilityRange[1])) {
+                for (let j = 0; j < addWeapon.length; j++) {
+                    let cfg = GameConfig.Weapon.getElement(addWeapon[j]);
+                    if (GToolkit.isNullOrUndefined(cfg)) {
+                        console.error("initPlayerBuff cfg is null");
+                        continue;
+                    }
+
+                    pData.addGift(addWeapon[j]);
+                }
+                break;
+            }
+        }
+        pData.save(true);
     }
 
     /**更新玩家怒气值 */
@@ -104,9 +155,10 @@ export class WeaponModuleS extends ModuleS<WeaponModuleC, WeaponModuleData>{
         if (ownWeaponIds.includes(weaponId)) {
             return;
         }
+        pData.realGet(weaponId);
         pData.addWeaponId(weaponId, true);
         // 购买减金币后并装备
-        EventManager.instance.call(EPlayerEvents_S.PlayerEvent_SubGold_S, this.currentPlayerId, -weaponTriggerCfg.sellValue)
+        EventManager.instance.call(EPlayerEvents_S.PlayerEvent_SubGold_S, this.currentPlayerId, -weaponTriggerCfg.sellValue);
 
         // 直接装备
         this.changeWeaponId(this.currentPlayerId, weaponId);

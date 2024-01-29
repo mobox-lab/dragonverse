@@ -501,5 +501,45 @@ export class Globaldata {
     public static readonly MAX_ORDER_LOG_COUNT = 50;
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+//#region Energy
+    /**
+     * 体力容量.
+     * @type {number}
+     */
+    public static readonly ENERGY_MAX: number = 240;
+
+    /**
+     * 体力系数采样数量.
+     * @type {number}
+     */
+    public static readonly ENERGY_RECOVERY_SAMPLE_COUNT: number = 5;
+
+    /**
+     * 体力 恢复间隔. min
+     * @type {number}
+     */
+    public static readonly ENERGY_RECOVERY_INTERVAL: number = 30;
+
+    /**
+     * 体力 恢复间隔. ms
+     * @type {number}
+     */
+    public static get ENERGY_RECOVERY_INTERVAL_MS(): number {
+        return this.ENERGY_RECOVERY_INTERVAL * 60 * 1000;
+    };
+
+    /**
+     * 体力 失效再唤醒间隔.
+     * @type {number}
+     */
+    public static readonly ENERGY_INVALID_RE_ALIVE_DURATION: number = 100;
+
+    /**
+     * 体力 修改合批次数.
+     * @type {number}
+     */
+    public static readonly ENERGY_PATCH_RPC_COUNT = 10;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 
 }
