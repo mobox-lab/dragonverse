@@ -210,7 +210,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
                 return;
             }
 
-            const energyRecoveryIntervalMs = GlobalData.Global.isRelease ? GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS : 60 * 1e3;
+            const energyRecoveryIntervalMs = GlobalData.Global.isRelease ? GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS : 30 * 1e3;
             const now = Date.now();
             const duration = now - d.lastRecoveryTime;
             let timeout: number;

@@ -6,7 +6,7 @@ import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { IDollMachineElement } from "../../config/DollMachine";
 import { GlobalData } from "../../const/GlobalData";
 import GToolkit from "../../utils/GToolkit";
-
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 
 /**娃娃机服务端类 */
@@ -49,7 +49,7 @@ class DollMachineS {
 
     /**
      * 一台娃娃机对应的配置信息
-     * @param config 
+     * @param config
      */
     constructor(config: IDollMachineElement) {
         this.id = config.id;
@@ -64,7 +64,7 @@ class DollMachineS {
         this.initCreate();
         this.initTriggers();
         this.StartCheckEggPosTask();
-        console.log(`初始化娃娃机id: ${this.id} 成功`)
+        console.log(`初始化娃娃机id: ${this.id} 成功`);
     }
 
     /**初始化游戏对象 */
@@ -75,7 +75,7 @@ class DollMachineS {
         // 缓存抓钩的初始位置
         this.hookPrimaryPos = this.hook.worldTransform.position;
         // 设置绳子位置和抓钩一致
-        this.rope.worldTransform.position = this.hook.worldTransform.position
+        this.rope.worldTransform.position = this.hook.worldTransform.position;
 
         // 娃娃机边界标志物体
         this.dollMachineSymbolObj = GameObject.findGameObjectById(this.machineConfig.Marker);
@@ -94,9 +94,9 @@ class DollMachineS {
         // 娃娃掉落触发器
         let dropTrigger = GameObject.findGameObjectById(this.machineConfig.Trigger) as Trigger;
         dropTrigger.onEnter.add((obj) => {
-            console.log(`娃娃机 id=${this.id}抓到了: ${obj.name}`)
+            console.log(`娃娃机 id=${this.id}抓到了: ${obj.name}`);
             ModuleService.getModule(DollMachineModuleS).onDollDrop(obj, this.id);
-        })
+        });
     }
 
     /** 获取娃娃机的四个边界点(XY平面) */
@@ -158,7 +158,7 @@ class DollMachineS {
                 this.createEgg();
             }
             // console.log("当前蛋的数量为：" + this.eggSet.size);
-        }, generateInterval)
+        }, generateInterval);
         console.warn("创建蛋任务id为：" + this.createEggTaskId);
     }
 
@@ -174,6 +174,10 @@ class DollMachineS {
         let eggGuid = GameConfig.Doll.getElement(eggId).Guid;
         // 随机创建娃娃机里的蛋
         let egg = await GameObject.asyncSpawn(eggGuid);
+        if (!egg) {
+            Log4Ts.error(DollMachineS, `guid error: ${eggGuid}`);
+            return;
+        }
 
         // 开启物理
         let mesh = egg as Model;
@@ -246,7 +250,7 @@ class DollMachineS {
         let tempScale = this.rope.worldTransform.scale.clone();
         let tempLoc = this.hook.worldTransform.position.clone();
 
-        let tween = new mw.Tween({ z: startZ, s: 0 }).to({ z: endZ, s: scale }, doll.ClawDownTime[0])
+        let tween = new mw.Tween({z: startZ, s: 0}).to({z: endZ, s: scale}, doll.ClawDownTime[0])
             .onUpdate((obj) => {
                 tempLoc.z = obj.z;
                 this.hook.worldTransform.position = tempLoc;
@@ -265,14 +269,14 @@ class DollMachineS {
     private async hookUpTween() {
         const doll = GlobalData.DollMachine;
         // 绳子起止位置Z轴坐标
-        let startZ = this.hookPrimaryPos.z
+        let startZ = this.hookPrimaryPos.z;
         let endZ = startZ - doll.ClawUpToDownHight;
         //绳子缩放
         let scale = doll.ClawUpToDownHight / 100;
 
         let tempScale = this.rope.worldTransform.scale.clone();
         let tempLoc = this.hook.worldTransform.position.clone();
-        let tween = new mw.Tween({ z: endZ, s: scale }).to({ z: startZ, s: 0 }, doll.ClawDownTime[0])
+        let tween = new mw.Tween({z: endZ, s: scale}).to({z: startZ, s: 0}, doll.ClawDownTime[0])
             .onUpdate((obj) => {
                 tempLoc.z = obj.z;
                 this.hook.worldTransform.position = tempLoc;
@@ -291,8 +295,17 @@ class DollMachineS {
     private async hookTween() {
 
         const doll = GlobalData.DollMachine.ClawArrRota;
-        let tween = new mw.Tween({ up: doll[0][0].clone(), after: doll[0][1].clone(), left: doll[0][2].clone(), right: doll[0][3].clone() }).
-            to({ up: doll[1][0].clone(), after: doll[1][1].clone(), left: doll[1][2].clone(), right: doll[1][3].clone() }, GlobalData.DollMachine.ClawDownTime[1])
+        let tween = new mw.Tween({
+            up: doll[0][0].clone(),
+            after: doll[0][1].clone(),
+            left: doll[0][2].clone(),
+            right: doll[0][3].clone(),
+        }).to({
+            up: doll[1][0].clone(),
+            after: doll[1][1].clone(),
+            left: doll[1][2].clone(),
+            right: doll[1][3].clone(),
+        }, GlobalData.DollMachine.ClawDownTime[1])
             .onUpdate((obj) => {
                 this.claws[0].localTransform.rotation = obj.up;
                 this.claws[1].localTransform.rotation = obj.after;
@@ -310,7 +323,11 @@ class DollMachineS {
     private async hookBackTween() {
 
         let tempLoc = this.hook.worldTransform.position.clone();
-        let tween = new mw.Tween({ x: tempLoc.x, y: tempLoc.y, z: tempLoc.z }).to({ x: this.hookPrimaryPos.x, y: this.hookPrimaryPos.y, z: this.hookPrimaryPos.z }, GlobalData.DollMachine.ClawDownTime[2])
+        let tween = new mw.Tween({x: tempLoc.x, y: tempLoc.y, z: tempLoc.z}).to({
+            x: this.hookPrimaryPos.x,
+            y: this.hookPrimaryPos.y,
+            z: this.hookPrimaryPos.z,
+        }, GlobalData.DollMachine.ClawDownTime[2])
             .onUpdate((obj) => {
                 tempLoc.x = obj.x;
                 tempLoc.y = obj.y;
@@ -326,7 +343,7 @@ class DollMachineS {
                 // 关闭抓钩碰撞，让球掉下来
                 this.claws.forEach(claw => {
                     claw.setCollision(mw.PropertyStatus.Off);
-                })
+                });
                 // 清除正在抓娃娃状态
                 this.isCatching = false;
             }).start();
@@ -347,6 +364,7 @@ class DollMachineS {
     private timeCount: any;
     /**是否正在抓娃娃 */
     private isCatching: boolean = false;
+
     /**开始倒计时 */
     public async startCountDown() {
         let time = GlobalData.DollMachine.Time;
@@ -366,7 +384,7 @@ class DollMachineS {
         // 开始抓娃娃后，开启抓钩碰撞
         this.claws.forEach(claw => {
             claw.setCollision(mw.PropertyStatus.On);
-        })
+        });
     }
 
 
@@ -378,7 +396,7 @@ class DollMachineS {
             // 延时清空当前使用娃娃机的玩家（用于判断是谁抓到的娃娃，等娃娃掉下去）
             setTimeout(() => {
                 ModuleService.getModule(DollMachineModuleS).setCurPlayer(null, "", this.id);
-                console.warn("清除玩家使用状态")
+                console.warn("清除玩家使用状态");
             }, 2000);
         }
     }
@@ -457,6 +475,7 @@ export class DollMachineModuleS extends ModuleS<DollMachineModuleC, null> {
     private dollMachineList: DollMachineS[] = [null];
     /**娃娃名称-娃娃Id Map (根据名称查找id) */
     private dollNameMap: Map<string, number> = new Map();
+
     /**通行证模块 */
     // public passModuleS: PassModuleS;
 
@@ -491,7 +510,7 @@ export class DollMachineModuleS extends ModuleS<DollMachineModuleC, null> {
         let len = configs.length;
         for (let i = 0; i < len; i++) {
             let machine = new DollMachineS(configs[i]);
-            this.dollMachineList.push(machine)
+            this.dollMachineList.push(machine);
         }
     }
 
@@ -536,7 +555,7 @@ export class DollMachineModuleS extends ModuleS<DollMachineModuleC, null> {
         machine.curPlayer = player;
         this.getAllClient().net_setCurPlayerName(name, machineId, playerId);
         if (machine.curPlayer == null) {
-            console.log("结束使用娃娃机")
+            console.log("结束使用娃娃机");
             // 结束抓娃娃
             this.finishCatchDoll(machineId);
             return;
@@ -549,6 +568,7 @@ export class DollMachineModuleS extends ModuleS<DollMachineModuleC, null> {
     public net_setHookSpeedX(machineId: number, speedX: number) {
         this.dollMachineList[machineId].hookSpeedX = speedX;
     }
+
     public net_setHookSpeedY(machineId: number, speedY: number) {
         this.dollMachineList[machineId].hookSpeedY = speedY;
     }
@@ -618,7 +638,7 @@ export class DollMachineModuleS extends ModuleS<DollMachineModuleC, null> {
         this.dollMachineList[machineId].eggSet.forEach(egg => {
             let mesh = egg as Model;
             mesh.physicsEnabled = usePhysics;
-        })
+        });
     }
 
     /**

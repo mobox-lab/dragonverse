@@ -506,7 +506,7 @@ export class Globaldata {
      * 体力容量.
      * @type {number}
      */
-    public static readonly ENERGY_MAX: number = 240;
+    public static readonly ENERGY_MAX: number = 24;
 
     /**
      * 体力系数采样数量.
@@ -527,6 +527,12 @@ export class Globaldata {
     public static get ENERGY_RECOVERY_INTERVAL_MS(): number {
         return this.ENERGY_RECOVERY_INTERVAL * 60 * 1000;
     };
+
+    /**
+     * 体力 恢复量.
+     * @type {number}
+     */
+    public static readonly ENERGY_RECOVERY_COUNT = 1;
 
     /**
      * 体力 失效再唤醒间隔.
