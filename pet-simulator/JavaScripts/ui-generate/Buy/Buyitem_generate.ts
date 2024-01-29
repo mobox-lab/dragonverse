@@ -6,8 +6,8 @@
 
 
 
-@UIBind('UI/Buy/BuyItem.ui')
-export default class BuyItem_Generate extends UIScript {
+@UIBind('UI/Buy/Buyitem.ui')
+export default class Buyitem_Generate extends UIScript {
 		private mPic_Base_Internal: mw.Image
 	public get mPic_Base(): mw.Image {
 		if(!this.mPic_Base_Internal&&this.uiWidgetBase) {
