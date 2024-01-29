@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-24 17:39:11
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-26 16:27:05
+ * @LastEditTime : 2024-01-29 09:59:42
  * @FilePath     : \DragonVerse\pet-simulator\JavaScripts\ui\BuyCoinPanel.ts
  * @Description  : 商店界面
  */
@@ -14,10 +14,7 @@ import MessageBox from "../utils/MessageBox";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 import { PlayerModuleC } from "../modules/Player/PlayerModuleC";
 import { TipsManager } from "../modules/Hud/P_TipUI";
-import BuyItem_Generate from "../ui-generate/Buy/Buyitem_generate";
-
-
-
+import Buyitem_Generate from "../ui-generate/Buy/Buyitem_generate";
 
 export default class BuyCoinPanel extends BuyUI_Generate {
     onStart() {
@@ -65,7 +62,7 @@ export default class BuyCoinPanel extends BuyUI_Generate {
     }
 }
 
-class BuyCoinItem extends BuyItem_Generate {
+class BuyCoinItem extends Buyitem_Generate {
     initUI(title: string, count: number, price: number, clickCallBack: () => void) {
         this.mText_Name.text = title;
         this.mText_Info.text = `X${count}`;
