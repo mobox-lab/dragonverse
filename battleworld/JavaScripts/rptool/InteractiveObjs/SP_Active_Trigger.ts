@@ -1,4 +1,5 @@
 import { GameConfig } from "../../config/GameConfig";
+import { EnergyModuleC } from "../../module/Energy/EnergyModule";
 import { PlayerModuleC } from "../../module/PlayerModule/PlayerModuleC";
 import { Attribute } from "../../module/PlayerModule/sub_attribute/AttributeValueObject";
 import { MessageBox } from "../../tool/MessageBox";
@@ -42,6 +43,7 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         if (chara.player.playerId != Player.localPlayer.playerId) {
             return;
         }
+        if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) return;
         chara.movementEnabled = false;
         const playerC = ModuleService.getModule(PlayerModuleC);
         let [rank] = playerC.getRank();
