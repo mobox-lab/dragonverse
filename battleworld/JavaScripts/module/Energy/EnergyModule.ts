@@ -190,43 +190,29 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
         const d = this.getPlayerData(player);
         const playerId = player.playerId;
 
-        // const recovery = () => {
-        //     if (!this.petBagModule()) {
-        //         this._intervalHolder.set(
-        //             playerId,
-        //             setTimeout(recovery, Globaldata.ENERGY_INVALID_RE_ALIVE_DURATION),
-        //         );
-        //         return;
-        //     }
-        //
-        //     const energyRecoveryIntervalMs = Globaldata.isRelease ? Globaldata.ENERGY_RECOVERY_INTERVAL_MS : 60 * 1e3;
-        //     const now = Date.now();
-        //     const duration = now - d.lastRecoveryTime;
-        //     let timeout: number;
-        //     if (duration < energyRecoveryIntervalMs) {
-        //         timeout = energyRecoveryIntervalMs - duration;
-        //     } else {
-        //         if (d.energy < Globaldata.ENERGY_MAX) {
-        //             Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.energy}`);
-        //             d.energy = Math.min(
-        //                 Globaldata.ENERGY_MAX,
-        //                 d.energy + (this.petBagModule().getPlayerEnergyRecoveryCoefficient(playerId))
-        //                 * Math.max(
-        //                     ((now - d.lastRecoveryTime) /
-        //                         energyRecoveryIntervalMs) | 0,
-        //                     0));
-        //         }
-        //         d.lastRecoveryTime = now;
-        //         timeout = energyRecoveryIntervalMs;
-        //         this.getClient(playerId).net_recovery(d.energy);
-        //         d.save(false);
-        //     }
-        //     this._intervalHolder.set(
-        //         playerId,
-        //         setTimeout(recovery, timeout),
-        //     );
-        // };
-        // recovery();
+        const recovery = () => {
+            const energyRecoveryIntervalMs = Globaldata.isRelease ? Globaldata.ENERGY_RECOVERY_INTERVAL_MS : 60 * 1e3;
+            const now = Date.now();
+            const duration = now - d.lastRecoveryTime;
+            let timeout: number;
+            if (duration < energyRecoveryIntervalMs) {
+                timeout = energyRecoveryIntervalMs - duration;
+            } else {
+                if (d.energy < Globaldata.ENERGY_MAX) {
+                    Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.energy}`);
+                    d.energy += Globaldata.ENERGY_RECOVERY_COUNT;
+                }
+                d.lastRecoveryTime = now;
+                timeout = energyRecoveryIntervalMs;
+                this.getClient(playerId).net_recovery(d.energy);
+                d.save(false);
+            }
+            this._intervalHolder.set(
+                playerId,
+                setTimeout(recovery, timeout),
+            );
+        };
+        recovery();
     }
 
     protected onPlayerLeft(player: Player): void {
