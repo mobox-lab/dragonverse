@@ -6,6 +6,7 @@ import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { IDollMachineElement } from "../../config/DollMachine";
 import { GlobalData } from "../../const/GlobalData";
 import GToolkit from "../../utils/GToolkit";
+import { mode } from "crypto-js";
 
 
 
@@ -46,7 +47,7 @@ class DollMachineS {
     /**检查蛋定时任务Id */
     public checkEggTaskId: number = null;
 
-
+    private _dropTrigger: Trigger = null;
     /**
      * 一台娃娃机对应的配置信息
      * @param config 
@@ -92,8 +93,8 @@ class DollMachineS {
     /** 初始化触发器 */
     private initTriggers() {
         // 娃娃掉落触发器
-        let dropTrigger = GameObject.findGameObjectById(this.machineConfig.Trigger) as Trigger;
-        dropTrigger.onEnter.add((obj) => {
+        this._dropTrigger = GameObject.findGameObjectById(this.machineConfig.Trigger) as Trigger;
+        this._dropTrigger.onEnter.add((obj) => {
             console.log(`娃娃机 id=${this.id}抓到了: ${obj.name}`)
             ModuleService.getModule(DollMachineModuleS).onDollDrop(obj, this.id);
         })
@@ -178,6 +179,7 @@ class DollMachineS {
         // 开启物理
         let mesh = egg as Model;
         mesh.physicsEnabled = true;
+
         // 获取随机生成位置
         let pos = this.getEggGeneratePos(this.eggGeneratePosList);
         egg.worldTransform.position = pos;
@@ -318,17 +320,26 @@ class DollMachineS {
                 this.hook.worldTransform.position = tempLoc;
                 this.rope.worldTransform.position = tempLoc;
             }).onComplete(() => {
-                this.claws[0].localTransform.rotation = GlobalData.DollMachine.ClawArrRota[0][0];
-                this.claws[1].localTransform.rotation = GlobalData.DollMachine.ClawArrRota[0][1];
-                this.claws[2].localTransform.rotation = GlobalData.DollMachine.ClawArrRota[0][2];
-                this.claws[3].localTransform.rotation = GlobalData.DollMachine.ClawArrRota[0][3];
-                this.clearTimeCountDown();
-                // 关闭抓钩碰撞，让球掉下来
-                this.claws.forEach(claw => {
-                    claw.setCollision(mw.PropertyStatus.Off);
-                })
-                // 清除正在抓娃娃状态
-                this.isCatching = false;
+                setTimeout(() => {
+                    this.claws[0].localTransform.rotation = GlobalData.DollMachine.ClawArrRota[0][0];
+                    this.claws[1].localTransform.rotation = GlobalData.DollMachine.ClawArrRota[0][1];
+                    this.claws[2].localTransform.rotation = GlobalData.DollMachine.ClawArrRota[0][2];
+                    this.claws[3].localTransform.rotation = GlobalData.DollMachine.ClawArrRota[0][3];
+                    let res = QueryUtil.lineTrace(this._dropTrigger.worldTransform.position.clone(), this._dropTrigger.worldTransform.position.clone().add(new Vector(0, 0, 1000)), true, false, [], false, false, this._dropTrigger);
+                    if (res.length > 0) {
+                        let model = res[0].gameObject as Model;
+                        model.angularDamping = 100;
+                        // model.linerDamping = 0;
+                    }
+                    this.clearTimeCountDown();
+                    // 关闭抓钩碰撞，让球掉下来
+                    this.claws.forEach(claw => {
+                        claw.setCollision(mw.PropertyStatus.Off);
+                    })
+                    // 清除正在抓娃娃状态
+                    this.isCatching = false;
+                }, 500);
+
             }).start();
     }
 
