@@ -67,6 +67,7 @@ import { InteractiveModuleC } from "./module/InteractiveModule/InteractiveModule
 import { AntiCheatSystem } from "./tool/AntiCheatSystem";
 import * as mwaction from "mwaction";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
+import EnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
 
 declare global {
     var UE: any;
@@ -88,10 +89,10 @@ export default class GameLauncher extends mw.Script {
     })
     languageType1: string = "-1";
 
-    @mw.Property({displayName: "gm开关"})
+    @mw.Property({ displayName: "gm开关" })
     gmSwitch: boolean = true;
 
-    @mw.Property({displayName: "是否支持技能编辑器"})
+    @mw.Property({ displayName: "是否支持技能编辑器" })
     isMotionEdit: boolean = true;
 
     @mw.Property({
@@ -103,11 +104,11 @@ export default class GameLauncher extends mw.Script {
     })
     public logLevel = 0;
 
-    @mw.Property({displayName: "是否发布", group: "发布"})
+    @mw.Property({ displayName: "是否发布", group: "发布" })
     public isRelease: boolean = false;
 
 
-    @mw.Property({displayName: "是否开启RPC统计"})
+    @mw.Property({ displayName: "是否开启RPC统计" })
     public isRecordRPC: boolean = false;
 
     async onStart() {
@@ -181,6 +182,7 @@ export default class GameLauncher extends mw.Script {
         // ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
         // ModuleService.registerModule(GuideModuleS2, GuideModuleC2, null);
         ModuleService.registerModule(InteractiveModuleS, InteractiveModuleC, null);
+        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, EnergyModuleData);
     }
 
 
