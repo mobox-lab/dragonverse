@@ -592,7 +592,7 @@ export class PetBagModuleData extends Subdata {
         for (const key of Object.keys(this.bagContainerNew)) {
             const pet = this.bagContainerNew[key] as petItemDataNew;
             const q = GameConfig.PetARR.getElement(pet.I).QualityType + GameConfig.PetARR.getElement(pet.I).DevType;
-            if (qsq.length === 0) qsq.push(q);
+            if (qsq.length < GlobalData.Energy.ENERGY_RECOVERY_SAMPLE_COUNT) qsq.push(q);
             else if (qsq[qsq.length - 1] >= q) continue;
             else {
                 for (let i = 0; i < qsq.length; ++i) {
