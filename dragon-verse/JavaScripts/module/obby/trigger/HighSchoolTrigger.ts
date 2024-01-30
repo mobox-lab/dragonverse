@@ -76,8 +76,6 @@ export default class HighSchoolTrigger extends mw.Script {
                     if(!obby.isInGame()){
                         obby.enterGame();
                         HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
-                        this.setProps(obj);
-                        UIService.getUI(MainPanel).setCanSprint(false);
                     }
                 } else if (this._circleType == HighSchoolType.DeadBackGround) {
                     //锁定摄像头
@@ -103,31 +101,13 @@ export default class HighSchoolTrigger extends mw.Script {
         }
     };
 
-    private setProps(obj: mw.Character) {
-        obj.maxWalkSpeed = GameServiceConfig.ROLE_MAX_WALK_SPEED_OBBY;
-        obj.maxAcceleration = GameServiceConfig.ROLE_MAX_WALK_ACCURATE_OBBY;
-        obj.maxStepHeight = GameServiceConfig.ROLE_MAX_STEP_HEIGHT_OBBY;
-        obj.walkableFloorAngle = GameServiceConfig.ROLE_WALKABLE_FLOOR_ANGLE_OBBY;
-        obj.rotateRate = GameServiceConfig.ROLE_ROTATE_RATE_OBBY;
-        obj.groundFriction = GameServiceConfig.ROLE_GROUND_FRICTION_OBBY;
-        obj.maxFallingSpeed = GameServiceConfig.ROLE_FALLING_SPEED_OBBY;
-        obj.gravityScale = GameServiceConfig.ROLE_GRAVITY_SCALE_OBBY;
-        obj.maxJumpHeight = GameServiceConfig.ROLE_JUMP_HEIGHT_OBBY;
-        obj.jumpMaxCount = GameServiceConfig.ROLE_JUMP_MAX_COUNT_OBBY;
-    }
-
     private onCountDown = () => {
         if (this._hander) {
             TimeUtil.clearInterval(this._hander);
             this._hander = null;
         }
-        this.reborn();
+        let obby =  ModuleService.getModule(ObbyModuleC);
+        obby.reborn();
     };
-
-    private reborn() {
-        Player.localPlayer.character.ragdollEnabled = false;
-        Player.localPlayer.character.worldTransform.position = HighSchoolTrigger.lastPos;
-        Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
-    }
 
 }

@@ -205,6 +205,8 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             this._curLv = 0;
             this.server.net_getLv();
             UIService.showUI(this._obbyPanel);
+            this.setObbyProps(Player.localPlayer.character);
+            UIService.getUI(MainPanel).setCanSprint(false);
         }
 
         
@@ -231,6 +233,8 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             this._curLv = 0;
             this._isInGame = false;
             UIService.hideUI(this._obbyPanel);
+            this.resetProps(Player.localPlayer.character);
+            UIService.getUI(MainPanel).setCanSprint(true);
         }
 
         public checkLv(curLv: number) {
@@ -238,6 +242,59 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
                 return true;
             }
             return false;
+        }
+
+        private maxWalkSpeedOri = 0;
+        private maxAccelerationOri = 0;
+        private maxStepHeightOri = 0;
+        private walkableFloorAngleOri = 0;
+        private rotateRateOri = 0;
+        private groundFrictionOri = 0;
+        private maxFallingSpeedOri = 0;
+        private gravityScaleOri = 0;
+        private maxJumpHeightOri = 0;
+        private jumpMaxCountOri = 0;
+        private setObbyProps(obj: mw.Character) {
+            this.maxWalkSpeedOri = obj.maxWalkSpeed;
+            this.maxAccelerationOri = obj.maxAcceleration;
+            this.maxStepHeightOri = obj.maxStepHeight;
+            this.walkableFloorAngleOri = obj.walkableFloorAngle;
+            this.rotateRateOri = obj.rotateRate;
+            this.groundFrictionOri = obj.groundFriction;
+            this.maxFallingSpeedOri = obj.maxFallingSpeed;
+            this.gravityScaleOri = obj.gravityScale;
+            this.maxJumpHeightOri = obj.maxJumpHeight;
+            this.jumpMaxCountOri = obj.jumpMaxCount;
+            
+            obj.maxWalkSpeed = GameServiceConfig.ROLE_MAX_WALK_SPEED_OBBY;
+            obj.maxAcceleration = GameServiceConfig.ROLE_MAX_WALK_ACCURATE_OBBY;
+            obj.maxStepHeight = GameServiceConfig.ROLE_MAX_STEP_HEIGHT_OBBY;
+            obj.walkableFloorAngle = GameServiceConfig.ROLE_WALKABLE_FLOOR_ANGLE_OBBY;
+            obj.rotateRate = GameServiceConfig.ROLE_ROTATE_RATE_OBBY;
+            obj.groundFriction = GameServiceConfig.ROLE_GROUND_FRICTION_OBBY;
+            obj.maxFallingSpeed = GameServiceConfig.ROLE_FALLING_SPEED_OBBY;
+            obj.gravityScale = GameServiceConfig.ROLE_GRAVITY_SCALE_OBBY;
+            obj.maxJumpHeight = GameServiceConfig.ROLE_JUMP_HEIGHT_OBBY;
+            obj.jumpMaxCount = GameServiceConfig.ROLE_JUMP_MAX_COUNT_OBBY;
+        }
+
+        private resetProps(obj: mw.Character) {
+            obj.maxWalkSpeed = this.maxWalkSpeedOri
+            obj.maxAcceleration = this.maxAccelerationOri
+            obj.maxStepHeight = this.maxStepHeightOri
+            obj.walkableFloorAngle = this.walkableFloorAngleOri
+            obj.rotateRate = this.rotateRateOri
+            obj.groundFriction = this.groundFrictionOri
+            obj.maxFallingSpeed = this.maxFallingSpeedOri
+            obj.gravityScale = this.gravityScaleOri
+            obj.maxJumpHeight = this.maxJumpHeightOri
+            obj.jumpMaxCount = this.jumpMaxCountOri
+        }
+
+        public reborn() {
+            Player.localPlayer.character.ragdollEnabled = false;
+            Player.localPlayer.character.worldTransform.position = this._checkPointCfg[""+this._curLv];
+            Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
         }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -251,8 +308,8 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             if(curLv > this._curLv){
                 //需要传送到之前的关卡 需要读取关卡的配置位置
                 console.log("net_updateLv 传送======");
-                Player.localPlayer.character.worldTransform.position = this._checkPointCfg[""+curLv];
-                Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
+                this._curLv = curLv;
+                this.reborn();
             }
         }
         this._curLv = curLv;
