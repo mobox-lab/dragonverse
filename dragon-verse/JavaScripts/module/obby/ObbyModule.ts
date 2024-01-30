@@ -18,6 +18,7 @@ import EventListener = mw.EventListener;
 import Enum = UE.Enum;
 import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
 import { DataUpgradeMethod } from "../../depend/jibu-module/JModule";
+import Nolan from "../../depend/nolan/Nolan";
 
 export default class ObbyModuleData extends Subdata {
 
@@ -97,6 +98,7 @@ export default class ObbyModuleData extends Subdata {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     public updateLv(lv: number): boolean {
         if(lv > this.lv){
+            this.lv = lv;
             return true
         }else{
             return false;
@@ -122,7 +124,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
     //#region Member
 
-    private _mainPanel: MainPanel;
+    // private _mainPanel: MainPanel;
     private _obbyPanel: ObbyInteractorPanel;
     private _curLv:number;
     private _maxLv:number;
@@ -141,10 +143,9 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         super.onStart();
 
         //#region Member init
-        this._mainPanel = UIService.getUI(MainPanel);
         this._obbyPanel = UIService.create(ObbyInteractorPanel);
         this.initCheckPoint();
-        console.log("obbyModuleC onStart================")
+        Log4Ts.log(ObbyModuleC,"obbyModuleC onStart================")
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
@@ -159,11 +160,11 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
-        console.log("obbyModuleC onEnterScene================")
+        Log4Ts.log(ObbyModuleC,"obbyModuleC onEnterScene================")
     }
 
     protected onDestroy(): void {
-        console.log("obbyModuleC onDestroy================")
+        Log4Ts.log(ObbyModuleC,"obbyModuleC onDestroy================")
         super.onDestroy();
 
         //#region Event Unsubscribe
@@ -180,9 +181,10 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
         private initCheckPoint(){
             
-            this._maxLv = 100;//这里要读取配置表 知道最大的关卡数
-            this._checkPointCfg["0"] = new mw.Vector(393000,13359,24668);
-            this._checkPointCfg["1"] = new mw.Vector(393500,13359,24668);
+            this._maxLv = GameConfig.BagItem.getAllElement().length;
+            this._checkPointCfg["1"] = new mw.Vector(393000,13359,24668);
+            this._checkPointCfg["2"] = new mw.Vector(393500,13359,24668);
+            console.log("initCheckPoint _maxLv======"+this._maxLv);
         }
         /**
          * 是否在游戏中
@@ -200,6 +202,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             this._isInGame = true;
             this._curLv = 0;
             this.server.net_getLv();
+            UIService.showUI(this._obbyPanel);
         }
 
         
@@ -208,6 +211,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
          * @param playerId
          */
         public updateCheckPoint(checkPointId:number) {
+            
             //拉取当前的进度
             if(checkPointId <= this._curLv){
                 return;
@@ -224,10 +228,11 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             this._isStart = false;
             this._curLv = 0;
             this._isInGame = false;
+            UIService.hideUI(this._obbyPanel);
         }
 
         public checkLv(curLv: number) {
-            if(curLv > this._curLv){
+            if(this._isStart&&curLv > this._curLv){
                 return true;
             }
             return false;
@@ -238,18 +243,18 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     //#region Net Method
 
     public net_updateLv(curLv: number) {
+        console.log("net_updateLv curLv======"+curLv);
         if(!this._isStart){
             this._isStart = true;
             if(curLv > this._curLv){
                 //需要传送到之前的关卡 需要读取关卡的配置位置
-                
+                console.log("net_updateLv 传送======");
+                Player.localPlayer.character.worldTransform.position = this._checkPointCfg[""+curLv];
+                Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
             }
-        }else if(curLv > this._curLv && this._isStart){
-            //播放粒子特效
-            // EffectService.playOnGameObject()
         }
         this._curLv = curLv;
-        this._obbyPanel.setProValue(this._curLv/this._maxLv);
+        this._obbyPanel.setCurLv(this._curLv,this._maxLv);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -288,7 +293,7 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
 
     protected onStart(): void {
         super.onStart();
-        console.log("obbyModules onStart================")
+        Log4Ts.log(ObbyModuleS,"obbyModules onStart================")
 
         //#region Member init
         //#endregion ------------------------------------------------------------------------------------------ 
@@ -310,20 +315,20 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
 
     protected onExecute(type: number, ...params: any[]): void {
         super.onExecute(type, ...params);
-        console.log("obbyModules onExecute================")
+        Log4Ts.log(ObbyModuleS,"obbyModules onExecute================")
     }
 
     protected onPlayerLeft(player: Player): void {
-        console.log("obbyModules onPlayerLeft================")
+        Log4Ts.log(ObbyModuleS,"obbyModules onPlayerLeft================")
     }
 
     protected onPlayerEnterGame(player: Player): void {
-        console.log("obbyModules onPlayerEnterGame================")
+        Log4Ts.log(ObbyModuleS,"obbyModules onPlayerEnterGame================")
     }
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
-        console.log("obbyModules onPlayerJoined================")
+        Log4Ts.log(ObbyModuleS,"obbyModules onPlayerJoined================")
     }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -337,10 +342,13 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
         playerData.updateLv(lv);
         playerData.save(false);
         this.getClient(playerId).net_updateLv(lv);
+        // Log4Ts.log(ObbyModuleS,"持久化 当前关卡数 lv========================"+lv);
+        console.log("持久化 当前关卡数 lv========================"+lv);
     }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
      //#region Net Method
+     @noReply()
      public net_saveLv(checkLv: number) {
         const currPlayerId = this.currentPlayerId;
         const playerData = this.getPlayerData(currPlayerId);
@@ -357,7 +365,7 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
         return;
     }
 
-    
+    @noReply()
     public net_getLv() {
         const currPlayerId = this.currentPlayerId;
         const playerData = this.getPlayerData(currPlayerId);

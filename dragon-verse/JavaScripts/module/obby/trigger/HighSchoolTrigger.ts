@@ -89,7 +89,9 @@ export default class HighSchoolTrigger extends mw.Script {
                 } else if (this._circleType == HighSchoolType.ScorePoint) {
                     let obby = ModuleService.getModule(ObbyModuleC);
                     HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
+                    console.log("entercheckPoint idx="+this._checkPointIdx)
                     if (obby.checkLv(this._checkPointIdx)) {
+                        console.log("entercheckPoint3333 idx="+this._checkPointIdx)
                         Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.resolves.Obby_GoldReward());
                         //播放粒子特效
                         mw.EffectService.playAtPosition("89095", this.gameObject.worldTransform.position);
