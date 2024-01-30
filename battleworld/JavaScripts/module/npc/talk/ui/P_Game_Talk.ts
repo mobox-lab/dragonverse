@@ -3,6 +3,7 @@ import { INpcDialogElement } from "../../../../config/NpcDialog";
 import { ITabTalkElement } from "../../../../config/TabTalk";
 import { EModule_Events } from "../../../../const/Enum";
 import { Globaldata } from "../../../../const/Globaldata";
+import KeyOperationManager from "../../../../controller/key-operation-manager/KeyOperationManager";
 import { EventManager } from "../../../../tool/EventManager";
 import { util } from "../../../../tool/Utils";
 import P_Game_Talk_Generate from "../../../../ui-generate/talk/P_Game_Talk_generate";
@@ -33,6 +34,12 @@ export class P_Game_Talk extends P_Game_Talk_Generate {
         this.interval = Globaldata.talkTextInterval;
         this.step = Globaldata.talkTextStep;
         this.registerButtonEvent();
+    }
+    onShow() {
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            UIService.hideUI(this);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        })
     }
 
     onHide() {

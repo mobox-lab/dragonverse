@@ -10,8 +10,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { DoubleKillPanel } from "./UI/DoubleKillPanel";
 import { AnalyticsTool, EFirstDo } from "../AnalyticsModule/AnalyticsTool";
 
-export class NoticeModuleC extends ModuleC<NoticeModuleS, null>
-{
+export class NoticeModuleC extends ModuleC<NoticeModuleS, null> {
     private mAttribute: AttributeModuleC = null;
 
     protected onStart(): void {
@@ -22,16 +21,16 @@ export class NoticeModuleC extends ModuleC<NoticeModuleS, null>
 
 
 
-        InputUtil.onKeyDown(mw.Keys.F1, () => {
+        // InputUtil.onKeyDown(mw.Keys.F1, () => {
 
-            let data: TKillData = {
-                killType: EKillType.none,
-                killerName: "玩家" + MathUtil.randomInt(1, 555),
-                killerWeaponId: 1,
-                beKillName: "玩家2" + MathUtil.randomInt(1, 555)
-            }
-            Notice.addKillTip(data);
-        });
+        //     let data: TKillData = {
+        //         killType: EKillType.none,
+        //         killerName: "玩家" + MathUtil.randomInt(1, 555),
+        //         killerWeaponId: 1,
+        //         beKillName: "玩家2" + MathUtil.randomInt(1, 555)
+        //     }
+        //     Notice.addKillTip(data);
+        // });
     }
 
     private mgs_Room(text: string) {

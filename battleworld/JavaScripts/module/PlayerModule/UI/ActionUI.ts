@@ -50,6 +50,7 @@ export default class ActionUI extends Main_action_Generate {
             b.init(rootCanvas, i);
             b.setVisible(false);
             this.skillBtns.push(b);
+            InputUtil.bindButton(Keys[`F${i - 2}`], rootCanvas.getChildByName("Btn_invoke"))
         }
 
         /**释放大招 */
