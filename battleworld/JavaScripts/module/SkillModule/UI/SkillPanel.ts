@@ -1,6 +1,7 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EAnalyticsEvents, EPlayerEvents_C } from "../../../const/Enum";
 import { Globaldata } from "../../../const/Globaldata";
+import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import { EventManager } from "../../../tool/EventManager";
 import { VList } from "../../../tool/NodeList";
 import { TimerTool } from "../../../tool/TimerTool";
@@ -192,7 +193,10 @@ export class SkillPanel extends SkillPanel_Generate {
         this.refresh_nodeList();
 
         EventManager.instance.call(EPlayerEvents_C.Player_RefreshSkillPoints);
-
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            UIService.hideUI(this);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        })
     }
 
     private refresh_nodeList() {

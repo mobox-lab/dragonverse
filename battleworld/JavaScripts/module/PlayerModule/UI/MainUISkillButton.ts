@@ -249,12 +249,11 @@ export class MainUISkillButton {
             this.mBtnName.text = this.motionSkillCfgs[0].Name;
         } else {
             if (!this._btnDataCfg && this._btnDataCfg.btnType == 1) {
-                //如果不是普攻再显示底图，按钮已经做了按下效果，为啥要显示底图。。。
+                //如果不是普攻再显示底图
                 this.mIcon.visibility = mw.SlateVisibility.SelfHitTestInvisible;
                 this.mBtnName.visibility = mw.SlateVisibility.Collapsed;
                 this.mIcon.imageGuid = this._btnDataCfg.btnIcon;
             }
-
         }
 
 

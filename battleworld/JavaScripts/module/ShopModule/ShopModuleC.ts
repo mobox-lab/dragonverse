@@ -25,9 +25,9 @@ export class ShopModuleC extends ModuleC<ShopModuleS, ShopModuleData> {
         this._shopView = mw.UIService.create(ShopView);
         this.init_itemData();
 
-        InputUtil.onKeyDown(Keys.F4, () => {
-            mw.UIService.showUI(this._shopView);
-        })
+        // InputUtil.onKeyDown(Keys.F4, () => {
+        //     mw.UIService.showUI(this._shopView);
+        // })
 
         //商店进入触发器
         let trigger = GameObject.findGameObjectById(Globaldata.shop_trigger_guid) as Trigger;

@@ -1,14 +1,15 @@
 ﻿/** 
  * @Author       : fengqi.han
  * @Date         : 2023-12-12 15:50:18
- * @LastEditors  : fengqi.han
- * @LastEditTime : 2024-01-04 09:52:18
- * @FilePath     : \battleworld\JavaScripts\module\PlayerModule\UI\rank\RankPanel.ts
+ * @LastEditors  : zewei.zhang
+ * @LastEditTime : 2024-01-30 16:55:27
+ * @FilePath     : \DragonVerse\battleworld\JavaScripts\module\PlayerModule\UI\rank\RankPanel.ts
  * @Description  : 段位系统ui面板
  */
 
 import { GameConfig } from "../../../../config/GameConfig";
 import { IRankElement } from "../../../../config/Rank";
+import KeyOperationManager from "../../../../controller/key-operation-manager/KeyOperationManager";
 import Rank_main_Generate from "../../../../ui-generate/Rank/Rank_main_generate";
 import { AnalyticsTool, EClickEvent, EPageName } from "../../../AnalyticsModule/AnalyticsTool";
 import { PlayerHeadUIModuleC } from "../../../PlayerHeadUIModule/PlayerHeadUIModuleC";
@@ -61,7 +62,10 @@ export class RankPanel extends Rank_main_Generate {
         let isshowRank = ModuleService.getModule(PlayerModuleC).getAttr(Attribute.EnumAttributeType.isShowRank);
         this.mBtn_Rank_On.visibility = isshowRank ? SlateVisibility.Visible : SlateVisibility.Collapsed;
         this.mBtn_Rank.visibility = isshowRank ? SlateVisibility.Collapsed : SlateVisibility.Visible;
+
+
     }
+
 
     protected onShow(): void {
         let [rank, rankScore, dayRankScore] = ModuleService.getModule(PlayerModuleC).getRank();
@@ -114,6 +118,11 @@ export class RankPanel extends Rank_main_Generate {
 
         //埋点
         AnalyticsTool.send_ts_page(EPageName.rank);
+
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            UIService.hideUI(this);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        })
     }
 
     /**

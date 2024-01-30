@@ -4,7 +4,7 @@
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * AUTHOR: 断桥烟雨
  * UI: UI/Main/MainUISkillButton.ui
- * TIME: 2024.01.30-15.47.37
+ * TIME: 2024.01.30-17.14.16
  */
 
  
@@ -38,7 +38,7 @@
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/MBlue") as any);
 		
 	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock") as any);
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/ShortCutKey") as any);
 		
 	
 

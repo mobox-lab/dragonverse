@@ -3,6 +3,7 @@ import { EModule_Events } from "../../../const/Enum";
 import { EventManager } from "../../../tool/EventManager";
 import { Globaldata } from "../../../const/Globaldata";
 import { AnalyticsTool, EPageName } from "../../AnalyticsModule/AnalyticsTool";
+import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 
 /**设置*/
 export default class SetingUI extends Setting_Main_Generate {
@@ -55,6 +56,10 @@ export default class SetingUI extends Setting_Main_Generate {
         this.refresh_lockBtn();
         // 埋点
         AnalyticsTool.send_ts_page(EPageName.setting);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            UIService.hideUI(this);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        })
     }
 
     listen_cameraTargetArmLength(value: number) {

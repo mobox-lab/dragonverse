@@ -1,6 +1,7 @@
 ﻿import { GameConfig } from "../../../config/GameConfig";
 import { EAnalyticsEvents, EAttributeEvents_C, EEquipPartType, EModule_Events } from "../../../const/Enum";
 import { Globaldata } from "../../../const/Globaldata";
+import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import { CameraManger } from "../../../tool/CameraManger";
 import { EventManager } from "../../../tool/EventManager";
 import { VList } from "../../../tool/NodeList";
@@ -77,12 +78,16 @@ export class ShopView extends UIRole_Generate {
             let equipId = ModuleService.getModule(EquipModuleC).getPartEquipId(i);
             this._bagItemMap.set(i - 1, equipId);
         }
-        
+
         CameraManger.instance.setCameraOffset(Globaldata.shop_camera_offset);
         EventManager.instance.call(EModule_Events.shop_hideShowUI, false);
         this.refresh_all();
         // 埋点
         AnalyticsTool.send_ts_page(EPageName.shop);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            UIService.hideUI(this);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        })
     }
 
     onHide() {

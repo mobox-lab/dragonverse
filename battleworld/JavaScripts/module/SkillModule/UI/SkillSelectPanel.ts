@@ -1,4 +1,5 @@
 import { GameConfig } from "../../../config/GameConfig";
+import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import SkillSelectPanel_Generate from "../../../ui-generate/Skill/SkillSelectPanel_generate";
 import { AnalyticsTool, EClickEvent } from "../../AnalyticsModule/AnalyticsTool";
 import { SkillModuleC } from "../SkillModuleC";
@@ -64,6 +65,11 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
         let msg2 = StringUtil.format(msg, skillCfg.Name);
 
         this.mTipText.text = msg2;
+
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            UIService.hide(SkillSelectPanel);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        })
     }
 
 }

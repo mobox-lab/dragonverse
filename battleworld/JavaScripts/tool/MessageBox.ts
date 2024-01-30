@@ -1,3 +1,4 @@
+import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 import MessageBox_Generate from "../ui-generate/common/MessageBox_generate";
 
 
@@ -91,9 +92,14 @@ export class MessageBox extends MessageBox_Generate {
 
     public show() {
         mw.UIService.showUI(this, mw.UILayerSystem);
+        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+            this.resListener(false);
+            mw.UIService.hideUI(this);
+        });
     }
 
     public hide() {
         mw.UIService.hideUI(this);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 }
