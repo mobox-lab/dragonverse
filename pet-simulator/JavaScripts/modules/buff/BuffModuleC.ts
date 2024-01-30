@@ -13,9 +13,7 @@ export class BuffModuleC extends ModuleC<BuffModuleS, BuffData> {
     // buffUI
     private buffUI: P_Game_Buff;
     // 玩家当前获得的buff
-    private buffs: GlobalEnum.BuffType[] = [];
-    // 每十秒从服务端获取一次buff
-    private buffTimer: number = 10;
+    private buffs: number[] = [];
 
     onEnterScene(sceneType: number): void {
         this.init();
@@ -23,17 +21,7 @@ export class BuffModuleC extends ModuleC<BuffModuleS, BuffData> {
     }
 
     async onUpdate(dt: number) {
-        this.buffTimer -= dt;
-        if (this.buffTimer <= 0) {
-            this.buffTimer = 10;
-            let str = await this.server.net_getBuff();
-            if (!StringUtil.isEmpty(str)) {
-                let obj = this.parse(str);
-                MapEx.forEach(obj, (type: GlobalEnum.BuffType, time: number) => {
-                    this.buffUI.setBuffTime(Number(type), time);
-                });
-            }
-        }
+
     }
 
     /**
@@ -69,24 +57,19 @@ export class BuffModuleC extends ModuleC<BuffModuleS, BuffData> {
      * @param type 药水类型
      * @param time 有效时间
      */
-    public addBuff(type: GlobalEnum.BuffType, time: number, isRpc: boolean = true) {
-        if (time <= 0 || isNaN(time)) return;
-
-        if (this.buffs.includes(type)) {
-            this.buffUI.addBuffTime(type, time);
-            if (isRpc) this.server.net_addBuffTime(type, time);
-            oTrace(`修改buff时间 .............`, type, time);
+    public addBuff(buffId: number) {
+        if (this.buffs.includes(buffId)) {
             return;
         }
-
-        let ele = this.getBuffElement(type);
-        oTrace(`增加一个buff `, type, ele);
-        this.buffUI.addBuff(new BuffInfo(ele.name, ele.PicGuid, type, time));
-        this.startBuff(type);
-        this.buffs.push(type);
-        if (isRpc) {
-            this.server.net_addBuff(type, time);
+        let ele = GameConfig.Buff.getElement(buffId);
+        if (ele == null) {
+            console.error("addBuff ele == null");
+            return;
         }
+        oTrace(`增加一个buff `, buffId);
+        this.buffUI.addBuff(new BuffInfo(ele.name, ele.PicGuid, buffId));
+        this.startBuff(buffId);
+        this.buffs.push(buffId);
     }
 
     /**
@@ -99,66 +82,53 @@ export class BuffModuleC extends ModuleC<BuffModuleS, BuffData> {
             this.buffs.splice(index, 1);
         }
         this.stopBuff(type);
-        this.server.net_removeBuff(type);
-    }
-
-    /**
-     * 根据buff类型获取对应的element
-     */
-    private getBuffElement(type: GlobalEnum.BuffType) {
-        let ele: IBuffElement = null;
-        switch (Number(type)) { // buffInfo里边传的字符串类型，这里要转成number
-            case GlobalEnum.BuffType.LuckyPotion:
-                ele = GameConfig.Buff.getElement(3);
-                break;
-            case GlobalEnum.BuffType.SuperLuckyPotion:
-                ele = GameConfig.Buff.getElement(4);
-                break;
-            case GlobalEnum.BuffType.ThreeTimesDamage:
-                ele = GameConfig.Buff.getElement(2);
-                break;
-            case GlobalEnum.BuffType.ThreeTimesGold:
-                ele = GameConfig.Buff.getElement(1);
-                break;
-        }
-        return ele;
     }
 
     /**
      * 开启buff
      */
-    private startBuff(type: GlobalEnum.BuffType) {
-        switch (Number(type)) {
-            case GlobalEnum.BuffType.LuckyPotion:
-                GlobalData.Buff.curSmallLuckyBuff = GlobalData.Buff.smallLuckyPotion;
+    private startBuff(buffId: number) {
+        let cfg = GameConfig.Buff.getElement(buffId);
+        if (cfg == null) {
+            console.error("startBuff ele == null");
+            return;
+        }
+        if (cfg.type == null || cfg.param == null) {
+            console.error("startBuff cfg.type == null||cfg.param == null");
+            return;
+        }
+        switch (Number(cfg.type)) {
+            case GlobalEnum.BuffType.Gold:
+                GlobalData.Buff.goldBuff = 1 + cfg.param/100;
                 break;
-            case GlobalEnum.BuffType.SuperLuckyPotion:
-                GlobalData.Buff.curSuperLuckyBuff = GlobalData.Buff.superLuckyPotion;
+            case GlobalEnum.BuffType.Damage:
+                GlobalData.Buff.damageBuff = 1 + cfg.param/100;
                 break;
-            case GlobalEnum.BuffType.ThreeTimesDamage:
-                GlobalData.Buff.damageBuff = 3;
-                break;
-            case GlobalEnum.BuffType.ThreeTimesGold:
-                GlobalData.Buff.goldBuff = 3;
+            default:
                 break;
         }
+        console.log("startBuff=========",cfg.type,cfg.param);
     }
 
     /**
      * 结束buff
      */
-    private stopBuff(type: GlobalEnum.BuffType) {
-        switch (Number(type)) {
-            case GlobalEnum.BuffType.LuckyPotion:
-                GlobalData.Buff.curSmallLuckyBuff = [0, 0];
-                break;
-            case GlobalEnum.BuffType.SuperLuckyPotion:
-                GlobalData.Buff.curSuperLuckyBuff = [0, 0]
-                break;
-            case GlobalEnum.BuffType.ThreeTimesDamage:
+    private stopBuff(buffId: number) {
+        let cfg = GameConfig.Buff.getElement(buffId);
+        if (cfg == null) {
+            console.error("startBuff ele == null");
+            return;
+        }
+
+        if (cfg.type == null || cfg.param == null) {
+            console.error("startBuff cfg.type == null||cfg.param == null");
+            return;
+        }
+        switch (Number(cfg.type)) {
+            case GlobalEnum.BuffType.Damage:
                 GlobalData.Buff.damageBuff = 1;
                 break;
-            case GlobalEnum.BuffType.ThreeTimesGold:
+            case GlobalEnum.BuffType.Gold:
                 GlobalData.Buff.goldBuff = 1;
                 break;
         }
@@ -167,9 +137,9 @@ export class BuffModuleC extends ModuleC<BuffModuleS, BuffData> {
     /**
      * 进入游戏add玩家buff
      */
-    public net_addPlayerBuff(buffs: GlobalEnum.BuffType[], times: number[]) {
-        for (let i = 0; i < buffs.length; i++) {
-            this.addBuff(buffs[i], times[i], false);
+    public net_addPlayerBuff(buffIds: number[]) {
+        for (let i = 0; i < buffIds.length; i++) {
+            this.addBuff(buffIds[i]);
         }
     }
 }

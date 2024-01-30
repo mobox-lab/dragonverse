@@ -1245,21 +1245,11 @@ export namespace GlobalData {
          */
         public static readonly ENERGY_RECOVERY_SAMPLE_COUNT: number = 5;
 
-        //#region Exist for Test
-        //R <<<<<<
-        // /**
-        //  * 体力 恢复间隔. min
-        //  * @type {number}
-        //  */
-        // public static readonly ENERGY_RECOVERY_INTERVAL: number = 30;
-        //  ------
         /**
          * 体力 恢复间隔. min
          * @type {number}
          */
-        public static readonly ENERGY_RECOVERY_INTERVAL: number = 5;
-        //T >>>>>>
-        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        public static readonly ENERGY_RECOVERY_INTERVAL: number = 30;
 
         /**
          * 体力 恢复间隔. ms

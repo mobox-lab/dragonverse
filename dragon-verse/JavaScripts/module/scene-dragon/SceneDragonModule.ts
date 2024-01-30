@@ -144,7 +144,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                                 if (!param) resolve(onBirth());
                             },
                         },
-                        {duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_2},
+                        { duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_2 },
                         {
                             dist: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_STAGE_3_SCALE,
                             duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_3,
@@ -303,10 +303,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         const now = Date.now();
         if (this._lastTryCatchTime && now - this._lastTryCatchTime < GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION) return;
 
-//#region Check
+        //#region Check
         const syncKey = this._lockingSyncKey;
         if (GToolkit.isNullOrEmpty(syncKey)) {
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.NonCandidateSceneDragon));
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.NonCandidateSceneDragon));
             Log4Ts.log(SceneDragonModuleC, `current locking sync key is null.`);
             return;
         }
@@ -323,13 +323,13 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             Log4Ts.warn(SceneDragonModuleC, `item un catchable. waiting for delete.`);
             return;
         }
-//#endregion
+        //#endregion
 
         this.clearTimeOutForAutoCatch();
         this._lastTryCatchTime = now;
         this._currentCatchResultSyncKey = null;
 
-//#region Throw Behavior
+        //#region Throw Behavior
         Player
             .localPlayer
             .getPlayerState(UnifiedRoleController)
@@ -344,7 +344,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             Log4Ts.error(SceneDragonModuleC, `prefab of dragon ball not set.`);
         }
         this._currentBall?.do();
-//#endregion
+        //#endregion
 
         this.server
             .net_tryCatch(syncKey)
@@ -430,13 +430,13 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     private lockWithView(candidate: string) {
         this._lockingSyncKey = candidate;
-        Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        Event.dispatchToLocal(EventDefine.DragonOnLock, { syncKey: this._lockingSyncKey } as DragonSyncKeyEventArgs);
     }
 
     private unlockWithView() {
         this._lockingSyncKey = null;
         this.clearTimeOutForAutoCatch();
-        Event.dispatchToLocal(EventDefine.DragonOnUnlock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        Event.dispatchToLocal(EventDefine.DragonOnUnlock, { syncKey: this._lockingSyncKey } as DragonSyncKeyEventArgs);
     }
 
     private getSceneDragonBySyncKey(syncKey: string): SceneDragon | null {
@@ -470,13 +470,13 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 };
             })
             .where(item => item.distSqr < sceneDragonCatchableDistanceSqr)
-            .defaultIfEmpty({syncKey: null, existInfo: null, distSqr: 0})
+            .defaultIfEmpty({ syncKey: null, existInfo: null, distSqr: 0 })
             .minBy(item => item.distSqr)
             .syncKey ?? null;
 
         if (this._candidate !== candidate) {
             this.syncItemMap.get(this._candidate)?.behavior.unElected();
-            Event.dispatchToLocal(EventDefine.DragonOnCandidateChange, {syncKey: candidate} as DragonSyncKeyEventArgs);
+            Event.dispatchToLocal(EventDefine.DragonOnCandidateChange, { syncKey: candidate } as DragonSyncKeyEventArgs);
             this._candidate = candidate;
         }
     }
@@ -526,10 +526,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     //#region Net Method
     public net_generate(syncKey: string,
-                        id: number,
-                        hitPoint: number,
-                        generateTime: number,
-                        location: Vector) {
+        id: number,
+        hitPoint: number,
+        generateTime: number,
+        location: Vector) {
         this.generate(
             syncKey,
             new SceneDragon()
@@ -691,7 +691,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             .from(this.existenceItemMap.get(playerId)?.dragonSyncKeys ?? [])
             .select((syncKey) => this.syncItemMap.get(syncKey))
             .where((item) => item ? SceneDragon.dragonId(item.id) === SceneDragon.dragonId(id) : false)
-            .defaultIfEmpty({generateTime: 0} as SceneDragon)
+            .defaultIfEmpty({ generateTime: 0 } as SceneDragon)
             .max((item) => item.generateTime);
     }
 
@@ -713,9 +713,9 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             .forEach((item) => {
                 if (GToolkit.isNullOrEmpty(SceneDragon.getDragonConfig(item.id).areaIds)) return;
                 for (let i = 0;
-                     i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
-                     this.isGenerateEnable(playerId, item.id);
-                     i++) {
+                    i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
+                    this.isGenerateEnable(playerId, item.id);
+                    i++) {
                     Log4Ts.log(SceneDragonModuleS,
                         `checking generate.`,
                         () => `playerId: ${playerId}.`,
@@ -800,8 +800,8 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         Log4Ts.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
 
         item.autoDestroyTimerId = setTimeout(() => {
-                this.destroy(playerId, syncKey, true);
-            },
+            this.destroy(playerId, syncKey, true);
+        },
             SceneDragon.maxExistenceTime(itemId),
         );
 

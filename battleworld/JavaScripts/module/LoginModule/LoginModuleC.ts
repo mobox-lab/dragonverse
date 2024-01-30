@@ -23,18 +23,17 @@ export class LoginModuleC extends ModuleC<LoginModuleS, null> {
 
 
         if (DataCenterC.getData(PlayerModuleData).isNewPlayer) {
-            let isComplate = DataCenterC.getData(GuideDataHelper).guideIsComplate(1);
-            if (isComplate == undefined || isComplate == null || isComplate == false) {
+            // let isComplate = DataCenterC.getData(GuideDataHelper).guideIsComplate(1);
+            // if (isComplate == undefined || isComplate == null || isComplate == false) {
 
-                EventManager.instance.call(EAreaEvent_C.AreaEvent_guidePos_C);
-                EventManager.instance.call(EModule_Events.ui_openMainView, true);
+            //     EventManager.instance.call(EAreaEvent_C.AreaEvent_guidePos_C);
+            //     EventManager.instance.call(EModule_Events.ui_openMainView, true);
 
-                EventManager.instance.call(EGuide_Event_C.GuideEvent_StartGuide_C);
-                return;
-            } else {
+            //     EventManager.instance.call(EGuide_Event_C.GuideEvent_StartGuide_C);
+            //     return;
+            // } else {
                 this.server.net_firstLogin();
-            }
-
+            // }
         }
 
         // if (DataCenterC.getData(PlayerModuleData).isNewPlayer) {

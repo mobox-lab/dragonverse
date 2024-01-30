@@ -21,21 +21,13 @@ export namespace GlobalEnum {
     /**药水BUFF类型 */
     export enum BuffType {
         /**
-         * 三倍金币
+         * 金币
          */
-        ThreeTimesGold = 1,
+        Gold = 1,
         /**
-         * 三倍伤害
+         * 伤害
          */
-        ThreeTimesDamage = 2,
-        /**
-         * 幸运药水
-         */
-        LuckyPotion = 3,
-        /**
-         * 超级幸运药水
-         */
-        SuperLuckyPotion = 4,
+        Damage = 2,
     }
 
     /**成就类型 */

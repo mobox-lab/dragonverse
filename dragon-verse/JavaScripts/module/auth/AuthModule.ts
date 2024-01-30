@@ -454,7 +454,7 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, AuthModuleData> {
                 true, Player.localPlayer.playerId);
             return;
         }
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.verifyCodeSuccess));
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.verifyCodeSuccess));
         this.data.enterEnable = true;
         this.releasePlayer();
     }

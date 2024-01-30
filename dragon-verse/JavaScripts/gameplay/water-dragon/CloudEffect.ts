@@ -2,8 +2,8 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-12 13:10:45
- * @FilePath     : \dragon027\JavaScripts\gameplay\water-dragon\CloudEffect.ts
+ * @LastEditTime : 2024-01-26 11:12:11
+ * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\water-dragon\CloudEffect.ts
  * @Description  : 云朵交互物
  */
 
@@ -54,7 +54,7 @@ export default class CloudEffect extends mw.Script {
                 if (id == null) return;
                 let type = CompanionHelper.getCompanionType(id);
                 if (!type || type !== DragonElemental.Fire) {
-                    PromotTips.showTips(i18n.lan(i18n.keyTable.Need_FireDargon));
+                    PromotTips.showTips(i18n.lan(i18n.lanKeys.Need_FireDargon));
                     return;
                 };
 
@@ -163,7 +163,7 @@ export default class CloudEffect extends mw.Script {
     private showFireBtn() {
         ProximityPrompts.show([{
             keyBoard: "F",
-            text: i18n.lan(i18n.keyTable.TinyGameLanKey0003),
+            text: i18n.lan(i18n.lanKeys.TinyGameLanKey0003),
             enabled: true,
             onSelected: () => {
                 if (this._isFiring) return;
