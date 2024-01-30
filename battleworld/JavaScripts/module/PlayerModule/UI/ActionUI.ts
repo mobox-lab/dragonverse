@@ -50,7 +50,8 @@ export default class ActionUI extends Main_action_Generate {
             b.init(rootCanvas, i);
             b.setVisible(false);
             this.skillBtns.push(b);
-            InputUtil.bindButton(Keys[`F${i - 2}`], rootCanvas.getChildByName("Btn_invoke"))
+            InputUtil.bindButton(Keys[`F${i - 2}`], rootCanvas.getChildByName("Btn_invoke"));
+            (rootCanvas.getChildByName("ShortCutKey") as TextBlock).text = Keys[`F${i - 2}`].toString();
         }
 
         /**释放大招 */
