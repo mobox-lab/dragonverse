@@ -92,7 +92,7 @@ export default class HighSchoolTrigger extends mw.Script {
                     if(obby.checkLv(this._checkPointIdx)){
                         Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_GoldReward));
                         //播放粒子特效
-                        mw.EffectService.playAtPosition("", this.gameObject.worldTransform.position);
+                        mw.EffectService.playAtPosition("89095", this.gameObject.worldTransform.position);
                         //记录是第几关 改变进度条
                         obby.updateCheckPoint(this._checkPointIdx);
                     }
