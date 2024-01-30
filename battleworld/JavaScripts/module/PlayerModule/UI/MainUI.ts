@@ -104,8 +104,8 @@ export class MainUI extends Main_HUD_Generate {
         EventManager.instance.add(EPlayerEvents_C.PlayerEvent_ResetJoyStick_C, this.listen_resetJoyStick, this);
         // 玩家段位分变化
         EventManager.instance.add(EAttributeEvents_C.Attribute_RankScore_Change_C, this.listen_rankScore, this);
-        // 怒气值变化
-        EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
+        // // 怒气值变化
+        // EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
 
         EventManager.instance.add(EAttributeEvents_C.Attribute_Energy_Change_C, this.changeEnergy, this);
         this.changeEnergy();
@@ -126,8 +126,8 @@ export class MainUI extends Main_HUD_Generate {
         this.layer = mw.UILayerBottom;
 
         this.mSkillSelectBox.visibility = mw.SlateVisibility.Collapsed;
-        this.mBar_Fire.percent = 0;
-        this.mBar_Fire.visibility = mw.SlateVisibility.HitTestInvisible;
+        // this.mBar_Fire.percent = 0;
+        // this.mBar_Fire.visibility = mw.SlateVisibility.HitTestInvisible;
 
         this.listen_massacreValue();
 
@@ -742,14 +742,14 @@ export class MainUI extends Main_HUD_Generate {
     /*******************************************************怒气********************************************************* */
 
     /**玩家怒气值发生变化 */
-    private listen_angerChange() {
+    // private listen_angerChange() {
 
-        let maxAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.maxAngerValue);
+    //     let maxAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.maxAngerValue);
 
-        let curAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.angerValue);
+    //     let curAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.angerValue);
 
-        this.mBar_Fire.percent = curAngerValue / maxAngerValue;
-    }
+    //     this.mBar_Fire.percent = curAngerValue / maxAngerValue;
+    // }
 
     private changeEnergy() {
         this.mBattle_1.text = ModuleService.getModule(EnergyModuleC).currEnergy().toString();

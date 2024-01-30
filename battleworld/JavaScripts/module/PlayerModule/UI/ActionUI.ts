@@ -62,7 +62,7 @@ export default class ActionUI extends Main_action_Generate {
         EventManager.instance.add(EAttributeEvents_C.Attribute_WeaponId_Change_C, this.listen_weaponIdChange, this);
         EventManager.instance.add(ESkillEvent_C.SkillEvent_RandomSkill_C, this.listen_randomSkill, this);
         // 怒气值变化
-        EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
+        // EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
 
         EventManager.instance.add(EAttributeEvents_C.Attribute_gasExplosion_C, this.listen_gasExplosion, this);
 
@@ -190,18 +190,18 @@ export default class ActionUI extends Main_action_Generate {
 
 
     /**玩家怒气值变化 */
-    private listen_angerChange() {
-        let maxAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.maxAngerValue);
-        let curAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.angerValue);
+    // private listen_angerChange() {
+    //     let maxAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.maxAngerValue);
+    //     let curAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.angerValue);
 
-        if (curAngerValue < maxAngerValue) {
+    //     if (curAngerValue < maxAngerValue) {
 
-            this.showVisibleFinalSkill(false);
-            return;
-        }
+    //         this.showVisibleFinalSkill(false);
+    //         return;
+    //     }
 
-        this.showVisibleFinalSkill(true);
-    }
+    //     this.showVisibleFinalSkill(true);
+    // }
 
     public showVisibleFinalSkill(show: boolean) {
         if (show) {
