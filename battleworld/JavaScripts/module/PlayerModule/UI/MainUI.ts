@@ -463,7 +463,8 @@ export class MainUI extends Main_HUD_Generate {
             EventManager.instance.call(EAnalyticsEvents.firstDo, EFirstDo.backed);
             // 埋点
             AnalyticsTool.send_ts_action_do(EMovementType.backSafe);
-
+            //回城显示ui
+            this.setCoinAndEnergyVisible(true);
         }, (time: number) => {
             this.mText_Back_Time.text = `${time.toFixed(1)}s`;
             this.mBar_Back.currentValue = time / Globaldata.player_backTime;
@@ -753,5 +754,10 @@ export class MainUI extends Main_HUD_Generate {
 
     private changeEnergy() {
         this.mBattle_1.text = ModuleService.getModule(EnergyModuleC).currEnergy().toString();
+    }
+
+    public setCoinAndEnergyVisible(visible: boolean) {
+        this.mCanvasMCoin.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
+        this.mCanvasBattle.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
     }
 }

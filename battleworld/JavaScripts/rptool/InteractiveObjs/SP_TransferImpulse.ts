@@ -5,6 +5,7 @@ import { EnergyModuleC } from "../../module/Energy/EnergyModule";
 import { InteractiveModuleC } from "../../module/InteractiveModule/InteractiveModuleC";
 import { EPlayerState } from "../../module/PlayerModule/FSM/PlyerState";
 import { PlayerManager } from "../../module/PlayerModule/PlayerManager";
+import { MainUI } from "../../module/PlayerModule/UI/MainUI";
 import { EventManager } from "../../tool/EventManager";
 import { InteractLogic_C, InteractLogic_S, InteractObject } from "./InteractObject";
 
@@ -138,6 +139,9 @@ class TransferImpulse_C extends InteractLogic_C<SP_TransferImpulse> {
                 ModuleService.getModule(EnergyModuleC).consume(1, true);
                 //通知ui，体力变更
                 EventManager.instance.call(EAttributeEvents_C.Attribute_Energy_Change_C);
+                //隐藏ui
+                UIService.getUI(MainUI)?.setCoinAndEnergyVisible(false);
+
             }, this.info.delayLaunchTime * 1000);
 
         });

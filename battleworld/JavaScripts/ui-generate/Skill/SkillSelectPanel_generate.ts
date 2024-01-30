@@ -2,16 +2,44 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 帅你一脸(影月宗·大师)
+ * AUTHOR: 断桥烟雨
  * UI: UI/Skill/SkillSelectPanel.ui
- * TIME: 2023.11.15-14.12.50
+ * TIME: 2024.01.30-19.39.19
  */
 
  
 
  @UIBind('UI/Skill/SkillSelectPanel.ui')
  export default class SkillSelectPanel_Generate extends UIScript {
-	 	private mSelectPanel_Internal: mw.Canvas
+	 	private mBgblack_Internal: mw.Image
+	public get mBgblack(): mw.Image {
+		if(!this.mBgblack_Internal&&this.uiWidgetBase) {
+			this.mBgblack_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBgblack') as mw.Image
+		}
+		return this.mBgblack_Internal
+	}
+	private mTipCanvas_Internal: mw.Canvas
+	public get mTipCanvas(): mw.Canvas {
+		if(!this.mTipCanvas_Internal&&this.uiWidgetBase) {
+			this.mTipCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTipCanvas') as mw.Canvas
+		}
+		return this.mTipCanvas_Internal
+	}
+	private mTipText_Internal: mw.TextBlock
+	public get mTipText(): mw.TextBlock {
+		if(!this.mTipText_Internal&&this.uiWidgetBase) {
+			this.mTipText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTipCanvas/mTipText') as mw.TextBlock
+		}
+		return this.mTipText_Internal
+	}
+	private bg_Internal: mw.Image
+	public get bg(): mw.Image {
+		if(!this.bg_Internal&&this.uiWidgetBase) {
+			this.bg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTipCanvas/bg') as mw.Image
+		}
+		return this.bg_Internal
+	}
+	private mSelectPanel_Internal: mw.Canvas
 	public get mSelectPanel(): mw.Canvas {
 		if(!this.mSelectPanel_Internal&&this.uiWidgetBase) {
 			this.mSelectPanel_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSelectPanel') as mw.Canvas
@@ -46,19 +74,33 @@
 		}
 		return this.mSelectBtn4_Internal
 	}
-	private mTipCanvas_Internal: mw.Canvas
-	public get mTipCanvas(): mw.Canvas {
-		if(!this.mTipCanvas_Internal&&this.uiWidgetBase) {
-			this.mTipCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTipCanvas') as mw.Canvas
+	private skill4_Internal: mw.TextBlock
+	public get skill4(): mw.TextBlock {
+		if(!this.skill4_Internal&&this.uiWidgetBase) {
+			this.skill4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSelectPanel/skill4') as mw.TextBlock
 		}
-		return this.mTipCanvas_Internal
+		return this.skill4_Internal
 	}
-	private mTipText_Internal: mw.TextBlock
-	public get mTipText(): mw.TextBlock {
-		if(!this.mTipText_Internal&&this.uiWidgetBase) {
-			this.mTipText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mTipCanvas/mTipText') as mw.TextBlock
+	private skill3_Internal: mw.TextBlock
+	public get skill3(): mw.TextBlock {
+		if(!this.skill3_Internal&&this.uiWidgetBase) {
+			this.skill3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSelectPanel/skill3') as mw.TextBlock
 		}
-		return this.mTipText_Internal
+		return this.skill3_Internal
+	}
+	private skill2_Internal: mw.TextBlock
+	public get skill2(): mw.TextBlock {
+		if(!this.skill2_Internal&&this.uiWidgetBase) {
+			this.skill2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSelectPanel/skill2') as mw.TextBlock
+		}
+		return this.skill2_Internal
+	}
+	private skill1_Internal: mw.TextBlock
+	public get skill1(): mw.TextBlock {
+		if(!this.skill1_Internal&&this.uiWidgetBase) {
+			this.skill1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSelectPanel/skill1') as mw.TextBlock
+		}
+		return this.skill1_Internal
 	}
 	private mSelectBtn_Internal: mw.StaleButton
 	public get mSelectBtn(): mw.StaleButton {
@@ -73,6 +115,13 @@
 			this.mDiscardBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mDiscardBtn') as mw.StaleButton
 		}
 		return this.mDiscardBtn_Internal
+	}
+	private mClosebtn_Internal: mw.Button
+	public get mClosebtn(): mw.Button {
+		if(!this.mClosebtn_Internal&&this.uiWidgetBase) {
+			this.mClosebtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mClosebtn') as mw.Button
+		}
+		return this.mClosebtn_Internal
 	}
 
 
@@ -130,12 +179,30 @@
 	
 		//按钮添加点击
 		
+		this.mClosebtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mClosebtn");
+		})
+		
+		
+	
 
 		//按钮多语言
 		
 		//文本多语言
 		
 		this.initLanguage(this.mTipText)
+		
+	
+		this.initLanguage(this.skill4)
+		
+	
+		this.initLanguage(this.skill3)
+		
+	
+		this.initLanguage(this.skill2)
+		
+	
+		this.initLanguage(this.skill1)
 		
 	
 		//文本多语言

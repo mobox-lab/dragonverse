@@ -20,14 +20,28 @@ export class Globaldata {
      */
     public static punchImgGuid = "295281";
 
-    /**单手剑图片id */
+    /**单手剑普攻图片id */
     public static singleSwordImgGuid = "295344";
 
-    /**杖图片id */
+    /**杖普攻图片id */
     public static wandImgGuid = "295287";
 
-    /**双手剑图片id */
+    /**双手剑普攻图片id */
     public static twoHandedSwordImgGuid = "295273";
+
+    /**
+     * 拳头背景图片id
+     */
+    public static punchBgImgGuid = "295322";
+
+    /**单手剑背景图片id */
+    public static singleSwordBgImgGuid = "295333";
+
+    /**杖背景图片id */
+    public static wandBgImgGuid = "295346";
+
+    /**双手剑背景图片id */
+    public static twoHandedSwordBgImgGuid = "295328";
 
     /**--------------------------------------系统--------------------------------- */
     /**所选择的语言索引(-1:系统 0:英语 1:汉语 2:日语 3:德语)*/

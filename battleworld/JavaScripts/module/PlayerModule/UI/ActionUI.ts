@@ -162,6 +162,7 @@ export default class ActionUI extends Main_action_Generate {
             case 2: return Globaldata.singleSwordImgGuid;
             case 3: return Globaldata.wandImgGuid;
             case 4: return Globaldata.twoHandedSwordImgGuid;
+            default: return Globaldata.punchBgImgGuid;
         }
     }
 
