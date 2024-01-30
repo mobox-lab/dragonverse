@@ -547,12 +547,12 @@ export default class GameServiceConfig {
     /**
      * 角色 下落速度.
      */
-    public static readonly ROLE_FALLING_SPEED_OBBY = 2000;
+    public static readonly ROLE_FALLING_SPEED_OBBY = 1000;
 
     /**
      * 角色 重力倍率.
      */
-    public static readonly ROLE_GRAVITY_SCALE_OBBY = 2.4;
+    public static readonly ROLE_GRAVITY_SCALE_OBBY = 2.0;
 
     /**
      * 角色 最大跳跃高度.
