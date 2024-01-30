@@ -600,7 +600,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             Log4Ts.error(AuthModuleS, `get token failed. ${JSON.stringify(respInJson)}`);
         } else {
             if (this._tokenMap.has(playerId)) {
-                this._tokenMap.set(playerId, GlobalData.Global.isRelease ? respInJson.data?.mToken : "19dce05a6d90cbfa09f157c20a33a525fa2c5d827940ee8b31fc88fc76db9f83989683");
+                this._tokenMap.set(playerId, GlobalData.Global.isRelease ? respInJson.data?.mToken : "d3c539da19c7c9a0f967ba0a46b7ce33324d231573f72ae345fe65a0631320b3989682");
                 this.onRefreshToken(playerId);
             } else {
                 this.logPlayerNotExist(playerId);
