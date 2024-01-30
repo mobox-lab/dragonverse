@@ -142,11 +142,10 @@ interface MoboxDragonData {
     /**
      * 属性.
      */
-    element: number[]
+    element: number[],
     /**
      * 能力值.
      */
-    ,
     ability: number,
     /**
      * 潜力.
@@ -779,7 +778,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 star: 0,
                 tokenId: 0,
             })
-            .sum(item => item?.ability ?? 0) + (GlobalData.Global.isRelease ? 0 : 250));
+            .sum(item => item ? calAbility(
+                item.quality,
+                item.star,
+                item.potential,
+                item.level) : 0) + (GlobalData.Global.isRelease ? 0 : 250));
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -828,4 +831,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+/**
+ * 计算龙能力值.
+ * @param {number} quality 品质.
+ * @param {number} star 星级.
+ * @param {number} attribute 潜力.
+ * @param {number} level 等级.
+ * @return {number}
+ */
+function calAbility(quality: number, star: number, attribute: number, level: number): number {
+    let ratio = [0.4, 0.5, 0.6, 0.8, 1];
+    return Math.round(Math.pow(star, ratio[quality]) * (+attribute) * level / 20);
 }
