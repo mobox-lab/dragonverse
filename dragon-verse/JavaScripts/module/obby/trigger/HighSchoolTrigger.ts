@@ -4,13 +4,13 @@
  * @LastEditors: steven
  * @LastEditTime: 2023-12-21 16:30:39
  */
-import { EventDefine } from "../../const/EventDefine";
-import GameServiceConfig from "../../const/GameServiceConfig";
-import Nolan from "../../depend/nolan/Nolan";
-import i18n from "../../language/i18n";
-import { PromotTips } from "../../ui/common/PromotTips";
-import MainPanel from "../../ui/main/MainPanel";
-import GToolkit from "../../util/GToolkit";
+import { EventDefine } from "../../../const/EventDefine";
+import GameServiceConfig from "../../../const/GameServiceConfig";
+import Nolan from "../../../depend/nolan/Nolan";
+import i18n from "../../../language/i18n";
+import MainPanel from "../../../ui/main/MainPanel";
+import GToolkit from "../../../util/GToolkit";
+import { ObbyModuleC } from "../ObbyModule";
 
 
 /**
@@ -37,11 +37,11 @@ export default class HighSchoolTrigger extends mw.Script {
             "坠落死亡区": HighSchoolType.DeadBackGround,
             "红色死亡区": HighSchoolType.DeadRed,
             "得分点": HighSchoolType.ScorePoint,
-        }
+        },
     })
     private _circleType: HighSchoolType = HighSchoolType.TransStart;
 
-    @mw.Property({ displayName: "关卡叙述，用来表示是第几个检查点" })
+    @mw.Property({displayName: "关卡叙述，用来表示是第几个检查点"})
     private _checkPointIdx: number = 0;
 
     private _trigger: mw.Trigger;
@@ -72,23 +72,30 @@ export default class HighSchoolTrigger extends mw.Script {
         if (obj instanceof mw.Character) {
             if (GToolkit.isSelfCharacter(obj)) {
                 if (this._circleType == HighSchoolType.TransStart) {
-                    HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
-                    this.setProps(obj);
-                    UIService.getUI(MainPanel).setCanSprint(false);
+                    let obby =  ModuleService.getModule(ObbyModuleC);
+                    if(!obby.isInGame()){
+                        obby.enterGame();
+                        HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
+                        this.setProps(obj);
+                        UIService.getUI(MainPanel).setCanSprint(false);
+                    }
                 } else if (this._circleType == HighSchoolType.DeadBackGround) {
                     //锁定摄像头
                     obj.ragdollEnabled = true;
                     this._hander = TimeUtil.setInterval(this.onCountDown, 2);
-
                 } else if (this._circleType == HighSchoolType.DeadRed) {
                     obj.ragdollEnabled = true;
                     this._hander = TimeUtil.setInterval(this.onCountDown, 2);
                 } else if (this._circleType == HighSchoolType.ScorePoint) {
+                    let obby = ModuleService.getModule(ObbyModuleC);
                     HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
-                    // PromotTips.showTips(i18n.lan(i18n.lankey.Need_FireDargon));
-                    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_GoldReward));
-                    //记录是第几关 改变进度条
-
+                    if (obby.checkLv(this._checkPointIdx)) {
+                        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.resolves.Obby_GoldReward());
+                        //播放粒子特效
+                        mw.EffectService.playAtPosition("", this.gameObject.worldTransform.position);
+                        //记录是第几关 改变进度条
+                        obby.updateCheckPoint(this._checkPointIdx);
+                    }
                 }
             }
         }

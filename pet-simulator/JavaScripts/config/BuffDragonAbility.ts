@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","dragonAbilityRange","addBuff"],["","",""],[1,[0,100],[0]],[2,[101,300],[1,5]],[3,[301,1000],[2,6]],[4,[1001,10000],[3,7]],[5,[10001,99999],[4,8]]];
+const EXCELDATA:Array<Array<any>> = [["id","dragonAbilityRange","addBuff"],["","",""],[1,[101,400],[1]],[2,[401,1000],[1,6]],[3,[1001,10000],[2,6]],[4,[10001,9999999],[2,7]]];
 export interface IBuffDragonAbilityElement extends IElementBase{
  	/**id*/
 	id:number

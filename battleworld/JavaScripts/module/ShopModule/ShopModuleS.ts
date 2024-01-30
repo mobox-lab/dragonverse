@@ -8,12 +8,13 @@ import { ShopModuleData } from "./ShopModuleData";
 /**
  * 商城模块S
  */
-export class ShopModuleS extends ModuleS<ShopModuleC, ShopModuleData> {
+export class ShopModuleS extends mwext.ModuleS<ShopModuleC, ShopModuleData> {
 
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void {
 
     }
+
     /**
      * 购买物品
      * @param itemId 物品id
@@ -25,12 +26,12 @@ export class ShopModuleS extends ModuleS<ShopModuleC, ShopModuleData> {
             playerS.reducePlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.money, needMoney);
             this.addOwnItem(this.currentPlayerId, itemId);
             return true;
-        }
-        else {
+        } else {
             return false;
         }
 
     }
+
     /**
      * 添加物品
      * @param itemId 物品id
