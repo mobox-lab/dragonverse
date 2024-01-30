@@ -131,7 +131,7 @@ export class P_HudUI extends Hud_Generate {
         bindYoact(() => {
             GToolkit.trySetText(this.mText_Mcoin, GlobalData.Global.isRelease ?
                 utils.formatNumber(this.authModuleC?.currency.count) :
-                (((this.authModuleC?.currency.count ?? 0) * 100 | 0) / 100).toString());
+                ((this.authModuleC?.currency.count ?? 0).toFixed(2).toString()));
         });
 
 
