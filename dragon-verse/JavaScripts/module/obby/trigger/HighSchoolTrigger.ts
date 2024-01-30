@@ -48,7 +48,7 @@ export default class HighSchoolTrigger extends mw.Script {
 
     private _hander: number;
 
-    public static lastPos:mw.Vector;
+    public static lastPos: mw.Vector;
 
     protected onStart(): void {
         if (mw.SystemUtil.isServer()) {
@@ -59,7 +59,7 @@ export default class HighSchoolTrigger extends mw.Script {
 
 
     private initTrigger() {
-        this._trigger =  this.gameObject as mw.Trigger;
+        this._trigger = this.gameObject as mw.Trigger;
         this._trigger.onEnter.add(this.onEnter);
     }
 

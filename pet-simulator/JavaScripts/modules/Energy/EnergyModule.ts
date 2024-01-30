@@ -209,11 +209,13 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
                 );
                 return;
             }
+
+            const energyRecoveryIntervalMs = GlobalData.Global.isRelease ? GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS : 30 * 1e3;
             const now = Date.now();
             const duration = now - d.lastRecoveryTime;
             let timeout: number;
-            if (duration < GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS) {
-                timeout = GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS - duration;
+            if (duration < energyRecoveryIntervalMs) {
+                timeout = energyRecoveryIntervalMs - duration;
             } else {
                 if (d.energy < GlobalData.Energy.ENERGY_MAX) {
                     Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.energy}`);
@@ -222,11 +224,11 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
                         d.energy + (this.petBagModule().getPlayerEnergyRecoveryCoefficient(playerId))
                         * Math.max(
                             ((now - d.lastRecoveryTime) /
-                                GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS) | 0,
+                                energyRecoveryIntervalMs) | 0,
                             0));
                 }
                 d.lastRecoveryTime = now;
-                timeout = GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS;
+                timeout = energyRecoveryIntervalMs;
                 this.getClient(playerId).net_recovery(d.energy);
                 d.save(false);
             }

@@ -22,6 +22,12 @@ export class Globaldata {
     public static logLevel: number = 0;
     /**是否开启GM */
     public static isOpenGm: boolean = false;
+
+    /**
+     * 是否 发布.
+     * @type {boolean}
+     */
+    public static isRelease = false;
     /**相机缩放最大距离 */
     public static targetArmMaxLen: number = 2400;
     /**相机缩放最短距离 */
@@ -38,6 +44,7 @@ export class Globaldata {
     public static tmpRotation1: mw.Rotation = mw.Rotation.zero;
     /**只参与赋值 */
     public static tmpLinearColor: mw.LinearColor = mw.LinearColor.white;
+
     /**拷贝临时 计算 */
     public static copyVector(loc: mw.Vector) {
         this.tmpVector.x = loc.x;
@@ -63,7 +70,7 @@ export class Globaldata {
     public static isAutoLockEnemy: boolean = true;
 
     /**-----------------------------------角色-------------------------------------- */
-    //玩家最多金币限制 9999999999
+        //玩家最多金币限制 9999999999
     public static playerMaxMoney: number = 9999999999;
     /**玩家每日获取段位分限制 */
     public static maxRankScore: number = 1000;
@@ -338,7 +345,6 @@ export class Globaldata {
     public static quick_prop_allTime: number = 0;
 
 
-
     /**-----------------------------------宠物------------------------------------------- */
     /**飞行的移动数组 改的是z轴高度 */
     public static flyArr: mw.Vector2[] = [new mw.Vector2(0, 0), new mw.Vector2(8, 0), new mw.Vector2(0, 0), new mw.Vector2(-8, 0), new mw.Vector2(0, 0)];
@@ -380,7 +386,6 @@ export class Globaldata {
     public static showToHideDelayTime: number = 3000;
     /**开启碰撞延迟时间 */
     public static landCollisionTime: number = 1000;
-
 
 
     /**------------------------------------------杀戮悬赏------------------------------------------------ */
@@ -426,7 +431,7 @@ export class Globaldata {
         "guide_dialog_1",
         "guide_dialog_2",
         "guide_dialog_3",
-        "guide_dialog_4"
+        "guide_dialog_4",
     ];
     /**步骤B  UI引导提示偏移 */
     public static guide_stepB_tipOffset: mw.Vector2 = new mw.Vector2(-200, 0);
@@ -437,20 +442,20 @@ export class Globaldata {
     public static guide_stepC_Dialogs: string[] = [
         "guide_dialog_5",
         "guide_dialog_6",
-        "guide_dialog_7"
+        "guide_dialog_7",
     ];
     /**步骤F多语言key */
     public static guide_stepE_Dialogs: string[] = [
         "guide_dialog_8",
         "guide_dialog_9",
-        "guide_dialog_10"
+        "guide_dialog_10",
     ];
 
     /**步骤G多语言key */
     public static guide_stepG_Dialogs: string[] = [
         "guide_dialog_11",
         "guide_dialog_12",
-        "guide_dialog_13"
+        "guide_dialog_13",
     ];
 
     /**大炮触发器guid */
@@ -485,6 +490,62 @@ export class Globaldata {
 
     /**怒气衰减间隔 单位 秒 */
     public static anger_cutBackInterval: number = 0.25;
+
+//#region Auth
+    /**
+     * 最小访问间隔. ms
+     * @type {number}
+     */
+    public static readonly MIN_ACCESS_INTERVAL = 0.5e3;
+
+    public static readonly MAX_ORDER_LOG_COUNT = 50;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Energy
+    /**
+     * 体力容量.
+     * @type {number}
+     */
+    public static readonly ENERGY_MAX: number = 24;
+
+    /**
+     * 体力系数采样数量.
+     * @type {number}
+     */
+    public static readonly ENERGY_RECOVERY_SAMPLE_COUNT: number = 5;
+
+    /**
+     * 体力 恢复间隔. min
+     * @type {number}
+     */
+    public static readonly ENERGY_RECOVERY_INTERVAL: number = 30;
+
+    /**
+     * 体力 恢复间隔. ms
+     * @type {number}
+     */
+    public static get ENERGY_RECOVERY_INTERVAL_MS(): number {
+        return this.ENERGY_RECOVERY_INTERVAL * 60 * 1000;
+    };
+
+    /**
+     * 体力 恢复量.
+     * @type {number}
+     */
+    public static readonly ENERGY_RECOVERY_COUNT = 1;
+
+    /**
+     * 体力 失效再唤醒间隔.
+     * @type {number}
+     */
+    public static readonly ENERGY_INVALID_RE_ALIVE_DURATION: number = 100;
+
+    /**
+     * 体力 修改合批次数.
+     * @type {number}
+     */
+    public static readonly ENERGY_PATCH_RPC_COUNT = 10;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 
 }

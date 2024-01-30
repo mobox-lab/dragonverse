@@ -8,14 +8,7 @@
 
 @UIBind('UI/Catching/ControlUI.ui')
 export default class ControlUI_Generate extends UIScript {
-		private skipBtn_Internal: mw.StaleButton
-	public get skipBtn(): mw.StaleButton {
-		if(!this.skipBtn_Internal&&this.uiWidgetBase) {
-			this.skipBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/skipBtn') as mw.StaleButton
-		}
-		return this.skipBtn_Internal
-	}
-	private mCanvas_Internal: mw.Canvas
+		private mCanvas_Internal: mw.Canvas
 	public get mCanvas(): mw.Canvas {
 		if(!this.mCanvas_Internal&&this.uiWidgetBase) {
 			this.mCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas') as mw.Canvas
@@ -50,10 +43,17 @@ export default class ControlUI_Generate extends UIScript {
 		}
 		return this.mButton_Down_Internal
 	}
+	private skipBtn_Internal: mw.StaleButton
+	public get skipBtn(): mw.StaleButton {
+		if(!this.skipBtn_Internal&&this.uiWidgetBase) {
+			this.skipBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/Canvas/skipBtn') as mw.StaleButton
+		}
+		return this.skipBtn_Internal
+	}
 	private mButton_Catch_Internal: mw.Button
 	public get mButton_Catch(): mw.Button {
 		if(!this.mButton_Catch_Internal&&this.uiWidgetBase) {
-			this.mButton_Catch_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mButton_Catch') as mw.Button
+			this.mButton_Catch_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/Canvas/mButton_Catch') as mw.Button
 		}
 		return this.mButton_Catch_Internal
 	}

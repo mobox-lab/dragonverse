@@ -1,15 +1,15 @@
 import CryptoJS from "crypto-js";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import GToolkit, { Tf } from "../../utils/GToolkit";
+import GToolkit from "../../utils/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import noReply = mwext.Decorator.noReply;
 import { GlobalEnum } from "../../const/Enum";
-import PetQuality = GlobalEnum.PetQuality;
 import { GlobalData } from "../../const/GlobalData";
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import UUID from "pure-uuid";
 import Enumerable from "linq";
+import PetQuality = GlobalEnum.PetQuality;
 
 export default class AuthModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -134,18 +134,44 @@ interface UpdatePetSimulatorRankDataParam {
 
 interface MoboxDragonData {
     tokenId: number,
-    prototype: number,
-    attribute: number,
-    elements: number,
+    name: string,
+    /**
+     * 品质.
+     */
+    quality: number,
+    /**
+     * 属性.
+     */
+    element: number[]
+    /**
+     * 能力值.
+     */
+    ,
+    ability: number,
+    /**
+     * 潜力.
+     */
+    potential: number
+    /**
+     * 星级.
+     */
     star: number,
+    /**
+     * 等级.
+     */
     level: number,
-    expr: number,
+    /**
+     * 繁殖次数，最多7次.
+     */
     mating: number,
-    shareCd: number,
-    parent0: number,
-    parent1: number,
+    /**
+     * 技能.
+     */
+    skills: number[],
+    /**
+     * 个性.
+     */
     personality: number,
-    skills: number
 }
 
 interface QueryMoboxDragonDataResponse {
@@ -381,18 +407,72 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private static readonly HEADER_TOKEN = "x-bits-token";
 
-    private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
+    private static CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
 
-    private static readonly CODE_VERIFY_AES_IV = this.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+    private static CODE_VERIFY_AES_IV = "";
 
-    private static readonly CLIENT_ID = "12000169457322200012";
+    private static CLIENT_ID = "12000169457322200012";
 
-    private static readonly SECRET = "6430d2d6497e136df763b572377361678f303f4d624be7ca9ee9b3b28985fe60";
+    private static SECRET = "6430d2d6497e136df763b572377361678f303f4d624be7ca9ee9b3b28985fe60";
+
+    private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
+
+    private static readonly CLIENT_ID_STORAGE_KEY = "CLIENT_ID_STORAGE_KEY";
+
+    private static readonly SECRET_STORAGE_KEY = "SECRET_STORAGE_KEY";
+
+    private static getSensitiveData() {
+        this.getCodeVerifyAesKey();
+        this.getClientId();
+        this.getSecret();
+    }
+
+    private static getCodeVerifyAesKey() {
+        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
+            (value) => {
+                if (value.code === 200) AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
+                else {
+                    this.logGetDataError();
+                    this.getCodeVerifyAesKey();
+                }
+            },
+        );
+    }
+
+    private static getClientId() {
+        DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
+            (value) => {
+                if (value.code === 200) AuthModuleS.CLIENT_ID = value.data;
+                else {
+                    this.logGetDataError();
+                    this.getClientId();
+                }
+            },
+        );
+    }
+
+    private static getSecret() {
+        DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
+            (value) => {
+                if (value.code === 200) AuthModuleS.SECRET = value.data;
+                else {
+                    this.logGetDataError();
+                    this.getSecret();
+                }
+            },
+        );
+    }
+
+    private static logGetDataError() {
+        Log4Ts.error(AuthModuleS, `get data failed.`, `refreshing.`);
+    }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Member
     private _eventListeners: EventListener[] = [];
+
+    protected useJAntiCheat: boolean = true;
 
     /**
      * @type {Map<number, string>} key: playerId, value: token.
@@ -408,6 +488,16 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     protected onJStart(): void {
 //#region Member init
+
+        if (GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_KEY)) {
+            AuthModuleS.getSensitiveData();
+        } else {
+            DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.CODE_VERIFY_AES_KEY);
+            DataStorage.asyncSetData(AuthModuleS.CLIENT_ID_STORAGE_KEY, AuthModuleS.CLIENT_ID);
+            DataStorage.asyncSetData(AuthModuleS.SECRET_STORAGE_KEY, AuthModuleS.SECRET);
+        }
+
+        AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
 //#endregion ------------------------------------------------------------------------------------------
 
 //#region Event Subscribe
@@ -482,23 +572,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private async getToken(playerId: number) {
         const player = Player.getPlayer(playerId);
-
-//#region Exist for Test
-//R <<<<<<
-        // if (!player) {
-        //     this.logPlayerNotExist(playerId);
-        //     return;
-        // }
-        // const param: QueryP12Param = {
-        //     userId: player.userId,
-        // };
-//
-//  ------
+        if (!player) {
+            this.logPlayerNotExist(playerId);
+            return;
+        }
         const param: QueryP12Param = {
-            userId: "1026061",
+            userId: GlobalData.Global.isRelease ? player.userId : "1026061",
         };
-//T >>>>>>
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         const body: EncryptedRequest = {
             encryptData: this.getSecret(JSON.stringify(param)),
@@ -520,14 +600,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             Log4Ts.error(AuthModuleS, `get token failed. ${JSON.stringify(respInJson)}`);
         } else {
             if (this._tokenMap.has(playerId)) {
-                //#region Exist for Test
-                //R <<<<<<
-                //
-                // this._tokenMap.set(playerId, respInJson.data?.mToken);
-                //  ------
-                this._tokenMap.set(playerId, "19dce05a6d90cbfa09f157c20a33a525fa2c5d827940ee8b31fc88fc76db9f83989683");
-                //T >>>>>>
-                //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+                this._tokenMap.set(playerId, GlobalData.Global.isRelease ? respInJson.data?.mToken : "19dce05a6d90cbfa09f157c20a33a525fa2c5d827940ee8b31fc88fc76db9f83989683");
                 this.onRefreshToken(playerId);
             } else {
                 this.logPlayerNotExist(playerId);
@@ -672,7 +745,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return;
         }
 
-        userId = "1234567";
+        userId = GlobalData.Global.isRelease ? userId : "1234567";
 
         const resp = await fetch(`${GlobalData.Global.isRelease ?
                 AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
@@ -694,21 +767,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return Promise.resolve(Enumerable
             .from(respInJson.data)
             .defaultIfEmpty({
-                attribute: 0,
-                elements: 0,
-                expr: 0,
+                ability: 0,
+                element: [],
                 level: 0,
                 mating: 0,
-                parent0: 0,
-                parent1: 0,
+                name: "",
                 personality: 0,
-                prototype: 0,
-                shareCd: 0,
-                skills: 0,
+                potential: 0,
+                quality: 0,
+                skills: [],
                 star: 0,
                 tokenId: 0,
             })
-            .sum(item => item?.attribute ?? 0));
+            .sum(item => item?.ability ?? 0) + (GlobalData.Global.isRelease ? 0 : 250));
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

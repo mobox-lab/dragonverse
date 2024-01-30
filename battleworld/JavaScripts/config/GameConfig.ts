@@ -32,6 +32,7 @@ import {ShopConfig} from "./Shop";
 import {SkillLibConfig} from "./SkillLib";
 import {SoundConfig} from "./Sound";
 import {TabTalkConfig} from "./TabTalk";
+import {WeaponDragonAbilityConfig} from "./WeaponDragonAbility";
 import {WeaponTriggerConfig} from "./WeaponTrigger";
 import {WeaponConfig} from "./Weapon";
 
@@ -85,6 +86,7 @@ export class GameConfig{
 	public static get SkillLib():SkillLibConfig{ return this.getConfig(SkillLibConfig) };
 	public static get Sound():SoundConfig{ return this.getConfig(SoundConfig) };
 	public static get TabTalk():TabTalkConfig{ return this.getConfig(TabTalkConfig) };
+	public static get WeaponDragonAbility():WeaponDragonAbilityConfig{ return this.getConfig(WeaponDragonAbilityConfig) };
 	public static get WeaponTrigger():WeaponTriggerConfig{ return this.getConfig(WeaponTriggerConfig) };
 	public static get Weapon():WeaponConfig{ return this.getConfig(WeaponConfig) };
 }

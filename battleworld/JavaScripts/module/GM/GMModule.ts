@@ -4,7 +4,7 @@ import Tips from "../../tool/P_Tips";
 import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import { Globaldata } from "../../const/Globaldata";
 import { EventManager } from "../../tool/EventManager";
-import { EAttributeEvents_S, EModule_Events, EMotion_Events, ENotice_Events_S, EPlayerEvents_C, EPlayerEvents_S } from "../../const/Enum";
+import { EAttributeEvents_C, EAttributeEvents_S, EModule_Events, EMotion_Events, ENotice_Events_S, EPlayerEvents_C, EPlayerEvents_S } from "../../const/Enum";
 import { GameConfig } from "../../config/GameConfig";
 import { BuffModuleS } from "../buffModule/BuffModuleS";
 import { MotionModuleC } from "../MotionModule/MotionModuleC";
@@ -22,6 +22,7 @@ import { BuffModuleC } from "../buffModule/BuffModuleC";
 import { EPlayerState } from "../PlayerModule/FSM/PlyerState";
 import { MascotModuleS } from "../npc/mascotNpc/MascotModuleS";
 import { PlayerHeadUIModuleC } from "../PlayerHeadUIModule/PlayerHeadUIModuleC";
+import { EnergyModuleC } from "../Energy/EnergyModule";
 
 
 
@@ -510,5 +511,11 @@ AddGMCommand("跳DragonVerse", () => {
 
 AddGMCommand("跳PetSimulator", () => {
     RouteService.enterNewGame(Globaldata.petSimulatorGameId);
+})
+
+AddGMCommand("扣体力", (player, value) => {
+    ModuleService.getModule(EnergyModuleC).consume(Number(value), true);
+    EventManager.instance.call(EAttributeEvents_C.Attribute_Energy_Change_C);
+
 })
 

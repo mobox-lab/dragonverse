@@ -17,6 +17,7 @@ import GToolkit from "../../util/GToolkit";
 import MainCurtainPanel from "../main/MainCurtainPanel";
 import UIScript = mw.UIScript;
 import GameServiceConfig from "../../const/GameServiceConfig";
+import i18n, { LanguageTypes } from "../../language/i18n";
 
 
 /**
@@ -156,7 +157,7 @@ AddGMCommand("加或删光暗龙", (player, value) => {
 
 }, (player, value) => {
 
-    // ModuleService.getModule(QuestModuleS).testAddOrDeleteLightDarkDragon(player.playerId, Number(value));
+    ModuleService.getModule(QuestModuleS).testAddOrDeleteLightDarkDragon(player.playerId, Number(value));
 }, "龙");
 
 AddGMCommand(
@@ -187,3 +188,7 @@ AddGMCommand("跳Battle World", () => {
 }, (player) => {
 });
 
+AddGMCommand("切语言", (player, value) => {
+
+    i18n.use(Number(value), true);
+})

@@ -17,6 +17,7 @@ import { RankPanel } from "./rank/RankPanel";
 import { PlayerManager } from "../PlayerManager";
 import { GameConfig } from "../../../config/GameConfig";
 import { RedDotManager, RedDotName } from "../../HudModule/RedDot";
+import { EnergyModuleC } from "../../Energy/EnergyModule";
 
 
 export class MainUI extends Main_HUD_Generate {
@@ -104,6 +105,10 @@ export class MainUI extends Main_HUD_Generate {
         EventManager.instance.add(EAttributeEvents_C.Attribute_RankScore_Change_C, this.listen_rankScore, this);
         // 怒气值变化
         EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
+
+        EventManager.instance.add(EAttributeEvents_C.Attribute_Energy_Change_C, this.changeEnergy, this);
+        this.changeEnergy();
+
         this.onReserveAttrChanged();
 
         this.initBack();
@@ -113,6 +118,7 @@ export class MainUI extends Main_HUD_Generate {
         this.initReset();
 
         this.initPill();
+
 
         this.canUpdate = true;
 
@@ -125,6 +131,8 @@ export class MainUI extends Main_HUD_Generate {
         this.listen_massacreValue();
 
         this.registerRedDot();
+
+        this.mBattle.text = Globaldata.ENERGY_MAX.toString();
     }
 
     /**
@@ -717,4 +725,7 @@ export class MainUI extends Main_HUD_Generate {
         this.mBar_Fire.percent = curAngerValue / maxAngerValue;
     }
 
+    private changeEnergy() {
+        this.mBattle_1.text = ModuleService.getModule(EnergyModuleC).currEnergy().toString();
+    }
 }

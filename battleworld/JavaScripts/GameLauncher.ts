@@ -59,13 +59,15 @@ import RankListModuleS from "./module/RankListModule/RankListModuleS";
 import RankListModuleC from "./module/RankListModule/RankListModuleC";
 import DressUpModuleS from "./module/DressUpModule/DressUpModuleS";
 import DressUpModuleC from "./module/DressUpModule/DressUpModuleC";
-import { GuideModuleC2 } from "./module/GuideModule/GuideModuleC2";
-import { GuideModuleS2 } from "./module/GuideModule/GuideModuleS2";
+// import { GuideModuleC2 } from "./module/GuideModule/GuideModuleC2";
+// import { GuideModuleS2 } from "./module/GuideModule/GuideModuleS2";
 import { GuideDataHelper, GuideModuleC, GuideModuleS } from "module_guide";
 import { InteractiveModuleS } from "./module/InteractiveModule/InteractiveModuleS";
 import { InteractiveModuleC } from "./module/InteractiveModule/InteractiveModuleC";
 import { AntiCheatSystem } from "./tool/AntiCheatSystem";
 import * as mwaction from "mwaction";
+import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
+import EnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
 
 declare global {
     var UE: any;
@@ -82,8 +84,8 @@ export default class GameLauncher extends mw.Script {
         displayName: "语言l", selectOptions: {
             "默认": "-1",
             "英文": "0",
-            "中文": "1"
-        }
+            "中文": "1",
+        },
     })
     languageType1: string = "-1";
 
@@ -98,10 +100,12 @@ export default class GameLauncher extends mw.Script {
             "全部": 0,
             "Error&Warning": 1,
             "Error": 2,
-        }
+        },
     })
     public logLevel = 0;
 
+    @mw.Property({ displayName: "是否发布", group: "发布" })
+    public isRelease: boolean = false;
 
 
     @mw.Property({ displayName: "是否开启RPC统计" })
@@ -110,6 +114,7 @@ export default class GameLauncher extends mw.Script {
     async onStart() {
 
         Globaldata.isOpenGm = this.gmSwitch;
+        Globaldata.isRelease = this.isRelease;
         mwaction;
         // 开启作弊检测
         //this.checkCheat();
@@ -139,13 +144,14 @@ export default class GameLauncher extends mw.Script {
     }
 
     onUpdate(dt: number) {
-        update()
-        mw.TweenUtil.TWEEN.update()
+        update();
+        mw.TweenUtil.TWEEN.update();
         actions.AcitonMgr.update(dt * 1000);
     }
 
     protected onRegisterModule(): void {
         PlayerManagerExtesion.init();
+        ModuleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         ModuleService.registerModule(AttributeModuleS, AttributeModuleC, null);
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerModuleData);
         ModuleService.registerModule(WeaponModuleS, WeaponModuleC, WeaponModuleData);
@@ -173,9 +179,10 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(MascotModuleS, MascotModuleC, null);
         ModuleService.registerModule(RankListModuleS, RankListModuleC, null);
         ModuleService.registerModule(DressUpModuleS, DressUpModuleC, null);
-        ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
-        ModuleService.registerModule(GuideModuleS2, GuideModuleC2, null);
+        // ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
+        // ModuleService.registerModule(GuideModuleS2, GuideModuleC2, null);
         ModuleService.registerModule(InteractiveModuleS, InteractiveModuleC, null);
+        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, EnergyModuleData);
     }
 
 
@@ -192,7 +199,7 @@ export default class GameLauncher extends mw.Script {
         }
 
         AntiCheatSystem.registerCheatDetectionCallback((fieldName: string, cheatValue: any, originalValue: any) => {
-            console.error("===registerCheatDetectionCallback ", fieldName, cheatValue, originalValue)
+            console.error("===registerCheatDetectionCallback ", fieldName, cheatValue, originalValue);
         });
 
     }

@@ -92,8 +92,8 @@ class DollMachineC {
     private initStartUI(conf: IDollMachineElement) {
         let startBtnObj = GameObject.findGameObjectById(conf.Control) as mw.UIWidget;
         this._worldUIPos = startBtnObj.worldTransform.position;
-        this.startBtn = startBtnObj.getTargetUIWidget().rootContent.findChildByPath("mCanvas/mButton_Catch") as mw.Button;
-        let skipBtn = startBtnObj.getTargetUIWidget().rootContent.findChildByPath("skipBtn") as mw.Button;
+        this.startBtn = startBtnObj.getTargetUIWidget().rootContent.findChildByPath("mCanvas/Canvas/mButton_Catch") as mw.Button;
+        let skipBtn = startBtnObj.getTargetUIWidget().rootContent.findChildByPath("mCanvas/Canvas/skipBtn") as mw.Button;
         if (skipBtn) skipBtn.visibility = SlateVisibility.Hidden;
         this.startBtn.onClicked.add(() => {
             this.onClickStartBtnAction.call(this.id);

@@ -615,10 +615,10 @@ export default class MainPanel extends MainPanel_Generate {
         }
         switch (type) {
             case GenerableTypes.SceneDragon:
-                this.txtOperationFeedback.text = i18n.lan(isSuccess ? i18n.keyTable.Catch_002 : i18n.keyTable.Catch_003);
+                this.txtOperationFeedback.text = i18n.lan(isSuccess ? i18n.lanKeys.Catch_002 : i18n.lanKeys.Catch_003);
                 break;
             case GenerableTypes.CollectibleItem:
-                this.txtOperationFeedback.text = i18n.lan(isSuccess ? i18n.keyTable.Collection_002 : i18n.keyTable.Collection_003);
+                this.txtOperationFeedback.text = i18n.lan(isSuccess ? i18n.lanKeys.Collection_002 : i18n.lanKeys.Collection_003);
                 break;
             default:
                 break;
@@ -744,12 +744,12 @@ export default class MainPanel extends MainPanel_Generate {
         if (this.bagModule.hasDragonBall()) {
             this.sceneDragonModule.lock();
         } else {
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.Catch_004));
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Catch_004));
         }
     };
 
     private onFinishSubTask = () => {
-        this.showGlobalPrompt(i18n.lan(i18n.keyTable.TinyGameLanKey0004));
+        this.showGlobalPrompt(i18n.lan(i18n.lanKeys.TinyGameLanKey0004));
     };
 
 
