@@ -257,7 +257,7 @@ export class P_HudUI extends Hud_Generate {
             this.mGoldAddValue = (value - this.mGold) / GlobalData.hudUI.addAniTime;
             return;
         }
-        this.mText_coin.text = utils.formatNumber(value);
+        this.mText_coin.text = utils.formatNumber(value | 0);
         this.mGold = value;
         this.mTargetGold = value;
     }
@@ -270,7 +270,7 @@ export class P_HudUI extends Hud_Generate {
             this.mDiamondAddValue = (value - this.mDiamond) / GlobalData.hudUI.addAniTime;
             return;
         }
-        this.mText_diamond.text = utils.formatNumber(value);
+        this.mText_diamond.text = utils.formatNumber(value | 0);
         this.mDiamond = value;
         this.mTargetDiamond = value;
     }
