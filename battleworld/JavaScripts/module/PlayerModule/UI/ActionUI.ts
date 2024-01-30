@@ -223,4 +223,32 @@ export default class ActionUI extends Main_action_Generate {
             this.mfinalTween.stop();
         }
     }
+
+    public setAbilitiesVisible(visible: boolean) {
+        //设置显影的时候要判断原ui是否已经显影
+        if (visible) {
+            this.weaponSkillBtns.forEach(item => {
+                if (item.currentVisible === visible) {
+                    item.outerSetVisible(visible);
+                }
+            })
+            this.skillBtns.forEach(item => {
+                if (item.currentVisible === visible) {
+                    item.outerSetVisible(visible);
+                }
+            })
+        } else {
+            this.weaponSkillBtns.forEach(item => {
+                if (item.currentVisible !== visible) {
+                    item.outerSetVisible(visible);
+                }
+            })
+            this.skillBtns.forEach(item => {
+                if (item.currentVisible !== visible) {
+                    item.outerSetVisible(visible);
+                }
+            })
+        }
+
+    }
 }

@@ -57,6 +57,8 @@ export class MainUISkillButton {
     private _motionSkillIndex: number = 0;
     /**释放技能时的索引 */
     private _preMotionSkillIndex: number = 0;
+    /**记录ui显影，用于外部控制 */
+    public currentVisible: boolean = false;
 
     public init(rootCanvas: mw.Canvas, btnIndex: number) {
 
@@ -132,7 +134,12 @@ export class MainUISkillButton {
     }
 
     public setVisible(visible: boolean) {
+        this.currentVisible = visible;
+        let v = visible ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
+        this.rootCanvas.visibility = v;
+    }
 
+    public outerSetVisible(visible: boolean) {
         let v = visible ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
         this.rootCanvas.visibility = v;
     }
