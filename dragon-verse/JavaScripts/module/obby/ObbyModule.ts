@@ -181,9 +181,11 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
         private initCheckPoint(){
             
-            this._maxLv = GameConfig.BagItem.getAllElement().length;
-            this._checkPointCfg["1"] = new mw.Vector(393000,13359,24668);
-            this._checkPointCfg["2"] = new mw.Vector(393500,13359,24668);
+            this._maxLv = GameConfig.Obbycheck.getAllElement().length;
+            for(let i=1;i<=this._maxLv;i++){
+                let ele = GameConfig.Obbycheck.getElement(i);
+                this._checkPointCfg[""+i] = new mw.Vector(ele.checkpointloc[0],ele.checkpointloc[1],ele.checkpointloc[2]);
+            }
             console.log("initCheckPoint _maxLv======"+this._maxLv);
         }
         /**
