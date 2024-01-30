@@ -87,12 +87,15 @@ export default class HighSchoolTrigger extends mw.Script {
                     obj.ragdollEnabled = true;
                     this._hander = TimeUtil.setInterval(this.onCountDown, 2);
                 }else if (this._circleType == HighSchoolType.ScorePoint) {
-                    HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
-                    // PromotTips.showTips(i18n.lan(i18n.keyTable.Need_FireDargon));
-                    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.Obby_GoldReward));
-                    //记录是第几关 改变进度条
                     let obby =  ModuleService.getModule(ObbyModuleC);
-                    obby.net_updateLv(this._checkPointIdx);
+                    HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
+                    if(obby.checkLv(this._checkPointIdx)){
+                        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.keyTable.Obby_GoldReward));
+                        //播放粒子特效
+                        mw.EffectService.playAtPosition("", this.gameObject.worldTransform.position);
+                        //记录是第几关 改变进度条
+                        obby.updateCheckPoint(this._checkPointIdx);
+                    }
                 }
             }
         }

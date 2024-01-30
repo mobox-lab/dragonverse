@@ -207,7 +207,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
          * 通过检查点
          * @param playerId
          */
-        public enterCheckPoint(checkPointId:number) {
+        public updateCheckPoint(checkPointId:number) {
             //拉取当前的进度
             if(checkPointId <= this._curLv){
                 return;
@@ -224,6 +224,13 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             this._isStart = false;
             this._curLv = 0;
             this._isInGame = false;
+        }
+
+        public checkLv(curLv: number) {
+            if(curLv > this._curLv){
+                return true;
+            }
+            return false;
         }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
