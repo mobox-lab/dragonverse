@@ -517,7 +517,7 @@ export default class GameServiceConfig {
     /**
      * 角色 最大行走速度.
      */
-    public static readonly ROLE_MAX_WALK_SPEED_OBBY = 400;
+    public static readonly ROLE_MAX_WALK_SPEED_OBBY = 600;
 
     /**
      * 角色 最大行走加速度.
