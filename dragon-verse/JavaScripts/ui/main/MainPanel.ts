@@ -26,6 +26,7 @@ import { CubicBezier } from "../../depend/easing/Easing";
 import Regulator from "../../depend/regulator/Regulator";
 import MainCurtainPanel from "./MainCurtainPanel";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import { ObbyModuleC } from "../../module/obby/ObbyModule";
 
 /**
  * 主界面.
@@ -763,4 +764,6 @@ function respawn() {
         .localPlayer
         .getPlayerState(UnifiedRoleController)
         ?.respawn();
+    let obby =  ModuleService.getModule(ObbyModuleC);
+    obby.exitGame();
 }
