@@ -72,8 +72,8 @@ export default class HighSchoolTrigger extends mw.Script {
         if (obj instanceof mw.Character) {
             if (GToolkit.isSelfCharacter(obj)) {
                 if (this._circleType == HighSchoolType.TransStart) {
-                    let obby = ModuleService.getModule(ObbyModuleC);
-                    if (!obby.isInGame) {
+                    let obby =  ModuleService.getModule(ObbyModuleC);
+                    if(!obby.isInGame()){
                         obby.enterGame();
                         HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
                         this.setProps(obj);
