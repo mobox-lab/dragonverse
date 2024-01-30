@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 一只黄鹂鸣翠柳
+ * AUTHOR: 断桥烟雨
  * UI: UI/Main/Main_action.ui
- * TIME: 2024.01.07-13.57.15
+ * TIME: 2024.01.30-15.47.37
  */
 
  
@@ -18,6 +18,20 @@
 		}
 		return this.mCanvasSkill0_Internal
 	}
+	private dashname_1_1_Internal: mw.TextBlock
+	public get dashname_1_1(): mw.TextBlock {
+		if(!this.dashname_1_1_Internal&&this.uiWidgetBase) {
+			this.dashname_1_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill0/dashname_1_1') as mw.TextBlock
+		}
+		return this.dashname_1_1_Internal
+	}
+	private mBtnjump_1_1_Internal: mw.TextBlock
+	public get mBtnjump_1_1(): mw.TextBlock {
+		if(!this.mBtnjump_1_1_Internal&&this.uiWidgetBase) {
+			this.mBtnjump_1_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill0/mBtnjump_1_1') as mw.TextBlock
+		}
+		return this.mBtnjump_1_1_Internal
+	}
 	private mCanvasSkill1_Internal: mw.Canvas
 	public get mCanvasSkill1(): mw.Canvas {
 		if(!this.mCanvasSkill1_Internal&&this.uiWidgetBase) {
@@ -25,12 +39,40 @@
 		}
 		return this.mCanvasSkill1_Internal
 	}
+	private mBtnjump_Internal: mw.TextBlock
+	public get mBtnjump(): mw.TextBlock {
+		if(!this.mBtnjump_Internal&&this.uiWidgetBase) {
+			this.mBtnjump_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill1/mBtnjump') as mw.TextBlock
+		}
+		return this.mBtnjump_Internal
+	}
+	private mjumpname_Internal: mw.TextBlock
+	public get mjumpname(): mw.TextBlock {
+		if(!this.mjumpname_Internal&&this.uiWidgetBase) {
+			this.mjumpname_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill1/mjumpname') as mw.TextBlock
+		}
+		return this.mjumpname_Internal
+	}
 	private mCanvasSkill2_Internal: mw.Canvas
 	public get mCanvasSkill2(): mw.Canvas {
 		if(!this.mCanvasSkill2_Internal&&this.uiWidgetBase) {
 			this.mCanvasSkill2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill2') as mw.Canvas
 		}
 		return this.mCanvasSkill2_Internal
+	}
+	private mBtndash_Internal: mw.TextBlock
+	public get mBtndash(): mw.TextBlock {
+		if(!this.mBtndash_Internal&&this.uiWidgetBase) {
+			this.mBtndash_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill2/mBtndash') as mw.TextBlock
+		}
+		return this.mBtndash_Internal
+	}
+	private dashname_Internal: mw.TextBlock
+	public get dashname(): mw.TextBlock {
+		if(!this.dashname_Internal&&this.uiWidgetBase) {
+			this.dashname_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill2/dashname') as mw.TextBlock
+		}
+		return this.dashname_Internal
 	}
 	private mCanvasSkill3_Internal: mw.UserWidget
 	public get mCanvasSkill3(): mw.UserWidget {
@@ -107,6 +149,24 @@
 		
 		//文本多语言
 		
+		this.initLanguage(this.dashname_1_1)
+		
+	
+		this.initLanguage(this.mBtnjump_1_1)
+		
+	
+		this.initLanguage(this.mBtnjump)
+		
+	
+		this.initLanguage(this.mjumpname)
+		
+	
+		this.initLanguage(this.mBtndash)
+		
+	
+		this.initLanguage(this.dashname)
+		
+	
 		//文本多语言
 		
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvasSkill0/MBtnName") as any);

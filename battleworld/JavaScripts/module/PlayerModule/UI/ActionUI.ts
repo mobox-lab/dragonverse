@@ -1,6 +1,7 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { EAttributeEvents_C, EModule_Events, EMotionEvents_C, ESkillEvent_C } from "../../../const/Enum";
 import { Globaldata } from "../../../const/Globaldata";
+import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import { EventManager } from "../../../tool/EventManager";
 import Main_action_Generate from "../../../ui-generate/Main/Main_action_generate";
 import { AttributeModuleC } from "../../AttributeModule/AttributeModuleC";
@@ -138,6 +139,28 @@ export default class ActionUI extends Main_action_Generate {
             this.weaponSkillBtns[index].setInfo(btnDataId);
         }
 
+        //控制ui显示
+        this.showWeaponUI(weaponId);
+    }
+
+    private showWeaponUI(showWeaponId: number) {
+        let btn = this.mCanvasSkill0.getChildByName("Btn_invoke") as Button;
+        if (btn) {
+            let guid = this.getImageGuid(showWeaponId);
+            btn.normalImageGuid = guid;
+            btn.disableImageGuid = guid;
+            btn.pressedImageGuid = guid;
+        }
+        this.dashname_1_1.text = GameConfig.Language[`Weapon_Name_${showWeaponId}`].Value;
+    }
+
+    private getImageGuid(weaponId: number): string {
+        switch (weaponId) {
+            case 1: return Globaldata.punchImgGuid;
+            case 2: return Globaldata.singleSwordImgGuid;
+            case 3: return Globaldata.wandImgGuid;
+            case 4: return Globaldata.twoHandedSwordImgGuid;
+        }
     }
 
     /**刷新选择的技能 */
@@ -198,6 +221,4 @@ export default class ActionUI extends Main_action_Generate {
             this.mfinalTween.stop();
         }
     }
-
-
 }

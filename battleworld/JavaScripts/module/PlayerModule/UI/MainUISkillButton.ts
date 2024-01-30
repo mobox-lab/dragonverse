@@ -80,7 +80,6 @@ export class MainUISkillButton {
 
         this.img_eff.visibility = mw.SlateVisibility.Collapsed;
 
-
         this.mIcon.visibility = mw.SlateVisibility.Collapsed;
         this.mBtnName.visibility = mw.SlateVisibility.Collapsed;
 
@@ -118,10 +117,18 @@ export class MainUISkillButton {
         this._curTime = 0;
         this.setVisible(false);
 
+        // if (this._btnDataCfg && this._btnDataCfg.btnType == 1) {
+        //     mw.InputUtil.unbindButton(mw.Keys.RightMouseButton);
+        // }
         if (this._btnDataCfg && this._btnDataCfg.btnType == 1) {
-            mw.InputUtil.unbindButton(mw.Keys.RightMouseButton);
+            mw.InputUtil.unbindButton(mw.Keys.Q);
+        } else if (this._btnDataCfg && this._btnDataCfg.id == 1) {
+            //是跳跃
+            InputUtil.unbindButton(Keys.SpaceBar);
+        } else if (this._btnDataCfg && this._btnDataCfg.id == 2) {
+            //是冲刺
+            InputUtil.unbindButton(Keys.C);
         }
-
     }
 
     public setVisible(visible: boolean) {
@@ -137,8 +144,15 @@ export class MainUISkillButton {
         this._btnDataCfg = GameConfig.MotionBtnData.getElement(btnDataId);
 
         if (this._btnDataCfg && this._btnDataCfg.btnType == 1) {
-            mw.InputUtil.bindButton(mw.Keys.RightMouseButton, this.btn_invoke);
+            mw.InputUtil.bindButton(mw.Keys.Q, this.btn_invoke);
+        } else if (this._btnDataCfg && this._btnDataCfg.id == 1) {
+            //是跳跃
+            InputUtil.bindButton(Keys.SpaceBar, this.btn_invoke);
+        } else if (this._btnDataCfg && this._btnDataCfg.id == 2) {
+            //是冲刺
+            InputUtil.bindButton(Keys.C, this.btn_invoke);
         }
+
         this._motionSkillIndex = 0;
         this.motionSkillCfgs.length = 0;
 
@@ -234,9 +248,13 @@ export class MainUISkillButton {
             this.mBtnName.visibility = mw.SlateVisibility.SelfHitTestInvisible;
             this.mBtnName.text = this.motionSkillCfgs[0].Name;
         } else {
-            this.mIcon.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-            this.mBtnName.visibility = mw.SlateVisibility.Collapsed;
-            this.mIcon.imageGuid = this._btnDataCfg.btnIcon;
+            if (!this._btnDataCfg && this._btnDataCfg.btnType == 1) {
+                //如果不是普攻再显示底图，按钮已经做了按下效果，为啥要显示底图。。。
+                this.mIcon.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+                this.mBtnName.visibility = mw.SlateVisibility.Collapsed;
+                this.mIcon.imageGuid = this._btnDataCfg.btnIcon;
+            }
+
         }
 
 
@@ -304,7 +322,6 @@ export class MainUISkillButton {
                 }
                 break;
         }
-
     }
 
     private clear_bashKey() {

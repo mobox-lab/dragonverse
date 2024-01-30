@@ -1,4 +1,4 @@
-import { SpawnManager, SpawnInfo, } from '../../Modified027Editor/ModifiedSpawn';
+import { SpawnManager, SpawnInfo } from "../../Modified027Editor/ModifiedSpawn";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
@@ -8,10 +8,12 @@ import { cubicBezier, getPos, setPos } from "../../utils/MoveUtil";
 import { SoundManager } from "../../utils/SoundManager";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { RewardTipsManager } from "../UI/RewardTips";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 
 export class DropManager {
     private static _instance: DropManager = null;
+
     public static getInstance(): DropManager {
         if (this._instance == null) {
             this._instance = new DropManager();
@@ -32,7 +34,7 @@ export class DropManager {
         TimeUtil.setInterval(() => {
             this.comparePlayerDis();
             this.compareDis();
-        }, 3)
+        }, 3);
     }
 
     init(): void {
@@ -40,12 +42,12 @@ export class DropManager {
         this.playerModule = ModuleService.getModule(PlayerModuleC);
     }
 
-    /**在当前坐标一圈为方向创建掉落 
+    /**在当前坐标一圈为方向创建掉落
      * @param pos 当前坐标
      * @param type 掉落类型
      * @param value 掉落总值
      * @param count 掉落数量
-    */
+     */
     public createDrop(pos: mw.Vector, type: GlobalEnum.CoinType, allValue: number, count: number, isBox: boolean = false): void {
         if (count <= 0 || allValue <= 0) return;
         let val = Math.ceil(allValue / count);
@@ -62,7 +64,7 @@ export class DropManager {
                     return;
                 }
             }
-        }, 0.01)
+        }, 0.01);
     }
 
     /**需要金币数量 */
@@ -112,7 +114,7 @@ export class DropManager {
                 return;
             }
             drop.update(dt);
-        })
+        });
     }
 
     /**吸收金币轮询 */
@@ -130,6 +132,7 @@ export class DropManager {
             this.resetValue();
         }
     }
+
     /**重置金币钻石值 */
     private resetValue(): void {
         this.typeValue.set(GlobalEnum.CoinType.FirstWorldGold, 0);
@@ -149,7 +152,7 @@ export class DropManager {
             if (dis >= GlobalData.DropAni.playerDistance * GlobalData.DropAni.playerDistance) {
                 element.destroy();
             }
-        })
+        });
     }
 
     /**比较所有掉落物之间的距离看是否有平方距离低于20 */
@@ -182,8 +185,6 @@ export class DropManager {
             oTraceError("金币类型错误");
             return;
         } else {
-            //取整
-            value = Math.ceil(value);
             this.typeValue.set(coinType, gold + value);
             this._isStartAbsorb = true;
         }
@@ -197,8 +198,6 @@ export class DropManager {
             oTraceError("钻石类型错误");
             return;
         } else {
-            //取整
-            value = Math.ceil(value);
             this.typeValue.set(GlobalEnum.CoinType.Diamond, diamond + value);
             this._isStartAbsorb = true;
         }
@@ -213,6 +212,7 @@ class Drop {
     public get gold(): number {
         return this._gold;
     }
+
     public set gold(val: number) {
         this._gold = val;
     }
@@ -222,6 +222,7 @@ class Drop {
     public get diamond(): number {
         return this._diamond;
     }
+
     public set diamond(val: number) {
         this._diamond = val;
     }
@@ -229,13 +230,16 @@ class Drop {
     public get type(): GlobalEnum.CoinType {
         return this._type;
     }
+
     private _type: GlobalEnum.CoinType;
 
     /**当前模型 */
     public model: mw.Effect = null;
+
     private get _maxDis(): number {
         return GlobalData.DropAni.resourceToPlayer * GlobalData.LevelUp.levelRange;
     }
+
     private canUpdate: boolean = false;
     public isDestroy: boolean = false;
 
@@ -244,6 +248,7 @@ class Drop {
     public get isLand(): boolean {
         return this._isLand;
     }
+
     /**模拟物理贝塞尔 */
     private _physicsBezier: number[] = GlobalData.DropAni.physicsBezier;
     /**是否开始弹跳 */
@@ -270,14 +275,12 @@ class Drop {
             this.model = await SpawnManager.modifyPoolAsyncSpawn(guid, GameObjPoolSourceType.Asset);
             this._gold = value;
             this.diamond = 0;
-        }
-        else if (type == GlobalEnum.CoinType.ThirdWorldGold) {
+        } else if (type == GlobalEnum.CoinType.ThirdWorldGold) {
             let guid = GameConfig.Coins.getElement(4).Effect;
             this.model = await SpawnManager.modifyPoolAsyncSpawn(guid, GameObjPoolSourceType.Asset);
             this._gold = value;
             this.diamond = 0;
-        }
-        else if (type == GlobalEnum.CoinType.Diamond) {
+        } else if (type == GlobalEnum.CoinType.Diamond) {
             let guid = GameConfig.Coins.getElement(2).Effect;
             this.model = await SpawnManager.modifyPoolAsyncSpawn(guid, GameObjPoolSourceType.Asset);
             this._diamond = value;
@@ -303,7 +306,7 @@ class Drop {
         let hight = MathUtil.randomFloat(hights[0], hights[1]);
         let up: number;
         this.targetPos.z = Math.ceil(this.targetPos.z);
-        up = this.targetPos.z + GlobalData.DropAni.resourceY
+        up = this.targetPos.z + GlobalData.DropAni.resourceY;
         const endPoint = new mw.Vector(startLoc.x + x, startLoc.y + y, up); //地面高度
         let dir = mw.Vector.subtract(endPoint, startLoc).normalized;
         const controlPoint = new mw.Vector((endPoint.x - startLoc.x) * 1 / 4 + startLoc.x,
@@ -312,16 +315,16 @@ class Drop {
         this._moveToTween = new mw.Tween(startLoc).to({
             x: [
                 controlPoint.x,
-                endPoint.x
+                endPoint.x,
             ],
             y: [
                 controlPoint.y,
-                endPoint.y
+                endPoint.y,
             ],
             z: [
                 controlPoint.z,
-                endPoint.z
-            ]
+                endPoint.z,
+            ],
         }, GlobalData.DropAni.dropTime).interpolation(TweenUtil.Interpolation.Bezier)
             .onUpdate((value: mw.Vector) => {
                 if (value.z >= hight) {
@@ -348,7 +351,7 @@ class Drop {
         let startLoc = getPos(this.model);
         let endLoc = mw.Vector.add(startLoc, mw.Vector.multiply(dir, dis));
         this._moveToTween.stop();
-        this._moveToTween = new mw.Tween(startLoc).to({ x: endLoc.x, y: endLoc.y }, time)
+        this._moveToTween = new mw.Tween(startLoc).to({x: endLoc.x, y: endLoc.y}, time)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete(() => {
@@ -372,11 +375,11 @@ class Drop {
 
         startPos.z = this.targetPos.z + GlobalData.DropAni.resourceY;
 
-        this._moveToTween = new mw.Tween(startPos).to({ z: startPos.z + height }, GlobalData.DropAni.bonceUpTime)
+        this._moveToTween = new mw.Tween(startPos).to({z: startPos.z + height}, GlobalData.DropAni.bonceUpTime)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete((obj) => {
-                this._moveToTween = new mw.Tween(obj).to({ z: this.targetPos.z + GlobalData.DropAni.resourceY }, GlobalData.DropAni.bonceDownTime)
+                this._moveToTween = new mw.Tween(obj).to({z: this.targetPos.z + GlobalData.DropAni.resourceY}, GlobalData.DropAni.bonceDownTime)
                     .onUpdate((value: mw.Vector) => {
                         setPos(this.model, value);
                     }).onComplete(() => {
@@ -430,6 +433,7 @@ class Drop {
             this.flyToPlayer(dis, targetPos, loc);
         }
     }
+
     /**宠物吸收 */
     private petAbsorb() {
         let arr = GlobalData.Enchant.petAutoBuffKeys;
@@ -439,11 +443,11 @@ class Drop {
         arr.forEach((key) => {
             let pet = curPetArr.find((value) => {
                 return value.key == key;
-            })
+            });
             if (pet) {
                 this.distanceAbsorb(pet.PetGameObj?.tempLocation);
             }
-        })
+        });
     }
 
     /**飞往tween贝塞尔 */
@@ -461,16 +465,20 @@ class Drop {
                 setPos(this.model, value);
             }).onComplete(() => {
                 if (this._gold > 0) {
-                    DropManager.getInstance().addGold(this._gold * GlobalData.Buff.goldBuff, this.type);
-                    RewardTipsManager.instance.getUI(this.type, this._gold * GlobalData.Buff.goldBuff);
+                    const val = this._gold * GlobalData.Buff.goldBuff;
+                    Log4Ts.log(Drop, `add gold count ${val}`);
+                    DropManager.getInstance().addGold(val, this.type);
+                    RewardTipsManager.instance.getUI(this.type, val);
                 }
                 if (this._diamond > 0) {
-                    RewardTipsManager.instance.getUI(this.type, this._diamond * GlobalData.LevelUp.moreDiamond);
-                    DropManager.getInstance().addDiamond(this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond);
+                    const val = this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond;
+                    Log4Ts.log(Drop, `add diamond count ${val}`);
+                    RewardTipsManager.instance.getUI(this.type, val);
+                    DropManager.getInstance().addDiamond(val);
                 }
                 this.destroy();
-                SoundManager.instance.play3DSound(GlobalData.Music.resourceEnterPlayer, getPos(this.model))
-            }).start().easing(cubicBezier(this._flyToTweenBezier[0], this._flyToTweenBezier[1], this._flyToTweenBezier[2], this._flyToTweenBezier[3]))
+                SoundManager.instance.play3DSound(GlobalData.Music.resourceEnterPlayer, getPos(this.model));
+            }).start().easing(cubicBezier(this._flyToTweenBezier[0], this._flyToTweenBezier[1], this._flyToTweenBezier[2], this._flyToTweenBezier[3]));
     }
 
     public destroy() {

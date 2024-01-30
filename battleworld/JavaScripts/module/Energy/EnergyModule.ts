@@ -204,7 +204,12 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
             } else {
                 if (d.energy < Globaldata.ENERGY_MAX) {
                     Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.energy}`);
-                    d.energy += Globaldata.ENERGY_RECOVERY_COUNT;
+                    d.energy = Math.min(
+                        Globaldata.ENERGY_MAX,
+                        d.energy + Math.max(
+                            ((now - d.lastRecoveryTime) /
+                                energyRecoveryIntervalMs) | 0,
+                            0));
                 }
                 d.lastRecoveryTime = now;
                 timeout = energyRecoveryIntervalMs;

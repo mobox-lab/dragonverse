@@ -15,6 +15,20 @@ export class Globaldata {
      */
     public static jumpGameProgressDuration = 3e3;
 
+    /**
+     * 拳头普攻图片id
+     */
+    public static punchImgGuid = "295281";
+
+    /**单手剑图片id */
+    public static singleSwordImgGuid = "295344";
+
+    /**杖图片id */
+    public static wandImgGuid = "295287";
+
+    /**双手剑图片id */
+    public static twoHandedSwordImgGuid = "295273";
+
     /**--------------------------------------系统--------------------------------- */
     /**所选择的语言索引(-1:系统 0:英语 1:汉语 2:日语 3:德语)*/
     public static selectedLanguageIndex: number = -1;
@@ -70,7 +84,7 @@ export class Globaldata {
     public static isAutoLockEnemy: boolean = true;
 
     /**-----------------------------------角色-------------------------------------- */
-        //玩家最多金币限制 9999999999
+    //玩家最多金币限制 9999999999
     public static playerMaxMoney: number = 9999999999;
     /**玩家每日获取段位分限制 */
     public static maxRankScore: number = 1000;
@@ -491,7 +505,7 @@ export class Globaldata {
     /**怒气衰减间隔 单位 秒 */
     public static anger_cutBackInterval: number = 0.25;
 
-//#region Auth
+    //#region Auth
     /**
      * 最小访问间隔. ms
      * @type {number}
@@ -499,9 +513,9 @@ export class Globaldata {
     public static readonly MIN_ACCESS_INTERVAL = 0.5e3;
 
     public static readonly MAX_ORDER_LOG_COUNT = 50;
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Energy
+    //#region Energy
     /**
      * 体力容量.
      * @type {number}
@@ -545,7 +559,7 @@ export class Globaldata {
      * @type {number}
      */
     public static readonly ENERGY_PATCH_RPC_COUNT = 10;
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 
 }
