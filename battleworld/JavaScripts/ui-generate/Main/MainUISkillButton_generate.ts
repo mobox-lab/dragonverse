@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 麇沓
+ * AUTHOR: 断桥烟雨
  * UI: UI/Main/MainUISkillButton.ui
- * TIME: 2023.11.28-09.43.44
+ * TIME: 2024.01.30-15.47.37
  */
 
  
@@ -36,6 +36,9 @@
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/MBlue") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock") as any);
 		
 	
 

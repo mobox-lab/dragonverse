@@ -1,4 +1,5 @@
 
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import SP_InteractiveUI_Generate from "../../ui-generate/RP/RPNPMUI/SP_InteractiveUI_generate";
 
 //点击UI的画布
@@ -128,6 +129,8 @@ class ClickUI {
         this.btn.onClicked.add(() => {
             this.callBack();
         });
+
+
     }
 
     public show(guid: string, content: string, obj: mw.GameObject, offset: mw.Vector, callBack: Function): void {
@@ -144,6 +147,10 @@ class ClickUI {
         this.root.position = pos.subtract(this.root.size.multiply(0.5));
         this.root.visibility = mw.SlateVisibility.SelfHitTestInvisible;
         this.isShow = true;
+
+        KeyOperationManager.getInstance().onKeyUp(Keys.F, null, () => {
+            this.callBack();
+        });
     }
 
     public changeIcon(guid: string): void {
@@ -161,5 +168,7 @@ class ClickUI {
         this.callBack = null;
         this.isShow = false;
         this.root.visibility = mw.SlateVisibility.Collapsed;
+
+        KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
     }
 }

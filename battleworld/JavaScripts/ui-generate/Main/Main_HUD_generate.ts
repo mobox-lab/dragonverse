@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 安妮熊
+ * AUTHOR: 断桥烟雨
  * UI: UI/Main/Main_HUD.ui
- * TIME: 2024.01.24-15.12.21
+ * TIME: 2024.01.30-15.47.37
  */
 
  
@@ -116,13 +116,6 @@
 		}
 		return this.mBar_Magic_Internal
 	}
-	private mText_Magic_Internal: mw.TextBlock
-	public get mText_Magic(): mw.TextBlock {
-		if(!this.mText_Magic_Internal&&this.uiWidgetBase) {
-			this.mText_Magic_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/hpCanvas/mText_Magic') as mw.TextBlock
-		}
-		return this.mText_Magic_Internal
-	}
 	private mBar_Kill_Internal: mw.ProgressBar
 	public get mBar_Kill(): mw.ProgressBar {
 		if(!this.mBar_Kill_Internal&&this.uiWidgetBase) {
@@ -136,6 +129,13 @@
 			this.mIcon_Kill_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/hpCanvas/mIcon_Kill') as mw.Image
 		}
 		return this.mIcon_Kill_Internal
+	}
+	private mText_Magic_Internal: mw.TextBlock
+	public get mText_Magic(): mw.TextBlock {
+		if(!this.mText_Magic_Internal&&this.uiWidgetBase) {
+			this.mText_Magic_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/hpCanvas/mText_Magic') as mw.TextBlock
+		}
+		return this.mText_Magic_Internal
 	}
 	private mBar_Fire_Internal: mw.ProgressBar
 	public get mBar_Fire(): mw.ProgressBar {
@@ -263,19 +263,19 @@
 		}
 		return this.mCanvasBattle_Internal
 	}
-	private mBattle_Internal: mw.TextBlock
-	public get mBattle(): mw.TextBlock {
-		if(!this.mBattle_Internal&&this.uiWidgetBase) {
-			this.mBattle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBattle') as mw.TextBlock
-		}
-		return this.mBattle_Internal
-	}
 	private mBattle_1_Internal: mw.TextBlock
 	public get mBattle_1(): mw.TextBlock {
 		if(!this.mBattle_1_Internal&&this.uiWidgetBase) {
 			this.mBattle_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBattle_1') as mw.TextBlock
 		}
 		return this.mBattle_1_Internal
+	}
+	private mBattle_Internal: mw.TextBlock
+	public get mBattle(): mw.TextBlock {
+		if(!this.mBattle_Internal&&this.uiWidgetBase) {
+			this.mBattle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBattle') as mw.TextBlock
+		}
+		return this.mBattle_Internal
 	}
 	private mBattle_2_Internal: mw.TextBlock
 	public get mBattle_2(): mw.TextBlock {
@@ -613,10 +613,10 @@
 		this.initLanguage(this.mGold)
 		
 	
-		this.initLanguage(this.mBattle)
+		this.initLanguage(this.mBattle_1)
 		
 	
-		this.initLanguage(this.mBattle_1)
+		this.initLanguage(this.mBattle)
 		
 	
 		this.initLanguage(this.mBattle_2)
@@ -652,6 +652,9 @@
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock_4") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCavasTrans/TextBlock_5") as any);
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/rankCanvas/TextBlock_1") as any);
