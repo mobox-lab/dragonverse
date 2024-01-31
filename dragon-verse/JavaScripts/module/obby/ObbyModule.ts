@@ -66,7 +66,7 @@ export default class ObbyModuleData extends Subdata {
         return ObbyModuleData.RELEASE_VERSIONS[ObbyModuleData.RELEASE_VERSIONS.length - 1];
     }
 
-    
+
     /**
      * 数据版本检查.
      */
@@ -97,10 +97,10 @@ export default class ObbyModuleData extends Subdata {
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     public updateLv(lv: number): boolean {
-        if(lv > this.lv){
+        if (lv > this.lv) {
             this.lv = lv;
             return true
-        }else{
+        } else {
             return false;
         }
     }
@@ -131,13 +131,15 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
     // private _mainPanel: MainPanel;
     private _obbyPanel: ObbyInteractorPanel;
-    private _curLv:number;
-    private _maxLv:number;
-    private _isStart:boolean;
-    private _isInGame:boolean;
+    private _curLv: number;
+    private _maxLv: number;
+    private _isStart: boolean;
+    private _isInGame: boolean;
     private _eventListeners: EventListener[] = [];
     private _checkPointCfg = {}
-    public  _startPos: mw.Vector;
+    private _effectPointCfg = {}
+    private _effectScaleCfg = {}
+    public _startPos: mw.Vector;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -151,7 +153,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         //#region Member init
         this._obbyPanel = UIService.create(ObbyInteractorPanel);
         this.initCheckPoint();
-        Log4Ts.log(ObbyModuleC,"obbyModuleC onStart================")
+        Log4Ts.log(ObbyModuleC, "obbyModuleC onStart================")
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
@@ -165,11 +167,11 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
-        Log4Ts.log(ObbyModuleC,"obbyModuleC onEnterScene================")
+        Log4Ts.log(ObbyModuleC, "obbyModuleC onEnterScene================")
     }
 
     protected onDestroy(): void {
-        Log4Ts.log(ObbyModuleC,"obbyModuleC onDestroy================")
+        Log4Ts.log(ObbyModuleC, "obbyModuleC onDestroy================")
         super.onDestroy();
 
         //#region Event Unsubscribe
@@ -184,143 +186,153 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     //#region Method
 
-        private initCheckPoint(){
-            
-            this._maxLv = GameConfig.Obbycheck.getAllElement().length;
-            for(let i=1;i<=this._maxLv;i++){
-                let ele = GameConfig.Obbycheck.getElement(i);
-                this._checkPointCfg[""+i] = new mw.Vector(ele.checkpointloc[0],ele.checkpointloc[1],ele.checkpointloc[2]);
-            }
-            console.log("initCheckPoint _maxLv======"+this._maxLv);
+    private initCheckPoint() {
+
+        this._maxLv = GameConfig.Obbycheck.getAllElement().length;
+        for (let i = 0; i <= this._maxLv; i++) {
+            let ele = GameConfig.Obbycheck.getElement(i);
+            this._checkPointCfg["" + i] = new mw.Vector(ele.checkpointloc[0], ele.checkpointloc[1], ele.checkpointloc[2]);
+            this._effectPointCfg["" + i] = new mw.Vector(ele.splashpointloc[0], ele.splashpointloc[1], ele.splashpointloc[2]);
+            this._effectScaleCfg["" + i] = new mw.Vector(ele.splashscale[0], ele.splashscale[1], ele.splashscale[2]);
         }
-        /**
-         * 是否在游戏中
-         */
-        public isInGame():boolean {
-            return this._isInGame;
+        console.log("initCheckPoint _maxLv======" + this._maxLv);
+    }
+    /**
+     * 是否在游戏中
+     */
+    public isInGame(): boolean {
+        return this._isInGame;
+    }
+
+    /**
+     * 进入游戏
+     */
+    public enterGame() {
+        //拉取当前的进度
+        this._isStart = false;
+        this._isInGame = true;
+        this._curLv = 0;
+        this._startPos = Player.localPlayer.character.worldTransform.position;
+        this.server.net_getLv();
+        UIService.showUI(this._obbyPanel);
+        this.setObbyProps(Player.localPlayer.character);
+        UIService.getUI(MainPanel).setCanSprint(false);
+    }
+
+
+    /**
+     * 通过检查点
+     * @param playerId
+     */
+    public async updateCheckPoint(checkPointId: number) {
+
+        //拉取当前的进度
+        if (checkPointId <= this._curLv) {
+            return;
         }
 
-        /**
-         * 进入游戏
-         */
-        public enterGame() {
-            //拉取当前的进度
-            this._isStart = false;
-            this._isInGame = true;
-            this._curLv = 0;
-            this._startPos = Player.localPlayer.character.worldTransform.position;
-            this.server.net_getLv();
-            UIService.showUI(this._obbyPanel);
-            this.setObbyProps(Player.localPlayer.character);
-            UIService.getUI(MainPanel).setCanSprint(false);
-        }
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.resolves.Obby_GoldReward());
+        //播放粒子特效
+        let pos = this._effectPointCfg["" + this._curLv];
+        let scale = this._effectScaleCfg["" + this._curLv];
+        EffectService.playAtPosition(
+            GameServiceConfig.SCENE_DRAGON_OBBY,
+            pos,
+            {
+                scale: scale,
+                loopCount: 1,
+            })
+        this.server.net_saveLv(checkPointId);
+    }
 
-        
-        /**
-         * 通过检查点
-         * @param playerId
-         */
-        public updateCheckPoint(checkPointId:number) {
-            
-            //拉取当前的进度
-            if(checkPointId <= this._curLv){
-                return;
-            }
-            
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.resolves.Obby_GoldReward());
-            //播放粒子特效
-            // mw.EffectService.playAtPosition("89095", this.gameObject.worldTransform.position);
-            this.server.net_saveLv(checkPointId);
-        }
 
-        
-        /**
-         * 离开游戏
-         * @param playerId
-         */
-        public exitGame() {
-            this._isStart = false;
-            this._curLv = 0;
-            this._isInGame = false;
-            UIService.hideUI(this._obbyPanel);
-            this.resetProps(Player.localPlayer.character);
-            UIService.getUI(MainPanel).setCanSprint(true);
-        }
+    /**
+     * 离开游戏
+     * @param playerId
+     */
+    public exitGame() {
+        this._isStart = false;
+        this._curLv = 0;
+        this._isInGame = false;
+        UIService.hideUI(this._obbyPanel);
+        this.resetProps(Player.localPlayer.character);
+        UIService.getUI(MainPanel).setCanSprint(true);
+    }
 
-        public checkLv(curLv: number) {
-            if(this._isStart&&curLv > this._curLv){
-                return true;
-            }
-            return false;
+    public checkLv(curLv: number) {
+        if (this._isStart && curLv > this._curLv) {
+            return true;
         }
+        return false;
+    }
 
-        private maxWalkSpeedOri = 0;
-        private maxAccelerationOri = 0;
-        private maxStepHeightOri = 0;
-        private walkableFloorAngleOri = 0;
-        private rotateRateOri = 0;
-        private groundFrictionOri = 0;
-        private maxFallingSpeedOri = 0;
-        private gravityScaleOri = 0;
-        private maxJumpHeightOri = 0;
-        private jumpMaxCountOri = 0;
-        private setObbyProps(obj: mw.Character) {
-            this.maxWalkSpeedOri = obj.maxWalkSpeed;
-            this.maxAccelerationOri = obj.maxAcceleration;
-            this.maxStepHeightOri = obj.maxStepHeight;
-            this.walkableFloorAngleOri = obj.walkableFloorAngle;
-            this.rotateRateOri = obj.rotateRate;
-            this.groundFrictionOri = obj.groundFriction;
-            this.maxFallingSpeedOri = obj.maxFallingSpeed;
-            this.gravityScaleOri = obj.gravityScale;
-            this.maxJumpHeightOri = obj.maxJumpHeight;
-            this.jumpMaxCountOri = obj.jumpMaxCount;
-            
-            obj.maxWalkSpeed = GameServiceConfig.ROLE_MAX_WALK_SPEED_OBBY;
-            obj.maxAcceleration = GameServiceConfig.ROLE_MAX_WALK_ACCURATE_OBBY;
-            obj.maxStepHeight = GameServiceConfig.ROLE_MAX_STEP_HEIGHT_OBBY;
-            obj.walkableFloorAngle = GameServiceConfig.ROLE_WALKABLE_FLOOR_ANGLE_OBBY;
-            obj.rotateRate = GameServiceConfig.ROLE_ROTATE_RATE_OBBY;
-            obj.groundFriction = GameServiceConfig.ROLE_GROUND_FRICTION_OBBY;
-            obj.maxFallingSpeed = GameServiceConfig.ROLE_FALLING_SPEED_OBBY;
-            obj.gravityScale = GameServiceConfig.ROLE_GRAVITY_SCALE_OBBY;
-            obj.maxJumpHeight = GameServiceConfig.ROLE_JUMP_HEIGHT_OBBY;
-            obj.jumpMaxCount = GameServiceConfig.ROLE_JUMP_MAX_COUNT_OBBY;
-        }
+    private maxWalkSpeedOri = 0;
+    private maxAccelerationOri = 0;
+    private maxStepHeightOri = 0;
+    private walkableFloorAngleOri = 0;
+    private rotateRateOri = 0;
+    private groundFrictionOri = 0;
+    private maxFallingSpeedOri = 0;
+    private gravityScaleOri = 0;
+    private maxJumpHeightOri = 0;
+    private jumpMaxCountOri = 0;
+    private setObbyProps(obj: mw.Character) {
+        this.maxWalkSpeedOri = obj.maxWalkSpeed;
+        this.maxAccelerationOri = obj.maxAcceleration;
+        this.maxStepHeightOri = obj.maxStepHeight;
+        this.walkableFloorAngleOri = obj.walkableFloorAngle;
+        this.rotateRateOri = obj.rotateRate;
+        this.groundFrictionOri = obj.groundFriction;
+        this.maxFallingSpeedOri = obj.maxFallingSpeed;
+        this.gravityScaleOri = obj.gravityScale;
+        this.maxJumpHeightOri = obj.maxJumpHeight;
+        this.jumpMaxCountOri = obj.jumpMaxCount;
 
-        private resetProps(obj: mw.Character) {
-            obj.maxWalkSpeed = this.maxWalkSpeedOri
-            obj.maxAcceleration = this.maxAccelerationOri
-            obj.maxStepHeight = this.maxStepHeightOri
-            obj.walkableFloorAngle = this.walkableFloorAngleOri
-            obj.rotateRate = this.rotateRateOri
-            obj.groundFriction = this.groundFrictionOri
-            obj.maxFallingSpeed = this.maxFallingSpeedOri
-            obj.gravityScale = this.gravityScaleOri
-            obj.maxJumpHeight = this.maxJumpHeightOri
-            obj.jumpMaxCount = this.jumpMaxCountOri
-        }
+        obj.maxWalkSpeed = GameServiceConfig.ROLE_MAX_WALK_SPEED_OBBY;
+        obj.maxAcceleration = GameServiceConfig.ROLE_MAX_WALK_ACCURATE_OBBY;
+        obj.maxStepHeight = GameServiceConfig.ROLE_MAX_STEP_HEIGHT_OBBY;
+        obj.walkableFloorAngle = GameServiceConfig.ROLE_WALKABLE_FLOOR_ANGLE_OBBY;
+        obj.rotateRate = GameServiceConfig.ROLE_ROTATE_RATE_OBBY;
+        obj.groundFriction = GameServiceConfig.ROLE_GROUND_FRICTION_OBBY;
+        obj.maxFallingSpeed = GameServiceConfig.ROLE_FALLING_SPEED_OBBY;
+        obj.gravityScale = GameServiceConfig.ROLE_GRAVITY_SCALE_OBBY;
+        obj.maxJumpHeight = GameServiceConfig.ROLE_JUMP_HEIGHT_OBBY;
+        obj.jumpMaxCount = GameServiceConfig.ROLE_JUMP_MAX_COUNT_OBBY;
+    }
 
-        public reborn() {
-            console.log("reborn lv=============="+this._curLv)
-            Player.localPlayer.character.ragdollEnabled = false;
-            if(this._curLv == 0){
-                Player.localPlayer.character.worldTransform.position = this._startPos;
-            }else{
-                Player.localPlayer.character.worldTransform.position = this._checkPointCfg[""+this._curLv];
-            }
-            Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
+    private resetProps(obj: mw.Character) {
+        obj.maxWalkSpeed = this.maxWalkSpeedOri
+        obj.maxAcceleration = this.maxAccelerationOri
+        obj.maxStepHeight = this.maxStepHeightOri
+        obj.walkableFloorAngle = this.walkableFloorAngleOri
+        obj.rotateRate = this.rotateRateOri
+        obj.groundFriction = this.groundFrictionOri
+        obj.maxFallingSpeed = this.maxFallingSpeedOri
+        obj.gravityScale = this.gravityScaleOri
+        obj.maxJumpHeight = this.maxJumpHeightOri
+        obj.jumpMaxCount = this.jumpMaxCountOri
+    }
+
+    public reborn() {
+        console.log("reborn lv==============" + this._curLv)
+        Player.localPlayer.character.ragdollEnabled = false;
+        if (this._curLv == 0) {
+            Player.localPlayer.character.worldTransform.position = this._startPos;
+        } else {
+            Player.localPlayer.character.worldTransform.position = this._checkPointCfg["" + this._curLv];
         }
+        Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
+    }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
 
     public net_updateLv(curLv: number) {
-        console.log("net_updateLv curLv======"+curLv);
-        if(!this._isStart){
+        console.log("net_updateLv curLv======" + curLv);
+        if (!this._isStart) {
             this._isStart = true;
-            if(curLv > this._curLv){
+            if (curLv > this._curLv) {
                 //需要传送到之前的关卡 需要读取关卡的配置位置
                 console.log("net_updateLv 传送======");
                 this._curLv = curLv;
@@ -328,7 +340,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             }
         }
         this._curLv = curLv;
-        this._obbyPanel.setCurLv(this._curLv,this._maxLv);
+        this._obbyPanel.setCurLv(this._curLv, this._maxLv);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -345,7 +357,7 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
     //#region Constant
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     //#region Member
-        private _maxLv = 100; //最大关卡数
+    private _maxLv = 100; //最大关卡数
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -358,7 +370,7 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
 
     protected onStart(): void {
         super.onStart();
-        Log4Ts.log(ObbyModuleS,"obbyModules onStart================")
+        Log4Ts.log(ObbyModuleS, "obbyModules onStart================")
 
         //#region Member init
         //#endregion ------------------------------------------------------------------------------------------ 
@@ -380,26 +392,26 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
 
     protected onExecute(type: number, ...params: any[]): void {
         super.onExecute(type, ...params);
-        Log4Ts.log(ObbyModuleS,"obbyModules onExecute================")
+        Log4Ts.log(ObbyModuleS, "obbyModules onExecute================")
     }
 
     protected onPlayerLeft(player: Player): void {
-        Log4Ts.log(ObbyModuleS,"obbyModules onPlayerLeft================")
+        Log4Ts.log(ObbyModuleS, "obbyModules onPlayerLeft================")
     }
 
     protected onPlayerEnterGame(player: Player): void {
-        Log4Ts.log(ObbyModuleS,"obbyModules onPlayerEnterGame================")
+        Log4Ts.log(ObbyModuleS, "obbyModules onPlayerEnterGame================")
     }
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
-        Log4Ts.log(ObbyModuleS,"obbyModules onPlayerJoined================")
+        Log4Ts.log(ObbyModuleS, "obbyModules onPlayerJoined================")
     }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 
     //#region Method
-    
+
     /**
      * 更新等级并持久化
      */
@@ -409,25 +421,25 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
         playerData.save(false);
         this.getClient(playerId).net_updateLv(lv);
         // Log4Ts.log(ObbyModuleS,"持久化 当前关卡数 lv========================"+lv);
-        console.log("持久化 当前关卡数 lv========================"+lv);
+        console.log("持久化 当前关卡数 lv========================" + lv);
     }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-     //#region Net Method
-     @noReply()
-     public net_saveLv(checkLv: number) {
+    //#region Net Method
+    @noReply()
+    public net_saveLv(checkLv: number) {
         const currPlayerId = this.currentPlayerId;
         const playerData = this.getPlayerData(currPlayerId);
         let lv = playerData.getLv();
-        if(checkLv<=lv){
+        if (checkLv <= lv) {
             return;
         }
 
-        if(checkLv > this._maxLv){
+        if (checkLv > this._maxLv) {
             checkLv = this._maxLv;
         }
-    
-        this.updateLv(currPlayerId,checkLv)
+
+        this.updateLv(currPlayerId, checkLv)
         return;
     }
 

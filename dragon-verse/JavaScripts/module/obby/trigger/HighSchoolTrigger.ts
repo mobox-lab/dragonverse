@@ -80,10 +80,10 @@ export default class HighSchoolTrigger extends mw.Script {
                 } else if (this._circleType == HighSchoolType.DeadBackGround) {
                     //锁定摄像头
                     obj.ragdollEnabled = true;
-                    this._hander = TimeUtil.setInterval(this.onCountDown, 2);
+                    this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY);
                 } else if (this._circleType == HighSchoolType.DeadRed) {
                     obj.ragdollEnabled = true;
-                    this._hander = TimeUtil.setInterval(this.onCountDown, 2);
+                    this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY);
                 } else if (this._circleType == HighSchoolType.ScorePoint) {
                     let obby = ModuleService.getModule(ObbyModuleC);
                     if (obby.checkLv(this._checkPointIdx)) {
