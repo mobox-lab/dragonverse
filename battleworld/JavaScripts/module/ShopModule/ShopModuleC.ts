@@ -135,4 +135,8 @@ export class ShopModuleC extends ModuleC<ShopModuleS, ShopModuleData> {
     }
 
 
+    public async buyBattleTimes(itemId: number): Promise<boolean> {
+        return await this.server.net_buyBattleTimes(itemId);
+    }
+
 }

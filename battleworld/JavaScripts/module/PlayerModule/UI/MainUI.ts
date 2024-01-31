@@ -19,7 +19,13 @@ import { GameConfig } from "../../../config/GameConfig";
 import { RedDotManager, RedDotName } from "../../HudModule/RedDot";
 import { EnergyModuleC } from "../../Energy/EnergyModule";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
-
+import BuyEnergyPanel from "../../../ui/BuyEnergyPanel";
+import { Yoact } from "../../../depend/yoact/Yoact";
+import bindYoact = Yoact.bindYoact;
+import GToolkit from "../../../utils/GToolkit";
+import { AuthModuleC } from "../../auth/AuthModule";
+import { MessageBox } from "../../../tool/MessageBox";
+import Tips from "../../../tool/P_Tips";
 
 export class MainUI extends Main_HUD_Generate {
 
@@ -135,6 +141,32 @@ export class MainUI extends Main_HUD_Generate {
 
         this.mBattle.text = Globaldata.ENERGY_MAX.toString();
 
+        this.mBtn_Battle_Add.onClicked.add(() => {
+            UIService.show(BuyEnergyPanel);
+        })
+
+        bindYoact(() => {
+            GToolkit.trySetText(this.mMCoin,
+                ((this.authModuleC?.currency.count ?? 0).toFixed(2).toString()));
+        });
+
+        this.mBtn_MCoin_Refresh.onClicked.add(() => {
+            this.authModuleC.queryCurrency();
+        });
+
+        this.mBtn_MCoin_Add.onClicked.add(() => {
+            MessageBox.showOneBtnMessage(GameConfig.Language.Tips_Text_1.Value, GameConfig.Language.Deposit_1.Value, () => {
+                StringUtil.clipboardCopy(Globaldata.copyUrl);
+                Tips.show(GameConfig.Language.Copy_Success_Text_1.Value)
+            }, GameConfig.Language.Deposit_2.Value);
+        });
+
+    }
+    private _authModuleC: AuthModuleC;
+
+    private get authModuleC(): AuthModuleC | null {
+        if (!this._authModuleC) this._authModuleC = ModuleService.getModule(AuthModuleC);
+        return this._authModuleC;
     }
 
     /**
@@ -736,4 +768,6 @@ export class MainUI extends Main_HUD_Generate {
         this.mCanvasMCoin.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
         this.mCanvasBattle.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
     }
+
+
 }

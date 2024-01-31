@@ -91,15 +91,16 @@ export class MessageBox extends MessageBox_Generate {
     }
 
     public show() {
-        mw.UIService.showUI(this, mw.UILayerSystem);
         KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
             this.resListener(false);
             mw.UIService.hideUI(this);
         });
+        mw.UIService.showUI(this, mw.UILayerSystem);
     }
 
     public hide() {
-        mw.UIService.hideUI(this);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        mw.UIService.hideUI(this);
+
     }
 }

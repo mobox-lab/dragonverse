@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 帅你一脸(影月宗·大师)
+ * AUTHOR: 断桥烟雨
  * UI: UI/common/MessageBox.ui
- * TIME: 2023.11.15-14.12.48
+ * TIME: 2024.01.31-14.36.05
  */
 
  
@@ -39,19 +39,19 @@
 		}
 		return this.mNo_btn_Internal
 	}
-	private mOK_btn_Internal: mw.StaleButton
-	public get mOK_btn(): mw.StaleButton {
-		if(!this.mOK_btn_Internal&&this.uiWidgetBase) {
-			this.mOK_btn_Internal = this.uiWidgetBase.findChildByPath('Canvas/BodyCanvas/mOK_btn') as mw.StaleButton
-		}
-		return this.mOK_btn_Internal
-	}
 	private mTitle_txt_Internal: mw.TextBlock
 	public get mTitle_txt(): mw.TextBlock {
 		if(!this.mTitle_txt_Internal&&this.uiWidgetBase) {
 			this.mTitle_txt_Internal = this.uiWidgetBase.findChildByPath('Canvas/BodyCanvas/mTitle_txt') as mw.TextBlock
 		}
 		return this.mTitle_txt_Internal
+	}
+	private mOK_btn_Internal: mw.StaleButton
+	public get mOK_btn(): mw.StaleButton {
+		if(!this.mOK_btn_Internal&&this.uiWidgetBase) {
+			this.mOK_btn_Internal = this.uiWidgetBase.findChildByPath('Canvas/BodyCanvas/mOK_btn') as mw.StaleButton
+		}
+		return this.mOK_btn_Internal
 	}
 
 
