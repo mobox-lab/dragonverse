@@ -80,18 +80,13 @@ export default class HighSchoolTrigger extends mw.Script {
                 } else if (this._circleType == HighSchoolType.DeadBackGround) {
                     //锁定摄像头
                     obj.ragdollEnabled = true;
-                    this._hander = TimeUtil.setInterval(this.onCountDown, 2);
+                    this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY);
                 } else if (this._circleType == HighSchoolType.DeadRed) {
                     obj.ragdollEnabled = true;
-                    this._hander = TimeUtil.setInterval(this.onCountDown, 2);
+                    this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY);
                 } else if (this._circleType == HighSchoolType.ScorePoint) {
                     let obby = ModuleService.getModule(ObbyModuleC);
-                    console.log("entercheckPoint idx="+this._checkPointIdx)
                     if (obby.checkLv(this._checkPointIdx)) {
-                        console.log("entercheckPoint3333 idx="+this._checkPointIdx)
-                        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.resolves.Obby_GoldReward());
-                        //播放粒子特效
-                        mw.EffectService.playAtPosition("89095", this.gameObject.worldTransform.position);
                         //记录是第几关 改变进度条
                         obby.updateCheckPoint(this._checkPointIdx);
                     }

@@ -563,5 +563,15 @@ export default class GameServiceConfig {
      * 角色 最大跳跃次数.
      */
     public static readonly ROLE_JUMP_MAX_COUNT_OBBY = 1;
+
+    /**
+     * 复活等待间隔.
+     */
+    public static readonly REBORN_INTERVAL_OBBY = 2;
+
+    /**
+     * 跑酷得分特效 Guid.
+     */
+    public static readonly SCENE_DRAGON_OBBY = "89095";
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ //#region Role
 }
