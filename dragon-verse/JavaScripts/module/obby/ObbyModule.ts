@@ -21,7 +21,6 @@ import { DataUpgradeMethod } from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
 
 export default class ObbyModuleData extends Subdata {
-
     /**
      * 已经发布的正式数据版本号.
      * 以版本发布时间 升序排列.
@@ -108,6 +107,11 @@ export default class ObbyModuleData extends Subdata {
     public getLv() {
         return this.lv;
     }
+
+    public gmSetLv(lv: number): boolean {
+        this.lv = lv;
+        return true;
+    }
 }
 
 /**
@@ -132,6 +136,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     private _isInGame:boolean;
     private _eventListeners: EventListener[] = [];
     private _checkPointCfg = {}
+    public  _startPos: mw.Vector;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -150,7 +155,6 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
         //#region Event Subscribe
         // this._eventListeners.push(Event.addLocalListener(EventDefine.EnterCollectibleItemRange, this.onEnterCollectibleItemRange));
-        // this._eventListeners.push(Event.addLocalListener(EventDefine.LeaveCollectibleItemRange, this.onLeaveCollectibleItemRange));
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -203,6 +207,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             this._isStart = false;
             this._isInGame = true;
             this._curLv = 0;
+            this._startPos = Player.localPlayer.character.worldTransform.position;
             this.server.net_getLv();
             UIService.showUI(this._obbyPanel);
             this.setObbyProps(Player.localPlayer.character);
@@ -292,8 +297,13 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         }
 
         public reborn() {
+            console.log("reborn lv=============="+this._curLv)
             Player.localPlayer.character.ragdollEnabled = false;
-            Player.localPlayer.character.worldTransform.position = this._checkPointCfg[""+this._curLv];
+            if(this._curLv == 0){
+                Player.localPlayer.character.worldTransform.position = this._startPos;
+            }else{
+                Player.localPlayer.character.worldTransform.position = this._checkPointCfg[""+this._curLv];
+            }
             Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
         }
 
@@ -319,18 +329,9 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
-    // public onEnterCollectibleItemRange = (args: PlayerInteractCollectibleItemEventArgs) => {
-    //     if (args.playerId === Player.localPlayer.playerId) {
-    //         this.collectCandidates.push(args.itemSyncKey);
-    //         this._mainPanel.addCollectibleItemInteractor(args.itemSyncKey);
-    //     }
-    // };
-
-    // public onLeaveCollectibleItemRange = (args: PlayerInteractCollectibleItemEventArgs) => {
-    //     if (args.playerId === Player.localPlayer.playerId) {
-    //         GToolkit.remove(this.collectCandidates, args.itemSyncKey);
-    //         this._mainPanel.removeCollectibleItemInteractor(args.itemSyncKey);
-    //     }
+    // public onGMSetLv = (lv: number) => {
+    //     console.log("onGMSetLv lv============="+lv);
+    //     this.gmSetLV(lv);
     // };
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
@@ -393,6 +394,7 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
 
 
     //#region Method
+    
     /**
      * 更新等级并持久化
      */
@@ -431,6 +433,12 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
         let lv = playerData.getLv();
         this.getClient(currPlayerId).net_updateLv(lv);
         return;
+    }
+
+    public gmSetLV(currPlayerId: number, lv: number) {
+        const playerData = this.getPlayerData(currPlayerId);
+        playerData.gmSetLv(lv);
+        playerData.save(false);
     }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
