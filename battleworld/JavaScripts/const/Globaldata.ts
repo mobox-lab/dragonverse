@@ -14,7 +14,8 @@ export class Globaldata {
      * 跳游戏进度时长
      */
     public static jumpGameProgressDuration = 3e3;
-
+    /**充值网址 */
+    public static copyUrl = "https://www.mobox.io";
     /**
      * 拳头普攻图片id
      */

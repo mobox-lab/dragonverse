@@ -223,8 +223,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
                         GlobalData.Energy.ENERGY_MAX,
                         d.energy + (this.petBagModule().getPlayerEnergyRecoveryCoefficient(playerId))
                         * Math.max(
-                            ((now - d.lastRecoveryTime) /
-                                energyRecoveryIntervalMs) | 0,
+                            Math.floor(duration / energyRecoveryIntervalMs),
                             0));
                 }
                 d.lastRecoveryTime = now;
