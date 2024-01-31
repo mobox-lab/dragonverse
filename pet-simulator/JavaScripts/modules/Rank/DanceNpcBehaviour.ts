@@ -23,12 +23,12 @@ export default class DanceNpcBehaviour extends mw.Script {
             mw.AccountService.setUserData(this.gameObject as mw.Character, data, async (state) => {
                 // 播放跳舞动画
                 let danceGuid = GlobalData.Rank.npcDanceMap.get(this.gameObject.gameObjectId);
-                if (this.anim == null) {
-                    await AssetUtil.asyncDownloadAsset(GlobalData.Rank.npcDanceMap.get(this.gameObject.gameObjectId));
-                    this.anim = PlayerManagerExtesion.loadAnimationExtesion(npc, danceGuid);
-                    this.anim.loop = 0;
-                }
-                PlayerManagerExtesion.rpcPlayAnimation(npc, danceGuid);
+                // if (this.anim == null) {
+                //     await AssetUtil.asyncDownloadAsset(GlobalData.Rank.npcDanceMap.get(this.gameObject.gameObjectId));
+                //     this.anim = PlayerManagerExtesion.loadAnimationExtesion(npc, danceGuid);
+
+                // }
+                PlayerManagerExtesion.rpcPlayAnimation(npc, danceGuid, 0);
             });
         });
 
