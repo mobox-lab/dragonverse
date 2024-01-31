@@ -231,18 +231,6 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         if (checkPointId <= this._curLv) {
             return;
         }
-
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.resolves.Obby_GoldReward());
-        //播放粒子特效
-        let pos = this._effectPointCfg["" + this._curLv];
-        let scale = this._effectScaleCfg["" + this._curLv];
-        EffectService.playAtPosition(
-            GameServiceConfig.SCENE_DRAGON_OBBY,
-            pos,
-            {
-                scale: scale,
-                loopCount: 1,
-            })
         this.server.net_saveLv(checkPointId);
     }
 
