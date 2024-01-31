@@ -163,7 +163,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
         super.onStart();
 
         //#region Member init
-        //#endregion ------------------------------------------------------------------------------------------ 
+        //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
         // this._eventListeners.push(Event.addLocalListener(EventDefine.EVENT_NAME, CALLBACK));
@@ -207,8 +207,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
                     d.energy = Math.min(
                         Globaldata.ENERGY_MAX,
                         d.energy + Math.max(
-                            ((now - d.lastRecoveryTime) /
-                                energyRecoveryIntervalMs) | 0,
+                            Math.floor(duration / energyRecoveryIntervalMs) ,
                             0));
                 }
                 d.lastRecoveryTime = now;
