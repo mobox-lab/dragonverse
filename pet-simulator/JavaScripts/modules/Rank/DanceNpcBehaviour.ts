@@ -16,7 +16,7 @@ export default class DanceNpcBehaviour extends mw.Script {
     /**当该npc对应的玩家发生改变时执行 (客户端) */
     private async onRankPlayerChange() {
 
-        return;
+        // return;
 
         let npc = this.gameObject as mw.Character;
         mw.AccountService.getUserData(this.userId, 0, (data) => {
