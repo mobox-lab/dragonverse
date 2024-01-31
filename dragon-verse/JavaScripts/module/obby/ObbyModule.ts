@@ -19,6 +19,7 @@ import Enum = UE.Enum;
 import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
 import { DataUpgradeMethod } from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
+import i18n from "../../language/i18n";
 
 export default class ObbyModuleData extends Subdata {
     /**
@@ -225,6 +226,10 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             if(checkPointId <= this._curLv){
                 return;
             }
+            
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.resolves.Obby_GoldReward());
+            //播放粒子特效
+            // mw.EffectService.playAtPosition("89095", this.gameObject.worldTransform.position);
             this.server.net_saveLv(checkPointId);
         }
 
