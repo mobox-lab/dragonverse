@@ -87,7 +87,7 @@ export class ShopView extends UIRole_Generate {
         AnalyticsTool.send_ts_page(EPageName.shop);
         KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
             UIService.hideUI(this);
-            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+
         })
 
         UIService.getUI(ActionUI)?.setAbilitiesVisible(false);
@@ -107,7 +107,7 @@ export class ShopView extends UIRole_Generate {
             let pendantId = equipId ? GameConfig.Shop.getElement(equipId).pendantId : null;
             this.itemPreview(pendantId, key);
         })
-
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         UIService.getUI(ActionUI)?.setAbilitiesVisible(true);
     }
 

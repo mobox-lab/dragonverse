@@ -207,7 +207,6 @@ export class SkillPanel extends SkillPanel_Generate {
         EventManager.instance.call(EPlayerEvents_C.Player_RefreshSkillPoints);
         KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
             UIService.hideUI(this);
-            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         })
     }
 
@@ -225,7 +224,7 @@ export class SkillPanel extends SkillPanel_Generate {
 
     onHide() {
         EventManager.instance.call(EPlayerEvents_C.Player_RefreshSkillPoints);
-
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
 
         this.onAction_closePanel.call();
         this.onAction_closePanel.clear();

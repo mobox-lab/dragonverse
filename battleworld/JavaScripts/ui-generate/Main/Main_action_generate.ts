@@ -4,7 +4,7 @@
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * AUTHOR: 断桥烟雨
  * UI: UI/Main/Main_action.ui
- * TIME: 2024.01.30-15.47.37
+ * TIME: 2024.01.31-10.04.14
  */
 
  
@@ -18,12 +18,12 @@
 		}
 		return this.mCanvasSkill0_Internal
 	}
-	private dashname_1_1_Internal: mw.TextBlock
-	public get dashname_1_1(): mw.TextBlock {
-		if(!this.dashname_1_1_Internal&&this.uiWidgetBase) {
-			this.dashname_1_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill0/dashname_1_1') as mw.TextBlock
+	private weaponName_Internal: mw.TextBlock
+	public get weaponName(): mw.TextBlock {
+		if(!this.weaponName_Internal&&this.uiWidgetBase) {
+			this.weaponName_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill0/weaponName') as mw.TextBlock
 		}
-		return this.dashname_1_1_Internal
+		return this.weaponName_Internal
 	}
 	private mBtnjump_1_1_Internal: mw.TextBlock
 	public get mBtnjump_1_1(): mw.TextBlock {
@@ -149,7 +149,7 @@
 		
 		//文本多语言
 		
-		this.initLanguage(this.dashname_1_1)
+		this.initLanguage(this.weaponName)
 		
 	
 		this.initLanguage(this.mBtnjump_1_1)
@@ -169,9 +169,6 @@
 	
 		//文本多语言
 		
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvasSkill0/MBtnName") as any);
-		
-	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvasSkill0/MBlue") as any);
 		
 	

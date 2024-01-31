@@ -38,12 +38,12 @@ export class P_Game_Talk extends P_Game_Talk_Generate {
     onShow() {
         KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
             UIService.hideUI(this);
-            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         })
     }
 
     onHide() {
         EventManager.instance.call(EModule_Events.ui_hideTalk, this.npcId, this.config);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
     /**
