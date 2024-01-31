@@ -2,7 +2,7 @@
  * @Author       : fengqi.han
  * @Date         : 2023-12-12 15:50:18
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-30 16:55:27
+ * @LastEditTime : 2024-01-31 10:08:51
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\module\PlayerModule\UI\rank\RankPanel.ts
  * @Description  : 段位系统ui面板
  */
@@ -121,8 +121,11 @@ export class RankPanel extends Rank_main_Generate {
 
         KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
             UIService.hideUI(this);
-            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         })
+    }
+
+    onHide() {
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
     /**

@@ -20,7 +20,7 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
 
         for (let index = 0; index < this.mSelectPanel.getChildrenCount(); index++) {
             let ui = this.mSelectPanel.getChildAt(index);
-            if (ui instanceof Button) {
+            if (ui instanceof StaleButton || ui instanceof Button) {
                 ui.onClicked.add(() => {
                     UIService.hide(SkillSelectPanel);
                     this.mSkill.replaceSkillLibId(this.selectSkillLibId, index);
@@ -95,8 +95,11 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
 
         KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
             UIService.hide(SkillSelectPanel);
-            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         })
+    }
+
+    onHide() {
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
     private getBgImageGuid(weaponId: number): string {
