@@ -557,7 +557,7 @@ export default class GameServiceConfig {
     /**
      * 角色 最大跳跃高度.
      */
-    public static readonly ROLE_JUMP_HEIGHT_OBBY = 200;
+    public static readonly ROLE_JUMP_HEIGHT_OBBY = 160;
 
     /**
      * 角色 最大跳跃次数.
