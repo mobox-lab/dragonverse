@@ -47,6 +47,8 @@ class ItemSkillSelect extends ItemSkillSelect_Generate implements VList.IItemRen
             return;
         }
 
+        this.bg_1_1.imageGuid = this.getBgImageGuid(skillLibCfg.weaponType);
+
         this.mSkillName.text = motionSkillCfg.Name;
 
         if (SkillPanel.isSimple) {
@@ -80,6 +82,16 @@ class ItemSkillSelect extends ItemSkillSelect_Generate implements VList.IItemRen
 
     setSelect(bool: boolean): void {
 
+    }
+
+    private getBgImageGuid(weaponId: number): string {
+        switch (weaponId) {
+            case 1: return Globaldata.punchBgImgGuid;
+            case 2: return Globaldata.singleSwordBgImgGuid;
+            case 3: return Globaldata.wandBgImgGuid;
+            case 4: return Globaldata.twoHandedSwordBgImgGuid;
+            default: return Globaldata.punchBgImgGuid;
+        }
     }
 
 }

@@ -57,6 +57,8 @@ export class MainUISkillButton {
     private _motionSkillIndex: number = 0;
     /**释放技能时的索引 */
     private _preMotionSkillIndex: number = 0;
+    /**记录ui显影，用于外部控制 */
+    public currentVisible: boolean = false;
 
     public init(rootCanvas: mw.Canvas, btnIndex: number) {
 
@@ -81,7 +83,7 @@ export class MainUISkillButton {
         this.img_eff.visibility = mw.SlateVisibility.Collapsed;
 
         this.mIcon.visibility = mw.SlateVisibility.Collapsed;
-        this.mBtnName.visibility = mw.SlateVisibility.Collapsed;
+        // this.mBtnName.visibility = mw.SlateVisibility.Collapsed;
 
         this.mCDMask.visibility = mw.SlateVisibility.Collapsed;
         this.mBlue.visibility = mw.SlateVisibility.Collapsed;
@@ -132,7 +134,12 @@ export class MainUISkillButton {
     }
 
     public setVisible(visible: boolean) {
+        this.currentVisible = visible;
+        let v = visible ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
+        this.rootCanvas.visibility = v;
+    }
 
+    public outerSetVisible(visible: boolean) {
         let v = visible ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
         this.rootCanvas.visibility = v;
     }
@@ -243,18 +250,23 @@ export class MainUISkillButton {
         this.btn_invoke.visibility = mw.SlateVisibility.Visible;
 
 
-        if (StringUtil.isEmpty(this._btnDataCfg.btnIcon)) {
-            this.mIcon.visibility = mw.SlateVisibility.Collapsed;
-            this.mBtnName.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-            this.mBtnName.text = this.motionSkillCfgs[0].Name;
-        } else {
-            if (!this._btnDataCfg && this._btnDataCfg.btnType == 1) {
-                //如果不是普攻再显示底图
-                this.mIcon.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mBtnName.visibility = mw.SlateVisibility.Collapsed;
-                this.mIcon.imageGuid = this._btnDataCfg.btnIcon;
-            }
+        // if (StringUtil.isEmpty(this._btnDataCfg.btnIcon)) {
+        //     this.mIcon.visibility = mw.SlateVisibility.Collapsed;
+        //     this.mBtnName.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+        //     this.mBtnName.text = this.motionSkillCfgs[0].Name;
+        // } else {
+
+        //     this.mIcon.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+        //     this.mBtnName.visibility = mw.SlateVisibility.Collapsed;
+        //     this.mIcon.imageGuid = this._btnDataCfg.btnIcon;
+
+        // }
+        if (!StringUtil.isEmpty(this._btnDataCfg.btnIcon)) {
+            this.btn_invoke.normalImageGuid = this._btnDataCfg.btnIcon;
+            this.btn_invoke.pressedImageGuid = this._btnDataCfg.btnIcon;
+            this.btn_invoke.disableImageGuid = this._btnDataCfg.btnIcon;
         }
+        this.mBtnName.text = this.motionSkillCfgs[0].Name;
 
 
         let cdNum = this.motionSkillCfgs[0].magicPoints;

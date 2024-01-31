@@ -11,6 +11,7 @@ import UIRole_Generate from "../../../ui-generate/Shop/UIDecorate/UIRole_generat
 import { AnalyticsTool, EFirstDo, EPageName } from "../../AnalyticsModule/AnalyticsTool";
 import { EquipModuleC } from "../../EquipModule/EquipModuleC";
 import { PlayerModuleData } from "../../PlayerModule/PlayerModuleData";
+import ActionUI from "../../PlayerModule/UI/ActionUI";
 import { Attribute } from "../../PlayerModule/sub_attribute/AttributeValueObject";
 import { ShopModuleC } from "../ShopModuleC";
 import { TabItem, Item } from "./ShopItem";
@@ -88,6 +89,8 @@ export class ShopView extends UIRole_Generate {
             UIService.hideUI(this);
             KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         })
+
+        UIService.getUI(ActionUI)?.setAbilitiesVisible(false);
     }
 
     onHide() {
@@ -104,6 +107,8 @@ export class ShopView extends UIRole_Generate {
             let pendantId = equipId ? GameConfig.Shop.getElement(equipId).pendantId : null;
             this.itemPreview(pendantId, key);
         })
+
+        UIService.getUI(ActionUI)?.setAbilitiesVisible(true);
     }
 
     /**

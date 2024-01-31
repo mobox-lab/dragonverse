@@ -53,7 +53,7 @@ export class AttrPlayerStateSync extends mw.PlayerState {
     })
     private attr86: number = 0;
     private async client_call_attr_86() {
-        EventSyncTool.dispatchToLocal(EAttributeEvents_C.Attribute_AngerValue_C, this.attr86);
+        // EventSyncTool.dispatchToLocal(EAttributeEvents_C.Attribute_AngerValue_C, this.attr86);
     }
 
     /**玩家最大怒气值*/

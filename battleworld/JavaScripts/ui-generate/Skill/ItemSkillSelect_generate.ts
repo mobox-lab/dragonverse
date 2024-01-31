@@ -2,16 +2,23 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 帅你一脸(影月宗·大师)
+ * AUTHOR: 断桥烟雨
  * UI: UI/Skill/ItemSkillSelect.ui
- * TIME: 2023.11.15-14.12.50
+ * TIME: 2024.01.30-19.39.19
  */
 
  
 
  @UIBind('UI/Skill/ItemSkillSelect.ui')
  export default class ItemSkillSelect_Generate extends UIScript {
-	 	private mSkillName_Internal: mw.TextBlock
+	 	private bg_1_1_Internal: mw.Image
+	public get bg_1_1(): mw.Image {
+		if(!this.bg_1_1_Internal&&this.uiWidgetBase) {
+			this.bg_1_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/bg_1_1') as mw.Image
+		}
+		return this.bg_1_1_Internal
+	}
+	private mSkillName_Internal: mw.TextBlock
 	public get mSkillName(): mw.TextBlock {
 		if(!this.mSkillName_Internal&&this.uiWidgetBase) {
 			this.mSkillName_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSkillName') as mw.TextBlock

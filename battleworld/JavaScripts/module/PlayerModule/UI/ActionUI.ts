@@ -62,7 +62,7 @@ export default class ActionUI extends Main_action_Generate {
         EventManager.instance.add(EAttributeEvents_C.Attribute_WeaponId_Change_C, this.listen_weaponIdChange, this);
         EventManager.instance.add(ESkillEvent_C.SkillEvent_RandomSkill_C, this.listen_randomSkill, this);
         // 怒气值变化
-        EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
+        // EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
 
         EventManager.instance.add(EAttributeEvents_C.Attribute_gasExplosion_C, this.listen_gasExplosion, this);
 
@@ -162,6 +162,7 @@ export default class ActionUI extends Main_action_Generate {
             case 2: return Globaldata.singleSwordImgGuid;
             case 3: return Globaldata.wandImgGuid;
             case 4: return Globaldata.twoHandedSwordImgGuid;
+            default: return Globaldata.punchBgImgGuid;
         }
     }
 
@@ -190,18 +191,18 @@ export default class ActionUI extends Main_action_Generate {
 
 
     /**玩家怒气值变化 */
-    private listen_angerChange() {
-        let maxAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.maxAngerValue);
-        let curAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.angerValue);
+    // private listen_angerChange() {
+    //     let maxAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.maxAngerValue);
+    //     let curAngerValue = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.angerValue);
 
-        if (curAngerValue < maxAngerValue) {
+    //     if (curAngerValue < maxAngerValue) {
 
-            this.showVisibleFinalSkill(false);
-            return;
-        }
+    //         this.showVisibleFinalSkill(false);
+    //         return;
+    //     }
 
-        this.showVisibleFinalSkill(true);
-    }
+    //     this.showVisibleFinalSkill(true);
+    // }
 
     public showVisibleFinalSkill(show: boolean) {
         if (show) {
@@ -222,5 +223,33 @@ export default class ActionUI extends Main_action_Generate {
         if (this.mfinalTween) {
             this.mfinalTween.stop();
         }
+    }
+
+    public setAbilitiesVisible(visible: boolean) {
+        //设置显影的时候要判断原ui是否已经显影
+        if (visible) {
+            this.weaponSkillBtns.forEach(item => {
+                if (item.currentVisible === visible) {
+                    item.outerSetVisible(visible);
+                }
+            })
+            this.skillBtns.forEach(item => {
+                if (item.currentVisible === visible) {
+                    item.outerSetVisible(visible);
+                }
+            })
+        } else {
+            this.weaponSkillBtns.forEach(item => {
+                if (item.currentVisible !== visible) {
+                    item.outerSetVisible(visible);
+                }
+            })
+            this.skillBtns.forEach(item => {
+                if (item.currentVisible !== visible) {
+                    item.outerSetVisible(visible);
+                }
+            })
+        }
+
     }
 }
