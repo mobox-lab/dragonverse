@@ -58,7 +58,7 @@ export default class SetingUI extends Setting_Main_Generate {
         AnalyticsTool.send_ts_page(EPageName.setting);
         KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
             UIService.hideUI(this);
-            KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+
         })
     }
 
@@ -110,6 +110,7 @@ export default class SetingUI extends Setting_Main_Generate {
     onBack() {
 
         mw.UIService.hideUI(this);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
     onSaturationClicked() {
@@ -131,6 +132,7 @@ export default class SetingUI extends Setting_Main_Generate {
     private refresh_lockBtn() {
         this.mBtn_Lock.text = Globaldata.isAutoLockEnemy ? "ON" : "OFF";
     }
+
 
 
 }

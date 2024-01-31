@@ -266,7 +266,11 @@ export class MainUISkillButton {
             this.btn_invoke.pressedImageGuid = this._btnDataCfg.btnIcon;
             this.btn_invoke.disableImageGuid = this._btnDataCfg.btnIcon;
         }
-        this.mBtnName.text = this.motionSkillCfgs[0].Name;
+        if (this.mBtnName) {
+            //普攻键没有mBtnName
+            this.mBtnName.text = this.motionSkillCfgs[0].Name;
+        }
+
 
 
         let cdNum = this.motionSkillCfgs[0].magicPoints;
