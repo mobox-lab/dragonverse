@@ -18,6 +18,7 @@ import MainCurtainPanel from "../main/MainCurtainPanel";
 import UIScript = mw.UIScript;
 import GameServiceConfig from "../../const/GameServiceConfig";
 import i18n, { LanguageTypes } from "../../language/i18n";
+import { ObbyModuleC, ObbyModuleS } from "../../module/obby/ObbyModule";
 
 
 /**
@@ -191,4 +192,10 @@ AddGMCommand("跳Battle World", () => {
 AddGMCommand("切语言", (player, value) => {
 
     i18n.use(Number(value), true);
+})
+
+AddGMCommand("重置跑酷等级",
+(player, value) => {
+}, (player, value) => {
+    ModuleService.getModule(ObbyModuleS).gmSetLV(player.playerId,Number.parseInt(value));
 })

@@ -10,6 +10,7 @@ import Nolan from "../../../depend/nolan/Nolan";
 import i18n from "../../../language/i18n";
 import MainPanel from "../../../ui/main/MainPanel";
 import GToolkit from "../../../util/GToolkit";
+import UnifiedRoleController from "../../role/UnifiedRoleController";
 import { ObbyModuleC } from "../ObbyModule";
 
 
@@ -22,6 +23,7 @@ export enum HighSchoolType {
     DeadBackGround = 2,//地下的死亡触发点，碰到后就锁定视角，判定死亡
     DeadRed = 3,//红色方块 触碰后变成布娃娃，然后回到原点
     ScorePoint = 4,//得分点 碰到后就得分
+    GameExit = 5,//游戏结束
 }
 
 /**
@@ -37,6 +39,7 @@ export default class HighSchoolTrigger extends mw.Script {
             "坠落死亡区": HighSchoolType.DeadBackGround,
             "红色死亡区": HighSchoolType.DeadRed,
             "得分点": HighSchoolType.ScorePoint,
+            "游戏退出点": HighSchoolType.GameExit,
         },
     })
     private _circleType: HighSchoolType = HighSchoolType.TransStart;
@@ -47,8 +50,6 @@ export default class HighSchoolTrigger extends mw.Script {
     private _trigger: mw.Trigger;
 
     private _hander: number;
-
-    public static lastPos: mw.Vector;
 
     protected onStart(): void {
         if (mw.SystemUtil.isServer()) {
@@ -75,7 +76,6 @@ export default class HighSchoolTrigger extends mw.Script {
                     let obby =  ModuleService.getModule(ObbyModuleC);
                     if(!obby.isInGame()){
                         obby.enterGame();
-                        HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
                     }
                 } else if (this._circleType == HighSchoolType.DeadBackGround) {
                     //锁定摄像头
@@ -86,7 +86,6 @@ export default class HighSchoolTrigger extends mw.Script {
                     this._hander = TimeUtil.setInterval(this.onCountDown, 2);
                 } else if (this._circleType == HighSchoolType.ScorePoint) {
                     let obby = ModuleService.getModule(ObbyModuleC);
-                    HighSchoolTrigger.lastPos = this._trigger.worldTransform.position;
                     console.log("entercheckPoint idx="+this._checkPointIdx)
                     if (obby.checkLv(this._checkPointIdx)) {
                         console.log("entercheckPoint3333 idx="+this._checkPointIdx)
@@ -96,6 +95,15 @@ export default class HighSchoolTrigger extends mw.Script {
                         //记录是第几关 改变进度条
                         obby.updateCheckPoint(this._checkPointIdx);
                     }
+                }else if (this._circleType == HighSchoolType.GameExit) {
+                    Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
+                    Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
+                    Player
+                        .localPlayer
+                        .getPlayerState(UnifiedRoleController)
+                        ?.respawn();
+                    let obby =  ModuleService.getModule(ObbyModuleC);
+                    obby.exitGame();
                 }
             }
         }
