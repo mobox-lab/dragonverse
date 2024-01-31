@@ -188,8 +188,9 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
     private initCheckPoint() {
 
-        this._maxLv = GameConfig.Obbycheck.getAllElement().length;
-        for (let i = 0; i <= this._maxLv; i++) {
+        let len = GameConfig.Obbycheck.getAllElement().length
+        this._maxLv = len-1
+        for (let i = 0; i < len; i++) {
             let ele = GameConfig.Obbycheck.getElement(i);
             this._checkPointCfg["" + i] = new mw.Vector(ele.checkpointloc[0], ele.checkpointloc[1], ele.checkpointloc[2]);
             this._effectPointCfg["" + i] = new mw.Vector(ele.splashpointloc[0], ele.splashpointloc[1], ele.splashpointloc[2]);
@@ -243,6 +244,19 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
                 loopCount: 1,
             })
         this.server.net_saveLv(checkPointId);
+    }
+
+    private playGetPointEffect(lv:number){
+        //播放粒子特效
+        let pos = this._effectPointCfg["" + lv];
+        let scale = this._effectScaleCfg["" + lv];
+        EffectService.playAtPosition(
+            GameServiceConfig.SCENE_DRAGON_OBBY,
+            pos,
+            {
+                scale: scale,
+                loopCount: 1,
+            })
     }
 
 
@@ -338,6 +352,9 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
                 this._curLv = curLv;
                 this.reborn();
             }
+        }
+        if(this._curLv < curLv){
+            this.playGetPointEffect(curLv);
         }
         this._curLv = curLv;
         this._obbyPanel.setCurLv(this._curLv, this._maxLv);
