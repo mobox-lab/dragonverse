@@ -16,19 +16,19 @@ export default class DanceNpcBehaviour extends mw.Script {
     /**当该npc对应的玩家发生改变时执行 (客户端) */
     private async onRankPlayerChange() {
 
-        return;
+        // return;
 
         let npc = this.gameObject as mw.Character;
         mw.AccountService.getUserData(this.userId, 0, (data) => {
             mw.AccountService.setUserData(this.gameObject as mw.Character, data, async (state) => {
                 // 播放跳舞动画
                 let danceGuid = GlobalData.Rank.npcDanceMap.get(this.gameObject.gameObjectId);
-                if (this.anim == null) {
-                    await AssetUtil.asyncDownloadAsset(GlobalData.Rank.npcDanceMap.get(this.gameObject.gameObjectId));
-                    this.anim = PlayerManagerExtesion.loadAnimationExtesion(npc, danceGuid);
-                    this.anim.loop = 0;
-                }
-                PlayerManagerExtesion.rpcPlayAnimation(npc, danceGuid);
+                // if (this.anim == null) {
+                //     await AssetUtil.asyncDownloadAsset(GlobalData.Rank.npcDanceMap.get(this.gameObject.gameObjectId));
+                //     this.anim = PlayerManagerExtesion.loadAnimationExtesion(npc, danceGuid);
+
+                // }
+                PlayerManagerExtesion.rpcPlayAnimation(npc, danceGuid, 0);
             });
         });
 
