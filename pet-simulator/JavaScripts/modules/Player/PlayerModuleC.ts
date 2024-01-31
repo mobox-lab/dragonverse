@@ -1,4 +1,4 @@
-import { PlayerManagerExtesion, } from '../../Modified027Editor/ModifiedPlayer';
+import { PlayerManagerExtesion } from "../../Modified027Editor/ModifiedPlayer";
 import { MapEx } from "odin";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
@@ -29,10 +29,12 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
     private hudUI: P_HudUI = null;
     private curBehavior: PlayerBehavior;
     private static _curBehavior: PlayerBehavior;
+
     /**当前玩家行为 */
     public static get curPlayer(): PlayerBehavior {
         return this._curBehavior;
     }
+
     /**输入模块 */
     private inputModule: InputModuleC;
     /**金币改变回调 */
@@ -69,7 +71,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
                     //TODO this.checkCoinGradient(coinType, this.data.gold3);
                     break;
                 case GlobalEnum.CoinType.SummerGold:
-                    this.onGoldChange.call(GlobalEnum.CoinType.SummerGold, this.data.summerCoin)
+                    this.onGoldChange.call(GlobalEnum.CoinType.SummerGold, this.data.summerCoin);
                     break;
                 default:
                     break;
@@ -90,14 +92,15 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
         this.hudUI.onSkateboardAction.add(this.onSkateboardAction, this);
         InputUtil.onKeyDown(Keys.L, () => {
             this.showLevelUp();
-        })
+        });
         utils.triInit(GlobalData.LevelUp.triggerGuid, () => {
             this.showLevelUp();
         }, () => {
             mw.UIService.getUI(P_LevelUI).hide();
-        })
+        });
         this.setFastTranCanvasVis();
     }
+
     public get SummerCoin(): number {
         return this.data.summerCoin;
     }
@@ -177,7 +180,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
             if (this.curBehavior.skateboardState) {
                 this.curBehavior.onSkateboardContinue();
             }
-        })
+        });
         TimeUtil.delaySecond(time).then(() => {
             this.curBehavior.onClickAttackSpeed();
         });
@@ -201,7 +204,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
 
     /**松开攻速按钮 */
     private onReleaseAttackSpeed(): void {
-        PlayerManagerExtesion.stopStanceExtesion(this.localPlayer.character,);
+        PlayerManagerExtesion.stopStanceExtesion(this.localPlayer.character);
         this.pressAnim?.stop();
         this.curBehavior?.onReleaseAttackSpeed();
     }
@@ -220,7 +223,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
         if (GlobalData.Global.isUseAvatar) {
             AccountService.downloadData(this.localPlayer.character, () => {
                 this.changePlatformSkin(1, false);
-            })
+            });
         } else {
             // setTimeout(() => {
             //TODO:临时代码
@@ -229,8 +232,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
         }
         if (this.data.playerQuitLoc < 2000) {//开局进入第一世界
             this.onGoldChange.call(GlobalEnum.CoinType.FirstWorldGold, this.data.gold);
-        }
-        else if (this.data.playerQuitLoc < 3000) {//开局进入第二世界
+        } else if (this.data.playerQuitLoc < 3000) {//开局进入第二世界
             this.onGoldChange.call(GlobalEnum.CoinType.SecondWorldGold, this.data.gold2);
         } else if (this.data.playerQuitLoc < 4000) {//开局进入第三世界
             this.onGoldChange.call(GlobalEnum.CoinType.ThirdWorldGold, this.data.gold3);
@@ -243,11 +245,10 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
         let cfgid = MapEx.get(this.data.buryingPoint, GlobalEnum.CoinType.FirstWorldGold);
         if (!cfgid) cfgid = 0;
     }
+
     private checkCoinCount(cfgid: number, coinType: GlobalEnum.CoinType): void {
         let cfg = GameConfig.Gradient.getElement(cfgid);
     }
-
-
 
 
     /**显示升级界面 */
@@ -389,8 +390,11 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
     public async clearGoldGem(): Promise<void> {
         await this.reduceDiamond(this.data.diamond);
         await this.reduceGold(this.data.gold, GlobalEnum.CoinType.FirstWorldGold);
-
+        await this.reduceGold(this.data.gold2, GlobalEnum.CoinType.SecondWorldGold);
+        await this.reduceGold(this.data.gold3, GlobalEnum.CoinType.ThirdWorldGold);
+        await this.reduceGold(this.data.summerCoin, GlobalEnum.CoinType.SummerGold);
     }
+
     public async net_levelNotice(playerId: number, count: number) {
         let str = await PlayerNameManager.instance.getPlayerName(playerId);
         if (count == GlobalData.Notice.levelUpTipsCount[0]) {
