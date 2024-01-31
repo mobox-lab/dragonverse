@@ -19,19 +19,19 @@ class PlayerItem {
     private playerID: number;
 
     public onClick: Action1<number> = new Action1();
-    btn: mw.Button;
+    // btn: mw.Button;
 
     constructor(public data: { id: number, state: GlobalEnum.TradingState }, private ui: mw.UserWidget) {
         this.playerID = data.id;
         this.sendImg = ui.findChildByPath("RootCanvas/Canvas/mImage_Go") as mw.Image;
         this.stateText = ui.findChildByPath("RootCanvas/Canvas/mtext_State") as mw.TextBlock;
         this.playerName = ui.findChildByPath("RootCanvas/Canvas/mtext_Username") as mw.TextBlock;
-        this.btn = ui.findChildByPath("RootCanvas/Canvas/mbtn_Trade") as mw.Button;
-        this.btn.touchMethod = mw.ButtonTouchMethod.PreciseTap;
+        // this.btn = ui.findChildByPath("RootCanvas/Canvas/mbtn_Trade") as mw.Button;
+        // this.btn.touchMethod = mw.ButtonTouchMethod.PreciseTap;
         this.playerImg = ui.findChildByPath("RootCanvas/Canvas/Image") as mw.Image;
-        this.btn.onClicked.add(() => {
-            this.onClick.call(this.playerID);
-        });
+        // this.btn.onClicked.add(() => {
+        //     this.onClick.call(this.playerID);
+        // });
 
         this.setPlayerName(data.id);
         this.setSendState(data.state);
@@ -52,7 +52,7 @@ class PlayerItem {
         if (state == GlobalEnum.TradingState.CanTrading) {
             this.sendImg.visibility = mw.SlateVisibility.SelfHitTestInvisible;
             this.stateText.text = GameConfig.Language.button_3.Value;
-            this.btn.enable = true;
+            // this.btn.enable = true;
         } else {
             if (state == GlobalEnum.TradingState.Reject) {
                 this.stateText.text = GameConfig.Language.button_4.Value
@@ -63,7 +63,7 @@ class PlayerItem {
             if (state == GlobalEnum.TradingState.Trading) {
                 this.stateText.text = GameConfig.Language.button_6.Value
             }
-            this.btn.enable = false;
+            // this.btn.enable = false;
             this.sendImg.visibility = mw.SlateVisibility.Collapsed;
         }
 

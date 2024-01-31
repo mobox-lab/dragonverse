@@ -155,6 +155,13 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.mText_stamina_Internal
 	}
+	private tips_btn_Internal: mw.Button
+	public get tips_btn(): mw.Button {
+		if(!this.tips_btn_Internal&&this.uiWidgetBase) {
+			this.tips_btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_stamina/tips_btn') as mw.Button
+		}
+		return this.tips_btn_Internal
+	}
 	private mCanvas_Transmit_Internal: mw.Canvas
 	public get mCanvas_Transmit(): mw.Canvas {
 		if(!this.mCanvas_Transmit_Internal&&this.uiWidgetBase) {
@@ -294,6 +301,12 @@ export default class Hud_Generate extends UIScript {
 			Event.dispatchToLocal("PlayButtonClick", "mRefresh_Btn");
 		})
 		this.mRefresh_Btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.tips_btn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "tips_btn");
+		})
+		this.tips_btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		this.mBtn_Transmit.onClicked.add(()=>{

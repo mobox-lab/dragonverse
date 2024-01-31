@@ -14,6 +14,7 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import MessageBox from "../../utils/MessageBox";
 import { GameConfig } from "../../config/GameConfig";
 import { TipsManager } from "./P_TipUI";
+import BuffEnergyTips_Generate from "../../ui-generate/common/BuffEnergyTips_generate";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -154,6 +155,21 @@ export class P_HudUI extends Hud_Generate {
                 TipsManager.instance.showTip(GameConfig.Language.Copy_Success_Text_1.Value);
             }, GameConfig.Language.Deposit_2.Value);
         });
+
+        this.tips_btn.onClicked.add(() => {
+            let ui = UIService.show(BuffEnergyTips_Generate);
+            ui.title.text = GameConfig.Language.Stamina_Rule_1.Value;
+            ui.mText_message.text = GameConfig.Language.Stamina_Rule_2.Value;
+            ui.mBtn_OK.onClicked.clear();
+            ui.mBtn_OK.onClicked.add(() => {
+                UIService.hideUI(ui);
+                KeyOperationManager.getInstance().unregisterKey(null, Keys.Escape);
+            });
+            KeyOperationManager.getInstance().onKeyUp(Keys.Escape, null, () => {
+                UIService.hideUI(ui);
+                KeyOperationManager.getInstance().unregisterKey(null, Keys.Escape);
+            });
+        })
     }
 
     private _velocity: Vector = new Vector();
@@ -207,7 +223,7 @@ export class P_HudUI extends Hud_Generate {
         let startAngle = GlobalData.TweenFastTranBtn.startAngle;
         let endAngle = GlobalData.TweenFastTranBtn.endAngle;
         let time = GlobalData.TweenFastTranBtn.tweenTime;
-        this.leftToRightTween = new mw.Tween({angle: startAngle}).to({angle: endAngle}, time * 1000)
+        this.leftToRightTween = new mw.Tween({ angle: startAngle }).to({ angle: endAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -217,7 +233,7 @@ export class P_HudUI extends Hud_Generate {
                 }
             })
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
-        this.rightToLeftTween = new mw.Tween({angle: endAngle}).to({angle: startAngle}, time * 1000)
+        this.rightToLeftTween = new mw.Tween({ angle: endAngle }).to({ angle: startAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })

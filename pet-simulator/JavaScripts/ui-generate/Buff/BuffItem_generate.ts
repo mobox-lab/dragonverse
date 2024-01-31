@@ -29,6 +29,13 @@ export default class BuffItem_Generate extends UIScript {
 		}
 		return this.mTime_Internal
 	}
+	private btn_Internal: mw.Button
+	public get btn(): mw.Button {
+		if(!this.btn_Internal&&this.uiWidgetBase) {
+			this.btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/btn') as mw.Button
+		}
+		return this.btn_Internal
+	}
 
 
 
@@ -47,6 +54,12 @@ export default class BuffItem_Generate extends UIScript {
 		
 		//按钮添加点击
 		
+		this.btn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btn");
+		})
+		this.btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 
 		//按钮多语言
 		
