@@ -2,13 +2,15 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-31 11:20:52
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-31 13:45:09
+ * @LastEditTime : 2024-01-31 16:53:23
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\ui\BuyEnergyPanel.ts
  * @Description  : 购买战斗次数
  */
 
 import { GameConfig } from "../config/GameConfig";
+import { Globaldata } from "../const/Globaldata";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
+import { EnergyModuleC } from "../module/Energy/EnergyModule";
 import { ShopModuleC } from "../module/ShopModule/ShopModuleC";
 import { MessageBox } from "../tool/MessageBox";
 import Tips from "../tool/P_Tips";
@@ -16,6 +18,7 @@ import BuyPanel_Generate from "../ui-generate/Buy/BuyPanel_generate";
 import ItemBuy_Generate from "../ui-generate/Buy/ItemBuy_generate";
 
 export default class BuyEnergyPanel extends BuyPanel_Generate {
+    private _selectButtons: Map<number, StaleButton> = new Map<number, StaleButton>();
     onStart() {
         let configs = GameConfig.GoodsTable.getAllElement();
         configs.forEach(item => {
@@ -46,6 +49,7 @@ export default class BuyEnergyPanel extends BuyPanel_Generate {
                     }
                 });
             });
+            this._selectButtons.set(item.id, goodsItem.mSelectBtn);
             this.mSelectList.addChild(goodsItem.uiObject);
         });
 
@@ -57,9 +61,22 @@ export default class BuyEnergyPanel extends BuyPanel_Generate {
             UIService.hideUI(this);
         });
     }
+
     onShow() {
         this.mainCanvas.visibility = SlateVisibility.Visible;
         this.mCanvas_undo.visibility = SlateVisibility.Hidden;
+        //计算下能不能买
+        let currEnergy = ModuleService.getModule(EnergyModuleC).currEnergy();
+        let configs = GameConfig.GoodsTable.getAllElement();
+        configs.forEach(item => {
+            let btn = this._selectButtons.get(item.id);
+            if (!btn) return;
+            if (currEnergy + item.buyCount > Globaldata.ENERGY_MAX) {
+                btn.enable = false;
+            } else {
+                btn.enable = true;
+            }
+        });
     }
 
     onHide() {
