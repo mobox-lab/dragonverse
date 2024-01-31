@@ -132,6 +132,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     private _isInGame:boolean;
     private _eventListeners: EventListener[] = [];
     private _checkPointCfg = {}
+    public  _startPos: mw.Vector;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -203,6 +204,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             this._isStart = false;
             this._isInGame = true;
             this._curLv = 0;
+            this._startPos = Player.localPlayer.character.worldTransform.position;
             this.server.net_getLv();
             UIService.showUI(this._obbyPanel);
             this.setObbyProps(Player.localPlayer.character);
@@ -293,7 +295,11 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
         public reborn() {
             Player.localPlayer.character.ragdollEnabled = false;
-            Player.localPlayer.character.worldTransform.position = this._checkPointCfg[""+this._curLv];
+            if(this._curLv == 0){
+                Player.localPlayer.character.worldTransform.position = this._startPos;
+            }else{
+                Player.localPlayer.character.worldTransform.position = this._checkPointCfg[""+this._curLv];
+            }
             Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
         }
 
