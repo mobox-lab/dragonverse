@@ -843,5 +843,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
  */
 function calAbility(quality: number, star: number, attribute: number, level: number): number {
     let ratio = [0.4, 0.5, 0.6, 0.8, 1];
-    return Math.round(Math.pow(star, ratio[quality]) * (+attribute) * level / 20);
+    return Math.round(
+        Math.pow(star,
+            ratio[GToolkit.safeIndex(quality, ratio, "cut")])
+        * attribute * level / 20);
 }
