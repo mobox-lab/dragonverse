@@ -13,8 +13,9 @@ import { LandModuleC } from '../LandModule/LandModuleC';
 import { PlayerModuleC } from '../PlayerModule/PlayerModuleC';
 import { ShopView } from '../ShopModule/UI/ShopView';
 import { ECoreStep, EHurtSource, THurtSourceData } from '../AnalyticsModule/AnalyticsTool';
+import { MainUI } from '../PlayerModule/UI/MainUI';
 
-export class AreaModuleC extends ModuleC<AreaModuleS, null>{
+export class AreaModuleC extends ModuleC<AreaModuleS, null> {
 
     /**玩家模块*/
     private playerModuleC: PlayerModuleC = null;
@@ -78,9 +79,11 @@ export class AreaModuleC extends ModuleC<AreaModuleS, null>{
         let pos = null;
         if (areaId == EAreaId.Battle) {
             pos = await ModuleService.getModule(LandModuleC).getrandomPostion();
-
+            UIService.getUI(MainUI)?.setCoinAndEnergyVisible(false);
         } else {
             pos = cfg.bornPoint;
+            //回城，显示ui
+            UIService.getUI(MainUI)?.setCoinAndEnergyVisible(true);
         }
 
         this.setLocation(pos.clone());
@@ -160,6 +163,7 @@ export class AreaModuleC extends ModuleC<AreaModuleS, null>{
 
             if (hp > maxHP * 0.5) {
                 let position = await ModuleService.getModule(LandModuleC).getrandomPostion();
+                UIService.getUI(MainUI)?.setCoinAndEnergyVisible(false);
                 this.setLocation(position);
             } else {
 
@@ -193,6 +197,7 @@ export class AreaModuleC extends ModuleC<AreaModuleS, null>{
 
     public async net_dropLand() {
         let position = await ModuleService.getModule(LandModuleC).getrandomPostion();
+        UIService.getUI(MainUI)?.setCoinAndEnergyVisible(false);
         this.setLocation(position);
     }
 

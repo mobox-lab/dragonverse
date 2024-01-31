@@ -135,30 +135,6 @@ export class MainUI extends Main_HUD_Generate {
 
         this.mBattle.text = Globaldata.ENERGY_MAX.toString();
 
-        KeyOperationManager.getInstance().onKeyPress(Keys.W, this, () => {
-            this.changeVelocityX(1);
-        });
-        KeyOperationManager.getInstance().onKeyPress(Keys.S, this, () => {
-            this.changeVelocityX(-1);
-        });
-        KeyOperationManager.getInstance().onKeyPress(Keys.A, this, () => {
-            this.changeVelocityY(-1);
-        });
-        KeyOperationManager.getInstance().onKeyPress(Keys.D, this, () => {
-            this.changeVelocityY(1);
-        });
-    }
-    private _velocity: Vector = new Vector();
-    public changeVelocityX(x: number) {
-        this._velocity.set(0, 0, 0);
-        this._velocity.x += x;
-        mw.Player.localPlayer.character.addMovement(this._velocity);
-    }
-
-    public changeVelocityY(y: number) {
-        this._velocity.set(0, 0, 0);
-        this._velocity.y += y;
-        mw.Player.localPlayer.character.addMovement(this._velocity);
     }
 
     /**
