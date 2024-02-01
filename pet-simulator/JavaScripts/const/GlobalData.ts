@@ -1237,7 +1237,13 @@ export namespace GlobalData {
          * 体力容量.
          * @type {number}
          */
-        public static readonly ENERGY_MAX: number = 240;
+        public static readonly ENERGY_MAX: number = 480;
+
+        /**
+         * 体力 单次恢复上限.
+         * @type {number}
+         */
+        public static readonly ENERGY_RECOVERY_MAX_COUNT=60;
 
         /**
          * 体力系数采样数量.
@@ -1270,6 +1276,12 @@ export namespace GlobalData {
          * @type {number}
          */
         public static readonly ENERGY_PATCH_RPC_COUNT = 10;
+
+        /**
+         * 体力 倍率.
+         * @type {number}
+         */
+        public static readonly ENERGY_RATIO = 2;
     }
 
     /**

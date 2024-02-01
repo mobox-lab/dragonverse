@@ -222,9 +222,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
                     d.energy = Math.min(
                         GlobalData.Energy.ENERGY_MAX,
                         d.energy + (this.petBagModule().getPlayerEnergyRecoveryCoefficient(playerId))
-                        * Math.max(
-                            Math.floor(duration / energyRecoveryIntervalMs),
-                            0));
+                        * Math.max(Math.floor(duration / energyRecoveryIntervalMs), 0));
                 }
                 d.lastRecoveryTime = now;
                 timeout = energyRecoveryIntervalMs;

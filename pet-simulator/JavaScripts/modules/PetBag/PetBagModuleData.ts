@@ -607,8 +607,8 @@ export class PetBagModuleData extends Subdata {
         }
         let result = 0;
         for (const val of qsq) {
-            result += val;
+            result += val * GlobalData.Energy.ENERGY_RATIO;
         }
-        return result;
+        return Math.min(result, GlobalData.Energy.ENERGY_RECOVERY_MAX_COUNT);
     }
 }
