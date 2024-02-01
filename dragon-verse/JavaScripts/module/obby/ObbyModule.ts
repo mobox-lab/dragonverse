@@ -139,6 +139,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     private _checkPointCfg = {}
     private _effectPointCfg = {}
     private _effectScaleCfg = {}
+    private _hander: number;
     public _startPos: mw.Vector;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -220,6 +221,14 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         UIService.getUI(MainPanel).setCanSprint(false);
     }
 
+    private onCountDown = () => {
+        if (this._hander) {
+            TimeUtil.clearInterval(this._hander);
+            this._hander = null;
+        }
+        let obby =  ModuleService.getModule(ObbyModuleC);
+        obby.reborn();
+    };
 
     /**
      * 通过检查点
@@ -245,14 +254,18 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
                 scale: scale,
                 loopCount: 1,
             })
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_GoldReward));
     }
-
 
     /**
      * 离开游戏
      * @param playerId
      */
     public exitGame() {
+        if (this._hander) {
+            TimeUtil.clearInterval(this._hander);
+            this._hander = null;
+        }
         this._isStart = false;
         this._curLv = 0;
         this._isInGame = false;
@@ -325,6 +338,23 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         }
         console.log("reborn ============== pos=" + Player.localPlayer.character.worldTransform.position.toString())
         Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
+    }
+
+    public redDead() {
+        if (this._hander) {
+            return;
+        }
+        this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY)
+        Player.localPlayer.character.ragdollEnabled = true;
+    }
+
+    public groundDead() {
+        if (this._hander) {
+            return;
+        }
+        this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY)
+        //锁定摄像头
+        Player.localPlayer.character.ragdollEnabled = true;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
