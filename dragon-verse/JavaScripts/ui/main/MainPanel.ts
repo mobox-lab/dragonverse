@@ -764,6 +764,4 @@ function respawn() {
         .localPlayer
         .getPlayerState(UnifiedRoleController)
         ?.respawn();
-    let obby =  ModuleService.getModule(ObbyModuleC);
-    obby.exitGame();
 }
