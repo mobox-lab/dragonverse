@@ -344,17 +344,17 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         if (this._hander) {
             return;
         }
-        Player.localPlayer.character.ragdollEnabled = true;
         this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY)
+        Player.localPlayer.character.ragdollEnabled = true;
     }
 
     public groundDead() {
         if (this._hander) {
             return;
         }
+        this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY)
         //锁定摄像头
         Player.localPlayer.character.ragdollEnabled = true;
-        this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY)
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
