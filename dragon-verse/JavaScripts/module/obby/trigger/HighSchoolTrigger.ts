@@ -49,8 +49,6 @@ export default class HighSchoolTrigger extends mw.Script {
 
     private _trigger: mw.Trigger;
 
-    private _hander: number;
-
     protected onStart(): void {
         if (mw.SystemUtil.isServer()) {
             return;
@@ -72,20 +70,17 @@ export default class HighSchoolTrigger extends mw.Script {
     private onEnter = (obj: mw.GameObject) => {
         if (obj instanceof mw.Character) {
             if (GToolkit.isSelfCharacter(obj)) {
+                let obby =  ModuleService.getModule(ObbyModuleC);
                 if (this._circleType == HighSchoolType.TransStart) {
-                    let obby =  ModuleService.getModule(ObbyModuleC);
                     if(!obby.isInGame()){
                         obby.enterGame();
                     }
                 } else if (this._circleType == HighSchoolType.DeadBackGround) {
-                    //锁定摄像头
-                    obj.ragdollEnabled = true;
-                    this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY);
+                    obby.groundDead();
                 } else if (this._circleType == HighSchoolType.DeadRed) {
-                    obj.ragdollEnabled = true;
-                    this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY);
+                    let obby =  ModuleService.getModule(ObbyModuleC);
+                    obby.redDead();
                 } else if (this._circleType == HighSchoolType.ScorePoint) {
-                    let obby = ModuleService.getModule(ObbyModuleC);
                     if (obby.checkLv(this._checkPointIdx)) {
                         //记录是第几关 改变进度条
                         obby.updateCheckPoint(this._checkPointIdx);
@@ -97,20 +92,10 @@ export default class HighSchoolTrigger extends mw.Script {
                         .localPlayer
                         .getPlayerState(UnifiedRoleController)
                         ?.respawn();
-                    let obby =  ModuleService.getModule(ObbyModuleC);
                     obby.exitGame();
                 }
             }
         }
-    };
-
-    private onCountDown = () => {
-        if (this._hander) {
-            TimeUtil.clearInterval(this._hander);
-            this._hander = null;
-        }
-        let obby =  ModuleService.getModule(ObbyModuleC);
-        obby.reborn();
     };
 
 }
