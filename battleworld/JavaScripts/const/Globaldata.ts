@@ -527,7 +527,17 @@ export class Globaldata {
      */
     public static readonly MIN_ACCESS_INTERVAL = 0.5e3;
 
+    /**
+     * 最大订单日志数量.
+     * @type {number}
+     */
     public static readonly MAX_ORDER_LOG_COUNT = 50;
+
+    /**
+     * Token 过期刷新间隔. ms
+     * @type {number}
+     */
+    public static readonly EXPIRED_REFRESH_INTERVAL = 10e3;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Energy

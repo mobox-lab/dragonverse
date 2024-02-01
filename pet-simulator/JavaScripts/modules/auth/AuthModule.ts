@@ -134,7 +134,10 @@ interface UpdatePetSimulatorRankDataParam {
 
 interface MoboxDragonData {
     tokenId: number,
-    name: string,
+    /**
+     * 原型 Id.
+     */
+    protoId: number,
     /**
      * 品质.
      */
@@ -142,15 +145,19 @@ interface MoboxDragonData {
     /**
      * 属性.
      */
-    element: number[],
-    /**
-     * 能力值.
-     */
-    ability: number,
+    elements: number,
     /**
      * 潜力.
      */
-    potential: number
+    potential: number,
+    /**
+     * 主属性.
+     */
+    primaryEle: number,
+    /**
+     * 副属性.
+     */
+    secondEle: number,
     /**
      * 星级.
      */
@@ -166,17 +173,23 @@ interface MoboxDragonData {
     /**
      * 技能.
      */
-    skills: number[],
+    skills: number,
     /**
      * 个性.
      */
     personality: number,
 }
 
+interface MoboxDragonInstanceQuality {
+    quality: number,
+    primaryEle: number,
+    secondEle: number,
+}
+
 interface QueryMoboxDragonDataResponse {
     code: number;
     message?: string;
-    data?: MoboxDragonData[];
+    data?: { dragons: MoboxDragonData[] };
 }
 
 /**
@@ -297,10 +310,25 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * 测试用 mobox Url.
      */
     private static readonly TEST_MOBOX_URL = "https://test-game-api.modragon.io";
+
     /**
      * 发布用 mobox Url.
      */
     private static readonly RELEASE_MOBOX_URL = "https://accountapi.mobox.io";
+
+    /**
+     * 测试用 mobox NFT Url.
+     * @type {string}
+     * @private
+     */
+    private static readonly TEST_MOBOX_NFT_URL = "http://16.163.58.210:8087";
+
+    /**
+     * 发布用 mobox NFT Url.
+     * @type {string}
+     * @private
+     */
+    private static readonly RELEASE_MOBOX_NFT_URL = "https://nft-api.mobox.io";
 
     /**
      * getToken 后缀.
@@ -332,7 +360,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @type {string}
      * @private
      */
-    private static readonly QUERY_MOBOX_DRAGON_URL_SUFFIX = "/modragon/mo-assets/dragon";
+    private static readonly QUERY_MOBOX_DRAGON_URL_SUFFIX = "/nft/dragon/infos";
+
+    /**
+     * 测试用 token.
+     * @type {string}
+     * @private
+     */
+    private static readonly TEST_TOKEN = "d42d78c2a78d03a234defda7b34e0f63cc962feb0cdfa5c39409427eaaad85479896b6";
 
     /**
      * 测试用 getToken Url.
@@ -391,17 +426,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     /**
-     * 测试用 更新宠物模拟器排行榜数据 Url.
+     * 测试用 查询 Mobox 龙信息 Url.
      */
     private static get TEST_QUERY_MOBOX_DRAGON_URL() {
-        return this.TEST_P12_URL + this.QUERY_MOBOX_DRAGON_URL_SUFFIX;
+        return this.TEST_MOBOX_NFT_URL + this.QUERY_MOBOX_DRAGON_URL_SUFFIX;
     }
 
     /**
-     * 发布用 更新宠物模拟器排行榜数据 Url.
+     * 发布用 查询 Mobox 龙信息 Url.
      */
     private static get RELEASE_QUERY_MOBOX_DRAGON_URL() {
-        return this.RELEASE_P12_URL + this.QUERY_MOBOX_DRAGON_URL_SUFFIX;
+        return this.RELEASE_MOBOX_NFT_URL + this.QUERY_MOBOX_DRAGON_URL_SUFFIX;
     }
 
     private static readonly HEADER_TOKEN = "x-bits-token";
@@ -576,7 +611,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return;
         }
         const param: QueryP12Param = {
-            userId: GlobalData.Global.isRelease ? player.userId : "1026061",
+            userId: player.userId,
         };
 
         const body: EncryptedRequest = {
@@ -599,7 +634,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             Log4Ts.error(AuthModuleS, `get token failed. ${JSON.stringify(respInJson)}`);
         } else {
             if (this._tokenMap.has(playerId)) {
-                this._tokenMap.set(playerId, GlobalData.Global.isRelease ? respInJson.data?.mToken : "d3c539da19c7c9a0f967ba0a46b7ce33324d231573f72ae345fe65a0631320b3989682");
+                this._tokenMap.set(playerId, respInJson.data?.mToken);
                 this.onRefreshToken(playerId);
             } else {
                 this.logPlayerNotExist(playerId);
@@ -613,14 +648,20 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private onTokenExpired(playerId: number) {
         Log4Ts.warn(AuthModuleS, `token expired. refreshing... playerId: ${playerId}`);
-        this.getToken(playerId);
+        setTimeout(() => this.getToken(playerId),
+            GlobalData.Auth.EXPIRED_REFRESH_INTERVAL);
     }
 
     private async queryCurrency(playerId: number) {
-        const token = this._tokenMap.get(playerId);
+        let token = this._tokenMap.get(playerId);
         if (GToolkit.isNullOrUndefined(token)) {
             this.logPlayerTokenInvalid(playerId);
-            return;
+            if (GlobalData.Global.isRelease) {
+                return;
+            } else {
+                Log4Ts.log(AuthModuleS, `use test token.`);
+                token = AuthModuleS.TEST_TOKEN;
+            }
         }
         const queryCurrencyParam: QueryCurrencyParam = {
             symbol: "mbox",
@@ -651,10 +692,15 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     public async pay(playerId: number, cost: number): Promise<boolean> {
-        const token = this._tokenMap.get(playerId);
+        let token = this._tokenMap.get(playerId);
         if (GToolkit.isNullOrUndefined(token)) {
             this.logPlayerTokenInvalid(playerId);
-            return Promise.resolve(false);
+            if (GlobalData.Global.isRelease) {
+                return Promise.resolve(false);
+            } else {
+                Log4Ts.log(AuthModuleS, `use test token.`);
+                token = AuthModuleS.TEST_TOKEN;
+            }
         }
 
         Log4Ts.log(AuthModuleS, `player paid. playerId: ${playerId}, cost: ${cost}`);
@@ -744,11 +790,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return;
         }
 
-        userId = GlobalData.Global.isRelease ? userId : "1234567";
+        let useTest: boolean = false;
+        if (GToolkit.isNullOrEmpty(this._tokenMap.get(playerId)) && !GlobalData.Global.isRelease) {
+            userId = "1026061";
+            useTest = true;
+        }
 
-        const resp = await fetch(`${GlobalData.Global.isRelease ?
-                AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
-                AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL}?userId=${userId}`,
+        const resp = await fetch(`${useTest ? AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL : AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL}?uid=${userId}`,
             {
                 method: "GET",
             });
@@ -764,17 +812,25 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         }
 
         return Promise.resolve(Enumerable
-            .from(respInJson.data)
+            .from(respInJson.data.dragons)
+            .doAction(item => {
+                    const qua = formatElements(item.elements);
+                    item.quality = qua.quality;
+                    item.primaryEle = qua.primaryEle;
+                    item.secondEle = qua.secondEle;
+                },
+            )
             .defaultIfEmpty({
-                ability: 0,
-                element: [],
+                elements: 0,
                 level: 0,
                 mating: 0,
-                name: "",
                 personality: 0,
                 potential: 0,
+                primaryEle: 0,
+                protoId: 0,
                 quality: 0,
-                skills: [],
+                secondEle: 0,
+                skills: 0,
                 star: 0,
                 tokenId: 0,
             })
@@ -847,4 +903,27 @@ function calAbility(quality: number, star: number, attribute: number, level: num
         Math.pow(star,
             ratio[GToolkit.safeIndex(quality, ratio, "cut")])
         * attribute * level / 20);
+}
+
+//elements为3147314 十六进制表示为0x300632
+//0x300632 对应 Q|E5|E4|E3|E2|E1 ；其中E1为主元素、E2-E5为副元素，0表示没有、Q为品质
+//品质为3; 主元素（E1）为2; 副元素为3/6
+
+//示例代码参考
+/**
+ *
+ * @param {number} data
+ * @return {{primaryEle: number, secondEle: number, quality: number}}
+ */
+function formatElements(data: number): MoboxDragonInstanceQuality {
+    let quality = (data >> 20);         //品质
+    let primaryEle = (data & 0x00000f); //主元素
+    let secondEle = 0;  //副元素，用十进制表示(3600表示副元素为3、6)
+    secondEle = secondEle * 10 + ((data & 0x0000f0) >> 4);
+    if (quality > 2) {
+        secondEle = secondEle * 10 + ((data & 0x000f00) >> 8);
+        secondEle = secondEle * 10 + ((data & 0x00f000) >> 12);
+        secondEle = secondEle * 10 + ((data & 0x0f0000) >> 16);
+    }
+    return {primaryEle: quality, quality: primaryEle, secondEle: secondEle};
 }
