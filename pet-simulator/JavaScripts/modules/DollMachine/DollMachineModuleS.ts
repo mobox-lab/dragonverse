@@ -10,7 +10,6 @@ import GToolkit from "../../utils/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 
-
 /**娃娃机服务端类 */
 class DollMachineS {
 
@@ -49,6 +48,7 @@ class DollMachineS {
     public checkEggTaskId: number = null;
 
     private _dropTrigger: Trigger = null;
+
     /**
      * 一台娃娃机对应的配置信息
      * @param config
@@ -96,7 +96,7 @@ class DollMachineS {
         // 娃娃掉落触发器
         this._dropTrigger = GameObject.findGameObjectById(this.machineConfig.Trigger) as Trigger;
         this._dropTrigger.onEnter.add((obj) => {
-            console.log(`娃娃机 id=${this.id}抓到了: ${obj.name}`)
+            console.log(`娃娃机 id=${this.id}抓到了: ${obj.name}`);
             ModuleService.getModule(DollMachineModuleS).onDollDrop(obj, this.id);
         });
     }
@@ -253,7 +253,7 @@ class DollMachineS {
         let tempScale = this.rope.worldTransform.scale.clone();
         let tempLoc = this.hook.worldTransform.position.clone();
 
-        let tween = new mw.Tween({ z: startZ, s: 0 }).to({ z: endZ, s: scale }, doll.ClawDownTime[0])
+        let tween = new mw.Tween({z: startZ, s: 0}).to({z: endZ, s: scale}, doll.ClawDownTime[0])
             .onUpdate((obj) => {
                 tempLoc.z = obj.z;
                 this.hook.worldTransform.position = tempLoc;
@@ -279,7 +279,7 @@ class DollMachineS {
 
         let tempScale = this.rope.worldTransform.scale.clone();
         let tempLoc = this.hook.worldTransform.position.clone();
-        let tween = new mw.Tween({ z: endZ, s: scale }).to({ z: startZ, s: 0 }, doll.ClawDownTime[0])
+        let tween = new mw.Tween({z: endZ, s: scale}).to({z: startZ, s: 0}, doll.ClawDownTime[0])
             .onUpdate((obj) => {
                 tempLoc.z = obj.z;
                 this.hook.worldTransform.position = tempLoc;
@@ -326,7 +326,7 @@ class DollMachineS {
     private async hookBackTween() {
 
         let tempLoc = this.hook.worldTransform.position.clone();
-        let tween = new mw.Tween({ x: tempLoc.x, y: tempLoc.y, z: tempLoc.z }).to({
+        let tween = new mw.Tween({x: tempLoc.x, y: tempLoc.y, z: tempLoc.z}).to({
             x: this.hookPrimaryPos.x,
             y: this.hookPrimaryPos.y,
             z: this.hookPrimaryPos.z,
@@ -353,7 +353,7 @@ class DollMachineS {
                     // 关闭抓钩碰撞，让球掉下来
                     this.claws.forEach(claw => {
                         claw.setCollision(mw.PropertyStatus.Off);
-                    })
+                    });
                     // 清除正在抓娃娃状态
                     this.isCatching = false;
                 }, 500);
@@ -603,7 +603,7 @@ export class DollMachineModuleS extends ModuleS<DollMachineModuleC, null> {
     /** 娃娃掉到触发器后执行的方法 */
     public onDollDrop(obj: GameObject, machineId: number) {
         let machine = this.dollMachineList[machineId];
-        let player = Player.getPlayer(machine.curPlayer.playerId);
+        let player = Player.getPlayer(machine?.curPlayer?.playerId ?? null);
         if (!player) return;
         let name = obj.name;
         console.log("抓到了 " + name);

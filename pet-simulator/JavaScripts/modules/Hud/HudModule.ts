@@ -85,8 +85,8 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
         let info = mw.UIService.getUI(GameIngo_Generate);
         let text = "";
 
-        text += `_${RoomService.getRoomId()}`
-        text += `u:${AccountService.getUserId()}`
+        // text += `_${RoomService.getRoomId()}`
+        // text += `u:${AccountService.getUserId()}`
         info.mText.text = text;
         info.show();
     }
