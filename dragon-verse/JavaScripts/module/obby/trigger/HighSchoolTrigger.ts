@@ -92,7 +92,6 @@ export default class HighSchoolTrigger extends mw.Script {
                         .localPlayer
                         .getPlayerState(UnifiedRoleController)
                         ?.respawn();
-                    obby.exitGame();
                 }
             }
         }
