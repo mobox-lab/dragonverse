@@ -557,7 +557,7 @@ export default class GameServiceConfig {
     /**
      * 角色 最大跳跃高度.
      */
-    public static readonly ROLE_JUMP_HEIGHT_OBBY = 160;
+    public static readonly ROLE_JUMP_HEIGHT_OBBY = 180;
 
     /**
      * 角色 最大跳跃次数.
@@ -567,7 +567,7 @@ export default class GameServiceConfig {
     /**
      * 复活等待间隔.
      */
-    public static readonly REBORN_INTERVAL_OBBY = 2;
+    public static readonly REBORN_INTERVAL_OBBY = 1;
 
     /**
      * 跑酷得分特效 Guid.
