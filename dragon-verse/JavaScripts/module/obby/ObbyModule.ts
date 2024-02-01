@@ -254,7 +254,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
                 scale: scale,
                 loopCount: 1,
             })
-        
+            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_GoldReward));
     }
 
     /**
