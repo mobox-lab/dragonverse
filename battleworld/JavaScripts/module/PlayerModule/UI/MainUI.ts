@@ -201,18 +201,18 @@ export class MainUI extends Main_HUD_Generate {
 
         this.mAttackNum.text = "";
 
-        let text = RouteService.getGameVersion();
-
-        if (StringUtil.isEmpty(text)) {
-            text = SystemUtil.getVersion();
-        }
-        if (StringUtil.isEmpty(text)) {
-            text = "version null"
-        }
-
-        text += `_${RoomService.getRoomId()}`
-        text += `_uid:${AccountService.getUserId()}`
-        this.mVersion.text = text;
+        // let text = RouteService.getGameVersion();
+        //
+        // if (StringUtil.isEmpty(text)) {
+        //     text = SystemUtil.getVersion();
+        // }
+        // if (StringUtil.isEmpty(text)) {
+        //     text = "version null"
+        // }
+        //
+        // text += `_${RoomService.getRoomId()}`
+        // text += `_uid:${AccountService.getUserId()}`
+        // this.mVersion.text = text;
     }
 
     private listen_gmPlayerInfo() {
