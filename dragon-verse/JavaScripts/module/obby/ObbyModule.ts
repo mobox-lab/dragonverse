@@ -189,14 +189,14 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     private initCheckPoint() {
 
         let len = GameConfig.Obbycheck.getAllElement().length
-        this._maxLv = len-1
-        for (let i = 0; i < len; i++) {
+        this._maxLv = len
+        for (let i = 1; i <= len; i++) {
             let ele = GameConfig.Obbycheck.getElement(i);
             this._checkPointCfg["" + i] = new mw.Vector(ele.checkpointloc[0], ele.checkpointloc[1], ele.checkpointloc[2]);
             this._effectPointCfg["" + i] = new mw.Vector(ele.splashpointloc[0], ele.splashpointloc[1], ele.splashpointloc[2]);
             this._effectScaleCfg["" + i] = new mw.Vector(ele.splashscale[0], ele.splashscale[1], ele.splashscale[2]);
         }
-        console.log("initCheckPoint _maxLv======" + this._maxLv);
+        // reborn ============== pos=X=393994.28125 Y=13640.490234375 Z=24237.24609375 
     }
     /**
      * 是否在游戏中
@@ -316,13 +316,14 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     public reborn() {
-        console.log("reborn lv==============" + this._curLv)
+        console.log("reborn ============== lv=" + this._curLv)
         Player.localPlayer.character.ragdollEnabled = false;
         if (this._curLv == 0) {
             Player.localPlayer.character.worldTransform.position = this._startPos;
         } else {
             Player.localPlayer.character.worldTransform.position = this._checkPointCfg["" + this._curLv];
         }
+        console.log("reborn ============== pos=" + Player.localPlayer.character.worldTransform.position.toString())
         Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
     }
 
