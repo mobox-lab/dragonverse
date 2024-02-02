@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","Info","price","buyCount","title"],["","","","","Language"],[1,"10娃娃机币",30,10,"Task_shop_16"],[2,"35娃娃机币",100,35,"Task_shop_16"],[3,"70娃娃机币",200,70,"Task_shop_16"],[4,"150娃娃机币",400,150,"Task_shop_16"],[5,"270娃娃机币",700,270,"Task_shop_16"],[6,"400娃娃机币",1000,400,"Task_shop_16"]];
+const EXCELDATA:Array<Array<any>> = [["id","Info","price","buyCount","title"],["","","","","Language"],[1,"10娃娃机币",30,10,"BuyDollCoin_Text_3"],[2,"35娃娃机币",100,35,"BuyDollCoin_Text_3"],[3,"70娃娃机币",200,70,"BuyDollCoin_Text_3"],[4,"150娃娃机币",400,150,"BuyDollCoin_Text_3"],[5,"270娃娃机币",700,270,"BuyDollCoin_Text_3"],[6,"400娃娃机币",1000,400,"BuyDollCoin_Text_3"]];
 export interface IGoodsTableElement extends IElementBase{
  	/**undefined*/
 	id:number
