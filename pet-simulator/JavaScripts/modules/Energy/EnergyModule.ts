@@ -5,6 +5,7 @@ import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import ModuleService = mwext.ModuleService;
 import GToolkit, { Tf } from "../../utils/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Global = GlobalData.Global;
 
 export default class EnergyModuleData extends mwext.Subdata {
     //@Decorator.persistence()
@@ -210,7 +211,9 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
                 return;
             }
 
-            const energyRecoveryIntervalMs = GlobalData.Global.isRelease ? GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS : 30 * 1e3;
+            const energyRecoveryIntervalMs = GlobalData.Global.isRelease || GlobalData.Global.isBeta ?
+                GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS :
+                30 * 1e3;
             const now = Date.now();
             const duration = now - d.lastRecoveryTime;
             let timeout: number;

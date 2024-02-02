@@ -204,6 +204,11 @@ export enum ConsumeTypes {
      * @type {ConsumeTypes.DollMachine}
      */
     DollMachine = 75000,
+    /**
+     * 格斗世界体力.
+     * @type {ConsumeTypes.BattleWorldEnergy}
+     */
+    BattleWorldEnergy = 75001,
 }
 
 /**
@@ -224,7 +229,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     private _originToken: string = null;
 
-    public currency = createYoact({ count: 0 });
+    public currency = createYoact({count: 0});
 
     private _lastQueryCurrencyTime: number = 0;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -654,7 +659,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         let token = this._tokenMap.get(playerId);
         if (GToolkit.isNullOrUndefined(token)) {
             this.logPlayerTokenInvalid(playerId);
-            if (Globaldata.isRelease) {
+            if (Globaldata.isRelease || Globaldata.isBeta) {
                 return;
             } else {
                 Log4Ts.log(AuthModuleS, `use test token.`);
@@ -689,11 +694,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.getClient(playerId).net_setCurrency(respInJson.data.balance);
     }
 
-    public async pay(playerId: number, cost: number): Promise<boolean> {
+    public async pay(playerId: number, cost: number, consumeType: ConsumeTypes): Promise<boolean> {
         let token = this._tokenMap.get(playerId);
         if (GToolkit.isNullOrUndefined(token)) {
             this.logPlayerTokenInvalid(playerId);
-            if (Globaldata.isRelease) {
+            if (Globaldata.isRelease || Globaldata.isBeta) {
                 return Promise.resolve(false);
             } else {
                 Log4Ts.log(AuthModuleS, `use test token.`);
@@ -702,7 +707,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         }
 
         Log4Ts.log(AuthModuleS, `player paid. playerId: ${playerId}, cost: ${cost}`);
-        const order = this.generateOrder(cost, ConsumeTypes.DollMachine);
+        const order = this.generateOrder(cost, consumeType);
         this.getPlayerData(playerId)?.serverSaveOrder(order);
 
         const resp = await fetch(`${Globaldata.isRelease ?
@@ -788,13 +793,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return;
         }
 
-        let useTest: boolean = false;
-        if (GToolkit.isNullOrEmpty(this._tokenMap.get(playerId)) && !Globaldata.isRelease) {
-            userId = "1026061";
-            useTest = true;
-        }
-
-        const resp = await fetch(`${useTest ? AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL : AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL}?uid=${userId}`,
+        const resp = await fetch(`${Globaldata.isRelease ?
+                AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
+                AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL}?uid=${userId}`,
             {
                 method: "GET",
             });
@@ -836,7 +837,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 item.quality,
                 item.star,
                 item.potential,
-                item.level) : 0) + (Globaldata.isRelease ? 0 : 250));
+                item.level) : 0) + (Globaldata.isRelease || Globaldata.isBeta ? 0 : 250));
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

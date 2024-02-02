@@ -43,6 +43,7 @@ export namespace GlobalData {
 
     export class Global {
         public static isRelease: boolean = false;
+        public static isBeta: boolean = false;
         /**是否显示GM */
         public static isShowGM: boolean = false;
         /**所选择的语言索引(-1:系统 0:英语 1:汉语 2:日语 3:德语)*/
@@ -1243,7 +1244,7 @@ export namespace GlobalData {
          * 体力 单次恢复上限.
          * @type {number}
          */
-        public static readonly ENERGY_RECOVERY_MAX_COUNT=60;
+        public static readonly ENERGY_RECOVERY_MAX_COUNT = 60;
 
         /**
          * 体力系数采样数量.

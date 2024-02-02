@@ -68,6 +68,8 @@ export default class GameStart extends mw.Script {
 
     @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
+    @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
+    public isBeta: boolean = false;
     @mw.Property({displayName: "是否开启主页GM开关按钮"})
     private isOpenGm = false;
     @mw.Property({displayName: "是否免费送滑板"})
@@ -120,6 +122,7 @@ export default class GameStart extends mw.Script {
         mLogManager.instance.setLogLevel(1);
         LogManager.instance.setLogLevel(1);
         GlobalData.Global.isRelease = this.isRelease;
+        GlobalData.Global.isBeta = this.isBeta;
         GlobalData.Global.isSameGoBack = this.isSameGoBack;
         GlobalData.Global.isOpenCollectMachine = this.isOpenCollectMachine;
         GlobalData.Global.isShowGM = this.isOpenGm;

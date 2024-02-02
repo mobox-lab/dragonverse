@@ -130,7 +130,7 @@ export class P_HudUI extends Hud_Generate {
         this.setGMBtn();
         this.startFastTranBtnTween();
         bindYoact(() => {
-            GToolkit.trySetText(this.mText_Mcoin, GlobalData.Global.isRelease ?
+            GToolkit.trySetText(this.mText_Mcoin, GlobalData.Global.isRelease || GlobalData.Global.isBeta ?
                 utils.formatNumber(this.authModuleC?.currency.count) :
                 ((this.authModuleC?.currency.count ?? 0).toFixed(2).toString()));
         });
@@ -169,7 +169,7 @@ export class P_HudUI extends Hud_Generate {
                 UIService.hideUI(ui);
                 KeyOperationManager.getInstance().unregisterKey(null, Keys.Escape);
             });
-        })
+        });
     }
 
     private _velocity: Vector = new Vector();
@@ -223,7 +223,7 @@ export class P_HudUI extends Hud_Generate {
         let startAngle = GlobalData.TweenFastTranBtn.startAngle;
         let endAngle = GlobalData.TweenFastTranBtn.endAngle;
         let time = GlobalData.TweenFastTranBtn.tweenTime;
-        this.leftToRightTween = new mw.Tween({ angle: startAngle }).to({ angle: endAngle }, time * 1000)
+        this.leftToRightTween = new mw.Tween({angle: startAngle}).to({angle: endAngle}, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -233,7 +233,7 @@ export class P_HudUI extends Hud_Generate {
                 }
             })
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
-        this.rightToLeftTween = new mw.Tween({ angle: endAngle }).to({ angle: startAngle }, time * 1000)
+        this.rightToLeftTween = new mw.Tween({angle: endAngle}).to({angle: startAngle}, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
