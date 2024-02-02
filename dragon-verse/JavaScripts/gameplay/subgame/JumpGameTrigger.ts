@@ -8,7 +8,7 @@ import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_genera
  * @Author       : zewei.zhang
  * @Date         : 2024-01-16 14:42:38
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-17 17:36:31
+ * @LastEditTime : 2024-02-02 17:47:49
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\subgame\JumpGameTrigger.ts
  * @Description  : 跳游戏触发器
  */
@@ -20,8 +20,8 @@ export default class JumpGameTrigger extends Script {
     private _progressBar: ProgressBar;
     private _cnvProgressBar: Canvas;
 
-    @mw.Property({ displayName: "要跳转的游戏", selectOptions: { "PetSimulator": GameServiceConfig.SUB_GAME_PET_SIMULATOR_GAME_ID, "BattleWorld": GameServiceConfig.SUB_GAME_BATTLE_WORLD_GAME_ID } })
-    private _jumpGameId: string = GameServiceConfig.SUB_GAME_PET_SIMULATOR_GAME_ID;
+    @mw.Property({ displayName: "要跳转游戏的GameId" })
+    private _jumpGameId: string = '';
 
     protected onStart(): void {
         if (SystemUtil.isClient()) {
