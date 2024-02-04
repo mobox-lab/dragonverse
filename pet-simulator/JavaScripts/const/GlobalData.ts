@@ -97,7 +97,9 @@ export namespace GlobalData {
 
     /**宠物 */
     export class pet {
-
+        //扭蛋开出来龙娘的姿势
+        public static petShowStanceGuid: string = "144180";
+        //龙娘攻击动画
         public static chaAttackAnimGuid: string = "121561";
 
         /**宠物移动的最大帧数（超过该值不动了） */
@@ -1054,7 +1056,7 @@ export namespace GlobalData {
 
         /**娃娃相对爪子位置 */
         public static DollRelativeClawLoc: mw.Vector[] = [new mw.Vector(0, 24, 0), new mw.Vector(0, 35, 0),
-            new mw.Vector(1.35, 30, 0), new mw.Vector(-1.35, 30, 0), new mw.Vector(0, 35, 0), new mw.Vector(0, 24, 0), new mw.Vector(0, 24, 0)];
+        new mw.Vector(1.35, 30, 0), new mw.Vector(-1.35, 30, 0), new mw.Vector(0, 35, 0), new mw.Vector(0, 24, 0), new mw.Vector(0, 24, 0)];
 
         /**钩子左右下上晃动 */
         public static HookShaking: number[][] = [[0, 3], [0, -3], [0, -3], [0, 3], [90, 93], [90, 87], [90, 87], [90, 93]];
@@ -1306,5 +1308,10 @@ export namespace GlobalData {
          * @type {number}
          */
         public static readonly EXPIRED_REFRESH_INTERVAL = 10e3;
+    }
+
+    export enum PetCharacterType {
+        GameObject = 0,
+        Character = 1
     }
 }

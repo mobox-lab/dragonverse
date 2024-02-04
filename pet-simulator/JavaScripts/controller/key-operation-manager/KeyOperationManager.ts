@@ -215,7 +215,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
             if (!force) {
                 for (let item of guard.operations) {
                     if (item.ui === ui) {
-                        Log4Ts.warn(KeyOperationManager, `already has a callback on key ${key}-${opType} in ui ${ui.constructor.name}. it will be ignore.`);
+                        Log4Ts.warn(KeyOperationManager, `already has a callback on key ${key}-${opType} in ui ${ui?.constructor.name}. it will be ignore.`);
                         return false;
                     }
                 }
