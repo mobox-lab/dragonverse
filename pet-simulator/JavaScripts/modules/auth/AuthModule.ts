@@ -616,8 +616,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return;
         }
         const param: QueryP12Param = {
-            // userId: player.userId,
-            userId: "2097259",
+            userId: player.userId,
         };
 
         const body: EncryptedRequest = {
