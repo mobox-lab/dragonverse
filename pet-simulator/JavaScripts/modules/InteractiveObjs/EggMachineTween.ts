@@ -4,6 +4,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { EggEndInfo, GlobalData } from "../../const/GlobalData";
 import { EffectManager } from "../../utils/EffectManager";
+import GToolkit from '../../utils/GToolkit';
 import { cubicBezier } from "../../utils/MoveUtil";
 import { SoundManager } from "../../utils/SoundManager";
 import { UICtrl } from "../../utils/UICtrl";
@@ -72,7 +73,7 @@ export class EggMachineTween {
         this.dollEgg_3 = await GameObject.asyncFindGameObjectById(GlobalData.SpecialEgg.egg3);
         this.touch = new mw.TouchInput();
     }
-
+    private _wing: Effect = null;
     /**
      * 开始动画
      * @param obj 蛋模型
@@ -106,7 +107,36 @@ export class EggMachineTween {
         if (!isDown) {
             await AssetUtil.asyncDownloadAsset(guid);
         }
-        this.pet = await SpawnManager.asyncSpawn({ guid: guid })
+        if (petConf.CharacterType === GlobalData.PetCharacterType.Character) {
+            this.pet = await SpawnManager.asyncSpawn({ guid: "Character" });
+            GToolkit.safeSetDescription(this.pet as Character, guid);
+            (this.pet as Character).gravityScale = 0;
+            (this.pet as Character).physicsEnabled = false;
+            (this.pet as Character).movementEnabled = false;
+            (this.pet as Character).jumpEnabled = false;
+            (this.pet as Character).maxFallingSpeed = 0;
+
+            let stance = (this.pet as Character).loadSubStance(GlobalData.pet.petShowStanceGuid);
+            stance.play();
+
+            (this.pet as Character).displayName = "";
+            //加翅膀
+            if (petConf.wingGuid && petConf.wingTransform) {
+                this._wing = await mw.GameObject.asyncSpawn(petConf.wingGuid);
+
+                (this.pet as Character).attachToSlot(this._wing, HumanoidSlotType.BackOrnamental);
+                TimeUtil.delayExecute(() => {
+                    //延迟隐藏，否则还会显示，可能某些属性生效会改变显影
+                    (this.pet as Character).setVisibility(false);
+                    (this._wing as Effect).play();
+                    this._wing.localTransform = new Transform(new Vector(petConf.wingTransform[0][0], petConf.wingTransform[0][1], petConf.wingTransform[0][2]), new Rotation(petConf.wingTransform[1][0], petConf.wingTransform[1][1], petConf.wingTransform[1][2]), new Vector(petConf.wingTransform[2][0], petConf.wingTransform[2][1], petConf.wingTransform[2][2]));;
+                }, 10);
+                this._wing.setVisibility(false);
+            }
+
+        } else if (petConf.CharacterType === GlobalData.PetCharacterType.GameObject) {
+            this.pet = await SpawnManager.asyncSpawn({ guid: guid });
+        }
         // 宠物模型扭蛋动画的transform
         let offset = petConf.MoveWay == 1 ? GlobalData.EggMachine.petEggOffset : GlobalData.EggMachine.petFlyEggOffset;
         offset = petConf.AnimLocation ? petConf.AnimLocation : offset;
@@ -116,7 +146,12 @@ export class EggMachineTween {
         this.pet.setCollision(mw.PropertyStatus.Off);
         this.pet.parent = this.cube2;
         this.pet.localTransform.position = (offset);
-        this.pet.localTransform.rotation = (rot);
+        if (petConf.CharacterType === GlobalData.PetCharacterType.Character) {
+            this.pet.localTransform.rotation = rot.clone().add(new Rotation(0, 0, 180));
+        } else if (petConf.CharacterType === GlobalData.PetCharacterType.GameObject) {
+            this.pet.localTransform.rotation = rot.clone();
+        }
+
         this.pet.localTransform.scale = (scale);
 
         SoundManager.instance.playSound(15);
@@ -130,22 +165,58 @@ export class EggMachineTween {
 
 
     /**宠物动画 */
-    public startTween_Pet(cfgId: number): void {
+    public async startTween_Pet(cfgId: number) {
         UICtrl.instance.closeAllUI();
         PlayerModuleC.curPlayer.setAllPetVisible(false);
         this.petId = cfgId;
         let petInfo = GameConfig.PetARR.getElement(cfgId);
         let guid = petInfo.ModelGuid;
-        SpawnManager.asyncSpawn({ guid: guid }).then((obj) => {
-            this.pet = obj;
-            let offset = petInfo.MoveWay == 1 ? GlobalData.EggMachine.petEggOffset : GlobalData.EggMachine.petFlyEggOffset;
-            utils.showAllChildExcept(this.pet, false);
-            this.pet.setCollision(mw.PropertyStatus.Off);
-            this.pet.parent = this.cube2;
-            this.pet.localTransform.position = (offset);
-            this.pet.localTransform.rotation = (mw.Rotation.zero);
-            this.state1Over();
-        })
+
+        if (petInfo.CharacterType === GlobalData.PetCharacterType.Character) {
+            this.pet = await SpawnManager.asyncSpawn({ guid: "Character" });
+
+            (this.pet as Character).gravityScale = 0.1;
+            (this.pet as Character).physicsEnabled = false;
+            (this.pet as Character).movementEnabled = false;
+            (this.pet as Character).jumpEnabled = false;
+            (this.pet as Character).maxFallingSpeed = 0.1;
+            GToolkit.safeSetDescription(this.pet as Character, guid);
+            let stance = (this.pet as Character).loadSubStance(GlobalData.pet.petShowStanceGuid);
+            stance.play();
+
+            //加翅膀
+            if (petInfo.wingGuid && petInfo.wingTransform) {
+                this._wing = await mw.GameObject.asyncSpawn(petInfo.wingGuid);
+
+                (this.pet as Character).attachToSlot(this._wing, HumanoidSlotType.BackOrnamental);
+                TimeUtil.delayExecute(() => {
+                    (this.pet as Character).setVisibility(false);
+                    (this._wing as Effect).play();
+                    this._wing.localTransform = new Transform(new Vector(petInfo.wingTransform[0][0], petInfo.wingTransform[0][1], petInfo.wingTransform[0][2]), new Rotation(petInfo.wingTransform[1][0], petInfo.wingTransform[1][1], petInfo.wingTransform[1][2]), new Vector(petInfo.wingTransform[2][0], petInfo.wingTransform[2][1], petInfo.wingTransform[2][2]));;
+                }, 10);
+            }
+            (this.pet as Character).displayName = "";
+
+            this._wing.setVisibility(false);
+        } else if (petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
+            this.pet = await SpawnManager.asyncSpawn({ guid: guid });
+
+        }
+
+        // SpawnManager.asyncSpawn({ guid: guid }).then((obj) => {
+        // this.pet = obj;
+        let offset = petInfo.MoveWay == 1 ? GlobalData.EggMachine.petEggOffset : GlobalData.EggMachine.petFlyEggOffset;
+        utils.showAllChildExcept(this.pet, false);
+        this.pet.setCollision(mw.PropertyStatus.Off);
+        this.pet.parent = this.cube2;
+        this.pet.localTransform.position = (offset);
+        if (petInfo.CharacterType === GlobalData.PetCharacterType.Character) {
+            this.pet.localTransform.rotation = new Rotation(0, 0, 180);
+        } else if (petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
+            this.pet.localTransform.rotation = Rotation.zero;
+        }
+        this.state1Over();
+        // })
         SoundManager.instance.playSound(15);
         this.isStage1 = true;
         this.isStart = true;
@@ -214,6 +285,8 @@ export class EggMachineTween {
         this.currentPetEffId = EffectManager.instance.playEffectOnObj(12, this.cube1);
         this.tween2Init();
         this.addTouch();
+        this.pet.setVisibility(true);
+        this._wing?.setVisibility(true);
         mw.UIService.getUI(P_EggGet).setInfo(this.petId);
     }
 
@@ -250,6 +323,7 @@ export class EggMachineTween {
         this.isStart = false;
         this.cube1.worldTransform.scale = mw.Vector.one;
         this.pet.destroy();
+        this._wing?.destroy();
         this.pet = null;
         this.endTween?.stop();
         this.endTween = null;
