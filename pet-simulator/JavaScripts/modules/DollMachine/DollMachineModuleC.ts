@@ -306,6 +306,7 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
     }
 
     public skipPlay(machineId: number) {
+        this.setUI(false);
         this.server.net_randomGivePet(machineId);
     }
 
