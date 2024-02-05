@@ -1258,7 +1258,7 @@ export namespace GlobalData {
          * 体力 恢复间隔. min
          * @type {number}
          */
-        public static readonly ENERGY_RECOVERY_INTERVAL: number = 30;
+        public static readonly ENERGY_RECOVERY_INTERVAL: number = 5;
 
         /**
          * 体力 恢复间隔. ms
@@ -1284,7 +1284,7 @@ export namespace GlobalData {
          * 体力 倍率.
          * @type {number}
          */
-        public static readonly ENERGY_RATIO = 2;
+        public static readonly ENERGY_RATIO = 1/3;
     }
 
     /**
