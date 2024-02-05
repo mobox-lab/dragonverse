@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","des","rankName","integral","rankIntegral","shopId","rankImgID","rankTicket","notice"],["","","Language","","","","","",""],[1,"青铜 - Bronze","Rank_name_1",0,[13,18,20,23,25,28,30],0,"296288",0,0],[2,"白银 - Silver","Rank_name_2",100,[11,15,18,20,23,25,28],0,"296289",0,0],[3,"黄金 - Gold","Rank_name_3",300,[7,9,10,12,15,18,20],4001,"296292",0,0],[4,"铂金 - Platinum","Rank_name_4",1000,[4,6,9,10,12,15,18],4002,"296285",0,0],[5,"钻石 - Diamond","Rank_name_5",2000,[0,4,6,9,10,12,15],4003,"296281",1,1]];
+const EXCELDATA:Array<Array<any>> = [["id","des","rankName","integral","rankIntegral","shopId","rankImgID","rankTicket","notice"],["","","Language","","","","","",""],[1,"青铜 - Bronze","Rank_name_1",0,[13,18,20,23,25,28,30],0,"296288",0,0],[2,"白银 - Silver","Rank_name_2",500,[11,15,18,20,23,25,28],0,"296289",0,0],[3,"黄金 - Gold","Rank_name_3",1000,[7,9,10,12,15,18,20],4001,"296292",0,0],[4,"铂金 - Platinum","Rank_name_4",1500,[4,6,9,10,12,15,18],4002,"296285",1,0],[5,"钻石 - Diamond","Rank_name_5",2000,[0,4,6,9,10,12,15],4003,"296281",2,1]];
 export interface IRankElement extends IElementBase{
  	/**唯一ID*/
 	id:number
