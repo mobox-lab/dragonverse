@@ -349,6 +349,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         if (this._hander||!this._isStart) {
             return;
         }
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_RedTips));
         this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY)
         Player.localPlayer.character.ragdollEnabled = true;
     }
