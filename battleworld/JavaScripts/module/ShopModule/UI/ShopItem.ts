@@ -1,4 +1,5 @@
 ﻿import { EEquipPartType } from "../../../const/Enum";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import { IItemRender } from "../../../tool/UIMultiScroller";
 import { util } from "../../../tool/Utils";
 import UIDecItem_Generate from "../../../ui-generate/Shop/UIDecorate/UIDecItem_generate";
@@ -127,6 +128,11 @@ export class Item extends UIDecItem_Generate implements IItemRender {
      * 刷新item
      */
     public refresh_view() {
+        Log4Ts.log({ name: "ShopItem" },
+            `商店 item id: ${this.itemData.id}`,
+            `商店 item 特效 Guid: ${this.itemData.guid}`,
+            `realIndex: ${this.realIndex}`,
+        );
         if (this.itemData.price) {
             this.mImgNeed.visibility = mw.SlateVisibility.SelfHitTestInvisible;
             this.mTextNeed.text = this.itemData.price.toString();
@@ -142,6 +148,12 @@ export class Item extends UIDecItem_Generate implements IItemRender {
             // 获得资源Icon信息
             let res = mw.getAssetIconDataByAssetID(this.itemData.guid);
             if (res) {
+                Log4Ts.log({ name: "ShopItem" },
+                    `商店 item id: ${this.itemData.id}`,
+                    `商店 item 特效 Guid: ${this.itemData.guid}`,
+                    `商店 item resource icon assetId: ${res.assetID}`,
+                    `realIndex: ${this.realIndex}`,
+                );
                 this.mImgIcon.setImageByAssetIconData(res);
             }
         }
