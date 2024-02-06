@@ -2,7 +2,7 @@
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
-import { AuthModuleS } from "../auth/AuthModule";
+import { AuthModuleS, ConsumeTypes } from "../auth/AuthModule";
 import { ShopModuleC } from "./ShopModuleC";
 import { ShopModuleData } from "./ShopModuleData";
 
@@ -67,7 +67,7 @@ export class ShopModuleS extends mwext.ModuleS<ShopModuleC, ShopModuleData> {
         let config = GameConfig.GoodsTable.getElement(itemId);
         if (!config) return false;
         let playerId = this.currentPlayerId;
-        let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, config.price);
+        let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, config.price,ConsumeTypes.BattleWorldEnergy);
         if (res) {
             ModuleService.getModule(EnergyModuleS).addEnergy(playerId, config.buyCount);
             return true;

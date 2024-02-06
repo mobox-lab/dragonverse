@@ -57,6 +57,11 @@ export class Globaldata {
      * @type {boolean}
      */
     public static isRelease = false;
+    /**
+     * 是否 beta 发布.
+     * @type {boolean}
+     */
+    public static isBeta = false;
     /**相机缩放最大距离 */
     public static targetArmMaxLen: number = 2400;
     /**相机缩放最短距离 */

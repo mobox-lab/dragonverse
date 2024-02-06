@@ -107,6 +107,9 @@ export default class GameLauncher extends mw.Script {
     @mw.Property({ displayName: "是否发布", group: "发布" })
     public isRelease: boolean = false;
 
+    @mw.Property({ displayName: "是否 beta 发布", group: "发布" })
+    public isBeta: boolean = false;
+
 
     @mw.Property({ displayName: "是否开启RPC统计" })
     public isRecordRPC: boolean = false;
@@ -115,6 +118,7 @@ export default class GameLauncher extends mw.Script {
 
         Globaldata.isOpenGm = this.gmSwitch;
         Globaldata.isRelease = this.isRelease;
+        Globaldata.isBeta = this.isBeta;
         mwaction;
         // 开启作弊检测
         //this.checkCheat();

@@ -29,11 +29,6 @@ export enum PetState {
     Attack = 2,
 }
 
-enum PetCharacterType {
-    GameObject = 0,
-    Character = 1
-}
-
 export default class PetBehaviour {
 
     public petName: string = "";
@@ -107,7 +102,7 @@ export default class PetBehaviour {
         this.clipDis = owner == currentChar ? GlobalData.Global.selfPetCutDistance : GlobalData.Global.otherPetCutDistance;
         this.speed = this.petInfo.PetSpeed * (1 + EnchantBuff.getPetBuff(this.key).moveSpeedAdd / 100);
         this.chaseSpeed = this.petInfo.PetChase;
-        if (this.petInfo.CharacterType === PetCharacterType.Character) {
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character) {
             SpawnManager.modifyPoolAsyncSpawn("Character").then(cha => {
                 if (!this.owner || !this.owner.worldTransform) this.destory();
                 this.pet = cha as Character;
@@ -148,7 +143,7 @@ export default class PetBehaviour {
                     });
                 }
             });
-        } else if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+        } else if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
             let ModelGuid = this.petInfo.ModelGuid;
             let type = GameObjPoolSourceType.Prefab;
             SpawnManager.modifyPoolAsyncSpawn(ModelGuid, type).then(obj => {
@@ -228,7 +223,7 @@ export default class PetBehaviour {
         this.attackTween?.stop();
         this.attackTween = null;
         this.stopMove();
-        if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) {
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character && this.pet instanceof Character) {
             this.pet.detachFromSlot(this._wing);
             this._wing.destroy();
         }
@@ -251,7 +246,7 @@ export default class PetBehaviour {
         pos = this.keepOnGround(pos, ownerTransform.position);
         pos.z += 20;
         let rot = ownerTransform.rotation;
-        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
             rot.z += 180;
         }
         petTransform.position = pos;
@@ -361,9 +356,9 @@ export default class PetBehaviour {
         let endPos = ownerTransform.transformPosition(this.disPos);
         petTransform.lookAt(endPos);
         let endRot = petTransform.rotation;
-        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
             endRot.set(0, 0, endRot.z + 180);
-        } else if (this.petInfo.CharacterType === PetCharacterType.Character) {
+        } else if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character) {
             endRot.set(0, 0, endRot.z);
         }
 
@@ -374,7 +369,7 @@ export default class PetBehaviour {
         if (this.lastMoveState && !currentMoveState) {  // 上次移动，这次不移动时
             this.lastMoveState = false;
             endPos = this.keepOnGround(endPos, ownerTransform.position);
-            if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+            if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
                 endPos.z += this.height;
             }
             this.moveto(endPos, endRot);
@@ -399,10 +394,10 @@ export default class PetBehaviour {
             endRot = this.ownerTransform.rotation;
             endPos = this.keepOnGround(endPos);
 
-            if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+            if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
                 endPos.z += this.height;
                 endRot.set(0, 0, endRot.z + 180);
-            } else if (this.petInfo.CharacterType === PetCharacterType.Character) {
+            } else if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character) {
                 endRot.set(0, 0, endRot.z);
             }
 
@@ -428,7 +423,7 @@ export default class PetBehaviour {
             this.attackTween = null;
         }
         endPos = this.keepOnGround(endPos);
-        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
             endPos.z += this.height;
             this.jump(dt, endPos, endRot);
         }
@@ -523,7 +518,7 @@ export default class PetBehaviour {
         petTransform.lookAt(this.resPos);
         let endPos = petTransform.position;
         let endRot = petTransform.rotation;
-        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
             endRot.z += 180;
         }
         endRot.x = 0;
@@ -533,7 +528,7 @@ export default class PetBehaviour {
         let dis = dir.length;
         let moveDis = this.chaseSpeed * dt;
         if (dis < moveDis) {
-            if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) {
+            if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character && this.pet instanceof Character) {
                 let pos = this.targetPos.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight))
                 this.arrow?.update(pos, this.resPos);
             } else {
@@ -541,9 +536,9 @@ export default class PetBehaviour {
             }
 
             this._state = PetState.Attack;
-            if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+            if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
                 this.moveto(new mw.Vector(this.targetPos.x, this.targetPos.y, this.targetPos.z + this.height), endRot);
-            } else if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) {
+            } else if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character && this.pet instanceof Character) {
                 this.moveto(new mw.Vector(this.targetPos.x, this.targetPos.y, this.targetPos.z), endRot);
             }
 
@@ -558,14 +553,14 @@ export default class PetBehaviour {
         endPos.y += move.y;
 
         endPos = this.keepOnGround(endPos);
-        if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) {
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character && this.pet instanceof Character) {
             let pos = this.position.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight))
             this.arrow?.update(pos, this.resPos);
         } else {
             this.arrow?.update(this.position, this.resPos);
         }
 
-        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
             this.jump(dt, endPos, endRot);
         }
         if (GlobalData.pet.isSmoothLerp) {
@@ -604,7 +599,7 @@ export default class PetBehaviour {
             petTransform.rotation = this.endRot;
             if (this._state == PetState.Idle) {
                 petTransform.rotation = this.owner.worldTransform.rotation;
-                if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+                if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
                     petTransform.rotation.z += 180;
                 }
             }
@@ -650,7 +645,7 @@ export default class PetBehaviour {
     private _attackAni: Animation;
     private attackTweenInit(): void {
 
-        if (this.petInfo.CharacterType === PetCharacterType.GameObject) {
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
             const bezier = GlobalData.pet.attackBezier;
             let time = GlobalData.pet.attackTime;
             if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
@@ -669,7 +664,7 @@ export default class PetBehaviour {
                 this.playAttackEffect();
 
             }).start().easing(cubicBezier(bezier[0], bezier[1], bezier[2], bezier[3]));
-        } else if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character && (!this._attackAni || !this._attackAni.isPlaying)) {
+        } else if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character && this.pet instanceof Character && (!this._attackAni || !this._attackAni.isPlaying)) {
             this._attackAni = this.pet.loadAnimation(GlobalData.pet.chaAttackAnimGuid);
             this._attackAni.loop = 1;
             let time = GlobalData.pet.attackTime;
@@ -772,7 +767,7 @@ export default class PetBehaviour {
     /**宠物坐标保持在地面 大消耗点 100次调用7ms */
     private keepOnGround(endPos: mw.Vector, currentPos?: mw.Vector): mw.Vector {
         if (!currentPos) currentPos = this.ownerTransform.position;
-        if (this.petInfo.CharacterType === PetCharacterType.GameObject && utils.frameCount < GlobalData.pet.gravityFrame && (this.owner != this.currentChar)) {
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject && utils.frameCount < GlobalData.pet.gravityFrame && (this.owner != this.currentChar)) {
             endPos.z = currentPos.z - this.owner.collisionExtent.z;
             return endPos;
         }
@@ -790,8 +785,8 @@ export default class PetBehaviour {
                 break;
             }
         }
-        if (!isSuccess && this.petInfo.CharacterType === PetCharacterType.GameObject) endPos.z = currentPos.z - this.owner.collisionExtent.z;
-        if (this.petInfo.CharacterType === PetCharacterType.Character && this.pet instanceof Character) endPos.z += this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight;
+        if (!isSuccess && this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) endPos.z = currentPos.z - this.owner.collisionExtent.z;
+        if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character && this.pet instanceof Character) endPos.z += this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight;
         return endPos;
     }
 

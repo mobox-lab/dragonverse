@@ -15,7 +15,7 @@ import { PlayerModuleData } from "../Player/PlayerModuleData";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
 
-export class ResourceModuleC extends ModuleC<ResourceModuleS, null>{
+export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
 
     /**破化物个数 */
     private breakCount: number = 0;
@@ -105,6 +105,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null>{
     }
     private async create() {
         let ui = await SpawnManager.modifyPoolAsyncSpawn("86D759734C10E0628324CD8DBA68FC43", GameObjPoolSourceType.Prefab);
+        ui.worldTransform.position = new Vector(0, 0, -5000);
         let wid = ui.getChildByName("世界UI") as mw.UIWidget;
         let text = wid.getTargetUIWidget().rootContent.findChildByPath("TextBlock") as mw.TextBlock;
         text.text = GameConfig.Language.World_3D_1.Value;
@@ -234,7 +235,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null>{
 }
 
 
-export class ResourceModuleS extends ModuleS<ResourceModuleC, null>{
+export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
 
     /**资源区域Map 个数 areaID,pointID */
     private areaMap: Map<number, number> = new Map<number, number>();

@@ -195,7 +195,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
         const playerId = player.playerId;
 
         const recovery = () => {
-            const energyRecoveryIntervalMs = Globaldata.isRelease ? Globaldata.ENERGY_RECOVERY_INTERVAL_MS : 60 * 1e3;
+            const energyRecoveryIntervalMs = Globaldata.ENERGY_RECOVERY_INTERVAL_MS ;
             const now = Date.now();
             const duration = now - d.lastRecoveryTime;
             let timeout: number;
@@ -207,7 +207,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
                     d.energy = Math.min(
                         Globaldata.ENERGY_MAX,
                         d.energy + Math.max(
-                            Math.floor(duration / energyRecoveryIntervalMs) ,
+                            Math.floor(duration / energyRecoveryIntervalMs),
                             0));
                 }
                 d.lastRecoveryTime = now;

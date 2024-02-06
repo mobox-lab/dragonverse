@@ -8,12 +8,11 @@ import { utils } from "../../utils/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
-import { BuffModuleC } from "../buff/BuffModuleC";
 import { Task_ModuleC } from "../Task/TaskModuleC";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { DebugConsole } from "debug_console";
-import { EnergyModuleC, EnergyModuleS } from "../Energy/EnergyModule";
-import { AuthModuleS } from "../auth/AuthModule";
+import { EnergyModuleS } from "../Energy/EnergyModule";
+import { AuthModuleS, ConsumeTypes } from "../auth/AuthModule";
 import { BuffModuleS } from "../buff/BuffModuleS";
 
 
@@ -605,7 +604,7 @@ AddGMCommand(
     "消费货币",
     undefined,
     (player, value) => {
-        ModuleService.getModule(AuthModuleS)["pay"](player.playerId, Number(value));
+        ModuleService.getModule(AuthModuleS)["pay"](player.playerId, Number(value),ConsumeTypes.DollMachine);
     },
     "Auth",
 );

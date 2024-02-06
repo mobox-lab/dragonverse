@@ -4,7 +4,15 @@ import Tips from "../../tool/P_Tips";
 import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import { Globaldata } from "../../const/Globaldata";
 import { EventManager } from "../../tool/EventManager";
-import { EAttributeEvents_C, EAttributeEvents_S, EModule_Events, EMotion_Events, ENotice_Events_S, EPlayerEvents_C, EPlayerEvents_S } from "../../const/Enum";
+import {
+    EAttributeEvents_C,
+    EAttributeEvents_S,
+    EModule_Events,
+    EMotion_Events,
+    ENotice_Events_S,
+    EPlayerEvents_C,
+    EPlayerEvents_S,
+} from "../../const/Enum";
 import { GameConfig } from "../../config/GameConfig";
 import { BuffModuleS } from "../buffModule/BuffModuleS";
 import { MotionModuleC } from "../MotionModule/MotionModuleC";
@@ -12,9 +20,9 @@ import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { PlayerModuleC } from "../PlayerModule/PlayerModuleC";
 import { PlayerModuleData } from "../PlayerModule/PlayerModuleData";
 import { BulletModuleS } from "../BulletModule/BulletModuleS";
-import { WeaponModuleS } from '../WeaponModule/WeaponModuleS';
-import { LandModuleS } from '../LandModule/LandModuleS';
-import { GMBasePanel, GM, AddGMCommand } from 'module_gm';
+import { WeaponModuleS } from "../WeaponModule/WeaponModuleS";
+import { LandModuleS } from "../LandModule/LandModuleS";
+import { GMBasePanel, GM, AddGMCommand } from "module_gm";
 import GMHUD_Generate from "../../ui-generate/GM/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/GM/GMItem_generate";
 import { LandModuleC } from "../LandModule/LandModuleC";
@@ -23,7 +31,6 @@ import { EPlayerState } from "../PlayerModule/FSM/PlyerState";
 import { MascotModuleS } from "../npc/mascotNpc/MascotModuleS";
 import { PlayerHeadUIModuleC } from "../PlayerHeadUIModule/PlayerHeadUIModuleC";
 import { EnergyModuleC } from "../Energy/EnergyModule";
-
 
 
 export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
@@ -81,9 +88,10 @@ export class GMModuleS extends ModuleS<GMModuleC, GMModuleData> {
     }
 
     public testCount: number = 0;
+
     public addCount() {
         this.testCount++;
-        console.error(" check cur testCount = " + this.testCount)
+        console.error(" check cur testCount = " + this.testCount);
     }
 
 }
@@ -94,24 +102,19 @@ export class GM_ParrySuccTime {
 }
 
 
-
-
 AddGMCommand("打开技能编辑器", (player: mw.Player, value: string) => {
     EventManager.instance.call(EModule_Events.gm_HideShowUI);
     MotionManager.instance.showEditor();
-}, null, "编辑器")
+}, null, "编辑器");
 
 AddGMCommand("播放动效id", (player: mw.Player, value: string) => {
     ModuleService.getModule(MotionModuleC).gm_invoke_motion(Number(value));
-}, null, "编辑器")
+}, null, "编辑器");
 AddGMCommand("发射子弹id", (player: mw.Player, value: string) => {
 
 }, (player: mw.Player, value: string) => {
     ModuleService.getModule(BulletModuleS).gm_fireSkillBullet(player, Number(value));
-}, "编辑器")
-
-
-
+}, "编辑器");
 
 
 AddGMCommand("id|旋转x|旋转y|z", (player: mw.Player, value: string) => {
@@ -128,7 +131,7 @@ AddGMCommand("id|旋转x|旋转y|z", (player: mw.Player, value: string) => {
     }
     let rot = new mw.Vector(Number(values[1]), Number(values[2]), Number(values[3]));
 
-    effectCfg.EffectRotate = rot
+    effectCfg.EffectRotate = rot;
 
     Tips.show("修改成功");
 
@@ -144,8 +147,8 @@ AddGMCommand("id|旋转x|旋转y|z", (player: mw.Player, value: string) => {
     }
     let rot = new mw.Vector(Number(values[1]), Number(values[2]), Number(values[3]));
 
-    effectCfg.EffectRotate = rot
-}, "配置表")
+    effectCfg.EffectRotate = rot;
+}, "配置表");
 
 AddGMCommand("播放特效表id", (player: mw.Player, value: string) => {
 
@@ -165,9 +168,7 @@ AddGMCommand("播放特效表id", (player: mw.Player, value: string) => {
 
 }, (player: mw.Player, value: string) => {
 
-}, "配置表")
-
-
+}, "配置表");
 
 
 AddGMCommand("修改时间膨胀，格式：延时|持续时间", (player: mw.Player, value: string) => {
@@ -184,12 +185,12 @@ AddGMCommand("修改时间膨胀，格式：延时|持续时间", (player: mw.Pl
     let newV = value.split("|");
     if (newV.length != 2) {
         console.error(" 参数长度错误 value = " + value);
-        return
+        return;
     }
     GM_ParrySuccTime.parrySuccTime_Before = Number(newV[0]);
     GM_ParrySuccTime.parrySuccTime_After = Number(newV[1]);
-    console.error(" 参数修改成功 \n Num1 = " + GM_ParrySuccTime.parrySuccTime_Before + "\n Num2 = " + GM_ParrySuccTime.parrySuccTime_After)
-})
+    console.error(" 参数修改成功 \n Num1 = " + GM_ParrySuccTime.parrySuccTime_Before + "\n Num2 = " + GM_ParrySuccTime.parrySuccTime_After);
+});
 
 AddGMCommand("无敌1取消0", (player: mw.Player, value: string) => {
 
@@ -205,7 +206,7 @@ AddGMCommand("无敌1取消0", (player: mw.Player, value: string) => {
 
     Globaldata.isInvincible = va == 1;
     DataCenterS.getData(player, PlayerModuleData).isInvincible = va == 1;
-}, "玩家")
+}, "玩家");
 AddGMCommand("无限能量1取消0", (player: mw.Player, value: string) => {
     let va = Number(value[0]);
     Globaldata.isInfiniteEnergy = va == 1;
@@ -218,7 +219,7 @@ AddGMCommand("无限能量1取消0", (player: mw.Player, value: string) => {
 
     DataCenterS.getData(player, PlayerModuleData).isInfiniteEnergy = va == 1;
 
-}, "玩家")
+}, "玩家");
 
 AddGMCommand("增加经验", null, (player: mw.Player, value: string) => {
     if (!value) {
@@ -226,9 +227,24 @@ AddGMCommand("增加经验", null, (player: mw.Player, value: string) => {
         return;
     }
     let v2 = Number(value);
-    ModuleService.getModule(PlayerModuleS).
-        addPlayerAttr(player.playerId, Attribute.EnumAttributeType.exp, v2)
-}, "玩家")
+    ModuleService.getModule(PlayerModuleS).addPlayerAttr(player.playerId, Attribute.EnumAttributeType.exp, v2);
+}, "玩家");
+
+AddGMCommand("改变段位分", null, (player: mw.Player, value: string) => {
+    if (!value) {
+        console.error(" 数据有问题 ！！！！！！！！！");
+        return;
+    }
+    let v2 = Number(value);
+    if (v2 > 0) {
+        ModuleService.getModule(PlayerModuleS).setPlayerAttr(player.playerId, Attribute.EnumAttributeType.dayRankScore, 0);
+        ModuleService.getModule(PlayerModuleS).addPlayerAttr(player.playerId, Attribute.EnumAttributeType.rankScore, Math.round(v2));
+    } else {
+        ModuleService.getModule(PlayerModuleS).setPlayerAttr(player.playerId, Attribute.EnumAttributeType.dayRankScore, 0);
+        ModuleService.getModule(PlayerModuleS).reducePlayerAttr(player.playerId, Attribute.EnumAttributeType.rankScore, Math.round(-v2));
+    }
+
+}, "玩家");
 
 AddGMCommand("增加金币", null, (player: mw.Player, value: string) => {
     if (!value) {
@@ -236,9 +252,8 @@ AddGMCommand("增加金币", null, (player: mw.Player, value: string) => {
         return;
     }
     let v2 = Number(value);
-    ModuleService.getModule(PlayerModuleS).
-        addPlayerAttr(player.playerId, Attribute.EnumAttributeType.money, v2)
-}, "玩家")
+    ModuleService.getModule(PlayerModuleS).addPlayerAttr(player.playerId, Attribute.EnumAttributeType.money, v2);
+}, "玩家");
 
 AddGMCommand("自杀", (player: mw.Player, value: string) => {
 
@@ -251,7 +266,7 @@ AddGMCommand("自杀", (player: mw.Player, value: string) => {
 }, (player: mw.Player, value: string) => {
 
 
-}, "玩家")
+}, "玩家");
 
 AddGMCommand("自杀并释放技能", (player: mw.Player, value: string) => {
 
@@ -266,19 +281,19 @@ AddGMCommand("自杀并释放技能", (player: mw.Player, value: string) => {
 }, (player: mw.Player, value: string) => {
 
 
-}, "玩家")
+}, "玩家");
 
 AddGMCommand("修改玩家属性key|value", (player: mw.Player, value: string) => {
     let values = value.split("|");
     if (values.length != 2) {
-        console.error(" 参数错误 value = " + value)
-        return
+        console.error(" 参数错误 value = " + value);
+        return;
     }
     let attrType = Number(values[0]);
     let attrValue = Number(values[1]);
     if (isNaN(attrType) || isNaN(attrValue)) {
-        console.error(" 参数错误 value = " + value)
-        return
+        console.error(" 参数错误 value = " + value);
+        return;
     }
     if (attrValue > 0) {
         ModuleService.getModule(PlayerModuleC).addAttr(attrType, attrValue);
@@ -287,13 +302,13 @@ AddGMCommand("修改玩家属性key|value", (player: mw.Player, value: string) =
     }
 }, (player: mw.Player, value: string) => {
 
-}, "玩家")
+}, "玩家");
 
 AddGMCommand("设置所有玩家头顶ui，0隐藏，1显示", (player: mw.Player, value: string) => {
     ModuleService.getModule(PlayerHeadUIModuleC).setAllHeadUIVisible(Number(value) == 1);
 }, (player: mw.Player, value: string) => {
 
-}, "玩家")
+}, "玩家");
 
 AddGMCommand("增加技能点属", (player: mw.Player, value: string) => {
 
@@ -390,10 +405,6 @@ AddGMCommand("输出地形服务端", (player: mw.Player, value: string) => {
 }, "地形");
 
 
-
-
-
-
 AddGMCommand("玩家加BUFF(buffID)", null, (player: mw.Player, value: string) => {
     if (!value) {
         console.error(" 数据有问题 ！！！！！！！！！");
@@ -401,7 +412,7 @@ AddGMCommand("玩家加BUFF(buffID)", null, (player: mw.Player, value: string) =
     }
     let buffID = Number(value);
     ModuleService.getModule(BuffModuleS).createBuff(buffID, player.playerId, player.playerId);
-}, "Buff")
+}, "Buff");
 
 AddGMCommand("怪加BUFF(buffID)", (player: mw.Player, value: string) => {
     if (!value) {
@@ -410,9 +421,7 @@ AddGMCommand("怪加BUFF(buffID)", (player: mw.Player, value: string) => {
     }
     let buffID = Number(value);
     ModuleService.getModule(BuffModuleC).createBuffOnScenceUnit(buffID, -1, true);
-}, null, "Buff")
-
-
+}, null, "Buff");
 
 
 AddGMCommand("相机旋转", (player: mw.Player, value: string) => {
@@ -422,7 +431,7 @@ AddGMCommand("相机旋转", (player: mw.Player, value: string) => {
     cam.localTransform.rotation = new mw.Rotation(Number(values[0]), Number(values[1]), Number(values[2]));
 }, (player: mw.Player, value: string) => {
 
-}, "相机")
+}, "相机");
 AddGMCommand("相机相对位置偏移", (player: mw.Player, value: string) => {
     let values = value.split("|");
     let camera = Camera.currentCamera;
@@ -432,31 +441,26 @@ AddGMCommand("相机相对位置偏移", (player: mw.Player, value: string) => {
 
 }, (player: mw.Player, value: string) => {
 
-}, "相机")
-
-
-
-
-
+}, "相机");
 
 
 AddGMCommand("fps", (player: mw.Player, value: string) => {
     UE.KismetSystemLibrary.ExecuteConsoleCommand(player.character["actor"], "stat FPS");
-}, null, "调试")
+}, null, "调试");
 AddGMCommand("打开性能参数", (player: mw.Player, value: string) => {
     UE.KismetSystemLibrary.ExecuteConsoleCommand(player.character["actor"], "stat unit");
-}, null, "调试")
+}, null, "调试");
 AddGMCommand("打开性能参数MAX", (player: mw.Player, value: string) => {
     UE.KismetSystemLibrary.ExecuteConsoleCommand(player.character["actor"], "stat unitMax");
-}, null, "调试")
+}, null, "调试");
 
 AddGMCommand("打开碰撞体", (player: mw.Player, value: string) => {
     UE.KismetSystemLibrary.ExecuteConsoleCommand(player.character["actor"], "show collision");
-}, null, "调试")
+}, null, "调试");
 
 AddGMCommand("设置网络延迟", (player: mw.Player, value: string) => {
     UE.KismetSystemLibrary.ExecuteConsoleCommand(player.character["actor"], `net pktlag=${Number(value)}`);
-}, null, "调试")
+}, null, "调试");
 
 
 AddGMCommand("输入命令", (player: mw.Player, value: string) => {
@@ -464,18 +468,18 @@ AddGMCommand("输入命令", (player: mw.Player, value: string) => {
         return;
     }
     UE.KismetSystemLibrary.ExecuteConsoleCommand(player.character["actor"], value);
-}, null, "调试")
+}, null, "调试");
 
 AddGMCommand("屏幕特效Pos", (player: mw.Player, value: string) => {
     let values = value.split("|");
     ModuleService.getModule(PlayerModuleC).diveEffect.localTransform.position = new mw.Vector(Number(values[0]), Number(values[1]), Number(values[2]));
 
-}, null, "特效")
+}, null, "特效");
 
 AddGMCommand("屏幕特效Rot", (player: mw.Player, value: string) => {
     let values = value.split("|");
     ModuleService.getModule(PlayerModuleC).diveEffect.localTransform.rotation = new mw.Rotation(Number(values[0]), Number(values[1]), Number(values[2]));
-}, null, "特效")
+}, null, "特效");
 
 
 AddGMCommand("技能释放", (player: mw.Player, value: string) => {
@@ -488,7 +492,7 @@ AddGMCommand("技能释放", (player: mw.Player, value: string) => {
         ModuleService.getModule(PlayerModuleC).weaponSkill(skillCfg, true);
     }
 
-}, null, "技能")
+}, null, "技能");
 
 AddGMCommand("击杀提示：数量", null, (player: mw.Player, value: string) => {
 
@@ -503,19 +507,19 @@ AddGMCommand("击杀提示：数量", null, (player: mw.Player, value: string) =
         }
     }
     EventManager.instance.call(ENotice_Events_S.NoticeEvent_KillTip_S, killId, 0, beKillId, Number(value));
-}, "击杀提示")
+}, "击杀提示");
 
 AddGMCommand("跳DragonVerse", () => {
     RouteService.enterNewGame(Globaldata.dragonverseGameId);
-})
+});
 
 AddGMCommand("跳PetSimulator", () => {
     RouteService.enterNewGame(Globaldata.petSimulatorGameId);
-})
+});
 
 AddGMCommand("扣体力", (player, value) => {
     ModuleService.getModule(EnergyModuleC).consume(Number(value), true);
     EventManager.instance.call(EAttributeEvents_C.Attribute_Energy_Change_C);
 
-})
+});
 

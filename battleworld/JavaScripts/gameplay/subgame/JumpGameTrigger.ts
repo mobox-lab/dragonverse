@@ -3,7 +3,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-16 14:42:38
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-17 18:05:22
+ * @LastEditTime : 2024-02-02 17:47:23
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\gameplay\subgame\JumpGameTrigger.ts
  * @Description  : 跳游戏触发器
  */
@@ -20,8 +20,8 @@ export default class JumpGameTrigger extends Script {
     private _progressBar: ProgressBar;
     private _cnvProgressBar: Canvas;
 
-    @mw.Property({ displayName: "要跳转的游戏", selectOptions: { "DragonVerse": Globaldata.dragonverseGameId, "PetSimulator": Globaldata.petSimulatorGameId } })
-    private _jumpGameId: string = Globaldata.dragonverseGameId;
+    @mw.Property({ displayName: "要跳转游戏的GameId" })
+    private _jumpGameId: string = '';
 
     protected onStart(): void {
         if (SystemUtil.isClient()) {
