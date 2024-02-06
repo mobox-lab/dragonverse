@@ -87,7 +87,9 @@ class DollMachineC {
         // 初始化倒计时任务id为null
         this.timeCountIntervalId = null;
     }
+
     private _worldUIPos: Vector = new Vector();
+
     /**初始化开始抓娃娃世界UI点击事件 */
     private initStartUI(conf: IDollMachineElement) {
         let startBtnObj = GameObject.findGameObjectById(conf.Control) as mw.UIWidget;
@@ -112,7 +114,7 @@ class DollMachineC {
             if (distance < 270000) {
                 this.onClickStartBtnAction.call(this.id);
             }
-        })
+        });
     }
 
     /**初始化gameObject */
@@ -168,7 +170,7 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
             if (!isStart) {
                 this.isGettingItem = false;
             }
-        })
+        });
     }
 
     /**初始化娃娃机数组 */
@@ -182,20 +184,19 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
     }
 
 
-
     /**添加开始抓娃娃事件 */
     private addStartBtnListener() {
         let len = this.machineList.length;
         for (let machineId = 1; machineId < len; machineId++) {
             this.machineList[machineId].onClickStartBtnAction.add((id) => {
                 this.startBtnClick(id);
-            })
+            });
         }
     }
 
     public setDollMachineShortcutKey() {
         for (let machineId = 1; machineId < this.machineList.length; machineId++) {
-            this.machineList[machineId].setStartShortcutKey()
+            this.machineList[machineId].setStartShortcutKey();
         }
     }
 
@@ -211,7 +212,7 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
         // 如果自己正在使用娃娃机
         if (this.isInteract) {
             // TODO 换成多语言
-            MessageBox.showOneBtnMessage("已经在使用娃娃机了");
+            MessageBox.showOneBtnMessage(GameConfig.Language.Claw_Tips_11.Value);
             return;
         }
         // 玩家自己处于使用娃娃机的cd中
@@ -285,7 +286,7 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
             if (time <= 0) {
                 this.FinishCatchDoll(machineId);
             }
-        }, 1)
+        }, 1);
     }
 
     /**清楚倒计时 */
@@ -301,7 +302,7 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
             this.playerCD--;
         }, 1, () => {
             return this.playerCD <= 0;
-        })
+        });
         // this.server.net_cancelPhysics(machineId)
     }
 
@@ -373,7 +374,7 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
                 // MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_1.Value);
                 UIService.show(BuyCoinPanel);
             }
-        })
+        });
     }
 
 
@@ -432,8 +433,7 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
         if (isShow) {
             this.controlUI.machineId = machineId;
             this.controlUI.show();
-        }
-        else
+        } else
             this.controlUI.hide();
     }
 
@@ -461,7 +461,7 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
         if (this.shakeTween?.isPlaying()) {
             return;
         }
-        this.shakeTween = new mw.Tween({ y: hookShaking[0] }).to({ y: hookShaking[1] }, 500).onUpdate((rota) => {
+        this.shakeTween = new mw.Tween({y: hookShaking[0]}).to({y: hookShaking[1]}, 500).onUpdate((rota) => {
             if (count > 3) {
                 this.tempRota.x = rota.y;
             } else {
