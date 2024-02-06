@@ -158,7 +158,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
-        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, this.onPlayerReset));
+        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, this.onPlayerReset.bind(this)));
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -222,12 +222,15 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     private onCountDown = () => {
+        if (!this._isStart) {
+            return;
+        }
         if (this._hander) {
             TimeUtil.clearInterval(this._hander);
             this._hander = null;
+            let obby =  ModuleService.getModule(ObbyModuleC);
+            obby.reborn();
         }
-        let obby =  ModuleService.getModule(ObbyModuleC);
-        obby.reborn();
     };
 
     /**
@@ -269,6 +272,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         this._isStart = false;
         this._curLv = 0;
         this._isInGame = false;
+        Player.localPlayer.character.ragdollEnabled = false;
         UIService.hideUI(this._obbyPanel);
         this.resetProps(Player.localPlayer.character);
         UIService.getUI(MainPanel).setCanSprint(true);
@@ -329,30 +333,31 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     public reborn() {
-        console.log("reborn ============== lv=" + this._curLv)
+        if (!this._isStart) {
+            return;
+        }
         Player.localPlayer.character.ragdollEnabled = false;
         if (this._curLv == 0) {
             Player.localPlayer.character.worldTransform.position = this._startPos;
         } else {
             Player.localPlayer.character.worldTransform.position = this._checkPointCfg["" + this._curLv];
         }
-        console.log("reborn ============== pos=" + Player.localPlayer.character.worldTransform.position.toString())
         Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
     }
 
     public redDead() {
-        if (this._hander) {
+        if (this._hander||!this._isStart) {
             return;
         }
-        this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY)
+        this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY)
         Player.localPlayer.character.ragdollEnabled = true;
     }
 
     public groundDead() {
-        if (this._hander) {
+        if (this._hander||!this._isStart) {
             return;
         }
-        this._hander = TimeUtil.setInterval(this.onCountDown, GameServiceConfig.REBORN_INTERVAL_OBBY)
+        this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY)
         //锁定摄像头
         Player.localPlayer.character.ragdollEnabled = true;
     }
@@ -362,12 +367,10 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     //#region Net Method
 
     public net_updateLv(curLv: number) {
-        console.log("net_updateLv curLv======" + curLv);
         if (!this._isStart) {
             this._isStart = true;
             if (curLv > this._curLv) {
                 //需要传送到之前的关卡 需要读取关卡的配置位置
-                console.log("net_updateLv 传送======");
                 this._curLv = curLv;
                 this.reborn();
             }
@@ -457,8 +460,7 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
         playerData.updateLv(lv);
         playerData.save(false);
         this.getClient(playerId).net_updateLv(lv);
-        // Log4Ts.log(ObbyModuleS,"持久化 当前关卡数 lv========================"+lv);
-        console.log("持久化 当前关卡数 lv========================" + lv);
+        Log4Ts.log(ObbyModuleS,"持久化 当前关卡数 lv========================"+lv);
     }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
