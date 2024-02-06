@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-31 11:20:52
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-31 16:53:23
+ * @LastEditTime : 2024-02-05 18:29:04
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\ui\BuyEnergyPanel.ts
  * @Description  : 购买战斗次数
  */
@@ -25,7 +25,7 @@ export default class BuyEnergyPanel extends BuyPanel_Generate {
             let goodsItem = UIService.create(ItemBuy_Generate);
             goodsItem.mItemName.text = item.title;
             goodsItem.price.text = `${item.price}`;
-            goodsItem.count.text = `X${item.buyCount}`;
+            goodsItem.count.text = `x${item.buyCount}`;
             goodsItem.mSelectBtn.onClicked.add(() => {
                 this.mainCanvas.visibility = SlateVisibility.Hidden;
                 //购买item
