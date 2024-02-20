@@ -104,7 +104,7 @@ export default class PetBehaviour {
         this.chaseSpeed = this.petInfo.PetChase;
         if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character) {
             SpawnManager.modifyPoolAsyncSpawn("Character").then(cha => {
-                if (!this.owner || !this.owner.worldTransform) this.destory();
+                if (!this.owner || !this.owner.worldTransform) this.destroy();
                 this.pet = cha as Character;
                 if (!(this.pet instanceof Character)) return;
                 this.pet.collisionWithOtherCharacterEnabled = false;
@@ -147,7 +147,7 @@ export default class PetBehaviour {
             let ModelGuid = this.petInfo.ModelGuid;
             let type = GameObjPoolSourceType.Prefab;
             SpawnManager.modifyPoolAsyncSpawn(ModelGuid, type).then(obj => {
-                if (!this.owner || !this.owner.worldTransform) this.destory();
+                if (!this.owner || !this.owner.worldTransform) this.destroy();
                 this.pet = obj;
                 this.pet.setCollision(mw.PropertyStatus.Off);
                 SoundManager.instance.play3DSound(GlobalData.Music.petEquip, this.pet);
@@ -211,7 +211,7 @@ export default class PetBehaviour {
         return this._state;
     }
 
-    public destory(): void {
+    public destroy(): void {
         if (!this.pet) {
             this.pet = null;
             return;

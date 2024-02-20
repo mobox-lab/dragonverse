@@ -335,7 +335,7 @@ export default class PlayerBehavior extends mw.Script {
         this.owner = null;
         if (this.moveSoundId) SoundService.stop3DSound(this.moveSoundId);
         this.myFollowPets.forEach(pet => {
-            pet.destory();
+            pet.destroy();
         });
         if (this.mySkateboard) {
             this.mySkateboard.unEquipBoard(this.owner, this.currentChar);
@@ -383,13 +383,13 @@ export default class PlayerBehavior extends mw.Script {
             this.pets = this.pets.replace("/teleport1", "");
             this.pets = this.pets.replace("/teleport2", "");
             this.myFollowPets.forEach(pet => {
-                pet.destory();
+                pet.destroy();
             })
             this.myFollowPets.length = 0;
         }
         if (this.pets == "") {
             this.myFollowPets.forEach(pet => {
-                pet.destory();
+                pet.destroy();
             })
             this.myFollowPets.length = 0;
             return;
@@ -418,7 +418,7 @@ export default class PlayerBehavior extends mw.Script {
         }
         //销毁不需要的宠物
         destorys.forEach(pet => {
-            pet.destory();
+            pet.destroy();
             let index = this.myFollowPets.findIndex(p => p.petId == pet.petId);
             this.myFollowPets.splice(index, 1);
         });

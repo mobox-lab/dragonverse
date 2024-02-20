@@ -51,7 +51,7 @@ export class RewardTips {
         this.clearTween();
         this.clearHideInterval();
 
-        this.addValue = count / GlobalData.RewardTipsUI.showInterval;
+        this.addValue = count * GlobalData.RewardTipsUI.showInterval * 0.5;
 
         this.allCount += count;
 
@@ -152,10 +152,10 @@ export class RewardTips {
         if (this.allCount > this.curValue) {
             this.curValue += this.addValue;
             this.mValText.text = utils.formatNumber(Math.floor(this.curValue))
+        } else {
+            this.mValText.text = utils.formatNumber(Math.floor(this.allCount))
         }
     }
-
-
 }
 
 
@@ -164,14 +164,14 @@ export class RewardTipsManager {
 
     public static instance: RewardTipsManager;
 
-    private fristGoldTips: RewardTips;
+    private firstGoldTips: RewardTips;
     private secondGoldTips: RewardTips;
     private thirdGoldTips: RewardTips;
     private diamondTips: RewardTips;
 
     constructor() {
-        this.fristGoldTips = new RewardTips(new mw.Vector(0, 100));
-        this.fristGoldTips.setImg(GlobalEnum.CoinType.FirstWorldGold)
+        this.firstGoldTips = new RewardTips(new mw.Vector(0, 100));
+        this.firstGoldTips.setImg(GlobalEnum.CoinType.FirstWorldGold)
         this.secondGoldTips = new RewardTips(new mw.Vector(0, 100));
         this.secondGoldTips.setImg(GlobalEnum.CoinType.SecondWorldGold)
         this.thirdGoldTips = new RewardTips(new mw.Vector(0, 100));
@@ -183,7 +183,7 @@ export class RewardTipsManager {
 
     public getUI(type: GlobalEnum.CoinType, count: number) {
         if (type == GlobalEnum.CoinType.FirstWorldGold) {
-            this.fristGoldTips.startTween(count);
+            this.firstGoldTips.startTween(count);
         } else if (type == GlobalEnum.CoinType.SecondWorldGold) {
             this.secondGoldTips.startTween(count);
         } else if (type == GlobalEnum.CoinType.ThirdWorldGold) {
