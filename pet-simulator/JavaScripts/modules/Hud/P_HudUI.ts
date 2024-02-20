@@ -273,7 +273,7 @@ export class P_HudUI extends Hud_Generate {
             this.mGoldAddValue = (value - this.mGold) / GlobalData.hudUI.addAniTime;
             return;
         }
-        this.mText_coin.text = utils.formatNumber(Math.ceil(value));
+        this.mText_coin.text = utils.formatNumber(Math.floor(value));
         this.mGold = value;
         this.mTargetGold = value;
     }
