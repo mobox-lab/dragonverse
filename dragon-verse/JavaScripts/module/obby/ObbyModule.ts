@@ -228,9 +228,15 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         if (this._hander) {
             let obby =  ModuleService.getModule(ObbyModuleC);
             obby.reborn();
-            TimeUtil.clearInterval(this._hander);
-            this._hander = null;
+            TimeUtil.setInterval(this.onClearHander.bind(this), 0.5)
+            // TimeUtil.clearInterval(this._hander);
+            // this._hander = null;
         }
+    };
+
+    private onClearHander = () => {
+        TimeUtil.clearInterval(this._hander);
+        this._hander = null;
     };
 
     /**
