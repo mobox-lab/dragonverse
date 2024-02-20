@@ -70,11 +70,11 @@ interface SubGameInfo {
      */
     gameNum: number,
     /**
-     * 完成时间. unix
+     * 完成时间.
      */
     achievedAt: number,
     /**
-     * 当前签名时间. unix
+     * 当前签名时间.
      */
     timestamp: number,
 }

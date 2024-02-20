@@ -1,15 +1,19 @@
 import CryptoJS from "crypto-js";
-import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import {JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
 import GToolkit from "../../utils/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import noReply = mwext.Decorator.noReply;
-import { GlobalEnum } from "../../const/Enum";
-import { GlobalData } from "../../const/GlobalData";
-import { Yoact } from "../../depend/yoact/Yoact";
-import createYoact = Yoact.createYoact;
+import {GlobalEnum} from "../../const/Enum";
+import {GlobalData} from "../../const/GlobalData";
+import {Yoact} from "../../depend/yoact/Yoact";
 import UUID from "pure-uuid";
 import Enumerable from "linq";
+import noReply = mwext.Decorator.noReply;
+import createYoact = Yoact.createYoact;
 import PetQuality = GlobalEnum.PetQuality;
+import HttpRequestURL = mw.HttpRequestURL;
+import HttpRequestType = mw.HttpRequestType;
+import Regulator from "../../depend/regulator/Regulator";
+import Global = GlobalData.Global;
 
 export default class AuthModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -42,14 +46,21 @@ interface EncryptedRequest {
     encryptData: string;
 }
 
-interface GetTokenResponse {
+interface GetTempTokenResponse {
+    code: number,
+    message: string,
+    data?: string,
+}
+
+interface GetP12TokenParam {
+    gtoken: string;
+}
+
+interface GetP12TokenResponse {
     code: number;
-    path: string;
-    message: string;
-    timestamp: string;
-    data?: {
-        walletAddress?: string;
-        mToken?: string;
+    info: string;
+    data: {
+        token: string
     };
 }
 
@@ -259,6 +270,8 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
+
+        this.queryTempToken();
     }
 
     protected onDestroy(): void {
@@ -289,11 +302,49 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
         }
     }
 
+    /**
+     * 查询临时 token.
+     * 一个连续的动作. 成功刷新后将更新 服务器端 token.
+     */
+    public queryTempToken() {
+        const handler: HttpResponse = (result, content, responseCode) => {
+            if (result && responseCode === 200) {
+                const resp = JSON.parse(content) as GetTempTokenResponse;
+                if (GToolkit.isNullOrEmpty(resp.data)) {
+                    Log4Ts.warn(AuthModuleC, `get an invalid temp token.`);
+                } else {
+                    Log4Ts.log(AuthModuleC, `get temp token. token: ${resp.data}.`);
+                    this.reportTempToken(resp.data);
+                }
+            } else {
+                Log4Ts.log(AuthModuleC, `receive an invalid response. code: ${responseCode}. content: ${content}.`);
+            }
+        };
+
+        generalHttpRequest(handler, HttpRequestURL.CobblestoneService, AuthModuleS.GET_MW_TEMP_TOKEN_URL_SUFFIX, "", HttpRequestType.Post);
+    }
+
+    public reportTempToken(token: string) {
+        this.server.net_reportTempToken(token).then(
+            (value) => {
+                if (value) {
+                    Log4Ts.log(AuthModuleC, `registered token report success.`);
+                } else {
+                    Log4Ts.warn(AuthModuleC, `temp token report failed.`);
+                }
+            }
+        );
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
     public net_setCurrency(val: string) {
         this.currency.count = Number(val);
+    }
+
+    public net_refreshToken() {
+        this.queryTempToken();
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -336,10 +387,18 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly RELEASE_MOBOX_NFT_URL = "https://nft-api.mobox.io";
 
     /**
-     * getToken 后缀.
+     * 获取 MW 临时 token 后缀.
+     * @type {string}
      * @private
      */
-    private static readonly GET_TOKEN_URL_SUFFIX = "/modragon/mo-sso/m-token";
+    public static readonly GET_MW_TEMP_TOKEN_URL_SUFFIX = "sso/universal/user/v1/get/temp/token";
+
+    /**
+     * 获取 P12 token 后缀.
+     * @type {string}
+     * @private
+     */
+    private static readonly GET_P12_TOKEN_URL_SUFFIX = "/oauth/gpark";
 
     /**
      * 查询货币余额后缀.
@@ -376,16 +435,18 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     /**
      * 测试用 getToken Url.
+     * @get
      */
-    private static get TEST_GET_TOKEN_URL() {
-        return this.TEST_P12_URL + this.GET_TOKEN_URL_SUFFIX;
+    private static get TEST_GET_P12_TOKEN_URL() {
+        return this.TEST_MOBOX_URL + this.GET_P12_TOKEN_URL_SUFFIX;
     }
 
     /**
      * 发布用 getToken Url.
+     * @get
      */
-    private static get RELEASE_GET_TOKEN_URL() {
-        return this.RELEASE_P12_URL + this.GET_TOKEN_URL_SUFFIX;
+    private static get RELEASE_GET_P12_TOKEN_URL() {
+        return this.RELEASE_MOBOX_URL + this.GET_P12_TOKEN_URL_SUFFIX;
     }
 
     /**
@@ -518,6 +579,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @private
      */
     private _tokenMap: Map<number, string> = new Map<number, string>();
+
+    /**
+     * @type {Map<number, Regulator>} key: playerId, value: Regulator.
+     * @private
+     */
+    private _expiredRegulatorMap: Map<number, Regulator> = new Map<number, Regulator>();
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -565,13 +632,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-        this._tokenMap.set(player.playerId, null);
-        this.getToken(player.playerId);
+
+        const playerId = player.playerId;
+        this._tokenMap.set(playerId, null);
+        this._expiredRegulatorMap.set(playerId, new Regulator(GlobalData.Auth.EXPIRED_REFRESH_INTERVAL));
     }
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
-        this._tokenMap.delete(player.playerId);
+        const playerId = player.playerId;
+        this._tokenMap.delete(playerId);
+        this._expiredRegulatorMap.delete(playerId);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -609,37 +680,35 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return CryptoJS.HmacSHA256(paramStr, AuthModuleS.SECRET).toString(CryptoJS.enc.Hex);
     }
 
-    private async getToken(playerId: number) {
-        const player = Player.getPlayer(playerId);
-        if (!player) {
-            this.logPlayerNotExist(playerId);
-            return;
+    /**
+     * 获取并注册 P12 token.
+     * @return {Promise<boolean>}
+     * @private
+     * @param playerId
+     * @param tempToken
+     */
+    private async getP12Token(playerId: number, tempToken: string) {
+        if (GToolkit.isNullOrEmpty(tempToken)) {
+            Log4Ts.warn(AuthModuleS, `temp token of player ${playerId} is invalid.`);
+            return false;
         }
-        const param: QueryP12Param = {
-            userId: player.userId,
-        };
 
-        const body: EncryptedRequest = {
-            encryptData: this.getSecret(JSON.stringify(param)),
-        };
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-                AuthModuleS.RELEASE_GET_TOKEN_URL :
-                AuthModuleS.TEST_GET_TOKEN_URL}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charset=UTF-8",
-                },
-                body: JSON.stringify(body),
-            });
+            AuthModuleS.RELEASE_GET_P12_TOKEN_URL :
+            AuthModuleS.TEST_GET_P12_TOKEN_URL}`, {
+            method: "POST",
+            body: JSON.stringify({
+                gtoken: tempToken,
+            } as GetP12TokenParam),
+        });
 
-        const respInJson = await resp.json<GetTokenResponse>();
+        const respInJson = await resp.json<GetP12TokenResponse>();
 
-        if (GToolkit.isNullOrUndefined(respInJson.data?.mToken)) {
+        if (respInJson?.code !== 200 || GToolkit.isNullOrUndefined(respInJson.data?.token ?? undefined)) {
             Log4Ts.error(AuthModuleS, `get token failed. ${JSON.stringify(respInJson)}`);
         } else {
             if (this._tokenMap.has(playerId)) {
-                this._tokenMap.set(playerId, respInJson.data?.mToken);
+                this._tokenMap.set(playerId, respInJson.data?.token);
                 this.onRefreshToken(playerId);
             } else {
                 this.logPlayerNotExist(playerId);
@@ -653,8 +722,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private onTokenExpired(playerId: number) {
         Log4Ts.warn(AuthModuleS, `token expired. refreshing... playerId: ${playerId}`);
-        setTimeout(() => this.getToken(playerId),
-            GlobalData.Auth.EXPIRED_REFRESH_INTERVAL);
+        this._tokenMap.set(playerId, null);
+        if (this._expiredRegulatorMap.get(playerId).ready()) this.getClient(playerId)?.net_refreshToken();
     }
 
     private async queryCurrency(playerId: number) {
@@ -885,7 +954,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 }
             },
         );
+    }
 
+    public async net_reportTempToken(token: string): Promise<boolean> {
+        const currentPlayerId = this.currentPlayerId;
+        return this.getP12Token(currentPlayerId, token);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
