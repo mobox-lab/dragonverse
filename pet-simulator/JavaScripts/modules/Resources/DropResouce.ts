@@ -351,7 +351,7 @@ class Drop {
         let startLoc = getPos(this.model);
         let endLoc = mw.Vector.add(startLoc, mw.Vector.multiply(dir, dis));
         this._moveToTween.stop();
-        this._moveToTween = new mw.Tween(startLoc).to({x: endLoc.x, y: endLoc.y}, time)
+        this._moveToTween = new mw.Tween(startLoc).to({ x: endLoc.x, y: endLoc.y }, time)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete(() => {
@@ -375,11 +375,11 @@ class Drop {
 
         startPos.z = this.targetPos.z + GlobalData.DropAni.resourceY;
 
-        this._moveToTween = new mw.Tween(startPos).to({z: startPos.z + height}, GlobalData.DropAni.bonceUpTime)
+        this._moveToTween = new mw.Tween(startPos).to({ z: startPos.z + height }, GlobalData.DropAni.bonceUpTime)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete((obj) => {
-                this._moveToTween = new mw.Tween(obj).to({z: this.targetPos.z + GlobalData.DropAni.resourceY}, GlobalData.DropAni.bonceDownTime)
+                this._moveToTween = new mw.Tween(obj).to({ z: this.targetPos.z + GlobalData.DropAni.resourceY }, GlobalData.DropAni.bonceDownTime)
                     .onUpdate((value: mw.Vector) => {
                         setPos(this.model, value);
                     }).onComplete(() => {
@@ -465,13 +465,13 @@ class Drop {
                 setPos(this.model, value);
             }).onComplete(() => {
                 if (this._gold > 0) {
-                    const val = this._gold * GlobalData.Buff.goldBuff;
+                    const val = Math.round(this._gold * GlobalData.Buff.goldBuff);
                     Log4Ts.log(Drop, `add gold count ${val}`);
                     DropManager.getInstance().addGold(val, this.type);
                     RewardTipsManager.instance.getUI(this.type, val);
                 }
                 if (this._diamond > 0) {
-                    const val = this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond;
+                    const val = Math.round(this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond);
                     Log4Ts.log(Drop, `add diamond count ${val}`);
                     RewardTipsManager.instance.getUI(this.type, val);
                     DropManager.getInstance().addDiamond(val);
