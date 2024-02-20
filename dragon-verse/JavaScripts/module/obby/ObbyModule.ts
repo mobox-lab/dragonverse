@@ -226,10 +226,10 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             return;
         }
         if (this._hander) {
-            TimeUtil.clearInterval(this._hander);
-            this._hander = null;
             let obby =  ModuleService.getModule(ObbyModuleC);
             obby.reborn();
+            TimeUtil.clearInterval(this._hander);
+            this._hander = null;
         }
     };
 
@@ -346,9 +346,11 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     public redDead() {
+        console.log("redDead1=======================")
         if (this._hander||!this._isStart) {
             return;
         }
+        console.log("redDead2=======================")
         Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_RedTips));
         this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY)
         Player.localPlayer.character.ragdollEnabled = true;
