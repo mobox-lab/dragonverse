@@ -331,7 +331,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
                 if (value) {
                     Log4Ts.log(AuthModuleC, `registered token report success.`);
                 } else {
-                    Log4Ts.warn(AuthModuleC, `temp token report failed.`);
+                    Log4Ts.warn(AuthModuleC, `temp token report failed. reason: ${value[1] ?? ""}.`);
                 }
             }
         );
@@ -688,16 +688,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @param playerId
      * @param tempToken
      */
-    private async getP12Token(playerId: number, tempToken: string) {
+    private async getP12Token(playerId: number, tempToken: string): Promise<[boolean, string]> {
         if (GToolkit.isNullOrEmpty(tempToken)) {
             Log4Ts.warn(AuthModuleS, `temp token of player ${playerId} is invalid.`);
-            return false;
+            return [false, "token invalid."];
         }
 
         const resp = await fetch(`${GlobalData.Global.isRelease ?
             AuthModuleS.RELEASE_GET_P12_TOKEN_URL :
             AuthModuleS.TEST_GET_P12_TOKEN_URL}`, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json;charset=UTF-8",
+            },
             body: JSON.stringify({
                 gtoken: tempToken,
             } as GetP12TokenParam),
@@ -706,13 +709,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const respInJson = await resp.json<GetP12TokenResponse>();
 
         if (respInJson?.code !== 200 || GToolkit.isNullOrUndefined(respInJson.data?.token ?? undefined)) {
-            Log4Ts.error(AuthModuleS, `get token failed. ${JSON.stringify(respInJson)}`);
+            const msg = `get token failed. ${JSON.stringify(respInJson)}`;
+            Log4Ts.error(AuthModuleS, msg);
+            return [false, msg];
         } else {
             if (this._tokenMap.has(playerId)) {
                 this._tokenMap.set(playerId, respInJson.data?.token);
                 this.onRefreshToken(playerId);
+                return [true, "success."];
             } else {
                 this.logPlayerNotExist(playerId);
+                return [false, "player not exist."];
             }
         }
     }
@@ -957,7 +964,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         );
     }
 
-    public async net_reportTempToken(token: string): Promise<boolean> {
+    public async net_reportTempToken(token: string): Promise<[boolean, string]> {
         const currentPlayerId = this.currentPlayerId;
         return this.getP12Token(currentPlayerId, token);
     }
