@@ -311,7 +311,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
             if (result && responseCode === 200) {
                 const resp = JSON.parse(content) as GetTempTokenResponse;
                 if (GToolkit.isNullOrEmpty(resp.data)) {
-                    Log4Ts.warn(AuthModuleC, `get an invalid temp token.`);
+                    Log4Ts.warn(AuthModuleC, `get an invalid temp token. content: ${content}.`);
                 } else {
                     Log4Ts.log(AuthModuleC, `get temp token. token: ${resp.data}.`);
                     this.reportTempToken(resp.data);
@@ -321,6 +321,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
             }
         };
 
+        Log4Ts.log(AuthModuleC, `trying to query temp token.`);
         generalHttpRequest(handler, HttpRequestURL.CobblestoneService, AuthModuleS.GET_MW_TEMP_TOKEN_URL_SUFFIX, "", HttpRequestType.Post);
     }
 
