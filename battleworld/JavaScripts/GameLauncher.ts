@@ -66,8 +66,8 @@ import { InteractiveModuleS } from "./module/InteractiveModule/InteractiveModule
 import { InteractiveModuleC } from "./module/InteractiveModule/InteractiveModuleC";
 import { AntiCheatSystem } from "./tool/AntiCheatSystem";
 import * as mwaction from "mwaction";
-import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
-import EnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
+import BattleWorldAuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
+import BattleWorldEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
 
 declare global {
     var UE: any;
@@ -155,7 +155,7 @@ export default class GameLauncher extends mw.Script {
 
     protected onRegisterModule(): void {
         PlayerManagerExtesion.init();
-        ModuleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
+        ModuleService.registerModule(AuthModuleS, AuthModuleC, BattleWorldAuthModuleData);
         ModuleService.registerModule(AttributeModuleS, AttributeModuleC, null);
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerModuleData);
         ModuleService.registerModule(WeaponModuleS, WeaponModuleC, WeaponModuleData);
@@ -186,7 +186,7 @@ export default class GameLauncher extends mw.Script {
         // ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
         // ModuleService.registerModule(GuideModuleS2, GuideModuleC2, null);
         ModuleService.registerModule(InteractiveModuleS, InteractiveModuleC, null);
-        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, EnergyModuleData);
+        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, BattleWorldEnergyModuleData);
     }
 
 
