@@ -74,15 +74,15 @@ export class PlayerManagerExtesion {
         }
         sync = sync == undefined ? true : sync;
         const stance = new RpcStance(assetId, char);
-        return stance;
+        return stance as unknown as SubStance;
     }
 
     public static rpcPlayAnimation(owner: mw.Character, assetId: string, loop: number = 1, speed: number = 1): mw.Animation {
-        let ani = this.loadAnimationExtesion(owner, assetId) as RpcAnimation;
+        let ani = this.loadAnimationExtesion(owner, assetId)  ;
         ani.loop = loop;
         ani.speed = speed;
         ani.play();
-        return ani;
+        return ani as unknown as Animation;
     }
 
     public static rpcStopAnimation(owner: mw.Character, assetId: string): void {
@@ -101,7 +101,7 @@ export class PlayerManagerExtesion {
         anim.loop = loopCount;
         anim.speed = AnimationLength === 0 ? 1 : this.getRate(anim.length / AnimationLength);
         anim.play();
-        return anim;
+        return anim as unknown as Animation;
     }
 
     private static getRate(num: number): number {
@@ -114,7 +114,7 @@ export class PlayerManagerExtesion {
             return char.loadAnimation(assetid);
         }
         const anim = new RpcAnimation(char, assetid);
-        return anim;
+        return anim as unknown as Animation;
     }
 
 }
@@ -331,7 +331,7 @@ class RpcAnimation {
         anim.speed = speed;
         anim.slot = slot;
         anim.play();
-        return anim;
+        return anim as unknown as Animation;
     }
 
     public static pauseAnimation(guid: string, assetId: string): void {
