@@ -220,8 +220,8 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         UIService.showUI(this._obbyPanel);
         Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(0);
         Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(0);
-        this.setObbyProps(Player.localPlayer.character);
         UIService.getUI(MainPanel).setCanSprint(false);
+        this.setObbyProps(Player.localPlayer.character);
     }
 
     private async onCountDown  ()  {
@@ -279,6 +279,8 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         Player.localPlayer.character.ragdollEnabled = false;
         UIService.hideUI(this._obbyPanel);
         this.resetProps(Player.localPlayer.character);
+        Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(0);
+        Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(0);
         UIService.getUI(MainPanel).setCanSprint(true);
     }
 
