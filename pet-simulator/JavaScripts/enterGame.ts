@@ -8,7 +8,7 @@
  */
 import { GameConfig } from "./config/GameConfig";
 import { GlobalData } from "./const/GlobalData";
-import { PlayerModuleData } from "./modules/Player/PlayerModuleData";
+import { PetSimulatorPlayerModuleData } from "./modules/Player/PlayerModuleData";
 import MessageBox from "./utils/MessageBox";
 
 import { utils } from "./utils/uitls";
@@ -84,7 +84,7 @@ export default class enterGame extends mw.Script {
 
     /**是否解锁 */
     private isUnlock() {
-        return DataCenterC.getData(PlayerModuleData).isPlaza;
+        return DataCenterC.getData(PetSimulatorPlayerModuleData).isPlaza;
     }
 
 

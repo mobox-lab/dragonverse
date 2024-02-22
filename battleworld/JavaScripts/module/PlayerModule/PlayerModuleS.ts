@@ -15,7 +15,7 @@ import { RecoveryLifeBuffS } from "../buffModule/Buff/CustomBuff/RecoveryLifeBuf
 import { BuffModuleS } from "../buffModule/BuffModuleS";
 import { PlayerManager } from "./PlayerManager";
 import { PlayerModuleC } from "./PlayerModuleC";
-import { EnumDamageType, HitDamageInfo, PlayerModuleData } from "./PlayerModuleData";
+import { EnumDamageType, HitDamageInfo, BattleWorldPlayerModuleData } from "./PlayerModuleData";
 import { Attribute } from "./sub_attribute/AttributeValueObject";
 import EnumAttributeType = Attribute.EnumAttributeType;
 import { AttributeModuleS } from '../AttributeModule/AttributeModuleS';
@@ -50,7 +50,7 @@ export type THurtData = {
     maxCheckDis?: number,
 }
 
-export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
+export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModuleData> {
 
     /**玩家代理类map */
     private playerProxyMap: Map<number, PlayerProxyS> = new Map();
@@ -974,7 +974,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         if (player == null) {
             return;
         }
-        let data: PlayerModuleData = this.getPlayerData(playerID);
+        let data: BattleWorldPlayerModuleData = this.getPlayerData(playerID);
         if (data == null) {
             return;
         }

@@ -11,7 +11,7 @@ import { BonusUI } from "./scenceUnitUI";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { GlobalEnum } from "../../const/Enum";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
-import { PlayerModuleData } from "../Player/PlayerModuleData";
+import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
 
@@ -58,7 +58,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     private objs: mw.GameObject[] = [];
     /**引导点击破坏物 */
     public guideClickDestroyable(): void {
-        let PlayerData = DataCenterC.getData(PlayerModuleData);
+        let PlayerData = DataCenterC.getData(PetSimulatorPlayerModuleData);
         let isNewPlayer = PlayerData.gold == 0;
         if (!isNewPlayer) {
             return;

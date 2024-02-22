@@ -9,7 +9,7 @@ import { updater } from "../../tool/Updater";
 import { util } from "../../tool/Utils";
 import { MotionModuleC } from "../MotionModule/MotionModuleC";
 import { FSMManager } from "./FSM/FSMManager";
-import { PlayerModuleData, HitDamageInfo } from "./PlayerModuleData";
+import { BattleWorldPlayerModuleData, HitDamageInfo } from "./PlayerModuleData";
 import { PlayerModuleS } from "./PlayerModuleS";
 import ActionUI from "./UI/ActionUI";
 import { DamageDigit, EnumDamageAppearanceType } from "./UI/DamageDigit";
@@ -81,7 +81,7 @@ const SkillState: Set<EPlayerState> = new Set([
     EPlayerState.Parry,
 ])
 
-export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
+export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModuleData> {
 
     /**当前玩家位置 */
     public static playerLazyLocation: mw.Vector

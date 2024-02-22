@@ -16,7 +16,7 @@ import { BagTool } from "../PetBag/BagTool";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { CollectModuleData } from "../PetCollect/CollectModuleData";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
-import { PlayerModuleData } from "../Player/PlayerModuleData";
+import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { EggMachineTween } from "./EggMachineTween";
 import { EggInfo, InterBtn } from "./P_EggMachine";
 
@@ -186,7 +186,7 @@ class EggM {
         })
         let playerModuleC = ModuleService.getModule(PlayerModuleC);
 
-        let playerData = DataCenterC.getData(PlayerModuleData);
+        let playerData = DataCenterC.getData(PetSimulatorPlayerModuleData);
 
         if (this.cfg.AreaID < 2000) {
             this.curGold = playerData.gold;

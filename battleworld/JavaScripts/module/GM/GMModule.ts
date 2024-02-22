@@ -18,7 +18,7 @@ import { BuffModuleS } from "../buffModule/BuffModuleS";
 import { MotionModuleC } from "../MotionModule/MotionModuleC";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { PlayerModuleC } from "../PlayerModule/PlayerModuleC";
-import { PlayerModuleData } from "../PlayerModule/PlayerModuleData";
+import { BattleWorldPlayerModuleData } from "../PlayerModule/PlayerModuleData";
 import { BulletModuleS } from "../BulletModule/BulletModuleS";
 import { WeaponModuleS } from "../WeaponModule/WeaponModuleS";
 import { LandModuleS } from "../LandModule/LandModuleS";
@@ -197,7 +197,7 @@ AddGMCommand("无敌1取消0", (player: mw.Player, value: string) => {
     let va = Number(value[0]);
     Globaldata.isInvincible = va == 1;
 
-    DataCenterC.getData(PlayerModuleData).isInvincible = va == 1;
+    DataCenterC.getData(BattleWorldPlayerModuleData).isInvincible = va == 1;
 
 }, (player: mw.Player, value: string) => {
 
@@ -205,19 +205,19 @@ AddGMCommand("无敌1取消0", (player: mw.Player, value: string) => {
     let va = Number(value[0]);
 
     Globaldata.isInvincible = va == 1;
-    DataCenterS.getData(player, PlayerModuleData).isInvincible = va == 1;
+    DataCenterS.getData(player, BattleWorldPlayerModuleData).isInvincible = va == 1;
 }, "玩家");
 AddGMCommand("无限能量1取消0", (player: mw.Player, value: string) => {
     let va = Number(value[0]);
     Globaldata.isInfiniteEnergy = va == 1;
-    DataCenterC.getData(PlayerModuleData).isInfiniteEnergy = va == 1;
+    DataCenterC.getData(BattleWorldPlayerModuleData).isInfiniteEnergy = va == 1;
 }, (player: mw.Player, value: string) => {
 
     let va = Number(value[0]);
 
     Globaldata.isInvincible = va == 1;
 
-    DataCenterS.getData(player, PlayerModuleData).isInfiniteEnergy = va == 1;
+    DataCenterS.getData(player, BattleWorldPlayerModuleData).isInfiniteEnergy = va == 1;
 
 }, "玩家");
 

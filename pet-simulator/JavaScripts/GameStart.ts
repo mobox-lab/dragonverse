@@ -13,7 +13,7 @@ import { AreaModuleC } from "./modules/AreaDivide/AreaModuleC";
 import { AreaModuleData } from "./modules/AreaDivide/AreaModuleData";
 import { InputModuleC, InputModuleS } from "./modules/Input/InputModule";
 import { ResourceModuleC, ResourceModuleS } from "./modules/Resources/ResourceModule";
-import { PlayerModuleData } from "./modules/Player/PlayerModuleData";
+import { PetSimulatorPlayerModuleData } from "./modules/Player/PlayerModuleData";
 import { PetBagModuleS } from "./modules/PetBag/PetBagModuleS";
 import { PetBagModuleC } from "./modules/PetBag/PetBagModuleC";
 import { PetBagModuleData } from "./modules/PetBag/PetBagModuleData";
@@ -66,33 +66,33 @@ export default class GameStart extends mw.Script {
     @mw.Property()
     private isOnline: boolean = false;
 
-    @mw.Property({displayName: "是否发布", group: "发布"})
+    @mw.Property({ displayName: "是否发布", group: "发布" })
     public isRelease: boolean = false;
-    @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
+    @mw.Property({ displayName: "是否 Beta 发布", group: "发布" })
     public isBeta: boolean = false;
-    @mw.Property({displayName: "是否开启主页GM开关按钮"})
+    @mw.Property({ displayName: "是否开启主页GM开关按钮" })
     private isOpenGm = false;
-    @mw.Property({displayName: "是否免费送滑板"})
+    @mw.Property({ displayName: "是否免费送滑板" })
     private isFreeSkateboard = false;
-    @mw.Property({displayName: "是否使用平台形象"})
+    @mw.Property({ displayName: "是否使用平台形象" })
     private isUseAvatar = true;
-    @mw.Property({displayName: "是否使海外发布"})
+    @mw.Property({ displayName: "是否使海外发布" })
     private isOverSea = true;
-    @mw.Property({displayName: "是否同去同回"})
+    @mw.Property({ displayName: "是否同去同回" })
     private isSameGoBack = false;
-    @mw.Property({displayName: "是否开启收集图鉴机器"})
+    @mw.Property({ displayName: "是否开启收集图鉴机器" })
     private isOpenCollectMachine = true;
     @mw.Property({
         displayName: "语言类型",
         group: "Odin设置",
-        selectOptions: {"系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3"},
+        selectOptions: { "系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3" },
     })
     private selectedLanguageIndex: string = "-1";
 
     @mw.Property({
         displayName: "Log级别",
         group: "Odin设置",
-        selectOptions: {"None": "0", "Error": "1", "Warn": "2", "Log": "3"},
+        selectOptions: { "None": "0", "Error": "1", "Warn": "2", "Log": "3" },
     })
     private logLevel: string = "0";
 
@@ -212,7 +212,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(Task_ModuleS, Task_ModuleC, TaskModuleData);
         ModuleService.registerModule(RankModuleS, RankModuleC, null);
         ModuleService.registerModule(DollMachineModuleS, DollMachineModuleC, null);
-        ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerModuleData);
+        ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PetSimulatorPlayerModuleData);
         ModuleService.registerModule(PetBagModuleS, PetBagModuleC, PetBagModuleData);
         ModuleService.registerModule(EnergyModuleS, EnergyModuleC, EnergyModuleData);
     }

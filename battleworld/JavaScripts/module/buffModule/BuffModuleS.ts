@@ -9,13 +9,13 @@ import { EBuffEvent_S, EDefineType, EModule_Events_S, EPlayerEvents_S } from "..
 import { RecoveryLifeBuffS } from "./Buff/CustomBuff/RecoveryLifeBuff";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { Globaldata } from "../../const/Globaldata";
-import { PlayerModuleData } from "../PlayerModule/PlayerModuleData";
+import { BattleWorldPlayerModuleData } from "../PlayerModule/PlayerModuleData";
 import { util } from "../../tool/Utils";
 import { MascotModuleS } from "../npc/mascotNpc/MascotModuleS";
 import { Tools } from "../../tool/Tools";
 
 
-export class BuffModuleS extends ModuleS<BuffModuleC, null>{
+export class BuffModuleS extends ModuleS<BuffModuleC, null> {
 
     /**特殊处理：重新创建 且只能存在一个configId的buff, 会销毁所有已经有的 21,27,*/
     private refashCreateBuffConfigId: number[] = [];
@@ -290,7 +290,7 @@ export class BuffModuleS extends ModuleS<BuffModuleC, null>{
 
         //传送中不创建吸附类buff 
         if (buffCfg.buffEffectType == EBuffEffectType.Center) {
-            let data = DataCenterS.getData(toPlayID, PlayerModuleData);
+            let data = DataCenterS.getData(toPlayID, BattleWorldPlayerModuleData);
             if (data && data.istransform) {
                 return;
             }

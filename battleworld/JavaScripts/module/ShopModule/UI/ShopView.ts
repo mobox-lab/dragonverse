@@ -10,7 +10,7 @@ import { IItemRender, UIMultiScroller } from "../../../tool/UIMultiScroller";
 import UIRole_Generate from "../../../ui-generate/Shop/UIDecorate/UIRole_generate";
 import { AnalyticsTool, EFirstDo, EPageName } from "../../AnalyticsModule/AnalyticsTool";
 import { EquipModuleC } from "../../EquipModule/EquipModuleC";
-import { PlayerModuleData } from "../../PlayerModule/PlayerModuleData";
+import { BattleWorldPlayerModuleData } from "../../PlayerModule/PlayerModuleData";
 import ActionUI from "../../PlayerModule/UI/ActionUI";
 import { Attribute } from "../../PlayerModule/sub_attribute/AttributeValueObject";
 import { ShopModuleC } from "../ShopModuleC";
@@ -357,7 +357,7 @@ export class ShopView extends UIRole_Generate {
      * 主动更新金币数量
      */
     private updateMoney() {
-        let curMoney = DataCenterC.getData(PlayerModuleData).getAttrValue(Attribute.EnumAttributeType.money);
+        let curMoney = DataCenterC.getData(BattleWorldPlayerModuleData).getAttrValue(Attribute.EnumAttributeType.money);
         this.mGold.text = curMoney.toString();
     }
     /** 

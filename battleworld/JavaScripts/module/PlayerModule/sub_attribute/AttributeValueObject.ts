@@ -1,7 +1,7 @@
 import { oTrace } from "odin"
 import { EventManager } from "../../../tool/EventManager"
 import { EAttributeEvents_S } from "../../../const/Enum"
-import { PlayerModuleData } from "../PlayerModuleData";
+import { BattleWorldPlayerModuleData } from "../PlayerModuleData";
 
 
 export namespace Attribute {
@@ -401,7 +401,7 @@ export namespace Attribute {
 
             // 百分比减伤特殊处理下，按照最新的计算公式
             if (SystemUtil.isServer()) {
-                let playerData = DataCenterS.getData(this.playerID, PlayerModuleData);
+                let playerData = DataCenterS.getData(this.playerID, BattleWorldPlayerModuleData);
                 if (playerData) {
                     //playerData.addDefRecord(value);
 
@@ -438,7 +438,7 @@ export namespace Attribute {
         public reduceValue(type: Attribute.EnumAttributeType, value: number, isSpecial: boolean = false) {
 
             if (SystemUtil.isClient()) {
-                let pData = DataCenterC.getData(PlayerModuleData);
+                let pData = DataCenterC.getData(BattleWorldPlayerModuleData);
                 if (type == Attribute.EnumAttributeType.hp && pData.isInvincible) {
                     return;
                 }
@@ -447,7 +447,7 @@ export namespace Attribute {
                 }
 
             } else if (SystemUtil.isServer()) {
-                let pData = DataCenterS.getData(this.playerID, PlayerModuleData);
+                let pData = DataCenterS.getData(this.playerID, BattleWorldPlayerModuleData);
                 if (type == Attribute.EnumAttributeType.hp && pData.isInvincible) {
                     return;
                 }
@@ -467,7 +467,7 @@ export namespace Attribute {
 
             // 百分比减伤特殊处理下，按照最新的计算公式
             if (SystemUtil.isServer()) {
-                let playerData = DataCenterS.getData(this.playerID, PlayerModuleData);
+                let playerData = DataCenterS.getData(this.playerID, BattleWorldPlayerModuleData);
                 if (playerData) {
                     // playerData.reduceDefRecrod(value);
                     playerData.reducePerGainRecrod(type, value);

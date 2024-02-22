@@ -24,7 +24,7 @@ export interface HitDamageInfo {
 }
 
 
-export class PlayerModuleData extends Subdata {
+export class BattleWorldPlayerModuleData extends Subdata {
 
     /**是否为新玩家 */
     @Decorator.persistence()
