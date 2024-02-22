@@ -1,19 +1,19 @@
-import { PlayerManagerExtesion, } from '../../Modified027Editor/ModifiedPlayer';
-import { ChatMsg } from "../../utils/ChatMsg";
+import {PlayerManagerExtesion,} from "../../Modified027Editor/ModifiedPlayer";
+import {ChatMsg} from "../../utils/ChatMsg";
 import MessageBox from "../../utils/MessageBox";
-import { stringToNumberArr, utils } from "../../utils/uitls";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
-import { P_Msg } from "./P_Msg";
-import { P_TradingChooseMain, } from "./P_TradeChoose";
-import { P_historyRecord } from "./P_TradeHistory";
-import { P_Trading } from "./P_Trading";
-import { PlayerNameManager } from "./PlayerNameManager";
-import { TradingModuleData, tradeRecord } from "./TradingModuleData";
-import { TradingModuleS } from "./TradingModuleS";
-import { GameConfig } from "../../config/GameConfig";
-import { GlobalEnum } from "../../const/Enum";
+import {stringToNumberArr, utils} from "../../utils/uitls";
+import {AnalyticsTool} from "../Analytics/AnalyticsTool";
+import {P_Msg} from "./P_Msg";
+import {P_TradingChooseMain,} from "./P_TradeChoose";
+import {P_historyRecord} from "./P_TradeHistory";
+import {P_Trading} from "./P_Trading";
+import {PlayerNameManager} from "./PlayerNameManager";
+import {TradingModuleData, tradeRecord} from "./TradingModuleData";
+import {TradingModuleS} from "./TradingModuleS";
+import {GameConfig} from "../../config/GameConfig";
+import {GlobalEnum} from "../../const/Enum";
 
-export class TradingModuleC extends ModuleC<TradingModuleS, TradingModuleData>{
+export class TradingModuleC extends ModuleC<TradingModuleS, TradingModuleData> {
 
     private choosePlayerUI: P_TradingChooseMain;
     private histroyUI: P_historyRecord;
@@ -33,7 +33,7 @@ export class TradingModuleC extends ModuleC<TradingModuleS, TradingModuleData>{
             if (this.chatUI && this.chatUI.uiObject.visible) {
                 this.chatUI.uiObject.visibility = mw.SlateVisibility.Collapsed;
             }
-        })
+        });
         this.tradUI.onSendMsgAC.add(this.chatPanel.bind(this));
         this.choosePlayerUI = mw.UIService.getUI(P_TradingChooseMain);
         this.histroyUI = mw.UIService.getUI(P_historyRecord);
@@ -45,18 +45,20 @@ export class TradingModuleC extends ModuleC<TradingModuleS, TradingModuleData>{
 
         this.initSceneTrigger();
     }
+
     protected async onEnterScene(sceneType: number): Promise<void> {
         let name = AccountService.getNickName();
         if (!name) name = "测试名字 " + utils.GetRandomNum(1, 100);
         this.server.net_enterGame(name);
     }
+
     /** 存名字 */
     net_PlayerJoin(str: string) {
         let arr = JSON.parse(str);
         PlayerNameManager.instance.clearMap();
         arr.forEach((element: { id: number, name: string }) => {
             PlayerNameManager.instance.addPlayerName(element.id, element.name);
-        })
+        });
     }
 
     public async showChoosePlayerUI() {
@@ -69,7 +71,7 @@ export class TradingModuleC extends ModuleC<TradingModuleS, TradingModuleData>{
         let arr: { id: number, state: GlobalEnum.TradingState, petId: number }[] = [];
         PlayerNameManager.instance.clearMap();
         JSON.parse(data).forEach((element: { id: number, name: string, state: number, petId: number }) => {
-            arr.push({ id: element.id, state: element.state, petId: element.petId });
+            arr.push({id: element.id, state: element.state, petId: element.petId});
             PlayerNameManager.instance.addPlayerName(element.id, element.name);
         });
         return arr;
@@ -87,6 +89,7 @@ export class TradingModuleC extends ModuleC<TradingModuleS, TradingModuleData>{
 
         AnalyticsTool.action_sell(1, 0, 0);
     }
+
     /**评价 */
     private comment(is: boolean, data: tradeRecord) {
         let Arr = stringToNumberArr(data.str);
@@ -133,13 +136,13 @@ export class TradingModuleC extends ModuleC<TradingModuleS, TradingModuleData>{
 
     /**发送消息 */
     private sendMsg(msg: string) {
-        ChatMsg.enqueue({ msg: msg, playerID: this.curPlayerID });
+        ChatMsg.enqueue({msg: msg, playerID: this.curPlayerID});
         this.server.net_sendMsg(this.tarPlayerID, msg);
     }
 
     /**接收消息 */
     net_receiveMsg(sendId: number, str: string) {
-        ChatMsg.enqueue({ msg: str, playerID: sendId });
+        ChatMsg.enqueue({msg: str, playerID: sendId});
         this.tradUI.setRedPointVis(true);
     }
 
@@ -148,9 +151,10 @@ export class TradingModuleC extends ModuleC<TradingModuleS, TradingModuleData>{
 
     private async initSceneTrigger() {
         let trigger = await GameObject.asyncFindGameObjectById("330EDD490C991F0F") as mw.Trigger;
-        trigger.onEnter.add(this.enterTrigger.bind(this));
-        trigger.onLeave.add(this.exitTrigger.bind(this));
+        trigger?.onEnter.add(this.enterTrigger.bind(this));
+        trigger?.onLeave.add(this.exitTrigger.bind(this));
     }
+
     private enterTrigger(obj: mw.GameObject) {
         if (PlayerManagerExtesion.isCharacter(obj) == false) {
             return;

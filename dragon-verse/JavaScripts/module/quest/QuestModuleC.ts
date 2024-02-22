@@ -34,7 +34,7 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
 
             let go = await mw.GameObject.asyncSpawn(config.questObjectGuid);
 
-            let script: Quest = GToolkit.getFirstScript(go, Quest);
+            let script: Quest = GToolkit.getFirstComponent(go, Quest);
             if (!script) {
                 Log4Ts.error(QuestModuleC, `预制体中没有绑定 Quest 脚本${config.name}`);
                 return;

@@ -1,6 +1,6 @@
 import GToolkit from "../../util/GToolkit";
-import { PickableItem } from "./PickableItem";
-import { Puzzle } from "./Puzzle";
+import {PickableItem} from "./PickableItem";
+import {Puzzle} from "./Puzzle";
 
 
 export interface KeyItem {
@@ -15,10 +15,10 @@ export abstract class KeyItemPuzzle extends Puzzle {
 
     private _storageInfo: KeyItem[] = [];
 
-    @mw.Property({ displayName: "允许存储的类型" })
+    @mw.Property({displayName: "允许存储的类型"})
     public allowStorageType: number[] = [0];
 
-    @mw.Property({ displayName: "需要放置的数量" })
+    @mw.Property({displayName: "需要放置的数量"})
     public requiredPutNum: number = 0;
 
 
@@ -54,7 +54,7 @@ export abstract class KeyItemPuzzle extends Puzzle {
         if (!enter) {
             return;
         }
-        let storageItem: PickableItem = GToolkit.getFirstScript(enter, PickableItem);
+        let storageItem: PickableItem = GToolkit.getFirstComponent(enter, PickableItem);
 
         if (!storageItem) {
             this.onPutInSomeGameObject(enter, false);
