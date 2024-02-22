@@ -1,10 +1,10 @@
 import Enumerable from "linq";
-import { QuestStateEnum } from "../../module/quest/Config";
+import {QuestStateEnum} from "../../module/quest/Config";
 import GToolkit from "../../util/GToolkit";
-import { KeyItemPuzzle } from "../interactive/KeyItemPuzzel";
-import { PickableItem } from "../interactive/PickableItem";
+import {KeyItemPuzzle} from "../interactive/KeyItemPuzzel";
+import {PickableItem} from "../interactive/PickableItem";
 import WoodRewardPuzzle from "../interactive/WoodRewardPuzzle";
-import { Quest } from "./Quest";
+import {Quest} from "./Quest";
 
 interface LiftTaskInfo {
     index: number;
@@ -23,11 +23,11 @@ interface WoodDragonTaskInfo {
 class StoneTaskInfo {
 
 
-    @mw.Property({ displayName: "机关预制体场景guid" })
+    @mw.Property({displayName: "机关预制体场景guid"})
     public puzzleGuid: string = "";
 
 
-    @mw.Property({ displayName: "石头预制体场景guid" })
+    @mw.Property({displayName: "石头预制体场景guid"})
     public stoneGuid: string = "";
 }
 
@@ -45,11 +45,11 @@ interface PuzzleInfo {
 @mw.Component
 export default class WoodDragonQuest extends Quest {
 
-    @mw.Property({ displayName: "任务配置" })
+    @mw.Property({displayName: "任务配置"})
     private _taskConfig: StoneTaskInfo[] = [new StoneTaskInfo()];
 
 
-    @mw.Property({ displayName: "奖励预制体的guid" })
+    @mw.Property({displayName: "奖励预制体的guid"})
 
     private _rewardGuid: string = "";
 
@@ -101,7 +101,7 @@ export default class WoodDragonQuest extends Quest {
             let puzzle = await GameObject.asyncFindGameObjectById(config.puzzleGuid);
 
 
-            let puzzleScript: KeyItemPuzzle = GToolkit.getFirstScript(puzzle, KeyItemPuzzle);
+            let puzzleScript: KeyItemPuzzle = GToolkit.getFirstComponent(puzzle, KeyItemPuzzle);
 
 
             if (!puzzleScript) {
@@ -119,7 +119,7 @@ export default class WoodDragonQuest extends Quest {
 
             if (!value.complete) {
 
-                let stoneScript: PickableItem = GToolkit.getFirstScript(stone, PickableItem);
+                let stoneScript: PickableItem = GToolkit.getFirstComponent(stone, PickableItem);
                 if (!stoneScript) {
                     throw new Error("配置的预制体中，没有PickableItem脚本");
                 }
@@ -136,7 +136,7 @@ export default class WoodDragonQuest extends Quest {
 
 
         let reward = await GameObject.asyncFindGameObjectById(this._rewardGuid);
-        const rewardScript: WoodRewardPuzzle = this._reward = GToolkit.getFirstScript(reward, WoodRewardPuzzle);
+        const rewardScript: WoodRewardPuzzle = this._reward = GToolkit.getFirstComponent(reward, WoodRewardPuzzle);
         if (!rewardScript) {
             throw new Error(" 奖励预制体没有存放脚本");
         }
@@ -156,7 +156,6 @@ export default class WoodDragonQuest extends Quest {
             .from(this._cacheInfo.liftTasks)
             .count(info => info.complete);
     }
-
 
 
     private updateRewardTaskInfo() {

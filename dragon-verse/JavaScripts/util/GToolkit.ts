@@ -20,7 +20,7 @@ import Log4Ts from "../depend/log4ts/Log4Ts";
  * @author zewei.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.2.5b
+ * @version 1.2.6b
  * @beta
  */
 class GToolkit {
@@ -811,7 +811,7 @@ class GToolkit {
      */
     public getComponent<T extends mw.Script>(
         object: GameObject,
-        scriptCls: new (...param: unknown[]) => T,
+        scriptCls: AbstractAllowClass<T>,
         traverse: number = 0): T[] {
         if (!object) return [];
 
@@ -824,7 +824,7 @@ class GToolkit {
         do {
             for (const go of stack) {
                 cache.push(...go.getChildren());
-                result.push(...go.getComponents(scriptCls));
+                result.push(...go.getComponents(scriptCls as Constructor<T>));
             }
             stack = cache;
             cache = [];
@@ -842,7 +842,7 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstComponent<T extends mw.Script>(object: GameObject,
-                                                  scriptCls: (new (...args: unknown[]) => T),
+                                                  scriptCls: AbstractAllowClass<T>,
                                                   traverse: number = 0): T | null {
         if (!object) return null;
 
@@ -853,7 +853,7 @@ class GToolkit {
         do {
             for (const go of stack) {
                 cache.push(...go.getChildren());
-                const script = go.getComponent(scriptCls);
+                const script = go.getComponent(scriptCls as Constructor<T>);
                 if (script) return script as T;
             }
             stack = cache;
@@ -1482,6 +1482,11 @@ class GToolkit {
  * Prototype of a class constructor.
  */
 export type Constructor<TResult> = new (...args: Array<unknown>) => TResult;
+
+/**
+ * Constructor of an abstract-allow class.
+ */
+export type AbstractAllowClass<TResult> = Constructor<TResult> | Function;
 
 /**
  * A function taking one argument and returning a boolean result.
