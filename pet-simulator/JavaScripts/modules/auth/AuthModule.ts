@@ -141,6 +141,7 @@ interface UpdatePetSimulatorRankDataParam {
     petAttack: string;
     petObtainTime: number;
     round: number;
+    requestTs: number;
 }
 
 interface MoboxDragonData {
@@ -331,7 +332,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
                 if (value) {
                     Log4Ts.log(AuthModuleC, `registered token report success.`);
                 } else {
-                    Log4Ts.warn(AuthModuleC, `temp token report failed.`);
+                    Log4Ts.warn(AuthModuleC, `temp token report failed. reason: ${value[1] ?? ""}.`);
                 }
             }
         );
@@ -688,16 +689,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @param playerId
      * @param tempToken
      */
-    private async getP12Token(playerId: number, tempToken: string) {
+    private async getP12Token(playerId: number, tempToken: string): Promise<[boolean, string]> {
         if (GToolkit.isNullOrEmpty(tempToken)) {
             Log4Ts.warn(AuthModuleS, `temp token of player ${playerId} is invalid.`);
-            return false;
+            return [false, "token invalid."];
         }
 
         const resp = await fetch(`${GlobalData.Global.isRelease ?
             AuthModuleS.RELEASE_GET_P12_TOKEN_URL :
             AuthModuleS.TEST_GET_P12_TOKEN_URL}`, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json;charset=UTF-8",
+            },
             body: JSON.stringify({
                 gtoken: tempToken,
             } as GetP12TokenParam),
@@ -706,13 +710,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const respInJson = await resp.json<GetP12TokenResponse>();
 
         if (respInJson?.code !== 200 || GToolkit.isNullOrUndefined(respInJson.data?.token ?? undefined)) {
-            Log4Ts.error(AuthModuleS, `get token failed. ${JSON.stringify(respInJson)}`);
+            const msg = `get token failed. ${JSON.stringify(respInJson)}`;
+            Log4Ts.error(AuthModuleS, msg);
+            return [false, msg];
         } else {
             if (this._tokenMap.has(playerId)) {
                 this._tokenMap.set(playerId, respInJson.data?.token);
                 this.onRefreshToken(playerId);
+                return [true, "success."];
             } else {
                 this.logPlayerNotExist(playerId);
+                return [false, "player not exist."];
             }
         }
     }
@@ -825,7 +833,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return p;
     }
 
-    public async reportPetRankData(playerId: number, petName: string, rarity: PetQuality, attack: number, obtainTime: number, round: number) {
+    public async reportPetRankData(playerId: number, petName: string, petRarity: PetQuality, petAttack: number, petObtainTime: number, round: number) {
         const userId = Player.getPlayer(playerId)?.userId ?? null;
         if (GToolkit.isNullOrUndefined(userId)) {
             Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
@@ -833,12 +841,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         }
 
         const param: UpdatePetSimulatorRankDataParam = {
-            userId: userId,
-            petName: petName,
-            petRarity: rarity,
-            petAttack: attack.toString(),
-            petObtainTime: obtainTime,
-            round: round,
+            userId,
+            petName,
+            petRarity,
+            petAttack: petAttack.toString(),
+            petObtainTime,
+            round,
+            requestTs: Math.floor(Date.now() / 1000),
         };
         const body: EncryptedRequest = {
             encryptData: this.getSecret(JSON.stringify(param)),
@@ -921,43 +930,22 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     @noReply()
-    public net_updatePetSimulatorRankData(userId: string,
-                                          petName: string,
+    public net_updatePetSimulatorRankData(petName: string,
                                           petRarity: PetQuality,
                                           petAttack: number,
                                           petObtainTime: number,
                                           round: number = 1) {
-        const p: UpdatePetSimulatorRankDataParam = {
-            userId: userId,
-            petName: petName,
-            petRarity: petRarity,
-            petAttack: petAttack.toString(),
-            petObtainTime: petObtainTime,
-            round: round,
-        };
-        const body: EncryptedRequest = {
-            encryptData: this.getSecret(JSON.stringify(p)),
-        };
-
-        fetch(`${GlobalData.Global.isRelease ?
-                AuthModuleS.RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL :
-                AuthModuleS.TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charset=UTF-8",
-                },
-                body: JSON.stringify(body),
-            }).then(
-            resp => {
-                if (resp.status !== 200) {
-                    Log4Ts.error(AuthModuleS, `update pet simulator rank data failed. ${resp.status}`);
-                }
-            },
+        this.reportPetRankData(
+            this.currentPlayerId,
+            petName,
+            petRarity,
+            petAttack,
+            petObtainTime,
+            round,
         );
     }
 
-    public async net_reportTempToken(token: string): Promise<boolean> {
+    public async net_reportTempToken(token: string): Promise<[boolean, string]> {
         const currentPlayerId = this.currentPlayerId;
         return this.getP12Token(currentPlayerId, token);
     }

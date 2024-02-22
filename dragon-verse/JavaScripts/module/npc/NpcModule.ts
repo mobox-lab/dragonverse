@@ -2,8 +2,8 @@ import ModuleC = mwext.ModuleC;
 import ModuleS = mwext.ModuleS;
 import Subdata = mwext.Subdata;
 import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
-import { GameConfig } from "../../config/GameConfig";
-import { INpcElement } from "../../config/Npc";
+import {GameConfig} from "../../config/GameConfig";
+import {INpcElement} from "../../config/Npc";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GToolkit from "../../util/GToolkit";
 import NpcBehavior from "./NpcBehavior";
@@ -63,8 +63,8 @@ export class NpcModuleC extends ModuleC<NpcModuleS, NpcModuleData> {
             },
         );
 
-        GToolkit.getFirstScript(obj, NpcTrigger)?.init(config.id);
-        const behavior = GToolkit.getFirstScript(obj, NpcBehavior)?.init(config);
+        GToolkit.getFirstComponent(obj, NpcTrigger)?.init(config.id);
+        const behavior = GToolkit.getFirstComponent(obj, NpcBehavior)?.init(config);
         return new NpcExistInfo(behavior, obj);
     }
 

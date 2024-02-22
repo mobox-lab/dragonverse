@@ -83,7 +83,7 @@ export default class FireDragonQuest extends Quest {
                         return true;
                     })
                     .select(info => {
-                        const script = GToolkit.getFirstScript(info.obj, FirePuzzleBlock);
+                        const script = GToolkit.getFirstComponent(info.obj, FirePuzzleBlock);
                         if (!script) {
                             Log4Ts.warn(FireDragonQuest, `FirePuzzleBlock in object not found. guid: ${info.guid}`);
                             return {
@@ -112,7 +112,7 @@ export default class FireDragonQuest extends Quest {
         Enumerable
             .from(this._cacheInfo.blockTasks)
             .forEach((info: FireBlockCompleteInfo) => {
-                const script: FirePuzzleBlock = GToolkit.getFirstScript(GameObject.findGameObjectById(info.guid), FirePuzzleBlock);
+                const script: FirePuzzleBlock = GToolkit.getFirstComponent(GameObject.findGameObjectById(info.guid), FirePuzzleBlock);
                 if (!script) {
                     Log4Ts.error(FireDragonQuest, `the FireBlockCompleteInfo in config has a wrong guid.`);
                     return;
@@ -121,7 +121,7 @@ export default class FireDragonQuest extends Quest {
                 this._blockMap.set(info.guid, script);
             });
 
-        this._rewardPuzzle = GToolkit.getFirstScript(GameObject.findGameObjectById(this._rewardPuzzleGuid), FireRewardPuzzle);
+        this._rewardPuzzle = GToolkit.getFirstComponent(GameObject.findGameObjectById(this._rewardPuzzleGuid), FireRewardPuzzle);
         if (!this._rewardPuzzle) {
             Log4Ts.warn(FireDragonQuest, `there is no reward puzzle in scene.`);
             return;

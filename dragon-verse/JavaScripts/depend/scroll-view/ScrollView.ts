@@ -144,6 +144,8 @@ export default class ScrollView<
                         true,
                         true,
                     );
+                    container.autoSizeHorizontalEnable = true;
+                    container.autoSizeVerticalEnable = false;
                     break;
                 case mw.Orientation.OrientVertical:
                     if (padding.right > 0) {
@@ -164,6 +166,8 @@ export default class ScrollView<
                         true,
                         true,
                     );
+                    container.autoSizeHorizontalEnable = false;
+                    container.autoSizeVerticalEnable = true;
                     break;
             }
         }
@@ -298,16 +302,16 @@ export default class ScrollView<
     }
 
     private innerInsertUiItem(uiItem: UItem, key: number, index: number = -1) {
-        const ueWidget = GToolkit.getUePanelWidget(this._container);
-        const children = ueWidget.GetAllChildren();
-        if (index === -1 || index > children.Num()) {
-            index = children.Num();
+        // const ueWidget = GToolkit.getUePanelWidget(this._container);
+        // const children = ueWidget.GetAllChildren();
+        if (index === -1 || index > this._container.getChildrenCount()) {
+            index = this._container.getChildrenCount();
         }
 
         const tempChildrenUi: Widget[] = [];
-        for (let i = children.Num() - 1; i >= index; --i) {
+        for (let i = this._container.getChildrenCount() - 1; i >= index; --i) {
             tempChildrenUi.push(this._container.getChildAt(i));
-            ueWidget.RemoveChildAt(i);
+            this._container.removeChildAt(i);
         }
         this.initScrollViewItem(uiItem, key);
         this._container.addChild(uiItem.uiObject);

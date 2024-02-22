@@ -40,8 +40,6 @@ export default class CollectibleItemModuleData extends Subdata {
  */
 export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, CollectibleItemModuleData> {
     //#region Constant
-
-
     public static async CollectibleItemPrefabFactory(
         syncKey: string,
         id: number,
@@ -64,7 +62,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
             GameObjPoolSourceType.Prefab,
         );
         obj.worldTransform.position = location;
-        const trigger = GToolkit.getFirstScript(obj, CollectibleItemTrigger);
+        const trigger = GToolkit.getFirstComponent(obj, CollectibleItemTrigger);
         if (!trigger) {
             Log4Ts.error(CollectibleItemModuleC, `there is no trigger in prefab. id: ${id}`);
             return obj;
