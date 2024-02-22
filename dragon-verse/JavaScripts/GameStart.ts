@@ -5,7 +5,7 @@ import {TimeManager} from "./controller/TimeManager";
 import {VectorExt} from "./declaration/vectorext";
 import Log4Ts, {DebugLevels} from "./depend/log4ts/Log4Ts";
 import i18n, {LanguageTypes} from "./language/i18n";
-import AuthModuleData, {AuthModuleC, AuthModuleS} from "./module/auth/AuthModule";
+import DragonVerseAuthModuleData, {AuthModuleC, AuthModuleS} from "./module/auth/AuthModule";
 import BagModuleData, {BagModuleC, BagModuleS} from "./module/bag/BagModule";
 import CollectibleItemModuleData, {
     CollectibleItemModuleC,
@@ -207,7 +207,7 @@ export default class GameStart extends mw.Script {
         const moduleService = ModuleService;
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
         moduleService.registerModule(RoleModuleS, RoleModuleC, RoleModuleData);
-        moduleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
+        moduleService.registerModule(AuthModuleS, AuthModuleC, DragonVerseAuthModuleData);
         moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
         moduleService.registerModule(CollectibleItemModuleS, CollectibleItemModuleC, CollectibleItemModuleData);
         moduleService.registerModule(SceneDragonModuleS, SceneDragonModuleC, SceneDragonModuleData);

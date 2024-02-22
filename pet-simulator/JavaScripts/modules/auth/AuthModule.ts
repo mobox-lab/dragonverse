@@ -15,7 +15,7 @@ import HttpRequestType = mw.HttpRequestType;
 import Regulator from "../../depend/regulator/Regulator";
 import Global = GlobalData.Global;
 
-export default class AuthModuleData extends JModuleData {
+export default class PetSimulatorAuthModuleData extends JModuleData {
     //@Decorator.persistence()
     //public isSave: bool;
 
@@ -237,7 +237,7 @@ export enum ConsumeTypes {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
+export class AuthModuleC extends JModuleC<AuthModuleS, PetSimulatorAuthModuleData> {
 //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -352,7 +352,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
+export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleData> {
 //#region Constant
     /**
      * 测试用 P12 端 Url.
