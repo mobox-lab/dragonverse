@@ -9,7 +9,7 @@ import UUID from "pure-uuid";
 import Enumerable from "linq";
 import { Globaldata } from "../../const/Globaldata";
 
-export default class AuthModuleData extends JModuleData {
+export default class BattleWorldAuthModuleData extends JModuleData {
     //@Decorator.persistence()
     //public isSave: bool;
 
@@ -223,7 +223,7 @@ export enum ConsumeTypes {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
+export class AuthModuleC extends JModuleC<AuthModuleS, BattleWorldAuthModuleData> {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -297,7 +297,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
+export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData> {
 //#region Constant
     /**
      * 测试用 P12 端 Url.

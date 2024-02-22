@@ -88,7 +88,7 @@ interface CodeVerifyResponse {
     data: boolean;
 }
 
-export default class AuthModuleData extends mwext.Subdata {
+export default class DragonVerseAuthModuleData extends mwext.Subdata {
     /**
      * 已经发布的正式数据版本号.
      * 以版本发布时间 升序排列.
@@ -103,8 +103,8 @@ export default class AuthModuleData extends mwext.Subdata {
      * 版本升级办法.
      * UVM[n] : 从 RV[n] 升级到 RV[n+1] 的方法.
      */
-    public static readonly UPDATE_VERSION_METHOD: DataUpgradeMethod<AuthModuleData>[] = [
-        (data: AuthModuleData) => {
+    public static readonly UPDATE_VERSION_METHOD: DataUpgradeMethod<DragonVerseAuthModuleData>[] = [
+        (data: DragonVerseAuthModuleData) => {
             data.holdUserId = null;
             data.holdPlayerId = null;
             data.holdNickName = null;
@@ -150,7 +150,7 @@ export default class AuthModuleData extends mwext.Subdata {
      * 为什么不做成只读属性而是个 getter 呢.
      */
     public get version(): number {
-        return AuthModuleData.RELEASE_VERSIONS[AuthModuleData.RELEASE_VERSIONS.length - 1];
+        return DragonVerseAuthModuleData.RELEASE_VERSIONS[DragonVerseAuthModuleData.RELEASE_VERSIONS.length - 1];
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -161,25 +161,25 @@ export default class AuthModuleData extends mwext.Subdata {
     public checkVersion() {
         if (this.currentVersion === this.version) return;
 
-        Log4Ts.log(AuthModuleData,
+        Log4Ts.log(DragonVerseAuthModuleData,
             `数据准备升级`,
             () => `当前版本: ${this.currentVersion}`,
             () => `最新版本: ${this.version}.`,
         );
 
-        const startIndex = AuthModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
+        const startIndex = DragonVerseAuthModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
         if (startIndex < 0) {
             Log4Ts.error(
-                AuthModuleData,
+                DragonVerseAuthModuleData,
                 `数据号版本异常`,
                 `不是已发布的版本号`,
                 () => `当前版本: ${this.currentVersion}.`);
             return;
         }
 
-        for (let i = startIndex; i < AuthModuleData.UPDATE_VERSION_METHOD.length - 1; ++i) {
-            AuthModuleData.UPDATE_VERSION_METHOD[i](this);
-            this.currentVersion = AuthModuleData.RELEASE_VERSIONS[i + 1];
+        for (let i = startIndex; i < DragonVerseAuthModuleData.UPDATE_VERSION_METHOD.length - 1; ++i) {
+            DragonVerseAuthModuleData.UPDATE_VERSION_METHOD[i](this);
+            this.currentVersion = DragonVerseAuthModuleData.RELEASE_VERSIONS[i + 1];
         }
     }
 }
@@ -256,7 +256,7 @@ class RequestGuard {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class AuthModuleC extends mwext.ModuleC<AuthModuleS, AuthModuleData> {
+export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModuleData> {
     //#region Member
     private _originToken: string = null;
 
@@ -474,7 +474,7 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, AuthModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class AuthModuleS extends mwext.ModuleS<AuthModuleC, AuthModuleData> {
+export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModuleData> {
     //#region Constant
     /**
      * 验证时间容差.

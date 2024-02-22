@@ -41,8 +41,8 @@ import { RankModuleC } from "./modules/Rank/RankModuleC";
 import { DollMachineModuleC } from "./modules/DollMachine/DollMachineModuleC";
 import { DollMachineModuleS } from "./modules/DollMachine/DollMachineModuleS";
 import * as mwaction from "mwaction";
-import EnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./modules/Energy/EnergyModule";
-import AuthModuleData, { AuthModuleC, AuthModuleS } from "./modules/auth/AuthModule";
+import PetSimulatorEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./modules/Energy/EnergyModule";
+import PetSimulatorAuthModuleData, { AuthModuleC, AuthModuleS } from "./modules/auth/AuthModule";
 
 // declare global {
 //     var UE: any;
@@ -199,7 +199,7 @@ export default class GameStart extends mw.Script {
     }
 
     protected onRegisterModule(): void {
-        ModuleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
+        ModuleService.registerModule(AuthModuleS, AuthModuleC, PetSimulatorAuthModuleData);
         ModuleService.registerModule(HudModuleS, HudModuleC, null);
         ModuleService.registerModule(AreaModuleS, AreaModuleC, AreaModuleData);
         ModuleService.registerModule(InputModuleS, InputModuleC, null);
@@ -214,7 +214,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(DollMachineModuleS, DollMachineModuleC, null);
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerModuleData);
         ModuleService.registerModule(PetBagModuleS, PetBagModuleC, PetBagModuleData);
-        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, EnergyModuleData);
+        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PetSimulatorEnergyModuleData);
     }
 
     /**

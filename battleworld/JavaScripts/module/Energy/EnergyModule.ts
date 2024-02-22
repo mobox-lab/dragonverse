@@ -5,7 +5,7 @@ import { Globaldata } from "../../const/Globaldata";
 import { EventManager } from "../../tool/EventManager";
 import { EAttributeEvents_C } from "../../const/Enum";
 
-export default class EnergyModuleData extends mwext.Subdata {
+export default class BattleWorldEnergyModuleData extends mwext.Subdata {
     //@Decorator.persistence()
     //public isSave: bool;
 
@@ -13,26 +13,26 @@ export default class EnergyModuleData extends mwext.Subdata {
     public lastRecoveryTime: number = 0;
 
     @Decorator.persistence()
-    public energy: number = 0;
+    public battleWorldEnergy: number = 0;
 
     public isAfford(cost: number = 1): boolean {
-        return this.energy > 0;
+        return this.battleWorldEnergy > 0;
     }
 
     public consume(count: number = 1): number {
-        const curr = this.energy;
+        const curr = this.battleWorldEnergy;
         if (curr < count) {
-            this.energy = 0;
+            this.battleWorldEnergy = 0;
             return curr;
         } else {
-            this.energy -= count;
+            this.battleWorldEnergy -= count;
             return count;
         }
     }
 
     protected initDefaultData(): void {
         super.initDefaultData();
-        this.energy = Globaldata.ENERGY_MAX;
+        this.battleWorldEnergy = Globaldata.ENERGY_MAX;
         const now = Date.now();
         this.lastRecoveryTime = now;
     }
@@ -50,7 +50,7 @@ export default class EnergyModuleData extends mwext.Subdata {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData> {
+export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BattleWorldEnergyModuleData> {
     //#region Member
     private _eventListeners: EventListener[] = [];
     private _ctr: number = 0;
@@ -118,7 +118,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData
         const real = this.data.consume(count);
         if (this._ctr === 0) this._ctrAliveTime = Date.now();
         this._ctr += real;
-        Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${this.data.energy}`);
+        Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${this.data.battleWorldEnergy}`);
 
         if (syncInstant || this._ctr > Globaldata.ENERGY_PATCH_RPC_COUNT) {
             this.server.net_consume(this._ctr, this._ctrAliveTime);
@@ -132,14 +132,14 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData
      * @return {number}
      */
     public currEnergy(): number {
-        return this.data.energy;
+        return this.data.battleWorldEnergy;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
     public net_recovery(currVal: number) {
-        this.data.energy = currVal - this._ctr;
+        this.data.battleWorldEnergy = currVal - this._ctr;
         //通知ui，体力变更
         EventManager.instance.call(EAttributeEvents_C.Attribute_Energy_Change_C);
     }
@@ -147,7 +147,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, EnergyModuleData
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData> {
+export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BattleWorldEnergyModuleData> {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -202,17 +202,17 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
             if (duration < energyRecoveryIntervalMs) {
                 timeout = energyRecoveryIntervalMs - duration;
             } else {
-                if (d.energy < Globaldata.ENERGY_MAX) {
-                    Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.energy}`);
-                    d.energy = Math.min(
+                if (d.battleWorldEnergy < Globaldata.ENERGY_MAX) {
+                    Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.battleWorldEnergy}`);
+                    d.battleWorldEnergy = Math.min(
                         Globaldata.ENERGY_MAX,
-                        d.energy + Math.max(
+                        d.battleWorldEnergy + Math.max(
                             Math.floor(duration / energyRecoveryIntervalMs),
                             0));
                 }
                 d.lastRecoveryTime = now;
                 timeout = energyRecoveryIntervalMs;
-                this.getClient(playerId).net_recovery(d.energy);
+                this.getClient(playerId).net_recovery(d.battleWorldEnergy);
                 d.save(false);
             }
             this._intervalHolder.set(
@@ -236,18 +236,18 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, EnergyModuleData
     public consume(playerId: number, count: number, firstTime: number) {
         const d = this.getPlayerData(playerId);
         if (!d) return;
-        if (d.energy >= Globaldata.ENERGY_MAX) d.lastRecoveryTime = firstTime;
+        if (d.battleWorldEnergy >= Globaldata.ENERGY_MAX) d.lastRecoveryTime = firstTime;
         d.consume(count);
         d.save(false);
-        Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${d.energy}`);
+        Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${d.battleWorldEnergy}`);
     }
 
     public addEnergy(playerId: number, val: number) {
         const d = this.getPlayerData(playerId);
         if (!d) return;
-        d.energy += val;
+        d.battleWorldEnergy += val;
         d.save(false);
-        this.getClient(playerId).net_recovery(d.energy);
+        this.getClient(playerId).net_recovery(d.battleWorldEnergy);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
