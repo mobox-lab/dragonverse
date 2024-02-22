@@ -3,12 +3,13 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-16 14:42:38
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-02-02 17:47:23
+ * @LastEditTime : 2024-02-22 14:45:01
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\gameplay\subgame\JumpGameTrigger.ts
  * @Description  : 跳游戏触发器
  */
 
 import { Globaldata } from "../../const/Globaldata";
+import Tips from "../../tool/P_Tips";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
 
 const progressTag = "JumpProgress";
@@ -20,8 +21,8 @@ export default class JumpGameTrigger extends Script {
     private _progressBar: ProgressBar;
     private _cnvProgressBar: Canvas;
 
-    @mw.Property({ displayName: "要跳转游戏的GameId" })
-    private _jumpGameId: string = '';
+    @mw.Property({ displayName: "要跳转的游戏", enumType: { "DragonVerse": 1, "PetSimulator": 2 } })
+    public jumpGameId: number = 1;
 
     protected onStart(): void {
         if (SystemUtil.isClient()) {
@@ -34,8 +35,22 @@ export default class JumpGameTrigger extends Script {
 
     onProgressDone() {
         //跳游戏
-        console.log(this, "跳游戏");
-        RouteService.enterNewGame(this._jumpGameId);
+        console.log(this, "跳游戏", this.getJumpSceneName(this.jumpGameId));
+        this.jumpGame(Player.localPlayer.userId);
+    }
+
+    @RemoteFunction(Server)
+    jumpGame(userId: string) {
+        const onFailed = (result: mw.TeleportResult) => {
+            // 将错误信息发给所有参与的客户端
+            for (const userId in result.userIds) {
+                const player = Player.getPlayer(userId)
+                if (player) {
+                    Tips.showToClient(player, result.message);
+                }
+            }
+        };
+        TeleportService.asyncTeleportToScene(this.getJumpSceneName(this.jumpGameId), [userId],).then(() => { }, onFailed);
     }
 
 
@@ -78,5 +93,12 @@ export default class JumpGameTrigger extends Script {
         actions.tween(this._cnvProgressBar).setTag(progressTag).to(100, { renderOpacity: 1 }).call(() => {
             progressTask.start();
         }).start();
+    }
+
+    getJumpSceneName(id: number): string {
+        switch (id) {
+            case 1: return "dragon-verse";
+            case 2: return "pet-simulator";
+        }
     }
 }
