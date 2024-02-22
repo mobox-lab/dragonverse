@@ -78,7 +78,6 @@ export default class HighSchoolTrigger extends mw.Script {
                 } else if (this._circleType == HighSchoolType.DeadBackGround) {
                     obby.groundDead();
                 } else if (this._circleType == HighSchoolType.DeadRed) {
-                    let obby =  ModuleService.getModule(ObbyModuleC);
                     obby.redDead();
                 } else if (this._circleType == HighSchoolType.ScorePoint) {
                     if (obby.checkLv(this._checkPointIdx)) {
