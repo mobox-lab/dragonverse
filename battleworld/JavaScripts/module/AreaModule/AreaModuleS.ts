@@ -4,7 +4,7 @@ import { EventManager } from "../../tool/EventManager";
 import { PlayerManager } from "../PlayerModule/PlayerManager";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { AreaModuleC } from "./AreaModuleC";
-import { PlayerModuleData } from "../PlayerModule/PlayerModuleData";
+import { BattleWorldPlayerModuleData } from "../PlayerModule/PlayerModuleData";
 import { AttributeModuleS } from "../AttributeModule/AttributeModuleS";
 import { Globaldata } from "../../const/Globaldata";
 import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
@@ -19,7 +19,7 @@ import { LandModuleS } from "../LandModule/LandModuleS";
  * 玩家如果存在传送行为，记得主动改下区域id
  */
 
-export class AreaModuleS extends ModuleS<AreaModuleC, null>{
+export class AreaModuleS extends ModuleS<AreaModuleC, null> {
 
 
 
@@ -53,7 +53,7 @@ export class AreaModuleS extends ModuleS<AreaModuleC, null>{
             EventManager.instance.call(EAttributeEvents_S.attr_change_s, pId, Attribute.EnumAttributeType.isCanChangeWeapon, 1);
 
             // 记录进入战斗区域时时间戳
-            let playerData = DataCenterS.getData(pId, PlayerModuleData);
+            let playerData = DataCenterS.getData(pId, BattleWorldPlayerModuleData);
             if (playerData) {
                 playerData.enterBattleTime();
             }

@@ -5,7 +5,7 @@ import { AttributeModuleS } from "./AttributeModuleS";
 import AttributeSync from "./AttributeSync";
 import { EventManager } from "../../tool/EventManager";
 import { EAttributeEvents_C } from "../../const/Enum";
-import { PlayerModuleData } from "../PlayerModule/PlayerModuleData";
+import { BattleWorldPlayerModuleData } from "../PlayerModule/PlayerModuleData";
 
 
 export class AttributeModuleC extends ModuleC<AttributeModuleS, null> {
@@ -18,7 +18,7 @@ export class AttributeModuleC extends ModuleC<AttributeModuleS, null> {
         // 初始化属性相关
 
         // 同步基础属性
-        let playerData = DataCenterC.getData(PlayerModuleData);
+        let playerData = DataCenterC.getData(BattleWorldPlayerModuleData);
         if (playerData == null) {
             return;
         }

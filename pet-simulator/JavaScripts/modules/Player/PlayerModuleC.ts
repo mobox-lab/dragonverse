@@ -19,12 +19,12 @@ import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
 import { P_LevelUI } from "./P_LevelUI";
 import PlayerBehavior from "./PlayerBehavior";
-import { PlayerModuleData } from "./PlayerModuleData";
+import { PetSimulatorPlayerModuleData } from "./PlayerModuleData";
 import { PlayerModuleS } from "./PlayerModuleS";
 import { IGradientElement } from "../../config/Gradient";
 
 /**玩家模块 */
-export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
+export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModuleData> {
     private achievementModuleC: AchievementModuleC = null;
     private hudUI: P_HudUI = null;
     private curBehavior: PlayerBehavior;

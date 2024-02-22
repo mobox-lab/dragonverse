@@ -5,14 +5,14 @@ import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import PlayerBehavior from "./PlayerBehavior";
 import { PlayerModuleC } from "./PlayerModuleC";
-import { PlayerModuleData } from "./PlayerModuleData";
+import { PetSimulatorPlayerModuleData } from "./PlayerModuleData";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
 import { AuthModuleS, ConsumeTypes } from "../auth/AuthModule";
 
 
-export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
+export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModuleData> {
 
     /**宠物背包模块 */
     public petBagModule: PetBagModuleS = null;
@@ -63,7 +63,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
 
         this.getClient(player).net_sendPoint();
     }
-    private checkCoinCount(data: PlayerModuleData, value: number, coinType: GlobalEnum.BuryingPointCoin): void {
+    private checkCoinCount(data: PetSimulatorPlayerModuleData, value: number, coinType: GlobalEnum.BuryingPointCoin): void {
         let id = 1;
 
         while (true) {
@@ -239,7 +239,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         let config = GameConfig.GoodsTable.getElement(configId);
         if (!config) return false;
         let playerId = this.currentPlayerId;
-        let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, config.price,ConsumeTypes.DollMachine);
+        let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, config.price, ConsumeTypes.DollMachine);
         if (res) {
             this.getPlayerData(playerId).addGold(config.buyCount, GlobalEnum.CoinType.SummerGold);
             return true;

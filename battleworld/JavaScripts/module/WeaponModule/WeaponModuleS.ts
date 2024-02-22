@@ -1,7 +1,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { EAttributeEvents_S, EPlayerEvents_S, EWeaponEvent_S } from "../../const/Enum";
 import { EventManager } from "../../tool/EventManager";
-import { PlayerModuleData } from "../PlayerModule/PlayerModuleData";
+import { BattleWorldPlayerModuleData } from "../PlayerModule/PlayerModuleData";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { WeaponModuleC } from "./WeaponModuleC";
 import { WeaponModuleData } from "./WeaponModuleData";
@@ -140,7 +140,7 @@ export class WeaponModuleS extends ModuleS<WeaponModuleC, WeaponModuleData> {
             return;
         }
 
-        let playerData = DataCenterS.getData(this.currentPlayerId, PlayerModuleData);
+        let playerData = DataCenterS.getData(this.currentPlayerId, BattleWorldPlayerModuleData);
         if (playerData == null) {
             return;
         }

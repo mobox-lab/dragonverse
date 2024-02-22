@@ -3,7 +3,7 @@ import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 
 
-export class PlayerModuleData extends Subdata {
+export class PetSimulatorPlayerModuleData extends Subdata {
 
     get dataName(): string {
         return "PlayerData";

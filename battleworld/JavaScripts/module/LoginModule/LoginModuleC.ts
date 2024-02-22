@@ -1,7 +1,7 @@
 import { EAreaEvent_C, EAreaId, EGuide_Event_C, EModule_Events, EPlayerEvents_C } from "../../const/Enum";
 import { EventManager } from "../../tool/EventManager";
 import { LoginModuleS } from "./LoginModuleS";
-import { PlayerModuleData } from '../PlayerModule/PlayerModuleData';
+import { BattleWorldPlayerModuleData } from '../PlayerModule/PlayerModuleData';
 import { GuideDataHelper } from "module_guide";
 import { CameraManger } from "../../tool/CameraManger";
 
@@ -22,7 +22,7 @@ export class LoginModuleC extends ModuleC<LoginModuleS, null> {
     private async startGame() {
 
 
-        if (DataCenterC.getData(PlayerModuleData).isNewPlayer) {
+        if (DataCenterC.getData(BattleWorldPlayerModuleData).isNewPlayer) {
             // let isComplate = DataCenterC.getData(GuideDataHelper).guideIsComplate(1);
             // if (isComplate == undefined || isComplate == null || isComplate == false) {
 
@@ -32,7 +32,7 @@ export class LoginModuleC extends ModuleC<LoginModuleS, null> {
             //     EventManager.instance.call(EGuide_Event_C.GuideEvent_StartGuide_C);
             //     return;
             // } else {
-                this.server.net_firstLogin();
+            this.server.net_firstLogin();
             // }
         }
 

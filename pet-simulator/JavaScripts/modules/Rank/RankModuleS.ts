@@ -1,6 +1,6 @@
 import { PlayerManagerExtesion, } from '../../Modified027Editor/ModifiedPlayer';
 import { RankModuleC, RankUIData } from "./RankModuleC";
-import { PlayerModuleData } from "../Player/PlayerModuleData";
+import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { GlobalData } from "../../const/GlobalData";
 import DanceNpcBehaviour from "./DanceNpcBehaviour";
 import { CollectModuleData } from "../PetCollect/CollectModuleData";
@@ -18,7 +18,7 @@ export class RankData {
     public collect: number;
 }
 
-export class RankModuleS extends ModuleS<RankModuleC, null>{
+export class RankModuleS extends ModuleS<RankModuleC, null> {
 
     private playerRankDataLs: Array<RankData> = [];
 
@@ -64,7 +64,7 @@ export class RankModuleS extends ModuleS<RankModuleC, null>{
 
         // 添加排名相关数据变化的回调
         // 钻石
-        let playerData = DataCenterS.getData(curPlayerId, PlayerModuleData);
+        let playerData = DataCenterS.getData(curPlayerId, PetSimulatorPlayerModuleData);
         playerData.onDiamondChange.add(() => {
             this.setValues(curPlayerId, RankType.Diamond, playerData.diamond);
         });

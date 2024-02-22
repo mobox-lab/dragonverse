@@ -12,7 +12,7 @@ import { MotionModuleS } from "./module/MotionModule/MotionModuleS";
 import { Globaldata } from "./const/Globaldata";
 import { MotionEditConst } from "./editors/motionEditor/MotionEditConst";
 import { PlayerModuleC } from "./module/PlayerModule/PlayerModuleC";
-import { PlayerModuleData } from "./module/PlayerModule/PlayerModuleData";
+import { BattleWorldPlayerModuleData } from "./module/PlayerModule/PlayerModuleData";
 import { PlayerModuleS } from "./module/PlayerModule/PlayerModuleS";
 import { LogManager } from "odin";
 import { EquipModuleS } from "./module/EquipModule/EquipModuleS";
@@ -157,7 +157,7 @@ export default class GameLauncher extends mw.Script {
         PlayerManagerExtesion.init();
         ModuleService.registerModule(AuthModuleS, AuthModuleC, BattleWorldAuthModuleData);
         ModuleService.registerModule(AttributeModuleS, AttributeModuleC, null);
-        ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerModuleData);
+        ModuleService.registerModule(PlayerModuleS, PlayerModuleC, BattleWorldPlayerModuleData);
         ModuleService.registerModule(WeaponModuleS, WeaponModuleC, WeaponModuleData);
         ModuleService.registerModule(SkillModuleS, SkillModuleC, null);
         ModuleService.registerModule(MotionModuleS, MotionModuleC, null);

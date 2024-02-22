@@ -1,7 +1,7 @@
 import { EAnalyticsEvents, EAreaEvent_C, EAreaId, EAttributeEvents_C, EModule_Events, EPlayerEvents_C, ESkillEvent_C, EbackType } from "../../../const/Enum";
 import { EventManager } from "../../../tool/EventManager";
 import { PlayerModuleC } from "../PlayerModuleC";
-import { PlayerModuleData } from "../PlayerModuleData";
+import { BattleWorldPlayerModuleData } from "../PlayerModuleData";
 import { Attribute } from "../sub_attribute/AttributeValueObject";
 import { Globaldata } from "../../../const/Globaldata";
 import { EPlayerState, PlyerState } from "../FSM/PlyerState";
@@ -33,7 +33,7 @@ export class MainUI extends Main_HUD_Generate {
 
     private atrributeMD: AttributeModuleC = null;
 
-    private playerData: PlayerModuleData;
+    private playerData: BattleWorldPlayerModuleData;
 
     private motionMD: MotionModuleC = null;
 
@@ -44,7 +44,7 @@ export class MainUI extends Main_HUD_Generate {
         this.atrributeMD = ModuleService.getModule(AttributeModuleC);
         this.motionMD = ModuleService.getModule(MotionModuleC);
         this.playerMD = ModuleService.getModule(PlayerModuleC);
-        this.playerData = DataCenterC.getData(PlayerModuleData);
+        this.playerData = DataCenterC.getData(BattleWorldPlayerModuleData);
 
         // gm
         this.mBtn_GM.onClicked.add(() => {

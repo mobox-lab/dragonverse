@@ -3,7 +3,7 @@ import TradeReady_Generate from "../../ui-generate/Trade/TradeReady_generate";
 import { oTraceError } from "../../utils/LogManager";
 import { PetBagModuleData, petItemDataNew } from "../PetBag/PetBagModuleData";
 import { P_PetHover } from "../PetCollect/P_Collect";
-import { PlayerModuleData } from "../Player/PlayerModuleData";
+import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { PlayerNameManager } from "./PlayerNameManager";
 import { petInfo } from "./TradingScript";
 import { GameConfig } from "../../config/GameConfig";
@@ -296,7 +296,7 @@ export class P_Trading extends TradeReady_Generate {
         }
 
 
-        let allCount = DataCenterC.getData(PlayerModuleData).diamond;
+        let allCount = DataCenterC.getData(PetSimulatorPlayerModuleData).diamond;
 
         if (count > allCount) {
             count = allCount - 1;
