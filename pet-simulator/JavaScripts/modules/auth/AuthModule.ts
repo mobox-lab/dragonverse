@@ -672,6 +672,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return e.ciphertext.toString(CryptoJS.enc.Base64);
     }
 
+    private decryptFromSecret(secret: string) {
+        const d = CryptoJS.AES.decrypt(
+            secret,
+            CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
+            {
+                iv: CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_IV),
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7,
+            },
+        );
+        return d.toString(CryptoJS.enc.Utf8);
+    }
+
     private getSign(params: object) {
         let paramStr = Object
             .keys(params)
@@ -927,22 +940,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 //#region Net Method
     public async net_queryCurrency() {
         this.queryCurrency(this.currentPlayerId);
-    }
-
-    @noReply()
-    public net_updatePetSimulatorRankData(petName: string,
-                                          petRarity: PetQuality,
-                                          petAttack: number,
-                                          petObtainTime: number,
-                                          round: number = 1) {
-        this.reportPetRankData(
-            this.currentPlayerId,
-            petName,
-            petRarity,
-            petAttack,
-            petObtainTime,
-            round,
-        );
     }
 
     public async net_reportTempToken(token: string): Promise<[boolean, string]> {
