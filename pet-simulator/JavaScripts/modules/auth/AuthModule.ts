@@ -136,6 +136,7 @@ interface ConsumeResponse {
 
 interface UpdatePetSimulatorRankDataParam {
     userId: string;
+    userName: string;
     petName: string;
     petRarity: number;
     petAttack: string;
@@ -419,7 +420,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
      * @type {string}
      * @private
      */
-    private static readonly UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX = "/modragon/mo-rank/pet/update";
+    private static readonly UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX = "/mo-rank/pet/update";
 
     /**
      * 查询 Mobox 龙信息后缀.
@@ -483,14 +484,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
      * 测试用 更新宠物模拟器排行榜数据 Url.
      */
     private static get TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL() {
-        return this.TEST_P12_URL + this.UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX;
+        return this.TEST_MOBOX_NFT_URL + this.UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX;
     }
 
     /**
      * 发布用 更新宠物模拟器排行榜数据 Url.
      */
     private static get RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL() {
-        return this.RELEASE_P12_URL + this.UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX;
+        return this.RELEASE_MOBOX_NFT_URL + this.UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX;
     }
 
     /**
@@ -847,14 +848,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     }
 
     public async reportPetRankData(playerId: number, petName: string, petRarity: PetQuality, petAttack: number, petObtainTime: number, round: number) {
-        const userId = Player.getPlayer(playerId)?.userId ?? null;
-        if (GToolkit.isNullOrUndefined(userId)) {
+        const player = Player.getPlayer(playerId) ?? null;
+        if (GToolkit.isNullOrUndefined(player)) {
             Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
             return;
         }
+        const userId = player.userId;
+        const userName = player.nickname;
 
         const param: UpdatePetSimulatorRankDataParam = {
             userId,
+            userName,
             petName,
             petRarity,
             petAttack: petAttack.toString(),
