@@ -20,6 +20,7 @@ import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
 import { DataUpgradeMethod } from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
+import UnifiedRoleController from "../role/UnifiedRoleController";
 
 export default class ObbyModuleData extends Subdata {
     /**
@@ -217,26 +218,23 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         this._startPos = Player.localPlayer.character.worldTransform.position;
         this.server.net_getLv();
         UIService.showUI(this._obbyPanel);
-        this.setObbyProps(Player.localPlayer.character);
+        Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(0);
+        Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(0);
         UIService.getUI(MainPanel).setCanSprint(false);
+        this.setObbyProps(Player.localPlayer.character);
     }
 
-    private onCountDown = () => {
+    private async onCountDown  ()  {
         if (!this._isStart) {
             return;
         }
         if (this._hander) {
             let obby =  ModuleService.getModule(ObbyModuleC);
             obby.reborn();
-            TimeUtil.setInterval(this.onClearHander.bind(this), 0.5)
-            // TimeUtil.clearInterval(this._hander);
-            // this._hander = null;
+            await TimeUtil.delaySecond(0);
+            TimeUtil.clearInterval(this._hander);
+            this._hander = null;
         }
-    };
-
-    private onClearHander = () => {
-        TimeUtil.clearInterval(this._hander);
-        this._hander = null;
     };
 
     /**
@@ -281,6 +279,8 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         Player.localPlayer.character.ragdollEnabled = false;
         UIService.hideUI(this._obbyPanel);
         this.resetProps(Player.localPlayer.character);
+        Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(0);
+        Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(0);
         UIService.getUI(MainPanel).setCanSprint(true);
     }
 
@@ -352,11 +352,9 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     public redDead() {
-        console.log("redDead1=======================")
         if (this._hander||!this._isStart) {
             return;
         }
-        console.log("redDead2=======================")
         Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_RedTips));
         this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY)
         Player.localPlayer.character.ragdollEnabled = true;
