@@ -258,9 +258,25 @@ export class P_FusePanel extends Fusepanel_Generate {
         this.mText_Money.text = utils.formatNumber(GlobalData.Fuse.cost);
         if (count < GlobalData.Fuse.minFuseCount) {
             this.mText_Number.text = utils.Format(GameConfig.Language.Page_UI_Tips_13.Value, count);
+            this.probabilityCanvas.visibility = SlateVisibility.Hidden;
         } else {
             this.mText_Number.text = utils.Format(GameConfig.Language.Text_Fuse_UI_1.Value, count);
+            this.probabilityCanvas.visibility = SlateVisibility.SelfHitTestInvisible;
+
+            //普通宠物的权重
+            let normalWeight = -10 * count + 80;
+            if (normalWeight < 0) normalWeight = 0;
+            //黄金宠物的权重
+            let goldWeight = -4 * count + 52;
+            if (goldWeight < 0) goldWeight = 0;
+            //彩虹宠物的权重
+            let rainbowWeight = -2 * count + 32;
+            if (rainbowWeight < 0) rainbowWeight = 0;
+            let totalWeight = normalWeight + goldWeight + rainbowWeight;
+
+            this.mText_Normal_Probability.text = `${Math.round(normalWeight / totalWeight * 100)}%`;
+            this.mText_Love_Probability.text = `${Math.round(goldWeight / totalWeight * 100)}%`;
+            this.mText_Rainbow_Probability.text = `${100 - Math.round(goldWeight / totalWeight * 100) - Math.round(normalWeight / totalWeight * 100)}%`;
         }
     }
-
 }
