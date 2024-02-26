@@ -128,6 +128,9 @@ export default class GameLauncher extends mw.Script {
 
             // 初始化多语言
             LanguageManager.init_language(Number(this.languageType1));
+
+            ChatService.asyncEnableChatWindow(true);
+
             let player = await Player.asyncGetLocalPlayer();
             await player.character.asyncReady();
         }

@@ -1,46 +1,46 @@
-import {GM} from "module_gm";
+import { GM } from "module_gm";
 import * as mwaction from "mwaction";
-import {HeadUIController} from "./controller/HeadUIController";
-import {TimeManager} from "./controller/TimeManager";
-import {VectorExt} from "./declaration/vectorext";
-import Log4Ts, {DebugLevels} from "./depend/log4ts/Log4Ts";
-import i18n, {LanguageTypes} from "./language/i18n";
-import DragonVerseAuthModuleData, {AuthModuleC, AuthModuleS} from "./module/auth/AuthModule";
-import BagModuleData, {BagModuleC, BagModuleS} from "./module/bag/BagModule";
+import { HeadUIController } from "./controller/HeadUIController";
+import { TimeManager } from "./controller/TimeManager";
+import { VectorExt } from "./declaration/vectorext";
+import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
+import i18n, { LanguageTypes } from "./language/i18n";
+import DragonVerseAuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
+import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
 import CollectibleItemModuleData, {
     CollectibleItemModuleC,
     CollectibleItemModuleS,
 } from "./module/collectible-item/CollectibleItemModule";
-import {CompanionData} from "./module/companion/CompanionData";
-import {CompanionModule_C} from "./module/companion/CompanionModule_C";
-import {CompanionModule_S} from "./module/companion/CompanionModule_S";
-import NpcModuleData, {NpcModuleC, NpcModuleS} from "./module/npc/NpcModule";
-import {QuestData} from "./module/quest/QuestData";
-import {QuestModuleC} from "./module/quest/QuestModuleC";
-import {QuestModuleS} from "./module/quest/QuestModuleS";
-import RoleModuleData, {RoleModuleC, RoleModuleS} from "./module/role/RoleModule";
-import SceneDragonModuleData, {SceneDragonModuleC, SceneDragonModuleS} from "./module/scene-dragon/SceneDragonModule";
+import { CompanionData } from "./module/companion/CompanionData";
+import { CompanionModule_C } from "./module/companion/CompanionModule_C";
+import { CompanionModule_S } from "./module/companion/CompanionModule_S";
+import NpcModuleData, { NpcModuleC, NpcModuleS } from "./module/npc/NpcModule";
+import { QuestData } from "./module/quest/QuestData";
+import { QuestModuleC } from "./module/quest/QuestModuleC";
+import { QuestModuleS } from "./module/quest/QuestModuleS";
+import RoleModuleData, { RoleModuleC, RoleModuleS } from "./module/role/RoleModule";
+import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 import GMPanel from "./ui/gm/GmPanel";
 import MainPanel from "./ui/main/MainPanel";
-import {VisualizeDebug} from "./util/VisualizeDebug";
-import {MapManager} from "./gameplay/map/MapManager";
-import {Delegate} from "./depend/delegate/Delegate";
+import { VisualizeDebug } from "./util/VisualizeDebug";
+import { MapManager } from "./gameplay/map/MapManager";
+import { Delegate } from "./depend/delegate/Delegate";
 import GToolkit from "./util/GToolkit";
 import SystemUtil = mw.SystemUtil;
 import Nolan from "./depend/nolan/Nolan";
 import GameServiceConfig from "./const/GameServiceConfig";
-import AudioController, {BgmPlayStrategy} from "./controller/audio/AudioController";
+import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioController";
 import DialogifyManager from "./depend/dialogify/DialogifyManager";
 import DialoguePanelController from "./depend/dialogify/dialogue-panel-controller/DialoguePanelController";
 import GlobalPromptPanel_Generate from "./ui-generate/main/GlobalPromptPanel_generate";
 import GlobalProperty from "./GlobalProperty";
-import ObbyModuleData, {ObbyModuleC, ObbyModuleS} from "./module/obby/ObbyModule";
+import ObbyModuleData, { ObbyModuleC, ObbyModuleS } from "./module/obby/ObbyModule";
 
 @Component
 export default class GameStart extends mw.Script {
     //#region Dev Config
 
-    @mw.Property({displayName: "是否发布", group: "发布"})
+    @mw.Property({ displayName: "是否发布", group: "发布" })
     public isRelease: boolean = false;
 
     @mw.Property({
@@ -51,25 +51,25 @@ export default class GameStart extends mw.Script {
     })
     public language: LanguageTypes = LanguageTypes.English;
 
-    @mw.Property({displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel})
+    @mw.Property({ displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel })
     public graphicsLevel: GraphicsLevel = GraphicsLevel.Cinematic3;
 
-    @mw.Property({displayName: "线上存储", group: "发布"})
+    @mw.Property({ displayName: "线上存储", group: "发布" })
     public isOnline: boolean = false;
 
-    @mw.Property({displayName: "是否 GM", group: "调试"})
+    @mw.Property({ displayName: "是否 GM", group: "调试" })
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: DebugLevels})
+    @mw.Property({ displayName: "服务端日志等级", group: "调试", enumType: DebugLevels })
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: DebugLevels})
+    @mw.Property({ displayName: "客户端日志等级", group: "调试", enumType: DebugLevels })
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({displayName: "上帝模式 冲刺速度倍率", group: "调试"})
+    @mw.Property({ displayName: "上帝模式 冲刺速度倍率", group: "调试" })
     public godModeSprintRatio: number = 10;
 
-    @mw.Property({displayName: "上帝模式 闪现位移距离", group: "调试"})
+    @mw.Property({ displayName: "上帝模式 闪现位移距离", group: "调试" })
     public godModeFlashDist: number = 1000;
 
     private _godMode: boolean = false;
@@ -184,6 +184,8 @@ export default class GameStart extends mw.Script {
         MapManager.instance.showMap();
 
         AudioController.getInstance().playBgm(undefined, BgmPlayStrategy.Rnd);
+
+        ChatService.asyncEnableChatWindow(false);
     }
 
     private initializeServer() {
