@@ -8,11 +8,11 @@ import { EventManager } from "../../tool/EventManager";
 
 
 
-import { SetingMoudleC } from "./SetingMoudleC";
+import { SettingModuleC } from "./SetingMoudleC";
+import { SettingModuleData } from "./SettingModuleData";
 
 
-export class SetingMoudleS extends ModuleS<SetingMoudleC, null>
-{
+export class SettingModuleS extends ModuleS<SettingModuleC, SettingModuleData> {
 
     protected onStart(): void {
 
@@ -20,6 +20,17 @@ export class SetingMoudleS extends ModuleS<SetingMoudleC, null>
 
     protected onPlayerLeft(player: mw.Player): void {
 
+    }
+
+
+    net_setCameraSpeed(value: number) {
+        this.currentData.cameraSpeed = value;
+        this.currentData.save(false);
+    }
+
+
+    async net_getCameraSpeed(): Promise<number> {
+        return this.currentData.cameraSpeed;
     }
 
 }

@@ -8,13 +8,13 @@
 
 import { EventManager } from "../../tool/EventManager";
 import { EModule_Events } from "../../const/Enum";
-import { SetingMoudleS } from "./SetingMoudleS";
+import { SettingModuleS } from "./SetingMoudleS";
 import SetingUI from "./UI/SetingUI";
 import { EWorldType, GlobalWorld } from "../../const/GlobalWorld";
+import { SettingModuleData } from "./SettingModuleData";
 
 
-export class SetingMoudleC extends ModuleC<SetingMoudleS, null>
-{
+export class SettingModuleC extends ModuleC<SettingModuleS, SettingModuleData> {
 
 
     private setingUI: SetingUI = null;
@@ -36,5 +36,11 @@ export class SetingMoudleC extends ModuleC<SetingMoudleS, null>
         mw.UIService.showUI(this.setingUI);
     }
 
+    async getCameraSpeed() {
+        return await this.server.net_getCameraSpeed();
+    }
 
+    setCameraSpeed(speed: number) {
+        this.server.net_setCameraSpeed(speed);
+    }
 }

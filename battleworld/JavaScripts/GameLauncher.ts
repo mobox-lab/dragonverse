@@ -36,8 +36,8 @@ import { PlayerHeadUIModuleC } from "./module/PlayerHeadUIModule/PlayerHeadUIMod
 import { LanguageManager } from "./tool/LanguageManager";
 import { GlobalAttrModuleS } from "./module/attr/GlobalAttrModuleS";
 import { GlobalAttrModuleC } from "./module/attr/GlobalAttrModuleC";
-import { SetingMoudleC } from "./module/SetingModule/SetingMoudleC";
-import { SetingMoudleS } from "./module/SetingModule/SetingMoudleS";
+import { SettingModuleC } from "./module/SetingModule/SetingMoudleC";
+import { SettingModuleS } from "./module/SetingModule/SetingMoudleS";
 import { PlayerManagerExtesion } from "./Modified027Editor/ModifiedPlayer";
 import { WeaponModuleS } from "./module/WeaponModule/WeaponModuleS";
 import { WeaponModuleC } from "./module/WeaponModule/WeaponModuleC";
@@ -68,6 +68,7 @@ import { AntiCheatSystem } from "./tool/AntiCheatSystem";
 import * as mwaction from "mwaction";
 import BattleWorldAuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
 import BattleWorldEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
+import { SettingModuleData } from "./module/SetingModule/SettingModuleData";
 
 declare global {
     var UE: any;
@@ -178,7 +179,7 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(AnalyticsModuleS, AnalyticsModuleC, AnalyticsModuleData);
         ModuleService.registerModule(ActionModuleS, ActionModuleC, null);
         ModuleService.registerModule(GlobalAttrModuleS, GlobalAttrModuleC, null);
-        ModuleService.registerModule(SetingMoudleS, SetingMoudleC, null);
+        ModuleService.registerModule(SettingModuleS, SettingModuleC, SettingModuleData);
         ModuleService.registerModule(TalkModuleS, TalkModuleC, null);
         ModuleService.registerModule(LandModuleS, LandModuleC, null);
         ModuleService.registerModule(PetModuleS, PetModuleC, null);
