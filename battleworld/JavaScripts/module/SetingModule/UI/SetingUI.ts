@@ -35,6 +35,8 @@ export default class SetingUI extends Setting_Main_Generate {
         this.mScroll_Saturation.sliderButtonReleaseDelegate.add(this.onSaturationChanged.bind(this));
         this.mScroll_Voice.sliderButtonReleaseDelegate.add(this.onVoiceChanged.bind(this));
         this.mScroll_BGM.sliderButtonReleaseDelegate.add(this.onBGMChanged.bind(this));
+        this.mScroll_speedInputScale.sliderButtonReleaseDelegate.add(this.onSpeedInputScaleChanged.bind(this));
+
         this.mBtn_Back.onClicked.add(this.onBack.bind(this));
         this.mBtn_Shadow.onClicked.add(this.onSaturationClicked.bind(this));
         this.mBtn_Lock.onClicked.add(this.onLockClicked.bind(this));
@@ -51,6 +53,7 @@ export default class SetingUI extends Setting_Main_Generate {
         this.mScroll_Voice.currentValue = SoundService.volumeScale;
         this.mScroll_InputScale.currentValue = this.getInputScale();
         this.mScroll_Saturation.currentValue = mw.PostProcess.saturation;  //this.setingMoudleC.postProcess.globalSaturation;
+        this.mScroll_speedInputScale.currentValue = Globaldata.cameraSpeed;
         this.curShadow = mw.Lighting.castShadowsEnabled;
         this.changeSaturationUI();
         this.refresh_lockBtn();
@@ -105,6 +108,10 @@ export default class SetingUI extends Setting_Main_Generate {
 
     onBGMChanged(value: number) {
         SoundService.BGMVolumeScale = value;
+    }
+
+    onSpeedInputScaleChanged(value: number) {
+        Globaldata.cameraSpeed = value;
     }
 
     onBack() {

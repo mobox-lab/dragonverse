@@ -54,7 +54,7 @@ export default class CameraArmManger {
 
             let curLen = Camera.currentCamera.springArm.length;
 
-            curLen -= 10;
+            curLen -= Globaldata.cameraSpeed;
             curLen = MathUtil.clamp(curLen, Globaldata.targetArmMinLen, Globaldata.targetArmMaxLen);
 
             Camera.currentCamera.springArm.length = curLen;
@@ -65,7 +65,7 @@ export default class CameraArmManger {
         InputUtil.onKeyDown(mw.Keys.MouseScrollDown, () => {
             let curLen = Camera.currentCamera.springArm.length;
 
-            curLen += 10;
+            curLen += Globaldata.cameraSpeed;
             curLen = MathUtil.clamp(curLen, Globaldata.targetArmMinLen, Globaldata.targetArmMaxLen);
 
             Camera.currentCamera.springArm.length = curLen;

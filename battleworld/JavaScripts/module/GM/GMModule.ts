@@ -509,13 +509,7 @@ AddGMCommand("击杀提示：数量", null, (player: mw.Player, value: string) =
     EventManager.instance.call(ENotice_Events_S.NoticeEvent_KillTip_S, killId, 0, beKillId, Number(value));
 }, "击杀提示");
 
-AddGMCommand("跳DragonVerse", () => {
-    RouteService.enterNewGame(Globaldata.dragonverseGameId);
-});
 
-AddGMCommand("跳PetSimulator", () => {
-    RouteService.enterNewGame(Globaldata.petSimulatorGameId);
-});
 
 AddGMCommand("扣体力", (player, value) => {
     ModuleService.getModule(EnergyModuleC).consume(Number(value), true);

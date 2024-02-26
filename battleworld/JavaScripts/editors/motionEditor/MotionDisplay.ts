@@ -3,6 +3,7 @@ import { ModifiedCameraSystem } from '../../Modified027Editor/ModifiedCamera';
 import { CameraManger, CameraSystemData } from "../../tool/CameraManger";
 import { Singleton } from "../../tool/FunctionUtil";
 import MotionEditorWindow_Generate from "../../ui-generate/editor_motion/MotionEditorWindow_generate";
+import { Globaldata } from '../../const/Globaldata';
 
 
 @Singleton()
@@ -130,10 +131,10 @@ export class MotionDisplay {
         });
 
         InputUtil.onKeyDown(mw.Keys.MouseScrollUp, () => {
-            this.camera.springArm.length -= 30;
+            this.camera.springArm.length -= Globaldata.cameraSpeed;
         })
         InputUtil.onKeyDown(mw.Keys.MouseScrollDown, () => {
-            this.camera.springArm.length += 30;
+            this.camera.springArm.length += Globaldata.cameraSpeed;
         })
 
 

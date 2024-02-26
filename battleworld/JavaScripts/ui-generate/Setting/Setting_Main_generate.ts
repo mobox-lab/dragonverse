@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 一只黄鹂鸣翠柳
+ * AUTHOR: 断桥烟雨
  * UI: UI/Setting/Setting_Main.ui
- * TIME: 2023.12.26-14.36.51
+ * TIME: 2024.02.26-18.02.50
  */
 
  
@@ -81,19 +81,19 @@
 		}
 		return this.mCanvas_GPU_Internal
 	}
-	private mScroll_GPU_Internal: mw.ProgressBar
-	public get mScroll_GPU(): mw.ProgressBar {
-		if(!this.mScroll_GPU_Internal&&this.uiWidgetBase) {
-			this.mScroll_GPU_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/mCanvas_GPU/mScroll_GPU') as mw.ProgressBar
-		}
-		return this.mScroll_GPU_Internal
-	}
 	private mBtn_Return_GPU_Internal: mw.Button
 	public get mBtn_Return_GPU(): mw.Button {
 		if(!this.mBtn_Return_GPU_Internal&&this.uiWidgetBase) {
 			this.mBtn_Return_GPU_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/mCanvas_GPU/mBtn_Return_GPU') as mw.Button
 		}
 		return this.mBtn_Return_GPU_Internal
+	}
+	private mScroll_GPU_Internal: mw.ProgressBar
+	public get mScroll_GPU(): mw.ProgressBar {
+		if(!this.mScroll_GPU_Internal&&this.uiWidgetBase) {
+			this.mScroll_GPU_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/mCanvas_GPU/mScroll_GPU') as mw.ProgressBar
+		}
+		return this.mScroll_GPU_Internal
 	}
 	private mCanvas_CPU_Internal: mw.Canvas
 	public get mCanvas_CPU(): mw.Canvas {
@@ -102,19 +102,19 @@
 		}
 		return this.mCanvas_CPU_Internal
 	}
-	private mScroll_CPU_Internal: mw.ProgressBar
-	public get mScroll_CPU(): mw.ProgressBar {
-		if(!this.mScroll_CPU_Internal&&this.uiWidgetBase) {
-			this.mScroll_CPU_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/mCanvas_CPU/mScroll_CPU') as mw.ProgressBar
-		}
-		return this.mScroll_CPU_Internal
-	}
 	private mBtn_Return_CPU_Internal: mw.Button
 	public get mBtn_Return_CPU(): mw.Button {
 		if(!this.mBtn_Return_CPU_Internal&&this.uiWidgetBase) {
 			this.mBtn_Return_CPU_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/mCanvas_CPU/mBtn_Return_CPU') as mw.Button
 		}
 		return this.mBtn_Return_CPU_Internal
+	}
+	private mScroll_CPU_Internal: mw.ProgressBar
+	public get mScroll_CPU(): mw.ProgressBar {
+		if(!this.mScroll_CPU_Internal&&this.uiWidgetBase) {
+			this.mScroll_CPU_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/mCanvas_CPU/mScroll_CPU') as mw.ProgressBar
+		}
+		return this.mScroll_CPU_Internal
 	}
 	private mCanvas_Saturation_Internal: mw.Canvas
 	public get mCanvas_Saturation(): mw.Canvas {
@@ -123,19 +123,19 @@
 		}
 		return this.mCanvas_Saturation_Internal
 	}
-	private mScroll_Saturation_Internal: mw.ProgressBar
-	public get mScroll_Saturation(): mw.ProgressBar {
-		if(!this.mScroll_Saturation_Internal&&this.uiWidgetBase) {
-			this.mScroll_Saturation_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/mCanvas_Saturation/mScroll_Saturation') as mw.ProgressBar
-		}
-		return this.mScroll_Saturation_Internal
-	}
 	private mBtn_Return_Saturation_Internal: mw.Button
 	public get mBtn_Return_Saturation(): mw.Button {
 		if(!this.mBtn_Return_Saturation_Internal&&this.uiWidgetBase) {
 			this.mBtn_Return_Saturation_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/mCanvas_Saturation/mBtn_Return_Saturation') as mw.Button
 		}
 		return this.mBtn_Return_Saturation_Internal
+	}
+	private mScroll_Saturation_Internal: mw.ProgressBar
+	public get mScroll_Saturation(): mw.ProgressBar {
+		if(!this.mScroll_Saturation_Internal&&this.uiWidgetBase) {
+			this.mScroll_Saturation_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/mCanvas_Saturation/mScroll_Saturation') as mw.ProgressBar
+		}
+		return this.mScroll_Saturation_Internal
 	}
 	private mCanvas_Shadow_Internal: mw.Canvas
 	public get mCanvas_Shadow(): mw.Canvas {
@@ -165,19 +165,19 @@
 		}
 		return this.mCanvas_InputScale_Internal
 	}
-	private mScroll_InputScale_Internal: mw.ProgressBar
-	public get mScroll_InputScale(): mw.ProgressBar {
-		if(!this.mScroll_InputScale_Internal&&this.uiWidgetBase) {
-			this.mScroll_InputScale_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_InputScale/mScroll_InputScale') as mw.ProgressBar
-		}
-		return this.mScroll_InputScale_Internal
-	}
 	private mBtn_Return_InputScale_Internal: mw.Button
 	public get mBtn_Return_InputScale(): mw.Button {
 		if(!this.mBtn_Return_InputScale_Internal&&this.uiWidgetBase) {
 			this.mBtn_Return_InputScale_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_InputScale/mBtn_Return_InputScale') as mw.Button
 		}
 		return this.mBtn_Return_InputScale_Internal
+	}
+	private mScroll_InputScale_Internal: mw.ProgressBar
+	public get mScroll_InputScale(): mw.ProgressBar {
+		if(!this.mScroll_InputScale_Internal&&this.uiWidgetBase) {
+			this.mScroll_InputScale_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_InputScale/mScroll_InputScale') as mw.ProgressBar
+		}
+		return this.mScroll_InputScale_Internal
 	}
 	private mCanvas_Lock_Internal: mw.Canvas
 	public get mCanvas_Lock(): mw.Canvas {
@@ -192,6 +192,20 @@
 			this.mBtn_Lock_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_Lock/mBtn_Lock') as mw.StaleButton
 		}
 		return this.mBtn_Lock_Internal
+	}
+	private mCanvas_cameraspeed_Internal: mw.Canvas
+	public get mCanvas_cameraspeed(): mw.Canvas {
+		if(!this.mCanvas_cameraspeed_Internal&&this.uiWidgetBase) {
+			this.mCanvas_cameraspeed_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed') as mw.Canvas
+		}
+		return this.mCanvas_cameraspeed_Internal
+	}
+	private mScroll_speedInputScale_Internal: mw.ProgressBar
+	public get mScroll_speedInputScale(): mw.ProgressBar {
+		if(!this.mScroll_speedInputScale_Internal&&this.uiWidgetBase) {
+			this.mScroll_speedInputScale_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed/mScroll_speedInputScale') as mw.ProgressBar
+		}
+		return this.mScroll_speedInputScale_Internal
 	}
 
 
@@ -329,6 +343,15 @@
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_Lock/Text_Shadow") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed/Text_Speed") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed/Text_Low") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed/Text_High") as any);
 		
 	
 

@@ -3,13 +3,9 @@ import { GameConfig } from "../config/GameConfig";
 export class Globaldata {
 
     /**
-     * DragonVerse 游戏id
+     * 相机移动速度
      */
-    public static dragonverseGameId = "P_bf83f6a1f880460bc61d3e1e41e810487db4ce18";
-    /**
-     * 宠物模拟器游戏id
-     */
-    public static petSimulatorGameId = "P_01da004d7f22f9eedeabe5e2a837a9e2fb8ca2b9";
+    public static cameraSpeed = 30;
     /**
      * 跳游戏进度时长
      */

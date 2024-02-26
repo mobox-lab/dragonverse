@@ -64,14 +64,7 @@ export namespace GlobalData {
         public static isSameGoBack: boolean = false;
         /**是否开启收集图鉴机器 */
         public static isOpenCollectMachine: boolean = false;
-        /**
-         * DragonVerse游戏gameid
-         */
-        public static dragonverseGameId: string = "P_bf83f6a1f880460bc61d3e1e41e810487db4ce18";
-        /**
-         * battleworld游戏gameid
-         */
-        public static battleworldGameId: string = "P_1d5df556504cf0bdc14a367a23fd65174f6ce6cb";
+
 
         /**
          * 跳子游戏 进度条时长.
@@ -1284,7 +1277,7 @@ export namespace GlobalData {
          * 体力 倍率.
          * @type {number}
          */
-        public static readonly ENERGY_RATIO = 1/3;
+        public static readonly ENERGY_RATIO = 1 / 3;
     }
 
     /**
