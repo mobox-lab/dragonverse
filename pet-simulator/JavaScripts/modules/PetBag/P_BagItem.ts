@@ -363,23 +363,23 @@ export class PetBag_Item extends Pet_item_Generate {
         let cfg = GameConfig.PetARR.getElement(id);
         if (cfg.QualityType == quality.Normal) {
             this.setStarNum(0);
-            this.setBgNormal();
+            this.setBgNormal(0);
 
         } else if (cfg.QualityType == quality.Rare) {
             this.setStarNum(0);
-            this.setBgNormal();
+            this.setBgNormal(1);
 
         } else if (cfg.QualityType == quality.Epic) {
             this.setStarNum(1);
-            this.setBgNormal();
+            this.setBgNormal(2);
         }
         else if (cfg.QualityType == quality.Legend) {//传说
             this.setStarNum(2);
-            this.setBgSpecial();
+            this.setBgSpecial(0);
 
         } else if (cfg.QualityType == quality.Myth) { //神话
             this.setStarNum(3);
-            this.setBgSpecial();
+            this.setBgSpecial(1);
         }
         //巨大化
         if (cfg.Shape == 2) {
@@ -389,7 +389,7 @@ export class PetBag_Item extends Pet_item_Generate {
         }
     }
     /**设置背景正常状态 */
-    public setBgNormal() {
+    public setBgNormal(typeIndex: number) {
         if (this.mPic_Equip.imageGuid != this.undefineBgGuid) {
             this.mPic_Equip.imageGuid = this.undefineBgGuid;
             this.mPic_Equip.renderScale = new mw.Vector2(1, 1);
@@ -397,15 +397,17 @@ export class PetBag_Item extends Pet_item_Generate {
         }
         //let color = mw.LinearColor.colorHexToLinearColor(GlobalData.Bag.bgColors[1])
         // if (this.mPic_Equip.setImageColorByHex !=) {
-        this.mPic_Equip.setImageColorByHex(GlobalData.Bag.bgColors[1]);
+
+        this.mPic_Equip.setImageColorByHex(GlobalData.Bag.rareColor[typeIndex]);
         // }
+
     }
 
     /**设置背景特殊状态 */
-    public setBgSpecial() {
+    public setBgSpecial(typeIndex: number) {
         this.mPic_Equip.imageColor = mw.LinearColor.colorHexToLinearColor(GlobalData.Bag.bgColors[0]);
-        if (this.mPic_Equip.imageGuid != GlobalData.Bag.legendBgGuid[1]) {
-            this.mPic_Equip.imageGuid = GlobalData.Bag.legendBgGuid[1];
+        if (this.mPic_Equip.imageGuid != GlobalData.Bag.legendBgGuid[typeIndex]) {
+            this.mPic_Equip.imageGuid = GlobalData.Bag.legendBgGuid[typeIndex];
             this.mPic_Equip.renderScale = GlobalData.Bag.legendBgScale;
             this.mPic_Equip_3.renderScale = new mw.Vector2(1, 1);
         }
