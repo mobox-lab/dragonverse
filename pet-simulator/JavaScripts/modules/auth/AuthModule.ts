@@ -37,11 +37,6 @@ export default class PetSimulatorAuthModuleData extends JModuleData {
     }
 }
 
-interface QueryP12Param {
-    userId?: string;
-    walletAddress?: string;
-}
-
 interface EncryptedRequest {
     encryptData: string;
 }
@@ -201,7 +196,7 @@ interface MoboxDragonInstanceQuality {
 
 interface QueryMoboxDragonDataResponse {
     code: number;
-    message?: string;
+    info?: string;
     data?: { dragons: MoboxDragonData[] };
 }
 
@@ -884,6 +879,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         Log4Ts.log(AuthModuleS, `get resp when report sub game info. ${JSON.stringify(respInJson)}`);
     }
 
+    /**
+     * 获取龙能力值.
+     * @param {number} playerId
+     * @return {Promise<number>}
+     */
     public async getMoboxDragonAbility(playerId: number): Promise<number> {
         let userId = Player.getPlayer(playerId)?.userId ?? null;
         if (GToolkit.isNullOrUndefined(userId)) {
