@@ -216,6 +216,14 @@ export class P_FusePanel extends Fusepanel_Generate {
     /**判断获得的宠物类型 普通0 黄金1 彩虹2 */
     private judgePetType(): number {
         let count = this.curSelectPets.length;
+        let specialCount = 0;
+        this.curSelectPets.forEach(item => {
+            let type = GameConfig.PetARR.getElement(item.I).DevType;
+            if (type === GlobalEnum.PetDevType.Love || type === GlobalEnum.PetDevType.Rainbow) {
+                specialCount++;
+            }
+        });
+
         //普通宠物的权重
         let normalWeight = -10 * count + 80;
         if (normalWeight < 0) normalWeight = 0;
@@ -223,7 +231,8 @@ export class P_FusePanel extends Fusepanel_Generate {
         let goldWeight = -4 * count + 52;
         if (goldWeight < 0) goldWeight = 0;
         //彩虹宠物的权重
-        let rainbowWeight = -2 * count + 32;
+        // let rainbowWeight = -2 * count + 32;
+        let rainbowWeight = 14 * count - 32 + 5 * specialCount;
         if (rainbowWeight < 0) rainbowWeight = 0;
         let totalWeight = normalWeight + goldWeight + rainbowWeight;
         let random = Math.random() * totalWeight;
@@ -263,6 +272,14 @@ export class P_FusePanel extends Fusepanel_Generate {
             this.mText_Number.text = utils.Format(GameConfig.Language.Text_Fuse_UI_1.Value, count);
             this.probabilityCanvas.visibility = SlateVisibility.SelfHitTestInvisible;
 
+            let specialCount = 0;
+            this.curSelectPets.forEach(item => {
+                let type = GameConfig.PetARR.getElement(item.I).DevType;
+                if (type === GlobalEnum.PetDevType.Love || type === GlobalEnum.PetDevType.Rainbow) {
+                    specialCount++;
+                }
+            });
+
             //普通宠物的权重
             let normalWeight = -10 * count + 80;
             if (normalWeight < 0) normalWeight = 0;
@@ -270,7 +287,8 @@ export class P_FusePanel extends Fusepanel_Generate {
             let goldWeight = -4 * count + 52;
             if (goldWeight < 0) goldWeight = 0;
             //彩虹宠物的权重
-            let rainbowWeight = -2 * count + 32;
+            // let rainbowWeight = -2 * count + 32;
+            let rainbowWeight = 14 * count - 32 + 5 * specialCount;
             if (rainbowWeight < 0) rainbowWeight = 0;
             let totalWeight = normalWeight + goldWeight + rainbowWeight;
 
