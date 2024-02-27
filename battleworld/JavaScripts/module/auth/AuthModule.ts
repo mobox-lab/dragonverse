@@ -121,13 +121,14 @@ interface ConsumeResponse {
     data?: ConsumeData;
 }
 
-interface UpdatePetSimulatorRankDataParam {
+interface UpdateBattleWorldRankDataParam {
     userId: string;
-    petName: string;
-    petRarity: number;
-    petAttack: string;
-    petObtainTime: number;
+    userName: string;
+    headUrl: string;
+    grade: number;
+    gradePower: string;
     round: number;
+    requestTs: number;
 }
 
 interface MoboxDragonData {
@@ -229,7 +230,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, BattleWorldAuthModuleData
 
     private _originToken: string = null;
 
-    public currency = createYoact({count: 0});
+    public currency = createYoact({ count: 0 });
 
     private _lastQueryCurrencyTime: number = 0;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -298,7 +299,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, BattleWorldAuthModuleData
 }
 
 export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData> {
-//#region Constant
+    //#region Constant
     /**
      * 测试用 P12 端 Url.
      */
@@ -352,11 +353,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
     private static readonly CONSUME_URL_SUFFIX = "/payment/app/pool/consume";
 
     /**
-     * 更新宠物模拟器排行榜数据后缀.
+     * 更新战斗世界排行榜数据后缀.
      * @type {string}
      * @private
      */
-    private static readonly UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX = "/modragon/mo-rank/pet/update";
+    private static readonly UPDATE_BATTLE_WORLD_RANK_DATA_URL_SUFFIX = "/mo-rank/fight/update";
 
     /**
      * 查询 Mobox 龙信息后缀.
@@ -415,17 +416,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
     }
 
     /**
-     * 测试用 更新宠物模拟器排行榜数据 Url.
+     * 测试用 更新战斗世界排行榜数据 Url.
      */
-    private static get TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL() {
-        return this.TEST_P12_URL + this.UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX;
+    private static get TEST_UPDATE_BATTLE_WORLD_RANK_DATA_URL() {
+        return this.TEST_MOBOX_NFT_URL + this.UPDATE_BATTLE_WORLD_RANK_DATA_URL_SUFFIX;
     }
 
     /**
-     * 发布用 更新宠物模拟器排行榜数据 Url.
+     * 发布用 更新战斗世界排行榜数据 Url.
      */
-    private static get RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL() {
-        return this.RELEASE_P12_URL + this.UPDATE_PET_SIMULATOR_RANK_DATA_URL_SUFFIX;
+    private static get RELEASE_UPDATE_BATTLE_WORLD_RANK_DATA_URL() {
+        return this.RELEASE_MOBOX_NFT_URL + this.UPDATE_BATTLE_WORLD_RANK_DATA_URL_SUFFIX;
     }
 
     /**
@@ -504,7 +505,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         Log4Ts.error(AuthModuleS, `get data failed.`, `refreshing.`);
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Member
     private _eventListeners: EventListener[] = [];
@@ -621,8 +622,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
             encryptData: this.getSecret(JSON.stringify(param)),
         };
         const resp = await fetch(`${Globaldata.isRelease ?
-                AuthModuleS.RELEASE_GET_TOKEN_URL :
-                AuthModuleS.TEST_GET_TOKEN_URL}`,
+            AuthModuleS.RELEASE_GET_TOKEN_URL :
+            AuthModuleS.TEST_GET_TOKEN_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -670,8 +671,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
             symbol: "mbox",
         };
         const resp = await fetch(`${Globaldata.isRelease ?
-                AuthModuleS.RELEASE_GET_CURRENCY_URL :
-                AuthModuleS.TEST_GET_CURRENCY_URL}`,
+            AuthModuleS.RELEASE_GET_CURRENCY_URL :
+            AuthModuleS.TEST_GET_CURRENCY_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -711,8 +712,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         this.getPlayerData(playerId)?.serverSaveOrder(order);
 
         const resp = await fetch(`${Globaldata.isRelease ?
-                AuthModuleS.RELEASE_CONSUME_URL :
-                AuthModuleS.TEST_CONSUME_URL}`,
+            AuthModuleS.RELEASE_CONSUME_URL :
+            AuthModuleS.TEST_CONSUME_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -753,16 +754,52 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         return p;
     }
 
+    public async reportBWRankData(playerId: number, grade: number, gradePower: string, round: number) {
+        const player = Player.getPlayer(playerId) ?? null;
+        if (GToolkit.isNullOrUndefined(player)) {
+            Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
+            return;
+        }
+        const userId = player.userId;
+        const userName = player.nickname;
+        const headUrl = player["avatarUrl"];
+        const param: UpdateBattleWorldRankDataParam = {
+            userId,
+            userName,
+            headUrl,
+            grade,
+            gradePower,
+            round,
+            requestTs: Math.floor(Date.now() / 1000),
+        };
+        const body: EncryptedRequest = {
+            encryptData: this.getSecret(JSON.stringify(param)),
+        };
+        const resp = await fetch(`${Globaldata.isRelease ?
+            AuthModuleS.RELEASE_UPDATE_BATTLE_WORLD_RANK_DATA_URL :
+            AuthModuleS.TEST_UPDATE_BATTLE_WORLD_RANK_DATA_URL}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                },
+                body: JSON.stringify(body),
+            });
+
+        const respInJson = await resp.json();
+        Log4Ts.log(AuthModuleS, `get resp when report sub game info. ${JSON.stringify(respInJson)}`);
+    }
     // public async reportPetRankData(playerId: number, petName: string, rarity: PetQuality, attack: number, obtainTime: number, round: number) {
     //     const userId = Player.getPlayer(playerId)?.userId ?? null;
     //     if (GToolkit.isNullOrUndefined(userId)) {
     //         Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
     //         return;
     //     }
-    //
-    //     const param: UpdatePetSimulatorRankDataParam = {
+
+    //     const param: UpdateBattleWorldRankDataParam = {
     //         userId: userId,
     //         petName: petName,
+    //         headUrl: headUrl,
     //         petRarity: rarity,
     //         petAttack: attack.toString(),
     //         petObtainTime: obtainTime,
@@ -772,8 +809,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
     //         encryptData: this.getSecret(JSON.stringify(param)),
     //     };
     //     const resp = await fetch(`${Globaldata.isRelease ?
-    //             AuthModuleS.RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL :
-    //             AuthModuleS.TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL}`,
+    //         AuthModuleS.RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL :
+    //         AuthModuleS.TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL}`,
     //         {
     //             method: "POST",
     //             headers: {
@@ -781,7 +818,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
     //             },
     //             body: JSON.stringify(body),
     //         });
-    //
+
     //     const respInJson = await resp.json();
     //     Log4Ts.log(AuthModuleS, `get resp when report sub game info. ${JSON.stringify(respInJson)}`);
     // }
@@ -794,8 +831,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         }
 
         const resp = await fetch(`${Globaldata.isRelease ?
-                AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
-                AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL}?uid=${userId}`,
+            AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
+            AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL}?uid=${userId}`,
             {
                 method: "GET",
             });
@@ -813,11 +850,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         return Promise.resolve(Enumerable
             .from(respInJson.data.dragons)
             .doAction(item => {
-                    const qua = formatElements(item.elements);
-                    item.quality = qua.quality;
-                    item.primaryEle = qua.primaryEle;
-                    item.secondEle = qua.secondEle;
-                },
+                const qua = formatElements(item.elements);
+                item.quality = qua.quality;
+                item.primaryEle = qua.primaryEle;
+                item.secondEle = qua.secondEle;
+            },
             )
             .defaultIfEmpty({
                 elements: 0,
@@ -882,5 +919,5 @@ function formatElements(data: number): MoboxDragonInstanceQuality {
         secondEle = secondEle * 10 + ((data & 0x00f000) >> 12);
         secondEle = secondEle * 10 + ((data & 0x0f0000) >> 16);
     }
-    return {primaryEle: quality, quality: primaryEle, secondEle: secondEle};
+    return { primaryEle: quality, quality: primaryEle, secondEle: secondEle };
 }
