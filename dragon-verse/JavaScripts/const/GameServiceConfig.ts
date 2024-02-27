@@ -454,6 +454,11 @@ export default class GameServiceConfig {
     public static readonly MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z = 100;
 
     /**
+     * 主界面 体力条 ui 屏幕坐标 x 偏移.
+     */
+    public static readonly MAIN_PANEL_CNV_STAMINA_SCREEN_LOCATION_OFFSET_X = 300;
+
+    /**
      * 主界面 体力条 ui scale 计算基数.
      */
     public static readonly MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE = 300;

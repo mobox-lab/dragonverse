@@ -689,7 +689,16 @@ export default class MainPanel extends MainPanel_Generate {
             true,
         );
 
-        this.cnvStamina.position = v.set(v);
+        if (!v.equals(Vector.zero)) {
+            this.cnvStamina.position = v.set(v);
+        } else {
+            //投影失效了
+            let middleRightPos = WindowUtil.getViewportSize().clone().multiply(0.5).subtract(this.cnvStamina.size.clone().multiply(0.5)).add(new Vector2(GameServiceConfig.MAIN_PANEL_CNV_STAMINA_SCREEN_LOCATION_OFFSET_X,
+                0));
+            this.cnvStamina.position = middleRightPos;
+        }
+
+
     }
 
     private updateStaminaScale() {
