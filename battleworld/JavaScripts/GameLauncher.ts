@@ -132,6 +132,8 @@ export default class GameLauncher extends mw.Script {
 
             ChatService.asyncEnableChatWindow(true);
 
+            InputUtil.mouseLockOptionEnabled = true;
+
             let player = await Player.asyncGetLocalPlayer();
             await player.character.asyncReady();
         }

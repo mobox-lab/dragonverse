@@ -89,6 +89,7 @@ export default class GameStart extends mw.Script {
         this.useUpdate = true;
         GlobalProperty.getInstance().isRelease = this.isRelease;
         this.initialize();
+
     }
 
     protected onUpdate(dt: number): void {
@@ -186,6 +187,8 @@ export default class GameStart extends mw.Script {
         AudioController.getInstance().playBgm(undefined, BgmPlayStrategy.Rnd);
 
         ChatService.asyncEnableChatWindow(false);
+
+        InputUtil.mouseLockOptionEnabled = true;
     }
 
     private initializeServer() {

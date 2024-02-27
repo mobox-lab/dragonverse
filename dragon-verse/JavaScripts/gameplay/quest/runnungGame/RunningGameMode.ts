@@ -11,6 +11,7 @@ import { TimeManager } from "../../../controller/TimeManager";
 import { SubGameTypes } from "../../../const/SubGameTypes";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
 import MainPanel from "../../../ui/main/MainPanel";
+import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 
 /**
  * 跑酷游戏状态
@@ -140,6 +141,7 @@ export class RunningGameMode {
         if (!this._gameController) {
             const character = Player.localPlayer.character;
             UIService.getUI(MainPanel)?.enableReset(false);
+            UIService.getUI(MainPanel)?.enableJump(false);
             character.switchToFlying();
             this._companionPairBagIdCache = this.companionModule.getCurrentShowupBagId();
             if (this._companionPairBagIdCache !== 0) this.companionModule.showUpCompanion(this._companionPairBagIdCache, false);
@@ -193,6 +195,7 @@ export class RunningGameMode {
         this._companionPairBagIdCache = 0;
 
         UIService.getUI(MainPanel)?.enableReset(true);
+        UIService.getUI(MainPanel)?.enableJump(true);
         if (this._status != RunningGameStatus.Guide) {
             //关闭游戏UI
             UIService.hide(RunningGameGamingPanel);
