@@ -5,6 +5,7 @@ import { Globaldata } from "../../../const/Globaldata";
 import { AnalyticsTool, EPageName } from "../../AnalyticsModule/AnalyticsTool";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import { SettingModuleC } from "../SetingMoudleC";
+import { MainUI } from "../../PlayerModule/UI/MainUI";
 
 /**设置*/
 export default class SetingUI extends Setting_Main_Generate {
@@ -49,9 +50,6 @@ export default class SetingUI extends Setting_Main_Generate {
         this.mBtn_Lock.onClicked.add(this.onLockClicked.bind(this));
 
         EventManager.instance.add(EModule_Events.SetingModuleC_cameratargetArmLength, this.listen_cameraTargetArmLength.bind(this));
-
-
-        ModuleService.getModule(SettingModuleC).getCameraSpeed().then(value => Globaldata.cameraSpeed = value);
     }
 
 
@@ -62,7 +60,7 @@ export default class SetingUI extends Setting_Main_Generate {
         this.mScroll_Voice.currentValue = SoundService.volumeScale;
         this.mScroll_InputScale.currentValue = this.getInputScale();
         this.mScroll_Saturation.currentValue = mw.PostProcess.saturation;  //this.setingMoudleC.postProcess.globalSaturation;
-        this.mScroll_speedInputScale.currentValue = Globaldata.cameraSpeed;
+        this.mScroll_speedInputScale.currentValue = Globaldata.cameraRotateSpeed;
         this.curShadow = mw.Lighting.castShadowsEnabled;
         this.changeSaturationUI();
         this.refresh_lockBtn();
@@ -72,7 +70,7 @@ export default class SetingUI extends Setting_Main_Generate {
             this.onBack();
         })
 
-        this.tempCameraSpeed = Globaldata.cameraSpeed;
+        this.tempCameraSpeed = Globaldata.cameraRotateSpeed;
     }
 
     listen_cameraTargetArmLength(value: number) {
@@ -121,12 +119,13 @@ export default class SetingUI extends Setting_Main_Generate {
     }
 
     onSpeedInputScaleChanged(value: number) {
-        Globaldata.cameraSpeed = value;
+        Globaldata.cameraRotateSpeed = value;
+        UIService.getUI(MainUI)?.setCameraSpeed(value);
     }
 
     onBack() {
-        if (this.tempCameraSpeed != Globaldata.cameraSpeed) {
-            ModuleService.getModule(SettingModuleC).setCameraSpeed(Globaldata.cameraSpeed);
+        if (this.tempCameraSpeed != Globaldata.cameraRotateSpeed) {
+            ModuleService.getModule(SettingModuleC).setCameraSpeed(Globaldata.cameraRotateSpeed);
         }
         mw.UIService.hideUI(this);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);

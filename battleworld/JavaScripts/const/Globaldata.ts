@@ -3,9 +3,9 @@ import { GameConfig } from "../config/GameConfig";
 export class Globaldata {
 
     /**
-     * 相机移动速度
+     * 相机移动速度([0,1])
      */
-    public static cameraSpeed = 30;
+    public static cameraRotateSpeed = 0.5;
     /**
      * 跳游戏进度时长
      */

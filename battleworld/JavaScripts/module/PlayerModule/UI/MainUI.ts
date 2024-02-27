@@ -26,6 +26,8 @@ import GToolkit from "../../../utils/GToolkit";
 import { AuthModuleC } from "../../auth/AuthModule";
 import { MessageBox } from "../../../tool/MessageBox";
 import Tips from "../../../tool/P_Tips";
+import { GlobalAttrHelpler } from "../../attr/GlobalAttrHelpler";
+import { SettingModuleC } from "../../SetingModule/SetingMoudleC";
 
 export class MainUI extends Main_HUD_Generate {
 
@@ -125,6 +127,12 @@ export class MainUI extends Main_HUD_Generate {
         this.initReset();
 
         this.initPill();
+        ModuleService.getModule(SettingModuleC).getCameraSpeed().then(value => {
+            Globaldata.cameraRotateSpeed = value;
+            this.setCameraSpeed(value);
+        });
+
+
 
 
         this.canUpdate = true;
@@ -177,6 +185,9 @@ export class MainUI extends Main_HUD_Generate {
         UIService.getUI(RankPanel);
     }
 
+    public setCameraSpeed(value: number) {
+        this.mTouchPad.inputScale = new Vector2(value, value);
+    }
     /**
      * 注册红点
      */

@@ -131,10 +131,10 @@ export class MotionDisplay {
         });
 
         InputUtil.onKeyDown(mw.Keys.MouseScrollUp, () => {
-            this.camera.springArm.length -= Globaldata.cameraSpeed;
+            this.camera.springArm.length -= 30;
         })
         InputUtil.onKeyDown(mw.Keys.MouseScrollDown, () => {
-            this.camera.springArm.length += Globaldata.cameraSpeed;
+            this.camera.springArm.length += 30;
         })
 
 
