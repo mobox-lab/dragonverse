@@ -530,7 +530,7 @@ export namespace GlobalData {
         public static bagMaxCapacity: number = 100;
 
         /**背包详情UI 稀有度 普通 稀有 史诗 传说 神话 底板颜色 */
-        public static rareColor: string[] = ["#94999DFF", "#59F43EFF", "#B442EDFF", "#FFD864FF", "#FF3B08FF"];
+        public static rareColor: string[] = ["#94999DFF", "#3956F4", "#B442EDFF", "#FFD864FF", "#FF3B08FF"];
         /**背包详情UI 特殊化 爱心、彩虹 颜色 */
         public static specialColor: string[] = ["#F04798FF", "#BA7FFFFF"];
 
