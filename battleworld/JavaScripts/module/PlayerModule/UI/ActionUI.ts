@@ -50,8 +50,31 @@ export default class ActionUI extends Main_action_Generate {
             b.init(rootCanvas, i);
             b.setVisible(false);
             this.skillBtns.push(b);
-            InputUtil.bindButton(Keys[`F${i - 2}`], rootCanvas.getChildByName("Btn_invoke"));
-            (rootCanvas.getChildByName("ShortCutKey") as TextBlock).text = Keys[`F${i - 2}`].toString();
+            let button = rootCanvas.getChildByName("Btn_invoke") as mw.Button;
+            switch (i) {
+                case 3: {
+                    button.addKey(Keys.E);
+                    (rootCanvas.getChildByName("ShortCutKey") as TextBlock).text = Keys.E.toString();
+                    break;
+                }
+                case 4: {
+                    button.addKey(Keys.R);
+                    (rootCanvas.getChildByName("ShortCutKey") as TextBlock).text = Keys.R.toString();
+                    break;
+                }
+                case 5: {
+                    button.addKey(Keys.T);
+                    (rootCanvas.getChildByName("ShortCutKey") as TextBlock).text = Keys.T.toString();
+                    break;
+                }
+                case 6: {
+                    button.addKey(Keys.Y);
+                    (rootCanvas.getChildByName("ShortCutKey") as TextBlock).text = Keys.Y.toString();
+                    break;
+                }
+                default: break;
+            }
+
         }
 
         /**释放大招 */
