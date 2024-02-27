@@ -1,6 +1,7 @@
 import { GeneralManager, } from '../Modified027Editor/ModifiedStaticAPI';
 import { GameConfig } from "../config/GameConfig";
 import { GlobalData } from "../const/GlobalData";
+import KeyOperationManager from '../controller/key-operation-manager/KeyOperationManager';
 
 export class utils {
 
@@ -333,11 +334,15 @@ export class utils {
             trigger.onEnter.add(other => {
                 if (other == Player.localPlayer.character) {
                     enterCB();
+                    KeyOperationManager.getInstance().onKeyDown(Keys.F, null, () => {
+                        enterCB();
+                    })
                 }
             });
             trigger.onLeave.add(other => {
                 if (other == Player.localPlayer.character) {
                     leaveCB();
+                    KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
                 }
             });
         })
