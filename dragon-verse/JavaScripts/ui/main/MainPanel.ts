@@ -136,16 +136,17 @@ export default class MainPanel extends MainPanel_Generate {
 
         this.btnJump.onPressed.add(() => {
             if (this._character) {
-                this._character.jump();
+                this.jump();
                 this.roleController?.trySprint(false);
             } else {
                 Player.asyncGetLocalPlayer().then((player) => {
                     this._character = player.character;
-                    this._character.jump();
+                    this.jump();
                     this.roleController?.trySprint(false);
                 });
             }
         });
+
         this.btnBag.onPressed.add(() => this.showBag());
         this.btnBook.onPressed.add(() => this.showHandbook());
         this.btnCode.onPressed.add(() => this.showCode());
@@ -165,9 +166,7 @@ export default class MainPanel extends MainPanel_Generate {
         KeyOperationManager.getInstance().onKeyPress(Keys.D, this, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(1);
         })
-        KeyOperationManager.getInstance().onKeyDown(Keys.SpaceBar, this, () => {
-            Player.localPlayer.getPlayerState(UnifiedRoleController).playerJump();
-        })
+
 
         this.setCanSprint(true);
 
@@ -731,7 +730,20 @@ export default class MainPanel extends MainPanel_Generate {
                 Log4Ts.warn(MainPanel, `type not supported.`);
         }
         this._currentInteractType = GenerableTypes.Null;
+
+
     };
+
+    jump() {
+        if (!(Player.localPlayer.character.getCurrentState() === CharacterStateType.Swimming)) {
+            this._character.changeState(CharacterStateType.Jumping);
+        } else {
+            actions.tween(Player.localPlayer.character.worldTransform).to(10,
+                { position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)) }).call(() => {
+                    this._character.changeState(CharacterStateType.Jumping);
+                }).start();
+        }
+    }
 
     private onEnablePlayerEnter() {
         this.btnCode.visibility = SlateVisibility.Hidden;
@@ -753,7 +765,9 @@ export default class MainPanel extends MainPanel_Generate {
         this.showGlobalPrompt(i18n.lan(i18n.lanKeys.TinyGameLanKey0004));
     };
 
-
+    public enableJump(enable: boolean) {
+        this.btnJump.enable = enable;
+    }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 

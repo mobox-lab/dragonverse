@@ -521,17 +521,6 @@ export default class UnifiedRoleController extends mw.PlayerState {
         TimeUtil.onEnterFrame.add(this.onEnterFrame, this);
     };
 
-    public playerJump() {
-        if (!(Player.localPlayer.character.movementMode === MovementMode.Swim)) {
-            mw.Player.localPlayer.character.jump();
-        } else {
-            actions.tween(Player.localPlayer.character.worldTransform).to(10,
-                { position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)) }).call(() => {
-                    Player.localPlayer.character.jump();
-                }).start();
-        }
-    }
-
     /**
      * 当 控制器于 Server 端就绪时 调用.
      */
