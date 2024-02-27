@@ -1,5 +1,5 @@
 ﻿import { Bubble } from "module_bubble";
-import { AddGMCommand, GMBasePanel } from "module_gm";
+import { AddGMCommand, GM, GMBasePanel } from "module_gm";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import GMHUD_Generate from "../../ui-generate/common/GM/GMHUD_generate";
@@ -14,6 +14,7 @@ import { DebugConsole } from "debug_console";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import { AuthModuleS, ConsumeTypes } from "../auth/AuthModule";
 import { BuffModuleS } from "../buff/BuffModuleS";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 
 //主面板
@@ -567,7 +568,37 @@ AddGMCommand("黑夜到白天", (player: mw.Player, value: string) => {
 
 }, "环境");
 
+AddGMCommand("跳BattleWorld", () => {
+}, (player) => {
+    const onFailed = (result: mw.TeleportResult) => {
+        // 将错误信息发给所有参与的客户端
+        for (const userId in result.userIds) {
+            const player = Player.getPlayer(userId);
+            if (player) {
+                Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                Log4Ts.log({ name: "GM" }, "onJumpGameFailed", result.message);
+            }
+        }
+    };
+    TeleportService.asyncTeleportToScene("battleworld", [player.userId],).then(() => {
+    }, onFailed);
+});
 
+AddGMCommand("跳DragonVerse", () => {
+}, (player) => {
+    const onFailed = (result: mw.TeleportResult) => {
+        // 将错误信息发给所有参与的客户端
+        for (const userId in result.userIds) {
+            const player = Player.getPlayer(userId);
+            if (player) {
+                Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                Log4Ts.log({ name: "GM" }, "onJumpGameFailed", result.message);
+            }
+        }
+    };
+    TeleportService.asyncTeleportToScene("dragon-verse", [player.userId],).then(() => {
+    }, onFailed);
+});
 
 AddGMCommand("Show Debug log", () => {
     DebugConsole.start(false);

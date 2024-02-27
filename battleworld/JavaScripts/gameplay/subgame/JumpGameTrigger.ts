@@ -3,12 +3,13 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-16 14:42:38
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-02-22 14:45:01
+ * @LastEditTime : 2024-02-27 13:54:52
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\gameplay\subgame\JumpGameTrigger.ts
  * @Description  : 跳游戏触发器
  */
 
 import { Globaldata } from "../../const/Globaldata";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Tips from "../../tool/P_Tips";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
 
@@ -47,6 +48,7 @@ export default class JumpGameTrigger extends Script {
                 const player = Player.getPlayer(userId)
                 if (player) {
                     Tips.showToClient(player, result.message);
+                    Log4Ts.log(this, "onJumpGameFail", result.message);
                 }
             }
         };

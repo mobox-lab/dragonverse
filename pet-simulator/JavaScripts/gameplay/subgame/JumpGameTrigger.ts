@@ -3,12 +3,13 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-16 14:42:38
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-02-22 14:45:04
+ * @LastEditTime : 2024-02-27 13:44:20
  * @FilePath     : \DragonVerse\pet-simulator\JavaScripts\gameplay\subgame\JumpGameTrigger.ts
  * @Description  : 跳游戏触发器
  */
 
 import { GlobalData } from "../../const/GlobalData";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { TipsManager } from "../../modules/Hud/P_TipUI";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
 
@@ -31,6 +32,7 @@ export default class JumpGameTrigger extends Script {
             this._trigger.onLeave.add(this.onPlayerLeave.bind(this));
             Event.addServerListener("onJumpGameFailed", (msg: string) => {
                 TipsManager.instance.showTip(msg);
+                Log4Ts.log(this, "onJumpGameFailed", msg);
             })
         }
     }
@@ -48,6 +50,7 @@ export default class JumpGameTrigger extends Script {
                 const player = Player.getPlayer(userId)
                 if (player) {
                     Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                    Log4Ts.log(this, "onJumpGameFailed", result.message)
                 }
             }
         };

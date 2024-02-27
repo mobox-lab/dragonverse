@@ -31,6 +31,7 @@ import { EPlayerState } from "../PlayerModule/FSM/PlyerState";
 import { MascotModuleS } from "../npc/mascotNpc/MascotModuleS";
 import { PlayerHeadUIModuleC } from "../PlayerHeadUIModule/PlayerHeadUIModuleC";
 import { EnergyModuleC } from "../Energy/EnergyModule";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 
 export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
@@ -480,6 +481,38 @@ AddGMCommand("屏幕特效Rot", (player: mw.Player, value: string) => {
     let values = value.split("|");
     ModuleService.getModule(PlayerModuleC).diveEffect.localTransform.rotation = new mw.Rotation(Number(values[0]), Number(values[1]), Number(values[2]));
 }, null, "特效");
+
+AddGMCommand("跳Pet-Simulator", () => {
+}, (player) => {
+    const onFailed = (result: mw.TeleportResult) => {
+        // 将错误信息发给所有参与的客户端
+        for (const userId in result.userIds) {
+            const player = Player.getPlayer(userId);
+            if (player) {
+                Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                Log4Ts.log({ name: "GM" }, "onJumpGameFailed", result.message);
+            }
+        }
+    };
+    TeleportService.asyncTeleportToScene("pet-simulator", [player.userId],).then(() => {
+    }, onFailed);
+});
+
+AddGMCommand("跳DragonVerse", () => {
+}, (player) => {
+    const onFailed = (result: mw.TeleportResult) => {
+        // 将错误信息发给所有参与的客户端
+        for (const userId in result.userIds) {
+            const player = Player.getPlayer(userId);
+            if (player) {
+                Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                Log4Ts.log({ name: "GM" }, "onJumpGameFailed", result.message);
+            }
+        }
+    };
+    TeleportService.asyncTeleportToScene("dragon-verse", [player.userId],).then(() => {
+    }, onFailed);
+});
 
 
 AddGMCommand("技能释放", (player: mw.Player, value: string) => {

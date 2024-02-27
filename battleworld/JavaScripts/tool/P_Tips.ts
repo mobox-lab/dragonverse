@@ -1,4 +1,5 @@
 import { Globaldata } from "../const/Globaldata";
+import Log4Ts from "../depend/log4ts/Log4Ts";
 import Tips_Generate from "../ui-generate/common/Tips_generate";
 import { Tween } from "./Tween";
 
@@ -62,6 +63,7 @@ export default class Tips extends Tips_Generate {
                 Tips.show(t_value);
                 return;
             }
+            Log4Ts.log(Tips, "Event_ShowTips", t_value);
         });
 
         Event.addServerListener("Event_ShowBottomTip", (content: string) => {

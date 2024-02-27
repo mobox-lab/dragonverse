@@ -1,9 +1,9 @@
-import {GameConfig} from "../../config/GameConfig";
+import { GameConfig } from "../../config/GameConfig";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Waterween from "../../depend/waterween/Waterween";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
-import {PromotTips} from "../../ui/common/PromotTips";
+import { PromotTips } from "../../ui/common/PromotTips";
 
 /**
  * @Author       : zewei.zhang
@@ -21,7 +21,7 @@ export default class JumpGameTrigger extends Script {
     private _progressBar: ProgressBar;
     private _cnvProgressBar: Canvas;
 
-    @mw.Property({displayName: "要跳转的游戏", enumType: {"BattleWorld": 1, "PetSimulator": 2}})
+    @mw.Property({ displayName: "要跳转的游戏", enumType: { "BattleWorld": 1, "PetSimulator": 2 } })
     private _jumpGameType: number = 1;
 
     protected onStart(): void {
@@ -32,6 +32,7 @@ export default class JumpGameTrigger extends Script {
             this._trigger.onLeave.add(this.onPlayerLeave.bind(this));
             Event.addServerListener("onJumpGameFailed", (msg: string) => {
                 PromotTips.showTips(msg);
+                Log4Ts.log(this, "onJumpGameFailed", msg);
             });
         }
     }
@@ -51,6 +52,7 @@ export default class JumpGameTrigger extends Script {
                 const player = Player.getPlayer(userId);
                 if (player) {
                     Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                    Log4Ts.log(this, "onJumpGameFailed", result.message);
                 }
             }
         };
@@ -90,11 +92,11 @@ export default class JumpGameTrigger extends Script {
      * 播放 Progress 动画.
      */
     public playProgress() {
-        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, {percent: 1}).call(() => {
+        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, { percent: 1 }).call(() => {
             this.onProgressDone();
         });
 
-        actions.tween(this._cnvProgressBar).setTag(progressTag).to(100, {renderOpacity: 1}).call(() => {
+        actions.tween(this._cnvProgressBar).setTag(progressTag).to(100, { renderOpacity: 1 }).call(() => {
             progressTask.start();
         }).start();
     }

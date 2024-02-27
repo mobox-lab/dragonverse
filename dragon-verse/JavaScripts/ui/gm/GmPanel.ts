@@ -180,13 +180,35 @@ AddGMCommand("获取名字", (player, value) => {
 })
 
 AddGMCommand("跳宠物模拟器", () => {
-    RouteService.enterNewGame(GameServiceConfig.SUB_GAME_PET_SIMULATOR_GAME_ID);
 }, (player) => {
+    const onFailed = (result: mw.TeleportResult) => {
+        // 将错误信息发给所有参与的客户端
+        for (const userId in result.userIds) {
+            const player = Player.getPlayer(userId);
+            if (player) {
+                Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                Log4Ts.log(GMPanel, "onJumpGameFailed", result.message);
+            }
+        }
+    };
+    TeleportService.asyncTeleportToScene("pet-simulator", [player.userId],).then(() => {
+    }, onFailed);
 });
 
 AddGMCommand("跳Battle World", () => {
-    RouteService.enterNewGame(GameServiceConfig.SUB_GAME_BATTLE_WORLD_GAME_ID);
 }, (player) => {
+    const onFailed = (result: mw.TeleportResult) => {
+        // 将错误信息发给所有参与的客户端
+        for (const userId in result.userIds) {
+            const player = Player.getPlayer(userId);
+            if (player) {
+                Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                Log4Ts.log(GMPanel, "onJumpGameFailed", result.message);
+            }
+        }
+    };
+    TeleportService.asyncTeleportToScene("battleworld", [player.userId],).then(() => {
+    }, onFailed);
 });
 
 AddGMCommand("切语言", (player, value) => {
@@ -195,7 +217,7 @@ AddGMCommand("切语言", (player, value) => {
 })
 
 AddGMCommand("重置跑酷等级",
-(player, value) => {
-}, (player, value) => {
-    ModuleService.getModule(ObbyModuleS).gmSetLV(player.playerId,Number.parseInt(value));
-})
+    (player, value) => {
+    }, (player, value) => {
+        ModuleService.getModule(ObbyModuleS).gmSetLV(player.playerId, Number.parseInt(value));
+    })
