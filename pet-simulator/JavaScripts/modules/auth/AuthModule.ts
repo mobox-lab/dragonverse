@@ -1,10 +1,10 @@
 import CryptoJS from "crypto-js";
-import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import {JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
 import GToolkit from "../../utils/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { GlobalEnum } from "../../const/Enum";
-import { GlobalData } from "../../const/GlobalData";
-import { Yoact } from "../../depend/yoact/Yoact";
+import {GlobalEnum} from "../../const/Enum";
+import {GlobalData} from "../../const/GlobalData";
+import {Yoact} from "../../depend/yoact/Yoact";
 import UUID from "pure-uuid";
 import Enumerable from "linq";
 import noReply = mwext.Decorator.noReply;
@@ -240,7 +240,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, PetSimulatorAuthModuleDat
 
     private _originToken: string = null;
 
-    public currency = createYoact({ count: 0 });
+    public currency = createYoact({count: 0});
 
     private _lastQueryCurrencyTime: number = 0;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -351,15 +351,6 @@ export class AuthModuleC extends JModuleC<AuthModuleS, PetSimulatorAuthModuleDat
 
 export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleData> {
     //#region Constant
-    /**
-     * 测试用 P12 端 Url.
-     */
-    private static readonly TEST_P12_URL = "https://modragon-api-test.mobox.app";
-
-    /**
-     * 发布用 P12 端 Url.
-     */
-    private static readonly RELEASE_P12_URL = "https://modragon-api.mobox.app";
 
     /**
      * 测试用 mobox Url.
@@ -506,13 +497,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
 
     private static readonly HEADER_TOKEN = "x-bits-token";
 
-    private static CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
+    private static CODE_VERIFY_AES_KEY = "";
 
     private static CODE_VERIFY_AES_IV = "";
 
-    private static CLIENT_ID = "12000169457322200012";
+    private static CLIENT_ID = "";
 
-    private static SECRET = "6430d2d6497e136df763b572377361678f303f4d624be7ca9ee9b3b28985fe60";
+    private static SECRET = "";
 
     private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
 
@@ -521,20 +512,31 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     private static readonly SECRET_STORAGE_KEY = "SECRET_STORAGE_KEY";
 
     private static getSensitiveData() {
-        this.getCodeVerifyAesKey();
-        this.getClientId();
-        this.getSecret();
+        GToolkit.doUtilTrue(
+            () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
+            this.getCodeVerifyAesKey,
+            GlobalData.Auth.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        GToolkit.doUtilTrue(
+            () => !GToolkit.isNullOrEmpty(this.CLIENT_ID_STORAGE_KEY),
+            this.getClientId,
+            GlobalData.Auth.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        GToolkit.doUtilTrue(
+            () => !GToolkit.isNullOrEmpty(this.SECRET_STORAGE_KEY),
+            this.querySecret,
+            GlobalData.Auth.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
     }
 
     private static getCodeVerifyAesKey() {
         DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
             (value) => {
-                if (value.code === 200) AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
-                else {
-                    this.logGetDataError();
-                    this.getCodeVerifyAesKey();
+                if (value.code === 200) {
+                    AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
+                    AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
                 }
-            },
+            }
         );
     }
 
@@ -542,28 +544,16 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
             (value) => {
                 if (value.code === 200) AuthModuleS.CLIENT_ID = value.data;
-                else {
-                    this.logGetDataError();
-                    this.getClientId();
-                }
-            },
+            }
         );
     }
 
-    private static getSecret() {
+    private static querySecret() {
         DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
             (value) => {
                 if (value.code === 200) AuthModuleS.SECRET = value.data;
-                else {
-                    this.logGetDataError();
-                    this.getSecret();
-                }
-            },
+            }
         );
-    }
-
-    private static logGetDataError() {
-        Log4Ts.error(AuthModuleS, `get data failed.`, `refreshing.`);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -594,15 +584,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     protected onJStart(): void {
         //#region Member init
 
-        if (GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_KEY)) {
-            AuthModuleS.getSensitiveData();
-        } else {
-            DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.CODE_VERIFY_AES_KEY);
-            DataStorage.asyncSetData(AuthModuleS.CLIENT_ID_STORAGE_KEY, AuthModuleS.CLIENT_ID);
-            DataStorage.asyncSetData(AuthModuleS.SECRET_STORAGE_KEY, AuthModuleS.SECRET);
-        }
-
-        AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+        AuthModuleS.getSensitiveData();
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
@@ -631,7 +613,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-
         const playerId = player.playerId;
         this._tokenMap.set(playerId, null);
         this._expiredRegulatorMap.set(playerId, new Regulator(GlobalData.Auth.EXPIRED_REFRESH_INTERVAL));
@@ -667,19 +648,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
             },
         );
         return e.ciphertext.toString(CryptoJS.enc.Base64);
-    }
-
-    private decryptFromSecret(secret: string) {
-        const d = CryptoJS.AES.decrypt(
-            secret,
-            CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
-            {
-                iv: CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_IV),
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7,
-            },
-        );
-        return d.toString(CryptoJS.enc.Utf8);
     }
 
     private getSign(params: object) {
@@ -760,8 +728,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
             symbol: "mbox",
         };
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-            AuthModuleS.RELEASE_GET_CURRENCY_URL :
-            AuthModuleS.TEST_GET_CURRENCY_URL}`,
+                AuthModuleS.RELEASE_GET_CURRENCY_URL :
+                AuthModuleS.TEST_GET_CURRENCY_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -801,8 +769,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         this.getPlayerData(playerId)?.serverSaveOrder(order);
 
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-            AuthModuleS.RELEASE_CONSUME_URL :
-            AuthModuleS.TEST_CONSUME_URL}`,
+                AuthModuleS.RELEASE_CONSUME_URL :
+                AuthModuleS.TEST_CONSUME_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -867,8 +835,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
             encryptData: this.getSecret(JSON.stringify(param)),
         };
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-            AuthModuleS.RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL :
-            AuthModuleS.TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL}`,
+                AuthModuleS.RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL :
+                AuthModuleS.TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -894,8 +862,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         }
 
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-            AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
-            AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL
+                AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
+                AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL
             }?uid=${userId}`,
             {
                 method: "GET",
@@ -914,11 +882,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         return Promise.resolve(Enumerable
             .from(respInJson.data.dragons)
             .doAction(item => {
-                const qua = formatElements(item.elements);
-                item.quality = qua.quality;
-                item.primaryEle = qua.primaryEle;
-                item.secondEle = qua.secondEle;
-            },
+                    const qua = formatElements(item.elements);
+                    item.quality = qua.quality;
+                    item.primaryEle = qua.primaryEle;
+                    item.secondEle = qua.secondEle;
+                },
             )
             .defaultIfEmpty({
                 elements: 0,
@@ -992,5 +960,5 @@ function formatElements(data: number): MoboxDragonInstanceQuality {
         secondEle = secondEle * 10 + ((data & 0x00f000) >> 12);
         secondEle = secondEle * 10 + ((data & 0x0f0000) >> 16);
     }
-    return { primaryEle: quality, quality: primaryEle, secondEle: secondEle };
+    return {primaryEle: quality, quality: primaryEle, secondEle: secondEle};
 }

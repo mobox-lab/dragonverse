@@ -8,6 +8,7 @@ import createYoact = Yoact.createYoact;
 import UUID from "pure-uuid";
 import Enumerable from "linq";
 import { Globaldata } from "../../const/Globaldata";
+import Regulator from "../../depend/regulator/Regulator";
 
 export default class BattleWorldAuthModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -40,14 +41,21 @@ interface EncryptedRequest {
     encryptData: string;
 }
 
-interface GetTokenResponse {
+interface GetTempTokenResponse {
+    code: number,
+    message: string,
+    data?: string,
+}
+
+interface GetP12TokenParam {
+    gtoken: string;
+}
+
+interface GetP12TokenResponse {
     code: number;
-    path: string;
-    message: string;
-    timestamp: string;
-    data?: {
-        walletAddress?: string;
-        mToken?: string;
+    info: string;
+    data: {
+        token: string
     };
 }
 
@@ -258,6 +266,8 @@ export class AuthModuleC extends JModuleC<AuthModuleS, BattleWorldAuthModuleData
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
+
+        this.queryTempToken();
     }
 
     protected onDestroy(): void {
@@ -288,6 +298,41 @@ export class AuthModuleC extends JModuleC<AuthModuleS, BattleWorldAuthModuleData
         }
     }
 
+    /**
+     * 查询临时 token.
+     * 一个连续的动作. 成功刷新后将更新 服务器端 token.
+     */
+    public queryTempToken() {
+        const handler: HttpResponse = (result, content, responseCode) => {
+            if (result && responseCode === 200) {
+                const resp = JSON.parse(content) as GetTempTokenResponse;
+                if (GToolkit.isNullOrEmpty(resp.data)) {
+                    Log4Ts.warn(AuthModuleC, `get an invalid temp token. content: ${content}.`);
+                } else {
+                    Log4Ts.log(AuthModuleC, `get temp token. token: ${resp.data}.`);
+                    this.reportTempToken(resp.data);
+                }
+            } else {
+                Log4Ts.log(AuthModuleC, `receive an invalid response. code: ${responseCode}. content: ${content}.`);
+            }
+        };
+
+        Log4Ts.log(AuthModuleC, `trying to query temp token.`);
+        generalHttpRequest(handler, HttpRequestURL.CobblestoneService, AuthModuleS.GET_MW_TEMP_TOKEN_URL_SUFFIX, "", HttpRequestType.Post);
+    }
+
+    public reportTempToken(token: string) {
+        this.server.net_reportTempToken(token).then(
+            (value) => {
+                if (value) {
+                    Log4Ts.log(AuthModuleC, `registered token report success.`);
+                } else {
+                    Log4Ts.warn(AuthModuleC, `temp token report failed. reason: ${value[1] ?? ""}.`);
+                }
+            }
+        );
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
@@ -295,20 +340,15 @@ export class AuthModuleC extends JModuleC<AuthModuleS, BattleWorldAuthModuleData
         this.currency.count = Number(val);
     }
 
+    public net_refreshToken() {
+        this.queryTempToken();
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData> {
     //#region Constant
-    /**
-     * 测试用 P12 端 Url.
-     */
-    private static readonly TEST_P12_URL = "https://modragon-api-test.mobox.app";
-
-    /**
-     * 发布用 P12 端 Url.
-     */
-    private static readonly RELEASE_P12_URL = "https://modragon-api.mobox.app";
 
     /**
      * 测试用 mobox Url.
@@ -335,10 +375,18 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
     private static readonly RELEASE_MOBOX_NFT_URL = "https://nft-api.mobox.io";
 
     /**
-     * getToken 后缀.
+     * 获取 MW 临时 token 后缀.
+     * @type {string}
      * @private
      */
-    private static readonly GET_TOKEN_URL_SUFFIX = "/modragon/mo-sso/m-token";
+    public static readonly GET_MW_TEMP_TOKEN_URL_SUFFIX = "sso/universal/user/v1/get/temp/token";
+
+    /**
+     * 获取 P12 token 后缀.
+     * @type {string}
+     * @private
+     */
+    private static readonly GET_P12_TOKEN_URL_SUFFIX = "/oauth/gpark";
 
     /**
      * 查询货币余额后缀.
@@ -375,16 +423,18 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
 
     /**
      * 测试用 getToken Url.
+     * @get
      */
-    private static get TEST_GET_TOKEN_URL() {
-        return this.TEST_P12_URL + this.GET_TOKEN_URL_SUFFIX;
+    private static get TEST_GET_P12_TOKEN_URL() {
+        return this.TEST_MOBOX_URL + this.GET_P12_TOKEN_URL_SUFFIX;
     }
 
     /**
      * 发布用 getToken Url.
+     * @get
      */
-    private static get RELEASE_GET_TOKEN_URL() {
-        return this.RELEASE_P12_URL + this.GET_TOKEN_URL_SUFFIX;
+    private static get RELEASE_GET_P12_TOKEN_URL() {
+        return this.RELEASE_MOBOX_URL + this.GET_P12_TOKEN_URL_SUFFIX;
     }
 
     /**
@@ -453,6 +503,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
 
     private static SECRET = "6430d2d6497e136df763b572377361678f303f4d624be7ca9ee9b3b28985fe60";
 
+
     private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
 
     private static readonly CLIENT_ID_STORAGE_KEY = "CLIENT_ID_STORAGE_KEY";
@@ -517,6 +568,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
      * @private
      */
     private _tokenMap: Map<number, string> = new Map<number, string>();
+
+    /**
+     * @type {Map<number, Regulator>} key: playerId, value: Regulator.
+     * @private
+     */
+    private _expiredRegulatorMap: Map<number, Regulator> = new Map<number, Regulator>();
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -564,13 +621,16 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
+        const playerId = player.playerId;
         this._tokenMap.set(player.playerId, null);
-        this.getToken(player.playerId);
+        this._expiredRegulatorMap.set(playerId, new Regulator(Globaldata.EXPIRED_REFRESH_INTERVAL));
     }
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
+        const playerId = player.playerId;
         this._tokenMap.delete(player.playerId);
+        this._expiredRegulatorMap.delete(playerId);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -608,40 +668,45 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         return CryptoJS.HmacSHA256(paramStr, AuthModuleS.SECRET).toString(CryptoJS.enc.Hex);
     }
 
-    private async getToken(playerId: number) {
-        const player = Player.getPlayer(playerId);
-        if (!player) {
-            this.logPlayerNotExist(playerId);
-            return;
+    /**
+     * 获取并注册 P12 token.
+     * @return {Promise<boolean>}
+     * @private
+     * @param playerId
+     * @param tempToken
+     */
+    private async getP12Token(playerId: number, tempToken: string): Promise<[boolean, string]> {
+        if (GToolkit.isNullOrEmpty(tempToken)) {
+            Log4Ts.warn(AuthModuleS, `temp token of player ${playerId} is invalid.`);
+            return [false, "token invalid."];
         }
-        const param: QueryP12Param = {
-            userId: player.userId,
-        };
 
-        const body: EncryptedRequest = {
-            encryptData: this.getSecret(JSON.stringify(param)),
-        };
         const resp = await fetch(`${Globaldata.isRelease ?
-            AuthModuleS.RELEASE_GET_TOKEN_URL :
-            AuthModuleS.TEST_GET_TOKEN_URL}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charset=UTF-8",
-                },
-                body: JSON.stringify(body),
-            });
+            AuthModuleS.RELEASE_GET_P12_TOKEN_URL :
+            AuthModuleS.TEST_GET_P12_TOKEN_URL}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json;charset=UTF-8",
+            },
+            body: JSON.stringify({
+                gtoken: tempToken,
+            } as GetP12TokenParam),
+        });
 
-        const respInJson = await resp.json<GetTokenResponse>();
+        const respInJson = await resp.json<GetP12TokenResponse>();
 
-        if (GToolkit.isNullOrUndefined(respInJson.data?.mToken)) {
-            Log4Ts.error(AuthModuleS, `get token failed. ${JSON.stringify(respInJson)}`);
+        if (respInJson?.code !== 200 || GToolkit.isNullOrUndefined(respInJson.data?.token ?? undefined)) {
+            const msg = `get token failed. ${JSON.stringify(respInJson)}`;
+            Log4Ts.error(AuthModuleS, msg);
+            return [false, msg];
         } else {
             if (this._tokenMap.has(playerId)) {
-                this._tokenMap.set(playerId, respInJson.data?.mToken);
+                this._tokenMap.set(playerId, respInJson.data?.token);
                 this.onRefreshToken(playerId);
+                return [true, "success."];
             } else {
                 this.logPlayerNotExist(playerId);
+                return [false, "player not exist."];
             }
         }
     }
@@ -652,8 +717,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
 
     private onTokenExpired(playerId: number) {
         Log4Ts.warn(AuthModuleS, `token expired. refreshing... playerId: ${playerId}`);
-        setTimeout(() => this.getToken(playerId),
-            Globaldata.EXPIRED_REFRESH_INTERVAL);
+        this._tokenMap.set(playerId, null);
+        if (this._expiredRegulatorMap.get(playerId).ready()) this.getClient(playerId)?.net_refreshToken();
     }
 
     private async queryCurrency(playerId: number) {
@@ -882,6 +947,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
     //#region Net Method
     public async net_queryCurrency() {
         this.queryCurrency(this.currentPlayerId);
+    }
+
+    public async net_reportTempToken(token: string): Promise<[boolean, string]> {
+        const currentPlayerId = this.currentPlayerId;
+        return this.getP12Token(currentPlayerId, token);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
