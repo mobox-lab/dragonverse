@@ -27,6 +27,7 @@
 ## 因此建议将 .project 文件加入备份
 **/.project
 !**/backup-project/.project
+**/Asset_Data_List
 **/LocalAssetList
 **/Local_Material_Assets
 **/DBCache/**/*
