@@ -134,7 +134,7 @@ interface UpdateBattleWorldRankDataParam {
     userName: string;
     headUrl: string;
     grade: number;
-    gradePower: string;
+    gradePower: number;
     round: number;
     requestTs: number;
 }
@@ -857,7 +857,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         return p;
     }
 
-    public async reportBWRankData(playerId: number, grade: number, gradePower: string, round: number) {
+    public async reportBWRankData(playerId: number, grade: number, gradePower: number, round: number) {
         const player = Player.getPlayer(playerId) ?? null;
         if (GToolkit.isNullOrUndefined(player)) {
             Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
