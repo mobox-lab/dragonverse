@@ -30,6 +30,7 @@ import { ShopModuleS } from '../ShopModule/ShopModuleS';
 import { EquipModuleS } from '../EquipModule/EquipModuleS';
 import { ERankNoticeType } from './UI/rank/RankNotice';
 import { MotionModuleS } from '../MotionModule/MotionModuleS';
+import { AuthModuleS } from '../auth/AuthModule';
 
 
 /**玩家伤害信息 */
@@ -940,7 +941,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         }
         if (type == Attribute.EnumAttributeType.rankScore) {
             this.reducePlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, value);
+
             data.setAttrValue(type, calValue);
+
+            let newRank = PlayerManager.instance.getRankLevel(calValue);
+            ModuleService.getModule(AuthModuleS).reportBWRankData(playerID, newRank, calValue.toString(), 1);
+
             EventManager.instance.call(EAttributeEvents_S.attr_change_s, playerID, Attribute.EnumAttributeType.rankScore, data.getAttrValue(Attribute.EnumAttributeType.rankScore));
             return;
         }
@@ -1015,8 +1021,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             let oldRank = PlayerManager.instance.getRankLevel(curAttrValue);
             curAttrValue = Math.round(curAttrValue + value);
             data.setAttrValue(type, curAttrValue, isSave);
+
+
+
             //升段位发公告
             let newRank = PlayerManager.instance.getRankLevel(curAttrValue);
+            ModuleService.getModule(AuthModuleS).reportBWRankData(playerID, newRank, curAttrValue.toString(), 1);
             if (newRank > oldRank) {
                 this.getAllClient().net_startNotice(ERankNoticeType.LevelUp, newRank, this.mAttribute.getAttrValue(playerID, Attribute.EnumAttributeType.playerName));
             }
