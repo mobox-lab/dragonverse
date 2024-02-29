@@ -945,7 +945,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             data.setAttrValue(type, calValue);
 
             let newRank = PlayerManager.instance.getRankLevel(calValue);
-            ModuleService.getModule(AuthModuleS).reportBWRankData(playerID, newRank, calValue.toString(), 1);
+            ModuleService.getModule(AuthModuleS).reportBWRankData(playerID, newRank, calValue, 1);
 
             EventManager.instance.call(EAttributeEvents_S.attr_change_s, playerID, Attribute.EnumAttributeType.rankScore, data.getAttrValue(Attribute.EnumAttributeType.rankScore));
             return;
@@ -1026,7 +1026,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
             //升段位发公告
             let newRank = PlayerManager.instance.getRankLevel(curAttrValue);
-            ModuleService.getModule(AuthModuleS).reportBWRankData(playerID, newRank, curAttrValue.toString(), 1);
+            ModuleService.getModule(AuthModuleS).reportBWRankData(playerID, newRank, curAttrValue, 1);
             if (newRank > oldRank) {
                 this.getAllClient().net_startNotice(ERankNoticeType.LevelUp, newRank, this.mAttribute.getAttrValue(playerID, Attribute.EnumAttributeType.playerName));
             }
