@@ -1,3 +1,4 @@
+import tryGenerateTsWidgetTypeByUEObject = mw.tryGenerateTsWidgetTypeByUEObject;
 import Character = mw.Character;
 import GameObject = mw.GameObject;
 import UIScript = mw.UIScript;
@@ -12,20 +13,17 @@ import UIScript = mw.UIScript;
  * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
  * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
  * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
- * @author G.S.C. GTk Standards committee. GTk 标准委员会.
+ * @author G.S.C. GTk Standards Committee. GTk 标准委员会.
  * @author LviatYi
  * @author minjia.zhang
  * @author zewei.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.1.0b
+ * @version 30.1.2b
  * @beta
  */
 class GToolkit {
     //#region Constant
-    private static readonly BIT_INPUT_INVALID_MSG = "input is invalid.";
-    private static readonly FLAG_NOT_SUPPORT_MSG = "input flag is not support";
-
     /**
      * 角度限制常数.
      * @private
@@ -88,18 +86,6 @@ class GToolkit {
 
     //#region Member
     private _characterDescriptionLockers: Set<string> = new Set();
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-    //#region MW Service
-    private _accountService: AccountService;
-
-    private get accountService(): AccountService {
-        if (!this._accountService) {
-            this._accountService = AccountService;
-        }
-        return this._accountService;
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Type Guard
@@ -261,32 +247,68 @@ class GToolkit {
     }
 
     /**
-     * do callback until predicate return true.
+     * do callback once when predicate return true.
      * @param predicate
      * @param callback
-     * @param interval ms.
+     * @param interval ms. test predicate interval.
      *      100 default.
      * @param instant test predicate at once.
      * @return interval hold id.
      */
-    public doUtilTrue(predicate: () => boolean,
+    public doWhenTrue(predicate: () => boolean,
                       callback: () => void,
                       interval: number = 100,
                       instant: boolean = true): number | null {
         if (instant && predicate()) {
-            callback();
+            try {
+                callback();
+            } catch (e) {
+            }
             return null;
         }
 
         const holdId = setInterval(() => {
-                if (!predicate()) {
-                    return;
-                }
+                if (!predicate()) return;
                 try {
                     callback();
                 } catch (e) {
                 } finally {
                     clearInterval(holdId);
+                }
+            },
+            interval,
+        );
+        return holdId;
+    }
+
+    /**
+     * do callback persistently until predicate return true.
+     * @param predicate
+     * @param callback
+     * @param interval ms. test predicate interval.
+     *      100 default.
+     * @param instant test predicate at once.
+     * @return interval hold id.
+     */
+    public doUntilTrue(predicate: () => boolean,
+                       callback: () => void,
+                       interval: number = 100,
+                       instant: boolean = true): number | null {
+        if (instant) {
+            if (predicate()) return null;
+            else callback();
+        }
+
+        const holdId = setInterval(() => {
+                if (predicate()) {
+                    clearInterval(holdId);
+                    return;
+                }
+                try {
+                    callback();
+                } catch (e) {
+                    clearInterval(holdId);
+                    return;
                 }
             },
             interval,
@@ -609,22 +631,21 @@ class GToolkit {
 
     /**
      * 时间转换.
+     * 支持的时间单位范围：[毫秒,天]
      * @param val 原值.
      * @param from 原值时间维度.
      * @param to 目标时间维度.
+     * @return {null} 入参在不支持的范围内时.
      */
     public timeConvert(val: number, from: TimeFormatDimensionFlagsLike, to: TimeFormatDimensionFlagsLike): number {
-        if (from === to) {
-            return val;
-        }
-        if (this.hammingWeight(from) !== 1 || this.hammingWeight(to) !== 1) {
-            return null;
-        }
+        if (from === to) return val;
+        if (this.hammingWeight(from) !== 1 || this.hammingWeight(to) !== 1) return null;
 
         if (
             (0x1 << this.bitFirstOne(from)) as TimeFormatDimensionFlags > TimeFormatDimensionFlags.Day ||
             (0x1 << this.bitFirstOne(to)) as TimeFormatDimensionFlags > TimeFormatDimensionFlags.Day
         ) {
+            return null;
         }
 
         while (from !== to) {
@@ -672,26 +693,63 @@ class GToolkit {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Geometry
+
     /**
-     * 两点欧几里得距离的平方. 当 b 为 null 时 将 a 视为向量. 并计算其长度平方.
-     * @param a
-     * @param b
+     * Manhattan Distance.
+     * 曼哈顿距离.
+     * 当 b 为 null 时 将 a 视为向量. 并计算其长度平方.
      */
-    public squaredEuclideanDistance(a: number[], b: number[] = null): number {
-        if (b && a.length !== b.length) {
-            return 0;
-        }
-
+    public manhattanDistance(a: number[] | GTkTypes.Vector2 | GTkTypes.Vector3, b: number[] | GTkTypes.Vector2 | GTkTypes.Vector3 = null): number {
         let result = 0;
-        for (let i = 0; i < a.length; i++) {
-            result += Math.pow(a[i] - (b ? b[i] : 0), 2);
-        }
+        if (a instanceof Array) {
+            if (b && a.length !== (b as Array<number>).length) return result;
 
-        return result;
+            for (let i = 0; i < a.length; i++) {
+                result += Math.abs(a[i] - (b ? b[i] : 0));
+            }
+
+            return result;
+        } else {
+            result = Math.abs(a.x - (b ? (b as GTkTypes.Vector3).x : 0)) +
+                Math.abs(a.y - (b ? (b as GTkTypes.Vector3).y : 0));
+            if ("z" in a) {
+                result += Math.abs(a.z as number - (b ? (b as GTkTypes.Vector3).z : 0));
+            }
+            return result;
+        }
     }
 
     /**
-     * 欧几里得距离. 当 b 为 null 时 将 a 视为向量. 并计算其长度.
+     * Squared Euclid Distance.
+     * 两点欧几里得距离的平方.
+     * 当 b 为 null 时 将 a 视为向量. 并计算其长度平方.
+     * @param a
+     * @param b
+     */
+    public squaredEuclideanDistance<T extends (number[] | GTkTypes.Vector2 | GTkTypes.Vector3)>(a: T, b: T = null): number {
+        let result = 0;
+        if (a instanceof Array) {
+            if (b && a.length !== (b as Array<number>).length) return result;
+
+            for (let i = 0; i < a.length; i++) {
+                result += Math.pow(a[i] - (b ? b[i] : 0), 2);
+            }
+
+            return result;
+        } else {
+            result = Math.pow(a.x - (b ? (b as GTkTypes.Vector3).x : 0), 2) +
+                Math.pow(a.y - (b ? (b as GTkTypes.Vector3).y : 0), 2);
+            if ("z" in a) {
+                result += Math.pow(a.z as number - (b ? (b as GTkTypes.Vector3).z : 0), 2);
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Euclid Distance.
+     * 欧几里得距离.
+     * 当 b 为 null 时 将 a 视为向量. 并计算其长度.
      * @param a
      * @param b
      */
@@ -726,6 +784,10 @@ class GToolkit {
         return quaternion.toRotation().rotateVector(origin);
     }
 
+    public expandToArray() {
+
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Bit
@@ -754,14 +816,10 @@ class GToolkit {
      *      {-1} 时入参不合法.
      */
     public bitFirstOne(num: number): number {
-        if ((num | 0) !== num) {
-            return -1;
-        }
+        if ((num | 0) !== num) return -1;
 
         let handle: number = 0;
-        while ((0x1 << handle) <= num) {
-            ++handle;
-        }
+        while ((0x1 << handle) <= num) ++handle;
         return handle - 1;
     }
 
@@ -803,9 +861,9 @@ class GToolkit {
      * @param traverse 遍历深度. 从 1 计数.
      *      0 default. 无限遍历.
      */
-    public getScript<T extends mw.Script>(
+    public getComponent<T extends mw.Script>(
         object: GameObject,
-        scriptCls: new (...param: unknown[]) => T,
+        scriptCls: AbstractAllowClass<T>,
         traverse: number = 0): T[] {
         if (!object) return [];
 
@@ -818,9 +876,7 @@ class GToolkit {
         do {
             for (const go of stack) {
                 cache.push(...go.getChildren());
-                result.push(...go.getScripts()
-                    .filter(script => script instanceof scriptCls)
-                    .map((value) => (value as T)));
+                result.push(...go.getComponents(scriptCls as Constructor<T>));
             }
             stack = cache;
             cache = [];
@@ -837,9 +893,9 @@ class GToolkit {
      * @param traverse 遍历深度. 从 1 计数.
      *      0 default. 无限遍历.
      */
-    public getFirstScript<T extends mw.Script>(object: GameObject,
-                                               scriptCls: (new (...args: unknown[]) => T) | Function,
-                                               traverse: number = 0): T | null {
+    public getFirstComponent<T extends mw.Script>(object: GameObject,
+                                                  scriptCls: AbstractAllowClass<T>,
+                                                  traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -849,9 +905,7 @@ class GToolkit {
         do {
             for (const go of stack) {
                 cache.push(...go.getChildren());
-                const script = go.getScripts().find((s) => {
-                    return s instanceof scriptCls;
-                });
+                const script = go.getComponent(scriptCls as Constructor<T>);
                 if (script) return script as T;
             }
             stack = cache;
@@ -870,7 +924,7 @@ class GToolkit {
      * @param traverse 遍历深度. 从 1 计数.
      *      0 default. 无限遍历.
      */
-    public getScriptIs<T extends mw.Script>(
+    public getComponentIs<T extends mw.Script>(
         object: GameObject,
         method: string | ((instance: object) => boolean),
         traverse: number = 0): T[] {
@@ -885,8 +939,8 @@ class GToolkit {
         do {
             for (const go of stack) {
                 cache.push(...go.getChildren());
-                result.push(...go.getScripts()
-                    .filter(script => this.is(script, method))
+                result.push(...go.getComponents()
+                    .filter(script => this.is<T>(script, method))
                     .map((value) => (value as T)));
             }
             stack = cache;
@@ -904,9 +958,9 @@ class GToolkit {
      * @param traverse 遍历深度. 从 1 计数.
      *      0 default. 无限遍历.
      */
-    public getFirstScriptIs<T extends mw.Script>(object: GameObject,
-                                                 method: string | ((instance: object) => boolean),
-                                                 traverse: number = 0): T | null {
+    public getFirstComponentIs<T extends mw.Script>(object: GameObject,
+                                                    method: string | ((instance: object) => boolean),
+                                                    traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -916,7 +970,7 @@ class GToolkit {
         do {
             for (const go of stack) {
                 cache.push(...go.getChildren());
-                const script = go.getScripts().find((s) => {
+                const script = go.getComponents().find((s) => {
                     return this.is(s, method);
                 });
                 if (script) return script as T;
@@ -1008,6 +1062,24 @@ class GToolkit {
      */
     public addRootScript<T extends mw.Script>(scriptCls: Constructor<T>): T {
         return this.getRootGameObject().addComponent(scriptCls);
+    }
+
+    /**
+     * 在场景中的根 GameObject 上获取脚本.
+     * @param {Constructor<T>} scriptCls
+     * @return {T | null}
+     */
+    public getRootScript<T extends mw.Script>(scriptCls: Constructor<T>): T | null {
+        return this.getRootGameObject().getComponent(scriptCls);
+    }
+
+    /**
+     * 在场景中的根 GameObject 上获取所有脚本.
+     * @param {Constructor<T>} scriptCls
+     * @return {T[] | null}
+     */
+    public getRootScripts<T extends mw.Script>(scriptCls: Constructor<T>): T[] | null {
+        return this.getRootGameObject().getComponents(scriptCls);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -1136,18 +1208,14 @@ class GToolkit {
      * @return set interval character state.
      */
     public safeSetDescription(character: mw.Character, description: string): boolean | null {
-        if (!character || this.isNullOrEmpty(character?.gameObjectId)) {
-            return false;
-        }
-        if (this._characterDescriptionLockers.has(character.gameObjectId)) {
-            return false;
-        }
+        if (!character || this.isNullOrEmpty(character?.gameObjectId)) return false;
+        if (this._characterDescriptionLockers.has(character.gameObjectId)) return false;
         this._characterDescriptionLockers.add(character.gameObjectId);
         character
             .asyncReady()
             .then(
                 () => {
-                    this.doUtilTrue(
+                    this.doWhenTrue(
                         () => character.isDescriptionReady,
                         () => {
                             character.setDescription([description]);
@@ -1229,6 +1297,36 @@ class GToolkit {
         if (ui.text === text) return false;
         ui.text = text;
         return true;
+    }
+
+    /**
+     * 转取 Ue PanelWidget.
+     * @param panel
+     */
+    public getUePanelWidget(panel: mw.Canvas): UE.PanelWidget {
+        return panel["get"]() as UE.PanelWidget;
+    }
+
+    /**
+     * 转取 Ue Widget.
+     * @param widget
+     */
+    public getUeWidget(widget: mw.Widget): UE.Widget {
+        return widget["get"]() as UE.Widget;
+    }
+
+    /**
+     * 获取 Canvas 下的所有 UI 控件.
+     * @param container
+     */
+    public getAllChildren(container: mw.Canvas): mw.Widget[] {
+        const ueWidget = this.getUePanelWidget(container);
+        const children = ueWidget.GetAllChildren();
+        const result: mw.Widget[] = [];
+        for (let i = 0; i < children.Num(); ++i) {
+            result.push(tryGenerateTsWidgetTypeByUEObject(children.Get(i)));
+        }
+        return result;
     }
 
     /**
@@ -1431,6 +1529,11 @@ class GToolkit {
 export type Constructor<TResult> = new (...args: Array<unknown>) => TResult;
 
 /**
+ * Constructor of an abstract-allow class.
+ */
+export type AbstractAllowClass<TResult> = Constructor<TResult> | Function;
+
+/**
  * A function taking one argument and returning a boolean result.
  * TArg void default.
  */
@@ -1454,6 +1557,22 @@ declare const _: unique symbol;
  * @desc 你不应该重写返回此类型的函数.
  */
 export type NoOverride = { [_]: typeof _; }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region Types
+namespace GTkTypes {
+    export interface Vector2 {
+        x: number;
+        y: number;
+    }
+
+    export interface Vector3 {
+        x: number;
+        y: number;
+        z: number;
+    }
+}
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -1558,6 +1677,14 @@ export enum GenderTypes {
 
 /**
  * advance switch.
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class Switcher {
     private _cases: (boolean | number)[][] = [];
@@ -1611,4 +1738,74 @@ export class Switcher {
     }
 }
 
-export default new GToolkit();
+/**
+ * 分帧器.
+ * @desc ---
+ * @desc 为某个请求设定频率上限.
+ *
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author minjia.zhang
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+ */
+export class Regulator {
+    /**
+     * 更新间隔. ms.
+     */
+    public updateInterval: number;
+
+    /**
+     * 上次就绪时间.
+     */
+    public lastUpdate: number = 0;
+
+    public elapsed(now: number): number {
+        return now - this.lastUpdate;
+    }
+
+    /**
+     * 是否 就绪.
+     */
+    public ready(): boolean {
+        const now = Date.now();
+        if (this.elapsed(now) >= this.updateInterval) {
+            this.lastUpdate = now;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param updateInterval 更新间隔.
+     */
+    constructor(updateInterval?: number) {
+        this.updateInterval = updateInterval || 1000;
+    }
+
+    /**
+     * 频率. 每秒 ready 次数.
+     */
+    public frequency(val: number): this {
+        this.updateInterval = 1000 / val;
+        return this;
+    }
+
+    /**
+     * 间隔.
+     * @param val
+     */
+    public interval(val: number): this {
+        this.updateInterval = val;
+        return this;
+    }
+}
+
+const Gtk = new GToolkit();
+
+export default Gtk;

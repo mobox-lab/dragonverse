@@ -495,13 +495,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
 
     private static readonly HEADER_TOKEN = "x-bits-token";
 
-    private static CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
+    private static CODE_VERIFY_AES_KEY = "";
 
     private static CODE_VERIFY_AES_IV = "";
 
-    private static CLIENT_ID = "12000169457322200012";
+    private static CLIENT_ID = "";
 
-    private static SECRET = "6430d2d6497e136df763b572377361678f303f4d624be7ca9ee9b3b28985fe60";
+    private static SECRET = "";
 
 
     private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
@@ -510,47 +510,73 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
 
     private static readonly SECRET_STORAGE_KEY = "SECRET_STORAGE_KEY";
 
+    private static readonly PLACE_HOLDER = "REPLACE_IT";
+
+    public static readonly KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL = 3e3;
+
     private static getSensitiveData() {
-        this.getCodeVerifyAesKey();
-        this.getClientId();
-        this.getSecret();
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
+            this.getCodeVerifyAesKey,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.CLIENT_ID),
+            this.getClientId,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.SECRET),
+            this.querySecret,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
     }
 
     private static getCodeVerifyAesKey() {
         DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
             (value) => {
-                if (value.code === 200) AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
-                else {
-                    this.logGetDataError();
-                    this.getCodeVerifyAesKey();
+                Log4Ts.log(AuthModuleS, `value`, value.code);
+                if (value.code === 200) {
+                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
+                        AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+                    } else {
+                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey Failed`);
+                    }
                 }
-            },
+            }
         );
     }
 
     private static getClientId() {
         DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
             (value) => {
-                if (value.code === 200) AuthModuleS.CLIENT_ID = value.data;
-                else {
-                    this.logGetDataError();
-                    this.getClientId();
+                if (value.code === 200) {
+                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.CLIENT_ID = value.data;
+                    } else {
+                        Log4Ts.log(AuthModuleS, `getClientId Failed`);
+                    }
                 }
-            },
+            }
         );
     }
 
-    private static getSecret() {
+    private static querySecret() {
         DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
             (value) => {
-                if (value.code === 200) AuthModuleS.SECRET = value.data;
-                else {
-                    this.logGetDataError();
-                    this.getSecret();
+                if (value.code === 200) {
+                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.SECRET = value.data;
+                    } else {
+                        Log4Ts.log(AuthModuleS, `querySecret Failed`);
+                    }
                 }
-            },
+            }
         );
     }
+
+
 
     private static logGetDataError() {
         Log4Ts.error(AuthModuleS, `get data failed.`, `refreshing.`);
@@ -587,12 +613,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         if (GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_KEY)) {
             AuthModuleS.getSensitiveData();
         } else {
-            DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.CODE_VERIFY_AES_KEY);
-            DataStorage.asyncSetData(AuthModuleS.CLIENT_ID_STORAGE_KEY, AuthModuleS.CLIENT_ID);
-            DataStorage.asyncSetData(AuthModuleS.SECRET_STORAGE_KEY, AuthModuleS.SECRET);
+            // DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.CODE_VERIFY_AES_KEY);
+            // DataStorage.asyncSetData(AuthModuleS.CLIENT_ID_STORAGE_KEY, AuthModuleS.CLIENT_ID);
+            // DataStorage.asyncSetData(AuthModuleS.SECRET_STORAGE_KEY, AuthModuleS.SECRET);
         }
 
-        AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+        // AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
@@ -646,6 +672,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
     }
 
     private getSecret(message: string) {
+        if (GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_IV) || GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_KEY)) {
+            Log4Ts.log(AuthModuleS, `code verify aes iv or key is null or empty.`);
+            return null;
+        }
         const e = CryptoJS.AES.encrypt(
             message,
             CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
@@ -659,6 +689,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
     }
 
     private getSign(params: object) {
+        if (GToolkit.isNullOrEmpty(AuthModuleS.SECRET)) {
+            Log4Ts.log(AuthModuleS, `secret is null or empty.`);
+            return;
+        }
         let paramStr = Object
             .keys(params)
             .sort()
@@ -803,6 +837,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
     }
 
     private generateOrder(cost: number, action: ConsumeTypes): ConsumeParam {
+        if (GToolkit.isNullOrEmpty(AuthModuleS.CLIENT_ID)) {
+            Log4Ts.log(AuthModuleS, `client id is null or empty.`);
+            return null;
+        }
         const p = {
             client_id: AuthModuleS.CLIENT_ID,
             order_id: new UUID(4).toString(),

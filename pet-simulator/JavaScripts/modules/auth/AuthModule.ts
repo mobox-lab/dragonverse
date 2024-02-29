@@ -1,10 +1,10 @@
 import CryptoJS from "crypto-js";
-import {JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
-import GToolkit from "../../utils/GToolkit";
+import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import {GlobalEnum} from "../../const/Enum";
-import {GlobalData} from "../../const/GlobalData";
-import {Yoact} from "../../depend/yoact/Yoact";
+import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
+import { Yoact } from "../../depend/yoact/Yoact";
 import UUID from "pure-uuid";
 import Enumerable from "linq";
 import noReply = mwext.Decorator.noReply;
@@ -14,6 +14,7 @@ import HttpRequestURL = mw.HttpRequestURL;
 import HttpRequestType = mw.HttpRequestType;
 import Regulator from "../../depend/regulator/Regulator";
 import Global = GlobalData.Global;
+import GToolkit from "../../util/GToolkit";
 
 export default class PetSimulatorAuthModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -240,7 +241,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, PetSimulatorAuthModuleDat
 
     private _originToken: string = null;
 
-    public currency = createYoact({count: 0});
+    public currency = createYoact({ count: 0 });
 
     private _lastQueryCurrencyTime: number = 0;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -248,7 +249,6 @@ export class AuthModuleC extends JModuleC<AuthModuleS, PetSimulatorAuthModuleDat
     //#region MetaWorld Event
     protected onAwake(): void {
         super.onAwake();
-
         //#region Inner Member init
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
@@ -511,50 +511,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
 
     private static readonly SECRET_STORAGE_KEY = "SECRET_STORAGE_KEY";
 
-    private static getSensitiveData() {
-        GToolkit.doUtilTrue(
-            () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
-            this.getCodeVerifyAesKey,
-            GlobalData.Auth.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
-        );
-        GToolkit.doUtilTrue(
-            () => !GToolkit.isNullOrEmpty(this.CLIENT_ID_STORAGE_KEY),
-            this.getClientId,
-            GlobalData.Auth.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
-        );
-        GToolkit.doUtilTrue(
-            () => !GToolkit.isNullOrEmpty(this.SECRET_STORAGE_KEY),
-            this.querySecret,
-            GlobalData.Auth.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
-        );
-    }
+    private static readonly PLACE_HOLDER = "REPLACE_IT";
 
-    private static getCodeVerifyAesKey() {
-        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
-            (value) => {
-                if (value.code === 200) {
-                    AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
-                    AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
-                }
-            }
-        );
-    }
-
-    private static getClientId() {
-        DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
-            (value) => {
-                if (value.code === 200) AuthModuleS.CLIENT_ID = value.data;
-            }
-        );
-    }
-
-    private static querySecret() {
-        DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
-            (value) => {
-                if (value.code === 200) AuthModuleS.SECRET = value.data;
-            }
-        );
-    }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -583,7 +541,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
 
     protected onJStart(): void {
         //#region Member init
-
+        Log4Ts.log(AuthModuleS, `AuthModuleS Start`);
         AuthModuleS.getSensitiveData();
         //#endregion ------------------------------------------------------------------------------------------
 
@@ -628,6 +586,69 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
+    private static getSensitiveData() {
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
+            this.getCodeVerifyAesKey,
+            GlobalData.Auth.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.CLIENT_ID),
+            this.getClientId,
+            GlobalData.Auth.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.SECRET),
+            this.querySecret,
+            GlobalData.Auth.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+    }
+
+    private static getCodeVerifyAesKey() {
+        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
+            (value) => {
+                Log4Ts.log(AuthModuleS, `value`, value.code);
+                if (value.code === 200) {
+                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
+                        AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+                    } else {
+                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey Failed`);
+                    }
+                }
+            }
+        );
+    }
+
+    private static getClientId() {
+        DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
+            (value) => {
+                if (value.code === 200) {
+                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.CLIENT_ID = value.data;
+                    } else {
+                        Log4Ts.log(AuthModuleS, `getClientId Failed`);
+                    }
+                }
+            }
+        );
+    }
+
+    private static querySecret() {
+        DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
+            (value) => {
+                if (value.code === 200) {
+                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.SECRET = value.data;
+                    } else {
+                        Log4Ts.log(AuthModuleS, `querySecret Failed`);
+                    }
+                }
+            }
+        );
+    }
+
+
 
     private logPlayerNotExist(playerId: number) {
         Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
@@ -638,6 +659,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     }
 
     private getSecret(message: string) {
+        if (GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_IV) || GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_KEY)) {
+            Log4Ts.log(AuthModuleS, `code verify aes iv or key is null or empty.`);
+            return;
+        }
+
         const e = CryptoJS.AES.encrypt(
             message,
             CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
@@ -651,6 +677,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     }
 
     private getSign(params: object) {
+        if (GToolkit.isNullOrEmpty(AuthModuleS.SECRET)) {
+            Log4Ts.log(AuthModuleS, `secret is null or empty.`);
+            return;
+        }
         let paramStr = Object
             .keys(params)
             .sort()
@@ -728,8 +758,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
             symbol: "mbox",
         };
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-                AuthModuleS.RELEASE_GET_CURRENCY_URL :
-                AuthModuleS.TEST_GET_CURRENCY_URL}`,
+            AuthModuleS.RELEASE_GET_CURRENCY_URL :
+            AuthModuleS.TEST_GET_CURRENCY_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -769,8 +799,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         this.getPlayerData(playerId)?.serverSaveOrder(order);
 
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-                AuthModuleS.RELEASE_CONSUME_URL :
-                AuthModuleS.TEST_CONSUME_URL}`,
+            AuthModuleS.RELEASE_CONSUME_URL :
+            AuthModuleS.TEST_CONSUME_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -795,6 +825,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     }
 
     private generateOrder(cost: number, action: ConsumeTypes): ConsumeParam {
+        if (GToolkit.isNullOrEmpty(AuthModuleS.CLIENT_ID)) {
+            Log4Ts.log(AuthModuleS, `client id is null or empty.`);
+            return;
+        }
         const p = {
             client_id: AuthModuleS.CLIENT_ID,
             order_id: new UUID(4).toString(),
@@ -835,8 +869,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
             encryptData: this.getSecret(JSON.stringify(param)),
         };
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-                AuthModuleS.RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL :
-                AuthModuleS.TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL}`,
+            AuthModuleS.RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL :
+            AuthModuleS.TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -862,8 +896,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         }
 
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-                AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
-                AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL
+            AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
+            AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL
             }?uid=${userId}`,
             {
                 method: "GET",
@@ -882,11 +916,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         return Promise.resolve(Enumerable
             .from(respInJson.data.dragons)
             .doAction(item => {
-                    const qua = formatElements(item.elements);
-                    item.quality = qua.quality;
-                    item.primaryEle = qua.primaryEle;
-                    item.secondEle = qua.secondEle;
-                },
+                const qua = formatElements(item.elements);
+                item.quality = qua.quality;
+                item.primaryEle = qua.primaryEle;
+                item.secondEle = qua.secondEle;
+            },
             )
             .defaultIfEmpty({
                 elements: 0,
@@ -960,5 +994,5 @@ function formatElements(data: number): MoboxDragonInstanceQuality {
         secondEle = secondEle * 10 + ((data & 0x00f000) >> 12);
         secondEle = secondEle * 10 + ((data & 0x0f0000) >> 16);
     }
-    return {primaryEle: quality, quality: primaryEle, secondEle: secondEle};
+    return { primaryEle: quality, quality: primaryEle, secondEle: secondEle };
 }

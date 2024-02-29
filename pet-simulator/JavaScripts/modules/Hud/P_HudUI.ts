@@ -1,20 +1,21 @@
-﻿import {GlobalData} from "../../const/GlobalData";
+﻿import { GlobalData } from "../../const/GlobalData";
 import GMHUD_Generate from "../../ui-generate/common/GM/GMHUD_generate";
 import Hud_Generate from "../../ui-generate/hud/Hud_generate";
-import {cubicBezier} from "../../utils/MoveUtil";
-import {utils} from "../../utils/uitls";
-import {P_SummerCoin} from "../DollMachine/P_DollMachine";
-import {EnergyModuleC} from "../Energy/EnergyModule";
-import GToolkit from "../../utils/GToolkit";
-import {Yoact} from "../../depend/yoact/Yoact";
+import { cubicBezier } from "../../utils/MoveUtil";
+import { utils } from "../../utils/uitls";
+import { P_SummerCoin } from "../DollMachine/P_DollMachine";
+import { EnergyModuleC } from "../Energy/EnergyModule";
+
+import { Yoact } from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
 import ModuleService = mwext.ModuleService;
-import {AuthModuleC} from "../auth/AuthModule";
+import { AuthModuleC } from "../auth/AuthModule";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import MessageBox from "../../utils/MessageBox";
-import {GameConfig} from "../../config/GameConfig";
-import {TipsManager} from "./P_TipUI";
+import { GameConfig } from "../../config/GameConfig";
+import { TipsManager } from "./P_TipUI";
 import BuffEnergyTips_Generate from "../../ui-generate/common/BuffEnergyTips_generate";
+import GToolkit from "../../util/GToolkit";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -223,7 +224,7 @@ export class P_HudUI extends Hud_Generate {
         let startAngle = GlobalData.TweenFastTranBtn.startAngle;
         let endAngle = GlobalData.TweenFastTranBtn.endAngle;
         let time = GlobalData.TweenFastTranBtn.tweenTime;
-        this.leftToRightTween = new mw.Tween({angle: startAngle}).to({angle: endAngle}, time * 1000)
+        this.leftToRightTween = new mw.Tween({ angle: startAngle }).to({ angle: endAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -233,7 +234,7 @@ export class P_HudUI extends Hud_Generate {
                 }
             })
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
-        this.rightToLeftTween = new mw.Tween({angle: endAngle}).to({angle: startAngle}, time * 1000)
+        this.rightToLeftTween = new mw.Tween({ angle: endAngle }).to({ angle: startAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })

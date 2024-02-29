@@ -5,7 +5,7 @@ import { DollMachineModuleC, DollType } from "./DollMachineModuleC";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { IDollMachineElement } from "../../config/DollMachine";
 import { GlobalData } from "../../const/GlobalData";
-import GToolkit from "../../utils/GToolkit";
+import GToolkit from "../../util/GToolkit";
 
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 
@@ -253,7 +253,7 @@ class DollMachineS {
         let tempScale = this.rope.worldTransform.scale.clone();
         let tempLoc = this.hook.worldTransform.position.clone();
 
-        let tween = new mw.Tween({z: startZ, s: 0}).to({z: endZ, s: scale}, doll.ClawDownTime[0])
+        let tween = new mw.Tween({ z: startZ, s: 0 }).to({ z: endZ, s: scale }, doll.ClawDownTime[0])
             .onUpdate((obj) => {
                 tempLoc.z = obj.z;
                 this.hook.worldTransform.position = tempLoc;
@@ -279,7 +279,7 @@ class DollMachineS {
 
         let tempScale = this.rope.worldTransform.scale.clone();
         let tempLoc = this.hook.worldTransform.position.clone();
-        let tween = new mw.Tween({z: endZ, s: scale}).to({z: startZ, s: 0}, doll.ClawDownTime[0])
+        let tween = new mw.Tween({ z: endZ, s: scale }).to({ z: startZ, s: 0 }, doll.ClawDownTime[0])
             .onUpdate((obj) => {
                 tempLoc.z = obj.z;
                 this.hook.worldTransform.position = tempLoc;
@@ -326,7 +326,7 @@ class DollMachineS {
     private async hookBackTween() {
 
         let tempLoc = this.hook.worldTransform.position.clone();
-        let tween = new mw.Tween({x: tempLoc.x, y: tempLoc.y, z: tempLoc.z}).to({
+        let tween = new mw.Tween({ x: tempLoc.x, y: tempLoc.y, z: tempLoc.z }).to({
             x: this.hookPrimaryPos.x,
             y: this.hookPrimaryPos.y,
             z: this.hookPrimaryPos.z,

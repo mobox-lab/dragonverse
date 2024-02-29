@@ -2,7 +2,6 @@ import tryGenerateTsWidgetTypeByUEObject = mw.tryGenerateTsWidgetTypeByUEObject;
 import Character = mw.Character;
 import GameObject = mw.GameObject;
 import UIScript = mw.UIScript;
-import Log4Ts from "../depend/log4ts/Log4Ts";
 
 /**
  * GToolkit.
@@ -20,14 +19,11 @@ import Log4Ts from "../depend/log4ts/Log4Ts";
  * @author zewei.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.2.6b
+ * @version 30.1.2b
  * @beta
  */
 class GToolkit {
     //#region Constant
-    private static readonly BIT_INPUT_INVALID_MSG = "input is invalid.";
-    private static readonly FLAG_NOT_SUPPORT_MSG = "input flag is not support";
-
     /**
      * 角度限制常数.
      * @private
@@ -90,18 +86,6 @@ class GToolkit {
 
     //#region Member
     private _characterDescriptionLockers: Set<string> = new Set();
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-    //#region MW Service
-    private _accountService: AccountService;
-
-    private get accountService(): AccountService {
-        if (!this._accountService) {
-            this._accountService = AccountService;
-        }
-        return this._accountService;
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Type Guard
@@ -263,32 +247,68 @@ class GToolkit {
     }
 
     /**
-     * do callback until predicate return true.
+     * do callback once when predicate return true.
      * @param predicate
      * @param callback
-     * @param interval ms.
+     * @param interval ms. test predicate interval.
      *      100 default.
      * @param instant test predicate at once.
      * @return interval hold id.
      */
-    public doUtilTrue(predicate: () => boolean,
+    public doWhenTrue(predicate: () => boolean,
                       callback: () => void,
                       interval: number = 100,
                       instant: boolean = true): number | null {
         if (instant && predicate()) {
-            callback();
+            try {
+                callback();
+            } catch (e) {
+            }
             return null;
         }
 
         const holdId = setInterval(() => {
-                if (!predicate()) {
-                    return;
-                }
+                if (!predicate()) return;
                 try {
                     callback();
                 } catch (e) {
                 } finally {
                     clearInterval(holdId);
+                }
+            },
+            interval,
+        );
+        return holdId;
+    }
+
+    /**
+     * do callback persistently until predicate return true.
+     * @param predicate
+     * @param callback
+     * @param interval ms. test predicate interval.
+     *      100 default.
+     * @param instant test predicate at once.
+     * @return interval hold id.
+     */
+    public doUntilTrue(predicate: () => boolean,
+                       callback: () => void,
+                       interval: number = 100,
+                       instant: boolean = true): number | null {
+        if (instant) {
+            if (predicate()) return null;
+            else callback();
+        }
+
+        const holdId = setInterval(() => {
+                if (predicate()) {
+                    clearInterval(holdId);
+                    return;
+                }
+                try {
+                    callback();
+                } catch (e) {
+                    clearInterval(holdId);
+                    return;
                 }
             },
             interval,
@@ -373,7 +393,6 @@ class GToolkit {
         }
 
         const r = this.random(0, stepWeight[stepWeight.length - 1]);
-        Log4Ts.log(GToolkit, `random r=${r}`);
         let start: number = 0;
         let end = stepWeight.length;
         while (start < end) {
@@ -612,24 +631,21 @@ class GToolkit {
 
     /**
      * 时间转换.
+     * 支持的时间单位范围：[毫秒,天]
      * @param val 原值.
      * @param from 原值时间维度.
      * @param to 目标时间维度.
+     * @return {null} 入参在不支持的范围内时.
      */
     public timeConvert(val: number, from: TimeFormatDimensionFlagsLike, to: TimeFormatDimensionFlagsLike): number {
-        if (from === to) {
-            return val;
-        }
-        if (this.hammingWeight(from) !== 1 || this.hammingWeight(to) !== 1) {
-            Log4Ts.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
-            return null;
-        }
+        if (from === to) return val;
+        if (this.hammingWeight(from) !== 1 || this.hammingWeight(to) !== 1) return null;
 
         if (
             (0x1 << this.bitFirstOne(from)) as TimeFormatDimensionFlags > TimeFormatDimensionFlags.Day ||
             (0x1 << this.bitFirstOne(to)) as TimeFormatDimensionFlags > TimeFormatDimensionFlags.Day
         ) {
-            Log4Ts.error(GToolkit, GToolkit.FLAG_NOT_SUPPORT_MSG);
+            return null;
         }
 
         while (from !== to) {
@@ -677,26 +693,63 @@ class GToolkit {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Geometry
+
     /**
-     * 两点欧几里得距离的平方. 当 b 为 null 时 将 a 视为向量. 并计算其长度平方.
-     * @param a
-     * @param b
+     * Manhattan Distance.
+     * 曼哈顿距离.
+     * 当 b 为 null 时 将 a 视为向量. 并计算其长度平方.
      */
-    public squaredEuclideanDistance(a: number[], b: number[] = null): number {
-        if (b && a.length !== b.length) {
-            return 0;
-        }
-
+    public manhattanDistance(a: number[] | GTkTypes.Vector2 | GTkTypes.Vector3, b: number[] | GTkTypes.Vector2 | GTkTypes.Vector3 = null): number {
         let result = 0;
-        for (let i = 0; i < a.length; i++) {
-            result += Math.pow(a[i] - (b ? b[i] : 0), 2);
-        }
+        if (a instanceof Array) {
+            if (b && a.length !== (b as Array<number>).length) return result;
 
-        return result;
+            for (let i = 0; i < a.length; i++) {
+                result += Math.abs(a[i] - (b ? b[i] : 0));
+            }
+
+            return result;
+        } else {
+            result = Math.abs(a.x - (b ? (b as GTkTypes.Vector3).x : 0)) +
+                Math.abs(a.y - (b ? (b as GTkTypes.Vector3).y : 0));
+            if ("z" in a) {
+                result += Math.abs(a.z as number - (b ? (b as GTkTypes.Vector3).z : 0));
+            }
+            return result;
+        }
     }
 
     /**
-     * 欧几里得距离. 当 b 为 null 时 将 a 视为向量. 并计算其长度.
+     * Squared Euclid Distance.
+     * 两点欧几里得距离的平方.
+     * 当 b 为 null 时 将 a 视为向量. 并计算其长度平方.
+     * @param a
+     * @param b
+     */
+    public squaredEuclideanDistance<T extends (number[] | GTkTypes.Vector2 | GTkTypes.Vector3)>(a: T, b: T = null): number {
+        let result = 0;
+        if (a instanceof Array) {
+            if (b && a.length !== (b as Array<number>).length) return result;
+
+            for (let i = 0; i < a.length; i++) {
+                result += Math.pow(a[i] - (b ? b[i] : 0), 2);
+            }
+
+            return result;
+        } else {
+            result = Math.pow(a.x - (b ? (b as GTkTypes.Vector3).x : 0), 2) +
+                Math.pow(a.y - (b ? (b as GTkTypes.Vector3).y : 0), 2);
+            if ("z" in a) {
+                result += Math.pow(a.z as number - (b ? (b as GTkTypes.Vector3).z : 0), 2);
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Euclid Distance.
+     * 欧几里得距离.
+     * 当 b 为 null 时 将 a 视为向量. 并计算其长度.
      * @param a
      * @param b
      */
@@ -731,6 +784,10 @@ class GToolkit {
         return quaternion.toRotation().rotateVector(origin);
     }
 
+    public expandToArray() {
+
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Bit
@@ -759,15 +816,10 @@ class GToolkit {
      *      {-1} 时入参不合法.
      */
     public bitFirstOne(num: number): number {
-        if ((num | 0) !== num) {
-            Log4Ts.error(GToolkit, GToolkit.BIT_INPUT_INVALID_MSG);
-            return -1;
-        }
+        if ((num | 0) !== num) return -1;
 
         let handle: number = 0;
-        while ((0x1 << handle) <= num) {
-            ++handle;
-        }
+        while ((0x1 << handle) <= num) ++handle;
         return handle - 1;
     }
 
@@ -1074,7 +1126,6 @@ class GToolkit {
      */
     public isSelfCharacter(idOrObj: number | string | GameObject) {
         if (SystemUtil.isServer()) {
-            Log4Ts.error(GToolkit, `isSelfCharacter should be called in Client`);
             return false;
         }
         const self: Player = Player.localPlayer;
@@ -1157,20 +1208,14 @@ class GToolkit {
      * @return set interval character state.
      */
     public safeSetDescription(character: mw.Character, description: string): boolean | null {
-        if (!character || this.isNullOrEmpty(character?.gameObjectId)) {
-            Log4Ts.error(GToolkit, `character is invalid`);
-            return false;
-        }
-        if (this._characterDescriptionLockers.has(character.gameObjectId)) {
-            Log4Ts.warn(GToolkit, `character desc locked.`, `somebody is waiting for set desc`);
-            return false;
-        }
+        if (!character || this.isNullOrEmpty(character?.gameObjectId)) return false;
+        if (this._characterDescriptionLockers.has(character.gameObjectId)) return false;
         this._characterDescriptionLockers.add(character.gameObjectId);
         character
             .asyncReady()
             .then(
                 () => {
-                    this.doUtilTrue(
+                    this.doWhenTrue(
                         () => character.isDescriptionReady,
                         () => {
                             character.setDescription([description]);
@@ -1515,6 +1560,22 @@ export type NoOverride = { [_]: typeof _; }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
+//#region Types
+namespace GTkTypes {
+    export interface Vector2 {
+        x: number;
+        y: number;
+    }
+
+    export interface Vector3 {
+        x: number;
+        y: number;
+        z: number;
+    }
+}
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 export type TimeFormatDimensionFlagsLike = TimeFormatDimensionFlags | Tf;
 
 /**
@@ -1616,6 +1677,14 @@ export enum GenderTypes {
 
 /**
  * advance switch.
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class Switcher {
     private _cases: (boolean | number)[][] = [];
@@ -1666,6 +1735,74 @@ export class Switcher {
         }
 
         this?._default();
+    }
+}
+
+/**
+ * 分帧器.
+ * @desc ---
+ * @desc 为某个请求设定频率上限.
+ *
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author minjia.zhang
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+ */
+export class Regulator {
+    /**
+     * 更新间隔. ms.
+     */
+    public updateInterval: number;
+
+    /**
+     * 上次就绪时间.
+     */
+    public lastUpdate: number = 0;
+
+    public elapsed(now: number): number {
+        return now - this.lastUpdate;
+    }
+
+    /**
+     * 是否 就绪.
+     */
+    public ready(): boolean {
+        const now = Date.now();
+        if (this.elapsed(now) >= this.updateInterval) {
+            this.lastUpdate = now;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param updateInterval 更新间隔.
+     */
+    constructor(updateInterval?: number) {
+        this.updateInterval = updateInterval || 1000;
+    }
+
+    /**
+     * 频率. 每秒 ready 次数.
+     */
+    public frequency(val: number): this {
+        this.updateInterval = 1000 / val;
+        return this;
+    }
+
+    /**
+     * 间隔.
+     * @param val
+     */
+    public interval(val: number): this {
+        this.updateInterval = val;
+        return this;
     }
 }
 

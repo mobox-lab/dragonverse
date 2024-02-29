@@ -533,10 +533,6 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         return this.RELEASE_P12_URL + this.SUB_GAME_REPORT_URL_SUFFIX;
     }
 
-    private static readonly CODE_VERIFY_AES_KEY = "MODRAGONMODRAGONMODRAGON";
-
-    private static readonly CODE_VERIFY_AES_IV = this.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
-
     private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
 
     /**
@@ -588,7 +584,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
 
     protected onStart(): void {
         super.onStart();
-
+        AuthModuleS.getSensitiveData();
         //#region Member init     
         //#endregion ------------------------------------------------------------------------------------------ 
 
@@ -639,6 +635,89 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
+    }
+
+    private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
+
+    private static readonly CLIENT_ID_STORAGE_KEY = "CLIENT_ID_STORAGE_KEY";
+
+    private static readonly SECRET_STORAGE_KEY = "SECRET_STORAGE_KEY";
+
+    private static readonly PLACE_HOLDER = "REPLACE_IT";
+
+    private static CODE_VERIFY_AES_KEY = "";
+
+    private static CODE_VERIFY_AES_IV = "";
+
+    private static CLIENT_ID = "";
+
+    private static SECRET = "";
+
+    public static readonly KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL = 3e3;
+
+    private static getSensitiveData() {
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
+            this.getCodeVerifyAesKey,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.CLIENT_ID),
+            this.getClientId,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.SECRET),
+            this.querySecret,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+    }
+
+    private static getCodeVerifyAesKey() {
+        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
+            (value) => {
+                Log4Ts.log(AuthModuleS, `value`, value.code);
+                if (value.code === 200) {
+                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
+                        AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+                    } else {
+                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey Failed`);
+                        DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
+                    }
+                }
+            }
+        );
+    }
+
+    private static getClientId() {
+        DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
+            (value) => {
+                if (value.code === 200) {
+                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.CLIENT_ID = value.data;
+                    } else {
+                        Log4Ts.log(AuthModuleS, `getClientId Failed`);
+                        DataStorage.asyncSetData(AuthModuleS.CLIENT_ID_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
+                    }
+                }
+            }
+        );
+    }
+
+    private static querySecret() {
+        DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
+            (value) => {
+                if (value.code === 200) {
+                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.SECRET = value.data;
+                    } else {
+                        Log4Ts.log(AuthModuleS, `querySecret Failed`);
+                        DataStorage.asyncSetData(AuthModuleS.SECRET_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
+                    }
+                }
+            }
+        );
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
