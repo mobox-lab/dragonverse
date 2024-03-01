@@ -69,6 +69,7 @@ import * as mwaction from "mwaction";
 import BattleWorldAuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
 import BattleWorldEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
 import { SettingModuleData } from "./module/SetingModule/SettingModuleData";
+import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
 
 declare global {
     var UE: any;
@@ -193,6 +194,7 @@ export default class GameLauncher extends mw.Script {
         // ModuleService.registerModule(GuideModuleS2, GuideModuleC2, null);
         ModuleService.registerModule(InteractiveModuleS, InteractiveModuleC, null);
         ModuleService.registerModule(EnergyModuleS, EnergyModuleC, BattleWorldEnergyModuleData);
+        ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
     }
 
 

@@ -16,6 +16,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { TipsManager } from "./P_TipUI";
 import BuffEnergyTips_Generate from "../../ui-generate/common/BuffEnergyTips_generate";
 import GToolkit from "../../util/GToolkit";
+import { JumpGamePanel } from "../../ui/JumpGamePanel";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -135,7 +136,9 @@ export class P_HudUI extends Hud_Generate {
                 utils.formatNumber(this.authModuleC?.currency.count) :
                 ((this.authModuleC?.currency.count ?? 0).toFixed(2).toString()));
         });
-
+        this.jumpRoomBtn.onClicked.add(() => {
+            UIService.show(JumpGamePanel);
+        })
 
         KeyOperationManager.getInstance().onKeyPress(Keys.W, this, () => {
             this.changeVelocityX(1);

@@ -28,6 +28,7 @@ import { MessageBox } from "../../../tool/MessageBox";
 import Tips from "../../../tool/P_Tips";
 import { GlobalAttrHelpler } from "../../attr/GlobalAttrHelpler";
 import { SettingModuleC } from "../../SetingModule/SetingMoudleC";
+import { JumpGamePanel } from "../../../ui/jump-game/JumpGamePanel";
 
 export class MainUI extends Main_HUD_Generate {
 
@@ -132,7 +133,9 @@ export class MainUI extends Main_HUD_Generate {
             this.setCameraSpeed(value);
         });
 
-
+        this.jumpRoomBtn.onClicked.add(() => {
+            UIService.show(JumpGamePanel);
+        })
 
 
         this.canUpdate = true;
