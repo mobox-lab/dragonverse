@@ -3,7 +3,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-16 14:42:38
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-02-27 13:54:52
+ * @LastEditTime : 2024-03-01 14:26:23
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\gameplay\subgame\JumpGameTrigger.ts
  * @Description  : 跳游戏触发器
  */
@@ -30,7 +30,11 @@ export default class JumpGameTrigger extends Script {
             this._trigger = this.gameObject as Trigger;
             this._trigger.onEnter.add(this.onPlayerEnter.bind(this));
             this._trigger.onLeave.add(this.onPlayerLeave.bind(this));
-
+        } else if (SystemUtil.isServer()) {
+            Event.addClientListener("onJumpToRoom", (player: Player, roomId: string) => {
+                Log4Ts.log(this, "onJumpToRoom", player.userId, roomId);
+                TeleportService.asyncTeleportToRoom(roomId, [player.userId], null).then(() => { }, this.onFailed);
+            })
         }
     }
 
@@ -39,20 +43,19 @@ export default class JumpGameTrigger extends Script {
         console.log(this, "跳游戏", this.getJumpSceneName(this.jumpGameId));
         this.jumpGame(Player.localPlayer.userId);
     }
-
+    onFailed = (result: mw.TeleportResult) => {
+        // 将错误信息发给所有参与的客户端
+        for (const userId in result.userIds) {
+            const player = Player.getPlayer(userId)
+            if (player) {
+                Tips.showToClient(player, result.message);
+                Log4Ts.log(this, "onJumpGameFail", result.message);
+            }
+        }
+    };
     @RemoteFunction(Server)
     jumpGame(userId: string) {
-        const onFailed = (result: mw.TeleportResult) => {
-            // 将错误信息发给所有参与的客户端
-            for (const userId in result.userIds) {
-                const player = Player.getPlayer(userId)
-                if (player) {
-                    Tips.showToClient(player, result.message);
-                    Log4Ts.log(this, "onJumpGameFail", result.message);
-                }
-            }
-        };
-        TeleportService.asyncTeleportToScene(this.getJumpSceneName(this.jumpGameId), [userId],).then(() => { }, onFailed);
+        TeleportService.asyncTeleportToScene(this.getJumpSceneName(this.jumpGameId), [userId],).then(() => { }, this.onFailed);
     }
 
 

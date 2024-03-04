@@ -246,6 +246,27 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.mBtn_skid_Internal
 	}
+	private mCanvas_jumpRoom_Internal: mw.Canvas
+	public get mCanvas_jumpRoom(): mw.Canvas {
+		if(!this.mCanvas_jumpRoom_Internal&&this.uiWidgetBase) {
+			this.mCanvas_jumpRoom_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_jumpRoom') as mw.Canvas
+		}
+		return this.mCanvas_jumpRoom_Internal
+	}
+	private jumpRoomBtn_Internal: mw.Button
+	public get jumpRoomBtn(): mw.Button {
+		if(!this.jumpRoomBtn_Internal&&this.uiWidgetBase) {
+			this.jumpRoomBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_jumpRoom/jumpRoomBtn') as mw.Button
+		}
+		return this.jumpRoomBtn_Internal
+	}
+	private roomIdText_Internal: mw.TextBlock
+	public get roomIdText(): mw.TextBlock {
+		if(!this.roomIdText_Internal&&this.uiWidgetBase) {
+			this.roomIdText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/roomIdText') as mw.TextBlock
+		}
+		return this.roomIdText_Internal
+	}
 
 
 
@@ -333,6 +354,12 @@ export default class Hud_Generate extends UIScript {
 		this.mBtn_skid.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
+		this.jumpRoomBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "jumpRoomBtn");
+		})
+		this.jumpRoomBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 
 		//按钮多语言
 		
@@ -354,6 +381,9 @@ export default class Hud_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.mText_stamina)
+		
+	
+		this.initLanguage(this.roomIdText)
 		
 	
 		//文本多语言

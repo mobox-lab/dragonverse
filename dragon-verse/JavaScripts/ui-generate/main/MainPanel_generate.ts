@@ -127,12 +127,12 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnCode_Internal
 	}
-	private btnMail_Internal: mw.StaleButton
-	public get btnMail(): mw.StaleButton {
-		if(!this.btnMail_Internal&&this.uiWidgetBase) {
-			this.btnMail_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvExtraFuntion/btnMail') as mw.StaleButton
+	private btnJumpGame_Internal: mw.StaleButton
+	public get btnJumpGame(): mw.StaleButton {
+		if(!this.btnJumpGame_Internal&&this.uiWidgetBase) {
+			this.btnJumpGame_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvExtraFuntion/btnJumpGame') as mw.StaleButton
 		}
-		return this.btnMail_Internal
+		return this.btnJumpGame_Internal
 	}
 	private cnvProgressBar_Internal: mw.Canvas
 	public get cnvProgressBar(): mw.Canvas {
@@ -260,6 +260,13 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.cnvKeyPrompt_Internal
 	}
+	private roomIdText_Internal: mw.TextBlock
+	public get roomIdText(): mw.TextBlock {
+		if(!this.roomIdText_Internal&&this.uiWidgetBase) {
+			this.roomIdText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/roomIdText') as mw.TextBlock
+		}
+		return this.roomIdText_Internal
+	}
 
 
 
@@ -278,7 +285,7 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.btnCode);
         
 	
-        this.initLanguage(this.btnMail);
+        this.initLanguage(this.btnJumpGame);
         
 	
         this.initLanguage(this.btnBag);
@@ -306,6 +313,9 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.txtOperationFeedback)
         
 	
+        this.initLanguage(this.roomIdText)
+        
+	
         // 静态文本多语言
         
         this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1") as mw.TextBlock);
@@ -325,7 +335,7 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.btnCode);
         
 	
-        this.unregisterLanKey(this.btnMail);
+        this.unregisterLanKey(this.btnJumpGame);
         
 	
         this.unregisterLanKey(this.btnBag);
@@ -351,6 +361,9 @@ export default class MainPanel_Generate extends UIScript {
         
 	
         this.unregisterLanKey(this.txtOperationFeedback)
+        
+	
+        this.unregisterLanKey(this.roomIdText)
         
 	
         // 隐藏文本多语言

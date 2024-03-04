@@ -27,6 +27,7 @@ import Regulator from "../../depend/regulator/Regulator";
 import MainCurtainPanel from "./MainCurtainPanel";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { ObbyModuleC } from "../../module/obby/ObbyModule";
+import { JumpGamePanel } from "../jump-game/JumpGamePanel";
 
 /**
  * 主界面.
@@ -311,6 +312,10 @@ export default class MainPanel extends MainPanel_Generate {
             }
         });
 
+        this.btnJumpGame.onClicked.add(() => {
+            UIService.show(JumpGamePanel);
+        })
+
         this.init();
         //#endregion ------------------------------------------------------------------------------------------
 
@@ -494,7 +499,6 @@ export default class MainPanel extends MainPanel_Generate {
 
         //#region Exist for V1
         GToolkit.trySetVisibility(this.btnCode, false);
-        GToolkit.trySetVisibility(this.btnMail, false);
         GToolkit.trySetVisibility(this.btnBook, false);
         GToolkit.trySetVisibility(this.btnDragon, false);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

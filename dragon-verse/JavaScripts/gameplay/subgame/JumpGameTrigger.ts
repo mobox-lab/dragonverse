@@ -1,7 +1,5 @@
-import { GameConfig } from "../../config/GameConfig";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Waterween from "../../depend/waterween/Waterween";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
 import { PromotTips } from "../../ui/common/PromotTips";
 
@@ -48,14 +46,13 @@ export default class JumpGameTrigger extends Script {
     jumpGame(userId: string) {
         const onFailed = (result: mw.TeleportResult) => {
             // 将错误信息发给所有参与的客户端
-            for (const userId in result.userIds) {
-                const player = Player.getPlayer(userId);
-                if (player) {
-                    Event.dispatchToClient(player, "onJumpGameFailed", result.message);
-                    Log4Ts.log(this, "onJumpGameFailed", result.message);
-                }
+            const player = Player.getPlayer(userId);
+            if (player) {
+                Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                Log4Ts.log(this, "onJumpGameFailed", result.message);
             }
         };
+
         TeleportService.asyncTeleportToScene(this.getJumpSceneName(this._jumpGameType), [userId],).then(() => {
         }, onFailed);
     }

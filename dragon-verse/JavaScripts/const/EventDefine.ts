@@ -165,7 +165,9 @@ export enum EventDefine {
     OnRunningGameUnlockMagicCircle = "On_RuningGame_Unlock_MagicCircle",
 
     /**当解锁龙任务完成 */
-    OnDragonQuestsComplete = "On_Dragon_Quests_Complete"
+    OnDragonQuestsComplete = "On_Dragon_Quests_Complete",
+
+    OnJumpingRoom = "On_Jumping_Room",
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

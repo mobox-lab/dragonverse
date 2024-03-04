@@ -35,6 +35,7 @@ import DialoguePanelController from "./depend/dialogify/dialogue-panel-controlle
 import GlobalPromptPanel_Generate from "./ui-generate/main/GlobalPromptPanel_generate";
 import GlobalProperty from "./GlobalProperty";
 import ObbyModuleData, { ObbyModuleC, ObbyModuleS } from "./module/obby/ObbyModule";
+import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -220,6 +221,7 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(CompanionModule_S, CompanionModule_C, CompanionData);
         moduleService.registerModule(QuestModuleS, QuestModuleC, QuestData);
         moduleService.registerModule(ObbyModuleS, ObbyModuleC, ObbyModuleData);
+        moduleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
         if (SystemUtil.isClient()) {
             moduleService.getModule(RoleModuleC).delegateOnReady(() => {
                 this._moduleReady = true;

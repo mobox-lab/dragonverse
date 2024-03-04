@@ -4,7 +4,7 @@
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * AUTHOR: 断桥烟雨
  * UI: UI/Main/Main_HUD.ui
- * TIME: 2024.01.30-15.47.37
+ * TIME: 2024.03.01-16.10.35
  */
 
  
@@ -459,6 +459,27 @@
 		}
 		return this.mSocialImg_Internal
 	}
+	private jumpRoomBtn_Internal: mw.Button
+	public get jumpRoomBtn(): mw.Button {
+		if(!this.jumpRoomBtn_Internal&&this.uiWidgetBase) {
+			this.jumpRoomBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/jumpRoomBtn') as mw.Button
+		}
+		return this.jumpRoomBtn_Internal
+	}
+	private actionimage_1_Internal: mw.Image
+	public get actionimage_1(): mw.Image {
+		if(!this.actionimage_1_Internal&&this.uiWidgetBase) {
+			this.actionimage_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/actionimage_1') as mw.Image
+		}
+		return this.actionimage_1_Internal
+	}
+	private actiontext_1_Internal: mw.TextBlock
+	public get actiontext_1(): mw.TextBlock {
+		if(!this.actiontext_1_Internal&&this.uiWidgetBase) {
+			this.actiontext_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/actiontext_1') as mw.TextBlock
+		}
+		return this.actiontext_1_Internal
+	}
 	private eventsCanvas_Internal: mw.Canvas
 	public get eventsCanvas(): mw.Canvas {
 		if(!this.eventsCanvas_Internal&&this.uiWidgetBase) {
@@ -479,6 +500,13 @@
 			this.mEventsImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/eventsCanvas/mEventsImg') as mw.Image
 		}
 		return this.mEventsImg_Internal
+	}
+	private roomIdText_Internal: mw.TextBlock
+	public get roomIdText(): mw.TextBlock {
+		if(!this.roomIdText_Internal&&this.uiWidgetBase) {
+			this.roomIdText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/roomIdText') as mw.TextBlock
+		}
+		return this.roomIdText_Internal
 	}
 
 
@@ -572,6 +600,12 @@
 		
 		
 	
+		this.jumpRoomBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "jumpRoomBtn");
+		})
+		
+		
+	
 		this.mEventsBtn.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mEventsBtn");
 		})
@@ -641,6 +675,12 @@
 		
 	
 		this.initLanguage(this.mPoint)
+		
+	
+		this.initLanguage(this.actiontext_1)
+		
+	
+		this.initLanguage(this.roomIdText)
 		
 	
 		//文本多语言

@@ -3,7 +3,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-16 14:42:38
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-02-27 13:44:20
+ * @LastEditTime : 2024-03-01 16:02:40
  * @FilePath     : \DragonVerse\pet-simulator\JavaScripts\gameplay\subgame\JumpGameTrigger.ts
  * @Description  : 跳游戏触发器
  */
@@ -37,6 +37,8 @@ export default class JumpGameTrigger extends Script {
         }
     }
 
+
+
     onProgressDone() {
         //跳游戏
         console.log(this, "跳游戏", this.getJumpSceneName(this.jumpGameId));
@@ -46,16 +48,16 @@ export default class JumpGameTrigger extends Script {
     jumpGame(userId: string) {
         const onFailed = (result: mw.TeleportResult) => {
             // 将错误信息发给所有参与的客户端
-            for (const userId in result.userIds) {
-                const player = Player.getPlayer(userId)
-                if (player) {
-                    Event.dispatchToClient(player, "onJumpGameFailed", result.message);
-                    Log4Ts.log(this, "onJumpGameFailed", result.message)
-                }
+            const player = Player.getPlayer(userId)
+            if (player) {
+                Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                Log4Ts.log(this, "onJumpGameFailed", result.message)
             }
+
         };
-        TeleportService.asyncTeleportToScene(this.getJumpSceneName(this.jumpGameId), [userId],).then(() => { }, onFailed);
+        TeleportService.asyncTeleportToScene(this.getJumpSceneName(this.jumpGameId), [userId], null).then(() => { }, onFailed);
     }
+
 
 
     onPlayerEnter(other: GameObject) {

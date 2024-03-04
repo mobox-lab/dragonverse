@@ -43,6 +43,7 @@ import { DollMachineModuleS } from "./modules/DollMachine/DollMachineModuleS";
 import * as mwaction from "mwaction";
 import PetSimulatorEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./modules/Energy/EnergyModule";
 import PetSimulatorAuthModuleData, { AuthModuleC, AuthModuleS } from "./modules/auth/AuthModule";
+import { JumpRoomModuleC, JumpRoomModuleS } from "./modules/jump-room/JumpRoomModule";
 
 // declare global {
 //     var UE: any;
@@ -217,6 +218,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PetSimulatorPlayerModuleData);
         ModuleService.registerModule(PetBagModuleS, PetBagModuleC, PetBagModuleData);
         ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PetSimulatorEnergyModuleData);
+        ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
     }
 
     /**
