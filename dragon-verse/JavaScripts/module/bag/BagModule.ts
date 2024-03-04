@@ -3,16 +3,16 @@ import ModuleS = mwext.ModuleS;
 import Subdata = mwext.Subdata;
 import createYoact = Yoact.createYoact;
 import Enumerable from "linq";
-import { IBagItemElement } from "../../config/BagItem";
-import { GameConfig } from "../../config/GameConfig";
+import {IBagItemElement} from "../../config/BagItem";
+import {GameConfig} from "../../config/GameConfig";
 import ByteArray from "../../depend/byteArray/ByteArray";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import IUnique from "../../depend/yoact/IUnique";
-import { Yoact } from "../../depend/yoact/Yoact";
+import {Yoact} from "../../depend/yoact/Yoact";
 import YoactArray from "../../depend/yoact/YoactArray";
-import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
-import { EventDefine } from "../../const/EventDefine";
-import { AuthModuleS } from "../auth/AuthModule";
+import ForeignKeyIndexer, {BagTypes} from "../../const/ForeignKeyIndexer";
+import {EventDefine} from "../../const/EventDefine";
+import {AuthModuleS} from "../auth/AuthModule";
 import GameStart from "../../GameStart";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import GlobalProperty from "../../GlobalProperty";
@@ -125,10 +125,19 @@ export default class BagModuleData extends Subdata {
     public itemsMap: object = {};
 
     @Decorator.persistence()
-    public gold: number = 0;
+    public handbookStr: string;
 
     @Decorator.persistence()
-    public handbookStr: string;
+    public obbyCoin: number = 0;
+
+    @Decorator.persistence()
+    public obbyTicket: number = 0;
+
+    @Decorator.persistence()
+    public lastDailyObbyCoinDrawTime: number = 0;
+
+    @Decorator.persistence()
+    public lastDailyObbyTicketDrawTime: number = 0;
 
     private _handbook: ByteArray = null;
 
@@ -143,7 +152,6 @@ export default class BagModuleData extends Subdata {
     protected initDefaultData(): void {
         this.currentVersion = this.version;
         this.itemsMap = {};
-        this.gold = 0;
         this.initHandBook();
     }
 
@@ -251,29 +259,6 @@ export default class BagModuleData extends Subdata {
         this.itemsMap = {};
     }
 
-    public getGold() {
-        return this.gold;
-    }
-
-    public addGold(count: number): boolean {
-        if (count > 0) {
-            this.gold += count;
-            return true;
-        } else {
-            const target = this.gold - count;
-            this.gold = target >= 0 ? target : 0;
-            return target >= 0;
-        }
-    }
-
-    /**
-     * 是否 可以支付.
-     * @param price
-     */
-    public isAfford(price: number) {
-        return this.gold >= price;
-    }
-
     /**
      * 记录收集.
      */
@@ -283,6 +268,50 @@ export default class BagModuleData extends Subdata {
         }
         this.handbook.setValue(bagId, true);
         return true;
+    }
+
+    /**
+     * 添加 Obby Coin.
+     * @param {number} count
+     * @param {boolean} daily 是否 每日奖励.
+     *      - true 进行每日奖励检查. 未到时间返回 false. 否则更新时间记录.
+     *      - false default.
+     * @return {boolean}
+     */
+    public addObbyCoin(count: number, daily: boolean = false): boolean {
+        let result: boolean;
+        if (daily) {
+            const now = new Date();
+            result = new Date(this.lastDailyObbyCoinDrawTime).toDateString() !== now.toDateString();
+            if (result) this.lastDailyObbyCoinDrawTime = now.getTime();
+            else return result;
+        }
+        this.obbyCoin += count;
+        result = this.obbyCoin >= 0;
+        if (!result) this.obbyCoin = 0;
+        return result;
+    }
+
+    /**
+     * 添加 Obby Ticket.
+     * @param {number} count
+     * @param {boolean} daily 是否 每日奖励.
+     *      - true 进行每日奖励检查. 未到时间返回 false. 否则更新时间记录.
+     *      - false default.
+     * @return {boolean}
+     */
+    public addObbyTicket(count: number, daily: boolean = false): boolean {
+        let result: boolean;
+        if (daily) {
+            const now = new Date();
+            result = new Date(this.lastDailyObbyTicketDrawTime).toDateString() !== now.toDateString();
+            if (result) this.lastDailyObbyTicketDrawTime = now.getTime();
+            else return result;
+        }
+        this.obbyTicket += count;
+        result = this.obbyTicket >= 0;
+        if (!result) this.obbyTicket = 0;
+        return result;
     }
 }
 
@@ -303,8 +332,9 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
     public handbookYoact: YoactArray<HandbookItemUnique> = new YoactArray<HandbookItemUnique>();
 
-    public goldYoact: { count: number } = createYoact({ count: 0 });
-    public dragonBallYoact: { count: number } = createYoact({ count: 0 });
+    public dragonBallYoact: { count: number } = createYoact({count: 0});
+    public obbyCoinYoact: { count: number } = Yoact.createYoact({count: 0});
+    public obbyTicketYoact: { count: number } = Yoact.createYoact({count: 0});
 
     private _isReady: boolean = false;
 
@@ -327,8 +357,9 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         this.handbookYoact
             .setAll(HandbookItemUnique.arrayFromByteArray(this.data));
         this.dragonBallYoact.count = this.getItemCount(GameServiceConfig.DRAGON_BALL_BAG_ID);
+        this.obbyCoinYoact.count = this.data.obbyCoin;
+        this.obbyTicketYoact.count = this.data.obbyTicket;
         this._isReady = true;
-        // this.goldYoact.count=this.getItemCount(GameServiceConfig.GOLD_BAG_ID);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
@@ -404,14 +435,6 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     }
 
     /**
-     * 是否 可以支付.
-     * @param price
-     */
-    public isAfford(price: number): boolean {
-        return isAfford(this.data, price);
-    }
-
-    /**
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall() {
@@ -458,10 +481,6 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         this.selfSetItem(bagId, autoRemove && !count ? null : count);
     }
 
-    public net_setGold(count: number) {
-        this.goldYoact.count = count;
-    }
-
     public net_setRecord(bagId: number, value: number) {
         const handbookItem = this.handbookYoact.getItem(bagId);
         if (!handbookItem) return;
@@ -470,6 +489,18 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
             Log4Ts.log(BagModuleC, `${v ? "" : "un"}record item. id: ${bagId}.`);
             handbookItem.collected = v;
         }
+    }
+
+    public net_setObbyCoin(count: number): void {
+        Log4Ts.log(BagModuleC, `set obby coin from server. count: ${count}.`);
+        this.data.obbyCoin = count;
+        this.obbyCoinYoact.count = count;
+    }
+
+    public net_setObbyTicket(count: number): void {
+        Log4Ts.log(BagModuleC, `set obby ticket from server. count: ${count}.`);
+        this.data.obbyTicket = count;
+        this.obbyTicketYoact.count = count;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -526,17 +557,6 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
-    /**
-     * 添加金币.
-     * @param playerId
-     * @param count
-     */
-    public addGold(playerId: number, count: number) {
-        const playerData = this.getPlayerData(playerId);
-        playerData.addGold(count);
-        playerData.save(false);
-        this.getClient(playerId).net_setGold(playerData.getGold());
-    }
 
     /**
      添加或删除指定数量的 BagItem.
@@ -627,6 +647,71 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         return !GlobalProperty.getInstance().isRelease || this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
     }
 
+    /**
+     * 每日领取 Obby Coin.
+     * @param {number} playerId
+     * @return {boolean}
+     */
+    public dailyDrawObbyCoin(playerId: number): boolean {
+        const playerData = this.getPlayerData(playerId);
+        if (!playerData) return false;
+        Log4Ts.log(BagModuleS, `daily draw obby coin. playerId: ${playerId}. count: ${GameServiceConfig.DAILY_OBBY_COIN_OBTAIN_COUNT}. player last get time: ${new Date(playerData.lastDailyObbyCoinDrawTime).toDateString()}.`);
+        playerData.addObbyCoin(GameServiceConfig.DAILY_OBBY_COIN_OBTAIN_COUNT, true);
+        playerData.save(false);
+        this.getClient(playerId).net_setObbyCoin(playerData.obbyCoin);
+        return true;
+    }
+
+    /**
+     * 添加或删除 Obby Coin.
+     * @param {number} playerId
+     * @param {number} count
+     */
+    public addObbyCoin(playerId: number, count: number) {
+        const playerData = this.getPlayerData(playerId);
+        Log4Ts.log(BagModuleS, `add draw obby coin. playerId: ${playerId}. count: ${count}.`);
+        playerData.addObbyCoin(count, false);
+        playerData.save(false);
+        this.getClient(playerId).net_setObbyCoin(playerData.obbyCoin);
+    }
+
+    /**
+     * 每日领取 Obby Ticket.
+     * @param {number} playerId
+     * @return {boolean}
+     */
+    public dailyDrawObbyTicket(playerId: number): boolean {
+        const playerData = this.getPlayerData(playerId);
+        if (!playerData) return false;
+        Log4Ts.log(BagModuleS, `daily draw obby ticket. playerId: ${playerId}. count: ${GameServiceConfig.DAILY_OBBY_TICKET_OBTAIN_COUNT}. player last get time: ${new Date(playerData.lastDailyObbyTicketDrawTime).toDateString()}.`);
+        playerData.addObbyTicket(GameServiceConfig.DAILY_OBBY_TICKET_OBTAIN_COUNT, true);
+        playerData.save(false);
+        this.getClient(playerId).net_setObbyTicket(playerData.obbyTicket);
+        return true;
+    }
+
+    /**
+     * 添加或删除 Obby Ticket.
+     * @param {number} playerId
+     * @param {number} count
+     */
+    public addObbyTicket(playerId: number, count: number) {
+        const playerData = this.getPlayerData(playerId);
+        Log4Ts.log(BagModuleS, `add draw obby ticket. playerId: ${playerId}. count: ${count}.`);
+        playerData.addObbyTicket(count, false);
+        playerData.save(false);
+        this.getClient(playerId).net_setObbyTicket(playerData.obbyTicket);
+    }
+
+    /**
+     * 是否 玩家具有 Obby Ticket.
+     * @param {number} playerId
+     * @return {boolean}
+     */
+    public hasObbyTicket(playerId: number): boolean {
+        return (this.getPlayerData(playerId)?.obbyTicket ?? 0) > 0;
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
@@ -638,7 +723,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         this.removeItem(this.currentPlayerId, bagId);
     }
 
-    /** 
+    /**
      * @description: 获取背包物品对应数量
      * @param playerId 玩家id
      * @param bagId 物品id
@@ -648,9 +733,6 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         const data = this.getPlayerData(playerId);
         return data.getItemCount(bagId);
     }
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-}
 
-function isAfford(data: BagModuleData, price: number) {
-    return data.isAfford(price);
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
