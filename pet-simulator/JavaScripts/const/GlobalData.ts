@@ -1284,6 +1284,10 @@ export namespace GlobalData {
      * Auth 及 通信.
      */
     export class Auth {
+        /**
+         * 敏感数据重取间隔. ms
+         * @type {number}
+         */
         public static readonly KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL = 3e3;
 
         /**

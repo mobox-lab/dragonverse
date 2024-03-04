@@ -1,13 +1,13 @@
 import CryptoJS from "crypto-js";
-import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import {JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
 import GToolkit from "../../utils/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import noReply = mwext.Decorator.noReply;
-import { Yoact } from "../../depend/yoact/Yoact";
+import {Yoact} from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import UUID from "pure-uuid";
 import Enumerable from "linq";
-import { Globaldata } from "../../const/Globaldata";
+import {Globaldata} from "../../const/Globaldata";
 import Regulator from "../../depend/regulator/Regulator";
 
 export default class BattleWorldAuthModuleData extends JModuleData {
@@ -32,11 +32,7 @@ export default class BattleWorldAuthModuleData extends JModuleData {
     }
 }
 
-interface QueryP12Param {
-    userId?: string;
-    walletAddress?: string;
-}
-
+//#region Interface
 interface EncryptedRequest {
     encryptData: string;
 }
@@ -198,6 +194,7 @@ interface QueryMoboxDragonDataResponse {
     message?: string;
     data?: { dragons: MoboxDragonData[] };
 }
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 /**
  * 消费类型.
@@ -236,9 +233,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, BattleWorldAuthModuleData
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    private _originToken: string = null;
-
-    public currency = createYoact({ count: 0 });
+    public currency = createYoact({count: 0});
 
     private _lastQueryCurrencyTime: number = 0;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -514,70 +509,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
 
     public static readonly KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL = 3e3;
 
-    private static getSensitiveData() {
-        GToolkit.doUntilTrue(
-            () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
-            this.getCodeVerifyAesKey,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
-        );
-        GToolkit.doUntilTrue(
-            () => !GToolkit.isNullOrEmpty(this.CLIENT_ID),
-            this.getClientId,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
-        );
-        GToolkit.doUntilTrue(
-            () => !GToolkit.isNullOrEmpty(this.SECRET),
-            this.querySecret,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
-        );
-    }
-
-    private static getCodeVerifyAesKey() {
-        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
-            (value) => {
-                Log4Ts.log(AuthModuleS, `value`, value.code);
-                if (value.code === 200) {
-                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
-                        AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
-                    } else {
-                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey Failed`);
-                    }
-                }
-            }
-        );
-    }
-
-    private static getClientId() {
-        DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
-            (value) => {
-                if (value.code === 200) {
-                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.CLIENT_ID = value.data;
-                    } else {
-                        Log4Ts.log(AuthModuleS, `getClientId Failed`);
-                    }
-                }
-            }
-        );
-    }
-
-    private static querySecret() {
-        DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
-            (value) => {
-                if (value.code === 200) {
-                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.SECRET = value.data;
-                    } else {
-                        Log4Ts.log(AuthModuleS, `querySecret Failed`);
-                    }
-                }
-            }
-        );
-    }
-
-
-
     private static logGetDataError() {
         Log4Ts.error(AuthModuleS, `get data failed.`, `refreshing.`);
     }
@@ -609,16 +540,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
 
     protected onJStart(): void {
         //#region Member init
-
-        if (GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_KEY)) {
-            AuthModuleS.getSensitiveData();
-        } else {
-            // DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.CODE_VERIFY_AES_KEY);
-            // DataStorage.asyncSetData(AuthModuleS.CLIENT_ID_STORAGE_KEY, AuthModuleS.CLIENT_ID);
-            // DataStorage.asyncSetData(AuthModuleS.SECRET_STORAGE_KEY, AuthModuleS.SECRET);
-        }
-
-        // AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+        AuthModuleS.getSensitiveData();
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
@@ -662,6 +584,80 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
+
+//#region Sensitive Data
+    private static getSensitiveData() {
+        Log4Ts.log(AuthModuleS, `try get sensitive data.`);
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
+            this.getCodeVerifyAesKey,
+            Globaldata.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.CLIENT_ID),
+            this.getClientId,
+            Globaldata.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        GToolkit.doUntilTrue(
+            () => !GToolkit.isNullOrEmpty(this.SECRET),
+            this.querySecret,
+            Globaldata.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+    }
+
+    private static getCodeVerifyAesKey() {
+        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
+            (value) => {
+                Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey`);
+                if (value.code === 200 && !GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    Log4Ts.log(undefined, "success.");
+                    AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
+                    AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+                } else {
+                    Log4Ts.log(undefined, `failed. code: ${value.code}. data: ${value.data}.`);
+                    if (value.data === AuthModuleS.PLACE_HOLDER) {
+                        Log4Ts.log(undefined, `data in kv storage is still place holder.`);
+                    }
+                }
+            }
+        );
+    }
+
+    private static getClientId() {
+        DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
+            (value) => {
+                Log4Ts.log(AuthModuleS, `getClientId`);
+                if (value.code === 200 && !GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    Log4Ts.log(undefined, "success.");
+                    AuthModuleS.CLIENT_ID = value.data;
+                } else {
+                    Log4Ts.log(undefined, `failed. code: ${value.code}. data: ${value.data}.`);
+                    if (value.data === AuthModuleS.PLACE_HOLDER) {
+                        Log4Ts.log(undefined, `data in kv storage is still place holder.`);
+                    }
+                }
+            }
+        );
+    }
+
+    private static querySecret() {
+        DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
+            (value) => {
+                Log4Ts.log(AuthModuleS, `querySecret`);
+                if (value.code === 200 && !GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    Log4Ts.log(undefined, "success.");
+                    AuthModuleS.SECRET = value.data;
+                } else {
+                    Log4Ts.log(undefined, `failed. code: ${value.code}. data: ${value.data}.`);
+                    if (value.data === AuthModuleS.PLACE_HOLDER) {
+                        Log4Ts.log(undefined, `data in kv storage is still place holder.`);
+                    }
+                }
+            }
+        );
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     private logPlayerNotExist(playerId: number) {
         Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
@@ -770,8 +766,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
             symbol: "mbox",
         };
         const resp = await fetch(`${Globaldata.isRelease ?
-            AuthModuleS.RELEASE_GET_CURRENCY_URL :
-            AuthModuleS.TEST_GET_CURRENCY_URL}`,
+                AuthModuleS.RELEASE_GET_CURRENCY_URL :
+                AuthModuleS.TEST_GET_CURRENCY_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -811,8 +807,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         this.getPlayerData(playerId)?.serverSaveOrder(order);
 
         const resp = await fetch(`${Globaldata.isRelease ?
-            AuthModuleS.RELEASE_CONSUME_URL :
-            AuthModuleS.TEST_CONSUME_URL}`,
+                AuthModuleS.RELEASE_CONSUME_URL :
+                AuthModuleS.TEST_CONSUME_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -879,8 +875,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
             encryptData: this.getSecret(JSON.stringify(param)),
         };
         const resp = await fetch(`${Globaldata.isRelease ?
-            AuthModuleS.RELEASE_UPDATE_BATTLE_WORLD_RANK_DATA_URL :
-            AuthModuleS.TEST_UPDATE_BATTLE_WORLD_RANK_DATA_URL}`,
+                AuthModuleS.RELEASE_UPDATE_BATTLE_WORLD_RANK_DATA_URL :
+                AuthModuleS.TEST_UPDATE_BATTLE_WORLD_RANK_DATA_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -892,6 +888,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         const respInJson = await resp.json();
         Log4Ts.log(AuthModuleS, `get resp when report sub game info. ${JSON.stringify(respInJson)}`);
     }
+
     // public async reportPetRankData(playerId: number, petName: string, rarity: PetQuality, attack: number, obtainTime: number, round: number) {
     //     const userId = Player.getPlayer(playerId)?.userId ?? null;
     //     if (GToolkit.isNullOrUndefined(userId)) {
@@ -934,8 +931,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         }
 
         const resp = await fetch(`${Globaldata.isRelease ?
-            AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
-            AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL}?uid=${userId}`,
+                AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
+                AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL}?uid=${userId}`,
             {
                 method: "GET",
             });
@@ -953,11 +950,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, BattleWorldAuthModuleData
         return Promise.resolve(Enumerable
             .from(respInJson.data.dragons)
             .doAction(item => {
-                const qua = formatElements(item.elements);
-                item.quality = qua.quality;
-                item.primaryEle = qua.primaryEle;
-                item.secondEle = qua.secondEle;
-            },
+                    const qua = formatElements(item.elements);
+                    item.quality = qua.quality;
+                    item.primaryEle = qua.primaryEle;
+                    item.secondEle = qua.secondEle;
+                },
             )
             .defaultIfEmpty({
                 elements: 0,
@@ -1027,5 +1024,5 @@ function formatElements(data: number): MoboxDragonInstanceQuality {
         secondEle = secondEle * 10 + ((data & 0x00f000) >> 12);
         secondEle = secondEle * 10 + ((data & 0x0f0000) >> 16);
     }
-    return { primaryEle: quality, quality: primaryEle, secondEle: secondEle };
+    return {primaryEle: quality, quality: primaryEle, secondEle: secondEle};
 }

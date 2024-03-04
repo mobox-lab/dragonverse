@@ -1,10 +1,10 @@
 import CryptoJS from "crypto-js";
-import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import {JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
 
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { GlobalEnum } from "../../const/Enum";
-import { GlobalData } from "../../const/GlobalData";
-import { Yoact } from "../../depend/yoact/Yoact";
+import {GlobalEnum} from "../../const/Enum";
+import {GlobalData} from "../../const/GlobalData";
+import {Yoact} from "../../depend/yoact/Yoact";
 import UUID from "pure-uuid";
 import Enumerable from "linq";
 import noReply = mwext.Decorator.noReply;
@@ -38,6 +38,7 @@ export default class PetSimulatorAuthModuleData extends JModuleData {
     }
 }
 
+//#region Interface
 interface EncryptedRequest {
     encryptData: string;
 }
@@ -201,6 +202,7 @@ interface QueryMoboxDragonDataResponse {
     info?: string;
     data?: { dragons: MoboxDragonData[] };
 }
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 /**
  * 消费类型.
@@ -239,9 +241,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, PetSimulatorAuthModuleDat
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    private _originToken: string = null;
-
-    public currency = createYoact({ count: 0 });
+    public currency = createYoact({count: 0});
 
     private _lastQueryCurrencyTime: number = 0;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -326,7 +326,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, PetSimulatorAuthModuleDat
     public reportTempToken(token: string) {
         this.server.net_reportTempToken(token).then(
             (value) => {
-                if (value) {
+                if (value[0]) {
                     Log4Ts.log(AuthModuleC, `registered token report success.`);
                 } else {
                     Log4Ts.warn(AuthModuleC, `temp token report failed. reason: ${value[1] ?? ""}.`);
@@ -495,6 +495,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         return this.RELEASE_MOBOX_NFT_URL + this.QUERY_MOBOX_DRAGON_URL_SUFFIX;
     }
 
+
     private static readonly HEADER_TOKEN = "x-bits-token";
 
     private static CODE_VERIFY_AES_KEY = "";
@@ -512,7 +513,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     private static readonly SECRET_STORAGE_KEY = "SECRET_STORAGE_KEY";
 
     private static readonly PLACE_HOLDER = "REPLACE_IT";
-
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -541,7 +541,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
 
     protected onJStart(): void {
         //#region Member init
-        Log4Ts.log(AuthModuleS, `AuthModuleS Start`);
         AuthModuleS.getSensitiveData();
         //#endregion ------------------------------------------------------------------------------------------
 
@@ -586,7 +585,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
+
+//#region Sensitive Data
     private static getSensitiveData() {
+        Log4Ts.log(AuthModuleS, `try get sensitive data.`);
         GToolkit.doUntilTrue(
             () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
             this.getCodeVerifyAesKey,
@@ -607,13 +609,15 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     private static getCodeVerifyAesKey() {
         DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
             (value) => {
-                Log4Ts.log(AuthModuleS, `value`, value.code);
-                if (value.code === 200) {
-                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
-                        AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
-                    } else {
-                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey Failed`);
+                Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey`);
+                if (value.code === 200 && !GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    Log4Ts.log(undefined, "success.");
+                    AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
+                    AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
+                } else {
+                    Log4Ts.log(undefined, `failed. code: ${value.code}. data: ${value.data}.`);
+                    if (value.data === AuthModuleS.PLACE_HOLDER) {
+                        Log4Ts.log(undefined, `data in kv storage is still place holder.`);
                     }
                 }
             }
@@ -623,11 +627,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     private static getClientId() {
         DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
             (value) => {
-                if (value.code === 200) {
-                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.CLIENT_ID = value.data;
-                    } else {
-                        Log4Ts.log(AuthModuleS, `getClientId Failed`);
+                Log4Ts.log(AuthModuleS, `getClientId`);
+                if (value.code === 200 && !GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    Log4Ts.log(undefined, "success.");
+                    AuthModuleS.CLIENT_ID = value.data;
+                } else {
+                    Log4Ts.log(undefined, `failed. code: ${value.code}. data: ${value.data}.`);
+                    if (value.data === AuthModuleS.PLACE_HOLDER) {
+                        Log4Ts.log(undefined, `data in kv storage is still place holder.`);
                     }
                 }
             }
@@ -637,28 +644,31 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     private static querySecret() {
         DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
             (value) => {
-                if (value.code === 200) {
-                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.SECRET = value.data;
-                    } else {
-                        Log4Ts.log(AuthModuleS, `querySecret Failed`);
+                Log4Ts.log(AuthModuleS, `querySecret`);
+                if (value.code === 200 && !GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    Log4Ts.log(undefined, "success.");
+                    AuthModuleS.SECRET = value.data;
+                } else {
+                    Log4Ts.log(undefined, `failed. code: ${value.code}. data: ${value.data}.`);
+                    if (value.data === AuthModuleS.PLACE_HOLDER) {
+                        Log4Ts.log(undefined, `data in kv storage is still place holder.`);
                     }
                 }
             }
         );
     }
 
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-
-    private logPlayerNotExist(playerId: number) {
+    private logPlayerNotExist(playerId: number): void {
         Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
     }
 
-    private logPlayerTokenInvalid(playerId: number) {
+    private logPlayerTokenInvalid(playerId: number): void {
         Log4Ts.error(AuthModuleS, `player token invalid. id: ${playerId}`);
     }
 
-    private getSecret(message: string) {
+    private getSecret(message: string): string {
         if (GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_IV) || GToolkit.isNullOrEmpty(AuthModuleS.CODE_VERIFY_AES_KEY)) {
             Log4Ts.log(AuthModuleS, `code verify aes iv or key is null or empty.`);
             return;
@@ -676,7 +686,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         return e.ciphertext.toString(CryptoJS.enc.Base64);
     }
 
-    private getSign(params: object) {
+    private getSign(params: object): string {
         if (GToolkit.isNullOrEmpty(AuthModuleS.SECRET)) {
             Log4Ts.log(AuthModuleS, `secret is null or empty.`);
             return;
@@ -692,10 +702,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
 
     /**
      * 获取并注册 P12 token.
-     * @return {Promise<boolean>}
      * @private
      * @param playerId
      * @param tempToken
+     * @returns {Promise<[boolean, string]>} [result, reason]
      */
     private async getP12Token(playerId: number, tempToken: string): Promise<[boolean, string]> {
         if (GToolkit.isNullOrEmpty(tempToken)) {
@@ -721,15 +731,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
             const msg = `get token failed. ${JSON.stringify(respInJson)}`;
             Log4Ts.error(AuthModuleS, msg);
             return [false, msg];
+        } else if (this._tokenMap.has(playerId)) {
+            this._tokenMap.set(playerId, respInJson.data?.token);
+            this.onRefreshToken(playerId);
+            return [true, `success. token: ${respInJson.data?.token}`];
         } else {
-            if (this._tokenMap.has(playerId)) {
-                this._tokenMap.set(playerId, respInJson.data?.token);
-                this.onRefreshToken(playerId);
-                return [true, "success."];
-            } else {
-                this.logPlayerNotExist(playerId);
-                return [false, "player not exist."];
-            }
+            this.logPlayerNotExist(playerId);
+            return [false, "player not exist."];
         }
     }
 
@@ -758,8 +766,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
             symbol: "mbox",
         };
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-            AuthModuleS.RELEASE_GET_CURRENCY_URL :
-            AuthModuleS.TEST_GET_CURRENCY_URL}`,
+                AuthModuleS.RELEASE_GET_CURRENCY_URL :
+                AuthModuleS.TEST_GET_CURRENCY_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -799,8 +807,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         this.getPlayerData(playerId)?.serverSaveOrder(order);
 
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-            AuthModuleS.RELEASE_CONSUME_URL :
-            AuthModuleS.TEST_CONSUME_URL}`,
+                AuthModuleS.RELEASE_CONSUME_URL :
+                AuthModuleS.TEST_CONSUME_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -869,8 +877,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
             encryptData: this.getSecret(JSON.stringify(param)),
         };
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-            AuthModuleS.RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL :
-            AuthModuleS.TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL}`,
+                AuthModuleS.RELEASE_UPDATE_PET_SIMULATOR_RANK_DATA_URL :
+                AuthModuleS.TEST_UPDATE_PET_SIMULATOR_RANK_DATA_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -896,8 +904,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         }
 
         const resp = await fetch(`${GlobalData.Global.isRelease ?
-            AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
-            AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL
+                AuthModuleS.RELEASE_QUERY_MOBOX_DRAGON_URL :
+                AuthModuleS.TEST_QUERY_MOBOX_DRAGON_URL
             }?uid=${userId}`,
             {
                 method: "GET",
@@ -916,11 +924,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
         return Promise.resolve(Enumerable
             .from(respInJson.data.dragons)
             .doAction(item => {
-                const qua = formatElements(item.elements);
-                item.quality = qua.quality;
-                item.primaryEle = qua.primaryEle;
-                item.secondEle = qua.secondEle;
-            },
+                    const qua = formatElements(item.elements);
+                    item.quality = qua.quality;
+                    item.primaryEle = qua.primaryEle;
+                    item.secondEle = qua.secondEle;
+                },
             )
             .defaultIfEmpty({
                 elements: 0,
@@ -946,6 +954,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, PetSimulatorAuthModuleDat
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
+    @noReply()
     public async net_queryCurrency() {
         this.queryCurrency(this.currentPlayerId);
     }
@@ -994,5 +1003,5 @@ function formatElements(data: number): MoboxDragonInstanceQuality {
         secondEle = secondEle * 10 + ((data & 0x00f000) >> 12);
         secondEle = secondEle * 10 + ((data & 0x0f0000) >> 16);
     }
-    return { primaryEle: quality, quality: primaryEle, secondEle: secondEle };
+    return {primaryEle: quality, quality: primaryEle, secondEle: secondEle};
 }
