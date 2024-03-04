@@ -1,4 +1,4 @@
-import GToolkit, { Tf } from "../util/GToolkit";
+import GToolkit, {Tf} from "../util/GToolkit";
 
 export default class GameServiceConfig {
     //#region Sub Game
@@ -301,6 +301,16 @@ export default class GameServiceConfig {
      * Dragon Ball 背包 Id.
      */
     public static readonly DRAGON_BALL_BAG_ID = 1;
+
+    /**
+     * 每日 obby coin 获取数量.
+     */
+    public static readonly DAILY_OBBY_COIN_OBTAIN_COUNT = 10;
+
+    /**
+     * 每日 obby ticket 获取数量.
+     */
+    public static readonly DAILY_OBBY_TICKET_OBTAIN_COUNT = 10;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Role
