@@ -57,12 +57,61 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.imgSprintEffect1_Internal
 	}
+	private playcount_Internal: mw.Canvas
+	public get playcount(): mw.Canvas {
+		if(!this.playcount_Internal&&this.uiWidgetBase) {
+			this.playcount_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/playcount') as mw.Canvas
+		}
+		return this.playcount_Internal
+	}
+	private hearticon_Internal: mw.Image
+	public get hearticon(): mw.Image {
+		if(!this.hearticon_Internal&&this.uiWidgetBase) {
+			this.hearticon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/playcount/hearticon') as mw.Image
+		}
+		return this.hearticon_Internal
+	}
+	private playtimecount_Internal: mw.TextBlock
+	public get playtimecount(): mw.TextBlock {
+		if(!this.playtimecount_Internal&&this.uiWidgetBase) {
+			this.playtimecount_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/playcount/playtimecount') as mw.TextBlock
+		}
+		return this.playtimecount_Internal
+	}
+	private playtimecount_1_Internal: mw.TextBlock
+	public get playtimecount_1(): mw.TextBlock {
+		if(!this.playtimecount_1_Internal&&this.uiWidgetBase) {
+			this.playtimecount_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/playcount/playtimecount_1') as mw.TextBlock
+		}
+		return this.playtimecount_1_Internal
+	}
 	private sceneDragonInteractorContainer_Internal: mw.Canvas
 	public get sceneDragonInteractorContainer(): mw.Canvas {
 		if(!this.sceneDragonInteractorContainer_Internal&&this.uiWidgetBase) {
 			this.sceneDragonInteractorContainer_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/sceneDragonInteractorContainer') as mw.Canvas
 		}
 		return this.sceneDragonInteractorContainer_Internal
+	}
+	private coincount_Internal: mw.Canvas
+	public get coincount(): mw.Canvas {
+		if(!this.coincount_Internal&&this.uiWidgetBase) {
+			this.coincount_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/coincount') as mw.Canvas
+		}
+		return this.coincount_Internal
+	}
+	private coinback_Internal: mw.Image
+	public get coinback(): mw.Image {
+		if(!this.coinback_Internal&&this.uiWidgetBase) {
+			this.coinback_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/coincount/coinback') as mw.Image
+		}
+		return this.coinback_Internal
+	}
+	private textcoin_Internal: mw.TextBlock
+	public get textcoin(): mw.TextBlock {
+		if(!this.textcoin_Internal&&this.uiWidgetBase) {
+			this.textcoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/coincount/textcoin') as mw.TextBlock
+		}
+		return this.textcoin_Internal
 	}
 	private cnvSetting_Internal: mw.Canvas
 	public get cnvSetting(): mw.Canvas {
@@ -190,6 +239,34 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnRunning_Internal
 	}
+	private coin_Internal: mw.Image
+	public get coin(): mw.Image {
+		if(!this.coin_Internal&&this.uiWidgetBase) {
+			this.coin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/coin') as mw.Image
+		}
+		return this.coin_Internal
+	}
+	private cost_Internal: mw.TextBlock
+	public get cost(): mw.TextBlock {
+		if(!this.cost_Internal&&this.uiWidgetBase) {
+			this.cost_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/cost') as mw.TextBlock
+		}
+		return this.cost_Internal
+	}
+	private cost_1_Internal: mw.TextBlock
+	public get cost_1(): mw.TextBlock {
+		if(!this.cost_1_Internal&&this.uiWidgetBase) {
+			this.cost_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/cost_1') as mw.TextBlock
+		}
+		return this.cost_1_Internal
+	}
+	private coin_1_Internal: mw.Image
+	public get coin_1(): mw.Image {
+		if(!this.coin_1_Internal&&this.uiWidgetBase) {
+			this.coin_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/coin_1') as mw.Image
+		}
+		return this.coin_1_Internal
+	}
 	private cnvOperationalFeedback_Internal: mw.Canvas
 	public get cnvOperationalFeedback(): mw.Canvas {
 		if(!this.cnvOperationalFeedback_Internal&&this.uiWidgetBase) {
@@ -307,7 +384,22 @@ export default class MainPanel_Generate extends UIScript {
         
         // 文本多语言
         
+        this.initLanguage(this.playtimecount)
+        
+	
+        this.initLanguage(this.playtimecount_1)
+        
+	
+        this.initLanguage(this.textcoin)
+        
+	
         this.initLanguage(this.txtDragonBallNum)
+        
+	
+        this.initLanguage(this.cost)
+        
+	
+        this.initLanguage(this.cost_1)
         
 	
         this.initLanguage(this.txtOperationFeedback)
@@ -357,7 +449,22 @@ export default class MainPanel_Generate extends UIScript {
         
         // 文本多语言
         
+        this.unregisterLanKey(this.playtimecount)
+        
+	
+        this.unregisterLanKey(this.playtimecount_1)
+        
+	
+        this.unregisterLanKey(this.textcoin)
+        
+	
         this.unregisterLanKey(this.txtDragonBallNum)
+        
+	
+        this.unregisterLanKey(this.cost)
+        
+	
+        this.unregisterLanKey(this.cost_1)
         
 	
         this.unregisterLanKey(this.txtOperationFeedback)
