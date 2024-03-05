@@ -13,12 +13,13 @@ import {QuestModuleC} from "../../module/quest/QuestModuleC";
 
 import {HeadUIController} from "../../controller/HeadUIController";
 
-import GToolkit from "../../util/GToolkit";
+import GToolkit, {RandomGenerator} from "../../util/GToolkit";
 import MainCurtainPanel from "../main/MainCurtainPanel";
 import UIScript = mw.UIScript;
 import GameServiceConfig from "../../const/GameServiceConfig";
 import i18n, {LanguageTypes} from "../../language/i18n";
 import {ObbyModuleC, ObbyModuleS} from "../../module/obby/ObbyModule";
+import Gtk from "../../util/GToolkit";
 
 
 /**
@@ -49,20 +50,20 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
 }
 
 AddGMCommand("Hello world", () => {
-        Log4Ts.log(GMPanel, `Hello world`);
-    },
+    Log4Ts.log(GMPanel, `Hello world`);
+},
     null,
     "CHello");
 AddGMCommand("Prompt", () => {
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
-    },
+    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
+},
     null,
     "MainPanel");
 
 AddGMCommand("Show Curtain", (player, value) => {
-        if (GToolkit.isNullOrEmpty(value)) Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
-        else Event.dispatchToLocal(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME);
-    },
+    if (GToolkit.isNullOrEmpty(value)) Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
+    else Event.dispatchToLocal(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME);
+},
     null,
     "MainPanel");
 
@@ -216,12 +217,6 @@ AddGMCommand("切语言", (player, value) => {
     i18n.use(Number(value), true);
 });
 
-AddGMCommand("重置跑酷等级",
-    (player, value) => {
-    }, (player, value) => {
-        ModuleService.getModule(ObbyModuleS).gmSetLV(player.playerId, Number.parseInt(value));
-    });
-
 //#region TDD-Obby Coin & Ticket
 AddGMCommand(
     "触发每日领取 ObbyCoin",
@@ -229,6 +224,7 @@ AddGMCommand(
     (player) => {
         ModuleService.getModule(BagModuleS).dailyDrawObbyCoin(player.playerId);
     },
+    "TTD"
 );
 
 AddGMCommand(
@@ -242,6 +238,7 @@ AddGMCommand(
         data.lastDailyObbyCoinDrawTime = 0;
         data.save(false);
     },
+    "TTD"
 );
 
 AddGMCommand(
@@ -256,6 +253,7 @@ AddGMCommand(
             module.getClient(player).net_setObbyCoin(data.obbyCoin);
         }
     },
+    "TTD",
 );
 
 AddGMCommand(
@@ -264,6 +262,7 @@ AddGMCommand(
     (player) => {
         ModuleService.getModule(BagModuleS).dailyDrawObbyTicket(player.playerId);
     },
+    "TTD",
 );
 
 AddGMCommand(
@@ -277,6 +276,7 @@ AddGMCommand(
         data.lastDailyObbyTicketDrawTime = 0;
         data.save(false);
     },
+    "TTD"
 );
 
 AddGMCommand(
@@ -291,5 +291,41 @@ AddGMCommand(
             module.getClient(player).net_setObbyTicket(data.obbyTicket);
         }
     },
+    "TTD"
+);
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+//#region TDD-Obby Star
+AddGMCommand(
+    "附近生成 ObbyStar",
+    undefined,
+    (player) => {
+        GameObject.asyncSpawn("6EDF95564D6DA29E3D8CA7BD1C854B77", {
+            replicates: true,
+            transform: new Transform(
+                new RandomGenerator()
+                    .from(Gtk.randomDimensionSphere(2))
+                    .handle((value) => {
+                        return value * 500;
+                    })
+                    .toVector3()
+                    .add(player.character.worldTransform.position),
+                new mw.Rotation,
+                mw.Vector.one)
+        }).then(
+            (value) => {
+                Log4Ts.log({name: "TTD"}, `ObbyStar Spawned: ${value}`);
+            }
+        );
+    },
+    "TTD"
+);
+AddGMCommand(
+    "重置所有 ObbyStar",
+    undefined,
+    (player) => {
+        Event.dispatchToLocal(EventDefine.ObbyStarReset, player);
+    },
+    "TTD"
 );
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

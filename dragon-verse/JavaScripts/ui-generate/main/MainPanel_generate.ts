@@ -225,19 +225,19 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.obbySkillCanvas_Internal
 	}
-	private btnDragon_Internal: mw.StaleButton
-	public get btnDragon(): mw.StaleButton {
-		if(!this.btnDragon_Internal&&this.uiWidgetBase) {
-			this.btnDragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/obbySkillCanvas/btnDragon') as mw.StaleButton
+	private btnFindPath_Internal: mw.StaleButton
+	public get btnFindPath(): mw.StaleButton {
+		if(!this.btnFindPath_Internal&&this.uiWidgetBase) {
+			this.btnFindPath_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/obbySkillCanvas/btnFindPath') as mw.StaleButton
 		}
-		return this.btnDragon_Internal
+		return this.btnFindPath_Internal
 	}
-	private btnBook_Internal: mw.StaleButton
-	public get btnBook(): mw.StaleButton {
-		if(!this.btnBook_Internal&&this.uiWidgetBase) {
-			this.btnBook_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/obbySkillCanvas/btnBook') as mw.StaleButton
+	private btnShield_Internal: mw.StaleButton
+	public get btnShield(): mw.StaleButton {
+		if(!this.btnShield_Internal&&this.uiWidgetBase) {
+			this.btnShield_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/obbySkillCanvas/btnShield') as mw.StaleButton
 		}
-		return this.btnBook_Internal
+		return this.btnShield_Internal
 	}
 	private coin_Internal: mw.Image
 	public get coin(): mw.Image {
@@ -393,10 +393,10 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.btnCode);
         
 	
-        this.initLanguage(this.btnDragon);
+        this.initLanguage(this.btnFindPath);
         
 	
-        this.initLanguage(this.btnBook);
+        this.initLanguage(this.btnShield);
         
 	
         this.initLanguage(this.btnReset);
@@ -461,10 +461,10 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.btnCode);
         
 	
-        this.unregisterLanKey(this.btnDragon);
+        this.unregisterLanKey(this.btnFindPath);
         
 	
-        this.unregisterLanKey(this.btnBook);
+        this.unregisterLanKey(this.btnShield);
         
 	
         this.unregisterLanKey(this.btnReset);

@@ -1,5 +1,88 @@
-import { Delegate } from "../delegate/Delegate.js";
+import {Delegate} from "../delegate/Delegate.js";
 import SimpleDelegate = Delegate.SimpleDelegate;
+
+/**
+ * Finite State Machine.
+ * 有限自动状态机 (FSM).
+ * @desc 一种基于状态的行为设计模式.
+ * @desc 针对状态定义转换条件.
+ * @desc 允许搭配响应式数据使用.
+ * @desc ---
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
+ * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
+ * @version 1.0.6b
+ */
+export default class FiniteStateMachine<TEvent> {
+    /**
+     * 根状态.
+     */
+    public readonly root: State<TEvent>;
+
+    public constructor(root: State<TEvent>) {
+        this.root = root;
+        this._current = root;
+        this.root.onEnter.invoke();
+    }
+
+    private _current: State<TEvent>;
+
+    /**
+     * 当前状态.
+     */
+    public get current(): State<TEvent> {
+        return this._current;
+    }
+
+    /**
+     * 重置到根状态.
+     */
+    public reset() {
+        if (this._current === this.root) return;
+        this._current.onExit.invoke();
+        this._current = this.root;
+        this._current.onEnter.invoke();
+    }
+
+    /**
+     * 评估 条件.
+     * @desc 当条件发生变化时 将自动进入新 State.
+     * @desc 连锁的. 进入新 State  直到该 State 无法再进入下一个满足条件的 State.
+     * @param event
+     */
+    public evaluate(event: TEvent): boolean {
+        let result = false;
+        while (true) {
+            let next: State<TEvent> | Region<TEvent> = this._current.evaluate(event);
+            if (!next) {
+                break;
+            }
+
+            if (next === this._current) {
+                break;
+            }
+
+            this._current.exit();
+            next.enter();
+            this._current = next instanceof Region ? next.history : next;
+            result = true;
+        }
+        return result;
+    }
+
+    /**
+     * 调用当前状态的 {@link State.onUpdate} 存活委托.
+     * @param deltaTime
+     */
+    public update(deltaTime: number) {
+        this._current?.update(deltaTime);
+    }
+}
 
 /**
  * A function taking one argument and returning a boolean result.
@@ -37,6 +120,8 @@ export class State<TEvent> implements ConditionCheck<TEvent> {
 
     /**
      * 存活 委托.
+     * 需要手动调用 {@link State.update} 方法以生效.
+     * @param deltaTime 由手动调用 {@link State.update} 方法时传入的参数决定.
      */
     public onUpdate: SimpleDelegate<number> = new SimpleDelegate<number>();
 
@@ -133,7 +218,8 @@ export class State<TEvent> implements ConditionCheck<TEvent> {
 
     /**
      * 添加 存活 委托.
-     * @param action
+     * 需要手动调用 {@link State.update} 方法以生效.
+     * @param action 参数由手动调用 {@link State.update} 方法时传入的参数决定.
      */
     public addUpdate(action: Action<number>): this {
         this.onUpdate.add(action);
@@ -142,8 +228,9 @@ export class State<TEvent> implements ConditionCheck<TEvent> {
 
     /**
      * 添加 存活 委托.
+     * 需要手动调用 {@link State.update} 方法以生效.
      * @desc short for {@link addUpdate}
-     * @param action
+     * @param action 参数由手动调用 {@link State.update} 方法时传入的参数决定.
      */
     public aU(action: Action<number>): this {
         return this.addUpdate(action);
@@ -247,6 +334,10 @@ export class Region<TEvent> implements ConditionCheck<TEvent> {
         this.name = name;
     }
 
+    private _useHistory: boolean = true;
+
+    private _first: State<TEvent> = null;
+
     private _history: State<TEvent> = null;
 
     /**
@@ -266,9 +357,8 @@ export class Region<TEvent> implements ConditionCheck<TEvent> {
      */
     public include(...states: State<TEvent>[]): this {
         states.forEach(state => {
-            if (!this._history) {
-                this._history = state;
-            }
+            if (!this._first) this._first = state;
+            if (!this._history) this._history = state;
             state.regions.add(this);
             this.subStates.add(state);
         });
@@ -277,11 +367,27 @@ export class Region<TEvent> implements ConditionCheck<TEvent> {
     }
 
     /**
+     * 是否 启用历史记录.
+     * @param {boolean} use
+     *      -true default. 在退出 Region 时记录历史 State. 并在下次进入 Region 时进入历史 State.
+     *      -false 在退出 Region 时不记录历史 State. 并在下次进入 Region 时进入 Region 内的第一个被 include 注册的 State.
+     * @return {this}
+     */
+    public useHistory(use: boolean = true): this {
+        this._useHistory = use;
+        return this;
+    }
+
+    /**
      * 进入 Region.
      * @friend {@link FiniteStateMachine}
      */
     public enter() {
-        this._history.enter();
+        if (this._useHistory) {
+            this._history?.enter();
+        } else {
+            this._first?.enter();
+        }
     }
 
     /**
@@ -325,87 +431,4 @@ export class Transaction<TEvent> {
     }
 
     private condition: Predicate<TEvent> = () => true;
-}
-
-/**
- * Finite State Machine.
- * 有限自动状态机 (FSM).
- * @desc 一种基于状态的行为设计模式.
- * @desc 针对状态定义转换条件.
- * @desc 允许搭配响应式数据使用.
- * @desc ---
- * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
- * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
- * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
- * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
- * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
- * @author LviatYi
- * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
- * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.0.4b
- */
-export default class FiniteStateMachine<TEvent> {
-    /**
-     * 根状态.
-     */
-    public readonly root: State<TEvent>;
-
-    public constructor(root: State<TEvent>) {
-        this.root = root;
-        this._current = root;
-        this.root.onEnter.invoke();
-    }
-
-    private _current: State<TEvent>;
-
-    /**
-     * 当前状态.
-     */
-    public get current(): State<TEvent> {
-        return this._current;
-    }
-
-    /**
-     * 重置到根状态.
-     */
-    public reset() {
-        if (this._current === this.root) return;
-        this._current.onExit.invoke();
-        this._current = this.root;
-        this._current.onEnter.invoke();
-    }
-
-    /**
-     * 评估 条件.
-     * @desc 当条件发生变化时 将自动进入新 State.
-     * @desc 连锁的. 进入新 State  直到该 State 无法再进入下一个满足条件的 State.
-     * @param event
-     */
-    public evaluate(event: TEvent): boolean {
-        let result = false;
-        while (true) {
-            let next: State<TEvent> | Region<TEvent> = this._current.evaluate(event);
-            if (!next) {
-                break;
-            }
-
-            if (next === this._current) {
-                break;
-            }
-
-            this._current.exit();
-            this._current = next instanceof Region ? next.history : next;
-            next.enter();
-            result = true;
-        }
-        return result;
-    }
-
-    /**
-     * 调用当前状态的 {@link State.onUpdate} 存活委托.
-     * @param deltaTime
-     */
-    public update(deltaTime: number) {
-        this._current?.update(deltaTime);
-    }
 }

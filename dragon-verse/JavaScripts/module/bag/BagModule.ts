@@ -3,16 +3,16 @@ import ModuleS = mwext.ModuleS;
 import Subdata = mwext.Subdata;
 import createYoact = Yoact.createYoact;
 import Enumerable from "linq";
-import {IBagItemElement} from "../../config/BagItem";
-import {GameConfig} from "../../config/GameConfig";
+import { IBagItemElement } from "../../config/BagItem";
+import { GameConfig } from "../../config/GameConfig";
 import ByteArray from "../../depend/byteArray/ByteArray";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import IUnique from "../../depend/yoact/IUnique";
-import {Yoact} from "../../depend/yoact/Yoact";
+import { Yoact } from "../../depend/yoact/Yoact";
 import YoactArray from "../../depend/yoact/YoactArray";
-import ForeignKeyIndexer, {BagTypes} from "../../const/ForeignKeyIndexer";
-import {EventDefine} from "../../const/EventDefine";
-import {AuthModuleS} from "../auth/AuthModule";
+import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
+import { EventDefine } from "../../const/EventDefine";
+import { AuthModuleS } from "../auth/AuthModule";
 import GameStart from "../../GameStart";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import GlobalProperty from "../../GlobalProperty";
@@ -332,9 +332,9 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
     public handbookYoact: YoactArray<HandbookItemUnique> = new YoactArray<HandbookItemUnique>();
 
-    public dragonBallYoact: { count: number } = createYoact({count: 0});
-    public obbyCoinYoact: { count: number } = Yoact.createYoact({count: 0});
-    public obbyTicketYoact: { count: number } = Yoact.createYoact({count: 0});
+    public dragonBallYoact: { count: number } = createYoact({ count: 0 });
+    public obbyCoinYoact: { count: number } = Yoact.createYoact({ count: 0 });
+    public obbyTicketYoact: { count: number } = Yoact.createYoact({ count: 0 });
 
     private _isReady: boolean = false;
 
@@ -501,6 +501,10 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         Log4Ts.log(BagModuleC, `set obby ticket from server. count: ${count}.`);
         this.data.obbyTicket = count;
         this.obbyTicketYoact.count = count;
+    }
+
+    public async consumeObbyTicket(): Promise<boolean> {
+        return this.server.net_consumeObbyTicket();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -673,6 +677,34 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         playerData.addObbyCoin(count, false);
         playerData.save(false);
         this.getClient(playerId).net_setObbyCoin(playerData.obbyCoin);
+    }
+
+    /**
+     * 消耗Obby金币
+     * @param playerId
+     */
+    public consumeObbyCoin(playerId: number): boolean {
+        const playerData = this.getPlayerData(playerId);
+        if (playerData.obbyCoin >= 10) {
+            this.addObbyCoin(playerId, -10);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 消耗Obby入场券
+     * @param playerId
+     */
+    public net_consumeObbyTicket(): Promise<boolean> {
+        const playerData = this.getPlayerData(this.currentPlayerId);
+        if (playerData.obbyTicket >= 1) {
+            this.addObbyTicket(this.currentPlayerId, -1);
+            return Promise.resolve(true);
+        } else {
+            return Promise.resolve(false);
+        }
     }
 
     /**
