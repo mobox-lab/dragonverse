@@ -8,20 +8,24 @@
  */
 
 import { BagModuleC } from "../../module/bag/BagModule";
+import ObbyEnterFailPanel from "../../ui/obby/ObbyEnterFailPanel";
+import ObbyEnterPanel from "../../ui/obby/ObbyEnterPanel";
+
 import PortalTrigger from "../portal/PortalTrigger";
 
 export default class ObbyPortalTrigger extends PortalTrigger {
 
     protected async transferPlayer(character: mw.Character) {
         //先弹确认ui
-        UIService.show()
-        //检查次数
-        let res = await ModuleService.getModule(BagModuleC).consumeObbyTicket();
-        if (res) {
-            super.transferPlayer(character);
-        } else {
-
-        }
-
+        let ui = UIService.show(ObbyEnterPanel);
+        ui.onClickYesCallBack = async () => {
+            //检查次数
+            let res = await ModuleService.getModule(BagModuleC).consumeObbyTicket();
+            if (res) {
+                super.transferPlayer(character);
+            } else {
+                UIService.show(ObbyEnterFailPanel);
+            }
+        };
     }
 }
