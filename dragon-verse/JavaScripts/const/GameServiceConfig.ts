@@ -1,4 +1,4 @@
-import GToolkit, {Tf} from "../util/GToolkit";
+import GToolkit, { Tf } from "../util/GToolkit";
 
 export default class GameServiceConfig {
     //#region Sub Game
@@ -7,6 +7,10 @@ export default class GameServiceConfig {
      */
     public static readonly SUB_GAME_SCENE_JUMP_PROGRESS_DURATION = 3e3;
 
+    /**
+     * 跑酷游戏退出传送位置
+     */
+    public static readonly ENTER_OBBY_GAME_POS = new Vector(5441, -20000, 1450);
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
