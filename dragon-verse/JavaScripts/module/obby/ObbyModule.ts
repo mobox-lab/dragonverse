@@ -21,6 +21,8 @@ import { DataUpgradeMethod } from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
 import UnifiedRoleController from "../role/UnifiedRoleController";
+import { GameEndPanel } from "../../ui/obby/GameEndPanel";
+import { MapManager } from "../../gameplay/map/MapManager";
 
 export default class ObbyModuleData extends Subdata {
     /**
@@ -134,7 +136,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     private _obbyPanel: ObbyInteractorPanel;
     private _curLv: number;
     private _maxLv: number;
-    private _isStart: boolean;
+    // private _isStart: boolean;
     private _isInGame: boolean;
     private _eventListeners: EventListener[] = [];
     private _checkPointCfg = {}
@@ -159,7 +161,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
-        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, this.onPlayerReset.bind(this)));
+        // this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, this.onPlayerReset.bind(this)));
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -212,7 +214,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
      */
     public enterGame() {
         //拉取当前的进度
-        this._isStart = false;
+        // this._isStart = false;
         this._isInGame = true;
         this._curLv = 0;
         this._startPos = Player.localPlayer.character.worldTransform.position;
@@ -220,17 +222,30 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         UIService.showUI(this._obbyPanel);
         Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(0);
         Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(0);
-        UIService.getUI(MainPanel).setCanSprint(false);
+
         this.setObbyProps(Player.localPlayer.character);
+
+        let mainPanel = UIService.getUI(MainPanel);
+        if (mainPanel) {
+            mainPanel.setCanSprint(false);
+            mainPanel.resetCanvas.visibility = SlateVisibility.Hidden;
+            mainPanel.obbySkillCanvas.visibility = SlateVisibility.Visible;
+            mainPanel.playcount.visibility = SlateVisibility.Visible;
+            mainPanel.coincount.visibility = SlateVisibility.Visible;
+            mainPanel.switchRoomCanvas.visibility = SlateVisibility.Hidden;
+            MapManager.instance.hideMap();
+        }
+        this.server.net_revertGame();
     }
 
-    private async onCountDown  ()  {
-        if (!this._isStart) {
-            return;
-        }
+    private async onCountDown() {
+        // if (!this._isStart) {
+        //     return;
+        // }
         if (this._hander) {
-            let obby =  ModuleService.getModule(ObbyModuleC);
-            obby.reborn();
+            // let obby = ModuleService.getModule(ObbyModuleC);
+            // obby.reborn();
+            UIService.show(GameEndPanel);
             await TimeUtil.delaySecond(0);
             TimeUtil.clearInterval(this._hander);
             this._hander = null;
@@ -250,7 +265,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         this.server.net_saveLv(checkPointId);
     }
 
-    private playGetPointEffect(lv:number){
+    private playGetPointEffect(lv: number) {
         //播放粒子特效
         let pos = this._effectPointCfg["" + lv];
         let scale = this._effectScaleCfg["" + lv];
@@ -261,7 +276,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
                 scale: scale,
                 loopCount: 1,
             })
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_GoldReward));
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_GoldReward));
     }
 
     /**
@@ -273,19 +288,30 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             TimeUtil.clearInterval(this._hander);
             this._hander = null;
         }
-        this._isStart = false;
+        // this._isStart = false;
         this._curLv = 0;
         this._isInGame = false;
-        Player.localPlayer.character.ragdollEnabled = false;
+        // Player.localPlayer.character.changeState(CharacterStateType.Running);
         UIService.hideUI(this._obbyPanel);
         this.resetProps(Player.localPlayer.character);
         Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(0);
         Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(0);
-        UIService.getUI(MainPanel).setCanSprint(true);
+        let mainPanel = UIService.getUI(MainPanel);
+        if (mainPanel) {
+            mainPanel.setCanSprint(true);
+            mainPanel.resetCanvas.visibility = SlateVisibility.Visible;
+            mainPanel.obbySkillCanvas.visibility = SlateVisibility.Hidden;
+            mainPanel.playcount.visibility = SlateVisibility.Hidden;
+            mainPanel.coincount.visibility = SlateVisibility.Hidden;
+            mainPanel.switchRoomCanvas.visibility = SlateVisibility.Visible;
+            MapManager.instance.showMap();
+        }
+        this._obbyPanel.setCurLv(this._curLv, this._maxLv);
+        this.server.net_revertGame();
     }
 
     public checkLv(curLv: number) {
-        if (this._isStart && curLv > this._curLv) {
+        if (curLv > this._curLv) {
             return true;
         }
         return false;
@@ -339,34 +365,36 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     public reborn() {
-        if (!this._isStart) {
-            return;
-        }
-        Player.localPlayer.character.ragdollEnabled = false;
-        if (this._curLv == 0) {
-            Player.localPlayer.character.worldTransform.position = this._startPos;
-        } else {
-            Player.localPlayer.character.worldTransform.position = this._checkPointCfg["" + this._curLv];
-        }
+        // if (!this._isStart) {
+        //     return;
+        // }
+        Player.localPlayer.character.changeState(CharacterStateType.Running);
+        // if (this._curLv == 0) {
+        //     Player.localPlayer.character.worldTransform.position = this._startPos;
+        // } else {
+        //     Player.localPlayer.character.worldTransform.position = this._checkPointCfg["" + this._curLv];
+        // }
+        Player.localPlayer.character.worldTransform.position = GameServiceConfig.ENTER_OBBY_GAME_POS;
         Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
+        this.exitGame();
     }
 
     public redDead() {
-        if (this._hander||!this._isStart) {
+        if (this._hander) {
             return;
         }
         Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_RedTips));
         this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY)
-        Player.localPlayer.character.ragdollEnabled = true;
+        Player.localPlayer.character.changeState(CharacterStateType.Ragdoll);
     }
 
     public groundDead() {
-        if (this._hander||!this._isStart) {
+        if (this._hander) {
             return;
         }
         this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY)
         //锁定摄像头
-        Player.localPlayer.character.ragdollEnabled = true;
+        Player.localPlayer.character.changeState(CharacterStateType.Ragdoll);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -374,15 +402,15 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     //#region Net Method
 
     public net_updateLv(curLv: number) {
-        if (!this._isStart) {
-            this._isStart = true;
-            if (curLv > this._curLv) {
-                //需要传送到之前的关卡 需要读取关卡的配置位置
-                this._curLv = curLv;
-                this.reborn();
-            }
-        }
-        if(this._curLv < curLv){
+        // if (!this._isStart) {
+        //     this._isStart = true;
+        //     if (curLv > this._curLv) {
+        //         //需要传送到之前的关卡 需要读取关卡的配置位置
+        //         this._curLv = curLv;
+        //         this.reborn();
+        //     }
+        // }
+        if (this._curLv < curLv) {
             this.playGetPointEffect(curLv);
         }
         this._curLv = curLv;
@@ -392,11 +420,11 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
-    public onPlayerReset = (playerId: number) => {
-        if(this._isInGame&&playerId == Player.localPlayer.character.player.playerId){
-            this.exitGame();
-        }
-    };
+    // public onPlayerReset = (playerId: number) => {
+    //     if (this._isInGame && playerId == Player.localPlayer.character.player.playerId) {
+    //         this.exitGame();
+    //     }
+    // };
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -467,7 +495,7 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
         playerData.updateLv(lv);
         playerData.save(false);
         this.getClient(playerId).net_updateLv(lv);
-        Log4Ts.log(ObbyModuleS,"持久化 当前关卡数 lv========================"+lv);
+        Log4Ts.log(ObbyModuleS, "持久化 当前关卡数 lv========================" + lv);
     }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -487,6 +515,12 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
 
         this.updateLv(currPlayerId, checkLv)
         return;
+    }
+
+    @noReply()
+    public net_revertGame() {
+        this.currentData.lv = 0;
+        this.currentData.save(false);
     }
 
     @noReply()

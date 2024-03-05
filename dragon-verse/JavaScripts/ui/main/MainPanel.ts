@@ -499,8 +499,12 @@ export default class MainPanel extends MainPanel_Generate {
 
         //#region Exist for V1
         GToolkit.trySetVisibility(this.btnCode, false);
-        GToolkit.trySetVisibility(this.btnBook, false);
-        GToolkit.trySetVisibility(this.btnDragon, false);
+        // GToolkit.trySetVisibility(this.btnBook, false);
+        // GToolkit.trySetVisibility(this.btnDragon, false);
+        GToolkit.trySetVisibility(this.obbySkillCanvas, false);
+        GToolkit.trySetVisibility(this.playcount, false);
+        GToolkit.trySetVisibility(this.coincount, false);
+        GToolkit.trySetVisibility(this.btnDragonBall, false);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 

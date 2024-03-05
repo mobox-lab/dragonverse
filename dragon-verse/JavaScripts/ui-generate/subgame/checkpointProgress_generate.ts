@@ -29,12 +29,12 @@ export default class checkpointProgress_Generate extends UIScript {
 		}
 		return this.textCavas_Internal
 	}
-	private text1_Internal: mw.TextBlock
-	public get text1(): mw.TextBlock {
-		if(!this.text1_Internal&&this.uiWidgetBase) {
-			this.text1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCavas/text1') as mw.TextBlock
+	private text1_2_Internal: mw.TextBlock
+	public get text1_2(): mw.TextBlock {
+		if(!this.text1_2_Internal&&this.uiWidgetBase) {
+			this.text1_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCavas/text1_2') as mw.TextBlock
 		}
-		return this.text1_Internal
+		return this.text1_2_Internal
 	}
 	private count_Internal: mw.TextBlock
 	public get count(): mw.TextBlock {
@@ -43,12 +43,12 @@ export default class checkpointProgress_Generate extends UIScript {
 		}
 		return this.count_Internal
 	}
-	private text1_2_Internal: mw.TextBlock
-	public get text1_2(): mw.TextBlock {
-		if(!this.text1_2_Internal&&this.uiWidgetBase) {
-			this.text1_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCavas/text1_2') as mw.TextBlock
+	private text1_Internal: mw.TextBlock
+	public get text1(): mw.TextBlock {
+		if(!this.text1_Internal&&this.uiWidgetBase) {
+			this.text1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCavas/text1') as mw.TextBlock
 		}
-		return this.text1_2_Internal
+		return this.text1_Internal
 	}
 
 
@@ -69,13 +69,13 @@ export default class checkpointProgress_Generate extends UIScript {
         
         // 文本多语言
         
-        this.initLanguage(this.text1)
+        this.initLanguage(this.text1_2)
         
 	
         this.initLanguage(this.count)
         
 	
-        this.initLanguage(this.text1_2)
+        this.initLanguage(this.text1)
         
 	
         // 静态文本多语言
@@ -89,13 +89,13 @@ export default class checkpointProgress_Generate extends UIScript {
         
         // 文本多语言
         
-        this.unregisterLanKey(this.text1)
+        this.unregisterLanKey(this.text1_2)
         
 	
         this.unregisterLanKey(this.count)
         
 	
-        this.unregisterLanKey(this.text1_2)
+        this.unregisterLanKey(this.text1)
         
 	
         // 隐藏文本多语言
