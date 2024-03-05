@@ -1,17 +1,28 @@
-import {GameConfig} from "../../config/GameConfig";
-import {EventDefine} from "../../const/EventDefine";
+
+import Enumerable from "linq";
+import UUID from "pure-uuid";
+import { GameConfig } from "../../config/GameConfig";
+import { EventDefine } from "../../const/EventDefine";
+import { BagTypes } from "../../const/ForeignKeyIndexer";
+
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MainPanel from "../../ui/main/MainPanel";
+
+import { BagModuleS } from "../bag/BagModule";
+
+
 import noReply = mwext.Decorator.noReply;
 import EventListener = mw.EventListener;
-import {ObbyInteractorPanel} from "../../ui/obby/ObbyInteractorPanel";
-import {DataUpgradeMethod, JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
+
+import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
+import { DataUpgradeMethod, JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
 import UnifiedRoleController from "../role/UnifiedRoleController";
-import {GameEndPanel} from "../../ui/obby/GameEndPanel";
-import {MapManager} from "../../gameplay/map/MapManager";
+import { GameEndPanel } from "../../ui/obby/GameEndPanel";
+import { MapManager } from "../../gameplay/map/MapManager";
+
 
 export default class ObbyModuleData extends JModuleData {
     @Decorator.persistence()
@@ -600,13 +611,18 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
             return Promise.resolve(false);
         } else {
             //判断有没钱
-            this._playerIsInvincible.set(this.currentPlayerId, true);
-            let playerId = this.currentPlayerId;
-            this.getClient(this.currentPlayerId).net_setInvincibleSuccess();
+            let res = ModuleService.getModule(BagModuleS).consumeObbyCoin(this.currentPlayerId);
+            if (res) {
+                this._playerIsInvincible.set(this.currentPlayerId, true);
+                let playerId = this.currentPlayerId;
+                this.getClient(this.currentPlayerId).net_setInvincibleSuccess();
 
-            await mw.TimeUtil.delaySecond(10);
-            this._playerIsInvincible.set(playerId, false);
-            return Promise.resolve(true);
+                await mw.TimeUtil.delaySecond(10);
+                this._playerIsInvincible.set(playerId, false);
+                return Promise.resolve(true);
+            } else {
+                return Promise.resolve(false);
+            }
         }
     }
 
@@ -620,7 +636,8 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
 
     public async net_autoFindPath(): Promise<boolean> {
         if (this._playerIsAutoMove.get(this.currentPlayerId) !== true) {
-            //不是无敌状态再扣钱
+            //不是再扣钱
+
             let character = Player.getPlayer(this.currentPlayerId).character;
             if (!character) return;
 
@@ -635,7 +652,7 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
             this._playerIsAutoMove.set(this.currentPlayerId, true);
             let playerId = this.currentPlayerId;
 
-            actions.tween(character.worldTransform).to(1000, {position: pos}).call(() => {
+            actions.tween(character.worldTransform).to(1000, { position: pos }).call(() => {
                 animation.stop();
                 character.gravityScale = oriGravity;
                 character.movementEnabled = true;

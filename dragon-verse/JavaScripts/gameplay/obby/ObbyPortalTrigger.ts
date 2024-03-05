@@ -7,14 +7,21 @@
  * @Description  : 修改描述
  */
 
-import {BagModuleC} from "../../module/bag/BagModule";
+import { BagModuleC } from "../../module/bag/BagModule";
 import PortalTrigger from "../portal/PortalTrigger";
 
 export default class ObbyPortalTrigger extends PortalTrigger {
 
-    protected transferPlayer(character: mw.Character): void {
+    protected async transferPlayer(character: mw.Character) {
+        //先弹确认ui
+        UIService.show()
         //检查次数
+        let res = await ModuleService.getModule(BagModuleC).consumeObbyTicket();
+        if (res) {
+            super.transferPlayer(character);
+        } else {
 
-        super.transferPlayer(character);
+        }
+
     }
 }
