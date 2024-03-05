@@ -1,6 +1,5 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GToolkit from "../../util/GToolkit";
-import { RoleModuleC, RoleModuleS } from "../../module/role/RoleModule";
 import GameObject = mw.GameObject;
 import { EventDefine } from "../../const/EventDefine";
 

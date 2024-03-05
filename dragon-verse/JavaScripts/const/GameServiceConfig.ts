@@ -585,5 +585,17 @@ export default class GameServiceConfig {
      * 跑酷得分特效 Guid.
      */
     public static readonly SCENE_DRAGON_OBBY = "89095";
+
+    /**
+     * 跑酷星星飞行加速度.
+     * @type {number}
+     */
+    public static readonly OBBY_STAR_FLY_ACCELERATED = 3;
+
+    /**
+     * 跑酷星星飞行最大速度.
+     * @type {number}
+     */
+    public static readonly OBBY_STAR_FLY_MAX_SPEED = 100;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ //#region Role
 }
