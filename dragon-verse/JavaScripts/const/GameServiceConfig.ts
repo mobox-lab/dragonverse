@@ -1,4 +1,4 @@
-import GToolkit, { Tf } from "../util/GToolkit";
+import GToolkit, {Tf} from "../util/GToolkit";
 
 export default class GameServiceConfig {
     //#region Sub Game
@@ -590,12 +590,30 @@ export default class GameServiceConfig {
      * 跑酷星星飞行加速度.
      * @type {number}
      */
-    public static readonly OBBY_STAR_FLY_ACCELERATED = 3;
+    public static readonly OBBY_STAR_FLY_ACCELERATED = 300;
 
     /**
      * 跑酷星星飞行最大速度.
      * @type {number}
      */
-    public static readonly OBBY_STAR_FLY_MAX_SPEED = 100;
+    public static readonly OBBY_STAR_FLY_MAX_SPEED = 1000;
+
+    /**
+     * 跑酷星星自旋速度. °/s
+     * @type {number}
+     */
+    public static readonly OBBY_STAR_SELF_ROTATION_SPEED = 180;
+
+    /**
+     * 跑酷星星漂浮最大距离.
+     * @type {number}
+     */
+    public static readonly OBBY_STAR_FLOAT_MAX_DIST = 10;
+
+    /**
+     * 跑酷星星漂浮阶段时间.
+     * @type {number}
+     */
+    public static readonly OBBY_STAR_FLOAT_STAGE_DURATION = 1e3;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ //#region Role
 }
