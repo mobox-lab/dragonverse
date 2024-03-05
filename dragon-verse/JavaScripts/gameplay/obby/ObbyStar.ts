@@ -11,6 +11,7 @@ import createYoact = Yoact.createYoact;
 import bindYoact = Yoact.bindYoact;
 import stopEffect = Yoact.stopEffect;
 import {EventDefine} from "../../const/EventDefine";
+import {ObbyModuleS} from "../../module/obby/ObbyModule";
 
 /**
  * DragonVerse Obby Star Behavior.
@@ -60,6 +61,13 @@ export default class ObbyStar extends mw.Script {
     private _machineEffect: Yoact.Effect;
 
     private _floatTask: TweenTaskGroup;
+
+    private _obbyModuleS: ObbyModuleS;
+
+    private get obbyModuleS(): ObbyModuleS | null {
+        if (!this._obbyModuleS) this._obbyModuleS = ModuleService.getModule(ObbyModuleS);
+        return this._obbyModuleS;
+    }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -112,14 +120,6 @@ export default class ObbyStar extends mw.Script {
         this.state.isFlying = true;
     }
 
-    @RemoteFunction(Server)
-    public reportFlyFinished(playerId: number) {
-        if (this._serverUsedMap.get(playerId) === false) {
-            this._serverUsedMap.set(playerId, true);
-//TODO_LviatYi Add Star
-        }
-    }
-
     @RemoteFunction(Client)
     public clientReset(player: mw.Player) {
         this.state.isAlive = true;
@@ -129,7 +129,7 @@ export default class ObbyStar extends mw.Script {
     @RemoteFunction(Server)
     public serverReset(player: mw.Player) {
         if (this._serverUsedMap)
-        this.clientReset(player);
+            this.clientReset(player);
         this._serverUsedMap.delete(player.playerId);
     }
 
@@ -188,7 +188,6 @@ export default class ObbyStar extends mw.Script {
             .aEx((arg) => {
                 this.state.isFlying = false;
                 this.state.flySpeed = 0;
-                this.reportFlyFinished(this._clientCharacter.player.playerId);
                 this.state.isAlive = false;
             });
 
@@ -214,9 +213,11 @@ export default class ObbyStar extends mw.Script {
     private onObjectEnter = (obj: GameObject): void => {
         if (Gtk.isCharacter(obj)) {
             const player = obj.player;
-            if (this._serverUsedMap.get(player.playerId) === undefined) {
+            const playerId = player.playerId;
+            if (!this._serverUsedMap.get(playerId)) {
                 this.flyToPlayer(player);
-                this._serverUsedMap.set(player.playerId, false);
+                this._serverUsedMap.set(playerId, true);
+                this.obbyModuleS.addPlayerStarCount(playerId);
             }
         }
     };
