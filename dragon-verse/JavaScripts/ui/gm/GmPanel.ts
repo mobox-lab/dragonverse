@@ -50,20 +50,20 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
 }
 
 AddGMCommand("Hello world", () => {
-        Log4Ts.log(GMPanel, `Hello world`);
-    },
+    Log4Ts.log(GMPanel, `Hello world`);
+},
     null,
     "CHello");
 AddGMCommand("Prompt", () => {
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
-    },
+    Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, "Hello world");
+},
     null,
     "MainPanel");
 
 AddGMCommand("Show Curtain", (player, value) => {
-        if (GToolkit.isNullOrEmpty(value)) Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
-        else Event.dispatchToLocal(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME);
-    },
+    if (GToolkit.isNullOrEmpty(value)) Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
+    else Event.dispatchToLocal(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME);
+},
     null,
     "MainPanel");
 
@@ -216,12 +216,6 @@ AddGMCommand("切语言", (player, value) => {
 
     i18n.use(Number(value), true);
 });
-
-AddGMCommand("重置跑酷等级",
-    (player, value) => {
-    }, (player, value) => {
-        ModuleService.getModule(ObbyModuleS).gmSetLV(player.playerId, Number.parseInt(value));
-    });
 
 //#region TDD-Obby Coin & Ticket
 AddGMCommand(
