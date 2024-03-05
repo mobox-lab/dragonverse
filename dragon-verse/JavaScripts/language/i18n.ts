@@ -1,7 +1,7 @@
-import { GameConfig } from "../config/GameConfig";
-import { ILanguageElement } from "../config/Language";
+import {GameConfig} from "../config/GameConfig";
+import {ILanguageElement} from "../config/Language";
 import Log4Ts from "../depend/log4ts/Log4Ts";
-import { Yoact } from "../depend/yoact/Yoact";
+import {Yoact} from "../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import bindYoact = Yoact.bindYoact;
 import stopEffect = Yoact.stopEffect;
@@ -89,7 +89,11 @@ let languageDefault = {
     Obby_GoldReward: "你已经获得金币奖励",
     Obby_RedTips: "红色区域为死亡区域，不可触碰",
 
-    JumpGameFailed: "跳转房间失败！"
+    JumpGameFailed: "跳转房间失败！",
+
+    addInvincible_Success: "添加护盾成功！",
+    addInvincible_Fail: "添加护盾失败！",
+    Invincible_End: "护盾结束！",
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 };
@@ -150,7 +154,7 @@ class i18n {
      */
     public resolves: ResolveTable;
 
-    private _languageType: { data: LanguageTypes } = createYoact({ data: LanguageTypes.English });
+    private _languageType: { data: LanguageTypes } = createYoact({data: LanguageTypes.English});
 
     private _lastLanguageType: number = -1;
 
