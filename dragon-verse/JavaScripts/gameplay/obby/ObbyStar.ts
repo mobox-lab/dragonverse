@@ -1,9 +1,16 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk from "../../util/GToolkit";
 import GameObject = mw.GameObject;
-import {EventDefine} from "../../const/EventDefine";
-import GToolkit from "../../util/GToolkit";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import FiniteStateMachine, {State} from "../../depend/finite-state-machine/FiniteStateMachine";
+import {Yoact} from "../../depend/yoact/Yoact";
+import Waterween from "../../depend/waterween/Waterween";
+import Easing from "../../depend/easing/Easing";
+import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
+import createYoact = Yoact.createYoact;
+import bindYoact = Yoact.bindYoact;
+import stopEffect = Yoact.stopEffect;
+import {EventDefine} from "../../const/EventDefine";
 
 /**
  * DragonVerse Obby Star Behavior.
@@ -32,21 +39,27 @@ export default class ObbyStar extends mw.Script {
 
 //#region Member
 
-    @Property({displayName: "湿润 Buff 持续时长 s", group: "Config | buff"})
-    public wetBuffDuration: number = 5;
-
-    @Property({displayName: "爆炸冲量力", group: "Config | buff"})
-    public force: number = 1000;
+    // @Property({displayName: "湿润 Buff 持续时长 s", group: "Config | buff"})
+    // public wetBuffDuration: number = 5;
+    //
+    // @Property({displayName: "爆炸冲量力", group: "Config | buff"})
+    // public force: number = 1000;
 
     private _trigger: Trigger;
-
-    private _flying: boolean;
-
-    private _flySpeed: number = 0;
 
     private _clientCharacter: mw.Character;
 
     private _serverUsedMap: Map<number, boolean> = new Map();
+
+    private _originPosition: Vector;
+
+    public state: ObbyStarBehaviorStates = createYoact(new ObbyStarBehaviorStates());
+
+    private _machine: FiniteStateMachine<unknown>;
+
+    private _machineEffect: Yoact.Effect;
+
+    private _floatTask: TweenTaskGroup;
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -56,6 +69,7 @@ export default class ObbyStar extends mw.Script {
         this.useUpdate = true;
 
 //region Member init
+        this._originPosition = this.gameObject.worldTransform.position;
 
         if (SystemUtil.isServer()) {
             this._trigger = Gtk.getFirstGameObject(this.gameObject, ObbyStar.GAME_OBJECT_TRIGGER_NAME) as Trigger;
@@ -63,29 +77,17 @@ export default class ObbyStar extends mw.Script {
                 Log4Ts.error(ObbyStar, `there is no trigger under this game object.`);
             } else {
                 this._trigger.onEnter.add(this.onObjectEnter);
-                this._trigger.onLeave.add(this.onObjectLeave);
+                Event.addLocalListener(EventDefine.ObbyStarReset, (player: mw.Player) => this.serverReset(player));
             }
         } else if (SystemUtil.isClient()) {
             this._clientCharacter = Player.localPlayer.character;
+            this.initStateMachine();
         }
     }
 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
-
-        if (SystemUtil.isClient() && this._flying) {
-            const direction = this.gameObject.worldTransform.position.subtract(this._clientCharacter.worldTransform.position).normalize();
-            this._flySpeed = Math.min(this._flySpeed + GameServiceConfig.OBBY_STAR_FLY_ACCELERATED * dt, GameServiceConfig.OBBY_STAR_FLY_MAX_SPEED);
-            this.gameObject.worldTransform.position = this.gameObject.worldTransform.position.add(direction.multiply(this._flySpeed * dt));
-
-
-            if (this.gameObject.worldTransform.position.squaredDistanceTo(this._clientCharacter.worldTransform.position) < 1) {
-                this._flying = false;
-                this._flySpeed = 0;
-                this.gameObject.setVisibility(false);
-                this.reportFlyFinished(this._clientCharacter.player.playerId);
-            }
-        }
+        this._machine?.update(dt);
     }
 
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -97,6 +99,8 @@ export default class ObbyStar extends mw.Script {
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     protected onDestroy(): void {
+        this._floatTask.destroy();
+        stopEffect(this._machineEffect);
         super.onDestroy();
     }
 
@@ -105,7 +109,7 @@ export default class ObbyStar extends mw.Script {
 //#region Method
     @RemoteFunction(Client)
     public flyToPlayer(player: mw.Player) {
-        this._flying = true;
+        this.state.isFlying = true;
     }
 
     @RemoteFunction(Server)
@@ -118,14 +122,90 @@ export default class ObbyStar extends mw.Script {
 
     @RemoteFunction(Client)
     public clientReset(player: mw.Player) {
-        this._flying = false;
-        this._flySpeed = 0;
+        this.state.isAlive = true;
         this.gameObject.setVisibility(true);
     }
 
+    @RemoteFunction(Server)
     public serverReset(player: mw.Player) {
+        if (this._serverUsedMap)
         this.clientReset(player);
         this._serverUsedMap.delete(player.playerId);
+    }
+
+    private initStateMachine() {
+        const idle = new State<ObbyStarBehaviorStates>(ObbyStarStates.Idle)
+            .aE(() => {
+                Log4Ts.log(ObbyStar, `enter ${idle.name} state.`);
+                this.gameObject.worldTransform.position = this._originPosition;
+                this.gameObject.setVisibility(true);
+                if (this._floatTask) {
+                    this._floatTask.continue();
+                } else {
+                    this._floatTask = Waterween.group(
+                        () => {
+                            return {
+                                motionZ: this.gameObject.worldTransform.position.z - this._originPosition.z
+                            };
+                        },
+                        (val) => {
+                            this.gameObject.worldTransform.position = Gtk.newWithZ(this.gameObject.worldTransform.position, this._originPosition.z + val.motionZ);
+                        },
+                        [
+                            {
+                                duration: GameServiceConfig.OBBY_STAR_FLOAT_STAGE_DURATION,
+                                dist: {motionZ: GameServiceConfig.OBBY_STAR_FLOAT_MAX_DIST},
+                                easing: Easing.easeInOutCubic
+                            },
+                            {
+                                duration: GameServiceConfig.OBBY_STAR_FLOAT_STAGE_DURATION,
+                                dist: {motionZ: 0},
+                                easing: Easing.easeInOutCubic
+                            }])
+                        .repeat()
+                        .continue();
+                }
+            })
+            .aU((dt) => {
+                this.gameObject.worldTransform.rotation =
+                    Gtk.newWithZ(this.gameObject.worldTransform.rotation, this.gameObject.worldTransform.rotation.z + GameServiceConfig.OBBY_STAR_SELF_ROTATION_SPEED * dt);
+            })
+            .aEx(() => {
+                this._floatTask?.pause();
+            });
+
+        const fly = new State<ObbyStarBehaviorStates>(ObbyStarStates.Flying)
+            .aE(() => {
+                Log4Ts.log(ObbyStar, `enter ${idle.name} state.`);
+                this.state.sqrDist = Number.MAX_VALUE;
+            })
+            .aU((dt) => {
+                const direction = this._clientCharacter.worldTransform.position.subtract(this.gameObject.worldTransform.position).normalize();
+                this.state.flySpeed = Math.min(this.state.flySpeed + GameServiceConfig.OBBY_STAR_FLY_ACCELERATED * dt, GameServiceConfig.OBBY_STAR_FLY_MAX_SPEED);
+                this.gameObject.worldTransform.position = this.gameObject.worldTransform.position.add(direction.multiply(this.state.flySpeed * dt));
+                this.state.sqrDist = this.gameObject.worldTransform.position.squaredDistanceTo(this._clientCharacter.worldTransform.position);
+            })
+            .aEx((arg) => {
+                this.state.isFlying = false;
+                this.state.flySpeed = 0;
+                this.reportFlyFinished(this._clientCharacter.player.playerId);
+                this.state.isAlive = false;
+            });
+
+        const hidden = new State<ObbyStarBehaviorStates>(ObbyStarStates.Hidden)
+            .aE(() => {
+                Log4Ts.log(ObbyStar, `enter ${idle.name} state.`);
+                this.gameObject.setVisibility(false);
+            });
+
+        idle.when((state) => state.isFlying).to(fly);
+        fly.when((state) => state.sqrDist < 100).to(hidden);
+        hidden.when((state) => state.isAlive).to(idle);
+
+        this._machine = new FiniteStateMachine(idle);
+        this._machineEffect = bindYoact(() => {
+            this._machine.evaluate(this.state);
+        });
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -134,20 +214,28 @@ export default class ObbyStar extends mw.Script {
     private onObjectEnter = (obj: GameObject): void => {
         if (Gtk.isCharacter(obj)) {
             const player = obj.player;
-            this.flyToPlayer(player);
-            this._serverUsedMap.set(player.playerId, false);
-        }
-    };
-
-    private onObjectLeave = (obj: GameObject): void => {
-        if (GToolkit.isCharacter(obj)) {
-            Event.dispatchToClient(
-                obj.player,
-                EventDefine.PlayerLeaveFirePuzzleBlock,
-                this.gameObject.gameObjectId,
-                this.wetBuffDuration);
+            if (this._serverUsedMap.get(player.playerId) === undefined) {
+                this.flyToPlayer(player);
+                this._serverUsedMap.set(player.playerId, false);
+            }
         }
     };
 
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+enum ObbyStarStates {
+    Idle = "idle",
+    Flying = "flying",
+    Hidden = "hidden"
+}
+
+class ObbyStarBehaviorStates {
+    sqrDist: number = Number.MAX_VALUE;
+
+    isFlying: boolean = false;
+
+    isAlive: boolean = true;
+
+    flySpeed: number = 0;
 }
