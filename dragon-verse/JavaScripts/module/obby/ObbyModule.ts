@@ -1,124 +1,40 @@
-import Enumerable from "linq";
-import UUID from "pure-uuid";
 import {GameConfig} from "../../config/GameConfig";
 import {EventDefine} from "../../const/EventDefine";
-import {BagTypes} from "../../const/ForeignKeyIndexer";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Regulator from "../../depend/regulator/Regulator";
-import AreaManager from "../../gameplay/area/AreaManager";
 import MainPanel from "../../ui/main/MainPanel";
-import GToolkit from "../../util/GToolkit";
-import {IPoint3} from "../../util/area/Shape";
-import {BagModuleS} from "../bag/BagModule";
 import noReply = mwext.Decorator.noReply;
-import GameObject = mw.GameObject;
-import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import EventListener = mw.EventListener;
-import Enum = UE.Enum;
 import {ObbyInteractorPanel} from "../../ui/obby/ObbyInteractorPanel";
-import {DataUpgradeMethod} from "../../depend/jibu-module/JModule";
+import {DataUpgradeMethod, JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
 import UnifiedRoleController from "../role/UnifiedRoleController";
 import {GameEndPanel} from "../../ui/obby/GameEndPanel";
 import {MapManager} from "../../gameplay/map/MapManager";
-import {KeyboardManager} from "../../controller/KeyboardManager";
-import GTkTypes from "../../util/GToolkit";
 
+export default class ObbyModuleData extends JModuleData {
+    @Decorator.persistence()
+    public totalStarCount: number = 0;
 
-export default class ObbyModuleData extends Subdata {
-    /**
-     * 已经发布的正式数据版本号.
-     * 以版本发布时间 升序排列.
-     * RV.
-     */
-    public static readonly RELEASE_VERSIONS: number[] = [
-        202401291339,
-    ];
-
-    /**
-     * 版本升级办法.
-     * UVM[n] : 从 RV[n] 升级到 RV[n+1] 的方法.
-     */
-    public static readonly UPDATE_VERSION_METHOD: DataUpgradeMethod<ObbyModuleData>[] = [
-        // (data) => {
-        // },
-    ];
-
-    // @Decorator.persistence()
-    // public lv: number = 0;
-
-    //#region Sub data
-    protected initDefaultData(): void {
-        this.currentVersion = this.version;
-        // this.lv = 0;
+    public recordStarCount(count: number, save: boolean = true) {
+        this.totalStarCount += count;
+        if (save) this.save(true);
     }
 
-    protected onDataInit(): void {
-        super.onDataInit();
-        this.checkVersion();
+    protected get releasedVersions(): number[] {
+        return [
+            202401291339,
+            202403051755
+        ];
     }
 
-    public save(syncToClient: boolean): this {
-        return super.save(syncToClient);
+    protected get updateVersionMethod(): DataUpgradeMethod<this>[] {
+        return [(data) => {
+            delete data["lv"];
+            return data;
+        }];
     }
-
-    /**
-     * 定义为最新版本号.
-     * 为什么不做成只读属性而是个 getter 呢.
-     */
-    public get version(): number {
-        return ObbyModuleData.RELEASE_VERSIONS[ObbyModuleData.RELEASE_VERSIONS.length - 1];
-    }
-
-
-    /**
-     * 数据版本检查.
-     */
-    public checkVersion() {
-        if (this.currentVersion === this.version) return;
-
-        Log4Ts.log(ObbyModuleData,
-            `数据准备升级`,
-            () => `当前版本: ${this.currentVersion}`,
-            () => `最新版本: ${this.version}.`,
-        );
-
-        const startIndex = ObbyModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
-        if (startIndex < 0) {
-            Log4Ts.error(
-                ObbyModuleData,
-                `数据号版本异常`,
-                `不是已发布的版本号`,
-                () => `当前版本: ${this.currentVersion}.`);
-            return;
-        }
-
-        for (let i = startIndex; i < ObbyModuleData.UPDATE_VERSION_METHOD.length - 1; ++i) {
-            ObbyModuleData.UPDATE_VERSION_METHOD[i](this);
-            this.currentVersion = ObbyModuleData.RELEASE_VERSIONS[i + 1];
-        }
-    }
-
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-    // public updateLv(lv: number): boolean {
-    //     if (lv > this.lv) {
-    //         this.lv = lv;
-    //         return true
-    //     } else {
-    //         return false;
-    //     }
-    // }
-    //
-    // public getLv() {
-    //     return this.lv;
-    // }
-    //
-    // public gmSetLv(lv: number): boolean {
-    //     this.lv = lv;
-    //     return true;
-    // }
 }
 
 /**
@@ -127,9 +43,8 @@ export default class ObbyModuleData extends Subdata {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
+export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
     //#region Constant
-
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -142,9 +57,9 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     // private _isStart: boolean;
     private _isInGame: boolean;
     private _eventListeners: EventListener[] = [];
-    private _checkPointCfg = {}
-    private _effectPointCfg = {}
-    private _effectScaleCfg = {}
+    private _checkPointCfg = {};
+    private _effectPointCfg = {};
+    private _effectScaleCfg = {};
     private _hander: number;
     public _startPos: mw.Vector;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -154,13 +69,11 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         super.onAwake();
     }
 
-    protected onStart(): void {
-        super.onStart();
-
+    protected onJStart(): void {
         //#region Member init
         this._obbyPanel = UIService.create(ObbyInteractorPanel);
         this.initCheckPoint();
-        Log4Ts.log(ObbyModuleC, "obbyModuleC onStart================")
+        Log4Ts.log(ObbyModuleC, "obbyModuleC onStart================");
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
@@ -174,11 +87,11 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
-        Log4Ts.log(ObbyModuleC, "obbyModuleC onEnterScene================")
+        Log4Ts.log(ObbyModuleC, "obbyModuleC onEnterScene================");
     }
 
     protected onDestroy(): void {
-        Log4Ts.log(ObbyModuleC, "obbyModuleC onDestroy================")
+        Log4Ts.log(ObbyModuleC, "obbyModuleC onDestroy================");
         super.onDestroy();
 
         //#region Event Unsubscribe
@@ -191,12 +104,13 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
     //#region Method
 
     private initCheckPoint() {
 
-        let len = GameConfig.Obbycheck.getAllElement().length
-        this._maxLv = len
+        let len = GameConfig.Obbycheck.getAllElement().length;
+        this._maxLv = len;
         for (let i = 1; i <= len; i++) {
             let ele = GameConfig.Obbycheck.getElement(i);
             this._checkPointCfg["" + i] = new mw.Vector(ele.checkpointloc[0], ele.checkpointloc[1], ele.checkpointloc[2]);
@@ -280,7 +194,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     public async setInvincible() {
-        let res = await this.server.net_setInvincible()
+        let res = await this.server.net_setInvincible();
         if (res) {
             Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Invincible_End));
         } else {
@@ -316,7 +230,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             {
                 scale: scale,
                 loopCount: 1,
-            })
+            });
         Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_GoldReward));
     }
 
@@ -394,16 +308,16 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     private resetProps(obj: mw.Character) {
-        obj.maxWalkSpeed = this.maxWalkSpeedOri
-        obj.maxAcceleration = this.maxAccelerationOri
-        obj.maxStepHeight = this.maxStepHeightOri
-        obj.walkableFloorAngle = this.walkableFloorAngleOri
-        obj.rotateRate = this.rotateRateOri
-        obj.groundFriction = this.groundFrictionOri
-        obj.maxFallingSpeed = this.maxFallingSpeedOri
-        obj.gravityScale = this.gravityScaleOri
-        obj.maxJumpHeight = this.maxJumpHeightOri
-        obj.jumpMaxCount = this.jumpMaxCountOri
+        obj.maxWalkSpeed = this.maxWalkSpeedOri;
+        obj.maxAcceleration = this.maxAccelerationOri;
+        obj.maxStepHeight = this.maxStepHeightOri;
+        obj.walkableFloorAngle = this.walkableFloorAngleOri;
+        obj.rotateRate = this.rotateRateOri;
+        obj.groundFriction = this.groundFrictionOri;
+        obj.maxFallingSpeed = this.maxFallingSpeedOri;
+        obj.gravityScale = this.gravityScaleOri;
+        obj.maxJumpHeight = this.maxJumpHeightOri;
+        obj.jumpMaxCount = this.jumpMaxCountOri;
     }
 
     public reborn() {
@@ -430,7 +344,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
             let isAutoMoving = await this.server.net_isAutoMoving();
             if (!isAutoMoving) {
                 Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_RedTips));
-                this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY)
+                this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY);
                 Player.localPlayer.character.changeState(CharacterStateType.Ragdoll);
             }
         } else {
@@ -452,7 +366,7 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
         if (!isInvincible) {
             let isAutoMoving = await this.server.net_isAutoMoving();
             if (!isAutoMoving) {
-                this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY)
+                this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY);
                 //锁定摄像头
                 Player.localPlayer.character.changeState(CharacterStateType.Ragdoll);
             }
@@ -498,13 +412,21 @@ export class ObbyModuleC extends ModuleC<ObbyModuleS, ObbyModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
+export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
     //#region Constant
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
     //#region Member
     private _maxLv = 100; //最大关卡数
     //玩家当前通过的关卡
+
     private _playerArrivedCheckPoint: Map<number, number> = new Map<number, number>();
+
+    private _checkPointMap: Map<number, Vector> = new Map<number, Vector>();
+
+    private _playerStarsCounter: Map<number, number> = new Map<number, number>();
+
+    private _playerStartTimeMap: Map<number, number> = new Map<number, number>();
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -515,9 +437,8 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
-    protected onStart(): void {
-        super.onStart();
-        Log4Ts.log(ObbyModuleS, "obbyModules onStart================")
+    protected onJStart(): void {
+        Log4Ts.log(ObbyModuleS, "obbyModules onStart================");
 
         //#region Member init
         //#endregion ------------------------------------------------------------------------------------------ 
@@ -539,15 +460,15 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
 
     protected onExecute(type: number, ...params: any[]): void {
         super.onExecute(type, ...params);
-        Log4Ts.log(ObbyModuleS, "obbyModules onExecute================")
+        Log4Ts.log(ObbyModuleS, "obbyModules onExecute================");
     }
 
     protected onPlayerLeft(player: Player): void {
-        Log4Ts.log(ObbyModuleS, "obbyModules onPlayerLeft================")
+        Log4Ts.log(ObbyModuleS, "obbyModules onPlayerLeft================");
     }
 
     protected onPlayerEnterGame(player: Player): void {
-        Log4Ts.log(ObbyModuleS, "obbyModules onPlayerEnterGame================")
+        Log4Ts.log(ObbyModuleS, "obbyModules onPlayerEnterGame================");
     }
 
     protected onPlayerJoined(player: Player): void {
@@ -555,11 +476,10 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
         this._playerArrivedCheckPoint.set(player.playerId, 0);
         this._playerIsInvincible.set(player.playerId, false);
         this._playerIsAutoMove.set(player.playerId, false);
-        Log4Ts.log(ObbyModuleS, "obbyModules onPlayerJoined================")
+        Log4Ts.log(ObbyModuleS, "obbyModules onPlayerJoined================");
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
 
     //#region Method
 
@@ -573,6 +493,61 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
         this._playerArrivedCheckPoint.set(playerId, lv);
         this.getClient(playerId).net_updateLv(lv);
         Log4Ts.log(ObbyModuleS, "持久化 当前关卡数 lv========================" + lv);
+    }
+
+    private initCheckPoint() {
+        let len = GameConfig.Obbycheck.getAllElement().length;
+        this._maxLv = len;
+        for (let i = 1; i <= len; i++) {
+            let ele = GameConfig.Obbycheck.getElement(i);
+            this._checkPointMap[i] = new mw.Vector(ele.checkpointloc[0], ele.checkpointloc[1], ele.checkpointloc[2]);
+        }
+        // reborn ============== pos=X=393994.28125 Y=13640.490234375 Z=24237.24609375
+    }
+
+    /**
+     * 增加 Star.
+     * @param {number} playerId
+     */
+    public addPlayerStarCount(playerId: number) {
+        this._playerStarsCounter.set(playerId, (this._playerStarsCounter.get(playerId) ?? 0) + 1);
+    }
+
+    public getPlayerStarCount(playerId: number) {
+        return this._playerStarsCounter.get(playerId) ?? 0;
+    }
+
+    /**
+     * 开始游戏.
+     * @param {number} playerId
+     */
+    public startGame(playerId: number) {
+        const player = Player.getPlayer(playerId);
+        if (!player) return;
+        Event.dispatchToLocal(EventDefine.ObbyStarReset, player);
+        this._playerStarsCounter.set(playerId, 0);
+        this._playerStartTimeMap.set(playerId, Date.now());
+    }
+
+    /**
+     * 结束游戏.
+     * @param {number} playerId
+     * @return {GameResult | null} 返回游戏结果.
+     *      - null 时 游戏并未开始.
+     */
+    public endGame(playerId: number): GameResult | null {
+        if (this._playerStartTimeMap.has(playerId)) {
+            const data = this.getPlayerData(playerId);
+            const currentCount = this._playerStarsCounter.get(playerId) ?? 0;
+            this._playerStarsCounter.delete(playerId);
+            data.recordStarCount(currentCount);
+            return {
+                currentCount,
+                duration: Date.now() - this._playerStartTimeMap.get(playerId),
+                totalCount: data.totalStarCount,
+            };
+        }
+        return null;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -592,7 +567,7 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
             checkLv = this._maxLv;
         }
 
-        this.updateLv(currPlayerId, checkLv)
+        this.updateLv(currPlayerId, checkLv);
         return;
     }
 
@@ -674,17 +649,24 @@ export class ObbyModuleS extends ModuleS<ObbyModuleC, ObbyModuleData> {
         }
     }
 
-    private _checkPointMap: Map<number, Vector> = new Map<number, Vector>();
-
-    private initCheckPoint() {
-        let len = GameConfig.Obbycheck.getAllElement().length;
-        this._maxLv = len
-        for (let i = 1; i <= len; i++) {
-            let ele = GameConfig.Obbycheck.getElement(i);
-            this._checkPointMap[i] = new mw.Vector(ele.checkpointloc[0], ele.checkpointloc[1], ele.checkpointloc[2]);
-        }
-        // reborn ============== pos=X=393994.28125 Y=13640.490234375 Z=24237.24609375 
+    public async net_getStarCount(): Promise<number> {
+        return this.getPlayerStarCount(this.currentPlayerId);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+interface GameResult {
+    /**
+     * 游戏时长.
+     */
+    duration: number;
+    /**
+     * 获取 ObbyStar 数量.
+     */
+    currentCount: number;
+    /**
+     * 总计获取 ObbyStar 数量.
+     */
+    totalCount: number;
 }
