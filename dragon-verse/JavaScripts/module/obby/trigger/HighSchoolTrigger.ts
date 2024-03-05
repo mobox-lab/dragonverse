@@ -44,7 +44,7 @@ export default class HighSchoolTrigger extends mw.Script {
     })
     private _circleType: HighSchoolType = HighSchoolType.TransStart;
 
-    @mw.Property({displayName: "关卡叙述，用来表示是第几个检查点"})
+    @mw.Property({ displayName: "关卡叙述，用来表示是第几个检查点" })
     private _checkPointIdx: number = 0;
 
     private _trigger: mw.Trigger;
@@ -70,9 +70,9 @@ export default class HighSchoolTrigger extends mw.Script {
     private onEnter = (obj: mw.GameObject) => {
         if (obj instanceof mw.Character) {
             if (GToolkit.isSelfCharacter(obj)) {
-                let obby =  ModuleService.getModule(ObbyModuleC);
+                let obby = ModuleService.getModule(ObbyModuleC);
                 if (this._circleType == HighSchoolType.TransStart) {
-                    if(!obby.isInGame()){
+                    if (!obby.isInGame()) {
                         obby.enterGame();
                     }
                 } else if (this._circleType == HighSchoolType.DeadBackGround) {
@@ -80,11 +80,12 @@ export default class HighSchoolTrigger extends mw.Script {
                 } else if (this._circleType == HighSchoolType.DeadRed) {
                     obby.redDead();
                 } else if (this._circleType == HighSchoolType.ScorePoint) {
+                    //判断是不是后面一关
                     if (obby.checkLv(this._checkPointIdx)) {
                         //记录是第几关 改变进度条
                         obby.updateCheckPoint(this._checkPointIdx);
                     }
-                }else if (this._circleType == HighSchoolType.GameExit) {
+                } else if (this._circleType == HighSchoolType.GameExit) {
                     Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
                     Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
                     Player
