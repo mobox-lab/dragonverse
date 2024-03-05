@@ -12,6 +12,7 @@ import bindYoact = Yoact.bindYoact;
 import stopEffect = Yoact.stopEffect;
 import {EventDefine} from "../../const/EventDefine";
 import {ObbyModuleS} from "../../module/obby/ObbyModule";
+import AudioController from "../../controller/audio/AudioController";
 
 /**
  * DragonVerse Obby Star Behavior.
@@ -180,12 +181,22 @@ export default class ObbyStar extends mw.Script {
                 this.state.sqrDist = Number.MAX_VALUE;
             })
             .aU((dt) => {
+                this.gameObject.worldTransform.rotation =
+                    Gtk.newWithZ(this.gameObject.worldTransform.rotation, this.gameObject.worldTransform.rotation.z + GameServiceConfig.OBBY_STAR_SELF_ROTATION_SPEED * dt);
                 const direction = this._clientCharacter.worldTransform.position.subtract(this.gameObject.worldTransform.position).normalize();
                 this.state.flySpeed = Math.min(this.state.flySpeed + GameServiceConfig.OBBY_STAR_FLY_ACCELERATED * dt, GameServiceConfig.OBBY_STAR_FLY_MAX_SPEED);
                 this.gameObject.worldTransform.position = this.gameObject.worldTransform.position.add(direction.multiply(this.state.flySpeed * dt));
                 this.state.sqrDist = this.gameObject.worldTransform.position.squaredDistanceTo(this._clientCharacter.worldTransform.position);
             })
             .aEx((arg) => {
+                EffectService.playAtPosition(
+                    GameServiceConfig.OBBY_STAR_COLLECT_EFFECT_GUID,
+                    this.gameObject.worldTransform.position,
+                );
+                AudioController.getInstance().play(
+                    GameServiceConfig.OBBY_STAR_COLLECT_SOUND_ID,
+                    this.gameObject.worldTransform.position,
+                )
                 this.state.isFlying = false;
                 this.state.flySpeed = 0;
                 this.state.isAlive = false;

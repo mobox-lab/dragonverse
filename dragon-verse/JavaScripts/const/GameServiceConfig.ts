@@ -587,6 +587,18 @@ export default class GameServiceConfig {
     public static readonly SCENE_DRAGON_OBBY = "89095";
 
     /**
+     * 跑酷星星收集特效 Guid.
+     * @type {string}
+     */
+    public static readonly OBBY_STAR_COLLECT_EFFECT_GUID = "151580";
+
+    /**
+     * 跑酷星星收集音效 Guid.
+     * @type {string}
+     */
+    public static readonly OBBY_STAR_COLLECT_SOUND_ID = 136202;
+
+    /**
      * 跑酷星星飞行加速度.
      * @type {number}
      */
@@ -602,18 +614,18 @@ export default class GameServiceConfig {
      * 跑酷星星自旋速度. °/s
      * @type {number}
      */
-    public static readonly OBBY_STAR_SELF_ROTATION_SPEED = 180;
+    public static readonly OBBY_STAR_SELF_ROTATION_SPEED = 15;
 
     /**
      * 跑酷星星漂浮最大距离.
      * @type {number}
      */
-    public static readonly OBBY_STAR_FLOAT_MAX_DIST = 10;
+    public static readonly OBBY_STAR_FLOAT_MAX_DIST = 20;
 
     /**
      * 跑酷星星漂浮阶段时间.
      * @type {number}
      */
-    public static readonly OBBY_STAR_FLOAT_STAGE_DURATION = 1e3;
+    public static readonly OBBY_STAR_FLOAT_STAGE_DURATION = 4e3;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ //#region Role
 }
