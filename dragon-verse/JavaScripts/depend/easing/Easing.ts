@@ -12,6 +12,727 @@ const c4 = (2 * PI) / 3;
 const c5 = (2 * PI) / 4.5;
 
 /**
+ * Easing functions.
+ * 强大的 Easing 函数库.
+ * 附赠一个 CubicBezier 实现.
+ *
+ * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
+ * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
+ * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
+ * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
+ * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+ * @author LviatYi
+ * @version 2.7.0b
+ * @see https://easings.net/
+ * @see https://cubic-bezier.com/
+ * @see https://www.geogebra.org/graphing/mfgtqbbp
+ */
+export default class Easing {
+    /**
+     * linear curve.
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static linear: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x;
+    };
+
+    /**
+     * easeInQuad curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInQuad.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInQuad: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x * x;
+    };
+
+    /**
+     * easeOutQuad curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeOutQuad.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeOutQuad: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return 1 - (1 - x) * (1 - x);
+    };
+
+    /**
+     * easeInOutQuad curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInOutQuad.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInOutQuad: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x < 0.5 ? 2 * x * x : 1 - pow(-2 * x + 2, 2) / 2;
+    };
+
+    /**
+     * easeInCubic curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInCubic.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInCubic: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x * x * x;
+    };
+
+    /**
+     * easeOutCubic curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeOutCubic.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeOutCubic: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return 1 - pow(1 - x, 3);
+    };
+
+    /**
+     * easeInOutCubic curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInOutCubic.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInOutCubic: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x < 0.5 ? 4 * x * x * x : 1 - pow(-2 * x + 2, 3) / 2;
+    };
+
+    /**
+     * easeInQuart curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInQuart.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInQuart: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x * x * x * x;
+    };
+
+    /**
+     * easeOutQuart curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeOutQuart.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeOutQuart: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return 1 - pow(1 - x, 4);
+    };
+
+    /**
+     * easeInOutQuart curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInOutQuart.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInOutQuart: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x < 0.5 ? 8 * x * x * x * x : 1 - pow(-2 * x + 2, 4) / 2;
+    };
+
+    /**
+     * easeInQuint curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInQuint.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInQuint: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x * x * x * x * x;
+    };
+
+    /**
+     * easeOutQuint curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeOutQuint.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeOutQuint: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return 1 - pow(1 - x, 5);
+    };
+
+    /**
+     * easeInOutQuint curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInOutQuint.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInOutQuint: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x < 0.5 ? 16 * x * x * x * x * x : 1 - pow(-2 * x + 2, 5) / 2;
+    };
+
+    /**
+     * easeInSine curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInSine.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInSine: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return 1 - cos((x * PI) / 2);
+    };
+
+    /**
+     * easeOutSine curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeOutSine.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeOutSine: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return sin((x * PI) / 2);
+    };
+
+    /**
+     * easeInOutSine curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInOutSine.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInOutSine: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return -(cos(PI * x) - 1) / 2;
+    };
+
+    /**
+     * easeInExpo curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInExpo.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInExpo: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x === 0 ? 0 : pow(2, 10 * x - 10);
+    };
+
+    /**
+     * easeOutExpo curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeOutExpo.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeOutExpo: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x === 1 ? 1 : 1 - pow(2, -10 * x);
+    };
+
+    /**
+     * easeInOutExpo curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInOutExpo.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInOutExpo: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x === 0
+            ? 0
+            : x === 1
+                ? 1
+                : x < 0.5
+                    ? pow(2, 20 * x - 10) / 2
+                    : (2 - pow(2, -20 * x + 10)) / 2;
+    };
+
+    /**
+     * easeInCirc curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInCirc.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInCirc: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return 1 - sqrt(1 - pow(x, 2));
+    };
+
+    /**
+     * easeOutCirc curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeOutCirc.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeOutCirc: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return sqrt(1 - pow(x - 1, 2));
+    };
+
+    /**
+     * easeInOutCirc curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInOutCirc.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInOutCirc: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x < 0.5
+            ? (1 - sqrt(1 - pow(2 * x, 2))) / 2
+            : (sqrt(1 - pow(-2 * x + 2, 2)) + 1) / 2;
+    };
+
+    /**
+     * easeInBack curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInBack.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInBack: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return c3 * x * x * x - c1 * x * x;
+    };
+
+    /**
+     * easeOutBack curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeOutBack.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeOutBack: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return 1 + c3 * pow(x - 1, 3) + c1 * pow(x - 1, 2);
+    };
+
+    /**
+     * easeInOutBack curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInOutBack.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInOutBack: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x < 0.5
+            ? (pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2
+            : (pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
+    };
+
+    /**
+     * easeInElastic curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInElastic.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInElastic: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x === 0
+            ? 0
+            : x === 1
+                ? 1
+                : -pow(2, 10 * x - 10) * sin((x * 10 - 10.75) * c4);
+    };
+
+    /**
+     * easeOutElastic curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeOutElastic.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeOutElastic: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x === 0
+            ? 0
+            : x === 1
+                ? 1
+                : pow(2, -10 * x) * sin((x * 10 - 0.75) * c4) + 1;
+    };
+
+    /**
+     * easeInOutElastic curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInOutElastic.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInOutElastic: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x === 0
+            ? 0
+            : x === 1
+                ? 1
+                : x < 0.5
+                    ? -(pow(2, 20 * x - 10) * sin((20 * x - 11.125) * c5)) / 2
+                    : (pow(2, -20 * x + 10) * sin((20 * x - 11.125) * c5)) / 2 + 1;
+    };
+
+    /**
+     * easeInBounce curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInBounce.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInBounce: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return 1 - this.easeInOutBounce(1 - x);
+    };
+
+    /**
+     * easeOutBounce curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeOutBounce.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeOutBounce: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        const n1 = 7.5625;
+        const d1 = 2.75;
+
+        if (x < 1 / d1) {
+            return n1 * x * x;
+        } else if (x < 2 / d1) {
+            return n1 * (x -= 1.5 / d1) * x + 0.75;
+        } else if (x < 2.5 / d1) {
+            return n1 * (x -= 2.25 / d1) * x + 0.9375;
+        } else {
+            return n1 * (x -= 2.625 / d1) * x + 0.984375;
+        }
+    };
+
+    /**
+     * easeInOutBounce curve.
+     * @desc ![](https://raw.githubusercontent.com/LviatYi/KnownBase/master/Easing/pic/easeInOutBounce.svg)
+     * @param x
+     * @param clamp is clamp x in [0,1].
+     * @return y
+     * @static
+     * @public
+     */
+    public static easeInOutBounce: EasingFunction = (x: number, clamp: boolean = true) => {
+        if (clamp) {
+            x = this.clamp01(x);
+        }
+        return x < 0.5
+            ? (1 - this.easeInOutBounce(1 - 2 * x)) / 2
+            : (1 + this.easeInOutBounce(2 * x - 1)) / 2;
+    };
+
+    /**
+     * cubic bezier.
+     * create bezier by P1,P2.
+     * x1 and x2 will be clamped in [0,1].
+     */
+    public static cubicBezier(x1: number, y1: number, x2: number, y2: number): EasingFunction {
+        return (new CubicBezier(x1, y1, x2, y2)).bezier;
+    }
+
+    /**
+     * regressive cubic bezier.
+     * create bezier by P1,P2.
+     * x1 and x2 will be clamped in [0,1].
+     */
+    public static regCubicBezier(x1: number, y1: number, x2: number, y2: number): EasingFunction {
+        return (new RegCubicBezier(x1, y1, x2, y2)).bezier;
+    }
+
+    /**
+     * cut bezier1 at t and connect to bezier2 with smoothing.
+     * return a new CubicBezierBase with p1 from current direction and p2 from bezier2.p2.
+     *
+     * @param easing1
+     * @param easing2
+     *      - undefined default. ignore the easing2.
+     * @param cutXorT default 1.
+     * @param scaleX1 default 1.
+     * @param scaleY1 default 1.
+     * @param scaleX2 default 1.
+     * @param scaleY2 default 1.
+     * @param isReg 是否 回归.
+     * @param isX is cut in x.
+     * @param strategy
+     * @see CubicBezierBase
+     * @profession
+     */
+    public static smoothBezier(easing1: CubicBezier | EasingFunction,
+                               easing2: CubicBezier,
+                               cutXorT: number = 1,
+                               scaleX1: number = 1,
+                               scaleY1: number = 1,
+                               scaleX2: number = 1,
+                               scaleY2: number = 1,
+                               isReg: boolean = false,
+                               isX: boolean = true,
+                               strategy: SmoothBezierStrategy = new DefaultSmoothBezierStrategy()): CubicBezier {
+        let newP1: Vector2;
+        let newP2: Vector2;
+        if (easing1 instanceof CubicBezierBase) {
+            if (isX) {
+                cutXorT = easing1.getT(cutXorT);
+            }
+            [newP1, newP2] = strategy.getStrategy(
+                easing1,
+                easing2,
+                cutXorT,
+                scaleX1,
+                scaleY1,
+                scaleX2,
+                scaleY2,
+                isReg,
+            );
+        } else {
+            const d1 = Easing.getFirstDerivation(easing1)(cutXorT);
+            const d2 = Easing.getSecondDerivation(easing1)(cutXorT);
+            const angle = Math.atan(d1);
+            newP1 = new Vector2(Math.cos(angle), Math.sin(angle)).multiple(d2);
+            newP2 = new Vector2(1 / 2, isReg ? 0 : 1);
+        }
+
+        return isReg ?
+            new RegCubicBezier(
+                newP1.x,
+                newP1.y,
+                newP2?.x ?? 1,
+                newP2?.y ?? 0,
+            ) :
+            new CubicBezier(
+                newP1.x,
+                newP1.y,
+                newP2?.x ?? 1,
+                newP2?.y ?? 1,
+            );
+    }
+
+    /**
+     * return input clamped in [min,max].
+     * @param input
+     * @param min
+     * @param max
+     */
+    public static clamp(input: number, min: number, max: number) {
+        return Math.max(min, Math.min(max, input));
+    }
+
+    /**
+     return input clamped in [0,1].
+     * return input clamped.
+     * @param input
+     */
+    public static clamp01(input: number) {
+        return this.clamp(input, 0, 1);
+    }
+
+    /**
+     * get first derivation.
+     * @param easing
+     * @param d
+     */
+    public static getFirstDerivation(easing: EasingFunction, d: number = 1e-6) {
+        return (x: number) => {
+            return (easing(x + d) - easing(x - d)) / 2 / d;
+        };
+    }
+
+    /**
+     * first derivative.
+     * @param easing
+     * @param x
+     * @param d
+     */
+    public static firstDerivative(easing: EasingFunction, x: number, d: number = 1e-6) {
+        return Easing.getFirstDerivation(easing, d)(x);
+    }
+
+    /**
+     * get second derivation.
+     * @param easing
+     * @param d
+     */
+    public static getSecondDerivation(easing: EasingFunction, d: number = 1e-6) {
+        const firstDerivation = Easing.getFirstDerivation(easing, d);
+        return (x: number) => {
+            return (firstDerivation(x + d) - firstDerivation(x - d)) / 2 / d;
+        };
+    }
+
+    /**
+     * second derivative.
+     * @param easing
+     * @param x
+     * @param d
+     */
+    public static secondDerivative(easing: EasingFunction, x: number, d: number = 1e-6) {
+        return Easing.getSecondDerivation(easing, d)(x);
+    }
+
+//region Util
+    /**
+     * sample given function in [from,to].
+     * @param func function want sample.
+     * @param from
+     * @param to
+     * @param epsilon default 1e-6.
+     */
+    public static sampleFunc(func: (x: number) => number, from: number = 0, to: number = 1, epsilon: number = 1e-3): Vector2[] {
+        const points: Vector2[] = [];
+
+        let x = from;
+        while (x < to) {
+            points.push(new Vector2(x, func(x)));
+            x += epsilon;
+        }
+        if (x !== to) {
+            points.push(new Vector2(to, func(to)));
+        }
+        return points;
+    }
+
+//endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+/**
  * Vector 2.
  * readonly.
  *
@@ -645,694 +1366,3 @@ export class DefaultSmoothBezierStrategy extends SmoothBezierStrategy {
 }
 
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-/**
- * Easing functions.
- * 强大的 Easing 函数库.
- * 附赠一个 CubicBezier 实现.
- *
- * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
- * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
- * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
- * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
- * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
- * @author LviatYi
- * @version 2.6.8b
- * @see https://easings.net/
- * @see https://cubic-bezier.com/
- * @see https://www.geogebra.org/graphing/mfgtqbbp
- */
-export default class Easing {
-    /**
-     * linear curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static linear: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x;
-    };
-
-    /**
-     * easeInQuad curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInQuad: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x * x;
-    };
-
-    /**
-     * easeOutQuad curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeOutQuad: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return 1 - (1 - x) * (1 - x);
-    };
-
-    /**
-     * easeInOutQuad curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInOutQuad: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x < 0.5 ? 2 * x * x : 1 - pow(-2 * x + 2, 2) / 2;
-    };
-
-    /**
-     * easeInCubic curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInCubic: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x * x * x;
-    };
-
-    /**
-     * easeOutCubic curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeOutCubic: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return 1 - pow(1 - x, 3);
-    };
-
-    /**
-     * easeInOutCubic curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInOutCubic: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x < 0.5 ? 4 * x * x * x : 1 - pow(-2 * x + 2, 3) / 2;
-    };
-
-    /**
-     * easeInQuart curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInQuart: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x * x * x * x;
-    };
-
-    /**
-     * easeOutQuart curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeOutQuart: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return 1 - pow(1 - x, 4);
-    };
-
-    /**
-     * easeInOutQuart curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInOutQuart: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x < 0.5 ? 8 * x * x * x * x : 1 - pow(-2 * x + 2, 4) / 2;
-    };
-
-    /**
-     * easeInQuint curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInQuint: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x * x * x * x * x;
-    };
-
-    /**
-     * easeOutQuint curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeOutQuint: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return 1 - pow(1 - x, 5);
-    };
-
-    /**
-     * easeInOutQuint curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInOutQuint: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x < 0.5 ? 16 * x * x * x * x * x : 1 - pow(-2 * x + 2, 5) / 2;
-    };
-
-    /**
-     * easeInSine curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInSine: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return 1 - cos((x * PI) / 2);
-    };
-
-    /**
-     * easeOutSine curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeOutSine: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return sin((x * PI) / 2);
-    };
-
-    /**
-     * easeInOutSine curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInOutSine: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return -(cos(PI * x) - 1) / 2;
-    };
-
-    /**
-     * easeInExpo curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInExpo: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x === 0 ? 0 : pow(2, 10 * x - 10);
-    };
-
-    /**
-     * easeOutExpo curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeOutExpo: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x === 1 ? 1 : 1 - pow(2, -10 * x);
-    };
-
-    /**
-     * easeInOutExpo curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInOutExpo: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x === 0
-            ? 0
-            : x === 1
-                ? 1
-                : x < 0.5
-                    ? pow(2, 20 * x - 10) / 2
-                    : (2 - pow(2, -20 * x + 10)) / 2;
-    };
-
-    /**
-     * easeInCirc curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInCirc: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return 1 - sqrt(1 - pow(x, 2));
-    };
-
-    /**
-     * easeOutCirc curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeOutCirc: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return sqrt(1 - pow(x - 1, 2));
-    };
-
-    /**
-     * easeInOutCirc curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInOutCirc: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x < 0.5
-            ? (1 - sqrt(1 - pow(2 * x, 2))) / 2
-            : (sqrt(1 - pow(-2 * x + 2, 2)) + 1) / 2;
-    };
-
-    /**
-     * easeInBack curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInBack: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return c3 * x * x * x - c1 * x * x;
-    };
-
-    /**
-     * easeOutBack curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeOutBack: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return 1 + c3 * pow(x - 1, 3) + c1 * pow(x - 1, 2);
-    };
-
-    /**
-     * easeInOutBack curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInOutBack: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x < 0.5
-            ? (pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2
-            : (pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
-    };
-
-    /**
-     * easeInElastic curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInElastic: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x === 0
-            ? 0
-            : x === 1
-                ? 1
-                : -pow(2, 10 * x - 10) * sin((x * 10 - 10.75) * c4);
-    };
-
-    /**
-     * easeOutElastic curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeOutElastic: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x === 0
-            ? 0
-            : x === 1
-                ? 1
-                : pow(2, -10 * x) * sin((x * 10 - 0.75) * c4) + 1;
-    };
-
-    /**
-     * easeInOutElastic curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInOutElastic: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x === 0
-            ? 0
-            : x === 1
-                ? 1
-                : x < 0.5
-                    ? -(pow(2, 20 * x - 10) * sin((20 * x - 11.125) * c5)) / 2
-                    : (pow(2, -20 * x + 10) * sin((20 * x - 11.125) * c5)) / 2 + 1;
-    };
-
-    /**
-     * easeInBounce curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInBounce: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return 1 - this.easeInOutBounce(1 - x);
-    };
-
-    /**
-     * easeOutBounce curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeOutBounce: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        const n1 = 7.5625;
-        const d1 = 2.75;
-
-        if (x < 1 / d1) {
-            return n1 * x * x;
-        } else if (x < 2 / d1) {
-            return n1 * (x -= 1.5 / d1) * x + 0.75;
-        } else if (x < 2.5 / d1) {
-            return n1 * (x -= 2.25 / d1) * x + 0.9375;
-        } else {
-            return n1 * (x -= 2.625 / d1) * x + 0.984375;
-        }
-    };
-
-    /**
-     * easeInOutBounce curve.
-     * @param x
-     * @param clamp is clamp x in [0,1].
-     * @return y
-     * @static
-     * @public
-     */
-    public static easeInOutBounce: EasingFunction = (x: number, clamp: boolean = true) => {
-        if (clamp) {
-            x = this.clamp01(x);
-        }
-        return x < 0.5
-            ? (1 - this.easeInOutBounce(1 - 2 * x)) / 2
-            : (1 + this.easeInOutBounce(2 * x - 1)) / 2;
-    };
-
-    /**
-     * cubic bezier.
-     * create bezier by P1,P2.
-     * x1 and x2 will be clamped in [0,1].
-     */
-    public static cubicBezier(x1: number, y1: number, x2: number, y2: number): EasingFunction {
-        return (new CubicBezier(x1, y1, x2, y2)).bezier;
-    }
-
-    /**
-     * regressive cubic bezier.
-     * create bezier by P1,P2.
-     * x1 and x2 will be clamped in [0,1].
-     */
-    public static regCubicBezier(x1: number, y1: number, x2: number, y2: number): EasingFunction {
-        return (new RegCubicBezier(x1, y1, x2, y2)).bezier;
-    }
-
-    /**
-     * cut bezier1 at t and connect to bezier2 with smoothing.
-     * return a new CubicBezierBase with p1 from current direction and p2 from bezier2.p2.
-     *
-     * @param easing1
-     * @param easing2
-     *      - undefined default. ignore the easing2.
-     * @param cutXorT default 1.
-     * @param scaleX1 default 1.
-     * @param scaleY1 default 1.
-     * @param scaleX2 default 1.
-     * @param scaleY2 default 1.
-     * @param isReg 是否 回归.
-     * @param isX is cut in x.
-     * @param strategy
-     * @see CubicBezierBase
-     * @profession
-     */
-    public static smoothBezier(easing1: CubicBezier | EasingFunction,
-                               easing2: CubicBezier,
-                               cutXorT: number = 1,
-                               scaleX1: number = 1,
-                               scaleY1: number = 1,
-                               scaleX2: number = 1,
-                               scaleY2: number = 1,
-                               isReg: boolean = false,
-                               isX: boolean = true,
-                               strategy: SmoothBezierStrategy = new DefaultSmoothBezierStrategy()): CubicBezier {
-        let newP1: Vector2;
-        let newP2: Vector2;
-        if (easing1 instanceof CubicBezierBase) {
-            if (isX) {
-                cutXorT = easing1.getT(cutXorT);
-            }
-            [newP1, newP2] = strategy.getStrategy(
-                easing1,
-                easing2,
-                cutXorT,
-                scaleX1,
-                scaleY1,
-                scaleX2,
-                scaleY2,
-                isReg,
-            );
-        } else {
-            const d1 = Easing.getFirstDerivation(easing1)(cutXorT);
-            const d2 = Easing.getSecondDerivation(easing1)(cutXorT);
-            const angle = Math.atan(d1);
-            newP1 = new Vector2(Math.cos(angle), Math.sin(angle)).multiple(d2);
-            newP2 = new Vector2(1 / 2, isReg ? 0 : 1);
-        }
-
-        return isReg ?
-            new RegCubicBezier(
-                newP1.x,
-                newP1.y,
-                newP2?.x ?? 1,
-                newP2?.y ?? 0,
-            ) :
-            new CubicBezier(
-                newP1.x,
-                newP1.y,
-                newP2?.x ?? 1,
-                newP2?.y ?? 1,
-            );
-    }
-
-    /**
-     * return input clamped in [min,max].
-     * @param input
-     * @param min
-     * @param max
-     */
-    public static clamp(input: number, min: number, max: number) {
-        return Math.max(min, Math.min(max, input));
-    }
-
-    /**
-     return input clamped in [0,1].
-     * return input clamped.
-     * @param input
-     */
-    public static clamp01(input: number) {
-        return this.clamp(input, 0, 1);
-    }
-
-    /**
-     * get first derivation.
-     * @param easing
-     * @param d
-     */
-    public static getFirstDerivation(easing: EasingFunction, d: number = 1e-6) {
-        return (x: number) => {
-            return (easing(x + d) - easing(x - d)) / 2 / d;
-        };
-    }
-
-    /**
-     * first derivative.
-     * @param easing
-     * @param x
-     * @param d
-     */
-    public static firstDerivative(easing: EasingFunction, x: number, d: number = 1e-6) {
-        return Easing.getFirstDerivation(easing, d)(x);
-    }
-
-    /**
-     * get second derivation.
-     * @param easing
-     * @param d
-     */
-    public static getSecondDerivation(easing: EasingFunction, d: number = 1e-6) {
-        const firstDerivation = Easing.getFirstDerivation(easing, d);
-        return (x: number) => {
-            return (firstDerivation(x + d) - firstDerivation(x - d)) / 2 / d;
-        };
-    }
-
-    /**
-     * second derivative.
-     * @param easing
-     * @param x
-     * @param d
-     */
-    public static secondDerivative(easing: EasingFunction, x: number, d: number = 1e-6) {
-        return Easing.getSecondDerivation(easing, d)(x);
-    }
-
-//region Util
-    /**
-     * sample given function in [from,to].
-     * @param func function want sample.
-     * @param from
-     * @param to
-     * @param epsilon default 1e-6.
-     */
-    public static sampleFunc(func: (x: number) => number, from: number = 0, to: number = 1, epsilon: number = 1e-3): Vector2[] {
-        const points: Vector2[] = [];
-
-        let x = from;
-        while (x < to) {
-            points.push(new Vector2(x, func(x)));
-            x += epsilon;
-        }
-        if (x !== to) {
-            points.push(new Vector2(to, func(to)));
-        }
-        return points;
-    }
-
-//endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-}
