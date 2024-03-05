@@ -41,11 +41,8 @@ export default class ObbyStar extends mw.Script {
 
 //#region Member
 
-    // @Property({displayName: "湿润 Buff 持续时长 s", group: "Config | buff"})
-    // public wetBuffDuration: number = 5;
-    //
-    // @Property({displayName: "爆炸冲量力", group: "Config | buff"})
-    // public force: number = 1000;
+    @Property({displayName: "隶属关卡", group: "Level"})
+    public level: number = 0;
 
     private _trigger: Trigger;
 
@@ -87,6 +84,11 @@ export default class ObbyStar extends mw.Script {
             } else {
                 this._trigger.onEnter.add(this.onObjectEnter);
                 Event.addLocalListener(EventDefine.ObbyStarReset, (player: mw.Player) => this.serverReset(player));
+                Event.addLocalListener(EventDefine.ObbyStarCollectLevel, (player: Player, level: number) => {
+                    if (this.level === level) {
+                        this.collect(player);
+                    }
+                });
             }
         } else if (SystemUtil.isClient()) {
             this._clientCharacter = Player.localPlayer.character;
@@ -196,7 +198,7 @@ export default class ObbyStar extends mw.Script {
                 AudioController.getInstance().play(
                     GameServiceConfig.OBBY_STAR_COLLECT_SOUND_ID,
                     this.gameObject.worldTransform.position,
-                )
+                );
                 this.state.isFlying = false;
                 this.state.flySpeed = 0;
                 this.state.isAlive = false;
@@ -218,17 +220,24 @@ export default class ObbyStar extends mw.Script {
         });
     }
 
+    /**
+     * 收集.
+     * @param {Player} player
+     */
+    private collect(player: Player) {
+        this.flyToPlayer(player);
+        this._serverUsedMap.set(player.playerId, true);
+        this.obbyModuleS.addPlayerStarCount(player.playerId);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //region Event Callback
     private onObjectEnter = (obj: GameObject): void => {
         if (Gtk.isCharacter(obj)) {
             const player = obj.player;
-            const playerId = player.playerId;
-            if (!this._serverUsedMap.get(playerId)) {
-                this.flyToPlayer(player);
-                this._serverUsedMap.set(playerId, true);
-                this.obbyModuleS.addPlayerStarCount(playerId);
+            if (!this._serverUsedMap.get(player.playerId)) {
+                this.collect(player);
             }
         }
     };
