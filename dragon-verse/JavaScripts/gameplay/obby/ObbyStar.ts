@@ -237,7 +237,7 @@ export default class ObbyStar extends mw.Script {
             });
 
         idle.when((state) => state.isFlying).to(fly);
-        fly.when((state) => state.sqrDist < 100).to(hidden);
+        fly.when((state) => state.sqrDist < 100 || state.sqrDist > 2500).to(hidden);
         hidden.when((state) => state.isAlive).to(idle);
 
         this._machine = new FiniteStateMachine(idle);
