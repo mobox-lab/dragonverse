@@ -596,7 +596,7 @@ export default class GameServiceConfig {
      * 跑酷星星收集音效 Guid.
      * @type {string}
      */
-    public static readonly OBBY_STAR_COLLECT_SOUND_ID = 136202;
+    public static readonly OBBY_STAR_COLLECT_SOUND_ID = 29;
 
     /**
      * 跑酷星星飞行加速度.
