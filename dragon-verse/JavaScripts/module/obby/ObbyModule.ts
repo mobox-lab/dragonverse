@@ -1,27 +1,27 @@
 import Enumerable from "linq";
 import UUID from "pure-uuid";
-import { GameConfig } from "../../config/GameConfig";
-import { EventDefine } from "../../const/EventDefine";
-import { BagTypes } from "../../const/ForeignKeyIndexer";
+import {GameConfig} from "../../config/GameConfig";
+import {EventDefine} from "../../const/EventDefine";
+import {BagTypes} from "../../const/ForeignKeyIndexer";
 
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MainPanel from "../../ui/main/MainPanel";
 
-import { BagModuleS } from "../bag/BagModule";
+import {BagModuleS} from "../bag/BagModule";
 
 
 import noReply = mwext.Decorator.noReply;
 import EventListener = mw.EventListener;
 
-import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
-import { DataUpgradeMethod, JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import {ObbyInteractorPanel} from "../../ui/obby/ObbyInteractorPanel";
+import {DataUpgradeMethod, JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
 import UnifiedRoleController from "../role/UnifiedRoleController";
-import { ObbyEndPanel, ObbyGameData } from "../../ui/obby/ObbyEndPanel";
-import { MapManager } from "../../gameplay/map/MapManager";
-import { NoOverride } from "../../util/GToolkit";
+import {ObbyEndPanel, ObbyGameData} from "../../ui/obby/ObbyEndPanel";
+import {MapManager} from "../../gameplay/map/MapManager";
+import {NoOverride} from "../../util/GToolkit";
 
 
 export default class ObbyModuleData extends JModuleData {
@@ -548,25 +548,6 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
     }
 
     /**
-     * 开始游戏.
-     * @param {number} playerId
-     */
-    @noReply()
-    public net_startGame(playerId: number) {
-        const player = Player.getPlayer(playerId);
-        if (!player) return;
-        Event.dispatchToLocal(EventDefine.ObbyStarReset, player);
-        this._playerStarsCounter.set(playerId, 0);
-        this._playerStartTimeMap.set(playerId, Date.now());
-        this._playerArrivedCheckPoint.set(player.playerId, 0);
-        this._playerIsInvincible.set(player.playerId, false);
-        this._playerIsAutoMove.set(player.playerId, false);
-
-        let lv = this._playerArrivedCheckPoint.get(this.currentPlayerId);
-        this.getClient(this.currentPlayerId).net_updateLv(lv);
-    }
-
-    /**
      * 结束游戏.
      * @param {number} playerId
      * @return {GameResult | null} 返回游戏结果.
@@ -613,14 +594,6 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
         this.updateLv(currPlayerId, checkLv);
         return;
     }
-
-    // @noReply()
-    // public net_startGame() {
-    //     // const currPlayerId = this.currentPlayerId;
-    //     // const playerData = this.getPlayerData(currPlayerId);
-    //     // let lv = playerData.getLv();
-
-    // }
 
     /**
      * @description: 获取是否无敌
@@ -691,7 +664,7 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
 
                 Event.dispatchToLocal(EventDefine.ObbyStarCollectLevel, Player.getPlayer(this.currentPlayerId), this._playerArrivedCheckPoint.get(this.currentPlayerId));
 
-                actions.tween(character.worldTransform).to(1000, { position: pos }).call(() => {
+                actions.tween(character.worldTransform).to(1000, {position: pos}).call(() => {
                     animation.stop();
                     character.gravityScale = oriGravity;
                     character.movementEnabled = true;
@@ -710,6 +683,26 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
 
     public async net_getStarCount(): Promise<number> {
         return this.getPlayerStarCount(this.currentPlayerId);
+    }
+
+    /**
+     * 开始游戏.
+     * @param {number} playerId
+     */
+    @noReply()
+    public net_startGame(playerId: number) {
+        const player = Player.getPlayer(playerId);
+        if (!player) return;
+        Event.dispatchToLocal(EventDefine.ObbyStarReset, player);
+        Event.dispatchToClient(player, EventDefine.ObbyStarReset, player);
+        this._playerStarsCounter.set(playerId, 0);
+        this._playerStartTimeMap.set(playerId, Date.now());
+        this._playerArrivedCheckPoint.set(player.playerId, 0);
+        this._playerIsInvincible.set(player.playerId, false);
+        this._playerIsAutoMove.set(player.playerId, false);
+
+        let lv = this._playerArrivedCheckPoint.get(this.currentPlayerId);
+        this.getClient(this.currentPlayerId).net_updateLv(lv);
     }
 
     public async net_endGame(): Promise<GameResult> {

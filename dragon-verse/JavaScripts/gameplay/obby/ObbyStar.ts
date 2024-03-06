@@ -103,11 +103,12 @@ export default class ObbyStar extends mw.Script {
         if (SystemUtil.isServer()) {
             Event.addLocalListener(EventDefine.ObbyStarReset, (player: mw.Player) => this.serverReset(player));
             Event.addLocalListener(EventDefine.ObbyStarCollectLevel, (player: Player, level: number) => {
-                if (this.level === level) {
+                if (this.level === level && !this._serverUsedMap.get(player.playerId)) {
                     this.collect(player);
                 }
             });
         } else if (SystemUtil.isClient()) {
+            Event.addServerListener(EventDefine.ObbyStarReset, (player: mw.Player) => this.clientReset(player));
             this._clientCharacter = Player.localPlayer.character;
             this.initStateMachine();
         }
@@ -142,6 +143,7 @@ export default class ObbyStar extends mw.Script {
 
     @RemoteFunction(Client)
     public clientReset(player: mw.Player) {
+        if (this.state.isAlive) return;
         this.state.isAlive = true;
         this._touchedInClient = false;
         this.gameObject.setVisibility(true);
@@ -149,9 +151,10 @@ export default class ObbyStar extends mw.Script {
 
     @RemoteFunction(Server)
     public serverReset(player: mw.Player) {
-        if (this._serverUsedMap)
+        if (this._serverUsedMap.get(player.playerId)) {
             this.clientReset(player);
-        this._serverUsedMap.delete(player.playerId);
+        }
+        this._serverUsedMap.set(player.playerId, false);
     }
 
     private initStateMachine() {
@@ -205,7 +208,12 @@ export default class ObbyStar extends mw.Script {
                     Gtk.newWithZ(this.gameObject.worldTransform.rotation, this.gameObject.worldTransform.rotation.z + GameServiceConfig.OBBY_STAR_SELF_ROTATION_SPEED * dt);
                 const direction = this._clientCharacter.worldTransform.position.subtract(this.gameObject.worldTransform.position).normalize();
                 this.state.flySpeed = Math.min(this.state.flySpeed + GameServiceConfig.OBBY_STAR_FLY_ACCELERATED * dt, GameServiceConfig.OBBY_STAR_FLY_MAX_SPEED);
-                this.gameObject.worldTransform.position = this.gameObject.worldTransform.position.add(direction.multiply(this.state.flySpeed * dt));
+                const displacement = direction.multiply(this.state.flySpeed * dt);
+                const distDisplacement = displacement.sqrLength;
+                const distPlayerStar = this.gameObject.worldTransform.position.squaredDistanceTo(this._clientCharacter.worldTransform.position);
+                this.gameObject.worldTransform.position = this.gameObject.worldTransform.position.add(distDisplacement < distPlayerStar ?
+                    displacement :
+                    this.gameObject.worldTransform.position.clone().subtract(this._clientCharacter.worldTransform.position));
                 this.state.sqrDist = this.gameObject.worldTransform.position.squaredDistanceTo(this._clientCharacter.worldTransform.position);
             })
             .aEx((arg) => {
