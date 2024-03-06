@@ -201,7 +201,6 @@ export default class ObbyStar extends mw.Script {
         const fly = new State<ObbyStarBehaviorStates>(ObbyStarStates.Flying)
             .aE(() => {
                 Log4Ts.log(ObbyStar, `enter ${idle.name} state.`);
-                this.state.sqrDist = Number.MAX_VALUE;
             })
             .aU((dt) => {
                 this.gameObject.worldTransform.rotation =
@@ -233,6 +232,7 @@ export default class ObbyStar extends mw.Script {
         const hidden = new State<ObbyStarBehaviorStates>(ObbyStarStates.Hidden)
             .aE(() => {
                 Log4Ts.log(ObbyStar, `enter ${idle.name} state.`);
+                this.state.sqrDist = Number.MAX_VALUE;
                 this.gameObject.setVisibility(false);
             });
 
