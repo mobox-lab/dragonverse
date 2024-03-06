@@ -1,4 +1,4 @@
-import GToolkit, {Tf} from "../util/GToolkit";
+import GToolkit, { Tf } from "../util/GToolkit";
 
 export default class GameServiceConfig {
     //#region Sub Game
@@ -11,6 +11,16 @@ export default class GameServiceConfig {
      * 跑酷游戏退出传送位置
      */
     public static readonly ENTER_OBBY_GAME_POS = new Vector(5441, -20000, 1450);
+
+    /**
+     * 无敌护盾花费金币数
+     */
+    public static readonly INVINCIBLE_COST = 10;
+
+    /**
+     * 自动寻路花费金币数
+     */
+    public static readonly AUTO_FIND_PATH_COST = 10;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -616,30 +626,30 @@ export default class GameServiceConfig {
      * 跑酷星星飞行加速度.
      * @type {number}
      */
-    public static readonly OBBY_STAR_FLY_ACCELERATED = 300;
+    public static readonly OBBY_STAR_FLY_ACCELERATED = 1300;
 
     /**
      * 跑酷星星飞行最大速度.
      * @type {number}
      */
-    public static readonly OBBY_STAR_FLY_MAX_SPEED = 1000;
+    public static readonly OBBY_STAR_FLY_MAX_SPEED = 3000;
 
     /**
      * 跑酷星星自旋速度. °/s
      * @type {number}
      */
-    public static readonly OBBY_STAR_SELF_ROTATION_SPEED = 15;
+    public static readonly OBBY_STAR_SELF_ROTATION_SPEED = 90;
 
     /**
      * 跑酷星星漂浮最大距离.
      * @type {number}
      */
-    public static readonly OBBY_STAR_FLOAT_MAX_DIST = 20;
+    public static readonly OBBY_STAR_FLOAT_MAX_DIST = 100;
 
     /**
      * 跑酷星星漂浮阶段时间.
      * @type {number}
      */
-    public static readonly OBBY_STAR_FLOAT_STAGE_DURATION = 4e3;
+    public static readonly OBBY_STAR_FLOAT_STAGE_DURATION = 2e3;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ //#region Role
 }
