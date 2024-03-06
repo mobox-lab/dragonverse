@@ -606,14 +606,14 @@ export default class GameServiceConfig {
      * 跑酷星星触碰特效 Guid.
      * @type {string}
      */
-    public static readonly OBBY_STAR_TOUCH_EFFECT_GUID = "113901";
+    public static readonly OBBY_STAR_TOUCH_EFFECT_GUID = "155715";
 
     /**
      * 跑酷星星触碰特效 缩放.
      * @type {Vector}
      */
     public static get OBBY_STAR_TOUCH_EFFECT_SCALE() {
-        return new Vector(1.2, 1.2, 1.2);
+        return new Vector(1.0, 1.0, 1.0);
     }
 
     /**
