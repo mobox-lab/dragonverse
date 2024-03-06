@@ -78,6 +78,8 @@ export default class ObbyStar extends mw.Script {
 
     private _obbyModuleS: ObbyModuleS;
 
+    private _touchedInClient: boolean = false;
+
     private get obbyModuleS(): ObbyModuleS | null {
         if (!this._obbyModuleS) this._obbyModuleS = ModuleService.getModule(ObbyModuleS);
         return this._obbyModuleS;
@@ -92,20 +94,19 @@ export default class ObbyStar extends mw.Script {
 
 //region Member init
         this._originPosition = this.gameObject.worldTransform.position;
-
+        this._trigger = Gtk.getFirstGameObject(this.gameObject, ObbyStar.GAME_OBJECT_TRIGGER_NAME) as Trigger;
+        if (!this._trigger) {
+            Log4Ts.error(ObbyStar, `there is no trigger under this game object.`);
+        } else {
+            this._trigger.onEnter.add(this.onObjectEnter);
+        }
         if (SystemUtil.isServer()) {
-            this._trigger = Gtk.getFirstGameObject(this.gameObject, ObbyStar.GAME_OBJECT_TRIGGER_NAME) as Trigger;
-            if (!this._trigger) {
-                Log4Ts.error(ObbyStar, `there is no trigger under this game object.`);
-            } else {
-                this._trigger.onEnter.add(this.onObjectEnter);
-                Event.addLocalListener(EventDefine.ObbyStarReset, (player: mw.Player) => this.serverReset(player));
-                Event.addLocalListener(EventDefine.ObbyStarCollectLevel, (player: Player, level: number) => {
-                    if (this.level === level) {
-                        this.collect(player);
-                    }
-                });
-            }
+            Event.addLocalListener(EventDefine.ObbyStarReset, (player: mw.Player) => this.serverReset(player));
+            Event.addLocalListener(EventDefine.ObbyStarCollectLevel, (player: Player, level: number) => {
+                if (this.level === level) {
+                    this.collect(player);
+                }
+            });
         } else if (SystemUtil.isClient()) {
             this._clientCharacter = Player.localPlayer.character;
             this.initStateMachine();
@@ -142,6 +143,7 @@ export default class ObbyStar extends mw.Script {
     @RemoteFunction(Client)
     public clientReset(player: mw.Player) {
         this.state.isAlive = true;
+        this._touchedInClient = false;
         this.gameObject.setVisibility(true);
     }
 
@@ -211,10 +213,10 @@ export default class ObbyStar extends mw.Script {
                     GameServiceConfig.OBBY_STAR_COLLECT_EFFECT_GUID,
                     this.gameObject.worldTransform.position,
                 );
-                AudioController.getInstance().play(
-                    GameServiceConfig.OBBY_STAR_COLLECT_SOUND_ID,
-                    this.gameObject.worldTransform.position,
-                );
+                // AudioController.getInstance().play(
+                //     GameServiceConfig.OBBY_STAR_COLLECT_SOUND_ID,
+                //     this.gameObject.worldTransform.position,
+                // );
                 this.state.isFlying = false;
                 this.state.flySpeed = 0;
                 this.state.isAlive = false;
@@ -251,9 +253,15 @@ export default class ObbyStar extends mw.Script {
 //region Event Callback
     private onObjectEnter = (obj: GameObject): void => {
         if (Gtk.isCharacter(obj)) {
-            const player = obj.player;
-            if (!this._serverUsedMap.get(player.playerId)) {
-                this.collect(player);
+            if (SystemUtil.isServer()) {
+                const player = obj.player;
+                if (!this._serverUsedMap.get(player.playerId)) {
+                    this.collect(player);
+                }
+            } else if (SystemUtil.isClient()) {
+                if (this._touchedInClient) return;
+                this._touchedInClient = true;
+                EffectService.playAtPosition(GameServiceConfig.OBBY_STAR_TOUCH_EFFECT_GUID, this.gameObject.worldTransform.position);
             }
         }
     };

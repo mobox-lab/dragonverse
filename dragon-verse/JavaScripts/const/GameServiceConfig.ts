@@ -593,7 +593,13 @@ export default class GameServiceConfig {
     public static readonly OBBY_STAR_COLLECT_EFFECT_GUID = "151580";
 
     /**
-     * 跑酷星星收集音效 Guid.
+     * 跑酷星星触碰特效 Guid.
+     * @type {string}
+     */
+    public static readonly OBBY_STAR_TOUCH_EFFECT_GUID = "151580";
+
+    /**
+     * 跑酷星星收集音效 Id.
      * @type {string}
      */
     public static readonly OBBY_STAR_COLLECT_SOUND_ID = 29;
