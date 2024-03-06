@@ -603,7 +603,7 @@ export default class GameServiceConfig {
      * @type {Vector}
      */
     public static get OBBY_STAR_TOUCH_EFFECT_SCALE() {
-        return new Vector(1, 1, 1);
+        return new Vector(1.5, 1.5, 1.5);
     }
 
     /**

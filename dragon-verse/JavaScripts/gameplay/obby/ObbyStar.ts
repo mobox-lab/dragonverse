@@ -213,10 +213,10 @@ export default class ObbyStar extends mw.Script {
                     GameServiceConfig.OBBY_STAR_COLLECT_EFFECT_GUID,
                     this.gameObject.worldTransform.position,
                 );
-                // AudioController.getInstance().play(
-                //     GameServiceConfig.OBBY_STAR_COLLECT_SOUND_ID,
-                //     this.gameObject.worldTransform.position,
-                // );
+                AudioController.getInstance().play(
+                    GameServiceConfig.OBBY_STAR_COLLECT_SOUND_ID,
+                    this.gameObject.worldTransform.position,
+                );
                 this.state.isFlying = false;
                 this.state.flySpeed = 0;
                 this.state.isAlive = false;
