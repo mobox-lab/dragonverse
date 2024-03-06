@@ -16,6 +16,7 @@ import { AuthModuleS } from "../auth/AuthModule";
 import GameStart from "../../GameStart";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import GlobalProperty from "../../GlobalProperty";
+import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -507,6 +508,10 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         return this.server.net_consumeObbyTicket();
     }
 
+    public isObbyTicketEnough(): boolean {
+        return this.data.obbyTicket > 0;
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -698,12 +703,18 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
      * @param playerId
      */
     public net_consumeObbyTicket(): Promise<boolean> {
-        const playerData = this.getPlayerData(this.currentPlayerId);
-        if (playerData.obbyTicket >= 1) {
-            this.addObbyTicket(this.currentPlayerId, -1);
+        //判断需不需要消耗次数
+        if (DataCenterS.getData(this.currentPlayerId, ObbyModuleData).leaveObbyByExitGame === true) {
+            ModuleService.getModule(ObbyModuleS).enterObbyWithoutTicket(this.currentPlayerId);
             return Promise.resolve(true);
         } else {
-            return Promise.resolve(false);
+            const playerData = this.getPlayerData(this.currentPlayerId);
+            if (playerData.obbyTicket >= 1) {
+                this.addObbyTicket(this.currentPlayerId, -1);
+                return Promise.resolve(true);
+            } else {
+                return Promise.resolve(false);
+            }
         }
     }
 

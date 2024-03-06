@@ -21,15 +21,24 @@ import i18n from "../../language/i18n";
 import UnifiedRoleController from "../role/UnifiedRoleController";
 import { ObbyEndPanel, ObbyGameData } from "../../ui/obby/ObbyEndPanel";
 import { MapManager } from "../../gameplay/map/MapManager";
+import { NoOverride } from "../../util/GToolkit";
 
 
 export default class ObbyModuleData extends JModuleData {
     @Decorator.persistence()
     public totalStarCount: number = 0;
 
+    @Decorator.persistence()
+    public leaveObbyByExitGame: boolean = false;
+
     public recordStarCount(count: number, save: boolean = true) {
         this.totalStarCount += count;
         if (save) this.save(true);
+    }
+
+    public setLeaveObbyByExitGame(value: boolean) {
+        this.leaveObbyByExitGame = value;
+        this.save(false);
     }
 
     protected get releasedVersions(): number[] {
@@ -158,8 +167,8 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
             mainPanel.setCanSprint(false);
             mainPanel.resetCanvas.visibility = SlateVisibility.Hidden;
             mainPanel.obbySkillCanvas.visibility = SlateVisibility.Visible;
-            mainPanel.playcount.visibility = SlateVisibility.Visible;
-            mainPanel.coincount.visibility = SlateVisibility.Visible;
+            // mainPanel.playcount.visibility = SlateVisibility.Visible;
+            // mainPanel.coincount.visibility = SlateVisibility.Visible;
             mainPanel.switchRoomCanvas.visibility = SlateVisibility.Hidden;
             MapManager.instance.hideMap();
         }
@@ -274,8 +283,8 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
             mainPanel.setCanSprint(true);
             mainPanel.resetCanvas.visibility = SlateVisibility.Visible;
             mainPanel.obbySkillCanvas.visibility = SlateVisibility.Hidden;
-            mainPanel.playcount.visibility = SlateVisibility.Hidden;
-            mainPanel.coincount.visibility = SlateVisibility.Hidden;
+            // mainPanel.playcount.visibility = SlateVisibility.Hidden;
+            // mainPanel.coincount.visibility = SlateVisibility.Hidden;
             mainPanel.switchRoomCanvas.visibility = SlateVisibility.Visible;
             MapManager.instance.showMap();
         }
@@ -418,6 +427,10 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
         this._obbyPanel.setCurLv(this._curLv, this._maxLv);
     }
 
+    public net_showEnterTips() {
+        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.ObbyEnterWithoutTicket));
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
@@ -482,6 +495,9 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
 
     protected onPlayerLeft(player: Player): void {
         Log4Ts.log(ObbyModuleS, "obbyModules onPlayerLeft================");
+        if (this._playerStarsCounter.has(player.playerId)) {
+            this.getPlayerData(player).setLeaveObbyByExitGame(true);
+        }
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -561,6 +577,8 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
             const data = this.getPlayerData(playerId);
             const currentCount = this._playerStarsCounter.get(playerId) ?? 0;
             this._playerStarsCounter.delete(playerId);
+            //设置为正常退出
+            this.getPlayerData(playerId).setLeaveObbyByExitGame(false);
             data.recordStarCount(currentCount);
             let levels = this._playerArrivedCheckPoint.get(playerId);
             //重置为0
@@ -604,14 +622,23 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
 
     // }
 
+    /**
+     * @description: 获取是否无敌
+     */
     public async net_isInvincible(): Promise<boolean> {
         return Promise.resolve(this._playerIsInvincible.get(this.currentPlayerId));
     }
 
+    /**
+     * @description: 获取是否正在自动寻路
+     */
     public async net_isAutoMoving(): Promise<boolean> {
         return Promise.resolve(this._playerIsAutoMove.get(this.currentPlayerId));
     }
 
+    /**
+     * @description: 设置无敌状态
+     */
     public async net_setInvincible(): Promise<boolean> {
         if (this._playerIsInvincible.get(this.currentPlayerId) === true) {
             return Promise.resolve(false);
@@ -687,6 +714,10 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
 
     public async net_endGame(): Promise<GameResult> {
         return this.endGame(this.currentPlayerId);
+    }
+
+    public enterObbyWithoutTicket(playerId: number) {
+        this.getClient(playerId).net_showEnterTips();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

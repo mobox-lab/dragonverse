@@ -94,7 +94,9 @@ let languageDefault = {
     addInvincible_Success: "添加护盾成功！",
     addInvincible_Fail: "添加护盾失败！",
     Invincible_End: "护盾结束！",
-    autoFindPath_Fail: "自动寻路失败！"
+    autoFindPath_Fail: "自动寻路失败！",
+
+    ObbyEnterWithoutTicket: "由于上次在跑酷关内未失败，此次进入不消耗游戏次数！"
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 };

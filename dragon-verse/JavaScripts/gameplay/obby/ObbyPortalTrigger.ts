@@ -17,16 +17,23 @@ export default class ObbyPortalTrigger extends PortalTrigger {
 
     protected async transferPlayer(character: mw.Character) {
         //先弹确认ui
-        let ui = UIService.show(ObbyEnterPanel);
-        ui.onClickYesCallBack = async () => {
-            UIService.hide(ObbyEnterPanel);
-            //检查次数
-            let res = await ModuleService.getModule(BagModuleC).consumeObbyTicket();
-            if (res) {
-                super.transferPlayer(character);
-            } else {
-                UIService.show(ObbyEnterFailPanel);
-            }
-        };
+        //先本地判断下够不够次数
+        if (UIService.getUI(ObbyEnterPanel).isShowing || UIService.getUI(ObbyEnterFailPanel).isShowing) return;
+        if (ModuleService.getModule(BagModuleC).isObbyTicketEnough()) {
+            let ui = UIService.show(ObbyEnterPanel);
+            ui.onClickYesCallBack = async () => {
+                UIService.hide(ObbyEnterPanel);
+                //检查次数
+                let res = await ModuleService.getModule(BagModuleC).consumeObbyTicket();
+                if (res) {
+                    super.transferPlayer(character);
+                } else {
+                    UIService.show(ObbyEnterFailPanel);
+                }
+            };
+        } else {
+            UIService.show(ObbyEnterFailPanel);
+        }
+
     }
 }
