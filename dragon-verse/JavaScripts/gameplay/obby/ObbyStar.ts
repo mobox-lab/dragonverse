@@ -14,6 +14,22 @@ import {EventDefine} from "../../const/EventDefine";
 import {ObbyModuleS} from "../../module/obby/ObbyModule";
 import AudioController from "../../controller/audio/AudioController";
 
+enum ObbyStarStates {
+    Idle = "idle",
+    Flying = "flying",
+    Hidden = "hidden"
+}
+
+class ObbyStarBehaviorStates {
+    sqrDist: number = Number.MAX_VALUE;
+
+    isFlying: boolean = false;
+
+    isAlive: boolean = true;
+
+    flySpeed: number = 0;
+}
+
 /**
  * DragonVerse Obby Star Behavior.
  *
@@ -243,20 +259,4 @@ export default class ObbyStar extends mw.Script {
     };
 
 //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-}
-
-enum ObbyStarStates {
-    Idle = "idle",
-    Flying = "flying",
-    Hidden = "hidden"
-}
-
-class ObbyStarBehaviorStates {
-    sqrDist: number = Number.MAX_VALUE;
-
-    isFlying: boolean = false;
-
-    isAlive: boolean = true;
-
-    flySpeed: number = 0;
 }
