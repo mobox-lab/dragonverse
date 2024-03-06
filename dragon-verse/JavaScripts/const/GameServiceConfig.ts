@@ -606,14 +606,14 @@ export default class GameServiceConfig {
      * 跑酷星星触碰特效 Guid.
      * @type {string}
      */
-    public static readonly OBBY_STAR_TOUCH_EFFECT_GUID = "151580";
+    public static readonly OBBY_STAR_TOUCH_EFFECT_GUID = "113901";
 
     /**
      * 跑酷星星触碰特效 缩放.
      * @type {Vector}
      */
     public static get OBBY_STAR_TOUCH_EFFECT_SCALE() {
-        return new Vector(1.5, 1.5, 1.5);
+        return new Vector(1.2, 1.2, 1.2);
     }
 
     /**
@@ -644,7 +644,7 @@ export default class GameServiceConfig {
      * 跑酷星星漂浮最大距离.
      * @type {number}
      */
-    public static readonly OBBY_STAR_FLOAT_MAX_DIST = 100;
+    public static readonly OBBY_STAR_FLOAT_MAX_DIST = 50;
 
     /**
      * 跑酷星星漂浮阶段时间.
