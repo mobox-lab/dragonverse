@@ -19,6 +19,7 @@ export default class ObbyPortalTrigger extends PortalTrigger {
         //先弹确认ui
         let ui = UIService.show(ObbyEnterPanel);
         ui.onClickYesCallBack = async () => {
+            UIService.hide(ObbyEnterPanel);
             //检查次数
             let res = await ModuleService.getModule(BagModuleC).consumeObbyTicket();
             if (res) {

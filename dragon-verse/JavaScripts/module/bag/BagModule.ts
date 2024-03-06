@@ -683,10 +683,10 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
      * 消耗Obby金币
      * @param playerId
      */
-    public consumeObbyCoin(playerId: number): boolean {
+    public consumeObbyCoin(playerId: number, count: number): boolean {
         const playerData = this.getPlayerData(playerId);
-        if (playerData.obbyCoin >= 10) {
-            this.addObbyCoin(playerId, -10);
+        if (playerData.obbyCoin >= count) {
+            this.addObbyCoin(playerId, -count);
             return true;
         } else {
             return false;

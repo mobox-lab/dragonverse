@@ -4,14 +4,16 @@
  * @LastEditors: steven
  * @LastEditTime: 2023-12-21 16:30:39
  */
-import { EventDefine } from "../../../const/EventDefine";
+import {GameConfig} from "../../../config/GameConfig";
+import {EventDefine} from "../../../const/EventDefine";
 import GameServiceConfig from "../../../const/GameServiceConfig";
 import Nolan from "../../../depend/nolan/Nolan";
 import i18n from "../../../language/i18n";
 import MainPanel from "../../../ui/main/MainPanel";
+import {ObbyEndPanel} from "../../../ui/obby/ObbyEndPanel";
 import GToolkit from "../../../util/GToolkit";
 import UnifiedRoleController from "../../role/UnifiedRoleController";
-import { ObbyModuleC } from "../ObbyModule";
+import {ObbyModuleC} from "../ObbyModule";
 
 
 /**
@@ -44,7 +46,7 @@ export default class HighSchoolTrigger extends mw.Script {
     })
     private _circleType: HighSchoolType = HighSchoolType.TransStart;
 
-    @mw.Property({ displayName: "关卡叙述，用来表示是第几个检查点" })
+    @mw.Property({displayName: "关卡叙述，用来表示是第几个检查点"})
     private _checkPointIdx: number = 0;
 
     private _trigger: mw.Trigger;
@@ -85,13 +87,18 @@ export default class HighSchoolTrigger extends mw.Script {
                         //记录是第几关 改变进度条
                         obby.updateCheckPoint(this._checkPointIdx);
                     }
+                    if (this._checkPointIdx === GameConfig.Obbycheck.getAllElement().length) {
+                        //是最后一关
+                        ModuleService.getModule(ObbyModuleC).endGame();
+                    }
+
                 } else if (this._circleType == HighSchoolType.GameExit) {
-                    Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
-                    Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
-                    Player
-                        .localPlayer
-                        .getPlayerState(UnifiedRoleController)
-                        ?.respawn();
+                    // Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
+                    // Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
+                    // Player
+                    //     .localPlayer
+                    //     .getPlayerState(UnifiedRoleController)
+                    //     ?.respawn();
                 }
             }
         }

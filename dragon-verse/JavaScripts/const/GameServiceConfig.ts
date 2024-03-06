@@ -1,4 +1,4 @@
-import GToolkit, {Tf} from "../util/GToolkit";
+import GToolkit, { Tf } from "../util/GToolkit";
 
 export default class GameServiceConfig {
     //#region Sub Game
@@ -11,6 +11,16 @@ export default class GameServiceConfig {
      * 跑酷游戏退出传送位置
      */
     public static readonly ENTER_OBBY_GAME_POS = new Vector(5441, -20000, 1450);
+
+    /**
+     * 无敌护盾花费金币数
+     */
+    public static readonly INVINCIBLE_COST = 10;
+
+    /**
+     * 自动寻路花费金币数
+     */
+    public static readonly AUTO_FIND_PATH_COST = 10;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 

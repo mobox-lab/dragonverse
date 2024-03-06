@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-03-05 18:09:34
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-03-05 18:44:42
+ * @LastEditTime : 2024-03-06 11:42:38
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\ui\obby\ObbyEnterPanel.ts
  * @Description  : 进入Obby确认Panel
  */
@@ -18,14 +18,14 @@ export default class ObbyEnterPanel extends doubleconfirm_Generate {
         this.codeButtonNo.onClicked.add(() => {
             UIService.hide(ObbyEnterPanel);
         })
-        this.codeButtonYes.onClicked.add(this.onClickYesCallBack);
+        this.codeButtonYes.onClicked.add(() => this.onClickYesCallBack());
     }
 
-    public onClickYesCallBack: () => void;
+    public onClickYesCallBack: () => {};
 
     onShow() {
         KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
-            UIService.hide(ObbyEnterFailPanel);
+            UIService.hide(ObbyEnterPanel);
         })
     }
     onHide() {

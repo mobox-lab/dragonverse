@@ -169,6 +169,13 @@ export default class endhighs_Generate extends UIScript {
 		}
 		return this.gameOverText_Internal
 	}
+	private youWinText_Internal: mw.TextBlock
+	public get youWinText(): mw.TextBlock {
+		if(!this.youWinText_Internal&&this.uiWidgetBase) {
+			this.youWinText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/infoCanvas/title/youWinText') as mw.TextBlock
+		}
+		return this.youWinText_Internal
+	}
 
 
 
@@ -218,6 +225,9 @@ export default class endhighs_Generate extends UIScript {
         this.initLanguage(this.gameOverText)
         
 	
+        this.initLanguage(this.youWinText)
+        
+	
         // 静态文本多语言
         
     }
@@ -257,6 +267,9 @@ export default class endhighs_Generate extends UIScript {
         
 	
         this.unregisterLanKey(this.gameOverText)
+        
+	
+        this.unregisterLanKey(this.youWinText)
         
 	
         // 隐藏文本多语言

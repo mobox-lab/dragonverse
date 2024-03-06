@@ -1,26 +1,26 @@
 import Enumerable from "linq";
 import UUID from "pure-uuid";
-import {GameConfig} from "../../config/GameConfig";
-import {EventDefine} from "../../const/EventDefine";
-import {BagTypes} from "../../const/ForeignKeyIndexer";
+import { GameConfig } from "../../config/GameConfig";
+import { EventDefine } from "../../const/EventDefine";
+import { BagTypes } from "../../const/ForeignKeyIndexer";
 
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MainPanel from "../../ui/main/MainPanel";
 
-import {BagModuleS} from "../bag/BagModule";
+import { BagModuleS } from "../bag/BagModule";
 
 
 import noReply = mwext.Decorator.noReply;
 import EventListener = mw.EventListener;
 
-import {ObbyInteractorPanel} from "../../ui/obby/ObbyInteractorPanel";
-import {DataUpgradeMethod, JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
+import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
+import { DataUpgradeMethod, JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
 import UnifiedRoleController from "../role/UnifiedRoleController";
-import {GameEndPanel} from "../../ui/obby/GameEndPanel";
-import {MapManager} from "../../gameplay/map/MapManager";
+import { ObbyEndPanel, ObbyGameData } from "../../ui/obby/ObbyEndPanel";
+import { MapManager } from "../../gameplay/map/MapManager";
 
 
 export default class ObbyModuleData extends JModuleData {
@@ -146,7 +146,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
         this._isInGame = true;
         this._curLv = 0;
         this._startPos = Player.localPlayer.character.worldTransform.position.clone();
-        this.server.net_getLv();
+        this.server.net_startGame(Player.localPlayer.playerId);
         UIService.showUI(this._obbyPanel);
         Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(0);
         Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(0);
@@ -163,7 +163,6 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
             mainPanel.switchRoomCanvas.visibility = SlateVisibility.Hidden;
             MapManager.instance.hideMap();
         }
-        this.server.net_revertGame();
     }
 
     private async onCountDown() {
@@ -171,14 +170,22 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
         //     return;
         // }
         if (this._hander) {
-            // let obby = ModuleService.getModule(ObbyModuleC);
-            // obby.reborn();
-            UIService.show(GameEndPanel);
-            await TimeUtil.delaySecond(0);
+            await this.endGame();
+            // await TimeUtil.delaySecond(0);
             TimeUtil.clearInterval(this._hander);
             this._hander = null;
         }
     };
+
+    public async endGame() {
+        let res = await this.server.net_endGame();
+        let data = new ObbyGameData();
+        data.score = res.currentCount;
+        data.totalScore = res.totalCount;
+        data.time = res.duration;
+        data.trans = res.passedLevel;
+        UIService.show(ObbyEndPanel, data);
+    }
 
     private _isFindingPath = false;
 
@@ -197,7 +204,8 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
             if (res) {
                 //寻路完了
             } else {
-                //没钱了，或者是无敌状态
+                //没钱了
+                Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.autoFindPath_Fail));
             }
             this._isFindingPath = false;
         }
@@ -272,7 +280,6 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
             MapManager.instance.showMap();
         }
         this._obbyPanel.setCurLv(this._curLv, this._maxLv);
-        this.server.net_revertGame();
     }
 
     public checkLv(curLv: number) {
@@ -483,9 +490,6 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
-        this._playerArrivedCheckPoint.set(player.playerId, 0);
-        this._playerIsInvincible.set(player.playerId, false);
-        this._playerIsAutoMove.set(player.playerId, false);
         Log4Ts.log(ObbyModuleS, "obbyModules onPlayerJoined================");
     }
 
@@ -531,12 +535,19 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
      * 开始游戏.
      * @param {number} playerId
      */
-    public startGame(playerId: number) {
+    @noReply()
+    public net_startGame(playerId: number) {
         const player = Player.getPlayer(playerId);
         if (!player) return;
         Event.dispatchToLocal(EventDefine.ObbyStarReset, player);
         this._playerStarsCounter.set(playerId, 0);
         this._playerStartTimeMap.set(playerId, Date.now());
+        this._playerArrivedCheckPoint.set(player.playerId, 0);
+        this._playerIsInvincible.set(player.playerId, false);
+        this._playerIsAutoMove.set(player.playerId, false);
+
+        let lv = this._playerArrivedCheckPoint.get(this.currentPlayerId);
+        this.getClient(this.currentPlayerId).net_updateLv(lv);
     }
 
     /**
@@ -551,10 +562,14 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
             const currentCount = this._playerStarsCounter.get(playerId) ?? 0;
             this._playerStarsCounter.delete(playerId);
             data.recordStarCount(currentCount);
+            let levels = this._playerArrivedCheckPoint.get(playerId);
+            //重置为0
+            this._playerArrivedCheckPoint.set(playerId, 0);
             return {
                 currentCount,
                 duration: Date.now() - this._playerStartTimeMap.get(playerId),
                 totalCount: data.totalStarCount,
+                passedLevel: levels
             };
         }
         return null;
@@ -581,21 +596,13 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
         return;
     }
 
-    @noReply()
-    public net_revertGame() {
-        this._playerArrivedCheckPoint.set(this.currentPlayerId, 0);
-        // this.currentData.lv = 0;
-        // this.currentData.save(false);
-    }
+    // @noReply()
+    // public net_startGame() {
+    //     // const currPlayerId = this.currentPlayerId;
+    //     // const playerData = this.getPlayerData(currPlayerId);
+    //     // let lv = playerData.getLv();
 
-    @noReply()
-    public net_getLv() {
-        // const currPlayerId = this.currentPlayerId;
-        // const playerData = this.getPlayerData(currPlayerId);
-        // let lv = playerData.getLv();
-        let lv = this._playerArrivedCheckPoint.get(this.currentPlayerId);
-        this.getClient(this.currentPlayerId).net_updateLv(lv);
-    }
+    // }
 
     public async net_isInvincible(): Promise<boolean> {
         return Promise.resolve(this._playerIsInvincible.get(this.currentPlayerId));
@@ -610,7 +617,7 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
             return Promise.resolve(false);
         } else {
             //判断有没钱
-            let res = ModuleService.getModule(BagModuleS).consumeObbyCoin(this.currentPlayerId);
+            let res = ModuleService.getModule(BagModuleS).consumeObbyCoin(this.currentPlayerId, GameServiceConfig.INVINCIBLE_COST);
             if (res) {
                 this._playerIsInvincible.set(this.currentPlayerId, true);
                 let playerId = this.currentPlayerId;
@@ -633,33 +640,42 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
     private _playerIsInvincible: Map<number, boolean> = new Map<number, boolean>();
     private _playerIsAutoMove: Map<number, boolean> = new Map<number, boolean>();
 
+    /**
+     * @description: 跳关方法
+     */
     public async net_autoFindPath(): Promise<boolean> {
         if (this._playerIsAutoMove.get(this.currentPlayerId) !== true) {
-            //不是再扣钱
+            //不在传送
+            let res = ModuleService.getModule(BagModuleS).consumeObbyCoin(this.currentPlayerId, GameServiceConfig.AUTO_FIND_PATH_COST);
+            if (res) {
+                let character = Player.getPlayer(this.currentPlayerId).character;
+                if (!character) return;
 
-            let character = Player.getPlayer(this.currentPlayerId).character;
-            if (!character) return;
+                let oriGravity = character.gravityScale;
+                character.gravityScale = 0;
 
-            let oriGravity = character.gravityScale;
-            character.gravityScale = 0;
+                let animation = character.loadAnimation("285174");
+                animation.play();
+                character.movementEnabled = false;
+                let pos = this._checkPointMap[this._playerArrivedCheckPoint.get(this.currentPlayerId) + 1];
+                character.worldTransform.lookAt(new Vector(pos.x, pos.y, character.worldTransform.position.z));
+                this._playerIsAutoMove.set(this.currentPlayerId, true);
+                let playerId = this.currentPlayerId;
 
-            let animation = character.loadAnimation("285174");
-            animation.play();
-            character.movementEnabled = false;
-            let pos = this._checkPointMap[this._playerArrivedCheckPoint.get(this.currentPlayerId) + 1];
-            character.worldTransform.lookAt(new Vector(pos.x, pos.y, character.worldTransform.position.z));
-            this._playerIsAutoMove.set(this.currentPlayerId, true);
-            let playerId = this.currentPlayerId;
+                Event.dispatchToLocal(EventDefine.ObbyStarCollectLevel, Player.getPlayer(this.currentPlayerId), this._playerArrivedCheckPoint.get(this.currentPlayerId));
 
-            actions.tween(character.worldTransform).to(1000, {position: pos}).call(() => {
-                animation.stop();
-                character.gravityScale = oriGravity;
-                character.movementEnabled = true;
-                this._playerIsAutoMove.set(playerId, false);
+                actions.tween(character.worldTransform).to(1000, { position: pos }).call(() => {
+                    animation.stop();
+                    character.gravityScale = oriGravity;
+                    character.movementEnabled = true;
+                    this._playerIsAutoMove.set(playerId, false);
 
-            }).start();
-            await TimeUtil.delaySecond(1);
-            return Promise.resolve(true);
+                }).start();
+                await TimeUtil.delaySecond(1);
+                return Promise.resolve(true);
+            } else {
+                return Promise.resolve(false);
+            }
         } else {
             return Promise.resolve(false);
         }
@@ -689,4 +705,9 @@ interface GameResult {
      * 总计获取 ObbyStar 数量.
      */
     totalCount: number;
+    /**
+     * 通过的关卡数
+     */
+    passedLevel: number;
+
 }
