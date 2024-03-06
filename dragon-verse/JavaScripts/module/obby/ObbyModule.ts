@@ -1,27 +1,27 @@
 import Enumerable from "linq";
 import UUID from "pure-uuid";
-import {GameConfig} from "../../config/GameConfig";
-import {EventDefine} from "../../const/EventDefine";
-import {BagTypes} from "../../const/ForeignKeyIndexer";
+import { GameConfig } from "../../config/GameConfig";
+import { EventDefine } from "../../const/EventDefine";
+import { BagTypes } from "../../const/ForeignKeyIndexer";
 
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MainPanel from "../../ui/main/MainPanel";
 
-import {BagModuleS} from "../bag/BagModule";
+import { BagModuleS } from "../bag/BagModule";
 
 
 import noReply = mwext.Decorator.noReply;
 import EventListener = mw.EventListener;
 
-import {ObbyInteractorPanel} from "../../ui/obby/ObbyInteractorPanel";
-import {DataUpgradeMethod, JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
+import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
+import { DataUpgradeMethod, JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
 import UnifiedRoleController from "../role/UnifiedRoleController";
-import {ObbyEndPanel, ObbyGameData} from "../../ui/obby/ObbyEndPanel";
-import {MapManager} from "../../gameplay/map/MapManager";
-import {NoOverride} from "../../util/GToolkit";
+import { ObbyEndPanel, ObbyGameData } from "../../ui/obby/ObbyEndPanel";
+import { MapManager } from "../../gameplay/map/MapManager";
+import { NoOverride } from "../../util/GToolkit";
 
 
 export default class ObbyModuleData extends JModuleData {
@@ -79,7 +79,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
     private _checkPointCfg = {};
     private _effectPointCfg = {};
     private _effectScaleCfg = {};
-    private _hander: number;
+    // private _hander: number;
     public _startPos: mw.Vector;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -152,6 +152,8 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
     public enterGame() {
         //拉取当前的进度
         // this._isStart = false;
+
+
         this._isInGame = true;
         this._curLv = 0;
         this._startPos = Player.localPlayer.character.worldTransform.position.clone();
@@ -174,19 +176,20 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
         }
     }
 
-    private async onCountDown() {
-        // if (!this._isStart) {
-        //     return;
-        // }
-        if (this._hander) {
-            await this.endGame();
-            // await TimeUtil.delaySecond(0);
-            TimeUtil.clearInterval(this._hander);
-            this._hander = null;
-        }
-    };
+    // private async onCountDown() {
+    //     // if (!this._isStart) {
+    //     //     return;
+    //     // }
+    //     // if (this._hander) {
+
+    //     // await TimeUtil.delaySecond(0);
+    //     //     TimeUtil.clearInterval(this._hander);
+    //     //     this._hander = null;
+    //     // }
+    // };
 
     public async endGame() {
+        console.log("1111111111111111111111111111")
         let res = await this.server.net_endGame();
         let data = new ObbyGameData();
         data.score = res.currentCount;
@@ -266,10 +269,10 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
      * @param playerId
      */
     public exitGame() {
-        if (this._hander) {
-            TimeUtil.clearInterval(this._hander);
-            this._hander = null;
-        }
+        // if (this._hander) {
+        //     TimeUtil.clearInterval(this._hander);
+        //     this._hander = null;
+        // }
         // this._isStart = false;
         this._curLv = 0;
         this._isInGame = false;
@@ -289,6 +292,9 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
             MapManager.instance.showMap();
         }
         this._obbyPanel.setCurLv(this._curLv, this._maxLv);
+
+        this._redDeadIsExecuting = false;
+        this._groundIsExecuting = false;
     }
 
     public checkLv(curLv: number) {
@@ -361,17 +367,25 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
         this.exitGame();
     }
 
+    private _redDeadIsExecuting = false;
     public async redDead() {
-        if (this._hander) {
-            return;
-        }
+        // if (this._hander) {
+        //     return;
+        // }
+        if (this._redDeadIsExecuting) return;
+        this._redDeadIsExecuting = true;
         let isInvincible = await this.server.net_isInvincible();
         if (!isInvincible) {
             let isAutoMoving = await this.server.net_isAutoMoving();
             if (!isAutoMoving) {
+
                 Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_RedTips));
-                this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY);
+                TimeUtil.delaySecond(GameServiceConfig.REBORN_INTERVAL_OBBY).then(() => {
+                    this.endGame();
+                })
                 Player.localPlayer.character.changeState(CharacterStateType.Ragdoll);
+            } else {
+                this._redDeadIsExecuting = false;
             }
         } else {
             //复位到之前的点位
@@ -380,21 +394,28 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
             } else {
                 mw.Player.localPlayer.character.worldTransform.position = this._checkPointCfg["" + this._curLv];
             }
-
+            this._redDeadIsExecuting = false;
         }
     }
-
+    private _groundIsExecuting = false;
     public async groundDead() {
-        if (this._hander) {
-            return;
-        }
+        // if (this._hander) {
+        //     return;
+        // }
+        if (this._groundIsExecuting) return;
+        this._groundIsExecuting = true;
         let isInvincible = await this.server.net_isInvincible();
         if (!isInvincible) {
             let isAutoMoving = await this.server.net_isAutoMoving();
             if (!isAutoMoving) {
-                this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), GameServiceConfig.REBORN_INTERVAL_OBBY);
+                TimeUtil.delaySecond(GameServiceConfig.REBORN_INTERVAL_OBBY).then(() => {
+                    this.endGame();
+                })
+                // this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), );
                 //锁定摄像头
                 Player.localPlayer.character.changeState(CharacterStateType.Ragdoll);
+            } else {
+                this._groundIsExecuting = false;
             }
         } else {
             //复位到之前的点位
@@ -403,7 +424,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
             } else {
                 mw.Player.localPlayer.character.worldTransform.position = this._checkPointCfg["" + this._curLv];
             }
-
+            this._groundIsExecuting = false;
         }
     }
 
@@ -664,7 +685,7 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
 
                 Event.dispatchToLocal(EventDefine.ObbyStarCollectLevel, Player.getPlayer(this.currentPlayerId), this._playerArrivedCheckPoint.get(this.currentPlayerId));
 
-                actions.tween(character.worldTransform).to(1000, {position: pos}).call(() => {
+                actions.tween(character.worldTransform).to(1000, { position: pos }).call(() => {
                     animation.stop();
                     character.gravityScale = oriGravity;
                     character.movementEnabled = true;
