@@ -261,7 +261,12 @@ export default class ObbyStar extends mw.Script {
             } else if (SystemUtil.isClient()) {
                 if (this._touchedInClient) return;
                 this._touchedInClient = true;
-                EffectService.playAtPosition(GameServiceConfig.OBBY_STAR_TOUCH_EFFECT_GUID, this.gameObject.worldTransform.position);
+                EffectService.playAtPosition(
+                    GameServiceConfig.OBBY_STAR_TOUCH_EFFECT_GUID,
+                    this.gameObject.worldTransform.position,
+                    {
+                        scale: GameServiceConfig.OBBY_STAR_TOUCH_EFFECT_SCALE
+                    });
             }
         }
     };

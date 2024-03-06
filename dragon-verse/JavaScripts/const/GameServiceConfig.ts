@@ -599,6 +599,14 @@ export default class GameServiceConfig {
     public static readonly OBBY_STAR_TOUCH_EFFECT_GUID = "151580";
 
     /**
+     * 跑酷星星触碰特效 缩放.
+     * @type {Vector}
+     */
+    public static get OBBY_STAR_TOUCH_EFFECT_SCALE() {
+        return new Vector(1, 1, 1);
+    }
+
+    /**
      * 跑酷星星收集音效 Id.
      * @type {string}
      */
