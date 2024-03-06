@@ -91,7 +91,7 @@ export enum BgmPlayStrategy {
  * @author LviatYi
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.2.0
+ * @version 1.2.3
  */
 export default class AudioController extends Singleton<AudioController>() {
     //region Member
@@ -283,6 +283,7 @@ export default class AudioController extends Singleton<AudioController>() {
     public play(soundId: SoundIDEnum | number,
                 target: mw.Vector | mw.GameObject | string = mw.Vector.zero): string | number {
         const config: ISoundElement = this.getConfig(soundId);
+        if (!config) return;
         let holdId: number | string;
         if (config.isEffect) {
             if (config.isStereo) {
@@ -343,6 +344,7 @@ export default class AudioController extends Singleton<AudioController>() {
             }
         }
         const config: ISoundElement = this.getConfig(soundId);
+        if (!config) return;
         const duration = BgmDurationRegisterArray[BgmRegisterArray.indexOf(soundId)] ?? 5;
         if (config.isEffect) {
             Log4Ts.warn(AudioController, `config is not bgm.`);
@@ -389,6 +391,7 @@ export default class AudioController extends Singleton<AudioController>() {
             set.forEach(
                 (value) => {
                     const config = this.getConfig(soundId);
+                    if (!config) return;
                     if (config.isEffect) {
                         if (config.isStereo) {
                             SoundService.stop3DSound(value as number);
@@ -425,8 +428,13 @@ export default class AudioController extends Singleton<AudioController>() {
      * 获取配置.
      * @private
      */
-    private getConfig(soundId: SoundIDEnum): ISoundElement {
-        return GameConfig.Sound.getElement(soundId);
+    private getConfig(soundId: SoundIDEnum): ISoundElement | null {
+        try {
+            return GameConfig.Sound.getElement(soundId) ?? null;
+        } catch (e) {
+            Log4Ts.error(AudioController, `获取配置失败. id: ${soundId}`, e);
+            return null;
+        }
     }
 
     //endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
