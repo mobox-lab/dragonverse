@@ -643,7 +643,7 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
             if (res) {
                 this._playerIsInvincible.set(this.currentPlayerId, true);
                 let playerId = this.currentPlayerId;
-                EffectService.playOnGameObject("89122", this.currentPlayer.character, {
+                EffectService.playOnGameObject(GameServiceConfig.OBBY_INVINCIBLE_EFFECT_GUID, this.currentPlayer.character, {
                     slotType: HumanoidSlotType.Root,
                     duration: GameServiceConfig.OBBY_INVINCIBLE_TIME, position: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_POS_OFFSET,
                     rotation: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_ROTATION,

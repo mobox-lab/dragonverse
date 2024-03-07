@@ -26,6 +26,10 @@ export default class GameServiceConfig {
      */
     public static readonly OBBY_INVINCIBLE_TIME = 10;
     /**
+     * 护盾特效Guid
+     */
+    public static readonly OBBY_INVINCIBLE_EFFECT_GUID = "89122";
+    /**
      * 护盾特效位置偏移
      */
     public static readonly OBBY_INVINCIBLE_EFFECT_POS_OFFSET = new Vector(0, 0, 0);
