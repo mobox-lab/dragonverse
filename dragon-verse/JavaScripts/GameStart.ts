@@ -32,7 +32,6 @@ import GameServiceConfig from "./const/GameServiceConfig";
 import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioController";
 import DialogifyManager from "./depend/dialogify/DialogifyManager";
 import DialoguePanelController from "./depend/dialogify/dialogue-panel-controller/DialoguePanelController";
-import GlobalPromptPanel_Generate from "./ui-generate/main/GlobalPromptPanel_generate";
 import GlobalProperty from "./GlobalProperty";
 import ObbyModuleData, { ObbyModuleC, ObbyModuleS } from "./module/obby/ObbyModule";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
