@@ -262,7 +262,7 @@ export default class ObbyStar extends mw.Script {
         idle.when((state) => state.isFlying).to(fly);
         fly.when((state) => {
             const sqrDist = state.playerLocation ? Gtk.squaredEuclideanDistance(state.playerLocation, this.gameObject.worldTransform.position) : Number.MAX_VALUE;
-            return sqrDist < 100 || sqrDist > 2500;
+            return sqrDist < 100 || sqrDist > 250000;
         }).to(hidden);
         hidden.when((state) => state.isAlive).to(idle);
         activity.when((state) => {
