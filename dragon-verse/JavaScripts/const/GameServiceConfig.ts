@@ -21,6 +21,22 @@ export default class GameServiceConfig {
      * 自动寻路花费金币数
      */
     public static readonly AUTO_FIND_PATH_COST = 10;
+    /**
+     * 护盾无敌时间
+     */
+    public static readonly OBBY_INVINCIBLE_TIME = 10;
+    /**
+     * 护盾特效位置偏移
+     */
+    public static readonly OBBY_INVINCIBLE_EFFECT_POS_OFFSET = new Vector(0, 0, 0);
+    /**
+     * 护盾特效旋转
+     */
+    public static readonly OBBY_INVINCIBLE_EFFECT_ROTATION = new Rotation(0, 0, 0);
+    /**
+     * 护盾特效缩放
+     */
+    public static readonly OBBY_INVINCIBLE_EFFECT_SCALE = new Vector(1, 1, 1);
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 

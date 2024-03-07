@@ -234,6 +234,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
 
     public net_setInvincibleSuccess() {
         Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.addInvincible_Success));
+
     }
 
 
@@ -642,9 +643,15 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
             if (res) {
                 this._playerIsInvincible.set(this.currentPlayerId, true);
                 let playerId = this.currentPlayerId;
+                EffectService.playOnGameObject("89122", this.currentPlayer.character, {
+                    slotType: HumanoidSlotType.Root,
+                    duration: GameServiceConfig.OBBY_INVINCIBLE_TIME, position: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_POS_OFFSET,
+                    rotation: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_ROTATION,
+                    scale: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_SCALE
+                });
                 this.getClient(this.currentPlayerId).net_setInvincibleSuccess();
 
-                await mw.TimeUtil.delaySecond(10);
+                await mw.TimeUtil.delaySecond(GameServiceConfig.OBBY_INVINCIBLE_TIME);
                 this._playerIsInvincible.set(playerId, false);
                 return Promise.resolve(true);
             } else {
