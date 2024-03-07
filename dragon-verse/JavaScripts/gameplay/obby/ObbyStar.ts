@@ -57,12 +57,6 @@ class ObbyStarBehaviorStates {
 @Component
 export default class ObbyStar extends mw.Script {
 //#region Constant
-    private static readonly BLOCK_MAGMA_MATERIAL_ASSET_ID = "6EAB7AFB42853BE6F1B1989C46D3ED77";
-
-    private static readonly BLOCK_WATER_MATERIAL_ASSET_ID = "197999";
-
-    private static readonly GAME_OBJECT_MESH_NAME = "mesh";
-
     private static readonly GAME_OBJECT_TRIGGER_NAME = "obbyStarTrigger";
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -213,6 +207,7 @@ export default class ObbyStar extends mw.Script {
         const fly = new State<ObbyStarBehaviorStates>(ObbyStarStates.Flying)
             .aE(() => {
                 Log4Ts.log(ObbyStar, `enter ${fly.name} state.`);
+                this.state.syncPlayerLocation(this._clientCharacter);
             })
             .aU((dt) => {
                 this.gameObject.worldTransform.rotation =
@@ -255,21 +250,22 @@ export default class ObbyStar extends mw.Script {
                 }
             });
 
-        const activity = new Region<ObbyStarBehaviorStates>("active").include(idle, fly, hidden);
-        const silence = new Region<ObbyStarBehaviorStates>("silence").include(silent);
-
         idle.when((state) => state.isFlying).to(fly);
         fly.when((state) => {
             const sqrDist = state.playerLocation ? Gtk.squaredEuclideanDistance(state.playerLocation, this.gameObject.worldTransform.position) : Number.MAX_VALUE;
-            return sqrDist < 100 || sqrDist > 2500;
+            return sqrDist < 100 || sqrDist > 8000000;
         }).to(hidden);
         hidden.when((state) => state.isAlive).to(idle);
-        activity.when((state) =>
-            Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) > 5000 ||
-            Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) > 5000).to(silent);
-        silence.when((state) =>
-            Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) < 5000 &&
-            Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) < 5000).to(activity);
+        idle.when((state) => {
+            if (!state.playerLocation) return false;
+            return Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) < 5000 &&
+                Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) < 5000;
+        }).to(silent);
+        silent.when((state) => {
+            if (!state.playerLocation) return false;
+            return Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) < 5000 &&
+                Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) < 5000;
+        }).to(idle);
 
         this._machine = new FiniteStateMachine(idle);
         this._machineEffect = bindYoact(() => {
@@ -282,7 +278,9 @@ export default class ObbyStar extends mw.Script {
      * @param {Player} player
      */
     private collect(player: Player) {
-        this.flyToPlayer(player);
+        setTimeout(() => {
+            this.flyToPlayer(player);
+        }, 0.3e3);
         this._serverUsedMap.set(player.playerId, true);
         this.obbyModuleS.addPlayerStarCount(player.playerId);
         Log4Ts.log(ObbyStar, `add count. guid: ${this.gameObject.gameObjectId}`);
