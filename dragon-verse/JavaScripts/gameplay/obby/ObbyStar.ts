@@ -264,12 +264,16 @@ export default class ObbyStar extends mw.Script {
             return sqrDist < 100 || sqrDist > 2500;
         }).to(hidden);
         hidden.when((state) => state.isAlive).to(idle);
-        activity.when((state) =>
-            Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) > 5000 ||
-            Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) > 5000).to(silent);
-        silence.when((state) =>
-            Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) < 5000 &&
-            Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) < 5000).to(activity);
+        activity.when((state) => {
+            if (!state.playerLocation) return false;
+            return Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) > 5000 ||
+                Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) > 5000;
+        }).to(silent);
+        silence.when((state) => {
+            if (!state.playerLocation) return false;
+            return Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) < 5000 &&
+                Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) < 5000;
+        }).to(activity);
 
         this._machine = new FiniteStateMachine(idle);
         this._machineEffect = bindYoact(() => {
