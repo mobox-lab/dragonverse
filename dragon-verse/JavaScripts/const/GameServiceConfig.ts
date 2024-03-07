@@ -32,7 +32,7 @@ export default class GameServiceConfig {
     /**
      * 护盾特效位置偏移
      */
-    public static readonly OBBY_INVINCIBLE_EFFECT_POS_OFFSET = new Vector(0, 0, 0);
+    public static readonly OBBY_INVINCIBLE_EFFECT_POS_OFFSET = new Vector(0, 0, 90);
     /**
      * 护盾特效旋转
      */
@@ -40,7 +40,7 @@ export default class GameServiceConfig {
     /**
      * 护盾特效缩放
      */
-    public static readonly OBBY_INVINCIBLE_EFFECT_SCALE = new Vector(1, 1, 1);
+    public static readonly OBBY_INVINCIBLE_EFFECT_SCALE = new Vector(0.6, 0.6, 0.6);
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
