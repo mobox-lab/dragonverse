@@ -1,8 +1,8 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Gtk from "../../util/GToolkit";
+import Gtk, {GTkTypes, Regulator} from "../../util/GToolkit";
 import GameObject = mw.GameObject;
 import GameServiceConfig from "../../const/GameServiceConfig";
-import FiniteStateMachine, {State} from "../../depend/finite-state-machine/FiniteStateMachine";
+import FiniteStateMachine, {Region, State} from "../../depend/finite-state-machine/FiniteStateMachine";
 import {Yoact} from "../../depend/yoact/Yoact";
 import Waterween from "../../depend/waterween/Waterween";
 import Easing from "../../depend/easing/Easing";
@@ -17,17 +17,29 @@ import AudioController from "../../controller/audio/AudioController";
 enum ObbyStarStates {
     Idle = "idle",
     Flying = "flying",
-    Hidden = "hidden"
+    Hidden = "hidden",
+    Silent = "silent"
 }
 
 class ObbyStarBehaviorStates {
-    sqrDist: number = Number.MAX_VALUE;
+    playerLocation: GTkTypes.Vector3 = null;
 
     isFlying: boolean = false;
 
     isAlive: boolean = true;
 
     flySpeed: number = 0;
+
+    @Yoact.Noact()
+    regulator: Regulator = new Regulator(1e3);
+
+    public syncPlayerLocation(character: mw.Character) {
+        this.playerLocation = {
+            x: character.worldTransform.position.x,
+            y: character.worldTransform.position.y,
+            z: character.worldTransform.position.z,
+        };
+    }
 }
 
 /**
@@ -200,7 +212,7 @@ export default class ObbyStar extends mw.Script {
 
         const fly = new State<ObbyStarBehaviorStates>(ObbyStarStates.Flying)
             .aE(() => {
-                Log4Ts.log(ObbyStar, `enter ${idle.name} state.`);
+                Log4Ts.log(ObbyStar, `enter ${fly.name} state.`);
             })
             .aU((dt) => {
                 this.gameObject.worldTransform.rotation =
@@ -213,7 +225,7 @@ export default class ObbyStar extends mw.Script {
                 this.gameObject.worldTransform.position = this.gameObject.worldTransform.position.add(distDisplacement < distPlayerStar ?
                     displacement :
                     this.gameObject.worldTransform.position.clone().subtract(this._clientCharacter.worldTransform.position));
-                this.state.sqrDist = this.gameObject.worldTransform.position.squaredDistanceTo(this._clientCharacter.worldTransform.position);
+                this.state.syncPlayerLocation(this._clientCharacter);
             })
             .aEx((arg) => {
                 EffectService.playAtPosition(
@@ -231,14 +243,33 @@ export default class ObbyStar extends mw.Script {
 
         const hidden = new State<ObbyStarBehaviorStates>(ObbyStarStates.Hidden)
             .aE(() => {
-                Log4Ts.log(ObbyStar, `enter ${idle.name} state.`);
-                this.state.sqrDist = Number.MAX_VALUE;
+                Log4Ts.log(ObbyStar, `enter ${hidden.name} state.`);
+                this.state.playerLocation = null;
                 this.gameObject.setVisibility(false);
             });
 
+        const silent = new State<ObbyStarBehaviorStates>("silent")
+            .aU((arg) => {
+                if (this.state.regulator.ready()) {
+                    this.state.syncPlayerLocation(this._clientCharacter);
+                }
+            });
+
+        const activity = new Region<ObbyStarBehaviorStates>("active").include(idle, fly, hidden);
+        const silence = new Region<ObbyStarBehaviorStates>("silence").include(silent);
+
         idle.when((state) => state.isFlying).to(fly);
-        fly.when((state) => state.sqrDist < 100 || state.sqrDist > 2500).to(hidden);
+        fly.when((state) => {
+            const sqrDist = state.playerLocation ? Gtk.squaredEuclideanDistance(state.playerLocation, this.gameObject.worldTransform.position) : Number.MAX_VALUE;
+            return sqrDist < 100 || sqrDist > 2500;
+        }).to(hidden);
         hidden.when((state) => state.isAlive).to(idle);
+        activity.when((state) =>
+            Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) > 5000 ||
+            Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) > 5000).to(silent);
+        silence.when((state) =>
+            Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) < 5000 &&
+            Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) < 5000).to(activity);
 
         this._machine = new FiniteStateMachine(idle);
         this._machineEffect = bindYoact(() => {
@@ -254,6 +285,7 @@ export default class ObbyStar extends mw.Script {
         this.flyToPlayer(player);
         this._serverUsedMap.set(player.playerId, true);
         this.obbyModuleS.addPlayerStarCount(player.playerId);
+        Log4Ts.log(ObbyStar, `add count. guid: ${this.gameObject.gameObjectId}`);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
