@@ -626,7 +626,7 @@ export default class GameServiceConfig {
      * 跑酷星星飞行加速度.
      * @type {number}
      */
-    public static readonly OBBY_STAR_FLY_ACCELERATED = 1300;
+    public static readonly OBBY_STAR_FLY_ACCELERATED = 300;
 
     /**
      * 跑酷星星飞行最大速度.

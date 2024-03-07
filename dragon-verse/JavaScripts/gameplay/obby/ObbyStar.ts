@@ -213,6 +213,7 @@ export default class ObbyStar extends mw.Script {
         const fly = new State<ObbyStarBehaviorStates>(ObbyStarStates.Flying)
             .aE(() => {
                 Log4Ts.log(ObbyStar, `enter ${fly.name} state.`);
+                this.state.syncPlayerLocation(this._clientCharacter);
             })
             .aU((dt) => {
                 this.gameObject.worldTransform.rotation =
@@ -286,7 +287,9 @@ export default class ObbyStar extends mw.Script {
      * @param {Player} player
      */
     private collect(player: Player) {
-        this.flyToPlayer(player);
+        setTimeout(() => {
+            this.flyToPlayer(player);
+        }, 0.5e3);
         this._serverUsedMap.set(player.playerId, true);
         this.obbyModuleS.addPlayerStarCount(player.playerId);
         Log4Ts.log(ObbyStar, `add count. guid: ${this.gameObject.gameObjectId}`);
