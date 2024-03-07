@@ -2,6 +2,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GToolkit from "../../util/GToolkit";
 import Rotation = mw.Rotation;
 import Nolan from "../../depend/nolan/Nolan";
+import Gtk from "../../util/GToolkit";
 
 /**
  * 传送门 Trigger.
@@ -19,8 +20,11 @@ import Nolan from "../../depend/nolan/Nolan";
 export default class PortalTrigger extends mw.Script {
     //#region Member
 
-    @Property({ displayName: "传送目的地", group: "Config-location" })
+    @Property({displayName: "传送目的地", group: "Config-location"})
     public destination: Vector = Vector.zero;
+
+    @Property({displayName: "传送目标", group: "Config-location", tooltip: "传送目标的 guid. 优先生效."})
+    public destinationTargetGuid: string = "";
 
     @Property({
         displayName: "是否刷新玩家物体旋转",
@@ -36,7 +40,7 @@ export default class PortalTrigger extends mw.Script {
     })
     public isRefreshCameraRotation: boolean = true;
 
-    @Property({ displayName: "角色目标旋转", group: "Config-rotation" })
+    @Property({displayName: "角色目标旋转", group: "Config-rotation"})
     public endRotation: Rotation = Rotation.zero;
 
     @Property({
@@ -103,7 +107,9 @@ export default class PortalTrigger extends mw.Script {
 
                 character.addImpulse(velocity.clone().multiply(Vector.negOne), true);
                 character.worldTransform = new Transform(
-                    this.destination,
+                    Gtk.isNullOrEmpty(this.destinationTargetGuid) ?
+                        this.destination :
+                        GameObject.findGameObjectById(this.destinationTargetGuid)?.worldTransform.position ?? this.destination,
                     this.isRefreshObjectRotation ? this.endRotation : character.worldTransform.rotation,
                     character.worldTransform.scale,
                 );
