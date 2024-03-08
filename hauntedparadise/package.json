@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "module_gm": "^5.0.4",
-    "debug_console": "^0.1.2"
+    "debug_console": "^0.1.3",
+    "module_gm": "^5.0.4"
   }
 }
