@@ -1,0 +1,74 @@
+import { ConfigBase, IElementBase } from "./ConfigBase";
+const EXCELDATA:Array<Array<any>> = [["id","name","icon","quality","type","tip","value","bagName","description","isConsumable","isCanActiveUse","useEffect","useSound","isCanDiscard","maxCount","maxGrid","isCanPick","mark","sound","res","offsetLoc","offsetRot","scale","otherLoc","otherRot","otherScale","clazz","clazzParam","prefab","roomType","refreshType","difficuty"],["","Language","","","","Language","","Language","Language","","","","","","","","","","","","","","","","","","","","","","",""],[10000,"UI_item_10000","304692",4,555,"UI_item_10000",1000,"UI_item_10000","UI_des_00",true,true,null,null,false,99999,1,true,"复活卡",0,"332B36A74B95A01B5DEEA88E1EEE2ABE",new mw.Vector(80,50,-10),new mw.Vector(0,0,150),new mw.Vector(1,1,1),new mw.Vector(13,-3,6),new mw.Vector(3.5,82,-16),new mw.Vector(0.5,0.5,0.5),"RelifeItem",null,"757F26DB4C2754C70DEA71AD0D726726",null,0,0],[10001,"UI_item_10001","304683",1,555,"UI_item_10001",100,"UI_item_10001","UI_des_01",true,true,null,null,false,99999,1,true,"小血瓶",0,"95F0853C47C7395D51FA48BFBFC75445",new mw.Vector(100,70,-30),new mw.Vector(1,1,1),new mw.Vector(1.2,1.2,1.2),new mw.Vector(5,-3,-4),new mw.Vector(6,0,0),new mw.Vector(0.8,0.8,.8),"TransItem",["2"],"2827B10345A5943A47A879A2177320D5",null,0,0],[10002,"UI_item_10002","304677",2,555,"UI_item_10002",150,"UI_item_10002","UI_des_02",true,true,null,null,false,99999,1,true,"中血瓶",0,"B53086794A95410F8EEA68836BBECB30",new mw.Vector(100,70,-30),new mw.Vector(1,1,1),new mw.Vector(1.2,1.2,1.2),new mw.Vector(5,-3,-4),new mw.Vector(6,0,0),new mw.Vector(0.8,0.8,.8),"TransItem",["3"],"D3B70F99490727A9D268BCBD4A2C47B6",null,0,0],[10003,"UI_item_10003","304679",3,555,"UI_item_10003",200,"UI_item_10003","UI_des_03",true,true,null,null,false,99999,1,true,"大血瓶",0,"7025CF164FA8B605746A4092EEC5E663",new mw.Vector(120,70,-25),new mw.Vector(-10,20,0),new mw.Vector(1,1,1),new mw.Vector(4.5,-5,-4),new mw.Vector(6,0,0),new mw.Vector(0.4,0.4,0.4),"TransItem",["4"],"B0BF6F5749E8EA1489C12CBDF9A38B52",null,0,0],[10004,"UI_item_10004","304676",4,555,"UI_item_10004",300,"UI_item_10004","UI_des_04",true,true,null,null,false,99999,1,true,"活力丹",0,"0FE9447F44F0933A31C921954DBA413C",new mw.Vector(100,70,-30),new mw.Vector(0,0,130),new mw.Vector(1,1,1),new mw.Vector(14,-6,12),new mw.Vector(20,96,0),new mw.Vector(0.6,0.6,0.6),null,null,"2FB25F18488E758702733A863A074A0D",null,0,0],[10005,"UI_item_10005","304686",1,555,"UI_item_10005",800,"UI_item_10005","UI_des_05",true,true,null,null,false,99999,1,true,"单局双倍经验卡",0,"266B3A6F4838B89FADAE4D8A780F594C",new mw.Vector(80,50,-10),new mw.Vector(90,-10,130),new mw.Vector(1,1,1),new mw.Vector(5,-5,2),new mw.Vector(70,0,0),new mw.Vector(0.7,0.7,0.7),null,null,"8D32C02348CF1F8347F158A33CBB9F59",null,0,0],[10006,"UI_item_10006","304688",2,555,"UI_item_10006",1600,"UI_item_10006","UI_des_06",true,true,null,null,false,99999,1,true,"一天双倍经验卡",0,"61A98A904C5EBF2BE7552D92A75F670A",new mw.Vector(80,50,-10),new mw.Vector(90,-10,130),new mw.Vector(1.2,1.2,1.2),new mw.Vector(5,-5,2),new mw.Vector(70,0,0),new mw.Vector(0.8,.8,0.8),"BuffItem",["1"],"1276DEA54F55A727D9B613AB20DB8A14",null,0,0],[10007,"UI_item_10007","304680",3,555,"UI_item_10007",4600,"UI_item_10007","UI_des_07",true,true,null,null,false,99999,1,true,"三天双倍经验卡",0,"3CDA9F7E4DDA2B62852C70B330B1D888",new mw.Vector(80,50,-10),new mw.Vector(90,-10,130),new mw.Vector(1.2,1.2,1.2),new mw.Vector(5,-5,2),new mw.Vector(70,0,0),new mw.Vector(0.8,.8,0.8),"BuffItem",["2"],"01B8242243250F8CA2E2769D992EBC85",null,0,0],[10008,"UI_item_10008","304691",4,555,"UI_item_10008",10000,"UI_item_10008","UI_des_08",true,true,null,null,false,99999,1,true,"七天双倍经验卡",0,"C36EC0A34913E9F1495330965DA8A47A",new mw.Vector(80,50,-10),new mw.Vector(90,-10,130),new mw.Vector(1.2,1.2,1.2),new mw.Vector(5,-5,2),new mw.Vector(70,0,0),new mw.Vector(0.8,.8,0.8),"BuffItem",["3"],"3EB9E48D4CC6615197FCF0A96AF36006",null,0,0],[10009,"UI_item_10009","304684",3,555,"UI_item_10009",2400,"UI_item_10009","UI_des_09",true,true,null,null,false,99999,1,true,"一天三倍经验卡",0,"05E746674FAA01EC63A54DAAEC550B2A",new mw.Vector(80,50,-10),new mw.Vector(90,-10,130),new mw.Vector(1.2,1.2,1.2),new mw.Vector(5,-5,2),new mw.Vector(70,0,0),new mw.Vector(0.7,0.7,0.7),"BuffItem",["4"],"FC6CC309422273C0B99530A96A3E5A8D",null,0,0],[10010,"UI_item_10010","304687",2,555,"UI_item_10010",980,"UI_item_10010","UI_des_10",true,true,null,null,false,99999,1,true,"小礼包",0,"013F2A6642888F83CF32379940E6E8E7",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.15,0.15,0.15),new mw.Vector(13,-11,4),new mw.Vector(355,83,329),new mw.Vector(0.5,0.5,0.5),null,null,"9BC575E5463DC53FCB8FBD8FE7E44BB0",null,0,0],[10011,"UI_item_10011","304674",3,555,"UI_item_10011",3750,"UI_item_10011","UI_des_11",true,true,null,null,false,99999,1,true,"中礼包",0,"3045AAB141AA36648EC89B9FC6C352CF",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.1,0.1,0.1),new mw.Vector(16,-10,4),new mw.Vector(0.05,87,-13),new mw.Vector(0.25,0.25,0.25),null,null,"0275DA334AB14097957877926C77CC11",null,0,0],[10012,"UI_item_10012","304678",4,555,"UI_item_10012",5000,"UI_item_10012","UI_des_12",true,true,null,null,false,99999,1,true,"大礼包",0,"296218804529FA323784BA82CD7DAA51",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.1,0.1,0.1),new mw.Vector(14,-8,5),new mw.Vector(0.05,87,-13),new mw.Vector(0.3,0.3,0.3),null,null,"F831BB0545657D6C9887EFA5EFD03F36",null,0,0],[10013,"UI_item_10013","304689",4,555,"UI_item_10013",5500,"UI_item_10013","UI_des_13",true,true,null,null,false,99999,1,true,"解谜提示卡",0,"456C88EF4D354CFB2B1B85A452AEE77E",new mw.Vector(100,70,-50),new mw.Vector(-10,0,0),new mw.Vector(0.4,0.4,0.4),new mw.Vector(7,-6.5,-11),new mw.Vector(20,0,0),new mw.Vector(0.15,0.15,0.15),"CueCard",null,"BF7AC4C248B768D6F5B62A8DAE7C22FF",null,0,0],[10014,"UI_item_10014","304690",4,555,"UI_item_10014",9980,"UI_item_10014","UI_des_14",true,true,[["198611","1B53059E4FCF9D931B8786840AD327F0","173344","E563C1324CEE70D0B7C5658205B975C8","1923C15D401118735D35E597D7E71A71"]],null,false,99999,1,true,"丘比特效",0,"6761C41C4E88A901380B36824DCA35E6",new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),"InteractItem",null,"F52028274F5235F45BDDF38E97D53314",null,0,0],[10015,"UI_item_10015","304675",1,555,"UI_item_10015",20,"UI_item_10015","UI_des_15",true,true,null,null,false,99999,1,true,"雪球",0,"E7A7098E4D9D8B30319D86AC173A4C23",new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),"InteractItem",null,"996FEC28465B12F49A7735AA8551AAB2",null,0,0],[10016,"UI_item_10016","304682",1,555,"UI_item_10016",20,"UI_item_10016","UI_des_16",true,true,[["86411","121408","A98822E640322032899DC0850C3BA10F"]],null,false,99999,1,true,"巴掌特效",0,"C6EFB1874A9A492CBF9C2E841431DB5A",new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),"InteractItem",null,"C635B30A4B10D4B9514F138DDE64D0E7",null,0,0],[10017,"UI_item_10017","304685",1,555,"UI_item_10017",20,"UI_item_10017","UI_des_17",true,true,null,null,false,99999,1,true,"鸡腿特效",0,"29F6662048F413D69A2346A11928D06F",new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),"InteractItem",null,"0242916E41B057653C7CC19DB9E90456",null,0,0],[10018,"UI_item_10018","50330",1,555,"UI_item_10018",20,"UI_item_10018","UI_des_18",true,true,null,null,false,99999,1,true,"欢呼特效",0,null,new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),"InteractItem",null,null,null,0,0],[10200,"UI_item_10200","303467",1,555,"UI_des_200",0,"UI_item_10200","UI_des_200",true,true,null,null,false,99999,1,true,"恐惧币",0,"CC46F8384FEE9873EE030384096FC09C",new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),new mw.Vector(1,1,1),"InteractItem",null,"F9A7EB3445CCE3972F7A79BBF903459E",null,0,0],[11001,"UI_item_11001","303467",1,1,"Currency_01",50,"UI_item_11001","UI_item_11001",true,true,null,null,false,99999,1,true,"50恐惧币",0,"013F2A6642888F83CF32379940E6E8E7",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.15,0.15,0.15),new mw.Vector(13,-11,4),new mw.Vector(355,83,329),new mw.Vector(0.5,0.5,0.5),"Currency",["1","50"],"85335069420FB2399780AC84BCCA44DD",null,0,0],[11002,"UI_item_11002","303467",1,1,"Currency_01",100,"UI_item_11002","UI_item_11002",true,true,null,null,false,99999,1,true,"100恐惧币",0,"013F2A6642888F83CF32379940E6E8E7",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.15,0.15,0.15),new mw.Vector(13,-11,4),new mw.Vector(355,83,329),new mw.Vector(0.5,0.5,0.5),"Currency",["1","100"],"69D8CAED40E22E245512A3950086D99B",null,0,0],[11003,"UI_item_11003","303467",1,1,"Currency_01",150,"UI_item_11003","UI_item_11003",true,true,null,null,false,99999,1,true,"150恐惧币",0,"013F2A6642888F83CF32379940E6E8E7",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.15,0.15,0.15),new mw.Vector(13,-11,4),new mw.Vector(355,83,329),new mw.Vector(0.5,0.5,0.5),"Currency",["1","150"],"5C9B556140BC663CB83B63B4CED4A30D",null,0,0],[11004,"UI_item_11004","303467",2,1,"Currency_01",200,"UI_item_11004","UI_item_11004",true,true,null,null,false,99999,1,true,"200恐惧币",0,"3045AAB141AA36648EC89B9FC6C352CF",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.1,0.1,0.1),new mw.Vector(16,-10,4),new mw.Vector(0.05,87,-13),new mw.Vector(0.25,0.25,0.25),"Currency",["1","200"],"DA45A67045B6A73945B12D9843666022",null,0,0],[11005,"UI_item_11005","303467",2,1,"Currency_01",300,"UI_item_11005","UI_item_11005",true,true,null,null,false,99999,1,true,"300恐惧币",0,"3045AAB141AA36648EC89B9FC6C352CF",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.1,0.1,0.1),new mw.Vector(16,-10,4),new mw.Vector(0.05,87,-13),new mw.Vector(0.25,0.25,0.25),"Currency",["1","300"],"AD53866C4E7DB03B4720098A51AB11AA",null,0,0],[11006,"UI_item_11006","303467",2,1,"Currency_01",400,"UI_item_11006","UI_item_11006",true,true,null,null,false,99999,1,true,"400恐惧币",0,"3045AAB141AA36648EC89B9FC6C352CF",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.1,0.1,0.1),new mw.Vector(16,-10,4),new mw.Vector(0.05,87,-13),new mw.Vector(0.25,0.25,0.25),"Currency",["1","400"],"C60DE611476CE3AB4863C39653EA2F51",null,0,0],[11007,"UI_item_11007","303467",3,1,"Currency_01",500,"UI_item_11007","UI_item_11007",true,true,null,null,false,99999,1,true,"500恐惧币",0,"3045AAB141AA36648EC89B9FC6C352CF",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.1,0.1,0.1),new mw.Vector(16,-10,4),new mw.Vector(0.05,87,-13),new mw.Vector(0.25,0.25,0.25),"Currency",["1","500"],"4CDD17264BE3600A60C2869294097958",null,0,0],[11008,"UI_item_11008","303467",3,1,"Currency_01",750,"UI_item_11008","UI_item_11008",true,true,null,null,false,99999,1,true,"750恐惧币",0,"296218804529FA323784BA82CD7DAA51",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.1,0.1,0.1),new mw.Vector(14,-8,5),new mw.Vector(0.05,87,-13),new mw.Vector(0.3,0.3,0.3),"Currency",["1","750"],"D9622ADB440FF2460A80D0AB664EBD3C",null,0,0],[11009,"UI_item_11009","303467",4,1,"Currency_01",1000,"UI_item_11009","UI_item_11009",true,true,null,null,false,99999,1,true,"1000恐惧币",0,"296218804529FA323784BA82CD7DAA51",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.1,0.1,0.1),new mw.Vector(14,-8,5),new mw.Vector(0.05,87,-13),new mw.Vector(0.3,0.3,0.3),"Currency",["1","1000"],"A09770994C565E24C9A7618A16DA1AC1",null,0,0],[11010,"UI_item_11010","303467",4,1,"Currency_01",2000,"UI_item_11010","UI_item_11010",true,true,null,null,false,99999,1,true,"2000恐惧币",0,"296218804529FA323784BA82CD7DAA51",new mw.Vector(25,15,-5),new mw.Vector(10,0,120),new mw.Vector(0.1,0.1,0.1),new mw.Vector(14,-8,5),new mw.Vector(0.05,87,-13),new mw.Vector(0.3,0.3,0.3),"Currency",["1","2000"],"B1CCDCAF4B263AD64C839C8391FF370F",null,0,0]];
+export interface ISubItemElement extends IElementBase{
+ 	/**ID*/
+	id:number
+	/**道具名字*/
+	name:string
+	/**道具图标*/
+	icon:string
+	/**道具品质*/
+	quality:number
+	/**道具类型*/
+	type:number
+	/**道具提示*/
+	tip:string
+	/**价值*/
+	value:number
+	/**背包名字*/
+	bagName:string
+	/**描述*/
+	description:string
+	/**是否是可消耗品（0:false*/
+	isConsumable:boolean
+	/**1true）*/
+	isCanActiveUse:boolean
+	/**是否可以主动使用*/
+	useEffect:Array<Array<string>>
+	/**主动使用的效果*/
+	useSound:Array<string>
+	/**主动使用音效*/
+	isCanDiscard:boolean
+	/**是否可以丢弃*/
+	maxCount:number
+	/**最大叠加数目*/
+	maxGrid:number
+	/**最多可以存多少格子*/
+	isCanPick:boolean
+	/**是否可以拾起*/
+	mark:string
+	/**注释*/
+	sound:number
+	/**音效*/
+	res:string
+	/**手持资源*/
+	offsetLoc:mw.Vector
+	/**道具偏移*/
+	offsetRot:mw.Vector
+	/**道具旋转*/
+	scale:mw.Vector
+	/**道具缩放*/
+	otherLoc:mw.Vector
+	/**别人看到的位移旋转和缩放*/
+	otherRot:mw.Vector
+	/**undefined*/
+	otherScale:mw.Vector
+	/**undefined*/
+	clazz:string
+	/**对应实现类（程序填写）*/
+	clazzParam:Array<string>
+	/**效果参数（对应建筑ID）*/
+	prefab:string
+	/**预制体(场景中的拾取道具客户端工程ID)*/
+	roomType:Array<number>
+	/**房间类型*/
+	refreshType:number
+	/**刷新类型(脚本里是0的话都可以在那个位置刷新)*/
+	difficuty:number
+ } 
+export class SubItemConfig extends ConfigBase<ISubItemElement>{
+	constructor(){
+		super(EXCELDATA);
+	}
+
+}
