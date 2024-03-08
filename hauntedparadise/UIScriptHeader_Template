@@ -1,0 +1,68 @@
+
+ ${Import}
+
+ @UIBind('${UIPath}')
+ export default class ${ClassName}_Generate extends ${SuperClassName} {
+	 ${Fileds}
+ 
+	protected onAwake() {
+		//设置能否每帧触发onUpdate
+		this.canUpdate = false;
+		this.layer = mw.UILayerBottom;
+		this.initButtons();
+	}
+	protected initButtons() {
+		//按钮添加点击
+		${StaleButton_Start}
+		this.${StaleButton}.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "${ClassName}_${StaleButton}");
+		})
+		this.initLanguage(this.${StaleButton});
+		this.${StaleButton}.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.${StaleButton}.onPressed.add(() => {
+			this.${StaleButton}["preScale"] = this.${StaleButton}.renderScale;
+			this.${StaleButton}.renderScale = Vector2.one.set(this.${StaleButton}["preScale"]).multiply(1.1);
+		})
+		this.${StaleButton}.onReleased.add(() => {
+			this.${StaleButton}.renderScale = this.${StaleButton}["preScale"];
+		})
+		
+		${StaleButton_End}
+		//按钮添加点击
+		${Button_Start}
+		this.${Button}.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "${ClassName}_${Button}");
+		})
+		this.${Button}.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.${Button}.onPressed.add(() => {
+			this.${Button}["preScale"] = this.${Button}.renderScale;
+			this.${Button}.renderScale = Vector2.one.set(this.${Button}["preScale"]).multiply(1.1);
+		})
+		this.${Button}.onReleased.add(() => {
+			this.${Button}.renderScale = this.${Button}["preScale"];
+		})
+		${Button_End}
+
+		//按钮多语言
+		${StaleButton_HideStart}
+		this.initLanguage(this.uiWidgetBase.findChildByPath("${StaleButton_Path}") as any);
+		${StaleButton_HideEnd}
+		//文本多语言
+		${TextBlock_Start}
+		this.initLanguage(this.${TextBlock})
+		${TextBlock_End}
+		//文本多语言
+		${TextBlock_HideStart}
+		this.initLanguage(this.uiWidgetBase.findChildByPath("${TextBlock_Path}") as any);
+		${TextBlock_HideEnd}
+
+	}
+	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
+        let call = mw.UIScript.getBehavior("lan");
+        if (call && ui) {
+            call(ui);
+        }
+    }
+ }
+
+UIService['UI_${ClassName}'] = ${ClassName}_Generate;
