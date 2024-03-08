@@ -1,4 +1,4 @@
-import GToolkit, { Tf } from "../util/GToolkit";
+import GToolkit, {Tf} from "../util/GToolkit";
 
 export default class GameServiceConfig {
     //#region Sub Game
@@ -82,7 +82,7 @@ export default class GameServiceConfig {
     /**
      * 采集物 场景龙 检查生成间隔.
      */
-    public static readonly TRY_GENERATE_INTERVAL = 1000;
+    public static readonly TRY_GENERATE_INTERVAL = 3000;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Partner Dragon
