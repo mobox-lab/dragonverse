@@ -150,12 +150,12 @@ export class ProcedureModuleC extends ModuleC<ProcedureModuleS, ProcedureData> {
     private clientLoadGame(degree: number, style: number, archiveID: number) {
         BoardHelper.ChangeKeyValue(BoardKeys.Style, style.toString());
         BoardHelper.ChangeKeyValue(BoardKeys.Degree, degree.toString());
-        if (degree < GlobalDefine.minDegree) {
-            ModuleService.getModule(GhostModuleC).protectedPlayer(true);
-        }
-        else {
-            ModuleService.getModule(GhostModuleC).protectedPlayer(false);
-        }
+        // if (degree < GlobalDefine.minDegree) {
+        //     ModuleService.getModule(GhostModuleC).protectedPlayer(true);
+        // }
+        // else {
+        //     ModuleService.getModule(GhostModuleC).protectedPlayer(false);
+        // }
 
         BoardHelper.ChangeKeyValue(BoardKeys.ArchiveID, style.toString());
         this.myScript.degree = degree;
