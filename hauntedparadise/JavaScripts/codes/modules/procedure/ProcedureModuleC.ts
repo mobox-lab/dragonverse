@@ -83,7 +83,7 @@ export class ProcedureModuleC extends ModuleC<ProcedureModuleS, ProcedureData> {
         Event.addLocalListener(Event_GhostCachedEvent, this.onPlayerBeChased.bind(this));
         Event.addLocalListener(Event_PlayerPass, this.onPlayerWin.bind(this));
         Event.addLocalListener("Local_PlayerPass", this.onPlayerWinByLocalEvent.bind(this));
-        Event.addLocalListener("evt_unlockNote", (guid: string, cfgId: string) => { this.unlockNote(Number(cfgId)) });
+        // Event.addLocalListener("evt_unlockNote", (guid: string, cfgId: string) => { this.unlockNote(Number(cfgId)) });
     }
 
     /** 供服务端注册同步到客户端的脚本 */
@@ -190,7 +190,7 @@ export class ProcedureModuleC extends ModuleC<ProcedureModuleS, ProcedureData> {
         this.myScript.client_canStartGame = true;
         this.isLoadByArchive ? ModuleService.getModule(PlayerModuleC).setLife() : ModuleService.getModule(PlayerModuleC).initLife();
 
-        this.isLoadByArchive ? this.server.net_loadNote(Player.localPlayer.userId) : this.server.net_initNote(Player.localPlayer.userId, this.myScript.archiveID);
+        // this.isLoadByArchive ? this.server.net_loadNote(Player.localPlayer.userId) : this.server.net_initNote(Player.localPlayer.userId, this.myScript.archiveID);
     }
 
     public getServer(): ProcedureModuleS {

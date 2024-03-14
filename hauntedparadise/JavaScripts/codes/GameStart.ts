@@ -236,7 +236,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(BagModuleS, BagModuleC);
         ModuleService.registerModule(BlackBoardModuleS, BlackBoardModuleC);
         ModuleService.registerModule(EquipModuleS, EquipModuleC);
-        // ModuleService.registerModule(GhostModuleS, GhostModuleC);
+        ModuleService.registerModule(GhostModuleS, GhostModuleC);
         ModuleService.registerModule(ObjInterModuleS, ObjInterModuleC);
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
         ModuleService.registerModule(ProcedureModuleS, ProcedureModuleC, ProcedureData);
