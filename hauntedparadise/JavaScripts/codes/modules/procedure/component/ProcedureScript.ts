@@ -14,7 +14,7 @@ import { VictoryPanel } from "../ui/VictoryPanel";
 
 /** 继承PlayerState之后只同步给客户端自己 */
 @Component
-export default class ProcedureScript extends PlayerState {
+export default class ProcedureScript extends mw.PlayerState {
 
     /** 用于同步的游戏状态 双端 */
     private _state: EmProcedureState = EmProcedureState.Init;

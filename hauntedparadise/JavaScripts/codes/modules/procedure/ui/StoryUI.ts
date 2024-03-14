@@ -22,20 +22,20 @@ export class StoryUI extends Story_UI_Generate {
         // 渐显的时间
         UIAniUtil.playOpaAni(this.canvas_bg, 1, 2e3);
         // 展示时间
-        if (GameStart.IsTesting) {
+        // if (GameStart.IsTesting) {
             setTimeout(() => {
-                UIService.getUI(MainMenuPanel).switchPlayerCamera();
+                // UIService.getUI(MainMenuPanel).switchPlayerCamera();
                 ModuleService.getModule(ProcedureModuleC).startGame();
                 // 渐隐完的时间
                 UIAniUtil.playOpaAni(this.canvas_bg, 0, 3e3, () => { UIService.hide(StoryUI); });
             }, 1e3);
-        } else {
-            setTimeout(() => {
-                UIService.getUI(MainMenuPanel).switchPlayerCamera();
-                setTimeout(() => { ModuleService.getModule(ProcedureModuleC).startGame(); }, 2e3);
-                // 渐隐完的时间
-                UIAniUtil.playOpaAni(this.canvas_bg, 0, 3e3, () => { UIService.hide(StoryUI); });
-            }, 7e3);
-        }
+        // } else {
+        //     setTimeout(() => {
+        //         // UIService.getUI(MainMenuPanel).switchPlayerCamera();
+        //         setTimeout(() => { ModuleService.getModule(ProcedureModuleC).startGame(); }, 2e3);
+        //         // 渐隐完的时间
+        //         UIAniUtil.playOpaAni(this.canvas_bg, 0, 3e3, () => { UIService.hide(StoryUI); });
+        //     }, 7e3);
+        // }
     }
 }

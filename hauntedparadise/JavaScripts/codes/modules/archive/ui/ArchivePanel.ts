@@ -21,9 +21,15 @@ export class ArchivePanel extends Archive_UI_Generate {
     onStart(): void {
         for (let index = 0; index < MaxArchiveNum; index++) {
             // 初始化activeItem
-            const archiveItem = new ArchiveItem(this[`btn_del${index + 1}`], this[`text_diffi${index + 1}`], this[`text_day${index + 1}`],
-                this[`text_time${index + 1}`], this[`text_unknown${index + 1}`], this[`text_date${index + 1}`],
-                this[`btn_start${index + 1}`], this[`text_start${index + 1}`]);
+            const archiveItem = new ArchiveItem(
+                this[`btn_del${index + 1}`],
+                this[`text_diffi${index + 1}`],
+                this[`text_day${index + 1}`],
+                this[`text_time${index + 1}`],
+                this[`text_unknown${index + 1}`],
+                this[`text_date${index + 1}`],
+                this[`btn_start${index + 1}`],
+                this[`text_start${index + 1}`]);
             archiveItem.id = index;
             archiveItem.initButtons();
             this._archiveItemMap.set(index, archiveItem);

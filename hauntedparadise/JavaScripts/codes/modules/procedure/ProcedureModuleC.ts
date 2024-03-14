@@ -177,7 +177,8 @@ export class ProcedureModuleC extends ModuleC<ProcedureModuleS, ProcedureData> {
      */
     public loadGame(degree: number, style: number, archiveID: number, isLoadByArchive: boolean = false) {
         console.log(`DEBUG>>> 加载游戏，难度：${degree}, 风格：${style}，存档序号：${archiveID}`);
-        UIService.show(StoryUI);
+        // UIService.show(StoryUI);
+        ModuleService.getModule(ProcedureModuleC).startGame();
         UIService.getUI(NotebookPanel).clearAllDot();
         SoundService.playSound("131828");
         this.isLoadByArchive = isLoadByArchive;

@@ -15,37 +15,37 @@
  * @Description  : 
  */
 
-import { getIsRefresh, targetVersion } from "../../../../DefNoSubModule";
-import { GameConfig } from "../../../../config/GameConfig";
-import { PlayerManagerExtension } from "../../../Modified027Editor/ModifiedPlayer";
-import { CommonUtils } from "../../../utils/CommonUtils";
-import { GlobalSwitch } from "../../../utils/GlobalSwitch";
-import { MainUI } from "../../../ui/MainUI";
-import { MapEx } from "../../../utils/MapEx";
+import {getIsRefresh, targetVersion} from "../../../../DefNoSubModule";
+import {GameConfig} from "../../../../config/GameConfig";
+import {PlayerManagerExtension} from "../../../Modified027Editor/ModifiedPlayer";
+import {CommonUtils} from "../../../utils/CommonUtils";
+import {GlobalSwitch} from "../../../utils/GlobalSwitch";
+import {MainUI} from "../../../ui/MainUI";
+import {MapEx} from "../../../utils/MapEx";
 import MusicMgr from "../../../utils/MusicMgr";
-import { GhostTraceHelper } from "../../../utils/TraceHelper";
-import { UtilEx } from "../../../utils/UtilEx";
+import {GhostTraceHelper} from "../../../utils/TraceHelper";
+import {UtilEx} from "../../../utils/UtilEx";
 import PlayerArchiveData from "../../archive/ArchiveData";
-import { ArchiveData, ArchiveDataType, ClueSaveData } from "../../archive/ArchiveHelper";
+import {ArchiveData, ArchiveDataType, ClueSaveData} from "../../archive/ArchiveHelper";
 import ArchiveModuleC from "../../archive/ArchiveModuleC";
-import { BagDefine, BagItemData } from "../../bag/BagDefine";
-import { PlayerInterModuleC } from "../../inter/PlayerInterModule";
-import { INIT_HP_NUM } from "../../player/PlayerData";
-import { PlayerModuleC } from "../../player/PlayerModuleC";
+import {BagDefine, BagItemData} from "../../bag/BagDefine";
+import {PlayerInterModuleC} from "../../inter/PlayerInterModule";
+import {INIT_HP_NUM} from "../../player/PlayerData";
+import {PlayerModuleC} from "../../player/PlayerModuleC";
 import HpHud from "../../player/ui/HpHud";
-import { ProcedureModuleC } from "../ProcedureModuleC";
-import { RoomHelper } from "../RoomHelper";
-import { PickItemId, PickItemTag } from "../const/ClueDefine";
-import { EmProcedureState } from "../const/EmProcedureState";
-import { Event_GameEnd, Event_LoadArchiveData } from "../const/Events";
-import { LoadingGameUI } from "../ui/LoadingGameUI";
-import { MainMenuPanel } from "../ui/MainMenuPanel";
-import { ProcedureStateBase } from "./ProcedureState";
-import GameStart, { EGameTheme } from "../../../GameStart";
-import { BoardHelper } from "../../blackboard/BoardDefine";
-import { WaitLoop } from "../../../utils/AsyncTool";
+import {ProcedureModuleC} from "../ProcedureModuleC";
+import {RoomHelper} from "../RoomHelper";
+import {PickItemId, PickItemTag} from "../const/ClueDefine";
+import {EmProcedureState} from "../const/EmProcedureState";
+import {Event_GameEnd, Event_LoadArchiveData} from "../const/Events";
+import {LoadingGameUI} from "../ui/LoadingGameUI";
+import {MainMenuPanel} from "../ui/MainMenuPanel";
+import {ProcedureStateBase} from "./ProcedureState";
+import GameStart, {EGameTheme} from "../../../GameStart";
+import {BoardHelper, DegreeType, StyleType} from "../../blackboard/BoardDefine";
+import {WaitLoop} from "../../../utils/AsyncTool";
 import BagPanel from "../../bag/ui/BagPanel";
-import { ScenePropsModuleC } from "../../sceneProps/ScenePropsModule";
+import {ScenePropsModuleC} from "../../sceneProps/ScenePropsModule";
 
 
 export class InitProcedureStateClient extends ProcedureStateBase {
@@ -60,13 +60,23 @@ export class InitProcedureStateClient extends ProcedureStateBase {
             /** 帮blackBoard代发一下 */
             Event.dispatchToLocal(BoardHelper.BoardLoadingEvt);
         } else {
-            UIService.show(MainMenuPanel);
+            ModuleService.getModule(ArchiveModuleC).reqAllData().then(
+                (allDataList: ArchiveData[]) => {
+                    const firstData = allDataList[0];
+                    if (firstData) {
+                        ModuleService.getModule(ProcedureModuleC).loadGame(firstData.degree, StyleType.Cute, 0, true);
+                    } else {
+                        ModuleService.getModule(ProcedureModuleC).loadGame(DegreeType.Simple, StyleType.Cute, 0);
+                    }
+                }
+            );
+            // UIService.show(MainMenuPanel);
         }
-    }
+    };
 
     exit?: (nextState?: any) => void = () => {
         UIService.hide(MainMenuPanel);
-    }
+    };
 }
 
 export class LoadingProcedureStateClient extends ProcedureStateBase {
@@ -76,37 +86,37 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
         go[PickItemId] = itemId;
         go.getChildren().forEach(e => {
             this.setAsClueItem(e, guid, itemId);
-        })
+        });
     }
 
     enter?: (data?: any) => void = async () => {
-        const char = Player.localPlayer.character
+        const char = Player.localPlayer.character;
 
         // 把和其他玩家得碰撞关了
         Player.localPlayer.character.collisionWithOtherCharacterEnabled = false;
 
         // 加载动画资源
-        await UtilEx.asyncLoadAsset("15155")
-        const anim = PlayerManagerExtension.rpcPlayAnimation(char, "15155");
-        anim.loop = Infinity;
+        await UtilEx.asyncLoadAsset("15155");
+        // const anim = PlayerManagerExtension.rpcPlayAnimation(char, "15155");
+        // anim.loop = Infinity;
         // 加载存档数据
         let archiveData = await ModuleService.getModule(ArchiveModuleC).reqDataByArchiveId(this.owner.archiveID);
         const degreeCfg = GameConfig.Difficulty.getElement(this.owner.degree);
-        const playerModule = ModuleService.getModule(PlayerModuleC)
+        const playerModule = ModuleService.getModule(PlayerModuleC);
         playerModule.birthPos = archiveData.birthPos;
         playerModule.birthRot = CommonUtils.arr2Rot(archiveData.birthRot, new Rotation(GameConfig.Global.StartRot.vector));
 
         // 存活天数
         GlobalSwitch.enableTimeSys() && UIService.getUI(MainUI).setAliveDay(archiveData.aliveDay);
 
-        console.log(CommonUtils.arr2Rot(archiveData.birthRot, new Rotation(GameConfig.Global.StartRot.vector)) + " startRot")
+        console.log(CommonUtils.arr2Rot(archiveData.birthRot, new Rotation(GameConfig.Global.StartRot.vector)) + " startRot");
         // 先改一下位置
         Player.localPlayer.character.worldTransform.position = new Vector(archiveData.birthPos.x, archiveData.birthPos.y, archiveData.birthPos.z);
         const rot = playerModule.birthRot;
         setTimeout(() => {
             Player.localPlayer.character.worldTransform.rotation = new Rotation(0, 0, rot.z);
             Player.setControllerRotation(playerModule.birthRot);
-            console.log("setRotation" + playerModule.birthRot)
+            console.log("setRotation" + playerModule.birthRot);
         }, 20);
         // 生成线索
         if (archiveData.isInitClues) {
@@ -117,8 +127,12 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
                     console.error("MyTypeError 生成线索物品失败cfg not find", val.assid);
                     return;
                 }
-                let go = await GameObject.asyncSpawn(cfg.prefab, { replicates: false });
-                if (!go) { await WaitLoop.loop(() => { return go }) }
+                let go = await GameObject.asyncSpawn(cfg.prefab, {replicates: false});
+                if (!go) {
+                    await WaitLoop.loop(() => {
+                        return go;
+                    });
+                }
                 if (go) {
                     let box = go.getBoundingBoxExtent(true, false);
                     let offsetz = Math.max(0, box.z / 2);
@@ -131,7 +145,7 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
                     go.setCollision(CollisionStatus.QueryOnly);
                     this.owner.client_clueGOArray.push(go);
                 }
-            })
+            });
         }
         if (getIsRefresh(archiveData)) {
             console.log("生成新的线索");
@@ -153,7 +167,7 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
                     continue;
                 }
                 if (!cfg.roomType) {
-                    console.error("MyTypeError 生成物品失败cfg no roomType" + cfg.id)
+                    console.error("MyTypeError 生成物品失败cfg no roomType" + cfg.id);
                     continue;
                 }
                 let roomTyps = cfg.roomType.filter(e => {
@@ -161,19 +175,19 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
                         if (itemPoint.refreshDegree > this.owner.degree) {
                             return false;
                         }
-                        return itemPoint.isUsed == false && (itemPoint.refreshType == 0 || itemPoint.refreshType == cfg.refreshType)
+                        return itemPoint.isUsed == false && (itemPoint.refreshType == 0 || itemPoint.refreshType == cfg.refreshType);
                     });
                     return items.length != 0;
-                })
+                });
                 console.log(cfg.id + "roomTypeArr" + roomTyps);
                 const roomType = UtilEx.MathEx.rangeItem(roomTyps, false);
                 const items = RoomHelper.instance.getRoom(roomType).items.filter((itemPoint) => {
                     if (itemPoint.refreshDegree > this.owner.degree) {
                         return false;
                     }
-                    return itemPoint.isUsed == false && (itemPoint.refreshType == 0 || itemPoint.refreshType == cfg.refreshType)
+                    return itemPoint.isUsed == false && (itemPoint.refreshType == 0 || itemPoint.refreshType == cfg.refreshType);
                 });
-                console.log("线索物品" + cfg.id + ":" + items.length)
+                console.log("线索物品" + cfg.id + ":" + items.length);
                 const itemPoint = UtilEx.MathEx.rangeItem(items);
                 if (!itemPoint) {
                     console.error("MyTypeError 生成线索物品失败 item not find", cfg.id, JSON.stringify(items));
@@ -198,7 +212,7 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
                 this.owner.client_clueGOArray.push(go);
             }
             ModuleService.getModule(ArchiveModuleC).reqSaveData([
-                ArchiveDataType.CLUES, ArchiveDataType.CLUESINIT, ArchiveDataType.VERSION, ArchiveDataType.LIFE],
+                    ArchiveDataType.CLUES, ArchiveDataType.CLUESINIT, ArchiveDataType.VERSION, ArchiveDataType.LIFE],
                 [map, true, targetVersion, degreeCfg.lifeNum]
             );
         }
@@ -207,14 +221,16 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
                 const element = GameConfig.Global.initItems.array1d[index];
                 const cfg = GameConfig.Item.getElement(element);
                 if (!cfg) {
-                    console.error("添加物品失败")
+                    console.error("添加物品失败");
                     continue;
                 }
                 if (!archiveData.bagItems) {
                     archiveData.bagItems = [];
                 }
-                if (archiveData.bagItems.find(e => { return e.cfgId == element; })) {
-                    console.error("背包中已经存在物品了")
+                if (archiveData.bagItems.find(e => {
+                    return e.cfgId == element;
+                })) {
+                    console.error("背包中已经存在物品了");
                     continue;
                 }
                 let itemdata = new BagItemData();
@@ -225,12 +241,12 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
                 archiveData.bagItems.push(itemdata);
             }
             ModuleService.getModule(ArchiveModuleC).reqSaveData([
-                ArchiveDataType.BAGITEMS, ArchiveDataType.BAGITEMINIT],
+                    ArchiveDataType.BAGITEMS, ArchiveDataType.BAGITEMINIT],
                 [archiveData.bagItems, true]
             );
         }
         await this.checkSceneProps(archiveData);
-        console.log("[Board]开始存档")
+        console.log("[Board]开始存档");
 
         if (GlobalSwitch.enableHpHud()) {
             UIService.getUI(HpHud).initBloodVolume(archiveData.hp, INIT_HP_NUM);
@@ -238,8 +254,8 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
         }
 
         Event.dispatchToLocal(Event_LoadArchiveData, archiveData);
-        anim.play();
-    }
+        // anim.play();
+    };
 
     update?: (dt: number) => void = (dt) => {
         if (this.owner.client_canStartGame) {
@@ -247,12 +263,12 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
             this.owner.setState(EmProcedureState.Start);
             ModuleService.getModule(ProcedureModuleC).getServer().net_syncProcedureState(this.owner.userId, EmProcedureState.Start);
         }
-    }
+    };
 
     exit?: (nextState?: any) => void = () => {
         this.owner.client_canStartGame = false;
         ModuleService.getModule(ProcedureModuleC).getServer().net_setPlayerVisible(Player.localPlayer.playerId, true);
-    }
+    };
 
     private async checkSceneProps(archiveData: ArchiveData) {
         if (GameStart.GameTheme == EGameTheme.Graveyard) {
@@ -274,11 +290,11 @@ export class LoadingProcedureStateClient extends ProcedureStateBase {
                     console.error("MyTypeError 生成线索物品失败cfg not find\n", val.assid);
                     continue;
                 }
-                const key = `CE${keyTime}${index}`
+                const key = `CE${keyTime}${index}`;
                 MapEx.set(map, key, val);
-                let go = await GameObject.asyncSpawn(cfg.prefab, { replicates: false });
+                let go = await GameObject.asyncSpawn(cfg.prefab, {replicates: false});
                 if (!go) {
-                    console.error("MyTypeError 资源生成失败\n资源的id为" + cfg.prefab)
+                    console.error("MyTypeError 资源生成失败\n资源的id为" + cfg.prefab);
                     continue;
                 }
                 if (go) {
@@ -331,30 +347,34 @@ export class StartProcedureStateClient extends ProcedureStateBase {
         //GhostTraceHelper.uploadMGS("ts_action_open_box", "存档第几次进入", {});
         ModuleService.getModule(ArchiveModuleC).addClickCount(this.owner.archiveID);
         ModuleService.getModule(PlayerModuleC).setMGSListener();
-    }
+    };
 
     isListenMove: boolean = false;
 
     update?: (dt: number) => void = (dt) => {
-        if (!this.isListenMove) { return; }
+        if (!this.isListenMove) {
+            return;
+        }
         if (Vector.squaredDistance(this.birthPos, Player.localPlayer.character.worldTransform.position) > 1e4) {
             // 把和其他玩家的碰撞打开
             Player.localPlayer.character.collisionWithOtherCharacterEnabled = true;
             this.isListenMove = false;
         }
-    }
+    };
 
     exit?: (data?: any) => void = (data?: any) => {
         UIService.getUI(BagPanel).setAllNodeEmpty();
         Player.localPlayer.character.collisionWithOtherCharacterEnabled = false;
-    }
+    };
 }
 
 export class EndProcedureStateClient extends ProcedureStateBase {
 
     enter?: (data?: any) => void = (data?: any) => {
         ModuleService.getModule(PlayerInterModuleC).reqStopInter();
-        this.owner.client_clueGOArray.forEach((go) => { go.destroy(); });
+        this.owner.client_clueGOArray.forEach((go) => {
+            go.destroy();
+        });
         this.owner.client_clueGOArray.length = 0;
         Event.dispatchToLocal(Event_GameEnd);
         this.client_initPlayerState();
@@ -362,5 +382,5 @@ export class EndProcedureStateClient extends ProcedureStateBase {
         if (!data) {
             UIService.show(MainMenuPanel);
         }
-    }
+    };
 }

@@ -40,10 +40,10 @@ export class MainMenuPanel extends Start_UI_Generate {
 
     playerCamera: Camera;
 
-    /** 用玩家的摄像机 */
-    public switchPlayerCamera() {
-        Camera.switch(this.playerCamera);
-    }
+    // /** 用玩家的摄像机 */
+    // public switchPlayerCamera() {
+    //     Camera.switch(this.playerCamera);
+    // }
 
     protected onAwake(): void {
         Player.asyncGetLocalPlayer().then(player => { this.playerCamera = Camera.currentCamera; });
@@ -96,7 +96,7 @@ export class MainMenuPanel extends Start_UI_Generate {
     monster: Character;
 
     onStart(): void {
-        UtilEx.asyncLoadAsset("131828");
+        // UtilEx.asyncLoadAsset("131828");
 
         GameObject.asyncFindGameObjectById(GameConfig.PaintingStyle.getElement(StyleType.Normal).CameraId).then((camera: Camera) => {
             this.camera = camera;
@@ -105,7 +105,7 @@ export class MainMenuPanel extends Start_UI_Generate {
                 this.canvas_switch.visibility = SlateVisibility.Collapsed;
                 // this.canvas_subtitles.visibility = SlateVisibility.Collapsed;
                 this.canvas_hall.position = this.canvas_switch.position;
-                Camera.switch(camera);
+                // Camera.switch(camera);
             } else {
                 this.switchStyle(false);
             }
@@ -127,7 +127,7 @@ export class MainMenuPanel extends Start_UI_Generate {
         let ghostCfg = GameConfig.PaintingStyle.getElement(this.styleList[this.styleId]);
         const listStyleId = this.styleList[this.styleId];
         this.camera = this.cameraList[listStyleId - 1];
-        Camera.switch(this.cameraList[listStyleId - 1], isdelay ? 1 : 0);
+        // Camera.switch(this.cameraList[listStyleId - 1], isdelay ? 1 : 0);
         let tempTrans = this.monsterTransformList[listStyleId - 1];
         if (tempTrans) {
             this.initMonster(ghostCfg, tempTrans.clone());
@@ -173,7 +173,7 @@ export class MainMenuPanel extends Start_UI_Generate {
         this.styleList = GameStart.isGPark ? [StyleType.Normal, StyleType.Abnormal, StyleType.Cute] : [StyleType.Normal, StyleType.Cute];
         MusicMgr.instance.play(1001);
         GhostTraceHelper.uploadMGS("ts_action_open_box", "开始游戏界面", { box_id: 0 });
-        this.camera ? Camera.switch(this.camera) : "";
+        // this.camera ? Camera.switch(this.camera) : "";
         UIService.getUI(ArchivePanel).reqRefreshArchiveInfo();
         this.cancelPressState(this.btn_start, this.img_paint1);
         this.cancelPressState(this.btn_switchstyle, this.img_paint2);
