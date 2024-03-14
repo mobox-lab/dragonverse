@@ -52,7 +52,7 @@ export class GhostModuleS extends ModuleS<GhostModuleC, null> {
                     this.getAllClient().net_spawnBigPatrol(curtime - this._patrolStartTime);
                     setTimeout(() => {
                         Player.getAllPlayers().forEach(e => {
-                            this.playGhostSpawn(e);
+                            // this.playGhostSpawn(e);
                         });
                     }, CeHuaDefines.GhostPatrolStartTime * 1000);
 
@@ -127,7 +127,7 @@ export class GhostModuleS extends ModuleS<GhostModuleC, null> {
                 const timeModule = ModuleService.getModule(TimeModuleS);
                 if (timeModule.isInNight) {
                     console.log("newplayerenter,spawnGhosts")
-                    this.playGhostSpawn(this.currentPlayer);
+                    // this.playGhostSpawn(this.currentPlayer);
                 }
             } catch (error) {
                 console.error(error);

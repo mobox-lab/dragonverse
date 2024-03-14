@@ -114,28 +114,28 @@ export default class TimeScript extends Script {
 
 
     private onTimeChanged() {
-        if (!this.timeModuleC) {
-            console.error("------等待Time模块加载-----");
-            return;
-        }
-        this.timeModuleC.timer = this._timer;
-        if (!this._cli_isEnable) {
-            return;
-        }
-        let isInNight = this._timer >= DayTimeSecond;
-        let lan = LanUtil.getText(isInNight ? "tips_show_12" : "tips_show_11");
-        if (!isInNight) {
-            let timeStr = CommonUtils.FormatTimeMS(DayTimeSecond - this._timer);
-            UIService.getUI(TipsUI).showCatTips(CommonUtils.formatString(lan, timeStr));
-        }
-        else {
-            UIService.getUI(TipsUI).showCatTips(lan);
-        }
-
-        if (isInNight != this._cli_isInNight) {
-            this._cli_isInNight = isInNight;
-            Fog.enabled = this._cli_isInNight;
-        }
+        // if (!this.timeModuleC) {
+        //     console.error("------等待Time模块加载-----");
+        //     return;
+        // }
+        // this.timeModuleC.timer = this._timer;
+        // if (!this._cli_isEnable) {
+        //     return;
+        // }
+        // let isInNight = this._timer >= DayTimeSecond;
+        // let lan = LanUtil.getText(isInNight ? "tips_show_12" : "tips_show_11");
+        // if (!isInNight) {
+        //     let timeStr = CommonUtils.FormatTimeMS(DayTimeSecond - this._timer);
+        //     UIService.getUI(TipsUI).showCatTips(CommonUtils.formatString(lan, timeStr));
+        // }
+        // else {
+        //     UIService.getUI(TipsUI).showCatTips(lan);
+        // }
+        //
+        // if (isInNight != this._cli_isInNight) {
+        //     this._cli_isInNight = isInNight;
+        //     Fog.enabled = this._cli_isInNight;
+        // }
     }
 
     /** 时间状态改变 */
