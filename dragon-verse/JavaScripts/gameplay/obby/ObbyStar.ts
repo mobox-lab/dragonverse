@@ -1,5 +1,5 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Gtk, {GTkTypes, Regulator} from "../../util/GToolkit";
+import Gtk, {GtkTypes, Regulator} from "../../util/GToolkit";
 import GameObject = mw.GameObject;
 import GameServiceConfig from "../../const/GameServiceConfig";
 import FiniteStateMachine, {Region, State} from "../../depend/finite-state-machine/FiniteStateMachine";
@@ -22,7 +22,7 @@ enum ObbyStarStates {
 }
 
 class ObbyStarBehaviorStates {
-    playerLocation: GTkTypes.Vector3 = null;
+    playerLocation: GtkTypes.Vector3 = null;
 
     isFlying: boolean = false;
 
