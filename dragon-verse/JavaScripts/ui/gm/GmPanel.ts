@@ -139,16 +139,6 @@ AddGMCommand("进入对话",
     undefined,
     "对话");
 
-AddGMCommand(
-    "通过验证",
-    (player, value) => {
-        ModuleService.getModule(AuthModuleC).net_enableEnter();
-    },
-    (player) => {
-        ModuleService.getModule(AuthModuleS).recordPlayer(player);
-    },
-    "Root 权限");
-
 AddGMCommand("测试背包龙", (player, value) => {
     // ModuleService.getModule(QuestModuleC).updateRunningGameScore(Number(value));
 }, () => {

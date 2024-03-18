@@ -587,13 +587,13 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
             () => `autoRemove: ${autoRemove}.`,
         );
 
-        if (GlobalProperty.getInstance().isRelease && (!this._authModule?.enableEnter(playerId) ?? true)) {
-            Log4Ts.warn(BagModuleS,
-                `has no auth permission when add item. rejected.`,
-                `playerId: ${playerId}`,
-            );
-            return;
-        }
+        // if (GlobalProperty.getInstance().isRelease && (!this._authModule?.enableEnter(playerId) ?? true)) {
+        //     Log4Ts.warn(BagModuleS,
+        //         `has no auth permission when add item. rejected.`,
+        //         `playerId: ${playerId}`,
+        //     );
+        //     return;
+        // }
 
         if (!playerData.getItemCount(bagId) &&
             count > 0 &&

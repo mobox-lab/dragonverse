@@ -1,5 +1,3 @@
-import CodeVerifyPanel_Generate from "../../ui-generate/auth/CodeVerifyPanel_generate";
-import { AuthModuleC } from "../../module/auth/AuthModule";
 import Keys = mw.Keys;
 import CodePanel_Generate from "../../ui-generate/code/CodePanel_generate";
 
@@ -17,7 +15,7 @@ export default class CodeVerifyPanel extends CodePanel_Generate {
         this.codeInputBox.text = "";
         this.codeButtonVerify.enable = false;
         this.codeButtonVerify.onClicked.add(() => {
-            ModuleService.getModule(AuthModuleC).verifyCode(this.codeInputBox.text);
+            // ModuleService.getModule(AuthModuleC).verifyCode(this.codeInputBox.text);
             UIService.destroyUI(CodeVerifyPanel);
         });
         this.codeButtonClose.onClicked.add(() => UIService.destroyUI(CodeVerifyPanel));

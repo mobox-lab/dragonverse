@@ -52,7 +52,7 @@ export function testFunc() {
 }
 
 export function codeTest(contentNodeId: number): number[] {
-    let res = ModuleService.getModule(AuthModuleC).canEnterGame();
+    let res = true;
     let config = GameConfig.DialogueContentNode.getElement(contentNodeId);
 
     if (res) {

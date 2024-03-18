@@ -1,27 +1,28 @@
 import Enumerable from "linq";
 import UUID from "pure-uuid";
-import { GameConfig } from "../../config/GameConfig";
-import { EventDefine } from "../../const/EventDefine";
-import { BagTypes } from "../../const/ForeignKeyIndexer";
+import {GameConfig} from "../../config/GameConfig";
+import {EventDefine} from "../../const/EventDefine";
+import {BagTypes} from "../../const/ForeignKeyIndexer";
 
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MainPanel from "../../ui/main/MainPanel";
 
-import { BagModuleS } from "../bag/BagModule";
+import {BagModuleS} from "../bag/BagModule";
 
 
 import noReply = mwext.Decorator.noReply;
 import EventListener = mw.EventListener;
 
-import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
-import { DataUpgradeMethod, JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import {ObbyInteractorPanel} from "../../ui/obby/ObbyInteractorPanel";
+import {DataUpgradeMethod, JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
 import UnifiedRoleController from "../role/UnifiedRoleController";
-import { ObbyEndPanel, ObbyGameData } from "../../ui/obby/ObbyEndPanel";
-import { MapManager } from "../../gameplay/map/MapManager";
-import { NoOverride } from "../../util/GToolkit";
+import {ObbyEndPanel, ObbyGameData} from "../../ui/obby/ObbyEndPanel";
+import {MapManager} from "../../gameplay/map/MapManager";
+import {NoOverride} from "../../util/GToolkit";
+import {AuthModuleS} from "../auth/AuthModule";
 
 
 export default class ObbyModuleData extends JModuleData {
@@ -189,7 +190,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
     // };
 
     public async endGame() {
-        console.log("1111111111111111111111111111")
+        console.log("1111111111111111111111111111");
         let res = await this.server.net_endGame();
         let data = new ObbyGameData();
         data.score = res.currentCount;
@@ -369,6 +370,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     private _redDeadIsExecuting = false;
+
     public async redDead() {
         // if (this._hander) {
         //     return;
@@ -383,7 +385,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
                 Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_RedTips));
                 TimeUtil.delaySecond(GameServiceConfig.REBORN_INTERVAL_OBBY).then(() => {
                     this.endGame();
-                })
+                });
                 Player.localPlayer.character.changeState(CharacterStateType.Ragdoll);
             } else {
                 this._redDeadIsExecuting = false;
@@ -398,7 +400,9 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
             this._redDeadIsExecuting = false;
         }
     }
+
     private _groundIsExecuting = false;
+
     public async groundDead() {
         // if (this._hander) {
         //     return;
@@ -411,7 +415,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
             if (!isAutoMoving) {
                 TimeUtil.delaySecond(GameServiceConfig.REBORN_INTERVAL_OBBY).then(() => {
                     this.endGame();
-                })
+                });
                 // this._hander = TimeUtil.setInterval(this.onCountDown.bind(this), );
                 //锁定摄像头
                 Player.localPlayer.character.changeState(CharacterStateType.Ragdoll);
@@ -586,6 +590,7 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
             let levels = this._playerArrivedCheckPoint.get(playerId);
             //重置为0
             this._playerArrivedCheckPoint.set(playerId, 0);
+            ModuleService.getModule(AuthModuleS).reportRainbowLeapInfo(playerId, data.totalStarCount, 1);
             return {
                 currentCount,
                 duration: Date.now() - this._playerStartTimeMap.get(playerId),
@@ -645,7 +650,8 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
                 let playerId = this.currentPlayerId;
                 EffectService.playOnGameObject(GameServiceConfig.OBBY_INVINCIBLE_EFFECT_GUID, this.currentPlayer.character, {
                     slotType: HumanoidSlotType.Root,
-                    duration: GameServiceConfig.OBBY_INVINCIBLE_TIME, position: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_POS_OFFSET,
+                    duration: GameServiceConfig.OBBY_INVINCIBLE_TIME,
+                    position: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_POS_OFFSET,
                     rotation: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_ROTATION,
                     scale: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_SCALE
                 });
@@ -692,7 +698,7 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
 
                 Event.dispatchToLocal(EventDefine.ObbyStarCollectLevel, Player.getPlayer(this.currentPlayerId), this._playerArrivedCheckPoint.get(this.currentPlayerId));
 
-                actions.tween(character.worldTransform).to(1000, { position: pos }).call(() => {
+                actions.tween(character.worldTransform).to(1000, {position: pos}).call(() => {
                     animation.stop();
                     character.gravityScale = oriGravity;
                     character.movementEnabled = true;

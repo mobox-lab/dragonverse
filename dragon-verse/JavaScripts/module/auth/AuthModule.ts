@@ -1,16 +1,16 @@
 import CryptoJS from "crypto-js";
-import { EventDefine } from "../../const/EventDefine";
+import {EventDefine} from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import { SubGameTypes } from "../../const/SubGameTypes";
-import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
+import {SubGameTypes} from "../../const/SubGameTypes";
+import Log4Ts, {Announcer, LogString} from "../../depend/log4ts/Log4Ts";
 import FixedQueue from "../../depend/queue/FixedQueue";
 import Regulator from "../../depend/regulator/Regulator";
 import i18n from "../../language/i18n";
-import GToolkit, { Expression, TimeFormatDimensionFlags } from "../../util/GToolkit";
+import GToolkit, {Expression, TimeFormatDimensionFlags} from "../../util/GToolkit";
 import noReply = mwext.Decorator.noReply;
-import { TimeManager } from "../../controller/TimeManager";
+import {TimeManager} from "../../controller/TimeManager";
 import AreaManager from "../../gameplay/area/AreaManager";
-import { isPointInShape2D } from "../../util/area/Shape";
+import {isPointInShape2D} from "../../util/area/Shape";
 import GlobalProperty from "../../GlobalProperty";
 
 type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
@@ -35,15 +35,6 @@ class SaltToken {
         this.content = content;
         this.time = time;
     }
-}
-
-/**
- * Code 验证请求.
- */
-interface CodeVerifyRequest {
-    secret: string;
-    userId: string;
-    address?: string;
 }
 
 /**
@@ -88,6 +79,18 @@ interface CodeVerifyResponse {
     data: boolean;
 }
 
+/**
+ * 彩虹跳跳乐 排行榜更新参数.
+ */
+interface RainbowLeapRankUpdateParams {
+    userId: string;
+    userName: string;
+    headUrl: string;
+    star: number;
+    round: number;
+    requestTs: number;
+}
+
 export default class DragonVerseAuthModuleData extends mwext.Subdata {
     /**
      * 已经发布的正式数据版本号.
@@ -97,6 +100,7 @@ export default class DragonVerseAuthModuleData extends mwext.Subdata {
     public static readonly RELEASE_VERSIONS: number[] = [
         1,
         202401051219,
+        202403181323,
     ];
 
     /**
@@ -109,6 +113,9 @@ export default class DragonVerseAuthModuleData extends mwext.Subdata {
             data.holdPlayerId = null;
             data.holdNickName = null;
         },
+        (data: DragonVerseAuthModuleData) => {
+            data["enterEnable"] = undefined;
+        },
     ];
 
     @Decorator.persistence()
@@ -119,12 +126,6 @@ export default class DragonVerseAuthModuleData extends mwext.Subdata {
 
     @Decorator.persistence()
     public holdNickName: string;
-
-    /**
-     * 玩家准入权限.
-     */
-    @Decorator.persistence()
-    public enterEnable: boolean = false;
 
     /**
      * 玩家 Code 验证请求时间记录.
@@ -260,10 +261,6 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
     //#region Member
     private _originToken: string = null;
 
-    private _lastVerifyCodeTime: number = null;
-
-    private _codeVerityGuard: RequestGuard = new RequestGuard();
-
     private _lastSubGameReportTime: number = 0;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -290,22 +287,15 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
-        this._codeVerityGuard.init(this.data.codeVerifyReqData);
         this.server.net_getToken().then((value) => {
             this._originToken = value;
         });
-        if (this.data.enterEnable) {
-            this.releasePlayer();
-        } else {
-            this.forbiddenPlayer();
-        }
-
+        this.releasePlayer();
     }
 
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        //TODO_LviatYi 
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -316,62 +306,6 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
-    /**
-     * 验证 Code.
-     * @param code
-     */
-    public verifyCode(code: string): void {
-        const playerId = Player.localPlayer.playerId;
-        logState(
-            AuthModuleC,
-            "log",
-            `try to verify code.`,
-            true,
-            playerId,
-            Player.localPlayer.userId,
-            code,
-        );
-
-        if (this.isVerifyCodeRunning()) {
-            Log4Ts.log(
-                AuthModuleC,
-                `player is verifying code.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan("isVerifying"));
-            return;
-        }
-
-        if (this.data.enterEnable) {
-            Log4Ts.log(
-                AuthModuleC,
-                `player already enable enter.`,
-                `try patrol in server.`);
-
-            this.releasePlayer();
-            this.patrol();
-            return;
-        }
-
-        const now = TimeManager.getInstance().currentTime;
-        if (!GlobalProperty.getInstance().isRelease || this._codeVerityGuard.req(now)) {
-            this._lastVerifyCodeTime = now;
-            this.server.net_verifyCode(this.generateSaltToken(), code);
-        } else {
-            Log4Ts.warn(AuthModuleC, `code verify request too frequently.`);
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan("verifyCodeTooFrequently"));
-        }
-    }
-
-    /**
-     * 是否 仍在验证过程.
-     */
-    public isVerifyCodeRunning(): boolean {
-        if (this._lastVerifyCodeTime === null || TimeManager.getInstance().currentTime - this._lastVerifyCodeTime >= GameServiceConfig.MAX_AUTH_WAITING_TIME) {
-            this._lastVerifyCodeTime = null;
-            return false;
-        }
-
-        return true;
-    }
 
     private generateSaltToken(): SaltToken {
         const time = TimeManager.getInstance().currentTime;
@@ -395,32 +329,6 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
     }
 
     /**
-     * @description: 玩家禁止进入
-     */
-    private forbiddenPlayer() {
-        logState(
-            AuthModuleC,
-            "log",
-            `forbidden player`,
-            true, Player.localPlayer.playerId);
-        Event.dispatchToLocal(EventDefine.PlayerDisableEnter);
-    }
-
-    /**
-     * 客户端 主动邀请巡逻.
-     * @desc 理论上当以下时机时需发起巡逻：
-     * @desc  - 客户端具有准入权限 但服务端可能没有准入权限.
-     * @desc
-     * @desc 主动邀请巡逻的 PRC 发起需要满足以下所有条件：
-     * @desc  - 客户端具有准入权限.
-     */
-    public patrol() {
-        if (!this.data.enterEnable) return;
-
-        this.server.net_passivityPatrol();
-    }
-
-    /**
      * 上报子游戏信息.
      * @param clientTimeStamp
      * @param subGameType
@@ -440,35 +348,7 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
 
     //#region Net Method
     public net_verifyFail() {
-        this._lastVerifyCodeTime = null;
         Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan("verifyCodeFail"));
-    }
-
-    public net_enableEnter() {
-        this._lastVerifyCodeTime = null;
-        if (this.data.enterEnable) {
-            logState(
-                AuthModuleC,
-                "log",
-                `player already enable enter.`,
-                true, Player.localPlayer.playerId);
-            return;
-        }
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.verifyCodeSuccess));
-        this.data.enterEnable = true;
-        this.releasePlayer();
-    }
-
-    /**
-     * 是否 通过验证.
-     */
-    public canEnterGame(): boolean {
-        let res = this.data.enterEnable;
-        if (res) {
-            //去服务端校验一下，不一样会踢下线
-            this.patrol();
-        }
-        return res;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -494,6 +374,20 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
     private static readonly RELEASE_P12_URL = "https://modragon-api.mobox.app";
 
     /**
+     * 测试用 mobox NFT Url.
+     * @type {string}
+     * @private
+     */
+    private static readonly TEST_MOBOX_NFT_URL = "http://16.163.58.210:8087";
+
+    /**
+     * 发布用 mobox NFT Url.
+     * @type {string}
+     * @private
+     */
+    private static readonly RELEASE_MOBOX_NFT_URL = "https://nft-api.mobox.io";
+
+    /**
      * Code 验证 Url 后缀.
      * @private
      */
@@ -504,6 +398,13 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
      * @private
      */
     private static readonly SUB_GAME_REPORT_URL_SUFFIX = "/modragon/achievement";
+
+    /**
+     * 彩虹跳跳乐 信息汇报 Url 后缀.
+     * @type {string}
+     * @private
+     */
+    private static readonly RAINBOW_LEAP_REPORT_URL_SUFFIX = "/mo-rank/rainbow-leap/update";
 
     /**
      * 测试用 Code 验证 Url.
@@ -533,6 +434,20 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         return this.RELEASE_P12_URL + this.SUB_GAME_REPORT_URL_SUFFIX;
     }
 
+    /**
+     * 测试用 彩虹跳跳乐 信息汇报 Url.
+     */
+    private static get TEST_RAINBOW_LEAP_REPORT_URL() {
+        return this.TEST_MOBOX_NFT_URL + this.RAINBOW_LEAP_REPORT_URL_SUFFIX;
+    }
+
+    /**
+     * 发布用 彩虹跳跳乐 信息汇报 Url.
+     */
+    private static get RELEASE_RAINBOW_LEAP_REPORT_URL() {
+        return this.RELEASE_MOBOX_NFT_URL + this.RAINBOW_LEAP_REPORT_URL_SUFFIX;
+    }
+
     private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
 
     /**
@@ -542,7 +457,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
+            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -596,17 +511,16 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         super.onUpdate(dt);
 
         //定时检测
-        if (this._patrolRegulator.ready()) {
-            Player.getAllPlayers().forEach(player => {
-                this.initiativePatrol(player.playerId);
-            });
-        }
+        // if (this._patrolRegulator.ready()) {
+        //     Player.getAllPlayers().forEach(player => {
+        //         this.initiativePatrol(player.playerId);
+        //     });
+        // }
     }
 
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        //TODO_LviatYi 
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -730,43 +644,17 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
+            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
+            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
             return false;
         }
 
         //TODO_LviatYi 与现存 token 进行比对.
         return true;
-    }
-
-    private async verifyEnterCode(code: string, uid: string): Promise<boolean> {
-        //#region Exist for Test
-        if (!GlobalProperty.getInstance().isRelease && code === "123456") return Promise.resolve(true);
-        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-        const codeSalt = `${code}-${Date.now()}`;
-        const secret = this.getSecret(codeSalt);
-        const body: CodeVerifyRequest = {
-            secret: secret,
-            userId: uid,
-        };
-
-        const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
-            AuthModuleS.RELEASE_CODE_VERIFY_URL :
-            AuthModuleS.TEST_CODE_VERIFY_URL}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charset=UTF-8",
-                },
-                body: JSON.stringify(body),
-            });
-
-        const respInJson = await resp.json<CodeVerifyResponse>();
-        return (respInJson?.code ?? null) === 200;
     }
 
     private getSecret(message: string) {
@@ -783,35 +671,6 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
     }
 
     /**
-     * 记录玩家准入权限.
-     * @param player
-     */
-    public recordPlayer(player: number | Player): boolean {
-        logState(
-            AuthModuleS,
-            "log",
-            `release player. enjoy!`,
-            true,
-            typeof player === "number" ? player : player.playerId,
-            GToolkit.queryPlayer(player).userId);
-
-        const data = this.getPlayerData(player);
-        if (data.enterEnable) {
-            logState(
-                AuthModuleS,
-                "warn",
-                `player already recorded.`,
-                true,
-                typeof player === "number" ? player : player.playerId);
-            return false;
-        }
-
-        data.enterEnable = true;
-        data.save(false);
-        return true;
-    }
-
-    /**
      * 上报子游戏信息.
      * @param playerId 玩家 Id.
      * @param clientTimeStamp 客户端完成时间戳.
@@ -819,12 +678,10 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
      * @param value 汇报值.
      */
     public async reportSubGameInfo(playerId: number, clientTimeStamp: number, subGameType: SubGameTypes, value: number) {
-        const thanLastReport = Date.now() - (this._subGameReportMap.get(playerId) ?? 0);
-        if (thanLastReport <= GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL) {
+        if (this.subGameIntervalCheck(playerId)) {
             Log4Ts.log(AuthModuleS, `report sub game info too frequently.`);
             return;
         }
-        this._subGameReportMap.set(playerId, Date.now());
         const uid = Player.getPlayer(playerId)?.userId ?? null;
         if (GToolkit.isNullOrEmpty(uid)) {
             Log4Ts.error(AuthModuleS, `can't find player ${playerId} when report sub game info.`);
@@ -843,8 +700,8 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         };
 
         const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
-            AuthModuleS.RELEASE_SUB_GAME_REPORT_URL :
-            AuthModuleS.TEST_SUB_GAME_REPORT_URL}`,
+                AuthModuleS.RELEASE_SUB_GAME_REPORT_URL :
+                AuthModuleS.TEST_SUB_GAME_REPORT_URL}`,
             {
                 method: "POST",
                 headers: {
@@ -858,45 +715,55 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
     }
 
     /**
-     * 是否 具有准入权限.
-     * @param playerId
+     * 上报彩虹跑酷信息.
+     * @param playerId 玩家 Id.
+     * @param star 星星数量.
+     * @param round 轮次.
      */
-    public enableEnter(playerId: number): boolean {
-        return this.getPlayerData(playerId)?.enterEnable ?? false;
+    public async reportRainbowLeapInfo(playerId: number, star: number, round: number) {
+        if (this.subGameIntervalCheck(playerId)) {
+            Log4Ts.log(AuthModuleS, `report rainbow leap info too frequently.`);
+            return;
+        }
+        const player = Player.getPlayer(playerId) ?? null;
+        if (GToolkit.isNullOrUndefined(player)) {
+            Log4Ts.error(AuthModuleS, `can't find player ${playerId} when report rainbow leap info.`);
+            return;
+        }
+
+        const reportInfo: RainbowLeapRankUpdateParams = {
+            userId: player.userId,
+            userName: player.nickname,
+            headUrl: player["avatarUrl"],
+            star,
+            round,
+            requestTs: Math.ceil(Date.now() / 1000),
+        };
+        const secret = this.getSecret(JSON.stringify(reportInfo));
+        const body: SubGameRequest = {
+            secret: secret,
+        };
+
+        const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
+                AuthModuleS.RELEASE_RAINBOW_LEAP_REPORT_URL :
+                AuthModuleS.TEST_RAINBOW_LEAP_REPORT_URL}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                },
+                body: JSON.stringify(body),
+            });
+
+        const respInJson = await resp.json();
+        Log4Ts.log(AuthModuleS, `get resp when report rainbow leap info. ${JSON.stringify(respInJson)}`);
     }
 
-    /**
-     * 主动巡逻.
-     * @desc 理论上当以下时机时需发起巡逻：
-     * @desc  - 服务端无准入权限 但客户端可能具有准入权限.
-     * @desc
-     * @desc 主动巡逻的判定前提：
-     * @desc  - 服务端具有准入权限.
-     * @desc 主动巡逻的判定条件：
-     * @desc  - 玩家不在新手区域 {@link AreaManager.getRespawnArea()} 内.
-     * @desc
-     * @param playerId 玩家id
-     */
-    private initiativePatrol(playerId: number) {
-        if (!GlobalProperty.getInstance().isRelease) return;
-        if (this.getPlayerData(playerId).enterEnable) return;
-        Log4Ts.log(AuthModuleS, `initiative patrol on player: ${playerId}.`);
-        let player = Player.getPlayer(playerId);
-        if (!player) return;
-        if (!isPointInShape2D(AreaManager.getInstance().getSafeHouseArea(), player.character.worldTransform.position)) {
-            Log4Ts.warn(AuthModuleS, `failed. player is not in safe house when patrol.`);
-            const respawnPoint = GToolkit.randomArrayItem(AreaManager.getInstance().getRespawnArea());
-            player.character.worldTransform.position = new Vector(respawnPoint.x, respawnPoint.y, respawnPoint.z);
-        } else {
-            Log4Ts.log(AuthModuleS, `success. player is in safe house when patrol.`);
-        }
-        // //判断在不在新手村，不在就归位
-        // let trigger = GameObject.findGameObjectByName("beginnerChecker") as Trigger;
-        // if (trigger && player) {
-        //     if (!trigger.checkInArea(player.character)) {
-        //         player.character.worldTransform.position = trigger.worldTransform.position;
-        //     }
-        // }
+    private subGameIntervalCheck(playerId: number): boolean {
+        const thanLastReport = Date.now() - (this._subGameReportMap.get(playerId) ?? 0);
+        if (thanLastReport <= GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL) return false;
+        this._subGameReportMap.set(playerId, Date.now());
+        return true;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -906,124 +773,6 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         const playerId = this.currentPlayerId;
         const uid = this.currentPlayer.userId;
         return Promise.resolve(`token-${playerId}-${uid}`);
-    }
-
-    /**
-     * 无准入 C 请求 P12 端验证 Code.
-     * 如通过则放行.
-     * @param token
-     * @param code
-     */
-    @noReply()
-    public net_verifyCode(token: SaltToken, code: string) {
-        const currPlayerId = this.currentPlayerId;
-        if (GlobalProperty.getInstance().isRelease ? !this._codeVerifyMap.get(currPlayerId).req() : false) {
-            this.getClient(currPlayerId)?.net_verifyFail();
-            return;
-        }
-        const uid = this.currentPlayer.userId;
-        logState(
-            AuthModuleS,
-            "log",
-            `receive code verify request.`,
-            true,
-            currPlayerId,
-            uid,
-            code);
-
-        if (!this.tokenVerify(token)) {
-            logState(
-                AuthModuleS,
-                "warn",
-                `token verify failed. token is invalid`,
-                true,
-                currPlayerId,
-                uid,
-            );
-            this.getClient(this.currentPlayerId)?.net_verifyFail();
-            return;
-        }
-
-        this
-            .verifyEnterCode(code, uid)
-            .then((value) => {
-                if (!value) {
-                    logState(
-                        AuthModuleS,
-                        "log",
-                        `verify failed.`,
-                        true,
-                        currPlayerId,
-                        uid,
-                    );
-                    this.getClient(currPlayerId)?.net_verifyFail();
-                    return;
-                }
-                this.recordPlayer(currPlayerId);
-                if (value) this.getClient(currPlayerId)?.net_enableEnter();
-            },
-            )
-            .catch((reason) => {
-                this.getClient(currPlayerId)?.net_verifyFail();
-            });
-    }
-
-    /**
-     * 无准入 C 请求检查 S 端是否具有准入权限.
-     * 如有请求放行.
-     */
-    @noReply()
-    public net_checkPlayEnterEnable() {
-        logState(
-            AuthModuleS,
-            "log",
-            `receive check auth request.`,
-            true,
-            this.currentPlayerId,
-            Player.getPlayer(this.currentPlayerId).userId,
-        );
-
-        if (this.getPlayerData(this.currentPlayerId).enterEnable) {
-            logState(
-                AuthModuleS,
-                "log",
-                `enable enter.`,
-                true,
-                this.currentPlayerId,
-                Player.getPlayer(this.currentPlayerId).userId,
-            );
-
-            this.getClient(this.currentPlayerId)?.net_enableEnter();
-        }
-    }
-
-    /**
-     * 有准入 C 巡逻 请求 S 端被动检查是否具有准入权限.
-     * 如无则踢出.
-     */
-    @noReply()
-    public net_passivityPatrol() {
-        logState(
-            AuthModuleS,
-            "log",
-            `receive patrol request.`,
-            true,
-            this.currentPlayerId,
-            Player.getPlayer(this.currentPlayerId).userId,
-        );
-
-        if (this.currentData.enterEnable) return;
-
-        logState(
-            AuthModuleS,
-            "warn",
-            `detect player don't have access when patrolling.`,
-            true,
-            this.currentPlayerId,
-            Player.getPlayer(this.currentPlayerId).userId,
-        );
-
-        RoomService.kick(this.currentPlayer, "You don't have access");
     }
 
     /**
