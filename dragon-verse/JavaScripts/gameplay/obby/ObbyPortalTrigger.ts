@@ -58,7 +58,7 @@ export default class ObbyPortalTrigger extends Script {
     protected onStart(): void {
         super.onStart();
 
-        if (mw.SystemUtil.isServer()) {
+        if (!mw.SystemUtil.isClient()) {
             return;
         }
         //region Member init

@@ -6,12 +6,12 @@
  * @FilePath     : \hauntedparadise\JavaScripts\codes\modules\procedure\ProcedureData.ts
  * @Description  : 
  */
-import { GameConfig } from "../../../config/GameConfig";
+import {GameConfig} from "../../../config/GameConfig";
 import GameStart from "../../GameStart";
-import { MapEx } from "../../utils/MapEx";
-import { ArchiveDataType, ArchiveHelper } from "../archive/ArchiveHelper";
-import { DegreeType } from "../blackboard/BoardDefine";
-import { ProcedureModuleS } from "./ProcedureModuleS";
+import {MapEx} from "../../utils/MapEx";
+import {ArchiveDataType, ArchiveHelper} from "../archive/ArchiveHelper";
+import {DegreeType} from "../blackboard/BoardDefine";
+import {ProcedureModuleS} from "./ProcedureModuleS";
 import GlobalDataHelper from "./ui/GlobalDataHelper";
 
 
@@ -49,10 +49,15 @@ export default class ProcedureData extends Subdata {
      * @param degree
      */
     public passDegree(degree: DegreeType) {
-        if (this.isDegreePassed(degree)) { return; }
+        if (this.isDegreePassed(degree)) {
+            return;
+        }
         this.passedDegrees.push(degree);
         if (!GameStart.IsAPackage) {
-            if (degree >= 2 && degree < 5) { this.unlockNewDegree(degree + 1) };
+            if (degree >= 2 && degree < 5) {
+                this.unlockNewDegree(degree + 1);
+            }
+            ;
         }
         this.save(true);
         GlobalDataHelper.addPassNum(degree);
@@ -82,7 +87,9 @@ export default class ProcedureData extends Subdata {
     /** 根据存档来加载笔记 */
     public async loadNoteByArchive(userId: string) {
         // 加载前，先把存档清空
-        MapEx.forEach(this.notebookMap, (k) => { MapEx.set(this.notebookMap, k, false) });
+        MapEx.forEach(this.notebookMap, (k) => {
+            MapEx.set(this.notebookMap, k, false);
+        });
         this.save(true);
         // 加载存档
         const archiveData = await ArchiveHelper.reqGetData(userId, ProcedureModuleS.getScriptByUserID(userId).archiveID);
@@ -103,7 +110,9 @@ export default class ProcedureData extends Subdata {
         if (!this.notebookMap) {
             this.notebookMap = {};
         }
-        MapEx.forEach(this.notebookMap, (k) => { MapEx.set(this.notebookMap, k, false) });
+        MapEx.forEach(this.notebookMap, (k) => {
+            MapEx.set(this.notebookMap, k, false);
+        });
         this.save(true);
 
         // 解锁初始化默认的
@@ -112,9 +121,13 @@ export default class ProcedureData extends Subdata {
 
     /** 解锁一个笔记 */
     public async unlockNote(cfgId: number, userId: string, archiveId?: number) {
-        if (archiveId === -1 || !archiveId) { archiveId = ProcedureModuleS.getScriptByUserID(userId).archiveID }
+        if (archiveId === -1 || !archiveId) {
+            archiveId = ProcedureModuleS.getScriptByUserID(userId).archiveID;
+        }
         let unlockedNotes: number[] = (await ArchiveHelper.reqGetData(userId, archiveId)).unlockedNotes;
-        if (unlockedNotes.includes(cfgId)) { return; }
+        if (unlockedNotes.includes(cfgId)) {
+            return;
+        }
         unlockedNotes.push(cfgId);
         ArchiveHelper.reqSetData(userId, [ArchiveDataType.UNLOCKEDNOTES], [unlockedNotes]);
         this.writeNoteByCfgId(cfgId);

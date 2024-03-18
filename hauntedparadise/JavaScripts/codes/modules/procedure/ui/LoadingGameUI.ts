@@ -41,27 +41,27 @@ export class LoadingGameUI extends Background_Generate {
             UIService.hide(LoadingGameUI);
             this.tween = null;
             const char = Player.localPlayer.character
-            await UtilEx.asyncLoadAsset("14629")
+            // await UtilEx.asyncLoadAsset("14629")
             await TimeUtil.delaySecond(0.5);
             MusicMgr.instance.play(200);
             await TimeUtil.delaySecond(0.5);
-            const anim = PlayerManagerExtension.loadAnimationExtesion(char, "14629");
-            anim.play();
-
-            let loadTime = anim.length * 1000 / anim.speed;
-            if (loadTime > 6000) {
-                loadTime = 6000;
-            }
-            setTimeout(() => {
+            // const anim = PlayerManagerExtension.loadAnimationExtesion(char, "14629");
+            // anim.play();
+            //
+            // let loadTime = anim.length * 1000 / anim.speed;
+            // if (loadTime > 6000) {
+            //     loadTime = 6000;
+            // }
+            // setTimeout(() => {
                 char.jumpEnabled = true;
                 char.movementEnabled = true;
                 UIService.show(MainUI);
                 UIService.show(TipsUI);
                 ModuleService.getModule(HelpModuleC).isStartGame = true;
-            }, loadTime);
+            // }, loadTime);
         } else {
-            this.tween = new mw.Tween({ val: 1 }).to({ val: 0 }, 1000)
-                .repeat(2)
+            this.tween = new mw.Tween({ val: 1 }).to({ val: 0 }, 1)
+                .repeat(1)
                 .yoyo(true)
                 .easing(TweenUtil.Easing.Quadratic.InOut)
                 .onUpdate((obj) => {
@@ -71,20 +71,20 @@ export class LoadingGameUI extends Background_Generate {
                     mw.UIService.hide(LoadingGameUI);
                     this.tween = null;
                     const char = Player.localPlayer.character
-                    await UtilEx.asyncLoadAsset("14629")
+                    // await UtilEx.asyncLoadAsset("14629")
                     await TimeUtil.delaySecond(0.5);
                     MusicMgr.instance.play(200);
                     await TimeUtil.delaySecond(0.5);
 
-                    const anim = PlayerManagerExtension.loadAnimationExtesion(char, "14629");
-                    anim.speed = 0.3;
-                    anim.play();
-
-                    let loadTime = anim.length * 1000 / anim.speed;
-                    if (loadTime > 6000) {
-                        loadTime = 6000;
-                    }
-                    setTimeout(() => {
+                    // const anim = PlayerManagerExtension.loadAnimationExtesion(char, "14629");
+                    // anim.speed = 0.3;
+                    // anim.play();
+                    //
+                    // let loadTime = anim.length * 1000 / anim.speed;
+                    // if (loadTime > 6000) {
+                    //     loadTime = 6000;
+                    // }
+                    // setTimeout(() => {
                         char.jumpEnabled = true;
                         char.movementEnabled = true;
                         UIService.show(MainUI);
@@ -94,7 +94,7 @@ export class LoadingGameUI extends Background_Generate {
                         if (GameStart.GameTheme === EGameTheme.Graveyard) {
                             MusicMgr.instance.play(StartProcedureStateClient.BGMSoundItemCfgId);
                         }
-                    }, loadTime);
+                    // }, loadTime);
                     // anim.onFinish.add(() => {
 
                     // })

@@ -166,7 +166,7 @@ export class ProcedureModuleS extends ModuleS<ProcedureModuleC, ProcedureData> {
      */
     @Decorator.noReply()
     public net_loadNote(userId: string) {
-        this.getPlayerData(userId).loadNoteByArchive(userId);
+        // this.getPlayerData(userId).loadNoteByArchive(userId);
     }
 
     @Decorator.noReply()

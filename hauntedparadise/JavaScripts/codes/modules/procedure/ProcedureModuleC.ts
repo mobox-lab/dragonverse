@@ -83,7 +83,7 @@ export class ProcedureModuleC extends ModuleC<ProcedureModuleS, ProcedureData> {
         Event.addLocalListener(Event_GhostCachedEvent, this.onPlayerBeChased.bind(this));
         Event.addLocalListener(Event_PlayerPass, this.onPlayerWin.bind(this));
         Event.addLocalListener("Local_PlayerPass", this.onPlayerWinByLocalEvent.bind(this));
-        Event.addLocalListener("evt_unlockNote", (guid: string, cfgId: string) => { this.unlockNote(Number(cfgId)) });
+        // Event.addLocalListener("evt_unlockNote", (guid: string, cfgId: string) => { this.unlockNote(Number(cfgId)) });
     }
 
     /** 供服务端注册同步到客户端的脚本 */
@@ -150,12 +150,12 @@ export class ProcedureModuleC extends ModuleC<ProcedureModuleS, ProcedureData> {
     private clientLoadGame(degree: number, style: number, archiveID: number) {
         BoardHelper.ChangeKeyValue(BoardKeys.Style, style.toString());
         BoardHelper.ChangeKeyValue(BoardKeys.Degree, degree.toString());
-        if (degree < GlobalDefine.minDegree) {
-            ModuleService.getModule(GhostModuleC).protectedPlayer(true);
-        }
-        else {
-            ModuleService.getModule(GhostModuleC).protectedPlayer(false);
-        }
+        // if (degree < GlobalDefine.minDegree) {
+        //     ModuleService.getModule(GhostModuleC).protectedPlayer(true);
+        // }
+        // else {
+        //     ModuleService.getModule(GhostModuleC).protectedPlayer(false);
+        // }
 
         BoardHelper.ChangeKeyValue(BoardKeys.ArchiveID, style.toString());
         this.myScript.degree = degree;
@@ -177,7 +177,8 @@ export class ProcedureModuleC extends ModuleC<ProcedureModuleS, ProcedureData> {
      */
     public loadGame(degree: number, style: number, archiveID: number, isLoadByArchive: boolean = false) {
         console.log(`DEBUG>>> 加载游戏，难度：${degree}, 风格：${style}，存档序号：${archiveID}`);
-        UIService.show(StoryUI);
+        // UIService.show(StoryUI);
+        ModuleService.getModule(ProcedureModuleC).startGame();
         UIService.getUI(NotebookPanel).clearAllDot();
         SoundService.playSound("131828");
         this.isLoadByArchive = isLoadByArchive;
@@ -189,7 +190,7 @@ export class ProcedureModuleC extends ModuleC<ProcedureModuleS, ProcedureData> {
         this.myScript.client_canStartGame = true;
         this.isLoadByArchive ? ModuleService.getModule(PlayerModuleC).setLife() : ModuleService.getModule(PlayerModuleC).initLife();
 
-        this.isLoadByArchive ? this.server.net_loadNote(Player.localPlayer.userId) : this.server.net_initNote(Player.localPlayer.userId, this.myScript.archiveID);
+        // this.isLoadByArchive ? this.server.net_loadNote(Player.localPlayer.userId) : this.server.net_initNote(Player.localPlayer.userId, this.myScript.archiveID);
     }
 
     public getServer(): ProcedureModuleS {
