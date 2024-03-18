@@ -40,8 +40,8 @@ class SaltToken {
 /**
  * 子游戏信息 记录请求.
  */
-interface SubGameRequest {
-    secret: string;
+interface EncryptedData {
+    encryptData: string;
 }
 
 /**
@@ -678,40 +678,40 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
      * @param value 汇报值.
      */
     public async reportSubGameInfo(playerId: number, clientTimeStamp: number, subGameType: SubGameTypes, value: number) {
-        if (this.subGameIntervalCheck(playerId)) {
-            Log4Ts.log(AuthModuleS, `report sub game info too frequently.`);
-            return;
-        }
-        const uid = Player.getPlayer(playerId)?.userId ?? null;
-        if (GToolkit.isNullOrEmpty(uid)) {
-            Log4Ts.error(AuthModuleS, `can't find player ${playerId} when report sub game info.`);
-            return;
-        }
-        const reportInfo: SubGameInfo = {
-            userId: uid,
-            point: value,
-            gameNum: subGameType,
-            achievedAt: clientTimeStamp,
-            timestamp: Date.now(),
-        };
-        const secret = this.getSecret(JSON.stringify(reportInfo));
-        const body: SubGameRequest = {
-            secret: secret,
-        };
-
-        const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
-                AuthModuleS.RELEASE_SUB_GAME_REPORT_URL :
-                AuthModuleS.TEST_SUB_GAME_REPORT_URL}`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charset=UTF-8",
-                },
-                body: JSON.stringify(body),
-            });
-
-        const respInJson = await resp.json();
-        Log4Ts.log(AuthModuleS, `get resp when report sub game info. ${JSON.stringify(respInJson)}`);
+        // if (!this.subGameIntervalCheck(playerId)) {
+        //     Log4Ts.log(AuthModuleS, `report sub game info too frequently.`);
+        //     return;
+        // }
+        // const uid = Player.getPlayer(playerId)?.userId ?? null;
+        // if (GToolkit.isNullOrEmpty(uid)) {
+        //     Log4Ts.error(AuthModuleS, `can't find player ${playerId} when report sub game info.`);
+        //     return;
+        // }
+        // const reportInfo: SubGameInfo = {
+        //     userId: uid,
+        //     point: value,
+        //     gameNum: subGameType,
+        //     achievedAt: clientTimeStamp,
+        //     timestamp: Date.now(),
+        // };
+        // const secret = this.getSecret(JSON.stringify(reportInfo));
+        // const body: SubGameRequest = {
+        //     secret: secret,
+        // };
+        //
+        // const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
+        //         AuthModuleS.RELEASE_SUB_GAME_REPORT_URL :
+        //         AuthModuleS.TEST_SUB_GAME_REPORT_URL}`,
+        //     {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json;charset=UTF-8",
+        //         },
+        //         body: JSON.stringify(body),
+        //     });
+        //
+        // const respInJson = await resp.json();
+        // Log4Ts.log(AuthModuleS, `get resp when report sub game info. ${JSON.stringify(respInJson)}`);
     }
 
     /**
@@ -721,7 +721,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
      * @param round 轮次.
      */
     public async reportRainbowLeapInfo(playerId: number, star: number, round: number) {
-        if (this.subGameIntervalCheck(playerId)) {
+        if (!this.subGameIntervalCheck(playerId)) {
             Log4Ts.log(AuthModuleS, `report rainbow leap info too frequently.`);
             return;
         }
@@ -739,9 +739,9 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
             round,
             requestTs: Math.ceil(Date.now() / 1000),
         };
-        const secret = this.getSecret(JSON.stringify(reportInfo));
-        const body: SubGameRequest = {
-            secret: secret,
+        const encryptData = this.getSecret(JSON.stringify(reportInfo));
+        const body: EncryptedData = {
+            encryptData,
         };
 
         const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
