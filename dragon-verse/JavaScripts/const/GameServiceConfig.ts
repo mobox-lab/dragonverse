@@ -131,7 +131,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 最远存活距离.
      */
-    public static readonly SCENE_DRAGON_MAX_LIVE_DISTANCE = 100000;
+    public static readonly SCENE_DRAGON_MAX_LIVE_DISTANCE = 10000;
 
     /**
      * 场景龙 存活检查间隔.
