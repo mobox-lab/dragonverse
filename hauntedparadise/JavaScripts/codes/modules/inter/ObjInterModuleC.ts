@@ -59,7 +59,7 @@ export class ObjInterModuleC extends ModuleC<ObjInterModuleS, null> {
         for (let index = 0; index < this._lineOffset.length; index++) {
             let linePos = viewPos.clone().add(this._lineOffset[index]);
             //let viewPos = this._ui.getWhitePointPos();
-            let res = ScreenUtil.getGameObjectByScreenPosition(linePos.x, linePos.y, 300, true, false);
+            let res = ScreenUtil.getGameObjectByScreenPosition(linePos.x, linePos.y, 600, true, false);
             for (let index = 0; index < res.length; index++) {
                 const element = res[index];
                 if (PlayerManagerExtension.isCharacter(element.gameObject) || element.gameObject instanceof mw.Trigger || element.gameObject instanceof UIWidget) {

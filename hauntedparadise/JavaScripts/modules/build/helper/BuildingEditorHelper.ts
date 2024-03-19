@@ -220,7 +220,6 @@ export class BuildingEditorHelper {
                     childFlag = true;
                     break;
                 }
-                ;
             }
             if (childFlag) continue;
 
