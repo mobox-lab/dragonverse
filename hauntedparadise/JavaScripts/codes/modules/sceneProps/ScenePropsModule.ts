@@ -58,13 +58,13 @@ export class ScenePropsModuleC extends ModuleC<ScenePropsModuleS, ScenePropsData
 
 export class ScenePropsModuleS extends ModuleS<ScenePropsModuleC, ScenePropsData> {
     protected onStart(): void {
-        Event.addLocalListener(InterSaveModuleS.onClueDel, (pid: number, key: string) => {
-            let data = this.getPlayerData(pid);
-            if (!data) {
-                return;
-            }
-            data.delProp(key);
-        })
+        // Event.addLocalListener(InterSaveModuleS.onClueDel, (pid: number, key: string) => {
+        //     let data = this.getPlayerData(pid);
+        //     if (!data) {
+        //         return;
+        //     }
+        //     data.delProp(key);
+        // })
     }
 
     public net_getProps(diffcult: number) {

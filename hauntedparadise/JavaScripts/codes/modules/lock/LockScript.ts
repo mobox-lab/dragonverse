@@ -117,7 +117,7 @@ export default class LockScript extends LevelBase {
         console.log(this.id, "创建密码", pwdStr)
 
         BoardHelper.ChangeKeyValue(this.id, pwdStr);
-        ModuleService.getModule(InterSaveModuleC).reqSavePasswd(this.id, pwdStr);
+        // ModuleService.getModule(InterSaveModuleC).reqSavePasswd(this.id, pwdStr);
     }
 
     /**

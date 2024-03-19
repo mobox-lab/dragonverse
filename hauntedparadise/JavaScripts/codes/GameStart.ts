@@ -243,7 +243,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(PlayerInterModuleS, PlayerInterModuleC);
         ModuleService.registerModule(ArchiveModuleS, ArchiveModuleC, PlayerArchiveData);
         ModuleService.registerModule(GlobalRankModuleS, GlobalRankModuleC, PlayerRankData);
-        ModuleService.registerModule(InterSaveModuleS, InterSaveModuleC);
+        // ModuleService.registerModule(InterSaveModuleS, InterSaveModuleC);
         ModuleService.registerModule(HotWeaponModuleS, HotWeaponModuleC);
         ModuleService.registerModule(MeleeWeaponModuleS, MeleeWeaponModuleC);
         ModuleService.registerModule(DanmakuModuleS, DanmakuModuleC);

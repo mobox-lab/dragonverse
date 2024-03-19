@@ -150,7 +150,7 @@ export class BagModuleC extends ModuleC<BagModuleS, null> {
 
         if (this.checkIsSpecialItem(cfgId)) {
             if (clueGuid != "") {
-                ModuleService.getModule(InterSaveModuleC).reqDeleteClue(clueGuid);
+                // ModuleService.getModule(InterSaveModuleC).reqDeleteClue(clueGuid);
             }
             RouteDefine.addSpecialItem(this.localPlayer.userId, cfgId, count);
             return true;

@@ -39,7 +39,7 @@ export default class LockHelperC {
         // let map: MapEx.MapExClass<string> = (await this.archiveC.reqAllData())[achieveId].password;
         // MapEx.set(map, id, value)
         // this.archiveC.reqSaveData([ArchiveDataType.PASSWORD], [map])
-        ModuleService.getModule(InterSaveModuleC).reqSavePasswd(id, value);
+        // ModuleService.getModule(InterSaveModuleC).reqSavePasswd(id, value);
     }
     // /**
     //  * 

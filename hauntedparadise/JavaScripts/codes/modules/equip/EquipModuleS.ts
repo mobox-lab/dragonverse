@@ -105,7 +105,7 @@ export class EquipModuleS extends ModuleS<EquipModuleC, null> {
             let discardCount = script.equipData.count;
             BagDefine.RemoveItem(this.currentPlayerId, guid);
             if (cfg.isCanPick) {
-                ModuleService.getModule(InterSaveModuleS).addClue(key, fallPos, cfg.id);
+                // ModuleService.getModule(InterSaveModuleS).addClue(key, fallPos, cfg.id);
                 this.getClient(this.currentPlayer).net_insDisItem(key, cfg.prefab, fallPos, discardCount);
             }
         }

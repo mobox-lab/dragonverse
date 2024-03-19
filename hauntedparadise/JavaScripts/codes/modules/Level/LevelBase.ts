@@ -10,7 +10,7 @@
 import { MapEx } from "../../utils/MapEx";
 import { ArchiveData } from "../archive/ArchiveHelper";
 import { BoardHelper } from "../blackboard/BoardDefine";
-import { InterSaveModuleC } from "../inter/InterSaveHelper";
+// import { InterSaveModuleC } from "../inter/InterSaveHelper";
 import { ProcedureModuleC } from "../procedure/ProcedureModuleC";
 import { EmProcedureState } from "../procedure/const/EmProcedureState";
 import { Event_LoadArchiveData } from "../procedure/const/Events";
@@ -96,19 +96,19 @@ export default class LevelBase extends mw.Script {
     }
 
     save2Archive(statId: number) {
-        ModuleService.getModule(InterSaveModuleC).reqSaveInter(this.getKey(), statId);
+        // ModuleService.getModule(InterSaveModuleC).reqSaveInter(this.getKey(), statId);
     }
 
     save2ArchiveAndUseItem(statId: number) {
-        ModuleService.getModule(InterSaveModuleC).reqSaveInterAndUseItem(this.getKey(), statId);
+        // ModuleService.getModule(InterSaveModuleC).reqSaveInterAndUseItem(this.getKey(), statId);
     }
 
     save2ArchiveAndAddItem(statId: number, itemId: number, count: number, needSelect: boolean = true) {
-        ModuleService.getModule(InterSaveModuleC).reqSaveInterAndAddItem(this.getKey(), statId, itemId, count, needSelect);
+        // ModuleService.getModule(InterSaveModuleC).reqSaveInterAndAddItem(this.getKey(), statId, itemId, count, needSelect);
     }
 
     save2ArchiveAndAddCurrency(statId: number, itemId: number, count: number, needSelect: boolean = true) {
-        ModuleService.getModule(InterSaveModuleC).reqSaveInterAndAddCurrency(this.getKey(), statId);
+        // ModuleService.getModule(InterSaveModuleC).reqSaveInterAndAddCurrency(this.getKey(), statId);
     }
 
     onLoadData(data: ArchiveData) {

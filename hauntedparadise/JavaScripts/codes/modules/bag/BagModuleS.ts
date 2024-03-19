@@ -93,7 +93,7 @@ export class BagModuleS extends ModuleS<BagModuleC, null> {
 
         if (this.checkIsSpecialItem(cfgId)) {
             if (clueGuid != "") {
-                ModuleService.getModule(InterSaveModuleS).net_deleteClue(playerId, clueGuid);
+                // ModuleService.getModule(InterSaveModuleS).net_deleteClue(playerId, clueGuid);
             }
             RouteDefine.addSpecialItem(Player.getPlayer(playerId).userId, cfgId, count);
             return true;
@@ -175,7 +175,7 @@ export class BagModuleS extends ModuleS<BagModuleC, null> {
 
         Event.dispatchToLocal(BagDefine.AddItemEvt, playerId, cfgId, customData);
         if (clueGuid != "") {
-            ModuleService.getModule(InterSaveModuleS).net_deleteClue(playerId, clueGuid);
+            // ModuleService.getModule(InterSaveModuleS).net_deleteClue(playerId, clueGuid);
         }
 
         // 保存到存档
@@ -217,7 +217,7 @@ export class BagModuleS extends ModuleS<BagModuleC, null> {
         console.log("获得了恐惧比" + mount)
         RouteDefine.changeFearCoin(player.userId, mount);
         if (clueGuid != "") {
-            ModuleService.getModule(InterSaveModuleS).net_deleteClue(pid, clueGuid);
+            // ModuleService.getModule(InterSaveModuleS).net_deleteClue(pid, clueGuid);
         }
         this.getClient(player).net_tipsCurrency(cfg.id, mount);
     }
