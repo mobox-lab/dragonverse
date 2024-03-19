@@ -6,25 +6,24 @@
  * @FilePath: \hauntedparadise\JavaScripts\modules\build\ui\BuildPanel.ts
  * @Description  : 
  */
-import { EquipDefine } from "../../../codes/modules/equip/EquipDefine";
-import { EquipModuleC } from "../../../codes/modules/equip/EquipModuleC";
+import {EquipDefine} from "../../../codes/modules/equip/EquipDefine";
+import {EquipModuleC} from "../../../codes/modules/equip/EquipModuleC";
 import MusicMgr from "../../../codes/utils/MusicMgr";
 import Tips from "../../../codes/utils/Tips";
-import { GhostTraceHelper } from "../../../codes/utils/TraceHelper";
-import { GameConfig } from "../../../config/GameConfig";
+import {GhostTraceHelper} from "../../../codes/utils/TraceHelper";
+import {GameConfig} from "../../../config/GameConfig";
 import Build_UI_Generate from "../../../ui-generate/ShareUI/Build_UI_generate";
-import { BuildModuleC } from "../BuildModuleC";
-import { BuildingEditorHelper } from "../helper/BuildingEditorHelper";
-
+import {BuildModuleC} from "../BuildModuleC";
+import {BuildingEditorHelper} from "../helper/BuildingEditorHelper";
 
 
 export class BuildPanel extends Build_UI_Generate {
 
-    private moveZ: number = 0;
-    private moveDir: number = 0;
+    private rotateOffsetX: number = 0;
+    private rotateOffsetZ: number = 0;
 
     /** 旋转值 */
-    private moveNum: number = 1;
+    private moveNum: number = 90;
 
     private itemId: number = 1;
 
@@ -49,58 +48,58 @@ export class BuildPanel extends Build_UI_Generate {
             }
 
             if (BuildingEditorHelper.instance.checkCanBuild()) {
-                ModuleService.getModule(EquipModuleC).removeItem(Player.localPlayer.playerId)
-                BuildingEditorHelper.instance.confirmEdit()
+                ModuleService.getModule(EquipModuleC).removeItem(Player.localPlayer.playerId);
+                BuildingEditorHelper.instance.confirmEdit();
                 MusicMgr.instance.play(2004);
             }
-        })
+        });
 
         this.btn_discardItem.onClicked.add(() => {
             GhostTraceHelper.itemTrace(this.itemId, 5);
-            ModuleService.getModule(EquipModuleC).removeItem(Player.localPlayer.playerId)
+            ModuleService.getModule(EquipModuleC).removeItem(Player.localPlayer.playerId);
         });
 
         // up
         this.btn_up.onPressed.add(() => {
-            this.moveDir = this.moveNum;
+            this.rotateOffsetX = this.moveNum;
             this.canUpdate = true;
             GhostTraceHelper.itemTrace(this.itemId, 6);
-        })
+        });
         this.btn_up.onReleased.add(() => {
-            this.moveDir = 0;
+            this.rotateOffsetX = 0;
             this.canUpdate = false;
-        })
+        });
         // down
         this.btn_down.onPressed.add(() => {
-            this.moveDir = -this.moveNum;
+            this.rotateOffsetX = -this.moveNum;
             this.canUpdate = true;
             GhostTraceHelper.itemTrace(this.itemId, 7);
-        })
+        });
         this.btn_down.onReleased.add(() => {
-            this.moveDir = 0;
+            this.rotateOffsetX = 0;
             this.canUpdate = false;
-        })
+        });
 
         // left
         this.btn_left.onPressed.add(() => {
-            this.moveZ = this.moveNum;
+            this.rotateOffsetZ = this.moveNum;
             this.canUpdate = true;
             GhostTraceHelper.itemTrace(this.itemId, 8);
-        })
+        });
         this.btn_left.onReleased.add(() => {
-            this.moveZ = 0;
+            this.rotateOffsetZ = 0;
             this.canUpdate = false;
-        })
+        });
         // right
         this.btn_right.onPressed.add(() => {
-            this.moveZ = -this.moveNum;
+            this.rotateOffsetZ = -this.moveNum;
             this.canUpdate = true;
             GhostTraceHelper.itemTrace(this.itemId, 9);
-        })
+        });
         this.btn_right.onReleased.add(() => {
-            this.moveZ = 0;
+            this.rotateOffsetZ = 0;
             this.canUpdate = false;
-        })
+        });
     }
 
     onHide() {
@@ -109,13 +108,15 @@ export class BuildPanel extends Build_UI_Generate {
 
     onUpdate(dt) {
         const char = Player.localPlayer.character;
-        if (this.moveZ) {
-            let q: Quaternion = BuildingEditorHelper.instance.qOffset;
-            BuildingEditorHelper.instance.qOffset = Quaternion.rotateAround(q, Vector.up, this.moveZ * dt);
+        if (this.rotateOffsetZ) {
+            BuildingEditorHelper.instance.zOffset += this.rotateOffsetZ * dt;
+            // let q: Quaternion = BuildingEditorHelper.instance.qOffset;
+            // BuildingEditorHelper.instance.qOffset = Quaternion.rotateAround(q, Vector.up, this.rotateOffsetZ * dt);
         }
-        if (this.moveDir) {
-            let q: Quaternion = BuildingEditorHelper.instance.qOffset;
-            BuildingEditorHelper.instance.qOffset = Quaternion.rotateAround(q, char.worldTransform.getRightVector(), this.moveDir * dt);
+        if (this.rotateOffsetX) {
+            BuildingEditorHelper.instance.xOffset += this.rotateOffsetX * dt;
+            // let q: Quaternion = BuildingEditorHelper.instance.qOffset;
+            // BuildingEditorHelper.instance.qOffset = Quaternion.rotateAround(q, char.worldTransform.getRightVector(), this.rotateOffsetX * dt);
         }
     }
 }

@@ -1,12 +1,12 @@
-import { UtilEx } from "../../../utils/UtilEx";
-import { HomeModuleC } from "../../home/HomeModuleC";
-import { BuildModuleC } from "../BuildModuleC";
-import { BuildingHelper } from "./BuildingHelper";
-import { BuildingInfo } from "../building/BuildingInfo";
+import {UtilEx} from "../../../utils/UtilEx";
+import {HomeModuleC} from "../../home/HomeModuleC";
+import {BuildModuleC} from "../BuildModuleC";
+import {BuildingHelper} from "./BuildingHelper";
+import {BuildingInfo} from "../building/BuildingInfo";
 import Tips from "../../../codes/utils/Tips";
-import { CommonUtils } from "../../../codes/utils/CommonUtils";
-import { GhostTraceHelper } from "../../../codes/utils/TraceHelper";
-import { GameConfig } from "../../../config/GameConfig";
+import {CommonUtils} from "../../../codes/utils/CommonUtils";
+import {GhostTraceHelper} from "../../../codes/utils/TraceHelper";
+import {GameConfig} from "../../../config/GameConfig";
 
 /*
  * @Author: chen.liang chen.liang@appshahe.com
@@ -22,6 +22,7 @@ const MaxBuildDis: number = 1000;
 
 export class BuildingEditorHelper {
     private static _ins: BuildingEditorHelper;
+
     public static get instance() {
         if (!this._ins) {
             this._ins = new BuildingEditorHelper();
@@ -36,13 +37,15 @@ export class BuildingEditorHelper {
         return false;
     }
 
-    qOffset = Quaternion.identity;
+    xOffset = 0;
+    zOffset = 0;
     rZ = 0;
     private useUpdate: boolean = false;
     editorGO: GameObject;
     private itemId: number;
     private hitRes: HitResult;
     private traceTimer: number = 0;
+
     constructor() {
         this.useUpdate = false;
         TimeUtil.onEnterFrame.add(this.update, this);
@@ -75,10 +78,12 @@ export class BuildingEditorHelper {
         this.itemId = itemId;
         this.hitRes = null;
         this.useUpdate = true;
-        this.qOffset = Quaternion.identity;
+        this.xOffset = 0;
+        this.zOffset = 0;
         this.rZ = 0;
         Event.dispatchToLocal("EnableLineTrace", false);
     }
+
     /**
      * 取消建筑,退出编辑模式
      */
@@ -96,7 +101,7 @@ export class BuildingEditorHelper {
 
     /**
      * 检测建筑能否创建
-     * @returns 
+     * @returns
      */
     checkCanBuild() {
         if (!this.hitRes) {
@@ -116,18 +121,16 @@ export class BuildingEditorHelper {
             if (false == StringUtil.isEmpty(parent.info.ownerId) && parent.info.ownerId != Player.localPlayer.userId) {
                 // Tips.show("不能在别人家园建造");
                 // return false;
-            }
-            else if (isInHome && parent.info.ownerId != Player.localPlayer.userId) {
+            } else if (isInHome && parent.info.ownerId != Player.localPlayer.userId) {
                 // Tips.show("父节点在家园外");
                 return false;
-            }
-            else if (!isInHome && parent.info.ownerId == Player.localPlayer.userId) {
+            } else if (!isInHome && parent.info.ownerId == Player.localPlayer.userId) {
                 // Tips.show("父节点在家园内");
                 return false;
             }
         }
 
-        return true
+        return true;
     }
 
     /**
@@ -153,7 +156,7 @@ export class BuildingEditorHelper {
             const checkRes = localHome.checkIn(this.editorGO.worldTransform.position);
             if (checkRes) info.ownerId = Player.localPlayer.userId;
         }
-        console.log("check it")
+        console.log("check it");
 
         if (StringUtil.isEmpty(info.ownerId) == false) {
             info.homePos = this.editorGO.worldTransform.position.subtract(localHome.gameObject.worldTransform.position);
@@ -177,8 +180,9 @@ export class BuildingEditorHelper {
         ModuleService.getModule(BuildModuleC).reqBuild(info);
 
         this.hitRes = null;
-        this.qOffset = Quaternion.identity
-        this.rZ = 0
+        this.xOffset = 0;
+        this.zOffset = 0;
+        this.rZ = 0;
     }
 
     private update(dt: number) {
@@ -201,11 +205,11 @@ export class BuildingEditorHelper {
      */
     private trace() {
 
-        const trans = Camera.currentCamera.worldTransform;
-        const pos = trans.position;
-        const forward = trans.getForwardVector();
-        const res = QueryUtil.lineTrace(pos, pos.clone().add(forward.multiply(MaxBuildDis)), true, false);
-        for (let hit of res) {
+        const cameraTf = Camera.currentCamera.worldTransform;
+        const pos = cameraTf.position;
+        const forward = cameraTf.getForwardVector();
+        const hitRes = QueryUtil.lineTrace(pos, pos.clone().add(forward.multiply(MaxBuildDis)), true, false);
+        for (let hit of hitRes) {
             if (BuildingEditorHelper.defaultExclude(hit.gameObject)) continue;
 
             // 检测是否为物体本身
@@ -215,7 +219,8 @@ export class BuildingEditorHelper {
                 if (child == hit.gameObject) {
                     childFlag = true;
                     break;
-                };
+                }
+                ;
             }
             if (childFlag) continue;
 
@@ -225,10 +230,13 @@ export class BuildingEditorHelper {
             this.tempImpactNormal = hit.impactNormal;
             break;
         }
-        const q1 = Quaternion.multiply(this.tempImpactNormal.toRotation().toQuaternion(), new Rotation(0, -90, 0).toQuaternion());
-        const q2 = Quaternion.multiply(this.qOffset, q1);
-        this.editorGO.worldTransform.rotation = q2.toRotation();
+
+        const q = new Rotation(this.xOffset, 0, Rotation.fromVector(forward).z + 90 + this.zOffset).toQuaternion();
+
+        console.log("building editor q:", q.toRotation());
+        this.editorGO.worldTransform.rotation = q.toRotation();
     }
+
     // client setMaterial
 
     /**
@@ -238,7 +246,7 @@ export class BuildingEditorHelper {
 
     /**
      * 设置材质
-     * @param go 
+     * @param go
      * @param matId 如果为空则还原
      */
     async setMaterial(go: GameObject, matId: string = null) {
