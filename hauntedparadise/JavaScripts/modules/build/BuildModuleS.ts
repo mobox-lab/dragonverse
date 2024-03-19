@@ -6,18 +6,18 @@
  * @FilePath     : \hauntedparadise\JavaScripts\modules\build\BuildModuleS.ts
  * @Description  : 
  */
-import { ArchiveHelper } from "../../codes/modules/archive/ArchiveHelper";
-import { BuildModuleC } from "./BuildModuleC";
-import { BuildingBase } from "./building/BuildingBase";
-import { BuildingFactory } from "./building/BuildingFactory";
-import { BuildingInfo } from "./building/BuildingInfo";
-import { BuildingHomeData } from "./helper/BuildingHomeData";
-import { BuildingHelper } from "./helper/BuildingHelper";
-import BuildingSpawnTrigger, { BuildingSpawner } from "./spawnTrigger/BuildingSpawnTrigger";
-import { ProcedureModuleS } from "../../codes/modules/procedure/ProcedureModuleS";
-import { BuildingEditorHelper } from "./helper/BuildingEditorHelper";
-import { WaitLoop } from "../../codes/utils/AsyncTool";
-import { GameConfig } from "../../config/GameConfig";
+import {ArchiveHelper} from "../../codes/modules/archive/ArchiveHelper";
+import {BuildModuleC} from "./BuildModuleC";
+import {BuildingBase} from "./building/BuildingBase";
+import {BuildingFactory} from "./building/BuildingFactory";
+import {BuildingInfo} from "./building/BuildingInfo";
+import {BuildingHomeData} from "./helper/BuildingHomeData";
+import {BuildingHelper} from "./helper/BuildingHelper";
+import BuildingSpawnTrigger, {BuildingSpawner} from "./spawnTrigger/BuildingSpawnTrigger";
+import {ProcedureModuleS} from "../../codes/modules/procedure/ProcedureModuleS";
+import {BuildingEditorHelper} from "./helper/BuildingEditorHelper";
+import {WaitLoop} from "../../codes/utils/AsyncTool";
+import {GameConfig} from "../../config/GameConfig";
 
 /**
  * 建筑信息的id
@@ -28,6 +28,7 @@ class MoveInfo {
     go: GameObject;
     offset: Vector;
 }
+
 /**
  * Build模块Server端
  */
@@ -62,13 +63,13 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
     dataMap = new Map<string, BuildingHomeData>();
     /**
      * 建筑map
-    */
+     */
     buildingMap = new Map<string, BuildingBase>();
     /**建筑信息表 */
     private buildingInfoMap = new Map<string, BuildingInfo>();
     /**
      * 同步map
-    */
+     */
     updateMap = new Map<number, BuildingInfo[]>();
     private updateFlagMap = new Map<number, boolean>();
     /**
@@ -94,7 +95,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
         // 建筑物也会受伤
         Event.addLocalListener("S2S_ChangeBuildingHP", (uuid: string, hpChange: number) => {
             this.net_ChangeBuildingHP(uuid, hpChange);
-        })
+        });
 
         Event.addLocalListener("EndProcedureServer", this.recycleBuilding.bind(this));
 
@@ -110,7 +111,9 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
     private recycleBuilding(userId: string) {
         // 保存玩家建筑信息
         this.getDataInfo(userId).onLeave();
-        this.net_removeBuilding(this.getPlayerBuildingInfo(userId).map(v => { return v.uuid; }));
+        this.net_removeBuilding(this.getPlayerBuildingInfo(userId).map(v => {
+            return v.uuid;
+        }));
     }
 
     /**
@@ -201,7 +204,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
                     updateArr.length = 0;
                 }
             }
-        })
+        });
     }
 
     private async checkShow(dt: number) {
@@ -227,10 +230,11 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
                 if (dis > BuildingHelper.ServerShowDistance) continue;
                 info["dis"] = dis;
                 nearInfos.push(info);
-            };
+            }
+            ;
             nearInfos.sort((a, b) => {
                 return a["dis"] - b["dis"];
-            })
+            });
             if (nearInfos.length > BuildingHelper.ShowCount) {
                 nearInfos.length = BuildingHelper.ShowCount;
             }
@@ -244,8 +248,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
                 const building = this.buildingMap.get(info.uuid);
                 newMap.set(info.uuid, building);
                 this.buildingMap.delete(info.uuid);
-            }
-            else {
+            } else {
                 const building = await BuildingFactory.createBuilding(info);
                 newMap.set(info.uuid, building);
             }
@@ -264,7 +267,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
 
     /**
      *  保存建筑信息
-     * @param dt 
+     * @param dt
      */
     private checkSave(dt) {
         if (this.saveTimer > 0) {
@@ -286,8 +289,8 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
 
     /**
      *  初始化家园建筑
-     * @param userId 
-     * @param archiveId 
+     * @param userId
+     * @param archiveId
      */
     @Decorator.noReply()
     async net_initHome(userId: string) {
@@ -300,7 +303,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
 
     /**
      *  家园创建建筑
-     * @param infos 
+     * @param infos
      */
     homeCreateBuildings(infos: BuildingInfo[]) {
         for (let info of infos) {
@@ -311,9 +314,10 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
         });
 
     }
+
     /**
      *  家园移除建筑
-     * @param uuids 
+     * @param uuids
      */
     homeRemoveBuildings(uuids: string[]) {
         for (let uuid of uuids) {
@@ -329,7 +333,9 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
     private MaxBuildingNum: number = 5;
 
     public getPlayerBuildingInfo(userId: string): Array<BuildingInfo> {
-        if (!this.playerBuildingInfoMap.has(userId)) { return [new BuildingInfo()]; }
+        if (!this.playerBuildingInfoMap.has(userId)) {
+            return [new BuildingInfo()];
+        }
         return this.playerBuildingInfoMap.get(userId);
     }
 
@@ -348,8 +354,8 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
 
     /**
      *  创建建筑
-     * @param info 
-     * @param playerId 
+     * @param info
+     * @param playerId
      */
     async net_createBuilding(infos: BuildingInfo[], uId?: string) {
         if (!uId) uId = this.currentPlayer.userId;
@@ -360,7 +366,9 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
             // 如果有建造者信息
             if (!StringUtil.isEmpty(info.creatorId)) {
                 // 先看是否建筑超限
-                if (this.net_checkBuildingOver(info.creatorId)) { return; }
+                if (this.net_checkBuildingOver(info.creatorId)) {
+                    return;
+                }
                 this.pushNewBuildingIntoMap(info);
             }
 
@@ -369,7 +377,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
 
 
             // 在家的话，保存当前建筑
-            if (false == StringUtil.isEmpty(info.ownerId)) {
+            if (!StringUtil.isEmpty(info.ownerId)) {
                 this.getDataInfo(info.ownerId).addBuilding(info);
             }
 
@@ -394,12 +402,12 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
 
     /**
      * 移除建筑
-     * @param uuid 
+     * @param uuid
      */
     net_removeBuilding(uuids: string[]) {
         console.log("net_removeBuilding", uuids);
-        const updateInfos: BuildingInfo[] = []
-        const removeUUIds: string[] = []
+        const updateInfos: BuildingInfo[] = [];
+        const removeUUIds: string[] = [];
         for (let i = 0; i < uuids.length; i++) {
             const uuid = uuids[i];
             this.spawner.forEach(spawn => spawn.checkRemove(uuid));
@@ -427,7 +435,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
                     if (index >= 0) {
                         parent.childrenUUIDs.splice(index, 1);
                     }
-                    updateInfos.push(parent)
+                    updateInfos.push(parent);
                 }
             }
             if (info.childrenUUIDs.length > 0) {
@@ -454,34 +462,36 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
         }
         updateInfos.forEach(info => {
             if (false == StringUtil.isEmpty(info.ownerId)) {
-                this.getDataInfo(info.ownerId).updateBuilding(info);
+                this.getDataInfo(info.ownerId).addBuilding(info);
             }
         });
         Player.getAllPlayers().forEach(player => {
             let arr = this.getUpdateInfo(player.playerId);
-            if (!arr) { arr = []; }
+            if (!arr) {
+                arr = [];
+            }
             arr.push(...updateInfos);
             for (let i = arr.length - 1; i >= 0; i--) {
                 if (removeUUIds.includes(arr[i].uuid)) {
                     arr.splice(i, 1);
                 }
             }
-        })
+        });
         this.getAllClient().net_removeInfos(removeUUIds);
     }
 
     /**
      * 伤害建筑
-     * @param uuid 
-     * @param hpChange 
-     * @returns 
+     * @param uuid
+     * @param hpChange
+     * @returns
      */
     net_ChangeBuildingHP(uuid: string, hpChange: number) {
         const info = this.buildingInfoMap.get(uuid);
         if (!info) return;
         hpChange = Math.ceil(hpChange);
         console.log("tryHurt", hpChange, JSON.stringify(info));
-        const cfg = BuildingHelper.getBuildCfgByItemId(info.itemId)
+        const cfg = BuildingHelper.getBuildCfgByItemId(info.itemId);
         if (hpChange < 0 && !cfg.canAttack) {
             console.log("canAttack is false");
             return;
@@ -491,7 +501,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
         // 建筑被摧毁
         if (info.hp <= 0) {
 
-            EffectService.playAtPosition(cfg.effectGuid, info.pos.clone().add(cfg.effectOffset), { scale: cfg.effectZoom });
+            EffectService.playAtPosition(cfg.effectGuid, info.pos.clone().add(cfg.effectOffset), {scale: cfg.effectZoom});
             this.net_removeBuilding([uuid]);
             return;
         }
@@ -499,11 +509,11 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
         // 更新建筑信息
         this.updateMap.forEach((arr, playerId) => {
             arr.push(info);
-        })
+        });
 
         // 更新家园建筑
         if (false == StringUtil.isEmpty(info.ownerId)) {
-            this.getDataInfo(info.ownerId).updateBuilding(info);
+            this.getDataInfo(info.ownerId).addBuilding(info);
         }
 
         // 更新建筑实例
@@ -515,15 +525,15 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
 
     /**
      *  检测建筑掉落
-     * @param info 
-     * @param oldParentUUID 
-     * @param changeArr 
-     * @param removeArr 
-     * @returns 
+     * @param info
+     * @param oldParentUUID
+     * @param changeArr
+     * @param removeArr
+     * @returns
      */
     private async checkBuildingDown(info: BuildingInfo, oldParentUUID: string, changeArr: BuildingInfo[], removeArr: string[]) {
         const pos = info.pos;
-        const exUUID: string[] = []
+        const exUUID: string[] = [];
         exUUID.push(oldParentUUID);
         exUUID.push(...this.getAllChildrenUUId(info));
         // 射线检测
@@ -552,9 +562,9 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
 
     /**
      *  更新建筑位置
-     * @param info 
-     * @param pos 
-     * @param changeArr 
+     * @param info
+     * @param pos
+     * @param changeArr
      */
     private updatePos(info: BuildingInfo, pos: Vector, changeArr: BuildingInfo[]) {
         info.pos = info.pos.add(pos);
@@ -564,12 +574,12 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
             if (child) {
                 this.updatePos(child, pos, changeArr);
             }
-        })
+        });
 
         // 在家的话，更新家里的位置,保存当前建筑
         if (!StringUtil.isEmpty(info.ownerId) && info.homePos != null && info.homePos.add) {
             info.homePos = info.homePos.add(pos);
-            this.getDataInfo(info.ownerId).updateBuilding(info);
+            this.getDataInfo(info.ownerId).addBuilding(info);
         }
 
         // 更新建筑实例
@@ -581,8 +591,8 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
 
     /**
      *  获取所有子节点的uuid
-     * @param info 
-     * @returns 
+     * @param info
+     * @returns
      */
     private getAllChildrenUUId(info: BuildingInfo) {
         const uuids = [];
@@ -592,7 +602,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
             if (child) {
                 uuids.push(...this.getAllChildrenUUId(child));
             }
-        })
+        });
         return uuids;
     }
 
@@ -614,7 +624,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
                 restTime = e.restTime;
                 isSpawning = true;
             }
-        })
+        });
         if (!isSpawning) {
             return 0;
         }

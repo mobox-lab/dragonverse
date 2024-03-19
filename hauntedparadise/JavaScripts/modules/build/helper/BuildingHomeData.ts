@@ -120,11 +120,6 @@ export class BuildingHomeData {
         this.needSave = true;
     }
 
-    public updateBuilding(info: BuildingInfo) {
-        UtilEx.MapEx.set(this.buildingInfoMap, info.uuid, info);
-        this.needSave = true;
-    }
-
     private async readDS(key: string) {
         var res = await DataStorage.asyncGetData(key)
         if (res.code != DataStorageResultCode.Success) {

@@ -23,6 +23,8 @@ const MaxBuildDis: number = 1000;
 export class BuildingEditorHelper {
     private static _ins: BuildingEditorHelper;
 
+    public isMyIsland: boolean = true;
+
     public static get instance() {
         if (!this._ins) {
             this._ins = new BuildingEditorHelper();
@@ -54,6 +56,10 @@ export class BuildingEditorHelper {
     // client 创建建筑
 
     async openEdit(itemId: number) {
+        if (!this.isMyIsland) {
+            return;
+        }
+
         const cfg = BuildingHelper.getBuildCfgByItemId(itemId);
         if (!cfg) {
             console.error("openEdit error cfg", itemId);
