@@ -33,10 +33,9 @@ export class BuildingEditorHelper {
     };
 
     public static defaultExclude(go: GameObject): boolean {
-        if (go instanceof Character) return true;
-        if (go instanceof Trigger) return true;
-        if (go.tag.includes("Ghost")) return true;
-        return false;
+        return go instanceof Character ||
+            go instanceof Trigger ||
+            go.tag.includes("Ghost");
     }
 
     xOffset = 0;

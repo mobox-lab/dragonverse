@@ -6,55 +6,55 @@
  * @FilePath: \hauntedparadise\JavaScripts\codes\GameStart.ts
  * @Description  : 
  */
-import { AddGMCommand, GM } from "module_gm";
-import { GameConfig } from "../config/GameConfig";
-import { I18n } from "./I18n";
-import { GMBasePanelUI } from "./common/gm/GmUI";
-import { localGMConfig } from "./common/gm/config";
+import {AddGMCommand, GM} from "module_gm";
+import {GameConfig} from "../config/GameConfig";
+import {I18n} from "./I18n";
+import {GMBasePanelUI} from "./common/gm/GmUI";
+import {localGMConfig} from "./common/gm/config";
 import PlayerArchiveData from "./modules/archive/ArchiveData";
 import ArchiveModuleC from "./modules/archive/ArchiveModuleC";
 import ArchiveModuleS from "./modules/archive/ArchiveModuleS";
-import { BagModuleC } from "./modules/bag/BagModuleC";
-import { BagModuleS } from "./modules/bag/BagModuleS";
-import { BlackBoardModuleC } from "./modules/blackboard/BlackBoardMdouleC";
-import { BlackBoardModuleS } from "./modules/blackboard/BlackBoardModuleS";
-import { CameraModuleC, CameraModuleS } from "./modules/camera/CameraModule";
-import { CameraCG } from "./modules/cameraCG/CameraCG";
-import { EquipModuleC } from "./modules/equip/EquipModuleC";
-import { EquipModuleS } from "./modules/equip/EquipModuleS";
-import { GhostModuleC } from "./modules/ghost/GhostModuleC";
-import { GhostModuleS } from "./modules/ghost/GhostModuleS";
-import { GlobalRankModuleC } from "./modules/globalRank/GlobalRankModuleC";
-import { GlobalRankModuleS } from "./modules/globalRank/GlobalRankModuleS";
+import {BagModuleC} from "./modules/bag/BagModuleC";
+import {BagModuleS} from "./modules/bag/BagModuleS";
+import {BlackBoardModuleC} from "./modules/blackboard/BlackBoardMdouleC";
+import {BlackBoardModuleS} from "./modules/blackboard/BlackBoardModuleS";
+import {CameraModuleC, CameraModuleS} from "./modules/camera/CameraModule";
+import {CameraCG} from "./modules/cameraCG/CameraCG";
+import {EquipModuleC} from "./modules/equip/EquipModuleC";
+import {EquipModuleS} from "./modules/equip/EquipModuleS";
+import {GhostModuleC} from "./modules/ghost/GhostModuleC";
+import {GhostModuleS} from "./modules/ghost/GhostModuleS";
+import {GlobalRankModuleC} from "./modules/globalRank/GlobalRankModuleC";
+import {GlobalRankModuleS} from "./modules/globalRank/GlobalRankModuleS";
 import PlayerRankData from "./modules/globalRank/PlayerRankData";
 import HelpModuleC from "./modules/help/HelpModuleC";
 import HelpModuleS from "./modules/help/HelpModuleS";
 import HotWeaponModuleC from "./modules/hotweapon/HotWeaponC";
 import HotWeaponModuleS from "./modules/hotweapon/HotWeaponS";
-import { InterSaveModuleC, InterSaveModuleS } from "./modules/inter/InterSaveHelper";
-import { ObjInterModuleC } from "./modules/inter/ObjInterModuleC";
-import { ObjInterModuleS } from "./modules/inter/ObjInterModuleS";
-import { PlayerInterModuleC, PlayerInterModuleS } from "./modules/inter/PlayerInterModule";
+import {InterSaveModuleC, InterSaveModuleS} from "./modules/inter/InterSaveHelper";
+import {ObjInterModuleC} from "./modules/inter/ObjInterModuleC";
+import {ObjInterModuleS} from "./modules/inter/ObjInterModuleS";
+import {PlayerInterModuleC, PlayerInterModuleS} from "./modules/inter/PlayerInterModule";
 import MeleeWeaponModuleC from "./modules/meleeweapon/MeleeWeaponC";
 import MeleeWeaponModuleS from "./modules/meleeweapon/MeleeWeaponS";
 import PlayerData from "./modules/player/PlayerData";
-import { PlayerModuleC } from "./modules/player/PlayerModuleC";
-import { PlayerModuleS } from "./modules/player/PlayerModuleS";
+import {PlayerModuleC} from "./modules/player/PlayerModuleC";
+import {PlayerModuleS} from "./modules/player/PlayerModuleS";
 import ProcedureData from "./modules/procedure/ProcedureData";
-import { ProcedureModuleC } from "./modules/procedure/ProcedureModuleC";
-import { ProcedureModuleS } from "./modules/procedure/ProcedureModuleS";
+import {ProcedureModuleC} from "./modules/procedure/ProcedureModuleC";
+import {ProcedureModuleS} from "./modules/procedure/ProcedureModuleS";
 import TimeModuleC from "./modules/time/TimeModuleC";
 import TimeModuleS from "./modules/time/TimeModuleS";
 import AutoGraphic from "./utils/AutoGraphic";
-import { UtilEx } from "./utils/UtilEx";
-import { DanmakuModuleC, DanmakuModuleS } from "./modules/danmaku/DanmakuModule";
-import { GhostTraceHelper } from "./utils/TraceHelper";
-import { GamesStartDefines } from "./Defines";
+import {UtilEx} from "./utils/UtilEx";
+import {DanmakuModuleC, DanmakuModuleS} from "./modules/danmaku/DanmakuModule";
+import {GhostTraceHelper} from "./utils/TraceHelper";
+import {GamesStartDefines} from "./Defines";
 import ExGuideModuleS from "./modules/guide/ExGuideModuleS";
 import ExGuideModuleC from "./modules/guide/ExGuideModuleC";
 import ExGuideData from "./modules/guide/ExGuideData";
-import { RouteModuleS, RouteModuleC } from "./modules/route/RouteModule";
-import { PlayerManagerExtension } from "./Modified027Editor/ModifiedPlayer";
+import {RouteModuleS, RouteModuleC} from "./modules/route/RouteModule";
+import {PlayerManagerExtension} from "./Modified027Editor/ModifiedPlayer";
 import MergeConfigHelper from "./utils/MergeConfigHelper";
 import StoreModuleS from "./modules/store/StoreModuleS";
 import StoreModuleC from "./modules/store/StoreModuleC";
@@ -62,10 +62,10 @@ import StoreData from "./modules/store/StoreData";
 import TreasureModuleS from "./modules/treasure/TreasureModuleS";
 import TreasureModuleC from "./modules/treasure/TreasureModuleC";
 import TreasureData from "./modules/treasure/TreasureData";
-import { IDCardModuleC, IDCardModuleS } from "./modules/idcard/IDCardModule";
-import { ScenePropsModuleS, ScenePropsModuleC } from "./modules/sceneProps/ScenePropsModule";
-import { ScenePropsData } from "./modules/sceneProps/ScenePropsData";
-import { BuffModuleC, BuffModuleS } from "./modules/buff/BuffModule";
+import {IDCardModuleC, IDCardModuleS} from "./modules/idcard/IDCardModule";
+import {ScenePropsModuleS, ScenePropsModuleC} from "./modules/sceneProps/ScenePropsModule";
+import {ScenePropsData} from "./modules/sceneProps/ScenePropsData";
+import {BuffModuleC, BuffModuleS} from "./modules/buff/BuffModule";
 
 /**
  * 游戏主题
@@ -91,7 +91,6 @@ export enum EGameTheme {
     /** 占位 */
     Empty = "Empty"
 }
-
 /** odin启动类 */
 @Component
 export default class GameStart extends mw.Script {
@@ -104,38 +103,38 @@ export default class GameStart extends mw.Script {
     /** 是否功能测试 */
     public static IsTesting: boolean = false;
 
-    @mw.Property({ group: "辅助功能", displayName: "速开游戏", tooltip: "帮助功能测提效" })
+    @mw.Property({group: "辅助功能", displayName: "速开游戏", tooltip: "帮助功能测提效"})
     public isTesting: boolean = false;
 
-    @mw.Property({ group: "全局设置", displayName: "有存档模式" })
+    @mw.Property({group: "全局设置", displayName: "有存档模式"})
     public notDB: boolean = false;
 
-    @mw.Property({ group: "全局设置", displayName: "启用GM命令" })
+    @mw.Property({group: "全局设置", displayName: "启用GM命令"})
     private useGM = true;
 
-    @mw.Property({ group: "全局设置", displayName: "当前语言:-1系统0英1中" })
+    @mw.Property({group: "全局设置", displayName: "当前语言:-1系统0英1中"})
     public language: number = -1;
 
-    @Property({ group: "全局设置", displayName: "是否是海外" })
+    @Property({group: "全局设置", displayName: "是否是海外"})
     public isGark: boolean = false;
 
-    @Property({ group: "全局设置", displayName: "是否开启时间系统" })
+    @Property({group: "全局设置", displayName: "是否开启时间系统"})
     public isOpenTimer: boolean = false;
 
-    @Property({ group: "全局设置", displayName: "游戏主题", enumType: EGameTheme, selectOptions: EGameTheme })
+    @Property({group: "全局设置", displayName: "游戏主题", enumType: EGameTheme, selectOptions: EGameTheme})
     public readonly gameTheme: EGameTheme = EGameTheme.School;
 
-    @Property({ group: "全局设置", displayName: "打开救人系统" })
+    @Property({group: "全局设置", displayName: "打开救人系统"})
     public isOpenHelp: boolean = false;
 
-    @Property({ group: "全局设置", displayName: "打开玩家间碰撞" })
+    @Property({group: "全局设置", displayName: "打开玩家间碰撞"})
     public isOpenCharCollsion: boolean = false;
 
     /** 全局 */
     public static GameTheme: EGameTheme = EGameTheme.School;
 
     /** 是否A包 */
-    @Property({ group: "全局设置", displayName: "是否A包" })
+    @Property({group: "全局设置", displayName: "是否A包"})
     public isA: boolean = true;
 
     /** 是否A包 */
@@ -172,7 +171,7 @@ export default class GameStart extends mw.Script {
                 if (e.clazz == "Currency") {
                     e.type = 1;
                 }
-            })
+            });
         }, 1e3);
 
         //Event.dispatchToLocal(EVENT_REG_COMM_MODULE);
@@ -189,11 +188,11 @@ export default class GameStart extends mw.Script {
             mw.UIService.showUI = (panel: mw.UIScript, layer?: number, ...params: any[]) => {
                 GhostTraceHelper.uishowTrace(panel.constructor.name);
                 return originalShowUI(panel, layer, ...params);
-            }
+            };
 
             Event.addLocalListener("PlayButtonClick", (btnname: string) => {
                 GhostTraceHelper.buttonTrace(btnname);
-            })
+            });
         }
         console.info("[GameStart] 初始化游戏结束");
         const mainTween = TweenUtil.TWEEN;
@@ -214,13 +213,13 @@ export default class GameStart extends mw.Script {
                     } catch (error) {
                         delete mainTween["_tweens"][tweenIds[i]];
                         console.error(error);
-                        console.error(error.stack)
+                        console.error(error.stack);
                     }
                 }
                 tweenIds = Object.keys(mainTween["_tweensAddedDuringUpdate"]);
             }
             return true;
-        }
+        };
     }
 
     private async initAssets() {
@@ -247,7 +246,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(HotWeaponModuleS, HotWeaponModuleC);
         ModuleService.registerModule(MeleeWeaponModuleS, MeleeWeaponModuleC);
         ModuleService.registerModule(DanmakuModuleS, DanmakuModuleC);
-        ModuleService.registerModule(HelpModuleS, HelpModuleC)
+        ModuleService.registerModule(HelpModuleS, HelpModuleC);
         ModuleService.registerModule(RouteModuleS, RouteModuleC);
         ModuleService.registerModule(ScenePropsModuleS, ScenePropsModuleC, ScenePropsData);
         ModuleService.registerModule(StoreModuleS, StoreModuleC, StoreData);
