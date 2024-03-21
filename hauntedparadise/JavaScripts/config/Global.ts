@@ -94,7 +94,7 @@ export class GlobalConfig extends ConfigBase<IGlobalElement>{
 	get isGhostCloseDoor ():IGlobalElement{return this.getElement(34)};
 	/**2000*/
 	get BuildDropSpeed():IGlobalElement{return this.getElement(35)};
-	/**1*/
+	/**90*/
 	get BuildRotDelta():IGlobalElement{return this.getElement(36)};
 	/**200*/
 	get MaxBuildingNum():IGlobalElement{return this.getElement(37)};
