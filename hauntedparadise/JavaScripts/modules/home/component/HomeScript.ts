@@ -7,14 +7,16 @@
  * @Description  : 
  */
 import HandTriggerCom from "../../../codes/modules/inter/HandTriggerCom";
-import { PlayerModuleC } from "../../../codes/modules/player/PlayerModuleC";
-import { TimerOnly, WaitLoop } from "../../../codes/utils/AsyncTool";
-import { GhostTraceHelper } from "../../../codes/utils/TraceHelper";
-import { GameConfig } from "../../../config/GameConfig";
-import { HomeModuleC } from "../HomeModuleC";
-import { HomeModuleS } from "../HomeModuleS";
-import { HomeBaseHud } from "../ui/HomeBaseHud";
+import {PlayerModuleC} from "../../../codes/modules/player/PlayerModuleC";
+import {TimerOnly, WaitLoop} from "../../../codes/utils/AsyncTool";
+import {GhostTraceHelper} from "../../../codes/utils/TraceHelper";
+import {GameConfig} from "../../../config/GameConfig";
+import {HomeModuleC} from "../HomeModuleC";
+import {HomeModuleS} from "../HomeModuleS";
+import {HomeBaseHud} from "../ui/HomeBaseHud";
 import HomeInfoHud from "../ui/HomeInfoHud";
+import {BuildModuleS} from "../../build/BuildModuleS";
+import Player = mw.Player;
 
 const HomeTrigger = "HomeTrigger";
 /**
@@ -23,28 +25,28 @@ const HomeTrigger = "HomeTrigger";
 @Component
 export default class HomeScript extends Script {
 
-    @Property({ group: "Setting", displayName: "家园id" })
+    @Property({group: "Setting", displayName: "家园id"})
     homeId: number = 0;
 
-    @Property({ group: "Setting", displayName: "牌子", capture: true })
+    @Property({group: "Setting", displayName: "牌子", capture: true})
     homeObjId: string = "";
 
-    @Property({ group: "Setting", displayName: "信箱", capture: true })
+    @Property({group: "Setting", displayName: "信箱", capture: true})
     mailObjId: string = "";
 
-    @Property({ group: "Setting", displayName: "新信息提示", capture: true })
+    @Property({group: "Setting", displayName: "新信息提示", capture: true})
     mailEffId: string = "";
 
-    @Property({ group: "Setting", displayName: "出生点", capture: true })
+    @Property({group: "Setting", displayName: "出生点", capture: true})
     birthAnchorId: string = "";
 
-    @Property({ group: "Setting", displayName: "家园位置锚点", capture: true })
+    @Property({group: "Setting", displayName: "家园位置锚点", capture: true})
     homeBaseAnchorId: string = "";
 
-    @Property({ hideInEditor: true, replicated: true, onChanged: "onPlayerIdChanged" })
+    @Property({hideInEditor: true, replicated: true, onChanged: "onPlayerIdChanged"})
     ownerId: string = "";
 
-    @Property({ hideInEditor: true, replicated: true, onChanged: "onPlayerAliveDayChange" })
+    @Property({hideInEditor: true, replicated: true, onChanged: "onPlayerAliveDayChange"})
     aliveDay: number = -1;
 
     private homeTrigger: Trigger;
@@ -68,7 +70,7 @@ export default class HomeScript extends Script {
 
     /**
      * 检测位置是否在触发器内
-     * @param vec 
+     * @param vec
      */
     checkIn(vec: Vector) {
         if (!this.homeTrigger) return false;
@@ -87,7 +89,9 @@ export default class HomeScript extends Script {
     private timer: TimerOnly = new TimerOnly();
 
     public onPlayerAliveDayChange() {
-        if (StringUtil.isEmpty(this.ownerId)) { return; }
+        if (StringUtil.isEmpty(this.ownerId)) {
+            return;
+        }
         this.timer.setTimeout(() => {
             this.homeInfoUI.text_home_1.text = StringUtil.format(GameConfig.Language.tips_show_10.Value, this.aliveDay);
         }, 1e3);
@@ -103,7 +107,9 @@ export default class HomeScript extends Script {
 
     public setHomeInfo(info1) {
         if (!this.homeInfoObj || !this.homeInfoUI) {
-            WaitLoop.loop(() => { return this.homeInfoObj && this.homeInfoUI }, 100, -1).then(() => {
+            WaitLoop.loop(() => {
+                return this.homeInfoObj && this.homeInfoUI;
+            }, 100, -1).then(() => {
                 this.homeInfoUI.setInfo(info1);
             });
         } else {
@@ -116,7 +122,9 @@ export default class HomeScript extends Script {
         // 先找到那个牌子
         this.homeInfoObj = GameObject.findGameObjectById(this.homeObjId);
         this.tipsInfoComponent = this.homeInfoObj.getScripts()[0] as HandTriggerCom;
-        if (!this.homeInfoObj) { return; }
+        if (!this.homeInfoObj) {
+            return;
+        }
         let worldUI = await GameObject.asyncSpawn("UIWidget") as UIWidget;
         worldUI.occlusionEnable = false;
         worldUI.parent = this.homeInfoObj;
@@ -202,16 +210,7 @@ export default class HomeScript extends Script {
             if (this.isOwner) {
                 this.mailBoxObj.tag = "interObj";
 
-                // 把玩家自己传送到自家门口
-                Player.localPlayer.character.worldTransform.position = this.birthPoint.worldTransform.position;
-                let zRotOff = Vector.subtract(this.mailBoxObj.worldTransform.position, this.birthPoint.worldTransform.position).toRotation().z;
-                let birthRot = new Rotation(0, 0, zRotOff);
-                Player.localPlayer.character.worldTransform.rotation = birthRot;
-                Player.setControllerRotation(birthRot);
-                // 改玩家复活后的传送位置
-                let playerModuleC = ModuleService.getModule(PlayerModuleC);
-                playerModuleC.birthPos = this.birthPoint.worldTransform.position.clone();
-                playerModuleC.birthRot = birthRot;
+                this.teleportToHome(player);
                 // 自家的提示
                 HomeBaseHud.setTargetLoc(this.homeBaseAnchor);
             }
@@ -219,7 +218,9 @@ export default class HomeScript extends Script {
     }
 
     public setMailEffVis(vis: boolean) {
-        if (!this.mailBoxEff) { return; }
+        if (!this.mailBoxEff) {
+            return;
+        }
         this.mailBoxEff.setVisibility(vis ? PropertyStatus.On : PropertyStatus.Off);
     }
 
@@ -244,5 +245,25 @@ export default class HomeScript extends Script {
 
     private get isOwner() {
         return this.ownerId === Player.localPlayer.userId;
+    }
+
+    public teleportToHome(player: Player) {
+        if (this.birthPoint) {
+            player.character.worldTransform.position = this.birthPoint.worldTransform.position;
+
+            player.character.worldTransform.position = this.birthPoint.worldTransform.position;
+            let zRotOff = Vector.subtract(this.mailBoxObj.worldTransform.position, this.birthPoint.worldTransform.position).toRotation().z;
+            let birthRot = new Rotation(0, 0, zRotOff);
+            player.character.worldTransform.rotation = birthRot;
+            if (player === Player.localPlayer) {
+                Player.setControllerRotation(birthRot);
+            }
+            // 改玩家复活后的传送位置
+            let playerModuleC = ModuleService.getModule(PlayerModuleC);
+            playerModuleC.birthPos = this.birthPoint.worldTransform.position.clone();
+            playerModuleC.birthRot = birthRot;
+            return true;
+        }
+        return false;
     }
 }
