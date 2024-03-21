@@ -18,6 +18,20 @@ import {ProcedureModuleS} from "../../codes/modules/procedure/ProcedureModuleS";
 import {BuildingEditorHelper} from "./helper/BuildingEditorHelper";
 import {WaitLoop} from "../../codes/utils/AsyncTool";
 import {GameConfig} from "../../config/GameConfig";
+import {twoDateDis} from "../mailbox/UIMailBox";
+import {HomeModuleS} from "../home/HomeModuleS";
+
+interface HsTeleportData {
+    /**
+     * 是否为访客.
+     */
+    isVisitor: boolean;
+    /**
+     * 访客的目标 userId.
+     */
+    visitorTo: string;
+}
+
 
 /**
  * 建筑信息的id
@@ -65,6 +79,17 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
      * 建筑map
      */
     buildingMap = new Map<string, BuildingBase>();
+
+    /**
+     * 访客记录表.
+     * @type {Map<number, boolean>} {playerId, isVisitor}
+     *
+     * 访客模式将：
+     *  - 禁用搭建功能.
+     * @type {boolean}
+     */
+    visitorMap = new Map<number, boolean>();
+
     /**建筑信息表 */
     private buildingInfoMap = new Map<string, BuildingInfo>();
     /**
@@ -105,6 +130,15 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
         this.saveTimer = 10;
 
         this.MaxBuildingNum = GameConfig.Global.MaxBuildingNum.number;
+
+        Player.onPlayerJoin.add((player) => {
+            const dataRaw = TeleportService.getTeleportData(player.teleportId) ?? null;
+            if (dataRaw) {
+                const data = JSON.parse(dataRaw as string) as HsTeleportData;
+                this.setIsVisitor(player.playerId, data.isVisitor);
+                //TODO_LviatYi jump to player's island.
+            }
+        });
     }
 
     /** 回收玩家的家园 */
@@ -629,6 +663,39 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
             return 0;
         }
         return restTime;
+    }
+
+    /**
+     * 设置玩家访客属性.
+     * @param {number} playerId
+     * @param {boolean} isVisitor
+     */
+    public setIsVisitor(playerId: number, isVisitor: boolean) {
+        this.visitorMap.set(playerId, isVisitor);
+    }
+
+    public async visitTo(player: Player, targetUserId: string) {
+        const roomInfo = await TeleportService.asyncGetPlayerRoomInfo(targetUserId);
+        if (!roomInfo) return "Player is not online.";
+        if (roomInfo.roomId === RoomService.getRoomId()) {
+            this.setIsVisitor(player.playerId, true);
+            ModuleService.getModule(HomeModuleS).transportPlayerToHome(player, targetUserId);
+            return "Visit player directly.";
+        } else {
+            const result = await TeleportService.asyncTeleportToRoom(roomInfo.roomId, [player.userId], {
+                teleportData: JSON.stringify({
+                    isVisitor: true,
+                    visitorTo: targetUserId
+                } as HsTeleportData)
+            });
+
+            return "try teleporting to player's room. result: " + result;
+        }
+    }
+
+    public exitVisit(player: Player) {
+        this.setIsVisitor(player.playerId, false);
+        ModuleService.getModule(HomeModuleS).transportPlayerToHome(player, player.userId);
     }
 }
 
