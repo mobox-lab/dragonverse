@@ -3,12 +3,26 @@
 
  @UIBind('UI/ShareUI/Build_UI.ui')
  export default class Build_UI_Generate extends UIScript {
-	 	private canvas_place_Internal: mw.Canvas
+	 	private mImageBackground_Internal: mw.Image
+	public get mImageBackground(): mw.Image {
+		if(!this.mImageBackground_Internal&&this.uiWidgetBase) {
+			this.mImageBackground_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImageBackground') as mw.Image
+		}
+		return this.mImageBackground_Internal
+	}
+	private canvas_place_Internal: mw.Canvas
 	public get canvas_place(): mw.Canvas {
 		if(!this.canvas_place_Internal&&this.uiWidgetBase) {
 			this.canvas_place_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place') as mw.Canvas
 		}
 		return this.canvas_place_Internal
+	}
+	private mImageDetailBG_Internal: mw.Image
+	public get mImageDetailBG(): mw.Image {
+		if(!this.mImageDetailBG_Internal&&this.uiWidgetBase) {
+			this.mImageDetailBG_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mImageDetailBG') as mw.Image
+		}
+		return this.mImageDetailBG_Internal
 	}
 	private btn_place_Internal: mw.Button
 	public get btn_place(): mw.Button {
@@ -16,6 +30,69 @@
 			this.btn_place_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/btn_place') as mw.Button
 		}
 		return this.btn_place_Internal
+	}
+	private mName_Internal: mw.TextBlock
+	public get mName(): mw.TextBlock {
+		if(!this.mName_Internal&&this.uiWidgetBase) {
+			this.mName_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mName') as mw.TextBlock
+		}
+		return this.mName_Internal
+	}
+	private mImageIllustrate1_Internal: mw.Image
+	public get mImageIllustrate1(): mw.Image {
+		if(!this.mImageIllustrate1_Internal&&this.uiWidgetBase) {
+			this.mImageIllustrate1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mImageIllustrate1') as mw.Image
+		}
+		return this.mImageIllustrate1_Internal
+	}
+	private mIllustrate1_Internal: mw.TextBlock
+	public get mIllustrate1(): mw.TextBlock {
+		if(!this.mIllustrate1_Internal&&this.uiWidgetBase) {
+			this.mIllustrate1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mIllustrate1') as mw.TextBlock
+		}
+		return this.mIllustrate1_Internal
+	}
+	private mImageIllustrate2_Internal: mw.Image
+	public get mImageIllustrate2(): mw.Image {
+		if(!this.mImageIllustrate2_Internal&&this.uiWidgetBase) {
+			this.mImageIllustrate2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mImageIllustrate2') as mw.Image
+		}
+		return this.mImageIllustrate2_Internal
+	}
+	private mIllustrate2_Internal: mw.TextBlock
+	public get mIllustrate2(): mw.TextBlock {
+		if(!this.mIllustrate2_Internal&&this.uiWidgetBase) {
+			this.mIllustrate2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mIllustrate2') as mw.TextBlock
+		}
+		return this.mIllustrate2_Internal
+	}
+	private mImageIllustrate3_Internal: mw.Image
+	public get mImageIllustrate3(): mw.Image {
+		if(!this.mImageIllustrate3_Internal&&this.uiWidgetBase) {
+			this.mImageIllustrate3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mImageIllustrate3') as mw.Image
+		}
+		return this.mImageIllustrate3_Internal
+	}
+	private mIllustrate3_Internal: mw.TextBlock
+	public get mIllustrate3(): mw.TextBlock {
+		if(!this.mIllustrate3_Internal&&this.uiWidgetBase) {
+			this.mIllustrate3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mIllustrate3') as mw.TextBlock
+		}
+		return this.mIllustrate3_Internal
+	}
+	private mImageIllustrate4_Internal: mw.Image
+	public get mImageIllustrate4(): mw.Image {
+		if(!this.mImageIllustrate4_Internal&&this.uiWidgetBase) {
+			this.mImageIllustrate4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mImageIllustrate4') as mw.Image
+		}
+		return this.mImageIllustrate4_Internal
+	}
+	private mIllustrate4_Internal: mw.TextBlock
+	public get mIllustrate4(): mw.TextBlock {
+		if(!this.mIllustrate4_Internal&&this.uiWidgetBase) {
+			this.mIllustrate4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mIllustrate4') as mw.TextBlock
+		}
+		return this.mIllustrate4_Internal
 	}
 	private canvas_direction_Internal: mw.Canvas
 	public get canvas_direction(): mw.Canvas {
@@ -163,6 +240,21 @@
 		
 		//文本多语言
 		
+		this.initLanguage(this.mName)
+		
+	
+		this.initLanguage(this.mIllustrate1)
+		
+	
+		this.initLanguage(this.mIllustrate2)
+		
+	
+		this.initLanguage(this.mIllustrate3)
+		
+	
+		this.initLanguage(this.mIllustrate4)
+		
+	
 		//文本多语言
 		
 
