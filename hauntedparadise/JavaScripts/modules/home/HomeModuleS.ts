@@ -8,8 +8,9 @@
  */
 
 
-import { HomeModuleC } from "./HomeModuleC";
+import {HomeModuleC} from "./HomeModuleC";
 import HomeScript from "./component/HomeScript";
+
 /**
  * Home模块Server端
  */
@@ -27,7 +28,10 @@ export class HomeModuleS extends ModuleS<HomeModuleC, null> {
         Event.addLocalListener("StartProcedureServer", this.initHome.bind(this));
         Event.addLocalListener("EndProcedureServer", this.recycleHome.bind(this));
         Event.addClientListener("OnPlayerAliveDayChange", (player: Player, aliveDay: number) => {
-            if (!this.homeMap.has(player.userId)) { console.error(`DEBUG ERROR>>> 同步玩家 ${player.userId} 存活天数失败，这个玩家没有登记户口信息`); return; }
+            if (!this.homeMap.has(player.userId)) {
+                console.error(`DEBUG ERROR>>> 同步玩家 ${player.userId} 存活天数失败，这个玩家没有登记户口信息`);
+                return;
+            }
             this.homeMap.get(player.userId).aliveDay = aliveDay;
         });
     }
@@ -77,6 +81,10 @@ export class HomeModuleS extends ModuleS<HomeModuleC, null> {
         home.ownerId = "";
         home.aliveDay = -1;
         this.emptyHomes.push(home);
+    }
+
+    public transportPlayerToHome(player: Player, targetUserId: string) {
+        this.getClient(player).transportPlayerToHome(player, targetUserId);
     }
 }
 
