@@ -347,7 +347,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
 
     //#region MetaWorld Event
     protected onAwake(): void {
-        super.onAwake();
+         super.onAwake();
     }
 
     protected onStart(): void {
