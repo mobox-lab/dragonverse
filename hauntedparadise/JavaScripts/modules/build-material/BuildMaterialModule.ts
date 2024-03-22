@@ -1,10 +1,24 @@
 import {JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
 import IUnique from "../../depend/yoact/IUnique";
 import IYoactArray from "../../depend/yoact/IYoactArray";
+import {GameConfig} from "../../config/GameConfig";
+import {BuildingItem} from "../build/building/BuildingItem";
+
+export enum BuildingTypes {
+    /**
+     * 建筑.
+     * @type {BuildingTypes.Building}
+     */
+    Building = 1,
+    /**
+     * 家具.
+     * @type {BuildingTypes.Furniture}
+     */
+    Furniture = 2,
+}
 
 export class BuildMaterialUnique implements IUnique {
     public id: number;
-    public count: number;
 
     public static arrayFromObject(data: BuildMaterialModuleData): BuildMaterialUnique[] {
         const result: BuildMaterialUnique[] = [];
@@ -17,20 +31,13 @@ export class BuildMaterialUnique implements IUnique {
         return result;
     }
 
-    constructor(id: number, count: number) {
+    constructor(id: number) {
         this.id = id;
-        this.count = count;
     }
 
     //#region IUnique
     public move(updated: this): boolean {
-        let changed: boolean = false;
-        if (this.count !== updated.count) {
-            changed = true;
-            this.count = updated.count;
-        }
-
-        return changed;
+        return false;
     }
 
     public primaryKey = (): number => this.id;
@@ -72,6 +79,13 @@ export class BuildMaterialModuleC extends JModuleC<BuildMaterialModuleS, BuildMa
 
     protected onJStart(): void {
 //#region Member init
+        this.buildMaterialYoact.setAll(
+            GameConfig.Item.getAllElement()
+                .filter((value) => value.clazz === BuildingItem.name)
+                .map((value) => {
+                    return new BuildMaterialUnique(value.id);
+                })
+        );
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Event Subscribe

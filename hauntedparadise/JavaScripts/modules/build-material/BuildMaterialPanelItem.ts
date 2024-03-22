@@ -1,7 +1,7 @@
 import IScrollViewItem from "../../depend/scroll-view/IScrollViewItem";
-import { Yoact } from "../../depend/yoact/Yoact";
+import {Yoact} from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
-import { GameConfig } from "../../config/GameConfig";
+import {GameConfig} from "../../config/GameConfig";
 import BuildingIcon_Generate from "../../ui-generate/ShareUI/Building/BuildingIcon_generate";
 import {BuildMaterialUnique} from "./BuildMaterialModule";
 import GToolkit from "../../utils/GToolkit";
@@ -9,8 +9,7 @@ import GToolkit from "../../utils/GToolkit";
 export default class BuildMaterialPanelItem extends BuildingIcon_Generate implements IScrollViewItem<BuildMaterialUnique> {
 //#region IScrollViewItem
     bindData(data: BuildMaterialUnique): void {
-        // bindYoact(() => this.mItemNum.text = data.count.toString());
-        // this.mImgIcon.imageGuid = GameConfig.BuildMaterial.getElement(data.id).icon;
+        this.mImgIcon.imageGuid = GameConfig.Item.getElement(data.id).icon;
     }
 
     get clickObj(): mw.StaleButton {
