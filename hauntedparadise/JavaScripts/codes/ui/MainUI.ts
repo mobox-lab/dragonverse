@@ -153,10 +153,6 @@ export class MainUI extends Main_UI_Generate {
         })
     }
 
-    setLifeNum(lifeIndex: number) {
-        this.img_lifenum.imageGuid = LifeNumImags[lifeIndex];
-    }
-
     /**
      * 
      * @param needResetJoyStick 是否需要重置摇杆
@@ -240,7 +236,6 @@ export class MainUI extends Main_UI_Generate {
     public applyHallPanel() {
         this.canvas_setting.visibility = SlateVisibility.Collapsed;
         // this.canvas_tools.visibility = SlateVisibility.Collapsed;
-        this.life_canvas.visibility = SlateVisibility.Collapsed;
         this.canvas_time.visibility = SlateVisibility.Collapsed;
         this.btn_notebook.visibility = SlateVisibility.Collapsed;
         this.canvas_book.visibility = SlateVisibility.Collapsed;

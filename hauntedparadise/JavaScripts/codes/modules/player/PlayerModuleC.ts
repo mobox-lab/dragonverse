@@ -91,7 +91,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerData> {
     /** 复活次数改变的回调 */
     private onLifeChangeCall(lifeNum: number) {
         UIService.hide(LosePanel);
-        UIService.getUI(MainUI).setLifeNum(this.deathTimes);
         console.log("curlifenum" + lifeNum)
         if (lifeNum <= 0) {
             UIService.show(LosePanel);
