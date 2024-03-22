@@ -206,20 +206,6 @@
 		}
 		return this.img_aim_Internal
 	}
-	private life_canvas_Internal: mw.Canvas
-	public get life_canvas(): mw.Canvas {
-		if(!this.life_canvas_Internal&&this.uiWidgetBase) {
-			this.life_canvas_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/life_canvas') as mw.Canvas
-		}
-		return this.life_canvas_Internal
-	}
-	private img_lifenum_Internal: mw.Image
-	public get img_lifenum(): mw.Image {
-		if(!this.img_lifenum_Internal&&this.uiWidgetBase) {
-			this.img_lifenum_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/life_canvas/img_lifenum') as mw.Image
-		}
-		return this.img_lifenum_Internal
-	}
 	private canvas_idCard_Internal: mw.Canvas
 	public get canvas_idCard(): mw.Canvas {
 		if(!this.canvas_idCard_Internal&&this.uiWidgetBase) {
@@ -254,6 +240,20 @@
 			this.btn_shop_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/canvas_shop/btn_shop') as mw.Button
 		}
 		return this.btn_shop_Internal
+	}
+	private canvas_build_Internal: mw.Canvas
+	public get canvas_build(): mw.Canvas {
+		if(!this.canvas_build_Internal&&this.uiWidgetBase) {
+			this.canvas_build_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/canvas_build') as mw.Canvas
+		}
+		return this.canvas_build_Internal
+	}
+	private btn_build_material_Internal: mw.Button
+	public get btn_build_material(): mw.Button {
+		if(!this.btn_build_material_Internal&&this.uiWidgetBase) {
+			this.btn_build_material_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/canvas_build/btn_build_material') as mw.Button
+		}
+		return this.btn_build_material_Internal
 	}
 
 
@@ -396,6 +396,19 @@
 		})
 		this.btn_shop.onReleased.add(() => {
 			this.btn_shop.renderScale = this.btn_shop["preScale"];
+		})
+		
+	
+		this.btn_build_material.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "Main_UI_btn_build_material");
+		})
+		this.btn_build_material.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.btn_build_material.onPressed.add(() => {
+			this.btn_build_material["preScale"] = this.btn_build_material.renderScale;
+			this.btn_build_material.renderScale = Vector2.one.set(this.btn_build_material["preScale"]).multiply(1.1);
+		})
+		this.btn_build_material.onReleased.add(() => {
+			this.btn_build_material.renderScale = this.btn_build_material["preScale"];
 		})
 		
 	

@@ -24,12 +24,26 @@
 		}
 		return this.btn1_Internal
 	}
+	private btn1_1_Internal: mw.StaleButton
+	public get btn1_1(): mw.StaleButton {
+		if(!this.btn1_1_Internal&&this.uiWidgetBase) {
+			this.btn1_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/MWCanvas_2147482460/cnvTags/btn1_1') as mw.StaleButton
+		}
+		return this.btn1_1_Internal
+	}
 	private btn2_Internal: mw.StaleButton
 	public get btn2(): mw.StaleButton {
 		if(!this.btn2_Internal&&this.uiWidgetBase) {
 			this.btn2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/MWCanvas_2147482460/cnvTags/btn2') as mw.StaleButton
 		}
 		return this.btn2_Internal
+	}
+	private btn2_1_Internal: mw.StaleButton
+	public get btn2_1(): mw.StaleButton {
+		if(!this.btn2_1_Internal&&this.uiWidgetBase) {
+			this.btn2_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/MWCanvas_2147482460/cnvTags/btn2_1') as mw.StaleButton
+		}
+		return this.btn2_1_Internal
 	}
 	private mScrollBox_Internal: mw.ScrollBox
 	public get mScrollBox(): mw.ScrollBox {
@@ -114,6 +128,21 @@
 		
 		
 	
+		this.btn1_1.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "Building_UI_btn1_1");
+		})
+		this.initLanguage(this.btn1_1);
+		this.btn1_1.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.btn1_1.onPressed.add(() => {
+			this.btn1_1["preScale"] = this.btn1_1.renderScale;
+			this.btn1_1.renderScale = Vector2.one.set(this.btn1_1["preScale"]).multiply(1.1);
+		})
+		this.btn1_1.onReleased.add(() => {
+			this.btn1_1.renderScale = this.btn1_1["preScale"];
+		})
+		
+		
+	
 		this.btn2.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "Building_UI_btn2");
 		})
@@ -125,6 +154,21 @@
 		})
 		this.btn2.onReleased.add(() => {
 			this.btn2.renderScale = this.btn2["preScale"];
+		})
+		
+		
+	
+		this.btn2_1.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "Building_UI_btn2_1");
+		})
+		this.initLanguage(this.btn2_1);
+		this.btn2_1.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.btn2_1.onPressed.add(() => {
+			this.btn2_1["preScale"] = this.btn2_1.renderScale;
+			this.btn2_1.renderScale = Vector2.one.set(this.btn2_1["preScale"]).multiply(1.1);
+		})
+		this.btn2_1.onReleased.add(() => {
+			this.btn2_1.renderScale = this.btn2_1["preScale"];
 		})
 		
 		
