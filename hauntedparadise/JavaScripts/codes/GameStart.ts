@@ -66,6 +66,11 @@ import {IDCardModuleC, IDCardModuleS} from "./modules/idcard/IDCardModule";
 import {ScenePropsModuleS, ScenePropsModuleC} from "./modules/sceneProps/ScenePropsModule";
 import {ScenePropsData} from "./modules/sceneProps/ScenePropsData";
 import {BuffModuleC, BuffModuleS} from "./modules/buff/BuffModule";
+import {MailBoxData, MailBoxModuleC, MailBoxModuleS} from "../modules/mailbox/MailBoxModule";
+import {BuildModuleS} from "../modules/build/BuildModuleS";
+import {BuildModuleC} from "../modules/build/BuildModuleC";
+import {HomeModuleS} from "../modules/home/HomeModuleS";
+import {HomeModuleC} from "../modules/home/HomeModuleC";
 
 /**
  * 游戏主题
@@ -97,7 +102,6 @@ export default class GameStart extends mw.Script {
 
     public static isOpenHelp: boolean = false;
 
-    public static onRegisterModule = new Action();
     public static isGPark: boolean = false;
 
     /** 是否功能测试 */
@@ -250,6 +254,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(RouteModuleS, RouteModuleC);
         ModuleService.registerModule(ScenePropsModuleS, ScenePropsModuleC, ScenePropsData);
         ModuleService.registerModule(StoreModuleS, StoreModuleC, StoreData);
+        ModuleService.registerModule(MailBoxModuleS, MailBoxModuleC, MailBoxData);
         PlayerManagerExtension.init();
         if (this.gameTheme === EGameTheme.Hall) {
             ModuleService.registerModule(ExGuideModuleS, ExGuideModuleC, ExGuideData);
@@ -257,8 +262,9 @@ export default class GameStart extends mw.Script {
         }
         this.isOpenTimer && ModuleService.registerModule(TimeModuleS, TimeModuleC);
         ModuleService.registerModule(IDCardModuleS, IDCardModuleC);
+        ModuleService.registerModule(BuildModuleS, BuildModuleC);
         ModuleService.registerModule(BuffModuleS, BuffModuleC);
-        GameStart.onRegisterModule.call();
+        ModuleService.registerModule(HomeModuleS, HomeModuleC);
     }
 
     protected override onDestroy(): void {

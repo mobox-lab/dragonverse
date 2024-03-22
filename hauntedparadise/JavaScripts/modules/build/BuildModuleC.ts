@@ -5,7 +5,6 @@ import { AddGMCommand } from "module_gm";
 import { BuildModuleS } from "./BuildModuleS";
 import { BuildingEditorHelper } from "./helper/BuildingEditorHelper";
 import { BuildingInfo } from "./building/BuildingInfo";
-import GameStart from "../../codes/GameStart";
 import { BuildingHelper } from "./helper/BuildingHelper";
 import { BagDefine } from "../../codes/modules/bag/BagDefine";
 import { BuildingFactory } from "./building/BuildingFactory";
@@ -236,6 +235,3 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
     }
 
 }
-GameStart.onRegisterModule.add(() => {
-    ModuleService.registerModule(BuildModuleS, BuildModuleC);
-});

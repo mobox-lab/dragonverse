@@ -8,7 +8,6 @@
  */
 
 import { IMailBoxElement } from "../../config/MailBox";
-import GameStart from "../../codes/GameStart";
 import { MapEx } from "../../codes/utils/MapEx";
 import { MailScript } from "./MailScript";
 import { ProcedureModuleC } from "../../codes/modules/procedure/ProcedureModuleC";
@@ -227,7 +226,3 @@ export class MailBoxModuleS extends ModuleS<MailBoxModuleC, MailBoxData> {
         this.mailMap.get(userId).updateDate(aliveDay);
     }
 }
-
-GameStart.onRegisterModule.add(() => {
-    ModuleService.registerModule(MailBoxModuleS, MailBoxModuleC, MailBoxData);
-});

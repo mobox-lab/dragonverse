@@ -8,7 +8,6 @@
  */
 
 
-import GameStart from "../../codes/GameStart";
 import {MailBoxPanel} from "../mailbox/UIMailBox";
 import {HomeModuleS} from "./HomeModuleS";
 import HomeScript from "./component/HomeScript";
@@ -59,8 +58,3 @@ export class HomeModuleC extends ModuleC<HomeModuleS, null> {
         this.transportPlayerToHome(player, targetUserId);
     }
 }
-
-GameStart.onRegisterModule.add(() => {
-    ModuleService.registerModule(HomeModuleS, HomeModuleC);
-});
-
