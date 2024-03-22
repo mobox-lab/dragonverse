@@ -30,10 +30,10 @@ export default class BagPanel extends Bag_UI_Generate {
     private bagItemDataList: BagItemData[] = [];
 
     private initContainer() {
-        this.canvas_prop.removeAllChildren();
-        this.viewContainer = new GridSelectContainer(this.canvas_prop, BagItemUI);
+        // this.canvas_prop.removeAllChildren();
+        // this.viewContainer = new GridSelectContainer(this.canvas_prop, BagItemUI);
         this.normalItemContainer = new GridSelectContainer(this.canvas_items01, BagItemUI);
-        this.specialItemContainer = new GridSelectContainer(this.canvas_items, BagItemUI);
+        // this.specialItemContainer = new GridSelectContainer(this.canvas_items, BagItemUI);
         for (let index = 0; index < BagDefine.ViewCount; index++) {
             let node = this.viewContainer.addNode();
             node.initNode(index, EBagItemType.View);
@@ -86,11 +86,11 @@ export default class BagPanel extends Bag_UI_Generate {
         Event.addLocalListener(BagDefine.OnItemChangeEvt, (bagItemList: BagItemData[]) => { this.bagItemDataList = bagItemList; })
         //初始化货币显示
         RouteDefine.getFearCoin(Player.localPlayer.userId).then(val => {
-            this.text_freenum.text = val.toString()
+            // this.text_freenum.text = val.toString()
         })
         //监听货币变化
         RouteDefine.onFearCoinChangeAction.add((money: number) => {
-            this.text_freenum.text = money.toString();
+            // this.text_freenum.text = money.toString();
         })
     }
 
@@ -239,12 +239,12 @@ export default class BagPanel extends Bag_UI_Generate {
 
     private initBtn() {
         this.btn_back.onClicked.add(this.applyFirstView.bind(this));
-        this.btn_expand.onClicked.add(this.applySecondView.bind(this));
-        this.btn_openbag.onClicked.add(this.shiftView.bind(this));
+        // this.btn_expand.onClicked.add(this.applySecondView.bind(this));
+        // this.btn_openbag.onClicked.add(this.shiftView.bind(this));
         const closeBtnList: Button[] = [];
-        closeBtnList.push(this.btn_close);
-        closeBtnList.push(this.btn_close1);
-        closeBtnList.push(this.btn_close2);
+        // closeBtnList.push(this.btn_close);
+        // closeBtnList.push(this.btn_close1);
+        // closeBtnList.push(this.btn_close2);
         closeBtnList.forEach(btn => {
             btn.clickMethod = ButtonClickMethod.PreciseClick;
             btn.onClicked.add(() => { this.checkExistSelectedItem()?.onSelect.call() });
@@ -347,7 +347,7 @@ export default class BagPanel extends Bag_UI_Generate {
         this.curView = 1;
         this.exitChangeMode();
         this.canvas_bag.visibility = SlateVisibility.Collapsed;
-        this.btn_expand.visibility = SlateVisibility.Visible;
+        // this.btn_expand.visibility = SlateVisibility.Visible;
         this.clearAllSelectNode();
         this.checkHasEquipWeapon();
         EquipDefine.EquipItem(null);
@@ -365,7 +365,7 @@ export default class BagPanel extends Bag_UI_Generate {
         this.curView = 2;
         ModuleService.getModule(EquipModuleC).equip(null);
         this.canvas_bag.visibility = SlateVisibility.SelfHitTestInvisible;
-        this.btn_expand.visibility = SlateVisibility.Collapsed;
+        // this.btn_expand.visibility = SlateVisibility.Collapsed;
         this.viewContainer.beSelectedNode && this.viewContainer.beSelectedNode.onSelect.call();
     }
 
