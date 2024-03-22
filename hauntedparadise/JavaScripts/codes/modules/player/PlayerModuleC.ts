@@ -13,8 +13,8 @@ import { P_Blood } from '../../ui/P_Blood';
 import MusicMgr from '../../utils/MusicMgr';
 import { GhostTraceHelper } from "../../utils/TraceHelper";
 import { BoardHelper } from "../blackboard/BoardDefine";
-import { GhostEvents } from '../ghost/GhostDefine';
-import { KillUI } from '../ghost/ui/KillUI';
+// import { GhostEvents } from '../ghost/GhostDefine';
+// import { KillUI } from '../ghost/ui/KillUI';
 import { InterEvtNameDef } from '../inter/ObjInterDefine';
 import { ProcedureModuleC } from '../procedure/ProcedureModuleC';
 import { DeathPanel } from '../procedure/ui/DeathPanel';
@@ -23,7 +23,7 @@ import PlayerData, { INIT_HP_NUM, INIT_LIFE_NUM } from './PlayerData';
 import { PlayerModuleS } from "./PlayerModuleS";
 import HpHud from './ui/HpHud';
 import RegionTips from '../../ui/RegionTips';
-import { GhostModuleC } from '../ghost/GhostModuleC';
+// import { GhostModuleC } from '../ghost/GhostModuleC';
 import { EquipDefine } from '../equip/EquipDefine';
 import HandHud from '../idcard/ui/HandHud';
 import { ReItemUI } from '../../ui/items/ReItemUI';
@@ -131,20 +131,20 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerData> {
 
         UIService.getUI(HpHud).updateBloodVolume(hpNum);
         if (hpNum <= 0) {
-            let ghostmoc = ModuleService.getModule(GhostModuleC);
-            ghostmoc.playKillAni();
-            if (ghostmoc.isKilling) {
-                await new Promise((resolve) => {
-                    const intervalid = setInterval(() => {
-                        if (ghostmoc.isKilling) {
-                            return;
-                        }
-                        clearInterval(intervalid)
-                        resolve(0)
-                    }, 200)
-                })
-            }
-            this.reduceLife(true);
+            // let ghostmoc = ModuleService.getModule(GhostModuleC);
+            // ghostmoc.playKillAni();
+            // if (ghostmoc.isKilling) {
+            //     await new Promise((resolve) => {
+            //         const intervalid = setInterval(() => {
+            //             if (ghostmoc.isKilling) {
+            //                 return;
+            //             }
+            //             clearInterval(intervalid)
+            //             resolve(0)
+            //         }, 200)
+            //     })
+            // }
+            // this.reduceLife(true);
         }
     }
 
@@ -540,13 +540,13 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerData> {
             if (DataCenterC.getData(PlayerData).life > 1) {
                 UIService.getUI(DeathPanel).playOpenAni(() => {
                     UIService.show(MainUI);
-                    UIService.hide(KillUI);
+                    // UIService.hide(KillUI);
 
                     this.localPlayer.character.movementEnabled = true;
                     this.localPlayer.character.jumpEnabled = true;
                     setTimeout(() => {
                         callback && callback();
-                        Event.dispatchToLocal(GhostEvents.CatchPlayer, this.localPlayerId);
+                        // Event.dispatchToLocal(GhostEvents.CatchPlayer, this.localPlayerId);
                         this._isKilling = false;
                     }, 1000);
                 });
@@ -556,9 +556,9 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerData> {
                 callback && callback();
                 this.localPlayer.character.movementEnabled = true;
                 this.localPlayer.character.jumpEnabled = true;
-                Event.dispatchToLocal(GhostEvents.CatchPlayer, this.localPlayerId);
+                // Event.dispatchToLocal(GhostEvents.CatchPlayer, this.localPlayerId);
                 setTimeout(() => {
-                    UIService.hide(KillUI);
+                    // UIService.hide(KillUI);
                     this._isKilling = false;
                 }, 1000);
             }

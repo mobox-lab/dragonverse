@@ -1,5 +1,5 @@
 ﻿import { CommonUtils } from "../../utils/CommonUtils";
-import { GhostModuleC } from "../ghost/GhostModuleC";
+// import { GhostModuleC } from "../ghost/GhostModuleC";
 
 @Component
 export default class SafeTrigger extends Script {
@@ -11,12 +11,12 @@ export default class SafeTrigger extends Script {
         let trigger = this.gameObject as Trigger;
 
         trigger.onEnter.add((char: Character) => {
-            if (CommonUtils.isSelfChar(char))
-                ModuleService.getModule(GhostModuleC).protectedPlayer(true);
+            // if (CommonUtils.isSelfChar(char))
+                // ModuleService.getModule(GhostModuleC).protectedPlayer(true);
         })
         trigger.onLeave.add((char: Character) => {
-            if (CommonUtils.isSelfChar(char))
-                ModuleService.getModule(GhostModuleC).protectedPlayer(false);
+            // if (CommonUtils.isSelfChar(char))
+            //     ModuleService.getModule(GhostModuleC).protectedPlayer(false);
         })
     }
 }

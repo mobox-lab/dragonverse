@@ -15,18 +15,18 @@ import { ProcedureModuleC } from "../../modules/procedure/ProcedureModuleC";
 import { LosePanel } from "../../modules/procedure/ui/LosePanel";
 import { VictoryPanel } from "../../modules/procedure/ui/VictoryPanel";
 import { BagDefine } from "../../modules/bag/BagDefine";
-import GhostInst from "../../modules/ghost/GhostInst";
-import { GhostModuleS } from "../../modules/ghost/GhostModuleS";
+// import GhostInst from "../../modules/ghost/GhostInst";
+// import { GhostModuleS } from "../../modules/ghost/GhostModuleS";
 import { PlayerModuleC } from "../../modules/player/PlayerModuleC";
-import { BehaviorNode } from "../../behavior3/BehaviorNode";
+// import { BehaviorNode } from "../../behavior3/BehaviorNode";
 import TimeModuleS from "../../modules/time/TimeModuleS";
 import { EGameTheme } from "../../GameStart";
 import JumpGameBox from "../../modules/route/ui/JumGameBox";
-import GhostGraphPanel from "../../modules/ghost/ui/GhostGraphPanel";
+// import GhostGraphPanel from "../../modules/ghost/ui/GhostGraphPanel";
 import { RouteDefine } from "../../modules/route/RouteDefine";
 import { RouteModuleC } from "../../modules/route/RouteModule";
 import { GameConfig } from "../../../config/GameConfig";
-import { GhostModuleC } from "../../modules/ghost/GhostModuleC";
+// import { GhostModuleC } from "../../modules/ghost/GhostModuleC";
 
 export type GMData = {
     label: string,
@@ -39,26 +39,26 @@ let temp: any;
 
 /** GM命令配置组 */
 export const localGMConfig: GMData[] = [
-    {
-        label: "进入安全区",
-        group: "触发器测试",
-        clientCmd: (player: Player, params: string) => {
-            ModuleService.getModule(GhostModuleC).isinvinci = (true);
-        },
-        serverCmd: (player: Player, params: string) => {
-            ModuleService.getModule(GhostModuleS).protectedPlayer(player.playerId, true);
-        }
-    },
-    {
-        label: "离开安全区",
-        group: "触发器测试",
-        clientCmd: (player: Player, params: string) => {
-            ModuleService.getModule(GhostModuleC).isinvinci = (false);
-        },
-        serverCmd: (player: Player, params: string) => {
-            ModuleService.getModule(GhostModuleS).protectedPlayer(player.playerId, false);
-        }
-    },
+    // {
+    //     label: "进入安全区",
+    //     group: "触发器测试",
+    //     clientCmd: (player: Player, params: string) => {
+    //         ModuleService.getModule(GhostModuleC).isinvinci = (true);
+    //     },
+    //     serverCmd: (player: Player, params: string) => {
+    //         ModuleService.getModule(GhostModuleS).protectedPlayer(player.playerId, true);
+    //     }
+    // },
+    // {
+    //     label: "离开安全区",
+    //     group: "触发器测试",
+    //     clientCmd: (player: Player, params: string) => {
+    //         ModuleService.getModule(GhostModuleC).isinvinci = (false);
+    //     },
+    //     serverCmd: (player: Player, params: string) => {
+    //         ModuleService.getModule(GhostModuleS).protectedPlayer(player.playerId, false);
+    //     }
+    // },
     {
         label: "获得特殊道具",
         group: "商店",
@@ -109,15 +109,15 @@ export const localGMConfig: GMData[] = [
         serverCmd: (player: Player, params: string) => {
         }
     },
-    {
-        label: "打开图录",
-        group: "大厅",
-        clientCmd: (player: Player, params: string) => {
-            UIService.show(GhostGraphPanel);
-        },
-        serverCmd: (player: Player, params: string) => {
-        }
-    },
+    // {
+    //     label: "打开图录",
+    //     group: "大厅",
+    //     clientCmd: (player: Player, params: string) => {
+    //         UIService.show(GhostGraphPanel);
+    //     },
+    //     serverCmd: (player: Player, params: string) => {
+    //     }
+    // },
     {
         label: "玩家穿墙术",
         group: "墓地",
@@ -143,19 +143,19 @@ export const localGMConfig: GMData[] = [
             // })
         }
     },
-    {
-        label: "修改鬼的移动速度",
-        group: "墓地",
-        clientCmd: (player: Player, params: string) => {
-            // CommonUtils.blackDescription(player.character.description);
-            // player.character.syncDescription();
-        },
-        serverCmd: (player: Player, params: string) => {
-            ModuleService.getModule(GhostModuleS)["ghostMap"].forEach(e => {
-                e.ghostChar.maxWalkSpeed = Number(params);
-            })
-        }
-    },
+    // {
+    //     label: "修改鬼的移动速度",
+    //     group: "墓地",
+    //     clientCmd: (player: Player, params: string) => {
+    //         // CommonUtils.blackDescription(player.character.description);
+    //         // player.character.syncDescription();
+    //     },
+    //     serverCmd: (player: Player, params: string) => {
+    //         ModuleService.getModule(GhostModuleS)["ghostMap"].forEach(e => {
+    //             e.ghostChar.maxWalkSpeed = Number(params);
+    //         })
+    //     }
+    // },
     {
         label: "天气加速",
         group: "墓地",
@@ -235,26 +235,26 @@ export const localGMConfig: GMData[] = [
         serverCmd: (player: Player) => {
         }
     },
-    {
-        label: "无敌",
-        group: "无敌",
-        clientCmd: () => {
-            GhostInst.isInvincible = true;
-        },
-        serverCmd: (player: Player) => {
-            ModuleService.getModule(GhostModuleS).setPlayerCd(player, 999999999);
-        }
-    },
-    {
-        label: "取消无敌",
-        group: "无敌",
-        clientCmd: () => {
-            GhostInst.isInvincible = false;
-        },
-        serverCmd: (player: Player) => {
-            ModuleService.getModule(GhostModuleS).setPlayerCd(player, -100);
-        }
-    }
+    // {
+    //     label: "无敌",
+    //     group: "无敌",
+    //     clientCmd: () => {
+    //         GhostInst.isInvincible = true;
+    //     },
+    //     serverCmd: (player: Player) => {
+    //         ModuleService.getModule(GhostModuleS).setPlayerCd(player, 999999999);
+    //     }
+    // },
+    // {
+    //     label: "取消无敌",
+    //     group: "无敌",
+    //     clientCmd: () => {
+    //         GhostInst.isInvincible = false;
+    //     },
+    //     serverCmd: (player: Player) => {
+    //         ModuleService.getModule(GhostModuleS).setPlayerCd(player, -100);
+    //     }
+    // }
     ,
     {
         label: "解锁一个笔记",
@@ -274,14 +274,14 @@ export const localGMConfig: GMData[] = [
         },
         serverCmd: null,
     },
-    {
-        label: "打开行为树调试log",
-        group: "默认",
-        clientCmd: (player: mw.Player, params: string) => {
-            BehaviorNode.isOpenLog = true;
-        },
-        serverCmd: null,
-    },
+    // {
+    //     label: "打开行为树调试log",
+    //     group: "默认",
+    //     clientCmd: (player: mw.Player, params: string) => {
+    //         BehaviorNode.isOpenLog = true;
+    //     },
+    //     serverCmd: null,
+    // },
     {
         label: "设置自己简单难度的通关时间（秒）",
         group: "全服排行榜",

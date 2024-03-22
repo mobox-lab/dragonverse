@@ -7,7 +7,7 @@
  * @Description  : 
  */
 import { ArchiveHelper } from "../archive/ArchiveHelper";
-import { GhostModuleS } from "../ghost/GhostModuleS";
+// import { GhostModuleS } from "../ghost/GhostModuleS";
 import { ProcedureModuleS } from "../procedure/ProcedureModuleS";
 import PlayerData, { INIT_HP_NUM } from "./PlayerData";
 import { PlayerModuleC } from "./PlayerModuleC";
@@ -16,7 +16,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerData> {
     protected onPlayerJoined(player: mw.Player): void {
         this.getPlayerData(player).hpAction.add((hp: number) => {
             if (hp <= 0) {
-                ModuleService.getModule(GhostModuleS).setPlayerCd(player);
+                // ModuleService.getModule(GhostModuleS).setPlayerCd(player);
             }
         })
     }
@@ -74,7 +74,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerData> {
     }
 
     net_setKillCd(cd: number) {
-        ModuleService.getModule(GhostModuleS).setPlayerCd(this.currentPlayer, cd);
+        // ModuleService.getModule(GhostModuleS).setPlayerCd(this.currentPlayer, cd);
     }
 
     /** 直接设置玩家当前生命值 */

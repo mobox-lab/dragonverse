@@ -1,6 +1,6 @@
 import { IEvtCom, RegisterEvt } from "./IEvtCom";
 import { PlayerModuleC } from "../../player/PlayerModuleC";
-import GhostInst from "../../ghost/GhostInst";
+// import GhostInst from "../../ghost/GhostInst";
 import { MainUI } from "../../../ui/MainUI";
 import { NotebookPanel } from "../../procedure/ui/NotebookPanel";
 
@@ -9,9 +9,9 @@ export class DeathEvt implements IEvtCom {
     evtName: string = "evt_playerDeath";
 
     onGetCall(goid: string, aniGuid: string, dealyStr: string) {
-        if (GhostInst.isInvincible) {
-            return;
-        }
+        // if (GhostInst.isInvincible) {
+        //     return;
+        // }
         if (ModuleService.getModule(PlayerModuleC).isKilling) {
             return;
         }
@@ -34,9 +34,9 @@ export class DeathEvt2 implements IEvtCom {
     evtName: string = "evt_setPlayerDie";
 
     onGetCall(goid: string, dealyStr: string) {
-        if (GhostInst.isInvincible) {
-            return;
-        }
+        // if (GhostInst.isInvincible) {
+        //     return;
+        // }
         if (ModuleService.getModule(PlayerModuleC).isKilling) {
             return;
         }

@@ -3,7 +3,7 @@ import { MainUI } from "../../ui/MainUI";
 import { CommonUtils } from "../../utils/CommonUtils";
 import { BoardHelper } from "../blackboard/BoardDefine";
 import { CameraCG } from "../cameraCG/CameraCG";
-import { GhostModuleC } from "../ghost/GhostModuleC";
+// import { GhostModuleC } from "../ghost/GhostModuleC";
 import { InterEvtData, ObjInterDefine } from "../inter/ObjInterDefine";
 
 @Component
@@ -34,7 +34,7 @@ export default class CGPlayer extends Script {
             }
             UIService.hide(MainUI);
             this._curIndex = 0;
-            ModuleService.getModule(GhostModuleC).protectedPlayer(true);
+            // ModuleService.getModule(GhostModuleC).protectedPlayer(true);
             this.playAni();
         });
         Event.addLocalListener(BoardHelper.BoardLoadingEvt, () => {
@@ -52,7 +52,7 @@ export default class CGPlayer extends Script {
         child?.setVisibility(PropertyStatus.On, true);
         child?.setCollision(PropertyStatus.On, true);
         if (!cgelem) {
-            ModuleService.getModule(GhostModuleC).protectedPlayer(false);
+            // ModuleService.getModule(GhostModuleC).protectedPlayer(false);
             Player.localPlayer.character.setVisibility(PropertyStatus.On);
             UIService.show(MainUI);
             CameraCG.instance.exitFreeCamera();
@@ -67,7 +67,7 @@ export default class CGPlayer extends Script {
             child?.setCollision(PropertyStatus.Off, true);
             this._curIndex++;
             if (this._curIndex >= this.cgId.length) {
-                ModuleService.getModule(GhostModuleC).protectedPlayer(false);
+                // ModuleService.getModule(GhostModuleC).protectedPlayer(false);
                 Player.localPlayer.character.setVisibility(PropertyStatus.On);
                 UIService.show(MainUI);
                 CameraCG.instance.exitFreeCamera();

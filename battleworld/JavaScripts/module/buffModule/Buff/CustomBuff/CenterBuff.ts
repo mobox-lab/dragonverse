@@ -85,8 +85,8 @@ export class CenterBuffS extends BuffS_Base {
 
     private p_cast: mw.Player;
     private ticker: number = 0;
-    private fromPoint: mw.Vector = mw.Vector.zero;; // 起始点
-    private middlePoint: mw.Vector = mw.Vector.zero;; // 中间点
+    private fromPoint: mw.Vector = mw.Vector.zero; // 起始点
+    private middlePoint: mw.Vector = mw.Vector.zero; // 中间点
     private endPoint: mw.Vector = mw.Vector.zero; // 终止点
     private speed: number = 0; //速度
     private dalte: number = 0.1//间隔

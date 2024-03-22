@@ -6,8 +6,8 @@
  * @FilePath     : \hauntedparadise\JavaScripts\codes\modules\help\HelpModuleS.ts
  * @Description  : 
  */
-import { GhostModuleC } from "../ghost/GhostModuleC";
-import { PlayerModuleS } from "../player/PlayerModuleS";
+// import { GhostModuleC } from "../ghost/GhostModuleC";
+// import { PlayerModuleS } from "../player/PlayerModuleS";
 import HelpModuleC, { HelpTime } from "./HelpModuleC";
 
 export default class HelpModuleS extends ModuleS<HelpModuleC, null> {

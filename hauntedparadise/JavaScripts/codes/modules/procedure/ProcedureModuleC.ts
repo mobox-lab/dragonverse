@@ -24,7 +24,7 @@ import { GlobalSwitch } from "../../utils/GlobalSwitch";
 import TimeTransferUtil from "../../utils/TimeTransferUtil";
 import { BoardHelper, BoardKeys, DegreeType } from "../blackboard/BoardDefine";
 import { BuffModuleC } from "../buff/BuffModule";
-import { GhostModuleC } from "../ghost/GhostModuleC";
+// import { GhostModuleC } from "../ghost/GhostModuleC";
 import { PlayerAttr } from "../player/PlayerAttr";
 import { PlayerModuleC } from "../player/PlayerModuleC";
 import { RouteDataType } from "../route/RouteData";

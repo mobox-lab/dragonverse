@@ -12,7 +12,7 @@ import { LanUtil } from "../../utils/LanUtil";
 import { GhostTraceHelper } from "../../utils/TraceHelper";
 import { BoardHelper, BoardKeys } from "../blackboard/BoardDefine";
 import { GoPool } from "../cameraCG/utils/GoPoole";
-import { GhostModuleC } from "../ghost/GhostModuleC";
+// import { GhostModuleC } from "../ghost/GhostModuleC";
 import HelpModuleS from "./HelpModuleS";
 import { HelpInVisibleUI } from "./ui/HelpInVisableUI";
 import HelpUI from "./ui/HelpUI";
@@ -108,7 +108,7 @@ export default class HelpModuleC extends ModuleC<HelpModuleS, null> {
     /**无敌状态的切换 */
     changeInvincibilityState(isInvincible: boolean) {
         BoardHelper.ChangeKeyValue(BoardKeys.PlayerInvincible, isInvincible)
-        ModuleService.getModule(GhostModuleC).protectedPlayer(isInvincible);
+        // ModuleService.getModule(GhostModuleC).protectedPlayer(isInvincible);
 
     }
 

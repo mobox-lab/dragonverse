@@ -1,27 +1,28 @@
-import { GameConfig } from "../../config/GameConfig";
+import {GameConfig} from "../../config/GameConfig";
 import Main_UI_Generate from "../../ui-generate/ShareUI/Main_UI_generate";
-import GameStart, { EGameTheme } from "../GameStart";
-import { ArchiveDataType } from "../modules/archive/ArchiveHelper";
+import GameStart, {EGameTheme} from "../GameStart";
+import {ArchiveDataType} from "../modules/archive/ArchiveHelper";
 import ArchiveModuleC from "../modules/archive/ArchiveModuleC";
-import { BagItemData } from "../modules/bag/BagDefine";
+import {BagItemData} from "../modules/bag/BagDefine";
 import BagPanel from "../modules/bag/ui/BagPanel";
-import { EquipDefine } from "../modules/equip/EquipDefine";
-import GhostGraphPanel from "../modules/ghost/ui/GhostGraphPanel";
+import {EquipDefine} from "../modules/equip/EquipDefine";
+// import GhostGraphPanel from "../modules/ghost/ui/GhostGraphPanel";
 import IDCardPanel from "../modules/idcard/ui/IDCardPanel";
-import { ObjInterModuleC } from "../modules/inter/ObjInterModuleC";
-import { PlayerInterModuleC } from "../modules/inter/PlayerInterModule";
+import {ObjInterModuleC} from "../modules/inter/ObjInterModuleC";
+import {PlayerInterModuleC} from "../modules/inter/PlayerInterModule";
 import LockUI from "../modules/lock/LockUI";
 import HpHud from "../modules/player/ui/HpHud";
-import { ProcedureModuleC } from "../modules/procedure/ProcedureModuleC";
-import { EmProcedureState } from "../modules/procedure/const/EmProcedureState";
-import { NotebookPanel } from "../modules/procedure/ui/NotebookPanel";
+import {ProcedureModuleC} from "../modules/procedure/ProcedureModuleC";
+import {EmProcedureState} from "../modules/procedure/const/EmProcedureState";
+import {NotebookPanel} from "../modules/procedure/ui/NotebookPanel";
 import StoreModuleC from "../modules/store/StoreModuleC";
-import { CommonUtils } from "../utils/CommonUtils";
-import { GlobalSwitch } from "../utils/GlobalSwitch";
+import {CommonUtils} from "../utils/CommonUtils";
+import {GlobalSwitch} from "../utils/GlobalSwitch";
 import MusicMgr from "../utils/MusicMgr";
-import { default as EmojiUI, default as emojiUI } from "./EmojiUI";
+import {default as EmojiUI, default as emojiUI} from "./EmojiUI";
 import SetUI from "./SetUI";
-import { TipsUI } from "./TipsUI";
+import {TipsUI} from "./TipsUI";
+import BuildMaterialPanel from "../../modules/build-material/BuildMaterialPanel";
 
 
 /** 代表生命数量的图片 */
@@ -32,7 +33,9 @@ export class MainUI extends Main_UI_Generate {
 
     protected onAwake(): void {
         this.initButtons();
-        this.btn_notebook.onClicked.add(() => { UIService.show(NotebookPanel); });
+        this.btn_notebook.onClicked.add(() => {
+            UIService.show(NotebookPanel);
+        });
         // this.btn_catch.pressedMethod = mw.ButtonPressMethod.ButtonPress;
         this.btn_catch.clickMethod = mw.ButtonClickMethod.DownAndUp;
         this.btn_catch.touchMethod = ButtonTouchMethod.DownAndUp;
@@ -60,7 +63,7 @@ export class MainUI extends Main_UI_Generate {
         this.btn_catch.onClicked.add(() => {
             let curTIme = TimeUtil.elapsedTime();
             if (curTIme - this._lastTriggerTime < 0.5) {
-                console.error("操作过于频繁")
+                console.error("操作过于频繁");
                 return;
             }
             this._lastTriggerTime = curTIme;
@@ -69,14 +72,17 @@ export class MainUI extends Main_UI_Generate {
                 return;
             }
             ModuleService.getModule(ObjInterModuleC).triggerSelectItem();
-        })
+        });
         this.btn_setting.onClicked.add(() => {
             UIService.show(SetUI);
-        })
-
-        this.btn_camera.onClicked.add(() => {
-            UIService.show(GhostGraphPanel);
         });
+        this.btn_build_material.onClicked.add(() => {
+            UIService.show(BuildMaterialPanel);
+        });
+
+        // this.btn_camera.onClicked.add(() => {
+        //     UIService.show(GhostGraphPanel);
+        // });
 
         this.btn_idCard.onClicked.add(() => {
             UIService.show(IDCardPanel, Player.localPlayer.userId);
@@ -85,7 +91,7 @@ export class MainUI extends Main_UI_Generate {
         this.btn_switchposition.onClicked.add(() => {
             UIService.show(emojiUI);
             this.btn_switchposition.visibility = SlateVisibility.Collapsed;
-        })
+        });
 
         // this.btn_catch.onClicked.add(() => {
         //     let curTIme = TimeUtil.elapsedTime();
@@ -105,27 +111,33 @@ export class MainUI extends Main_UI_Generate {
         });
         this.btn_useprops.onClicked.add(() => {
             EquipDefine.activeUseEquip();
-        })
+        });
 
         if (GameStart.GameTheme === EGameTheme.Graveyard) {
             this.btn_jump.onClicked.clear();
             this.btn_jump.onClicked.add(() => {
                 MusicMgr.instance.play(2006);
-                if (!Player.localPlayer.character) { return; }
+                if (!Player.localPlayer.character) {
+                    return;
+                }
                 Player.localPlayer.character.jump();
             });
         } else {
-            this.btn_jump.onClicked.add(() => { Player.localPlayer.character.jump(); });
+            this.btn_jump.onClicked.add(() => {
+                Player.localPlayer.character.jump();
+            });
         }
         this.btn_shop.onClicked.add(() => {
-            ModuleService.getModule(StoreModuleC).openStore(1)
-        })
+            ModuleService.getModule(StoreModuleC).openStore(1);
+        });
 
-        this.setHandVisible(false)
+        this.setHandVisible(false);
         this.initEquipUse();
 
         /** 启用跳跃按钮 */
-        if (GlobalSwitch.enableJumpBtn()) { this.canvas_jump.visibility = SlateVisibility.SelfHitTestInvisible; }
+        if (GlobalSwitch.enableJumpBtn()) {
+            this.canvas_jump.visibility = SlateVisibility.SelfHitTestInvisible;
+        }
     }
 
     private initEquipUse() {
@@ -135,28 +147,25 @@ export class MainUI extends Main_UI_Generate {
                 if (cfg.isCanActiveUse) {
                     this.canvas_useprops.visibility = SlateVisibility.SelfHitTestInvisible;
                     this.img_props.imageGuid = cfg.icon;
-                }
-                else {
+                } else {
                     this.canvas_useprops.visibility = SlateVisibility.Collapsed;
                 }
                 if (cfg.isCanDiscard) {
                     this.canvas_discardItem.visibility = SlateVisibility.SelfHitTestInvisible;
-                }
-                else {
+                } else {
                     this.canvas_discardItem.visibility = SlateVisibility.Collapsed;
                 }
-            }
-            else {
+            } else {
                 this.canvas_useprops.visibility = SlateVisibility.Collapsed;
                 this.canvas_discardItem.visibility = SlateVisibility.Collapsed;
             }
-        })
+        });
     }
 
     /**
-     * 
+     *
      * @param needResetJoyStick 是否需要重置摇杆
-     * @returns 
+     * @returns
      */
     onShow(needResetJoyStick: boolean = true, needPriorBagView: boolean = false) {
         // 不在游戏流程中却被显示了就关闭
@@ -181,7 +190,7 @@ export class MainUI extends Main_UI_Generate {
 
     onHide() {
         this.mVirtualJoystickPanel.resetJoyStick();
-        console.log("ressetJoyStick")
+        console.log("ressetJoyStick");
         UIService.hide(HpHud);
         UIService.hide(EmojiUI);
         UIService.getUI(TipsUI).setCatVisiable(false);
@@ -192,25 +201,27 @@ export class MainUI extends Main_UI_Generate {
     /** 是否静止交互UI的显示 */
     public banHandUIVisible: boolean = false;
 
-    private _priority: number = 0
+    private _priority: number = 0;
 
     /**
      * 设置手的显隐
      * @param visible 是否显示
      * @param priority 显示的优先级，优先级高的会覆盖优先级低的
-     * @returns 
+     * @returns
      */
     public setHandVisible(visible: boolean, priority: number = 0, isSync: boolean = true) {
         isSync && Event.dispatchToLocal("SetHandVisible", visible);
-        if (visible && this.banHandUIVisible) { console.error("交互UI显示失败，被ban了！"); return; }
+        if (visible && this.banHandUIVisible) {
+            console.error("交互UI显示失败，被ban了！");
+            return;
+        }
 
         if (this._priority > priority) {
             return;
         }
         if (visible) {
             this._priority = priority;
-        }
-        else {
+        } else {
             this._priority = 0;
         }
 
@@ -226,7 +237,9 @@ export class MainUI extends Main_UI_Generate {
 
     public changeClockUI(color: LinearColor) {
         // this.mCanvas_pointer.renderTransformAngle = time / AllTimeSecond * 360;
-        if (!this.img_moon || !this.img_moon.imageColor) { return; }
+        if (!this.img_moon || !this.img_moon.imageColor) {
+            return;
+        }
         this.img_moon.imageColor = color;
         //计算当前时间24小时制
         //  this.text_timenew.text = (Math.floor(time / AllTimeSecond * 24) + ":" + ((time / AllTimeSecond * 24 - Math.floor(time / AllTimeSecond * 24)) * 60).toFixed(0));

@@ -1,5 +1,5 @@
 import { BoardHelper, BoardKeys } from "../../blackboard/BoardDefine";
-import GhostGraphPanel from "../../ghost/ui/GhostGraphPanel";
+// import GhostGraphPanel from "../../ghost/ui/GhostGraphPanel";
 import { IEvtCom, RegisterEvt } from "./IEvtCom";
 
 @RegisterEvt
@@ -9,9 +9,9 @@ export class OpenUIEvt implements IEvtCom {
     private _uimap: Map<string, any> = new Map();
 
     public constructor() {
-        this._uimap.set("GhostGraphPanel", () => {
-            UIService.show(GhostGraphPanel);
-        });
+        // this._uimap.set("GhostGraphPanel", () => {
+        //     UIService.show(GhostGraphPanel);
+        // });
     }
 
     onGetCall(goid: string, key: string) {

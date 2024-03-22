@@ -1,5 +1,5 @@
 
-import { SoundParam } from "../../../../ghost/GhostDefine";
+// import { SoundParam } from "../../../../ghost/GhostDefine";
 import { CSEditor } from "../../../CSEditor";
 import { EventFrameInfo } from "../../../model/info/EventFrameInfo";
 import { CSEffectInfoUI_Generate } from "../../../ui/generate/frameInfo/CSEffectInfoUI_generate";

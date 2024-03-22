@@ -2,7 +2,7 @@ import { IItemElement } from "../../../../config/Item";
 import { CommonUtils } from "../../../utils/CommonUtils";
 import MusicMgr from "../../../utils/MusicMgr";
 import { BoardHelper, BoardKeys } from "../../blackboard/BoardDefine";
-import { GhostBananeEvt } from "../../ghost/com/ClientGhostCheckCom";
+// import { GhostBananeEvt } from "../../ghost/com/ClientGhostCheckCom";
 import { registerItem, Item } from "./Item";
 
 @registerItem
@@ -56,7 +56,7 @@ export class BananeItem extends Item {
             go.worldTransform.position = loc;
         }).onComplete(() => {
             MusicMgr.instance.play(101);
-            Event.dispatchToLocal(GhostBananeEvt, go, isEffectChase, cfgId)
+            // Event.dispatchToLocal(GhostBananeEvt, go, isEffectChase, cfgId)
             setTimeout(() => {
                 go.destroy();
             }, 2000);
