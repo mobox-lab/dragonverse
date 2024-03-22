@@ -25,8 +25,6 @@ export default class TimeModuleC extends ModuleC<TimeModuleS, null> {
 
     protected onStart(): void {
         this.startSkyBoxChange();
-        UIService.getUI(MainUI).canvas_time.visibility = SlateVisibility.SelfHitTestInvisible;
-        UIService.getUI(MainUI).life_canvas.visibility = mw.SlateVisibility.Collapsed;
 
     }
 
