@@ -6,17 +6,18 @@
  * @FilePath     : \hauntedparadise\JavaScripts\modules\build\helper\BuildingHelper.ts
  * @Description  : 
  */
-import { BuildingBase } from "../building/BuildingBase";
-import { GameConfig } from "../../../config/GameConfig";
-import { BuildModuleC } from "../BuildModuleC";
-import { BuildModuleS } from "../BuildModuleS";
+import {BuildingBase} from "../building/BuildingBase";
+import {GameConfig} from "../../../config/GameConfig";
+import {BuildModuleC} from "../BuildModuleC";
+import {BuildModuleS} from "../BuildModuleS";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 
 export namespace BuildingHelper {
 
     /**
      * 一次更新多少个建筑
-    */
+     */
     export let UpdateMaxCount = 20;
     /**
      * 显示个数
@@ -38,16 +39,15 @@ export namespace BuildingHelper {
 
     /**
      * 根据建筑对象的guid获取建筑实例(性能不好)
-     * @param guid 
-     * @returns 
+     * @param guid
+     * @returns
      */
     export function tryGetBuildingByGuid(guid: string) {
         let buildings: IterableIterator<BuildingBase>;
 
         if (SystemUtil.isServer()) {
             buildings = ModuleService.getModule(BuildModuleS).buildingMap.values();
-        }
-        else {
+        } else {
             buildings = ModuleService.getModule(BuildModuleC).buildingMap.values();
         }
 
@@ -58,33 +58,31 @@ export namespace BuildingHelper {
 
     /**
      * 更高性能的方法
-     * @param go 
-     * @returns 
+     * @param go
+     * @returns
      */
     export function tryGetBuildingByGO(go: GameObject) {
         if (!go["BuildingUUID"]) return;
 
         if (SystemUtil.isServer()) {
             return ModuleService.getModule(BuildModuleS).buildingMap.get(go["BuildingUUID"]);
-        }
-        else {
+        } else {
             return ModuleService.getModule(BuildModuleC).buildingMap.get(go["BuildingUUID"]);
         }
     }
 
     /**
      * 攻击建筑
-     * @param go 
-     * @param damage 
-     * @returns 
+     * @param go
+     * @param damage
+     * @returns
      */
     export function tryHurtBuilding(go: GameObject, damage: number) {
         const building = tryGetBuildingByGO(go);
         if (!building) return false;
         if (SystemUtil.isServer()) {
             ModuleService.getModule(BuildModuleS).net_ChangeBuildingHP(building.info.uuid, damage);
-        }
-        else {
+        } else {
             ModuleService.getModule(BuildModuleC).reqHurt(building.info.uuid, damage);
         }
         return true;
@@ -93,12 +91,14 @@ export namespace BuildingHelper {
     export function getBuildCfgByItemId(itemId: number) {
         const itemCfg = GameConfig.Item.getElement(itemId);
         if (!itemCfg) {
-            throw new Error("MyTypeError itemCfg not found ,id:" + itemId);
+            Log4Ts.log(getBuildCfgByItemId, `building cfg of item id: ${itemId} not found.`);
+            return null;
         }
-        const buildId = Number.parseInt(itemCfg.clazzParam[0])
+        const buildId = Number.parseInt(itemCfg.clazzParam[0]);
         const buildCfg = GameConfig.Building.getElement(buildId);
         if (!buildCfg) {
-            throw new Error("MyTypeError buildCfg not found ,id:" + buildId);
+            Log4Ts.log(getBuildCfgByItemId, `building cfg of item id: ${itemId} not found.`);
+            return null;
         }
         return buildCfg;
     }
