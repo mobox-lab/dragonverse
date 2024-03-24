@@ -8,6 +8,7 @@ import {BuildingHelper} from "../build/helper/BuildingHelper";
 import Gtk from "../../utils/GToolkit";
 import stopEffect = Yoact.stopEffect;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import {BagModuleC} from "../../codes/modules/bag/BagModuleC";
 
 export default class BuildMaterialPanel extends Building_UI_Generate {
 //#region Constant
@@ -26,6 +27,14 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
     private _waitBtnHoldId: number = null;
 
     private _selectEffects: Yoact.Effect[] = [];
+
+    private _bagModuleC: BagModuleC;
+
+    private get bagModuleC(): BagModuleC | null {
+        if (!this._bagModuleC) this._bagModuleC = ModuleService.getModule(BagModuleC);
+        return this._bagModuleC;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld UI Event
@@ -64,8 +73,8 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
                 stopEffect(effect);
             }
             this._selectEffects.length = 0;
-            this.mName.text = GameConfig.Language[GameConfig.Item.getElement(key).name] ?? "";
-            this.mDesc.text = GameConfig.Language[GameConfig.Item.getElement(key).description] ?? "";
+            this.mName.text = GameConfig.Language[GameConfig.Item.getElement(key).name] ?? GameConfig.Item.getElement(key).name;
+            this.mDesc.text = GameConfig.Language[GameConfig.Item.getElement(key).description] ?? GameConfig.Item.getElement(key).description;
             // this.mIcon.imageGuid = GameConfig.BagItem.getElement(key).icon;
             // this._selectEffects.push(bindYoact(() => {
             //     this.mNum.text = i18n.lan(i18n.lanKeys.Bag_006) + ` ${data.count}`;
@@ -117,13 +126,21 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
         Gtk.setButtonGuid(this.mBtnOpt, BuildMaterialPanel.NOT_ENOUGH_BTN_IMG_GUID);
         this.mBtnOpt.enable = true;
         this.mBtnOpt.onClicked.clear();
+        let config = BuildingHelper.getBuildCfgByItemId(id);
+        if (!config) {
+            Log4Ts.log(BuildMaterialPanel, `cant query build config of item id: ${id}.`);
+            return;
+        }
+
         this.mBtnOpt.onClicked.add(
             () => {
                 this._waitBtnHoldId = mw.setTimeout(
                     () => this.judgeEnough(id),
                     BuildMaterialPanel.MIN_CLICK_INTERVAL
                 );
-                //TODO_LviatYi Buy
+                this.bagModuleC.pay(config.buildMaterial
+                    .map(item => [item[0] ?? -1, item[1] ?? 0] as [number, number])
+                    .filter(item => item[0] !== -1));
                 this.showNotEnoughBtn();
             },
         );
@@ -150,8 +167,18 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
         if (this._waitBtnHoldId) {
             clearTimeout(this._waitBtnHoldId);
         }
-        //TODO_LviatYi 判断是否足够支付
-        if (Math.random() > 0.5) {
+        let show = true;
+        let config = BuildingHelper.getBuildCfgByItemId(id);
+        if (!config) {
+            Log4Ts.log(BuildMaterialPanel, `cant query build config of item id: ${id}.`);
+            show = false;
+        }
+        if (show) {
+            show = show && this.bagModuleC.afford(config.buildMaterial
+                .map(item => [item[0] ?? -1, item[1] ?? 0] as [number, number])
+                .filter(item => item[0] !== -1));
+        }
+        if (show) {
             this.showEnoughBtn(id);
         } else {
             this.showNotEnoughBtn();

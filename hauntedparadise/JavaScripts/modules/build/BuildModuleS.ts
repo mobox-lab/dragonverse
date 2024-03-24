@@ -136,7 +136,7 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
             if (dataRaw) {
                 const data = JSON.parse(dataRaw as string) as HsTeleportData;
                 this.setIsVisitor(player.playerId, data.isVisitor);
-                //TODO_LviatYi jump to player's island.
+                ModuleService.getModule(HomeModuleS).transportPlayerToHome(player, data.visitorTo);
             }
         });
     }
