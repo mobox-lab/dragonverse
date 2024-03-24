@@ -71,6 +71,10 @@ import {BuildModuleS} from "../modules/build/BuildModuleS";
 import {BuildModuleC} from "../modules/build/BuildModuleC";
 import {HomeModuleS} from "../modules/home/HomeModuleS";
 import {HomeModuleC} from "../modules/home/HomeModuleC";
+import BuildMaterialModuleData, {
+    BuildMaterialModuleC,
+    BuildMaterialModuleS
+} from "../modules/build-material/BuildMaterialModule";
 
 /**
  * 游戏主题
@@ -96,6 +100,7 @@ export enum EGameTheme {
     /** 占位 */
     Empty = "Empty"
 }
+
 /** odin启动类 */
 @Component
 export default class GameStart extends mw.Script {
@@ -261,6 +266,7 @@ export default class GameStart extends mw.Script {
             ModuleService.registerModule(TreasureModuleS, TreasureModuleC, TreasureData);
         }
         this.isOpenTimer && ModuleService.registerModule(TimeModuleS, TimeModuleC);
+        ModuleService.registerModule(BuildMaterialModuleS, BuildMaterialModuleC, BuildMaterialModuleData);
         ModuleService.registerModule(IDCardModuleS, IDCardModuleC);
         ModuleService.registerModule(BuildModuleS, BuildModuleC);
         ModuleService.registerModule(BuffModuleS, BuffModuleC);
