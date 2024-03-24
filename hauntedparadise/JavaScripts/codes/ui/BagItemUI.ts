@@ -6,17 +6,17 @@
  * @FilePath     : \hauntedparadise\JavaScripts\codes\ui\BagItemUI.ts
  * @Description  : 
  */
-import { GameConfig } from "../../config/GameConfig";
-import { BagItemData } from "../modules/bag/BagDefine";
-import { EquipDefine } from "../modules/equip/EquipDefine";
+import {GameConfig} from "../../config/GameConfig";
+import {BagItemData} from "../modules/bag/BagDefine";
+import {EquipDefine} from "../modules/equip/EquipDefine";
 import Prop_UI_Generate from "../../ui-generate/ShareUI/Prop_UI_generate";
-import { CommonUtils } from "../utils/CommonUtils";
+import {CommonUtils} from "../utils/CommonUtils";
 import Tips from "../utils/Tips";
-import { GlobalSwitch } from "../utils/GlobalSwitch";
+import {GlobalSwitch} from "../utils/GlobalSwitch";
 import BagPanel from "../modules/bag/ui/BagPanel";
-import { IItemElement } from "../../config/Item";
-import { BagItemOperateHud } from "../modules/bag/ui/BagItemOperateHud";
-import { ItemUseBox } from "../modules/bag/ui/ItemUseBox";
+import {IItemElement} from "../../config/Item";
+import {BagItemOperateHud} from "../modules/bag/ui/BagItemOperateHud";
+import {ItemUseBox} from "../modules/bag/ui/ItemUseBox";
 
 export enum EBagItemType {
 
@@ -82,7 +82,9 @@ export class BagItemUI extends Prop_UI_Generate {
 
     /** 装备东西点击回调 */
     private onEquipClick() {
-        if (!this.data) { return; }
+        if (!this.data) {
+            return;
+        }
         if (this.isSelected) {
             EquipDefine.EquipItem(null);
         } else {
@@ -96,9 +98,12 @@ export class BagItemUI extends Prop_UI_Generate {
 
     /** 改变顺序点击回调 */
     private onTriggerClick() {
-        if (UIService.getUI(ItemUseBox).visible) { return; }
-        if (this.selfPanel.isChangeMode) { this.triggerMove(); }
-        else {
+        if (UIService.getUI(ItemUseBox).visible) {
+            return;
+        }
+        if (this.selfPanel.isChangeMode) {
+            this.triggerMove();
+        } else {
             const lastClickedItem = this.selfPanel.checkExistSelectedItem();
             lastClickedItem && lastClickedItem.onSelect.call();
             if (this.data) {
@@ -114,8 +119,12 @@ export class BagItemUI extends Prop_UI_Generate {
     /** 第一版 直接交换版 */
     private triggerChange() {
         const lastClickedItem = this.selfPanel.checkExistSelectedItem();
-        if (!lastClickedItem && !this.data) { return; }
-        if (this.data) { Tips.show(this.cfg.name); }
+        if (!lastClickedItem && !this.data) {
+            return;
+        }
+        if (this.data) {
+            Tips.show(this.cfg.name);
+        }
         if (lastClickedItem) {
             lastClickedItem.onSelect.call();
             if (lastClickedItem != this) {
@@ -128,14 +137,17 @@ export class BagItemUI extends Prop_UI_Generate {
                     this.selfPanel.reqChangeTwoItem(lastClickedItem, this);
                 }
             }
+        } else {
+            this.onSelect.call();
         }
-        else { this.onSelect.call(); }
     }
 
     /** 第二版 有触发移动操作前的交换 */
     private triggerMove() {
         const lastClickedItem = this.selfPanel.checkExistSelectedItem();
-        if (!lastClickedItem && !this.data) { return; }
+        if (!lastClickedItem && !this.data) {
+            return;
+        }
         lastClickedItem.onSelect.call();
         if (lastClickedItem != this) {
             // 两个配置相同的情况，考虑合并
@@ -153,17 +165,23 @@ export class BagItemUI extends Prop_UI_Generate {
     public setSelected(isTrue: boolean) {
         this.isSelected = isTrue;
         this.img_line.imageColor = isTrue ? BagItemUI.selectColor : BagItemUI.unSelectColor;
-        if (!isTrue) { this.hideAllInfo() };
+        if (!isTrue) {
+            this.hideAllInfo();
+        }
+        ;
     }
 
     /**
      * 设置这个格子的数据
-     * @param data 
+     * @param data
      * @param needSync 是否需要同步，默认不用
-     * @returns 
+     * @returns
      */
     public setData(data: BagItemData, needSync: boolean = false) {
-        if (data.count <= 0) { this.setAsEmpty(); return; }
+        if (data.count <= 0) {
+            this.setAsEmpty();
+            return;
+        }
         this.data = data;
         // nodeId变了需要同步
         if (this.data.nodeId != this.nodeId || needSync) {
@@ -172,13 +190,15 @@ export class BagItemUI extends Prop_UI_Generate {
         }
         let cfg = GameConfig.Item.getElement(data.cfgId);
         this.cfg = cfg;
-        if (!cfg) { console.error(`item表找不到这个配置啊${data.cfgId}`); return; }
+        if (!cfg) {
+            console.error(`item表找不到这个配置啊${data.cfgId}`);
+            return;
+        }
         this.img_prop.visibility = SlateVisibility.SelfHitTestInvisible;
         this.img_prop.imageGuid = cfg.icon;
         if (cfg.maxCount > 1) {
             this.text_num.text = data.count.toString();
-        }
-        else {
+        } else {
             this.text_num.text = "";
         }
 
@@ -195,7 +215,7 @@ export class BagItemUI extends Prop_UI_Generate {
             this.text_type.text = txtTips;
         }
 
-        this.img_quality.imageGuid = GameConfig.ItemQuality.getElement(cfg.quality).imgGuid;
+        this.img_quality.imageGuid = GameConfig.ItemQuality.getElement(cfg.quality)?.imgGuid ?? "";
 
         this.hideAllInfo();
     }

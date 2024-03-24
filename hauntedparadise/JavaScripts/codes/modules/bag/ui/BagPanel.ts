@@ -3,7 +3,6 @@ import Bag_UI_Generate from "../../../../ui-generate/ShareUI/Bag_UI_generate";
 import {Const} from "../../../Defines";
 import {BagItemUI, EBagItemType} from "../../../ui/BagItemUI";
 import {TimerOnly} from "../../../utils/AsyncTool";
-import {GlobalSwitch} from "../../../utils/GlobalSwitch";
 import Tips from "../../../utils/Tips";
 import {GridSelectContainer} from "../../../utils/UIPool";
 import {EquipDefine} from "../../equip/EquipDefine";
