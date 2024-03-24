@@ -3,6 +3,7 @@ import IUnique from "../../depend/yoact/IUnique";
 import IYoactArray from "../../depend/yoact/IYoactArray";
 import {GameConfig} from "../../config/GameConfig";
 import {BuildingItem} from "../build/building/BuildingItem";
+import YoactArray from "../../depend/yoact/YoactArray";
 
 export enum BuildingTypes {
     /**
@@ -66,7 +67,7 @@ export class BuildMaterialModuleC extends JModuleC<BuildMaterialModuleS, BuildMa
 //#region Member
     private _eventListeners: EventListener[] = [];
 
-    public buildMaterialYoact: IYoactArray<BuildMaterialUnique>;
+    public buildMaterialYoact: IYoactArray<BuildMaterialUnique> = new YoactArray();
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event

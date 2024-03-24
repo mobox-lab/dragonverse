@@ -3,10 +3,11 @@ import {Yoact} from "../../depend/yoact/Yoact";
 import Building_UI_Generate from "../../ui-generate/ShareUI/Building/Building_UI_generate";
 import {BuildingTypes, BuildMaterialModuleC, BuildMaterialUnique} from "./BuildMaterialModule";
 import BuildMaterialPanelItem from "./BuildMaterialPanelItem";
-import stopEffect = Yoact.stopEffect;
 import {GameConfig} from "../../config/GameConfig";
 import {BuildingHelper} from "../build/helper/BuildingHelper";
 import Gtk from "../../utils/GToolkit";
+import stopEffect = Yoact.stopEffect;
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export default class BuildMaterialPanel extends Building_UI_Generate {
 //#region Constant
@@ -44,6 +45,7 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
         );
         this.btn1.onClicked.add(() => this.setCategory(BuildingTypes.Building));
         this.btn2.onClicked.add(() => this.setCategory(BuildingTypes.Furniture));
+        this.setCategory(BuildingTypes.Building);
         this._scrollView = new ScrollView<BuildMaterialUnique, BuildMaterialPanelItem>(
             this._buildMaterialModule.buildMaterialYoact,
             BuildMaterialPanelItem,
@@ -158,8 +160,13 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
 
     private setCategory(type: BuildingTypes) {
         this._buildMaterialModule.buildMaterialYoact
-            .filter((item) =>
-                BuildingHelper.getBuildCfgByItemId(item.id).buildType === type);
+            .filter((item) => {
+                    let config = BuildingHelper.getBuildCfgByItemId(item.id);
+                    if (config) return BuildingHelper.getBuildCfgByItemId(item.id).buildType === type;
+                    Log4Ts.log(BuildMaterialPanel, `cant query build config of item id: ${item.id}.`);
+                    return false;
+                }
+            );
         switch (type) {
             case BuildingTypes.Building:
                 Gtk.setButtonGuid(this.btn1, BuildMaterialPanel.CATEGORY_CHOSEN_IMG_GUID);

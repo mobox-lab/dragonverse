@@ -121,7 +121,7 @@ export default class HomeScript extends Script {
     private async bindWorldUI() {
         // 先找到那个牌子
         this.homeInfoObj = GameObject.findGameObjectById(this.homeObjId);
-        this.tipsInfoComponent = this.homeInfoObj.getScripts()[0] as HandTriggerCom;
+        this.tipsInfoComponent = this.homeInfoObj.getComponents<HandTriggerCom>()[0];
         if (!this.homeInfoObj) {
             return;
         }
