@@ -3,14 +3,7 @@
 
  @UIBind('UI/ShareUI/Build_UI.ui')
  export default class Build_UI_Generate extends UIScript {
-	 	private mImageBackground_Internal: mw.Image
-	public get mImageBackground(): mw.Image {
-		if(!this.mImageBackground_Internal&&this.uiWidgetBase) {
-			this.mImageBackground_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImageBackground') as mw.Image
-		}
-		return this.mImageBackground_Internal
-	}
-	private canvas_place_Internal: mw.Canvas
+	 	private canvas_place_Internal: mw.Canvas
 	public get canvas_place(): mw.Canvas {
 		if(!this.canvas_place_Internal&&this.uiWidgetBase) {
 			this.canvas_place_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place') as mw.Canvas
@@ -72,6 +65,13 @@
 			this.btn_place2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/btn_place2') as mw.StaleButton
 		}
 		return this.btn_place2_Internal
+	}
+	private canvas_buildIcon_Internal: mw.Canvas
+	public get canvas_buildIcon(): mw.Canvas {
+		if(!this.canvas_buildIcon_Internal&&this.uiWidgetBase) {
+			this.canvas_buildIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/canvas_buildIcon') as mw.Canvas
+		}
+		return this.canvas_buildIcon_Internal
 	}
 	private canvas_direction_Internal: mw.Canvas
 	public get canvas_direction(): mw.Canvas {

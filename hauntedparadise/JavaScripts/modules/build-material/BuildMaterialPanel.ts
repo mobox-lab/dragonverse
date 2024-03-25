@@ -33,7 +33,7 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
 
     private _bagModuleC: BagModuleC;
 
-    private resourceItems: BuildMaterialItemPanel[] = [];
+    private _resourceItems: BuildMaterialItemPanel[] = [];
 
     private get bagModuleC(): BagModuleC | null {
         if (!this._bagModuleC) this._bagModuleC = ModuleService.getModule(BagModuleC);
@@ -85,17 +85,17 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
                 this.mName.text = GameConfig.Language[config.name] ?? config.name;
                 this.mDesc.text = GameConfig.Language[config.description] ?? config.description;
                 let i = 0;
-                for (; i < this.resourceItems.length && i < buildingConfig.buildMaterial.length; ++i) {
-                    this.resourceItems[i].setVisible(true);
-                    this.resourceItems[i].init(buildingConfig.buildMaterial[i][0], buildingConfig.buildMaterial[i][1]);
+                for (; i < this._resourceItems.length && i < buildingConfig.buildMaterial.length; ++i) {
+                    this._resourceItems[i].setVisible(true);
+                    this._resourceItems[i].init(buildingConfig.buildMaterial[i][0], buildingConfig.buildMaterial[i][1]);
                 }
-                for (; i < this.resourceItems.length || i < buildingConfig.buildMaterial.length; ++i) {
-                    if (i < this.resourceItems.length) {
-                        this.resourceItems[i].setVisible(false);
+                for (; i < this._resourceItems.length || i < buildingConfig.buildMaterial.length; ++i) {
+                    if (i < this._resourceItems.length) {
+                        this._resourceItems[i].setVisible(false);
                     } else {
                         const newItem = UIService.create(BuildMaterialItemPanel).init(buildingConfig.buildMaterial[i][0], buildingConfig.buildMaterial[i][1]);
                         this.materialCanvas.addChild(newItem.uiObject);
-                        this.resourceItems.push(newItem);
+                        this._resourceItems.push(newItem);
                     }
                 }
             } catch (e) {
@@ -151,7 +151,7 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
 
                 UIService.hide(BuildMaterialPanel);
                 BuildingEditorHelper.instance.openEdit(id).then(() => {
-                    UIService.show(BuildPanel, config.id);
+                    UIService.show(BuildPanel, id);
                 });
                 this.showNotEnoughBtn();
             },

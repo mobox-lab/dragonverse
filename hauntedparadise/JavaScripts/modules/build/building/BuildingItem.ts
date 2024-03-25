@@ -32,7 +32,7 @@ export class BuildingItem extends Item {
         UIService.hide(PickHud);
         BuildingEditorHelper.instance.openEdit(element.id).then(() => {
             // 打开建造界面
-            UIService.show(BuildPanel, Number(element.clazzParam[0]));
+            UIService.show(BuildPanel, element.id);
         });
     }
     protected onRemoveHand(element: IItemElement, ownerId: number): void {

@@ -16,6 +16,10 @@ import Build_UI_Generate from "../../../ui-generate/ShareUI/Build_UI_generate";
 import {BuildModuleC} from "../BuildModuleC";
 import {BuildingEditorHelper} from "../helper/BuildingEditorHelper";
 import {BagModuleC} from "../../../codes/modules/bag/BagModuleC";
+import {BuildingHelper} from "../helper/BuildingHelper";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import BuildMaterialItemPanel from "../../build-material/BuildMaterialItemPanel";
+import BuildingIconPanel from "./BuildingIconPanel";
 
 
 export class BuildPanel extends Build_UI_Generate {
@@ -26,15 +30,22 @@ export class BuildPanel extends Build_UI_Generate {
     /** 旋转值 */
     private moveNum: number = 90;
 
+    private itemId: number;
+
     private buildingId: number = 1;
 
+    private _resourceItems: BuildingIconPanel[] = [];
+
     onShow(itemId: number) {
-        this.buildingId = itemId;
+        this.itemId = itemId;
+        let config = BuildingHelper.getBuildCfgByItemId(itemId);
+        this.buildingId = config.id;
         if (this.buildingId === 1) {
             this.canvas_place.visibility = SlateVisibility.Collapsed;
         } else {
             this.canvas_place.visibility = SlateVisibility.SelfHitTestInvisible;
         }
+        this.judgeResource();
     }
 
     onStart() {
@@ -90,6 +101,8 @@ export class BuildPanel extends Build_UI_Generate {
             this.rotateOffsetZ = 0;
             this.canUpdate = false;
         });
+
+        this.btn_close.onClicked.add(() => this.exit());
     }
 
     onHide() {
@@ -127,8 +140,43 @@ export class BuildPanel extends Build_UI_Generate {
             MusicMgr.instance.play(2004);
         }
         if (exit) {
-            UIService.hide(BuildPanel);
-            BuildingEditorHelper.instance.cancelEdit();
+            this.exit();
+        } else {
+            this.judgeResource();
+        }
+    }
+
+    private exit() {
+        UIService.hide(BuildPanel);
+        BuildingEditorHelper.instance.cancelEdit();
+    }
+
+    private judgeResource() {
+        const buildingConfig = GameConfig.Building.getElement(this.buildingId);
+        if (!buildingConfig) {
+            Log4Ts.log(BuildPanel, `building Config is null`);
+            return false;
+        }
+
+
+        let i = 0;
+        for (; i < this._resourceItems.length && i < buildingConfig.buildMaterial.length; ++i) {
+            this._resourceItems[i].setVisible(true);
+            this._resourceItems[i].init(
+                GameConfig.Item.getElement(buildingConfig.buildMaterial[i][0])?.icon ?? "",
+                buildingConfig.buildMaterial[i][1]);
+        }
+        for (; i < this._resourceItems.length || i < buildingConfig.buildMaterial.length; ++i) {
+            if (i < this._resourceItems.length) {
+                this._resourceItems[i].setVisible(false);
+            } else {
+                const newItem = UIService
+                    .create(BuildingIconPanel)
+                    .init(GameConfig.Item.getElement(buildingConfig.buildMaterial[i][0])?.icon ?? "",
+                        buildingConfig.buildMaterial[i][1]);
+                this.canvas_buildIcon.addChild(newItem.uiObject);
+                this._resourceItems.push(newItem);
+            }
         }
     }
 }
