@@ -1,29 +1,28 @@
-
-
-import { BuildingBase } from "./building/BuildingBase";
-import { AddGMCommand } from "module_gm";
-import { BuildModuleS } from "./BuildModuleS";
-import { BuildingEditorHelper } from "./helper/BuildingEditorHelper";
-import { BuildingInfo } from "./building/BuildingInfo";
-import { BuildingHelper } from "./helper/BuildingHelper";
-import { BagDefine } from "../../codes/modules/bag/BagDefine";
-import { BuildingFactory } from "./building/BuildingFactory";
+import {BuildingBase} from "./building/BuildingBase";
+import {AddGMCommand} from "module_gm";
+import {BuildModuleS} from "./BuildModuleS";
+import {BuildingEditorHelper} from "./helper/BuildingEditorHelper";
+import {BuildingInfo} from "./building/BuildingInfo";
+import {BuildingHelper} from "./helper/BuildingHelper";
+import {BagDefine} from "../../codes/modules/bag/BagDefine";
+import {BuildingFactory} from "./building/BuildingFactory";
 import Tips from "../../codes/utils/Tips";
-import { Event_LoadArchiveData } from "../../codes/modules/procedure/const/Events";
-import { ArchiveData } from "../../codes/modules/archive/ArchiveHelper";
-import { GameConfig } from "../../config/GameConfig";
-import { CommonUtils } from "../../codes/utils/CommonUtils";
-import { LanUtil } from "../../codes/utils/LanUtil";
+import {Event_LoadArchiveData} from "../../codes/modules/procedure/const/Events";
+import {ArchiveData} from "../../codes/modules/archive/ArchiveHelper";
+import {GameConfig} from "../../config/GameConfig";
+import {CommonUtils} from "../../codes/utils/CommonUtils";
+import {LanUtil} from "../../codes/utils/LanUtil";
+import {BagModuleC} from "../../codes/modules/bag/BagModuleC";
 
 
 AddGMCommand("确认编辑", (p, args: string) => {
     BuildingEditorHelper.instance.confirmEdit();
-}, null, "建筑模块")
+}, null, "建筑模块");
 AddGMCommand("增加建筑(id,num)", null, (p, args: string) => {
     const [id, num] = args.split(",");
     const itemId = +id;
     const count = +num;
-    const infos = []
+    const infos = [];
     for (let i = 0; i < count; i++) {
         const info = new BuildingInfo();
         info.itemId = itemId;
@@ -31,11 +30,12 @@ AddGMCommand("增加建筑(id,num)", null, (p, args: string) => {
         info.rot = p.character.worldTransform.rotation.clone();
         infos.push(info);
     }
-    const m = ModuleService.getModule(BuildModuleS)
+    const m = ModuleService.getModule(BuildModuleS);
     m.net_createBuilding(infos, p.userId).then(() => {
-        Event.dispatchToClient(p, "tips_build", "build go:" + m.buildingMap.size + "info:" + m["buildingInfoMap"].size)
+        Event.dispatchToClient(p, "tips_build", "build go:" + m.buildingMap.size + "info:" + m["buildingInfoMap"].size);
     });
-}, "建筑模块")
+}, "建筑模块");
+
 /**
  * Build模块Client端
  */
@@ -44,7 +44,9 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
     /** 使用之前检测合法性 */
     async checkIllegal(uuid: string): Promise<boolean> {
         let illegal = await this.server.net_checkIllegal(uuid);
-        if (!illegal) { Tips.show("不可操作该建筑"); }
+        if (!illegal) {
+            Tips.show("不可操作该建筑");
+        }
         return illegal;
     }
 
@@ -52,19 +54,23 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
     buildingInfoMap = new Map<string, BuildingInfo>();
     showTimer = 0;
     showFlag = false;
+
     protected onStart(): void {
 
         BuildingHelper.MoveSpeed = GameConfig.Global["BuildDropSpeed"]["number"];
 
         Event.addServerListener("tips_build", (str: string) => {
             Tips.show(str);
-        })
+        });
         // 加载家园建筑
         Event.addLocalListener(Event_LoadArchiveData, (data: ArchiveData) => {
             this.reqInitHome();
-        })
+        });
 
-        Event.addLocalListener("ClearBuildingDirtyMark", () => { this.reqMarkDirty(this.interBuildingUUID, false); this.interBuildingUUID = null; });
+        Event.addLocalListener("ClearBuildingDirtyMark", () => {
+            this.reqMarkDirty(this.interBuildingUUID, false);
+            this.interBuildingUUID = null;
+        });
 
         let lastGettime = 0;
         Event.addLocalListener("showTreeTips", async () => {
@@ -79,7 +85,7 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
                 Tips.show(LanUtil.getText("tips_show_08"));
             }
 
-        })
+        });
     }
 
     /** 正在交互建筑的uuid */
@@ -99,7 +105,9 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
         // 获取玩家位置
         const player = Player.localPlayer;
 
-        if (!player || !player.character || !player.character.worldTransform) { return; }
+        if (!player || !player.character || !player.character.worldTransform) {
+            return;
+        }
 
         const playerLoc = player.character.worldTransform.position;
 
@@ -114,7 +122,7 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
         }
         nearInfos.sort((a, b) => {
             return a["dis"] - b["dis"];
-        })
+        });
 
         const newMap = new Map<string, BuildingBase>();
         // 显示建筑
@@ -141,14 +149,24 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
 
     /**
      * 请求服务端捡起建筑
-     * @param info 
+     * @param info
      */
     async repPick(building: BuildingBase) {
         if (await ModuleService.getModule(BuildModuleC).checkIllegal(building.info.uuid)) {
-            let res = await BagDefine.AddItem(Player.localPlayer.playerId, building.info.itemId, "", "", 1, false);
-            if (res) {
-                this.reqRemove([building.info.uuid]);
+            let config = BuildingHelper.getBuildCfgByItemId(building.info.itemId);
+            if (!config) {
+                return;
             }
+            const bag = ModuleService.getModule(BagModuleC);
+
+            for (const m of config.buildMaterial) {
+                await bag.reqAddItem(Player.localPlayer.playerId, m[0], "", "", m[1], false);
+            }
+
+            // let res = await BagDefine.AddItem(Player.localPlayer.playerId, building.info.itemId, "", "", 1, false);
+            // if (res) {
+            this.reqRemove([building.info.uuid]);
+            // }
         }
     }
 
@@ -162,7 +180,7 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
 
     /**
      * 请求服务端创建建筑
-     * @param info 
+     * @param info
      */
     reqBuild(info: BuildingInfo) {
         this.server.net_createBuilding([info], this.localPlayer.userId);
@@ -170,7 +188,7 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
 
     /**
      * 请求删除建筑
-     * @param uuids 
+     * @param uuids
      */
     reqRemove(uuids: string[]) {
         for (let index = 0; index < uuids.length; index++) {
@@ -198,16 +216,17 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
         console.log("net_updateInfos", JSON.stringify(infos));
         for (let info of infos) {
             if (!info) {
-                console.error("MyTypeError:存在不存在的建筑物")
+                console.error("MyTypeError:存在不存在的建筑物");
                 continue;
             }
             this.buildingInfoMap.set(info.uuid, info);
             let building = this.buildingMap.get(info.uuid);
             if (building) {
                 building.updateInfo(info);
-            }
-            else {
-                if (!Player.localPlayer || !Player.localPlayer.character || !Player.localPlayer.character.worldTransform) { return; }
+            } else {
+                if (!Player.localPlayer || !Player.localPlayer.character || !Player.localPlayer.character.worldTransform) {
+                    return;
+                }
                 const dis = Vector.distance(info.pos, Player.localPlayer.character.worldTransform.position);
                 if (dis > BuildingHelper.ClientShowDistance) continue;
                 if (this.buildingInfoMap.size > BuildingHelper.ShowCount + 1) continue;

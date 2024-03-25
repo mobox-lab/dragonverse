@@ -144,14 +144,20 @@ export class BagModuleS extends mwext.ModuleS<BagModuleC, null> {
     }
 
     protected onPlayerLeft(player: mw.Player): void {
-        this.setDvBuildMaterial(player);
-        try {
-            if (this._dataMap.has(player.playerId)) {
-                this._dataMap.delete(player.playerId);
-            }
-        } catch (error) {
-            console.error(error + "{BagModuleSLeftTypeError}");
-        }
+        this
+            .setDvBuildMaterial(player)
+            .then(
+                () => {
+                    try {
+                        if (this._dataMap.has(player.playerId)) {
+                            this._dataMap.delete(player.playerId);
+                        }
+                    } catch (error) {
+                        console.error(error + "{BagModuleSLeftTypeError}");
+                    }
+                }
+            );
+
     }
 
     /** 由客户端主动发起的同步，会自动保存一次到存档 */
@@ -513,11 +519,11 @@ export class BagModuleS extends mwext.ModuleS<BagModuleC, null> {
                 Log4Ts.error(BagModuleS, `couldn't query player dv bag data. userId: ${player.userId}.`);
                 return;
             }
-            for (const value of Object.keys(BuildingMaterialWithHsIdTypes)) {
-                const id = BuildingMaterialMapperIndexerByHs.get(BuildingMaterialWithHsIdTypes[value] as BuildingMaterialWithHsIdTypes);
-                if (id) {
-                    const count = DvBagHelper.getItemCount(data.itemsMap, id);
-                    this.reqSetItemCount(player.playerId, id, count);
+            for (const value of Object.keys(BuildingMaterialWithDvIdTypes).filter((v) => isNaN(Number(v)))) {
+                const dvId = BuildingMaterialWithDvIdTypes[value] as BuildingMaterialWithDvIdTypes;
+                if (dvId) {
+                    const count = DvBagHelper.getItemCount(data.itemsMap, dvId);
+                    this.reqSetItemCount(player.playerId, BuildingMaterialMapperIndexerByDv.get(dvId), count);
                 }
             }
             Log4Ts.log(BagModuleS, `query player dv bag data success. userId: ${player.userId}. data: ${JSON.stringify(data)}.`);
@@ -534,10 +540,10 @@ export class BagModuleS extends mwext.ModuleS<BagModuleC, null> {
                 Log4Ts.error(BagModuleS, `couldn't query player dv bag data. userId: ${player.userId}.`);
                 return;
             }
-            for (const value of Object.keys(BuildingMaterialWithHsIdTypes)) {
-                const id = BuildingMaterialMapperIndexerByHs.get(BuildingMaterialWithHsIdTypes[value] as BuildingMaterialWithHsIdTypes);
-                if (id) {
-                    DvBagHelper.setItemCount(data.itemsMap, id, this.getItemCount(player.playerId, id));
+            for (const value of Object.keys(BuildingMaterialWithDvIdTypes).filter((v) => isNaN(Number(v)))) {
+                const hsId = BuildingMaterialWithHsIdTypes[value] as BuildingMaterialWithHsIdTypes;
+                if (hsId) {
+                    DvBagHelper.setItemCount(data.itemsMap, BuildingMaterialMapperIndexerByHs.get(hsId), this.getItemCount(player.playerId, hsId));
                 }
             }
             Gtk.updateOtherSceneModuleData("BagModuleData",

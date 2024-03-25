@@ -237,7 +237,6 @@ export class BuildingEditorHelper {
 
         const q = new Rotation(this.xOffset, 0, Rotation.fromVector(forward).z + 90 + this.zOffset).toQuaternion();
 
-        console.log("building editor q:", q.toRotation());
         this.editorGO.worldTransform.rotation = q.toRotation();
     }
 

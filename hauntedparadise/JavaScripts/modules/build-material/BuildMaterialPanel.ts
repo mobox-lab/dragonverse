@@ -10,6 +10,8 @@ import stopEffect = Yoact.stopEffect;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import {BagModuleC} from "../../codes/modules/bag/BagModuleC";
 import BuildMaterialItemPanel from "./BuildMaterialItemPanel";
+import {BuildPanel} from "../build/ui/BuildPanel";
+import {BuildingEditorHelper} from "../build/helper/BuildingEditorHelper";
 
 export default class BuildMaterialPanel extends Building_UI_Generate {
 //#region Constant
@@ -127,12 +129,11 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
     /**
      *
      * @param id
-     * @param force 是否 执行强制刷新 否则将根据当前按钮图片 guid 判断是否需要刷新.
      * @private
      */
-    private showEnoughBtn(id: number, force: boolean = false) {
-        if (!force && this.mBtnOpt.normalImageGuid === BuildMaterialPanel.NOT_ENOUGH_BTN_IMG_GUID) return;
-        Gtk.setButtonGuid(this.mBtnOpt, BuildMaterialPanel.NOT_ENOUGH_BTN_IMG_GUID);
+    private showEnoughBtn(id: number) {
+        if (this.infoCanvas.visible && this.mBtnOpt.normalImageGuid === BuildMaterialPanel.ENOUGH_BTN_IMG_GUID) return;
+        Gtk.setButtonGuid(this.mBtnOpt, BuildMaterialPanel.ENOUGH_BTN_IMG_GUID);
         this.mBtnOpt.enable = true;
         this.mBtnOpt.onClicked.clear();
         let config = BuildingHelper.getBuildCfgByItemId(id);
@@ -147,9 +148,11 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
                     () => this.judgeEnough(id),
                     BuildMaterialPanel.MIN_CLICK_INTERVAL
                 );
-                this.bagModuleC.pay(config.buildMaterial
-                    .map(item => [item[0] ?? -1, item[1] ?? 0] as [number, number])
-                    .filter(item => item[0] !== -1));
+
+                UIService.hide(BuildMaterialPanel);
+                BuildingEditorHelper.instance.openEdit(id).then(() => {
+                    UIService.show(BuildPanel, config.id);
+                });
                 this.showNotEnoughBtn();
             },
         );
@@ -157,12 +160,11 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
 
     /**
      *
-     * @param force 是否 执行强制刷新 否则将根据当前按钮图片 guid 判断是否需要刷新.
      * @private
      */
-    private showNotEnoughBtn(force: boolean = false) {
-        if (!force && this.mBtnOpt.normalImageGuid === BuildMaterialPanel.ENOUGH_BTN_IMG_GUID) return;
-        Gtk.setButtonGuid(this.mBtnOpt, BuildMaterialPanel.ENOUGH_BTN_IMG_GUID);
+    private showNotEnoughBtn() {
+        if (this.infoCanvas.visible && this.mBtnOpt.normalImageGuid === BuildMaterialPanel.NOT_ENOUGH_BTN_IMG_GUID) return;
+        Gtk.setButtonGuid(this.mBtnOpt, BuildMaterialPanel.NOT_ENOUGH_BTN_IMG_GUID);
         this.mBtnOpt.enable = false;
         this.mBtnOpt.clickMethod;
     }
@@ -183,7 +185,7 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
             show = false;
         }
         if (show) {
-            show = show && this.bagModuleC.afford(config.buildMaterial
+            show = show && this.bagModuleC.afford((config.buildMaterial ?? [])
                 .map(item => [item[0] ?? -1, item[1] ?? 0] as [number, number])
                 .filter(item => item[0] !== -1));
         }
