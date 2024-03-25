@@ -23,8 +23,8 @@ import BuildingIconPanel from "./BuildingIconPanel";
 
 
 export class BuildPanel extends Build_UI_Generate {
-    private rotateOffsetX: number = 0;
-    private rotateOffsetZ: number = 0;
+    // private rotateOffsetX: number = 0;
+    // private rotateOffsetZ: number = 0;
 
     /** 旋转值 */
     private moveNum: number = 90;
@@ -61,43 +61,47 @@ export class BuildPanel extends Build_UI_Generate {
 
         // up
         this.btn_up.onPressed.add(() => {
-            this.rotateOffsetX = this.moveNum;
+            BuildingEditorHelper.instance.xOffset += 45;
+            // this.rotateOffsetX = this.moveNum;
             this.canUpdate = true;
             GhostTraceHelper.itemTrace(this.buildingId, 6);
         });
         this.btn_up.onReleased.add(() => {
-            this.rotateOffsetX = 0;
+            // this.rotateOffsetX = 0;
             this.canUpdate = false;
         });
         // down
         this.btn_down.onPressed.add(() => {
-            this.rotateOffsetX = -this.moveNum;
+            BuildingEditorHelper.instance.xOffset -= 45;
+            // this.rotateOffsetX = -this.moveNum;
             this.canUpdate = true;
             GhostTraceHelper.itemTrace(this.buildingId, 7);
         });
         this.btn_down.onReleased.add(() => {
-            this.rotateOffsetX = 0;
+            // this.rotateOffsetX = 0;
             this.canUpdate = false;
         });
 
         // left
         this.btn_left.onPressed.add(() => {
-            this.rotateOffsetZ = this.moveNum;
+            BuildingEditorHelper.instance.zOffset += 45;
+            // this.rotateOffsetZ = this.moveNum;
             this.canUpdate = true;
             GhostTraceHelper.itemTrace(this.buildingId, 8);
         });
         this.btn_left.onReleased.add(() => {
-            this.rotateOffsetZ = 0;
+            // this.rotateOffsetZ = 0;
             this.canUpdate = false;
         });
         // right
         this.btn_right.onPressed.add(() => {
-            this.rotateOffsetZ = -this.moveNum;
+            BuildingEditorHelper.instance.zOffset -= 45;
+            // this.rotateOffsetZ = -this.moveNum;
             this.canUpdate = true;
             GhostTraceHelper.itemTrace(this.buildingId, 9);
         });
         this.btn_right.onReleased.add(() => {
-            this.rotateOffsetZ = 0;
+            // this.rotateOffsetZ = 0;
             this.canUpdate = false;
         });
 
@@ -110,16 +114,16 @@ export class BuildPanel extends Build_UI_Generate {
 
     onUpdate(dt) {
         const char = Player.localPlayer.character;
-        if (this.rotateOffsetZ) {
-            BuildingEditorHelper.instance.zOffset += this.rotateOffsetZ * dt;
-            // let q: Quaternion = BuildingEditorHelper.instance.qOffset;
-            // BuildingEditorHelper.instance.qOffset = Quaternion.rotateAround(q, Vector.up, this.rotateOffsetZ * dt);
-        }
-        if (this.rotateOffsetX) {
-            BuildingEditorHelper.instance.xOffset += this.rotateOffsetX * dt;
-            // let q: Quaternion = BuildingEditorHelper.instance.qOffset;
-            // BuildingEditorHelper.instance.qOffset = Quaternion.rotateAround(q, char.worldTransform.getRightVector(), this.rotateOffsetX * dt);
-        }
+        // if (this.rotateOffsetZ) {
+        //     BuildingEditorHelper.instance.zOffset += this.rotateOffsetZ * dt;
+        //     // let q: Quaternion = BuildingEditorHelper.instance.qOffset;
+        //     // BuildingEditorHelper.instance.qOffset = Quaternion.rotateAround(q, Vector.up, this.rotateOffsetZ * dt);
+        // }
+        // if (this.rotateOffsetX) {
+        //     BuildingEditorHelper.instance.xOffset += this.rotateOffsetX * dt;
+        //     // let q: Quaternion = BuildingEditorHelper.instance.qOffset;
+        //     // BuildingEditorHelper.instance.qOffset = Quaternion.rotateAround(q, char.worldTransform.getRightVector(), this.rotateOffsetX * dt);
+        // }
     }
 
     async confirmBuild(exit: boolean = true) {

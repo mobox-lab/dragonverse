@@ -230,12 +230,17 @@ export class BuildingEditorHelper {
 
             // 检测成功
             this.hitRes = hit;
-            this.editorGO.worldTransform.position = hit.impactPoint;
+            const impact = hit.impactPoint;
+            this.editorGO.worldTransform.position = new Vector(
+                Math.ceil(impact.x / 50) * 50,
+                Math.ceil(impact.y / 50) * 50,
+                Math.ceil(impact.z / 50) * 50
+            );
             this.tempImpactNormal = hit.impactNormal;
             break;
         }
 
-        const q = new Rotation(this.xOffset, 0, Rotation.fromVector(forward).z + 90 + this.zOffset).toQuaternion();
+        const q = new Rotation(this.xOffset, 0, Math.ceil(Rotation.fromVector(forward).z / 45) * 45 + 90 + this.zOffset).toQuaternion();
 
         this.editorGO.worldTransform.rotation = q.toRotation();
     }
