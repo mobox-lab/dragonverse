@@ -3,75 +3,12 @@
 
  @UIBind('UI/ShareUI/Build_UI.ui')
  export default class Build_UI_Generate extends UIScript {
-	 	private mImageBackground_Internal: mw.Image
-	public get mImageBackground(): mw.Image {
-		if(!this.mImageBackground_Internal&&this.uiWidgetBase) {
-			this.mImageBackground_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImageBackground') as mw.Image
-		}
-		return this.mImageBackground_Internal
-	}
-	private canvas_direction_Internal: mw.Canvas
-	public get canvas_direction(): mw.Canvas {
-		if(!this.canvas_direction_Internal&&this.uiWidgetBase) {
-			this.canvas_direction_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_direction') as mw.Canvas
-		}
-		return this.canvas_direction_Internal
-	}
-	private btn_up_Internal: mw.Button
-	public get btn_up(): mw.Button {
-		if(!this.btn_up_Internal&&this.uiWidgetBase) {
-			this.btn_up_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_direction/btn_up') as mw.Button
-		}
-		return this.btn_up_Internal
-	}
-	private btn_down_Internal: mw.Button
-	public get btn_down(): mw.Button {
-		if(!this.btn_down_Internal&&this.uiWidgetBase) {
-			this.btn_down_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_direction/btn_down') as mw.Button
-		}
-		return this.btn_down_Internal
-	}
-	private btn_left_Internal: mw.Button
-	public get btn_left(): mw.Button {
-		if(!this.btn_left_Internal&&this.uiWidgetBase) {
-			this.btn_left_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_direction/btn_left') as mw.Button
-		}
-		return this.btn_left_Internal
-	}
-	private btn_right_Internal: mw.Button
-	public get btn_right(): mw.Button {
-		if(!this.btn_right_Internal&&this.uiWidgetBase) {
-			this.btn_right_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_direction/btn_right') as mw.Button
-		}
-		return this.btn_right_Internal
-	}
-	private canvas_discardItem_Internal: mw.Canvas
-	public get canvas_discardItem(): mw.Canvas {
-		if(!this.canvas_discardItem_Internal&&this.uiWidgetBase) {
-			this.canvas_discardItem_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_discardItem') as mw.Canvas
-		}
-		return this.canvas_discardItem_Internal
-	}
-	private btn_discardItem_Internal: mw.Button
-	public get btn_discardItem(): mw.Button {
-		if(!this.btn_discardItem_Internal&&this.uiWidgetBase) {
-			this.btn_discardItem_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_discardItem/btn_discardItem') as mw.Button
-		}
-		return this.btn_discardItem_Internal
-	}
-	private canvas_place_Internal: mw.Canvas
+	 	private canvas_place_Internal: mw.Canvas
 	public get canvas_place(): mw.Canvas {
 		if(!this.canvas_place_Internal&&this.uiWidgetBase) {
 			this.canvas_place_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place') as mw.Canvas
 		}
 		return this.canvas_place_Internal
-	}
-	private mImageDetailBG_Internal: mw.Image
-	public get mImageDetailBG(): mw.Image {
-		if(!this.mImageDetailBG_Internal&&this.uiWidgetBase) {
-			this.mImageDetailBG_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mImageDetailBG') as mw.Image
-		}
-		return this.mImageDetailBG_Internal
 	}
 	private btn_place_Internal: mw.Button
 	public get btn_place(): mw.Button {
@@ -79,6 +16,13 @@
 			this.btn_place_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/btn_place') as mw.Button
 		}
 		return this.btn_place_Internal
+	}
+	private mImageDetailBG_Internal: mw.Image
+	public get mImageDetailBG(): mw.Image {
+		if(!this.mImageDetailBG_Internal&&this.uiWidgetBase) {
+			this.mImageDetailBG_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mImageDetailBG') as mw.Image
+		}
+		return this.mImageDetailBG_Internal
 	}
 	private mName_Internal: mw.TextBlock
 	public get mName(): mw.TextBlock {
@@ -143,6 +87,55 @@
 		}
 		return this.mIllustrate4_Internal
 	}
+	private canvas_direction_Internal: mw.Canvas
+	public get canvas_direction(): mw.Canvas {
+		if(!this.canvas_direction_Internal&&this.uiWidgetBase) {
+			this.canvas_direction_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_direction') as mw.Canvas
+		}
+		return this.canvas_direction_Internal
+	}
+	private btn_up_Internal: mw.Button
+	public get btn_up(): mw.Button {
+		if(!this.btn_up_Internal&&this.uiWidgetBase) {
+			this.btn_up_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_direction/btn_up') as mw.Button
+		}
+		return this.btn_up_Internal
+	}
+	private btn_down_Internal: mw.Button
+	public get btn_down(): mw.Button {
+		if(!this.btn_down_Internal&&this.uiWidgetBase) {
+			this.btn_down_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_direction/btn_down') as mw.Button
+		}
+		return this.btn_down_Internal
+	}
+	private btn_left_Internal: mw.Button
+	public get btn_left(): mw.Button {
+		if(!this.btn_left_Internal&&this.uiWidgetBase) {
+			this.btn_left_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_direction/btn_left') as mw.Button
+		}
+		return this.btn_left_Internal
+	}
+	private btn_right_Internal: mw.Button
+	public get btn_right(): mw.Button {
+		if(!this.btn_right_Internal&&this.uiWidgetBase) {
+			this.btn_right_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_direction/btn_right') as mw.Button
+		}
+		return this.btn_right_Internal
+	}
+	private canvas_discardItem_Internal: mw.Canvas
+	public get canvas_discardItem(): mw.Canvas {
+		if(!this.canvas_discardItem_Internal&&this.uiWidgetBase) {
+			this.canvas_discardItem_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_discardItem') as mw.Canvas
+		}
+		return this.canvas_discardItem_Internal
+	}
+	private btn_discardItem_Internal: mw.Button
+	public get btn_discardItem(): mw.Button {
+		if(!this.btn_discardItem_Internal&&this.uiWidgetBase) {
+			this.btn_discardItem_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_discardItem/btn_discardItem') as mw.Button
+		}
+		return this.btn_discardItem_Internal
+	}
 
 
  
@@ -157,6 +150,19 @@
 		
 		//按钮添加点击
 		
+		this.btn_place.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "Build_UI_btn_place");
+		})
+		this.btn_place.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.btn_place.onPressed.add(() => {
+			this.btn_place["preScale"] = this.btn_place.renderScale;
+			this.btn_place.renderScale = Vector2.one.set(this.btn_place["preScale"]).multiply(1.1);
+		})
+		this.btn_place.onReleased.add(() => {
+			this.btn_place.renderScale = this.btn_place["preScale"];
+		})
+		
+	
 		this.btn_up.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "Build_UI_btn_up");
 		})
@@ -219,19 +225,6 @@
 		})
 		this.btn_discardItem.onReleased.add(() => {
 			this.btn_discardItem.renderScale = this.btn_discardItem["preScale"];
-		})
-		
-	
-		this.btn_place.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "Build_UI_btn_place");
-		})
-		this.btn_place.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		this.btn_place.onPressed.add(() => {
-			this.btn_place["preScale"] = this.btn_place.renderScale;
-			this.btn_place.renderScale = Vector2.one.set(this.btn_place["preScale"]).multiply(1.1);
-		})
-		this.btn_place.onReleased.add(() => {
-			this.btn_place.renderScale = this.btn_place["preScale"];
 		})
 		
 	
