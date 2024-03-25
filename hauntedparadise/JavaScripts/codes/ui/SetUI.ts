@@ -20,10 +20,10 @@ export default class SetUI extends Back_UI_Generate {
 
     onStart() {
         this.layer = mw.UILayerDialog;
-        // this.btn_back_01.onClicked.add(() => {
-        //     UIService.hideUI(this);
-        //     UIService.show(MainUI);
-        // })
+        this.btn_back_01.onClicked.add(() => {
+            UIService.hideUI(this);
+            UIService.show(MainUI);
+        })
         // this.btn_back_02.onClicked.add(() => {
         //     if (ModuleService.getModule(GhostModuleC).isKilling) {
         //         return;
