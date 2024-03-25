@@ -80,6 +80,13 @@
 		}
 		return this.mBtnOpt_Internal
 	}
+	private materialCanvas_Internal: mw.Canvas
+	public get materialCanvas(): mw.Canvas {
+		if(!this.materialCanvas_Internal&&this.uiWidgetBase) {
+			this.materialCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/MWCanvas_2147482460/materialCanvas') as mw.Canvas
+		}
+		return this.materialCanvas_Internal
+	}
 	private mBtnClose_Internal: mw.StaleButton
 	public get mBtnClose(): mw.StaleButton {
 		if(!this.mBtnClose_Internal&&this.uiWidgetBase) {

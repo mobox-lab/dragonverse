@@ -9,6 +9,7 @@ import Gtk from "../../utils/GToolkit";
 import stopEffect = Yoact.stopEffect;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import {BagModuleC} from "../../codes/modules/bag/BagModuleC";
+import BuildMaterialItemPanel from "./BuildMaterialItemPanel";
 
 export default class BuildMaterialPanel extends Building_UI_Generate {
 //#region Constant
@@ -29,6 +30,8 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
     private _selectEffects: Yoact.Effect[] = [];
 
     private _bagModuleC: BagModuleC;
+
+    private resourceItems: BuildMaterialItemPanel[] = [];
 
     private get bagModuleC(): BagModuleC | null {
         if (!this._bagModuleC) this._bagModuleC = ModuleService.getModule(BagModuleC);
@@ -73,23 +76,29 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
                 stopEffect(effect);
             }
             this._selectEffects.length = 0;
-            this.mName.text = GameConfig.Language[GameConfig.Item.getElement(key).name] ?? GameConfig.Item.getElement(key).name;
-            this.mDesc.text = GameConfig.Language[GameConfig.Item.getElement(key).description] ?? GameConfig.Item.getElement(key).description;
-            // this.mIcon.imageGuid = GameConfig.BagItem.getElement(key).icon;
-            // this._selectEffects.push(bindYoact(() => {
-            //     this.mNum.text = i18n.lan(i18n.lanKeys.Bag_006) + ` ${data.count}`;
-            // }));
 
-            // if (ForeignKeyIndexer.getInstance().isBagItemType(data.id, BagTypes.Dragon)) {
-            //     Gtk.trySetVisibility(this.mBtnOpt, true);
-            //     if (this._dragonModule.getCurrentShowupBagId() === data.id) {
-            //         this.showRestBtn(data.id, true);
-            //     } else {
-            //         this.showFollowBtn(data.id, true);
-            //     }
-            // } else {
-            //     Gtk.trySetVisibility(this.mBtnOpt, false);
-            // }
+            try {
+                const config = GameConfig.Item.getElement(key);
+                const buildingConfig = BuildingHelper.getBuildCfgByItemId(key);
+                this.mName.text = GameConfig.Language[config.name] ?? config.name;
+                this.mDesc.text = GameConfig.Language[config.description] ?? config.description;
+                let i = 0;
+                for (; i < this.resourceItems.length && i < buildingConfig.buildMaterial.length; ++i) {
+                    this.resourceItems[i].setVisible(true);
+                    this.resourceItems[i].init(buildingConfig.buildMaterial[i][0], buildingConfig.buildMaterial[i][1]);
+                }
+                for (; i < this.resourceItems.length || i < buildingConfig.buildMaterial.length; ++i) {
+                    if (i < this.resourceItems.length) {
+                        this.resourceItems[i].setVisible(false);
+                    } else {
+                        const newItem = UIService.create(BuildMaterialItemPanel).init(buildingConfig.buildMaterial[i][0], buildingConfig.buildMaterial[i][1]);
+                        this.materialCanvas.addChild(newItem.uiObject);
+                        this.resourceItems.push(newItem);
+                    }
+                }
+            } catch (e) {
+                Log4Ts.error(BuildMaterialPanel, `config not found for item id: ${key}.`);
+            }
         });
 
         Gtk.trySetVisibility(this.infoCanvas, false);
