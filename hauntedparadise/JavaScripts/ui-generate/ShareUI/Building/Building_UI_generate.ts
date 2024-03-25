@@ -73,19 +73,19 @@
 		}
 		return this.mDescBack_Internal
 	}
+	private materialCanvas_Internal: mw.Canvas
+	public get materialCanvas(): mw.Canvas {
+		if(!this.materialCanvas_Internal&&this.uiWidgetBase) {
+			this.materialCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/MWCanvas_2147482460/infoCanvas/materialCanvas') as mw.Canvas
+		}
+		return this.materialCanvas_Internal
+	}
 	private mBtnOpt_Internal: mw.StaleButton
 	public get mBtnOpt(): mw.StaleButton {
 		if(!this.mBtnOpt_Internal&&this.uiWidgetBase) {
 			this.mBtnOpt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/MWCanvas_2147482460/infoCanvas/mBtnOpt') as mw.StaleButton
 		}
 		return this.mBtnOpt_Internal
-	}
-	private materialCanvas_Internal: mw.Canvas
-	public get materialCanvas(): mw.Canvas {
-		if(!this.materialCanvas_Internal&&this.uiWidgetBase) {
-			this.materialCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/MWCanvas_2147482460/materialCanvas') as mw.Canvas
-		}
-		return this.materialCanvas_Internal
 	}
 	private mBtnClose_Internal: mw.StaleButton
 	public get mBtnClose(): mw.StaleButton {

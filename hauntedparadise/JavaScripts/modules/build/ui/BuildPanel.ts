@@ -23,7 +23,6 @@ import BuildingIconPanel from "./BuildingIconPanel";
 
 
 export class BuildPanel extends Build_UI_Generate {
-
     private rotateOffsetX: number = 0;
     private rotateOffsetZ: number = 0;
 
@@ -160,23 +159,35 @@ export class BuildPanel extends Build_UI_Generate {
 
 
         let i = 0;
+        let enough = true;
+        const bag = ModuleService.getModule(BagModuleC);
         for (; i < this._resourceItems.length && i < buildingConfig.buildMaterial.length; ++i) {
             this._resourceItems[i].setVisible(true);
+            let currentCount = bag.getItemCount(buildingConfig.buildMaterial[i][0]);
+            enough = enough && currentCount > buildingConfig.buildMaterial[i][1];
             this._resourceItems[i].init(
                 GameConfig.Item.getElement(buildingConfig.buildMaterial[i][0])?.icon ?? "",
+                currentCount,
                 buildingConfig.buildMaterial[i][1]);
         }
         for (; i < this._resourceItems.length || i < buildingConfig.buildMaterial.length; ++i) {
             if (i < this._resourceItems.length) {
                 this._resourceItems[i].setVisible(false);
             } else {
+                let currentCount = bag.getItemCount(buildingConfig.buildMaterial[i][0]);
+                enough = enough && currentCount > buildingConfig.buildMaterial[i][1];
                 const newItem = UIService
                     .create(BuildingIconPanel)
                     .init(GameConfig.Item.getElement(buildingConfig.buildMaterial[i][0])?.icon ?? "",
+                        currentCount,
                         buildingConfig.buildMaterial[i][1]);
                 this.canvas_buildIcon.addChild(newItem.uiObject);
                 this._resourceItems.push(newItem);
             }
+        }
+        if (!enough) {
+            this.btn_place1.onClicked.clear();
+            this.btn_place2.onClicked.clear();
         }
     }
 }

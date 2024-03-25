@@ -71,8 +71,8 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
                 Gtk.trySetVisibility(this.infoCanvas, false);
                 return;
             }
-            Gtk.trySetVisibility(this.infoCanvas, true);
             this.judgeEnough(key);
+            Gtk.trySetVisibility(this.infoCanvas, true);
             // const data = this._buildMaterialModule.buildMaterialYoact.getItem(key);
             for (const effect of this._selectEffects) {
                 stopEffect(effect);
@@ -85,11 +85,11 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
                 this.mName.text = GameConfig.Language[config.name] ?? config.name;
                 this.mDesc.text = GameConfig.Language[config.description] ?? config.description;
                 let i = 0;
-                for (; i < this._resourceItems.length && i < buildingConfig.buildMaterial.length; ++i) {
+                for (; i < this._resourceItems.length && i < (buildingConfig.buildMaterial?.length ?? 0); ++i) {
                     this._resourceItems[i].setVisible(true);
                     this._resourceItems[i].init(buildingConfig.buildMaterial[i][0], buildingConfig.buildMaterial[i][1]);
                 }
-                for (; i < this._resourceItems.length || i < buildingConfig.buildMaterial.length; ++i) {
+                for (; i < this._resourceItems.length || i < (buildingConfig.buildMaterial?.length ?? 0); ++i) {
                     if (i < this._resourceItems.length) {
                         this._resourceItems[i].setVisible(false);
                     } else {
@@ -102,8 +102,6 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
                 Log4Ts.error(BuildMaterialPanel, `config not found for item id: ${key}.`);
             }
         });
-
-        Gtk.trySetVisibility(this.infoCanvas, false);
 //#endregion ------------------------------------------------------------------------------------------
 
 //#region Event subscribe
@@ -150,9 +148,12 @@ export default class BuildMaterialPanel extends Building_UI_Generate {
                 );
 
                 UIService.hide(BuildMaterialPanel);
-                BuildingEditorHelper.instance.openEdit(id).then(() => {
-                    UIService.show(BuildPanel, id);
-                });
+                BuildingEditorHelper
+                    .instance
+                    .openEdit(id)
+                    .then(() => {
+                        UIService.show(BuildPanel, id);
+                    });
                 this.showNotEnoughBtn();
             },
         );

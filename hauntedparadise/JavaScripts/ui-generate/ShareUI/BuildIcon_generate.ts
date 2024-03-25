@@ -3,7 +3,14 @@
 
  @UIBind('UI/ShareUI/BuildIcon.ui')
  export default class BuildIcon_Generate extends UIScript {
-	 	private mImgIcon_Internal: mw.Image
+	 	private mBackground_Internal: mw.Image
+	public get mBackground(): mw.Image {
+		if(!this.mBackground_Internal&&this.uiWidgetBase) {
+			this.mBackground_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBackground') as mw.Image
+		}
+		return this.mBackground_Internal
+	}
+	private mImgIcon_Internal: mw.Image
 	public get mImgIcon(): mw.Image {
 		if(!this.mImgIcon_Internal&&this.uiWidgetBase) {
 			this.mImgIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImgIcon') as mw.Image

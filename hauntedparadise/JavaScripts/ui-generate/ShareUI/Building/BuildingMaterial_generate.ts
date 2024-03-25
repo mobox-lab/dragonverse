@@ -3,19 +3,19 @@
 
  @UIBind('UI/ShareUI/Building/BuildingMaterial.ui')
  export default class BuildingMaterial_Generate extends UIScript {
-	 	private mImageBackground_Internal: mw.Image
+	 	private mImageBackground_1_Internal: mw.Image
+	public get mImageBackground_1(): mw.Image {
+		if(!this.mImageBackground_1_Internal&&this.uiWidgetBase) {
+			this.mImageBackground_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImageBackground_1') as mw.Image
+		}
+		return this.mImageBackground_1_Internal
+	}
+	private mImageBackground_Internal: mw.Image
 	public get mImageBackground(): mw.Image {
 		if(!this.mImageBackground_Internal&&this.uiWidgetBase) {
 			this.mImageBackground_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImageBackground') as mw.Image
 		}
 		return this.mImageBackground_Internal
-	}
-	private mImageLess_Internal: mw.Image
-	public get mImageLess(): mw.Image {
-		if(!this.mImageLess_Internal&&this.uiWidgetBase) {
-			this.mImageLess_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImageLess') as mw.Image
-		}
-		return this.mImageLess_Internal
 	}
 	private mIcon_Internal: mw.Image
 	public get mIcon(): mw.Image {
