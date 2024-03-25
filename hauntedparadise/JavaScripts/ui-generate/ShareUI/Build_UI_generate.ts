@@ -3,19 +3,19 @@
 
  @UIBind('UI/ShareUI/Build_UI.ui')
  export default class Build_UI_Generate extends UIScript {
-	 	private canvas_place_Internal: mw.Canvas
+	 	private mImageBackground_Internal: mw.Image
+	public get mImageBackground(): mw.Image {
+		if(!this.mImageBackground_Internal&&this.uiWidgetBase) {
+			this.mImageBackground_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImageBackground') as mw.Image
+		}
+		return this.mImageBackground_Internal
+	}
+	private canvas_place_Internal: mw.Canvas
 	public get canvas_place(): mw.Canvas {
 		if(!this.canvas_place_Internal&&this.uiWidgetBase) {
 			this.canvas_place_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place') as mw.Canvas
 		}
 		return this.canvas_place_Internal
-	}
-	private btn_place_Internal: mw.Button
-	public get btn_place(): mw.Button {
-		if(!this.btn_place_Internal&&this.uiWidgetBase) {
-			this.btn_place_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/btn_place') as mw.Button
-		}
-		return this.btn_place_Internal
 	}
 	private mImageDetailBG_Internal: mw.Image
 	public get mImageDetailBG(): mw.Image {
@@ -30,34 +30,6 @@
 			this.mName_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mName') as mw.TextBlock
 		}
 		return this.mName_Internal
-	}
-	private mImageIllustrate1_Internal: mw.Image
-	public get mImageIllustrate1(): mw.Image {
-		if(!this.mImageIllustrate1_Internal&&this.uiWidgetBase) {
-			this.mImageIllustrate1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mImageIllustrate1') as mw.Image
-		}
-		return this.mImageIllustrate1_Internal
-	}
-	private mIllustrate1_Internal: mw.TextBlock
-	public get mIllustrate1(): mw.TextBlock {
-		if(!this.mIllustrate1_Internal&&this.uiWidgetBase) {
-			this.mIllustrate1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mIllustrate1') as mw.TextBlock
-		}
-		return this.mIllustrate1_Internal
-	}
-	private mImageIllustrate2_Internal: mw.Image
-	public get mImageIllustrate2(): mw.Image {
-		if(!this.mImageIllustrate2_Internal&&this.uiWidgetBase) {
-			this.mImageIllustrate2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mImageIllustrate2') as mw.Image
-		}
-		return this.mImageIllustrate2_Internal
-	}
-	private mIllustrate2_Internal: mw.TextBlock
-	public get mIllustrate2(): mw.TextBlock {
-		if(!this.mIllustrate2_Internal&&this.uiWidgetBase) {
-			this.mIllustrate2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mIllustrate2') as mw.TextBlock
-		}
-		return this.mIllustrate2_Internal
 	}
 	private mImageIllustrate3_Internal: mw.Image
 	public get mImageIllustrate3(): mw.Image {
@@ -86,6 +58,20 @@
 			this.mIllustrate4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/mIllustrate4') as mw.TextBlock
 		}
 		return this.mIllustrate4_Internal
+	}
+	private btn_place1_Internal: mw.StaleButton
+	public get btn_place1(): mw.StaleButton {
+		if(!this.btn_place1_Internal&&this.uiWidgetBase) {
+			this.btn_place1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/btn_place1') as mw.StaleButton
+		}
+		return this.btn_place1_Internal
+	}
+	private btn_place2_Internal: mw.StaleButton
+	public get btn_place2(): mw.StaleButton {
+		if(!this.btn_place2_Internal&&this.uiWidgetBase) {
+			this.btn_place2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_place/btn_place2') as mw.StaleButton
+		}
+		return this.btn_place2_Internal
 	}
 	private canvas_direction_Internal: mw.Canvas
 	public get canvas_direction(): mw.Canvas {
@@ -136,6 +122,13 @@
 		}
 		return this.btn_discardItem_Internal
 	}
+	private btn_close_Internal: mw.Button
+	public get btn_close(): mw.Button {
+		if(!this.btn_close_Internal&&this.uiWidgetBase) {
+			this.btn_close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/btn_close') as mw.Button
+		}
+		return this.btn_close_Internal
+	}
 
 
  
@@ -148,21 +141,38 @@
 	protected initButtons() {
 		//按钮添加点击
 		
-		//按钮添加点击
+		this.btn_place1.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "Build_UI_btn_place1");
+		})
+		this.initLanguage(this.btn_place1);
+		this.btn_place1.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.btn_place1.onPressed.add(() => {
+			this.btn_place1["preScale"] = this.btn_place1.renderScale;
+			this.btn_place1.renderScale = Vector2.one.set(this.btn_place1["preScale"]).multiply(1.1);
+		})
+		this.btn_place1.onReleased.add(() => {
+			this.btn_place1.renderScale = this.btn_place1["preScale"];
+		})
 		
-		this.btn_place.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "Build_UI_btn_place");
-		})
-		this.btn_place.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		this.btn_place.onPressed.add(() => {
-			this.btn_place["preScale"] = this.btn_place.renderScale;
-			this.btn_place.renderScale = Vector2.one.set(this.btn_place["preScale"]).multiply(1.1);
-		})
-		this.btn_place.onReleased.add(() => {
-			this.btn_place.renderScale = this.btn_place["preScale"];
-		})
 		
 	
+		this.btn_place2.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "Build_UI_btn_place2");
+		})
+		this.initLanguage(this.btn_place2);
+		this.btn_place2.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.btn_place2.onPressed.add(() => {
+			this.btn_place2["preScale"] = this.btn_place2.renderScale;
+			this.btn_place2.renderScale = Vector2.one.set(this.btn_place2["preScale"]).multiply(1.1);
+		})
+		this.btn_place2.onReleased.add(() => {
+			this.btn_place2.renderScale = this.btn_place2["preScale"];
+		})
+		
+		
+	
+		//按钮添加点击
+		
 		this.btn_up.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "Build_UI_btn_up");
 		})
@@ -228,18 +238,25 @@
 		})
 		
 	
+		this.btn_close.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "Build_UI_btn_close");
+		})
+		this.btn_close.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.btn_close.onPressed.add(() => {
+			this.btn_close["preScale"] = this.btn_close.renderScale;
+			this.btn_close.renderScale = Vector2.one.set(this.btn_close["preScale"]).multiply(1.1);
+		})
+		this.btn_close.onReleased.add(() => {
+			this.btn_close.renderScale = this.btn_close["preScale"];
+		})
+		
+	
 
 		//按钮多语言
 		
 		//文本多语言
 		
 		this.initLanguage(this.mName)
-		
-	
-		this.initLanguage(this.mIllustrate1)
-		
-	
-		this.initLanguage(this.mIllustrate2)
 		
 	
 		this.initLanguage(this.mIllustrate3)
