@@ -23,6 +23,7 @@ import {default as EmojiUI, default as emojiUI} from "./EmojiUI";
 import SetUI from "./SetUI";
 import {TipsUI} from "./TipsUI";
 import BuildMaterialPanel from "../../modules/build-material/BuildMaterialPanel";
+import JumpHomePanel from "../../modules/home/JumpHomePanel";
 
 
 /** 代表生命数量的图片 */
@@ -79,6 +80,7 @@ export class MainUI extends Main_UI_Generate {
         this.btn_build_material.onClicked.add(() => {
             UIService.show(BuildMaterialPanel);
         });
+        this.btnJumpGame.onClicked.add(() => UIService.show(JumpHomePanel));
 
         this.userIdText.text = Player.localPlayer.userId;
 
