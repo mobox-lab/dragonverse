@@ -253,4 +253,7 @@ export class BuildModuleC extends ModuleC<BuildModuleS, null> {
         }
     }
 
+    public try_visit(userId: string): Promise<"Player is not online." | "Visit player directly." | string> {
+        return this.server.net_visitTo(userId);
+    }
 }

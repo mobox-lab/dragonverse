@@ -693,6 +693,10 @@ export class BuildModuleS extends ModuleS<BuildModuleC, null> {
         }
     }
 
+    public net_visitTo(targetUserId: string): Promise<"Player is not online." | "Visit player directly." | string> {
+        return this.visitTo(this.currentPlayer, targetUserId);
+    }
+
     public exitVisit(player: Player) {
         this.setIsVisitor(player.playerId, false);
         ModuleService.getModule(HomeModuleS).transportPlayerToHome(player, player.userId);

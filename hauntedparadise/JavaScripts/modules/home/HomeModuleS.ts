@@ -84,7 +84,7 @@ export class HomeModuleS extends ModuleS<HomeModuleC, null> {
     }
 
     public transportPlayerToHome(player: Player, targetUserId: string) {
-        this.getClient(player).transportPlayerToHome(player, targetUserId);
+        this.getClient(player).net_transportPlayerToHome(player, targetUserId);
     }
 }
 
