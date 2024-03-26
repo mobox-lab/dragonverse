@@ -164,20 +164,6 @@
 		}
 		return this.btn_camera_Internal
 	}
-	private canvas_setting_Internal: mw.Canvas
-	public get canvas_setting(): mw.Canvas {
-		if(!this.canvas_setting_Internal&&this.uiWidgetBase) {
-			this.canvas_setting_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/Canvas_1/canvas_setting') as mw.Canvas
-		}
-		return this.canvas_setting_Internal
-	}
-	private btn_setting_Internal: mw.Button
-	public get btn_setting(): mw.Button {
-		if(!this.btn_setting_Internal&&this.uiWidgetBase) {
-			this.btn_setting_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/Canvas_1/canvas_setting/btn_setting') as mw.Button
-		}
-		return this.btn_setting_Internal
-	}
 	private canvas_catch_Internal: mw.Canvas
 	public get canvas_catch(): mw.Canvas {
 		if(!this.canvas_catch_Internal&&this.uiWidgetBase) {
@@ -191,6 +177,13 @@
 			this.btn_catch_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/canvas_catch/btn_catch') as mw.Button
 		}
 		return this.btn_catch_Internal
+	}
+	private img_catchIcon_Internal: mw.Image
+	public get img_catchIcon(): mw.Image {
+		if(!this.img_catchIcon_Internal&&this.uiWidgetBase) {
+			this.img_catchIcon_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/canvas_catch/img_catchIcon') as mw.Image
+		}
+		return this.img_catchIcon_Internal
 	}
 	private canvas_aim_Internal: mw.Canvas
 	public get canvas_aim(): mw.Canvas {
@@ -255,6 +248,90 @@
 		}
 		return this.btn_build_material_Internal
 	}
+	private img_buildBg_Internal: mw.Image
+	public get img_buildBg(): mw.Image {
+		if(!this.img_buildBg_Internal&&this.uiWidgetBase) {
+			this.img_buildBg_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/canvas_build/img_buildBg') as mw.Image
+		}
+		return this.img_buildBg_Internal
+	}
+	private canvas_setting_Internal: mw.Canvas
+	public get canvas_setting(): mw.Canvas {
+		if(!this.canvas_setting_Internal&&this.uiWidgetBase) {
+			this.canvas_setting_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/canvas_setting') as mw.Canvas
+		}
+		return this.canvas_setting_Internal
+	}
+	private imgUserAvatarIcon_Internal: mw.Image
+	public get imgUserAvatarIcon(): mw.Image {
+		if(!this.imgUserAvatarIcon_Internal&&this.uiWidgetBase) {
+			this.imgUserAvatarIcon_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/canvas_setting/imgUserAvatarIcon') as mw.Image
+		}
+		return this.imgUserAvatarIcon_Internal
+	}
+	private btn_setting_Internal: mw.Button
+	public get btn_setting(): mw.Button {
+		if(!this.btn_setting_Internal&&this.uiWidgetBase) {
+			this.btn_setting_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/canvas_setting/btn_setting') as mw.Button
+		}
+		return this.btn_setting_Internal
+	}
+	private coincount_Internal: mw.Canvas
+	public get coincount(): mw.Canvas {
+		if(!this.coincount_Internal&&this.uiWidgetBase) {
+			this.coincount_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/coincount') as mw.Canvas
+		}
+		return this.coincount_Internal
+	}
+	private coinback_Internal: mw.Image
+	public get coinback(): mw.Image {
+		if(!this.coinback_Internal&&this.uiWidgetBase) {
+			this.coinback_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/coincount/coinback') as mw.Image
+		}
+		return this.coinback_Internal
+	}
+	private textcoin_Internal: mw.TextBlock
+	public get textcoin(): mw.TextBlock {
+		if(!this.textcoin_Internal&&this.uiWidgetBase) {
+			this.textcoin_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/coincount/textcoin') as mw.TextBlock
+		}
+		return this.textcoin_Internal
+	}
+	private imgHomepoint_Internal: mw.Image
+	public get imgHomepoint(): mw.Image {
+		if(!this.imgHomepoint_Internal&&this.uiWidgetBase) {
+			this.imgHomepoint_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/coincount/imgHomepoint') as mw.Image
+		}
+		return this.imgHomepoint_Internal
+	}
+	private userIdText_Internal: mw.TextBlock
+	public get userIdText(): mw.TextBlock {
+		if(!this.userIdText_Internal&&this.uiWidgetBase) {
+			this.userIdText_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/userIdText') as mw.TextBlock
+		}
+		return this.userIdText_Internal
+	}
+	private switchRoomCanvas_Internal: mw.Canvas
+	public get switchRoomCanvas(): mw.Canvas {
+		if(!this.switchRoomCanvas_Internal&&this.uiWidgetBase) {
+			this.switchRoomCanvas_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/switchRoomCanvas') as mw.Canvas
+		}
+		return this.switchRoomCanvas_Internal
+	}
+	private btnJumpGame_Internal: mw.StaleButton
+	public get btnJumpGame(): mw.StaleButton {
+		if(!this.btnJumpGame_Internal&&this.uiWidgetBase) {
+			this.btnJumpGame_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/switchRoomCanvas/btnJumpGame') as mw.StaleButton
+		}
+		return this.btnJumpGame_Internal
+	}
+	private switchRoomText_Internal: mw.TextBlock
+	public get switchRoomText(): mw.TextBlock {
+		if(!this.switchRoomText_Internal&&this.uiWidgetBase) {
+			this.switchRoomText_Internal = this.uiWidgetBase.findChildByPath('mrootcanvas/switchRoomCanvas/switchRoomText') as mw.TextBlock
+		}
+		return this.switchRoomText_Internal
+	}
 
 
  
@@ -267,6 +344,21 @@
 	protected initButtons() {
 		//按钮添加点击
 		
+		this.btnJumpGame.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "Main_UI_btnJumpGame");
+		})
+		this.initLanguage(this.btnJumpGame);
+		this.btnJumpGame.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.btnJumpGame.onPressed.add(() => {
+			this.btnJumpGame["preScale"] = this.btnJumpGame.renderScale;
+			this.btnJumpGame.renderScale = Vector2.one.set(this.btnJumpGame["preScale"]).multiply(1.1);
+		})
+		this.btnJumpGame.onReleased.add(() => {
+			this.btnJumpGame.renderScale = this.btnJumpGame["preScale"];
+		})
+		
+		
+	
 		//按钮添加点击
 		
 		this.btn_useprops.onClicked.add(()=>{
@@ -347,19 +439,6 @@
 		})
 		
 	
-		this.btn_setting.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "Main_UI_btn_setting");
-		})
-		this.btn_setting.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		this.btn_setting.onPressed.add(() => {
-			this.btn_setting["preScale"] = this.btn_setting.renderScale;
-			this.btn_setting.renderScale = Vector2.one.set(this.btn_setting["preScale"]).multiply(1.1);
-		})
-		this.btn_setting.onReleased.add(() => {
-			this.btn_setting.renderScale = this.btn_setting["preScale"];
-		})
-		
-	
 		this.btn_catch.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "Main_UI_btn_catch");
 		})
@@ -412,6 +491,19 @@
 		})
 		
 	
+		this.btn_setting.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "Main_UI_btn_setting");
+		})
+		this.btn_setting.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.btn_setting.onPressed.add(() => {
+			this.btn_setting["preScale"] = this.btn_setting.renderScale;
+			this.btn_setting.renderScale = Vector2.one.set(this.btn_setting["preScale"]).multiply(1.1);
+		})
+		this.btn_setting.onReleased.add(() => {
+			this.btn_setting.renderScale = this.btn_setting["preScale"];
+		})
+		
+	
 
 		//按钮多语言
 		
@@ -421,6 +513,15 @@
 		
 	
 		this.initLanguage(this.text_timenew)
+		
+	
+		this.initLanguage(this.textcoin)
+		
+	
+		this.initLanguage(this.userIdText)
+		
+	
+		this.initLanguage(this.switchRoomText)
 		
 	
 		//文本多语言

@@ -80,6 +80,8 @@ export class MainUI extends Main_UI_Generate {
             UIService.show(BuildMaterialPanel);
         });
 
+        this.userIdText.text = Player.localPlayer.userId;
+
         // this.btn_camera.onClicked.add(() => {
         //     UIService.show(GhostGraphPanel);
         // });
