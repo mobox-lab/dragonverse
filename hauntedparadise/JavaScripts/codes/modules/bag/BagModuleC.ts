@@ -19,8 +19,24 @@ import {InterSaveModuleC} from "../inter/InterSaveHelper";
 import {Event_LoadArchiveData} from "../procedure/const/Events";
 import {RouteDefine} from "../route/RouteDefine";
 import {BagDefine, BagItemData} from "./BagDefine";
-import {BagModuleS} from "./BagModuleS";
+import {
+    BagModuleS,
+    BuildingMaterialMapperIndexerByDv,
+    BuildingMaterialWithDvIdTypes,
+    BuildingMaterialWithHsIdTypes
+} from "./BagModuleS";
 import BagPanel from "./ui/BagPanel";
+import {AddGMCommand} from "module_gm";
+
+AddGMCommand("增加建材", null, (p, args: string) => {
+        for (const value of Object.keys(BuildingMaterialWithHsIdTypes).filter((v) => isNaN(Number(v)))) {
+            const hsId = BuildingMaterialWithHsIdTypes[value] as BuildingMaterialWithHsIdTypes;
+            if (hsId) {
+                ModuleService.getModule(BagModuleS).net_reqAddItem(p.playerId, hsId, "", "", 999, false);
+            }
+        }
+    },
+    "Bag 背包");
 
 export class BagModuleC extends ModuleC<BagModuleS, null> {
 
