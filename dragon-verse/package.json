@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/node": "^20.4.8",
     "@types/crypto-js": "^4.2.1",
     "@types/uuid": "^9.0.7",
     "crypto-js": "^4.2.0",
@@ -12,6 +13,7 @@
     "seedrandom": "^3.0.5"
   },
   "devDependencies": {
-    "@types/seedrandom": "^3.0.8"
+    "@types/seedrandom": "^3.0.8",
+    "typescript": "^5.4.3"
   }
 }
