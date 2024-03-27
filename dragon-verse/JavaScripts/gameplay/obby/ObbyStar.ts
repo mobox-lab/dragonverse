@@ -22,6 +22,7 @@ enum ObbyStarStates {
 }
 
 class ObbyStarBehaviorStates {
+    @Yoact.Noact()
     playerLocation: GtkTypes.Vector3 = null;
 
     isFlying: boolean = false;
@@ -33,12 +34,13 @@ class ObbyStarBehaviorStates {
     @Yoact.Noact()
     regulator: Regulator = new Regulator(1e3);
 
-    public syncPlayerLocation(character: mw.Character) {
+    public syncPlayerLocation(character: mw.Character, callback: () => void = undefined) {
         this.playerLocation = {
             x: character.worldTransform.position.x,
             y: character.worldTransform.position.y,
             z: character.worldTransform.position.z,
         };
+        callback?.();
     }
 }
 
@@ -199,6 +201,7 @@ export default class ObbyStar extends mw.Script {
             .aU((dt) => {
                 this.gameObject.worldTransform.rotation =
                     Gtk.newWithZ(this.gameObject.worldTransform.rotation, this.gameObject.worldTransform.rotation.z + GameServiceConfig.OBBY_STAR_SELF_ROTATION_SPEED * dt);
+                this.state.syncPlayerLocation(this._clientCharacter, () => this._machine.evaluate(this.state));
             })
             .aEx(() => {
                 this._floatTask?.pause();
@@ -207,7 +210,6 @@ export default class ObbyStar extends mw.Script {
         const fly = new State<ObbyStarBehaviorStates>(ObbyStarStates.Flying)
             .aE(() => {
                 Log4Ts.log(ObbyStar, `enter ${fly.name} state.`);
-                this.state.syncPlayerLocation(this._clientCharacter);
             })
             .aU((dt) => {
                 this.gameObject.worldTransform.rotation =
@@ -220,7 +222,7 @@ export default class ObbyStar extends mw.Script {
                 this.gameObject.worldTransform.position = this.gameObject.worldTransform.position.add(distDisplacement < distPlayerStar ?
                     displacement :
                     this.gameObject.worldTransform.position.clone().subtract(this._clientCharacter.worldTransform.position));
-                this.state.syncPlayerLocation(this._clientCharacter);
+                this.state.syncPlayerLocation(this._clientCharacter, () => this._machine.evaluate(this.state));
             })
             .aEx((arg) => {
                 EffectService.playAtPosition(
@@ -246,7 +248,7 @@ export default class ObbyStar extends mw.Script {
         const silent = new State<ObbyStarBehaviorStates>("silent")
             .aU((arg) => {
                 if (this.state.regulator.ready()) {
-                    this.state.syncPlayerLocation(this._clientCharacter);
+                    this.state.syncPlayerLocation(this._clientCharacter, () => this._machine.evaluate(this.state));
                 }
             });
 
@@ -258,8 +260,8 @@ export default class ObbyStar extends mw.Script {
         hidden.when((state) => state.isAlive).to(idle);
         idle.when((state) => {
             if (!state.playerLocation) return false;
-            return Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) < 5000 &&
-                Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) < 5000;
+            return Math.abs(state.playerLocation.x - this.gameObject.worldTransform.position.x) > 5000 &&
+                Math.abs(state.playerLocation.y - this.gameObject.worldTransform.position.y) > 5000;
         }).to(silent);
         silent.when((state) => {
             if (!state.playerLocation) return false;
