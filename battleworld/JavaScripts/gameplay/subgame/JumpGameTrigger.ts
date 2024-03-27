@@ -1,5 +1,4 @@
-
-/** 
+/**
  * @Author       : zewei.zhang
  * @Date         : 2024-01-16 14:42:38
  * @LastEditors  : zewei.zhang
@@ -8,7 +7,7 @@
  * @Description  : 跳游戏触发器
  */
 
-import { Globaldata } from "../../const/Globaldata";
+import {Globaldata} from "../../const/Globaldata";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Tips from "../../tool/P_Tips";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
@@ -22,7 +21,7 @@ export default class JumpGameTrigger extends Script {
     private _progressBar: ProgressBar;
     private _cnvProgressBar: Canvas;
 
-    @mw.Property({ displayName: "要跳转的游戏", enumType: { "DragonVerse": 1, "PetSimulator": 2 } })
+    @mw.Property({displayName: "要跳转的游戏", enumType: {"DragonVerse": 1, "PetSimulator": 2, "HauntedParadise": 3}})
     public jumpGameId: number = 1;
 
     protected onStart(): void {
@@ -33,8 +32,9 @@ export default class JumpGameTrigger extends Script {
         } else if (SystemUtil.isServer()) {
             Event.addClientListener("onJumpToRoom", (player: Player, roomId: string) => {
                 Log4Ts.log(this, "onJumpToRoom", player.userId, roomId);
-                TeleportService.asyncTeleportToRoom(roomId, [player.userId], null).then(() => { }, this.onFailed);
-            })
+                TeleportService.asyncTeleportToRoom(roomId, [player.userId], null).then(() => {
+                }, this.onFailed);
+            });
         }
     }
 
@@ -43,19 +43,22 @@ export default class JumpGameTrigger extends Script {
         console.log(this, "跳游戏", this.getJumpSceneName(this.jumpGameId));
         this.jumpGame(Player.localPlayer.userId);
     }
+
     onFailed = (result: mw.TeleportResult) => {
         // 将错误信息发给所有参与的客户端
         for (const userId in result.userIds) {
-            const player = Player.getPlayer(userId)
+            const player = Player.getPlayer(userId);
             if (player) {
                 Tips.showToClient(player, result.message);
                 Log4Ts.log(this, "onJumpGameFail", result.message);
             }
         }
     };
+
     @RemoteFunction(Server)
     jumpGame(userId: string) {
-        TeleportService.asyncTeleportToScene(this.getJumpSceneName(this.jumpGameId), [userId],).then(() => { }, this.onFailed);
+        TeleportService.asyncTeleportToScene(this.getJumpSceneName(this.jumpGameId), [userId],).then(() => {
+        }, this.onFailed);
     }
 
 
@@ -88,22 +91,28 @@ export default class JumpGameTrigger extends Script {
     }
 
     /**
-    * 播放 Progress 动画.
-    */
+     * 播放 Progress 动画.
+     */
     public playProgress() {
-        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to(Globaldata.jumpGameProgressDuration, { percent: 1 }).call(() => {
+        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to(Globaldata.jumpGameProgressDuration, {percent: 1}).call(() => {
             this.onProgressDone();
         });
 
-        actions.tween(this._cnvProgressBar).setTag(progressTag).to(100, { renderOpacity: 1 }).call(() => {
+        actions.tween(this._cnvProgressBar).setTag(progressTag).to(100, {renderOpacity: 1}).call(() => {
             progressTask.start();
         }).start();
     }
 
     getJumpSceneName(id: number): string {
         switch (id) {
-            case 1: return "dragon-verse";
-            case 2: return "pet-simulator";
+            case 1:
+                return "dragon-verse";
+            case 2:
+                return "pet-simulator";
+            case 3:
+                return "hauntedparadise";
+            default:
+                return "battleworld";
         }
     }
 }

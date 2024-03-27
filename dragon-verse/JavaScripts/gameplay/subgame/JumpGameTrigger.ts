@@ -19,7 +19,7 @@ export default class JumpGameTrigger extends Script {
     private _progressBar: ProgressBar;
     private _cnvProgressBar: Canvas;
 
-    @mw.Property({displayName: "要跳转的游戏", enumType: {"BattleWorld": 1, "PetSimulator": 2, "HauntedParadise": 3}})
+    @mw.Property({displayName: "要跳转的游戏", enumType: {"DragonVerse": 1, "PetSimulator": 2, "BattleWorld": 3}})
     private _jumpGameType: number = 1;
 
     protected onStart(): void {
@@ -101,13 +101,13 @@ export default class JumpGameTrigger extends Script {
     getJumpSceneName(id: number): string {
         switch (id) {
             case 1:
-                return "battleworld";
+                return "dragon-verse";
             case 2:
                 return "pet-simulator";
             case 3:
-                return "hauntedparadise";
+                return "battleworld";
             default:
-                return "dragon-verse";
+                return "hauntedparadise";
         }
     }
 }

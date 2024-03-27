@@ -567,7 +567,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
 
     private static SECRET = "";
 
-    public static readonly KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL = 3e3;
+    public static readonly KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL = 5e3;
 
     private static getSensitiveData() {
         GToolkit.doUntilTrue(
