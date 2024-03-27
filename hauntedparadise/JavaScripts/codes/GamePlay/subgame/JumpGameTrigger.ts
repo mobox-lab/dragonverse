@@ -1,8 +1,3 @@
-import GameServiceConfig from "../../const/GameServiceConfig";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
-import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
-import {PromotTips} from "../../ui/common/PromotTips";
-
 /**
  * @Author       : zewei.zhang
  * @Date         : 2024-01-16 14:42:38
@@ -11,6 +6,9 @@ import {PromotTips} from "../../ui/common/PromotTips";
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\subgame\JumpGameTrigger.ts
  * @Description  : 跳游戏触发器
  */
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Tips from "../../utils/Tips";
+import JumpProgress_Generate from "../../../ui-generate/ShareUI/subgame/JumpProgress_generate";
 
 const progressTag = "JumpProgress";
 @Component
@@ -29,7 +27,7 @@ export default class JumpGameTrigger extends Script {
             this._trigger.onEnter.add(this.onPlayerEnter.bind(this));
             this._trigger.onLeave.add(this.onPlayerLeave.bind(this));
             Event.addServerListener("onJumpGameFailed", (msg: string) => {
-                PromotTips.showTips(msg);
+                Tips.show(msg);
                 Log4Ts.log(this, "onJumpGameFailed", msg);
             });
         }
@@ -89,7 +87,7 @@ export default class JumpGameTrigger extends Script {
      * 播放 Progress 动画.
      */
     public playProgress() {
-        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, {percent: 1}).call(() => {
+        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to( 3e3, {percent: 1}).call(() => {
             this.onProgressDone();
         });
 
