@@ -3,7 +3,7 @@ export abstract class InitializeCheckerScript extends mw.Script {
 
     protected isInitializeComplete: boolean = false;
 
-    public static required(target: unknown, propertyKey: string) {
+    public static required(target: object, propertyKey: string) {
         const name = target.constructor.name;
 
         if (!InitializeCheckerScript._requireMap.has(name)) {
