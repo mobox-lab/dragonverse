@@ -123,13 +123,16 @@ export class MainUISkillButton {
         //     mw.InputUtil.unbindButton(mw.Keys.RightMouseButton);
         // }
         if (this._btnDataCfg && this._btnDataCfg.btnType == 1) {
-            mw.InputUtil.unbindButton(mw.Keys.Q);
+            this.btn_invoke.removeKey(Keys.Q);
+            // mw.InputUtil.unbindButton(mw.Keys.Q);
         } else if (this._btnDataCfg && this._btnDataCfg.id == 1) {
             //是跳跃
-            InputUtil.unbindButton(Keys.SpaceBar);
+            this.btn_invoke.removeKey(Keys.SpaceBar);
+            // InputUtil.unbindButton(Keys.SpaceBar);
         } else if (this._btnDataCfg && this._btnDataCfg.id == 2) {
             //是冲刺
-            InputUtil.unbindButton(Keys.C);
+            this.btn_invoke.removeKey(Keys.C);
+            // InputUtil.unbindButton(Keys.C);
         }
     }
 
@@ -151,13 +154,16 @@ export class MainUISkillButton {
         this._btnDataCfg = GameConfig.MotionBtnData.getElement(btnDataId);
 
         if (this._btnDataCfg && this._btnDataCfg.btnType == 1) {
-            mw.InputUtil.bindButton(mw.Keys.Q, this.btn_invoke);
+            this.btn_invoke.addKey(mw.Keys.Q);
+            // mw.InputUtil.bindButton(mw.Keys.Q, this.btn_invoke);
         } else if (this._btnDataCfg && this._btnDataCfg.id == 1) {
             //是跳跃
-            InputUtil.bindButton(Keys.SpaceBar, this.btn_invoke);
+            this.btn_invoke.addKey(Keys.SpaceBar);
+            // InputUtil.bindButton(Keys.SpaceBar, this.btn_invoke);
         } else if (this._btnDataCfg && this._btnDataCfg.id == 2) {
             //是冲刺
-            InputUtil.bindButton(Keys.C, this.btn_invoke);
+            this.btn_invoke.addKey(Keys.C);
+            // InputUtil.bindButton(Keys.C, this.btn_invoke);
         }
 
         this._motionSkillIndex = 0;

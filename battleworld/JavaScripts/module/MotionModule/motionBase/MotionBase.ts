@@ -497,16 +497,18 @@ export abstract class AbstractMotion {
     }
 
     private check_effectBreak() {
-        let player = Player.getPlayer(this.motionContext.from);
+        // let player = Player.getPlayer(this.motionContext.from);
 
         // 容错处理
-        if (player == null) return;
-        if (player.character == null) return;
-        let velocity = player.character.velocity;
-        if (velocity == null) return;
-        if (velocity.x == 0 && velocity.y == 0) {
-            return;
-        }
+        // if (player == null) return;
+        // if (player.character == null) return;
+        // let velocity = player.character.velocity;
+        // if (velocity == null) return;
+        // if (velocity.x == 0 && velocity.y == 0) {
+        //     return;
+        // }
+
+        return;
 
         if (this.currentFrame >= this.motionData.frameCount) {
             return;
