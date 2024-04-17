@@ -333,9 +333,9 @@ export class MotionFrameNode_Effect extends MotionFrameNodeBase {
     public colorHex1: string = "";
 }
 
-/**音效节点 */
+/**3D音效节点 */
 @motionEdit_Node({
-    "nodeName": "音效",
+    "nodeName": "3D音效",
 
     "guid_vname": "guid",
     "guid_vtype": EMotionFrameNodeViewItemType.Text_Input,
@@ -345,13 +345,13 @@ export class MotionFrameNode_Effect extends MotionFrameNodeBase {
     "sound_innerRadius_vtype": EMotionFrameNodeViewItemType.Text_Input,
     "sound_maxDistance_vname": "衰减半径",
     "sound_maxDistance_vtype": EMotionFrameNodeViewItemType.Text_Input,
-    "sound_count_vname": "停止帧数",
-    "sound_count_vtype": EMotionFrameNodeViewItemType.Text_Input,
-    "bind_vname": "1绑定玩家非1坐标",
-    "bind_vtype": EMotionFrameNodeViewItemType.Text_Input,
+    // "sound_count_vname": "停止帧数",
+    // "sound_count_vtype": EMotionFrameNodeViewItemType.Text_Input,
+    // "bind_vname": "1绑定玩家非1坐标",
+    // "bind_vtype": EMotionFrameNodeViewItemType.Text_Input,
 })
-export class MotionFrameNode_Sound extends MotionFrameNodeBase {
-    public frameNodeType: EFrameNodeType = EFrameNodeType.MotionFrameNode_Sound;
+export class MotionFrameNode_3DSound extends MotionFrameNodeBase {
+    public frameNodeType: EFrameNodeType = EFrameNodeType.MotionFrameNode_3DSound;
 
     /** 节点Guid */
     public guid: string = "";
@@ -365,6 +365,32 @@ export class MotionFrameNode_Sound extends MotionFrameNodeBase {
     public sound_count: number = 0;
     /**是否绑定在玩家身上 */
     public bind: number = 1;
+}
+
+/**音效节点 */
+@motionEdit_Node({
+    "nodeName": "音效",
+
+    "guid_vname": "guid",
+    "guid_vtype": EMotionFrameNodeViewItemType.Text_Input,
+    "sound_volume_vname": "音量",
+    "sound_volume_vtype": EMotionFrameNodeViewItemType.Text_Input,
+})
+export class MotionFrameNode_Sound extends MotionFrameNodeBase {
+    public frameNodeType: EFrameNodeType = EFrameNodeType.MotionFrameNode_Sound;
+
+    /** 节点Guid */
+    public guid: string = "";
+    /**音量*/
+    public sound_volume: number = 1;
+    /**无衰半径*/
+    public sound_innerRadius: number = 100;
+    /**衰减半径*/
+    public sound_maxDistance: number = 3000;
+    // /**停止帧数*/
+    // public sound_count: number = 0;
+    // /**是否绑定在玩家身上 */
+    // public bind: number = 1;
 }
 
 /**位移节点 */

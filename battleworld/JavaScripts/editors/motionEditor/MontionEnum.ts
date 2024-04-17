@@ -9,6 +9,7 @@ export enum EFrameNodeType {
     /**蓄力motion */
     MotionFrameNode_ChargeMotion = "MotionFrameNode_ChargeMotion",
     MotionFrameNode_Effect = "MotionFrameNode_Effect",
+    MotionFrameNode_3DSound = "MotionFrameNode_3DSound",
     MotionFrameNode_Sound = "MotionFrameNode_Sound",
     MotionFrameNode_Move = "MotionFrameNode_Move",
     /**物理冲量 */

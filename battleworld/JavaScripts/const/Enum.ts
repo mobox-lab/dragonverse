@@ -636,8 +636,9 @@ export enum EMotion_Events {
     /**冲刺 */
     sprint = "sprint",
     /**冲刺加速度 */
-    sprintSpeed = "sprintSpeed"
-
+    sprintSpeed = "sprintSpeed",
+    EventPlayerCanMove = "EventPlayerCanMove",
+    EventPlayerCanNotMove = "EventPlayerCanNotMove",
 }
 
 /**提示模块 */

@@ -447,6 +447,7 @@ export class Globaldata {
     public static guide_woodPrefabGuid: string = "216549";
     /**木桩生成位置 */
     public static guide_npcBorn: mw.Vector = new mw.Vector(200099.22, 11062.03, 2350.51);
+    public static wood_bornPos: mw.Vector = new mw.Vector(212932.22, 13301.03, 1877.51);
     public static guide_npcScale: mw.Vector = new mw.Vector(2, 2, 2);
     /**最大血量 */
     public static guide_npcMaxHp: number = 9999999999999999999;

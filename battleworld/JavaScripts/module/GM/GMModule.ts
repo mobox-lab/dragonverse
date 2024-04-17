@@ -32,6 +32,7 @@ import { MascotModuleS } from "../npc/mascotNpc/MascotModuleS";
 import { PlayerHeadUIModuleC } from "../PlayerHeadUIModule/PlayerHeadUIModuleC";
 import { EnergyModuleC } from "../Energy/EnergyModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import WoodUnit from "../npc/WoodUnit";
 
 
 export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
@@ -550,3 +551,11 @@ AddGMCommand("扣体力", (player, value) => {
 
 });
 
+AddGMCommand("加木桩", async () => {
+
+    let prefabNpc = await mw.Script.spawnScript(WoodUnit);
+    //ts报错兼容
+    if (!prefabNpc) return;
+    await prefabNpc.initUnit(Globaldata.guide_npcId, Globaldata.guide_woodPrefabGuid);
+    prefabNpc.setModelLocation(Globaldata.wood_bornPos);
+})

@@ -179,7 +179,6 @@ export class AreaIntersect {
     protected async areaIntersect(form: mw.GameObject | mw.Vector) {
         let triggerLoc = await this.filter_attacks(form);
 
-
         if (this.filterIds.length == 0) return;
 
         for (let id of this.filterIds) {
@@ -254,6 +253,15 @@ export class AreaIntersect {
             oTraceError("filter_attacks trigger is null ");
             return null;
         }
+        //可视化trigger
+        if (SystemUtil.isPIE) {
+            if (this._areaCheckData.type === 0) {
+                QueryUtil.boxOverlap(trigger.worldTransform.position, trigger.worldTransform.scale, true);
+            } else if (this._areaCheckData.type === 1) {
+                QueryUtil.sphereOverlap(trigger.worldTransform.position, this._areaCheckData.range, true);
+            }
+        }
+
 
         // 可破坏交互物
         let destroys = RP_DestroyManager.instance.getCurAreaDestroys();
