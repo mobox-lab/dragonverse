@@ -6,7 +6,7 @@ import { motionClip } from "../../../editors/motionEditor/MotionDataManager";
 import { Constants } from "../../../tool/Constants";
 import { Tween } from "../../../tool/Tween";
 import { util } from "../../../tool/Utils";
-import { MotionFrameNode_AnimPause, MotionFrameNode_Animation, MotionFrameNode_BreakPoint, MotionFrameNode_Camera, MotionFrameNode_Charge, MotionFrameNode_ChargeMotion, MotionFrameNode_Effect, MotionFrameNode_Equip, MotionFrameNode_Event, MotionFrameNode_Fly, MotionFrameNode_FlyEntity, MotionFrameNode_Move, MotionFrameNode_PlayWeaponAnim, MotionFrameNode_RemoveEquip, MotionFrameNode_Shake, MotionFrameNode_SkillRect, MotionFrameNode_Sound, MotionFrameNode_TimeDilate, MotionFrameNode_VisibleWeapon, MotionFrameNode_impulse, MotioniFrameNode_ModelAnim } from "../../../editors/motionEditor/MotionFrameNodeBase";
+import { MotionFrameNode_AnimPause, MotionFrameNode_Animation, MotionFrameNode_BreakPoint, MotionFrameNode_Camera, MotionFrameNode_Charge, MotionFrameNode_ChargeMotion, MotionFrameNode_Effect, MotionFrameNode_Equip, MotionFrameNode_Event, MotionFrameNode_Fly, MotionFrameNode_FlyEntity, MotionFrameNode_Move, MotionFrameNode_PlayWeaponAnim, MotionFrameNode_RemoveEquip, MotionFrameNode_Shake, MotionFrameNode_SkillRect, MotionFrameNode_3DSound, MotionFrameNode_TimeDilate, MotionFrameNode_VisibleWeapon, MotionFrameNode_impulse, MotioniFrameNode_ModelAnim, MotionFrameNode_Sound } from "../../../editors/motionEditor/MotionFrameNodeBase";
 import { MotionEditConst } from "../../../editors/motionEditor/MotionEditConst";
 import { EventManager } from "../../../tool/EventManager";
 import { UIEvent_editMotion } from "../../../editors/motionEditor/UIEvent_editMotion";
@@ -337,15 +337,20 @@ export abstract class AbstractMotion {
 
                     this.playEffectByID(this.motionContext.from, sheet as MotionFrameNode_Effect);
                     break;
-                case EFrameNodeType.MotionFrameNode_Sound:
+                case EFrameNodeType.MotionFrameNode_3DSound:
                     {
                         const dressUpModule = ModuleService.getModule(DressUpModuleC);
-                        const soundSheet = sheet as MotionFrameNode_Sound;
+                        const soundSheet = sheet as MotionFrameNode_3DSound;
                         if (dressUpModule.dressUpInfo && dressUpModule.dressUpInfo && dressUpModule.dressUpInfo.specialSound != "") {
                             //变装时，如果有配置音效，需要走变装道具的音效
                             soundSheet.guid = dressUpModule.dressUpInfo.specialSound;
                         }
-                        this.playSoundByID(this.motionContext.from, soundSheet);
+                        this.play3DSoundByID(this.motionContext.from, soundSheet);
+                    }
+                    break;
+                case EFrameNodeType.MotionFrameNode_Sound:
+                    {
+                        this.playSoundByID(sheet as MotionFrameNode_Sound);
                     }
                     break;
                 case EFrameNodeType.MotionFrameNode_Move:
@@ -1117,16 +1122,21 @@ export abstract class AbstractMotion {
     }
 
 
-    // 音效
-    protected playSoundByID(playerID: number, sound: MotionFrameNode_Sound) {
+    // 3D音效
+    protected play3DSoundByID(playerID: number, sound: MotionFrameNode_3DSound) {
         let player = Player.getPlayer(playerID);
         if (!player) return;
 
         let playerLoc = PlayerManager.instance.getPlayerLoc(playerID);
         if (playerLoc == null) return;
 
-        mw.SoundService.play3DSound(sound.guid, playerLoc, 1, sound.sound_volume);
+        mw.SoundService.play3DSound(sound.guid, playerLoc, 1, sound.sound_volume, { radius: sound.sound_innerRadius, falloffDistance: sound.sound_maxDistance });
     }
+
+    protected playSoundByID(sound: MotionFrameNode_Sound) {
+        mw.SoundService.playSound(sound.guid, 1, sound.sound_volume);
+    }
+
 
     /**区域检测 */
     protected motion_areaCheck(sheet: MotionFrameNode_SkillRect) {

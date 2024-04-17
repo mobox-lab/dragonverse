@@ -185,6 +185,8 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
         this.createFSM();
 
         EventManager.instance.add(EMotion_Events.EventPlayerJump, this.listen_jump.bind(this));
+        EventManager.instance.add(EMotion_Events.EventPlayerCanMove, this.listen_playerCanMove.bind(this, true));
+        EventManager.instance.add(EMotion_Events.EventPlayerCanNotMove, this.listen_playerCanMove.bind(this, false));
         EventManager.instance.add(EMotion_Events.onDefensePressed, this.listen_onDefensePressed.bind(this));
         EventManager.instance.add(EMotion_Events.onDefenseRelease, this.listen_onDefenseRelease.bind(this));
         EventManager.instance.add(EMotion_Events.sprint, this.listen_sprit.bind(this));
@@ -743,6 +745,14 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
             this.changeState(EPlayerState.jump, currentStateType);
         } else {
             this.changeState(EPlayerState.jump, null)
+        }
+    }
+
+    public listen_playerCanMove(canMove: boolean) {
+        if (canMove) {
+            this.localPlayer.character.movementEnabled = true;
+        } else {
+            this.localPlayer.character.movementEnabled = false;
         }
     }
     /**
@@ -1366,6 +1376,25 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
     protected onDestroy(): void {
         // 埋点：核心循环结束 
         EventManager.instance.call(EAnalyticsEvents.coreStepEnd);
+        EventManager.instance.remove(EMotion_Events.EventPlayerJump, this.listen_jump, this);
+        EventManager.instance.remove(EMotion_Events.EventPlayerCanMove, this.listen_playerCanMove, this);
+        EventManager.instance.remove(EMotion_Events.EventPlayerCanNotMove, this.listen_playerCanMove, this);
+        EventManager.instance.remove(EMotion_Events.onDefensePressed, this.listen_onDefensePressed, this);
+        EventManager.instance.remove(EMotion_Events.onDefenseRelease, this.listen_onDefenseRelease, this);
+        EventManager.instance.remove(EMotion_Events.sprint, this.listen_sprit, this);
+        EventManager.instance.remove(EMotion_Events.sprintSpeed, this.listen_spriteSpeed, this);
+        EventManager.instance.remove(EModule_Events.ui_openMainView, this.listen_openMainView, this);
+        EventManager.instance.remove(EModule_Events.add_money, this.listen_add_money, this);
+        EventManager.instance.remove(EModule_Events.sub_money, this.listen_Reduce_Money, this);
+        EventManager.instance.remove(EModule_Events.hurtPlayer, this.listen_Sub_Hp, this);
+        EventManager.instance.remove(EPlayerEvents_C.player_setMovement_c, this.listen_setMovement, this);
+        EventManager.instance.remove(EPlayerEvents_C.player_syncPlayerName_c, this.listen_playerJoin, this);
+        EventManager.instance.remove(EPlayerEvents_C.player_beAttack_clientNpc_c, this.listen_beAttackClientNpc, this);
+        EventManager.instance.remove(EPlayerEvents_C.player_syncPlayerid_c, this.listen_playerJoin, this);
+        EventManager.instance.remove(EModule_Events.changetoBaseState, this.listen_changetoBaseStae, this);
+        EventManager.instance.remove(EModule_Events.changeState, this.changeState, this);
+        EventManager.instance.remove(EAttributeEvents_C.Attribute_Money_Change_C, this.listen_money_change, this);
+        EventManager.instance.remove(EPlayerEvents_C.Player_ChangePlayerState, this.listen_changePlayerState, this);
     }
 
     /**
