@@ -7,27 +7,20 @@
  * @zewei.zhang
  * @LviatYi
  * @version 1.0.8
- * UI: UI/dialogue/InteractNode.ui
+ * UI: UI/interactUI.ui
 */
 
 import UIScript = mw.UIScript;
 
 
-@UIBind('UI/dialogue/InteractNode.ui')
-export default class InteractNode_Generate extends UIScript {
+@UIBind('UI/interactUI.ui')
+export default class interactUI_Generate extends UIScript {
 	private btnMain_Internal: mw.Button
 	public get btnMain(): mw.Button {
 		if(!this.btnMain_Internal&&this.uiWidgetBase) {
 			this.btnMain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/btnMain') as mw.Button
 		}
 		return this.btnMain_Internal
-	}
-	private imgIcon_Internal: mw.Image
-	public get imgIcon(): mw.Image {
-		if(!this.imgIcon_Internal&&this.uiWidgetBase) {
-			this.imgIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgIcon') as mw.Image
-		}
-		return this.imgIcon_Internal
 	}
 	private txtContent_Internal: mw.TextBlock
 	public get txtContent(): mw.TextBlock {
@@ -36,12 +29,26 @@ export default class InteractNode_Generate extends UIScript {
 		}
 		return this.txtContent_Internal
 	}
-	private imgPreview_Internal: mw.Image
-	public get imgPreview(): mw.Image {
-		if(!this.imgPreview_Internal&&this.uiWidgetBase) {
-			this.imgPreview_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgPreview') as mw.Image
+	private imgIcon_Internal: mw.Image
+	public get imgIcon(): mw.Image {
+		if(!this.imgIcon_Internal&&this.uiWidgetBase) {
+			this.imgIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgIcon') as mw.Image
 		}
-		return this.imgPreview_Internal
+		return this.imgIcon_Internal
+	}
+	private imgbtn_Internal: mw.Image
+	public get imgbtn(): mw.Image {
+		if(!this.imgbtn_Internal&&this.uiWidgetBase) {
+			this.imgbtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgbtn') as mw.Image
+		}
+		return this.imgbtn_Internal
+	}
+	private txtbtn_Internal: mw.TextBlock
+	public get txtbtn(): mw.TextBlock {
+		if(!this.txtbtn_Internal&&this.uiWidgetBase) {
+			this.txtbtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/txtbtn') as mw.TextBlock
+		}
+		return this.txtbtn_Internal
 	}
 
 
@@ -65,6 +72,9 @@ export default class InteractNode_Generate extends UIScript {
         this.initLanguage(this.txtContent)
         
 	
+        this.initLanguage(this.txtbtn)
+        
+	
         // 静态文本多语言
         
     }
@@ -77,6 +87,9 @@ export default class InteractNode_Generate extends UIScript {
         // 文本多语言
         
         this.unregisterLanKey(this.txtContent)
+        
+	
+        this.unregisterLanKey(this.txtbtn)
         
 	
         // 隐藏文本多语言

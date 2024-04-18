@@ -7,41 +7,34 @@
  * @zewei.zhang
  * @LviatYi
  * @version 1.0.8
- * UI: UI/dialogue/InteractNode.ui
+ * UI: UI/tip/tiptiptip.ui
 */
 
 import UIScript = mw.UIScript;
 
 
-@UIBind('UI/dialogue/InteractNode.ui')
-export default class InteractNode_Generate extends UIScript {
-	private btnMain_Internal: mw.Button
-	public get btnMain(): mw.Button {
-		if(!this.btnMain_Internal&&this.uiWidgetBase) {
-			this.btnMain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/btnMain') as mw.Button
+@UIBind('UI/tip/tiptiptip.ui')
+export default class tiptiptip_Generate extends UIScript {
+	private canvasTip_Internal: mw.Canvas
+	public get canvasTip(): mw.Canvas {
+		if(!this.canvasTip_Internal&&this.uiWidgetBase) {
+			this.canvasTip_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip') as mw.Canvas
 		}
-		return this.btnMain_Internal
+		return this.canvasTip_Internal
 	}
-	private imgIcon_Internal: mw.Image
-	public get imgIcon(): mw.Image {
-		if(!this.imgIcon_Internal&&this.uiWidgetBase) {
-			this.imgIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgIcon') as mw.Image
+	private imgTipBg_Internal: mw.Image
+	public get imgTipBg(): mw.Image {
+		if(!this.imgTipBg_Internal&&this.uiWidgetBase) {
+			this.imgTipBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip/imgTipBg') as mw.Image
 		}
-		return this.imgIcon_Internal
+		return this.imgTipBg_Internal
 	}
-	private txtContent_Internal: mw.TextBlock
-	public get txtContent(): mw.TextBlock {
-		if(!this.txtContent_Internal&&this.uiWidgetBase) {
-			this.txtContent_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/txtContent') as mw.TextBlock
+	private textDescribtion_Internal: mw.TextBlock
+	public get textDescribtion(): mw.TextBlock {
+		if(!this.textDescribtion_Internal&&this.uiWidgetBase) {
+			this.textDescribtion_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip/textDescribtion') as mw.TextBlock
 		}
-		return this.txtContent_Internal
-	}
-	private imgPreview_Internal: mw.Image
-	public get imgPreview(): mw.Image {
-		if(!this.imgPreview_Internal&&this.uiWidgetBase) {
-			this.imgPreview_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgPreview') as mw.Image
-		}
-		return this.imgPreview_Internal
+		return this.textDescribtion_Internal
 	}
 
 
@@ -62,7 +55,7 @@ export default class InteractNode_Generate extends UIScript {
         
         // 文本多语言
         
-        this.initLanguage(this.txtContent)
+        this.initLanguage(this.textDescribtion)
         
 	
         // 静态文本多语言
@@ -76,7 +69,7 @@ export default class InteractNode_Generate extends UIScript {
         
         // 文本多语言
         
-        this.unregisterLanKey(this.txtContent)
+        this.unregisterLanKey(this.textDescribtion)
         
 	
         // 隐藏文本多语言

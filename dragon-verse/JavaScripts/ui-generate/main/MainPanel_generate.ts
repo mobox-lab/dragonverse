@@ -169,27 +169,6 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.cnvExtraFuntion_Internal
 	}
-	private switchRoomCanvas_Internal: mw.Canvas
-	public get switchRoomCanvas(): mw.Canvas {
-		if(!this.switchRoomCanvas_Internal&&this.uiWidgetBase) {
-			this.switchRoomCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvExtraFuntion/switchRoomCanvas') as mw.Canvas
-		}
-		return this.switchRoomCanvas_Internal
-	}
-	private btnJumpGame_Internal: mw.StaleButton
-	public get btnJumpGame(): mw.StaleButton {
-		if(!this.btnJumpGame_Internal&&this.uiWidgetBase) {
-			this.btnJumpGame_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvExtraFuntion/switchRoomCanvas/btnJumpGame') as mw.StaleButton
-		}
-		return this.btnJumpGame_Internal
-	}
-	private switchRoomText_Internal: mw.TextBlock
-	public get switchRoomText(): mw.TextBlock {
-		if(!this.switchRoomText_Internal&&this.uiWidgetBase) {
-			this.switchRoomText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvExtraFuntion/switchRoomCanvas/switchRoomText') as mw.TextBlock
-		}
-		return this.switchRoomText_Internal
-	}
 	private btnCode_Internal: mw.StaleButton
 	public get btnCode(): mw.StaleButton {
 		if(!this.btnCode_Internal&&this.uiWidgetBase) {
@@ -281,19 +260,117 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnReset_Internal
 	}
+	private bagCanvas_Internal: mw.Canvas
+	public get bagCanvas(): mw.Canvas {
+		if(!this.bagCanvas_Internal&&this.uiWidgetBase) {
+			this.bagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/bagCanvas') as mw.Canvas
+		}
+		return this.bagCanvas_Internal
+	}
 	private btnBag_Internal: mw.StaleButton
 	public get btnBag(): mw.StaleButton {
 		if(!this.btnBag_Internal&&this.uiWidgetBase) {
-			this.btnBag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnBag') as mw.StaleButton
+			this.btnBag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/bagCanvas/btnBag') as mw.StaleButton
 		}
 		return this.btnBag_Internal
 	}
-	private btnRunning_Internal: mw.StaleButton
-	public get btnRunning(): mw.StaleButton {
-		if(!this.btnRunning_Internal&&this.uiWidgetBase) {
-			this.btnRunning_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/btnRunning') as mw.StaleButton
+	private switchRoomCanvas_Internal: mw.Canvas
+	public get switchRoomCanvas(): mw.Canvas {
+		if(!this.switchRoomCanvas_Internal&&this.uiWidgetBase) {
+			this.switchRoomCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas') as mw.Canvas
 		}
-		return this.btnRunning_Internal
+		return this.switchRoomCanvas_Internal
+	}
+	private btnJumpGame_Internal: mw.StaleButton
+	public get btnJumpGame(): mw.StaleButton {
+		if(!this.btnJumpGame_Internal&&this.uiWidgetBase) {
+			this.btnJumpGame_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas/btnJumpGame') as mw.StaleButton
+		}
+		return this.btnJumpGame_Internal
+	}
+	private switchRoomText_Internal: mw.TextBlock
+	public get switchRoomText(): mw.TextBlock {
+		if(!this.switchRoomText_Internal&&this.uiWidgetBase) {
+			this.switchRoomText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas/switchRoomText') as mw.TextBlock
+		}
+		return this.switchRoomText_Internal
+	}
+	private mapCanvas_Internal: mw.Canvas
+	public get mapCanvas(): mw.Canvas {
+		if(!this.mapCanvas_Internal&&this.uiWidgetBase) {
+			this.mapCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/mapCanvas') as mw.Canvas
+		}
+		return this.mapCanvas_Internal
+	}
+	private btnMap_Internal: mw.StaleButton
+	public get btnMap(): mw.StaleButton {
+		if(!this.btnMap_Internal&&this.uiWidgetBase) {
+			this.btnMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/mapCanvas/btnMap') as mw.StaleButton
+		}
+		return this.btnMap_Internal
+	}
+	private textMap_Internal: mw.TextBlock
+	public get textMap(): mw.TextBlock {
+		if(!this.textMap_Internal&&this.uiWidgetBase) {
+			this.textMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/mapCanvas/textMap') as mw.TextBlock
+		}
+		return this.textMap_Internal
+	}
+	private soundCanvas_Internal: mw.Canvas
+	public get soundCanvas(): mw.Canvas {
+		if(!this.soundCanvas_Internal&&this.uiWidgetBase) {
+			this.soundCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/soundCanvas') as mw.Canvas
+		}
+		return this.soundCanvas_Internal
+	}
+	private btnSound_Internal: mw.StaleButton
+	public get btnSound(): mw.StaleButton {
+		if(!this.btnSound_Internal&&this.uiWidgetBase) {
+			this.btnSound_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/soundCanvas/btnSound') as mw.StaleButton
+		}
+		return this.btnSound_Internal
+	}
+	private cnvInteract_Internal: mw.Canvas
+	public get cnvInteract(): mw.Canvas {
+		if(!this.cnvInteract_Internal&&this.uiWidgetBase) {
+			this.cnvInteract_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract') as mw.Canvas
+		}
+		return this.cnvInteract_Internal
+	}
+	private btnMain_Internal: mw.Button
+	public get btnMain(): mw.Button {
+		if(!this.btnMain_Internal&&this.uiWidgetBase) {
+			this.btnMain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/btnMain') as mw.Button
+		}
+		return this.btnMain_Internal
+	}
+	private txtContent_Internal: mw.TextBlock
+	public get txtContent(): mw.TextBlock {
+		if(!this.txtContent_Internal&&this.uiWidgetBase) {
+			this.txtContent_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/txtContent') as mw.TextBlock
+		}
+		return this.txtContent_Internal
+	}
+	private imgIcon_Internal: mw.Image
+	public get imgIcon(): mw.Image {
+		if(!this.imgIcon_Internal&&this.uiWidgetBase) {
+			this.imgIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/imgIcon') as mw.Image
+		}
+		return this.imgIcon_Internal
+	}
+	private imgbtn_Internal: mw.Image
+	public get imgbtn(): mw.Image {
+		if(!this.imgbtn_Internal&&this.uiWidgetBase) {
+			this.imgbtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/imgbtn') as mw.Image
+		}
+		return this.imgbtn_Internal
+	}
+	private txtbtn_Internal: mw.TextBlock
+	public get txtbtn(): mw.TextBlock {
+		if(!this.txtbtn_Internal&&this.uiWidgetBase) {
+			this.txtbtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/txtbtn') as mw.TextBlock
+		}
+		return this.txtbtn_Internal
 	}
 	private cnvOperationalFeedback_Internal: mw.Canvas
 	public get cnvOperationalFeedback(): mw.Canvas {
@@ -387,9 +464,6 @@ export default class MainPanel_Generate extends UIScript {
     protected initTextLan() {
         // 文本按钮多语言
         
-        this.initLanguage(this.btnJumpGame);
-        
-	
         this.initLanguage(this.btnCode);
         
 	
@@ -405,7 +479,13 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.btnBag);
         
 	
-        this.initLanguage(this.btnRunning);
+        this.initLanguage(this.btnJumpGame);
+        
+	
+        this.initLanguage(this.btnMap);
+        
+	
+        this.initLanguage(this.btnSound);
         
 	
         // 静态文本按钮多语言
@@ -424,13 +504,22 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.txtDragonBallNum)
         
 	
-        this.initLanguage(this.switchRoomText)
-        
-	
         this.initLanguage(this.cost)
         
 	
         this.initLanguage(this.cost_1)
+        
+	
+        this.initLanguage(this.switchRoomText)
+        
+	
+        this.initLanguage(this.textMap)
+        
+	
+        this.initLanguage(this.txtContent)
+        
+	
+        this.initLanguage(this.txtbtn)
         
 	
         this.initLanguage(this.txtOperationFeedback)
@@ -444,7 +533,7 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/resetCanvas/TextBlock_1_1") as mw.TextBlock);
         
 	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1") as mw.TextBlock);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/bagCanvas/TextBlock_1") as mw.TextBlock);
         
 	
         this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as mw.TextBlock);
@@ -455,9 +544,6 @@ export default class MainPanel_Generate extends UIScript {
     protected unregisterTextLan(){
         // 文本按钮多语言
         
-        this.unregisterLanKey(this.btnJumpGame);
-        
-	
         this.unregisterLanKey(this.btnCode);
         
 	
@@ -473,7 +559,13 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.btnBag);
         
 	
-        this.unregisterLanKey(this.btnRunning);
+        this.unregisterLanKey(this.btnJumpGame);
+        
+	
+        this.unregisterLanKey(this.btnMap);
+        
+	
+        this.unregisterLanKey(this.btnSound);
         
 	
         // 隐藏文本按钮多语言
@@ -492,13 +584,22 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.txtDragonBallNum)
         
 	
-        this.unregisterLanKey(this.switchRoomText)
-        
-	
         this.unregisterLanKey(this.cost)
         
 	
         this.unregisterLanKey(this.cost_1)
+        
+	
+        this.unregisterLanKey(this.switchRoomText)
+        
+	
+        this.unregisterLanKey(this.textMap)
+        
+	
+        this.unregisterLanKey(this.txtContent)
+        
+	
+        this.unregisterLanKey(this.txtbtn)
         
 	
         this.unregisterLanKey(this.txtOperationFeedback)
@@ -512,7 +613,7 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/resetCanvas/TextBlock_1_1") as mw.TextBlock);
         
 	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/TextBlock_1") as mw.TextBlock);
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/bagCanvas/TextBlock_1") as mw.TextBlock);
         
 	
         this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as mw.TextBlock);
