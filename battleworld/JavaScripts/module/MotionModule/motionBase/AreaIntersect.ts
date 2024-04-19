@@ -256,9 +256,42 @@ export class AreaIntersect {
         //可视化trigger
         if (SystemUtil.isPIE) {
             if (this._areaCheckData.type === 0) {
-                QueryUtil.boxOverlap(trigger.worldTransform.position, trigger.worldTransform.scale, true);
+                //计算八个顶点
+                let p1 = trigger.worldTransform.transformPosition(new Vector(-50, -50, 0));
+                let p2 = trigger.worldTransform.transformPosition(new Vector(-50, -50, 50));
+                let p3 = trigger.worldTransform.transformPosition(new Vector(50, -50, 50));
+                let p4 = trigger.worldTransform.transformPosition(new Vector(50, -50, 0));
+                let p5 = trigger.worldTransform.transformPosition(new Vector(-50, 50, 0));
+                let p6 = trigger.worldTransform.transformPosition(new Vector(-50, 50, 50));
+                let p7 = trigger.worldTransform.transformPosition(new Vector(50, 50, 0));
+                let p8 = trigger.worldTransform.transformPosition(new Vector(50, 50, 50));
+                //打射线
+                QueryUtil.lineTrace(p1, p4, true, true);
+                QueryUtil.lineTrace(p1, p5, true, true);
+                QueryUtil.lineTrace(p2, p6, true, true);
+                QueryUtil.lineTrace(p1, p2, true, true);
+                QueryUtil.lineTrace(p4, p7, true, true);
+                QueryUtil.lineTrace(p4, p3, true, true);
+                QueryUtil.lineTrace(p7, p8, true, true);
+                QueryUtil.lineTrace(p7, p5, true, true);
+                QueryUtil.lineTrace(p5, p6, true, true);
+                QueryUtil.lineTrace(p6, p8, true, true);
+                QueryUtil.lineTrace(p2, p3, true, true);
+                QueryUtil.lineTrace(p3, p8, true, true);
+
+
+
+                // GameObject.asyncSpawn("197386", { transform: trigger.worldTransform.clone() }).then((obj) => {
+                //     let model = obj as Model;
+                //     model.setOutline(true, LinearColor.red, 5);
+
+                //     setTimeout(() => {
+                //         model.setOutline(false, LinearColor.red, 5);
+                //         model.destroy();
+                //     }, 4000);
+                // });
             } else if (this._areaCheckData.type === 1) {
-                QueryUtil.sphereOverlap(trigger.worldTransform.position, this._areaCheckData.range, true);
+                QueryUtil.sphereOverlap(trigger.worldTransform.position, trigger.worldTransform.scale.x * 50, true);
             }
         }
 
