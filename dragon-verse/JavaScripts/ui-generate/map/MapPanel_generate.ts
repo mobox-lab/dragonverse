@@ -46,7 +46,7 @@ export default class MapPanel_Generate extends UIScript {
 	private btnMapClose_Internal: mw.Button
 	public get btnMapClose(): mw.Button {
 		if(!this.btnMapClose_Internal&&this.uiWidgetBase) {
-			this.btnMapClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/btnMapClose') as mw.Button
+			this.btnMapClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/btnMapClose') as mw.Button
 		}
 		return this.btnMapClose_Internal
 	}
@@ -106,33 +106,6 @@ export default class MapPanel_Generate extends UIScript {
         
         // 静态文本多语言
         
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtChangeCamera") as mw.TextBlock);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/W/TextBlock") as mw.TextBlock);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/A/TextBlock") as mw.TextBlock);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/S/TextBlock") as mw.TextBlock);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/D/TextBlock") as mw.TextBlock);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtZoomMap") as mw.TextBlock);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/Mouse/TextBlock") as mw.TextBlock);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtCloseMap") as mw.TextBlock);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/ESC/TextBlock") as mw.TextBlock);
-        
-	
     }
 
     protected unregisterTextLan(){
@@ -144,33 +117,6 @@ export default class MapPanel_Generate extends UIScript {
         
         // 隐藏文本多语言
         
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtChangeCamera") as mw.TextBlock);
-        
-	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/W/TextBlock") as mw.TextBlock);
-        
-	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/A/TextBlock") as mw.TextBlock);
-        
-	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/S/TextBlock") as mw.TextBlock);
-        
-	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/D/TextBlock") as mw.TextBlock);
-        
-	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtZoomMap") as mw.TextBlock);
-        
-	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/Mouse/TextBlock") as mw.TextBlock);
-        
-	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/TxtCloseMap") as mw.TextBlock);
-        
-	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMap/CnvHotKeys/ESC/TextBlock") as mw.TextBlock);
-        
-	
     }
 
     private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

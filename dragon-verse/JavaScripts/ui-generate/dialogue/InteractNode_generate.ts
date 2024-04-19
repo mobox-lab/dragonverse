@@ -22,6 +22,13 @@ export default class InteractNode_Generate extends UIScript {
 		}
 		return this.btnMain_Internal
 	}
+	private imgIcon_Internal: mw.Image
+	public get imgIcon(): mw.Image {
+		if(!this.imgIcon_Internal&&this.uiWidgetBase) {
+			this.imgIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgIcon') as mw.Image
+		}
+		return this.imgIcon_Internal
+	}
 	private txtContent_Internal: mw.TextBlock
 	public get txtContent(): mw.TextBlock {
 		if(!this.txtContent_Internal&&this.uiWidgetBase) {
@@ -29,12 +36,12 @@ export default class InteractNode_Generate extends UIScript {
 		}
 		return this.txtContent_Internal
 	}
-	private imgIcon_Internal: mw.Image
-	public get imgIcon(): mw.Image {
-		if(!this.imgIcon_Internal&&this.uiWidgetBase) {
-			this.imgIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgIcon') as mw.Image
+	private imgPreview_Internal: mw.Image
+	public get imgPreview(): mw.Image {
+		if(!this.imgPreview_Internal&&this.uiWidgetBase) {
+			this.imgPreview_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgPreview') as mw.Image
 		}
-		return this.imgIcon_Internal
+		return this.imgPreview_Internal
 	}
 
 
