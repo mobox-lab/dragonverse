@@ -250,34 +250,55 @@ class GToolkit {
      * do callback once when predicate return true.
      * @param predicate
      * @param callback
-     * @param interval ms. test predicate interval.
-     *      100 default.
+     * @param interval test predicate interval. ms.
+     *      - 100 default.
      * @param instant test predicate at once.
+     * @param timeout timeout. stop predicate test after timeout. ms.
+     *      - 0 default. no timeout.
+     * @param onError on error callback.
+     * @param onTimeout on timeout callback.
      * @return interval hold id.
      */
     public doWhenTrue(predicate: () => boolean,
-                      callback: () => void,
-                      interval: number = 100,
-                      instant: boolean = true): number | null {
-        if (instant && predicate()) {
+        callback: () => void,
+        interval: number = 100,
+        instant: boolean = true,
+        timeout: number = 0,
+        onError: Expression<void> = undefined,
+        onTimeout: Expression<void> = undefined,): number | null {
+        const startTime = Date.now();
+        let holdId = null;
+        const callbackWithCatch = () => {
             try {
                 callback();
             } catch (e) {
+                try {
+                    onError && onError();
+                } catch (e) {
+                    console.error("GToolkit: error occurs in onError callback.");
+                    console.error(e);
+                }
+            } finally {
+                holdId && clearInterval(holdId);
             }
+        };
+        if (instant && predicate()) {
+            callbackWithCatch();
             return null;
         }
 
-        const holdId = setInterval(() => {
-                if (!predicate()) return;
-                try {
-                    callback();
-                } catch (e) {
-                } finally {
-                    clearInterval(holdId);
-                }
-            },
+        holdId = mw.setInterval(() => {
+            if (timeout > 0 && Date.now() - startTime > timeout) {
+                clearInterval(holdId);
+                onTimeout && onTimeout();
+                return;
+            }
+            if (!predicate()) return;
+            callbackWithCatch();
+        },
             interval,
         );
+
         return holdId;
     }
 
@@ -288,34 +309,57 @@ class GToolkit {
      * @param interval ms. test predicate interval.
      *      100 default.
      * @param instant test predicate at once.
+     * @param timeout timeout. stop predicate test after timeout. ms.
+     *      - 0 default. no timeout.
+     * @param onError on error callback.
+     * @param onTimeout on timeout callback.
      * @return interval hold id.
      */
     public doUntilTrue(predicate: () => boolean,
-                       callback: () => void,
-                       interval: number = 100,
-                       instant: boolean = true): number | null {
+        callback: () => void,
+        interval: number = 100,
+        instant: boolean = true,
+        timeout: number = 0,
+        onError: Expression<void> = undefined,
+        onTimeout: Expression<void> = undefined,): number | null {
+        const startTime = Date.now();
+        let holdId = null;
+        const callbackWithCatch = () => {
+            try {
+                callback();
+            } catch (e) {
+                try {
+                    onError && onError();
+                } catch (e) {
+                    console.error("GToolkit: error occurs in onError callback.");
+                    console.error(e);
+                }
+            } finally {
+                holdId && clearInterval(holdId);
+            }
+        };
         if (instant) {
             if (predicate()) return null;
-            else callback();
+            else callbackWithCatch();
         }
 
-        const holdId = setInterval(() => {
-                if (predicate()) {
-                    clearInterval(holdId);
-                    return;
-                }
-                try {
-                    callback();
-                } catch (e) {
-                    clearInterval(holdId);
-                    return;
-                }
-            },
+        holdId = mw.setInterval(() => {
+            if (timeout > 0 && Date.now() - startTime > timeout) {
+                clearInterval(holdId);
+                onTimeout && onTimeout();
+                return;
+            }
+            if (predicate()) {
+                clearInterval(holdId);
+                return;
+            }
+            callbackWithCatch();
+        },
             interval,
         );
+
         return holdId;
     }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Prototype
@@ -894,8 +938,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstComponent<T extends mw.Script>(object: GameObject,
-                                                  scriptCls: AbstractAllowClass<T>,
-                                                  traverse: number = 0): T | null {
+        scriptCls: AbstractAllowClass<T>,
+        traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -959,8 +1003,8 @@ class GToolkit {
      *      0 default. 无限遍历.
      */
     public getFirstComponentIs<T extends mw.Script>(object: GameObject,
-                                                    method: string | ((instance: object) => boolean),
-                                                    traverse: number = 0): T | null {
+        method: string | ((instance: object) => boolean),
+        traverse: number = 0): T | null {
         if (!object) return null;
 
         let traversed: number = 0;
@@ -1242,9 +1286,9 @@ class GToolkit {
      * @param disableGuid
      */
     public setButtonGuid(button: mw.Button | mw.StaleButton,
-                         normalGuid: string,
-                         pressedGuid: string = undefined,
-                         disableGuid: string = undefined) {
+        normalGuid: string,
+        pressedGuid: string = undefined,
+        disableGuid: string = undefined) {
         if (!pressedGuid) {
             pressedGuid = normalGuid;
         }
@@ -1377,10 +1421,10 @@ class GToolkit {
      * @return hitPoint 命中首个点的命中信息 当未命中时返回 null.
      */
     public detectVerticalTerrain(startPoint: mw.Vector,
-                                 length: number = 1000,
-                                 self: mw.GameObject = null,
-                                 ignoreObjectGuids: string[] = [],
-                                 debug: boolean = false): mw.HitResult | null {
+        length: number = 1000,
+        self: mw.GameObject = null,
+        ignoreObjectGuids: string[] = [],
+        debug: boolean = false): mw.HitResult | null {
         return QueryUtil.lineTrace(
             startPoint,
             this.newWithZ(startPoint, startPoint.z - length),
@@ -1399,9 +1443,9 @@ class GToolkit {
      * @param debug
      */
     public detectGameObjectVerticalTerrain(self: GameObject,
-                                           length: number = 1000,
-                                           ignoreObjectGuids: string[] = [],
-                                           debug: boolean = false): mw.HitResult | null {
+        length: number = 1000,
+        ignoreObjectGuids: string[] = [],
+        debug: boolean = false): mw.HitResult | null {
         if (!self) return null;
         return this.detectVerticalTerrain(
             self.worldTransform.position,
