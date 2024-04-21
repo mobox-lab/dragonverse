@@ -2,6 +2,8 @@ import { Singleton } from "../depend/singleton/Singleton";
 import i18n from "../language/i18n";
 import HeadUIPanel_Generate from "../ui-generate/head/HeadUIPanel_generate";
 import HiddenNameUI_Generate from "../ui-generate/head/HiddenNameUI_generate";
+import HeadNameUI from "../ui/head/HeadNameUI";
+import Gtk from "../util/GToolkit";
 
 
 @Serializable
@@ -231,10 +233,26 @@ export class HeadUIController extends Singleton<HeadUIController>() {
         this._activeInfos.push(info);
 
         let guid = HeadUIImageGuidLookTable[type];
-        uiWidget.uiBehavior.title.text = name;
-        if (lanKey) i18n.bind(uiWidget.uiBehavior.title, lanKey);
 
+
+        uiWidget.uiBehavior.title.text = name;
         uiWidget.uiBehavior.bg.imageGuid = guid;
+
+        //更新bg Size和Position，使其居中
+        Gtk.doWhenTrue(() => {
+            return uiWidget.uiBehavior.title.size.x > 0;
+        }, () => {
+            let size = uiWidget.uiBehavior.title.size;
+            let expandX = Math.max(0, size.x - 185);
+            uiWidget.uiBehavior.bg.size = new mw.Vector2(uiWidget.uiBehavior.bg.size.x + expandX, uiWidget.uiBehavior.bg.size.y);
+            uiWidget.uiBehavior.rootCanvas.position = new Vector2(-expandX / 2, 0);
+            if (expandX === 0) {
+                //字比图小，字要居中
+                uiWidget.uiBehavior.title.position = new Vector2((uiWidget.uiBehavior.bg.size.x - uiWidget.uiBehavior.title.size.x) / 2, uiWidget.uiBehavior.title.position.y);
+            }
+        })
+
+        if (lanKey) i18n.bind(uiWidget.uiBehavior.title, lanKey);
 
         uiWidget.parent = owner;
         if (!offset) {
