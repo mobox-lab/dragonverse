@@ -1,16 +1,16 @@
 import CryptoJS from "crypto-js";
-import {EventDefine} from "../../const/EventDefine";
+import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import {SubGameTypes} from "../../const/SubGameTypes";
-import Log4Ts, {Announcer, LogString} from "../../depend/log4ts/Log4Ts";
+import { SubGameTypes } from "../../const/SubGameTypes";
+import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
 import FixedQueue from "../../depend/queue/FixedQueue";
 import Regulator from "../../depend/regulator/Regulator";
 import i18n from "../../language/i18n";
-import GToolkit, {Expression, TimeFormatDimensionFlags} from "../../util/GToolkit";
+import GToolkit, { Expression, GtkTypes } from "../../util/GToolkit";
 import noReply = mwext.Decorator.noReply;
-import {TimeManager} from "../../controller/TimeManager";
+import { TimeManager } from "../../controller/TimeManager";
 import AreaManager from "../../gameplay/area/AreaManager";
-import {isPointInShape2D} from "../../util/area/Shape";
+import { isPointInShape2D } from "../../util/area/Shape";
 import GlobalProperty from "../../GlobalProperty";
 
 type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
@@ -208,11 +208,11 @@ class RequestGuard {
             return false;
         }
 
-        this._p -= this._q.shiftAll(item => now - item > GToolkit.timeConvert(1, TimeFormatDimensionFlags.Day, TimeFormatDimensionFlags.Millisecond));
+        this._p -= this._q.shiftAll(item => now - item > GToolkit.timeConvert(1, GtkTypes.TimeFormatDimensionFlags.Day, GtkTypes.TimeFormatDimensionFlags.Millisecond));
         let p = this._p;
         while (true) {
             const item = this._q.get(++p);
-            if (item === null || now - item <= GToolkit.timeConvert(1, TimeFormatDimensionFlags.Hour, TimeFormatDimensionFlags.Millisecond)) break;
+            if (item === null || now - item <= GToolkit.timeConvert(1, GtkTypes.TimeFormatDimensionFlags.Hour, GtkTypes.TimeFormatDimensionFlags.Millisecond)) break;
         }
         this._p = p - 1;
 
@@ -457,7 +457,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
+            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -644,12 +644,12 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
+            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
+            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
             return false;
         }
 
@@ -745,8 +745,8 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         };
 
         const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
-                AuthModuleS.RELEASE_RAINBOW_LEAP_REPORT_URL :
-                AuthModuleS.TEST_RAINBOW_LEAP_REPORT_URL}`,
+            AuthModuleS.RELEASE_RAINBOW_LEAP_REPORT_URL :
+            AuthModuleS.TEST_RAINBOW_LEAP_REPORT_URL}`,
             {
                 method: "POST",
                 headers: {
