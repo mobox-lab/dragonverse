@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 安妮熊
+ * AUTHOR: 断桥烟雨
  * UI: UI/Setting/Setting_Main.ui
- * TIME: 2024.04.19-17.15.38
+ * TIME: 2024.02.26-18.02.50
  */
 
  
@@ -17,6 +17,13 @@
 			this.mCanvas_Setting_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting') as mw.Canvas
 		}
 		return this.mCanvas_Setting_Internal
+	}
+	private mBtn_Back_Internal: mw.StaleButton
+	public get mBtn_Back(): mw.StaleButton {
+		if(!this.mBtn_Back_Internal&&this.uiWidgetBase) {
+			this.mBtn_Back_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/mBtn_Back') as mw.StaleButton
+		}
+		return this.mBtn_Back_Internal
 	}
 	private canvas_Setting_Internal: mw.Canvas
 	public get canvas_Setting(): mw.Canvas {
@@ -200,13 +207,6 @@
 		}
 		return this.mScroll_speedInputScale_Internal
 	}
-	private mBtn_Back_Internal: mw.StaleButton
-	public get mBtn_Back(): mw.StaleButton {
-		if(!this.mBtn_Back_Internal&&this.uiWidgetBase) {
-			this.mBtn_Back_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/mBtn_Back') as mw.StaleButton
-		}
-		return this.mBtn_Back_Internal
-	}
 
 
  
@@ -219,6 +219,13 @@
 	protected initButtons() {
 		//按钮添加点击
 		
+		this.mBtn_Back.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Back");
+		})
+		this.initLanguage(this.mBtn_Back);
+		//this.mBtn_Back.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 		this.mBtn_Shadow.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_Shadow");
 		})
@@ -231,13 +238,6 @@
 		})
 		this.initLanguage(this.mBtn_Lock);
 		//this.mBtn_Lock.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
-		this.mBtn_Back.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Back");
-		})
-		this.initLanguage(this.mBtn_Back);
-		//this.mBtn_Back.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		//按钮添加点击

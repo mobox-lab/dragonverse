@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 安妮熊
+ * AUTHOR: 冷风吹
  * UI: UI/Shop/UIDecorate/UIRole.ui
- * TIME: 2024.04.19-17.15.40
+ * TIME: 2023.12.15-16.38.04
  */
 
  
@@ -53,6 +53,27 @@
 		}
 		return this.mCanvasBtn_Internal
 	}
+	private mCanvasGold_Internal: mw.Canvas
+	public get mCanvasGold(): mw.Canvas {
+		if(!this.mCanvasGold_Internal&&this.uiWidgetBase) {
+			this.mCanvasGold_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/CanvasWindow/mCanvasBtn/mCanvasGold') as mw.Canvas
+		}
+		return this.mCanvasGold_Internal
+	}
+	private mTextGold_Internal: mw.TextBlock
+	public get mTextGold(): mw.TextBlock {
+		if(!this.mTextGold_Internal&&this.uiWidgetBase) {
+			this.mTextGold_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/CanvasWindow/mCanvasBtn/mCanvasGold/mTextGold') as mw.TextBlock
+		}
+		return this.mTextGold_Internal
+	}
+	private mBtnGold_Internal: mw.StaleButton
+	public get mBtnGold(): mw.StaleButton {
+		if(!this.mBtnGold_Internal&&this.uiWidgetBase) {
+			this.mBtnGold_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/CanvasWindow/mCanvasBtn/mCanvasGold/mBtnGold') as mw.StaleButton
+		}
+		return this.mBtnGold_Internal
+	}
 	private mCanvasDisBg_Internal: mw.Canvas
 	public get mCanvasDisBg(): mw.Canvas {
 		if(!this.mCanvasDisBg_Internal&&this.uiWidgetBase) {
@@ -87,27 +108,6 @@
 			this.mBtnDis_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/CanvasWindow/mCanvasBtn/mCanvasDisBg/mBtnDis') as mw.StaleButton
 		}
 		return this.mBtnDis_Internal
-	}
-	private mCanvasGold_Internal: mw.Canvas
-	public get mCanvasGold(): mw.Canvas {
-		if(!this.mCanvasGold_Internal&&this.uiWidgetBase) {
-			this.mCanvasGold_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/CanvasWindow/mCanvasBtn/mCanvasGold') as mw.Canvas
-		}
-		return this.mCanvasGold_Internal
-	}
-	private mTextGold_Internal: mw.TextBlock
-	public get mTextGold(): mw.TextBlock {
-		if(!this.mTextGold_Internal&&this.uiWidgetBase) {
-			this.mTextGold_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/CanvasWindow/mCanvasBtn/mCanvasGold/mTextGold') as mw.TextBlock
-		}
-		return this.mTextGold_Internal
-	}
-	private mBtnGold_Internal: mw.StaleButton
-	public get mBtnGold(): mw.StaleButton {
-		if(!this.mBtnGold_Internal&&this.uiWidgetBase) {
-			this.mBtnGold_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/CanvasWindow/mCanvasBtn/mCanvasGold/mBtnGold') as mw.StaleButton
-		}
-		return this.mBtnGold_Internal
 	}
 	private mCanvasWarn_Internal: mw.Canvas
 	public get mCanvasWarn(): mw.Canvas {
@@ -163,18 +163,18 @@
 	protected initButtons() {
 		//按钮添加点击
 		
-		this.mBtnDis.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtnDis");
-		})
-		this.initLanguage(this.mBtnDis);
-		//this.mBtnDis.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
 		this.mBtnGold.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtnGold");
 		})
 		this.initLanguage(this.mBtnGold);
 		//this.mBtnGold.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.mBtnDis.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtnDis");
+		})
+		this.initLanguage(this.mBtnDis);
+		//this.mBtnDis.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		//按钮添加点击
@@ -193,6 +193,9 @@
 		this.initLanguage(this.mTextClose1)
 		
 	
+		this.initLanguage(this.mTextGold)
+		
+	
 		this.initLanguage(this.mTextDis)
 		
 	
@@ -200,9 +203,6 @@
 		
 	
 		this.initLanguage(this.mTextDis3)
-		
-	
-		this.initLanguage(this.mTextGold)
 		
 	
 		this.initLanguage(this.mTextWarn)
