@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 一只黄鹂鸣翠柳
+ * AUTHOR: 安妮熊
  * UI: UI/talk/P_Game_Talk.ui
- * TIME: 2023.12.14-14.38.45
+ * TIME: 2024.04.19-17.15.39
  */
 
  
@@ -24,41 +24,6 @@
 			this.mText_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mText_1') as mw.TextBlock
 		}
 		return this.mText_1_Internal
-	}
-	private mCanvas_choose_Internal: mw.Canvas
-	public get mCanvas_choose(): mw.Canvas {
-		if(!this.mCanvas_choose_Internal&&this.uiWidgetBase) {
-			this.mCanvas_choose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_choose') as mw.Canvas
-		}
-		return this.mCanvas_choose_Internal
-	}
-	private mBtn_1_Internal: mw.StaleButton
-	public get mBtn_1(): mw.StaleButton {
-		if(!this.mBtn_1_Internal&&this.uiWidgetBase) {
-			this.mBtn_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_choose/mBtn_1') as mw.StaleButton
-		}
-		return this.mBtn_1_Internal
-	}
-	private mBtn_2_Internal: mw.StaleButton
-	public get mBtn_2(): mw.StaleButton {
-		if(!this.mBtn_2_Internal&&this.uiWidgetBase) {
-			this.mBtn_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_choose/mBtn_2') as mw.StaleButton
-		}
-		return this.mBtn_2_Internal
-	}
-	private mBtn_3_Internal: mw.StaleButton
-	public get mBtn_3(): mw.StaleButton {
-		if(!this.mBtn_3_Internal&&this.uiWidgetBase) {
-			this.mBtn_3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_choose/mBtn_3') as mw.StaleButton
-		}
-		return this.mBtn_3_Internal
-	}
-	private mBtn_4_Internal: mw.StaleButton
-	public get mBtn_4(): mw.StaleButton {
-		if(!this.mBtn_4_Internal&&this.uiWidgetBase) {
-			this.mBtn_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_choose/mBtn_4') as mw.StaleButton
-		}
-		return this.mBtn_4_Internal
 	}
 	private mCloseBtn_Internal: mw.Button
 	public get mCloseBtn(): mw.Button {
@@ -122,6 +87,41 @@
 			this.mText_value_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_cash/mText_value') as mw.TextBlock
 		}
 		return this.mText_value_Internal
+	}
+	private mCanvas_choose_Internal: mw.Canvas
+	public get mCanvas_choose(): mw.Canvas {
+		if(!this.mCanvas_choose_Internal&&this.uiWidgetBase) {
+			this.mCanvas_choose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_choose') as mw.Canvas
+		}
+		return this.mCanvas_choose_Internal
+	}
+	private mBtn_1_Internal: mw.StaleButton
+	public get mBtn_1(): mw.StaleButton {
+		if(!this.mBtn_1_Internal&&this.uiWidgetBase) {
+			this.mBtn_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_choose/mBtn_1') as mw.StaleButton
+		}
+		return this.mBtn_1_Internal
+	}
+	private mBtn_2_Internal: mw.StaleButton
+	public get mBtn_2(): mw.StaleButton {
+		if(!this.mBtn_2_Internal&&this.uiWidgetBase) {
+			this.mBtn_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_choose/mBtn_2') as mw.StaleButton
+		}
+		return this.mBtn_2_Internal
+	}
+	private mBtn_3_Internal: mw.StaleButton
+	public get mBtn_3(): mw.StaleButton {
+		if(!this.mBtn_3_Internal&&this.uiWidgetBase) {
+			this.mBtn_3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_choose/mBtn_3') as mw.StaleButton
+		}
+		return this.mBtn_3_Internal
+	}
+	private mBtn_4_Internal: mw.StaleButton
+	public get mBtn_4(): mw.StaleButton {
+		if(!this.mBtn_4_Internal&&this.uiWidgetBase) {
+			this.mBtn_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_npc/mCanvas_choose/mBtn_4') as mw.StaleButton
+		}
+		return this.mBtn_4_Internal
 	}
 
 

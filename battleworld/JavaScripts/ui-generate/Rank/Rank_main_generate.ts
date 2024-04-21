@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 冷风吹
+ * AUTHOR: 安妮熊
  * UI: UI/Rank/Rank_main.ui
- * TIME: 2023.12.15-14.14.07
+ * TIME: 2024.04.19-17.15.39
  */
 
  
@@ -60,13 +60,6 @@
 		}
 		return this.mRanktext_Internal
 	}
-	private upProgress_Text_Internal: mw.TextBlock
-	public get upProgress_Text(): mw.TextBlock {
-		if(!this.upProgress_Text_Internal&&this.uiWidgetBase) {
-			this.upProgress_Text_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/ruleCanvas/upProgress_Text') as mw.TextBlock
-		}
-		return this.upProgress_Text_Internal
-	}
 	private mProgressBar_Internal: mw.ProgressBar
 	public get mProgressBar(): mw.ProgressBar {
 		if(!this.mProgressBar_Internal&&this.uiWidgetBase) {
@@ -80,6 +73,13 @@
 			this.mProgressText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/ruleCanvas/mProgressText') as mw.TextBlock
 		}
 		return this.mProgressText_Internal
+	}
+	private upProgress_Text_Internal: mw.TextBlock
+	public get upProgress_Text(): mw.TextBlock {
+		if(!this.upProgress_Text_Internal&&this.uiWidgetBase) {
+			this.upProgress_Text_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/ruleCanvas/upProgress_Text') as mw.TextBlock
+		}
+		return this.upProgress_Text_Internal
 	}
 	private mNextRank_Internal: mw.TextBlock
 	public get mNextRank(): mw.TextBlock {
@@ -102,19 +102,19 @@
 		}
 		return this.unlockCanvas_Internal
 	}
-	private mUnlock_Internal: mw.TextBlock
-	public get mUnlock(): mw.TextBlock {
-		if(!this.mUnlock_Internal&&this.uiWidgetBase) {
-			this.mUnlock_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/unlockCanvas/mUnlock') as mw.TextBlock
-		}
-		return this.mUnlock_Internal
-	}
 	private mUnlockImg_Internal: mw.Image
 	public get mUnlockImg(): mw.Image {
 		if(!this.mUnlockImg_Internal&&this.uiWidgetBase) {
 			this.mUnlockImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/unlockCanvas/mUnlockImg') as mw.Image
 		}
 		return this.mUnlockImg_Internal
+	}
+	private mUnlock_Internal: mw.TextBlock
+	public get mUnlock(): mw.TextBlock {
+		if(!this.mUnlock_Internal&&this.uiWidgetBase) {
+			this.mUnlock_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/unlockCanvas/mUnlock') as mw.TextBlock
+		}
+		return this.mUnlock_Internal
 	}
 	private escCanvas_Internal: mw.Canvas
 	public get escCanvas(): mw.Canvas {
@@ -193,10 +193,10 @@
 		this.initLanguage(this.mRanktext)
 		
 	
-		this.initLanguage(this.upProgress_Text)
+		this.initLanguage(this.mProgressText)
 		
 	
-		this.initLanguage(this.mProgressText)
+		this.initLanguage(this.upProgress_Text)
 		
 	
 		this.initLanguage(this.mNextRank)
@@ -213,10 +213,10 @@
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock") as any);
 		
 	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/ruleCanvas/TextBlock_2_1") as any);
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/ruleCanvas/TextBlock_2") as any);
 		
 	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/ruleCanvas/TextBlock_2") as any);
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/ruleCanvas/TextBlock_2_1") as any);
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/unlockCanvas/TextBlock_7_1") as any);
