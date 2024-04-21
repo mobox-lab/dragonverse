@@ -18,6 +18,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MWUpdateDelegate = UE.MWUpdateDelegate;
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
 import off = Puerts.off;
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 const sceneSize: mw.Vector2 = mw.Vector2.zero;
 
@@ -70,7 +71,7 @@ export class MapPanel extends MapPanel_Generate {
 
         this._mapPosTask = Waterween
             .flow(
-                () => ({x: this.cnvMapMesh.position.x, y: this.cnvMapMesh.position.y}),
+                () => ({ x: this.cnvMapMesh.position.x, y: this.cnvMapMesh.position.y }),
                 (val) => this.cnvMapMesh.position = this._mapPositionCache.set(val.x, val.y),
                 GameServiceConfig.MAP_ZOOM_DURATION,
                 new CubicBezier(0.2, 0, 0.8, 1),
@@ -141,17 +142,30 @@ export class MapPanel extends MapPanel_Generate {
         this.canUpdate = true;
     }
 
+    onHide() {
+
+    }
+
     onUpdate() {
     }
 
+    private _imgs: Image[] = [];
     public showBigMap() {
         GToolkit.trySetVisibility(this.cnvMap, true);
         GToolkit.trySetVisibility(this.cnvMiniMap, false);
+
+        KeyOperationManager.getInstance().startDetectWidgetOnHover(this.cnvMapHolder, this._imgs, (widgets: mw.Widget[]) => {
+            widgets.forEach(element => {
+                console.log(element.name);
+            });
+        }, this.rootCanvas);
     }
 
     public showMiniMap() {
         GToolkit.trySetVisibility(this.cnvMap, false);
         GToolkit.trySetVisibility(this.cnvMiniMap, true);
+
+        KeyOperationManager.getInstance().stopDetectWidgetOnHover();
     }
 
     private calculateMiniMapPos() {
