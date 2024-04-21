@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 断桥烟雨
+ * AUTHOR: 安妮熊
  * UI: UI/Main/Main_HUD.ui
- * TIME: 2024.03.01-16.10.35
+ * TIME: 2024.04.19-17.15.38
  */
 
  
@@ -45,34 +45,6 @@
 			this.mSkillSelctCount_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSkillSelectBox/mSkillSelctCount') as mw.TextBlock
 		}
 		return this.mSkillSelctCount_Internal
-	}
-	private backCanvas_Internal: mw.Canvas
-	public get backCanvas(): mw.Canvas {
-		if(!this.backCanvas_Internal&&this.uiWidgetBase) {
-			this.backCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/backCanvas') as mw.Canvas
-		}
-		return this.backCanvas_Internal
-	}
-	private mBtn_Back_Internal: mw.Button
-	public get mBtn_Back(): mw.Button {
-		if(!this.mBtn_Back_Internal&&this.uiWidgetBase) {
-			this.mBtn_Back_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/backCanvas/mBtn_Back') as mw.Button
-		}
-		return this.mBtn_Back_Internal
-	}
-	private mMask_Back_Internal: mw.MaskButton
-	public get mMask_Back(): mw.MaskButton {
-		if(!this.mMask_Back_Internal&&this.uiWidgetBase) {
-			this.mMask_Back_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/backCanvas/mMask_Back') as mw.MaskButton
-		}
-		return this.mMask_Back_Internal
-	}
-	private mText_Back_Time_cd_Internal: mw.TextBlock
-	public get mText_Back_Time_cd(): mw.TextBlock {
-		if(!this.mText_Back_Time_cd_Internal&&this.uiWidgetBase) {
-			this.mText_Back_Time_cd_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/backCanvas/mText_Back_Time_cd') as mw.TextBlock
-		}
-		return this.mText_Back_Time_cd_Internal
 	}
 	private hpCanvas_Internal: mw.Canvas
 	public get hpCanvas(): mw.Canvas {
@@ -143,34 +115,6 @@
 			this.mBar_Fire_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/hpCanvas/mBar_Fire') as mw.ProgressBar
 		}
 		return this.mBar_Fire_Internal
-	}
-	private mBtn_Setting_Internal: mw.Button
-	public get mBtn_Setting(): mw.Button {
-		if(!this.mBtn_Setting_Internal&&this.uiWidgetBase) {
-			this.mBtn_Setting_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_Setting') as mw.Button
-		}
-		return this.mBtn_Setting_Internal
-	}
-	private mActionBtn_Internal: mw.Button
-	public get mActionBtn(): mw.Button {
-		if(!this.mActionBtn_Internal&&this.uiWidgetBase) {
-			this.mActionBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mActionBtn') as mw.Button
-		}
-		return this.mActionBtn_Internal
-	}
-	private actionimage_Internal: mw.Image
-	public get actionimage(): mw.Image {
-		if(!this.actionimage_Internal&&this.uiWidgetBase) {
-			this.actionimage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/actionimage') as mw.Image
-		}
-		return this.actionimage_Internal
-	}
-	private actiontext_Internal: mw.TextBlock
-	public get actiontext(): mw.TextBlock {
-		if(!this.actiontext_Internal&&this.uiWidgetBase) {
-			this.actiontext_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/actiontext') as mw.TextBlock
-		}
-		return this.actiontext_Internal
 	}
 	private mBtn_Reborn_Internal: mw.Button
 	public get mBtn_Reborn(): mw.Button {
@@ -256,69 +200,6 @@
 		}
 		return this.mGold_Internal
 	}
-	private mCanvasBattle_Internal: mw.Canvas
-	public get mCanvasBattle(): mw.Canvas {
-		if(!this.mCanvasBattle_Internal&&this.uiWidgetBase) {
-			this.mCanvasBattle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle') as mw.Canvas
-		}
-		return this.mCanvasBattle_Internal
-	}
-	private mBattle_1_Internal: mw.TextBlock
-	public get mBattle_1(): mw.TextBlock {
-		if(!this.mBattle_1_Internal&&this.uiWidgetBase) {
-			this.mBattle_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBattle_1') as mw.TextBlock
-		}
-		return this.mBattle_1_Internal
-	}
-	private mBattle_Internal: mw.TextBlock
-	public get mBattle(): mw.TextBlock {
-		if(!this.mBattle_Internal&&this.uiWidgetBase) {
-			this.mBattle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBattle') as mw.TextBlock
-		}
-		return this.mBattle_Internal
-	}
-	private mBattle_2_Internal: mw.TextBlock
-	public get mBattle_2(): mw.TextBlock {
-		if(!this.mBattle_2_Internal&&this.uiWidgetBase) {
-			this.mBattle_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBattle_2') as mw.TextBlock
-		}
-		return this.mBattle_2_Internal
-	}
-	private mBtn_Battle_Add_Internal: mw.Button
-	public get mBtn_Battle_Add(): mw.Button {
-		if(!this.mBtn_Battle_Add_Internal&&this.uiWidgetBase) {
-			this.mBtn_Battle_Add_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasBattle/mBtn_Battle_Add') as mw.Button
-		}
-		return this.mBtn_Battle_Add_Internal
-	}
-	private mCanvasMCoin_Internal: mw.Canvas
-	public get mCanvasMCoin(): mw.Canvas {
-		if(!this.mCanvasMCoin_Internal&&this.uiWidgetBase) {
-			this.mCanvasMCoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasMCoin') as mw.Canvas
-		}
-		return this.mCanvasMCoin_Internal
-	}
-	private mMCoin_Internal: mw.TextBlock
-	public get mMCoin(): mw.TextBlock {
-		if(!this.mMCoin_Internal&&this.uiWidgetBase) {
-			this.mMCoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasMCoin/mMCoin') as mw.TextBlock
-		}
-		return this.mMCoin_Internal
-	}
-	private mBtn_MCoin_Add_Internal: mw.Button
-	public get mBtn_MCoin_Add(): mw.Button {
-		if(!this.mBtn_MCoin_Add_Internal&&this.uiWidgetBase) {
-			this.mBtn_MCoin_Add_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasMCoin/mBtn_MCoin_Add') as mw.Button
-		}
-		return this.mBtn_MCoin_Add_Internal
-	}
-	private mBtn_MCoin_Refresh_Internal: mw.Button
-	public get mBtn_MCoin_Refresh(): mw.Button {
-		if(!this.mBtn_MCoin_Refresh_Internal&&this.uiWidgetBase) {
-			this.mBtn_MCoin_Refresh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasMCoin/mBtn_MCoin_Refresh') as mw.Button
-		}
-		return this.mBtn_MCoin_Refresh_Internal
-	}
 	private mCanvasPills_Internal: mw.Canvas
 	public get mCanvasPills(): mw.Canvas {
 		if(!this.mCanvasPills_Internal&&this.uiWidgetBase) {
@@ -326,103 +207,145 @@
 		}
 		return this.mCanvasPills_Internal
 	}
+	private canvasAttack_Internal: mw.Canvas
+	public get canvasAttack(): mw.Canvas {
+		if(!this.canvasAttack_Internal&&this.uiWidgetBase) {
+			this.canvasAttack_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack') as mw.Canvas
+		}
+		return this.canvasAttack_Internal
+	}
 	private mImage_Long_Internal: mw.Image
 	public get mImage_Long(): mw.Image {
 		if(!this.mImage_Long_Internal&&this.uiWidgetBase) {
-			this.mImage_Long_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mImage_Long') as mw.Image
+			this.mImage_Long_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/mImage_Long') as mw.Image
 		}
 		return this.mImage_Long_Internal
 	}
 	private mText_Long_Num_Internal: mw.TextBlock
 	public get mText_Long_Num(): mw.TextBlock {
 		if(!this.mText_Long_Num_Internal&&this.uiWidgetBase) {
-			this.mText_Long_Num_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mText_Long_Num') as mw.TextBlock
+			this.mText_Long_Num_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/mText_Long_Num') as mw.TextBlock
 		}
 		return this.mText_Long_Num_Internal
+	}
+	private textAttack_Internal: mw.TextBlock
+	public get textAttack(): mw.TextBlock {
+		if(!this.textAttack_Internal&&this.uiWidgetBase) {
+			this.textAttack_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/textAttack') as mw.TextBlock
+		}
+		return this.textAttack_Internal
+	}
+	private canvasDefend_Internal: mw.Canvas
+	public get canvasDefend(): mw.Canvas {
+		if(!this.canvasDefend_Internal&&this.uiWidgetBase) {
+			this.canvasDefend_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend') as mw.Canvas
+		}
+		return this.canvasDefend_Internal
 	}
 	private mImage_Tortoise_Internal: mw.Image
 	public get mImage_Tortoise(): mw.Image {
 		if(!this.mImage_Tortoise_Internal&&this.uiWidgetBase) {
-			this.mImage_Tortoise_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mImage_Tortoise') as mw.Image
+			this.mImage_Tortoise_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/mImage_Tortoise') as mw.Image
 		}
 		return this.mImage_Tortoise_Internal
 	}
 	private mText_Tortoise_Num_Internal: mw.TextBlock
 	public get mText_Tortoise_Num(): mw.TextBlock {
 		if(!this.mText_Tortoise_Num_Internal&&this.uiWidgetBase) {
-			this.mText_Tortoise_Num_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mText_Tortoise_Num') as mw.TextBlock
+			this.mText_Tortoise_Num_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/mText_Tortoise_Num') as mw.TextBlock
 		}
 		return this.mText_Tortoise_Num_Internal
+	}
+	private textDefend_Internal: mw.TextBlock
+	public get textDefend(): mw.TextBlock {
+		if(!this.textDefend_Internal&&this.uiWidgetBase) {
+			this.textDefend_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/textDefend') as mw.TextBlock
+		}
+		return this.textDefend_Internal
+	}
+	private canvasHeart_Internal: mw.Canvas
+	public get canvasHeart(): mw.Canvas {
+		if(!this.canvasHeart_Internal&&this.uiWidgetBase) {
+			this.canvasHeart_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart') as mw.Canvas
+		}
+		return this.canvasHeart_Internal
 	}
 	private mImage_Bone_Internal: mw.Image
 	public get mImage_Bone(): mw.Image {
 		if(!this.mImage_Bone_Internal&&this.uiWidgetBase) {
-			this.mImage_Bone_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mImage_Bone') as mw.Image
+			this.mImage_Bone_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/mImage_Bone') as mw.Image
 		}
 		return this.mImage_Bone_Internal
 	}
 	private mText_Bone_Num_Internal: mw.TextBlock
 	public get mText_Bone_Num(): mw.TextBlock {
 		if(!this.mText_Bone_Num_Internal&&this.uiWidgetBase) {
-			this.mText_Bone_Num_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mText_Bone_Num') as mw.TextBlock
+			this.mText_Bone_Num_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/mText_Bone_Num') as mw.TextBlock
 		}
 		return this.mText_Bone_Num_Internal
+	}
+	private textHeart_Internal: mw.TextBlock
+	public get textHeart(): mw.TextBlock {
+		if(!this.textHeart_Internal&&this.uiWidgetBase) {
+			this.textHeart_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/textHeart') as mw.TextBlock
+		}
+		return this.textHeart_Internal
+	}
+	private canvasBlue_Internal: mw.Canvas
+	public get canvasBlue(): mw.Canvas {
+		if(!this.canvasBlue_Internal&&this.uiWidgetBase) {
+			this.canvasBlue_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue') as mw.Canvas
+		}
+		return this.canvasBlue_Internal
 	}
 	private mImage_Qi_Internal: mw.Image
 	public get mImage_Qi(): mw.Image {
 		if(!this.mImage_Qi_Internal&&this.uiWidgetBase) {
-			this.mImage_Qi_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mImage_Qi') as mw.Image
+			this.mImage_Qi_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/mImage_Qi') as mw.Image
 		}
 		return this.mImage_Qi_Internal
 	}
 	private mText_Qi_Num_Internal: mw.TextBlock
 	public get mText_Qi_Num(): mw.TextBlock {
 		if(!this.mText_Qi_Num_Internal&&this.uiWidgetBase) {
-			this.mText_Qi_Num_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mText_Qi_Num') as mw.TextBlock
+			this.mText_Qi_Num_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/mText_Qi_Num') as mw.TextBlock
 		}
 		return this.mText_Qi_Num_Internal
+	}
+	private textBlue_Internal: mw.TextBlock
+	public get textBlue(): mw.TextBlock {
+		if(!this.textBlue_Internal&&this.uiWidgetBase) {
+			this.textBlue_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/textBlue') as mw.TextBlock
+		}
+		return this.textBlue_Internal
 	}
 	private mCavasTrans_Internal: mw.Canvas
 	public get mCavasTrans(): mw.Canvas {
 		if(!this.mCavasTrans_Internal&&this.uiWidgetBase) {
-			this.mCavasTrans_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCavasTrans') as mw.Canvas
+			this.mCavasTrans_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mCavasTrans') as mw.Canvas
 		}
 		return this.mCavasTrans_Internal
 	}
 	private mBtn_Trans_Internal: mw.Button
 	public get mBtn_Trans(): mw.Button {
 		if(!this.mBtn_Trans_Internal&&this.uiWidgetBase) {
-			this.mBtn_Trans_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCavasTrans/mBtn_Trans') as mw.Button
+			this.mBtn_Trans_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mCavasTrans/mBtn_Trans') as mw.Button
 		}
 		return this.mBtn_Trans_Internal
 	}
 	private mMask_Trans_Internal: mw.MaskButton
 	public get mMask_Trans(): mw.MaskButton {
 		if(!this.mMask_Trans_Internal&&this.uiWidgetBase) {
-			this.mMask_Trans_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCavasTrans/mMask_Trans') as mw.MaskButton
+			this.mMask_Trans_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mCavasTrans/mMask_Trans') as mw.MaskButton
 		}
 		return this.mMask_Trans_Internal
 	}
 	private mText_Trans_Time_cd_Internal: mw.TextBlock
 	public get mText_Trans_Time_cd(): mw.TextBlock {
 		if(!this.mText_Trans_Time_cd_Internal&&this.uiWidgetBase) {
-			this.mText_Trans_Time_cd_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCavasTrans/mText_Trans_Time_cd') as mw.TextBlock
+			this.mText_Trans_Time_cd_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/mCavasTrans/mText_Trans_Time_cd') as mw.TextBlock
 		}
 		return this.mText_Trans_Time_cd_Internal
-	}
-	private rankCanvas_Internal: mw.Canvas
-	public get rankCanvas(): mw.Canvas {
-		if(!this.rankCanvas_Internal&&this.uiWidgetBase) {
-			this.rankCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/rankCanvas') as mw.Canvas
-		}
-		return this.rankCanvas_Internal
-	}
-	private mBtn_Rank_Internal: mw.Button
-	public get mBtn_Rank(): mw.Button {
-		if(!this.mBtn_Rank_Internal&&this.uiWidgetBase) {
-			this.mBtn_Rank_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/rankCanvas/mBtn_Rank') as mw.Button
-		}
-		return this.mBtn_Rank_Internal
 	}
 	private pointCanvas_Internal: mw.Canvas
 	public get pointCanvas(): mw.Canvas {
@@ -459,27 +382,6 @@
 		}
 		return this.mSocialImg_Internal
 	}
-	private jumpRoomBtn_Internal: mw.Button
-	public get jumpRoomBtn(): mw.Button {
-		if(!this.jumpRoomBtn_Internal&&this.uiWidgetBase) {
-			this.jumpRoomBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/jumpRoomBtn') as mw.Button
-		}
-		return this.jumpRoomBtn_Internal
-	}
-	private actionimage_1_Internal: mw.Image
-	public get actionimage_1(): mw.Image {
-		if(!this.actionimage_1_Internal&&this.uiWidgetBase) {
-			this.actionimage_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/actionimage_1') as mw.Image
-		}
-		return this.actionimage_1_Internal
-	}
-	private actiontext_1_Internal: mw.TextBlock
-	public get actiontext_1(): mw.TextBlock {
-		if(!this.actiontext_1_Internal&&this.uiWidgetBase) {
-			this.actiontext_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/actiontext_1') as mw.TextBlock
-		}
-		return this.actiontext_1_Internal
-	}
 	private eventsCanvas_Internal: mw.Canvas
 	public get eventsCanvas(): mw.Canvas {
 		if(!this.eventsCanvas_Internal&&this.uiWidgetBase) {
@@ -508,6 +410,216 @@
 		}
 		return this.roomIdText_Internal
 	}
+	private canvasRecord_Internal: mw.Canvas
+	public get canvasRecord(): mw.Canvas {
+		if(!this.canvasRecord_Internal&&this.uiWidgetBase) {
+			this.canvasRecord_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasRecord') as mw.Canvas
+		}
+		return this.canvasRecord_Internal
+	}
+	private canvasDan_Internal: mw.Canvas
+	public get canvasDan(): mw.Canvas {
+		if(!this.canvasDan_Internal&&this.uiWidgetBase) {
+			this.canvasDan_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasRecord/canvasDan') as mw.Canvas
+		}
+		return this.canvasDan_Internal
+	}
+	private canvasKillRecord_Internal: mw.Canvas
+	public get canvasKillRecord(): mw.Canvas {
+		if(!this.canvasKillRecord_Internal&&this.uiWidgetBase) {
+			this.canvasKillRecord_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasRecord/canvasKillRecord') as mw.Canvas
+		}
+		return this.canvasKillRecord_Internal
+	}
+	private canvasPayMoney_Internal: mw.Canvas
+	public get canvasPayMoney(): mw.Canvas {
+		if(!this.canvasPayMoney_Internal&&this.uiWidgetBase) {
+			this.canvasPayMoney_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney') as mw.Canvas
+		}
+		return this.canvasPayMoney_Internal
+	}
+	private mCanvasMCoin_Internal: mw.Canvas
+	public get mCanvasMCoin(): mw.Canvas {
+		if(!this.mCanvasMCoin_Internal&&this.uiWidgetBase) {
+			this.mCanvasMCoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasMCoin') as mw.Canvas
+		}
+		return this.mCanvasMCoin_Internal
+	}
+	private mMCoin_Internal: mw.TextBlock
+	public get mMCoin(): mw.TextBlock {
+		if(!this.mMCoin_Internal&&this.uiWidgetBase) {
+			this.mMCoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasMCoin/mMCoin') as mw.TextBlock
+		}
+		return this.mMCoin_Internal
+	}
+	private mBtn_MCoin_Add_Internal: mw.Button
+	public get mBtn_MCoin_Add(): mw.Button {
+		if(!this.mBtn_MCoin_Add_Internal&&this.uiWidgetBase) {
+			this.mBtn_MCoin_Add_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasMCoin/mBtn_MCoin_Add') as mw.Button
+		}
+		return this.mBtn_MCoin_Add_Internal
+	}
+	private mBtn_MCoin_Refresh_Internal: mw.Button
+	public get mBtn_MCoin_Refresh(): mw.Button {
+		if(!this.mBtn_MCoin_Refresh_Internal&&this.uiWidgetBase) {
+			this.mBtn_MCoin_Refresh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasMCoin/mBtn_MCoin_Refresh') as mw.Button
+		}
+		return this.mBtn_MCoin_Refresh_Internal
+	}
+	private mCanvasBattle_Internal: mw.Canvas
+	public get mCanvasBattle(): mw.Canvas {
+		if(!this.mCanvasBattle_Internal&&this.uiWidgetBase) {
+			this.mCanvasBattle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasBattle') as mw.Canvas
+		}
+		return this.mCanvasBattle_Internal
+	}
+	private mBattle_1_Internal: mw.TextBlock
+	public get mBattle_1(): mw.TextBlock {
+		if(!this.mBattle_1_Internal&&this.uiWidgetBase) {
+			this.mBattle_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasBattle/mBattle_1') as mw.TextBlock
+		}
+		return this.mBattle_1_Internal
+	}
+	private mBattle_Internal: mw.TextBlock
+	public get mBattle(): mw.TextBlock {
+		if(!this.mBattle_Internal&&this.uiWidgetBase) {
+			this.mBattle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasBattle/mBattle') as mw.TextBlock
+		}
+		return this.mBattle_Internal
+	}
+	private mBattle_2_Internal: mw.TextBlock
+	public get mBattle_2(): mw.TextBlock {
+		if(!this.mBattle_2_Internal&&this.uiWidgetBase) {
+			this.mBattle_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasBattle/mBattle_2') as mw.TextBlock
+		}
+		return this.mBattle_2_Internal
+	}
+	private mBtn_Battle_Add_Internal: mw.Button
+	public get mBtn_Battle_Add(): mw.Button {
+		if(!this.mBtn_Battle_Add_Internal&&this.uiWidgetBase) {
+			this.mBtn_Battle_Add_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasBattle/mBtn_Battle_Add') as mw.Button
+		}
+		return this.mBtn_Battle_Add_Internal
+	}
+	private canvasIconBtn_Internal: mw.Canvas
+	public get canvasIconBtn(): mw.Canvas {
+		if(!this.canvasIconBtn_Internal&&this.uiWidgetBase) {
+			this.canvasIconBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn') as mw.Canvas
+		}
+		return this.canvasIconBtn_Internal
+	}
+	private backCanvas_Internal: mw.Canvas
+	public get backCanvas(): mw.Canvas {
+		if(!this.backCanvas_Internal&&this.uiWidgetBase) {
+			this.backCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/backCanvas') as mw.Canvas
+		}
+		return this.backCanvas_Internal
+	}
+	private mBtn_Back_Internal: mw.Button
+	public get mBtn_Back(): mw.Button {
+		if(!this.mBtn_Back_Internal&&this.uiWidgetBase) {
+			this.mBtn_Back_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/backCanvas/mBtn_Back') as mw.Button
+		}
+		return this.mBtn_Back_Internal
+	}
+	private mMask_Back_Internal: mw.MaskButton
+	public get mMask_Back(): mw.MaskButton {
+		if(!this.mMask_Back_Internal&&this.uiWidgetBase) {
+			this.mMask_Back_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/backCanvas/mMask_Back') as mw.MaskButton
+		}
+		return this.mMask_Back_Internal
+	}
+	private mText_Back_Time_cd_Internal: mw.TextBlock
+	public get mText_Back_Time_cd(): mw.TextBlock {
+		if(!this.mText_Back_Time_cd_Internal&&this.uiWidgetBase) {
+			this.mText_Back_Time_cd_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/backCanvas/mText_Back_Time_cd') as mw.TextBlock
+		}
+		return this.mText_Back_Time_cd_Internal
+	}
+	private canvasJumpRoom_Internal: mw.Canvas
+	public get canvasJumpRoom(): mw.Canvas {
+		if(!this.canvasJumpRoom_Internal&&this.uiWidgetBase) {
+			this.canvasJumpRoom_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasJumpRoom') as mw.Canvas
+		}
+		return this.canvasJumpRoom_Internal
+	}
+	private jumpRoomBtn_Internal: mw.Button
+	public get jumpRoomBtn(): mw.Button {
+		if(!this.jumpRoomBtn_Internal&&this.uiWidgetBase) {
+			this.jumpRoomBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasJumpRoom/jumpRoomBtn') as mw.Button
+		}
+		return this.jumpRoomBtn_Internal
+	}
+	private actionimage_1_Internal: mw.Image
+	public get actionimage_1(): mw.Image {
+		if(!this.actionimage_1_Internal&&this.uiWidgetBase) {
+			this.actionimage_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasJumpRoom/actionimage_1') as mw.Image
+		}
+		return this.actionimage_1_Internal
+	}
+	private actiontext_1_Internal: mw.TextBlock
+	public get actiontext_1(): mw.TextBlock {
+		if(!this.actiontext_1_Internal&&this.uiWidgetBase) {
+			this.actiontext_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasJumpRoom/actiontext_1') as mw.TextBlock
+		}
+		return this.actiontext_1_Internal
+	}
+	private canvasAction_Internal: mw.Canvas
+	public get canvasAction(): mw.Canvas {
+		if(!this.canvasAction_Internal&&this.uiWidgetBase) {
+			this.canvasAction_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasAction') as mw.Canvas
+		}
+		return this.canvasAction_Internal
+	}
+	private mActionBtn_Internal: mw.Button
+	public get mActionBtn(): mw.Button {
+		if(!this.mActionBtn_Internal&&this.uiWidgetBase) {
+			this.mActionBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasAction/mActionBtn') as mw.Button
+		}
+		return this.mActionBtn_Internal
+	}
+	private actionimage_Internal: mw.Image
+	public get actionimage(): mw.Image {
+		if(!this.actionimage_Internal&&this.uiWidgetBase) {
+			this.actionimage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasAction/actionimage') as mw.Image
+		}
+		return this.actionimage_Internal
+	}
+	private actiontext_Internal: mw.TextBlock
+	public get actiontext(): mw.TextBlock {
+		if(!this.actiontext_Internal&&this.uiWidgetBase) {
+			this.actiontext_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasAction/actiontext') as mw.TextBlock
+		}
+		return this.actiontext_Internal
+	}
+	private rankCanvas_Internal: mw.Canvas
+	public get rankCanvas(): mw.Canvas {
+		if(!this.rankCanvas_Internal&&this.uiWidgetBase) {
+			this.rankCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/rankCanvas') as mw.Canvas
+		}
+		return this.rankCanvas_Internal
+	}
+	private mBtn_Rank_Internal: mw.Button
+	public get mBtn_Rank(): mw.Button {
+		if(!this.mBtn_Rank_Internal&&this.uiWidgetBase) {
+			this.mBtn_Rank_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/rankCanvas/mBtn_Rank') as mw.Button
+		}
+		return this.mBtn_Rank_Internal
+	}
+	private canvasSetting_Internal: mw.Canvas
+	public get canvasSetting(): mw.Canvas {
+		if(!this.canvasSetting_Internal&&this.uiWidgetBase) {
+			this.canvasSetting_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasSetting') as mw.Canvas
+		}
+		return this.canvasSetting_Internal
+	}
+	private mBtn_Setting_Internal: mw.Button
+	public get mBtn_Setting(): mw.Button {
+		if(!this.mBtn_Setting_Internal&&this.uiWidgetBase) {
+			this.mBtn_Setting_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasSetting/mBtn_Setting') as mw.Button
+		}
+		return this.mBtn_Setting_Internal
+	}
 
 
  
@@ -524,24 +636,6 @@
 		
 		this.mSkillSelectBtn.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mSkillSelectBtn");
-		})
-		
-		
-	
-		this.mBtn_Back.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Back");
-		})
-		
-		
-	
-		this.mBtn_Setting.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Setting");
-		})
-		
-		
-	
-		this.mActionBtn.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mActionBtn");
 		})
 		
 		
@@ -564,8 +658,20 @@
 		
 		
 	
-		this.mBtn_Battle_Add.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Battle_Add");
+		this.mBtn_Trans.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Trans");
+		})
+		
+		
+	
+		this.mSocialBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mSocialBtn");
+		})
+		
+		
+	
+		this.mEventsBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mEventsBtn");
 		})
 		
 		
@@ -582,20 +688,14 @@
 		
 		
 	
-		this.mBtn_Trans.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Trans");
+		this.mBtn_Battle_Add.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Battle_Add");
 		})
 		
 		
 	
-		this.mBtn_Rank.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Rank");
-		})
-		
-		
-	
-		this.mSocialBtn.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mSocialBtn");
+		this.mBtn_Back.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Back");
 		})
 		
 		
@@ -606,8 +706,20 @@
 		
 		
 	
-		this.mEventsBtn.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mEventsBtn");
+		this.mActionBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mActionBtn");
+		})
+		
+		
+	
+		this.mBtn_Rank.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Rank");
+		})
+		
+		
+	
+		this.mBtn_Setting.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Setting");
 		})
 		
 		
@@ -620,16 +732,10 @@
 		this.initLanguage(this.mSkillSelctCount)
 		
 	
-		this.initLanguage(this.mText_Back_Time_cd)
-		
-	
 		this.initLanguage(this.mText_Life)
 		
 	
 		this.initLanguage(this.mText_Magic)
-		
-	
-		this.initLanguage(this.actiontext)
 		
 	
 		this.initLanguage(this.mAttackNum)
@@ -647,6 +753,42 @@
 		this.initLanguage(this.mGold)
 		
 	
+		this.initLanguage(this.mText_Long_Num)
+		
+	
+		this.initLanguage(this.textAttack)
+		
+	
+		this.initLanguage(this.mText_Tortoise_Num)
+		
+	
+		this.initLanguage(this.textDefend)
+		
+	
+		this.initLanguage(this.mText_Bone_Num)
+		
+	
+		this.initLanguage(this.textHeart)
+		
+	
+		this.initLanguage(this.mText_Qi_Num)
+		
+	
+		this.initLanguage(this.textBlue)
+		
+	
+		this.initLanguage(this.mText_Trans_Time_cd)
+		
+	
+		this.initLanguage(this.mPoint)
+		
+	
+		this.initLanguage(this.roomIdText)
+		
+	
+		this.initLanguage(this.mMCoin)
+		
+	
 		this.initLanguage(this.mBattle_1)
 		
 	
@@ -656,31 +798,13 @@
 		this.initLanguage(this.mBattle_2)
 		
 	
-		this.initLanguage(this.mMCoin)
-		
-	
-		this.initLanguage(this.mText_Long_Num)
-		
-	
-		this.initLanguage(this.mText_Tortoise_Num)
-		
-	
-		this.initLanguage(this.mText_Bone_Num)
-		
-	
-		this.initLanguage(this.mText_Qi_Num)
-		
-	
-		this.initLanguage(this.mText_Trans_Time_cd)
-		
-	
-		this.initLanguage(this.mPoint)
+		this.initLanguage(this.mText_Back_Time_cd)
 		
 	
 		this.initLanguage(this.actiontext_1)
 		
 	
-		this.initLanguage(this.roomIdText)
+		this.initLanguage(this.actiontext)
 		
 	
 		//文本多语言
@@ -688,22 +812,22 @@
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSkillSelectBox/TextBlock_4_1") as any);
 		
 	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/backCanvas/TextBlock") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock_4") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCavasTrans/TextBlock_5") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/rankCanvas/TextBlock_1") as any);
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvasPills/mCavasTrans/TextBlock_5") as any);
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/socialCanvas/TextBlock_2") as any);
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/eventsCanvas/TextBlock_3") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/canvasIconBtn/backCanvas/TextBlock") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/canvasIconBtn/rankCanvas/TextBlock_1") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/canvasIconBtn/canvasSetting/TextBlock_4") as any);
 		
 	
 
