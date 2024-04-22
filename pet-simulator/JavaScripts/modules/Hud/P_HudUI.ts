@@ -15,7 +15,7 @@ import MessageBox from "../../utils/MessageBox";
 import { GameConfig } from "../../config/GameConfig";
 import { TipsManager } from "./P_TipUI";
 import BuffEnergyTips_Generate from "../../ui-generate/common/BuffEnergyTips_generate";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "../../utils/GToolkit";
 import { JumpGamePanel } from "../../ui/JumpGamePanel";
 
 export class P_HudUI extends Hud_Generate {

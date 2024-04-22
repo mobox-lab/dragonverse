@@ -17,7 +17,7 @@ import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
 import Log4Ts from '../../depend/log4ts/Log4Ts';
 import { EnergyModuleC } from '../Energy/EnergyModule';
-import GToolkit from '../../util/GToolkit';
+import GToolkit from '../../utils/GToolkit';
 
 /**宠物状态 */
 export enum PetState {
