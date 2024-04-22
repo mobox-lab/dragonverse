@@ -1,5 +1,5 @@
 ### .gitignore | MetaWorldNPT by LviatYi
-### v31.0.3
+### v31.1.5
 ### https://github.com/LviatYi/MetaWorldNPT
 
 # Idea
@@ -28,7 +28,6 @@
 ## 忽略它的副作用是，新拉取的工程并未包含 .project 文件，导致无法正常打开工程
 ## 因此建议将 .project 文件加入备份
 **/.project
-!**/backup-project/.project
 !**/.project_backup
 .projectassembly
 !.projectassembly_backup
@@ -66,3 +65,4 @@ tsconfig.json
 # Custom
 **/JavaScripts/doc/*.drawio
 Log4TsSelfConfig.ts
+**/.distributor/distributor_cache_db
