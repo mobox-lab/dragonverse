@@ -23,7 +23,7 @@ import createYoact = Yoact.createYoact;
 import stopEffect = Yoact.stopEffect;
 import MainPanel from "../../ui/main/MainPanel";
 import Waterween from "../../depend/waterween/Waterween";
-import AudioController from "../../controller/audio/AudioController";
+import AudioController, { SoundIDEnum } from "../../controller/audio/AudioController";
 import { RoleModuleS } from "./RoleModule";
 import GlobalProperty from "../../GlobalProperty";
 
@@ -137,6 +137,10 @@ export default class UnifiedRoleController extends mw.PlayerState {
     /**上次落地的脚 0左脚，1右脚*/
     private _lastOnLandFoot: number = -1;
 
+    private _jumpExecuteOnce: boolean = false;
+    private _landedExecutedOnce: boolean = false;
+    private _swimExecuteOnce: boolean = false;
+
     private onEnterFrame(dt: number): void {
 
 
@@ -149,7 +153,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
         // mw.Player.localPlayer.character.addMovement(this._velocity);w
 
         //判断脚步是否落地
-        if (Player.localPlayer.character.isMoving && Player.localPlayer.character.movementMode == MovementMode.Walk) {
+        if (Player.localPlayer.character.isMoving && Player.localPlayer.character.getCurrentState() == CharacterStateType.Running) {
             let rightFootWorldPos = Player.localPlayer.character.getSlotWorldPosition(HumanoidSlotType.RightFoot);
             let leftFootWorldPos = Player.localPlayer.character.getSlotWorldPosition(HumanoidSlotType.LeftFoot);
             let rightResults = QueryUtil.lineTrace(rightFootWorldPos, rightFootWorldPos.clone().add(new Vector(0, 0, -100)), true, false, null, null, false, Player.localPlayer.character);
@@ -183,6 +187,38 @@ export default class UnifiedRoleController extends mw.PlayerState {
             this._canLeftExecute = false;
             AudioController.getInstance().play(28);
             this._lastOnLandFoot = 0;
+        }
+
+        if (Player.localPlayer.character.getCurrentState() === CharacterStateType.Jumping) {
+            if (!this._jumpExecuteOnce) {
+                this._jumpExecuteOnce = true;
+                AudioController.getInstance().play(30, Player.localPlayer.character);
+            }
+        } else {
+            this._jumpExecuteOnce = false;
+        }
+
+        if (Player.localPlayer.character.getCurrentState() === CharacterStateType.Landed) {
+            if (!this._landedExecutedOnce) {
+                this._landedExecutedOnce = true;
+                AudioController.getInstance().play(31, Player.localPlayer.character);
+            }
+        } else {
+            this._landedExecutedOnce = false;
+        }
+
+        if (Player.localPlayer.character.getCurrentState() === CharacterStateType.Swimming) {
+            if (!this._swimExecuteOnce) {
+                this._swimExecuteOnce = true;
+                //落水
+                AudioController.getInstance().play(32, Player.localPlayer.character);
+                AudioController.getInstance().play(33, Player.localPlayer.character);
+            }
+        } else {
+            if (this._swimExecuteOnce) {
+                AudioController.getInstance().stop(SoundIDEnum.SwimSound);
+            }
+            this._swimExecuteOnce = false;
         }
     }
 
