@@ -143,7 +143,7 @@ export default class PlayerSettingModuleData extends Subdata {
 }
 
 /**
- * PlayerSetting Module.sc
+ * PlayerSetting Module.
  * 玩家设置.
  *
  * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
