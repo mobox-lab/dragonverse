@@ -188,16 +188,16 @@ export default class MainPanel extends MainPanel_Generate {
         });
 
 
-        KeyOperationManager.getInstance().onKeyPress(Keys.W, this, () => {
+        KeyOperationManager.getInstance().onKeyPress(this,Keys.W, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(1);
         });
-        KeyOperationManager.getInstance().onKeyPress(Keys.S, this, () => {
+        KeyOperationManager.getInstance().onKeyPress(this,Keys.S, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(-1);
         });
-        KeyOperationManager.getInstance().onKeyPress(Keys.A, this, () => {
+        KeyOperationManager.getInstance().onKeyPress(this,Keys.A, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(-1);
         });
-        KeyOperationManager.getInstance().onKeyPress(Keys.D, this, () => {
+        KeyOperationManager.getInstance().onKeyPress(this,Keys.D, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(1);
         });
 
@@ -545,16 +545,16 @@ export default class MainPanel extends MainPanel_Generate {
      */
     public setCanSprint(canSprint: boolean) {
         if (canSprint) {
-            KeyOperationManager.getInstance().onKeyDown(mw.Keys.LeftShift, this, () => {
+            KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.LeftShift, () => {
                 this.roleController?.trySprint(true);
             });
-            KeyOperationManager.getInstance().onKeyUp(mw.Keys.LeftShift, this, () => {
+            KeyOperationManager.getInstance().onKeyUp(this, mw.Keys.LeftShift, () => {
                 this.roleController?.trySprint(false);
             });
-            KeyOperationManager.getInstance().onKeyDown(mw.Keys.RightShift, this, () => {
+            KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.RightShift, () => {
                 this.roleController?.trySprint(true);
             });
-            KeyOperationManager.getInstance().onKeyUp(mw.Keys.RightShift, this, () => {
+            KeyOperationManager.getInstance().onKeyUp(this, mw.Keys.RightShift, () => {
                 this.roleController?.trySprint(false);
             });
         } else {

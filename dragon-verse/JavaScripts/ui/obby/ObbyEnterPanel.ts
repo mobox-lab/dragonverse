@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : zewei.zhang
  * @Date         : 2024-03-05 18:09:34
  * @LastEditors  : zewei.zhang
@@ -13,24 +13,26 @@ import ObbyEnterFailPanel from "./ObbyEnterFailPanel";
 export default class ObbyEnterPanel extends doubleconfirm_Generate {
 
     public isShowing: boolean = false;
+
     onStart() {
         this.codeButtonClose.onClicked.add(() => {
             UIService.hide(ObbyEnterPanel);
         });
         this.codeButtonNo.onClicked.add(() => {
             UIService.hide(ObbyEnterPanel);
-        })
+        });
         this.codeButtonYes.onClicked.add(() => this.onClickYesCallBack());
     }
 
     public onClickYesCallBack: () => {};
 
     onShow() {
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hide(ObbyEnterPanel);
-        })
+        });
         this.isShowing = true;
     }
+
     onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         this.isShowing = false;

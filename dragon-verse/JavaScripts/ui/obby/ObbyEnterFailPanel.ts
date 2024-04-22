@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : zewei.zhang
  * @Date         : 2024-03-05 18:09:52
  * @LastEditors  : zewei.zhang
@@ -12,6 +12,7 @@ import doublecheck_Generate from "../../ui-generate/subgame/doublecheck_generate
 
 export default class ObbyEnterFailPanel extends doublecheck_Generate {
     public isShowing: boolean = false;
+
     onStart() {
         this.codeButtonClose.onClicked.add(() => {
             UIService.hide(ObbyEnterFailPanel);
@@ -23,11 +24,12 @@ export default class ObbyEnterFailPanel extends doublecheck_Generate {
     }
 
     onShow() {
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hide(ObbyEnterFailPanel);
-        })
+        });
         this.isShowing = true;
     }
+
     onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         this.isShowing = false;

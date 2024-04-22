@@ -1,20 +1,10 @@
-import { KeyboardManager } from "../../controller/KeyboardManager";
 import AudioController from "../../controller/audio/AudioController";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import PromotItem_Generate from "../../ui-generate/prompt/PromotItem_generate";
 import ProximityPrompts_Generate from "../../ui-generate/prompt/ProximityPrompts_generate";
 
 export module ProximityPrompts {
-
-
-
-
-
-
-
     class ProximityPromptsUI extends ProximityPrompts_Generate {
-
-
         private usingPromptItems: PromotItem_Generate[] = [];
 
         private _selectedIndex: number = 0;
@@ -44,15 +34,15 @@ export module ProximityPrompts {
             // KeyboardManager.getInstance().onKeyDown.add(this.onKeyDown, this);
             // KeyboardManager.getInstance().onKeyUp.add(this.onKeyUp, this);
 
-            KeyOperationManager.getInstance().onKeyDown(Keys.Up, this, () => {
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.Up, () => {
                 this.handlerIndex(-1);
             });
-            KeyOperationManager.getInstance().onKeyDown(Keys.Down, this, () => {
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.Down, () => {
                 this.handlerIndex(1);
             });
 
             for (const item of this.data) {
-                KeyOperationManager.getInstance().onKeyDown(item.keyBoard as Keys, this, () => {
+                KeyOperationManager.getInstance().onKeyDown(this, item.keyBoard as Keys, () => {
                     this.onSelected();
                 });
             }
@@ -74,15 +64,13 @@ export module ProximityPrompts {
         }
 
 
-
-
         private initializeConfigureDetail(infos: ProximityPromptInfo[]) {
             for (const v of infos) {
                 const item = getPromptItem();
                 item.keyText.text = v.keyBoard;
                 item.option.text = v.text;
                 item.selected.onClicked.add(() => {
-                    this.onSelected()
+                    this.onSelected();
                 });
                 item.selected.enable = v.enabled;
                 item.keyText.visibility = mw.SlateVisibility.Hidden;
@@ -160,18 +148,10 @@ export module ProximityPrompts {
     }
 
 
-
-
     function getPromptItem() {
 
         return mw.UIService.create(PromotItem_Generate);
     }
-
-
-
-
-
-
 
 
     export interface ProximityPromptInfo {
@@ -188,11 +168,6 @@ export module ProximityPrompts {
 
         UIService.show(ProximityPromptsUI, infos);
     }
-
-
-
-
-
 
 
     export function close() {

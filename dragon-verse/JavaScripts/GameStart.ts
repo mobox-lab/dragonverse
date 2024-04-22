@@ -196,22 +196,22 @@ export default class GameStart extends mw.Script {
         InputUtil.mouseLockOptionEnabled = false;
         InputUtil.isLockMouse = true;
 
-        KeyOperationManager.getInstance().onKeyDown(Keys.LeftAlt, null, () => {
+        KeyOperationManager.getInstance().onKeyDown(null, Keys.LeftAlt, () => {
             Log4Ts.log(GameStart, `alt key down`);
             InputUtil.isLockMouse = false;
         });
 
-        KeyOperationManager.getInstance().onKeyUp(Keys.LeftAlt, null, () => {
+        KeyOperationManager.getInstance().onKeyUp(null, Keys.LeftAlt, () => {
             Log4Ts.log(GameStart, `alt key up`);
             InputUtil.isLockMouse = true;
         });
 
-        KeyOperationManager.getInstance().onKeyDown(Keys.RightAlt, null, () => {
+        KeyOperationManager.getInstance().onKeyDown(null, Keys.RightAlt, () => {
             Log4Ts.log(GameStart, `alt key down`);
             InputUtil.isLockMouse = false;
         });
 
-        KeyOperationManager.getInstance().onKeyUp(Keys.RightAlt, null, () => {
+        KeyOperationManager.getInstance().onKeyUp(null, Keys.RightAlt, () => {
             Log4Ts.log(GameStart, `alt key up`);
             InputUtil.isLockMouse = true;
         });
