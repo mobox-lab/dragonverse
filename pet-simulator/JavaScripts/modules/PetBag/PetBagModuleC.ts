@@ -1,7 +1,7 @@
 
 import { GameConfig } from "../../config/GameConfig";
-import { oTraceError } from "../../utils/LogManager";
-import { numberArrToString, stringToNumberArr, utils } from "../../utils/uitls";
+import { oTraceError } from "../../util/LogManager";
+import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
 import { P_Bag } from "./P_Bag";
@@ -10,7 +10,7 @@ import { PetBagModuleS } from "./PetBagModuleS";
 import { GlobalData } from "../../const/GlobalData";
 import { P_Pet_Dev } from "./P_Pet_Dev";
 import { P_FusePanel } from "./P_FusePanel";
-import MessageBox from "../../utils/MessageBox";
+import MessageBox from "../../util/MessageBox";
 import { P_Enchants } from "./P_Enchants";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { GlobalEnum } from "../../const/Enum";

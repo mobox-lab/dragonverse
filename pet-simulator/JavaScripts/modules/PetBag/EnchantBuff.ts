@@ -1,7 +1,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import { stringToBuff } from "../../utils/uitls";
+import { stringToBuff } from "../../util/uitls";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { RewardTipsManager } from "../UI/RewardTips";
 import { BagTool } from "./BagTool";

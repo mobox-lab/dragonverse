@@ -2,7 +2,7 @@
 
 import { GameConfig } from "../../config/GameConfig";
 import HUDpetGift_Generate from "../../ui-generate/hud/HUDpetGift_generate";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
 
 export class P_HudPetGift extends HUDpetGift_Generate {

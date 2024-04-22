@@ -1,8 +1,8 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import { oTraceError } from "../../utils/LogManager";
-import { stringToNumberArr, utils } from "../../utils/uitls";
+import { oTraceError } from "../../util/LogManager";
+import { stringToNumberArr, utils } from "../../util/uitls";
 import { CollectModuleS } from "../PetCollect/CollectModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { petInfo } from "../Trading/TradingScript";

@@ -1,7 +1,7 @@
 import {PlayerManagerExtesion,} from "../../Modified027Editor/ModifiedPlayer";
-import {ChatMsg} from "../../utils/ChatMsg";
-import MessageBox from "../../utils/MessageBox";
-import {stringToNumberArr, utils} from "../../utils/uitls";
+import {ChatMsg} from "../../util/ChatMsg";
+import MessageBox from "../../util/MessageBox";
+import {stringToNumberArr, utils} from "../../util/uitls";
 import {AnalyticsTool} from "../Analytics/AnalyticsTool";
 import {P_Msg} from "./P_Msg";
 import {P_TradingChooseMain,} from "./P_TradeChoose";

@@ -8,7 +8,7 @@
  */
 import { GlobalData } from "../../const/GlobalData";
 import Tips_Generate from "../../ui-generate/common/Tips_generate";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 
 class P_TipUI extends Tips_Generate {
 

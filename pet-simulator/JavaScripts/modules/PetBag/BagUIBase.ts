@@ -1,6 +1,6 @@
 ﻿
 import { GlobalData } from "../../const/GlobalData";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 import { BagDataBase } from "./BagDataBase";
 import BagPanelBase from "./BagPanelBase";
 import { Layout } from "./IBagUI";

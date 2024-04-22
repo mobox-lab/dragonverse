@@ -5,8 +5,8 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import PetGet_Generate from "../../ui-generate/Pet/PetGet_generate";
 import EggInfo_Generate from "../../ui-generate/WorldUI/EggInfo_generate";
 import EggInteract_Generate from "../../ui-generate/WorldUI/EggInteract_generate";
-import { cubicBezier } from "../../utils/MoveUtil";
-import { Singleton } from "../../utils/uitls";
+import { cubicBezier } from "../../util/MoveUtil";
+import { Singleton } from "../../util/uitls";
 import { DollMachineModuleC } from "../DollMachine/DollMachineModuleC";
 import { P_HudUI } from "../Hud/P_HudUI";
 

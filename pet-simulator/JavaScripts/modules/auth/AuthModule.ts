@@ -14,7 +14,7 @@ import HttpRequestURL = mw.HttpRequestURL;
 import HttpRequestType = mw.HttpRequestType;
 import Regulator from "../../depend/regulator/Regulator";
 import Global = GlobalData.Global;
-import GToolkit from "../../utils/GToolkit";
+import GToolkit from "../../util/GToolkit";
 
 export default class PetSimulatorAuthModuleData extends JModuleData {
     //@Decorator.persistence()

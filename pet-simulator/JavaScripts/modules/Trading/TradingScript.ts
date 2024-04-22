@@ -1,6 +1,6 @@
 import { GlobalData } from "../../const/GlobalData";
-import MessageBox from "../../utils/MessageBox";
-import { numberArrToString, utils } from "../../utils/uitls";
+import MessageBox from "../../util/MessageBox";
+import { numberArrToString, utils } from "../../util/uitls";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { PetBagModuleData } from "../PetBag/PetBagModuleData";
 import { P_Msg } from "./P_Msg";

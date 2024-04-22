@@ -2,7 +2,7 @@ import { PlayerManagerExtesion } from '../../Modified027Editor/ModifiedPlayer';
 import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
 import { GeneralManager, } from '../../Modified027Editor/ModifiedStaticAPI';
 import { GlobalData } from "../../const/GlobalData";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 
 
 export class Skateboard {

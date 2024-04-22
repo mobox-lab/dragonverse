@@ -22,7 +22,7 @@ import KeyOperationManager from "../../../controller/key-operation-manager/KeyOp
 import BuyEnergyPanel from "../../../ui/BuyEnergyPanel";
 import { Yoact } from "../../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
-import GToolkit from "../../../utils/GToolkit";
+import GToolkit from "../../../util/GToolkit";
 import { AuthModuleC } from "../../auth/AuthModule";
 import { MessageBox } from "../../../tool/MessageBox";
 import Tips from "../../../tool/P_Tips";

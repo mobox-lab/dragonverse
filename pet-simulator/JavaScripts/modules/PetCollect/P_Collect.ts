@@ -7,7 +7,7 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import PetCollectItem_Generate from "../../ui-generate/Pet/PetCollectItem_generate";
 import PetCollectPanel_Generate from "../../ui-generate/Pet/PetCollectPanel_generate";
 import PetHover_Generate from "../../ui-generate/Pet/PetHover_generate";
-import { stringToBuff, utils } from "../../utils/uitls";
+import { stringToBuff, utils } from "../../util/uitls";
 import { BagTool } from "../PetBag/BagTool";
 import { PetBagModuleData, petItemDataNew } from "../PetBag/PetBagModuleData";
 import { CollectModuleC } from "./CollectModuleC";

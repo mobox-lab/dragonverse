@@ -2,7 +2,7 @@ import { GeneralManager, } from '../../Modified027Editor/ModifiedStaticAPI';
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import { oTraceError } from "../../utils/LogManager";
+import { oTraceError } from "../../util/LogManager";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { CollectModuleC } from "./CollectModuleC";

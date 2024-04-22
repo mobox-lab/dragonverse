@@ -3,7 +3,7 @@ import { ITimeRewardElement } from "../../config/TimeReward";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import GiftItem_Generate from "../../ui-generate/Gift/GiftItem_generate";
 import GiftMain_Generate from "../../ui-generate/Gift/GiftMain_generate";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 import { TipsManager } from "../Hud/P_TipUI";
 
 

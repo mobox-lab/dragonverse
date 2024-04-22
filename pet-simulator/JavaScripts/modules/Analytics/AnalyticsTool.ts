@@ -1,6 +1,6 @@
 
 import { AnalyticsUtil } from "odin";
-import { oTraceError } from "../../utils/LogManager";
+import { oTraceError } from "../../util/LogManager";
 
 export class AnalyticsTool {
 

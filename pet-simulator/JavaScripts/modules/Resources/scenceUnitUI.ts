@@ -3,7 +3,7 @@ import { SpawnManager, SpawnInfo, } from '../../Modified027Editor/ModifiedSpawn'
 import { oTraceError } from "odin";
 import { GameConfig } from "../../config/GameConfig";
 import resourceScript, { } from "./resource";
-import { Singleton, utils } from "../../utils/uitls";
+import { Singleton, utils } from "../../util/uitls";
 import { GlobalData } from "../../const/GlobalData";
 
 enum barColor {

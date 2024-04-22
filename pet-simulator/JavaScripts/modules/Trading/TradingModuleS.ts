@@ -1,7 +1,7 @@
 import { GeneralManager, } from '../../Modified027Editor/ModifiedStaticAPI';
 import { GlobalEnum } from "../../const/Enum";
-import { oTraceError } from "../../utils/LogManager";
-import { numberArrToString, stringToNumberArr, utils } from "../../utils/uitls";
+import { oTraceError } from "../../util/LogManager";
+import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
 import { BagTool } from "../PetBag/BagTool";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { PlayerModuleS } from "../Player/PlayerModuleS";

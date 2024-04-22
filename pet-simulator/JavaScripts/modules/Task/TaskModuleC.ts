@@ -2,8 +2,8 @@
 import { GameConfig } from "../../config/GameConfig";
 import { ITaskElement } from "../../config/Task";
 import { GlobalData } from "../../const/GlobalData";
-import MessageBox from "../../utils/MessageBox";
-import { utils } from "../../utils/uitls";
+import MessageBox from "../../util/MessageBox";
+import { utils } from "../../util/uitls";
 import { TipsManager } from "../Hud/P_TipUI";
 import { EggMachineTween } from "../InteractiveObjs/EggMachineTween";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";

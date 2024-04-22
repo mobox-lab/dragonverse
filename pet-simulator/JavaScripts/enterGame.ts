@@ -9,9 +9,9 @@
 import { GameConfig } from "./config/GameConfig";
 import { GlobalData } from "./const/GlobalData";
 import { PetSimulatorPlayerModuleData } from "./modules/Player/PlayerModuleData";
-import MessageBox from "./utils/MessageBox";
+import MessageBox from "./util/MessageBox";
 
-import { utils } from "./utils/uitls";
+import { utils } from "./util/uitls";
 import { PlayerModuleC } from "./modules/Player/PlayerModuleC";
 import { AnalyticsTool, ButtonAnaly } from "./modules/Analytics/AnalyticsTool";
 

@@ -5,10 +5,10 @@ import { OnlineModuleData } from "./OnlineModuleData";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { GameConfig } from "../../config/GameConfig";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
-import { numberArrToString, utils } from "../../utils/uitls";
+import { numberArrToString, utils } from "../../util/uitls";
 import { RewardState } from "./P_RewardPanel";
 import { GlobalEnum } from "../../const/Enum";
-import { oTraceError } from "../../utils/LogManager";
+import { oTraceError } from "../../util/LogManager";
 import { AreaModuleData } from "../AreaDivide/AreaModuleData";
 
 

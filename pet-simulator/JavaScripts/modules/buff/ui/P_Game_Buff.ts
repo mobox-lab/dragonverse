@@ -3,7 +3,7 @@ import { GlobalEnum } from "../../../const/Enum";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import P_Game_Buff_Generate from "../../../ui-generate/Buff/P_Game_Buff_generate";
 import BuffEnergyTips_Generate from "../../../ui-generate/common/BuffEnergyTips_generate";
-import MessageBox from "../../../utils/MessageBox";
+import MessageBox from "../../../util/MessageBox";
 import { BuffInfo, BuffItem } from "./BuffItem";
 
 export class P_Game_Buff extends P_Game_Buff_Generate {

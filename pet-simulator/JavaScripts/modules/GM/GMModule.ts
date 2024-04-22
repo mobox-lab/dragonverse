@@ -4,7 +4,7 @@ import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import GMHUD_Generate from "../../ui-generate/common/GM/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/common/GM/GMItem_generate";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { PlayerModuleC } from "../Player/PlayerModuleC";

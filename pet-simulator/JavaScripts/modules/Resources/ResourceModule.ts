@@ -2,8 +2,8 @@ import { SpawnManager, SpawnInfo, } from '../../Modified027Editor/ModifiedSpawn'
 import { oTraceWarning } from "odin";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
-import { oTraceError } from "../../utils/LogManager";
-import { utils } from "../../utils/uitls";
+import { oTraceError } from "../../util/LogManager";
+import { utils } from "../../util/uitls";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { DropManager } from "./DropResouce";
 import resourceScript, { Resource, SceneResourceMap } from "./resource";

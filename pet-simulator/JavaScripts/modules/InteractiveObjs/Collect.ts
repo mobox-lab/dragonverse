@@ -2,7 +2,7 @@ import { PlayerManagerExtesion, } from '../../Modified027Editor/ModifiedPlayer';
 import { GameConfig } from "../../config/GameConfig";
 import { IPetARRElement } from "../../config/PetARR";
 import { GlobalData } from "../../const/GlobalData";
-import { oTraceError } from "../../utils/LogManager";
+import { oTraceError } from "../../util/LogManager";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { CollectModuleC } from "../PetCollect/CollectModuleC";
 import { CollectModuleData } from "../PetCollect/CollectModuleData";

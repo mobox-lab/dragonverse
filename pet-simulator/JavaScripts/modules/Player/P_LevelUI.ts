@@ -3,7 +3,7 @@ import { IUpgradeElement } from "../../config/Upgrade";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import LevelUI_Generate from "../../ui-generate/LevelUp/LevelUI_generate";
 import TypeItem_Generate from "../../ui-generate/LevelUp/TypeItem_generate";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 import { PlayerModuleC } from "./PlayerModuleC";
 
 

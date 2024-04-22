@@ -1,4 +1,4 @@
-import { oTraceError } from "../../utils/LogManager";
+import { oTraceError } from "../../util/LogManager";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 

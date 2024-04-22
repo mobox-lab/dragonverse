@@ -1,5 +1,5 @@
 import { GameConfig } from "../../config/GameConfig";
-import { oTraceError } from "../../utils/LogManager";
+import { oTraceError } from "../../util/LogManager";
 
 export class AreaModuleData extends Subdata {
 

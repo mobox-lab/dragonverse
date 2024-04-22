@@ -1,6 +1,6 @@
 import { GlobalData } from "../../const/GlobalData";
-import { oTraceError } from "../../utils/LogManager";
-import { utils } from "../../utils/uitls";
+import { oTraceError } from "../../util/LogManager";
+import { utils } from "../../util/uitls";
 
 
 

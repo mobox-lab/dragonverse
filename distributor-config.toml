@@ -1,10 +1,10 @@
 [[items]]
 from = "./dragon-verse/JavaScripts/util/GToolkit.ts"
-to = ["./pet-simulator/JavaScripts/utils/GToolkit.ts", "./battleworld/JavaScripts/utils/GToolkit.ts"]
+to = ["./pet-simulator/JavaScripts/util/GToolkit.ts", "./battleworld/JavaScripts/util/GToolkit.ts"]
 
 [[items]]
 from = "./dragon-verse/JavaScripts/util/README.md"
-to = ["./pet-simulator/JavaScripts/utils/README.md","./battleworld/JavaScripts/utils/README.md"]
+to = ["./pet-simulator/JavaScripts/util/README.md","./battleworld/JavaScripts/util/README.md"]
 
 [[items]]
 from = "./dragon-verse/JavaScripts/controller/key-operation-manager"

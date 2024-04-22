@@ -3,8 +3,8 @@ import { GlobalData } from "../../const/GlobalData";
 import TradeChoose_Generate from "../../ui-generate/Trade/TradeChoose_generate";
 import { PlayerNameManager } from "./PlayerNameManager";
 import { GameConfig } from "../../config/GameConfig";
-import MessageBox from "../../utils/MessageBox";
-import { utils } from "../../utils/uitls";
+import MessageBox from "../../util/MessageBox";
+import { utils } from "../../util/uitls";
 import { GlobalEnum } from "../../const/Enum";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 

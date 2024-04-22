@@ -2,7 +2,7 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import CoinUI_Generate from "../../ui-generate/Catching/CoinUI_generate";
 import ControlUI_Generate from "../../ui-generate/Catching/ControlUI_generate";
 import BuyCoinPanel from "../../ui/BuyCoinPanel";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 import { DollMachineModuleC } from "./DollMachineModuleC";
 
 

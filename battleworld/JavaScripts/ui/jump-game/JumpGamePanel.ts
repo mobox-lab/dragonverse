@@ -10,7 +10,7 @@
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { JumpRoomModuleC } from "../../module/jump-room/JumpRoomModule";
 import JumpGamePanel_Generate from "../../ui-generate/jumpGame/JumpGamePanel_generate";
-import GToolkit from "../../utils/GToolkit";
+import GToolkit from "../../util/GToolkit";
 
 export class JumpGamePanel extends JumpGamePanel_Generate {
     onStart() {

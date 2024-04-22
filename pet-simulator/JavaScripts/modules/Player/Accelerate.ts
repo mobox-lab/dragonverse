@@ -1,7 +1,7 @@
 import { SpawnManager, SpawnInfo, } from '../../Modified027Editor/ModifiedSpawn';
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
-import { cubicBezier } from "../../utils/MoveUtil";
+import { cubicBezier } from "../../util/MoveUtil";
 import PetBehaviour from "./PetBehaviour";
 
 export class rateEff {

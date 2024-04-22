@@ -3,10 +3,10 @@ import { IPetARRElement } from "../../config/PetARR";
 import { GlobalData } from "../../const/GlobalData";
 import Pet_item_Generate from "../../ui-generate/Pet/Pet_item_generate";
 import { petItemDataNew } from "./PetBagModuleData";
-import { Singleton, stringToBuff, utils } from "../../utils/uitls";
+import { Singleton, stringToBuff, utils } from "../../util/uitls";
 import { BagTool } from "./BagTool";
 import { GlobalEnum } from "../../const/Enum";
-import { cubicBezier } from "../../utils/MoveUtil";
+import { cubicBezier } from "../../util/MoveUtil";
 
 
 export class PetBag_Item extends Pet_item_Generate {

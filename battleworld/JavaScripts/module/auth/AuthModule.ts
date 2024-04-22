@@ -1,6 +1,6 @@
 import CryptoJS from "crypto-js";
 import {JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
-import GToolkit from "../../utils/GToolkit";
+import GToolkit from "../../util/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import noReply = mwext.Decorator.noReply;
 import {Yoact} from "../../depend/yoact/Yoact";

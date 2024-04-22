@@ -1,6 +1,6 @@
 import HistoryRecord_Generate from "../../ui-generate/Trade/HistoryRecord_generate";
 import TradeHistory_Generate from "../../ui-generate/Trade/TradeHistory_generate";
-import { stringToNumberArr, utils } from "../../utils/uitls";
+import { stringToNumberArr, utils } from "../../util/uitls";
 import { petItemDataNew } from "../PetBag/PetBagModuleData";
 import { tradeRecord } from "./TradingModuleData";
 import { stringToPet } from "./TradingModuleS";

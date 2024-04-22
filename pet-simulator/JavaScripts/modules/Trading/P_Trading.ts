@@ -1,13 +1,13 @@
 import { GlobalData } from "../../const/GlobalData";
 import TradeReady_Generate from "../../ui-generate/Trade/TradeReady_generate";
-import { oTraceError } from "../../utils/LogManager";
+import { oTraceError } from "../../util/LogManager";
 import { PetBagModuleData, petItemDataNew } from "../PetBag/PetBagModuleData";
 import { P_PetHover } from "../PetCollect/P_Collect";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { PlayerNameManager } from "./PlayerNameManager";
 import { petInfo } from "./TradingScript";
 import { GameConfig } from "../../config/GameConfig";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 import { PetBagItem } from "../PetBag/P_Bag";
 
 import { PetBag_Item } from "../PetBag/P_BagItem";

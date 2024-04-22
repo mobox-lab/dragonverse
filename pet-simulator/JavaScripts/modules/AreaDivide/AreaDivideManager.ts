@@ -1,6 +1,6 @@
 import { GameConfig } from "../../config/GameConfig";
-import { oTrace, oTraceError } from "../../utils/LogManager";
-import { Singleton, utils } from "../../utils/uitls";
+import { oTrace, oTraceError } from "../../util/LogManager";
+import { Singleton, utils } from "../../util/uitls";
 
 
 /**区域划分 */

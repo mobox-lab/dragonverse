@@ -2,8 +2,8 @@
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import Fusepanel_Generate from "../../ui-generate/Fuse/Fusepanel_generate";
-import MessageBox from "../../utils/MessageBox";
-import { utils } from "../../utils/uitls";
+import MessageBox from "../../util/MessageBox";
+import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { PlayerModuleC } from "../Player/PlayerModuleC";

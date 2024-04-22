@@ -2,7 +2,7 @@
 
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";

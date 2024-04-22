@@ -2,7 +2,7 @@ import { SpawnManager, SpawnInfo, } from '../../Modified027Editor/ModifiedSpawn'
 import { ObjectPoolServices } from "../../Tools/ObjectPool";
 import { GlobalData } from "../../const/GlobalData";
 import { IPetARRElement } from "../../config/PetARR";
-import { cubicBezier } from "../../utils/MoveUtil";
+import { cubicBezier } from "../../util/MoveUtil";
 import { GameConfig } from "../../config/GameConfig";
 import { PlayerManagerExtesion } from '../../Modified027Editor/ModifiedPlayer';
 

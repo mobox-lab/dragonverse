@@ -2,7 +2,7 @@ import { Delegate } from "../delegate/Delegate";
 import Log4Ts from "../log4ts/Log4Ts";
 import SimpleDelegate = Delegate.SimpleDelegate;
 import SimpleDelegateFunction = Delegate.SimpleDelegateFunction;
-import { NoOverride } from "../../utils/GToolkit";
+import { NoOverride } from "../../util/GToolkit";
 
 const EVENT_NAME_NET_METHOD_CALLED_BY_CLIENT = "__mw_developer_O_Ask_repoleved_wm__";
 

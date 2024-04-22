@@ -6,8 +6,8 @@ import { GlobalData } from "../../const/GlobalData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import TransmitMain_Generate from "../../ui-generate/Transmit/TransmitMain_generate";
 import WorldtipsUI_Generate from "../../ui-generate/WorldUI/WorldtipsUI_generate";
-import { cubicBezier } from "../../utils/MoveUtil";
-import { utils } from "../../utils/uitls";
+import { cubicBezier } from "../../util/MoveUtil";
+import { utils } from "../../util/uitls";
 import { AreaModuleData } from "../AreaDivide/AreaModuleData";
 
 /**传送ui */

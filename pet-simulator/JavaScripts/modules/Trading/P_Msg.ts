@@ -2,7 +2,7 @@ import { UIPool } from "../../Tools/UIPool";
 import { GlobalData } from "../../const/GlobalData";
 import MsgItem_Generate from "../../ui-generate/Trade/MsgItem_generate";
 import MsgPanel_Generate from "../../ui-generate/Trade/MsgPanel_generate";
-import { ChatMsg } from "../../utils/ChatMsg";
+import { ChatMsg } from "../../util/ChatMsg";
 import { P_Trading } from "./P_Trading";
 
 export class P_Msg extends MsgPanel_Generate {

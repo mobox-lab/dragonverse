@@ -1,4 +1,4 @@
-import { stringToNumberArr } from "../../utils/uitls";
+import { stringToNumberArr } from "../../util/uitls";
 import { stringToArray } from "../Trading/TradingScript";
 import { AreaModuleC } from "./AreaModuleC";
 import { AreaModuleData } from "./AreaModuleData";

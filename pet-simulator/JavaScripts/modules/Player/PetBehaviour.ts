@@ -3,12 +3,12 @@ import { oTraceError } from "odin";
 import { GameConfig } from "../../config/GameConfig";
 import { IPetARRElement } from "../../config/PetARR";
 import { GlobalData, endInfo } from "../../const/GlobalData";
-import { Arrow } from "../../utils/ArrowControul";
-import { EffectManager } from "../../utils/EffectManager";
-import { cubicBezier, getRot, getTransform, setPos, setRot, setTransform } from "../../utils/MoveUtil";
-import { SoundManager } from "../../utils/SoundManager";
-import { utils } from "../../utils/uitls";
-import { VectorUtil } from "../../utils/VectorUtil";
+import { Arrow } from "../../util/ArrowControul";
+import { EffectManager } from "../../util/EffectManager";
+import { cubicBezier, getRot, getTransform, setPos, setRot, setTransform } from "../../util/MoveUtil";
+import { SoundManager } from "../../util/SoundManager";
+import { utils } from "../../util/uitls";
+import { VectorUtil } from "../../util/VectorUtil";
 import resourceScript, { SceneResourceMap } from "../Resources/resource";
 import { HUDInfo, HUDManager } from "./HUDManager";
 import PlayerBehavior from "./PlayerBehavior";
@@ -17,7 +17,7 @@ import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
 import Log4Ts from '../../depend/log4ts/Log4Ts';
 import { EnergyModuleC } from '../Energy/EnergyModule';
-import GToolkit from '../../utils/GToolkit';
+import GToolkit from '../../util/GToolkit';
 
 /**宠物状态 */
 export enum PetState {

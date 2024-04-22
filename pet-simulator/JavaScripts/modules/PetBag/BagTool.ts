@@ -1,6 +1,6 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
-import { buffToString } from "../../utils/uitls";
+import { buffToString } from "../../util/uitls";
 import { CollectModuleData } from "../PetCollect/CollectModuleData";
 import { petItemDataNew } from "./PetBagModuleData";
 

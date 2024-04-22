@@ -1,6 +1,6 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
-import { stringToNumberArr, utils } from "../../utils/uitls";
+import { stringToNumberArr, utils } from "../../util/uitls";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
 import { TipsManager } from "../Hud/P_TipUI";

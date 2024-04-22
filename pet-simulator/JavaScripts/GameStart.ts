@@ -5,7 +5,7 @@ import { GMBasePanelUI } from "./modules/GM/GMModule";
 import { HudModuleC, HudModuleS } from "./modules/Hud/HudModule";
 import { PlayerModuleC } from "./modules/Player/PlayerModuleC";
 import { PlayerModuleS } from "./modules/Player/PlayerModuleS";
-import { LogManager as mLogManager, oTrace, oTraceError, oTraceWarning } from "./utils/LogManager";
+import { LogManager as mLogManager, oTrace, oTraceError, oTraceWarning } from "./util/LogManager";
 import { GameObjectFactory } from "./modules/Resources/GameObjectPool";
 import { Resource } from "./modules/Resources/resource";
 import { AreaModuleS } from "./modules/AreaDivide/AreaModuleS";

@@ -10,7 +10,7 @@
 import { GameConfig } from "../config/GameConfig";
 import BuyUI_Generate from "../ui-generate/Buy/BuyUI_generate";
 
-import MessageBox from "../utils/MessageBox";
+import MessageBox from "../util/MessageBox";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 import { PlayerModuleC } from "../modules/Player/PlayerModuleC";
 import { TipsManager } from "../modules/Hud/P_TipUI";

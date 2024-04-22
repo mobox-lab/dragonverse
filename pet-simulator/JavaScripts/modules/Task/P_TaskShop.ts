@@ -6,7 +6,7 @@ import TaskShop_Itembig_Generate from "../../ui-generate/Task/TaskShop_Itembig_g
 import TaskShop_Itemmid_Generate from "../../ui-generate/Task/TaskShop_Itemmid_generate";
 import TaskShop_Itemmin_Generate from "../../ui-generate/Task/TaskShop_Itemmin_generate";
 import TaskShop_ItemText_Generate from "../../ui-generate/Task/TaskShop_ItemText_generate";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 import { TipsManager } from "../Hud/P_TipUI";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 

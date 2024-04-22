@@ -2,8 +2,8 @@
 import { IAchievementsElement } from "../../config/Achievements";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
-import { oTraceError } from "../../utils/LogManager";
-import { utils } from "../../utils/uitls";
+import { oTraceError } from "../../util/LogManager";
+import { utils } from "../../util/uitls";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { TipsManager } from "../Hud/P_TipUI";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";

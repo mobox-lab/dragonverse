@@ -1,7 +1,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
-import MessageBox from "../../utils/MessageBox";
-import { utils } from "../../utils/uitls";
+import MessageBox from "../../util/MessageBox";
+import { utils } from "../../util/uitls";
 import { TipsManager } from "../Hud/P_TipUI";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";

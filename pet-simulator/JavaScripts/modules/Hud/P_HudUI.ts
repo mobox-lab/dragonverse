@@ -1,8 +1,8 @@
 ﻿import { GlobalData } from "../../const/GlobalData";
 import GMHUD_Generate from "../../ui-generate/common/GM/GMHUD_generate";
 import Hud_Generate from "../../ui-generate/hud/Hud_generate";
-import { cubicBezier } from "../../utils/MoveUtil";
-import { utils } from "../../utils/uitls";
+import { cubicBezier } from "../../util/MoveUtil";
+import { utils } from "../../util/uitls";
 import { P_SummerCoin } from "../DollMachine/P_DollMachine";
 import { EnergyModuleC } from "../Energy/EnergyModule";
 
@@ -11,11 +11,11 @@ import bindYoact = Yoact.bindYoact;
 import ModuleService = mwext.ModuleService;
 import { AuthModuleC } from "../auth/AuthModule";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-import MessageBox from "../../utils/MessageBox";
+import MessageBox from "../../util/MessageBox";
 import { GameConfig } from "../../config/GameConfig";
 import { TipsManager } from "./P_TipUI";
 import BuffEnergyTips_Generate from "../../ui-generate/common/BuffEnergyTips_generate";
-import GToolkit from "../../utils/GToolkit";
+import GToolkit from "../../util/GToolkit";
 import { JumpGamePanel } from "../../ui/JumpGamePanel";
 
 export class P_HudUI extends Hud_Generate {

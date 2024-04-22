@@ -1,8 +1,8 @@
 import { GeneralManager, } from '../../Modified027Editor/ModifiedStaticAPI';
 import { oTraceError } from "odin";
 import { GlobalData } from "../../const/GlobalData";
-import { SoundManager } from "../../utils/SoundManager";
-import { VectorUtil } from "../../utils/VectorUtil";
+import { SoundManager } from "../../util/SoundManager";
+import { VectorUtil } from "../../util/VectorUtil";
 import { petItemDataNew } from "../PetBag/PetBagModuleData";
 import resourceScript from "../Resources/resource";
 import { Accelerate, LongPress, rateEff } from "./Accelerate";

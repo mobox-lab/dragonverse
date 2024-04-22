@@ -1,8 +1,8 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import { oTraceError } from "../../utils/LogManager";
-import { stringToNumberArr, utils } from "../../utils/uitls";
+import { oTraceError } from "../../util/LogManager";
+import { stringToNumberArr, utils } from "../../util/uitls";
 import PetQuality = GlobalEnum.PetQuality;
 import PetDevType = GlobalEnum.PetDevType;
 import Energy = GlobalData.Energy;

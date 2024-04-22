@@ -1,7 +1,7 @@
 
 import RankItem_Generate from "../../ui-generate/Rank/RankItem_generate";
 import { GlobalData } from "../../const/GlobalData";
-import { utils } from "../../utils/uitls";
+import { utils } from "../../util/uitls";
 import { RankUIData } from "./RankModuleC";
 import { RankType } from "./RankModuleS";
 
