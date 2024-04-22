@@ -153,19 +153,11 @@ export class MapPanel extends MapPanel_Generate {
     public showBigMap() {
         GToolkit.trySetVisibility(this.cnvMap, true);
         GToolkit.trySetVisibility(this.cnvMiniMap, false);
-
-        KeyOperationManager.getInstance().startDetectWidgetOnHover(this._imgs, (widgets: mw.Widget[]) => {
-            widgets.forEach(element => {
-                console.log(element.name);
-            });
-        }, this.cnvMapHolder, true);
     }
 
     public showMiniMap() {
         GToolkit.trySetVisibility(this.cnvMap, false);
         GToolkit.trySetVisibility(this.cnvMiniMap, true);
-
-        KeyOperationManager.getInstance().stopDetectWidgetOnHover();
     }
 
     private calculateMiniMapPos() {
