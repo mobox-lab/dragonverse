@@ -154,11 +154,11 @@ export class MapPanel extends MapPanel_Generate {
         GToolkit.trySetVisibility(this.cnvMap, true);
         GToolkit.trySetVisibility(this.cnvMiniMap, false);
 
-        KeyOperationManager.getInstance().startDetectWidgetOnHover(this.cnvMapHolder, this._imgs, (widgets: mw.Widget[]) => {
+        KeyOperationManager.getInstance().startDetectWidgetOnHover(this._imgs, (widgets: mw.Widget[]) => {
             widgets.forEach(element => {
                 console.log(element.name);
             });
-        }, this.rootCanvas);
+        }, this.cnvMapHolder, true);
     }
 
     public showMiniMap() {

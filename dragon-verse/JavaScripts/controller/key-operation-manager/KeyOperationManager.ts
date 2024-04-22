@@ -271,20 +271,20 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
 
     /** 
      * @description: 开始检测Widgets onHover事件
-     * @param parentWidgets 父级widgets，超出父级的widget范围的将不会被检测到
+     * @param maskWidget 父级widgets，超出父级的widget范围的将不会被检测到
      * @param needDetectWidgets 需要检测的widgets数组  
      * @param callback  回调函数，返回检测到的widget数组
      * @param debugCanvas 调试画布，如果需要可视化AABB，需要传入一个全屏的Canvas
      * @return 
      */
-    public startDetectWidgetOnHover(parentWidgets: mw.Widget, needDetectWidgets: mw.Widget[], callback: (widget: mw.Widget[]) => void, debugCanvas?: mw.Canvas) {
+    public startDetectWidgetOnHover(needDetectWidgets: mw.Widget[], callback: (widget: mw.Widget[]) => void, maskWidget: mw.Widget, debug: boolean = false) {
         this._bvhTree.reset();
         this._detectingWidgetOnHoverTimer = TimeUtil.setInterval(() => {
 
             //遍历需要检测的widget
             for (let widget of needDetectWidgets) {
                 //检测widget是否在父级widget范围内
-                if (parentWidgets && !this.isWidgetRangeOverlap(parentWidgets, widget)) {
+                if (maskWidget && !this.isWidgetRangeOverlap(maskWidget, widget)) {
                     //如果不在了，检查有没插入到tree里，有的话删掉
                     if (this._widgetNodes.has(widget.guid)) {
                         this._bvhTree.destroyNode(this._widgetNodes.get(widget.guid));
@@ -307,11 +307,11 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
                     }
                 }
             }
-            if (debugCanvas) {
+            if (debug) {
                 this._debugImgs.forEach(img => img.destroyObject());
                 this._debugImgs = [];
                 this._bvhTree.traverse((node) => {
-                    let image = mw.Image.newObject(debugCanvas);
+                    let image = mw.Image.newObject(UIService.canvas);
                     image.imageGuid = '114028';
                     image.imageDrawType = SlateBrushDrawType.Box;
                     image.size = node.aabb.max.clone().subtract(node.aabb.min);

@@ -672,4 +672,8 @@ export default class GameServiceConfig {
      */
     public static readonly OBBY_STAR_FLOAT_STAGE_DURATION = 2e3;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ //#region Role
+
+    public static readonly MAIN_PANEL_SOUND_BUTTON_IMG_GUID = '324601';
+
+    public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = '324594';
 }

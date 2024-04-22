@@ -1,33 +1,35 @@
-﻿import {EventDefine} from "../../const/EventDefine";
+﻿import { EventDefine } from "../../const/EventDefine";
 import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
 import BagPanel from "../bag/BagPanel";
-import {CollectibleInteractorPanel} from "../collectible/CollectibleInteractorPanel";
+import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
 import GToolkit from "../../util/GToolkit";
-import {AdvancedTweenTask} from "../../depend/waterween/tweenTask/AdvancedTweenTask";
+import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import GlobalPromptPanel from "./GlobalPromptPanel";
 import Waterween from "../../depend/waterween/Waterween";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
-import {AuthModuleC} from "../../module/auth/AuthModule";
-import {SceneDragonModuleC} from "../../module/scene-dragon/SceneDragonModule";
-import {BagModuleC} from "../../module/bag/BagModule";
-import {Yoact} from "../../depend/yoact/Yoact";
+import { AuthModuleC } from "../../module/auth/AuthModule";
+import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
+import { BagModuleC } from "../../module/bag/BagModule";
+import { Yoact } from "../../depend/yoact/Yoact";
 import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
 import i18n from "../../language/i18n";
-import {CollectibleItemModuleC} from "../../module/collectible-item/CollectibleItemModule";
-import {GenerableTypes} from "../../const/GenerableTypes";
-import UnifiedRoleController, {RoleMovementState} from "../../module/role/UnifiedRoleController";
+import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
+import { GenerableTypes } from "../../const/GenerableTypes";
+import UnifiedRoleController, { RoleMovementState } from "../../module/role/UnifiedRoleController";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
-import {FlowTweenTask} from "../../depend/waterween/tweenTask/FlowTweenTask";
-import {CubicBezier} from "../../depend/easing/Easing";
+import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
+import { CubicBezier } from "../../depend/easing/Easing";
 import Regulator from "../../depend/regulator/Regulator";
 import MainCurtainPanel from "./MainCurtainPanel";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-import {ObbyModuleC} from "../../module/obby/ObbyModule";
-import {JumpGamePanel} from "../jump-game/JumpGamePanel";
+import { ObbyModuleC } from "../../module/obby/ObbyModule";
+import { JumpGamePanel } from "../jump-game/JumpGamePanel";
+import AudioController from "../../controller/audio/AudioController";
+import { PlayerSettingModuleC } from "../../module/player-setting/PlayerSettingModule";
 
 /**
  * 主界面.
@@ -165,6 +167,27 @@ export default class MainPanel extends MainPanel_Generate {
             ModuleService.getModule(ObbyModuleC).setInvincible();
         });
 
+        ModuleService.ready().then(() => {
+            let res = ModuleService.getModule(PlayerSettingModuleC).isMuted();
+            if (res) {
+                this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID;
+            } else {
+                this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+            }
+            AudioController.getInstance().mute(res);
+        });
+        this.btnSound.onClicked.add(() => {
+            this.btnSound.enable = false;
+            let res = ModuleService.getModule(PlayerSettingModuleC).isMuted();
+            this.btnSound.disableImageGuid = res ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+            res = !res;
+            ModuleService.getModule(PlayerSettingModuleC).setMute(res);
+            AudioController.getInstance().mute(res);
+            this.btnSound.normalImageGuid = res ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+            this.btnSound.enable = true;
+        });
+
+
         KeyOperationManager.getInstance().onKeyPress(Keys.W, this, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(1);
         });
@@ -241,8 +264,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1);
 
@@ -255,8 +278,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1);
 
@@ -274,11 +297,11 @@ export default class MainPanel extends MainPanel_Generate {
         );
 
         const dist = [
-            {dist: 0.3, duration: 0.1e3},
-            {dist: 0.4, duration: 0.1e3},
-            {dist: 0.2, duration: 0.1e3},
-            {dist: 0.5, duration: 0.1e3},
-            {dist: 0.3, duration: 0.1e3},
+            { dist: 0.3, duration: 0.1e3 },
+            { dist: 0.4, duration: 0.1e3 },
+            { dist: 0.2, duration: 0.1e3 },
+            { dist: 0.5, duration: 0.1e3 },
+            { dist: 0.3, duration: 0.1e3 },
         ];
         this._effectImgTasks.push(
             Waterween
@@ -764,9 +787,9 @@ export default class MainPanel extends MainPanel_Generate {
             this._character.changeState(CharacterStateType.Jumping);
         } else {
             actions.tween(Player.localPlayer.character.worldTransform).to(10,
-                {position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100))}).call(() => {
-                this._character.changeState(CharacterStateType.Jumping);
-            }).start();
+                { position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)) }).call(() => {
+                    this._character.changeState(CharacterStateType.Jumping);
+                }).start();
         }
     }
 
