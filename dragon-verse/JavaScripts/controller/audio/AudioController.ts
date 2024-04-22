@@ -40,6 +40,10 @@ export enum SoundIDEnum {
      * 主 Bgm 2.
      */
     MainBgm2 = 27,
+    /**
+     * 游泳音效.
+     */
+    SwimSound = 33,
 }
 
 /**
@@ -281,7 +285,7 @@ export default class AudioController extends Singleton<AudioController>() {
      *      ig 二象性 源自 SoundService 的精妙设计.
      */
     public play(soundId: SoundIDEnum | number,
-                target: mw.Vector | mw.GameObject | string = mw.Vector.zero): string | number {
+        target: mw.Vector | mw.GameObject | string = mw.Vector.zero): string | number {
         const config: ISoundElement = this.getConfig(soundId);
         if (!config) return;
         let holdId: number | string;
@@ -359,12 +363,12 @@ export default class AudioController extends Singleton<AudioController>() {
             case BgmPlayStrategy.Seq:
             case BgmPlayStrategy.Rnd:
                 this._bgmSwitcherTimerId = setTimeout(() => {
-                        SoundService.stopBGM();
-                        this._bgmStartTimerId = setTimeout(
-                            () => this.playBgm(undefined, playStrategy),
-                            this._bgmRestInterval,
-                        );
-                    },
+                    SoundService.stopBGM();
+                    this._bgmStartTimerId = setTimeout(
+                        () => this.playBgm(undefined, playStrategy),
+                        this._bgmRestInterval,
+                    );
+                },
                     duration * 1e3);
                 break;
             case BgmPlayStrategy.Sng:

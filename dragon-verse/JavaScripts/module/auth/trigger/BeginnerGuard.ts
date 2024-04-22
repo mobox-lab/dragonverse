@@ -61,7 +61,7 @@ export default class BeginnerGuard extends mw.Script {
 
     private onPlayerEnableEnter = () => {
         this._blockEffect.setColor("Color", LinearColor.colorToLinearColor(101, 191, 214));
-        this._forbiddenArea.addPassableTarget(Player.localPlayer.character);
+        // this._forbiddenArea.addPassableTarget(Player.localPlayer.character);
     };
 
     private onPlayerDisableEnter() {

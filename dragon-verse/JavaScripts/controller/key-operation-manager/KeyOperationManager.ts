@@ -5,6 +5,9 @@ import EventListener = mw.EventListener;
 import Keys = mw.Keys;
 import TimeUtil = mw.TimeUtil;
 import GToolkit from "../../util/GToolkit";
+import { AABBTree, Node } from "./extends/AABBTree";
+import { AABB } from "./extends/AABB";
+import Gtk from "../../util/GToolkit";
 
 
 /**
@@ -259,6 +262,114 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
         }
 
         return result;
+    }
+
+    private _detectingWidgetOnHoverTimer: number = null;
+    private _bvhTree = new AABBTree();
+    private _widgetNodes: Map<string, Node> = new Map();
+    private _debugImgs: mw.Image[] = [];
+
+    /** 
+     * @description: 开始检测Widgets onHover事件
+     * @param maskWidget 父级widgets，超出父级的widget范围的将不会被检测到
+     * @param needDetectWidgets 需要检测的widgets数组  
+     * @param callback  回调函数，返回检测到的widget数组
+     * @param debugCanvas 调试画布，如果需要可视化AABB，需要传入一个全屏的Canvas
+     * @return 
+     */
+    public startDetectWidgetOnHover(needDetectWidgets: mw.Widget[], callback: (widget: mw.Widget[]) => void, maskWidget: mw.Widget, debug: boolean = false) {
+        this._bvhTree.reset();
+        this._detectingWidgetOnHoverTimer = TimeUtil.setInterval(() => {
+
+            //遍历需要检测的widget
+            for (let widget of needDetectWidgets) {
+                //检测widget是否在父级widget范围内
+                if (maskWidget && !this.isWidgetRangeOverlap(maskWidget, widget)) {
+                    //如果不在了，检查有没插入到tree里，有的话删掉
+                    if (this._widgetNodes.has(widget.guid)) {
+                        this._bvhTree.destroyNode(this._widgetNodes.get(widget.guid));
+                        this._widgetNodes.delete(widget.guid);
+                    }
+                    continue;
+                }
+
+                if (!this._widgetNodes.has(widget.guid)) {
+                    let node = this._bvhTree.createNode(widget.guid, this.getWidgetAABBInViewPort(widget));
+                    this._widgetNodes.set(widget.guid, node);
+                } else {
+                    //检测widget移动
+                    let aabb = this.getWidgetAABBInViewPort(widget);
+                    let node = this._widgetNodes.get(widget.guid);
+
+                    if (!node.aabb.equals(aabb)) {
+                        // console.log(widget.name, pos, size);
+                        this._bvhTree.moveNode(node, aabb);
+                    }
+                }
+            }
+            if (debug) {
+                this._debugImgs.forEach(img => img.destroyObject());
+                this._debugImgs = [];
+                this._bvhTree.traverse((node) => {
+                    let image = mw.Image.newObject(UIService.canvas);
+                    image.imageGuid = '114028';
+                    image.imageDrawType = SlateBrushDrawType.Box;
+                    image.size = node.aabb.max.clone().subtract(node.aabb.min);
+                    image.position = node.aabb.min.clone();
+                    image.renderOpacity = 0.1;
+                    this._debugImgs.push(image);
+                });
+            }
+
+            //获取鼠标位置
+            let mousePos = getMousePositionOnViewport();
+
+            // console.log(mousePos);
+            let widgets = this._bvhTree.queryPoint(mousePos);
+            if (widgets.length > 0) {
+                callback(widgets.map(node => needDetectWidgets.find(widget => widget.guid === node.data)));
+            }
+        }, 0.1);
+    }
+
+    /** 
+     * @description: 控件A和控件B的是否有重叠
+     * @param widgetA 
+     * @param widgetB
+     * @return 
+     */
+    private isWidgetRangeOverlap(widgetA: mw.Widget, widgetB: mw.Widget): boolean {
+        let widgetA_AABB = this.getWidgetAABBInViewPort(widgetA);
+        let widgetB_AABB = this.getWidgetAABBInViewPort(widgetB);
+        return widgetA_AABB.testOverlap(widgetB_AABB);
+    }
+
+    /** 
+     * @description: 获取控件在视口空间下的AABB
+     * @param widget UI控件
+     * @return 包围盒
+     */
+    private getWidgetAABBInViewPort(widget: mw.Widget): AABB {
+        let pos = new Vector2();
+        let outPixelPosition = new Vector2();
+        localToViewport(widget.cachedGeometry, Vector2.zero, outPixelPosition, pos);
+        let maxPos = new Vector2();
+        let outMaxPixelPosition = new Vector2();
+        localToViewport(widget.cachedGeometry, widget.size, outMaxPixelPosition, maxPos);
+        let size = maxPos.clone().subtract(pos);
+
+        return new AABB(pos.clone(), pos.add(size.clone()));
+    }
+
+    /** 
+     * @description: 停止检测控件悬停
+     */
+    public stopDetectWidgetOnHover() {
+        this._bvhTree.reset();
+        this._widgetNodes.clear();
+        this._debugImgs.forEach(img => img.destroyObject());
+        this._debugImgs = [];
+        TimeUtil.clearInterval(this._detectingWidgetOnHoverTimer);
     }
 }
 
