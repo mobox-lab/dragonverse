@@ -56,7 +56,7 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
             }
         }
 
-        let rewards = GameConfig.Task.getElement(taskId).reward;
+        let rewards = GameConfig.Task.getElement(taskId).reward ?? [];
 
         const reward = rewards[
             GToolkit.randomWeight(
@@ -65,7 +65,7 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
                     .select(reward => reward[reward.length - 1] ?? 0)
                     .toArray(),
             )];
-
+        if (!reward) return;
         for (let i = 0; i < reward.length - 1; i += 2) {
             let bagId = reward[i];
             let count = reward[i + 1];
