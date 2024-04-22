@@ -545,15 +545,22 @@ export default class MainPanel extends MainPanel_Generate {
      */
     public setCanSprint(canSprint: boolean) {
         if (canSprint) {
-            KeyOperationManager.getInstance().onKeyDown(mw.Keys.RightMouseButton, this, () => {
+            KeyOperationManager.getInstance().onKeyDown(mw.Keys.LeftShift, this, () => {
                 this.roleController?.trySprint(true);
             });
-            KeyOperationManager.getInstance().onKeyUp(mw.Keys.RightMouseButton, this, () => {
+            KeyOperationManager.getInstance().onKeyUp(mw.Keys.LeftShift, this, () => {
+                this.roleController?.trySprint(false);
+            });
+            KeyOperationManager.getInstance().onKeyDown(mw.Keys.RightShift, this, () => {
+                this.roleController?.trySprint(true);
+            });
+            KeyOperationManager.getInstance().onKeyUp(mw.Keys.RightShift, this, () => {
                 this.roleController?.trySprint(false);
             });
         } else {
             this.roleController?.trySprint(false);
-            KeyOperationManager.getInstance().unregisterKey(this, Keys.RightMouseButton);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.LeftShift);
+            KeyOperationManager.getInstance().unregisterKey(this, Keys.RightShift);
         }
     }
 

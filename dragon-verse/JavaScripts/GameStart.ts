@@ -36,6 +36,7 @@ import GlobalProperty from "./GlobalProperty";
 import ObbyModuleData, { ObbyModuleC, ObbyModuleS } from "./module/obby/ObbyModule";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
 import PlayerSettingModuleData, { PlayerSettingModuleC, PlayerSettingModuleS } from "./module/player-setting/PlayerSettingModule";
+import KeyOperationManager from "./controller/key-operation-manager/KeyOperationManager";
 
 @Component
 export default class GameStart extends mw.Script {
@@ -189,7 +190,28 @@ export default class GameStart extends mw.Script {
 
         ChatService.asyncEnableChatWindow(false);
 
-        InputUtil.mouseLockOptionEnabled = true;
+        InputUtil.mouseLockOptionEnabled = false;
+        InputUtil.isLockMouse = true;
+
+        KeyOperationManager.getInstance().onKeyDown(Keys.LeftAlt, null, () => {
+            Log4Ts.log(GameStart, `alt key down`);
+            InputUtil.isLockMouse = false;
+        });
+
+        KeyOperationManager.getInstance().onKeyUp(Keys.LeftAlt, null, () => {
+            Log4Ts.log(GameStart, `alt key up`);
+            InputUtil.isLockMouse = true;
+        });
+
+        KeyOperationManager.getInstance().onKeyDown(Keys.RightAlt, null, () => {
+            Log4Ts.log(GameStart, `alt key down`);
+            InputUtil.isLockMouse = false;
+        });
+
+        KeyOperationManager.getInstance().onKeyUp(Keys.RightAlt, null, () => {
+            Log4Ts.log(GameStart, `alt key up`);
+            InputUtil.isLockMouse = true;
+        });
     }
 
     private initializeServer() {
