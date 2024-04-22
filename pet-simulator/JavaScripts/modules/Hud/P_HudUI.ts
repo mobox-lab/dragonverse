@@ -1,22 +1,22 @@
-﻿import { GlobalData } from "../../const/GlobalData";
+﻿import {GlobalData} from "../../const/GlobalData";
 import GMHUD_Generate from "../../ui-generate/common/GM/GMHUD_generate";
 import Hud_Generate from "../../ui-generate/hud/Hud_generate";
-import { cubicBezier } from "../../util/MoveUtil";
-import { utils } from "../../util/uitls";
-import { P_SummerCoin } from "../DollMachine/P_DollMachine";
-import { EnergyModuleC } from "../Energy/EnergyModule";
+import {cubicBezier} from "../../util/MoveUtil";
+import {utils} from "../../util/uitls";
+import {P_SummerCoin} from "../DollMachine/P_DollMachine";
+import {EnergyModuleC} from "../Energy/EnergyModule";
 
-import { Yoact } from "../../depend/yoact/Yoact";
+import {Yoact} from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
 import ModuleService = mwext.ModuleService;
-import { AuthModuleC } from "../auth/AuthModule";
+import {AuthModuleC} from "../auth/AuthModule";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import MessageBox from "../../util/MessageBox";
-import { GameConfig } from "../../config/GameConfig";
-import { TipsManager } from "./P_TipUI";
+import {GameConfig} from "../../config/GameConfig";
+import {TipsManager} from "./P_TipUI";
 import BuffEnergyTips_Generate from "../../ui-generate/common/BuffEnergyTips_generate";
 import GToolkit from "../../util/GToolkit";
-import { JumpGamePanel } from "../../ui/JumpGamePanel";
+import {JumpGamePanel} from "../../ui/JumpGamePanel";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -138,18 +138,18 @@ export class P_HudUI extends Hud_Generate {
         });
         this.jumpRoomBtn.onClicked.add(() => {
             UIService.show(JumpGamePanel);
-        })
+        });
 
-        KeyOperationManager.getInstance().onKeyPress(Keys.W, this, () => {
+        KeyOperationManager.getInstance().onKeyPress(this, Keys.W, () => {
             this.changeVelocityX(1);
         });
-        KeyOperationManager.getInstance().onKeyPress(Keys.S, this, () => {
+        KeyOperationManager.getInstance().onKeyPress(this, Keys.S, () => {
             this.changeVelocityX(-1);
         });
-        KeyOperationManager.getInstance().onKeyPress(Keys.A, this, () => {
+        KeyOperationManager.getInstance().onKeyPress(this, Keys.A, () => {
             this.changeVelocityY(-1);
         });
-        KeyOperationManager.getInstance().onKeyPress(Keys.D, this, () => {
+        KeyOperationManager.getInstance().onKeyPress(this, Keys.D, () => {
             this.changeVelocityY(1);
         });
 
@@ -169,7 +169,7 @@ export class P_HudUI extends Hud_Generate {
                 UIService.hideUI(ui);
                 KeyOperationManager.getInstance().unregisterKey(null, Keys.Escape);
             });
-            KeyOperationManager.getInstance().onKeyUp(Keys.Escape, null, () => {
+            KeyOperationManager.getInstance().onKeyUp(null, Keys.Escape, () => {
                 UIService.hideUI(ui);
                 KeyOperationManager.getInstance().unregisterKey(null, Keys.Escape);
             });
@@ -227,7 +227,7 @@ export class P_HudUI extends Hud_Generate {
         let startAngle = GlobalData.TweenFastTranBtn.startAngle;
         let endAngle = GlobalData.TweenFastTranBtn.endAngle;
         let time = GlobalData.TweenFastTranBtn.tweenTime;
-        this.leftToRightTween = new mw.Tween({ angle: startAngle }).to({ angle: endAngle }, time * 1000)
+        this.leftToRightTween = new mw.Tween({angle: startAngle}).to({angle: endAngle}, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -237,7 +237,7 @@ export class P_HudUI extends Hud_Generate {
                 }
             })
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
-        this.rightToLeftTween = new mw.Tween({ angle: endAngle }).to({ angle: startAngle }, time * 1000)
+        this.rightToLeftTween = new mw.Tween({angle: endAngle}).to({angle: startAngle}, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })

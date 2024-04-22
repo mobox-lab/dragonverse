@@ -1,14 +1,14 @@
 import HistoryRecord_Generate from "../../ui-generate/Trade/HistoryRecord_generate";
 import TradeHistory_Generate from "../../ui-generate/Trade/TradeHistory_generate";
-import { stringToNumberArr, utils } from "../../util/uitls";
-import { petItemDataNew } from "../PetBag/PetBagModuleData";
-import { tradeRecord } from "./TradingModuleData";
-import { stringToPet } from "./TradingModuleS";
-import { petInfo } from "./TradingScript";
-import { GameConfig } from "../../config/GameConfig";
-import { TipsManager } from "../Hud/P_TipUI";
-import { PetBagItem } from "../PetBag/P_Bag";
-import { PetBag_Item } from "../PetBag/P_BagItem";
+import {stringToNumberArr, utils} from "../../util/uitls";
+import {petItemDataNew} from "../PetBag/PetBagModuleData";
+import {tradeRecord} from "./TradingModuleData";
+import {stringToPet} from "./TradingModuleS";
+import {petInfo} from "./TradingScript";
+import {GameConfig} from "../../config/GameConfig";
+import {TipsManager} from "../Hud/P_TipUI";
+import {PetBagItem} from "../PetBag/P_Bag";
+import {PetBag_Item} from "../PetBag/P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 
@@ -26,7 +26,7 @@ export class P_historyRecord extends HistoryRecord_Generate {
         });
         this.mBtn_Back.onClicked.add(() => {
             this.hide();
-        })
+        });
 
     }
 
@@ -59,32 +59,31 @@ export class P_historyRecord extends HistoryRecord_Generate {
         let senderGem = data[1];
         let receiverID = data[2];
         let receiveGem = data[3];
-        let nameArr = item.n.split(',');
+        let nameArr = item.n.split(",");
 
         if (myId == senderID) {
             panel.setMyCanvasItem(stringToPet(item.s));
             panel.setMyGem(senderGem);
-            panel.setOtherGem(receiveGem)
-            panel.setOtherName(nameArr[1])
+            panel.setOtherGem(receiveGem);
+            panel.setOtherName(nameArr[1]);
             panel.setOtherCanvasItem(stringToPet(item.r));
-        }
-        else {
+        } else {
             panel.setMyCanvasItem(stringToPet(item.r));
             panel.setMyGem(receiveGem);
-            panel.setOtherGem(senderGem)
-            panel.setOtherName(nameArr[0])
+            panel.setOtherGem(senderGem);
+            panel.setOtherName(nameArr[0]);
             panel.setOtherCanvasItem(stringToPet(item.s));
         }
         panel.show();
     }
 
     private comment(is: boolean, data: tradeRecord) {
-        this.onCommentAC.call(is, data)
+        this.onCommentAC.call(is, data);
     }
 
     public show(...param: any[]): void {
         super.show(...param);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
         });
     }
@@ -116,28 +115,30 @@ class HisToryItem {
         });
         this.goodBtn.onClicked.add(() => {
             if (this.data.c != "" || !this.isinit) {
-                TipsManager.instance.showTip(GameConfig.Language.Text_messagebox_19.Value)
+                TipsManager.instance.showTip(GameConfig.Language.Text_messagebox_19.Value);
                 return;
             }
             this.isinit = false;
             this.onComment.call(true, data);
             this.goodBtn.normalImageGuid = "179452";
-        })
+        });
         this.badBtn.onClicked.add(() => {
             if (data.c != "" || !this.isinit) {
-                TipsManager.instance.showTip(GameConfig.Language.Text_messagebox_19.Value)
+                TipsManager.instance.showTip(GameConfig.Language.Text_messagebox_19.Value);
                 return;
             }
             this.isinit = false;
             this.onComment.call(false, data);
             this.badBtn.normalImageGuid = "179452";
-        })
+        });
 
         this.setBtnState();
         this.setHistoryText();
         this.setTime();
     }
+
     private isinit: boolean = false;
+
     /**设置评价按钮状态 */
     private setBtnState() {
         if (this.data.c == "0") {
@@ -149,6 +150,7 @@ class HisToryItem {
             this.isinit = true;
         }
     }
+
     private setBtnEnable(isEnable: boolean) {
         this.goodBtn.enable = isEnable;
         this.badBtn.enable = isEnable;
@@ -165,19 +167,20 @@ class HisToryItem {
         let senderGem = data[1];
         let receiverID = data[2];
         let receiveGem = data[3];
-        let nameArr = this.data.n.split(',');
+        let nameArr = this.data.n.split(",");
 
-        let sendPet = stringToPet(this.data.s)
-        let receiverPet = stringToPet(this.data.r)
+        let sendPet = stringToPet(this.data.s);
+        let receiverPet = stringToPet(this.data.r);
 
         if (senderID == myId) {
-            this.historyText.text = utils.Format(str, sendPet.length, senderGem, nameArr[1])
+            this.historyText.text = utils.Format(str, sendPet.length, senderGem, nameArr[1]);
         } else {
-            this.historyText.text = utils.Format(str, receiverPet.length, receiveGem, nameArr[0])
+            this.historyText.text = utils.Format(str, receiverPet.length, receiveGem, nameArr[0]);
         }
 
 
     }
+
     /**设置时间 */
     private setTime() {
         let str = this.data.t.toString()[0] + this.data.t.toString()[1] + this.data.t.toString()[2] + this.data.t.toString()[3] + "/" + this.data.t.toString()[4] + this.data.t.toString()[5] + "/" + this.data.t.toString()[6] + this.data.t.toString()[7];
@@ -204,7 +207,7 @@ export class P_HistoryTrade extends TradeHistory_Generate {
 
         this.itemOtherArr.forEach(element => {
             element.setVisible(mw.SlateVisibility.Collapsed);
-        })
+        });
 
         for (let i = 0; i < arr.length; i++) {
             const element = arr[i];
@@ -213,7 +216,7 @@ export class P_HistoryTrade extends TradeHistory_Generate {
             data.p.a = element.attack;
             data.p.n = "";
             item.init(data);
-            item.uiObject.size = item.rootCanvas.size
+            item.uiObject.size = item.rootCanvas.size;
             this.mCanvas_ReceivePet.addChild(item.uiObject);
 
             if (!this.itemOtherArr.includes(item)) {
@@ -233,7 +236,7 @@ export class P_HistoryTrade extends TradeHistory_Generate {
             data.p.a = element.attack;
             data.p.n = "";
             item.init(data);
-            item.uiObject.size = item.rootCanvas.size
+            item.uiObject.size = item.rootCanvas.size;
             this.mCanvas_SelectPet.addChild(item.uiObject);
         }
     }
@@ -241,9 +244,11 @@ export class P_HistoryTrade extends TradeHistory_Generate {
     public setMyGem(val: number) {
         this.mText_DMnum.text = val.toString();
     }
+
     public setOtherGem(val: number) {
         this.mText_ReceiveDM.text = val.toString();
     }
+
     /**设置其他人名字 */
     public setOtherName(name: string) {
         this.mText_UserName.text = utils.Format(GameConfig.Language.User_pet.Value, name);

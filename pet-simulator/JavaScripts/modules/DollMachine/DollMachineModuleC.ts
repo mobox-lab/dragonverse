@@ -109,7 +109,7 @@ class DollMachineC {
     }
 
     public setStartShortcutKey() {
-        KeyOperationManager.getInstance().onKeyUp(Keys.F, null, () => {
+        KeyOperationManager.getInstance().onKeyUp(null, Keys.F, () => {
             let distance = Vector.squaredDistance(Player.localPlayer.character.worldTransform.position, this._worldUIPos);
             if (distance < 270000) {
                 this.onClickStartBtnAction.call(this.id);

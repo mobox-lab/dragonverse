@@ -38,7 +38,7 @@ export class P_LevelUI extends LevelUI_Generate {
     }
 
     protected onShow(...params: any[]): void {
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
         });
     }

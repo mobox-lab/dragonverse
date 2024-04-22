@@ -1,18 +1,16 @@
-
-import { GameConfig } from "../../config/GameConfig";
-import { IPetARRElement } from "../../config/PetARR";
-import { GlobalEnum } from "../../const/Enum";
-import { GlobalData } from "../../const/GlobalData";
+import {GameConfig} from "../../config/GameConfig";
+import {IPetARRElement} from "../../config/PetARR";
+import {GlobalEnum} from "../../const/Enum";
+import {GlobalData} from "../../const/GlobalData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import PetCollectItem_Generate from "../../ui-generate/Pet/PetCollectItem_generate";
 import PetCollectPanel_Generate from "../../ui-generate/Pet/PetCollectPanel_generate";
 import PetHover_Generate from "../../ui-generate/Pet/PetHover_generate";
-import { stringToBuff, utils } from "../../util/uitls";
-import { BagTool } from "../PetBag/BagTool";
-import { PetBagModuleData, petItemDataNew } from "../PetBag/PetBagModuleData";
-import { CollectModuleC } from "./CollectModuleC";
-import { IItemRender, List } from "./ScrollerView";
-
+import {stringToBuff, utils} from "../../util/uitls";
+import {BagTool} from "../PetBag/BagTool";
+import {PetBagModuleData, petItemDataNew} from "../PetBag/PetBagModuleData";
+import {CollectModuleC} from "./CollectModuleC";
+import {IItemRender, List} from "./ScrollerView";
 
 
 /**宠物item UI */
@@ -20,14 +18,17 @@ class petItem extends PetCollectItem_Generate implements IItemRender {
 
 
     index: number;
+
     setData(seq: string | number): void {
         let cfg = GameConfig.PetARR.getElement(seq as number);
         this.mPetImage.imageGuid = cfg.uiGuid;
         this.setSpecial(cfg);
     }
+
     setSelect(isSelect: boolean): void {
         throw new Error("Method not implemented.");
     }
+
     onclickSuccess: (idx: number) => void;
 
     /**特殊化 爱心彩虹 */
@@ -45,7 +46,7 @@ class petItem extends PetCollectItem_Generate implements IItemRender {
             //爱心化
             this.mPic_Heart.visibility = mw.SlateVisibility.SelfHitTestInvisible;
             this.mPic_Rainbow.visibility = mw.SlateVisibility.Collapsed;
-            return 1
+            return 1;
         }
 
 
@@ -53,7 +54,7 @@ class petItem extends PetCollectItem_Generate implements IItemRender {
             //彩虹化
             this.mPic_Heart.visibility = mw.SlateVisibility.Collapsed;
             this.mPic_Rainbow.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-            return 2
+            return 2;
         }
         return null;
 
@@ -77,7 +78,7 @@ export class P_Collect extends PetCollectPanel_Generate {
             this.collectMC.setCurAddLevel();
             this.switchState(false);
         });
-        this.list = new List(this.mScrollBox, this.mListCanvas, petItem)
+        this.list = new List(this.mScrollBox, this.mListCanvas, petItem);
 
     }
 
@@ -86,8 +87,7 @@ export class P_Collect extends PetCollectPanel_Generate {
         if (isShow) {
             this.mBtn_unlock.visibility = mw.SlateVisibility.Visible;
             this.mProgressCanvas.visibility = mw.SlateVisibility.Collapsed;
-        }
-        else {
+        } else {
             this.mBtn_unlock.visibility = mw.SlateVisibility.Collapsed;
             this.mProgressCanvas.visibility = mw.SlateVisibility.SelfHitTestInvisible;
         }
@@ -99,17 +99,18 @@ export class P_Collect extends PetCollectPanel_Generate {
         this.setCurHasCount(arr.length, level);
 
     }
+
     /**设置当前有个数 */
     public setCurHasCount(count: number, level: number) {
         this.mHasText.text = utils.Format(GameConfig.Language.Page_UI_Tips_3.Value, count);
         this.mbar_hp.currentValue = count / GlobalData.Collect.levelCount[level - 1];
-        this.setLevel(level)
+        this.setLevel(level);
     }
 
     protected onShow(...params: any[]): void {
         //this.playColorTween();
         utils.showUITween(this);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.mCloseBtn.onClicked.broadcast();
         });
     }
@@ -126,7 +127,7 @@ export class P_Collect extends PetCollectPanel_Generate {
 
     public setLevel(level: number) {
         if (level > GlobalData.Collect.levelCount.length)
-            this.mALLText.text = this.mHasText.text
+            this.mALLText.text = this.mHasText.text;
         else
             this.mALLText.text = utils.Format(GameConfig.Language.Page_UI_Tips_3.Value, GlobalData.Collect.levelCount[level - 1]);
         this.mText_level.text = utils.Format(GameConfig.Language.Page_UI_Tips_4.Value, level);
@@ -173,7 +174,7 @@ export class P_PetHover extends PetHover_Generate {
         let color = this.getSpecialColor(item.I);
         if (color != null) {
             this.mText_SpecialTips.text = cfg.Special;
-            this.mPic_SpecialTips.setImageColorByHex(color)
+            this.mPic_SpecialTips.setImageColorByHex(color);
             this.mText_SpecialTips.visibility = mw.SlateVisibility.Visible;
             this.mPic_SpecialTips.visibility = mw.SlateVisibility.Visible;
             this.isSpecialShow = true;
@@ -183,17 +184,17 @@ export class P_PetHover extends PetHover_Generate {
             this.isSpecialShow = false;
         }
 
-        let str = BagTool.getStr(item)
+        let str = BagTool.getStr(item);
         let buff = stringToBuff(str);
         switch (buff.length) {
             case 1:
                 this.setBuffText(this.getBuffText(buff[0]));
                 break;
             case 2:
-                this.setBuffText(this.getBuffText(buff[0]), this.getBuffText(buff[1]))
+                this.setBuffText(this.getBuffText(buff[0]), this.getBuffText(buff[1]));
                 break;
             case 3:
-                this.setBuffText(this.getBuffText(buff[0]), this.getBuffText(buff[1]), this.getBuffText(buff[2]))
+                this.setBuffText(this.getBuffText(buff[0]), this.getBuffText(buff[1]), this.getBuffText(buff[2]));
                 break;
             case 0:
                 this.setBuffText();
@@ -206,14 +207,15 @@ export class P_PetHover extends PetHover_Generate {
         if (item.p.n == null)
             this.mNiknameText.text = cfg.petName;
         else {
-            let data = DataCenterC.getData(PetBagModuleData).bagItemsByKey(item.k)
-            this.mNiknameText.text = '"' + data.p.n + '"';
+            let data = DataCenterC.getData(PetBagModuleData).bagItemsByKey(item.k);
+            this.mNiknameText.text = "\"" + data.p.n + "\"";
         }
     }
+
     /**获取描述 */
     public getBuffText(item: { id: number; level: number; }): string {
         let between = GlobalData.Enchant.normalEnchantId;
-        let cfg = GameConfig.Enchants.getElement(item.id)
+        let cfg = GameConfig.Enchants.getElement(item.id);
         let str: string;
 
         let name = cfg.Name;
@@ -231,17 +233,17 @@ export class P_PetHover extends PetHover_Generate {
 
     /**设置稀有度按钮颜色 */
     private setBtnColor(type: number) {
-        const quality = GlobalEnum.PetQuality
+        const quality = GlobalEnum.PetQuality;
         let colorArr = GlobalData.Bag.rareColor;
         let color: string;
         let str: string;
         switch (type) {
             case quality.Normal:
-                color = colorArr[0]
+                color = colorArr[0];
                 str = GameConfig.Language.PetARR_Quality_1.Value;
                 break;
             case quality.Rare:
-                color = colorArr[1]
+                color = colorArr[1];
                 str = GameConfig.Language.PetARR_Quality_2.Value;
                 break;
             case quality.Epic:
@@ -249,18 +251,18 @@ export class P_PetHover extends PetHover_Generate {
                 str = GameConfig.Language.PetARR_Quality_3.Value;
                 break;
             case quality.Legend:
-                color = colorArr[3]
+                color = colorArr[3];
                 str = GameConfig.Language.PetARR_Quality_4.Value;
                 break;
             case quality.Myth:
-                color = colorArr[4]
+                color = colorArr[4];
                 str = GameConfig.Language.PetARR_Quality_5.Value;
                 break;
             default:
-                color = colorArr[0]
+                color = colorArr[0];
                 break;
         }
-        this.mBackImage.setImageColorByHex(color)
+        this.mBackImage.setImageColorByHex(color);
         this.mQualityText.text = str;
     }
 
@@ -300,6 +302,7 @@ export class P_PetHover extends PetHover_Generate {
         this.mCanvas.size = new mw.Vector2(this.mCanvas.size.clone().x, width);
         this.mFrameImg.size = new mw.Vector2(this.mFrameImg.size.clone().x, width);
     }
+
     /**设置buff文本 */
     public setBuffText(buff_1: string = "", buff_2: string = "", buff_3: string = "") {
         let offY = 0; //Y偏移
@@ -381,6 +384,7 @@ export class P_PetHover extends PetHover_Generate {
 
         // }
     }
+
     private setUILoc(ui: mw.Widget, addX: number) {
         let curloc = ui.position.clone();
         ui.position = new mw.Vector2(curloc.x + addX, curloc.y);
@@ -391,15 +395,16 @@ export class P_PetHover extends PetHover_Generate {
         // this.map.set(this.mCanvas, [this.mCanvas.position.clone(), this.mCanvas.size.clone()])
         for (let i = 0; i < this.mCanvas.getChildrenCount(); i++) {
             const element = this.mCanvas.getChildAt(i);
-            this.map.set(element, [element.position.clone(), element.size.clone()])
+            this.map.set(element, [element.position.clone(), element.size.clone()]);
         }
     }
+
     /**恢复ui状态 */
     public recoverUIState() {
         this.map.forEach((val, key) => {
             key.position = val[0];
             key.size = val[1];
-        })
+        });
     }
 
     onHide() {

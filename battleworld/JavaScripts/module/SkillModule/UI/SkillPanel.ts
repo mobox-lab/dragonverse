@@ -205,7 +205,7 @@ export class SkillPanel extends SkillPanel_Generate {
         this.refresh_nodeList();
 
         EventManager.instance.call(EPlayerEvents_C.Player_RefreshSkillPoints);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hideUI(this);
         })
     }

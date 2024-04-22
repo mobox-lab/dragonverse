@@ -1,21 +1,20 @@
-﻿import { GameConfig } from "../../config/GameConfig";
-import { GlobalEnum } from "../../const/Enum";
-import { GlobalData } from "../../const/GlobalData";
+﻿import {GameConfig} from "../../config/GameConfig";
+import {GlobalEnum} from "../../const/Enum";
+import {GlobalData} from "../../const/GlobalData";
 import Fusepanel_Generate from "../../ui-generate/Fuse/Fusepanel_generate";
 import MessageBox from "../../util/MessageBox";
-import { utils } from "../../util/uitls";
+import {utils} from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
-import { PlayerModuleC } from "../Player/PlayerModuleC";
-import { PetBagItem } from "./P_Bag";
-import { PetBagModuleC } from "./PetBagModuleC";
-import { petItemDataNew } from "./PetBagModuleData";
+import {AnalyticsTool} from "../Analytics/AnalyticsTool";
+import {PlayerModuleC} from "../Player/PlayerModuleC";
+import {PetBagItem} from "./P_Bag";
+import {PetBagModuleC} from "./PetBagModuleC";
+import {petItemDataNew} from "./PetBagModuleData";
 
 
-
-
-import { PetBag_Item } from "./P_BagItem";
+import {PetBag_Item} from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+
 export class P_FusePanel extends Fusepanel_Generate {
     private achievementModuleC: AchievementModuleC = null;
 
@@ -29,10 +28,10 @@ export class P_FusePanel extends Fusepanel_Generate {
     onStart(): void {
         this.mBtn_Close.onClicked.add(() => {
             this.hide();
-        })
+        });
         this.mBtn_Fuse.onClicked.add(() => {
             this.onClickFuse();
-        })
+        });
         this.achievementModuleC = ModuleService.getModule(AchievementModuleC);
     }
 
@@ -48,16 +47,16 @@ export class P_FusePanel extends Fusepanel_Generate {
             this.mListCanvas.addChild(petItem.uiObject);
 
             petItem.init(item);
-            petItem.onHoverAC.clear()
+            petItem.onHoverAC.clear();
             if (petItem.getLockVis()) {
                 petItem.setLockVis(false);
             }
             this.petItems.push(petItem);
-        })
+        });
         this.curSelectPets.length = 0;
         this.changeCost();
         super.show(...param);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
         });
     }
@@ -122,7 +121,7 @@ export class P_FusePanel extends Fusepanel_Generate {
             } else {
                 super.show();
             }
-        })
+        });
     }
 
     /**合成宠物 */
@@ -152,7 +151,7 @@ export class P_FusePanel extends Fusepanel_Generate {
         let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
         let allPetIds: number[] = [];
         /**与最大攻击力差值 */
-        //获取ts最大整数数值
+            //获取ts最大整数数值
         let max = Number.MAX_VALUE;
         let allMaxAtkDiff = max;
         /**攻击力差值最小的宠物id */
@@ -181,7 +180,7 @@ export class P_FusePanel extends Fusepanel_Generate {
                     }
                 }
             }
-        })
+        });
         if (allPetIds.length == 0) {
             let minAtkDiffPetId = sameMinAtkDiffPetId == 0 ? allMinAtkDiffPetId : sameMinAtkDiffPetId;
             allPetIds.push(minAtkDiffPetId);
@@ -202,7 +201,7 @@ export class P_FusePanel extends Fusepanel_Generate {
             let wight = pet.PetAttack[0] * count;
             allPetAtk += wight;
             petAtkWeights.push(wight);
-        })
+        });
         let random = Math.random() * allPetAtk;
         let totalWeight = 0;
         for (let i = 0; i < petAtkWeights.length; i++) {
@@ -244,13 +243,15 @@ export class P_FusePanel extends Fusepanel_Generate {
         }
         return 2;
     }
+
     private _earliestObtainTime: number = 0;
+
     /**删除选中宠物 */
     private async delSelectPet() {
         let keys = [];
         this.curSelectPets.forEach(item => {
             keys.push(item.k);
-        })
+        });
 
         this._earliestObtainTime = this.curSelectPets[0].obtainTime;
         this.curSelectPets.forEach(item => {

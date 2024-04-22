@@ -1,14 +1,14 @@
-import { GameConfig } from "../../config/GameConfig";
-import { GlobalEnum } from "../../const/Enum";
-import { GlobalData } from "../../const/GlobalData";
+import {GameConfig} from "../../config/GameConfig";
+import {GlobalEnum} from "../../const/Enum";
+import {GlobalData} from "../../const/GlobalData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import PetGet_Generate from "../../ui-generate/Pet/PetGet_generate";
 import EggInfo_Generate from "../../ui-generate/WorldUI/EggInfo_generate";
 import EggInteract_Generate from "../../ui-generate/WorldUI/EggInteract_generate";
-import { cubicBezier } from "../../util/MoveUtil";
-import { Singleton } from "../../util/uitls";
-import { DollMachineModuleC } from "../DollMachine/DollMachineModuleC";
-import { P_HudUI } from "../Hud/P_HudUI";
+import {cubicBezier} from "../../util/MoveUtil";
+import {Singleton} from "../../util/uitls";
+import {DollMachineModuleC} from "../DollMachine/DollMachineModuleC";
+import {P_HudUI} from "../Hud/P_HudUI";
 
 
 /**蛋信息 UI */
@@ -20,7 +20,7 @@ export class EggInfo extends EggInfo_Generate {
     /**刷新ui */
     public refreshUI(cfgId: number, index: number) {
         let eggMachineCfg = GameConfig.EggMachine.getElement(cfgId);
-        let eggCfg = GameConfig.PetARR.getElement(eggMachineCfg.petArr[index])
+        let eggCfg = GameConfig.PetARR.getElement(eggMachineCfg.petArr[index]);
         this.id = eggCfg.id;
         this.setSpecial(eggCfg.id);
 
@@ -32,13 +32,14 @@ export class EggInfo extends EggInfo_Generate {
 
         this.mImage.imageGuid = eggCfg.uiGuid;
 
-        this.mText.fontColor = mw.LinearColor.colorHexToLinearColor(this.setQuality(eggCfg.id))
+        this.mText.fontColor = mw.LinearColor.colorHexToLinearColor(this.setQuality(eggCfg.id));
     }
 
 
     public setBackVis(isVis: boolean) {
-        this.mImage.setImageColorByHex(isVis ? GlobalData.EggMachine.unGetColor : "#FFFFFFFF")
+        this.mImage.setImageColorByHex(isVis ? GlobalData.EggMachine.unGetColor : "#FFFFFFFF");
     }
+
     /**特殊化 */
     private setSpecial(id: number) {
         const dev = GlobalEnum.PetDevType;
@@ -52,6 +53,7 @@ export class EggInfo extends EggInfo_Generate {
             this.mPic_Heart.visibility = mw.SlateVisibility.SelfHitTestInvisible;
         }
     }
+
     private setQuality(id: number) {
         let color = "";
         const quality = GlobalEnum.PetQuality;
@@ -65,8 +67,7 @@ export class EggInfo extends EggInfo_Generate {
             color = colors[1];
         } else if (type == quality.Epic) {
             color = colors[2];
-        }
-        else if (cfg.QualityType == quality.Legend) {//传说
+        } else if (cfg.QualityType == quality.Legend) {//传说
             color = colors[3];
         } else if (cfg.QualityType == quality.Myth) { //神话
             color = colors[4];
@@ -85,14 +86,18 @@ export class P_EggGet extends PetGet_Generate {
     onStart(): void {
         this.mCanvas.visibility = mw.SlateVisibility.Collapsed;
         let flashBezier = GlobalData.EggMachine.flashTweenBezier;
-        this.flashTween = new mw.Tween<{ alapr: number }>({ alapr: 1 }).to({ alapr: 0 }, GlobalData.EggMachine.flashTweenTime).onUpdate((obj) => {
+        this.flashTween = new mw.Tween<{
+            alapr: number
+        }>({alapr: 1}).to({alapr: 0}, GlobalData.EggMachine.flashTweenTime).onUpdate((obj) => {
             this.mPic_Flash.renderOpacity = obj.alapr;
         }).onComplete(() => {
             this.flashEnd();
         }).easing(cubicBezier(flashBezier[0], flashBezier[1], flashBezier[2], flashBezier[3]));
 
         let infoBezier = GlobalData.EggMachine.petInfoTweenBezier;
-        this.infoTween = new mw.Tween<{ scale: number }>({ scale: 0 }).to({ scale: 1 }, GlobalData.EggMachine.petInfoTweenTime).onUpdate((obj) => {
+        this.infoTween = new mw.Tween<{
+            scale: number
+        }>({scale: 0}).to({scale: 1}, GlobalData.EggMachine.petInfoTweenTime).onUpdate((obj) => {
             this.mCanvas.renderScale = new mw.Vector2(obj.scale, obj.scale);
         }).onComplete(() => {
             this.infoEnd();
@@ -129,8 +134,9 @@ export class P_EggGet extends PetGet_Generate {
     protected onShow(...params: any[]): void {
         this.flashTween.start();
     }
+
     private setBtnColor(type: number) {
-        const quality = GlobalEnum.PetQuality
+        const quality = GlobalEnum.PetQuality;
         let str: string;
         if (type == quality.Normal) {
             str = GameConfig.Language.PetARR_Quality_1.Value;
@@ -138,8 +144,7 @@ export class P_EggGet extends PetGet_Generate {
             str = GameConfig.Language.PetARR_Quality_2.Value;
         } else if (type == quality.Epic) {
             str = GameConfig.Language.PetARR_Quality_3.Value;
-        }
-        else if (type == quality.Legend) {//传说
+        } else if (type == quality.Legend) {//传说
             str = GameConfig.Language.PetARR_Quality_4.Value;
         } else if (type == quality.Myth) { //神话
             str = GameConfig.Language.PetARR_Quality_5.Value;
@@ -148,6 +153,7 @@ export class P_EggGet extends PetGet_Generate {
     }
 
 }
+
 @Singleton()
 export class InterBtn {
     public root: mw.UserWidgetPrefab = null;
@@ -179,7 +185,7 @@ export class InterBtn {
         this.root.visibility = (mw.SlateVisibility.SelfHitTestInvisible);
         //挂null上的key是全局的，先把娃娃机的取消掉
         KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
-        KeyOperationManager.getInstance().onKeyUp(Keys.F, null, () => {
+        KeyOperationManager.getInstance().onKeyUp(null, Keys.F, () => {
             this.callBack();
         });
 
@@ -189,6 +195,7 @@ export class InterBtn {
         let pos = mw.InputUtil.projectWorldPositionToWidgetPosition(this.obj.worldTransform.position, false).screenPosition;
         this.root.position = pos.subtract(this.root.size.multiply(0.5).add(this.offset));
     }
+
     private clear() {
         if (this.inter == null) return;
         TimeUtil.clearInterval(this.inter);

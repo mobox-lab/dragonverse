@@ -1,7 +1,7 @@
-import { GeneralManager, } from '../Modified027Editor/ModifiedStaticAPI';
-import { GameConfig } from "../config/GameConfig";
-import { GlobalData } from "../const/GlobalData";
-import KeyOperationManager from '../controller/key-operation-manager/KeyOperationManager';
+import {GeneralManager,} from "../Modified027Editor/ModifiedStaticAPI";
+import {GameConfig} from "../config/GameConfig";
+import {GlobalData} from "../const/GlobalData";
+import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 
 export class utils {
 
@@ -14,9 +14,9 @@ export class utils {
 
         posY = posY ? posY : mw.getViewportSize().y / 10;//视口大小
 
-        new mw.Tween({ y: posY })
+        new mw.Tween({y: posY})
 
-            .to({ y: 0 })
+            .to({y: 0})
 
             .duration(duration)
 
@@ -35,16 +35,18 @@ export class utils {
             .start()
 
             .onComplete(() => {
-                if (callBack) { callBack }
-            })
+                if (callBack) {
+                    callBack;
+                }
+            });
     }
 
     /**
-      * 随机获取指定范围内的整数
-      * @param Min 起始值
-      * @param Max 最大值
-      * @returns 随机整数[min, max]
-      */
+     * 随机获取指定范围内的整数
+     * @param Min 起始值
+     * @param Max 最大值
+     * @returns 随机整数[min, max]
+     */
     public static GetRandomNum(min: number, max: number): number {
         let Range = max - min;
         let Rand = Math.random();
@@ -58,7 +60,7 @@ export class utils {
                 child.setVisibility(isShow ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
             }
             this.showAllChildExcept(child, isShow, exceptName);
-        })
+        });
     }
 
     /**除了命名为"attack"，其他所有子节点加描边 */
@@ -69,7 +71,7 @@ export class utils {
                 GeneralManager.modifyaddOutlineEffect(child, pet.strokeColor, pet.strokeWidth, pet.strokeDepthBias, pet.strokeRange);
             }
             this.addOutlineExcept(child, isAdd, exceptName);
-        })
+        });
     }
 
     /**所有子节点设置裁剪距离 */
@@ -79,14 +81,14 @@ export class utils {
                 child.setCullDistance(distance);
             }
             this.setClipDistance(child, distance);
-        })
+        });
     }
 
     /**
-    * 获取Text表对应id多语言
-    * @param id 
-    * @returns 
-    */
+     * 获取Text表对应id多语言
+     * @param id
+     * @returns
+     */
     public static GetUIText(id: number): string {
         let textEle = GameConfig.Text.getElement(id);
         if (textEle == null) {
@@ -94,6 +96,7 @@ export class utils {
         }
         return textEle.Text;
     }
+
     public static Format(str: string, ...param: any[]) {
         if (param) {
             let i = 0;
@@ -152,6 +155,7 @@ export class utils {
         return cross % 2 == 1;  // 如果交点个数是奇数在多边形内。
 
     }
+
     /**检测一个点是否在长方体内*/
     public static check_pointInRectangle(point: mw.Vector, points: number[]): boolean {
         if (points.length < 3) {
@@ -179,6 +183,7 @@ export class utils {
         }
         return await mw.AssetUtil.asyncDownloadAsset(guid);
     }
+
     /**格式化描述为字符串 00:00:00 */
     public static formatTime(second: number): string {
         let t_sec = Math.floor(second % 60);
@@ -194,12 +199,14 @@ export class utils {
         }
         return leftTime + ":" + rightTime;
     }
+
     /**将number转换成时间 00:00*/
     public static parseTime(time: number): string {
         const minutes = Math.floor(time / 60);
         const seconds = time % 60;
-        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
     }
+
     /**关开BGM */
     public static setBGM(isPlay: boolean) {
         isPlay ? mw.SoundService.BGMVolumeScale = 1 : mw.SoundService.BGMVolumeScale = 0;
@@ -211,7 +218,7 @@ export class utils {
         let a = new Date();
         let str = TimeUtil.parseTime(a);
 
-        let strr = str.split(' ')[0].replace('-', '').replace('-', '');
+        let strr = str.split(" ")[0].replace("-", "").replace("-", "");
         return Number(strr);
     }
 
@@ -219,9 +226,10 @@ export class utils {
     public static getTodayHour(): number {
         let a = new Date();
         let str = TimeUtil.parseTime(a);
-        let strr = str.split(' ')[1].split(':')[0];
+        let strr = str.split(" ")[1].split(":")[0];
         return Number(strr);
     }
+
     /**设置物体可见性与碰撞 */
     public static setVisibilityAndCollider(go: mw.GameObject, status: boolean) {
         go.setVisibility(status ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
@@ -232,34 +240,39 @@ export class utils {
             } else if (element.getVisibility() && !status) {
                 element.setVisibility(mw.PropertyStatus.Off);
             }
-        })
+        });
     }
 
     public static GetCurMinute(): number {
         return Number((TimeUtil.time() / 60).toFixed(0));
     }
+
     public static GetCurSec(): number {
-        return TimeUtil.time()
+        return TimeUtil.time();
     }
+
     /**
-    * 返回当前时间（例 13：15）。
-    * @returns 
-    */
+     * 返回当前时间（例 13：15）。
+     * @returns
+     */
     public static getCurrentTime(): string {
         let date = new Date();
         return date.getHours() + ":" + date.getMinutes();
     }
+
     /**
-    * 今天是星期几
-    * @returns 
-    */
+     * 今天是星期几
+     * @returns
+     */
     public static getWhatDay(): string {
         let whatDay = "7123456".charAt(new Date().getDay());
         return whatDay;
-    }/**
+    }
+
+    /**
      * 返回上次登录是周几
-     * @param day 
-     * @returns 
+     * @param day
+     * @returns
      */
     public static getLastDay(day: number): string {
         let whatDay = "7123456".charAt(day);
@@ -268,9 +281,9 @@ export class utils {
 
     /**
      * 判断是否同一周
-     * @param date1 
-     * @param date2 
-     * @returns 
+     * @param date1
+     * @param date2
+     * @returns
      */
     public static iSameWeek(date1, date2): boolean {
         let dt1 = new Date();
@@ -307,14 +320,14 @@ export class utils {
             nNum = num / 1000;
             str = this.formatNumber2(nNum) + "k";
         } else {
-            str = num.toFixed(0)
+            str = num.toFixed(0);
         }
         return str;
     }
 
     /**保留小数点后两位 如果小数点后为0不保留 */
     public static formatNumber2(num: number): string {
-        return num.toFixed(2).replace(/\.?0+$/, '');
+        return num.toFixed(2).replace(/\.?0+$/, "");
     }
 
     /**数组中随机一个元素 */
@@ -334,9 +347,9 @@ export class utils {
             trigger.onEnter.add(other => {
                 if (other == Player.localPlayer.character) {
                     enterCB();
-                    KeyOperationManager.getInstance().onKeyDown(Keys.F, null, () => {
+                    KeyOperationManager.getInstance().onKeyDown(null, Keys.F, () => {
                         enterCB();
-                    })
+                    });
                 }
             });
             trigger.onLeave.add(other => {
@@ -345,7 +358,7 @@ export class utils {
                     KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
                 }
             });
-        })
+        });
     }
 
     /**刷新宠物id */
@@ -371,7 +384,7 @@ export class utils {
             PurchaseService.isPremiumMemberSupported((isSupport) => {
                 resovle(isSupport);
             });
-        })
+        });
     }
 
     public static isPremiumMember(): Promise<boolean> {
@@ -379,7 +392,7 @@ export class utils {
             PurchaseService.isPremiumMember((result) => {
                 resovle(result);
             });
-        })
+        });
     }
 }
 
@@ -390,7 +403,11 @@ export class ImgColorTween {
     private startSRBG2 = mw.LinearColor.colorHexToLinearColor("#111236"); //颜色3
     private endSRGB2 = mw.LinearColor.colorHexToLinearColor("#FF0055");
     private tween2: mw.Tween<{ x: number; y: number; z: number; }> = new mw.Tween
-        ({ x: this.startSRBG2.r, y: this.startSRBG2.g, z: this.startSRBG2.b }).to({ x: this.endSRGB2.r, y: this.endSRGB2.g, z: this.endSRGB2.b }, 800)
+    ({x: this.startSRBG2.r, y: this.startSRBG2.g, z: this.startSRBG2.b}).to({
+        x: this.endSRGB2.r,
+        y: this.endSRGB2.g,
+        z: this.endSRGB2.b
+    }, 800)
         .onUpdate((v) => {
             let sRGBColor: mw.LinearColor = mw.LinearColor.white;
             sRGBColor.r = Number((v.x));
@@ -403,7 +420,11 @@ export class ImgColorTween {
     private startSRBG1 = mw.LinearColor.colorHexToLinearColor("#E89839");  //颜色2
     private endSRGB1 = mw.LinearColor.colorHexToLinearColor("#111236");
     private tween1: mw.Tween<{ x: number; y: number; z: number; }> = new mw.Tween
-        ({ x: this.startSRBG1.r, y: this.startSRBG1.g, z: this.startSRBG1.b }).to({ x: this.endSRGB1.r, y: this.endSRGB1.g, z: this.endSRGB1.b }, 800)
+    ({x: this.startSRBG1.r, y: this.startSRBG1.g, z: this.startSRBG1.b}).to({
+        x: this.endSRGB1.r,
+        y: this.endSRGB1.g,
+        z: this.endSRGB1.b
+    }, 800)
         .onUpdate((v) => {
             let sRGBColor: mw.LinearColor = mw.LinearColor.white;
             sRGBColor.r = Number((v.x));
@@ -416,7 +437,11 @@ export class ImgColorTween {
     private startSRBG = mw.LinearColor.colorHexToLinearColor("#FF0055");  //颜色1
     private endSRGB = mw.LinearColor.colorHexToLinearColor("#E89839");
 
-    private tween = new mw.Tween({ x: this.startSRBG.r, y: this.startSRBG.g, z: this.startSRBG.b }).to({ x: this.endSRGB.r, y: this.endSRGB.g, z: this.endSRGB.b }, 800)
+    private tween = new mw.Tween({x: this.startSRBG.r, y: this.startSRBG.g, z: this.startSRBG.b}).to({
+        x: this.endSRGB.r,
+        y: this.endSRGB.g,
+        z: this.endSRGB.b
+    }, 800)
         .onUpdate((v) => {
             let sRGBColor: mw.LinearColor = mw.LinearColor.white;
             sRGBColor.r = Number((v.x));
@@ -438,8 +463,7 @@ export class ImgColorTween {
     public playColorTween(isPlay: boolean) {
         if (isPlay) {
             this.imgColorTween();
-        }
-        else {
+        } else {
             if (this.tween?.isPlaying())
                 this.tween.stop();
             if (this.tween1?.isPlaying())
@@ -454,6 +478,7 @@ export class ImgColorTween {
     }
 
 }
+
 export function tmonday(dtm): string {
     let dte = new Date(dtm);
     let day = dte.getDay();
@@ -462,7 +487,7 @@ export function tmonday(dtm): string {
         day = 7;
     }
     dte.setDate(dty - day + 1);
-    return dte.getFullYear() + '-' + dte.getMonth() + '-' + dte.getDate();
+    return dte.getFullYear() + "-" + dte.getMonth() + "-" + dte.getDate();
 }
 
 /**贝塞尔曲线 */
@@ -481,28 +506,31 @@ export class bezierCurve {
         }
         return pointArr;
     }
+
     public static vectorLerp(v1: mw.Vector | mw.Vector2, v2: mw.Vector | mw.Vector2, lerp: number): mw.Vector | mw.Vector2 {
         let x = 0;
         let y = 0;
         let z = null;
-        x = this.numLerp(v1.x, v2.x, lerp)
-        y = this.numLerp(v1.y, v2.y, lerp)
+        x = this.numLerp(v1.x, v2.x, lerp);
+        y = this.numLerp(v1.y, v2.y, lerp);
         if (v1 instanceof mw.Vector) {
-            z = this.numLerp((v1 as mw.Vector).z, (v2 as mw.Vector).z, lerp)
+            z = this.numLerp((v1 as mw.Vector).z, (v2 as mw.Vector).z, lerp);
         }
-        return z == null ? new mw.Vector2(x, y) : new mw.Vector(x, y, z)
+        return z == null ? new mw.Vector2(x, y) : new mw.Vector(x, y, z);
     }
+
     public static numLerp(a: number, b: number, lerp: number): number {
         if (lerp < 0)
-            lerp = 0
+            lerp = 0;
         if (lerp > 1)
-            lerp = 1
+            lerp = 1;
         return a + (b - a) * lerp;
     }
 }
 
 //单例的装饰器
 const SINGLETON_KEY = Symbol();
+
 export function Singleton() {
     return function (type: { new(), instance: any }) {
         const proxyType = new Proxy(type, {
@@ -519,7 +547,7 @@ export function Singleton() {
                 return target[SINGLETON_KEY];
             },
 
-        })
+        });
         Reflect.defineProperty(proxyType, "instance", {
             get() {
                 if (!this[SINGLETON_KEY]) {
@@ -530,16 +558,16 @@ export function Singleton() {
             set(next) {
                 this[SINGLETON_KEY] = next;
             }
-        })
-        return proxyType
-    }
+        });
+        return proxyType;
+    };
 }
 
 
 /**字符串转换为数字数组 */
 export function stringToNumberArr(str: string): number[] {
     let arr: number[] = [];
-    let strArr = str.split(',');
+    let strArr = str.split(",");
     for (let i = 0; i < strArr.length; i++) {
         const element = strArr[i];
         arr.push(Number(element));
@@ -549,13 +577,13 @@ export function stringToNumberArr(str: string): number[] {
 
 /**数字数组转换为字符串 */
 export function numberArrToString(arr: number[]): string {
-    let str = '';
+    let str = "";
     for (let i = 0; i < arr.length; i++) {
         const element = arr[i];
         if (i == 0) {
             str += element;
         } else {
-            str += ',' + element;
+            str += "," + element;
         }
     }
     return str;
@@ -563,7 +591,7 @@ export function numberArrToString(arr: number[]): string {
 
 /**把 词条转换为 id_level; */
 export function buffToString(id: number, level: number): string {
-    return id + "_" + level + ";"
+    return id + "_" + level + ";";
 }
 
 /**把 id_level; 转换为 词条 */
@@ -575,8 +603,8 @@ export function stringToBuff(str: string): { id: number, level: number }[] {
         let item = element.split("_");
         let id = Number(item[0]);
         let level = Number(item[1]);
-        buff.push({ id: id, level: level });
-    })
+        buff.push({id: id, level: level});
+    });
 
     return buff;
 }

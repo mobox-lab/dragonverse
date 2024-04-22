@@ -1,19 +1,20 @@
-﻿import { GameConfig } from "../../config/GameConfig";
-import { GlobalEnum } from "../../const/Enum";
-import { GlobalData } from "../../const/GlobalData";
+﻿import {GameConfig} from "../../config/GameConfig";
+import {GlobalEnum} from "../../const/Enum";
+import {GlobalData} from "../../const/GlobalData";
 import Dev_Generate from "../../ui-generate/Pet/Dev_generate";
 import MessageBox from "../../util/MessageBox";
-import { utils } from "../../util/uitls";
+import {utils} from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
-import { PlayerModuleC } from "../Player/PlayerModuleC";
-import { PetBagItem } from "./P_Bag";
-import { PetBagModuleC } from "./PetBagModuleC";
-import { petItemDataNew } from "./PetBagModuleData";
+import {AnalyticsTool} from "../Analytics/AnalyticsTool";
+import {PlayerModuleC} from "../Player/PlayerModuleC";
+import {PetBagItem} from "./P_Bag";
+import {PetBagModuleC} from "./PetBagModuleC";
+import {petItemDataNew} from "./PetBagModuleData";
 
 
-import { PetBag_Item } from "./P_BagItem";
+import {PetBag_Item} from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+
 export class P_Pet_Dev extends Dev_Generate {
     private achievementModuleC: AchievementModuleC = null;
     /**当前容器中的所有item */
@@ -34,10 +35,10 @@ export class P_Pet_Dev extends Dev_Generate {
     onStart(): void {
         this.mButton_Close.onClicked.add(() => {
             this.hide();
-        })
+        });
         this.mStaleButton_Ok.onClicked.add(() => {
             this.onClickDev();
-        })
+        });
         this.achievementModuleC = ModuleService.getModule(AchievementModuleC);
     }
 
@@ -119,16 +120,16 @@ export class P_Pet_Dev extends Dev_Generate {
 
             let petItem = PetBagItem.instance.UIPool.get();
             petItem.setClickFun(this.changeContainer.bind(this), this);
-            petItem.onHoverAC.clear()
+            petItem.onHoverAC.clear();
             this.mCanvas_List.addChild(petItem.uiObject);
 
             petItem.init(item);
             this.petItems.push(petItem);
-        })
+        });
         this.curCount = 0;
         this.changeCost(this.curCount, 0);
         super.show(...param);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
         });
     }
@@ -144,7 +145,7 @@ export class P_Pet_Dev extends Dev_Generate {
             this.curPetId = 0;
             this.curCount = 0;
             this.petItems.forEach(item => {
-                item.setVisible(mw.SlateVisibility.SelfHitTestInvisible)
+                item.setVisible(mw.SlateVisibility.SelfHitTestInvisible);
             });
         } else if (this.curCount == 1 && isEquip) {
             let maxCount = GlobalData.Dev.maxLevel;

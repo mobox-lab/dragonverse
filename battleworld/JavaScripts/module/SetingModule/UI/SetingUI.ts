@@ -66,7 +66,7 @@ export default class SetingUI extends Setting_Main_Generate {
         this.refresh_lockBtn();
         // 埋点
         AnalyticsTool.send_ts_page(EPageName.setting);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.onBack();
         })
 

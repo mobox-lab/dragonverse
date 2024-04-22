@@ -36,7 +36,7 @@ export class P_Game_Talk extends P_Game_Talk_Generate {
         this.registerButtonEvent();
     }
     onShow() {
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hideUI(this);
         })
     }

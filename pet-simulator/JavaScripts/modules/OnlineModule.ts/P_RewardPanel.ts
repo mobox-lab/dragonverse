@@ -1,12 +1,10 @@
-import { GameConfig } from "../../config/GameConfig";
-import { ITimeRewardElement } from "../../config/TimeReward";
+import {GameConfig} from "../../config/GameConfig";
+import {ITimeRewardElement} from "../../config/TimeReward";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import GiftItem_Generate from "../../ui-generate/Gift/GiftItem_generate";
 import GiftMain_Generate from "../../ui-generate/Gift/GiftMain_generate";
-import { utils } from "../../util/uitls";
-import { TipsManager } from "../Hud/P_TipUI";
-
-
+import {utils} from "../../util/uitls";
+import {TipsManager} from "../Hud/P_TipUI";
 
 
 export class P_RewardPanel extends GiftMain_Generate {
@@ -43,15 +41,16 @@ export class P_RewardPanel extends GiftMain_Generate {
         utils.showUITween(this);
         this.itemArr.forEach((item) => {
             item.setCount(true);
-        })
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.mBtn_Close.onClicked.broadcast();
         });
     }
+
     onHide() {
         this.itemArr.forEach((item) => {
             item.setCount(false);
-        })
+        });
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
@@ -67,7 +66,6 @@ export enum RewardState {
 }
 
 class RewardItem extends GiftItem_Generate {
-
 
 
     public onItemBtnAC: Action1<number> = new Action1();
@@ -103,14 +101,13 @@ class RewardItem extends GiftItem_Generate {
                 this.mText_Time.text = GameConfig.Language.Text_ItemUI_1.Value;
 
                 this.setRewardImgVis(true);
-            }
-            else if (this.curState == RewardState.rewarded) {
+            } else if (this.curState == RewardState.rewarded) {
                 TipsManager.instance.showTip(GameConfig.Language.Text_tips_5.Value);
             } else {
                 TipsManager.instance.showTip(GameConfig.Language.Text_tips_6.Value);
             }
 
-        })
+        });
     }
 
     public setRewardImgVis(isVis: boolean) {
@@ -144,7 +141,7 @@ class RewardItem extends GiftItem_Generate {
             if (this.curTime >= 0) {
                 this.curTime--;
                 if (this.isTime) {
-                    strTime = utils.parseTime(this.curTime)
+                    strTime = utils.parseTime(this.curTime);
                     this.mText_Time.text = (strTime);
                 }
 
@@ -157,12 +154,14 @@ class RewardItem extends GiftItem_Generate {
         }, 1);
 
     }
+
     private clearTimeInter() {
         if (this.timeInter) {
             TimeUtil.clearInterval(this.timeInter);
             this.timeInter = null;
         }
     }
+
     /**设置是否计时 */
     public setCount(isCount: boolean) {
         this.isTime = isCount;

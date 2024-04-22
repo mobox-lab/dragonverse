@@ -93,7 +93,7 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
             }
         }
 
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hide(SkillSelectPanel);
         })
     }

@@ -25,7 +25,7 @@ export class P_TaskShop extends TaskShop_Generate {
             this.init(taskShopData);
         }
         super.show(...param);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
         });
     }

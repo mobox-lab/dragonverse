@@ -1,14 +1,13 @@
-
-import { IAreaWorldElement } from "../../config/AreaWorld";
-import { GameConfig } from "../../config/GameConfig";
-import { GlobalEnum } from "../../const/Enum";
-import { GlobalData } from "../../const/GlobalData";
+import {IAreaWorldElement} from "../../config/AreaWorld";
+import {GameConfig} from "../../config/GameConfig";
+import {GlobalEnum} from "../../const/Enum";
+import {GlobalData} from "../../const/GlobalData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import TransmitMain_Generate from "../../ui-generate/Transmit/TransmitMain_generate";
 import WorldtipsUI_Generate from "../../ui-generate/WorldUI/WorldtipsUI_generate";
-import { cubicBezier } from "../../util/MoveUtil";
-import { utils } from "../../util/uitls";
-import { AreaModuleData } from "../AreaDivide/AreaModuleData";
+import {cubicBezier} from "../../util/MoveUtil";
+import {utils} from "../../util/uitls";
+import {AreaModuleData} from "../AreaDivide/AreaModuleData";
 
 /**传送ui */
 export class P_Transmit extends TransmitMain_Generate {
@@ -37,7 +36,7 @@ export class P_Transmit extends TransmitMain_Generate {
             this.isFirst = false;
         }
         utils.showUITween(this);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
         });
     }
@@ -53,6 +52,7 @@ export class P_Transmit extends TransmitMain_Generate {
             item.onBtnAC.add(this.worldBtnAC, this);
         }
     }
+
     //创建右边的关卡item
     private createPointItem(id: number) {
 
@@ -66,7 +66,7 @@ export class P_Transmit extends TransmitMain_Generate {
             let j = 0;
             for (j = 0; j < this.pointItems.length; j++) {  //更新旧的item
                 const element = this.pointItems[j];
-                let level = this.data.getAreaDataById(arr[j])
+                let level = this.data.getAreaDataById(arr[j]);
                 element.setLock(arr[j], level);
                 element.setItemVis(mw.SlateVisibility.SelfHitTestInvisible);
             }
@@ -77,8 +77,8 @@ export class P_Transmit extends TransmitMain_Generate {
                 this.pointItems.push(item);
                 this.mPointCanvas.addChild(ui);
 
-                let level = this.data.getAreaDataById(arr[j])
-                item.setLock(arr[j], level)
+                let level = this.data.getAreaDataById(arr[j]);
+                item.setLock(arr[j], level);
                 item.onBtnAC.add(this.pointBtnEvent.bind(this));
                 j++;
             }
@@ -87,7 +87,7 @@ export class P_Transmit extends TransmitMain_Generate {
             let i = 0;
             for (i = 0; i < arr.length; i++) {
                 const element = arr[i];
-                let level = this.data.getAreaDataById(arr[i])
+                let level = this.data.getAreaDataById(arr[i]);
                 this.pointItems[i].setLock(arr[i], level);
                 this.pointItems[i].setItemVis(mw.SlateVisibility.SelfHitTestInvisible);
             }
@@ -102,10 +102,12 @@ export class P_Transmit extends TransmitMain_Generate {
     private worldBtnAC(id: number) {
         this.createPointItem(id);
     }
+
     //点击右边的关卡item
     private pointBtnEvent(id: number, level: number) {
         this.onPointBtnAC.call(id, level);
     }
+
     /**解锁完毕更新ui样式 */
     public updateUI(id: number, level: number) {
         let ui = this.pointItems.find((item) => {
@@ -114,6 +116,7 @@ export class P_Transmit extends TransmitMain_Generate {
 
         ui?.setLock(id, level);
     }
+
     public hide(): void {
         super.hide();
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
@@ -124,7 +127,7 @@ export class P_Transmit extends TransmitMain_Generate {
 export class P_TransmitTips extends WorldtipsUI_Generate {
 
     public showWorld(worldType: GlobalEnum.World) {
-        let curText = this.getText(worldType)
+        let curText = this.getText(worldType);
         if (this.mText_Worldname.text == curText) {
             return;
         }
@@ -133,6 +136,7 @@ export class P_TransmitTips extends WorldtipsUI_Generate {
         this.tweenOpacity();
 
     }
+
     /**设置文本 */
     public getText(worldType: GlobalEnum.World) {
         let str: string = "";
@@ -159,7 +163,7 @@ export class P_TransmitTips extends WorldtipsUI_Generate {
     /**透明度tween */
     public tweenOpacity() {
         const bezier = GlobalData.TransferPoint.tipsTweenBezier;
-        let tween = new mw.Tween({ o: 0 }).to({ o: 1 }, GlobalData.TransferPoint.tipsTime * 1000)
+        let tween = new mw.Tween({o: 0}).to({o: 1}, GlobalData.TransferPoint.tipsTime * 1000)
             .onUpdate((value) => {
                 this.mText_Worldname.renderOpacity = value.o;
             }).onComplete((obj) => {
@@ -167,7 +171,6 @@ export class P_TransmitTips extends WorldtipsUI_Generate {
                 this.mText_Worldname.renderOpacity = 1;
             }).start().easing(cubicBezier(bezier[0], bezier[1], bezier[2], bezier[3])).yoyo(true).repeat(1);
     }
-
 
 
     protected onShow(...params: any[]): void {
@@ -200,7 +203,7 @@ class WorldItem {
 class PointItem {
     private btn: mw.StaleButton;
     private img: mw.Image;
-    private level: number
+    private level: number;
 
     public onBtnAC: Action2<number, number> = new Action2();
 
@@ -224,17 +227,17 @@ class PointItem {
             case 1:
                 this.img.imageGuid = GlobalData.TransferPoint.unLockIcon[0];
                 this.btn.text = GlobalData.TransferPoint.unLockName;
-                this.btn.normalImageGuid = GlobalData.TransferPoint.btnBgGuid[0]
+                this.btn.normalImageGuid = GlobalData.TransferPoint.btnBgGuid[0];
                 break;
             case 2:
                 this.img.imageGuid = GlobalData.TransferPoint.unLockIcon[1];
                 this.btn.text = cfg.Name;
-                this.btn.normalImageGuid = GlobalData.TransferPoint.btnBgGuid[1]
+                this.btn.normalImageGuid = GlobalData.TransferPoint.btnBgGuid[1];
                 break;
             case 3:
                 this.img.imageGuid = cfg.imgGuid;
                 this.btn.text = cfg.Name;
-                this.btn.normalImageGuid = GlobalData.TransferPoint.btnBgGuid[2]
+                this.btn.normalImageGuid = GlobalData.TransferPoint.btnBgGuid[2];
                 break;
             default:
                 break;

@@ -57,7 +57,7 @@ export default class BuyEnergyPanel extends BuyPanel_Generate {
             UIService.hideUI(this);
         });
 
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hideUI(this);
         });
     }

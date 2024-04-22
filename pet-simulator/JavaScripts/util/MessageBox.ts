@@ -108,7 +108,7 @@ export default class MessageBox extends MessageBox_Generate {
 
     public show(...param: any[]): void {
         super.show(...param);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, null, () => {
+        KeyOperationManager.getInstance().onKeyUp(null, Keys.Escape, () => {
             this.hide();
         });
     }
@@ -140,7 +140,7 @@ export class MessageOneBox extends TipsBox_Generate {
 
     public show(...param: any[]): void {
         super.show(...param);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, null, () => {
+        KeyOperationManager.getInstance().onKeyUp(null, Keys.Escape, () => {
             this.hide();
         });
     }

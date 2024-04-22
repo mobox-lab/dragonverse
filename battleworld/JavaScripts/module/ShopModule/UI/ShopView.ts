@@ -85,7 +85,7 @@ export class ShopView extends UIRole_Generate {
         this.refresh_all();
         // 埋点
         AnalyticsTool.send_ts_page(EPageName.shop);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hideUI(this);
 
         })

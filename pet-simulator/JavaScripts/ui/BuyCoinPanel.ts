@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : zewei.zhang
  * @Date         : 2024-01-24 17:39:11
  * @LastEditors  : zewei.zhang
@@ -7,13 +7,13 @@
  * @Description  : 商店界面
  */
 
-import { GameConfig } from "../config/GameConfig";
+import {GameConfig} from "../config/GameConfig";
 import BuyUI_Generate from "../ui-generate/Buy/BuyUI_generate";
 
 import MessageBox from "../util/MessageBox";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
-import { PlayerModuleC } from "../modules/Player/PlayerModuleC";
-import { TipsManager } from "../modules/Hud/P_TipUI";
+import {PlayerModuleC} from "../modules/Player/PlayerModuleC";
+import {TipsManager} from "../modules/Hud/P_TipUI";
 import Buyitem_Generate from "../ui-generate/Buy/Buyitem_generate";
 
 export default class BuyCoinPanel extends BuyUI_Generate {
@@ -40,15 +40,15 @@ export default class BuyCoinPanel extends BuyUI_Generate {
                 });
             });
             this.mCanvas_List.addChild(buyItem.uiObject);
-        })
+        });
 
         this.mBtn_close.onClicked.add(() => {
             this.hide();
-        })
+        });
 
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
-        })
+        });
     }
 
     protected onShow(...params: any[]): void {

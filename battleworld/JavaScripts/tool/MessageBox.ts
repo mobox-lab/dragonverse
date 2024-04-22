@@ -91,7 +91,7 @@ export class MessageBox extends MessageBox_Generate {
     }
 
     public show() {
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp( this, Keys.Escape, () => {
             this.resListener(false);
             mw.UIService.hideUI(this);
         });

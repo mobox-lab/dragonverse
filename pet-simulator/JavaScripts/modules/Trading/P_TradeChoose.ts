@@ -1,11 +1,10 @@
-
-import { GlobalData } from "../../const/GlobalData";
+import {GlobalData} from "../../const/GlobalData";
 import TradeChoose_Generate from "../../ui-generate/Trade/TradeChoose_generate";
-import { PlayerNameManager } from "./PlayerNameManager";
-import { GameConfig } from "../../config/GameConfig";
+import {PlayerNameManager} from "./PlayerNameManager";
+import {GameConfig} from "../../config/GameConfig";
 import MessageBox from "../../util/MessageBox";
-import { utils } from "../../util/uitls";
-import { GlobalEnum } from "../../const/Enum";
+import {utils} from "../../util/uitls";
+import {GlobalEnum} from "../../const/Enum";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 
@@ -19,6 +18,7 @@ class PlayerItem {
     private playerID: number;
 
     public onClick: Action1<number> = new Action1();
+
     // btn: mw.Button;
 
     constructor(public data: { id: number, state: GlobalEnum.TradingState }, private ui: mw.UserWidget) {
@@ -40,6 +40,7 @@ class PlayerItem {
     private async setPlayerName(playerID: number) {
         this.playerName.text = await PlayerNameManager.instance.getPlayerName(playerID);
     }
+
     /**设置玩家头像 */
     public setPlayerImg(petId: number) {
         let strongPetCfg = GameConfig.PetARR.getElement(petId);
@@ -55,13 +56,13 @@ class PlayerItem {
             // this.btn.enable = true;
         } else {
             if (state == GlobalEnum.TradingState.Reject) {
-                this.stateText.text = GameConfig.Language.button_4.Value
+                this.stateText.text = GameConfig.Language.button_4.Value;
             }
             if (state == GlobalEnum.TradingState.Cooling) {
-                this.stateText.text = GameConfig.Language.button_5.Value
+                this.stateText.text = GameConfig.Language.button_5.Value;
             }
             if (state == GlobalEnum.TradingState.Trading) {
-                this.stateText.text = GameConfig.Language.button_6.Value
+                this.stateText.text = GameConfig.Language.button_6.Value;
             }
             // this.btn.enable = false;
             this.sendImg.visibility = mw.SlateVisibility.Collapsed;
@@ -94,7 +95,9 @@ export class P_TradingChooseMain extends TradeChoose_Generate {
     private isOpenTrade: boolean = false;
 
     onStart() {
-        this.mBtn_Close.onClicked.add(() => { this.hide() })
+        this.mBtn_Close.onClicked.add(() => {
+            this.hide();
+        });
         this.mOpen_Btn.onClicked.add(this.onClickOpenBtn.bind(this));
     }
 
@@ -104,6 +107,7 @@ export class P_TradingChooseMain extends TradeChoose_Generate {
         this.mOpen_Btn.text = this.isOpenTrade ? GameConfig.Language.button_7.Value : GameConfig.Language.button_8.Value;
         this.mOpen_Btn.setNormalImageColorByHex(this.isOpenTrade ? GlobalData.Trading.openColor[0] : GlobalData.Trading.openColor[1]);
     }
+
     public setCanvasItem(arr: { id: number, state: GlobalEnum.TradingState, petId: number }[]) {
 
         if (arr.length >= this.itemArr.length) { //如果新的数组长度大于旧的数组长度，就添加新的item
@@ -161,7 +165,7 @@ export class P_TradingChooseMain extends TradeChoose_Generate {
                 } else {
                     return;
                 }
-            })
+            });
         } else {
             this.isOpenTrade = !this.isOpenTrade;
             this.initTradeBtn(this.isOpenTrade);
@@ -173,10 +177,11 @@ export class P_TradingChooseMain extends TradeChoose_Generate {
 
     protected onShow(...params: any[]): void {
         utils.showUITween(this);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
         });
     }
+
     public hide(): void {
         super.hide();
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);

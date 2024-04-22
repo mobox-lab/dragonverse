@@ -1,17 +1,16 @@
-
-import { UIPool } from "../../Tools/UIPool";
-import { GameConfig } from "../../config/GameConfig";
-import { GlobalData } from "../../const/GlobalData";
+import {UIPool} from "../../Tools/UIPool";
+import {GameConfig} from "../../config/GameConfig";
+import {GlobalData} from "../../const/GlobalData";
 import BagEmpty_Generate from "../../ui-generate/Pet/BagEmpty_generate";
 import PetBagPanel_Generate from "../../ui-generate/Pet/PetBagPanel_generate";
 import ReName_Generate from "../../ui-generate/Pet/ReName_generate";
 import MessageBox from "../../util/MessageBox";
-import { Singleton, stringToBuff, utils } from "../../util/uitls";
-import { AnalyticsTool, ButtonAnaly, Page } from "../Analytics/AnalyticsTool";
-import { P_PetHover } from "../PetCollect/P_Collect";
-import { PetBagModuleData, petItemDataNew, } from "./PetBagModuleData";
+import {Singleton, stringToBuff, utils} from "../../util/uitls";
+import {AnalyticsTool, ButtonAnaly, Page} from "../Analytics/AnalyticsTool";
+import {P_PetHover} from "../PetCollect/P_Collect";
+import {PetBagModuleData, petItemDataNew,} from "./PetBagModuleData";
 
-import { PetBag_Item } from "./P_BagItem";
+import {PetBag_Item} from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 
@@ -58,11 +57,11 @@ export class P_Bag extends PetBagPanel_Generate {
             this.setDelUI();
         });
         this.mSureDelBtn.onClicked.add(() => {
-            this.sureDel()
+            this.sureDel();
         });
         this.mSureDelBtn_Cancel.onClicked.add(() => {
             this.cancelDel();
-        })
+        });
         this.mEquipBtn.onClicked.add(() => {
             this.autoEquip();
         });
@@ -70,7 +69,7 @@ export class P_Bag extends PetBagPanel_Generate {
         this.itemBackArr = new UIPool<BagEmpty_Generate>();
         this.itemBackArr.setCreator(() => {
             let item = mw.UIService.create(BagEmpty_Generate);
-            item.uiObject.size = item.rootCanvas.size
+            item.uiObject.size = item.rootCanvas.size;
             return item;
         });
 
@@ -167,7 +166,7 @@ export class P_Bag extends PetBagPanel_Generate {
                 // 位置变动
                 if (dataCount != itemUI.count) {
                     // 播放平移动画
-                    itemUI.itemMoveTween(itemUI.count, dataCount, equipChange)
+                    itemUI.itemMoveTween(itemUI.count, dataCount, equipChange);
                 }
                 // 位置未变动
                 else {
@@ -302,20 +301,18 @@ export class P_Bag extends PetBagPanel_Generate {
     }
 
 
-
-
     /**ui提示显隐动画 */
     public tipsTween(keys: number[]) {
         keys.forEach((key) => {
 
             let item = this.itemArr.find((item) => {
-                return item.petData.k == key
+                return item.petData.k == key;
             });
             if (item) {
                 item.tipsTween();
                 this.itemTweenArr.push(item);
             }
-        })
+        });
     }
 
     /**创建背包空item */
@@ -375,6 +372,7 @@ export class P_Bag extends PetBagPanel_Generate {
         }
 
     }
+
     /**判断是否装备满了 */
     private isEquipFull(): boolean {
         if (this.data.CurPetFollowCount >= this.data.MaxFollowCount) {
@@ -426,7 +424,7 @@ export class P_Bag extends PetBagPanel_Generate {
             this.mEquip.visibility = mw.SlateVisibility.Collapsed;
             this.mEquipImg.visibility = mw.SlateVisibility.Collapsed;
         } else {
-            this.mDelBtn.normalImageGuid = "174835"
+            this.mDelBtn.normalImageGuid = "174835";
             this.mSureDelBtn_Cancel.visibility = mw.SlateVisibility.Collapsed;
             if (this.mSureDelBtn.visible)
                 this.mSureDelBtn.visibility = mw.SlateVisibility.Collapsed;
@@ -437,12 +435,14 @@ export class P_Bag extends PetBagPanel_Generate {
         }
 
     }
+
     /**设置取消按钮样式 */
     private setCancelBtn() {
         this.mDelBtn.normalImageGuid = "174991";
         this.mSureDelBtn_Cancel.visibility = mw.SlateVisibility.Visible;
         this.mSureDelBtn.visibility = mw.SlateVisibility.Collapsed;
     }
+
     /**设置删除按钮样式 */
     private setDelBtn() {
         this.mSureDelBtn_Cancel.visibility = mw.SlateVisibility.Collapsed;
@@ -464,6 +464,7 @@ export class P_Bag extends PetBagPanel_Generate {
             this.hide();
         });
     }
+
     /**取消按钮*/
     public cancelDel() {
         this.setDelUI();
@@ -476,11 +477,12 @@ export class P_Bag extends PetBagPanel_Generate {
             this.delArr.length = 0;
         }
         utils.showUITween(this);
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
         });
 
     }
+
     protected onHide(): void {
         console.log("OnHide");
 
@@ -499,7 +501,7 @@ export class P_Bag extends PetBagPanel_Generate {
                 } catch (error) {
                 }
             }
-        })
+        });
         PetBagItem.instance.UIPool.resetAll();
         this.itemTweenArr.length = 0;
 
@@ -507,17 +509,17 @@ export class P_Bag extends PetBagPanel_Generate {
 
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
+
     /**悬浮UI */
     private showHoverUI(isShow: boolean, item: PetBag_Item) {
         if (isShow) {
             let pos = item.uiObject.position;
-            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x, pos.y + this.mCanvas.position.y)
+            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x, pos.y + this.mCanvas.position.y);
             mw.UIService.getUI(P_PetHover).setPetInfoShow(item.petData, loc);
         } else {
             mw.UIService.getUI(P_PetHover).hide();
         }
     }
-
 
 
     /**设置装备按钮样式 */
@@ -528,6 +530,7 @@ export class P_Bag extends PetBagPanel_Generate {
             this.mEquip.text = GameConfig.Language.button_2.Value;
         }
     }
+
     private autoEquip() {
         if (this.mEquip.text == GameConfig.Language.button_1.Value) {
 
@@ -555,7 +558,7 @@ export class P_Bag extends PetBagPanel_Generate {
                 arr.push(element);
             }
             if (arr.length > 0) {
-                this.onEquipAC.call(false, arr)
+                this.onEquipAC.call(false, arr);
             }
         }
     }
@@ -578,14 +581,19 @@ export class P_Bag extends PetBagPanel_Generate {
 
 
     }
+
     /**是否包含 */
     private isIncludeKey(arr: petItemDataNew[], keys: number[]) {
         if (arr.length == 0) return false;
         if (arr.length == keys.length) return true;
 
         arr.sort((a, b) => {
-            let index_1 = this.data.CurFollowPets.findIndex((value) => { return value == a.k });
-            let index_2 = this.data.CurFollowPets.findIndex((value) => { return value == b.k });
+            let index_1 = this.data.CurFollowPets.findIndex((value) => {
+                return value == a.k;
+            });
+            let index_2 = this.data.CurFollowPets.findIndex((value) => {
+                return value == b.k;
+            });
             if (index_1 > 0) {
                 index_1 = 0;
             }
@@ -593,7 +601,7 @@ export class P_Bag extends PetBagPanel_Generate {
                 index_2 = 0;
             }
             return index_2 - index_1;
-        })
+        });
         let isHas = true;
         let len = arr.length >= this.data.MaxFollowCount ? this.data.MaxFollowCount : arr.length;
         for (let i = 0; i < len; i++) {
@@ -634,13 +642,15 @@ export class P_Bag extends PetBagPanel_Generate {
 export class PetBagItem {
     public static instance: PetBagItem;
     private uiPool: UIPool<PetBag_Item> = new UIPool();
+
     constructor() {
         this.uiPool.setCreator(() => {
             let item = mw.UIService.create(PetBag_Item);
-            item.uiObject.size = item.rootCanvas.size
+            item.uiObject.size = item.rootCanvas.size;
             return item;
-        })
+        });
     }
+
     public get UIPool() {
         return this.uiPool;
     }
@@ -684,7 +694,7 @@ class P_ReName extends ReName_Generate {
         this.item = item;
         let name = item.petData.p.n;
         if (!name) {
-            name = GameConfig.PetARR.getElement(item.petData.I).petName
+            name = GameConfig.PetARR.getElement(item.petData.I).petName;
         }
         this.mNameInputBox.text = name;
         this.preName = name;

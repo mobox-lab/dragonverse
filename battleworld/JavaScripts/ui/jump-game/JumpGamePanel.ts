@@ -24,7 +24,7 @@ export class JumpGamePanel extends JumpGamePanel_Generate {
         });
     }
     onShow() {
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hide(JumpGamePanel);
         })
     }

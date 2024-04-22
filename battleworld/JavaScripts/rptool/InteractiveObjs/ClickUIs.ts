@@ -148,7 +148,7 @@ class ClickUI {
         this.root.visibility = mw.SlateVisibility.SelfHitTestInvisible;
         this.isShow = true;
 
-        KeyOperationManager.getInstance().onKeyUp(Keys.F, null, () => {
+        KeyOperationManager.getInstance().onKeyUp(null, Keys.F, () => {
             this.callBack();
         });
     }

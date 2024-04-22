@@ -119,7 +119,7 @@ export class RankPanel extends Rank_main_Generate {
         //埋点
         AnalyticsTool.send_ts_page(EPageName.rank);
 
-        KeyOperationManager.getInstance().onKeyUp(Keys.Escape, this, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hideUI(this);
         })
     }

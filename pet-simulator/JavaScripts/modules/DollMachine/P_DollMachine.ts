@@ -2,8 +2,8 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import CoinUI_Generate from "../../ui-generate/Catching/CoinUI_generate";
 import ControlUI_Generate from "../../ui-generate/Catching/ControlUI_generate";
 import BuyCoinPanel from "../../ui/BuyCoinPanel";
-import { utils } from "../../util/uitls";
-import { DollMachineModuleC } from "./DollMachineModuleC";
+import {utils} from "../../util/uitls";
+import {DollMachineModuleC} from "./DollMachineModuleC";
 
 
 export enum MoveType {
@@ -23,66 +23,66 @@ export class P_DollMachine extends ControlUI_Generate {
         // 一号娃娃机
         this.mButton_Up.onPressed.add(() => {
             this.onMoveAc.call(MoveType.Up, true, this.machineId);
-        })
+        });
         this.mButton_Up.onReleased.add(() => {
             this.onMoveAc.call(MoveType.Up, false, this.machineId);
-        })
+        });
         this.mButton_Down.onReleased.add(() => {
             this.onMoveAc.call(MoveType.Up, false, this.machineId);
-        })
+        });
         this.mButton_Down.onPressed.add(() => {
             this.onMoveAc.call(MoveType.Down, true, this.machineId);
-        })
+        });
 
         this.mButton_Left.onPressed.add(() => {
             this.onMoveAc.call(MoveType.Left, true, this.machineId);
-        })
+        });
         this.mButton_Left.onReleased.add(() => {
             this.onMoveAc.call(MoveType.Left, false, this.machineId);
-        })
+        });
         this.mButton_Right.onPressed.add(() => {
             this.onMoveAc.call(MoveType.Right, true, this.machineId);
-        })
+        });
         this.mButton_Right.onReleased.add(() => {
             this.onMoveAc.call(MoveType.Right, false, this.machineId);
-        })
+        });
         this.mButton_Catch.onClicked.add(() => {
             this.catchAc.call(this.machineId);
-            console.log("MachineId = " + this.machineId)
-        })
+            console.log("MachineId = " + this.machineId);
+        });
 
         this.showAction.add(() => {
-            KeyOperationManager.getInstance().onKeyDown(Keys.Up, this, () => {
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.Up, () => {
                 this.onMoveAc.call(MoveType.Up, true, this.machineId);
             });
-            KeyOperationManager.getInstance().onKeyDown(Keys.Down, this, () => {
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.Down, () => {
                 this.onMoveAc.call(MoveType.Down, true, this.machineId);
             });
-            KeyOperationManager.getInstance().onKeyDown(Keys.Left, this, () => {
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.Left, () => {
                 this.onMoveAc.call(MoveType.Left, true, this.machineId);
             });
-            KeyOperationManager.getInstance().onKeyDown(Keys.Right, this, () => {
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.Right, () => {
                 this.onMoveAc.call(MoveType.Right, true, this.machineId);
             });
-            KeyOperationManager.getInstance().onKeyUp(Keys.Up, this, () => {
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.Up, () => {
                 this.onMoveAc.call(MoveType.Up, false, this.machineId);
             });
-            KeyOperationManager.getInstance().onKeyUp(Keys.Down, this, () => {
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.Down, () => {
                 this.onMoveAc.call(MoveType.Down, false, this.machineId);
             });
-            KeyOperationManager.getInstance().onKeyUp(Keys.Left, this, () => {
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.Left, () => {
                 this.onMoveAc.call(MoveType.Left, false, this.machineId);
             });
-            KeyOperationManager.getInstance().onKeyUp(Keys.Right, this, () => {
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.Right, () => {
                 this.onMoveAc.call(MoveType.Right, false, this.machineId);
             });
             //先把开始抓娃娃的f键取消注册
             KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
-            KeyOperationManager.getInstance().onKeyUp(Keys.F, this, () => {
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.F, () => {
                 this.catchAc.call(this.machineId);
                 console.log("MachineId = " + this.machineId);
             });
-        })
+        });
         this.hideAction.add(() => {
             KeyOperationManager.getInstance().unregisterKey(this, Keys.Up);
             KeyOperationManager.getInstance().unregisterKey(this, Keys.Down);
@@ -91,7 +91,7 @@ export class P_DollMachine extends ControlUI_Generate {
             KeyOperationManager.getInstance().unregisterKey(this, Keys.F);
             //结束了抓娃娃的f键注册上
             ModuleService.getModule(DollMachineModuleC).setDollMachineShortcutKey();
-        })
+        });
 
         this.skipBtn.onClicked.add(() => {
             ModuleService.getModule(DollMachineModuleC).skipPlay(this.machineId);
@@ -106,7 +106,7 @@ export class P_SummerCoin extends CoinUI_Generate {
     onStart() {
         this.mAdd_Btn.onClicked.add(() => {
             UIService.show(BuyCoinPanel);
-        })
+        });
     }
 
     public setValue(value: number) {
