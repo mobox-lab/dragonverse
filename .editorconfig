@@ -685,6 +685,9 @@ ij_powershell_while_on_new_line = false
 ij_powershell_wrap_first_method_in_call_chain = false
 ij_powershell_wrap_long_lines = false
 
+[{*.toml,Cargo.lock,Cargo.toml.orig,Gopkg.lock,Pipfile,poetry.lock}]
+ij_toml_keep_indents_on_empty_lines = false
+
 [{*.yaml,*.yml}]
 indent_size = 2
 ij_yaml_align_values_properties = do_not_align

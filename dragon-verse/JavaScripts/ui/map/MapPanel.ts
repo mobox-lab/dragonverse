@@ -11,13 +11,11 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import MainCurtainPanel from "../main/MainCurtainPanel";
 import GToolkit from "../../util/GToolkit";
 import BigMapPlayerArrow from "../main/BigMapPlayerArrowPanel";
-import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
+import {FlowTweenTask} from "../../depend/waterween/tweenTask/FlowTweenTask";
 import Waterween from "../../depend/waterween/Waterween";
-import Easing, { CubicBezier, CubicBezierBase } from "../../depend/easing/Easing";
+import Easing, {CubicBezier, CubicBezierBase} from "../../depend/easing/Easing";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import MWUpdateDelegate = UE.MWUpdateDelegate;
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
-import off = Puerts.off;
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 const sceneSize: mw.Vector2 = mw.Vector2.zero;
@@ -52,6 +50,7 @@ export class MapPanel extends MapPanel_Generate {
 
     protected onAwake(): void {
         super.onAwake();
+        this.canUpdate = true;
         sceneSize.set(
             GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.x - GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.x,
             GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS.y - GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS.y);
@@ -71,7 +70,7 @@ export class MapPanel extends MapPanel_Generate {
 
         this._mapPosTask = Waterween
             .flow(
-                () => ({ x: this.cnvMapMesh.position.x, y: this.cnvMapMesh.position.y }),
+                () => ({x: this.cnvMapMesh.position.x, y: this.cnvMapMesh.position.y}),
                 (val) => this.cnvMapMesh.position = this._mapPositionCache.set(val.x, val.y),
                 GameServiceConfig.MAP_ZOOM_DURATION,
                 new CubicBezier(0.2, 0, 0.8, 1),
@@ -135,6 +134,15 @@ export class MapPanel extends MapPanel_Generate {
             this.calculateMapPos();
         });
         this._updateDelegate.run();
+
+        for (let i = 0; i < 5; i++) {
+            const img = Image.newObject(this.cnvMapMesh);
+            img.size = new Vector2(50, 50);
+            img.position = new Vector2(Math.random() * 800, Math.random() * 900);
+            img.renderOpacity = 0.4;
+            this._imgs.push(img);
+        }
+
     }
 
     onShow() {
@@ -147,25 +155,32 @@ export class MapPanel extends MapPanel_Generate {
     }
 
     onUpdate() {
+        // KeyOperationManager.getInstance()["_hoverController"].drawTree();
     }
 
     private _imgs: Image[] = [];
+
     public showBigMap() {
         GToolkit.trySetVisibility(this.cnvMap, true);
         GToolkit.trySetVisibility(this.cnvMiniMap, false);
 
-        KeyOperationManager.getInstance().startDetectWidgetOnHover(this._imgs, (widgets: mw.Widget[]) => {
-            widgets.forEach(element => {
-                console.log(element.name);
+        this._imgs.forEach(element => {
+            KeyOperationManager.getInstance().onWidgetEntered(element, () => {
+                element.renderOpacity = 1;
             });
-        }, this.cnvMapHolder, true);
+            KeyOperationManager.getInstance().onWidgetLeave(element, () => {
+                element.renderOpacity = 0.4;
+            });
+        });
     }
 
     public showMiniMap() {
         GToolkit.trySetVisibility(this.cnvMap, false);
         GToolkit.trySetVisibility(this.cnvMiniMap, true);
-
-        KeyOperationManager.getInstance().stopDetectWidgetOnHover();
+        this._imgs.forEach(element => {
+            KeyOperationManager.getInstance().unregisterMouse(element);
+        });
+        // KeyOperationManager.getInstance().stopDetectWidgetOnHover();
     }
 
     private calculateMiniMapPos() {
