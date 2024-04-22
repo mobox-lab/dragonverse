@@ -1,10 +1,10 @@
 import MainCurtainPanel_Generate from "../../ui-generate/main/MainCurtainPanel_generate";
 import Waterween from "../../depend/waterween/Waterween";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
+import {FlowTweenTask} from "../../depend/waterween/tweenTask/FlowTweenTask";
 import Easing from "../../depend/easing/Easing";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import GToolkit, { Expression } from "../../util/GToolkit";
+import GToolkit, {Expression} from "../../util/GToolkit";
 import SlateVisibility = mw.SlateVisibility;
 
 export default class MainCurtainPanel extends MainCurtainPanel_Generate {
@@ -30,7 +30,6 @@ export default class MainCurtainPanel extends MainCurtainPanel_Generate {
             .flow(
                 () => this.cnvCurtain.renderOpacity,
                 (val) => {
-                    Log4Ts.log(MainCurtainPanel, `shown opa update val: ${val}`);
                     this.cnvCurtain.renderOpacity = val;
                 },
                 GameServiceConfig.MAIN_PANEL_CURTAIN_SHOWN_DURATION,
