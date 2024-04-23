@@ -2,8 +2,8 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-04-23 16:35:46
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-04-23 16:46:27
- * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\controller\MouseController.ts
+ * @LastEditTime : 2024-04-23 17:54:47
+ * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\controller\MouseLockController.ts
  * @Description  : 鼠标锁定管理器
  */
 
@@ -37,6 +37,6 @@ export class MouseLockController {
             InputUtil.isLockMouse = true;
         }
         KeyOperationManager.getInstance().unregisterKey(null, Keys.LeftAlt);
-        KeyOperationManager.getInstance().unregisterKey(null, Keys.LeftAlt);
+        KeyOperationManager.getInstance().unregisterKey(null, Keys.RightAlt);
     }
 }

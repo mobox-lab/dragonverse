@@ -36,6 +36,48 @@ export default class MapPanel_Generate extends UIScript {
 		}
 		return this.cnvMapMesh_Internal
 	}
+	private markCanvas_Internal: mw.Canvas
+	public get markCanvas(): mw.Canvas {
+		if(!this.markCanvas_Internal&&this.uiWidgetBase) {
+			this.markCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapMesh/markCanvas') as mw.Canvas
+		}
+		return this.markCanvas_Internal
+	}
+	private imgSymbol1_Internal: mw.Image
+	public get imgSymbol1(): mw.Image {
+		if(!this.imgSymbol1_Internal&&this.uiWidgetBase) {
+			this.imgSymbol1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapMesh/markCanvas/imgSymbol1') as mw.Image
+		}
+		return this.imgSymbol1_Internal
+	}
+	private imgSymbol2_Internal: mw.Image
+	public get imgSymbol2(): mw.Image {
+		if(!this.imgSymbol2_Internal&&this.uiWidgetBase) {
+			this.imgSymbol2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapMesh/markCanvas/imgSymbol2') as mw.Image
+		}
+		return this.imgSymbol2_Internal
+	}
+	private imgSymbol3_Internal: mw.Image
+	public get imgSymbol3(): mw.Image {
+		if(!this.imgSymbol3_Internal&&this.uiWidgetBase) {
+			this.imgSymbol3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapMesh/markCanvas/imgSymbol3') as mw.Image
+		}
+		return this.imgSymbol3_Internal
+	}
+	private imgSymbol4_Internal: mw.Image
+	public get imgSymbol4(): mw.Image {
+		if(!this.imgSymbol4_Internal&&this.uiWidgetBase) {
+			this.imgSymbol4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapMesh/markCanvas/imgSymbol4') as mw.Image
+		}
+		return this.imgSymbol4_Internal
+	}
+	private imgSymbol5_Internal: mw.Image
+	public get imgSymbol5(): mw.Image {
+		if(!this.imgSymbol5_Internal&&this.uiWidgetBase) {
+			this.imgSymbol5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapMesh/markCanvas/imgSymbol5') as mw.Image
+		}
+		return this.imgSymbol5_Internal
+	}
 	private cnvMapPlayerArrowContainer_Internal: mw.Canvas
 	public get cnvMapPlayerArrowContainer(): mw.Canvas {
 		if(!this.cnvMapPlayerArrowContainer_Internal&&this.uiWidgetBase) {

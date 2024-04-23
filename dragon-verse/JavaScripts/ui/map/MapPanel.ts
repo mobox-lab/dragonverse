@@ -18,6 +18,10 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
 import KeyOperationManager, { IKeyInteractive } from "../../controller/key-operation-manager/KeyOperationManager";
 import { MouseLockController } from "../../controller/MouseLockController";
+import tipLandMap_Generate from "../../ui-generate/map/tipLandMap_generate";
+import { GameConfig } from "../../config/GameConfig";
+import i18n from "../../language/i18n";
+import Gtk from "../../util/GToolkit";
 
 const sceneSize: mw.Vector2 = mw.Vector2.zero;
 
@@ -48,6 +52,8 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
     private _mapPositionCache: mw.Vector2 = mw.Vector2.zero;
 
     private _updateDelegate: MwBehaviorDelegate;
+
+    private _mapTips: tipLandMap_Generate[] = [];
 
     protected onAwake(): void {
         super.onAwake();
@@ -153,14 +159,16 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
         });
         this._updateDelegate.run();
 
-        for (let i = 0; i < 5; i++) {
-            const img = Image.newObject(this.cnvMapMesh);
-            img.size = new Vector2(50, 50);
-            img.position = new Vector2(Math.random() * 800, Math.random() * 900);
-            img.renderOpacity = 0.4;
-            this._imgs.push(img);
+        for (let i = 0; i < this.markCanvas.getChildrenCount(); i++) {
+            this._imgs.push(this.markCanvas.getChildAt(i) as Image);
         }
 
+        for (let i = 0; i < 3; i++) {
+            let ui = UIService.create(tipLandMap_Generate);
+            ui.uiObject.visibility = SlateVisibility.Hidden;
+            this._mapTips.push(ui);
+            this.rootCanvas.addChild(ui.uiObject);
+        }
     }
 
     onShow() {
@@ -192,11 +200,20 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
         this.btnMapClose.addKey(Keys.Escape);
 
         this._imgs.forEach(element => {
+            let usedTipsUI;
             KeyOperationManager.getInstance().onWidgetEntered(element, () => {
-                element.renderOpacity = 1;
+                for (let i = 0; i < 3; i++) {
+                    let ui = this._mapTips[i];
+                    if (ui.uiObject.visibility === SlateVisibility.SelfHitTestInvisible) continue;
+                    usedTipsUI = ui;
+                    ui.uiObject.visibility = SlateVisibility.SelfHitTestInvisible;
+                    ui.uiObject.position = Gtk.getUiResolvedPosition(element).add(new Vector2(50, 0));
+                    ui.textDescribe.text = i18n.lan(GameConfig.LandMark.findElement("uiName", element.name)?.description);
+                    break;
+                }
             });
             KeyOperationManager.getInstance().onWidgetLeave(element, () => {
-                element.renderOpacity = 0.4;
+                usedTipsUI.uiObject.visibility = SlateVisibility.Hidden;
             });
         });
 
@@ -211,7 +228,6 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
         this._imgs.forEach(element => {
             KeyOperationManager.getInstance().unregisterMouse(element);
         });
-        // KeyOperationManager.getInstance().stopDetectWidgetOnHover();
     }
 
     private calculateMiniMapPos() {
