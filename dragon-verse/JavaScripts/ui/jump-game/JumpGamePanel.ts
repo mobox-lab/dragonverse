@@ -31,10 +31,16 @@ export class JumpGamePanel extends JumpGamePanel_Generate {
         //     UIService.hide(JumpGamePanel);
         // });
 
-        this.codeButtonClose.addKey(Keys.Escape)
+        this.codeButtonClose.addKey(Keys.Escape);
+        InputUtil.isLockMouse = false;
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => { });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => { });
     }
 
     onHide() {
         // KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        InputUtil.isLockMouse = true;
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.LeftAlt);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.RightAlt);
     }
 }
