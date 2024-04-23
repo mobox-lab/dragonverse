@@ -85,7 +85,7 @@ export abstract class ATransactItem<T> {
     /**
      * 当前值.
      */
-    protected abstract get(): T;
+    public abstract get(): T;
 
     /**
      * 事务执行行为.
@@ -103,9 +103,10 @@ export abstract class ATransactItem<T> {
 
     /**
      * 待设值有效性.
+     * @desc 当未发生改动时 待设值为 null 因此无效.
      * @protected
      */
-    protected setValValid(): boolean {
+    public setValValid(): boolean {
         return this._setVal !== null;
     }
 }
