@@ -165,7 +165,8 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
 
         for (let i = 0; i < 3; i++) {
             let ui = UIService.create(tipLandMap_Generate);
-            ui.uiObject.visibility = SlateVisibility.Hidden;
+            ui.uiObject.visibility = SlateVisibility.SelfHitTestInvisible;
+            ui.uiObject.renderOpacity = 0;
             this._mapTips.push(ui);
             this.rootCanvas.addChild(ui.uiObject);
         }
@@ -200,20 +201,32 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
         this.btnMapClose.addKey(Keys.Escape);
 
         this._imgs.forEach(element => {
-            let usedTipsUI;
+            let usedTipsUI: tipLandMap_Generate;
             KeyOperationManager.getInstance().onWidgetEntered(element, () => {
                 for (let i = 0; i < 3; i++) {
                     let ui = this._mapTips[i];
-                    if (ui.uiObject.visibility === SlateVisibility.SelfHitTestInvisible) continue;
+                    if (ui.uiObject.renderOpacity > 0) continue;
                     usedTipsUI = ui;
-                    ui.uiObject.visibility = SlateVisibility.SelfHitTestInvisible;
+                    //之前可能有渐隐动画停了
+                    actions.tweens.stopAllByTarget(usedTipsUI.uiObject);
+                    actions.tween(usedTipsUI.uiObject)
+                        .set({ renderOpacity: 0 })
+                        .to(GameServiceConfig.MAP_PLAYER_DETAIL_SHOWN_DURATION, { renderOpacity: 1 })
+                        .union()
+                        .start();
                     ui.uiObject.position = Gtk.getUiResolvedPosition(element).add(new Vector2(50, 0));
                     ui.textDescribe.text = i18n.lan(GameConfig.LandMark.findElement("uiName", element.name)?.description);
                     break;
                 }
             });
             KeyOperationManager.getInstance().onWidgetLeave(element, () => {
-                usedTipsUI.uiObject.visibility = SlateVisibility.Hidden;
+                //先把之前的动画停了
+                actions.tweens.stopAllByTarget(usedTipsUI.uiObject);
+                actions.tween(usedTipsUI.uiObject)
+                    .set({ renderOpacity: 1 })
+                    .to(GameServiceConfig.MAP_PLAYER_DETAIL_SHOWN_DURATION, { renderOpacity: 0 })
+                    .union()
+                    .start();
             });
         });
 
