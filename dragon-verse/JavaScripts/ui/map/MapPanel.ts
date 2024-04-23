@@ -17,6 +17,7 @@ import Easing, { CubicBezier, CubicBezierBase } from "../../depend/easing/Easing
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
 import KeyOperationManager, { IKeyInteractive } from "../../controller/key-operation-manager/KeyOperationManager";
+import { MouseLockController } from "../../controller/MouseLockController";
 
 const sceneSize: mw.Vector2 = mw.Vector2.zero;
 
@@ -128,8 +129,6 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
         KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.A, () => { });
         KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.S, () => { });
         KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.D, () => { });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => { });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => { });
 
         KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.R, () => {
             this.cnvMapMesh.renderTransformPivot = new Vector2(0, 0);
@@ -188,7 +187,7 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
         GToolkit.trySetVisibility(this.cnvMap, true);
         GToolkit.trySetVisibility(this.cnvMiniMap, false);
 
-        InputUtil.isLockMouse = false;
+        MouseLockController.getInstance().needMouseUnlock();
 
         this.btnMapClose.addKey(Keys.Escape);
 
@@ -205,7 +204,8 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
 
 
     public showMiniMap() {
-        InputUtil.isLockMouse = true;
+        MouseLockController.getInstance().cancelMouseUnlock();
+
         GToolkit.trySetVisibility(this.cnvMap, false);
         GToolkit.trySetVisibility(this.cnvMiniMap, true);
         this._imgs.forEach(element => {

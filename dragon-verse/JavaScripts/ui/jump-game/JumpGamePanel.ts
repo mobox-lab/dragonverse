@@ -8,6 +8,7 @@
  */
 
 import { KeyboardManager } from "../../controller/KeyboardManager";
+import { MouseLockController } from "../../controller/MouseLockController";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { JumpRoomModuleC } from "../../module/jump-room/JumpRoomModule";
 import JumpGamePanel_Generate from "../../ui-generate/jumpGame/JumpGamePanel_generate";
@@ -32,15 +33,12 @@ export class JumpGamePanel extends JumpGamePanel_Generate {
         // });
 
         this.codeButtonClose.addKey(Keys.Escape);
-        InputUtil.isLockMouse = false;
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => { });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => { });
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
     onHide() {
         // KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
-        InputUtil.isLockMouse = true;
-        KeyOperationManager.getInstance().unregisterKey(this, Keys.LeftAlt);
-        KeyOperationManager.getInstance().unregisterKey(this, Keys.RightAlt);
+
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 }
