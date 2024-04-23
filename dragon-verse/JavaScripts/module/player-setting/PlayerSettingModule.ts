@@ -83,7 +83,7 @@ class MuteBgmVolumeTransactItem extends SettingItem<boolean> {
     }
 
     public get(): boolean {
-        return AudioController.getInstance().isPlayBgm;
+        return !AudioController.getInstance().isPlayBgm;
     }
 
     public reset(): this {
@@ -101,7 +101,7 @@ class MuteSoundEffectVolumeTransactItem extends SettingItem<boolean> {
     }
 
     public get(): boolean {
-        return AudioController.getInstance().isPlayEffect;
+        return !AudioController.getInstance().isPlayEffect;
     }
 
     public reset(): this {
@@ -186,7 +186,9 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
         //#region Member init
         this.set("language", this.data.language)
             .set("bgm-volume", this.data.bgmVolume)
+            .set("mute-bgm-volume", !!this.data.bgmVolume)
             .set("sound-effect-volume", this.data.soundEffectVolume)
+            .set("mute-sound-effect-volume", !!this.data.soundEffectVolume)
             .apply(false);
 
         Event.dispatchToLocal(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED);
@@ -262,12 +264,16 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
                 if (!item.setValValid()) continue;
                 switch ((item as SettingItem<unknown>).type) {
                     case "bgm-volume":
-                    case "mute-bgm-volume":
                         this.data.bgmVolume = item.setVal as number;
                         break;
+                    case "mute-bgm-volume":
+                        this.data.bgmVolume = (item.setVal as boolean) ? 0 : 1;
+                        break;
                     case "sound-effect-volume":
-                    case "mute-sound-effect-volume":
                         this.data.soundEffectVolume = item.setVal as number;
+                        break;
+                    case "mute-sound-effect-volume":
+                        this.data.soundEffectVolume = (item.setVal as boolean) ? 0 : 1;
                         break;
                     case "language":
                         this.data.language = item.setVal as LanguageTypes;

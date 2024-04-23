@@ -178,7 +178,8 @@ export default class MainPanel extends MainPanel_Generate {
 
         this.btnSound.onClicked.add(() => {
             this.btnSound.enable = false;
-            let res = SoundService.BGMVolumeScale === 0 && SoundService.volumeScale === 0;
+            //判断是否静音
+            let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
             this.btnSound.disableImageGuid = res ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
             res = !res;
             ModuleService.getModule(PlayerSettingModuleC).setMute(res);
@@ -389,7 +390,7 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     private updateMuteBtn() {
-        let res = SoundService.BGMVolumeScale === 0 && SoundService.volumeScale === 0;
+        let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
         if (res) {
             this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID;
         } else {
