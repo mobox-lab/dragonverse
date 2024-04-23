@@ -85,7 +85,7 @@ export abstract class ATransactItem<T> {
     /**
      * 当前值.
      */
-    protected abstract get(): T;
+    public abstract get(): T;
 
     /**
      * 事务执行行为.
