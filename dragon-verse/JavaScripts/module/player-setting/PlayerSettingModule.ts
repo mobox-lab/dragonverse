@@ -187,7 +187,7 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
         this.set("language", this.data.language)
             .set("bgm-volume", this.data.bgmVolume)
             .set("sound-effect-volume", this.data.soundEffectVolume)
-            .apply();
+            .apply(false);
 
         Event.dispatchToLocal(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -256,27 +256,31 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
     /**
      * 应用.
      */
-    public apply(): this {
-        for (const item of this._transact) {
-            switch ((item as SettingItem<unknown>).type) {
-                case "bgm-volume":
-                case "mute-bgm-volume":
-                    this.data.bgmVolume = item.setVal as number;
-                    break;
-                case "sound-effect-volume":
-                case "mute-sound-effect-volume":
-                    this.data.soundEffectVolume = item.setVal as number;
-                    break;
-                case "language":
-                    this.data.language = item.setVal as LanguageTypes;
-                    break;
-                default:
-                    Log4Ts.error(PlayerSettingModuleC, `unsupported setting item when save.`);
+    public apply(save: boolean = true): this {
+        if (save) {
+            for (const item of this._transact) {
+                if (!item.setValValid()) continue;
+                switch ((item as SettingItem<unknown>).type) {
+                    case "bgm-volume":
+                    case "mute-bgm-volume":
+                        this.data.bgmVolume = item.setVal as number;
+                        break;
+                    case "sound-effect-volume":
+                    case "mute-sound-effect-volume":
+                        this.data.soundEffectVolume = item.setVal as number;
+                        break;
+                    case "language":
+                        this.data.language = item.setVal as LanguageTypes;
+                        break;
+                    default:
+                        Log4Ts.error(PlayerSettingModuleC, `unsupported setting item when save.`);
+                }
             }
         }
 
+
         this._transact.commit();
-        this.saveData();
+        save && this.saveData();
         return this;
     }
 
