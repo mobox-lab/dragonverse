@@ -83,22 +83,26 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
             .btnMiniMap
             .onClicked
             .add(() => {
-                Event.dispatchToLocal(
-                    MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME,
-                    () => {
-                        this.showBigMap();
-                        Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
-                    });
+                // Event.dispatchToLocal(
+                //     MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME,
+                //     () => {
+                //         this.showBigMap();
+                //         Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
+                //     });
+                this.showBigMap();
             });
 
         this.btnMapClose
             .onClicked
-            .add(() => Event.dispatchToLocal(
-                MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME,
-                () => {
-                    this.showMiniMap();
-                    Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
-                }));
+            .add(() => {
+                // Event.dispatchToLocal(
+                //     MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME,
+                //     () => {
+                //         this.showMiniMap();
+                //         Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
+                //     })
+                this.showMiniMap();
+            });
 
         this.showMiniMap();
 
@@ -124,7 +128,8 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
         KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.A, () => { });
         KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.S, () => { });
         KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.D, () => { });
-
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => { });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => { });
 
         KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.R, () => {
             this.cnvMapMesh.renderTransformPivot = new Vector2(0, 0);
@@ -185,6 +190,8 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
 
         InputUtil.isLockMouse = false;
 
+        this.btnMapClose.addKey(Keys.Escape);
+
         this._imgs.forEach(element => {
             KeyOperationManager.getInstance().onWidgetEntered(element, () => {
                 element.renderOpacity = 1;
@@ -198,6 +205,7 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
 
 
     public showMiniMap() {
+        InputUtil.isLockMouse = true;
         GToolkit.trySetVisibility(this.cnvMap, false);
         GToolkit.trySetVisibility(this.cnvMiniMap, true);
         this._imgs.forEach(element => {
