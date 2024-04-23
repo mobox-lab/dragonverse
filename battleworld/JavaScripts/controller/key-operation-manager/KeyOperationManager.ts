@@ -1,8 +1,8 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GToolkit from "../../util/GToolkit";
-import Gtk, {GtkTypes, IRecyclable, Regulator, Singleton} from "../../util/GToolkit";
-import {KOMUtil} from "./extends/AABB";
-import {KeyOperationHoverController} from "./KeyOperationHoverController";
+import Gtk, { GtkTypes, IRecyclable, Regulator, Singleton } from "../../util/GToolkit";
+import { KOMUtil } from "./extends/AABB";
+import { KeyOperationHoverController } from "./KeyOperationHoverController";
 import EventListener = mw.EventListener;
 import Keys = mw.Keys;
 import getCurrentMousePosition = mw.getCurrentMousePosition;
@@ -38,7 +38,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
 
     private _mouseTestRegulator: Regulator = new Regulator(GtkTypes.Interval.Sensitive);
 
-//#region Builder Config
+    //#region Builder Config
 
     public get mouseTestInterval(): number {
         return this._mouseTestRegulator.updateInterval;
@@ -78,20 +78,20 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
         return this;
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     protected onConstruct(): void {
         super.onConstruct();
         mw.TimeUtil.onEnterFrame.add(() => {
-                const now = Date.now();
-                for (let guard of this._keyHoldMap.values()) {
-                    if (guard.lastTriggerTime === null) continue;
-                    const dt = now - guard.lastTriggerTime;
-                    if (dt < guard.threshold) continue;
-                    guard.call(dt);
-                    guard.lastTriggerTime = now;
-                }
-            },
+            const now = Date.now();
+            for (let guard of this._keyHoldMap.values()) {
+                if (guard.lastTriggerTime === null) continue;
+                const dt = now - guard.lastTriggerTime;
+                if (dt < guard.threshold) continue;
+                guard.call(dt);
+                guard.lastTriggerTime = now;
+            }
+        },
         );
 
         mw.TimeUtil.onEnterFrame.add((dt) => {
@@ -114,7 +114,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
         });
     }
 
-//#region Key Mouse Controller
+    //#region Key Mouse Controller
     /**
      * register {@link InputUtil.onKeyDown} for ui.
      * @param ui
@@ -128,10 +128,10 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
      *      true. 无论是否在最上层时都触发.
      */
     public onKeyDown(ui: KeyInteractiveUIScript,
-                     key: Keys,
-                     callback: NormalCallback,
-                     force: boolean = false,
-                     isAfterEffect: boolean = false): boolean {
+        key: Keys,
+        callback: NormalCallback,
+        force: boolean = false,
+        isAfterEffect: boolean = false): boolean {
         return this.registerKeyOperation(
             ui,
             key,
@@ -154,10 +154,10 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
      *      true. 无论是否在最上层时都触发.
      */
     public onKeyUp(ui: KeyInteractiveUIScript,
-                   key: Keys,
-                   callback: NormalCallback,
-                   force: boolean = false,
-                   isAfterEffect: boolean = false): boolean {
+        key: Keys,
+        callback: NormalCallback,
+        force: boolean = false,
+        isAfterEffect: boolean = false): boolean {
         return this.registerKeyOperation(
             ui,
             key,
@@ -181,11 +181,11 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
      *      true. 无论是否在最上层时都触发.
      */
     public onKeyPress(ui: KeyInteractiveUIScript,
-                      key: Keys,
-                      callback: DeltaTimeCallback,
-                      threshold: number = 0,
-                      force: boolean = false,
-                      isAfterEffect: boolean = false): boolean {
+        key: Keys,
+        callback: DeltaTimeCallback,
+        threshold: number = 0,
+        force: boolean = false,
+        isAfterEffect: boolean = false): boolean {
         return this.registerKeyOperation(
             ui,
             key,
@@ -193,7 +193,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
             callback,
             force,
             isAfterEffect,
-            {threshold: threshold});
+            { threshold: threshold });
     }
 
     /**
@@ -242,8 +242,8 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
      *      - undefined default. will unregister all operation type.
      */
     public unregisterKey(ui: KeyInteractiveUIScript,
-                         key: Keys = undefined,
-                         opType: OperationTypes = undefined) {
+        key: Keys = undefined,
+        opType: OperationTypes = undefined) {
         if (GToolkit.isNullOrUndefined(opType)) {
             this.unregisterKeyTransientOperation(ui, key, opType);
             this.unregisterKeyHoldOperation(ui, key);
@@ -302,9 +302,9 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
         }
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Debug
+    //#region Debug
 
     private _debugTimerId: number = undefined;
 
@@ -329,17 +329,17 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
         }
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Handler
+    //#region Handler
 
     private registerKeyOperation(ui: KeyInteractiveUIScript,
-                                 key: Keys,
-                                 opType: OperationTypes,
-                                 callback: AnyCallback,
-                                 force: boolean = false,
-                                 isAfterEffect: boolean = false,
-                                 options?: GuardOptions): boolean {
+        key: Keys,
+        opType: OperationTypes,
+        callback: AnyCallback,
+        force: boolean = false,
+        isAfterEffect: boolean = false,
+        options?: GuardOptions): boolean {
         let guard: AOperationGuard<unknown>;
         switch (opType) {
             case OperationTypes.OnKeyDown:
@@ -375,9 +375,9 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
     }
 
     private registerMouseOperation(opType: OperationTypes,
-                                   widget: mw.Widget,
-                                   callback: AnyCallback,
-                                   options?: MouseGuardOptions) {
+        widget: mw.Widget,
+        callback: AnyCallback,
+        options?: MouseGuardOptions) {
         let operation = this._mouseMap.get(widget.guid);
 
         if (Gtk.isNullOrUndefined(operation)) {
@@ -506,7 +506,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
             if (!curr) Log4Ts.log(KeyOperationManager, `curr widget not found ${widget.guid}`);
             else {
                 if ((curr.mouseMovementSpeedThreshold !== undefined &&
-                        now - this._lastUpdatedTime < curr.mouseMovementSpeedThreshold) ||
+                    now - this._lastUpdatedTime < curr.mouseMovementSpeedThreshold) ||
                     (curr.mouseMovementSpeedThreshold !== undefined &&
                         mouseMovementSpeedSqr > curr.mouseMovementSpeedThreshold)) {
                     return;
@@ -518,7 +518,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
         }
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 //#region Callback type
@@ -541,7 +541,7 @@ type AnyCallback = (p: unknown) => void;
 /**
  * 可选 key 按键可交互性接口.
  */
-interface IKeyInteractive {
+export interface IKeyInteractive {
     keyEnable?(): boolean;
 }
 
@@ -597,8 +597,8 @@ class KeyOperation<P> {
     public isAfterEffect: boolean;
 
     constructor(ui: KeyInteractiveUIScript,
-                callBack: (p?: P) => void,
-                isAfterEffect: boolean = false) {
+        callBack: (p?: P) => void,
+        isAfterEffect: boolean = false) {
         this.ui = ui;
         this.callBack = callBack;
         this.isAfterEffect = isAfterEffect;
@@ -631,7 +631,7 @@ class MouseOperation {
     hoverCallBack: (p: number) => void = undefined;
 
     constructor(widget: mw.Widget,
-                options?: MouseGuardOptions) {
+        options?: MouseGuardOptions) {
         this.widget = widget;
         this.mouseMovementSpeedThreshold = options?.mouseMovementSpeedThreshold;
         this.mouseTestInterval = options?.mouseTestInterval;
