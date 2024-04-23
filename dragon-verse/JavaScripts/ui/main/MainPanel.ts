@@ -170,18 +170,16 @@ export default class MainPanel extends MainPanel_Generate {
             ModuleService.getModule(ObbyModuleC).setInvincible();
         });
 
-        ModuleService.ready().then(() => {
-            let res = ModuleService.getModule(PlayerSettingModuleC).isMuted();
-            if (res) {
-                this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID;
-            } else {
-                this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
-            }
-            AudioController.getInstance().mute(res);
+        this.updateMuteBtn();
+        //接收一个事件
+        Event.addLocalListener(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED, () => {
+            this.updateMuteBtn();
         });
+
         this.btnSound.onClicked.add(() => {
             this.btnSound.enable = false;
-            let res = ModuleService.getModule(PlayerSettingModuleC).isMuted();
+            //判断是否静音
+            let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
             this.btnSound.disableImageGuid = res ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
             res = !res;
             ModuleService.getModule(PlayerSettingModuleC).setMute(res);
@@ -389,6 +387,16 @@ export default class MainPanel extends MainPanel_Generate {
         }));
         this._eventListeners.push(Event.addLocalListener(EventDefine.OnDragonQuestsComplete, this.onFinishSubTask));
         //#endregion ------------------------------------------------------------------------------------------
+    }
+
+    private updateMuteBtn() {
+        let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
+        if (res) {
+            this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID;
+        } else {
+            this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+        }
+        AudioController.getInstance().mute(res);
     }
 
     protected onUpdate() {
