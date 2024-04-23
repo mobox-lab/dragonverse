@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 1.0.8
+ * @version 31.1.0
  * UI: UI/main/MainPanel.ui
 */
 
@@ -288,12 +288,12 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnJumpGame_Internal
 	}
-	private switchRoomText_Internal: mw.TextBlock
-	public get switchRoomText(): mw.TextBlock {
-		if(!this.switchRoomText_Internal&&this.uiWidgetBase) {
-			this.switchRoomText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas/switchRoomText') as mw.TextBlock
+	private textRoom_Internal: mw.TextBlock
+	public get textRoom(): mw.TextBlock {
+		if(!this.textRoom_Internal&&this.uiWidgetBase) {
+			this.textRoom_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas/textRoom') as mw.TextBlock
 		}
-		return this.switchRoomText_Internal
+		return this.textRoom_Internal
 	}
 	private mapCanvas_Internal: mw.Canvas
 	public get mapCanvas(): mw.Canvas {
@@ -329,6 +329,13 @@ export default class MainPanel_Generate extends UIScript {
 			this.btnSound_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/soundCanvas/btnSound') as mw.StaleButton
 		}
 		return this.btnSound_Internal
+	}
+	private textSound_Internal: mw.TextBlock
+	public get textSound(): mw.TextBlock {
+		if(!this.textSound_Internal&&this.uiWidgetBase) {
+			this.textSound_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/soundCanvas/textSound') as mw.TextBlock
+		}
+		return this.textSound_Internal
 	}
 	private cnvInteract_Internal: mw.Canvas
 	public get cnvInteract(): mw.Canvas {
@@ -452,8 +459,22 @@ export default class MainPanel_Generate extends UIScript {
 
 
 
+	protected onStart() {
+    }
+
 	protected onAwake() {
+        // 强制实现其 以规避 show 自作主张的使用 .layer 覆写 onShow 的默认参数导致的接口设计哲学不统一.
+        this.layer = mw.UILayerMiddle;
 		this.initTextLan();
+	}
+
+    protected onUpdate(dt: number): void {
+	}
+
+	protected onShow(...args:unknown[]) {
+	}
+
+	protected onHide() {
 	}
 
     public destroy(): void {
@@ -510,10 +531,13 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.cost_1)
         
 	
-        this.initLanguage(this.switchRoomText)
+        this.initLanguage(this.textRoom)
         
 	
         this.initLanguage(this.textMap)
+        
+	
+        this.initLanguage(this.textSound)
         
 	
         this.initLanguage(this.txtContent)
@@ -590,10 +614,13 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.cost_1)
         
 	
-        this.unregisterLanKey(this.switchRoomText)
+        this.unregisterLanKey(this.textRoom)
         
 	
         this.unregisterLanKey(this.textMap)
+        
+	
+        this.unregisterLanKey(this.textSound)
         
 	
         this.unregisterLanKey(this.txtContent)
@@ -631,4 +658,3 @@ export default class MainPanel_Generate extends UIScript {
         unregisterFunc?.(ui);
     }
 }
- 

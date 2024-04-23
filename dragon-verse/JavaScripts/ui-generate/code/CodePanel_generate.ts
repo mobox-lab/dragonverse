@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 1.0.8
+ * @version 31.1.0
  * UI: UI/code/CodePanel.ui
 */
 
@@ -158,8 +158,22 @@ export default class CodePanel_Generate extends UIScript {
 
 
 
+	protected onStart() {
+    }
+
 	protected onAwake() {
+        // 强制实现其 以规避 show 自作主张的使用 .layer 覆写 onShow 的默认参数导致的接口设计哲学不统一.
+        this.layer = mw.UILayerMiddle;
 		this.initTextLan();
+	}
+
+    protected onUpdate(dt: number): void {
+	}
+
+	protected onShow(...args:unknown[]) {
+	}
+
+	protected onHide() {
 	}
 
     public destroy(): void {
@@ -253,4 +267,3 @@ export default class CodePanel_Generate extends UIScript {
         unregisterFunc?.(ui);
     }
 }
- 
