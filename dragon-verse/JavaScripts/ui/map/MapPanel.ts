@@ -11,19 +11,19 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import MainCurtainPanel from "../main/MainCurtainPanel";
 import GToolkit from "../../util/GToolkit";
 import BigMapPlayerArrow from "../main/BigMapPlayerArrowPanel";
-import {FlowTweenTask} from "../../depend/waterween/tweenTask/FlowTweenTask";
+import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
 import Waterween from "../../depend/waterween/Waterween";
-import Easing, {CubicBezier, CubicBezierBase} from "../../depend/easing/Easing";
+import Easing, { CubicBezier, CubicBezierBase } from "../../depend/easing/Easing";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
-import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import KeyOperationManager, { IKeyInteractive } from "../../controller/key-operation-manager/KeyOperationManager";
 
 const sceneSize: mw.Vector2 = mw.Vector2.zero;
 
 /**
  * 小地图 Panel.
  */
-export class MapPanel extends MapPanel_Generate {
+export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
 
     private _character: mw.Character;
 
@@ -70,7 +70,7 @@ export class MapPanel extends MapPanel_Generate {
 
         this._mapPosTask = Waterween
             .flow(
-                () => ({x: this.cnvMapMesh.position.x, y: this.cnvMapMesh.position.y}),
+                () => ({ x: this.cnvMapMesh.position.x, y: this.cnvMapMesh.position.y }),
                 (val) => this.cnvMapMesh.position = this._mapPositionCache.set(val.x, val.y),
                 GameServiceConfig.MAP_ZOOM_DURATION,
                 new CubicBezier(0.2, 0, 0.8, 1),
@@ -102,28 +102,42 @@ export class MapPanel extends MapPanel_Generate {
 
         this.showMiniMap();
 
-        InputUtil.onKeyDown(mw.Keys.MouseScrollUp, () => {
-            this.zoom(this.cnvMapMesh.renderScale.x + GameServiceConfig.MAP_ZOOM_PER_DIST, mw.getMousePositionOnPlatform());
+        KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.W, () => {
+            this.move(0, GameServiceConfig.MAP_MOVE_PER_DIST);
+            Log4Ts.log(MapPanel, `w`);
         });
-        InputUtil.onKeyDown(mw.Keys.MouseScrollDown, () => {
-            this.zoom(this.cnvMapMesh.renderScale.x - GameServiceConfig.MAP_ZOOM_PER_DIST, mw.getMousePositionOnPlatform());
+
+        KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.A, () => {
+            this.move(GameServiceConfig.MAP_MOVE_PER_DIST, 0);
+            Log4Ts.log(MapPanel, `A`);
         });
-        InputUtil.onKeyDown(mw.Keys.R, () => {
+
+        KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.S, () => {
+            this.move(0, -GameServiceConfig.MAP_MOVE_PER_DIST);
+        });
+
+        KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.D, () => {
+            this.move(-GameServiceConfig.MAP_MOVE_PER_DIST, 0);
+        });
+
+        KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.W, () => { });
+        KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.A, () => { });
+        KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.S, () => { });
+        KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.D, () => { });
+
+
+        KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.R, () => {
             this.cnvMapMesh.renderTransformPivot = new Vector2(0, 0);
             this.cnvMapMesh.renderScale = new Vector2(1, 1);
             this.cnvMapMesh.position = new Vector2(0, 0);
         });
-        InputUtil.onKeyDown(mw.Keys.W, () => {
-            this.move(0, GameServiceConfig.MAP_MOVE_PER_DIST);
+
+        KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.MouseScrollUp, () => {
+            this.zoom(this.cnvMapMesh.renderScale.x + GameServiceConfig.MAP_ZOOM_PER_DIST, mw.getMousePositionOnPlatform());
         });
-        InputUtil.onKeyDown(mw.Keys.A, () => {
-            this.move(GameServiceConfig.MAP_MOVE_PER_DIST, 0);
-        });
-        InputUtil.onKeyDown(mw.Keys.S, () => {
-            this.move(0, -GameServiceConfig.MAP_MOVE_PER_DIST);
-        });
-        InputUtil.onKeyDown(mw.Keys.D, () => {
-            this.move(-GameServiceConfig.MAP_MOVE_PER_DIST, 0);
+
+        KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.MouseScrollDown, () => {
+            this.zoom(this.cnvMapMesh.renderScale.x - GameServiceConfig.MAP_ZOOM_PER_DIST, mw.getMousePositionOnPlatform());
         });
 
         this._updateDelegate = GToolkit.addRootScript(MwBehaviorDelegate);
@@ -158,11 +172,18 @@ export class MapPanel extends MapPanel_Generate {
         // KeyOperationManager.getInstance()["_hoverController"].drawTree();
     }
 
+
+    keyEnable(): boolean {
+        return this.cnvMap.visible;
+    }
+
     private _imgs: Image[] = [];
 
     public showBigMap() {
         GToolkit.trySetVisibility(this.cnvMap, true);
         GToolkit.trySetVisibility(this.cnvMiniMap, false);
+
+        InputUtil.isLockMouse = false;
 
         this._imgs.forEach(element => {
             KeyOperationManager.getInstance().onWidgetEntered(element, () => {
@@ -172,7 +193,9 @@ export class MapPanel extends MapPanel_Generate {
                 element.renderOpacity = 0.4;
             });
         });
+
     }
+
 
     public showMiniMap() {
         GToolkit.trySetVisibility(this.cnvMap, false);

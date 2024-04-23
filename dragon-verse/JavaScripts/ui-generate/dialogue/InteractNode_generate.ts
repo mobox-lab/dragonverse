@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 1.0.8
+ * @version 31.1.0
  * UI: UI/dialogue/InteractNode.ui
 */
 
@@ -36,18 +36,25 @@ export default class InteractNode_Generate extends UIScript {
 		}
 		return this.txtContent_Internal
 	}
-	private imgPreview_Internal: mw.Image
-	public get imgPreview(): mw.Image {
-		if(!this.imgPreview_Internal&&this.uiWidgetBase) {
-			this.imgPreview_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgPreview') as mw.Image
-		}
-		return this.imgPreview_Internal
-	}
 
 
+
+	protected onStart() {
+    }
 
 	protected onAwake() {
+        // 强制实现其 以规避 show 自作主张的使用 .layer 覆写 onShow 的默认参数导致的接口设计哲学不统一.
+        this.layer = mw.UILayerMiddle;
 		this.initTextLan();
+	}
+
+    protected onUpdate(dt: number): void {
+	}
+
+	protected onShow(...args:unknown[]) {
+	}
+
+	protected onHide() {
 	}
 
     public destroy(): void {
@@ -93,4 +100,3 @@ export default class InteractNode_Generate extends UIScript {
         unregisterFunc?.(ui);
     }
 }
- 

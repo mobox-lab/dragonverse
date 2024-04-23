@@ -30,6 +30,7 @@ import { ObbyModuleC } from "../../module/obby/ObbyModule";
 import { JumpGamePanel } from "../jump-game/JumpGamePanel";
 import AudioController from "../../controller/audio/AudioController";
 import { PlayerSettingModuleC } from "../../module/player-setting/PlayerSettingModule";
+import Nolan from "../../depend/nolan/Nolan";
 
 /**
  * 主界面.
@@ -67,6 +68,8 @@ export default class MainPanel extends MainPanel_Generate {
     private _promptPanel: GlobalPromptPanel;
 
     private _sceneDragonModule: SceneDragonModuleC = null;
+
+    private _nolan: Nolan;
 
     public get sceneDragonModule(): SceneDragonModuleC | null {
         if (!this._sceneDragonModule) {
@@ -187,19 +190,40 @@ export default class MainPanel extends MainPanel_Generate {
             this.btnSound.enable = true;
         });
 
+        this._nolan = Nolan.getInstance();
 
-        KeyOperationManager.getInstance().onKeyPress(this,Keys.W, () => {
+
+        KeyOperationManager.getInstance().onKeyPress(this, Keys.W, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(1);
         });
-        KeyOperationManager.getInstance().onKeyPress(this,Keys.S, () => {
+        KeyOperationManager.getInstance().onKeyPress(this, Keys.S, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(-1);
         });
-        KeyOperationManager.getInstance().onKeyPress(this,Keys.A, () => {
+        KeyOperationManager.getInstance().onKeyPress(this, Keys.A, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(-1);
         });
-        KeyOperationManager.getInstance().onKeyPress(this,Keys.D, () => {
+        KeyOperationManager.getInstance().onKeyPress(this, Keys.D, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityY(1);
         });
+        KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.MouseScrollUp, () => {
+            if (!this._nolan) {
+                Log4Ts.warn(MainPanel, `nolan not ready.`);
+                return;
+            }
+
+            const dist = Math.max(GameServiceConfig.CAMERA_ZOOM_MIN_DIST, this._nolan.armLength - GameServiceConfig.CAMERA_ZOOM_PER_DIST);
+            this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
+        });
+        KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.MouseScrollDown, () => {
+            if (!this._nolan) {
+                Log4Ts.warn(MainPanel, `nolan not ready.`);
+                return;
+            }
+
+            const dist = Math.min(GameServiceConfig.CAMERA_ZOOM_MAX_DIST, this._nolan.armLength + GameServiceConfig.CAMERA_ZOOM_PER_DIST);
+            this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
+        });
+
 
 
         this.setCanSprint(true);
