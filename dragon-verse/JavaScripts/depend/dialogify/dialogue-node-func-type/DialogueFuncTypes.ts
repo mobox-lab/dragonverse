@@ -1,3 +1,4 @@
+import NpcInteractionPanel from "../../../ui/npc-interaction/NpcInteractionPanel";
 import Log4Ts from "../../log4ts/Log4Ts";
 
 /**
@@ -8,6 +9,10 @@ export enum DialogueNodeFuncTypes {
      * 空置.
      */
     Null,
+    /**
+     * 交互动作
+     */
+    Action = 5,
     /**
      * 测试节点功能.
      */
@@ -20,6 +25,8 @@ export default function DialogueFuncFactory(type: DialogueNodeFuncTypes): Dialog
     switch (type) {
         case DialogueNodeFuncTypes.TestFunc:
             return testFunc;
+        case DialogueNodeFuncTypes.Action:
+            return showActionPanel;
         case DialogueNodeFuncTypes.Null:
         default:
             return normalDialogueFunc;
@@ -31,6 +38,9 @@ export function normalDialogueFunc() {
 }
 
 export function testFunc() {
-    Log4Ts.log({name: "DialogueFuncTypes"}, `test called.`);
+    Log4Ts.log({ name: "DialogueFuncTypes" }, `test called.`);
 }
 
+export function showActionPanel() {
+    UIService.show(NpcInteractionPanel);
+}

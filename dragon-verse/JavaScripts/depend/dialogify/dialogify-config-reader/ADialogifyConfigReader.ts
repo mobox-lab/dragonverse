@@ -1,5 +1,6 @@
 import GToolkit from "../../../util/GToolkit";
-import InteractPredicateFactory from "../interact-generator-type/InteractPredicateTypes";
+import InteractPredicateFactory from "../interact-generator-type/InteractGeneratorTypes";
+
 
 export interface IRelateEntityConfigElement {
     /**
@@ -151,6 +152,7 @@ export function isEntityIdValid(sourceId: number) {
  * @param config
  */
 export function getInteractNodes(config: IDialogueContentNodeConfigElement): number[] {
+    if (!config.interactPredNodeIds) return [];
     return config.interactPredNodeIds
         .filter((ip) => {
             if (ip.length === 0) return false;
