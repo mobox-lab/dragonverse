@@ -32,11 +32,10 @@ export default class DialoguePanelController extends ADialoguePanelController<
         for (let i = 0; i < this._panel.cnvOptions.getChildrenCount(); i++) {
             KeyOperationManager.getInstance().unregisterMouse(this._panel.cnvOptions.getChildAt(i));
         }
-        KeyOperationManager.getInstance().debug(false);
+
         this._panel.cnvOptions.removeAllChildren();
         if (GToolkit.isNullOrEmpty(options)) return;
 
-        KeyOperationManager.getInstance().debug(true);
         options.forEach((interactNodeId) => {
             const interactNode = this.configReader.getDialogueInteractNodeConfig(interactNodeId);
             if (!interactNode) return;
