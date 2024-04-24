@@ -4,8 +4,8 @@ import ADialogifyConfigReader, {
     IDialogueInteractNodeConfigElement,
     IRelateEntityConfigElement,
 } from "../dialogify-config-reader/ADialogifyConfigReader";
-import DialoguePanel_Generate from "../../../ui-generate/dialogue/DialoguePanel_generate";
-import InteractNode_Generate from "../../../ui-generate/dialogue/InteractNode_generate";
+import DialoguePanel_Generate from "../../../ui-generate/dialogify/DialoguePanel_generate";
+import InteractNode_Generate from "../../../ui-generate/dialogify/InteractNode_generate";
 
 export default class DialoguePanelController extends ADialoguePanelController<
     DialoguePanel_Generate,
@@ -20,7 +20,7 @@ export default class DialoguePanelController extends ADialoguePanelController<
         this.registerPanel(UIService.create(DialoguePanel_Generate));
     }
 
-    protected get interactorItemConstructor(): new () => InteractNode_Generate {
+    protected get interactorItemConstructor(): new() => InteractNode_Generate {
         return InteractNode_Generate;
     }
 }

@@ -2,9 +2,8 @@
 
 一个由 配置表 构建的树形对话系统。
 
-v1.0.1b  
-by LviatYi
-by zewei.zhang
+v1.0.2b  
+by LviatYi by zewei.zhang
 
 阅读该文档时，推荐安装以下字体：
 
@@ -43,21 +42,24 @@ by zewei.zhang
 
 **对话内容节点** 即对「话」的抽象。
 
-|         Name         | PropName            | Type   | Desc              |
-| :------------------: | :------------------ | ------ | ----------------- |
-|          ID          | Id                  | int    | 对话内容节点 Id   |
-|     下条内容 Id      | NextId              | int    | 子对话内容节点 Id |
-|         内容         | Content             | string |                   |
-|     来源实体 Id      | SourceId            | int    | 叙述实体 Id       |
-| 对话交互节点列表 Ids | InteractNodeIds     | int[]  |                   |
-|  对话交互构建器 Id   | interactGeneratorId | int    |                   |
+| Name | PropName | Type | Desc |
+| :-: | :-- | --- | --- |
+| ID | Id | int | 对话内容节点 Id |
+| 下条内容 Id | NextId | int | 子对话内容节点 Id |
+| 内容 | Content | string |  |
+| 来源实体 Id | SourceId | int | 叙述实体 Id |
+| 可及性对话交互节点 Ids | InteractPredNodeIds | int[][] | [对话交互节点 Id,交互条件 Id][] |
 
 - **sourceId** 可置空 运行时置空自动继承对话树中的上一个非主体叙述实体。
   - 即自动找到上一个非主角作为此节点的来源。
+- **可及性对话交互节点 Ids** 用于定义可及的对话交互节点列表。
+  - 一个 [int,int] 元组的数组。
+  - 第一个 int 为对话交互节点 Id。
+  - 第二个 int 为交互条件 Id。
 
-对于 NextId Content InteractNodeIds 分别为空，配置行的含义为：
+对于 NextId Content InteractPredNodeIds 分别为空，配置行的含义为：
 
-| 置空情况 | 对话框点击反馈 | 对话内容框 | 可交互列表         | 备注         |
+| 置空情况 | 对话框点击反馈 | 对话内容框 | 可及交互节点列表   | 备注         |
 | -------- | -------------- | ---------- | ------------------ | ------------ |
 | 000      | 无             | 隐藏       | 隐藏               | 直接退出对话 |
 | 001      | 无             | 隐藏       | 显示               |              |
@@ -72,11 +74,11 @@ by zewei.zhang
 
 - NextId
 - Content
-- InteractNodeIds
+- InteractPredNodeIds
 
 的不同状态适用于不同场合。
 
-| 置空情况 | 屏幕点击反馈 | 对话内容框 | 可交互列表         | 备注     |
+| 置空情况 | 屏幕点击反馈 | 对话内容框 | 可及交互节点列表   | 备注     |
 | -------- | ------------ | ---------- | ------------------ | -------- |
 | ~~000~~  | ---          | ---        | ---                | 无意义的 |
 | 001      | 无           | 隐藏       | 显示               | **招呼** |
@@ -125,9 +127,9 @@ by zewei.zhang
 
 - **[FUNC]行为** 由程序提供。
 
-### 对话交互构建器 InteractGenerator
+### 交互条件 InteractPredicate
 
-用于覆写默认的对话交互节点列表。
+用于决定 对话内容节点 所引出的 对话交互节点 是否可用。
 
 | Name | PropName | Type   | Desc |
 | :--: | :------- | ------ | ---- |
@@ -135,7 +137,7 @@ by zewei.zhang
 | 名称 | Name     | string |      |
 | 行为 | Behavior | FUNC   |      |
 
-- **[FUNC]行为** 由程序提供，给定参数，返回一个对话交互节点列表 `InteractNodeIds`。
+- **[FUNC]行为** 由程序提供，给定参数，返回一个 boolean 。
 
 ## Instruct ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
