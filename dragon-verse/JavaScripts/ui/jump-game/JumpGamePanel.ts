@@ -7,9 +7,10 @@
  * @Description  : 跳房间界面
  */
 
-import {KeyboardManager} from "../../controller/KeyboardManager";
+import { KeyboardManager } from "../../controller/KeyboardManager";
+import { MouseLockController } from "../../controller/MouseLockController";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-import {JumpRoomModuleC} from "../../module/jump-room/JumpRoomModule";
+import { JumpRoomModuleC } from "../../module/jump-room/JumpRoomModule";
 import JumpGamePanel_Generate from "../../ui-generate/jumpGame/JumpGamePanel_generate";
 import GToolkit from "../../util/GToolkit";
 
@@ -27,12 +28,17 @@ export class JumpGamePanel extends JumpGamePanel_Generate {
     }
 
     onShow() {
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
-            UIService.hide(JumpGamePanel);
-        });
+        // KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
+        //     UIService.hide(JumpGamePanel);
+        // });
+
+        this.codeButtonClose.addKey(Keys.Escape);
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
     onHide() {
-        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        // KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 }

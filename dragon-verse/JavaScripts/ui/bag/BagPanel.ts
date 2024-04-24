@@ -11,6 +11,8 @@ import ModuleService = mwext.ModuleService;
 import bindYoact = Yoact.bindYoact;
 import stopEffect = Yoact.stopEffect;
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import { MouseLockController } from "../../controller/MouseLockController";
 
 export default class BagPanel extends BagMain_Generate {
     //#region Constant
@@ -73,6 +75,9 @@ export default class BagPanel extends BagMain_Generate {
                 GToolkit.trySetVisibility(this.mBtnOpt, false);
             }
         });
+
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => { });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => { });
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Widget bind
@@ -87,9 +92,12 @@ export default class BagPanel extends BagMain_Generate {
 
     protected onShow() {
         this._scrollView.resetSelect();
+
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
     protected onHide() {
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

@@ -17,6 +17,11 @@ import Easing, { CubicBezier, CubicBezierBase } from "../../depend/easing/Easing
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
 import KeyOperationManager, { IKeyInteractive } from "../../controller/key-operation-manager/KeyOperationManager";
+import { MouseLockController } from "../../controller/MouseLockController";
+import tipLandMap_Generate from "../../ui-generate/map/tipLandMap_generate";
+import { GameConfig } from "../../config/GameConfig";
+import i18n from "../../language/i18n";
+import Gtk from "../../util/GToolkit";
 
 const sceneSize: mw.Vector2 = mw.Vector2.zero;
 
@@ -47,6 +52,8 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
     private _mapPositionCache: mw.Vector2 = mw.Vector2.zero;
 
     private _updateDelegate: MwBehaviorDelegate;
+
+    private _mapTips: tipLandMap_Generate[] = [];
 
     protected onAwake(): void {
         super.onAwake();
@@ -83,22 +90,26 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
             .btnMiniMap
             .onClicked
             .add(() => {
-                Event.dispatchToLocal(
-                    MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME,
-                    () => {
-                        this.showBigMap();
-                        Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
-                    });
+                // Event.dispatchToLocal(
+                //     MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME,
+                //     () => {
+                //         this.showBigMap();
+                //         Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
+                //     });
+                this.showBigMap();
             });
 
         this.btnMapClose
             .onClicked
-            .add(() => Event.dispatchToLocal(
-                MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME,
-                () => {
-                    this.showMiniMap();
-                    Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
-                }));
+            .add(() => {
+                // Event.dispatchToLocal(
+                //     MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME,
+                //     () => {
+                //         this.showMiniMap();
+                //         Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
+                //     })
+                this.showMiniMap();
+            });
 
         this.showMiniMap();
 
@@ -125,7 +136,6 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
         KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.S, () => { });
         KeyOperationManager.getInstance().onKeyPress(this, mw.Keys.D, () => { });
 
-
         KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.R, () => {
             this.cnvMapMesh.renderTransformPivot = new Vector2(0, 0);
             this.cnvMapMesh.renderScale = new Vector2(1, 1);
@@ -149,14 +159,17 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
         });
         this._updateDelegate.run();
 
-        for (let i = 0; i < 5; i++) {
-            const img = Image.newObject(this.cnvMapMesh);
-            img.size = new Vector2(50, 50);
-            img.position = new Vector2(Math.random() * 800, Math.random() * 900);
-            img.renderOpacity = 0.4;
-            this._imgs.push(img);
+        for (let i = 0; i < this.markCanvas.getChildrenCount(); i++) {
+            this._imgs.push(this.markCanvas.getChildAt(i) as Image);
         }
 
+        for (let i = 0; i < 3; i++) {
+            let ui = UIService.create(tipLandMap_Generate);
+            ui.uiObject.visibility = SlateVisibility.SelfHitTestInvisible;
+            ui.uiObject.renderOpacity = 0;
+            this._mapTips.push(ui);
+            this.rootCanvas.addChild(ui.uiObject);
+        }
     }
 
     onShow() {
@@ -183,14 +196,37 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
         GToolkit.trySetVisibility(this.cnvMap, true);
         GToolkit.trySetVisibility(this.cnvMiniMap, false);
 
-        InputUtil.isLockMouse = false;
+        MouseLockController.getInstance().needMouseUnlock();
+
+        this.btnMapClose.addKey(Keys.Escape);
 
         this._imgs.forEach(element => {
+            let usedTipsUI: tipLandMap_Generate;
             KeyOperationManager.getInstance().onWidgetEntered(element, () => {
-                element.renderOpacity = 1;
+                for (let i = 0; i < 3; i++) {
+                    let ui = this._mapTips[i];
+                    if (ui.uiObject.renderOpacity > 0) continue;
+                    usedTipsUI = ui;
+                    //之前可能有渐隐动画停了
+                    actions.tweens.stopAllByTarget(usedTipsUI.uiObject);
+                    actions.tween(usedTipsUI.uiObject)
+                        .set({ renderOpacity: 0 })
+                        .to(GameServiceConfig.MAP_PLAYER_DETAIL_SHOWN_DURATION, { renderOpacity: 1 })
+                        .union()
+                        .start();
+                    ui.uiObject.position = Gtk.getUiResolvedPosition(element).add(new Vector2(50, 0));
+                    ui.textDescribe.text = i18n.lan(GameConfig.LandMark.findElement("uiName", element.name)?.description);
+                    break;
+                }
             });
             KeyOperationManager.getInstance().onWidgetLeave(element, () => {
-                element.renderOpacity = 0.4;
+                //先把之前的动画停了
+                actions.tweens.stopAllByTarget(usedTipsUI.uiObject);
+                actions.tween(usedTipsUI.uiObject)
+                    .set({ renderOpacity: 1 })
+                    .to(GameServiceConfig.MAP_PLAYER_DETAIL_SHOWN_DURATION, { renderOpacity: 0 })
+                    .union()
+                    .start();
             });
         });
 
@@ -198,12 +234,13 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
 
 
     public showMiniMap() {
+        MouseLockController.getInstance().cancelMouseUnlock();
+
         GToolkit.trySetVisibility(this.cnvMap, false);
         GToolkit.trySetVisibility(this.cnvMiniMap, true);
         this._imgs.forEach(element => {
             KeyOperationManager.getInstance().unregisterMouse(element);
         });
-        // KeyOperationManager.getInstance().stopDetectWidgetOnHover();
     }
 
     private calculateMiniMapPos() {

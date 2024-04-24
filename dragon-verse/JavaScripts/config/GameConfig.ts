@@ -11,6 +11,7 @@ import {DragonConfig} from "./Dragon";
 import {ElementalConfig} from "./Elemental";
 import {GlobalConfig} from "./Global";
 import {IceBlockConfig} from "./IceBlock";
+import {LandMarkConfig} from "./LandMark";
 import {LanguageConfig} from "./Language";
 import {NPCActionConfig} from "./NPCAction";
 import {NpcConfig} from "./Npc";
@@ -50,6 +51,7 @@ export class GameConfig{
 	public static get Elemental():ElementalConfig{ return this.getConfig(ElementalConfig) };
 	public static get Global():GlobalConfig{ return this.getConfig(GlobalConfig) };
 	public static get IceBlock():IceBlockConfig{ return this.getConfig(IceBlockConfig) };
+	public static get LandMark():LandMarkConfig{ return this.getConfig(LandMarkConfig) };
 	public static get Language():LanguageConfig{ return this.getConfig(LanguageConfig) };
 	public static get NPCAction():NPCActionConfig{ return this.getConfig(NPCActionConfig) };
 	public static get Npc():NpcConfig{ return this.getConfig(NpcConfig) };

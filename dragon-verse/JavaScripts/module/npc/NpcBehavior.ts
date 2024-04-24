@@ -10,10 +10,9 @@ import PlayerInteractNpcEventArgs from "./trigger/PlayerInteractNpcEventArgs";
 import GameServiceConfig from "../../const/GameServiceConfig";
 
 
-import DialoguePanel_Generate from "../../ui-generate/dialogue/DialoguePanel_generate";
 import DialogifyManager from "../../depend/dialogify/DialogifyManager";
 import { isDialogueContentNodeHasNextId, isValidDialogueContentNodeId } from "../../depend/dialogify/dialogify-config-reader/ADialogifyConfigReader";
-import DialoguePanelController from "../../depend/dialogify/dialogue-panel-controller/DialoguePanelController";
+import { MouseLockController } from "../../controller/MouseLockController";
 
 
 /**
@@ -179,6 +178,8 @@ export default class NpcBehavior extends mw.Script {
             contentNodeConfig,
             !hasContent,
         );
+
+        MouseLockController.getInstance().needMouseUnlock();
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     };
 
@@ -189,6 +190,8 @@ export default class NpcBehavior extends mw.Script {
         this.dm.exit();
         this._npcBasicAni.play();
         if (this._currentAni) this._currentAni.stop();
+
+        MouseLockController.getInstance().cancelMouseUnlock();
     };
 
     /**

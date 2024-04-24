@@ -31,6 +31,8 @@ import { JumpGamePanel } from "../jump-game/JumpGamePanel";
 import AudioController from "../../controller/audio/AudioController";
 import { PlayerSettingModuleC } from "../../module/player-setting/PlayerSettingModule";
 import Nolan from "../../depend/nolan/Nolan";
+import { MapManager } from "../../gameplay/map/MapManager";
+import { MapPanel } from "../map/MapPanel";
 
 /**
  * 主界面.
@@ -188,6 +190,10 @@ export default class MainPanel extends MainPanel_Generate {
             this.btnSound.enable = true;
         });
 
+        this.btnMap.onClicked.add(() => {
+            UIService.getUI(MapPanel)?.showBigMap();
+        });
+
         this._nolan = Nolan.getInstance();
 
 
@@ -222,6 +228,21 @@ export default class MainPanel extends MainPanel_Generate {
             this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
         });
 
+        KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => {
+            InputUtil.isLockMouse = false;
+        });
+
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => {
+            InputUtil.isLockMouse = true;
+        });
+
+        KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => {
+            InputUtil.isLockMouse = false;
+        });
+
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => {
+            InputUtil.isLockMouse = true;
+        });
 
 
         this.setCanSprint(true);
