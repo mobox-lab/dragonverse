@@ -676,4 +676,8 @@ export default class GameServiceConfig {
     public static readonly MAIN_PANEL_SOUND_BUTTON_IMG_GUID = '324601';
 
     public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = '324594';
+
+    public static readonly DIALOGUE_PANEL_OPTION_ON_HOVER_IMG_GUID = '324356';
+
+    public static readonly DIALOGUE_PANEL_OPTION_NORMAL_IMG_GUID = '324342';
 }

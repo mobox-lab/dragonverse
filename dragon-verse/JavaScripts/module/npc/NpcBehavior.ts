@@ -167,7 +167,7 @@ export default class NpcBehavior extends mw.Script {
 
         //#region 条件项 000 100 101
         if (!hasContent &&
-            (hasNextId || !hasNextId && GToolkit.isNullOrEmpty(contentNodeConfig.interactNodeIds))
+            (hasNextId || !hasNextId && GToolkit.isNullOrEmpty(contentNodeConfig.interactPredNodeIds))
         ) {
             Log4Ts.error(NpcBehavior, `配置了一行无意义的 DialogueContentNode. id: ${contentNodeConfig.id}`);
             return;

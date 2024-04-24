@@ -12,13 +12,13 @@ import ADialogifyConfigReader, {
     isEntityIdValid,
 } from "../dialogify-config-reader/ADialogifyConfigReader";
 
-import { DialogueFuncFactory, DialogueNodeFuncTypes } from "../dialogue-node-func-type/DialogueFuncTypes";
+import DialogueFuncFactory, { DialogueNodeFuncTypes } from "../dialogue-node-func-type/DialogueFuncTypes";
 import DialogifyConfigReader from "../dialogify-config-reader/DialogifyConfigReader";
 import i18n from "../../../language/i18n";
 
 export interface IContentNodePanel {
     /**
-     * 内容源 名称 TextBlock. 
+     * 内容源 名称 TextBlock.
      */
     txtSourceName: mw.TextBlock;
 
@@ -116,10 +116,11 @@ export default abstract class ADialoguePanelController<
     protected _panel: MP | null;
 
     protected checkPanel(): boolean {
-        if (this._panel) {
-            Log4Ts.error(ADialoguePanelController, `panel not setted.`);
+        if (!this._panel) {
+            Log4Ts.error(ADialoguePanelController, `panel not set.`);
+            return false;
         }
-        return !!this._panel;
+        return true;
     }
 
     protected _nextArrowShown: boolean = true;
@@ -177,7 +178,7 @@ export default abstract class ADialoguePanelController<
      * @privateRemarks 条件桩 (nextId content interactNodeIds) 的空情况.
      * @param config
      */
-    public setContent(config: IDialogueContentNodeElement) {
+    public setContent(config: IDialogueContentNodeConfigElement) {
         if (!this.checkPanel()) return;
         if (!config) {
             Log4Ts.error(ADialoguePanelController, `config is null.`);
@@ -192,7 +193,7 @@ export default abstract class ADialoguePanelController<
         //#region 条件项 000
         if (GToolkit.isNullOrEmpty(content) &&
             !isDialogueContentNodeHasNextId(config) &&
-            GToolkit.isNullOrEmpty(config.interactNodeIds)) {
+            GToolkit.isNullOrEmpty(config.interactPredNodeIds)) {
             this.exitDialogue();
             return;
         }
