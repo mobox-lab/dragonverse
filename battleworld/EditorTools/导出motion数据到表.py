@@ -4,7 +4,7 @@ import chardet
 import json
 import openpyxl
 
-filename = '../../../../../../Logs/MW_Client.log'  # 替换为您要读取的文件名
+filename = 'E:\Meta031.03\MetaWorldSaved\Saved\Logs\MW_Client.log'  # 替换为您要读取的文件名
 output_filename = 'MotionClip_技能数据.xlsx'  # 替换为您要导出的文件名
 
 vehicleDataTag = "vae-motion-saveData:"  # 载具路径数据关键字
