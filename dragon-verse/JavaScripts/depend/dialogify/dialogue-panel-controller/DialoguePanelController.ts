@@ -10,6 +10,7 @@ import GameServiceConfig from "../../../const/GameServiceConfig";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import GToolkit from "../../../util/GToolkit";
 
+
 export default class DialoguePanelController extends ADialoguePanelController<
     DialoguePanel_Generate,
     InteractNode_Generate,
