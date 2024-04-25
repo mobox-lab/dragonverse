@@ -15,8 +15,8 @@ export abstract class BaseInteractiveObj extends mw.Script implements IInteracti
 
     protected abstract startInteractionInServer(playerId: number): void;
     protected abstract startInteractionInClient(playerId: number): void;
-    protected abstract stopInteractionInServer(playerId: number, finishCallBack: () => void): void;
-    protected abstract stopInteractionInClient(playerId: number, finishCallBack: () => void): void;
+    protected abstract stopInteractionInServer(playerId: number, finishCallBack?: () => void): void;
+    protected abstract stopInteractionInClient(playerId: number, finishCallBack?: () => void): void;
 
     abstract someOneStartInteractionInClient(playerId: number): void;
     abstract someOneStartInteractionInServer(playerId: number): void;
@@ -216,6 +216,8 @@ export abstract class SharedInteractiveObj extends BaseInteractiveObj {
         this.ownerPlayerCount++;
         this.startInteractionInServer(playerId);
         ModuleService.getModule(InteractiveObjModuleS).startSharedInteraction(playerId, this.gameObject.gameObjectId);
+        //设置上玩家在交互
+        ModuleService.getModule(InteractiveObjModuleS).recordStartInteraction(playerId, this.gameObject.gameObjectId);
     }
 
     someOneStopInteractionInClient(playerId: number): void {

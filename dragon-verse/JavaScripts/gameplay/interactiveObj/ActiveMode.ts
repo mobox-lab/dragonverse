@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-04-24 16:48:00
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-04-25 15:08:48
+ * @LastEditTime : 2024-04-25 17:10:09
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\ActiveMode.ts
  * @Description  : 交互物触发模式
  */
@@ -32,7 +32,7 @@ export abstract class ActivateMode {
 }
 
 /** 
- * @description: 触发器环境
+ * @description: 设置触发器在哪里触发，最终的客户端和服务端的交互函数还是都会触发，只为了防止双端都触发逻辑冗余
  */
 export enum TriggerType {
     TriggerInServer,
@@ -232,6 +232,14 @@ export class ActivateByUIAndTrigger extends ActivateByUI {
                 this.hideUI();
             }
         }
+    }
+
+    public clickToStartInteraction() {
+        ModuleService.getModule(InteractiveObjModuleC).startInteraction(this._interactiveObj.gameObjectId);
+    }
+
+    public clickToEndInteraction() {
+        ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this._interactiveObj.gameObjectId);
     }
 }
 
