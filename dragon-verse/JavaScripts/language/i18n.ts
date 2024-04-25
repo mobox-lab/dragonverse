@@ -256,9 +256,7 @@ class i18n {
     public use(languageType: LanguageTypes = 0, force: boolean = false): this {
         if (this._languageType.data === languageType && !force) return this;
         GameConfig.initLanguage(languageType, defaultGetLanguage);
-        // for (const [ui, lanKey] of this._staticUiLanKeyMap) {
-        //     if (ui) ui.text = this.lan(lanKey);
-        // }
+
         this._languageType.data = languageType;
         return this;
     }

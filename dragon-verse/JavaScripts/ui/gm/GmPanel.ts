@@ -202,11 +202,6 @@ AddGMCommand("跳Battle World", () => {
     }, onFailed);
 });
 
-AddGMCommand("切语言", (player, value) => {
-
-    i18n.use(Number(value), true);
-});
-
 //#region TDD-Obby Coin & Ticket
 AddGMCommand(
     "触发每日领取 ObbyCoin",

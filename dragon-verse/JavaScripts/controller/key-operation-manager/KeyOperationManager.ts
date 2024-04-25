@@ -38,7 +38,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
 
     private _mouseTestRegulator: Regulator = new Regulator(GtkTypes.Interval.Sensitive);
 
-    //#region Builder Config
+//#region Builder Config
 
     public get mouseTestInterval(): number {
         return this._mouseTestRegulator.updateInterval;
@@ -114,7 +114,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
         });
     }
 
-    //#region Key Mouse Controller
+//#region Key Mouse Controller
     /**
      * register {@link InputUtil.onKeyDown} for ui.
      * @param ui
@@ -304,7 +304,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region Debug
+//#region Debug
 
     private _debugTimerId: number = undefined;
 
@@ -332,7 +332,7 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region Handler
+//#region Handler
 
     private registerKeyOperation(ui: KeyInteractiveUIScript,
         key: Keys,
