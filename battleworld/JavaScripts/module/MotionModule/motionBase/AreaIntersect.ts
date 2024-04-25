@@ -254,7 +254,8 @@ export class AreaIntersect {
             return null;
         }
         //可视化trigger
-        if (SystemUtil.isPIE) {
+        if (SystemUtil.isPIE && Globaldata.showSkillRange) {
+
             if (this._areaCheckData.type === 0) {
                 //计算八个顶点
                 let p1 = trigger.worldTransform.transformPosition(new Vector(-50, -50, 0));

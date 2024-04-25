@@ -1,12 +1,9 @@
-import { GameConfig } from "../../../config/GameConfig";
-import { AuthModuleC } from "../../../module/auth/AuthModule";
 import Log4Ts from "../../log4ts/Log4Ts";
-import { DialogueNodeFuncTypes } from "../dialogue-node-func-type/DialogueFuncTypes";
 
 /**
- * 对话交互构建器 enum.
+ * 交互条件 enum.
  */
-export enum InteractGeneratorTypes {
+export enum InteractPredicateTypes {
     /**
      * 空置.
      */
@@ -15,52 +12,31 @@ export enum InteractGeneratorTypes {
      * 测试交互构建器.
      */
     TestFunc = 127,
-    /**
-     * 过code验证不显示对话
-     */
-    codeTest = 1,
 }
 
 /**
- * 对话交互构建器.
+ * 交互条件.
  * @param contentNodeId 对话内容节点 id.
- * @return number[] 对话内容节点.
- *
+ * @return 是否可交互.
  */
-export type InteractGenerator = (contentNodeId: number) => number[];
+export type InteractPredicate = (contentNodeId: number) => boolean;
 
-export default function InteractGeneratorFactory(type: InteractGeneratorTypes): InteractGenerator {
+export default function InteractPredicateFactory(type: InteractPredicateTypes): InteractPredicate {
     switch (type) {
-        case InteractGeneratorTypes.TestFunc:
+        case InteractPredicateTypes.TestFunc:
             return testFunc;
-        case InteractGeneratorTypes.codeTest:
-            return codeTest;
-        case InteractGeneratorTypes.Null:
-
+        case InteractPredicateTypes.Null:
         default:
             return normalDialogueFunc;
     }
 }
 
-export function normalDialogueFunc(contentNodeId: number): number[] {
-    return [];
+export function normalDialogueFunc(contentNodeId: number): boolean {
+    return true;
 }
 
 export function testFunc() {
     Log4Ts.log({ name: "DialogueFuncTypes" }, `test called.`);
-    return [127];
+    return false;
 }
-
-export function codeTest(contentNodeId: number): number[] {
-    let res = true;
-    let config = GameConfig.DialogueContentNode.getElement(contentNodeId);
-
-    if (res) {
-        let nodes = Array.from(config.interactNodeIds);
-        nodes.splice(nodes.indexOf(1), 1);
-        return nodes;
-    }
-    return config.interactNodeIds;
-}
-
 

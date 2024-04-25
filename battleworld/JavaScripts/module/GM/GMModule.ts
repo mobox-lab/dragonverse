@@ -559,3 +559,7 @@ AddGMCommand("加木桩", async () => {
     await prefabNpc.initUnit(Globaldata.guide_npcId, Globaldata.guide_woodPrefabGuid);
     prefabNpc.setModelLocation(Globaldata.wood_bornPos);
 })
+
+AddGMCommand("显示/隐藏技能范围", (player, value) => {
+    Globaldata.showSkillRange = !!value;
+})

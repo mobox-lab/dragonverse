@@ -84,9 +84,9 @@ export class QuestModuleC extends ModuleC<QuestModuleS, QuestData> implements Qu
      */
     public updateRunningGameScore(score: number) {
         //获取龙奖励
-        this.server.net_getRunningGameReward(score).then(res => {
-            if (res) Event.dispatchToLocal(EventDefine.OnDragonQuestsComplete);
-        });
+        // this.server.net_getRunningGameReward(score).then(res => {
+        //     if (res) Event.dispatchToLocal(EventDefine.OnDragonQuestsComplete);
+        // });
 
         const flag = this.data.isNewRecord(score);
         if (flag) {

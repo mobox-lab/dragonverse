@@ -382,7 +382,7 @@ export default class GameServiceConfig {
     /**
      * 角色 冲刺特效 SlotType.
      */
-    public static readonly ROLE_SPRINT_EFFECT_SLOT_TYPE = mw.HumanoidSlotType.RightFoot;
+    public static readonly ROLE_SPRINT_EFFECT_SLOT_TYPE = mw.HumanoidSlotType.Root;
 
     /**
      * 角色 冲刺特效 缩放.
@@ -392,7 +392,7 @@ export default class GameServiceConfig {
     /**
      * 角色 冲刺特效 位置偏移.
      */
-    public static readonly ROLE_SPRINT_EFFECT_POSITION_OFFSET = new Vector(0, -5, 0);
+    public static readonly ROLE_SPRINT_EFFECT_POSITION_OFFSET = new Vector(-22, 0, 20);
 
     /**
      * 角色 冲刺特效 残留时长.
@@ -676,4 +676,8 @@ export default class GameServiceConfig {
     public static readonly MAIN_PANEL_SOUND_BUTTON_IMG_GUID = '324601';
 
     public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = '324594';
+
+    public static readonly DIALOGUE_PANEL_OPTION_ON_HOVER_IMG_GUID = '324356';
+
+    public static readonly DIALOGUE_PANEL_OPTION_NORMAL_IMG_GUID = '324342';
 }
