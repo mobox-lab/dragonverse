@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["ID","Name","Appearance","InterTime","CreateNum","MaxNum","CreaEff","DisEff","WayRange","CheckRange","EscapeRange","EscapeTime","OutTime","Hp","DefaultSpeed","EscapeSpeed","Resistance","DropHp","DropId"],["","Language","","","","","","","","","","","","","","","","",""],[1,"Name_Npc_Masco_1","4428115846600B6C74DFB284369BAB00",30,1,1,[21],[22],5000,100,3000,5,2,10000,200,700,100,500,3]];
+const EXCELDATA:Array<Array<any>> = [["ID","Name","Appearance","InterTime","CreateNum","MaxNum","CreaEff","DisEff","WayRange","CheckRange","EscapeRange","EscapeTime","OutTime","Hp","DefaultSpeed","EscapeSpeed","Resistance","DropHp","DropId"],["","Language","","","","","","","","","","","","","","","","",""],[1,"Name_Npc_Masco_1","4428115846600B6C74DFB284369BAB00",30,1,1,[21],[22],5000,100,3000,5,2,2000,200,700,100,500,3]];
 export interface IMascotNpcElement extends IElementBase{
  	/**类型id*/
 	ID:number
