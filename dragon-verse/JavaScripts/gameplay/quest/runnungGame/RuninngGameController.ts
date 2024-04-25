@@ -315,15 +315,15 @@ export class RunningGameController {
         TimeUtil.clearInterval(this._intervalHander);
         this._intervalHander = null;
 
-        this._collisionTrigger.onEnter.clear();
+        this._collisionTrigger.onEnter?.clear();
         GameObjPool.despawn(this._collisionTrigger);
         this._collisionTrigger = null;
 
-        this._collisionEffect.stop();
+        this._collisionEffect?.stop();
         GameObjPool.despawn(this._collisionEffect);
         this._collisionEffect = null;
 
-        this._streakingEffect.stop();
+        this._streakingEffect?.stop();
         GameObjPool.despawn(this._streakingEffect);
         this._streakingEffect = null;
 
