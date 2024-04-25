@@ -8,9 +8,9 @@ const clipStatus: Map<mw.Widget, mw.Canvas> = new Map();
 export class KeyOperationHoverController {
     private _hoverTree = new KOMUtil.AABBTree();
 
-    private _nodeMap: Map<string, KOMUtil.Node> = new Map();
+    private _nodeMap: Map<mw.Widget, KOMUtil.Node> = new Map();
 
-    private _widgetMap: Map<string, mw.Widget> = new Map();
+    private _widgetSet: Set<mw.Widget> = new Set();
 
     /**
      * 是否无可 Hover 节点.
@@ -81,22 +81,22 @@ export class KeyOperationHoverController {
      * @private
      */
     private traceAll() {
-        for (let [guid, widget] of this._widgetMap.entries()) {
+        for (let widget of this._widgetSet.keys()) {
             let broken = false;
             if (!widget.parent) broken = true;
             else new Switcher()
-                .case(() => broken = !this.updateTreeNode(guid), true, true)
-                .case(() => broken = !this.reAddToTree(guid), true, false)
-                .case(() => this.tempRemoveFromTree(guid), false, true)
-                .judge(widget.visible, this._nodeMap.has(guid));
+                .case(() => broken = !this.updateTreeNode(widget), true, true)
+                .case(() => broken = !this.reAddToTree(widget), true, false)
+                .case(() => this.tempRemoveFromTree(widget), false, true)
+                .judge(widget.visible, this._nodeMap.has(widget));
 
             if (broken) {
-                const node = this._nodeMap.get(guid);
+                const node = this._nodeMap.get(widget);
                 if (node) {
-                    this._hoverTree.destroyNode(this._nodeMap.get(guid));
-                    this._nodeMap.delete(guid);
+                    this._hoverTree.destroyNode(this._nodeMap.get(widget));
+                    this._nodeMap.delete(widget);
                 }
-                this._widgetMap.delete(guid);
+                this._widgetSet.delete(widget);
             }
         }
     }
@@ -107,30 +107,29 @@ export class KeyOperationHoverController {
      * @param {mw.Widget} widget
      */
     public insertWidget(widget: mw.Widget): boolean {
-        const guid = widget.guid;
-        if (this._widgetMap.has(guid)) {
-            Log4Ts.log(KeyOperationHoverController, `already has widget ${guid}`);
+        if (this._widgetSet.has(widget)) {
+            Log4Ts.log(KeyOperationHoverController, `already has widget ${widget.guid}`);
             return false;
         }
-        this._widgetMap.set(guid, widget);
+        this._widgetSet.add(widget);
         return this.addToTree(widget);
     }
 
     /**
      * 更新 Widget 的 AABB.
-     * @param {string} guid
+     * @param {mw.Widget} widget
      * @return {boolean}
      * @private
      */
-    private updateTreeNode(guid: string): boolean {
+    private updateTreeNode(widget: mw.Widget): boolean {
         let aabb: KOMUtil.AABB;
         try {
-            aabb = this.getWidgetAABBInViewPort(this._widgetMap.get(guid));
+            aabb = this.getWidgetAABBInViewPort(widget);
         } catch (e) {
-            Log4Ts.log(KeyOperationHoverController, `error occurs when update widget. maybe widget has been destroyed ${guid}`);
+            Log4Ts.log(KeyOperationHoverController, `error occurs when update widget. maybe widget has been destroyed ${widget.name}`);
             return false;
         }
-        let node = this._nodeMap.get(guid);
+        let node = this._nodeMap.get(widget);
         if (!node.aabb.equals(aabb)) {
             this._hoverTree.moveNode(node, aabb);
         }
@@ -138,32 +137,30 @@ export class KeyOperationHoverController {
         return true;
     }
 
-    public removeWidget(widgetOrGuid: mw.Widget | string) {
-        const guid = typeof widgetOrGuid === "string" ? widgetOrGuid : widgetOrGuid.guid;
-        if (!this._widgetMap.has(guid)) {
-            Log4Ts.log(KeyOperationHoverController, `widget not found ${guid}`);
+    public removeWidget(widget: mw.Widget) {
+        if (!this._widgetSet.has(widget)) {
+            Log4Ts.log(KeyOperationHoverController, `widget not found ${widget.name}`);
             return;
         }
 
-        this._hoverTree.destroyNode(this._nodeMap.get(guid));
-        this._nodeMap.delete(guid);
-        this._widgetMap.delete(guid);
+        this._hoverTree.destroyNode(this._nodeMap.get(widget));
+        this._nodeMap.delete(widget);
+        this._widgetSet.delete(widget);
     }
 
     /**
      * 临时从树中移除控件.
-     * @param {string} guid
+     * @param {mw.Widget} widget
      * @private
      */
-    private tempRemoveFromTree(guid: string) {
-        this._hoverTree.destroyNode(this._nodeMap.get(guid));
-        this._nodeMap.delete(guid);
+    private tempRemoveFromTree(widget: mw.Widget) {
+        this._hoverTree.destroyNode(this._nodeMap.get(widget));
+        this._nodeMap.delete(widget);
     }
 
-    private reAddToTree(guid: string): boolean {
-        const widget = this._widgetMap.get(guid);
-        if (!widget) {
-            Log4Ts.log(KeyOperationHoverController, `widget not found ${guid}`);
+    private reAddToTree(widget: mw.Widget): boolean {
+        if (!this._widgetSet.has(widget)) {
+            Log4Ts.log(KeyOperationHoverController, `widget not found ${widget.name}`);
             return false;
         }
 
@@ -172,11 +169,11 @@ export class KeyOperationHoverController {
 
     private addToTree(widget: mw.Widget): boolean {
         try {
-            let node = this._hoverTree.createNode(widget.guid, this.getWidgetAABBInViewPort(widget));
-            this._nodeMap.set(widget.guid, node);
+            let node = this._hoverTree.createNode(widget, this.getWidgetAABBInViewPort(widget));
+            this._nodeMap.set(widget, node);
             return true;
         } catch (e) {
-            Log4Ts.log(KeyOperationHoverController, `error occurs when update widget. maybe widget has been destroyed ${widget?.guid}`);
+            Log4Ts.log(KeyOperationHoverController, `error occurs when update widget. maybe widget has been destroyed ${widget?.name}`);
             return false;
         }
     }
@@ -191,7 +188,7 @@ export class KeyOperationHoverController {
         const arr = this._hoverTree
             .queryPoint(tester)
             .map(item => {
-                return this._widgetMap.get(item.data as string);
+                return item.data;
             })
             .filter(item => {
                 const p = queryAncestorClipStatus(item);
@@ -256,7 +253,7 @@ let viewportLeftTop: mw.Vector2 = undefined;
 class BVHTreeNodeDebugImage implements IRecyclable {
     public image: mw.Image;
 
-    makeEnable(node: KOMUtil.Node): void {
+    public makeEnable(node: KOMUtil.Node): void {
         const viewportScale = mw.getViewportScale();
 
         Gtk.setUiSize(this.image, (node.aabb.max.x - node.aabb.min.x) / viewportScale + 4, (node.aabb.max.y - node.aabb.min.y) / viewportScale + 4);
@@ -264,8 +261,12 @@ class BVHTreeNodeDebugImage implements IRecyclable {
         Gtk.trySetVisibility(this.image, true);
     }
 
-    makeDisable(): void {
+    public makeDisable(): void {
         Gtk.trySetVisibility(this.image, false);
+    }
+
+    public makeDestroy(): void {
+        this.image.destroyObject();
     }
 
     constructor(image: mw.Image) {
@@ -281,9 +282,6 @@ const debugImagesPool = new ObjectPool({
         image.renderOpacity = 0.1;
         return new BVHTreeNodeDebugImage(image);
     },
-    destructor: (img) => {
-        img.image.destroyObject();
-    }
 });
 
 const debugImages: BVHTreeNodeDebugImage[] = [];

@@ -1,5 +1,5 @@
-import { KOMUtil } from "./extends/AABB";
-import Gtk, { GtkTypes, IRecyclable, ObjectPool, Regulator, Switcher } from "../../util/GToolkit";
+import {KOMUtil} from "./extends/AABB";
+import Gtk, {GtkTypes, IRecyclable, ObjectPool, Regulator, Switcher} from "../../util/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 
@@ -101,7 +101,7 @@ export class KeyOperationHoverController {
         }
     }
 
-    //#region Controller
+//#region Controller
     /**
      * 插入 Widget.
      * @param {mw.Widget} widget
@@ -199,9 +199,9 @@ export class KeyOperationHoverController {
         return arr.length > 0 ? arr[arr.length - 1] : null;
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-    //#region Debug
+//#region Debug
     /**
      * 在 UI root canvas 中绘制 BVH 树.
      */
@@ -209,7 +209,7 @@ export class KeyOperationHoverController {
         drawBVHTree(this._hoverTree);
     }
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 /**
@@ -253,7 +253,7 @@ let viewportLeftTop: mw.Vector2 = undefined;
 class BVHTreeNodeDebugImage implements IRecyclable {
     public image: mw.Image;
 
-    makeEnable(node: KOMUtil.Node): void {
+    public makeEnable(node: KOMUtil.Node): void {
         const viewportScale = mw.getViewportScale();
 
         Gtk.setUiSize(this.image, (node.aabb.max.x - node.aabb.min.x) / viewportScale + 4, (node.aabb.max.y - node.aabb.min.y) / viewportScale + 4);
@@ -261,8 +261,12 @@ class BVHTreeNodeDebugImage implements IRecyclable {
         Gtk.trySetVisibility(this.image, true);
     }
 
-    makeDisable(): void {
+    public makeDisable(): void {
         Gtk.trySetVisibility(this.image, false);
+    }
+
+    public makeDestroy(): void {
+        this.image.destroyObject();
     }
 
     constructor(image: mw.Image) {
@@ -278,9 +282,6 @@ const debugImagesPool = new ObjectPool({
         image.renderOpacity = 0.1;
         return new BVHTreeNodeDebugImage(image);
     },
-    destructor: (img) => {
-        img.image.destroyObject();
-    }
 });
 
 const debugImages: BVHTreeNodeDebugImage[] = [];
