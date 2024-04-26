@@ -16,7 +16,7 @@ import { AttributeModuleS } from "../AttributeModule/AttributeModuleS";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 
 
-export class MotionModuleS extends ModuleS<MotionModuleC, null>{
+export class MotionModuleS extends ModuleS<MotionModuleC, null> {
 
     private mPlayer: PlayerModuleS = null;
     private mAttr: AttributeModuleS = null;
@@ -302,7 +302,7 @@ export class MotionModuleS extends ModuleS<MotionModuleC, null>{
 
     /**播放motion */
     public playMotoin(pId: number, motionId: number) {
-        let client = this.getClient(pId);
+        let client = this.getAllClient();
         if (client == null) {
             return;
         }

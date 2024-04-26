@@ -1,7 +1,7 @@
-import { GameConfig } from "../config/GameConfig";
-import { ILanguageElement } from "../config/Language";
+import {GameConfig} from "../config/GameConfig";
+import {ILanguageElement} from "../config/Language";
 import Log4Ts from "../depend/log4ts/Log4Ts";
-import { Yoact } from "../depend/yoact/Yoact";
+import {Yoact} from "../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import bindYoact = Yoact.bindYoact;
 import stopEffect = Yoact.stopEffect;
@@ -67,6 +67,10 @@ let languageDefault = {
     //#endregion
 
     //#region MainPanel
+    CatchMainKey: "捕捉",
+
+    TalkMainKey: "对话",
+
     Collection_002: "收集成功",
 
     Collection_003: "收集失败",
@@ -157,7 +161,7 @@ class i18n {
      */
     public resolves: ResolveTable;
 
-    private _languageType: { data: LanguageTypes } = createYoact({ data: LanguageTypes.English });
+    private _languageType: { data: LanguageTypes } = createYoact({data: LanguageTypes.English});
 
     private _lastLanguageType: number = -1;
 

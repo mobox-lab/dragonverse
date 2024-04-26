@@ -1,7 +1,6 @@
-import GToolkit, { GtkTypes } from "../util/GToolkit";
+import GToolkit, {GtkTypes} from "../util/GToolkit";
 
 export default class GameServiceConfig {
-    public static readonly TipsDuration = 5e3;
     //#region Sub Game
     /**
      * 跳子游戏 进度条时长.
@@ -454,6 +453,12 @@ export default class GameServiceConfig {
 
     //#region UI
     /**
+     * 独占提示框 存在时长. ms
+     * @type {number}
+     */
+    public static readonly ONLY_TIPS_DURATION = 5e3;
+
+    /**
      * 主界面 幕布 显示动画时长. ms
      */
     public static readonly MAIN_PANEL_CURTAIN_SHOWN_DURATION = 0.5e3;
@@ -507,6 +512,30 @@ export default class GameServiceConfig {
      * 主界面 体力条 ui scale 计算基数.
      */
     public static readonly MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE = 300;
+
+    /**
+     * 主界面 交互按钮 捕捉 图标 Guid.
+     * @type {string}
+     */
+    public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_CATCH = "164192";
+
+    /**
+     * 主界面 交互按钮 对话 图标 Guid.
+     * @type {string}
+     */
+    public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_TALK = "324347";
+
+    /**
+     * 主界面 交互按钮 采集 图标 Guid.
+     * @type {string}
+     */
+    public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_COLLECT = "266693";
+
+    /**
+     * 主界面 交互按钮 自定义 默认 图标 Guid.
+     * @type {string}
+     */
+    public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_CUSTOM = "164192 ";
 
     /**
      * 地图界面 小地图左下点的世界坐标.
@@ -674,11 +703,11 @@ export default class GameServiceConfig {
     public static readonly OBBY_STAR_FLOAT_STAGE_DURATION = 2e3;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ //#region Role
 
-    public static readonly MAIN_PANEL_SOUND_BUTTON_IMG_GUID = '324601';
+    public static readonly MAIN_PANEL_SOUND_BUTTON_IMG_GUID = "324601";
 
-    public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = '324594';
+    public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = "324594";
 
-    public static readonly DIALOGUE_PANEL_OPTION_ON_HOVER_IMG_GUID = '324356';
+    public static readonly DIALOGUE_PANEL_OPTION_ON_HOVER_IMG_GUID = "324356";
 
-    public static readonly DIALOGUE_PANEL_OPTION_NORMAL_IMG_GUID = '324342';
+    public static readonly DIALOGUE_PANEL_OPTION_NORMAL_IMG_GUID = "324342";
 }
