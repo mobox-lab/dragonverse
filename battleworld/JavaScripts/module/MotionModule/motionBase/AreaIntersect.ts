@@ -254,7 +254,7 @@ export class AreaIntersect {
             return null;
         }
         //可视化trigger
-        if (SystemUtil.isPIE && Globaldata.showSkillRange) {
+        if (SystemUtil.isPIE && !Globaldata.isRelease && Globaldata.showSkillRange) {
 
             if (this._areaCheckData.type === 0) {
                 //计算八个顶点
