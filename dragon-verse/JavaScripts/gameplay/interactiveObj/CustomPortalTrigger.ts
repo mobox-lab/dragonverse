@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-04-25 16:47:36
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-04-25 18:10:17
+ * @LastEditTime : 2024-04-26 16:39:14
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\CustomPortalTrigger.ts
  * @Description  : 进度条传送门
  */
@@ -17,12 +17,19 @@ export default class CustomPortalTrigger extends BasePortalTrigger {
     onStartPortalInServer() {
         // throw new Error("Method not implemented.");
     }
+
+    onInterruptProgressInServer(): void {
+
+    }
+
     onStartPortalInClient() {
         Log4Ts.log(BasePortalTrigger, `开始进度条`);
     }
-    interruptProgress() {
+
+    onInterruptProgressInClient() {
         Log4Ts.log(BasePortalTrigger, `打断进度条`);
     }
+
     onProgressDone() {
         Log4Ts.log(BasePortalTrigger, `进度条结束，开始传送`);
     }

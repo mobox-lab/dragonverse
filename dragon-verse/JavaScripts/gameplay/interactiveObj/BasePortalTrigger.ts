@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-04-24 16:14:39
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-04-25 19:12:32
+ * @LastEditTime : 2024-04-26 16:48:46
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\BasePortalTrigger.ts
  * @Description  : 传送门交互物
  */
@@ -69,6 +69,7 @@ export abstract class BasePortalTrigger extends SharedInteractiveObj {
     protected stopInteractionInServer(playerId: number, finishCallBack?: () => void): void {
         Log4Ts.log(BasePortalTrigger, `stopInteractionInServer:${playerId}}`);
         finishCallBack();
+        this.onInterruptProgressInServer();
     }
 
     protected stopInteractionInClient(playerId: number, finishCallBack?: () => void): void {
@@ -78,7 +79,7 @@ export abstract class BasePortalTrigger extends SharedInteractiveObj {
         //进度条结束
         if (this._isPlayingProgress) {
             actions.tweens.stopAllByTag(this._progressTag);
-            this.interruptProgress();
+            this.onInterruptProgressInClient();
         }
 
         actions.tween(this._cnvProgressBar).to(100, { renderOpacity: 0 }).call(() => {
@@ -110,11 +111,13 @@ export abstract class BasePortalTrigger extends SharedInteractiveObj {
     }
 
 
-    abstract onStartPortalInServer();
+    abstract onStartPortalInServer(): void;
 
-    abstract onStartPortalInClient();
+    abstract onStartPortalInClient(): void;
 
-    abstract interruptProgress();
+    abstract onInterruptProgressInClient(): void;
 
-    abstract onProgressDone();
+    abstract onInterruptProgressInServer(): void;
+
+    abstract onProgressDone(): void;
 }
