@@ -21,6 +21,7 @@ import {RelateEntityConfig} from "./RelateEntity";
 import {SoundConfig} from "./Sound";
 import {SuccessRateAlgoConfig} from "./SuccessRateAlgo";
 import {TaskConfig} from "./Task";
+import {TipsPlaylistConfig} from "./TipsPlaylist";
 
 export class GameConfig{
 	private static configMap:Map<string, ConfigBase<IElementBase>> = new Map();
@@ -61,4 +62,5 @@ export class GameConfig{
 	public static get Sound():SoundConfig{ return this.getConfig(SoundConfig) };
 	public static get SuccessRateAlgo():SuccessRateAlgoConfig{ return this.getConfig(SuccessRateAlgoConfig) };
 	public static get Task():TaskConfig{ return this.getConfig(TaskConfig) };
+	public static get TipsPlaylist():TipsPlaylistConfig{ return this.getConfig(TipsPlaylistConfig) };
 }

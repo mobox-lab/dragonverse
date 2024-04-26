@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.1.0
+ * @version 31.2.0
  * UI: UI/tip/tiptiptip.ui
 */
 
@@ -29,12 +29,12 @@ export default class tiptiptip_Generate extends UIScript {
 		}
 		return this.imgTipBg_Internal
 	}
-	private textDescribtion_Internal: mw.TextBlock
-	public get textDescribtion(): mw.TextBlock {
-		if(!this.textDescribtion_Internal&&this.uiWidgetBase) {
-			this.textDescribtion_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip/textDescribtion') as mw.TextBlock
+	private textDescription_Internal: mw.TextBlock
+	public get textDescription(): mw.TextBlock {
+		if(!this.textDescription_Internal&&this.uiWidgetBase) {
+			this.textDescription_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip/textDescription') as mw.TextBlock
 		}
-		return this.textDescribtion_Internal
+		return this.textDescription_Internal
 	}
 
 
@@ -45,6 +45,7 @@ export default class tiptiptip_Generate extends UIScript {
 	protected onAwake() {
         // 强制实现其 以规避 show 自作主张的使用 .layer 覆写 onShow 的默认参数导致的接口设计哲学不统一.
         this.layer = mw.UILayerMiddle;
+        this.overrideTextSetter();
 		this.initTextLan();
 	}
 
@@ -69,11 +70,18 @@ export default class tiptiptip_Generate extends UIScript {
         
         // 文本多语言
         
-        this.initLanguage(this.textDescribtion)
+        this.initLanguage(this.textDescription)
         
 	
         // 静态文本多语言
         
+    }
+
+    protected overrideTextSetter() {
+        
+        overrideBubblingWidget(this.textDescription);
+        
+	
     }
 
     protected unregisterTextLan(){
@@ -83,7 +91,7 @@ export default class tiptiptip_Generate extends UIScript {
         
         // 文本多语言
         
-        this.unregisterLanKey(this.textDescribtion)
+        this.unregisterLanKey(this.textDescription)
         
 	
         // 隐藏文本多语言
@@ -99,4 +107,26 @@ export default class tiptiptip_Generate extends UIScript {
         let unregisterFunc = mw.UIScript.getBehavior("unregister");
         unregisterFunc?.(ui);
     }
+}
+
+function findPropertyDescriptor(obj: unknown, prop: string): PropertyDescriptor | null {
+    while (obj !== null) {
+        let descriptor = Object.getOwnPropertyDescriptor(obj, prop);
+        if (descriptor) {
+            return descriptor;
+        }
+        obj = Object.getPrototypeOf(obj);
+    }
+    return null;
+}
+
+function overrideBubblingWidget(textWidget: mw.TextBlock) {
+    const originSetter = findPropertyDescriptor(textWidget, "text")?.set;
+    if (!originSetter) return;
+    Object.defineProperty(textWidget, "text", {
+        set: function (value: string) {
+            if (textWidget.text === value) return;
+            originSetter.call(textWidget, value);
+        },
+    });
 }

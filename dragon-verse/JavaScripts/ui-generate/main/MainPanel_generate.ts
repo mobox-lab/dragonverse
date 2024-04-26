@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.1.0
+ * @version 31.2.0
  * UI: UI/main/MainPanel.ui
 */
 
@@ -465,6 +465,7 @@ export default class MainPanel_Generate extends UIScript {
 	protected onAwake() {
         // 强制实现其 以规避 show 自作主张的使用 .layer 覆写 onShow 的默认参数导致的接口设计哲学不统一.
         this.layer = mw.UILayerMiddle;
+        this.overrideTextSetter();
 		this.initTextLan();
 	}
 
@@ -565,6 +566,49 @@ export default class MainPanel_Generate extends UIScript {
 	
     }
 
+    protected overrideTextSetter() {
+        
+        overrideBubblingWidget(this.playtimecount);
+        
+	
+        overrideBubblingWidget(this.playtimecount_1);
+        
+	
+        overrideBubblingWidget(this.textcoin);
+        
+	
+        overrideBubblingWidget(this.txtDragonBallNum);
+        
+	
+        overrideBubblingWidget(this.cost);
+        
+	
+        overrideBubblingWidget(this.cost_1);
+        
+	
+        overrideBubblingWidget(this.textRoom);
+        
+	
+        overrideBubblingWidget(this.textMap);
+        
+	
+        overrideBubblingWidget(this.textSound);
+        
+	
+        overrideBubblingWidget(this.txtContent);
+        
+	
+        overrideBubblingWidget(this.txtbtn);
+        
+	
+        overrideBubblingWidget(this.txtOperationFeedback);
+        
+	
+        overrideBubblingWidget(this.roomIdText);
+        
+	
+    }
+
     protected unregisterTextLan(){
         // 文本按钮多语言
         
@@ -657,4 +701,26 @@ export default class MainPanel_Generate extends UIScript {
         let unregisterFunc = mw.UIScript.getBehavior("unregister");
         unregisterFunc?.(ui);
     }
+}
+
+function findPropertyDescriptor(obj: unknown, prop: string): PropertyDescriptor | null {
+    while (obj !== null) {
+        let descriptor = Object.getOwnPropertyDescriptor(obj, prop);
+        if (descriptor) {
+            return descriptor;
+        }
+        obj = Object.getPrototypeOf(obj);
+    }
+    return null;
+}
+
+function overrideBubblingWidget(textWidget: mw.TextBlock) {
+    const originSetter = findPropertyDescriptor(textWidget, "text")?.set;
+    if (!originSetter) return;
+    Object.defineProperty(textWidget, "text", {
+        set: function (value: string) {
+            if (textWidget.text === value) return;
+            originSetter.call(textWidget, value);
+        },
+    });
 }
