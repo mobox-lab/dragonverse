@@ -29,12 +29,12 @@ export default class tiptiptip_Generate extends UIScript {
 		}
 		return this.imgTipBg_Internal
 	}
-	private textDescription_Internal: mw.TextBlock
-	public get textDescription(): mw.TextBlock {
-		if(!this.textDescription_Internal&&this.uiWidgetBase) {
-			this.textDescription_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip/textDescription') as mw.TextBlock
+	private textDescribtion_Internal: mw.TextBlock
+	public get textDescribtion(): mw.TextBlock {
+		if(!this.textDescribtion_Internal&&this.uiWidgetBase) {
+			this.textDescribtion_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip/textDescribtion') as mw.TextBlock
 		}
-		return this.textDescription_Internal
+		return this.textDescribtion_Internal
 	}
 
 
@@ -70,7 +70,7 @@ export default class tiptiptip_Generate extends UIScript {
         
         // 文本多语言
         
-        this.initLanguage(this.textDescription)
+        this.initLanguage(this.textDescribtion)
         
 	
         // 静态文本多语言
@@ -79,7 +79,7 @@ export default class tiptiptip_Generate extends UIScript {
 
     protected overrideTextSetter() {
         
-        overrideBubblingWidget(this.textDescription);
+        overrideBubblingWidget(this.textDescribtion);
         
 	
     }
@@ -91,7 +91,7 @@ export default class tiptiptip_Generate extends UIScript {
         
         // 文本多语言
         
-        this.unregisterLanKey(this.textDescription)
+        this.unregisterLanKey(this.textDescribtion)
         
 	
         // 隐藏文本多语言
