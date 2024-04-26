@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.1.0
+ * @version 31.2.0
  * UI: UI/main/MainPanel.ui
 */
 
@@ -344,40 +344,40 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.cnvInteract_Internal
 	}
-	private btnMain_Internal: mw.Button
-	public get btnMain(): mw.Button {
-		if(!this.btnMain_Internal&&this.uiWidgetBase) {
-			this.btnMain_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/btnMain') as mw.Button
+	private btnInteract_Internal: mw.Button
+	public get btnInteract(): mw.Button {
+		if(!this.btnInteract_Internal&&this.uiWidgetBase) {
+			this.btnInteract_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/btnInteract') as mw.Button
 		}
-		return this.btnMain_Internal
+		return this.btnInteract_Internal
 	}
-	private txtContent_Internal: mw.TextBlock
-	public get txtContent(): mw.TextBlock {
-		if(!this.txtContent_Internal&&this.uiWidgetBase) {
-			this.txtContent_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/txtContent') as mw.TextBlock
+	private txtInteractContent_Internal: mw.TextBlock
+	public get txtInteractContent(): mw.TextBlock {
+		if(!this.txtInteractContent_Internal&&this.uiWidgetBase) {
+			this.txtInteractContent_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/txtInteractContent') as mw.TextBlock
 		}
-		return this.txtContent_Internal
+		return this.txtInteractContent_Internal
 	}
-	private imgIcon_Internal: mw.Image
-	public get imgIcon(): mw.Image {
-		if(!this.imgIcon_Internal&&this.uiWidgetBase) {
-			this.imgIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/imgIcon') as mw.Image
+	private imgInteractIcon_Internal: mw.Image
+	public get imgInteractIcon(): mw.Image {
+		if(!this.imgInteractIcon_Internal&&this.uiWidgetBase) {
+			this.imgInteractIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/imgInteractIcon') as mw.Image
 		}
-		return this.imgIcon_Internal
+		return this.imgInteractIcon_Internal
 	}
-	private imgbtn_Internal: mw.Image
-	public get imgbtn(): mw.Image {
-		if(!this.imgbtn_Internal&&this.uiWidgetBase) {
-			this.imgbtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/imgbtn') as mw.Image
+	private imgInteractKeyTips_Internal: mw.Image
+	public get imgInteractKeyTips(): mw.Image {
+		if(!this.imgInteractKeyTips_Internal&&this.uiWidgetBase) {
+			this.imgInteractKeyTips_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/imgInteractKeyTips') as mw.Image
 		}
-		return this.imgbtn_Internal
+		return this.imgInteractKeyTips_Internal
 	}
-	private txtbtn_Internal: mw.TextBlock
-	public get txtbtn(): mw.TextBlock {
-		if(!this.txtbtn_Internal&&this.uiWidgetBase) {
-			this.txtbtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/txtbtn') as mw.TextBlock
+	private txtInteractKeyTips_Internal: mw.TextBlock
+	public get txtInteractKeyTips(): mw.TextBlock {
+		if(!this.txtInteractKeyTips_Internal&&this.uiWidgetBase) {
+			this.txtInteractKeyTips_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/txtInteractKeyTips') as mw.TextBlock
 		}
-		return this.txtbtn_Internal
+		return this.txtInteractKeyTips_Internal
 	}
 	private cnvOperationalFeedback_Internal: mw.Canvas
 	public get cnvOperationalFeedback(): mw.Canvas {
@@ -465,6 +465,7 @@ export default class MainPanel_Generate extends UIScript {
 	protected onAwake() {
         // 强制实现其 以规避 show 自作主张的使用 .layer 覆写 onShow 的默认参数导致的接口设计哲学不统一.
         this.layer = mw.UILayerMiddle;
+        this.overrideTextSetter();
 		this.initTextLan();
 	}
 
@@ -540,10 +541,10 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.textSound)
         
 	
-        this.initLanguage(this.txtContent)
+        this.initLanguage(this.txtInteractContent)
         
 	
-        this.initLanguage(this.txtbtn)
+        this.initLanguage(this.txtInteractKeyTips)
         
 	
         this.initLanguage(this.txtOperationFeedback)
@@ -561,6 +562,49 @@ export default class MainPanel_Generate extends UIScript {
         
 	
         this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as mw.TextBlock);
+        
+	
+    }
+
+    protected overrideTextSetter() {
+        
+        overrideBubblingWidget(this.playtimecount);
+        
+	
+        overrideBubblingWidget(this.playtimecount_1);
+        
+	
+        overrideBubblingWidget(this.textcoin);
+        
+	
+        overrideBubblingWidget(this.txtDragonBallNum);
+        
+	
+        overrideBubblingWidget(this.cost);
+        
+	
+        overrideBubblingWidget(this.cost_1);
+        
+	
+        overrideBubblingWidget(this.textRoom);
+        
+	
+        overrideBubblingWidget(this.textMap);
+        
+	
+        overrideBubblingWidget(this.textSound);
+        
+	
+        overrideBubblingWidget(this.txtInteractContent);
+        
+	
+        overrideBubblingWidget(this.txtInteractKeyTips);
+        
+	
+        overrideBubblingWidget(this.txtOperationFeedback);
+        
+	
+        overrideBubblingWidget(this.roomIdText);
         
 	
     }
@@ -623,10 +667,10 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.textSound)
         
 	
-        this.unregisterLanKey(this.txtContent)
+        this.unregisterLanKey(this.txtInteractContent)
         
 	
-        this.unregisterLanKey(this.txtbtn)
+        this.unregisterLanKey(this.txtInteractKeyTips)
         
 	
         this.unregisterLanKey(this.txtOperationFeedback)
@@ -657,4 +701,26 @@ export default class MainPanel_Generate extends UIScript {
         let unregisterFunc = mw.UIScript.getBehavior("unregister");
         unregisterFunc?.(ui);
     }
+}
+
+function findPropertyDescriptor(obj: unknown, prop: string): PropertyDescriptor | null {
+    while (obj !== null) {
+        let descriptor = Object.getOwnPropertyDescriptor(obj, prop);
+        if (descriptor) {
+            return descriptor;
+        }
+        obj = Object.getPrototypeOf(obj);
+    }
+    return null;
+}
+
+function overrideBubblingWidget(textWidget: mw.TextBlock) {
+    const originSetter = findPropertyDescriptor(textWidget, "text")?.set;
+    if (!originSetter) return;
+    Object.defineProperty(textWidget, "text", {
+        set: function (value: string) {
+            if (textWidget.text === value) return;
+            originSetter.call(textWidget, value);
+        },
+    });
 }
