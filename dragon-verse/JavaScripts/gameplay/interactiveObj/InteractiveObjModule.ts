@@ -138,12 +138,12 @@ export class InteractiveObjModuleC extends ModuleC<InteractiveObjModuleS, null> 
         let finalPoints = this._quadTree.query(this._detectingRect, points);
         //先show现在的
         finalPoints.forEach(point => {
-            this._interactiveObjs.get(point.goGuid).activeMode.canActivate = true;
+            this._interactiveObjs.get(point.goGuid).canActivate(true);
         });
         //再hide不在的
         this._lastShowPoints.forEach(point => {
             if (finalPoints.indexOf(point) == -1) {
-                this._interactiveObjs.get(point.goGuid).activeMode.canActivate = false;
+                this._interactiveObjs.get(point.goGuid).canActivate(false);
             }
         });
 

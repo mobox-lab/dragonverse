@@ -23,6 +23,8 @@ export abstract class BaseInteractiveObj extends mw.Script implements IInteracti
     abstract someOneStopInteractionInServer(playerId: number): void;
     abstract someOneStopInteractionInClient(playerId: number): void;
 
+    abstract canActivate(value: boolean): void;
+
     abstract activeMode: ActivateMode;
 
     protected onStart(): void {
@@ -44,7 +46,6 @@ export abstract class BaseInteractiveObj extends mw.Script implements IInteracti
         } else if (SystemUtil.isClient()) {
             ModuleService.getModule(InteractiveObjModuleC).unRegisterInteractiveObj(this.gameObject.gameObjectId);
         }
-
     }
 }
 
@@ -131,6 +132,16 @@ export abstract class IndividualInteractiveObj extends BaseInteractiveObj {
         this.stopInteractionInClient(playerId, () => {
             ModuleService.getModule(InteractiveObjModuleC).endInteraction();
         });
+    }
+
+    canActivate(value: boolean): void {
+        if (value) {
+            if (this.ownerPlayerId === IndividualInteractiveObj.EndInteractionFlag) {
+                this.activeMode.activate = true;
+            }
+        } else {
+            this.activeMode.activate = false;
+        }
     }
 
 }
@@ -224,5 +235,15 @@ export abstract class SharedInteractiveObj extends BaseInteractiveObj {
         this.stopInteractionInClient(playerId, () => {
             ModuleService.getModule(InteractiveObjModuleC).endInteraction();
         });
+    }
+
+    canActivate(value: boolean): void {
+        if (value) {
+            if (this.ownerPlayerCount < this.maxPlayerCount) {
+                this.activeMode.activate = true;
+            }
+        } else {
+            this.activeMode.activate = false;
+        }
     }
 }
