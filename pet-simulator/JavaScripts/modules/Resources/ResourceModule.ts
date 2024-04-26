@@ -395,14 +395,19 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
             return;
         }
         let historyScenceId = this.getHistoryRes(areaId);
-        if (historyScenceId == 0 && areaId == 1002) { //初始默认区域
-            let type = this.isAreaOneFront(pointId);
-            historyScenceId = this.getScenceUnitId(areaId, type);
-        } else if (historyScenceId == 0) {
+        // if (historyScenceId == 0 && areaId == 1002) { //初始默认区域
+        //     let type = this.isAreaOneFront(pointId);
+        //     historyScenceId = this.getScenceUnitId(areaId, type);
+        // } else if (historyScenceId == 0) {
+        //     let type = this.randomCreate(areaId);
+        //     historyScenceId = this.getScenceUnitId(areaId, type);
+        // } else if (historyScenceId != 0 && areaId == 1002) {
+        //     let type = this.isAreaOneFront(pointId);
+        //     historyScenceId = this.getScenceUnitId(areaId, type);
+        // }
+
+        if (historyScenceId == 0) {
             let type = this.randomCreate(areaId);
-            historyScenceId = this.getScenceUnitId(areaId, type);
-        } else if (historyScenceId != 0 && areaId == 1002) {
-            let type = this.isAreaOneFront(pointId);
             historyScenceId = this.getScenceUnitId(areaId, type);
         }
 

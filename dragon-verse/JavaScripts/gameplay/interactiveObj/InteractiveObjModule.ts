@@ -7,7 +7,7 @@ import { BaseInteractiveObj } from "./BaseInteractiveScript";
 
 export class InteractiveObjModuleS extends ModuleS<InteractiveObjModuleC, null> {
     /**
-     * 独享交互物，记录当前与之交互的玩家id
+     * 记录当前玩家正在交互的物体
      */
     private _playerAndInteractingGoMap: Map<number, string> = new Map<number, string>();
 
@@ -60,7 +60,8 @@ export class InteractiveObjModuleS extends ModuleS<InteractiveObjModuleC, null> 
      */
     @noReply()
     public net_stopInteraction(playerId: number, goGuid: string): void {
-
+        //如果已经退出了，可能的情况是手动调用了endInteraction，而触发器还能触发结束
+        if (this._playerAndInteractingGoMap.get(playerId) != goGuid) return;
         this._interactiveObjs.get(goGuid).someOneStopInteractionInServer(playerId);
     }
 
@@ -70,7 +71,7 @@ export class InteractiveObjModuleS extends ModuleS<InteractiveObjModuleC, null> 
     }
 
     public net_recordEndInteraction(playerId: number) {
-        this._playerAndInteractingGoMap.delete(playerId);
+        this._playerAndInteractingGoMap.set(playerId, null);
     }
 
     /** 
@@ -137,12 +138,12 @@ export class InteractiveObjModuleC extends ModuleC<InteractiveObjModuleS, null> 
         let finalPoints = this._quadTree.query(this._detectingRect, points);
         //先show现在的
         finalPoints.forEach(point => {
-            this._interactiveObjs.get(point.goGuid).activeMode.canActivate = true;
+            this._interactiveObjs.get(point.goGuid).canActivate(true);
         });
         //再hide不在的
         this._lastShowPoints.forEach(point => {
             if (finalPoints.indexOf(point) == -1) {
-                this._interactiveObjs.get(point.goGuid).activeMode.canActivate = false;
+                this._interactiveObjs.get(point.goGuid).canActivate(false);
             }
         });
 

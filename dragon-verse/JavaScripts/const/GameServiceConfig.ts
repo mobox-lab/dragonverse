@@ -1,6 +1,7 @@
 import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
+    public static readonly TipsDuration = 5e3;
     //#region Sub Game
     /**
      * 跳子游戏 进度条时长.

@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-04-24 16:48:00
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-04-25 15:08:48
+ * @LastEditTime : 2024-04-26 09:34:16
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\ActiveMode.ts
  * @Description  : 交互物触发模式
  */
@@ -16,23 +16,23 @@ import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjMo
 export abstract class ActivateMode {
     protected _interactiveObj: GameObject;
 
-    private _canActivate: boolean = true;
+    private _activate: boolean = true;
 
     constructor(interactiveObj: GameObject) {
         this._interactiveObj = interactiveObj;
     }
 
-    public get canActivate(): boolean {
-        return this._canActivate;
+    public get activate(): boolean {
+        return this._activate;
     }
 
-    public set canActivate(value: boolean) {
-        this._canActivate = value;
+    public set activate(value: boolean) {
+        this._activate = value;
     }
 }
 
 /** 
- * @description: 触发器环境
+ * @description: 设置触发器在哪里触发，最终的客户端和服务端的交互函数还是都会触发，只为了防止双端都触发逻辑冗余
  */
 export enum TriggerType {
     TriggerInServer,
@@ -60,9 +60,9 @@ export class ActivateByTrigger extends ActivateMode {
         }
     }
 
-    set canActivate(value: boolean) {
-        super.canActivate = value;
-        this.canActivate ? this.enableTrigger() : this.disableTrigger();
+    set activate(value: boolean) {
+        super.activate = value;
+        this.activate ? this.enableTrigger() : this.disableTrigger();
     }
 
     private enableTrigger() {
@@ -150,8 +150,8 @@ export class ActivateByUI extends ActivateMode {
 
     }
 
-    set canActivate(value: boolean) {
-        super.canActivate = value;
+    set activate(value: boolean) {
+        super.activate = value;
         if (!SystemUtil.isClient()) return;
         if (value) {
             this.canShowUI();
@@ -232,6 +232,14 @@ export class ActivateByUIAndTrigger extends ActivateByUI {
                 this.hideUI();
             }
         }
+    }
+
+    public clickToStartInteraction() {
+        ModuleService.getModule(InteractiveObjModuleC).startInteraction(this._interactiveObj.gameObjectId);
+    }
+
+    public clickToEndInteraction() {
+        ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this._interactiveObj.gameObjectId);
     }
 }
 

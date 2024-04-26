@@ -15,13 +15,15 @@ export abstract class BaseInteractiveObj extends mw.Script implements IInteracti
 
     protected abstract startInteractionInServer(playerId: number): void;
     protected abstract startInteractionInClient(playerId: number): void;
-    protected abstract stopInteractionInServer(playerId: number, finishCallBack: () => void): void;
-    protected abstract stopInteractionInClient(playerId: number, finishCallBack: () => void): void;
+    protected abstract stopInteractionInServer(playerId: number, finishCallBack?: () => void): void;
+    protected abstract stopInteractionInClient(playerId: number, finishCallBack?: () => void): void;
 
     abstract someOneStartInteractionInClient(playerId: number): void;
     abstract someOneStartInteractionInServer(playerId: number): void;
     abstract someOneStopInteractionInServer(playerId: number): void;
     abstract someOneStopInteractionInClient(playerId: number): void;
+
+    abstract canActivate(value: boolean): void;
 
     abstract activeMode: ActivateMode;
 
@@ -44,7 +46,6 @@ export abstract class BaseInteractiveObj extends mw.Script implements IInteracti
         } else if (SystemUtil.isClient()) {
             ModuleService.getModule(InteractiveObjModuleC).unRegisterInteractiveObj(this.gameObject.gameObjectId);
         }
-
     }
 }
 
@@ -133,6 +134,16 @@ export abstract class IndividualInteractiveObj extends BaseInteractiveObj {
         });
     }
 
+    canActivate(value: boolean): void {
+        if (value) {
+            if (this.ownerPlayerId === IndividualInteractiveObj.EndInteractionFlag) {
+                this.activeMode.activate = true;
+            }
+        } else {
+            this.activeMode.activate = false;
+        }
+    }
+
 }
 
 /** 
@@ -216,11 +227,23 @@ export abstract class SharedInteractiveObj extends BaseInteractiveObj {
         this.ownerPlayerCount++;
         this.startInteractionInServer(playerId);
         ModuleService.getModule(InteractiveObjModuleS).startSharedInteraction(playerId, this.gameObject.gameObjectId);
+        //设置上玩家在交互
+        ModuleService.getModule(InteractiveObjModuleS).recordStartInteraction(playerId, this.gameObject.gameObjectId);
     }
 
     someOneStopInteractionInClient(playerId: number): void {
         this.stopInteractionInClient(playerId, () => {
             ModuleService.getModule(InteractiveObjModuleC).endInteraction();
         });
+    }
+
+    canActivate(value: boolean): void {
+        if (value) {
+            if (this.ownerPlayerCount < this.maxPlayerCount) {
+                this.activeMode.activate = true;
+            }
+        } else {
+            this.activeMode.activate = false;
+        }
     }
 }
