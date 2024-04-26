@@ -24,7 +24,7 @@ const autoRegisterSelf = () => {
     GlobalTips.getInstance().setGlobalTipsContainer(GlobalTipsPanel);
     let random = Math.floor(Math.random() * GameConfig.TipsPlaylist.getAllElement().length) + 1;
     let tips = GameConfig.TipsPlaylist.getElement(random);
-    GlobalTips.getInstance().showGlobalTips(i18n.lan(tips.content));
+    GlobalTips.getInstance().showGlobalTips(i18n.lan(tips.content), { duration: GameServiceConfig.TipsDuration });
 };
 
 if (mw.SystemUtil.isClient()) {
