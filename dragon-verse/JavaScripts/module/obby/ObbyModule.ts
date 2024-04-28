@@ -1,29 +1,28 @@
 import Enumerable from "linq";
 import UUID from "pure-uuid";
-import {GameConfig} from "../../config/GameConfig";
-import {EventDefine} from "../../const/EventDefine";
-import {BagTypes} from "../../const/ForeignKeyIndexer";
+import { GameConfig } from "../../config/GameConfig";
+import { EventDefine } from "../../const/EventDefine";
+import { BagTypes } from "../../const/ForeignKeyIndexer";
 
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MainPanel from "../../ui/main/MainPanel";
 
-import {BagModuleS} from "../bag/BagModule";
-
+import { BagModuleS } from "../bag/BagModule";
 
 import noReply = mwext.Decorator.noReply;
 import EventListener = mw.EventListener;
 
-import {ObbyInteractorPanel} from "../../ui/obby/ObbyInteractorPanel";
-import {DataUpgradeMethod, JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
+import { ObbyInteractorPanel } from "../../ui/obby/ObbyInteractorPanel";
+import { DataUpgradeMethod, JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
 import UnifiedRoleController from "../role/UnifiedRoleController";
-import {ObbyEndPanel, ObbyGameData} from "../../ui/obby/ObbyEndPanel";
-import {MapManager} from "../../gameplay/map/MapManager";
-import {NoOverride} from "../../util/GToolkit";
-import {AuthModuleS} from "../auth/AuthModule";
-
+import { ObbyEndPanel, ObbyGameData } from "../../ui/obby/ObbyEndPanel";
+import { MapManager } from "../../gameplay/map/MapManager";
+import { NoOverride } from "../../util/GToolkit";
+import { AuthModuleS } from "../auth/AuthModule";
+import GlobalTips from "../../depend/global-tips/GlobalTips";
 
 export default class ObbyModuleData extends JModuleData {
     @Decorator.persistence()
@@ -43,17 +42,16 @@ export default class ObbyModuleData extends JModuleData {
     }
 
     protected get releasedVersions(): number[] {
-        return [
-            202401291339,
-            202403051755
-        ];
+        return [202401291339, 202403051755];
     }
 
     protected get updateVersionMethod(): DataUpgradeMethod<this>[] {
-        return [(data) => {
-            delete data["lv"];
-            return data;
-        }];
+        return [
+            (data) => {
+                delete data["lv"];
+                return data;
+            },
+        ];
     }
 }
 
@@ -115,7 +113,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
         super.onDestroy();
 
         //#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
+        this._eventListeners.forEach((value) => value.disconnect());
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -128,16 +126,23 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
     //#region Method
 
     private initCheckPoint() {
-
         let len = GameConfig.Obbycheck.getAllElement().length;
         this._maxLv = len;
         for (let i = 1; i <= len; i++) {
             let ele = GameConfig.Obbycheck.getElement(i);
-            this._checkPointCfg["" + i] = new mw.Vector(ele.checkpointloc[0], ele.checkpointloc[1], ele.checkpointloc[2]);
-            this._effectPointCfg["" + i] = new mw.Vector(ele.splashpointloc[0], ele.splashpointloc[1], ele.splashpointloc[2]);
+            this._checkPointCfg["" + i] = new mw.Vector(
+                ele.checkpointloc[0],
+                ele.checkpointloc[1],
+                ele.checkpointloc[2]
+            );
+            this._effectPointCfg["" + i] = new mw.Vector(
+                ele.splashpointloc[0],
+                ele.splashpointloc[1],
+                ele.splashpointloc[2]
+            );
             this._effectScaleCfg["" + i] = new mw.Vector(ele.splashscale[0], ele.splashscale[1], ele.splashscale[2]);
         }
-        // reborn ============== pos=X=393994.28125 Y=13640.490234375 Z=24237.24609375 
+        // reborn ============== pos=X=393994.28125 Y=13640.490234375 Z=24237.24609375
     }
 
     /**
@@ -153,7 +158,6 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
     public enterGame() {
         //拉取当前的进度
         // this._isStart = false;
-
 
         this._isInGame = true;
         this._curLv = 0;
@@ -218,7 +222,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
                 //寻路完了
             } else {
                 //没钱了
-                Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.autoFindPath_Fail));
+                GlobalTips.getInstance().showGlobalTips(i18n.lan(i18n.lanKeys.autoFindPath_Fail));
             }
             this._isFindingPath = false;
         }
@@ -227,24 +231,21 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
     public async setInvincible() {
         let res = await this.server.net_setInvincible();
         if (res) {
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Invincible_End));
+            GlobalTips.getInstance().showGlobalTips(i18n.lan(i18n.lanKeys.Invincible_End));
         } else {
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.addInvincible_Fail));
+            GlobalTips.getInstance().showGlobalTips(i18n.lan(i18n.lanKeys.addInvincible_Fail));
         }
     }
 
     public net_setInvincibleSuccess() {
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.addInvincible_Success));
-
+        GlobalTips.getInstance().showGlobalTips(i18n.lan(i18n.lanKeys.addInvincible_Success));
     }
-
 
     /**
      * 通过检查点
      * @param playerId
      */
     public async updateCheckPoint(checkPointId: number) {
-
         //拉取当前的进度
         if (checkPointId <= this._curLv) {
             return;
@@ -256,13 +257,10 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
         //播放粒子特效
         let pos = this._effectPointCfg["" + lv];
         let scale = this._effectScaleCfg["" + lv];
-        EffectService.playAtPosition(
-            GameServiceConfig.SCENE_DRAGON_OBBY,
-            pos,
-            {
-                scale: scale,
-                loopCount: 1,
-            });
+        EffectService.playAtPosition(GameServiceConfig.SCENE_DRAGON_OBBY, pos, {
+            scale: scale,
+            loopCount: 1,
+        });
         Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_GoldReward));
     }
 
@@ -365,7 +363,9 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
         //     Player.localPlayer.character.worldTransform.position = this._checkPointCfg["" + this._curLv];
         // }
         Player.localPlayer.character.worldTransform.position = GameServiceConfig.ENTER_OBBY_GAME_POS;
-        Nolan.getInstance().lookToward(Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward));
+        Nolan.getInstance().lookToward(
+            Player.localPlayer.character.worldTransform.rotation.rotateVector(Vector.forward)
+        );
         this.exitGame();
     }
 
@@ -381,8 +381,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
         if (!isInvincible) {
             let isAutoMoving = await this.server.net_isAutoMoving();
             if (!isAutoMoving) {
-
-                Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Obby_RedTips));
+                GlobalTips.getInstance().showGlobalTips(i18n.lan(i18n.lanKeys.Obby_RedTips));
                 TimeUtil.delaySecond(GameServiceConfig.REBORN_INTERVAL_OBBY).then(() => {
                     this.endGame();
                 });
@@ -454,7 +453,7 @@ export class ObbyModuleC extends JModuleC<ObbyModuleS, ObbyModuleData> {
     }
 
     public net_showEnterTips() {
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.ObbyEnterWithoutTicket));
+        GlobalTips.getInstance().showGlobalTips(i18n.lan(i18n.lanKeys.ObbyEnterWithoutTicket));
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -497,7 +496,7 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
         Log4Ts.log(ObbyModuleS, "obbyModules onStart================");
 
         //#region Member init
-        //#endregion ------------------------------------------------------------------------------------------ 
+        //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
         //#endregion ------------------------------------------------------------------------------------------
@@ -510,7 +509,7 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        //TODO_LviatYi 
+        //TODO_LviatYi
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -595,7 +594,7 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
                 currentCount,
                 duration: Date.now() - this._playerStartTimeMap.get(playerId),
                 totalCount: data.totalStarCount,
-                passedLevel: levels
+                passedLevel: levels,
             };
         }
         return null;
@@ -644,17 +643,24 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
             return Promise.resolve(false);
         } else {
             //判断有没钱
-            let res = ModuleService.getModule(BagModuleS).consumeObbyCoin(this.currentPlayerId, GameServiceConfig.INVINCIBLE_COST);
+            let res = ModuleService.getModule(BagModuleS).consumeObbyCoin(
+                this.currentPlayerId,
+                GameServiceConfig.INVINCIBLE_COST
+            );
             if (res) {
                 this._playerIsInvincible.set(this.currentPlayerId, true);
                 let playerId = this.currentPlayerId;
-                EffectService.playOnGameObject(GameServiceConfig.OBBY_INVINCIBLE_EFFECT_GUID, this.currentPlayer.character, {
-                    slotType: HumanoidSlotType.Root,
-                    duration: GameServiceConfig.OBBY_INVINCIBLE_TIME,
-                    position: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_POS_OFFSET,
-                    rotation: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_ROTATION,
-                    scale: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_SCALE
-                });
+                EffectService.playOnGameObject(
+                    GameServiceConfig.OBBY_INVINCIBLE_EFFECT_GUID,
+                    this.currentPlayer.character,
+                    {
+                        slotType: HumanoidSlotType.Root,
+                        duration: GameServiceConfig.OBBY_INVINCIBLE_TIME,
+                        position: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_POS_OFFSET,
+                        rotation: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_ROTATION,
+                        scale: GameServiceConfig.OBBY_INVINCIBLE_EFFECT_SCALE,
+                    }
+                );
                 this.getClient(this.currentPlayerId).net_setInvincibleSuccess();
 
                 await mw.TimeUtil.delaySecond(GameServiceConfig.OBBY_INVINCIBLE_TIME);
@@ -680,7 +686,10 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
     public async net_autoFindPath(): Promise<boolean> {
         if (this._playerIsAutoMove.get(this.currentPlayerId) !== true) {
             //不在传送
-            let res = ModuleService.getModule(BagModuleS).consumeObbyCoin(this.currentPlayerId, GameServiceConfig.AUTO_FIND_PATH_COST);
+            let res = ModuleService.getModule(BagModuleS).consumeObbyCoin(
+                this.currentPlayerId,
+                GameServiceConfig.AUTO_FIND_PATH_COST
+            );
             if (res) {
                 let character = Player.getPlayer(this.currentPlayerId).character;
                 if (!character) return;
@@ -696,15 +705,22 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
                 this._playerIsAutoMove.set(this.currentPlayerId, true);
                 let playerId = this.currentPlayerId;
 
-                Event.dispatchToLocal(EventDefine.ObbyStarCollectLevel, Player.getPlayer(this.currentPlayerId), this._playerArrivedCheckPoint.get(this.currentPlayerId));
+                Event.dispatchToLocal(
+                    EventDefine.ObbyStarCollectLevel,
+                    Player.getPlayer(this.currentPlayerId),
+                    this._playerArrivedCheckPoint.get(this.currentPlayerId)
+                );
 
-                actions.tween(character.worldTransform).to(1000, {position: pos}).call(() => {
-                    animation.stop();
-                    character.gravityScale = oriGravity;
-                    character.movementEnabled = true;
-                    this._playerIsAutoMove.set(playerId, false);
-
-                }).start();
+                actions
+                    .tween(character.worldTransform)
+                    .to(1000, { position: pos })
+                    .call(() => {
+                        animation.stop();
+                        character.gravityScale = oriGravity;
+                        character.movementEnabled = true;
+                        this._playerIsAutoMove.set(playerId, false);
+                    })
+                    .start();
                 await TimeUtil.delaySecond(1);
                 return Promise.resolve(true);
             } else {
@@ -767,5 +783,4 @@ interface GameResult {
      * 通过的关卡数
      */
     passedLevel: number;
-
 }

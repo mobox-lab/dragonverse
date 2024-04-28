@@ -9,6 +9,7 @@ import GToolkit, { Expression, GtkTypes } from "../../util/GToolkit";
 import noReply = mwext.Decorator.noReply;
 import { TimeManager } from "../../controller/TimeManager";
 import GlobalProperty from "../../GlobalProperty";
+import GlobalTips from "../../depend/global-tips/GlobalTips";
 
 type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
 
@@ -48,23 +49,23 @@ interface SubGameInfo {
     /**
      * 用户 uuid.
      */
-    userId: string,
+    userId: string;
     /**
      * 闯关的积分.
      */
-    point: number,
+    point: number;
     /**
      * 这是第几个小游戏，目前只能填 6.
      */
-    gameNum: number,
+    gameNum: number;
     /**
      * 完成时间.
      */
-    achievedAt: number,
+    achievedAt: number;
     /**
      * 当前签名时间.
      */
-    timestamp: number,
+    timestamp: number;
 }
 
 /**
@@ -94,11 +95,7 @@ export default class DragonVerseAuthModuleData extends mwext.Subdata {
      * 以版本发布时间 升序排列.
      * RV.
      */
-    public static readonly RELEASE_VERSIONS: number[] = [
-        1,
-        202401051219,
-        202403181323,
-    ];
+    public static readonly RELEASE_VERSIONS: number[] = [1, 202401051219, 202403181323];
 
     /**
      * 版本升级办法.
@@ -130,7 +127,7 @@ export default class DragonVerseAuthModuleData extends mwext.Subdata {
     @Decorator.persistence()
     public codeVerifyReqData: number[] = [];
 
-//#region Sub data
+    //#region Sub data
     protected initDefaultData(): void {
         super.initDefaultData();
         this.holdUserId = null;
@@ -151,7 +148,7 @@ export default class DragonVerseAuthModuleData extends mwext.Subdata {
         return DragonVerseAuthModuleData.RELEASE_VERSIONS[DragonVerseAuthModuleData.RELEASE_VERSIONS.length - 1];
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     /**
      * 数据版本检查.
@@ -159,10 +156,11 @@ export default class DragonVerseAuthModuleData extends mwext.Subdata {
     public checkVersion() {
         if (this.currentVersion === this.version) return;
 
-        Log4Ts.log(DragonVerseAuthModuleData,
+        Log4Ts.log(
+            DragonVerseAuthModuleData,
             `数据准备升级`,
             () => `当前版本: ${this.currentVersion}`,
-            () => `最新版本: ${this.version}.`,
+            () => `最新版本: ${this.version}.`
         );
 
         const startIndex = DragonVerseAuthModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
@@ -171,7 +169,8 @@ export default class DragonVerseAuthModuleData extends mwext.Subdata {
                 DragonVerseAuthModuleData,
                 `数据号版本异常`,
                 `不是已发布的版本号`,
-                () => `当前版本: ${this.currentVersion}.`);
+                () => `当前版本: ${this.currentVersion}.`
+            );
             return;
         }
 
@@ -205,11 +204,28 @@ class RequestGuard {
             return false;
         }
 
-        this._p -= this._q.shiftAll(item => now - item > GToolkit.timeConvert(1, GtkTypes.TimeFormatDimensionFlags.Day, GtkTypes.TimeFormatDimensionFlags.Millisecond));
+        this._p -= this._q.shiftAll(
+            (item) =>
+                now - item >
+                GToolkit.timeConvert(
+                    1,
+                    GtkTypes.TimeFormatDimensionFlags.Day,
+                    GtkTypes.TimeFormatDimensionFlags.Millisecond
+                )
+        );
         let p = this._p;
         while (true) {
             const item = this._q.get(++p);
-            if (item === null || now - item <= GToolkit.timeConvert(1, GtkTypes.TimeFormatDimensionFlags.Hour, GtkTypes.TimeFormatDimensionFlags.Millisecond)) break;
+            if (
+                item === null ||
+                now - item <=
+                    GToolkit.timeConvert(
+                        1,
+                        GtkTypes.TimeFormatDimensionFlags.Hour,
+                        GtkTypes.TimeFormatDimensionFlags.Millisecond
+                    )
+            )
+                break;
         }
         this._p = p - 1;
 
@@ -255,14 +271,14 @@ class RequestGuard {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModuleData> {
-//#region Member
+    //#region Member
     private _originToken: string = null;
 
     private _lastSubGameReportTime: number = 0;
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region MetaWorld Event
+    //#region MetaWorld Event
     protected onAwake(): void {
         super.onAwake();
     }
@@ -270,12 +286,12 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
     protected onStart(): void {
         super.onStart();
 
-//#region Member init
+        //#region Member init
         this.server.net_initPlayerData(AccountService.getNickName());
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Event Subscribe
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#region Event Subscribe
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
     protected onUpdate(dt: number): void {
@@ -292,23 +308,21 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
 
     protected onDestroy(): void {
         super.onDestroy();
-//#region Event Unsubscribe
-//#endregion ------------------------------------------------------------------------------------------
+        //#region Event Unsubscribe
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onExecute(type: number, ...params: any[]): void {
         super.onExecute(type, ...params);
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Method
+    //#region Method
 
     private generateSaltToken(): SaltToken {
         const time = TimeManager.getInstance().currentTime;
-        return new SaltToken(
-            AuthModuleS.encryptToken(this._originToken, time),
-            time);
+        return new SaltToken(AuthModuleS.encryptToken(this._originToken, time), time);
     }
 
     /**
@@ -317,11 +331,7 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
      * @private
      */
     private releasePlayer() {
-        logState(
-            AuthModuleC,
-            "log",
-            `release player. enjoy!`,
-            true, Player.localPlayer.playerId);
+        logState(AuthModuleC, "log", `release player. enjoy!`, true, Player.localPlayer.playerId);
         Event.dispatchToLocal(EventDefine.PlayerEnableEnter);
     }
 
@@ -341,18 +351,18 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
         this.server.net_reportSubGameInfo(clientTimeStamp, subGameType, value);
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Net Method
+    //#region Net Method
     public net_verifyFail() {
-        Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan("verifyCodeFail"));
+        GlobalTips.getInstance().showGlobalTips(i18n.lan("verifyCodeFail"));
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModuleData> {
-//#region Constant
+    //#region Constant
     /**
      * 验证时间容差.
      * 容差范围内的时间允许通过验证.
@@ -457,9 +467,11 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         }
         //TODO_LviatYi encrypt token with time salt
         const saltTimeStr = saltTime.toString();
-        return saltTimeStr.substring(0, saltTimeStr.length / 2) +
+        return (
+            saltTimeStr.substring(0, saltTimeStr.length / 2) +
             token +
-            saltTimeStr.substring(saltTimeStr.length / 2, saltTimeStr.length);
+            saltTimeStr.substring(saltTimeStr.length / 2, saltTimeStr.length)
+        );
     }
 
     /**
@@ -474,20 +486,22 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         //TODO_LviatYi decrypt token with time salt
         const saltTimeStr = saltTime.toString();
         const token = saltToken.substring(saltTimeStr.length / 2, saltToken.length - saltTimeStr.length / 2);
-        const timeStr = saltToken.substring(0, saltTimeStr.length / 2) + saltToken.substring(saltToken.length - saltTimeStr.length / 2, saltToken.length);
+        const timeStr =
+            saltToken.substring(0, saltTimeStr.length / 2) +
+            saltToken.substring(saltToken.length - saltTimeStr.length / 2, saltToken.length);
 
         return timeStr === saltTime.toString() ? token : null;
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Member
+    //#region Member
     private _codeVerifyMap: Map<number, RequestGuard> = new Map<number, RequestGuard>();
 
     private _subGameReportMap: Map<number, number> = new Map<number, number>();
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region MetaWorld Event
+    //#region MetaWorld Event
     protected onAwake(): void {
         super.onAwake();
     }
@@ -495,11 +509,11 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
     protected onStart(): void {
         super.onStart();
         AuthModuleS.getSensitiveData();
-//#region Member init
-//#endregion ------------------------------------------------------------------------------------------
+        //#region Member init
+        //#endregion ------------------------------------------------------------------------------------------
 
-//#region Event Subscribe
-//#endregion ------------------------------------------------------------------------------------------
+        //#region Event Subscribe
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onUpdate(dt: number): void {
@@ -515,8 +529,8 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
 
     protected onDestroy(): void {
         super.onDestroy();
-//#region Event Unsubscribe
-//#endregion ------------------------------------------------------------------------------------------
+        //#region Event Unsubscribe
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onExecute(type: number, ...params: any[]): void {
@@ -568,70 +582,67 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         GToolkit.doUntilTrue(
             () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
             this.getCodeVerifyAesKey,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL
         );
         GToolkit.doUntilTrue(
             () => !GToolkit.isNullOrEmpty(this.CLIENT_ID),
             this.getClientId,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL
         );
         GToolkit.doUntilTrue(
             () => !GToolkit.isNullOrEmpty(this.SECRET),
             this.querySecret,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL
         );
     }
 
     private static getCodeVerifyAesKey() {
-        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then(
-            (value) => {
-                Log4Ts.log(AuthModuleS, `value`, value.code);
-                if (value.code === 200) {
-                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
-                        AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16).split("").reverse().join("");
-                    } else {
-                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey Failed`);
-                        DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
-                    }
+        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then((value) => {
+            Log4Ts.log(AuthModuleS, `value`, value.code);
+            if (value.code === 200) {
+                if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
+                    AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16)
+                        .split("")
+                        .reverse()
+                        .join("");
+                } else {
+                    Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey Failed`);
+                    DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
                 }
             }
-        );
+        });
     }
 
     private static getClientId() {
-        DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then(
-            (value) => {
-                if (value.code === 200) {
-                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.CLIENT_ID = value.data;
-                    } else {
-                        Log4Ts.log(AuthModuleS, `getClientId Failed`);
-                        DataStorage.asyncSetData(AuthModuleS.CLIENT_ID_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
-                    }
+        DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then((value) => {
+            if (value.code === 200) {
+                if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    AuthModuleS.CLIENT_ID = value.data;
+                } else {
+                    Log4Ts.log(AuthModuleS, `getClientId Failed`);
+                    DataStorage.asyncSetData(AuthModuleS.CLIENT_ID_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
                 }
             }
-        );
+        });
     }
 
     private static querySecret() {
-        DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then(
-            (value) => {
-                if (value.code === 200) {
-                    if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.SECRET = value.data;
-                    } else {
-                        Log4Ts.log(AuthModuleS, `querySecret Failed`);
-                        DataStorage.asyncSetData(AuthModuleS.SECRET_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
-                    }
+        DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then((value) => {
+            if (value.code === 200) {
+                if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    AuthModuleS.SECRET = value.data;
+                } else {
+                    Log4Ts.log(AuthModuleS, `querySecret Failed`);
+                    DataStorage.asyncSetData(AuthModuleS.SECRET_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
                 }
             }
-        );
+        });
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Method
+    //#region Method
     private timeVerify(reqTime: number): boolean {
         const serverNow = Date.now();
         return Math.abs(serverNow - reqTime) < AuthModuleS.TIME_TOLERATE;
@@ -653,15 +664,11 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
     }
 
     private getSecret(message: string) {
-        const e = CryptoJS.AES.encrypt(
-            message,
-            CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY),
-            {
-                iv: CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_IV),
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7,
-            },
-        );
+        const e = CryptoJS.AES.encrypt(message, CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY), {
+            iv: CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_IV),
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7,
+        });
         return e.ciphertext.toString(CryptoJS.enc.Base64);
     }
 
@@ -672,7 +679,12 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
      * @param subGameType 子游戏类型.
      * @param value 汇报值.
      */
-    public async reportSubGameInfo(playerId: number, clientTimeStamp: number, subGameType: SubGameTypes, value: number) {
+    public async reportSubGameInfo(
+        playerId: number,
+        clientTimeStamp: number,
+        subGameType: SubGameTypes,
+        value: number
+    ) {
         // if (!this.subGameIntervalCheck(playerId)) {
         //     Log4Ts.log(AuthModuleS, `report sub game info too frequently.`);
         //     return;
@@ -739,16 +751,20 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
             encryptData,
         };
 
-        const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
-            AuthModuleS.RELEASE_RAINBOW_LEAP_REPORT_URL :
-            AuthModuleS.TEST_RAINBOW_LEAP_REPORT_URL}`,
+        const resp = await fetch(
+            `${
+                GlobalProperty.getInstance().isRelease
+                    ? AuthModuleS.RELEASE_RAINBOW_LEAP_REPORT_URL
+                    : AuthModuleS.TEST_RAINBOW_LEAP_REPORT_URL
+            }`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
                 },
                 body: JSON.stringify(body),
-            });
+            }
+        );
 
         const respInJson = await resp.json();
         Log4Ts.log(AuthModuleS, `get resp when report rainbow leap info. ${JSON.stringify(respInJson)}`);
@@ -761,9 +777,9 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         return true;
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Net Method
+    //#region Net Method
     public net_getToken(): Promise<string> {
         const playerId = this.currentPlayerId;
         const uid = this.currentPlayer.userId;
@@ -789,7 +805,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         this.currentData.save(false);
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 function logState(
@@ -799,7 +815,8 @@ function logState(
     showTime: boolean,
     playerId: number,
     uid: string = undefined,
-    code: string = undefined): void {
+    code: string = undefined
+): void {
     let logFunc: Function;
     switch (logType) {
         case "log":

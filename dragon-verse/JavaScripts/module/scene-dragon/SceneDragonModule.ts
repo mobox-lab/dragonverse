@@ -19,6 +19,7 @@ import Waterween from "../../depend/waterween/Waterween";
 import Easing from "../../depend/easing/Easing";
 import EffectService = mw.EffectService;
 import { ThrowDragonBall } from "../../gameplay/archtype/action/ThrowDragonBall";
+import GlobalTips from "../../depend/global-tips/GlobalTips";
 
 /**
  * 场景龙 相关事件.
@@ -60,7 +61,9 @@ export default class SceneDragonModuleData extends Subdata {
  */
 export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonModuleData> {
     //#region Constant
-    public static async sceneDragonPrefabFactory(syncKey: string, item: SceneDragon): Promise<SceneDragonExistInfo> {
+    public static async sceneDragonPrefabFactory(
+        syncKey: string,
+        item: SceneDragon): Promise<SceneDragonExistInfo> {
         if (!item.location) {
             Log4Ts.error(SceneDragonModuleC, `generate item param location invalid.`);
             return Promise.resolve(null);
@@ -277,7 +280,10 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 }
                 this.unlockWithView();
             } else {
-                Player.localPlayer.getPlayerState(UnifiedRoleController)?.addMoveForbiddenBuff();
+                Player
+                    .localPlayer
+                    .getPlayerState(UnifiedRoleController)
+                    ?.addMoveForbiddenBuff();
             }
 
             if (this._candidate) {
@@ -309,7 +315,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         //#region Check
         const syncKey = this._lockingSyncKey;
         if (GToolkit.isNullOrEmpty(syncKey)) {
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.NonCandidateSceneDragon));
+            GlobalTips.getInstance().showGlobalTips(i18n.lan(i18n.lanKeys.NonCandidateSceneDragon));
             Log4Ts.log(SceneDragonModuleC, `current locking sync key is null.`);
             return;
         }
@@ -479,7 +485,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     private setTimeOutForAutoCatch() {
         this._lockTimerId = setTimeout(
             () => this.acceptResult(),
-            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
+            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION
         );
     }
 
