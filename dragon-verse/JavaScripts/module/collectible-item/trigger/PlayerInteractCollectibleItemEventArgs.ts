@@ -16,8 +16,8 @@ export default class PlayerInteractCollectibleItemEventArgs {
     /**
      *
      * @param playerId 进入玩家 playerId.
-     * @param itemSyncKey item syncKey.
+     * @param syncKey.
      */
-    constructor(public playerId: number, public itemSyncKey: string) {
+    constructor(public playerId: number, public syncKey: string) {
     }
 }

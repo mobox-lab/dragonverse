@@ -1,8 +1,9 @@
-import { ICollectibleItemElement } from "../../config/CollectibleItem";
-import { GameConfig } from "../../config/GameConfig";
-import { IBagItemElement } from "../../config/BagItem";
-import { QualityTypes } from "../../const/QualityTypes";
-import { ResultAlgo, ResultAlgoFactory, ResultAlgoTypes } from "./ResultAlgoTypes";
+import {ICollectibleItemElement} from "../../config/CollectibleItem";
+import {GameConfig} from "../../config/GameConfig";
+import {IBagItemElement} from "../../config/BagItem";
+import {QualityTypes} from "../../const/QualityTypes";
+import {ResultAlgo, ResultAlgoFactory, ResultAlgoTypes} from "./ResultAlgoTypes";
+import {CollectibleItemModuleC} from "./CollectibleItemModule";
 
 /**
  * Collectible Item.
@@ -18,6 +19,28 @@ import { ResultAlgo, ResultAlgoFactory, ResultAlgoTypes } from "./ResultAlgoType
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export default class CollectibleItem {
+//#region Constant
+    private static _module: CollectibleItemModuleC;
+
+    /**
+     * 优先级比较器.
+     * @param a
+     * @param b
+     * @return {number}
+     */
+    public static priorityCmp(a: string, b: string): number {
+        if (!this._module) this._module = mwext.ModuleService.getModule(CollectibleItemModuleC);
+        const aItem = this._module.syncItemMap.get(a);
+        const bItem = this._module.syncItemMap.get(b);
+        if (!(aItem?.object ?? null)) return 1;
+        if (!(bItem?.object ?? null)) return -1;
+        const playerLocation = Player.localPlayer.character.worldTransform.position;
+        return aItem.object.worldTransform.position.clone().subtract(playerLocation).sqrLength -
+            bItem.object.worldTransform.position.clone().subtract(playerLocation).sqrLength;
+    }
+
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
     private _id: number;
 
     /**
