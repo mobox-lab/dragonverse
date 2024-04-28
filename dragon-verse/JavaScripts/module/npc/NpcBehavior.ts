@@ -9,11 +9,15 @@ import GToolkit from "../../util/GToolkit";
 import PlayerInteractNpcEventArgs from "./trigger/PlayerInteractNpcEventArgs";
 import GameServiceConfig from "../../const/GameServiceConfig";
 
-
 import DialogifyManager from "../../depend/dialogify/DialogifyManager";
-import { isDialogueContentNodeHasNextId, isValidDialogueContentNodeId } from "../../depend/dialogify/dialogify-config-reader/ADialogifyConfigReader";
+import {
+    getInteractNodes,
+    isDialogueContentNodeHasNextId,
+    isValidDialogueContentNodeId,
+} from "../../depend/dialogify/dialogify-config-reader/ADialogifyConfigReader";
 import { MouseLockController } from "../../controller/MouseLockController";
-
+import MainPanel from "../../ui/main/MainPanel";
+import { CollectibleItemModuleC } from "../collectible-item/CollectibleItemModule";
 
 /**
  * Npc.
@@ -30,6 +34,25 @@ import { MouseLockController } from "../../controller/MouseLockController";
  */
 @Component
 export default class NpcBehavior extends mw.Script {
+    //#region Constant
+    /**
+     * 优先级比较器.
+     * @param a
+     * @param b
+     * @return {number}
+     */
+    public static priorityCmp(a: NpcBehavior, b: NpcBehavior): number {
+        if (!(a?.gameObject ?? null)) return 1;
+        if (!(b?.gameObject ?? null)) return -1;
+        const playerLocation = Player.localPlayer.character.worldTransform.position;
+        return (
+            a.gameObject.worldTransform.position.clone().subtract(playerLocation).sqrLength -
+            b.gameObject.worldTransform.position.clone().subtract(playerLocation).sqrLength
+        );
+    }
+
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
     //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -58,6 +81,12 @@ export default class NpcBehavior extends mw.Script {
     /**翅膀特效 */
     private _wing: Effect;
 
+    /**
+     * 是否 正在交谈.
+     * @type {boolean}
+     */
+    private _isTalking: boolean = false;
+
     private get dm() {
         if (!this._dialogifyManager) {
             this._dialogifyManager = DialogifyManager.getInstance();
@@ -78,21 +107,25 @@ export default class NpcBehavior extends mw.Script {
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
-        this._eventListeners.push(Event.addLocalListener(EventDefine.EnterNpcInteractRange, this.onEnterNpcInteractRange));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.LeaveNpcInteractRange, this.onLeaveNpcInteractRange));
+        this._eventListeners.push(
+            Event.addLocalListener(EventDefine.EnterNpcInteractRange, this.onEnterNpcInteractRange),
+        );
+        this._eventListeners.push(
+            Event.addLocalListener(EventDefine.LeaveNpcInteractRange, this.onLeaveNpcInteractRange),
+        );
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowNpcAction, this.showNpcAction.bind(this)));
         //#endregion ------------------------------------------------------------------------------------------
 
-        this._npcCharacter = (this.gameObject.getChildByName(GameServiceConfig.NPC_MESH_OBJECT_NAME) as Character);
+        this._npcCharacter = this.gameObject.getChildByName(GameServiceConfig.NPC_MESH_OBJECT_NAME) as Character;
         if (!this._npcCharacter) {
-            Log4Ts.log(NpcBehavior, `there is no mesh object named ${GameServiceConfig.NPC_MESH_OBJECT_NAME} in prefab.`);
+            Log4Ts.log(
+                NpcBehavior,
+                `there is no mesh object named ${GameServiceConfig.NPC_MESH_OBJECT_NAME} in prefab.`,
+            );
             return;
         }
-        GToolkit.safeSetDescription(
-            this._npcCharacter,
-            this._config.avatar,
-        );
-        //添加翅膀
+        GToolkit.safeSetDescription(this._npcCharacter, this._config.avatar);
+        // 添加翅膀
         let wingGuid = this._config.wingGuid;
         let wingTransform = this._config.wingTransform;
         if (wingGuid && wingTransform) {
@@ -101,14 +134,18 @@ export default class NpcBehavior extends mw.Script {
                 this._npcCharacter?.attachToSlot(this._wing, HumanoidSlotType.BackOrnamental);
                 TimeUtil.delayExecute(() => {
                     this._wing.play();
-                    this._wing.localTransform = new Transform(new Vector(wingTransform[0][0], wingTransform[0][1], wingTransform[0][2]), new Rotation(wingTransform[1][0], wingTransform[1][1], wingTransform[1][2]), new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2]));
+                    this._wing.localTransform = new Transform(
+                        new Vector(wingTransform[0][0], wingTransform[0][1], wingTransform[0][2]),
+                        new Rotation(wingTransform[1][0], wingTransform[1][1], wingTransform[1][2]),
+                        new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2]),
+                    );
                 }, 10);
             });
         }
 
         this._oriPos = this._npcCharacter.worldTransform.position;
         this._oriRot = this._npcCharacter.worldTransform.rotation;
-        //随机放一个动作
+        // 随机放一个动作
         if (this._config) {
             let guids = this._config.basicActions;
             let random = MathUtil.randomInt(0, guids.length);
@@ -117,7 +154,13 @@ export default class NpcBehavior extends mw.Script {
             this._npcBasicAni.play();
         }
 
-        HeadUIController.getInstance().registerHeadUI(this._npcCharacter, HeadUIType.NPC, i18n.lan(GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null"), null, GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null");
+        HeadUIController.getInstance().registerHeadUI(
+            this._npcCharacter,
+            HeadUIType.NPC,
+            i18n.lan(GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null"),
+            null,
+            GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null",
+        );
     }
 
     protected onUpdate(dt: number): void {
@@ -128,7 +171,7 @@ export default class NpcBehavior extends mw.Script {
         super.onDestroy();
 
         //#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
+        this._eventListeners.forEach((value) => value.disconnect());
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -155,44 +198,64 @@ export default class NpcBehavior extends mw.Script {
         if (!this._communicable) return;
 
         this._npcBasicAni.stop();
-        const contentNodeConfig = GameConfig.DialogueContentNode.getElement(this._config.greetNodeId);
-        if (!contentNodeConfig) {
-            Log4Ts.error(NpcBehavior, `can not find content node config. id: ${this._config.greetNodeId}`);
-            return;
-        }
 
-        const content = contentNodeConfig.content;
-        const hasNextId: boolean = isDialogueContentNodeHasNextId(contentNodeConfig);
-        const hasContent = !GToolkit.isNullOrEmpty(content);
-
-        //#region 条件项 000 100 101
-        if (!hasContent &&
-            (hasNextId || !hasNextId && GToolkit.isNullOrEmpty(contentNodeConfig.interactPredNodeIds))
-        ) {
-            Log4Ts.error(NpcBehavior, `配置了一行无意义的 DialogueContentNode. id: ${contentNodeConfig.id}`);
-            return;
-        }
-        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-        //#region 条件项 001 010 011 110 111
-        this.dm.chat(
-            contentNodeConfig,
-            !hasContent,
-        );
-
-        MouseLockController.getInstance().needMouseUnlock();
-        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        mw.UIService.getUI(MainPanel).enableNpc(this);
     };
 
     public onLeaveNpcInteractRange = (args: PlayerInteractNpcEventArgs) => {
         if (this._config.id !== args.id) return;
         if (!this._communicable) return;
 
-        this.dm.exit();
-        this._npcBasicAni.play();
         if (this._currentAni) this._currentAni.stop();
+        this._npcBasicAni.play();
 
-        MouseLockController.getInstance().cancelMouseUnlock();
+        mw.UIService.getUI(MainPanel).disableNpc(this);
+
+        if (this._isTalking) {
+            this.dm.exit();
+            MouseLockController.getInstance().cancelMouseUnlock();
+        }
     };
+
+    public talkEnable() {
+        return (getInteractNodes(GameConfig.DialogueContentNode.getElement(this._config.greetNodeId))?.length ?? 0) > 0;
+    }
+
+    public talkWith() {
+        const talkId =
+            getInteractNodes(GameConfig.DialogueContentNode.getElement(this._config.greetNodeId))?.[0] ?? null;
+        // DV NPC 业务限制 招呼节点有且仅有一个交互节点
+        if (isValidDialogueContentNodeId(talkId) === false) {
+            Log4Ts.log(NpcBehavior, `npc could not be talked with. id: ${this._config.id}`);
+            return;
+        }
+
+        const contentNodeConfig = GameConfig.DialogueContentNode.getElement(talkId);
+        if (!contentNodeConfig) {
+            Log4Ts.error(NpcBehavior, `can not find content node config. id: ${this._config.greetNodeId}`);
+            return;
+        }
+        this._isTalking = true;
+
+        const content = contentNodeConfig.content;
+        const hasNextId: boolean = isDialogueContentNodeHasNextId(contentNodeConfig);
+        const hasContent = !GToolkit.isNullOrEmpty(content);
+
+        //#region 条件项 000 100 101
+        if (
+            !hasContent &&
+            (hasNextId || (!hasNextId && GToolkit.isNullOrEmpty(contentNodeConfig.interactPredNodeIds)))
+        ) {
+            Log4Ts.error(NpcBehavior, `配置了一行无意义的 DialogueContentNode. id: ${contentNodeConfig.id}`);
+            return;
+        }
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#region 条件项 001 010 011 110 111
+        this.dm.chat(contentNodeConfig, !hasContent);
+
+        MouseLockController.getInstance().needMouseUnlock();
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    }
 
     /**
      * @description: 结束npc交互动作
@@ -243,9 +306,15 @@ export default class NpcBehavior extends mw.Script {
                 Player.localPlayer.character.movementEnabled = false;
                 Player.localPlayer.character.jumpEnabled = false;
 
-                this._npcCharacter.worldTransform.position = Player.localPlayer.character.worldTransform.position.add(Player.localPlayer.character.worldTransform.getForwardVector().multiply(config.posOffset.z));
+                this._npcCharacter.worldTransform.position = Player.localPlayer.character.worldTransform.position.add(
+                    Player.localPlayer.character.worldTransform.getForwardVector().multiply(config.posOffset.z),
+                );
                 let r = mw.Rotation.zero;
-                mw.Rotation.add(Player.localPlayer.character.worldTransform.rotation, new mw.Rotation(config.rotation), r);
+                mw.Rotation.add(
+                    Player.localPlayer.character.worldTransform.rotation,
+                    new mw.Rotation(config.rotation),
+                    r,
+                );
                 this._npcCharacter.worldTransform.rotation = r;
                 this._currentAni = this._npcCharacter.loadAnimation(config.accectStance);
                 this._currentAni.play();
@@ -261,10 +330,8 @@ export default class NpcBehavior extends mw.Script {
                 });
                 this._currentPlayerAni.play();
             } else if (config.type === 4) {
-
             }
         }
-
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
