@@ -32,6 +32,7 @@ import bindYoact = Yoact.bindYoact;
 import NpcBehavior from "../../module/npc/NpcBehavior";
 import CollectibleItem from "../../module/collectible-item/CollectibleItem";
 import DialogifyManager from "../../depend/dialogify/DialogifyManager";
+import { ActivateByUIAndTrigger, ActivateMode } from "../../gameplay/interactiveObj/ActiveMode";
 
 /**
  * 交互类型.
@@ -179,7 +180,7 @@ export default class MainPanel extends MainPanel_Generate {
 
     private _npcCandidates: NpcBehavior[] = [];
 
-    private _tpDoorCandidates: mw.GameObject[] = [];
+    private _tpDoorCandidate: ActivateMode = undefined;
 
     private _customCandidate: CustomInteractOption;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -702,16 +703,16 @@ export default class MainPanel extends MainPanel_Generate {
         Gtk.remove(this._npcCandidates, npc, false);
     }
 
-    public enableTransport(door: mw.GameObject) {
-        if (this._tpDoorCandidates.indexOf(door) >= 0) {
-            Log4Ts.log(MainPanel, `already in candidates.`, `guid: ${door.gameObjectId}`);
+    public enableTransport(door: ActivateMode) {
+        if (this._tpDoorCandidate === door) {
+            Log4Ts.log(MainPanel, `already in candidates.`);
             return;
         }
-        this._tpDoorCandidates.push(door);
+        this._tpDoorCandidate = door;
     }
 
-    public disableTransport(door: mw.GameObject) {
-        Gtk.remove(this._tpDoorCandidates, door, false);
+    public disableTransport() {
+        this._tpDoorCandidate = undefined;
     }
 
     public enableCustom(option: CustomInteractOption) {
@@ -767,7 +768,16 @@ export default class MainPanel extends MainPanel_Generate {
         return true;
     }
 
-    // private renderInteractOptionForTransport(): boolean {}
+    private renderInteractOptionForTransport(): boolean {
+        if (this._activatedInteractType === InteractType.Transport) return false;
+
+        this.txtInteractContent.text = i18n.resolves.TransportMainKey();
+        this.imgInteractIcon.imageGuid =
+            GameServiceConfig.MAIN_PANEL_INTERACTION_ICON_GUID_TRANSPORT ?? Gtk.IMAGE_FULLY_TRANSPARENT_GUID;
+        this.btnInteract.onClicked.clear();
+        this.btnInteract.onClicked.add(this.onTryTransport);
+        return true;
+    }
 
     private renderInteractOptionForCustom(): boolean {
         if (Gtk.isNullOrUndefined(this._customCandidate)) {
@@ -791,6 +801,8 @@ export default class MainPanel extends MainPanel_Generate {
         if (this._currentInteractType !== InteractType.Null) {
             // 正在进行某项交互.
             type = InteractType.Null;
+        } else if (this._tpDoorCandidate !== undefined) {
+            type = InteractType.Transport;
         } else if (!Gtk.isNullOrEmpty(this.sceneDragonModule?.candidate)) {
             type = InteractType.Catch;
         } else if (this._npcCandidates.length > 0) {
@@ -1076,6 +1088,10 @@ export default class MainPanel extends MainPanel_Generate {
 
     private onTryInteractNpc = () => {
         this._npcCandidates[0]?.talkWith();
+    };
+
+    private onTryTransport = () => {
+        (this._tpDoorCandidate as ActivateByUIAndTrigger).clickToStartInteraction();
     };
 
     private onFinishSubTask = () => {
