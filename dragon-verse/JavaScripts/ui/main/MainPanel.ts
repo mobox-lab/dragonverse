@@ -1,26 +1,20 @@
 ﻿import { EventDefine } from "../../const/EventDefine";
 import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
 import BagPanel from "../bag/BagPanel";
-import { CollectibleInteractorPanel } from "../collectible/CollectibleInteractorPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
-import GToolkit from "../../util/GToolkit";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import GlobalPromptPanel from "./GlobalPromptPanel";
 import Waterween from "../../depend/waterween/Waterween";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
-import { AuthModuleC } from "../../module/auth/AuthModule";
 import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
 import { BagModuleC } from "../../module/bag/BagModule";
 import { Yoact } from "../../depend/yoact/Yoact";
 import TweenTaskGroup from "../../depend/waterween/TweenTaskGroup";
 import i18n from "../../language/i18n";
 import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
-import { GenerableTypes } from "../../const/GenerableTypes";
 import UnifiedRoleController, { RoleMovementState } from "../../module/role/UnifiedRoleController";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import AccountService = mw.AccountService;
-import bindYoact = Yoact.bindYoact;
 import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
 import { CubicBezier } from "../../depend/easing/Easing";
 import Regulator from "../../depend/regulator/Regulator";
@@ -31,8 +25,59 @@ import { JumpGamePanel } from "../jump-game/JumpGamePanel";
 import AudioController from "../../controller/audio/AudioController";
 import { PlayerSettingModuleC } from "../../module/player-setting/PlayerSettingModule";
 import Nolan from "../../depend/nolan/Nolan";
-import { MapManager } from "../../gameplay/map/MapManager";
 import { MapPanel } from "../map/MapPanel";
+import Gtk from "../../util/GToolkit";
+import AccountService = mw.AccountService;
+import bindYoact = Yoact.bindYoact;
+import NpcBehavior from "../../module/npc/NpcBehavior";
+import CollectibleItem from "../../module/collectible-item/CollectibleItem";
+import DialogifyManager from "../../depend/dialogify/DialogifyManager";
+
+/**
+ * 交互类型.
+ * 调整顺序 将影响优先级.
+ */
+export enum InteractType {
+    /**
+     * 空置.
+     */
+    Null,
+    /**
+     * 捕捉.
+     */
+    Catch,
+    /**
+     * 对话.
+     */
+    Npc,
+    /**
+     * 收集.
+     */
+    Collect,
+    /**
+     * 传送.
+     */
+    Transport,
+    /**
+     * 自定义.
+     */
+    Custom,
+}
+
+/**
+ * 自定义交互选项.
+ */
+export interface CustomInteractOption {
+    /**
+     * 名称.
+     */
+    name: string;
+
+    /**
+     * 图标 Guid.
+     */
+    icon: string;
+}
 
 /**
  * 主界面.
@@ -64,8 +109,6 @@ export default class MainPanel extends MainPanel_Generate {
     private get roleController(): UnifiedRoleController | null {
         return this.character?.player?.getPlayerState(UnifiedRoleController) ?? null;
     }
-
-    private _collectibleInteractorMap: Map<string, CollectibleInteractorPanel> = new Map();
 
     private _promptPanel: GlobalPromptPanel;
 
@@ -114,7 +157,9 @@ export default class MainPanel extends MainPanel_Generate {
 
     private _effectImgTasks: TweenTaskGroup[] = [];
 
-    private _currentInteractType: GenerableTypes = GenerableTypes.Null;
+    private _activatedInteractType: InteractType = undefined;
+
+    private _currentInteractType: InteractType = InteractType.Null;
 
     private _staminaShownTask: AdvancedTweenTask<number>;
 
@@ -125,6 +170,18 @@ export default class MainPanel extends MainPanel_Generate {
     private _staminaValueUpdateRegulator: Regulator = new Regulator(1e3);
 
     private _staminaScaleTask: FlowTweenTask<number>;
+
+    private _lastCollectibleItem: string;
+
+    private _collectCandidates: string[] = [];
+
+    private _lastFocusNpc: NpcBehavior;
+
+    private _npcCandidates: NpcBehavior[] = [];
+
+    private _tpDoorCandidates: mw.GameObject[] = [];
+
+    private _customCandidate: CustomInteractOption;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -142,7 +199,7 @@ export default class MainPanel extends MainPanel_Generate {
         this._curtain = UIService.show(MainCurtainPanel);
         this._curtain.showCurtain(false);
 
-        this.btnJump.onPressed.add(() => {
+        this.btnJump.onClicked.add(() => {
             if (this._character) {
                 this.jump();
                 this.roleController?.trySprint(false);
@@ -155,38 +212,37 @@ export default class MainPanel extends MainPanel_Generate {
             }
         });
 
-        this.btnBag.onPressed.add(() => this.showBag());
-        // this.btnBook.onPressed.add(() => this.showHandbook());
-        this.btnCode.onPressed.add(() => this.showCode());
-        this.btnReset.onPressed.add(respawn);
-        this.btnDragonBall.onPressed.add(() => this.tryCatch());
-        this.btnCatch.onPressed.add(this.onTryCatchBtnClick);
+        this.btnBag.onClicked.add(() => this.showBag());
+        // this.btnBook.onClicked.add(() => this.showHandbook());
+        this.btnCode.onClicked.add(() => this.showCode());
+        this.btnReset.onClicked.add(respawn);
+        this.btnDragonBall.onClicked.add(() => this.tryCatch());
 
         this.btnFindPath.onClicked.add(() => {
-            //自动寻路
+            // 自动寻路
             ModuleService.getModule(ObbyModuleC).autoFindPath();
         });
 
         this.btnShield.onClicked.add(() => {
-            //护盾
+            // 护盾
             ModuleService.getModule(ObbyModuleC).setInvincible();
         });
 
         this.updateMuteBtn();
-        //接收一个事件
-        Event.addLocalListener(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED, () => {
-            this.updateMuteBtn();
-        });
 
         this.btnSound.onClicked.add(() => {
             this.btnSound.enable = false;
-            //判断是否静音
+            // 判断是否静音
             let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
-            this.btnSound.disableImageGuid = res ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+            this.btnSound.disableImageGuid = res
+                ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID
+                : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
             res = !res;
             ModuleService.getModule(PlayerSettingModuleC).setMute(res);
             AudioController.getInstance().mute(res);
-            this.btnSound.normalImageGuid = res ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+            this.btnSound.normalImageGuid = res
+                ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID
+                : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
             this.btnSound.enable = true;
         });
 
@@ -195,7 +251,6 @@ export default class MainPanel extends MainPanel_Generate {
         });
 
         this._nolan = Nolan.getInstance();
-
 
         KeyOperationManager.getInstance().onKeyPress(this, Keys.W, () => {
             Player.localPlayer.getPlayerState(UnifiedRoleController).changeVelocityX(1);
@@ -215,7 +270,10 @@ export default class MainPanel extends MainPanel_Generate {
                 return;
             }
 
-            const dist = Math.max(GameServiceConfig.CAMERA_ZOOM_MIN_DIST, this._nolan.armLength - GameServiceConfig.CAMERA_ZOOM_PER_DIST);
+            const dist = Math.max(
+                GameServiceConfig.CAMERA_ZOOM_MIN_DIST,
+                this._nolan.armLength - GameServiceConfig.CAMERA_ZOOM_PER_DIST,
+            );
             this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
         });
         KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.MouseScrollDown, () => {
@@ -224,79 +282,62 @@ export default class MainPanel extends MainPanel_Generate {
                 return;
             }
 
-            const dist = Math.min(GameServiceConfig.CAMERA_ZOOM_MAX_DIST, this._nolan.armLength + GameServiceConfig.CAMERA_ZOOM_PER_DIST);
+            const dist = Math.min(
+                GameServiceConfig.CAMERA_ZOOM_MAX_DIST,
+                this._nolan.armLength + GameServiceConfig.CAMERA_ZOOM_PER_DIST,
+            );
             this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
         });
-
-        KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => {
-            InputUtil.isLockMouse = false;
-        });
-
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => {
-            InputUtil.isLockMouse = true;
-        });
-
-        KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => {
-            InputUtil.isLockMouse = false;
-        });
-
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => {
-            InputUtil.isLockMouse = true;
-        });
-
+        KeyOperationManager.getInstance().onKeyDown(this, mw.Keys.SpaceBar, () => this.jump());
+        KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
+        KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = false));
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => (InputUtil.isLockMouse = true));
 
         this.setCanSprint(true);
 
         if (this.bagModule) {
-            bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
-            bindYoact(() => this.playtimecount_1.text = this.bagModule.obbyTicketYoact.count.toString());
-            bindYoact(() => this.textcoin.text = this.bagModule.obbyCoinYoact.count.toString());
-
+            bindYoact(() => (this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString()));
+            bindYoact(() => (this.playtimecount_1.text = this.bagModule.obbyTicketYoact.count.toString()));
+            bindYoact(() => (this.textcoin.text = this.bagModule.obbyCoinYoact.count.toString()));
         } else {
             const listener = Event.addLocalListener(EventDefine.BagModuleClientReady, () => {
-                bindYoact(() => this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString());
-                bindYoact(() => this.playtimecount_1.text = this.bagModule.obbyTicketYoact.count.toString());
-                bindYoact(() => this.textcoin.text = this.bagModule.obbyCoinYoact.count.toString());
+                bindYoact(() => (this.txtDragonBallNum.text = this.bagModule.dragonBallYoact.count.toString()));
+                bindYoact(() => (this.playtimecount_1.text = this.bagModule.obbyTicketYoact.count.toString()));
+                bindYoact(() => (this.textcoin.text = this.bagModule.obbyCoinYoact.count.toString()));
                 listener.disconnect();
             });
         }
 
-        this._progressTask =
-            Waterween
-                .to(
-                    () => this.progressBar.percent,
-                    (val) => this.progressBar.percent = val,
-                    1,
-                    GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION,
-                    0,
-                )
-                .restart(true);
+        this._progressTask = Waterween.to(
+            () => this.progressBar.percent,
+            (val) => (this.progressBar.percent = val),
+            1,
+            GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION,
+            0,
+        ).restart(true);
         this._progressTask.onDone.add((param) => {
             if (param) return;
             this.onProgressDone();
         });
 
-        this._progressShowTask =
-            Waterween
-                .to(
-                    () => this.cnvProgressBar.renderOpacity,
-                    (val) => this.cnvProgressBar.renderOpacity = val,
-                    1,
-                    0.5e3,
-                    0,
-                ).restart(true);
+        this._progressShowTask = Waterween.to(
+            () => this.cnvProgressBar.renderOpacity,
+            (val) => (this.cnvProgressBar.renderOpacity = val),
+            1,
+            0.5e3,
+            0,
+        ).restart(true);
 
-        this._pointerTask =
-            Waterween
-                .to(
-                    () => this.cnvPointer.renderTransformAngle,
-                    (val) => this.cnvPointer.renderTransformAngle = val,
-                    GameServiceConfig.MAIN_PANEL_POINTER_END_ANGLE,
-                    GameServiceConfig.MAIN_PANEL_POINTER_HALF_DURATION,
-                    GameServiceConfig.MAIN_PANEL_POINTER_START_ANGLE,
-                )
-                .restart(true)
-                .pingPong();
+        this._pointerTask = Waterween.to(
+            () => this.cnvPointer.renderTransformAngle,
+            (val) => (this.cnvPointer.renderTransformAngle = val),
+            GameServiceConfig.MAIN_PANEL_POINTER_END_ANGLE,
+            GameServiceConfig.MAIN_PANEL_POINTER_HALF_DURATION,
+            GameServiceConfig.MAIN_PANEL_POINTER_START_ANGLE,
+        )
+            .restart(true)
+            .pingPong();
 
         this._successTask = Waterween.group(
             () => {
@@ -310,7 +351,8 @@ export default class MainPanel extends MainPanel_Generate {
                 { dist: null, duration: 1e3 },
                 { dist: 0, duration: 0.5e3 },
             ],
-            1);
+            1,
+        );
 
         this._failTask = Waterween.group(
             () => {
@@ -324,20 +366,19 @@ export default class MainPanel extends MainPanel_Generate {
                 { dist: null, duration: 1e3 },
                 { dist: 0, duration: 0.5e3 },
             ],
-            1);
+            1,
+        );
 
         this._effectCnvTask = Waterween.to(
             () => this.cnvSprintEffect.renderOpacity,
-            (val) => this.cnvSprintEffect.renderOpacity = val,
+            (val) => (this.cnvSprintEffect.renderOpacity = val),
             1,
             GameServiceConfig.MAIN_PANEL_CNV_SPRINT_EFFECT_DURATION,
-            0)
-            .restart(true);
-        this._effectCnvTask.onDone.add(
-            (param) => {
-                if (param) this._effectImgTasks.forEach((value) => value.pause());
-            },
-        );
+            0,
+        ).restart(true);
+        this._effectCnvTask.onDone.add((param) => {
+            if (param) this._effectImgTasks.forEach((value) => value.pause());
+        });
 
         const dist = [
             { dist: 0.3, duration: 0.1e3 },
@@ -347,42 +388,38 @@ export default class MainPanel extends MainPanel_Generate {
             { dist: 0.3, duration: 0.1e3 },
         ];
         this._effectImgTasks.push(
-            Waterween
-                .group(
-                    () => this.imgSprintEffect1.renderOpacity,
-                    (val) => this.imgSprintEffect1.renderOpacity = val,
-                    dist,
-                )
-                .repeat());
+            Waterween.group(
+                () => this.imgSprintEffect1.renderOpacity,
+                (val) => (this.imgSprintEffect1.renderOpacity = val),
+                dist,
+            ).repeat(),
+        );
 
-        this._staminaShownTask = Waterween
-            .to(
-                () => this.cnvStamina.renderOpacity,
-                (val) => this.cnvStamina.renderOpacity = val,
-                1,
-                GameServiceConfig.MAIN_PANEL_CNV_STAMINA_SHOWN_DURATION,
-                0)
-            .restart(true);
+        this._staminaShownTask = Waterween.to(
+            () => this.cnvStamina.renderOpacity,
+            (val) => (this.cnvStamina.renderOpacity = val),
+            1,
+            GameServiceConfig.MAIN_PANEL_CNV_STAMINA_SHOWN_DURATION,
+            0,
+        ).restart(true);
 
-        this._staminaValueTask = Waterween
-            .flow(
-                () => this.barStamina.percent,
-                (val) => this.barStamina.percent = val,
-                1e3,
-                new CubicBezier(0.5, 0, 0.5, 1),
-                undefined,
-                true,
-            );
+        this._staminaValueTask = Waterween.flow(
+            () => this.barStamina.percent,
+            (val) => (this.barStamina.percent = val),
+            1e3,
+            new CubicBezier(0.5, 0, 0.5, 1),
+            undefined,
+            true,
+        );
 
-        this._staminaScaleTask = Waterween
-            .flow(
-                () => this.cnvStamina.renderScale.x,
-                val => this.cnvStamina.renderScale = new Vector(val, val),
-                1e3,
-                new CubicBezier(0.5, 0, 0.5, 1),
-                undefined,
-                true,
-            );
+        this._staminaScaleTask = Waterween.flow(
+            () => this.cnvStamina.renderScale.x,
+            (val) => (this.cnvStamina.renderScale = new Vector(val, val)),
+            1e3,
+            new CubicBezier(0.5, 0, 0.5, 1),
+            undefined,
+            true,
+        );
 
         this.btnCode.visibility = SlateVisibility.Hidden;
 
@@ -400,13 +437,37 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, () => this.prepareCatch()));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, () => this.endCatch()));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string)));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.PlayerReset, (playerId) => {
-            if (playerId === this.character.player.playerId) Log4Ts.log(MainPanel, `Player reset.`);
-        }));
+        this._eventListeners.push(
+            Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)),
+        );
+        this._eventListeners.push(
+            Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)),
+        );
+        this._eventListeners.push(
+            Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string)),
+        );
+        this._eventListeners.push(
+            Event.addLocalListener(EventDefine.PlayerReset, (playerId) => {
+                if (playerId === this.character.player.playerId) Log4Ts.log(MainPanel, `Player reset.`);
+            }),
+        );
         this._eventListeners.push(Event.addLocalListener(EventDefine.OnDragonQuestsComplete, this.onFinishSubTask));
+
+        this._eventListeners.push(
+            Event.addLocalListener(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED, () => this.updateMuteBtn()),
+        );
+        this._eventListeners.push(
+            Event.addLocalListener(
+                DialogifyManager.PlayerEnterOfficialDialogueEventName,
+                () => (this._currentInteractType = InteractType.Npc),
+            ),
+        );
+        this._eventListeners.push(
+            Event.addLocalListener(
+                DialogifyManager.LeaveDialogueEventName,
+                () => this._currentInteractType === InteractType.Npc && (this._currentInteractType = InteractType.Null),
+            ),
+        );
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -437,14 +498,7 @@ export default class MainPanel extends MainPanel_Generate {
             this.updateStaminaScale();
         }
 
-        const enableCatchBtn = this._currentInteractType === GenerableTypes.Null &&
-            !GToolkit.isNullOrEmpty(this.sceneDragonModule?.candidate ?? null);
-        GToolkit.trySetVisibility(
-            this.btnCatch,
-            enableCatchBtn);
-        GToolkit.trySetVisibility(
-            this.cnvCatchdragon,
-            enableCatchBtn);
+        this.judgeInteractType();
     }
 
     /**
@@ -452,16 +506,14 @@ export default class MainPanel extends MainPanel_Generate {
      * 对于UI的根节点的添加操作，进行调用
      * 注意：该事件可能会多次调用
      */
-    protected onAdded() {
-    }
+    protected onAdded() {}
 
     /**
      * 构造UI文件成功后，onAdded之后
      * 对于UI的根节点的移除操作，进行调用
      * 注意：该事件可能会多次调用
      */
-    protected onRemoved() {
-    }
+    protected onRemoved() {}
 
     /**
      * 构造UI文件成功后，UI对象再被销毁时调用
@@ -469,7 +521,7 @@ export default class MainPanel extends MainPanel_Generate {
      */
     protected onDestroy() {
         //#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
+        this._eventListeners.forEach((value) => value.disconnect());
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -478,19 +530,19 @@ export default class MainPanel extends MainPanel_Generate {
      * 通过canUpdate可以开启关闭调用
      * dt 两帧调用的时间差，毫秒
      */
-    //protected onUpdate(dt :number) {
+    // protected onUpdate(dt :number) {
     //}
 
     /**
      * 设置显示时触发
      */
-    //protected onShow(...params:any[]) {
+    // protected onShow(...params:any[]) {
     //}
 
     /**
      * 设置不显示时触发
      */
-    //protected onHide() {
+    // protected onHide() {
     //}
 
     /**
@@ -500,21 +552,21 @@ export default class MainPanel extends MainPanel_Generate {
      * 如果处理了，那么这个UI界面可以接收这次Touch后续的Move和End事件
      * 如果没有处理，那么这个UI界面就无法接收这次Touch后续的Move和End事件
      */
-    //protected onTouchStarted(InGemotry :Geometry,InPointerEvent:PointerEvent) :EventReply{
+    // protected onTouchStarted(InGemotry :Geometry,InPointerEvent:PointerEvent) :EventReply{
     //	return EventReply.unHandled; //EventReply.handled
     //}
 
     /**
      * 手指或则鼠标再UI界面上移动时
      */
-    //protected onTouchMoved(InGemotry :Geometry,InPointerEvent:PointerEvent) :EventReply{
+    // protected onTouchMoved(InGemotry :Geometry,InPointerEvent:PointerEvent) :EventReply{
     //	return EventReply.unHandled; //EventReply.handled
     //}
 
     /**
      * 手指或则鼠标离开UI界面时
      */
-    //protected OnTouchEnded(InGemotry :Geometry,InPointerEvent:PointerEvent) :EventReply{
+    // protected OnTouchEnded(InGemotry :Geometry,InPointerEvent:PointerEvent) :EventReply{
     //	return EventReply.unHandled; //EventReply.handled
     //}
 
@@ -523,7 +575,7 @@ export default class MainPanel extends MainPanel_Generate {
      * 可以触发一次拖拽事件的开始生成
      * 返回一次生成的拖拽事件 newDragDrop可以生成一次事件
      */
-    //protected onDragDetected(InGemotry :Geometry,InPointerEvent:PointerEvent):DragDropOperation {
+    // protected onDragDetected(InGemotry :Geometry,InPointerEvent:PointerEvent):DragDropOperation {
     //	return this.newDragDrop(null);
     //}
 
@@ -531,7 +583,7 @@ export default class MainPanel extends MainPanel_Generate {
      * 拖拽操作生成事件触发后经过这个UI时触发
      * 返回true的话表示处理了这次事件，不会再往这个UI的下一层的UI继续冒泡这个事件
      */
-    //protected onDragOver(InGemotry :Geometry,InDragDropEvent:PointerEvent,InDragDropOperation:DragDropOperation):boolean {
+    // protected onDragOver(InGemotry :Geometry,InDragDropEvent:PointerEvent,InDragDropOperation:DragDropOperation):boolean {
     //	return true;
     //}
 
@@ -539,40 +591,37 @@ export default class MainPanel extends MainPanel_Generate {
      * 拖拽操作生成事件触发后在这个UI释放完成时
      * 返回true的话表示处理了这次事件，不会再往这个UI的下一层的UI继续冒泡这个事件
      */
-    //protected onDrop(InGemotry :Geometry,InDragDropEvent:PointerEvent,InDragDropOperation:DragDropOperation):boolean {
+    // protected onDrop(InGemotry :Geometry,InDragDropEvent:PointerEvent,InDragDropOperation:DragDropOperation):boolean {
     //	return true;
     //}
 
     /**
      * 拖拽操作生成事件触发后进入这个UI时触发
      */
-    //protected onDragEnter(InGemotry :Geometry,InDragDropEvent:PointerEvent,InDragDropOperation:DragDropOperation) {
+    // protected onDragEnter(InGemotry :Geometry,InDragDropEvent:PointerEvent,InDragDropOperation:DragDropOperation) {
     //}
 
     /**
      * 拖拽操作生成事件触发后离开这个UI时触发
      */
-    //protected onDragLeave(InGemotry :Geometry,InDragDropEvent:PointerEvent) {
+    // protected onDragLeave(InGemotry :Geometry,InDragDropEvent:PointerEvent) {
     //}
 
     /**
      * 拖拽操作生成事件触发后，没有完成完成的拖拽事件而取消时触发
      */
-    //protected onDragCancelled(InGemotry :Geometry,InDragDropEvent:PointerEvent) {
+    // protected onDragCancelled(InGemotry :Geometry,InDragDropEvent:PointerEvent) {
     //}
 
-    protected onShow() {
-    }
+    protected onShow() {}
 
-    protected onHide() {
-    }
+    protected onHide() {}
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Init
     public init() {
-        GToolkit.trySetVisibility(this.cnvDragonBall, false);
-        GToolkit.trySetVisibility(this.cnvCatchdragon, !GToolkit.isNullOrEmpty(this.sceneDragonModule?.candidate ?? null));
+        Gtk.trySetVisibility(this.cnvDragonBall, false);
         UIService.hideUI(this._promptPanel);
         this.cnvSprintEffect.renderOpacity = 0;
         this.imgOperationFail.renderOpacity = 0;
@@ -582,13 +631,13 @@ export default class MainPanel extends MainPanel_Generate {
         this.refreshAvatar();
 
         //#region Exist for V1
-        GToolkit.trySetVisibility(this.btnCode, false);
-        // GToolkit.trySetVisibility(this.btnBook, false);
-        // GToolkit.trySetVisibility(this.btnDragon, false);
-        GToolkit.trySetVisibility(this.obbySkillCanvas, false);
-        // GToolkit.trySetVisibility(this.playcount, false);
-        // GToolkit.trySetVisibility(this.coincount, false);
-        GToolkit.trySetVisibility(this.btnDragonBall, false);
+        Gtk.trySetVisibility(this.btnCode, false);
+        // Gtk.trySetVisibility(this.btnBook, false);
+        // Gtk.trySetVisibility(this.btnDragon, false);
+        Gtk.trySetVisibility(this.obbySkillCanvas, false);
+        // Gtk.trySetVisibility(this.playcount, false);
+        // Gtk.trySetVisibility(this.coincount, false);
+        Gtk.trySetVisibility(this.btnDragonBall, false);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -620,20 +669,169 @@ export default class MainPanel extends MainPanel_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region UI Behavior
-    public addCollectibleItemInteractor(syncKey: string) {
-        const collectibleInteractor = UIService.create(CollectibleInteractorPanel);
-        collectibleInteractor.init(syncKey);
-        this._collectibleInteractorMap.set(syncKey, collectibleInteractor);
-        this.collectibleInteractorContainer.addChild(collectibleInteractor.uiObject);
+
+    //#region ├ Interact Btn
+    // 尝试有效化/注册一个可交互物品的交互按键.
+    // 按照优先级规则的首个元素将占用并渲染交互按键.
+
+    public enableCollectibleItem(syncKey: string) {
+        if (this._collectCandidates.indexOf(syncKey) >= 0) {
+            Log4Ts.log(MainPanel, `already in candidates.`, `syncKey: ${syncKey}`);
+            return;
+        }
+        this._collectCandidates.push(syncKey);
     }
 
-    public removeCollectibleItemInteractor(syncKey: string) {
-        const uis = this._collectibleInteractorMap.get(syncKey);
-        if (uis) {
-            this.collectibleInteractorContainer.removeChild(uis.uiObject);
-        }
-        this._collectibleInteractorMap.delete(syncKey);
+    public disableCollectibleItem(syncKey: string) {
+        Gtk.remove(this._collectCandidates, syncKey, false);
     }
+
+    public enableNpc(npc: NpcBehavior) {
+        if (this._npcCandidates.indexOf(npc) >= 0) {
+            Log4Ts.log(MainPanel, `already in candidates.`, `syncKey: ${npc}`);
+            return;
+        }
+        if (!npc.talkEnable()) {
+            Log4Ts.log(MainPanel, `npc talk disabled.`, `npc config id: ${npc.configId}`);
+            return;
+        }
+        this._npcCandidates.push(npc);
+    }
+
+    public disableNpc(npc: NpcBehavior) {
+        Gtk.remove(this._npcCandidates, npc, false);
+    }
+
+    public enableTransport(door: mw.GameObject) {
+        if (this._tpDoorCandidates.indexOf(door) >= 0) {
+            Log4Ts.log(MainPanel, `already in candidates.`, `guid: ${door.gameObjectId}`);
+            return;
+        }
+        this._tpDoorCandidates.push(door);
+    }
+
+    public disableTransport(door: mw.GameObject) {
+        Gtk.remove(this._tpDoorCandidates, door, false);
+    }
+
+    public enableCustom(option: CustomInteractOption) {
+        this._customCandidate = option;
+    }
+
+    public disableCustom(option: CustomInteractOption) {
+        this._customCandidate = undefined;
+    }
+
+    private renderInteractOptionForCatch(): boolean {
+        if (this._activatedInteractType === InteractType.Catch) return false;
+
+        this.txtInteractContent.text = i18n.resolves.CatchMainKey();
+        this.imgInteractIcon.imageGuid =
+            GameServiceConfig.MAIN_PANEL_INTERACTION_ICON_GUID_CATCH ?? Gtk.IMAGE_FULLY_TRANSPARENT_GUID;
+        this.btnInteract.onClicked.clear();
+        this.btnInteract.onClicked.add(this.onTryCatchBtnClick);
+        return true;
+    }
+
+    private renderInteractOptionForNpc(): boolean {
+        let c = this._npcCandidates.sort(NpcBehavior.priorityCmp)[0];
+        if (this._activatedInteractType === InteractType.Npc && c === this._lastFocusNpc) return false;
+        let valid: boolean = true;
+        if (!c) {
+            valid = false;
+            Log4Ts.error(MainPanel, `null or empty collect candidates.`);
+        }
+        this.txtInteractContent.text = valid ? i18n.resolves.TalkMainKey() : "";
+        this.imgInteractIcon.imageGuid =
+            GameServiceConfig.MAIN_PANEL_INTERACTION_ICON_GUID_TALK ?? Gtk.IMAGE_FULLY_TRANSPARENT_GUID;
+        this.btnInteract.onClicked.clear();
+        valid && this.btnInteract.onClicked.add(this.onTryInteractNpc);
+        this._lastFocusNpc = c;
+        return true;
+    }
+
+    private renderInteractOptionForCollect(): boolean {
+        let c = this._collectCandidates.sort(CollectibleItem.priorityCmp)[0];
+        if (this._activatedInteractType === InteractType.Collect && c === this._lastCollectibleItem) return false;
+        let valid: boolean = true;
+        if (!c) {
+            valid = false;
+            Log4Ts.error(MainPanel, `null or empty collect candidates.`);
+        }
+        this.txtInteractContent.text = valid ? i18n.resolves.CollectLanKey0001() : "";
+        this.imgInteractIcon.imageGuid =
+            GameServiceConfig.MAIN_PANEL_INTERACTION_ICON_GUID_COLLECT ?? Gtk.IMAGE_FULLY_TRANSPARENT_GUID;
+        this.btnInteract.onClicked.clear();
+        valid && this.btnInteract.onClicked.add(this.onTryCollectBtnClick);
+        this._lastCollectibleItem = c;
+        return true;
+    }
+
+    // private renderInteractOptionForTransport(): boolean {}
+
+    private renderInteractOptionForCustom(): boolean {
+        if (Gtk.isNullOrUndefined(this._customCandidate)) {
+            Log4Ts.warn(MainPanel, `set cnv interact with custom type, but option is null.`, `set with default value.`);
+            this.txtInteractContent.text = "";
+            this.imgInteractIcon.imageGuid = Gtk.IMAGE_FULLY_TRANSPARENT_GUID;
+            return false;
+        } else {
+            this.txtInteractContent.text = this._customCandidate.name ?? "";
+            let imgGuid =
+                this._customCandidate.icon ??
+                GameServiceConfig.MAIN_PANEL_INTERACTION_ICON_GUID_CUSTOM ??
+                Gtk.IMAGE_FULLY_TRANSPARENT_GUID;
+            if (imgGuid !== this.imgInteractIcon.imageGuid) this.imgInteractIcon.imageGuid = imgGuid;
+            return true;
+        }
+    }
+
+    public judgeInteractType() {
+        let type: InteractType = InteractType.Null;
+        if (this._currentInteractType !== InteractType.Null) {
+            // 正在进行某项交互.
+            type = InteractType.Null;
+        } else if (!Gtk.isNullOrEmpty(this.sceneDragonModule?.candidate)) {
+            type = InteractType.Catch;
+        } else if (this._npcCandidates.length > 0) {
+            type = InteractType.Npc;
+        } else if (this._collectCandidates.length > 0) {
+            type = InteractType.Collect;
+        } else if (this._customCandidate !== undefined) {
+            type = InteractType.Custom;
+        }
+
+        if (type === InteractType.Null) {
+            if (this._activatedInteractType === InteractType.Null) return;
+            this.txtInteractContent.text = "";
+            this.imgInteractIcon.imageGuid = Gtk.IMAGE_FULLY_TRANSPARENT_GUID;
+            this.btnInteract.onClicked.clear();
+
+            Gtk.trySetVisibility(this.cnvInteract, false);
+        } else {
+            Gtk.trySetVisibility(this.cnvInteract, true);
+            switch (type) {
+                case InteractType.Catch:
+                    this.renderInteractOptionForCatch();
+                    break;
+                case InteractType.Npc:
+                    this.renderInteractOptionForNpc();
+                    break;
+                case InteractType.Collect:
+                    this.renderInteractOptionForCollect();
+                    break;
+                // case InteractType.Transport:
+                //     this.renderInteractOptionForTransport();
+                //     break;
+                case InteractType.Custom:
+                    this.renderInteractOptionForCustom();
+                    break;
+            }
+        }
+        this._activatedInteractType = type;
+    }
+
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     public showGlobalPrompt(message: string) {
         this._promptPanel?.showPrompt(message);
@@ -651,11 +849,11 @@ export default class MainPanel extends MainPanel_Generate {
      */
     public prepareCatch() {
         Log4Ts.log(MainPanel, `try catch`);
-        if (this._currentInteractType !== GenerableTypes.Null) return;
+        if (this._currentInteractType !== InteractType.Null) return;
 
-        this._currentInteractType = GenerableTypes.SceneDragon;
+        this._currentInteractType = InteractType.Catch;
         this.btnDragonBall.enable = true;
-        GToolkit.trySetVisibility(this.cnvDragonBall, true);
+        Gtk.trySetVisibility(this.cnvDragonBall, true);
         this._pointerTask.restart();
     }
 
@@ -673,10 +871,10 @@ export default class MainPanel extends MainPanel_Generate {
      * 收集.
      */
     public tryCollect(syncKey: string) {
-        if (this._currentInteractType !== GenerableTypes.Null) return;
+        if (this._currentInteractType !== InteractType.Null) return;
         if (this.collectibleItemModule?.isCollecting ?? true) return;
 
-        this._currentInteractType = GenerableTypes.CollectibleItem;
+        this._currentInteractType = InteractType.Collect;
         this.collectibleItemModule?.tryCollect(syncKey);
         this.playProgress();
     }
@@ -687,9 +885,9 @@ export default class MainPanel extends MainPanel_Generate {
     public endCatch() {
         Log4Ts.log(MainPanel, `end catch`);
         this.roleController?.removeMoveForbiddenBuff();
-        this._currentInteractType = GenerableTypes.Null;
+        this._currentInteractType = InteractType.Null;
         this.btnDragonBall.enable = false;
-        GToolkit.trySetVisibility(this.cnvDragonBall, false);
+        Gtk.trySetVisibility(this.cnvDragonBall, false);
     }
 
     /**
@@ -700,7 +898,7 @@ export default class MainPanel extends MainPanel_Generate {
         this._progressTask.restart();
     }
 
-    public showResult(isSuccess: boolean, type: GenerableTypes) {
+    public showResult(isSuccess: boolean, type: InteractType) {
         const focusTask = isSuccess ? this._successTask : this._failTask;
         const anotherTask = isSuccess ? this._failTask : this._successTask;
 
@@ -713,11 +911,13 @@ export default class MainPanel extends MainPanel_Generate {
             }
         }
         switch (type) {
-            case GenerableTypes.SceneDragon:
+            case InteractType.Catch:
                 this.txtOperationFeedback.text = i18n.lan(isSuccess ? i18n.lanKeys.Catch_002 : i18n.lanKeys.Catch_003);
                 break;
-            case GenerableTypes.CollectibleItem:
-                this.txtOperationFeedback.text = i18n.lan(isSuccess ? i18n.lanKeys.Collection_002 : i18n.lanKeys.Collection_003);
+            case InteractType.Collect:
+                this.txtOperationFeedback.text = i18n.lan(
+                    isSuccess ? i18n.lanKeys.Collection_002 : i18n.lanKeys.Collection_003,
+                );
                 break;
             default:
                 break;
@@ -730,7 +930,7 @@ export default class MainPanel extends MainPanel_Generate {
      * @param enable
      */
     public enableReset(enable = true) {
-        GToolkit.trySetVisibility(this.btnReset, enable);
+        Gtk.trySetVisibility(this.btnReset, enable);
     }
 
     public showBag() {
@@ -752,9 +952,7 @@ export default class MainPanel extends MainPanel_Generate {
     public showSprintUiEffect(enable: boolean = true) {
         if (enable) {
             this._effectCnvTask.forward().continue();
-            this._effectImgTasks.forEach(
-                item => item.continue(),
-            );
+            this._effectImgTasks.forEach((item) => item.continue());
         } else {
             this._effectCnvTask.backward().continue();
         }
@@ -773,17 +971,15 @@ export default class MainPanel extends MainPanel_Generate {
         const v = new Vector2();
         ScreenUtil.projectWorldPositionToWidgetPosition(
             this.character.player,
-            this
-                .character
-                .worldTransform
-                .position
-                .add(
-                    Player
-                        .getControllerRotation()
-                        .rotateVector(new Vector(
-                            0,
-                            GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Y,
-                            GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z))),
+            this.character.worldTransform.position.add(
+                Player.getControllerRotation().rotateVector(
+                    new Vector(
+                        0,
+                        GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Y,
+                        GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z,
+                    ),
+                ),
+            ),
             v,
             true,
         );
@@ -791,19 +987,19 @@ export default class MainPanel extends MainPanel_Generate {
         if (!v.equals(Vector.zero)) {
             this.cnvStamina.position = v.set(v);
         } else {
-            //投影失效了
-            let middleRightPos = WindowUtil.getViewportSize().clone().multiply(0.5).subtract(this.cnvStamina.size.clone().multiply(0.5)).add(new Vector2(GameServiceConfig.MAIN_PANEL_CNV_STAMINA_SCREEN_LOCATION_OFFSET_X,
-                0));
-            this.cnvStamina.position = middleRightPos;
+            // 投影失效了
+            this.cnvStamina.position = WindowUtil.getViewportSize()
+                .clone()
+                .multiply(0.5)
+                .subtract(this.cnvStamina.size.clone().multiply(0.5))
+                .add(new Vector2(GameServiceConfig.MAIN_PANEL_CNV_STAMINA_SCREEN_LOCATION_OFFSET_X, 0));
         }
-
-
     }
 
     private updateStaminaScale() {
         this._staminaScaleTask.to(
-            GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE /
-            Camera.currentCamera.springArm.length);
+            GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE / Camera.currentCamera.springArm.length,
+        );
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -815,41 +1011,46 @@ export default class MainPanel extends MainPanel_Generate {
         this._progressShowTask.backward();
 
         switch (this._currentInteractType) {
-            case GenerableTypes.Null:
+            case InteractType.Null:
                 Log4Ts.warn(MainPanel, `there is no interact behavior.`);
                 break;
-            case GenerableTypes.SceneDragon:
-                const catchResult = !GToolkit.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
+            case InteractType.Catch:
+                const catchResult = !Gtk.isNullOrEmpty(this.sceneDragonModule?.currentCatchResultSyncKey ?? null);
                 Log4Ts.log(MainPanel, `catch result: ${catchResult}`);
                 this.sceneDragonModule?.acceptResult();
                 this.endCatch();
-                this.showResult(catchResult, GenerableTypes.SceneDragon);
+                this.showResult(catchResult, InteractType.Catch);
                 break;
-            case GenerableTypes.CollectibleItem:
-                const collectResult = !GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
+            case InteractType.Collect:
+                const collectResult = !Gtk.isNullOrEmpty(
+                    this.collectibleItemModule?.currentCollectResultSyncKey ?? null,
+                );
                 Log4Ts.log(MainPanel, `collect result: ${collectResult}`);
                 if (collectResult) {
-                    GToolkit.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
+                    Gtk.isNullOrEmpty(this.collectibleItemModule?.currentCollectResultSyncKey ?? null);
                     this.collectibleItemModule?.acceptCollect();
                 }
-                this.showResult(collectResult, GenerableTypes.CollectibleItem);
+                this.showResult(collectResult, InteractType.Collect);
                 break;
             default:
                 Log4Ts.warn(MainPanel, `type not supported.`);
         }
-        this._currentInteractType = GenerableTypes.Null;
-
-
+        this._currentInteractType = InteractType.Null;
     };
 
     jump() {
         if (!(Player.localPlayer.character.getCurrentState() === CharacterStateType.Swimming)) {
             this._character.changeState(CharacterStateType.Jumping);
         } else {
-            actions.tween(Player.localPlayer.character.worldTransform).to(10,
-                { position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)) }).call(() => {
+            actions
+                .tween(Player.localPlayer.character.worldTransform)
+                .to(10, {
+                    position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)),
+                })
+                .call(() => {
                     this._character.changeState(CharacterStateType.Jumping);
-                }).start();
+                })
+                .start();
         }
     }
 
@@ -869,6 +1070,14 @@ export default class MainPanel extends MainPanel_Generate {
         }
     };
 
+    private onTryCollectBtnClick = () => {
+        this.tryCollect(this._lastCollectibleItem);
+    };
+
+    private onTryInteractNpc = () => {
+        this._npcCandidates[0]?.talkWith();
+    };
+
     private onFinishSubTask = () => {
         this.showGlobalPrompt(i18n.lan(i18n.lanKeys.TinyGameLanKey0004));
     };
@@ -883,8 +1092,5 @@ export default class MainPanel extends MainPanel_Generate {
 function respawn() {
     Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
     Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
-    Player
-        .localPlayer
-        .getPlayerState(UnifiedRoleController)
-        ?.respawn();
+    Player.localPlayer.getPlayerState(UnifiedRoleController)?.respawn();
 }

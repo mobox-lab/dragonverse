@@ -6,9 +6,9 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.0
+ * @version 31.2.3
  * UI: UI/tip/tiptiptip.ui
-*/
+ */
 
 import UIScript = mw.UIScript;
 
@@ -58,9 +58,8 @@ export default class tiptiptip_Generate extends UIScript {
 	protected onHide() {
 	}
 
-    public destroy(): void {
+    protected onDestroy() {
         this.unregisterTextLan();
-        super.destroy();
     }
 
     protected initTextLan() {

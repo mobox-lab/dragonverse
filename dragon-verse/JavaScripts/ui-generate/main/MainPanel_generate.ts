@@ -6,9 +6,9 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.0
+ * @version 31.2.3
  * UI: UI/main/MainPanel.ui
-*/
+ */
 
 import UIScript = mw.UIScript;
 
@@ -358,13 +358,6 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.txtInteractContent_Internal
 	}
-	private imgInteractIcon_Internal: mw.Image
-	public get imgInteractIcon(): mw.Image {
-		if(!this.imgInteractIcon_Internal&&this.uiWidgetBase) {
-			this.imgInteractIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/imgInteractIcon') as mw.Image
-		}
-		return this.imgInteractIcon_Internal
-	}
 	private imgInteractKeyTips_Internal: mw.Image
 	public get imgInteractKeyTips(): mw.Image {
 		if(!this.imgInteractKeyTips_Internal&&this.uiWidgetBase) {
@@ -378,6 +371,13 @@ export default class MainPanel_Generate extends UIScript {
 			this.txtInteractKeyTips_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/txtInteractKeyTips') as mw.TextBlock
 		}
 		return this.txtInteractKeyTips_Internal
+	}
+	private imgInteractIcon_Internal: mw.Image
+	public get imgInteractIcon(): mw.Image {
+		if(!this.imgInteractIcon_Internal&&this.uiWidgetBase) {
+			this.imgInteractIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvInteract/imgInteractIcon') as mw.Image
+		}
+		return this.imgInteractIcon_Internal
 	}
 	private cnvOperationalFeedback_Internal: mw.Canvas
 	public get cnvOperationalFeedback(): mw.Canvas {
@@ -406,48 +406,6 @@ export default class MainPanel_Generate extends UIScript {
 			this.imgOperationSuccess_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvOperationalFeedback/imgOperationSuccess') as mw.Image
 		}
 		return this.imgOperationSuccess_Internal
-	}
-	private cnvCatchdragon_Internal: mw.Canvas
-	public get cnvCatchdragon(): mw.Canvas {
-		if(!this.cnvCatchdragon_Internal&&this.uiWidgetBase) {
-			this.cnvCatchdragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon') as mw.Canvas
-		}
-		return this.cnvCatchdragon_Internal
-	}
-	private catchBg_Internal: mw.Image
-	public get catchBg(): mw.Image {
-		if(!this.catchBg_Internal&&this.uiWidgetBase) {
-			this.catchBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/catchBg') as mw.Image
-		}
-		return this.catchBg_Internal
-	}
-	private catchBgBorder_Internal: mw.Image
-	public get catchBgBorder(): mw.Image {
-		if(!this.catchBgBorder_Internal&&this.uiWidgetBase) {
-			this.catchBgBorder_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/catchBgBorder') as mw.Image
-		}
-		return this.catchBgBorder_Internal
-	}
-	private catchIcon_Internal: mw.Image
-	public get catchIcon(): mw.Image {
-		if(!this.catchIcon_Internal&&this.uiWidgetBase) {
-			this.catchIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/catchIcon') as mw.Image
-		}
-		return this.catchIcon_Internal
-	}
-	private btnCatch_Internal: mw.Button
-	public get btnCatch(): mw.Button {
-		if(!this.btnCatch_Internal&&this.uiWidgetBase) {
-			this.btnCatch_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/btnCatch') as mw.Button
-		}
-		return this.btnCatch_Internal
-	}
-	private cnvKeyPrompt_Internal: mw.Canvas
-	public get cnvKeyPrompt(): mw.Canvas {
-		if(!this.cnvKeyPrompt_Internal&&this.uiWidgetBase) {
-			this.cnvKeyPrompt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvCatchdragon/cnvKeyPrompt') as mw.Canvas
-		}
-		return this.cnvKeyPrompt_Internal
 	}
 	private roomIdText_Internal: mw.TextBlock
 	public get roomIdText(): mw.TextBlock {
@@ -478,9 +436,8 @@ export default class MainPanel_Generate extends UIScript {
 	protected onHide() {
 	}
 
-    public destroy(): void {
+    protected onDestroy() {
         this.unregisterTextLan();
-        super.destroy();
     }
 
     protected initTextLan() {
@@ -559,9 +516,6 @@ export default class MainPanel_Generate extends UIScript {
         
 	
         this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/bagCanvas/TextBlock_1") as mw.TextBlock);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as mw.TextBlock);
         
 	
     }
@@ -685,9 +639,6 @@ export default class MainPanel_Generate extends UIScript {
         
 	
         this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/bagCanvas/TextBlock_1") as mw.TextBlock);
-        
-	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvCatchdragon/cnvKeyPrompt/TextBlock") as mw.TextBlock);
         
 	
     }

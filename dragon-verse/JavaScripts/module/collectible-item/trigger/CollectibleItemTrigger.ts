@@ -1,8 +1,9 @@
 import GToolkit from "../../../util/GToolkit";
-import { EventDefine } from "../../../const/EventDefine";
+import {EventDefine} from "../../../const/EventDefine";
 import Character = mw.Character;
 import PlayerInteractCollectibleItemEventArgs from "./PlayerInteractCollectibleItemEventArgs";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import MainPanel from "../../../ui/main/MainPanel";
 
 /**
  * 采集物 Trigger.
@@ -86,6 +87,7 @@ export default class CollectibleItemTrigger extends mw.Script {
     private characterEnter = (playerId: number) => {
         Log4Ts.log(CollectibleItemTrigger, `player enter. playerId: ${playerId}`);
         this._enteredList.add(playerId);
+        UIService.getUI(MainPanel)?.enableCollectibleItem(this._syncKey);
         Event.dispatchToLocal(
             EventDefine.EnterCollectibleItemRange,
             new PlayerInteractCollectibleItemEventArgs(playerId, this._syncKey),
@@ -95,6 +97,7 @@ export default class CollectibleItemTrigger extends mw.Script {
     private characterLeave = (playerId: number) => {
         Log4Ts.log(CollectibleItemTrigger, `player leave. playerId: ${playerId}`);
         this._enteredList.delete(playerId);
+        UIService.getUI(MainPanel)?.disableCollectibleItem(this._syncKey);
         Event.dispatchToLocal(
             EventDefine.LeaveCollectibleItemRange,
             new PlayerInteractCollectibleItemEventArgs(playerId, this._syncKey),

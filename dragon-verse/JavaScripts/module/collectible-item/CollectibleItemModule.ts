@@ -253,15 +253,13 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
     //#region Event Callback
     public onEnterCollectibleItemRange = (args: PlayerInteractCollectibleItemEventArgs) => {
         if (args.playerId === Player.localPlayer.playerId) {
-            this.collectCandidates.push(args.itemSyncKey);
-            this._mainPanel.addCollectibleItemInteractor(args.itemSyncKey);
+            this.collectCandidates.push(args.syncKey);
         }
     };
 
     public onLeaveCollectibleItemRange = (args: PlayerInteractCollectibleItemEventArgs) => {
         if (args.playerId === Player.localPlayer.playerId) {
-            GToolkit.remove(this.collectCandidates, args.itemSyncKey);
-            this._mainPanel.removeCollectibleItemInteractor(args.itemSyncKey);
+            GToolkit.remove(this.collectCandidates, args.syncKey);
         }
     };
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
