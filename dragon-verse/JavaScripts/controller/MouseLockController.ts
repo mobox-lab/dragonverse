@@ -1,12 +1,13 @@
-/** 
+/**
  * @Author       : zewei.zhang
  * @Date         : 2024-04-23 16:35:46
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-04-24 09:23:39
+ * @LastEditTime : 2024-04-28 10:42:49
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\controller\MouseLockController.ts
  * @Description  : 鼠标锁定管理器
  */
 
+import ADialoguePanelController from "../depend/dialogify/dialogue-panel-controller/ADialoguePanelController";
 import KeyOperationManager from "./key-operation-manager/KeyOperationManager";
 
 export class MouseLockController {
@@ -14,7 +15,10 @@ export class MouseLockController {
 
     private _needMouseUnlock: boolean[] = [];
 
-    private constructor() { }
+    private constructor() {
+        Event.addLocalListener(ADialoguePanelController.ControllerRefreshDialogueEventName, this.needMouseUnlock);
+        Event.addLocalListener(ADialoguePanelController.ControllerExitDialogueEventName, this.cancelMouseUnlock);
+    }
 
     public static getInstance(): MouseLockController {
         if (!this._instance) {
@@ -24,14 +28,13 @@ export class MouseLockController {
     }
 
     needMouseUnlock() {
-
         this._needMouseUnlock.push(true);
         InputUtil.isLockMouse = false;
         //录一次就行
         if (this._needMouseUnlock.length === 1) {
             //为了防止松开alt会导致鼠标锁定
-            KeyOperationManager.getInstance().onKeyUp(null, Keys.LeftAlt, () => { });
-            KeyOperationManager.getInstance().onKeyUp(null, Keys.RightAlt, () => { });
+            KeyOperationManager.getInstance().onKeyUp(null, Keys.LeftAlt, () => {});
+            KeyOperationManager.getInstance().onKeyUp(null, Keys.RightAlt, () => {});
         }
     }
 
