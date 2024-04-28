@@ -3,12 +3,10 @@ import { INpcElement } from "../../config/Npc";
 import { EventDefine } from "../../const/EventDefine";
 import { HeadUIController, HeadUIType } from "../../controller/HeadUIController";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-
 import i18n from "../../language/i18n";
 import GToolkit from "../../util/GToolkit";
 import PlayerInteractNpcEventArgs from "./trigger/PlayerInteractNpcEventArgs";
 import GameServiceConfig from "../../const/GameServiceConfig";
-
 import DialogifyManager from "../../depend/dialogify/DialogifyManager";
 import {
     getInteractNodes,
@@ -114,6 +112,11 @@ export default class NpcBehavior extends mw.Script {
             Event.addLocalListener(EventDefine.LeaveNpcInteractRange, this.onLeaveNpcInteractRange),
         );
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowNpcAction, this.showNpcAction.bind(this)));
+        this._eventListeners.push(
+            Event.addLocalListener(DialogifyManager.LeaveDialogueEventName, () => {
+                this._isTalking = false;
+            }),
+        );
         //#endregion ------------------------------------------------------------------------------------------
 
         this._npcCharacter = this.gameObject.getChildByName(GameServiceConfig.NPC_MESH_OBJECT_NAME) as Character;
