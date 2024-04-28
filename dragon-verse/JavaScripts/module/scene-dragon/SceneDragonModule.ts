@@ -61,9 +61,7 @@ export default class SceneDragonModuleData extends Subdata {
  */
 export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonModuleData> {
     //#region Constant
-    public static async sceneDragonPrefabFactory(
-        syncKey: string,
-        item: SceneDragon): Promise<SceneDragonExistInfo> {
+    public static async sceneDragonPrefabFactory(syncKey: string, item: SceneDragon): Promise<SceneDragonExistInfo> {
         if (!item.location) {
             Log4Ts.error(SceneDragonModuleC, `generate item param location invalid.`);
             return Promise.resolve(null);
@@ -141,7 +139,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                             if (!param) resolve(onBirth());
                         },
                     },
-                    { duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_2 },
+                    {duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_2},
                     {
                         dist: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_STAGE_3_SCALE,
                         duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_3,
@@ -280,10 +278,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 }
                 this.unlockWithView();
             } else {
-                Player
-                    .localPlayer
-                    .getPlayerState(UnifiedRoleController)
-                    ?.addMoveForbiddenBuff();
+                Player.localPlayer.getPlayerState(UnifiedRoleController)?.addMoveForbiddenBuff();
             }
 
             if (this._candidate) {
@@ -428,13 +423,13 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     private lockWithView(candidate: string) {
         this._lockingSyncKey = candidate;
-        Event.dispatchToLocal(EventDefine.DragonOnLock, { syncKey: this._lockingSyncKey } as DragonSyncKeyEventArgs);
+        Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
     }
 
     private unlockWithView() {
         this._lockingSyncKey = null;
         this.clearTimeOutForAutoCatch();
-        Event.dispatchToLocal(EventDefine.DragonOnUnlock, { syncKey: this._lockingSyncKey } as DragonSyncKeyEventArgs);
+        Event.dispatchToLocal(EventDefine.DragonOnUnlock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
     }
 
     private getSceneDragonBySyncKey(syncKey: string): SceneDragon | null {
@@ -470,7 +465,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                     };
                 })
                 .where((item) => item.distSqr < sceneDragonCatchableDistanceSqr)
-                .defaultIfEmpty({ syncKey: null, existInfo: null, distSqr: 0 })
+                .defaultIfEmpty({syncKey: null, existInfo: null, distSqr: 0})
                 .minBy((item) => item.distSqr).syncKey ?? null;
 
         if (this._candidate !== candidate) {
@@ -485,7 +480,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     private setTimeOutForAutoCatch() {
         this._lockTimerId = setTimeout(
             () => this.acceptResult(),
-            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION
+            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
         );
     }
 
@@ -596,7 +591,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      */
     private _generateLocationsMap: Map<number, IPoint3[]>;
 
-    private getValidGenerateLocation(id: number, playerId: number): IPoint3[] {
+    private getValidGenerateLocation(id: number): IPoint3[] {
         if (!this._generateLocationsMap) {
             this._generateLocationsMap = AreaManager.getInstance().getGenerationPointMap(BagTypes.Dragon);
         }
@@ -670,7 +665,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         return Enumerable.from(this.existenceItemMap.get(playerId)?.dragonSyncKeys ?? [])
             .select((syncKey) => this.syncItemMap.get(syncKey))
             .where((item) => (item ? SceneDragon.dragonId(item.id) === SceneDragon.dragonId(id) : false))
-            .defaultIfEmpty({ generateTime: 0 } as SceneDragon)
+            .defaultIfEmpty({generateTime: 0} as SceneDragon)
             .max((item) => item.generateTime);
     }
 
@@ -687,23 +682,24 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             return;
         }
 
-        Enumerable.from(GToolkit.randomShuffleArray(GameConfig.CharacterfulDragon.getAllElement())).forEach((item) => {
-            if (GToolkit.isNullOrEmpty(SceneDragon.getDragonConfig(item.id).areaIds)) return;
-            for (
-                let i = 0;
-                i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT && this.isGenerateEnable(playerId, item.id);
-                i++
-            ) {
-                Log4Ts.log(
-                    SceneDragonModuleS,
-                    `checking generate.`,
-                    () => `playerId: ${playerId}.`,
-                    () => `id: ${item.id}.`,
-                    () => `trial: ${i}.`,
-                );
-                this.generate(playerId, item.id);
-            }
-        });
+        Enumerable.from(GToolkit.randomShuffleArray(GameConfig.CharacterfulDragon.getAllElement()))
+            .forEach((item) => {
+                if (GToolkit.isNullOrEmpty(SceneDragon.getDragonConfig(item.id).areaIds)) return;
+                for (
+                    let i = 0;
+                    i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT && this.isGenerateEnable(playerId, item.id);
+                    i++
+                ) {
+                    Log4Ts.log(
+                        SceneDragonModuleS,
+                        `checking generate.`,
+                        () => `playerId: ${playerId}.`,
+                        () => `id: ${item.id}.`,
+                        () => `trial: ${i}.`,
+                    );
+                    this.generate(playerId, item.id);
+                }
+            });
     }
 
     /**
@@ -735,7 +731,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     private isGenerateEnable(playerId: number, id: number): boolean {
         return (
             (Date.now() - this.existenceItemMap.get(playerId)?.enterTime ?? Number.MAX_VALUE) >
-                SceneDragon.firstGenerateCd(id) &&
+            SceneDragon.firstGenerateCd(id) &&
             this.lastItemGenerateTime(playerId, id) + SceneDragon.generationInterval(id) < Date.now()
         );
     }
@@ -745,13 +741,17 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * @desc 场景龙是私有的 场景龙的存在依赖 playerId 属性.
      * @param playerId
      * @param itemId
+     * @param location 生成位置.
      */
-    private generate(playerId: number, itemId: number) {
+    private generate(playerId: number, itemId: number, location: IPoint3 = undefined) {
         Log4Ts.log(SceneDragonModuleS, `try generate item, itemId: ${itemId}.`);
 
-        let location = GToolkit.randomArrayItem(
-            this.getValidGenerateLocation(SceneDragon.getDragonConfig(itemId).id, playerId),
-        );
+        if (location === undefined) {
+            location = GToolkit.randomArrayItem(
+                this.getValidGenerateLocation(SceneDragon.getDragonConfig(itemId).id),
+            );
+        }
+
         if (location === null) {
             Log4Ts.error(SceneDragonModuleS, `generate location is null.`);
             return;
