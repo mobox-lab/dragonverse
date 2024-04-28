@@ -56,6 +56,10 @@ export default class NpcBehavior extends mw.Script {
 
     private _config: INpcElement;
 
+    public get configId(): number {
+        return this._config?.id ?? -1;
+    }
+
     private _communicable: boolean = false;
 
     private _dialogifyManager: DialogifyManager;

@@ -691,6 +691,10 @@ export default class MainPanel extends MainPanel_Generate {
             Log4Ts.log(MainPanel, `already in candidates.`, `syncKey: ${npc}`);
             return;
         }
+        if (!npc.talkEnable()) {
+            Log4Ts.log(MainPanel, `npc talk disabled.`, `npc config id: ${npc.configId}`);
+            return;
+        }
         this._npcCandidates.push(npc);
     }
 
