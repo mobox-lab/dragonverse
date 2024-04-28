@@ -3,7 +3,6 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import {HeadUIController, HeadUIType} from "../../controller/HeadUIController";
 import FiniteStateMachine, {Region, State} from "../../depend/finite-state-machine/FiniteStateMachine";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Regulator from "../../depend/regulator/Regulator";
 import {Yoact} from "../../depend/yoact/Yoact";
 import i18n from "../../language/i18n";
 import SceneDragon from "./SceneDragon";
@@ -16,9 +15,8 @@ import Effect = Yoact.Effect;
 import stopEffect = Yoact.stopEffect;
 import Animation = mw.Animation;
 import Navigation = mw.Navigation;
-import GameStart from "../../GameStart";
 import GameObject = mw.GameObject;
-import GToolkit from "../../util/GToolkit";
+import GToolkit, {Regulator} from "../../util/GToolkit";
 import GlobalProperty from "../../GlobalProperty";
 
 class SceneDragonBehaviorState {
@@ -238,7 +236,7 @@ export default class SceneDragonBehavior extends mw.Script {
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
 
-        if (this.regulator.ready() && !this.checkAlive()) {
+        if (this.regulator.request() && !this.checkAlive()) {
             Log4Ts.log(SceneDragonBehavior, `dragon out of alive range. syncKey: ${this.syncKey}`);
             Event.dispatchToLocal(EventDefine.DragonOutOfAliveRange, this.syncKey);
         }

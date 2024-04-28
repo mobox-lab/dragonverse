@@ -4,7 +4,6 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import { SubGameTypes } from "../../const/SubGameTypes";
 import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
 import FixedQueue from "../../depend/queue/FixedQueue";
-import Regulator from "../../depend/regulator/Regulator";
 import i18n from "../../language/i18n";
 import GToolkit, { Expression, GtkTypes } from "../../util/GToolkit";
 import noReply = mwext.Decorator.noReply;
@@ -455,8 +454,6 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
     private static get RELEASE_RAINBOW_LEAP_REPORT_URL() {
         return this.RELEASE_MOBOX_NFT_URL + this.RAINBOW_LEAP_REPORT_URL_SUFFIX;
     }
-
-    private _patrolRegulator: Regulator = new Regulator(GameServiceConfig.GUARD_PATROL_INTERVAL);
 
     /**
      * encrypt token with time salt.
