@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.0
+ * @version 31.2.2
  * UI: UI/jumpGame/JumpGamePanel.ui
 */
 
@@ -128,9 +128,8 @@ export default class JumpGamePanel_Generate extends UIScript {
 	protected onHide() {
 	}
 
-    public destroy(): void {
+    public onDestroy() {
         this.unregisterTextLan();
-        super.destroy();
     }
 
     protected initTextLan() {

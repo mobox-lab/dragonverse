@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.0
+ * @version 31.2.2
  * UI: UI/interactUI.ui
 */
 
@@ -28,13 +28,6 @@ export default class interactUI_Generate extends UIScript {
 			this.txtContent_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/txtContent') as mw.TextBlock
 		}
 		return this.txtContent_Internal
-	}
-	private imgIcon_Internal: mw.Image
-	public get imgIcon(): mw.Image {
-		if(!this.imgIcon_Internal&&this.uiWidgetBase) {
-			this.imgIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgIcon') as mw.Image
-		}
-		return this.imgIcon_Internal
 	}
 	private imgbtn_Internal: mw.Image
 	public get imgbtn(): mw.Image {
@@ -72,9 +65,8 @@ export default class interactUI_Generate extends UIScript {
 	protected onHide() {
 	}
 
-    public destroy(): void {
+    public onDestroy() {
         this.unregisterTextLan();
-        super.destroy();
     }
 
     protected initTextLan() {
