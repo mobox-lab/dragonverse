@@ -5,20 +5,17 @@ import { EventDefine } from "../../const/EventDefine";
 import { BagTypes } from "../../const/ForeignKeyIndexer";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Regulator from "../../depend/regulator/Regulator";
 import AreaManager from "../../gameplay/area/AreaManager";
 import MainPanel from "../../ui/main/MainPanel";
-import GToolkit from "../../util/GToolkit";
+import GToolkit, { Regulator } from "../../util/GToolkit";
 import { IPoint3 } from "../../util/area/Shape";
 import { BagModuleS } from "../bag/BagModule";
 import CollectibleItem from "./CollectibleItem";
 import CollectibleItemTrigger from "./trigger/CollectibleItemTrigger";
 import PlayerInteractCollectibleItemEventArgs from "./trigger/PlayerInteractCollectibleItemEventArgs";
-import noReply = mwext.Decorator.noReply;
 import GameObject = mw.GameObject;
 import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import EventListener = mw.EventListener;
-import Enum = UE.Enum;
 
 export default class CollectibleItemModuleData extends Subdata {
     //@Decorator.persistence()
@@ -40,10 +37,7 @@ export default class CollectibleItemModuleData extends Subdata {
  */
 export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, CollectibleItemModuleData> {
     //#region Constant
-    public static async CollectibleItemPrefabFactory(
-        syncKey: string,
-        id: number,
-        location: Vector) {
+    public static async CollectibleItemPrefabFactory(syncKey: string, id: number, location: Vector) {
         if (!location) {
             Log4Ts.error(CollectibleItemModuleC, `generate item param location invalid.`);
             return null;
@@ -57,10 +51,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
             Log4Ts.error(CollectibleItemModuleC, `prefab not set. id: ${id}`);
             return null;
         }
-        const obj = await GameObjPool.asyncSpawn(
-            assetId,
-            GameObjPoolSourceType.Prefab,
-        );
+        const obj = await GameObjPool.asyncSpawn(assetId, GameObjPoolSourceType.Prefab);
         obj.worldTransform.position = location;
         const trigger = GToolkit.getFirstComponent(obj, CollectibleItemTrigger);
         if (!trigger) {
@@ -80,7 +71,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
      *  - key sync key.
      *  - value CollectibleItem.
      */
-    public syncItemMap: Map<string, { item: CollectibleItem, object: GameObject }> = new Map();
+    public syncItemMap: Map<string, { item: CollectibleItem; object: GameObject }> = new Map();
 
     /**
      * 待采集物映射.
@@ -121,8 +112,12 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
-        this._eventListeners.push(Event.addLocalListener(EventDefine.EnterCollectibleItemRange, this.onEnterCollectibleItemRange));
-        this._eventListeners.push(Event.addLocalListener(EventDefine.LeaveCollectibleItemRange, this.onLeaveCollectibleItemRange));
+        this._eventListeners.push(
+            Event.addLocalListener(EventDefine.EnterCollectibleItemRange, this.onEnterCollectibleItemRange),
+        );
+        this._eventListeners.push(
+            Event.addLocalListener(EventDefine.LeaveCollectibleItemRange, this.onLeaveCollectibleItemRange),
+        );
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -138,7 +133,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         super.onDestroy();
 
         //#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
+        this._eventListeners.forEach((value) => value.disconnect());
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -170,15 +165,13 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 
         this._isCollecting = true;
 
-        this.server.net_tryCollectItem(syncKey).then(
-            (value) => {
-                if (value) {
-                    this._currentCollectResultSyncKey = syncKey;
-                } else {
-                    this._isCollecting = false;
-                }
-            },
-        );
+        this.server.net_tryCollectItem(syncKey).then((value) => {
+            if (value) {
+                this._currentCollectResultSyncKey = syncKey;
+            } else {
+                this._isCollecting = false;
+            }
+        });
     }
 
     /**
@@ -209,11 +202,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
             return;
         }
 
-        CollectibleItemModuleC.CollectibleItemPrefabFactory(
-            syncKey,
-            item.id,
-            item.location,
-        ).then((value) => {
+        CollectibleItemModuleC.CollectibleItemPrefabFactory(syncKey, item.id, item.location).then((value) => {
             if (!value) return;
 
             this.syncItemMap.set(syncKey, { item: item, object: value });
@@ -230,18 +219,8 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
-    public net_generate(syncKey: string,
-        id: number,
-        hitPoint: number,
-        generateTime: number,
-        location: Vector) {
-        this.generate(
-            syncKey,
-            new CollectibleItem()
-                .sync(id,
-                    hitPoint,
-                    generateTime,
-                    location));
+    public net_generate(syncKey: string, id: number, hitPoint: number, generateTime: number, location: Vector) {
+        this.generate(syncKey, new CollectibleItem().sync(id, hitPoint, generateTime, location));
     }
 
     public net_destroy(syncKey: string) {
@@ -307,12 +286,11 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     private _generatedLocationsMap: Map<number, Set<number>> = new Map();
 
     private getValidGenerateLocation(id: number, playerId: number): IPoint3 | null {
-        return GToolkit.randomArrayItem(Enumerable.from(this._generateLocationsMap.get(id))
-            .where(
-                point => !this._generatedLocationsMap.get(playerId).has(this.getHash(point))
-            )
-            .toArray())
-
+        return GToolkit.randomArrayItem(
+            Enumerable.from(this._generateLocationsMap.get(id))
+                .where((point) => !this._generatedLocationsMap.get(playerId).has(this.getHash(point)))
+                .toArray(),
+        );
     }
 
     private getHash(point: IPoint3): number {
@@ -334,7 +312,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
         //#region Member init
         this._bagModuleS = ModuleService.getModule(BagModuleS);
-        //#endregion ------------------------------------------------------------------------------------------ 
+        //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
         //#endregion ------------------------------------------------------------------------------------------
@@ -343,7 +321,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
 
-        if (this._generateRegulator.ready()) {
+        if (this._generateRegulator.request()) {
             this.tryGenerate();
         }
     }
@@ -351,7 +329,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        //TODO_LviatYi 
+        //TODO_LviatYi
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -386,10 +364,9 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @param id
      */
     private lastItemGenerateTime(playerId: number, id: number): number {
-        return Enumerable
-            .from(this.existenceItemMap.get(playerId))
+        return Enumerable.from(this.existenceItemMap.get(playerId))
             .select((syncKey) => this.syncItemMap.get(syncKey))
-            .where((item) => item ? item.id === id : false)
+            .where((item) => (item ? item.id === id : false))
             .defaultIfEmpty({ generateTime: 0 } as CollectibleItem)
             .max((item) => item.generateTime);
     }
@@ -400,9 +377,9 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @param id
      */
     private getItemExistenceCount(playerId: number, id: number): number {
-        return Enumerable
-            .from(this.existenceItemMap.get(playerId))
-            .count((syncKey) => this.syncItemMap.get(syncKey)?.id === id ?? false);
+        return Enumerable.from(this.existenceItemMap.get(playerId)).count(
+            (syncKey) => this.syncItemMap.get(syncKey)?.id === id ?? false,
+        );
     }
 
     /**
@@ -418,22 +395,24 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             return;
         }
 
-        Enumerable
-            .from(GameConfig.CollectibleItem.getAllElement())
-            .forEach((item) => {
-                for (let i = 0;
-                    i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT &&
-                    this.isGenerateEnable(playerId, item.id);
-                    i++) {
-                    Log4Ts.log(CollectibleItemModuleS, `checking generate.`,
-                        `playerId: ${playerId}.`,
-                        `id: ${item.id}.`,
-                        `current count: ${this.getItemExistenceCount(playerId, item.id)}.`,
-                        `max count: ${CollectibleItem.maxExistenceCount(item.id)}.`,
-                        `trial: ${i}.`);
-                    this.generate(playerId, item.id);
-                }
-            });
+        Enumerable.from(GameConfig.CollectibleItem.getAllElement()).forEach((item) => {
+            for (
+                let i = 0;
+                i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT && this.isGenerateEnable(playerId, item.id);
+                i++
+            ) {
+                Log4Ts.log(
+                    CollectibleItemModuleS,
+                    `checking generate.`,
+                    `playerId: ${playerId}.`,
+                    `id: ${item.id}.`,
+                    `current count: ${this.getItemExistenceCount(playerId, item.id)}.`,
+                    `max count: ${CollectibleItem.maxExistenceCount(item.id)}.`,
+                    `trial: ${i}.`,
+                );
+                this.generate(playerId, item.id);
+            }
+        });
     }
 
     /**
@@ -441,12 +420,10 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @param playerId
      */
     private removePrivateRecord(playerId: number): void {
-        Enumerable
-            .from(this.existenceItemMap.get(playerId))
-            .forEach(key => {
-                this.syncItemMap.delete(key);
-                this._syncLocker.delete(key);
-            });
+        Enumerable.from(this.existenceItemMap.get(playerId)).forEach((key) => {
+            this.syncItemMap.delete(key);
+            this._syncLocker.delete(key);
+        });
         this.existenceItemMap.delete(playerId);
     }
 
@@ -465,8 +442,10 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @param id
      */
     private isGenerateEnable(playerId: number, id: number): boolean {
-        return this.getItemExistenceCount(playerId, id) < CollectibleItem.maxExistenceCount(id) &&
-            this.lastItemGenerateTime(playerId, id) + CollectibleItem.generationInterval(id) < Date.now();
+        return (
+            this.getItemExistenceCount(playerId, id) < CollectibleItem.maxExistenceCount(id) &&
+            this.lastItemGenerateTime(playerId, id) + CollectibleItem.generationInterval(id) < Date.now()
+        );
     }
 
     /**
@@ -476,9 +455,12 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @param itemId
      */
     private generate(playerId: number, itemId: number) {
-        Log4Ts.log(CollectibleItemModuleS, `try generate item, itemId: ${itemId}.`,
+        Log4Ts.log(
+            CollectibleItemModuleS,
+            `try generate item, itemId: ${itemId}.`,
             () => `current count: ${this.getItemExistenceCount(playerId, itemId)}.`,
-            () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`);
+            () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`,
+        );
 
         let location = this.getValidGenerateLocation(itemId, playerId);
         if (location === null) {
@@ -501,23 +483,13 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         array.push(syncKey);
         this.syncItemMap.set(syncKey, item);
 
-        Log4Ts.log(CollectibleItemModuleS,
-            `generate item success. syncKey: ${syncKey}`,
-            () => item.info());
+        Log4Ts.log(CollectibleItemModuleS, `generate item success. syncKey: ${syncKey}`, () => item.info());
 
         item.autoDestroyTimerId = setTimeout(() => {
             this.destroy(playerId, syncKey);
-        },
-            CollectibleItem.maxExistenceTime(itemId),
-        );
+        }, CollectibleItem.maxExistenceTime(itemId));
 
-        this.getClient(playerId).net_generate(
-            syncKey,
-            item.id,
-            item.hitPoint,
-            item.generateTime,
-            item.location,
-        );
+        this.getClient(playerId).net_generate(syncKey, item.id, item.hitPoint, item.generateTime, item.location);
     }
 
     /**
@@ -532,11 +504,14 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             Log4Ts.error(CollectibleItemModuleS, `destroy item is null`);
             return;
         }
-        Log4Ts.log(CollectibleItemModuleS,
+        Log4Ts.log(
+            CollectibleItemModuleS,
             `try destroy item, itemId: ${item.id}.`,
-            () => `reason: ${(Date.now() - item.generateTime) > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`,
+            () =>
+                `reason: ${Date.now() - item.generateTime > CollectibleItem.maxExistenceTime(item.id) ? "time out" : "collected"}.`,
             () => `current count: ${this.getItemExistenceCount(playerId, item.id)}.`,
-            () => `max count: ${CollectibleItem.maxExistenceCount(item.id)}.`);
+            () => `max count: ${CollectibleItem.maxExistenceCount(item.id)}.`,
+        );
 
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
@@ -545,8 +520,11 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
         let array: string[] = this.existenceItemMap.get(playerId);
         if (!array || !GToolkit.remove(array, syncKey)) {
-            Log4Ts.log(CollectibleItemModuleS, `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
-             but it not exist in server`);
+            Log4Ts.log(
+                CollectibleItemModuleS,
+                `destroy Collectible Item ${item.id} whose generate time is ${item.generateTime},
+             but it not exist in server`,
+            );
         }
 
         const location = item.location;
@@ -581,7 +559,6 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             return Promise.resolve(false);
         }
 
-
         const success: boolean = GToolkit.randomWeight([CollectibleItem.successRate(item.id)], 1) === 0;
         if (!success) {
             Log4Ts.log(CollectibleItemModuleC, `collect fail. failed the success rate check.`);
@@ -600,15 +577,14 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             Log4Ts.error(CollectibleItemModuleS, `item not exist in server when collect. syncKey: ${syncKey} `);
             return;
         }
-        Log4Ts.log(CollectibleItemModuleS,
-            `accept collect item.`,
-            `syncKey: ${syncKey}`,
-            `${item.info()}`);
+        Log4Ts.log(CollectibleItemModuleS, `accept collect item.`, `syncKey: ${syncKey}`, `${item.info()}`);
         if (this._syncLocker.get(syncKey) !== currPlayerId) {
-            Log4Ts.log(CollectibleItemModuleS,
+            Log4Ts.log(
+                CollectibleItemModuleS,
                 `item locker illegal.`,
                 `current locker: ${this._syncLocker.get(syncKey)}.`,
-                `request locker: ${syncKey}.`);
+                `request locker: ${syncKey}.`,
+            );
             return;
         }
         this._syncLocker.delete(syncKey);

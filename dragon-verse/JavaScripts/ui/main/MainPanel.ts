@@ -17,7 +17,6 @@ import UnifiedRoleController, { RoleMovementState } from "../../module/role/Unif
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
 import { CubicBezier } from "../../depend/easing/Easing";
-import Regulator from "../../depend/regulator/Regulator";
 import MainCurtainPanel from "./MainCurtainPanel";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { ObbyModuleC } from "../../module/obby/ObbyModule";
@@ -26,7 +25,7 @@ import AudioController from "../../controller/audio/AudioController";
 import { PlayerSettingModuleC } from "../../module/player-setting/PlayerSettingModule";
 import Nolan from "../../depend/nolan/Nolan";
 import { MapPanel } from "../map/MapPanel";
-import Gtk from "../../util/GToolkit";
+import Gtk, { Regulator } from "../../util/GToolkit";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
 import NpcBehavior from "../../module/npc/NpcBehavior";
@@ -483,7 +482,7 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     protected onUpdate() {
-        if (this._staminaValueUpdateRegulator.ready()) {
+        if (this._staminaValueUpdateRegulator.request()) {
             const currValue = this.roleController?.movementState?.stamina ?? 0;
             const shown = currValue !== RoleMovementState.STAMINA_MAX_COUNT;
 
