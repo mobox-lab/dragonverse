@@ -71,6 +71,8 @@ let languageDefault = {
 
     TalkMainKey: "对话",
 
+    TransportMainKey: "激活",
+
     Collection_002: "收集成功",
 
     Collection_003: "收集失败",
