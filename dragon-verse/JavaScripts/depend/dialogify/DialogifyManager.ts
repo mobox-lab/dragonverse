@@ -5,7 +5,7 @@ import ADialogifyConfigReader, {
     IDialogueInteractNodeConfigElement,
     IRelateEntityConfigElement,
 } from "./dialogify-config-reader/ADialogifyConfigReader";
-import {Singleton} from "../../util/GToolkit";
+import { Singleton } from "../../util/GToolkit";
 
 /**
  * DialogifyManager.
@@ -20,10 +20,10 @@ import {Singleton} from "../../util/GToolkit";
  * @author zewei.zhang
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 1.0.2
+ * @version 1.0.4
  */
 export default class DialogifyManager extends Singleton<DialogifyManager>() {
-//#region Constant
+    //#region Constant
     /**
      * 玩家遇到招呼.
      * @desc <code> id:number </code> 对话内容节点 id.
@@ -39,9 +39,9 @@ export default class DialogifyManager extends Singleton<DialogifyManager>() {
      * @desc <code> id:number </code> 对话内容节点 id.
      */
     public static readonly LeaveDialogueEventName = "__DIALOGIFY_LEAVE_DIALOGUE__";
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Member
+    //#region Member
     private _panelController: ADialoguePanelController<
         any,
         any,
@@ -51,7 +51,9 @@ export default class DialogifyManager extends Singleton<DialogifyManager>() {
         ADialogifyConfigReader<
             IRelateEntityConfigElement,
             IDialogueContentNodeConfigElement,
-            IDialogueInteractNodeConfigElement>>;
+            IDialogueInteractNodeConfigElement
+        >
+    >;
 
     private get configReader(): ADialogifyConfigReader<
         IRelateEntityConfigElement,
@@ -59,7 +61,7 @@ export default class DialogifyManager extends Singleton<DialogifyManager>() {
         IDialogueInteractNodeConfigElement
     > | null {
         return this._panelController?.configReader ?? null;
-    };
+    }
 
     /**
      * 是否 正在对话.
@@ -86,43 +88,45 @@ export default class DialogifyManager extends Singleton<DialogifyManager>() {
         return this._panelController?.objectiveDialogueEntityId ?? null;
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Singleton
+    //#region Singleton
 
     protected onConstruct(): void {
         super.onConstruct();
 
-        Event.addLocalListener(ADialoguePanelController.ControllerExitDialogueEventName,
-            () => {
-                if (this.controllerInvalid()) return;
-                this._panelController.shutDown();
-            });
-        Event.addLocalListener(ADialoguePanelController.ControllerRefreshDialogueEventName,
-            (contentNodeId: number) => {
-                if (this.controllerInvalid()) return;
-                this._panelController.setContent(this.configReader?.getDialogueContentNodeConfig(contentNodeId));
-            });
+        Event.addLocalListener(ADialoguePanelController.ControllerExitDialogueEventName, () => {
+            if (this.controllerInvalid()) return;
+            this._panelController.shutDown();
+        });
+        Event.addLocalListener(ADialoguePanelController.ControllerRefreshDialogueEventName, (contentNodeId: number) => {
+            if (this.controllerInvalid()) return;
+            this._panelController.setContent(this.configReader?.getDialogueContentNodeConfig(contentNodeId));
+        });
     }
 
     /**
      * 初始化控制器.
      * @param controller
      */
-    public initController(controller: ADialoguePanelController<
-        any,
-        any,
-        IRelateEntityConfigElement,
-        IDialogueContentNodeConfigElement,
-        IDialogueInteractNodeConfigElement,
-        ADialogifyConfigReader<
+    public initController(
+        controller: ADialoguePanelController<
+            any,
+            any,
             IRelateEntityConfigElement,
             IDialogueContentNodeConfigElement,
-            IDialogueInteractNodeConfigElement>>) {
+            IDialogueInteractNodeConfigElement,
+            ADialogifyConfigReader<
+                IRelateEntityConfigElement,
+                IDialogueContentNodeConfigElement,
+                IDialogueInteractNodeConfigElement
+            >
+        >
+    ) {
         this._panelController = controller;
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     /**
      * 交谈.

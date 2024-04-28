@@ -16,8 +16,14 @@ export class MouseLockController {
     private _needMouseUnlock: boolean[] = [];
 
     private constructor() {
-        Event.addLocalListener(ADialoguePanelController.ControllerRefreshDialogueEventName, this.needMouseUnlock);
-        Event.addLocalListener(ADialoguePanelController.ControllerExitDialogueEventName, this.cancelMouseUnlock);
+        Event.addLocalListener(
+            ADialoguePanelController.ControllerRefreshDialogueEventName,
+            this.needMouseUnlock.bind(this)
+        );
+        Event.addLocalListener(
+            ADialoguePanelController.ControllerExitDialogueEventName,
+            this.cancelMouseUnlock.bind(this)
+        );
     }
 
     public static getInstance(): MouseLockController {

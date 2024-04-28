@@ -11,7 +11,6 @@ import ADialogifyConfigReader, {
     isDialogueInteractNodeHasFuncId,
     isEntityIdValid,
 } from "../dialogify-config-reader/ADialogifyConfigReader";
-
 import DialogueFuncFactory, { DialogueNodeFuncTypes } from "../dialogue-node-func-type/DialogueFuncTypes";
 import DialogifyConfigReader from "../dialogify-config-reader/DialogifyConfigReader";
 import i18n from "../../../language/i18n";
@@ -74,7 +73,8 @@ export default abstract class ADialoguePanelController<
     RC extends IRelateEntityConfigElement,
     CC extends IDialogueContentNodeConfigElement,
     IC extends IDialogueInteractNodeConfigElement,
-    R extends ADialogifyConfigReader<RC, CC, IC>> {
+    R extends ADialogifyConfigReader<RC, CC, IC>
+> {
     //#region Constant
     /**
      * 控制器 退出对话.
@@ -84,11 +84,18 @@ export default abstract class ADialoguePanelController<
     public static readonly ControllerExitDialogueEventName = "__CONTROLLER_EXIT_DIALOGUE__";
     /**
      * 控制器 刷新对话.
-     * @desc <code> id:number </code> 对话内容节点 id.
+     * @desc `id:number` 下一个对话内容节点 id.
      * @friend
      * {@link ADialoguePanelController}
      */
     public static readonly ControllerRefreshDialogueEventName = "__CONTROLLER_REFRESH_DIALOGUE__";
+
+    /**
+     * 进入对话内容节点.
+     * @desc `id:number` 当前对话内容节点 id.
+     * @type {string}
+     */
+    public static readonly ContentNodeUpdateEventName = "__CONTENT_NODE_UPDATE_EVENT_NAME__";
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Panel Member
@@ -191,16 +198,17 @@ export default abstract class ADialoguePanelController<
         const content = config.content;
 
         //#region 条件项 000
-        if (GToolkit.isNullOrEmpty(content) &&
+        if (
+            GToolkit.isNullOrEmpty(content) &&
             !isDialogueContentNodeHasNextId(config) &&
-            GToolkit.isNullOrEmpty(config.interactPredNodeIds)) {
+            GToolkit.isNullOrEmpty(config.interactPredNodeIds)
+        ) {
             this.exitDialogue();
             return;
         }
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
         //#region 条件项 100 101
-        if (GToolkit.isNullOrEmpty(content) &&
-            isDialogueContentNodeHasNextId(config)) {
+        if (GToolkit.isNullOrEmpty(content) && isDialogueContentNodeHasNextId(config)) {
             Log4Ts.error(ADialoguePanelController, `配置了一行无意义的 DialogueContentNode. id: ${config.id}`);
             this.exitDialogue();
             return;
@@ -211,11 +219,13 @@ export default abstract class ADialoguePanelController<
 
         const options: number[] = getInteractNodes(config);
         if (options.length > this.cnvOptionsMaxCapacity) {
-            Log4Ts.error(ADialoguePanelController,
+            Log4Ts.error(
+                ADialoguePanelController,
                 `count of options exceeds the recommended capacity.`,
                 `id: ${config.id}`,
                 `count: ${options.length}`,
-                `recommended capacity: ${this.cnvOptionsMaxCapacity}`);
+                `recommended capacity: ${this.cnvOptionsMaxCapacity}`
+            );
             options.length = this.cnvOptionsMaxCapacity;
         }
 
@@ -223,9 +233,9 @@ export default abstract class ADialoguePanelController<
         if (GToolkit.isNullOrEmpty(options)) {
             //#region 条件项 110
             if (isDialogueContentNodeHasNextId(config)) {
-                this._panel.btnNext
-                    .onClicked
-                    .add(() => Event.dispatchToLocal(ADialoguePanelController.ControllerRefreshDialogueEventName, config.nextId));
+                this._panel.btnNext.onClicked.add(() =>
+                    Event.dispatchToLocal(ADialoguePanelController.ControllerRefreshDialogueEventName, config.nextId)
+                );
             }
             //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -246,6 +256,8 @@ export default abstract class ADialoguePanelController<
             this.showNextArrow(isDialogueContentNodeHasNextId(config));
         }
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+        Event.dispatchToLocal(ADialoguePanelController.ContentNodeUpdateEventName, config.id);
     }
 
     /**
@@ -299,7 +311,10 @@ export default abstract class ADialoguePanelController<
             }
 
             if (isDialogueInteractNodeHasContentNodeId(config)) {
-                Event.dispatchToLocal(ADialoguePanelController.ControllerRefreshDialogueEventName, config.contentNodeId);
+                Event.dispatchToLocal(
+                    ADialoguePanelController.ControllerRefreshDialogueEventName,
+                    config.contentNodeId
+                );
             } else {
                 Event.dispatchToLocal(ADialoguePanelController.ControllerExitDialogueEventName);
             }
@@ -323,6 +338,7 @@ export default abstract class ADialoguePanelController<
     public shutDown(): boolean {
         this._currentContentId = null;
         if (!this.checkPanel()) return false;
+        this.showInteractOptions([]);
         return UIService.hideUI(this._panel);
     }
 
@@ -356,7 +372,7 @@ export default abstract class ADialoguePanelController<
      */
     public get configReader(): R {
         return DialogifyConfigReader as R;
-    };
+    }
 
     /**
      * 获取 对话内容节点 内容.

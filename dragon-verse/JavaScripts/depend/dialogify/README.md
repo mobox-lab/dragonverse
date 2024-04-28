@@ -2,13 +2,13 @@
 
 一个由 配置表 构建的树形对话系统。
 
-v1.0.2b  
+v1.0.4  
 by LviatYi by zewei.zhang
 
 阅读该文档时，推荐安装以下字体：
 
-- [JetBrainsMono Nerd Font Mono][JetbrainsMonoNerdFont]
-- [Sarasa Mono SC][SarasaMonoSC]
+-   [JetBrainsMono Nerd Font Mono][JetbrainsMonoNerdFont]
+-   [Sarasa Mono SC][SarasaMonoSC]
 
 若出现乱码，其为 Nerd Font 的特殊字符，不影响段落语义。
 
@@ -35,27 +35,27 @@ by LviatYi by zewei.zhang
 |   立绘   | OriginPainting | string  |      |
 | 是否主体 | IsSubjective   | boolean |      |
 
-- **[Opt]立绘** 一种标记 ，用于记录叙述实体的立绘属性。
-- **[Opt]是否主体** 一种标记 ，用于标记叙述实体的主体属性。可用于控制立绘显示位置（左/右）。
+-   **[Opt]立绘** 一种标记 ，用于记录叙述实体的立绘属性。
+-   **[Opt]是否主体** 一种标记 ，用于标记叙述实体的主体属性。可用于控制立绘显示位置（左/右）。
 
 ### 对话内容节点 DialogueContentNode
 
 **对话内容节点** 即对「话」的抽象。
 
-| Name | PropName | Type | Desc |
-| :-: | :-- | --- | --- |
-| ID | Id | int | 对话内容节点 Id |
-| 下条内容 Id | NextId | int | 子对话内容节点 Id |
-| 内容 | Content | string |  |
-| 来源实体 Id | SourceId | int | 叙述实体 Id |
+|          Name          | PropName            | Type    | Desc                            |
+| :--------------------: | :------------------ | ------- | ------------------------------- |
+|           ID           | Id                  | int     | 对话内容节点 Id                 |
+|      下条内容 Id       | NextId              | int     | 子对话内容节点 Id               |
+|          内容          | Content             | string  |                                 |
+|      来源实体 Id       | SourceId            | int     | 叙述实体 Id                     |
 | 可及性对话交互节点 Ids | InteractPredNodeIds | int[][] | [对话交互节点 Id,交互条件 Id][] |
 
-- **sourceId** 可置空 运行时置空自动继承对话树中的上一个非主体叙述实体。
-  - 即自动找到上一个非主角作为此节点的来源。
-- **可及性对话交互节点 Ids** 用于定义可及的对话交互节点列表。
-  - 一个 [int,int] 元组的数组。
-  - 第一个 int 为对话交互节点 Id。
-  - 第二个 int 为交互条件 Id。
+-   **sourceId** 可置空 运行时置空自动继承对话树中的上一个非主体叙述实体。
+    -   即自动找到上一个非主角作为此节点的来源。
+-   **可及性对话交互节点 Ids** 用于定义可及的对话交互节点列表。
+    -   一个 [int,int] 元组的数组。
+    -   第一个 int 为对话交互节点 Id。
+    -   第二个 int 为交互条件 Id。
 
 对于 NextId Content InteractPredNodeIds 分别为空，配置行的含义为：
 
@@ -72,9 +72,9 @@ by LviatYi by zewei.zhang
 
 一个对话从一个 **对话内容节点** 开启 ，且该节点以下属性：
 
-- NextId
-- Content
-- InteractPredNodeIds
+-   NextId
+-   Content
+-   InteractPredNodeIds
 
 的不同状态适用于不同场合。
 
@@ -89,14 +89,14 @@ by LviatYi by zewei.zhang
 | 110      | 显示下一条   | 显示       | 隐藏               | **打劫** |
 | 111      | 无           | 显示       | Content 完整后显示 | **打劫** |
 
-- **招呼**
-  - **常用的**。
-  - 不会强制锁定玩家视角。
-  - 玩家可以选择交互节点 以进一步对话 从而锁定玩家视角。
-- **打劫**
-  - 强制锁定玩家视角。玩家被强制拉入对话。
-  - 提供或不提供交互节点。
-    > 到了江心 且问你吃板刀还是馄饨
+-   **招呼**
+    -   **常用的**。
+    -   不会强制锁定玩家视角。
+    -   玩家可以选择交互节点 以进一步对话 从而锁定玩家视角。
+-   **打劫**
+    -   强制锁定玩家视角。玩家被强制拉入对话。
+    -   提供或不提供交互节点。
+        > 到了江心 且问你吃板刀还是馄饨
 
 ### 对话交互节点 DialogueInteractNode
 
@@ -112,8 +112,8 @@ by LviatYi by zewei.zhang
 
 对于 ContentNodeId 置空性，配置行的含义为：
 
-- 非空 跳转到对话内容节点。
-- 空 直接退出对话。
+-   非空 跳转到对话内容节点。
+-   空 直接退出对话。
 
 ### 对话节点功能 DialogueNodeFunc
 
@@ -125,7 +125,7 @@ by LviatYi by zewei.zhang
 | 名称 | Name     | string |      |
 | 行为 | Behavior | FUNC   |      |
 
-- **[FUNC]行为** 由程序提供。
+-   **[FUNC]行为** 由程序提供。
 
 ### 交互条件 InteractPredicate
 
@@ -137,7 +137,7 @@ by LviatYi by zewei.zhang
 | 名称 | Name     | string |      |
 | 行为 | Behavior | FUNC   |      |
 
-- **[FUNC]行为** 由程序提供，给定参数，返回一个 boolean 。
+-   **[FUNC]行为** 由程序提供，给定参数，返回一个 boolean 。
 
 ## Instruct ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
