@@ -1,6 +1,41 @@
-import GToolkit, {GtkTypes} from "../util/GToolkit";
+import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
+    //#region CowLevel
+    /**
+     * 奶牛关传送门无精灵球爆炸特效
+     */
+    public static readonly COW_LEVEL_PORTAL_EXPLODE_EFFECT_GUID = "290031";
+    /**
+     * 奶牛关传送门无精灵球爆炸特效缩放
+     */
+    public static readonly COW_LEVEL_PORTAL_EXPLODE_EFFECT_SCALE = new Vector(1, 1, 1);
+    /**
+     * 奶牛关传送门无精灵球爆炸冲量
+     */
+    public static readonly COW_LEVEL_PORTAL_EXPLODE_FORCE = new Vector(1000, 0, 1000);
+    /**
+     * 奶牛关传送门无精灵球爆炸音效
+     */
+    public static readonly COW_LEVEL_PORTAL_EXPLODE_SOUND_ID = "";
+    /**
+     * 奶牛关雕像有传送门激活特效
+     */
+    public static readonly COW_LEVEL_PORTAL_EFFECT_GUID = "142951";
+    /**
+     * 奶牛关雕像有传送门激活特效位置
+     */
+    public static readonly COW_LEVEL_PORTAL_EFFECT_POS = new Vector(-355.7, 37.7, 878);
+    /**
+     * 奶牛关雕像有传送门激活特效时长（秒）
+     */
+    public static readonly COW_LEVEL_PORTAL_EFFECT_DURATION = 0.6;
+    /**
+     * 奶牛关雕像有传送门激活特效缩放最大值
+     */
+    public static readonly COW_LEVEL_PORTAL_EFFECT_SCALE_MAX = new Vector(12, 12, 12);
+
+    //#endregion
     //#region Sub Game
     /**
      * 跳子游戏 进度条时长.
@@ -162,8 +197,7 @@ export default class GameServiceConfig {
      * 场景龙 最远存活距离平方.
      */
     public static get SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE() {
-        return GameServiceConfig.SCENE_DRAGON_MAX_LIVE_DISTANCE *
-            GameServiceConfig.SCENE_DRAGON_MAX_LIVE_DISTANCE;
+        return GameServiceConfig.SCENE_DRAGON_MAX_LIVE_DISTANCE * GameServiceConfig.SCENE_DRAGON_MAX_LIVE_DISTANCE;
     }
 
     /**
@@ -172,17 +206,18 @@ export default class GameServiceConfig {
      * @desc 活跃态 交互器 将进行更加频繁的距离检测 以平滑 UI 过渡.
      */
     public static get SQR_SCENE_DRAGON_UI_ACTIVITY_DISTANCE() {
-        return GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE *
+        return (
+            GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE *
             this.SCENE_DRAGON_UI_ACTIVITY_DISTANCE_RATIO *
-            this.SCENE_DRAGON_UI_ACTIVITY_DISTANCE_RATIO;
+            this.SCENE_DRAGON_UI_ACTIVITY_DISTANCE_RATIO
+        );
     }
 
     /**
      * 场景龙 可捕捉距离平方.
      */
     public static get SQR_SCENE_DRAGON_CATCHABLE_DISTANCE() {
-        return this.SCENE_DRAGON_CATCHABLE_DISTANCE *
-            this.SCENE_DRAGON_CATCHABLE_DISTANCE;
+        return this.SCENE_DRAGON_CATCHABLE_DISTANCE * this.SCENE_DRAGON_CATCHABLE_DISTANCE;
     }
 
     /**
@@ -190,9 +225,11 @@ export default class GameServiceConfig {
      * @desc 进入过渡开始距离时 交互器 从此为 0 值计算过渡参数 t.
      */
     public static get SQR_SCENE_DRAGON_UI_TRANSITION_START_DISTANCE() {
-        return this.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE *
+        return (
+            this.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE *
             this.SCENE_DRAGON_UI_TRANSITION_START_DISTANCE_RATIO *
-            this.SCENE_DRAGON_UI_TRANSITION_START_DISTANCE_RATIO;
+            this.SCENE_DRAGON_UI_TRANSITION_START_DISTANCE_RATIO
+        );
     }
 
     /**

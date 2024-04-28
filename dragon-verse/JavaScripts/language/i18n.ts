@@ -1,7 +1,7 @@
-import {GameConfig} from "../config/GameConfig";
-import {ILanguageElement} from "../config/Language";
+import { GameConfig } from "../config/GameConfig";
+import { ILanguageElement } from "../config/Language";
 import Log4Ts from "../depend/log4ts/Log4Ts";
-import {Yoact} from "../depend/yoact/Yoact";
+import { Yoact } from "../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import bindYoact = Yoact.bindYoact;
 import stopEffect = Yoact.stopEffect;
@@ -100,8 +100,11 @@ let languageDefault = {
     Invincible_End: "护盾结束！",
     autoFindPath_Fail: "自动寻路失败！",
 
-    ObbyEnterWithoutTicket: "由于上次在跑酷关内未失败，此次进入不消耗游戏次数！"
+    ObbyEnterWithoutTicket: "由于上次在跑酷关内未失败，此次进入不消耗游戏次数！",
 
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#region Cow Level
+    hasNoDragonBall: "缺少精灵球！神像拒绝了你！",
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 };
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -161,7 +164,7 @@ class i18n {
      */
     public resolves: ResolveTable;
 
-    private _languageType: { data: LanguageTypes } = createYoact({data: LanguageTypes.English});
+    private _languageType: { data: LanguageTypes } = createYoact({ data: LanguageTypes.English });
 
     private _lastLanguageType: number = -1;
 
