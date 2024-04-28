@@ -198,7 +198,7 @@ export class Globaldata {
     /**玩家被击飞动画播放速率*/
     public static blowUpAnimSpeed: number = 1;
     /**玩家被击飞的动画暂停时间 秒*/
-    public static blowUpAnimPauseTime: number = 0.15;
+    public static blowUpAnimPauseTime: number = 0;
     /**玩家被击飞时，检测地面的射线距离= 玩家坐标z - (胶囊体高度/2 + blowUpCheckOffsetZ)  距离单位 */
     public static blowUpCheckOffsetZ: number = 150;
     /**玩家被击飞时，要播放的 motionid */
