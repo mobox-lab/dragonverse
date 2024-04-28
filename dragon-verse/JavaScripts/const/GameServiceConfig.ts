@@ -1,6 +1,41 @@
 import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
+    //#region CowLevel
+    /**
+     * 奶牛关传送门无精灵球爆炸特效
+     */
+    public static readonly COW_LEVEL_PORTAL_EXPLODE_EFFECT_GUID = "290031";
+    /**
+     * 奶牛关传送门无精灵球爆炸特效缩放
+     */
+    public static readonly COW_LEVEL_PORTAL_EXPLODE_EFFECT_SCALE = new Vector(1, 1, 1);
+    /**
+     * 奶牛关传送门无精灵球爆炸冲量
+     */
+    public static readonly COW_LEVEL_PORTAL_EXPLODE_FORCE = new Vector(1000, 0, 1000);
+    /**
+     * 奶牛关传送门无精灵球爆炸音效
+     */
+    public static readonly COW_LEVEL_PORTAL_EXPLODE_SOUND_ID = "";
+    /**
+     * 奶牛关雕像有传送门激活特效
+     */
+    public static readonly COW_LEVEL_PORTAL_EFFECT_GUID = "142951";
+    /**
+     * 奶牛关雕像有传送门激活特效位置
+     */
+    public static readonly COW_LEVEL_PORTAL_EFFECT_POS = new Vector(-355.7, 37.7, 878);
+    /**
+     * 奶牛关雕像有传送门激活特效时长（秒）
+     */
+    public static readonly COW_LEVEL_PORTAL_EFFECT_DURATION = 0.6;
+    /**
+     * 奶牛关雕像有传送门激活特效缩放最大值
+     */
+    public static readonly COW_LEVEL_PORTAL_EFFECT_SCALE_MAX = new Vector(12, 12, 12);
+
+    //#endregion
     //#region Sub Game
     /**
      * 跳子游戏 进度条时长.

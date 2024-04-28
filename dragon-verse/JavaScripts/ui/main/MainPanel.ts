@@ -3,7 +3,6 @@ import MainPanel_Generate from "../../ui-generate/main/MainPanel_generate";
 import BagPanel from "../bag/BagPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
-import GlobalPromptPanel from "./GlobalPromptPanel";
 import Waterween from "../../depend/waterween/Waterween";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
@@ -32,6 +31,7 @@ import bindYoact = Yoact.bindYoact;
 import NpcBehavior from "../../module/npc/NpcBehavior";
 import CollectibleItem from "../../module/collectible-item/CollectibleItem";
 import DialogifyManager from "../../depend/dialogify/DialogifyManager";
+import GlobalTips from "../../depend/global-tips/GlobalTips";
 import { ActivateByUIAndTrigger, ActivateMode } from "../../gameplay/interactiveObj/ActiveMode";
 
 /**
@@ -110,8 +110,6 @@ export default class MainPanel extends MainPanel_Generate {
     private get roleController(): UnifiedRoleController | null {
         return this.character?.player?.getPlayerState(UnifiedRoleController) ?? null;
     }
-
-    private _promptPanel: GlobalPromptPanel;
 
     private _sceneDragonModule: SceneDragonModuleC = null;
 
@@ -193,7 +191,7 @@ export default class MainPanel extends MainPanel_Generate {
         //#region Member init
         this.layer = 0;
 
-        this._promptPanel = UIService.create(GlobalPromptPanel);
+        // this._promptPanel = UIService.create(GlobalPromptPanel);
 
         this._curtain = UIService.create(MainCurtainPanel);
         this._curtain.layer = mw.UILayerTop;
@@ -273,7 +271,7 @@ export default class MainPanel extends MainPanel_Generate {
 
             const dist = Math.max(
                 GameServiceConfig.CAMERA_ZOOM_MIN_DIST,
-                this._nolan.armLength - GameServiceConfig.CAMERA_ZOOM_PER_DIST,
+                this._nolan.armLength - GameServiceConfig.CAMERA_ZOOM_PER_DIST
             );
             this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
         });
@@ -285,7 +283,7 @@ export default class MainPanel extends MainPanel_Generate {
 
             const dist = Math.min(
                 GameServiceConfig.CAMERA_ZOOM_MAX_DIST,
-                this._nolan.armLength + GameServiceConfig.CAMERA_ZOOM_PER_DIST,
+                this._nolan.armLength + GameServiceConfig.CAMERA_ZOOM_PER_DIST
             );
             this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
         });
@@ -315,7 +313,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.progressBar.percent = val),
             1,
             GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION,
-            0,
+            0
         ).restart(true);
         this._progressTask.onDone.add((param) => {
             if (param) return;
@@ -327,7 +325,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvProgressBar.renderOpacity = val),
             1,
             0.5e3,
-            0,
+            0
         ).restart(true);
 
         this._pointerTask = Waterween.to(
@@ -335,7 +333,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvPointer.renderTransformAngle = val),
             GameServiceConfig.MAIN_PANEL_POINTER_END_ANGLE,
             GameServiceConfig.MAIN_PANEL_POINTER_HALF_DURATION,
-            GameServiceConfig.MAIN_PANEL_POINTER_START_ANGLE,
+            GameServiceConfig.MAIN_PANEL_POINTER_START_ANGLE
         )
             .restart(true)
             .pingPong();
@@ -352,7 +350,7 @@ export default class MainPanel extends MainPanel_Generate {
                 { dist: null, duration: 1e3 },
                 { dist: 0, duration: 0.5e3 },
             ],
-            1,
+            1
         );
 
         this._failTask = Waterween.group(
@@ -367,7 +365,7 @@ export default class MainPanel extends MainPanel_Generate {
                 { dist: null, duration: 1e3 },
                 { dist: 0, duration: 0.5e3 },
             ],
-            1,
+            1
         );
 
         this._effectCnvTask = Waterween.to(
@@ -375,7 +373,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvSprintEffect.renderOpacity = val),
             1,
             GameServiceConfig.MAIN_PANEL_CNV_SPRINT_EFFECT_DURATION,
-            0,
+            0
         ).restart(true);
         this._effectCnvTask.onDone.add((param) => {
             if (param) this._effectImgTasks.forEach((value) => value.pause());
@@ -392,8 +390,8 @@ export default class MainPanel extends MainPanel_Generate {
             Waterween.group(
                 () => this.imgSprintEffect1.renderOpacity,
                 (val) => (this.imgSprintEffect1.renderOpacity = val),
-                dist,
-            ).repeat(),
+                dist
+            ).repeat()
         );
 
         this._staminaShownTask = Waterween.to(
@@ -401,7 +399,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvStamina.renderOpacity = val),
             1,
             GameServiceConfig.MAIN_PANEL_CNV_STAMINA_SHOWN_DURATION,
-            0,
+            0
         ).restart(true);
 
         this._staminaValueTask = Waterween.flow(
@@ -410,7 +408,7 @@ export default class MainPanel extends MainPanel_Generate {
             1e3,
             new CubicBezier(0.5, 0, 0.5, 1),
             undefined,
-            true,
+            true
         );
 
         this._staminaScaleTask = Waterween.flow(
@@ -419,7 +417,7 @@ export default class MainPanel extends MainPanel_Generate {
             1e3,
             new CubicBezier(0.5, 0, 0.5, 1),
             undefined,
-            true,
+            true
         );
 
         this.btnCode.visibility = SlateVisibility.Hidden;
@@ -435,39 +433,38 @@ export default class MainPanel extends MainPanel_Generate {
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event subscribe
-        this._eventListeners.push(Event.addLocalListener(EventDefine.ShowGlobalPrompt, this.onShowGlobalPrompt));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, () => this.prepareCatch()));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, () => this.endCatch()));
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)),
+            Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this))
         );
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)),
+            Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this))
         );
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string)),
+            Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string))
         );
         this._eventListeners.push(
             Event.addLocalListener(EventDefine.PlayerReset, (playerId) => {
                 if (playerId === this.character.player.playerId) Log4Ts.log(MainPanel, `Player reset.`);
-            }),
+            })
         );
         this._eventListeners.push(Event.addLocalListener(EventDefine.OnDragonQuestsComplete, this.onFinishSubTask));
 
         this._eventListeners.push(
-            Event.addLocalListener(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED, () => this.updateMuteBtn()),
+            Event.addLocalListener(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED, () => this.updateMuteBtn())
         );
         this._eventListeners.push(
             Event.addLocalListener(
                 DialogifyManager.PlayerEnterOfficialDialogueEventName,
-                () => (this._currentInteractType = InteractType.Npc),
-            ),
+                () => (this._currentInteractType = InteractType.Npc)
+            )
         );
         this._eventListeners.push(
             Event.addLocalListener(
                 DialogifyManager.LeaveDialogueEventName,
-                () => this._currentInteractType === InteractType.Npc && (this._currentInteractType = InteractType.Null),
-            ),
+                () => this._currentInteractType === InteractType.Npc && (this._currentInteractType = InteractType.Null)
+            )
         );
         //#endregion ------------------------------------------------------------------------------------------
     }
@@ -623,7 +620,7 @@ export default class MainPanel extends MainPanel_Generate {
     //#region Init
     public init() {
         Gtk.trySetVisibility(this.cnvDragonBall, false);
-        UIService.hideUI(this._promptPanel);
+        // UIService.hideUI(this._promptPanel);
         this.cnvSprintEffect.renderOpacity = 0;
         this.imgOperationFail.renderOpacity = 0;
         this.imgOperationSuccess.renderOpacity = 0;
@@ -846,7 +843,7 @@ export default class MainPanel extends MainPanel_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     public showGlobalPrompt(message: string) {
-        this._promptPanel?.showPrompt(message);
+        // this._promptPanel?.showPrompt(message);
     }
 
     /**
@@ -928,7 +925,7 @@ export default class MainPanel extends MainPanel_Generate {
                 break;
             case InteractType.Collect:
                 this.txtOperationFeedback.text = i18n.lan(
-                    isSuccess ? i18n.lanKeys.Collection_002 : i18n.lanKeys.Collection_003,
+                    isSuccess ? i18n.lanKeys.Collection_002 : i18n.lanKeys.Collection_003
                 );
                 break;
             default:
@@ -988,12 +985,12 @@ export default class MainPanel extends MainPanel_Generate {
                     new Vector(
                         0,
                         GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Y,
-                        GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z,
-                    ),
-                ),
+                        GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z
+                    )
+                )
             ),
             v,
-            true,
+            true
         );
 
         if (!v.equals(Vector.zero)) {
@@ -1010,14 +1007,13 @@ export default class MainPanel extends MainPanel_Generate {
 
     private updateStaminaScale() {
         this._staminaScaleTask.to(
-            GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE / Camera.currentCamera.springArm.length,
+            GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE / Camera.currentCamera.springArm.length
         );
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
-    private onShowGlobalPrompt = (args: string) => this.showGlobalPrompt(args);
 
     private onProgressDone = () => {
         this._progressShowTask.backward();
@@ -1035,7 +1031,7 @@ export default class MainPanel extends MainPanel_Generate {
                 break;
             case InteractType.Collect:
                 const collectResult = !Gtk.isNullOrEmpty(
-                    this.collectibleItemModule?.currentCollectResultSyncKey ?? null,
+                    this.collectibleItemModule?.currentCollectResultSyncKey ?? null
                 );
                 Log4Ts.log(MainPanel, `collect result: ${collectResult}`);
                 if (collectResult) {
@@ -1078,7 +1074,7 @@ export default class MainPanel extends MainPanel_Generate {
         if (this.bagModule.hasDragonBall()) {
             this.sceneDragonModule.lock();
         } else {
-            Event.dispatchToLocal(EventDefine.ShowGlobalPrompt, i18n.lan(i18n.lanKeys.Catch_004));
+            GlobalTips.getInstance().showGlobalTips(i18n.lan(i18n.lanKeys.Catch_004));
         }
     };
 
@@ -1095,7 +1091,7 @@ export default class MainPanel extends MainPanel_Generate {
     };
 
     private onFinishSubTask = () => {
-        this.showGlobalPrompt(i18n.lan(i18n.lanKeys.TinyGameLanKey0004));
+        GlobalTips.getInstance().showGlobalTips(i18n.lan(i18n.lanKeys.TinyGameLanKey0004));
     };
 
     public enableJump(enable: boolean) {
