@@ -578,7 +578,7 @@ export default class GameServiceConfig {
      * 主界面 交互按钮 自定义 默认 图标 Guid.
      * @type {string}
      */
-    public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_CUSTOM = "164192 ";
+    public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_CUSTOM = "164192";
 
     /**
      * 地图界面 小地图左下点的世界坐标.
