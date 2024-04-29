@@ -15,7 +15,6 @@ export class State_BlowUp_S extends PlayerState_S {
     /**动画模块 */
     private mMotion: MotionModuleS = null;
 
-
     /**击飞动画对象 */
     private anim: mw.Animation = null;
     /**是否被击飞了 */
@@ -34,7 +33,6 @@ export class State_BlowUp_S extends PlayerState_S {
 
         this.blowUpMotionCfg = GameConfig.MotionClip.getElement(Globaldata.blowUpOverMotionId);
     }
-
 
     public enter() {
         let player = mw.Player.getPlayer(this.playerProxy.PId);
@@ -59,9 +57,7 @@ export class State_BlowUp_S extends PlayerState_S {
         //util.playEffectOnPlayer(this.playerProxy.PId, Globaldata.blowUpEffectId);
     }
 
-
     public onUpdate(dt: number) {
-
         if (this.isBlowUp) {
             return;
         }
@@ -96,8 +92,16 @@ export class State_BlowUp_S extends PlayerState_S {
         Globaldata.tmpVector2.y = playerLoc.y;
         Globaldata.tmpVector2.z = playerLoc.z - extenZ;
 
-
-        let results = QueryUtil.lineTrace(chara.worldTransform.position, Globaldata.tmpVector2, true, false, null, false, false, chara);
+        let results = QueryUtil.lineTrace(
+            chara.worldTransform.position,
+            Globaldata.tmpVector2,
+            true,
+            false,
+            null,
+            false,
+            false,
+            chara
+        );
 
         if (results.length > 0) {
             this.isBlowUp = true;
@@ -108,18 +112,16 @@ export class State_BlowUp_S extends PlayerState_S {
             }
             this.clear_blowUpKey();
             // 开始起飞
-            this.mMotion.playMotoin(this.playerProxy.PId, Globaldata.blowUpOverMotionId);
+            this.mMotion.playMotion(this.playerProxy.PId, Globaldata.blowUpOverMotionId);
 
             this.blowUpKey = setTimeout(() => {
                 this.blowUpKey = null;
                 this.stateOver();
             }, this.blowUpMotionCfg.frameCount * Constants.LogicFrameInterval * 1000);
         }
-
     }
 
     private stateOver() {
-
         let player = mw.Player.getPlayer(this.playerProxy.PId);
         if (player == null) {
             this.playerProxy.changeState(EPlayerState.Idle);
@@ -133,7 +135,6 @@ export class State_BlowUp_S extends PlayerState_S {
         this.playerProxy.changeState(EPlayerState.Idle);
     }
 
-
     private clear_blowUpKey() {
         if (this.blowUpKey) {
             clearTimeout(this.blowUpKey);
@@ -144,6 +145,4 @@ export class State_BlowUp_S extends PlayerState_S {
     exit(param?: any): void {
         this.clear_blowUpKey();
     }
-
-
 }
