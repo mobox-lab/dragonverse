@@ -71,7 +71,8 @@ export class P_Enchants extends EnchantsPanel_Generate {
         setTimeout(() => {
             this.onUpdateAc.call(false);
             this.showRes(tarEnchant, petKeyArr);
-        }, 500 + GlobalData.Enchant.effectDuration);
+            this.effect.stop();
+        }, 500 + GlobalData.Enchant.effectDuration * 1000);
         // this.effect.onFinish.clear();
         // this.effect.onFinish.add(() => {
         //     this.onUpdateAc.call(false);
