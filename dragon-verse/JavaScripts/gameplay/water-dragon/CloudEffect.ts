@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : zewei.zhang
  * @Date         : 2023-12-10 13:26:42
  * @LastEditors  : zewei.zhang
@@ -17,6 +17,8 @@ import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 import { QuestModuleC } from "../../module/quest/QuestModuleC";
 import { PromotTips } from "../../ui/common/PromotTips";
 import { ProximityPrompts } from "../../ui/common/ProximityPrompts";
+import MainPanel from "../../ui/main/MainPanel";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 @Component
 export default class CloudEffect extends mw.Script {
@@ -66,7 +68,8 @@ export default class CloudEffect extends mw.Script {
         this._trigger.onLeave.add((go) => {
             if (((go) instanceof mw.Character) && go.player.playerId === Player.localPlayer.playerId) {
                 Log4Ts.log(this, "离开云朵区域");
-                ProximityPrompts.close();
+                // ProximityPrompts.close();
+                mw.UIService.getUI(MainPanel)?.disableCustom();
                 PromotTips.hideTips();
             }
         });
@@ -75,7 +78,6 @@ export default class CloudEffect extends mw.Script {
 
         //按下Q键销毁云朵
         // InputUtil.onKeyDown(Keys.Q, () => {
-
 
         // });
 
@@ -86,7 +88,6 @@ export default class CloudEffect extends mw.Script {
             this.gameObject?.destroy();
         });
     }
-
 
     protected onUpdate(dt: number): void {
         this._clouds.forEach((scale, obj) => {
@@ -114,8 +115,7 @@ export default class CloudEffect extends mw.Script {
         });
     }
 
-
-    /** 
+    /**
      * @description: 获取可以销毁的云朵锚点
      */
     public getCanDestroyClouds(): string | null {
@@ -128,7 +128,7 @@ export default class CloudEffect extends mw.Script {
         return null;
     }
 
-    /** 
+    /**
      * @description: 销毁锚点下的云朵
      * @param anchorGuid 锚点guid
      */
@@ -138,7 +138,10 @@ export default class CloudEffect extends mw.Script {
 
         if (cloudsParent) {
             cloudsParent.getChildren().forEach(element => {
-                EffectService.playAtPosition("89589", element.worldTransform.position, { duration: 3, scale: new Vector(2, 2, 2) });
+                EffectService.playAtPosition("89589", element.worldTransform.position, {
+                    duration: 3,
+                    scale: new Vector(2, 2, 2),
+                });
             });
 
             cloudsParent.getChildren().forEach(element => {
@@ -161,16 +164,50 @@ export default class CloudEffect extends mw.Script {
     }
 
     private showFireBtn() {
-        ProximityPrompts.show([{
-            keyBoard: "F",
-            text: i18n.lan(i18n.lanKeys.TinyGameLanKey0003),
-            enabled: true,
-            onSelected: () => {
+        // ProximityPrompts.show([{
+        //     keyBoard: "F",
+        //     text: i18n.lan(i18n.lanKeys.TinyGameLanKey0003),
+        //     enabled: true,
+        //     onSelected: () => {
+        //         if (this._isFiring) return;
+        //         this._isFiring = true;
+        //         let anchorGuid = this.getCanDestroyClouds();
+        //         if (!anchorGuid) return;
+        //
+        //         let target = GameObject.findGameObjectById(anchorGuid).getChildren()[0];
+        //         AudioController.getInstance().play(SoundIDEnum.shootFireball, Player.localPlayer.character);
+        //         AudioController.getInstance().play(SoundIDEnum.hitCloud, target);
+        //         GameObject.asyncSpawn("160357", {
+        //             replicates: false,
+        //             transform: new Transform(Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)),
+        //                 Player.localPlayer.character.worldTransform.rotation,
+        //                 Vector.one),
+        //         }).then((go) => {
+        //             (go as Effect).play();
+        //             new Tween(go.worldTransform.position.clone()).to(target.worldTransform.position.clone(), 1000).onUpdate((pos) => {
+        //                 go.worldTransform.position = pos;
+        //             }).onComplete(() => {
+        //                 EffectService.playAtPosition("89080", target.worldTransform.position, {loopCount: 1});
+        //                 (go as Effect).forceStop();
+        //                 this.destroyClouds(anchorGuid);
+        //                 if (this.getCanDestroyClouds()) {
+        //                     //如果还有云朵，继续显示按钮
+        //                     this._isFiring = false;
+        //                     this.showFireBtn();
+        //                 }
+        //             }).start();
+        //         });
+        //     },
+        // }]);
+
+        mw.UIService.getUI(MainPanel)?.enableCustom({
+            name: i18n.resolves.TinyGameLanKey0003(),
+            icon: GameServiceConfig.MAIN_PANEL_INTERACTION_ICON_GUID_CUSTOM,
+            onTrigger: () => {
                 if (this._isFiring) return;
                 this._isFiring = true;
                 let anchorGuid = this.getCanDestroyClouds();
                 if (!anchorGuid) return;
-
                 let target = GameObject.findGameObjectById(anchorGuid).getChildren()[0];
                 AudioController.getInstance().play(SoundIDEnum.shootFireball, Player.localPlayer.character);
                 AudioController.getInstance().play(SoundIDEnum.hitCloud, target);
@@ -178,13 +215,13 @@ export default class CloudEffect extends mw.Script {
                     replicates: false,
                     transform: new Transform(Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)),
                         Player.localPlayer.character.worldTransform.rotation,
-                        Vector.one)
+                        Vector.one),
                 }).then((go) => {
                     (go as Effect).play();
                     new Tween(go.worldTransform.position.clone()).to(target.worldTransform.position.clone(), 1000).onUpdate((pos) => {
                         go.worldTransform.position = pos;
                     }).onComplete(() => {
-                        EffectService.playAtPosition("89080", target.worldTransform.position, { loopCount: 1 });
+                        EffectService.playAtPosition("89080", target.worldTransform.position, {loopCount: 1});
                         (go as Effect).forceStop();
                         this.destroyClouds(anchorGuid);
                         if (this.getCanDestroyClouds()) {
@@ -194,7 +231,7 @@ export default class CloudEffect extends mw.Script {
                         }
                     }).start();
                 });
-            }
-        }]);
+            },
+        });
     }
 }
