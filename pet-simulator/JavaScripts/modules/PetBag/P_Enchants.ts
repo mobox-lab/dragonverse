@@ -1,24 +1,22 @@
-import {GameConfig} from "../../config/GameConfig";
-import {GlobalEnum} from "../../const/Enum";
-import {GlobalData} from "../../const/GlobalData";
+import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
 import EnchantsPanel_Generate from "../../ui-generate/Enchants/EnchantsPanel_generate";
 import Enchants_item_Generate from "../../ui-generate/Enchants/Enchants_item_generate";
-import {oTraceError} from "../../util/LogManager";
+import { oTraceError } from "../../util/LogManager";
 import MessageBox from "../../util/MessageBox";
-import {numberArrToString, utils} from "../../util/uitls";
-import {P_PetHover} from "../PetCollect/P_Collect";
-import {PlayerModuleC} from "../Player/PlayerModuleC";
-import {BagTool} from "./BagTool";
-import {PetBagModuleData, petItemDataNew} from "./PetBagModuleData";
-import {AnalyModel, AnalyticsTool, Page} from "../Analytics/AnalyticsTool";
-import {PetBagItem} from "./P_Bag";
+import { numberArrToString, utils } from "../../util/uitls";
+import { P_PetHover } from "../PetCollect/P_Collect";
+import { PlayerModuleC } from "../Player/PlayerModuleC";
+import { BagTool } from "./BagTool";
+import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
+import { AnalyModel, AnalyticsTool, Page } from "../Analytics/AnalyticsTool";
+import { PetBagItem } from "./P_Bag";
 
-
-import {PetBag_Item} from "./P_BagItem";
+import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 export class P_Enchants extends EnchantsPanel_Generate {
-
     /**是否第一次打开 */
     private isFirstOpen: boolean = true;
     /**特效 */
@@ -40,7 +38,6 @@ export class P_Enchants extends EnchantsPanel_Generate {
     private bagData: PetBagModuleData;
     private enchantInterval: any;
 
-
     onStart() {
         this.mButton.onClicked.add(() => {
             if (this.isEnchanting) {
@@ -58,22 +55,28 @@ export class P_Enchants extends EnchantsPanel_Generate {
     private getEffect() {
         GameObject.asyncFindGameObjectById(GlobalData.Enchant.effectGuid).then((eff) => {
             this.effect = eff as mw.Effect;
-            this.effect.loop = false;
+            // this.effect.loop = false;
+            this.effect.duration = GlobalData.Enchant.effectDuration;
+            this.effect.stop();
         });
     }
 
     /**播放特效 */
     private playEffect(tarEnchant: number[], petKeyArr: number[]) {
-        this.effect.loopCount = GlobalData.Enchant.effectPlayTimes;
+        // this.effect.loopCount = GlobalData.Enchant.effectPlayTimes;
         this.onUpdateAc.call(true);
         setTimeout(() => {
             this.effect.play();
         }, 500);
-        this.effect.onFinish.clear();
-        this.effect.onFinish.add(() => {
+        setTimeout(() => {
             this.onUpdateAc.call(false);
             this.showRes(tarEnchant, petKeyArr);
-        });
+        }, 500 + GlobalData.Enchant.effectDuration);
+        // this.effect.onFinish.clear();
+        // this.effect.onFinish.add(() => {
+        //     this.onUpdateAc.call(false);
+        //     this.showRes(tarEnchant, petKeyArr);
+        // });
     }
 
     public showPanel(petData: petItemDataNew[]) {
@@ -108,7 +111,10 @@ export class P_Enchants extends EnchantsPanel_Generate {
     private showHoverUI(isShow: boolean, item: PetBag_Item) {
         if (isShow) {
             let pos = item.uiObject.position;
-            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x + this.mlistCanvas.position.x, pos.y + this.mCanvas.position.y + this.mlistCanvas.position.y);
+            let loc = new mw.Vector2(
+                pos.x + this.mCanvas.position.x + this.mlistCanvas.position.x,
+                pos.y + this.mCanvas.position.y + this.mlistCanvas.position.y
+            );
             mw.UIService.getUI(P_PetHover).setPetInfoShow(item.petData, loc);
         } else {
             mw.UIService.getUI(P_PetHover).hide();
@@ -126,7 +132,6 @@ export class P_Enchants extends EnchantsPanel_Generate {
         });
         return result;
     }
-
 
     private initEnchantItem() {
         let cfgs = GameConfig.Enchants.getAllElement();
@@ -210,12 +215,10 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.isCanEnchant();
     }
 
-
     /**判断附魔条件 */
     private isCanEnchant() {
-
-        let isHasEnchant = false;//是否有附魔
-        let isSameEnchant = true;//是否是同一种附魔
+        let isHasEnchant = false; //是否有附魔
+        let isSameEnchant = true; //是否是同一种附魔
 
         let selcetEnchant = this.getSelectEnchant();
         let playerMC = ModuleService.getModule(PlayerModuleC);
@@ -236,13 +239,14 @@ export class P_Enchants extends EnchantsPanel_Generate {
             //有附魔
             if (isSameEnchant) {
                 //同一种附魔
-                MessageBox.showOneBtnMessage(GameConfig.Language.Tips_Enchants_3.Value, () => {
-                });
+                MessageBox.showOneBtnMessage(GameConfig.Language.Tips_Enchants_3.Value, () => {});
                 return;
             }
             MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_2.Value, async (res: boolean) => {
                 if (res) {
-                    let isSuccess = await playerMC.reduceDiamond(this.selectPetKeys.length * GlobalData.Enchant.diamondCost);
+                    let isSuccess = await playerMC.reduceDiamond(
+                        this.selectPetKeys.length * GlobalData.Enchant.diamondCost
+                    );
                     if (!isSuccess) {
                         MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
                             super.show();
@@ -254,10 +258,11 @@ export class P_Enchants extends EnchantsPanel_Generate {
                 }
             });
         } else {
-
             MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_1.Value, async (res: boolean) => {
                 if (res) {
-                    let isSuccess = await playerMC.reduceDiamond(this.selectPetKeys.length * GlobalData.Enchant.diamondCost);
+                    let isSuccess = await playerMC.reduceDiamond(
+                        this.selectPetKeys.length * GlobalData.Enchant.diamondCost
+                    );
                     if (!isSuccess) {
                         MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
                             super.show();
@@ -337,8 +342,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
         if (tarEnchant.length == 0) {
             let ids = GlobalData.Enchant.normalEnchantId;
             for (let i = ids[0]; i < ids[1]; i++) {
-                if (!GlobalData.Enchant.filterIds.includes(i))
-                    tarEnchant.push(i);
+                if (!GlobalData.Enchant.filterIds.includes(i)) tarEnchant.push(i);
             }
         }
         //词条个数
@@ -373,11 +377,9 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.enchantAc.call(petKeyArr, curIdStr);
         del.forEach((element) => {
             let index = petKeyArr.indexOf(element);
-            if (index != -1)
-                petKeyArr.splice(index, 1);
+            if (index != -1) petKeyArr.splice(index, 1);
         });
         this.playEffect(tarEnchant, petKeyArr);
-
     }
 
     /**展示结果 */
@@ -395,10 +397,8 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.enchantInterval = setTimeout(() => {
             this.moveUI(false);
             this.enchantProgress(tarEnchant, petKeyArr);
-
         }, GlobalData.Enchant.stopTime * 1000);
     }
-
 
     /**设置附魔按钮点击态 */
     private setEnchantBtnClickState(isCan: boolean) {
@@ -406,8 +406,12 @@ export class P_Enchants extends EnchantsPanel_Generate {
         let char = Player.localPlayer.character;
         char.movementEnabled = isCan;
         char.jumpEnabled = isCan;
-        this.mTextBlock_Enchant.text = isCan ? GameConfig.Language.Tips_Enchants_7.Value : GameConfig.Language.Tips_Enchants_8.Value;
-        this.mButton_Enchant.normalImageGuid = isCan ? GlobalData.Enchant.enchantBtnGuid[0] : GlobalData.Enchant.enchantBtnGuid[1];
+        this.mTextBlock_Enchant.text = isCan
+            ? GameConfig.Language.Tips_Enchants_7.Value
+            : GameConfig.Language.Tips_Enchants_8.Value;
+        this.mButton_Enchant.normalImageGuid = isCan
+            ? GlobalData.Enchant.enchantBtnGuid[0]
+            : GlobalData.Enchant.enchantBtnGuid[1];
     }
 
     /**移走ui */
@@ -437,23 +441,24 @@ export class P_Enchants extends EnchantsPanel_Generate {
             this.hide();
         });
     }
-
 }
-
 
 /**词条item */
 class EnchantItem extends Enchants_item_Generate {
-
     public cfgId: number = 0;
     private isChoose: boolean = false;
     public onClickAc: Action = new Action();
 
     onStart() {
-        this.mButton_Entry.normalImageGuid = this.isChoose ? GlobalData.Enchant.enchantitemGuid[1] : GlobalData.Enchant.enchantitemGuid[0];
+        this.mButton_Entry.normalImageGuid = this.isChoose
+            ? GlobalData.Enchant.enchantitemGuid[1]
+            : GlobalData.Enchant.enchantitemGuid[0];
         this.mButton_Entry.onClicked.add(() => {
             this.isChoose = !this.isChoose;
             this.onClickAc.call();
-            this.mButton_Entry.normalImageGuid = this.isChoose ? GlobalData.Enchant.enchantitemGuid[1] : GlobalData.Enchant.enchantitemGuid[0];
+            this.mButton_Entry.normalImageGuid = this.isChoose
+                ? GlobalData.Enchant.enchantitemGuid[1]
+                : GlobalData.Enchant.enchantitemGuid[0];
         });
     }
 
@@ -472,6 +477,8 @@ class EnchantItem extends Enchants_item_Generate {
 
     public setSelectState(isChoose: boolean) {
         this.isChoose = isChoose;
-        this.mButton_Entry.normalImageGuid = this.isChoose ? GlobalData.Enchant.enchantitemGuid[1] : GlobalData.Enchant.enchantitemGuid[0];
+        this.mButton_Entry.normalImageGuid = this.isChoose
+            ? GlobalData.Enchant.enchantitemGuid[1]
+            : GlobalData.Enchant.enchantitemGuid[0];
     }
 }
