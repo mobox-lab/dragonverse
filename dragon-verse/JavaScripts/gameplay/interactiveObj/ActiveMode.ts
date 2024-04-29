@@ -1,8 +1,8 @@
-/** 
+/**
  * @Author       : zewei.zhang
  * @Date         : 2024-04-24 16:48:00
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-04-26 09:34:16
+ * @LastEditTime : 2024-04-28 10:09:02
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\ActiveMode.ts
  * @Description  : 交互物触发模式
  */
@@ -10,7 +10,7 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjModule";
 
-/** 
+/**
  * @description: 激活方式基类
  */
 export abstract class ActivateMode {
@@ -31,20 +31,20 @@ export abstract class ActivateMode {
     }
 }
 
-/** 
+/**
  * @description: 设置触发器在哪里触发，最终的客户端和服务端的交互函数还是都会触发，只为了防止双端都触发逻辑冗余
  */
 export enum TriggerType {
     TriggerInServer,
-    TriggerInClient
+    TriggerInClient,
 }
 
-/** 
+/**
  * @description: 通过触发器触发
  */
 export class ActivateByTrigger extends ActivateMode {
     protected trigger: mw.Trigger;
-    private _triggerType: TriggerType;
+    protected _triggerType: TriggerType;
     constructor(interactiveObj: GameObject, triggerType: TriggerType) {
         super(interactiveObj);
 
@@ -91,49 +91,54 @@ export class ActivateByTrigger extends ActivateMode {
 
     onEnterInServer = (go: mw.GameObject) => {
         Log4Ts.log(ActivateByTrigger, `active by trigger in server:${go.name}`);
-        if (((go) instanceof mw.Character)) {
+        if (go instanceof mw.Character) {
             let player = go.player;
             if (player) {
-                ModuleService.getModule(InteractiveObjModuleS).net_startInteraction(player.playerId, this._interactiveObj.gameObjectId);
+                ModuleService.getModule(InteractiveObjModuleS).net_startInteraction(
+                    player.playerId,
+                    this._interactiveObj.gameObjectId
+                );
             }
         }
-    }
+    };
 
     onLeaveInServer = (go: mw.GameObject) => {
-        if (((go) instanceof mw.Character)) {
+        if (go instanceof mw.Character) {
             let player = go.player;
             if (player) {
-                ModuleService.getModule(InteractiveObjModuleS).net_stopInteraction(player.playerId, this._interactiveObj.gameObjectId);
+                ModuleService.getModule(InteractiveObjModuleS).net_stopInteraction(
+                    player.playerId,
+                    this._interactiveObj.gameObjectId
+                );
             }
         }
-    }
+    };
 
     onEnterInClient = (go: mw.GameObject) => {
         Log4Ts.log(ActivateByTrigger, `active by trigger in client:${go.name}`);
-        if ((go) instanceof mw.Character) {
+        if (go instanceof mw.Character) {
             let player = go.player;
             if (player && player.playerId === Player.localPlayer.playerId) {
                 ModuleService.getModule(InteractiveObjModuleC).startInteraction(this._interactiveObj.gameObjectId);
             }
         }
-    }
+    };
 
     onLeaveInClient = (go: mw.GameObject) => {
-        if ((go) instanceof mw.Character) {
+        if (go instanceof mw.Character) {
             let player = (go as mw.Character).player;
             if (player && player.playerId === Player.localPlayer.playerId) {
                 ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this._interactiveObj.gameObjectId);
             }
         }
-    }
+    };
 }
 
-/** 
+/**
  * @description: 通过UI触发交互
  */
 export class ActivateByUI extends ActivateMode {
-
-    private _isInteractionUIShowing: boolean;//当前显示的UI
+    private _isInteractionUIShowing: boolean; //当前显示的UI
 
     protected showUI: () => void;
     protected hideUI: () => void;
@@ -144,10 +149,9 @@ export class ActivateByUI extends ActivateMode {
         this.hideUI = hideUI;
 
         //插入到四叉树
-        ModuleService.ready().then(() => {
-            ModuleService.getModule(InteractiveObjModuleC).insertInteractionIntoQuadTree(this._interactiveObj.worldTransform.position, this._interactiveObj.gameObjectId);
-        })
-
+        // ModuleService.ready().then(() => {
+        //     ModuleService.getModule(InteractiveObjModuleC).insertInteractionIntoQuadTree(this._interactiveObj.worldTransform.position, this._interactiveObj.gameObjectId);
+        // })
     }
 
     set activate(value: boolean) {
@@ -165,7 +169,6 @@ export class ActivateByUI extends ActivateMode {
      * @return {*}
      */
     private canShowUI(): void {
-
         if (this._isInteractionUIShowing) return;
 
         this._isInteractionUIShowing = true;
@@ -178,7 +181,6 @@ export class ActivateByUI extends ActivateMode {
      * @return {*}
      */
     protected canHideUI(): void {
-
         if (!this._isInteractionUIShowing) return;
 
         this._isInteractionUIShowing = false;
@@ -195,7 +197,7 @@ export class ActivateByUI extends ActivateMode {
     }
 }
 
-/** 
+/**
  * @description: 触发器触发显示UI，UI显示后点击触发
  */
 export class ActivateByUIAndTrigger extends ActivateByUI {
@@ -204,15 +206,35 @@ export class ActivateByUIAndTrigger extends ActivateByUI {
     constructor(interactiveObj: GameObject, showUI: () => void, hideUI: () => void) {
         super(interactiveObj, showUI, hideUI);
         if (SystemUtil.isClient()) {
-
             this._trigger = this._interactiveObj as mw.Trigger;
             this._trigger.onEnter.add(this.onEnter.bind(this));
             this._trigger.onLeave.add(this.onLeave.bind(this));
         }
     }
 
+    set activate(value: boolean) {
+        super.activate = value;
+        this.activate ? this.enableTrigger() : this.disableTrigger();
+    }
+
+    private enableTrigger() {
+        if (SystemUtil.isClient()) {
+            this._trigger.onEnter.clear();
+            this._trigger.onLeave.clear();
+            this._trigger.onEnter.add(this.onEnter);
+            this._trigger.onLeave.add(this.onLeave);
+        }
+    }
+
+    private disableTrigger() {
+        if (SystemUtil.isClient()) {
+            this._trigger.onEnter.clear();
+            this._trigger.onLeave.clear();
+        }
+    }
+
     onEnter(go: mw.GameObject) {
-        if (((go) instanceof mw.Character)) {
+        if (go instanceof mw.Character) {
             let player = (go as mw.Character).player;
             //是空的就是别人，刚进游戏的时候会有这种情况
             if (!player) return;
@@ -224,7 +246,7 @@ export class ActivateByUIAndTrigger extends ActivateByUI {
     }
 
     onLeave(go: mw.GameObject) {
-        if (((go) instanceof mw.Character)) {
+        if (go instanceof mw.Character) {
             let player = (go as mw.Character).player;
             //是空的就是别人，刚进游戏的时候会有这种情况
             if (!player) return;
@@ -242,6 +264,3 @@ export class ActivateByUIAndTrigger extends ActivateByUI {
         ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this._interactiveObj.gameObjectId);
     }
 }
-
-
-

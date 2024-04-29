@@ -1,25 +1,20 @@
-/** 
+/**
  * @Author       : zewei.zhang
  * @Date         : 2024-04-24 16:14:39
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-04-26 16:48:46
- * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\BasePortalTrigger.ts
- * @Description  : 传送门交互物
+ * @LastEditTime : 2024-04-26 18:28:57
+ * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\PortalTriggerWithProgress.ts
+ * @Description  : 带进度条的传送门交互物
  */
-
 
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
-import { ActivateByTrigger, ActivateMode, TriggerType } from "./ActiveMode";
 import { SharedInteractiveObj } from "./BaseInteractiveScript";
 import { InteractiveObjModuleC } from "./InteractiveObjModule";
 
-export abstract class BasePortalTrigger extends SharedInteractiveObj {
-
+export abstract class PortalTriggerWithProgress extends SharedInteractiveObj {
     @Property({ displayName: "进度条时间(秒),0不显示", group: "Config-progress" })
     public progressMaxTime: number = 3;
-
-    activeMode: ActivateMode;
 
     maxPlayerCount: number = Infinity;
 
@@ -28,27 +23,15 @@ export abstract class BasePortalTrigger extends SharedInteractiveObj {
 
     private readonly _progressTag = "JumpProgress";
 
-    abstract triggerType: TriggerType;
-
-
-    protected onStart(): void {
-        super.onStart();
-        this.activeMode = new ActivateByTrigger(this.gameObject, this.triggerType);
-    }
-
-    allPlayerEndInteractionInClient(): void {
-
-    }
-    firstStartInteractionInClient(): void {
-
-    }
+    allPlayerEndInteractionInClient(): void {}
+    firstStartInteractionInClient(): void {}
     protected startInteractionInServer(playerId: number): void {
-        Log4Ts.log(BasePortalTrigger, `startInteractionInServer:${playerId}}`);
-        this.onStartPortalInServer();
+        Log4Ts.log(PortalTriggerWithProgress, `startInteractionInServer:${playerId}}`);
+        this.onStartPortalInServer(playerId);
     }
 
     protected startInteractionInClient(playerId: number): void {
-        Log4Ts.log(BasePortalTrigger, `startInteractionInClient:${playerId}}`);
+        Log4Ts.log(PortalTriggerWithProgress, `startInteractionInClient:${playerId}}`);
         if (this.progressMaxTime > 0) {
             //显示进度条
             let ui = UIService.show(JumpProgress_Generate);
@@ -63,17 +46,16 @@ export abstract class BasePortalTrigger extends SharedInteractiveObj {
             this.onProgressDone();
         }
         this.onStartPortalInClient();
-
     }
 
     protected stopInteractionInServer(playerId: number, finishCallBack?: () => void): void {
-        Log4Ts.log(BasePortalTrigger, `stopInteractionInServer:${playerId}}`);
+        Log4Ts.log(PortalTriggerWithProgress, `stopInteractionInServer:${playerId}}`);
         finishCallBack();
-        this.onInterruptProgressInServer();
+        this.onInterruptProgressInServer(playerId);
     }
 
     protected stopInteractionInClient(playerId: number, finishCallBack?: () => void): void {
-        Log4Ts.log(BasePortalTrigger, `stopInteractionInClient:${playerId}}`);
+        Log4Ts.log(PortalTriggerWithProgress, `stopInteractionInClient:${playerId}}`);
 
         //如果退出trigger关闭进度条
         //进度条结束
@@ -82,15 +64,16 @@ export abstract class BasePortalTrigger extends SharedInteractiveObj {
             this.onInterruptProgressInClient();
         }
 
-        actions.tween(this._cnvProgressBar).to(100, { renderOpacity: 0 }).call(() => {
-            UIService.hide(JumpProgress_Generate);
-        }).start();
-
+        actions
+            .tween(this._cnvProgressBar)
+            .to(100, { renderOpacity: 0 })
+            .call(() => {
+                UIService.hide(JumpProgress_Generate);
+            })
+            .start();
 
         finishCallBack();
     }
-
-
 
     /**
      * 播放 Progress 动画.
@@ -98,26 +81,45 @@ export abstract class BasePortalTrigger extends SharedInteractiveObj {
     private _isPlayingProgress: boolean = false;
     public playProgress() {
         this._isPlayingProgress = true;
-        let progressTask = actions.tween(this._progressBar).setTag(this._progressTag).to(this.progressMaxTime * 1000, { percent: 1 }).call(() => {
-            this._isPlayingProgress = false;
-            //退出交互，进入传送
-            ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this.gameObject.gameObjectId);
-            this.onProgressDone();
-        });
+        let progressTask = actions
+            .tween(this._progressBar)
+            .setTag(this._progressTag)
+            .to(this.progressMaxTime * 1000, { percent: 1 })
+            .call(() => {
+                this._isPlayingProgress = false;
+                //退出交互，进入传送
+                ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this.gameObject.gameObjectId);
+                this.onProgressDone();
+            });
 
-        actions.tween(this._cnvProgressBar).setTag(this._progressTag).to(100, { renderOpacity: 1 }).call(() => {
-            progressTask.start();
-        }).start();
+        actions
+            .tween(this._cnvProgressBar)
+            .setTag(this._progressTag)
+            .to(100, { renderOpacity: 1 })
+            .call(() => {
+                progressTask.start();
+            })
+            .start();
     }
 
-
-    abstract onStartPortalInServer(): void;
-
+    /**
+     * @description: 服务端开始传送
+     */
+    abstract onStartPortalInServer(playerId: number): void;
+    /**
+     * @description: 客户端开始传送
+     */
     abstract onStartPortalInClient(): void;
-
+    /**
+     * @description: 客户端打断进度条时机
+     */
     abstract onInterruptProgressInClient(): void;
-
-    abstract onInterruptProgressInServer(): void;
-
+    /**
+     * @description: 服务端打断进度条时机
+     */
+    abstract onInterruptProgressInServer(playerId: number): void;
+    /**
+     * 进度条结束，没有进度条时，也会
+     */
     abstract onProgressDone(): void;
 }

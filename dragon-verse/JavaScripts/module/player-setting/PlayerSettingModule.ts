@@ -8,14 +8,14 @@ import { Constructor } from "../../util/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 type SettingItemType =
-    "bgm-volume"
+    | "bgm-volume"
     | "sound-effect-volume"
     | "language"
     | "mute-sound-effect-volume"
-    | "mute-bgm-volume"
+    | "mute-bgm-volume";
 
 abstract class SettingItem<T> extends ATransactItem<T> {
-    public readonly abstract type: SettingItemType;
+    public abstract readonly type: SettingItemType;
 
     public abstract reset(): this;
 }
@@ -131,16 +131,13 @@ export default class PlayerSettingModuleData extends Subdata {
     @Decorator.persistence()
     soundEffectVolume: number;
 
-
     protected initDefaultData(): void {
         this.language = LanguageTypes.Chinese;
         this.bgmVolume = 1;
         this.soundEffectVolume = 1;
     }
 
-    protected onDataInit(): void {
-
-    }
+    protected onDataInit(): void {}
 }
 
 /**
@@ -186,9 +183,9 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
         //#region Member init
         this.set("language", this.data.language)
             .set("bgm-volume", this.data.bgmVolume)
-            .set("mute-bgm-volume", !!this.data.bgmVolume)
+            .set("mute-bgm-volume", !this.data.bgmVolume)
             .set("sound-effect-volume", this.data.soundEffectVolume)
-            .set("mute-sound-effect-volume", !!this.data.soundEffectVolume)
+            .set("mute-sound-effect-volume", !this.data.soundEffectVolume)
             .apply(false);
 
         Event.dispatchToLocal(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED);
@@ -210,7 +207,7 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
+        this._eventListeners.forEach((value) => value.disconnect());
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -222,10 +219,7 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
 
     //#region Method
     private saveData() {
-        this.server.net_save(
-            this.data.language,
-            this.data.bgmVolume,
-            this.data.soundEffectVolume);
+        this.server.net_save(this.data.language, this.data.bgmVolume, this.data.soundEffectVolume);
     }
 
     /**
@@ -253,7 +247,6 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
         const item = new cls() as SettingItem<T>;
         return item.get();
     }
-
 
     /**
      * 应用.
@@ -283,7 +276,6 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
                 }
             }
         }
-
 
         this._transact.commit();
         save && this.saveData();
@@ -368,7 +360,7 @@ export class PlayerSettingModuleS extends ModuleS<PlayerSettingModuleC, PlayerSe
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
+        this._eventListeners.forEach((value) => value.disconnect());
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -394,11 +386,7 @@ export class PlayerSettingModuleS extends ModuleS<PlayerSettingModuleC, PlayerSe
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
-    public net_save(
-        language: LanguageTypes,
-        bgmVolume: number,
-        soundEffectVolume: number,
-    ) {
+    public net_save(language: LanguageTypes, bgmVolume: number, soundEffectVolume: number) {
         this.currentData.language = language;
         this.currentData.bgmVolume = bgmVolume;
         this.currentData.soundEffectVolume = soundEffectVolume;
