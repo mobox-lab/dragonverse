@@ -17,6 +17,7 @@ import { GlobalEnum } from "../../const/Enum";
 import { EnchantBuff } from "./EnchantBuff";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
+import Gtk from "../../util/GToolkit";
 
 export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     private achievementModuleC: AchievementModuleC = null;
@@ -94,6 +95,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         if (petIds.length == 0) return;
 
         let delArr: number[] = [];
+
         petIds.forEach((key) => {
             let data = this.data.bagItemsByKey(key);
             if (data.p.a == atk) {

@@ -77,6 +77,11 @@ export interface CustomInteractOption {
      * 图标 Guid.
      */
     icon: string;
+
+    /**
+     * 触发回调.
+     */
+    onTrigger: () => void;
 }
 
 /**
@@ -270,7 +275,7 @@ export default class MainPanel extends MainPanel_Generate {
 
             const dist = Math.max(
                 GameServiceConfig.CAMERA_ZOOM_MIN_DIST,
-                this._nolan.armLength - GameServiceConfig.CAMERA_ZOOM_PER_DIST
+                this._nolan.armLength - GameServiceConfig.CAMERA_ZOOM_PER_DIST,
             );
             this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
         });
@@ -282,7 +287,7 @@ export default class MainPanel extends MainPanel_Generate {
 
             const dist = Math.min(
                 GameServiceConfig.CAMERA_ZOOM_MAX_DIST,
-                this._nolan.armLength + GameServiceConfig.CAMERA_ZOOM_PER_DIST
+                this._nolan.armLength + GameServiceConfig.CAMERA_ZOOM_PER_DIST,
             );
             this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
         });
@@ -312,7 +317,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.progressBar.percent = val),
             1,
             GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION,
-            0
+            0,
         ).restart(true);
         this._progressTask.onDone.add((param) => {
             if (param) return;
@@ -324,7 +329,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvProgressBar.renderOpacity = val),
             1,
             0.5e3,
-            0
+            0,
         ).restart(true);
 
         this._pointerTask = Waterween.to(
@@ -332,7 +337,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvPointer.renderTransformAngle = val),
             GameServiceConfig.MAIN_PANEL_POINTER_END_ANGLE,
             GameServiceConfig.MAIN_PANEL_POINTER_HALF_DURATION,
-            GameServiceConfig.MAIN_PANEL_POINTER_START_ANGLE
+            GameServiceConfig.MAIN_PANEL_POINTER_START_ANGLE,
         )
             .restart(true)
             .pingPong();
@@ -346,10 +351,10 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                { dist: null, duration: 1e3 },
-                { dist: 0, duration: 0.5e3 },
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
             ],
-            1
+            1,
         );
 
         this._failTask = Waterween.group(
@@ -361,10 +366,10 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                { dist: null, duration: 1e3 },
-                { dist: 0, duration: 0.5e3 },
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
             ],
-            1
+            1,
         );
 
         this._effectCnvTask = Waterween.to(
@@ -372,25 +377,25 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvSprintEffect.renderOpacity = val),
             1,
             GameServiceConfig.MAIN_PANEL_CNV_SPRINT_EFFECT_DURATION,
-            0
+            0,
         ).restart(true);
         this._effectCnvTask.onDone.add((param) => {
             if (param) this._effectImgTasks.forEach((value) => value.pause());
         });
 
         const dist = [
-            { dist: 0.3, duration: 0.1e3 },
-            { dist: 0.4, duration: 0.1e3 },
-            { dist: 0.2, duration: 0.1e3 },
-            { dist: 0.5, duration: 0.1e3 },
-            { dist: 0.3, duration: 0.1e3 },
+            {dist: 0.3, duration: 0.1e3},
+            {dist: 0.4, duration: 0.1e3},
+            {dist: 0.2, duration: 0.1e3},
+            {dist: 0.5, duration: 0.1e3},
+            {dist: 0.3, duration: 0.1e3},
         ];
         this._effectImgTasks.push(
             Waterween.group(
                 () => this.imgSprintEffect1.renderOpacity,
                 (val) => (this.imgSprintEffect1.renderOpacity = val),
-                dist
-            ).repeat()
+                dist,
+            ).repeat(),
         );
 
         this._staminaShownTask = Waterween.to(
@@ -398,7 +403,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvStamina.renderOpacity = val),
             1,
             GameServiceConfig.MAIN_PANEL_CNV_STAMINA_SHOWN_DURATION,
-            0
+            0,
         ).restart(true);
 
         this._staminaValueTask = Waterween.flow(
@@ -407,7 +412,7 @@ export default class MainPanel extends MainPanel_Generate {
             1e3,
             new CubicBezier(0.5, 0, 0.5, 1),
             undefined,
-            true
+            true,
         );
 
         this._staminaScaleTask = Waterween.flow(
@@ -416,7 +421,7 @@ export default class MainPanel extends MainPanel_Generate {
             1e3,
             new CubicBezier(0.5, 0, 0.5, 1),
             undefined,
-            true
+            true,
         );
 
         this.btnCode.visibility = SlateVisibility.Hidden;
@@ -435,35 +440,35 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, () => this.prepareCatch()));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, () => this.endCatch()));
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this))
+            Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)),
         );
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this))
+            Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)),
         );
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string))
+            Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string)),
         );
         this._eventListeners.push(
             Event.addLocalListener(EventDefine.PlayerReset, (playerId) => {
                 if (playerId === this.character.player.playerId) Log4Ts.log(MainPanel, `Player reset.`);
-            })
+            }),
         );
         this._eventListeners.push(Event.addLocalListener(EventDefine.OnDragonQuestsComplete, this.onFinishSubTask));
 
         this._eventListeners.push(
-            Event.addLocalListener(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED, () => this.updateMuteBtn())
+            Event.addLocalListener(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED, () => this.updateMuteBtn()),
         );
         this._eventListeners.push(
             Event.addLocalListener(
                 DialogifyManager.PlayerEnterOfficialDialogueEventName,
-                () => (this._currentInteractType = InteractType.Npc)
-            )
+                () => (this._currentInteractType = InteractType.Npc),
+            ),
         );
         this._eventListeners.push(
             Event.addLocalListener(
                 DialogifyManager.LeaveDialogueEventName,
-                () => this._currentInteractType === InteractType.Npc && (this._currentInteractType = InteractType.Null)
-            )
+                () => this._currentInteractType === InteractType.Npc && (this._currentInteractType = InteractType.Null),
+            ),
         );
         //#endregion ------------------------------------------------------------------------------------------
     }
@@ -503,14 +508,16 @@ export default class MainPanel extends MainPanel_Generate {
      * 对于UI的根节点的添加操作，进行调用
      * 注意：该事件可能会多次调用
      */
-    protected onAdded() {}
+    protected onAdded() {
+    }
 
     /**
      * 构造UI文件成功后，onAdded之后
      * 对于UI的根节点的移除操作，进行调用
      * 注意：该事件可能会多次调用
      */
-    protected onRemoved() {}
+    protected onRemoved() {
+    }
 
     /**
      * 构造UI文件成功后，UI对象再被销毁时调用
@@ -610,9 +617,11 @@ export default class MainPanel extends MainPanel_Generate {
     // protected onDragCancelled(InGemotry :Geometry,InDragDropEvent:PointerEvent) {
     //}
 
-    protected onShow() {}
+    protected onShow() {
+    }
 
-    protected onHide() {}
+    protected onHide() {
+    }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -715,7 +724,7 @@ export default class MainPanel extends MainPanel_Generate {
         this._customCandidate = option;
     }
 
-    public disableCustom(option: CustomInteractOption) {
+    public disableCustom() {
         this._customCandidate = undefined;
     }
 
@@ -788,6 +797,8 @@ export default class MainPanel extends MainPanel_Generate {
                 GameServiceConfig.MAIN_PANEL_INTERACTION_ICON_GUID_CUSTOM ??
                 Gtk.IMAGE_FULLY_TRANSPARENT_GUID;
             if (imgGuid !== this.imgInteractIcon.imageGuid) this.imgInteractIcon.imageGuid = imgGuid;
+            this.btnInteract.onClicked.clear();
+            this.btnInteract.onClicked.add(() => this._customCandidate.onTrigger());
             return true;
         }
     }
@@ -828,9 +839,9 @@ export default class MainPanel extends MainPanel_Generate {
                 case InteractType.Collect:
                     this.renderInteractOptionForCollect();
                     break;
-                // case InteractType.Transport:
-                //     this.renderInteractOptionForTransport();
-                //     break;
+                case InteractType.Transport:
+                    this.renderInteractOptionForTransport();
+                    break;
                 case InteractType.Custom:
                     this.renderInteractOptionForCustom();
                     break;
@@ -840,10 +851,6 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-    public showGlobalPrompt(message: string) {
-        // this._promptPanel?.showPrompt(message);
-    }
 
     /**
      * 更新头像.
@@ -924,7 +931,7 @@ export default class MainPanel extends MainPanel_Generate {
                 break;
             case InteractType.Collect:
                 this.txtOperationFeedback.text = i18n.lan(
-                    isSuccess ? i18n.lanKeys.Collection_002 : i18n.lanKeys.Collection_003
+                    isSuccess ? i18n.lanKeys.Collection_002 : i18n.lanKeys.Collection_003,
                 );
                 break;
             default:
@@ -984,12 +991,12 @@ export default class MainPanel extends MainPanel_Generate {
                     new Vector(
                         0,
                         GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Y,
-                        GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z
-                    )
-                )
+                        GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z,
+                    ),
+                ),
             ),
             v,
-            true
+            true,
         );
 
         if (!v.equals(Vector.zero)) {
@@ -1006,7 +1013,7 @@ export default class MainPanel extends MainPanel_Generate {
 
     private updateStaminaScale() {
         this._staminaScaleTask.to(
-            GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE / Camera.currentCamera.springArm.length
+            GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE / Camera.currentCamera.springArm.length,
         );
     }
 
@@ -1030,7 +1037,7 @@ export default class MainPanel extends MainPanel_Generate {
                 break;
             case InteractType.Collect:
                 const collectResult = !Gtk.isNullOrEmpty(
-                    this.collectibleItemModule?.currentCollectResultSyncKey ?? null
+                    this.collectibleItemModule?.currentCollectResultSyncKey ?? null,
                 );
                 Log4Ts.log(MainPanel, `collect result: ${collectResult}`);
                 if (collectResult) {

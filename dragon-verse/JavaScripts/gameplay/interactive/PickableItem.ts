@@ -6,17 +6,17 @@ import { KeyItem } from "./KeyItemPuzzel";
 import { IPickerController } from "./PickerController";
 import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import MainPanel from "../../ui/main/MainPanel";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 const tempUseVector = new mw.Vector();
 
 export abstract class PickableItem extends InitializeCheckerScript implements KeyItem {
 
-
     @mw.Property({displayName: "放置物类型"})
     type: number = 0;
 
     public storage: string = "";
-
 
     @mw.Property({displayName: "初始位置"})
     public initializePosition: mw.Vector = new mw.Vector();
@@ -30,7 +30,6 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
     private _beenPicked: boolean = false;
 
     private _candidates: IPickerController[] = [];
-
 
     public onBeenPutInStorage: mw.Action1<PickableItem> = new mw.Action1();
 
@@ -54,13 +53,11 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
         super.onStart();
     }
 
-
     protected onInitialize(): void {
         this._trigger = this.gameObject.getChildByName("trigger") as mw.Trigger;
         this.size = this.gameObject.getBoundingBoxExtent(true, false, this.size);
         this.onPickStatusChanged();
     }
-
 
     private onPickStatusChanged() {
 
@@ -78,23 +75,27 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
             this.removeCandidate();
             this.onBeenPicked();
 
-            ProximityPrompts.show([{
-                keyBoard: "Z",
-                text: i18n.lan("TinyGameLanKey0002"),
-                enabled: true,
-                onSelected: () => {
-                    this.holder.putdown();
-                },
-            }]);
+            // ProximityPrompts.show([{
+            //     keyBoard: "Z",
+            //     text: i18n.lan("TinyGameLanKey0002"),
+            //     enabled: true,
+            //     onSelected: () => {
+            //         this.holder.putdown();
+            //     },
+            // }]);
+            mw.UIService.getUI(MainPanel)?.enableCustom({
+                name: i18n.resolves.TinyGameLanKey0002(),
+                icon: GameServiceConfig.MAIN_PANEL_INTERACTION_ICON_GUID_CUSTOM,
+                onTrigger: () => this.holder.putdown(),
+            });
         }
     }
-
 
     protected removeCandidate(target?: IPickerController) {
 
         if (!target) {
 
-            this._candidates.length > 0 && ProximityPrompts.close();
+            this._candidates.length > 0 && mw.UIService.getUI(MainPanel)?.disableCustom();
             this._candidates.length = 0;
 
             return;
@@ -105,7 +106,8 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
             if (target === candidate) {
 
                 this._candidates.splice(i, 1);
-                ProximityPrompts.close();
+                // ProximityPrompts.close();
+                mw.UIService.getUI(MainPanel)?.disableCustom();
             }
         }
     }
@@ -116,15 +118,19 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
             return;
         }
         this._candidates.push(target);
-        ProximityPrompts.show([{
-            keyBoard: "F",
-            text: i18n.lan("TinyGameLanKey0001"),
-            enabled: true,
-            onSelected: () => {
-                this.controllerTryPickupSelf(target);
-            },
-        }]);
-
+        // ProximityPrompts.show([{
+        //     keyBoard: "F",
+        //     text: i18n.lan("TinyGameLanKey0001"),
+        //     enabled: true,
+        //     onSelected: () => {
+        //         this.controllerTryPickupSelf(target);
+        //     },
+        // }]);
+        mw.UIService.getUI(MainPanel)?.enableCustom({
+            name: i18n.resolves.TinyGameLanKey0001(),
+            icon: GameServiceConfig.MAIN_PANEL_INTERACTION_ICON_GUID_CUSTOM,
+            onTrigger: () => this.controllerTryPickupSelf(target),
+        });
     }
 
     private onTriggerOut = (go: mw.GameObject) => {
@@ -153,7 +159,6 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
         this.addCandidate(picker);
     };
 
-
     protected resetGameObject(position?: mw.Vector) {
         if (!position) {
             position = this.initializePosition;
@@ -162,7 +167,6 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
         this.gameObject.worldTransform.position = position;
         (this.gameObject as mw.Model).setCollision(mw.PropertyStatus.On);
     }
-
 
     /**
      * 尝试被捡起
@@ -183,7 +187,6 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
         this.holder = candidate;
         this.pickStatus = true;
     }
-
 
     /**
      * 被放下
@@ -245,7 +248,6 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
         return null;
     }
 
-
     protected onDestroy(): void {
         super.onDestroy();
         this.holder = null;
@@ -253,10 +255,8 @@ export abstract class PickableItem extends InitializeCheckerScript implements Ke
         this._candidates.length = 0;
     }
 
-
     /** 交互物被拾起 */
     protected onBeenPicked() {
-
 
     }
 
