@@ -110,16 +110,16 @@ export default class NpcBehavior extends mw.Script {
 
         //#region Event Subscribe
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.EnterNpcInteractRange, this.onEnterNpcInteractRange),
+            Event.addLocalListener(EventDefine.EnterNpcInteractRange, this.onEnterNpcInteractRange)
         );
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.LeaveNpcInteractRange, this.onLeaveNpcInteractRange),
+            Event.addLocalListener(EventDefine.LeaveNpcInteractRange, this.onLeaveNpcInteractRange)
         );
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowNpcAction, this.showNpcAction.bind(this)));
         this._eventListeners.push(
             Event.addLocalListener(DialogifyManager.LeaveDialogueEventName, () => {
                 this._isTalking = false;
-            }),
+            })
         );
         //#endregion ------------------------------------------------------------------------------------------
 
@@ -127,7 +127,7 @@ export default class NpcBehavior extends mw.Script {
         if (!this._npcCharacter) {
             Log4Ts.log(
                 NpcBehavior,
-                `there is no mesh object named ${GameServiceConfig.NPC_MESH_OBJECT_NAME} in prefab.`,
+                `there is no mesh object named ${GameServiceConfig.NPC_MESH_OBJECT_NAME} in prefab.`
             );
             return;
         }
@@ -144,7 +144,7 @@ export default class NpcBehavior extends mw.Script {
                     this._wing.localTransform = new Transform(
                         new Vector(wingTransform[0][0], wingTransform[0][1], wingTransform[0][2]),
                         new Rotation(wingTransform[1][0], wingTransform[1][1], wingTransform[1][2]),
-                        new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2]),
+                        new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2])
                     );
                 }, 10);
             });
@@ -166,7 +166,7 @@ export default class NpcBehavior extends mw.Script {
             HeadUIType.NPC,
             i18n.lan(GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null"),
             null,
-            GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null",
+            GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null"
         );
     }
 
@@ -220,7 +220,6 @@ export default class NpcBehavior extends mw.Script {
 
         if (this._isTalking) {
             this.dm.exit();
-            MouseLockController.getInstance().cancelMouseUnlock();
         }
     };
 
@@ -259,8 +258,6 @@ export default class NpcBehavior extends mw.Script {
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
         //#region 条件项 001 010 011 110 111
         this.dm.chat(contentNodeConfig, !hasContent);
-
-        MouseLockController.getInstance().needMouseUnlock();
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -314,13 +311,13 @@ export default class NpcBehavior extends mw.Script {
                 Player.localPlayer.character.jumpEnabled = false;
 
                 this._npcCharacter.worldTransform.position = Player.localPlayer.character.worldTransform.position.add(
-                    Player.localPlayer.character.worldTransform.getForwardVector().multiply(config.posOffset.z),
+                    Player.localPlayer.character.worldTransform.getForwardVector().multiply(config.posOffset.z)
                 );
                 let r = mw.Rotation.zero;
                 mw.Rotation.add(
                     Player.localPlayer.character.worldTransform.rotation,
                     new mw.Rotation(config.rotation),
-                    r,
+                    r
                 );
                 this._npcCharacter.worldTransform.rotation = r;
                 this._currentAni = this._npcCharacter.loadAnimation(config.accectStance);

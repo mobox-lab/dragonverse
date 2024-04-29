@@ -7,6 +7,7 @@
  * @Description  : 鼠标锁定管理器
  */
 
+import DialogifyManager from "../depend/dialogify/DialogifyManager";
 import ADialoguePanelController from "../depend/dialogify/dialogue-panel-controller/ADialoguePanelController";
 import KeyOperationManager from "./key-operation-manager/KeyOperationManager";
 
@@ -16,10 +17,7 @@ export class MouseLockController {
     private _needMouseUnlock: boolean[] = [];
 
     private constructor() {
-        Event.addLocalListener(
-            ADialoguePanelController.ControllerRefreshDialogueEventName,
-            this.needMouseUnlock.bind(this)
-        );
+        Event.addLocalListener(DialogifyManager.PlayerEnterOfficialDialogueEventName, this.needMouseUnlock.bind(this));
         Event.addLocalListener(
             ADialoguePanelController.ControllerExitDialogueEventName,
             this.cancelMouseUnlock.bind(this)
