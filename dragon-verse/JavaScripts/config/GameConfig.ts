@@ -18,6 +18,7 @@ import {NpcConfig} from "./Npc";
 import {ObbycheckConfig} from "./Obbycheck";
 import {QualityConfig} from "./Quality";
 import {RelateEntityConfig} from "./RelateEntity";
+import {SceneConfig} from "./Scene";
 import {SoundConfig} from "./Sound";
 import {SuccessRateAlgoConfig} from "./SuccessRateAlgo";
 import {TaskConfig} from "./Task";
@@ -59,6 +60,7 @@ export class GameConfig{
 	public static get Obbycheck():ObbycheckConfig{ return this.getConfig(ObbycheckConfig) };
 	public static get Quality():QualityConfig{ return this.getConfig(QualityConfig) };
 	public static get RelateEntity():RelateEntityConfig{ return this.getConfig(RelateEntityConfig) };
+	public static get Scene():SceneConfig{ return this.getConfig(SceneConfig) };
 	public static get Sound():SoundConfig{ return this.getConfig(SoundConfig) };
 	public static get SuccessRateAlgo():SuccessRateAlgoConfig{ return this.getConfig(SuccessRateAlgoConfig) };
 	public static get Task():TaskConfig{ return this.getConfig(TaskConfig) };

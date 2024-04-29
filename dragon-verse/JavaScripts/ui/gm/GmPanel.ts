@@ -21,6 +21,7 @@ import i18n, { LanguageTypes } from "../../language/i18n";
 import { ObbyModuleC, ObbyModuleS } from "../../module/obby/ObbyModule";
 import Gtk from "../../util/GToolkit";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
+import CutScenePanel from "../jump-game/CutScenePanel";
 
 /**
  * GM.
@@ -337,4 +338,7 @@ AddGMCommand(
     },
     "TTD"
 );
+AddGMCommand("显示转场", () => {
+    UIService.show(CutScenePanel);
+});
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
