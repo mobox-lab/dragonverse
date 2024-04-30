@@ -46,7 +46,7 @@ export default class GameServiceConfig {
     /**
      * 奶牛关传送门tips显示时长
      */
-    public static readonly COW_LEVEL_PORTAL_SHOW_TIPS_DURATION = 2e3;
+    public static readonly COW_LEVEL_PORTAL_SHOW_TIPS_DURATION = 2;
 
     //#endregion
     //#region Sub Game
