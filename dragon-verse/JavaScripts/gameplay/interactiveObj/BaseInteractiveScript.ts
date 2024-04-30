@@ -200,7 +200,7 @@ export abstract class SharedInteractiveObj extends BaseInteractiveObj {
         this.stopInteractionInServer(playerId, () => {
             ModuleService.getModule(InteractiveObjModuleS).net_recordEndInteraction(playerId);
             //启用交互守卫
-            this.activeMode.activate = true;
+            if (this.ownerPlayerCount === this.maxPlayerCount - 1) this.activeMode.activate = true;
         });
         ModuleService.getModule(InteractiveObjModuleS).stopSharedInteraction(playerId, this.gameObject.gameObjectId);
     }
@@ -243,7 +243,7 @@ export abstract class SharedInteractiveObj extends BaseInteractiveObj {
     someOneStopInteractionInClient(playerId: number): void {
         this.stopInteractionInClient(playerId, () => {
             ModuleService.getModule(InteractiveObjModuleC).endInteraction();
-            this.activeMode.activate = true;
+            if (this.ownerPlayerCount === this.maxPlayerCount - 1) this.activeMode.activate = true;
         });
     }
 }

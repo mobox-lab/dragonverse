@@ -13,7 +13,7 @@ export default class GameServiceConfig {
     /**
      * 奶牛关传送门无精灵球爆炸冲量
      */
-    public static readonly COW_LEVEL_PORTAL_EXPLODE_FORCE = new Vector(1000, 0, 1000);
+    public static readonly COW_LEVEL_PORTAL_EXPLODE_FORCE = new Vector(0, -2000, 3000);
     /**
      * 奶牛关传送门无精灵球爆炸音效
      */

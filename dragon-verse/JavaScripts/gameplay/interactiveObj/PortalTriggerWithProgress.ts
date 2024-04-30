@@ -25,8 +25,17 @@ export abstract class PortalTriggerWithProgress extends SharedInteractiveObj {
 
     allPlayerEndInteractionInClient(): void {}
     firstStartInteractionInClient(): void {}
+
+    private _delayTimer: any;
     protected startInteractionInServer(playerId: number): void {
         Log4Ts.log(PortalTriggerWithProgress, `startInteractionInServer:${playerId}}`);
+        //服务端模拟在播放进度条
+        this._delayTimer = setTimeout(() => {
+            this.onProgressDoneInServer(playerId);
+            this._isPlayingProgress = false;
+        }, this.progressMaxTime * 1000);
+        this._isPlayingProgress = true;
+
         this.onStartPortalInServer(playerId);
     }
 
@@ -43,15 +52,19 @@ export abstract class PortalTriggerWithProgress extends SharedInteractiveObj {
         } else {
             //直接结束交互，进入传送
             ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this.gameObject.gameObjectId);
-            this.onProgressDone();
+            this.onProgressDoneInClient();
         }
         this.onStartPortalInClient();
     }
 
     protected stopInteractionInServer(playerId: number, finishCallBack?: () => void): void {
         Log4Ts.log(PortalTriggerWithProgress, `stopInteractionInServer:${playerId}}`);
+        if (this._isPlayingProgress) {
+            this.onInterruptProgressInServer(playerId);
+            clearTimeout(this._delayTimer);
+        }
+
         finishCallBack();
-        this.onInterruptProgressInServer(playerId);
     }
 
     protected stopInteractionInClient(playerId: number, finishCallBack?: () => void): void {
@@ -89,7 +102,7 @@ export abstract class PortalTriggerWithProgress extends SharedInteractiveObj {
                 this._isPlayingProgress = false;
                 //退出交互，进入传送
                 ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this.gameObject.gameObjectId);
-                this.onProgressDone();
+                this.onProgressDoneInClient();
             });
 
         actions
@@ -119,7 +132,9 @@ export abstract class PortalTriggerWithProgress extends SharedInteractiveObj {
      */
     abstract onInterruptProgressInServer(playerId: number): void;
     /**
-     * 进度条结束，没有进度条时，也会
+     * 进度条结束，进度条最大值为0时，会直接调用
      */
-    abstract onProgressDone(): void;
+    abstract onProgressDoneInClient(): void;
+
+    abstract onProgressDoneInServer(playerId: number): void;
 }

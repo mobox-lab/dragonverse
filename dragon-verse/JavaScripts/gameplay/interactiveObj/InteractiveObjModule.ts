@@ -65,7 +65,7 @@ export class InteractiveObjModuleS extends ModuleS<InteractiveObjModuleC, null> 
     }
 
     public net_recordEndInteraction(playerId: number) {
-        this._playerAndInteractingGoMap.set(playerId, null);
+        this._playerAndInteractingGoMap.delete(playerId);
     }
 
     /**
