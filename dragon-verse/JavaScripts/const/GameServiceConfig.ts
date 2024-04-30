@@ -34,6 +34,19 @@ export default class GameServiceConfig {
      * 奶牛关雕像有传送门激活特效缩放最大值
      */
     public static readonly COW_LEVEL_PORTAL_EFFECT_SCALE_MAX = new Vector(12, 12, 12);
+    /**
+     * 奶牛关在场景表里的id数组
+     */
+    public static readonly COW_LEVEL_SCENE_INDEX = [2, 3, 4, 5, 6];
+
+    /**
+     * 奶牛关传送门显示场景名时长
+     */
+    public static readonly COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION = 2e3;
+    /**
+     * 奶牛关传送门tips显示时长
+     */
+    public static readonly COW_LEVEL_PORTAL_SHOW_TIPS_DURATION = 2;
 
     //#endregion
     //#region Sub Game

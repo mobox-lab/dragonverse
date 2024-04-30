@@ -2,7 +2,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { ActivateMode } from "./ActiveMode";
 import { InteractiveObjModuleS, InteractiveObjModuleC } from "./InteractiveObjModule";
 
-/** 
+/**
  * @description: 开始交互事件，结束交互由于都走服务端，所以客户端不需要实现
  */
 interface IInteractiveObj {
@@ -12,7 +12,6 @@ interface IInteractiveObj {
     someOneStopInteractionInClient(playerId: number): void;
 }
 export abstract class BaseInteractiveObj extends mw.Script implements IInteractiveObj {
-
     protected abstract startInteractionInServer(playerId: number): void;
     protected abstract startInteractionInClient(playerId: number): void;
     protected abstract stopInteractionInServer(playerId: number, finishCallBack?: () => void): void;
@@ -23,21 +22,24 @@ export abstract class BaseInteractiveObj extends mw.Script implements IInteracti
     abstract someOneStopInteractionInServer(playerId: number): void;
     abstract someOneStopInteractionInClient(playerId: number): void;
 
-    abstract canActivate(value: boolean): void;
-
     abstract activeMode: ActivateMode;
 
     protected onStart(): void {
         if (SystemUtil.isServer()) {
             ModuleService.ready().then(() => {
-                ModuleService.getModule(InteractiveObjModuleS).registerInteractiveObj(this.gameObject.gameObjectId, this);
+                ModuleService.getModule(InteractiveObjModuleS).registerInteractiveObj(
+                    this.gameObject.gameObjectId,
+                    this
+                );
             });
         } else if (SystemUtil.isClient()) {
             ModuleService.ready().then(() => {
-                ModuleService.getModule(InteractiveObjModuleC).registerInteractiveObj(this.gameObject.gameObjectId, this);
+                ModuleService.getModule(InteractiveObjModuleC).registerInteractiveObj(
+                    this.gameObject.gameObjectId,
+                    this
+                );
             });
         }
-
     }
 
     onDestroy(): void {
@@ -49,7 +51,7 @@ export abstract class BaseInteractiveObj extends mw.Script implements IInteracti
     }
 }
 
-/** 
+/**
  * @description: 独享交互物，需要借助module管理控制权实现独享
  */
 export abstract class IndividualInteractiveObj extends BaseInteractiveObj {
@@ -58,11 +60,11 @@ export abstract class IndividualInteractiveObj extends BaseInteractiveObj {
      * 正在交互的玩家id，
      */
     @mw.Property({ replicated: true, onChanged: "onOwnerPlayerIdChanged", hideInEditor: true })
-    protected ownerPlayerId: number = IndividualInteractiveObj.EndInteractionFlag;//当前与之交互的玩家id（独享模式下）
+    protected ownerPlayerId: number = IndividualInteractiveObj.EndInteractionFlag; //当前与之交互的玩家id（独享模式下）
     /**
      * 上一次记录下来在交互的玩家id
      */
-    private _lastOwnerPlayerId = IndividualInteractiveObj.EndInteractionFlag;//上一次的ownerPlayerId
+    private _lastOwnerPlayerId = IndividualInteractiveObj.EndInteractionFlag; //上一次的ownerPlayerId
 
     /**
      * @description: owenPlayerId改变,属性同步
@@ -79,8 +81,6 @@ export abstract class IndividualInteractiveObj extends BaseInteractiveObj {
         this._lastOwnerPlayerId = this.ownerPlayerId;
     }
 
-
-
     /**
      * @description: 客户端设置正在交互的玩家
      * @param {number} playerId
@@ -88,24 +88,30 @@ export abstract class IndividualInteractiveObj extends BaseInteractiveObj {
      * @return {*}
      */
     someOneStartInteractionInClient(playerId: number): void {
-
         Log4Ts.log(this, `playerId:${playerId} start interaction on ${this.gameObject.name}`);
         this.startInteractionInClient(playerId);
+        //禁用交互守卫
+        this.activeMode.activate = false;
     }
 
     /**
      * 某一交互物服务端开始交互事件
      * @param playerId 玩家id
      * @param goGuid 交互物id
-     * @returns 
+     * @returns
      */
     someOneStartInteractionInServer(playerId: number): void {
         Log4Ts.log(this, `playerId:${playerId} start interaction on ${this.gameObject.name}`);
         //这里控制独享
         if (this.ownerPlayerId === IndividualInteractiveObj.EndInteractionFlag) {
             this.ownerPlayerId = playerId;
-            ModuleService.getModule(InteractiveObjModuleS).recordStartInteraction(playerId, this.gameObject.gameObjectId);
+            ModuleService.getModule(InteractiveObjModuleS).recordStartInteraction(
+                playerId,
+                this.gameObject.gameObjectId
+            );
             this.startInteractionInServer(playerId);
+            //禁用交互守卫
+            this.activeMode.activate = false;
         }
     }
 
@@ -119,6 +125,8 @@ export abstract class IndividualInteractiveObj extends BaseInteractiveObj {
         this.ownerPlayerId = IndividualInteractiveObj.EndInteractionFlag;
         this.stopInteractionInServer(playerId, () => {
             ModuleService.getModule(InteractiveObjModuleS).net_recordEndInteraction(playerId);
+            //启用交互守卫
+            this.activeMode.activate = true;
         });
     }
 
@@ -131,29 +139,20 @@ export abstract class IndividualInteractiveObj extends BaseInteractiveObj {
     someOneStopInteractionInClient(playerId: number): void {
         this.stopInteractionInClient(playerId, () => {
             ModuleService.getModule(InteractiveObjModuleC).endInteraction();
+            //启用交互守卫
+            this.activeMode.activate = true;
         });
     }
-
-    canActivate(value: boolean): void {
-        if (value) {
-            if (this.ownerPlayerId === IndividualInteractiveObj.EndInteractionFlag) {
-                this.activeMode.activate = true;
-            }
-        } else {
-            this.activeMode.activate = false;
-        }
-    }
-
 }
 
-/** 
+/**
  * @description: 共享交互物
  */
 export abstract class SharedInteractiveObj extends BaseInteractiveObj {
     /**
      * 正在交互的玩家数量,
      */
-    @mw.Property({ replicated: true, onChanged: 'onOwnerPlayerCountChanged', hideInEditor: true })
+    @mw.Property({ replicated: true, onChanged: "onOwnerPlayerCountChanged", hideInEditor: true })
     protected ownerPlayerCount: number = 0;
 
     /**
@@ -200,6 +199,8 @@ export abstract class SharedInteractiveObj extends BaseInteractiveObj {
         this.ownerPlayerCount--;
         this.stopInteractionInServer(playerId, () => {
             ModuleService.getModule(InteractiveObjModuleS).net_recordEndInteraction(playerId);
+            //启用交互守卫
+            this.activeMode.activate = true;
         });
         ModuleService.getModule(InteractiveObjModuleS).stopSharedInteraction(playerId, this.gameObject.gameObjectId);
     }
@@ -212,16 +213,19 @@ export abstract class SharedInteractiveObj extends BaseInteractiveObj {
      */
     someOneStartInteractionInClient(playerId: number): void {
         this.startInteractionInClient(playerId);
+        if (this.ownerPlayerCount === this.maxPlayerCount) {
+            this.activeMode.activate = false;
+        }
     }
 
     /**
      * 某一交互物服务端开始交互事件
      * @param playerId 玩家id
      * @param goGuid 交互物id
-     * @returns 
+     * @returns
      */
     someOneStartInteractionInServer(playerId: number): void {
-        if (this.ownerPlayerCount >= this.maxPlayerCount) {
+        if (this.ownerPlayerCount > this.maxPlayerCount) {
             return;
         }
         this.ownerPlayerCount++;
@@ -229,21 +233,17 @@ export abstract class SharedInteractiveObj extends BaseInteractiveObj {
         ModuleService.getModule(InteractiveObjModuleS).startSharedInteraction(playerId, this.gameObject.gameObjectId);
         //设置上玩家在交互
         ModuleService.getModule(InteractiveObjModuleS).recordStartInteraction(playerId, this.gameObject.gameObjectId);
+
+        if (this.ownerPlayerCount === this.maxPlayerCount) {
+            //到达上限禁用交互守卫
+            this.activeMode.activate = false;
+        }
     }
 
     someOneStopInteractionInClient(playerId: number): void {
         this.stopInteractionInClient(playerId, () => {
             ModuleService.getModule(InteractiveObjModuleC).endInteraction();
+            this.activeMode.activate = true;
         });
-    }
-
-    canActivate(value: boolean): void {
-        if (value) {
-            if (this.ownerPlayerCount < this.maxPlayerCount) {
-                this.activeMode.activate = true;
-            }
-        } else {
-            this.activeMode.activate = false;
-        }
     }
 }
