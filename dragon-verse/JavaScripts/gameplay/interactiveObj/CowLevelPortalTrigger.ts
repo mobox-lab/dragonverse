@@ -20,6 +20,7 @@ import MainPanel from "../../ui/main/MainPanel";
 import { ActivateByUIAndTrigger, ActivateMode } from "./ActiveMode";
 import { PortalTrigger } from "./PortalTrigger";
 import SkyBoxManager from "./SkyBoxManager";
+import { InteractiveObjModuleC } from "./InteractiveObjModule";
 
 export default class CowLevelPortalTrigger extends PortalTrigger {
     @Property({
@@ -52,19 +53,19 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
 
     protected onStart(): void {
         super.onStart();
-        this.activeMode = new ActivateByUIAndTrigger(this.gameObject, this.showUI.bind(this), this.hideUI.bind(this));
+        this.activeMode = new ActivateByUIAndTrigger(this.gameObject, this.showUI, this.hideUI);
         if (SystemUtil.isClient()) {
             this._nolan = Nolan.getInstance();
         }
     }
 
-    private showUI() {
+    private showUI = () => {
         mw.UIService.getUI(MainPanel)?.enableTransport(this.activeMode);
-    }
+    };
 
-    private hideUI() {
+    private hideUI = () => {
         mw.UIService.getUI(MainPanel)?.disableTransport();
-    }
+    };
 
     async onStartPortalInServer(playerId: number): Promise<void> {
         if (ModuleService.getModule(BagModuleS).hasDragonBall(playerId)) {
@@ -86,6 +87,8 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
     }
     async onStartPortalInClient(): Promise<void> {
         if (ModuleService.getModule(BagModuleC).hasDragonBall()) {
+            this.activeMode.activate = false;
+
             let effect = (await GameObject.asyncSpawn(GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_GUID)) as Effect;
             effect.worldTransform.position = GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_POS;
             actions
@@ -97,8 +100,8 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                 .union()
                 .call(() => {
                     //随机奶牛关
-                    let cowLevel = Math.floor(Math.random() * GameServiceConfig.COW_LEVEL_SCENE_INDEX.length) + 1;
-                    let sceneIndex = GameServiceConfig.COW_LEVEL_SCENE_INDEX[cowLevel - 1];
+                    let cowLevel = Math.floor(Math.random() * GameServiceConfig.COW_LEVEL_SCENE_INDEX.length);
+                    let sceneIndex = GameServiceConfig.COW_LEVEL_SCENE_INDEX[cowLevel];
                     let scene = GameConfig.Scene.getElement(sceneIndex);
                     //播tips
                     let tips = GameConfig.TipsPlaylist.findElement("environment", sceneIndex);
@@ -115,6 +118,11 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                                 only: true,
                             });
                             effect.destroy();
+                            //通知结束交互
+                            ModuleService.getModule(InteractiveObjModuleC).stopInteraction(
+                                this.gameObject.gameObjectId
+                            );
+                            this.activeMode.activate = true;
                         });
                     });
                 })

@@ -138,10 +138,12 @@ export class ActivateByTrigger extends ActivateMode {
  * @description: 通过UI触发交互
  */
 export class ActivateByUI extends ActivateMode {
-    private _isInteractionUIShowing: boolean; //当前显示的UI
+    protected _isInteractionUIShowing: boolean; //当前显示的UI
 
-    protected showUI: () => void;
-    protected hideUI: () => void;
+    protected _canShowUI: boolean = true;
+
+    private showUI: () => void;
+    private hideUI: () => void;
 
     constructor(interactiveObj: GameObject, showUI: () => void, hideUI: () => void) {
         super(interactiveObj);
@@ -154,38 +156,30 @@ export class ActivateByUI extends ActivateMode {
         // })
     }
 
+    public showInteractionUI() {
+        if (this._canShowUI) {
+            this.showUI();
+            this._isInteractionUIShowing = true;
+        }
+    }
+
+    public hideInteractionUI() {
+        this.hideUI();
+        this._isInteractionUIShowing = false;
+    }
+
     set activate(value: boolean) {
         super.activate = value;
         if (!SystemUtil.isClient()) return;
         if (value) {
-            this.canShowUI();
+            this._canShowUI = true;
         } else {
-            this.canHideUI();
+            this._canShowUI = false;
+            if (this._isInteractionUIShowing) {
+                this._isInteractionUIShowing = false;
+                this.hideUI();
+            }
         }
-    }
-
-    /**
-     * @description: showUI
-     * @return {*}
-     */
-    private canShowUI(): void {
-        if (this._isInteractionUIShowing) return;
-
-        this._isInteractionUIShowing = true;
-
-        this.showUI();
-    }
-
-    /**
-     * @description: 隐藏ui
-     * @return {*}
-     */
-    protected canHideUI(): void {
-        if (!this._isInteractionUIShowing) return;
-
-        this._isInteractionUIShowing = false;
-
-        this.hideUI();
     }
 
     public clickToStartInteraction() {
@@ -212,26 +206,26 @@ export class ActivateByUIAndTrigger extends ActivateByUI {
         }
     }
 
-    set activate(value: boolean) {
-        super.activate = value;
-        this.activate ? this.enableTrigger() : this.disableTrigger();
-    }
+    // set activate(value: boolean) {
+    //     super.activate = value;
+    //     this.activate ? this.enableTrigger() : this.disableTrigger();
+    // }
 
-    private enableTrigger() {
-        if (SystemUtil.isClient()) {
-            this._trigger.onEnter.clear();
-            this._trigger.onLeave.clear();
-            this._trigger.onEnter.add(this.onEnter);
-            this._trigger.onLeave.add(this.onLeave);
-        }
-    }
+    // private enableTrigger() {
+    //     if (SystemUtil.isClient()) {
+    //         this._trigger.onEnter.clear();
+    //         this._trigger.onLeave.clear();
+    //         this._trigger.onEnter.add(this.onEnter);
+    //         this._trigger.onLeave.add(this.onLeave);
+    //     }
+    // }
 
-    private disableTrigger() {
-        if (SystemUtil.isClient()) {
-            this._trigger.onEnter.clear();
-            this._trigger.onLeave.clear();
-        }
-    }
+    // private disableTrigger() {
+    //     if (SystemUtil.isClient()) {
+    //         this._trigger.onEnter.clear();
+    //         this._trigger.onLeave.clear();
+    //     }
+    // }
 
     onEnter(go: mw.GameObject) {
         if (go instanceof mw.Character) {
@@ -240,7 +234,9 @@ export class ActivateByUIAndTrigger extends ActivateByUI {
             if (!player) return;
             //判断是不是自己
             if (player.playerId === Player.localPlayer.playerId) {
-                this.showUI();
+                if (this._canShowUI) {
+                    this.showInteractionUI();
+                }
             }
         }
     }
@@ -251,7 +247,7 @@ export class ActivateByUIAndTrigger extends ActivateByUI {
             //是空的就是别人，刚进游戏的时候会有这种情况
             if (!player) return;
             if (player.playerId === Player.localPlayer.playerId) {
-                this.hideUI();
+                this.hideInteractionUI();
             }
         }
     }
