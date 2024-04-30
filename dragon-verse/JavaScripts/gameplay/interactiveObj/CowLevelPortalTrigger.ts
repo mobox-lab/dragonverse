@@ -20,7 +20,7 @@ import MainPanel from "../../ui/main/MainPanel";
 import { ActivateByUIAndTrigger, ActivateMode } from "./ActiveMode";
 import { PortalTrigger } from "./PortalTrigger";
 import SkyBoxManager from "./SkyBoxManager";
-import { InteractiveObjModuleC } from "./InteractiveObjModule";
+import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjModule";
 
 export default class CowLevelPortalTrigger extends PortalTrigger {
     @Property({
@@ -47,7 +47,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
     })
     public isHoldVelocity: boolean = false;
 
-    activeMode: ActivateMode;
+    activeMode: ActivateByUIAndTrigger;
 
     private _nolan: Nolan;
 
@@ -81,8 +81,18 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                 }
             );
             //加个冲量
-            player.character.addImpulse(GameServiceConfig.COW_LEVEL_PORTAL_EXPLODE_FORCE);
-            Event.dispatchToClient(player, GlobalTips.EVENT_NAME_GLOBAL_TIPS, i18n.resolves.hasNoDragonBall());
+            actions
+                .tween(player.character.worldTransform)
+                .to(10, {
+                    position: player.character.worldTransform.position.clone().add(new Vector(0, 0, 100)),
+                })
+                .call(() => {
+                    player.character.addImpulse(GameServiceConfig.COW_LEVEL_PORTAL_EXPLODE_FORCE, true);
+                })
+                .start();
+
+            // Event.dispatchToClient(player, GlobalTips.EVENT_NAME_GLOBAL_TIPS, i18n.resolves.hasNoDragonBall());
+            ModuleService.getModule(InteractiveObjModuleS).net_stopInteraction(playerId, this.gameObject.gameObjectId);
         }
     }
     async onStartPortalInClient(): Promise<void> {
@@ -127,6 +137,9 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                     });
                 })
                 .start();
+        } else {
+            this.activeMode.hideInteractionUI();
+            GlobalTips.getInstance().showGlobalTips(i18n.resolves.hasNoDragonBall());
         }
     }
 
