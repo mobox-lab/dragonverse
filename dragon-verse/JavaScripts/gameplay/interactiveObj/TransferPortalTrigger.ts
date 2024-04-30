@@ -1,28 +1,41 @@
 /**
  * @Author       : zewei.zhang
- * @Date         : 2024-04-26 17:01:39
+ * @Date         : 2024-04-30 15:33:15
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-04-26 18:28:25
- * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\CowLevelPortalTrigger.ts
- * @Description  : 奶牛关传送门
+ * @LastEditTime : 2024-04-30 15:33:17
+ * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\TransferPortalTrigger.ts
+ * @Description  : 中转传送门交互物
  */
 
-import { AddGMCommand } from "module_gm";
 import { GameConfig } from "../../config/GameConfig";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
-import { BagModuleC, BagModuleS } from "../../module/bag/BagModule";
-import CutScenePanel from "../../ui/jump-game/CutScenePanel";
-import MainPanel from "../../ui/main/MainPanel";
-import { ActivateByUIAndTrigger, ActivateMode } from "./ActiveMode";
-import { PortalTrigger } from "./PortalTrigger";
+import JumpGameTransition_Generate from "../../ui-generate/jumpGame/JumpGameTransition_generate";
+import { ActivateByTrigger, ActivateMode, TriggerType } from "./ActiveMode";
+import { PortalTriggerWithProgress } from "./PortalTriggerWithProgress";
 import EnvironmentManager from "./SkyBoxManager";
-import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjModule";
 
-export default class CowLevelPortalTrigger extends PortalTrigger {
+enum Destination {
+    anyCowLevel = 1,
+    mainScene = 2,
+    TransferScene = 3,
+}
+
+export class TransferPortalTrigger extends PortalTriggerWithProgress {
+    @Property({
+        displayName: "传送地点",
+        group: "Config-Destination",
+        enumType: {
+            任意奶牛关: Destination.anyCowLevel,
+            主场景: Destination.mainScene,
+            中转关: Destination.TransferScene,
+        },
+    })
+    public portalDestination: number = 2;
+
     @Property({
         displayName: "是否刷新玩家物体旋转",
         tooltip: "true 时 将玩家物体旋转调整为 endRotation.",
@@ -47,69 +60,43 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
     })
     public isHoldVelocity: boolean = false;
 
-    activeMode: ActivateByUIAndTrigger;
-
     private _nolan: Nolan;
 
     protected onStart(): void {
         super.onStart();
-        this.activeMode = new ActivateByUIAndTrigger(this.gameObject, this.showUI, this.hideUI);
+        this.activeMode = new ActivateByTrigger(this.gameObject, TriggerType.TriggerInClient);
         if (SystemUtil.isClient()) {
             this._nolan = Nolan.getInstance();
         }
     }
 
-    private showUI = () => {
-        mw.UIService.getUI(MainPanel)?.enableTransport(this.activeMode);
-    };
+    activeMode: ActivateMode;
 
-    private hideUI = () => {
-        mw.UIService.getUI(MainPanel)?.disableTransport();
-    };
-
-    async onStartPortalInServer(playerId: number): Promise<void> {
-        if (ModuleService.getModule(BagModuleS).hasDragonBall(playerId)) {
-        } else {
-            //播一个爆炸特效
-            let player = await Player.asyncGetPlayer(playerId);
-            EffectService.playAtPosition(
-                GameServiceConfig.COW_LEVEL_PORTAL_EXPLODE_EFFECT_GUID,
-                player.character.worldTransform.position,
+    onStartPortalInServer(playerId: number): void {}
+    onStartPortalInClient(): void {}
+    onInterruptProgressInClient(): void {}
+    onInterruptProgressInServer(playerId: number): void {}
+    onProgressDoneInClient(): void {
+        let pos: Vector;
+        switch (this.portalDestination) {
+            case Destination.TransferScene:
                 {
-                    loopCount: 1,
-                    scale: GameServiceConfig.COW_LEVEL_PORTAL_EXPLODE_EFFECT_SCALE,
+                    pos = GameConfig.Scene.getElement(GameServiceConfig.TRANSFER_SCENE_ID).bornLocation;
+                    this.showTransitionAnimation(() => {
+                        this.transferPlayer(Player.localPlayer.character, pos);
+                    });
                 }
-            );
-            //加个冲量
-            actions
-                .tween(player.character.worldTransform)
-                .to(10, {
-                    position: player.character.worldTransform.position.clone().add(new Vector(0, 0, 100)),
-                })
-                .call(() => {
-                    player.character.addImpulse(GameServiceConfig.COW_LEVEL_PORTAL_EXPLODE_FORCE, true);
-                })
-                .start();
-
-            // Event.dispatchToClient(player, GlobalTips.EVENT_NAME_GLOBAL_TIPS, i18n.resolves.hasNoDragonBall());
-            ModuleService.getModule(InteractiveObjModuleS).net_stopInteraction(playerId, this.gameObject.gameObjectId);
-        }
-    }
-    async onStartPortalInClient(): Promise<void> {
-        if (ModuleService.getModule(BagModuleC).hasDragonBall()) {
-            this.activeMode.activate = false;
-
-            let effect = (await GameObject.asyncSpawn(GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_GUID)) as Effect;
-            effect.worldTransform.position = GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_POS;
-            actions
-                .tween(effect.worldTransform)
-                .set({ scale: Vector.zero })
-                .to(GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_DURATION, {
-                    scale: GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_SCALE_MAX,
-                })
-                .union()
-                .call(() => {
-                    //随机奶牛关
+                break;
+            case Destination.mainScene:
+                {
+                    pos = GameConfig.Scene.getElement(GameServiceConfig.MAIN_SCENE_ID).bornLocation;
+                    this.showTransitionAnimation(() => {
+                        this.transferPlayer(Player.localPlayer.character, pos);
+                    });
+                }
+                break;
+            case Destination.anyCowLevel:
+                {
                     let scenes = GameConfig.Scene.getAllElement();
                     let cowLevelScene = scenes.map((element) => {
                         if (
@@ -126,8 +113,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                     let tips = GameConfig.TipsPlaylist.findElement("environment", scene.id);
                     if (tips) GlobalTips.getInstance().showGlobalTips(i18n.lan(tips.content));
                     TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
-                        //显示一个转场ui动画
-                        UIService.show(CutScenePanel, () => {
+                        this.showTransitionAnimation(() => {
                             //传送
                             this.transferPlayer(Player.localPlayer.character, scene.bornLocation);
                             //改变天空盒
@@ -136,24 +122,33 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                                 duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
                                 only: true,
                             });
-                            effect.destroy();
-                            //通知结束交互
-                            ModuleService.getModule(InteractiveObjModuleC).stopInteraction(
-                                this.gameObject.gameObjectId
-                            );
-                            this.activeMode.activate = true;
                         });
                     });
-                })
-                .start();
-        } else {
-            this.activeMode.hideInteractionUI();
-            GlobalTips.getInstance().showGlobalTips(i18n.resolves.hasNoDragonBall());
+                }
+                break;
+            default:
+                break;
         }
+    }
+    onProgressDoneInServer(playerId: number): void {}
+
+    private showTransitionAnimation(callBack: () => void) {
+        let ui = UIService.show(JumpGameTransition_Generate);
+        actions
+            .tween(ui.bImage)
+            .set({ renderOpacity: 0 })
+            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 100 })
+            .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
+            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
+            .union()
+            .call(() => {
+                callBack();
+            })
+            .start();
     }
 
     protected transferPlayer(character: Character, location: Vector) {
-        Log4Ts.log(PortalTrigger, `player enter. playerId: ${character?.player?.playerId ?? "null"}`);
+        Log4Ts.log(TransferPortalTrigger, `player enter. playerId: ${character?.player?.playerId ?? "null"}`);
 
         if (character) {
             const player = character.player;
@@ -180,7 +175,3 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
         }
     }
 }
-
-AddGMCommand("tips", () => {
-    GlobalTips.getInstance().showGlobalTips("i18n.lan(scene.name)", { duration: 2e3, only: true });
-});

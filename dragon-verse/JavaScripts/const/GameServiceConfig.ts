@@ -35,11 +35,6 @@ export default class GameServiceConfig {
      */
     public static readonly COW_LEVEL_PORTAL_EFFECT_SCALE_MAX = new Vector(12, 12, 12);
     /**
-     * 奶牛关在场景表里的id数组
-     */
-    public static readonly COW_LEVEL_SCENE_INDEX = [2, 3, 4, 5, 6];
-
-    /**
      * 奶牛关传送门显示场景名时长
      */
     public static readonly COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION = 2e3;
@@ -48,6 +43,28 @@ export default class GameServiceConfig {
      */
     public static readonly COW_LEVEL_PORTAL_SHOW_TIPS_DURATION = 2;
 
+    //#endregion
+    //#region Portal
+    /**
+     * 主场景在场景表里的id
+     */
+    public static readonly MAIN_SCENE_ID = 1;
+    /**
+     * 中转关在场景里的id
+     */
+    public static readonly TRANSFER_SCENE_ID = 7;
+    /**
+     * 转场动画渐显时间（毫秒）
+     */
+    public static readonly TRANSITION_FADE_IN_DURATION = 1500;
+    /**
+     * 转场动画渐隐时间（毫秒）
+     */
+    public static readonly TRANSITION_FADE_OUT_DURATION = 1500;
+    /**
+     * 转场动画中间停顿时间（毫秒）
+     */
+    public static readonly TRANSITION_DELAY_DURATION = 500;
     //#endregion
     //#region Sub Game
     /**
