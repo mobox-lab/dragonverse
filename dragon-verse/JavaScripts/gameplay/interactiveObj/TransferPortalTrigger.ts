@@ -137,13 +137,14 @@ export class TransferPortalTrigger extends PortalTriggerWithProgress {
         actions
             .tween(ui.bImage)
             .set({ renderOpacity: 0 })
-            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 100 })
+            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 1 })
             .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
             .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
-            .union()
             .call(() => {
+                UIService.hide(JumpGameTransition_Generate);
                 callBack();
             })
+            .union()
             .start();
     }
 
