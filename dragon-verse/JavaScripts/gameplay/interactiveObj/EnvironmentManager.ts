@@ -9,7 +9,8 @@
 
 import { GameConfig } from "../../config/GameConfig";
 import { ISceneEnvironmentElement } from "../../config/SceneEnvironment";
-import { Singleton } from "../../util/GToolkit";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Gtk, { Singleton } from "../../util/GToolkit";
 
 export default class EnvironmentManager extends Singleton<EnvironmentManager>() {
     public setEnvironment(sceneConfigId: number) {
@@ -20,167 +21,331 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
         this.setPostProcess(config);
         this.setLighting(config);
     }
+    /**
+     * @description: 设置后处理
+     * @param config
+     * @return
+     */
     public setPostProcess(config: ISceneEnvironmentElement) {
-        if (config.postProcessPreset !== -1) {
-            PostProcess.preset = config.postProcessPreset;
-        }
-        PostProcess.bloom = config.bloom;
-        PostProcess.saturation = config.saturation;
-        PostProcess.contrast = config.contrast;
-        if (Boolean(config.blurEnabled)) {
-            PostProcess.blurEnabled = Boolean(config.blurEnabled);
-            PostProcess.blurIntensity = config.blurIntensity;
-        } else {
-            PostProcess.blurEnabled = false;
-        }
+        this.setEnvironmentConfig("PostProcess: postProcessPreset", config.postProcessPreset, () => {
+            if (config.postProcessPreset !== -1) {
+                PostProcess.preset = config.postProcessPreset;
+            }
+        });
 
-        if (Boolean(config.depthOfFieldEnabled)) {
-            PostProcess.depthOfFieldEnabled = Boolean(config.depthOfFieldEnabled);
-            PostProcess.depthOfFieldIntensity = config.depthOfFieldIntensity;
-            PostProcess.focusDistance = config.focusDistance;
-            PostProcess.focusPosition = config.focusPosition;
-        } else {
-            PostProcess.depthOfFieldEnabled = false;
-        }
+        this.setEnvironmentConfig("PostProcess: bloom", config.bloom, () => {
+            PostProcess.bloom = config.bloom;
+        });
+
+        this.setEnvironmentConfig("PostProcess: saturation", config.saturation, () => {
+            PostProcess.saturation = config.saturation;
+        });
+
+        this.setEnvironmentConfig("PosProcess: contrast", config.contrast, () => {
+            PostProcess.contrast = config.contrast;
+        });
+
+        this.setEnvironmentConfig("PosProcess: blurEnabled", config.blurEnabled, () => {
+            if (Boolean(config.blurEnabled)) {
+                PostProcess.blurEnabled = Boolean(config.blurEnabled);
+                this.setEnvironmentConfig("PosProcess: blurIntensity", config.blurIntensity, () => {
+                    PostProcess.blurIntensity = config.blurIntensity;
+                });
+            } else {
+                PostProcess.blurEnabled = false;
+            }
+        });
+
+        this.setEnvironmentConfig("PosProcess: depthOfFieldEnabled", config.depthOfFieldEnabled, () => {
+            if (Boolean(config.depthOfFieldEnabled)) {
+                PostProcess.depthOfFieldEnabled = Boolean(config.depthOfFieldEnabled);
+                this.setEnvironmentConfig("PosProcess: depthOfFieldIntensity", config.depthOfFieldIntensity, () => {
+                    PostProcess.depthOfFieldIntensity = config.depthOfFieldIntensity;
+                });
+                this.setEnvironmentConfig("PosProcess: focusDistance", config.focusDistance, () => {
+                    PostProcess.focusDistance = config.focusDistance;
+                });
+                this.setEnvironmentConfig("PosProcess: focusPosition", config.focusPosition, () => {
+                    PostProcess.focusPosition = config.focusPosition;
+                });
+            } else {
+                PostProcess.depthOfFieldEnabled = false;
+            }
+        });
     }
+    /**
+     * @description: 设置光照
+     * @param config
+     * @return
+     */
     public setLighting(config: ISceneEnvironmentElement) {
-        Lighting.yawAngle = config.lightingYawAngle;
-        Lighting.pitchAngle = config.pitchAngle;
-        Lighting.lightColor = new LinearColor(
-            config.lightColor[0],
-            config.lightColor[1],
-            config.lightColor[2],
-            config.lightColor[3]
-        );
-        Lighting.ev100 = config.ev100;
-        Lighting.castShadowsEnabled = Boolean(config.castShadowsEnabled);
-        Lighting.shadowsDistance = config.shadowsDistance;
-        Lighting.temperatureEnabled = Boolean(config.temperatureEnabled);
-        Lighting.temperature = config.temperature;
-        Lighting.directionalLightIntensity = config.directionalLightIntensity;
-        Lighting.directionalLightColor = new LinearColor(
-            config.directionalLightColor[0],
-            config.directionalLightColor[1],
-            config.directionalLightColor[2],
-            config.directionalLightColor[3]
-        );
-        Lighting.skyLightColor = new LinearColor(
-            config.skyLightColor[0],
-            config.skyLightColor[1],
-            config.skyLightColor[2],
-            config.skyLightColor[3]
-        );
-        Lighting.skyLightIntensity = config.skyLightIntensity;
+        this.setEnvironmentConfig("Lighting: lightingYawAngle", config.lightingYawAngle, () => {
+            Lighting.yawAngle = config.lightingYawAngle;
+        });
+        this.setEnvironmentConfig("Lighting: pitchAngle", config.pitchAngle, () => {
+            Lighting.pitchAngle = config.pitchAngle;
+        });
+        this.setEnvironmentConfig("Lighting: lightColor", config.lightColor, () => {
+            Lighting.lightColor = new LinearColor(
+                config.lightColor.x,
+                config.lightColor.y,
+                config.lightColor.z,
+                config.lightColor.w
+            );
+        });
+        this.setEnvironmentConfig("Lighting: ev100", config.ev100, () => {
+            Lighting.ev100 = config.ev100;
+        });
+        this.setEnvironmentConfig("Lighting: castShadowsEnabled", config.castShadowsEnabled, () => {
+            Lighting.castShadowsEnabled = Boolean(config.castShadowsEnabled);
+        });
+        this.setEnvironmentConfig("Lighting: shadowsDistance", config.shadowsDistance, () => {
+            Lighting.shadowsDistance = config.shadowsDistance;
+        });
+        this.setEnvironmentConfig("Lighting: temperatureEnabled", config.temperatureEnabled, () => {
+            Lighting.temperatureEnabled = Boolean(config.temperatureEnabled);
+        });
+        this.setEnvironmentConfig("Lighting: temperature", config.temperature, () => {
+            Lighting.temperature = config.temperature;
+        });
+        this.setEnvironmentConfig("Lighting: directionalLightIntensity", config.directionalLightIntensity, () => {
+            Lighting.directionalLightIntensity = config.directionalLightIntensity;
+        });
+        this.setEnvironmentConfig("Lighting: directionalLightColor", config.directionalLightColor, () => {
+            Lighting.directionalLightColor = new LinearColor(
+                config.directionalLightColor.x,
+                config.directionalLightColor.y,
+                config.directionalLightColor.z,
+                config.directionalLightColor.w
+            );
+        });
+        this.setEnvironmentConfig("Lighting: skyLightColor", config.skyLightColor, () => {
+            Lighting.skyLightColor = new LinearColor(
+                config.skyLightColor.x,
+                config.skyLightColor.y,
+                config.skyLightColor.z,
+                config.skyLightColor.w
+            );
+        });
+        this.setEnvironmentConfig("Lighting: skyLightIntensity", config.skyLightIntensity, () => {
+            Lighting.skyLightIntensity = config.skyLightIntensity;
+        });
     }
+    /**
+     * @description: 设置雾效
+     * @param config
+     * @return
+     */
     public setFog(config: ISceneEnvironmentElement) {
-        if (Boolean(config.fogEnable)) {
-            Fog.enabled = Boolean(config.fogEnable);
-            Fog.density = config.density;
-            Fog.heightFalloff = config.heightFalloff;
-            Fog.height = config.height;
-            Fog.inscatteringColor = new LinearColor(
-                config.inscatteringColor[0],
-                config.inscatteringColor[1],
-                config.inscatteringColor[2],
-                config.inscatteringColor[3]
-            );
-            Fog.maxOpacity = config.maxOpacity;
-            Fog.startDistance = config.startDistance;
-            Fog.directionalInscatteringColor = new LinearColor(
-                config.directionalInscatteringColor[0],
-                config.directionalInscatteringColor[1],
-                config.directionalInscatteringColor[2],
-                config.directionalInscatteringColor[3]
-            );
-            Fog.directionalInscatteringExponent = config.directionalInscatteringExponent;
-            Fog.directionalInscatteringStartDistance = config.directionalInscatteringStartDistance;
-            Fog.setPreset(config.fogPreset);
-        } else {
-            Fog.enabled = false;
-        }
+        this.setEnvironmentConfig("Fog: fogEnable", config.fogEnable, () => {
+            if (Boolean(config.fogEnable)) {
+                Fog.enabled = Boolean(config.fogEnable);
+                this.setEnvironmentConfig("Fog: density", config.density, () => {
+                    Fog.density = config.density;
+                });
+                this.setEnvironmentConfig("Fog: heightFalloff", config.heightFalloff, () => {
+                    Fog.heightFalloff = config.heightFalloff;
+                });
+                this.setEnvironmentConfig("Fog: height", config.height, () => {
+                    Fog.height = config.height;
+                });
+                this.setEnvironmentConfig("Fog: inscatteringColor", config.inscatteringColor, () => {
+                    Fog.inscatteringColor = new LinearColor(
+                        config.inscatteringColor.x,
+                        config.inscatteringColor.y,
+                        config.inscatteringColor.z,
+                        config.inscatteringColor.w
+                    );
+                });
+                this.setEnvironmentConfig("Fog: maxOpacity", config.maxOpacity, () => {
+                    Fog.maxOpacity = config.maxOpacity;
+                });
+                this.setEnvironmentConfig("Fog: startDistance", config.startDistance, () => {
+                    Fog.startDistance = config.startDistance;
+                });
+                this.setEnvironmentConfig("Fog: directionalInscatteringColor", config.directionalInscatteringColor, () => {
+                    Fog.directionalInscatteringColor = new LinearColor(
+                        config.directionalInscatteringColor.x,
+                        config.directionalInscatteringColor.y,
+                        config.directionalInscatteringColor.z,
+                        config.directionalInscatteringColor.w
+                    );
+                });
+                this.setEnvironmentConfig("Fog: directionalInscatteringExponent", config.directionalInscatteringExponent, () => {
+                    Fog.directionalInscatteringExponent = config.directionalInscatteringExponent;
+                });
+                this.setEnvironmentConfig("Fog: directionalInscatteringStartDistance", config.directionalInscatteringStartDistance, () => {
+                    Fog.directionalInscatteringStartDistance = config.directionalInscatteringStartDistance;
+                });
+                this.setEnvironmentConfig("Fog: fogPreset", config.fogPreset, () => {
+                    Fog.setPreset(config.fogPreset);
+                });
+            } else {
+                Fog.enabled = false;
+            }
+        });
     }
     public setSkyBox(config: ISceneEnvironmentElement) {
-        Skybox.preset = config.skyBoxPreset;
-        Skybox.skyDomeBaseColor = new LinearColor(
-            config.skyDomeBaseColor[0],
-            config.skyDomeBaseColor[1],
-            config.skyDomeBaseColor[2],
-            config.skyDomeBaseColor[3]
-        );
-        Skybox.skyDomeGradientEnabled = Boolean(config.skyDomeGradientEnabled);
-        Skybox.skyDomeBottomColor = new LinearColor(
-            config.skyDomeBottomColor[0],
-            config.skyDomeBottomColor[1],
-            config.skyDomeBottomColor[2],
-            config.skyDomeBottomColor[3]
-        );
-        Skybox.skyDomeHorizontalFallOff = config.SkyDomeHorizontalFallOff;
-        Skybox.skyDomeIntensity = config.skyDomeIntensity;
-        Skybox.skyDomeMiddleColor = new LinearColor(
-            config.skyDomeMiddleColor[0],
-            config.skyDomeMiddleColor[1],
-            config.skyDomeMiddleColor[2],
-            config.skyDomeMiddleColor[3]
-        );
-        Skybox.skyDomeTextureID = config.skyDomeTextureID;
-        Skybox.skyDomeTopColor = new LinearColor(
-            config.skyDomeTopColor[0],
-            config.skyDomeTopColor[1],
-            config.skyDomeTopColor[2],
-            config.skyDomeTopColor[3]
-        );
-        Skybox.yawAngle = config.skyBoxYawAngle;
-        if (Boolean(config.starVisible)) {
-            Skybox.starVisible = Boolean(config.starVisible);
-            Skybox.starIntensity = config.starIntensity;
-            Skybox.starTextureID = config.starTextureID;
-            Skybox.starDensity = config.starDensity;
-        } else {
-            Skybox.starVisible = false;
-        }
-
-        if (Boolean(config.sunVisible)) {
-            Skybox.sunVisible = Boolean(config.sunVisible);
-            Skybox.sunColor = new LinearColor(
-                config.sunColor[0],
-                config.sunColor[1],
-                config.sunColor[2],
-                config.sunColor[3]
+        this.setEnvironmentConfig("SkyBox: skyBoxPreset", config.skyBoxPreset, () => {
+            Skybox.preset = config.skyBoxPreset;
+        });
+        this.setEnvironmentConfig("SkyBox: skyDomeBaseColor", config.skyDomeBaseColor, () => {
+            Skybox.skyDomeBaseColor = new LinearColor(
+                config.skyDomeBaseColor.x,
+                config.skyDomeBaseColor.y,
+                config.skyDomeBaseColor.z,
+                config.skyDomeBaseColor.w
             );
-            Skybox.sunSize = config.sunSize;
-            Skybox.sunIntensity = config.sunIntensity;
-            Skybox.sunTextureID = config.sunTextureID;
-        } else {
-            Skybox.sunVisible = false;
-        }
+        });
 
-        if (Boolean(config.moonVisible)) {
-            Skybox.moonVisible = Boolean(config.moonVisible);
-            Skybox.moonColor = new LinearColor(
-                config.moonColor[0],
-                config.moonColor[1],
-                config.moonColor[2],
-                config.moonColor[3]
-            );
-            Skybox.moonIntensity = config.moonIntensity;
-            Skybox.moonSize = config.moonSize;
-            Skybox.moonTextureID = config.moonTextureID;
-        }
+        this.setEnvironmentConfig("SkyBox: skyDomeGradientEnabled", config.skyDomeGradientEnabled, () => {
+            Skybox.skyDomeGradientEnabled = Boolean(config.skyDomeGradientEnabled);
+        });
 
-        if (Boolean(config.cloudVisible)) {
-            Skybox.cloudVisible = Boolean(config.cloudVisible);
-            Skybox.cloudColor = new LinearColor(
-                config.cloudColor[0],
-                config.cloudColor[1],
-                config.cloudColor[2],
-                config.cloudColor[3]
+        this.setEnvironmentConfig("SkyBox: skyDomeBottomColor", config.skyDomeBottomColor, () => {
+            Skybox.skyDomeBottomColor = new LinearColor(
+                config.skyDomeBottomColor.x,
+                config.skyDomeBottomColor.y,
+                config.skyDomeBottomColor.z,
+                config.skyDomeBottomColor.w
             );
-            Skybox.cloudSpeed = config.cloudSpeed;
-            Skybox.cloudOpacity = config.cloudOpacity;
-            Skybox.cloudTextureID = config.cloudTextureID;
-            Skybox.cloudDensity = config.cloudDensity;
-        } else {
-            Skybox.cloudVisible = false;
+        });
+        this.setEnvironmentConfig("SkyBox: SkyDomeHorizontalFallOff", config.SkyDomeHorizontalFallOff, () => {
+            Skybox.skyDomeHorizontalFallOff = config.SkyDomeHorizontalFallOff;
+        });
+        this.setEnvironmentConfig("SkyBox: skyDomeIntensity", config.skyDomeIntensity, () => {
+            Skybox.skyDomeIntensity = config.skyDomeIntensity;
+        });
+        this.setEnvironmentConfig("SkyBox: skyDomeMiddleColor", config.skyDomeMiddleColor, () => {
+            Skybox.skyDomeMiddleColor = new LinearColor(
+                config.skyDomeMiddleColor.x,
+                config.skyDomeMiddleColor.y,
+                config.skyDomeMiddleColor.z,
+                config.skyDomeMiddleColor.w
+            );
+        });
+        this.setEnvironmentConfig("SkyBox: skyDomeTextureID", config.skyDomeTextureID, () => {
+            Skybox.skyDomeTextureID = config.skyDomeTextureID;
+        });
+        this.setEnvironmentConfig("SkyBox: skyDomeTopColor", config.skyDomeTopColor, () => {
+            Skybox.skyDomeTopColor = new LinearColor(
+                config.skyDomeTopColor.x,
+                config.skyDomeTopColor.y,
+                config.skyDomeTopColor.z,
+                config.skyDomeTopColor.w
+            );
+        });
+        this.setEnvironmentConfig("SkyBox: skyBoxYawAngle", config.skyBoxYawAngle, () => {
+            Skybox.yawAngle = config.skyBoxYawAngle;
+        });
+
+        this.setEnvironmentConfig("SkyBox: starVisible", config.starVisible, () => {
+            if (Boolean(config.starVisible)) {
+                Skybox.starVisible = Boolean(config.starVisible);
+                this.setEnvironmentConfig("SkyBox: starIntensity", config.starIntensity, () => {
+                    Skybox.starIntensity = config.starIntensity;
+                });
+                this.setEnvironmentConfig("SkyBox: starTextureID", config.starTextureID, () => {
+                    Skybox.starTextureID = config.starTextureID;
+                });
+                this.setEnvironmentConfig("SkyBox: starDensity", config.starDensity, () => {
+                    Skybox.starDensity = config.starDensity;
+                });
+            } else {
+                Skybox.starVisible = false;
+            }
+        });
+
+        this.setEnvironmentConfig("SkyBox: sunVisible", config.sunVisible, () => {
+            if (Boolean(config.sunVisible)) {
+                Skybox.sunVisible = Boolean(config.sunVisible);
+                this.setEnvironmentConfig("SkyBox: sunColor", config.sunColor, () => {
+                    Skybox.sunColor = new LinearColor(
+                        config.sunColor.x,
+                        config.sunColor.y,
+                        config.sunColor.z,
+                        config.sunColor.w
+                    );
+                });
+                this.setEnvironmentConfig("SkyBox: sunSize", config.sunSize, () => {
+                    Skybox.sunSize = config.sunSize;
+                });
+                this.setEnvironmentConfig("SkyBox: sunIntensity", config.sunIntensity, () => {
+                    Skybox.sunIntensity = config.sunIntensity;
+                });
+                this.setEnvironmentConfig("SkyBox: sunTextureID", config.sunTextureID, () => {
+                    Skybox.sunTextureID = config.sunTextureID;
+                });
+            } else {
+                Skybox.sunVisible = false;
+            }
+        });
+
+        this.setEnvironmentConfig("SkyBox: moonVisible", config.moonVisible, () => {
+            if (Boolean(config.moonVisible)) {
+                Skybox.moonVisible = Boolean(config.moonVisible);
+                this.setEnvironmentConfig("SkyBox: moonColor", config.moonColor, () => {
+                    Skybox.moonColor = new LinearColor(
+                        config.moonColor.x,
+                        config.moonColor.y,
+                        config.moonColor.z,
+                        config.moonColor.w
+                    );
+                });
+                this.setEnvironmentConfig("SkyBox: moonIntensity", config.moonIntensity, () => {
+                    Skybox.moonIntensity = config.moonIntensity;
+                });
+                this.setEnvironmentConfig("SkyBox: moonSize", config.moonSize, () => {
+                    Skybox.moonSize = config.moonSize;
+                });
+                this.setEnvironmentConfig("SkyBox: moonTextureID", config.moonTextureID, () => {
+                    Skybox.moonTextureID = config.moonTextureID;
+                });
+            } else {
+                Skybox.moonVisible = false;
+            }
+        });
+
+        this.setEnvironmentConfig("SkyBox: cloudVisible", config.cloudVisible, () => {
+            if (Boolean(config.cloudVisible)) {
+                Skybox.cloudVisible = Boolean(config.cloudVisible);
+                this.setEnvironmentConfig("SkyBox: cloudColor", config.cloudColor, () => {
+                    Skybox.cloudColor = new LinearColor(
+                        config.cloudColor.x,
+                        config.cloudColor.y,
+                        config.cloudColor.z,
+                        config.cloudColor.w
+                    );
+                });
+                this.setEnvironmentConfig("SkyBox: cloudSpeed", config.cloudSpeed, () => {
+                    Skybox.cloudSpeed = config.cloudSpeed;
+                });
+                this.setEnvironmentConfig("SkyBox: cloudOpacity", config.cloudOpacity, () => {
+                    Skybox.cloudOpacity = config.cloudOpacity;
+                });
+                this.setEnvironmentConfig("SkyBox: cloudTextureID", config.cloudTextureID, () => {
+                    Skybox.cloudTextureID = config.cloudTextureID;
+                });
+                this.setEnvironmentConfig("SkyBox: cloudDensity", config.cloudDensity, () => {
+                    Skybox.cloudDensity = config.cloudDensity;
+                });
+            } else {
+                Skybox.cloudVisible = false;
+            }
+        });
+    }
+
+    private checkEnvironmentConfig(configName: string, config: any): boolean {
+        if (Gtk.isNullOrUndefined(config)) {
+            Log4Ts.log(EnvironmentManager, `${configName} is null!`);
+            return false;
+        }
+        return true;
+    }
+
+    private setEnvironmentConfig(configName: string, config: any, setMethod: () => void) {
+        if (this.checkEnvironmentConfig(configName, config)) {
+            setMethod();
         }
     }
 }

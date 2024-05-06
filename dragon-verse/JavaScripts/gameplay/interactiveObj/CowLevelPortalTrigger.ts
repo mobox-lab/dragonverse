@@ -201,6 +201,19 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
     }
 }
 
-AddGMCommand("tips", () => {
-    GlobalTips.getInstance().showGlobalTips("i18n.lan(scene.name)", { duration: 2e3, only: true });
+AddGMCommand("传送奶牛关", (player, value) => {
+    let scene = GameConfig.Scene.getElement(value);
+    player.character.worldTransform = new Transform(
+        scene.bornLocation,
+        player.character.worldTransform.rotation,
+        player.character.worldTransform.scale
+    );
+
+    //改变天空盒
+    EnvironmentManager.getInstance().setEnvironment(scene.id);
+    //显示场景名
+    GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
+        duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
+        only: true,
+    });
 });
