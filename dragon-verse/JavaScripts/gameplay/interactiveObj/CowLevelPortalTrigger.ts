@@ -21,6 +21,7 @@ import { ActivateByUIAndTrigger, ActivateMode } from "./ActiveMode";
 import { PortalTrigger } from "./PortalTrigger";
 import EnvironmentManager from "./EnvironmentManager";
 import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjModule";
+import JumpGameTransition_Generate from "../../ui-generate/jumpGame/JumpGameTransition_generate";
 
 export default class CowLevelPortalTrigger extends PortalTrigger {
     @Property({
@@ -127,7 +128,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                     if (tips) GlobalTips.getInstance().showGlobalTips(i18n.lan(tips.content));
                     TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
                         //显示一个转场ui动画
-                        UIService.show(CutScenePanel, () => {
+                        this.showTransitionAnimation(() => {
                             //传送
                             this.transferPlayer(Player.localPlayer.character, scene.bornLocation);
                             //改变天空盒
@@ -179,6 +180,24 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                 }
             }
         }
+    }
+
+    private showTransitionAnimation(callBack: () => void) {
+        let ui = UIService.show(JumpGameTransition_Generate);
+        actions
+            .tween(ui.bImage)
+            .set({ renderOpacity: 0 })
+            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 1 })
+            .call(() => {
+                callBack();
+            })
+            .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
+            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
+            .call(() => {
+                UIService.hide(JumpGameTransition_Generate);
+            })
+            .union()
+            .start();
     }
 }
 
