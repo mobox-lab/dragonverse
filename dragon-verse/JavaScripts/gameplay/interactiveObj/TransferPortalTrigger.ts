@@ -16,7 +16,7 @@ import i18n from "../../language/i18n";
 import JumpGameTransition_Generate from "../../ui-generate/jumpGame/JumpGameTransition_generate";
 import { ActivateByTrigger, ActivateMode, TriggerType } from "./ActiveMode";
 import { PortalTriggerWithProgress } from "./PortalTriggerWithProgress";
-import EnvironmentManager from "./SkyBoxManager";
+import EnvironmentManager from "./EnvironmentManager";
 
 enum Destination {
     anyCowLevel = 1,

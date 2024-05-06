@@ -19,7 +19,7 @@ import CutScenePanel from "../../ui/jump-game/CutScenePanel";
 import MainPanel from "../../ui/main/MainPanel";
 import { ActivateByUIAndTrigger, ActivateMode } from "./ActiveMode";
 import { PortalTrigger } from "./PortalTrigger";
-import EnvironmentManager from "./SkyBoxManager";
+import EnvironmentManager from "./EnvironmentManager";
 import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjModule";
 
 export default class CowLevelPortalTrigger extends PortalTrigger {
@@ -132,6 +132,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                             this.transferPlayer(Player.localPlayer.character, scene.bornLocation);
                             //改变天空盒
                             EnvironmentManager.getInstance().setEnvironment(scene.id);
+                            //显示场景名
                             GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
                                 duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
                                 only: true,
