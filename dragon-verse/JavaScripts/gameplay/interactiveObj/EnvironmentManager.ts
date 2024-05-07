@@ -4,7 +4,7 @@
  * @LastEditors  : zewei.zhang
  * @LastEditTime : 2024-04-30 09:20:49
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\SkyBoxManager.ts
- * @Description  : 天空盒管理
+ * @Description  : 环境管理
  */
 
 import { GameConfig } from "../../config/GameConfig";
@@ -85,13 +85,8 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
         this.setEnvironmentConfig("Lighting: pitchAngle", config.pitchAngle, () => {
             Lighting.pitchAngle = config.pitchAngle;
         });
-        this.setEnvironmentConfig("Lighting: lightColor", config.lightColor, () => {
-            Lighting.lightColor = new LinearColor(
-                config.lightColor.x,
-                config.lightColor.y,
-                config.lightColor.z,
-                config.lightColor.w
-            );
+        this.setLinearColorConfig("Lighting: lightColor", config.lightColor, (color) => {
+            Lighting.lightColor = color;
         });
         this.setEnvironmentConfig("Lighting: ev100", config.ev100, () => {
             Lighting.ev100 = config.ev100;
@@ -111,21 +106,11 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
         this.setEnvironmentConfig("Lighting: directionalLightIntensity", config.directionalLightIntensity, () => {
             Lighting.directionalLightIntensity = config.directionalLightIntensity;
         });
-        this.setEnvironmentConfig("Lighting: directionalLightColor", config.directionalLightColor, () => {
-            Lighting.directionalLightColor = new LinearColor(
-                config.directionalLightColor.x,
-                config.directionalLightColor.y,
-                config.directionalLightColor.z,
-                config.directionalLightColor.w
-            );
+        this.setLinearColorConfig("Lighting: directionalLightColor", config.directionalLightColor, (color) => {
+            Lighting.directionalLightColor = color;
         });
-        this.setEnvironmentConfig("Lighting: skyLightColor", config.skyLightColor, () => {
-            Lighting.skyLightColor = new LinearColor(
-                config.skyLightColor.x,
-                config.skyLightColor.y,
-                config.skyLightColor.z,
-                config.skyLightColor.w
-            );
+        this.setLinearColorConfig("Lighting: skyLightColor", config.skyLightColor, (color) => {
+            Lighting.skyLightColor = color;
         });
         this.setEnvironmentConfig("Lighting: skyLightIntensity", config.skyLightIntensity, () => {
             Lighting.skyLightIntensity = config.skyLightIntensity;
@@ -149,13 +134,8 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
                 this.setEnvironmentConfig("Fog: height", config.height, () => {
                     Fog.height = config.height;
                 });
-                this.setEnvironmentConfig("Fog: inscatteringColor", config.inscatteringColor, () => {
-                    Fog.inscatteringColor = new LinearColor(
-                        config.inscatteringColor.x,
-                        config.inscatteringColor.y,
-                        config.inscatteringColor.z,
-                        config.inscatteringColor.w
-                    );
+                this.setLinearColorConfig("Fog: inscatteringColor", config.inscatteringColor, (color) => {
+                    Fog.inscatteringColor = color;
                 });
                 this.setEnvironmentConfig("Fog: maxOpacity", config.maxOpacity, () => {
                     Fog.maxOpacity = config.maxOpacity;
@@ -163,13 +143,8 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
                 this.setEnvironmentConfig("Fog: startDistance", config.startDistance, () => {
                     Fog.startDistance = config.startDistance;
                 });
-                this.setEnvironmentConfig("Fog: directionalInscatteringColor", config.directionalInscatteringColor, () => {
-                    Fog.directionalInscatteringColor = new LinearColor(
-                        config.directionalInscatteringColor.x,
-                        config.directionalInscatteringColor.y,
-                        config.directionalInscatteringColor.z,
-                        config.directionalInscatteringColor.w
-                    );
+                this.setLinearColorConfig("Fog: directionalInscatteringColor", config.directionalInscatteringColor, (color) => {
+                    Fog.directionalInscatteringColor = color;
                 });
                 this.setEnvironmentConfig("Fog: directionalInscatteringExponent", config.directionalInscatteringExponent, () => {
                     Fog.directionalInscatteringExponent = config.directionalInscatteringExponent;
@@ -189,26 +164,16 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
         this.setEnvironmentConfig("SkyBox: skyBoxPreset", config.skyBoxPreset, () => {
             Skybox.preset = config.skyBoxPreset;
         });
-        this.setEnvironmentConfig("SkyBox: skyDomeBaseColor", config.skyDomeBaseColor, () => {
-            Skybox.skyDomeBaseColor = new LinearColor(
-                config.skyDomeBaseColor.x,
-                config.skyDomeBaseColor.y,
-                config.skyDomeBaseColor.z,
-                config.skyDomeBaseColor.w
-            );
+        this.setLinearColorConfig("SkyBox: skyDomeBaseColor", config.skyDomeBaseColor, (color) => {
+            Skybox.skyDomeBaseColor = color;
         });
 
         this.setEnvironmentConfig("SkyBox: skyDomeGradientEnabled", config.skyDomeGradientEnabled, () => {
             Skybox.skyDomeGradientEnabled = Boolean(config.skyDomeGradientEnabled);
         });
 
-        this.setEnvironmentConfig("SkyBox: skyDomeBottomColor", config.skyDomeBottomColor, () => {
-            Skybox.skyDomeBottomColor = new LinearColor(
-                config.skyDomeBottomColor.x,
-                config.skyDomeBottomColor.y,
-                config.skyDomeBottomColor.z,
-                config.skyDomeBottomColor.w
-            );
+        this.setLinearColorConfig("SkyBox: skyDomeBottomColor", config.skyDomeBottomColor, (color) => {
+            Skybox.skyDomeBottomColor = color;
         });
         this.setEnvironmentConfig("SkyBox: SkyDomeHorizontalFallOff", config.SkyDomeHorizontalFallOff, () => {
             Skybox.skyDomeHorizontalFallOff = config.SkyDomeHorizontalFallOff;
@@ -216,24 +181,14 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
         this.setEnvironmentConfig("SkyBox: skyDomeIntensity", config.skyDomeIntensity, () => {
             Skybox.skyDomeIntensity = config.skyDomeIntensity;
         });
-        this.setEnvironmentConfig("SkyBox: skyDomeMiddleColor", config.skyDomeMiddleColor, () => {
-            Skybox.skyDomeMiddleColor = new LinearColor(
-                config.skyDomeMiddleColor.x,
-                config.skyDomeMiddleColor.y,
-                config.skyDomeMiddleColor.z,
-                config.skyDomeMiddleColor.w
-            );
+        this.setLinearColorConfig("SkyBox: skyDomeMiddleColor", config.skyDomeMiddleColor, (color) => {
+            Skybox.skyDomeMiddleColor = color;
         });
         this.setEnvironmentConfig("SkyBox: skyDomeTextureID", config.skyDomeTextureID, () => {
             Skybox.skyDomeTextureID = config.skyDomeTextureID;
         });
-        this.setEnvironmentConfig("SkyBox: skyDomeTopColor", config.skyDomeTopColor, () => {
-            Skybox.skyDomeTopColor = new LinearColor(
-                config.skyDomeTopColor.x,
-                config.skyDomeTopColor.y,
-                config.skyDomeTopColor.z,
-                config.skyDomeTopColor.w
-            );
+        this.setLinearColorConfig("SkyBox: skyDomeTopColor", config.skyDomeTopColor, (color) => {
+            Skybox.skyDomeTopColor = color;
         });
         this.setEnvironmentConfig("SkyBox: skyBoxYawAngle", config.skyBoxYawAngle, () => {
             Skybox.yawAngle = config.skyBoxYawAngle;
@@ -259,13 +214,8 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
         this.setEnvironmentConfig("SkyBox: sunVisible", config.sunVisible, () => {
             if (Boolean(config.sunVisible)) {
                 Skybox.sunVisible = Boolean(config.sunVisible);
-                this.setEnvironmentConfig("SkyBox: sunColor", config.sunColor, () => {
-                    Skybox.sunColor = new LinearColor(
-                        config.sunColor.x,
-                        config.sunColor.y,
-                        config.sunColor.z,
-                        config.sunColor.w
-                    );
+                this.setLinearColorConfig("SkyBox: sunColor", config.sunColor, (color) => {
+                    Skybox.sunColor = color;
                 });
                 this.setEnvironmentConfig("SkyBox: sunSize", config.sunSize, () => {
                     Skybox.sunSize = config.sunSize;
@@ -284,13 +234,8 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
         this.setEnvironmentConfig("SkyBox: moonVisible", config.moonVisible, () => {
             if (Boolean(config.moonVisible)) {
                 Skybox.moonVisible = Boolean(config.moonVisible);
-                this.setEnvironmentConfig("SkyBox: moonColor", config.moonColor, () => {
-                    Skybox.moonColor = new LinearColor(
-                        config.moonColor.x,
-                        config.moonColor.y,
-                        config.moonColor.z,
-                        config.moonColor.w
-                    );
+                this.setLinearColorConfig("SkyBox: moonColor", config.moonColor, (color) => {
+                    Skybox.moonColor = color;
                 });
                 this.setEnvironmentConfig("SkyBox: moonIntensity", config.moonIntensity, () => {
                     Skybox.moonIntensity = config.moonIntensity;
@@ -309,13 +254,8 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
         this.setEnvironmentConfig("SkyBox: cloudVisible", config.cloudVisible, () => {
             if (Boolean(config.cloudVisible)) {
                 Skybox.cloudVisible = Boolean(config.cloudVisible);
-                this.setEnvironmentConfig("SkyBox: cloudColor", config.cloudColor, () => {
-                    Skybox.cloudColor = new LinearColor(
-                        config.cloudColor.x,
-                        config.cloudColor.y,
-                        config.cloudColor.z,
-                        config.cloudColor.w
-                    );
+                this.setLinearColorConfig("SkyBox: cloudColor", config.cloudColor, (color) => {
+                    Skybox.cloudColor = color;
                 });
                 this.setEnvironmentConfig("SkyBox: cloudSpeed", config.cloudSpeed, () => {
                     Skybox.cloudSpeed = config.cloudSpeed;
@@ -341,6 +281,17 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
             return false;
         }
         return true;
+    }
+
+    private setLinearColorConfig(configName: string, config: string, setMethod: (color: LinearColor) => void) {
+        this.setEnvironmentConfig(configName, config, () => {
+            let color = Gtk.catchMwExportColor(config);
+            if (color) {
+                setMethod(color);
+            } else {
+                Log4Ts.log(EnvironmentManager, `${configName} is not a valid color!`);
+            }
+        });
     }
 
     private setEnvironmentConfig(configName: string, config: any, setMethod: () => void) {
