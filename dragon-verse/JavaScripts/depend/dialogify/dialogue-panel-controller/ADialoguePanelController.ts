@@ -352,7 +352,7 @@ export default abstract class ADialoguePanelController<
      * @private
      * @param config
      */
-    private updateEntityIdData(config: IDialogueContentNodeElement) {
+    private updateEntityIdData(config: IDialogueContentNodeConfigElement) {
         if (!isEntityIdValid(config?.sourceId ?? null)) {
             return;
         }

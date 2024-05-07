@@ -2,8 +2,8 @@
  * @Author       : zewei.zhang
  * @Date         : 2023-12-11 17:50:24
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-15 16:24:09
- * @FilePath     : \dragon027\JavaScripts\ui\npc-interaction\NpcInteractionPanel.ts
+ * @LastEditTime : 2024-05-07 14:42:36
+ * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\ui\npc-interaction\NpcInteractionPanel.ts
  * @Description  : npc动作交互面板
  */
 
@@ -11,6 +11,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { INPCActionElement, NPCActionConfig } from "../../config/NPCAction";
 import { INpcElement } from "../../config/Npc";
 import { EventDefine } from "../../const/EventDefine";
+import { MouseLockController } from "../../controller/MouseLockController";
 import DialogifyManager from "../../depend/dialogify/DialogifyManager";
 import NPCActionPanel_Generate from "../../ui-generate/dialogue/NPCActionPanel_generate";
 import NPCBigItem_Generate from "../../ui-generate/dialogue/NPCBigItem_generate";
@@ -19,6 +20,7 @@ import NPCBigItem_Generate from "../../ui-generate/dialogue/NPCBigItem_generate"
 export default class NpcInteractionPanel extends NPCActionPanel_Generate {
     onStart() {
         this.closeBtn3.onClicked.add(() => {
+            MouseLockController.getInstance().cancelMouseUnlock();
             this.destroy();
         });
         let currentNpcId = DialogifyManager.getInstance().talkingDialogueEntityId;
@@ -28,8 +30,11 @@ export default class NpcInteractionPanel extends NPCActionPanel_Generate {
 
         let listener = Event.addLocalListener(EventDefine.LeaveNpcInteractRange, () => {
             this.destroy();
+            MouseLockController.getInstance().cancelMouseUnlock();
             Event.removeListener(listener);
         });
+
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
 
