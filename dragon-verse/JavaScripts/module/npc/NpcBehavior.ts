@@ -110,16 +110,16 @@ export default class NpcBehavior extends mw.Script {
 
         //#region Event Subscribe
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.EnterNpcInteractRange, this.onEnterNpcInteractRange)
+            Event.addLocalListener(EventDefine.EnterNpcInteractRange, this.onEnterNpcInteractRange),
         );
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.LeaveNpcInteractRange, this.onLeaveNpcInteractRange)
+            Event.addLocalListener(EventDefine.LeaveNpcInteractRange, this.onLeaveNpcInteractRange),
         );
         this._eventListeners.push(Event.addLocalListener(EventDefine.ShowNpcAction, this.showNpcAction.bind(this)));
         this._eventListeners.push(
             Event.addLocalListener(DialogifyManager.LeaveDialogueEventName, () => {
                 this._isTalking = false;
-            })
+            }),
         );
         //#endregion ------------------------------------------------------------------------------------------
 
@@ -127,7 +127,7 @@ export default class NpcBehavior extends mw.Script {
         if (!this._npcCharacter) {
             Log4Ts.log(
                 NpcBehavior,
-                `there is no mesh object named ${GameServiceConfig.NPC_MESH_OBJECT_NAME} in prefab.`
+                `there is no mesh object named ${GameServiceConfig.NPC_MESH_OBJECT_NAME} in prefab.`,
             );
             return;
         }
@@ -144,7 +144,7 @@ export default class NpcBehavior extends mw.Script {
                     this._wing.localTransform = new Transform(
                         new Vector(wingTransform[0][0], wingTransform[0][1], wingTransform[0][2]),
                         new Rotation(wingTransform[1][0], wingTransform[1][1], wingTransform[1][2]),
-                        new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2])
+                        new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2]),
                     );
                 }, 10);
             });
@@ -166,7 +166,7 @@ export default class NpcBehavior extends mw.Script {
             HeadUIType.NPC,
             i18n.lan(GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null"),
             null,
-            GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null"
+            GameConfig.RelateEntity.getElement(this._config.characterId)?.name ?? "null",
         );
     }
 
@@ -236,29 +236,34 @@ export default class NpcBehavior extends mw.Script {
             return;
         }
 
-        const contentNodeConfig = GameConfig.DialogueContentNode.getElement(talkId);
-        if (!contentNodeConfig) {
+        const greetResultConfig = GameConfig.DialogueInteractNode.getElement(talkId);
+        if (!greetResultConfig) {
+            Log4Ts.error(NpcBehavior, `can not find greet reference interact node config. id: ${talkId}`);
+            return;
+        }
+        const contentResultConfig = GameConfig.DialogueContentNode.getElement(greetResultConfig.contentNodeId);
+        if (!contentResultConfig) {
             Log4Ts.error(NpcBehavior, `can not find content node config. id: ${this._config.greetNodeId}`);
             return;
         }
         this._isTalking = true;
 
-        const content = contentNodeConfig.content;
-        const hasNextId: boolean = isDialogueContentNodeHasNextId(contentNodeConfig);
+        const content = contentResultConfig.content;
         const hasContent = !GToolkit.isNullOrEmpty(content);
 
-        //#region 条件项 000 100 101
-        if (
-            !hasContent &&
-            (hasNextId || (!hasNextId && GToolkit.isNullOrEmpty(contentNodeConfig.interactPredNodeIds)))
-        ) {
-            Log4Ts.error(NpcBehavior, `配置了一行无意义的 DialogueContentNode. id: ${contentNodeConfig.id}`);
+        this.dm.chat(contentResultConfig, !hasContent);
+    }
+
+    public getGreetContent(): string {
+        // DV NPC 业务限制 招呼节点有且仅有一个交互节点
+        const talkId =
+            getInteractNodes(GameConfig.DialogueContentNode.getElement(this._config.greetNodeId))?.[0] ?? null;
+        if (isValidDialogueContentNodeId(talkId) === false) {
+            Log4Ts.log(NpcBehavior, `npc could not be talked with. id: ${this._config.id}`);
             return;
         }
-        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-        //#region 条件项 001 010 011 110 111
-        this.dm.chat(contentNodeConfig, !hasContent);
-        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+        return i18n.lan(GameConfig.DialogueInteractNode.getElement(talkId)?.content) ?? "";
     }
 
     /**
@@ -311,13 +316,13 @@ export default class NpcBehavior extends mw.Script {
                 Player.localPlayer.character.jumpEnabled = false;
 
                 this._npcCharacter.worldTransform.position = Player.localPlayer.character.worldTransform.position.add(
-                    Player.localPlayer.character.worldTransform.getForwardVector().multiply(config.posOffset.z)
+                    Player.localPlayer.character.worldTransform.getForwardVector().multiply(config.posOffset.z),
                 );
                 let r = mw.Rotation.zero;
                 mw.Rotation.add(
                     Player.localPlayer.character.worldTransform.rotation,
                     new mw.Rotation(config.rotation),
-                    r
+                    r,
                 );
                 this._npcCharacter.worldTransform.rotation = r;
                 this._currentAni = this._npcCharacter.loadAnimation(config.accectStance);
