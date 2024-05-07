@@ -1,6 +1,5 @@
 import Enumerable from "linq";
 import UUID from "pure-uuid";
-import { GameConfig } from "../../config/GameConfig";
 import { EventDefine } from "../../const/EventDefine";
 import { BagTypes } from "../../const/ForeignKeyIndexer";
 import GameServiceConfig from "../../const/GameServiceConfig";
@@ -66,7 +65,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             Log4Ts.error(SceneDragonModuleC, `generate item param location invalid.`);
             return Promise.resolve(null);
         }
-        const dragonInfo = item.getDragonConfig();
+        const dragonInfo = item.getConfig();
         let assetId = dragonInfo.avatar;
         if (GToolkit.isNullOrEmpty(assetId)) {
             Log4Ts.error(SceneDragonModuleC, `avatar not set. id: ${item.id}`);
@@ -622,10 +621,6 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
-
-        if (this._generateRegulator.request()) {
-            this.tryGenerate();
-        }
     }
 
     protected onDestroy(): void {
@@ -656,51 +651,6 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
-    /**
-     * 指定玩家 与个性龙 id 的同种龙基最新生成时间.
-     * @param playerId
-     * @param id 个性龙 id.
-     */
-    private lastItemGenerateTime(playerId: number, id: number): number {
-        return Enumerable.from(this.existenceItemMap.get(playerId)?.dragonSyncKeys ?? [])
-            .select((syncKey) => this.syncItemMap.get(syncKey))
-            .where((item) => (item ? SceneDragon.dragonId(item.id) === SceneDragon.dragonId(id) : false))
-            .defaultIfEmpty({generateTime: 0} as SceneDragon)
-            .max((item) => item.generateTime);
-    }
-
-    /**
-     * 尝试生成.
-     * @param playerId 指定的 playerId. 若无指定则全检查.
-     * @private
-     */
-    private tryGenerate(playerId: number = undefined) {
-        if (playerId === undefined) {
-            for (const pId of this.existenceItemMap.keys()) {
-                this.tryGenerate(pId);
-            }
-            return;
-        }
-
-        Enumerable.from(GToolkit.randomShuffleArray(GameConfig.CharacterfulDragon.getAllElement()))
-            .forEach((item) => {
-                if (GToolkit.isNullOrEmpty(SceneDragon.getDragonConfig(item.id).areaIds)) return;
-                for (
-                    let i = 0;
-                    i < GameServiceConfig.MAX_SINGLE_GENERATE_TRIAL_COUNT && this.isGenerateEnable(playerId, item.id);
-                    i++
-                ) {
-                    Log4Ts.log(
-                        SceneDragonModuleS,
-                        `checking generate.`,
-                        () => `playerId: ${playerId}.`,
-                        () => `id: ${item.id}.`,
-                        () => `trial: ${i}.`,
-                    );
-                    this.generate(playerId, item.id);
-                }
-            });
-    }
 
     /**
      * 移除私有记录.
@@ -724,19 +674,6 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     }
 
     /**
-     * 是否具备 生成条件.
-     * @param playerId
-     * @param id 个性龙 id.
-     */
-    private isGenerateEnable(playerId: number, id: number): boolean {
-        return (
-            (Date.now() - this.existenceItemMap.get(playerId)?.enterTime ?? Number.MAX_VALUE) >
-            SceneDragon.firstGenerateCd(id) &&
-            this.lastItemGenerateTime(playerId, id) + SceneDragon.generationInterval(id) < Date.now()
-        );
-    }
-
-    /**
      * 注册 生成场景龙.
      * @desc 场景龙是私有的 场景龙的存在依赖 playerId 属性.
      * @param playerId
@@ -746,11 +683,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     private generate(playerId: number, itemId: number, location: IPoint3 = undefined) {
         Log4Ts.log(SceneDragonModuleS, `try generate item, itemId: ${itemId}.`);
 
-        if (location === undefined) {
-            location = GToolkit.randomArrayItem(
-                this.getValidGenerateLocation(SceneDragon.getDragonConfig(itemId).id),
-            );
-        }
+        //TODO_LviatYi 接入 AreaManager
 
         if (location === null) {
             Log4Ts.error(SceneDragonModuleS, `generate location is null.`);
@@ -787,10 +720,6 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         Log4Ts.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
 
-        item.autoDestroyTimerId = setTimeout(() => {
-            this.destroy(playerId, syncKey, true);
-        }, SceneDragon.maxExistenceTime(itemId));
-
         this.getClient(playerId).net_generate(syncKey, item.id, item.hitPoint, item.generateTime, item.location);
     }
 
@@ -807,12 +736,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             Log4Ts.error(SceneDragonModuleS, `destroy item is null`);
             return;
         }
-        Log4Ts.log(
-            SceneDragonModuleS,
-            () => `try destroy item, itemId : ${item.id}.`,
-            () =>
-                `reason: ${Date.now() - item.generateTime > SceneDragon.maxExistenceTime(item.id) ? "time out" : "collected"}.`,
-        );
+
         if (item.autoDestroyTimerId) {
             clearTimeout(item.autoDestroyTimerId);
             item.autoDestroyTimerId = null;

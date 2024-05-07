@@ -108,11 +108,9 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
                 return { id: item.id, type: item.elementalId }
             });
         //再找所有属于光暗龙的背包id
-        let bagIds = Enumerable.from(GameConfig.CharacterfulDragon.getAllElement())
-            .where(item => typeIds.any(type => type.id === item.dragonId))
-            .select(item => {
-                return { bagId: item.bagId, type: typeIds.first(type => type.id === item.dragonId).type }
-            });
+        let bagIds = Enumerable.from(GameConfig.Dragon.getAllElement())
+            .where(item => typeIds.any(type => type.id === item.id))
+            .select(item => ({bagId: item.bagId, type: typeIds.first(type => type.id === item.id).type}));
 
         //光暗龙背包id
         let lightDragonMap = new Map<number, number>();
@@ -145,10 +143,10 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
                 return { id: item.id, type: item.elementalId }
             });
         //再找所有属于光暗龙的背包id
-        let bagIds = Enumerable.from(GameConfig.CharacterfulDragon.getAllElement())
-            .where(item => typeIds.any(type => type.id === item.dragonId))
+        let bagIds = Enumerable.from(GameConfig.Dragon.getAllElement())
+            .where(item => typeIds.any(type => type.id === item.id))
             .select(item => {
-                return { bagId: item.bagId, type: typeIds.first(type => type.id === item.dragonId).type }
+                return { bagId: item.bagId, type: typeIds.first(type => type.id === item.id).type }
             });
 
         //光暗龙背包id
@@ -224,10 +222,10 @@ export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
                 return { id: item.id, type: item.elementalId }
             });
         //再找所有属于光暗龙的背包id
-        let bagIds = Enumerable.from(GameConfig.CharacterfulDragon.getAllElement())
-            .where(item => typeIds.any(type => type.id === item.dragonId))
+        let bagIds = Enumerable.from(GameConfig.Dragon.getAllElement())
+            .where(item => typeIds.any(type => type.id === item.id))
             .select(item => {
-                return { bagId: item.bagId, type: typeIds.first(type => type.id === item.dragonId).type }
+                return { bagId: item.bagId, type: typeIds.first(type => type.id === item.id).type }
             });
         //光暗龙背包id和对应数量
         let lightDragonMap = new Map<number, number>();
