@@ -974,6 +974,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         if (type == Attribute.EnumAttributeType.rankScore || type == Attribute.EnumAttributeType.dayRankScore) {
             calValue = Math.round(Math.max(0, calValue));
         }
+        // TODO: CL - 去掉 rankScore
         if (type == Attribute.EnumAttributeType.rankScore) {
             this.reducePlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, value);
 
@@ -1062,6 +1063,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             return;
         }
         // 段位分处理
+        // TODO: CL - 去掉 rankScore
         if (type == Attribute.EnumAttributeType.rankScore) {
             value = Math.round(
                 Math.min(value, Globaldata.maxRankScore - data.getAttrValue(Attribute.EnumAttributeType.dayRankScore))
@@ -2329,5 +2331,55 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             rotation: effCfg.weaRot.toRotation(),
             scale: effCfg.weaScale,
         });
+    }
+
+    /**
+     * 修改 Rank 得分
+     * @param {number} playerId -- 玩家ID
+     * @param {number} deltaScore -- 变化的 rank 分，增加/减少 +- 来判断
+     * @private
+     */
+    private changeRankScore(playerId: number, deltaScore: number) {
+        const player = Player.getPlayer(playerId);
+        const data = this.getPlayerData(playerId);
+        if (!player || !data || !deltaScore) return;
+
+        // TODO: CL - 暂时用 硬编码代替 enum
+        // 获取当前属性值
+        const currentScore = data.getAttrValue(59);
+        let calCurrentScore: number;
+
+        if (deltaScore < 0) {
+            // 如果 变化值 是负值，减少属性值
+            this.reducePlayerAttr(playerId, Attribute.EnumAttributeType.dayRankScore, Math.abs(deltaScore));
+            calCurrentScore = Math.round(Math.max(0, currentScore + deltaScore));
+        } else {
+            // 如果 变化值 是正值，增加属性值
+            const calDeltaScore = Math.round(Math.min(deltaScore, Globaldata.maxRankScore - data.getAttrValue(Attribute.EnumAttributeType.dayRankScore)));
+            this.addPlayerAttr(playerId, Attribute.EnumAttributeType.dayRankScore, calDeltaScore);
+            calCurrentScore = Math.round(currentScore + calDeltaScore);
+        }
+        // 设置新的属性值
+        data.setAttrValue(59, calCurrentScore);
+
+        // 计算并更新玩家等级
+        const newRank = PlayerManager.instance.getRankLevel(calCurrentScore);
+        ModuleService.getModule(AuthModuleS).reportBWRankData(playerId, newRank, calCurrentScore, 1);
+
+        // 如果是增加属性值并且玩家等级上升，触发升级通知
+        if (deltaScore > 0) {
+            const oldRank = PlayerManager.instance.getRankLevel(currentScore);
+            if (newRank > oldRank) {
+                this.getAllClient().net_startNotice(
+                    ERankNoticeType.LevelUp,
+                    newRank,
+                    this.mAttribute.getAttrValue(playerId, Attribute.EnumAttributeType.playerName),
+                );
+            }
+            this.checkRankReward(playerId);
+        }
+
+        // 同步给属性同步模块
+        EventManager.instance.call(EAttributeEvents_S.attr_change_s, playerId, 59, data.getAttrValue(59));
     }
 }
