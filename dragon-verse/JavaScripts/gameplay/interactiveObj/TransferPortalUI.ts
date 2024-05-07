@@ -2,12 +2,14 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-05-06 18:28:34
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-05-07 14:20:58
+ * @LastEditTime : 2024-05-07 18:47:10
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\TransferPortalUI.ts
  * @Description  : 奶牛关去中转关交互物
  */
 
+import PlayerControllerUI from "../../../Plugins/animation-editor/Editor/JavaScripts/ui/PlayerControllerUI";
 import { GameConfig } from "../../config/GameConfig";
+import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Nolan from "../../depend/nolan/Nolan";
@@ -43,6 +45,7 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
 
     private _nolan: Nolan;
 
+    private _currentCowLevelId: number = 0;
     onStartPortalInServer(playerId: number): void {
 
     }
@@ -69,15 +72,25 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
         this.activeMode = new ActivateByUI(this.gameObject, this.showUI, this.hideUI, false);
         if (SystemUtil.isClient()) {
             this._nolan = Nolan.getInstance();
+            Event.addLocalListener(EventDefine.PlayerEnterCowLevel, (sceneId: number) => {
+                this._currentCowLevelId = sceneId
+                this.activeMode.showInteractionUI();
+            });
         }
     }
 
     showUI(): void {
-        // UIService.getUI(MainPanel)?.showTransferBtn(this.activeMode.clickToStartInteraction);
+        UIService.getUI(MainPanel)?.switchToCowLevel(this.activeMode.clickToStartInteraction, this.respawn);
     }
 
     hideUI(): void {
-        // UIService.getUI(MainPanel)?.showMapBtn();
+        UIService.getUI(MainPanel)?.switchToTransferLevel();
+    }
+
+    respawn(): void {
+        if (this._currentCowLevelId) {
+            Player.localPlayer.character.worldTransform.position = GameConfig.Scene.getElement(this._currentCowLevelId).bornLocation;
+        }
     }
 
     protected transferPlayer = () => {
@@ -109,6 +122,8 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
                     }
                 }
             }
-        })
+        });
+
+
     }
 }

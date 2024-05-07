@@ -19,6 +19,7 @@ import { PortalTriggerWithProgress } from "./PortalTriggerWithProgress";
 import EnvironmentManager from "./EnvironmentManager";
 import { EventDefine } from "../../const/EventDefine";
 import UnifiedRoleController from "../../module/role/UnifiedRoleController";
+import MainPanel from "../../ui/main/MainPanel";
 
 enum Destination {
     anyCowLevel = 1,
@@ -104,6 +105,7 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
                         duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
                         only: true,
                     });
+                    UIService.getUI(MainPanel)?.backToMainScene();
                 }
                 break;
             case Destination.anyCowLevel:
@@ -133,6 +135,7 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
                                 duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
                                 only: true,
                             });
+                            Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
                         });
                     });
                 }

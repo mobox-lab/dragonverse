@@ -146,6 +146,8 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                                 this.gameObject.gameObjectId
                             );
                             this.activeMode.activate = true;
+
+                            Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
                         });
                     });
                 })
@@ -217,7 +219,7 @@ AddGMCommand("传送奶牛关", (player, value) => {
         );
     }
 
-
+    Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
     //改变天空盒
     EnvironmentManager.getInstance().setEnvironment(scene.id);
     //显示场景名
