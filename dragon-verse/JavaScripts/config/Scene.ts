@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","name","bornLocation","cloudColor","cloudDensity","cloudOpacity","cloudSpeed","cloudTextureID","cloudVisible","moonColor","moonIntensity","moonSize","moonTextureID","moonVisible","preset","skyDomeBottomColor","skyDomeBaseColor","skyDomeGradientEnabled","SkyDomeHorizontalFallOff","skyDomeIntensity","skyDomeMiddleColor","skyDomeTextureID","skyDomeTopColor","starIntensity","starDensity","starTextureID","starVisible","sunColor","sunIntensity","sunSize","sunTextureID","sunVisible","yawAngle"],["","Language","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""],[1,"Main_Scene_Name1",new mw.Vector(7983.23,1689.94,297205.16),new mw.Vector4(234,234,255,1),1,1,0.5,"178196",1,new mw.Vector4(255,255,255,1),5,19.41,"95624",1,0,new mw.Vector4(186,208,243,1),new mw.Vector4(188,188,188,1),1,20,1.17,new mw.Vector4(109,162,225,1),"195714",new mw.Vector4(59,117,198,1),0.68,26.14,null,0,new mw.Vector4(255,226,182,1),40,9,"184494",0,0],[2,"Main_Scene_Name2",new mw.Vector(601928.06,598676.88,7547.03),new mw.Vector4(255,196,149,1),1,0.5,0,"28450",1,new mw.Vector4(255,255,255,1),1,10,"95626",0,0,new mw.Vector4(255,204,152,1),new mw.Vector4(255,255,255,1),1,3,1,new mw.Vector4(225,184,195,1),"114028",new mw.Vector4(100,105,198,1),1,10,"14307",0,new mw.Vector4(255,227,156,1),20,6,"163437",1,0],[3,"Main_Scene_Name3",new mw.Vector(100459,993107.06,6829.08),new mw.Vector4(184,198,255,1),1,1,0,"28450",1,new mw.Vector4(255,255,255,1),5,19.41,"95624",0,0,new mw.Vector4(161,183,243,1),new mw.Vector4(255,255,255,1),1,5,1,new mw.Vector4(103,156,246,1),"114028",new mw.Vector4(35,90,231,1),1,10,null,0,new mw.Vector4(255,226,182,1),1,10,"184494",1,0],[4,"Main_Scene_Name4",new mw.Vector(999049.81,17085.43,5191.43),new mw.Vector4(255,225,204,1),1,0,0.5,"178196",1,new mw.Vector4(255,255,255,1),5,19.41,"95624",0,0,new mw.Vector4(255,235,215,1),new mw.Vector4(188,188,188,1),1,3,1,new mw.Vector4(225,184,195,1),"59838",new mw.Vector4(59,117,198,1),1,10,null,0,new mw.Vector4(255,227,156,1),20,6,"184494",1,0],[5,"Main_Scene_Name5",new mw.Vector(198270.59,101007.19,627.89),new mw.Vector4(228,234,255,1),1,1,0,"28450",1,new mw.Vector4(255,255,255,1),5,19.41,"95624",0,0,new mw.Vector4(186,208,243,1),new mw.Vector4(188,188,188,188),1,20,1.17,new mw.Vector4(154,178,243,1),"195714",new mw.Vector4(49,81,187,1),1,10,null,0,new mw.Vector4(255,226,182,1),40,9,"184494",1,0],[6,"Main_Scene_Name6",new mw.Vector(498676.69,50463.05,47427.00),new mw.Vector4(207,216,255,1),1,0,0.5,"178196",0,new mw.Vector4(192,96,141,1),2,0,"95624",1,0,new mw.Vector4(192,96,141,1),new mw.Vector4(255,207,255,1),1,5.07,2,new mw.Vector4(99,84,103,1),"114028",new mw.Vector4(0,0,0,1),0.72,14.6,"14307",1,new mw.Vector4(255,226,182,1),40,9,"184494",0,0]];
+const EXCELDATA:Array<Array<any>> = [["id","name","bornLocation"],["","Language",""],[1,"Main_Scene_Name",null],[2,"Main_Scene_Name1",new mw.Vector(7983.23,1689.94,297205.16)],[3,"Main_Scene_Name2",new mw.Vector(601928.06,598676.88,7547.03)],[4,"Main_Scene_Name3",new mw.Vector(100459,993107.06,6829.08)],[5,"Main_Scene_Name4",new mw.Vector(999049.81,17085.43,5191.43)],[6,"Main_Scene_Name5",new mw.Vector(198270.59,101007.19,627.89)],[7,"Main_Scene_Name6",new mw.Vector(498676.69,50463.05,47427.00)]];
 export interface ISceneElement extends IElementBase{
  	/**undefined*/
 	id:number
@@ -7,74 +7,6 @@ export interface ISceneElement extends IElementBase{
 	name:string
 	/**出生点*/
 	bornLocation:mw.Vector
-	/**云颜色，rgba范围[0，1]*/
-	cloudColor:mw.Vector4
-	/**云密度[0，1]*/
-	cloudDensity:number
-	/**云透明度[0，1]*/
-	cloudOpacity:number
-	/**云速度[0，1]*/
-	cloudSpeed:number
-	/**云贴图guid*/
-	cloudTextureID:string
-	/**云是否可见（0：不可见，1：可见）*/
-	cloudVisible:number
-	/**月亮颜色*/
-	moonColor:mw.Vector4
-	/**月亮亮度[0，2000]*/
-	moonIntensity:number
-	/**月亮大小[0，100]*/
-	moonSize:number
-	/**月亮贴图*/
-	moonTextureID:string
-	/**是否开启月亮（0：不可见，1：可见）*/
-	moonVisible:number
-	/**天空盒预设
-清晨（二次元）：0
-中午（二次元）：1
-黄昏（二次元）：2
-夜晚（二次元）：3
-清晨（LowPoly）：4
-中午（LowPoly）：5
-黄昏（LowPoly）：6
-夜晚（LowPoly）：7*/
-	preset:number
-	/**天空下层颜色*/
-	skyDomeBottomColor:mw.Vector4
-	/**天空盒整体颜色*/
-	skyDomeBaseColor:mw.Vector4
-	/**是否开启渐变效果*/
-	skyDomeGradientEnabled:number
-	/**地平线渐出值[1，20]*/
-	SkyDomeHorizontalFallOff:number
-	/**天空盒亮度[0，100]*/
-	skyDomeIntensity:number
-	/**天空中层颜色*/
-	skyDomeMiddleColor:mw.Vector4
-	/** 天空盒贴图*/
-	skyDomeTextureID:string
-	/**天空顶层颜色*/
-	skyDomeTopColor:mw.Vector4
-	/**星星亮度[0，1]*/
-	starIntensity:number
-	/**星星密度[0，100]*/
-	starDensity:number
-	/**星星贴图资源ID*/
-	starTextureID:string
-	/**是否开启星星*/
-	starVisible:number
-	/**太阳颜色*/
-	sunColor:mw.Vector4
-	/**太阳光亮度[0，2000]*/
-	sunIntensity:number
-	/**太阳大小[0，100]*/
-	sunSize:number
-	/**太阳贴图资源ID*/
-	sunTextureID:string
-	/**是否开启太阳*/
-	sunVisible:number
-	/**天空盒贴图旋转（度）[0，360]*/
-	yawAngle:number
  } 
 export class SceneConfig extends ConfigBase<ISceneElement>{
 	constructor(){

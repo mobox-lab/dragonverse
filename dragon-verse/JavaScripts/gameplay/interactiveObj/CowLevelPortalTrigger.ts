@@ -19,8 +19,9 @@ import CutScenePanel from "../../ui/jump-game/CutScenePanel";
 import MainPanel from "../../ui/main/MainPanel";
 import { ActivateByUIAndTrigger, ActivateMode } from "./ActiveMode";
 import { PortalTrigger } from "./PortalTrigger";
-import SkyBoxManager from "./SkyBoxManager";
+import EnvironmentManager from "./EnvironmentManager";
 import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjModule";
+import JumpGameTransition_Generate from "../../ui-generate/jumpGame/JumpGameTransition_generate";
 
 export default class CowLevelPortalTrigger extends PortalTrigger {
     @Property({
@@ -110,19 +111,29 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                 .union()
                 .call(() => {
                     //随机奶牛关
-                    let cowLevel = Math.floor(Math.random() * GameServiceConfig.COW_LEVEL_SCENE_INDEX.length);
-                    let sceneIndex = GameServiceConfig.COW_LEVEL_SCENE_INDEX[cowLevel];
-                    let scene = GameConfig.Scene.getElement(sceneIndex);
+                    let scenes = GameConfig.Scene.getAllElement();
+                    let cowLevelScene = scenes.map((element) => {
+                        if (
+                            element.id !== GameServiceConfig.MAIN_SCENE_ID &&
+                            element.id !== GameServiceConfig.TRANSFER_SCENE_ID
+                        ) {
+                            return element;
+                        }
+                    });
+
+                    let cowLevel = Math.floor(Math.random() * cowLevelScene.length);
+                    let scene = cowLevelScene[cowLevel];
                     //播tips
-                    let tips = GameConfig.TipsPlaylist.findElement("environment", sceneIndex);
+                    let tips = GameConfig.TipsPlaylist.findElement("environment", scene.id);
                     if (tips) GlobalTips.getInstance().showGlobalTips(i18n.lan(tips.content));
                     TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
                         //显示一个转场ui动画
-                        UIService.show(CutScenePanel, () => {
+                        this.showTransitionAnimation(() => {
                             //传送
                             this.transferPlayer(Player.localPlayer.character, scene.bornLocation);
                             //改变天空盒
-                            SkyBoxManager.getInstance().setSkyBox(sceneIndex);
+                            EnvironmentManager.getInstance().setEnvironment(scene.id);
+                            //显示场景名
                             GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
                                 duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
                                 only: true,
@@ -170,8 +181,39 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
             }
         }
     }
+
+    private showTransitionAnimation(callBack: () => void) {
+        let ui = UIService.show(JumpGameTransition_Generate);
+        actions
+            .tween(ui.bImage)
+            .set({ renderOpacity: 0 })
+            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 1 })
+            .call(() => {
+                callBack();
+            })
+            .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
+            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
+            .call(() => {
+                UIService.hide(JumpGameTransition_Generate);
+            })
+            .union()
+            .start();
+    }
 }
 
-AddGMCommand("tips", () => {
-    GlobalTips.getInstance().showGlobalTips("i18n.lan(scene.name)", { duration: 2e3, only: true });
+AddGMCommand("传送奶牛关", (player, value) => {
+    let scene = GameConfig.Scene.getElement(value);
+    player.character.worldTransform = new Transform(
+        scene.bornLocation,
+        player.character.worldTransform.rotation,
+        player.character.worldTransform.scale
+    );
+
+    //改变天空盒
+    EnvironmentManager.getInstance().setEnvironment(scene.id);
+    //显示场景名
+    GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
+        duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
+        only: true,
+    });
 });
