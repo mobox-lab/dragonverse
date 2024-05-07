@@ -26,7 +26,7 @@ enum Destination {
     // TransferScene = 3,
 }
 
-export class TransferPortalTrigger extends PortalTriggerWithProgress {
+export default class TransferPortalTrigger extends PortalTriggerWithProgress {
     @Property({
         displayName: "传送地点",
         group: "Config-Destination",

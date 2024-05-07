@@ -11,6 +11,8 @@ interface IInteractiveObj {
     someOneStopInteractionInServer(playerId: number): void;
     someOneStopInteractionInClient(playerId: number): void;
 }
+
+@Component
 export abstract class BaseInteractiveObj extends mw.Script implements IInteractiveObj {
     protected abstract startInteractionInServer(playerId: number): void;
     protected abstract startInteractionInClient(playerId: number): void;
