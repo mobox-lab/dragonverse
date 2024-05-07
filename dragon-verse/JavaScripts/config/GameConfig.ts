@@ -1,4 +1,5 @@
 import {ConfigBase, IElementBase} from "./ConfigBase";
+import {AnimalEcologyConfig} from "./AnimalEcology";
 import {AreaConfig} from "./Area";
 import {BagItemConfig} from "./BagItem";
 import {CharacterfulDragonConfig} from "./CharacterfulDragon";
@@ -42,6 +43,7 @@ export class GameConfig{
 		}
 		return this.configMap.get(ConfigClass.name) as T;
 	}
+	public static get AnimalEcology():AnimalEcologyConfig{ return this.getConfig(AnimalEcologyConfig) };
 	public static get Area():AreaConfig{ return this.getConfig(AreaConfig) };
 	public static get BagItem():BagItemConfig{ return this.getConfig(BagItemConfig) };
 	public static get CharacterfulDragon():CharacterfulDragonConfig{ return this.getConfig(CharacterfulDragonConfig) };

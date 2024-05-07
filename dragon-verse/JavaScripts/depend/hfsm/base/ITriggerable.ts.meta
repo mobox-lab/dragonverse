@@ -1,10 +1,1 @@
-{
-  "ver": "1.1.0",
-  "uuid": "2f72886d-1481-4488-b333-a2fa36219001",
-  "importer": "typescript",
-  "isPlugin": false,
-  "loadPluginInWeb": true,
-  "loadPluginInNative": true,
-  "loadPluginInEditor": false,
-  "subMetas": {}
-}
+﻿{"Guid":"3D51A3EC46DC4F4893B30DBE93A9F84A","Size":0,"sha1":"","Name":"ITriggerable.ts","Type":"JavaScript","Path":"../../../../MetaWorldSaved/Saved/MetaWorld/Project/Edit/DragonVerse/dragon-verse/JavaScripts/depend/hfsm/base/ITriggerable.ts","Icon":"","URL":"","Version":"1","Language":"","SortId":0,"TimeStamp":0,"ExtraParam":null}
