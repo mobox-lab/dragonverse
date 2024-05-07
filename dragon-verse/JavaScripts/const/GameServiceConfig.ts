@@ -52,7 +52,7 @@ export default class GameServiceConfig {
     /**
      * 中转关在场景里的id
      */
-    public static readonly TRANSFER_SCENE_ID = 7;
+    public static readonly TRANSFER_SCENE_ID = 8;
     /**
      * 转场动画渐显时间（毫秒）
      */

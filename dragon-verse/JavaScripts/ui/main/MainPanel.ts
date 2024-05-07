@@ -351,8 +351,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1,
         );
@@ -366,8 +366,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1,
         );
@@ -384,11 +384,11 @@ export default class MainPanel extends MainPanel_Generate {
         });
 
         const dist = [
-            {dist: 0.3, duration: 0.1e3},
-            {dist: 0.4, duration: 0.1e3},
-            {dist: 0.2, duration: 0.1e3},
-            {dist: 0.5, duration: 0.1e3},
-            {dist: 0.3, duration: 0.1e3},
+            { dist: 0.3, duration: 0.1e3 },
+            { dist: 0.4, duration: 0.1e3 },
+            { dist: 0.2, duration: 0.1e3 },
+            { dist: 0.5, duration: 0.1e3 },
+            { dist: 0.3, duration: 0.1e3 },
         ];
         this._effectImgTasks.push(
             Waterween.group(
@@ -1103,6 +1103,30 @@ export default class MainPanel extends MainPanel_Generate {
 
     public enableJump(enable: boolean) {
         this.btnJump.enable = enable;
+    }
+
+    public switchToCowLevel(transferCallBack: () => void, respawnCallBack: () => void) {
+        this.mapCanvas.visibility = SlateVisibility.Collapsed;
+        this.transferCanvas.visibility = SlateVisibility.Visible;
+        this.btnCow.onClicked.clear();
+        this.btnCow.onClicked.add(transferCallBack);
+
+        this.btnReset.onClicked.clear();
+        this.btnReset.onClicked.add(respawnCallBack);
+    }
+
+    public switchToTransferLevel() {
+        this.resetCanvas.visibility = SlateVisibility.Collapsed;
+        this.transferCanvas.visibility = SlateVisibility.Collapsed;
+        this.mapCanvas.visibility = SlateVisibility.Collapsed;
+    }
+
+    public backToMainScene() {
+        this.resetCanvas.visibility = SlateVisibility.Visible;
+        this.transferCanvas.visibility = SlateVisibility.Collapsed;
+        this.mapCanvas.visibility = SlateVisibility.Visible;
+        this.btnReset.onClicked.clear();
+        this.btnReset.onClicked.add(respawn);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

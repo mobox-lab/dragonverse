@@ -337,6 +337,27 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.textSound_Internal
 	}
+	private transferCanvas_Internal: mw.Canvas
+	public get transferCanvas(): mw.Canvas {
+		if(!this.transferCanvas_Internal&&this.uiWidgetBase) {
+			this.transferCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/transferCanvas') as mw.Canvas
+		}
+		return this.transferCanvas_Internal
+	}
+	private btnCow_Internal: mw.StaleButton
+	public get btnCow(): mw.StaleButton {
+		if(!this.btnCow_Internal&&this.uiWidgetBase) {
+			this.btnCow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/transferCanvas/btnCow') as mw.StaleButton
+		}
+		return this.btnCow_Internal
+	}
+	private textCow_Internal: mw.TextBlock
+	public get textCow(): mw.TextBlock {
+		if(!this.textCow_Internal&&this.uiWidgetBase) {
+			this.textCow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/transferCanvas/textCow') as mw.TextBlock
+		}
+		return this.textCow_Internal
+	}
 	private cnvInteract_Internal: mw.Canvas
 	public get cnvInteract(): mw.Canvas {
 		if(!this.cnvInteract_Internal&&this.uiWidgetBase) {
@@ -467,6 +488,9 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.btnSound);
         
 	
+        this.initLanguage(this.btnCow);
+        
+	
         // 静态文本按钮多语言
         
         // 文本多语言
@@ -496,6 +520,9 @@ export default class MainPanel_Generate extends UIScript {
         
 	
         this.initLanguage(this.textSound)
+        
+	
+        this.initLanguage(this.textCow)
         
 	
         this.initLanguage(this.txtInteractContent)
@@ -549,6 +576,9 @@ export default class MainPanel_Generate extends UIScript {
         overrideBubblingWidget(this.textSound);
         
 	
+        overrideBubblingWidget(this.textCow);
+        
+	
         overrideBubblingWidget(this.txtInteractContent);
         
 	
@@ -590,6 +620,9 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.btnSound);
         
 	
+        this.unregisterLanKey(this.btnCow);
+        
+	
         // 隐藏文本按钮多语言
         
         // 文本多语言
@@ -619,6 +652,9 @@ export default class MainPanel_Generate extends UIScript {
         
 	
         this.unregisterLanKey(this.textSound)
+        
+	
+        this.unregisterLanKey(this.textCow)
         
 	
         this.unregisterLanKey(this.txtInteractContent)
