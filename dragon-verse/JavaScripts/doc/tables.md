@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v1.0.5  
+v1.0.7  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -26,7 +26,7 @@ by LviatYi
 点集可以作为 **2D 形状** 或 **3D 点集合**：
 
 - **2D 形状**
-- 即当配表数据形为 $a_1|a_2|...|a_m||b_1|b_2|...|b_n$ ，其中 $m,n$ 皆为偶数时。
+- 即当配表数据形为 $a_1|a_2|...|a_m||b_1|b_2|...|b_n$ ，其中 $m, n$ 皆为偶数时。
   - 设区域 $A$ 由 2D 形状 $S_1$ $S_2$ 构成，则:
   - $S_1$ 所包含点的数量为 $\frac m2$
   - $S_2$ 所包含点的数量为 $\frac n2$
@@ -308,6 +308,29 @@ $$
 - Quest 物体 Guid
   - 构建场景时 需将 Quest 预制体拖入场景，并填入其 Guid。
 
+## 动物生态 AnimalEcology
+
+|       Name       | PropName            | Type   | Desc               |
+| :--------------: | :------------------ | ------ | ------------------ |
+|     动物 ID      | id                  | int    |                    |
+|       名称       | name                | string |                    |
+|     生成区域     | generationAreas     | int[]  | 目前仅支持点集区域 |
+| 生成起始时间 ms  | startGenerationTime | int    |                    |
+| 单次生成间隔 ms  | generationInterval  | int    |                    |
+|   单次生成数量   | generationCount     | int    |                    |
+| 自动消失时长 ms  | fadeTime            | int    |                    |
+|     运动范围     | movementRadius      | int    |                    |
+| 寻路范围可采样值 | pathFindRadius      | int[]  |                    |
+| 速度可采样值 m/s | speed               | int[]  |                    |
+| 休憩时长可采样值 | restTime            | int[]  |                    |
+|   预制体 Guid    | prefabGuid          | string |                    |
+
+- **movementRadius** 以生成区域为中心 在运动范围内的寻路点有效。
+- **pathFindRadius** 自动寻路的距离 从中采样下次运动的目标点。
+- **speed** 运动速度 从中采样下次运动的速度。
+- **restTime** 休憩时长 从中采样下次休憩的时长。休憩完成后开始采样下一个运动采样。
+  - 采样有效则进行下一次运动。
+  - 否则进行下一次休憩。
+
 [JetbrainsMonoNerdFont]: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip@fallbackFont
 [SarasaMonoSC]: https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
-

@@ -1,10 +1,1 @@
-{
-  "ver": "1.1.0",
-  "uuid": "898a1e45-7a71-48db-b507-1c398adaaa7d",
-  "importer": "typescript",
-  "isPlugin": false,
-  "loadPluginInWeb": true,
-  "loadPluginInNative": true,
-  "loadPluginInEditor": false,
-  "subMetas": {}
-}
+﻿{"Guid":"B6EDE4C64759F287E7D41BADDABA2907","Size":0,"sha1":"","Name":"ExceptionFormatter.ts","Type":"JavaScript","Path":"../../../../MetaWorldSaved/Saved/MetaWorld/Project/Edit/DragonVerse/dragon-verse/JavaScripts/depend/hfsm/exceptions/ExceptionFormatter.ts","Icon":"","URL":"","Version":"1","Language":"","SortId":0,"TimeStamp":0,"ExtraParam":null}
