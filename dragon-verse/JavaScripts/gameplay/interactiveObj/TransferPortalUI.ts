@@ -2,12 +2,11 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-05-06 18:28:34
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-05-07 18:47:10
+ * @LastEditTime : 2024-05-07 19:19:58
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\TransferPortalUI.ts
  * @Description  : 奶牛关去中转关交互物
  */
 
-import PlayerControllerUI from "../../../Plugins/animation-editor/Editor/JavaScripts/ui/PlayerControllerUI";
 import { GameConfig } from "../../config/GameConfig";
 import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
@@ -79,15 +78,15 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
         }
     }
 
-    showUI(): void {
+    showUI = () => {
         UIService.getUI(MainPanel)?.switchToCowLevel(this.activeMode.clickToStartInteraction, this.respawn);
     }
 
-    hideUI(): void {
+    hideUI = () => {
         UIService.getUI(MainPanel)?.switchToTransferLevel();
     }
 
-    respawn(): void {
+    respawn = () => {
         if (this._currentCowLevelId) {
             Player.localPlayer.character.worldTransform.position = GameConfig.Scene.getElement(this._currentCowLevelId).bornLocation;
         }
