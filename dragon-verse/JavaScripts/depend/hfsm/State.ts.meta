@@ -1,10 +1,1 @@
-{
-  "ver": "1.1.0",
-  "uuid": "01bebb23-ffe2-4230-ad92-f0e329328002",
-  "importer": "typescript",
-  "isPlugin": false,
-  "loadPluginInWeb": true,
-  "loadPluginInNative": true,
-  "loadPluginInEditor": false,
-  "subMetas": {}
-}
+﻿{"Guid":"CF29CA4D4789CD94EB176DAF971A7D0E","Size":0,"sha1":"","Name":"State.ts","Type":"JavaScript","Path":"../../../../MetaWorldSaved/Saved/MetaWorld/Project/Edit/DragonVerse/dragon-verse/JavaScripts/depend/hfsm/State.ts","Icon":"","URL":"","Version":"1","Language":"","SortId":0,"TimeStamp":0,"ExtraParam":null}

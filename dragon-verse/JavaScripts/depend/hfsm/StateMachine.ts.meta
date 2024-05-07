@@ -1,10 +1,1 @@
-{
-  "ver": "1.1.0",
-  "uuid": "83afb400-1415-4186-851a-a2da7557fcac",
-  "importer": "typescript",
-  "isPlugin": false,
-  "loadPluginInWeb": true,
-  "loadPluginInNative": true,
-  "loadPluginInEditor": false,
-  "subMetas": {}
-}
+﻿{"Guid":"0C43F8A0400D336D5A7ED28F18A987B8","Size":0,"sha1":"","Name":"StateMachine.ts","Type":"JavaScript","Path":"../../../../MetaWorldSaved/Saved/MetaWorld/Project/Edit/DragonVerse/dragon-verse/JavaScripts/depend/hfsm/StateMachine.ts","Icon":"","URL":"","Version":"1","Language":"","SortId":0,"TimeStamp":0,"ExtraParam":null}

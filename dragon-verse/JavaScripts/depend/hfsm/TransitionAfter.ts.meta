@@ -1,10 +1,1 @@
-{
-  "ver": "1.1.0",
-  "uuid": "cda7ed0a-d97a-4f4c-b5ad-0f1d29883194",
-  "importer": "typescript",
-  "isPlugin": false,
-  "loadPluginInWeb": true,
-  "loadPluginInNative": true,
-  "loadPluginInEditor": false,
-  "subMetas": {}
-}
+﻿{"Guid":"AEC30A044E1CD51BF1441EB331BD55F6","Size":0,"sha1":"","Name":"TransitionAfter.ts","Type":"JavaScript","Path":"../../../../MetaWorldSaved/Saved/MetaWorld/Project/Edit/DragonVerse/dragon-verse/JavaScripts/depend/hfsm/TransitionAfter.ts","Icon":"","URL":"","Version":"1","Language":"","SortId":0,"TimeStamp":0,"ExtraParam":null}
