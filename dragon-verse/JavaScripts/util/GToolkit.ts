@@ -15,7 +15,7 @@
  * @see https://github.com/LviatYi/MetaWorldNPT/tree/main/MetaWorldNPT/JavaScripts/util
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 31.9.7
+ * @version 31.9.8
  * @beta
  */
 class GToolkit {
@@ -758,7 +758,7 @@ class GToolkit {
      * @return {RandomGenerator}
      */
     public randomGenerator(length: number | number[] = 3): RandomGenerator {
-        return new RandomGenerator().random(3, this.defaultRandomFunc);
+        return new RandomGenerator().random(length, this.defaultRandomFunc);
     }
 
     /**
@@ -2843,6 +2843,16 @@ export class RandomGenerator {
         for (let i = 0; i < this._result.length; i++) {
             this._result[i] = randomFunc() * (isLength ? 1 : length[i]);
         }
+        return this;
+    }
+
+    /**
+     * generate random point on unit circle.
+     * @return {this}
+     */
+    public randomCircle(): this {
+        let r = Math.random() * Math.PI * 2;
+        this._result = [Math.cos(r), Math.sin(r)];
         return this;
     }
 
