@@ -17,21 +17,23 @@ import JumpGameTransition_Generate from "../../ui-generate/jumpGame/JumpGameTran
 import { ActivateByTrigger, ActivateMode, TriggerType } from "./ActiveMode";
 import { PortalTriggerWithProgress } from "./PortalTriggerWithProgress";
 import EnvironmentManager from "./EnvironmentManager";
+import { EventDefine } from "../../const/EventDefine";
+import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 
 enum Destination {
     anyCowLevel = 1,
     mainScene = 2,
-    TransferScene = 3,
+    // TransferScene = 3,
 }
 
-export class TransferPortalTrigger extends PortalTriggerWithProgress {
+export default class TransferPortalTrigger extends PortalTriggerWithProgress {
     @Property({
         displayName: "传送地点",
         group: "Config-Destination",
         enumType: {
             任意奶牛关: Destination.anyCowLevel,
             主场景: Destination.mainScene,
-            中转关: Destination.TransferScene,
+            // 中转关: Destination.TransferScene,
         },
     })
     public portalDestination: number = 2;
@@ -72,26 +74,35 @@ export class TransferPortalTrigger extends PortalTriggerWithProgress {
 
     activeMode: ActivateMode;
 
-    onStartPortalInServer(playerId: number): void {}
-    onStartPortalInClient(): void {}
-    onInterruptProgressInClient(): void {}
-    onInterruptProgressInServer(playerId: number): void {}
+    onStartPortalInServer(playerId: number): void { }
+    onStartPortalInClient(): void { }
+    onInterruptProgressInClient(): void { }
+    onInterruptProgressInServer(playerId: number): void { }
     onProgressDoneInClient(): void {
         let pos: Vector;
         switch (this.portalDestination) {
-            case Destination.TransferScene:
-                {
-                    pos = GameConfig.Scene.getElement(GameServiceConfig.TRANSFER_SCENE_ID).bornLocation;
-                    this.showTransitionAnimation(() => {
-                        this.transferPlayer(Player.localPlayer.character, pos);
-                    });
-                }
-                break;
+            // case Destination.TransferScene:
+            //     {
+            //         pos = GameConfig.Scene.getElement(GameServiceConfig.TRANSFER_SCENE_ID).bornLocation;
+            //         this.showTransitionAnimation(() => {
+            //             this.transferPlayer(Player.localPlayer.character, pos);
+            //         });
+            //     }
+            //     break;
             case Destination.mainScene:
                 {
-                    pos = GameConfig.Scene.getElement(GameServiceConfig.MAIN_SCENE_ID).bornLocation;
-                    this.showTransitionAnimation(() => {
-                        this.transferPlayer(Player.localPlayer.character, pos);
+                    let scene = GameConfig.Scene.getElement(1);
+                    showTransitionAnimation(() => {
+                        Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
+                        Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
+                        Player.localPlayer.getPlayerState(UnifiedRoleController)?.respawn();
+                    });
+                    //改变天空盒
+                    EnvironmentManager.getInstance().setEnvironment(scene.id);
+                    //显示场景名
+                    GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
+                        duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
+                        only: true,
                     });
                 }
                 break;
@@ -113,7 +124,7 @@ export class TransferPortalTrigger extends PortalTriggerWithProgress {
                     let tips = GameConfig.TipsPlaylist.findElement("environment", scene.id);
                     if (tips) GlobalTips.getInstance().showGlobalTips(i18n.lan(tips.content));
                     TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
-                        this.showTransitionAnimation(() => {
+                        showTransitionAnimation(() => {
                             //传送
                             this.transferPlayer(Player.localPlayer.character, scene.bornLocation);
                             //改变天空盒
@@ -130,23 +141,9 @@ export class TransferPortalTrigger extends PortalTriggerWithProgress {
                 break;
         }
     }
-    onProgressDoneInServer(playerId: number): void {}
+    onProgressDoneInServer(playerId: number): void { }
 
-    private showTransitionAnimation(callBack: () => void) {
-        let ui = UIService.show(JumpGameTransition_Generate);
-        actions
-            .tween(ui.bImage)
-            .set({ renderOpacity: 0 })
-            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 1 })
-            .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
-            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
-            .call(() => {
-                UIService.hide(JumpGameTransition_Generate);
-                callBack();
-            })
-            .union()
-            .start();
-    }
+
 
     protected transferPlayer(character: Character, location: Vector) {
         Log4Ts.log(TransferPortalTrigger, `player enter. playerId: ${character?.player?.playerId ?? "null"}`);
@@ -175,4 +172,20 @@ export class TransferPortalTrigger extends PortalTriggerWithProgress {
             }
         }
     }
+}
+
+export function showTransitionAnimation(callBack: () => void) {
+    let ui = UIService.show(JumpGameTransition_Generate);
+    actions
+        .tween(ui.bImage)
+        .set({ renderOpacity: 0 })
+        .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 1 })
+        .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
+        .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
+        .call(() => {
+            UIService.hide(JumpGameTransition_Generate);
+            callBack();
+        })
+        .union()
+        .start();
 }

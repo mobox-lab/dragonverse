@@ -101,15 +101,15 @@ export class InteractiveObjModuleC extends ModuleC<InteractiveObjModuleS, null> 
 
     protected onStart(): void {
         //构建四叉树
-        // this._boundary = new Rectangle(-1041, -1098, 6000, 8000);
-        // this._quadTree = new QuadTree(this._boundary, 4);
-        // this._detectingRect = new Rectangle(0, 0, this._detectingRange, this._detectingRange);
+        this._boundary = new Rectangle(-1041, -1098, 6000, 8000);
+        this._quadTree = new QuadTree(this._boundary, 4);
+        this._detectingRect = new Rectangle(0, 0, this._detectingRange, this._detectingRange);
     }
 
-    // public insertInteractionIntoQuadTree(pos: mw.Vector, goGuid: string) {
-    //     let point = new Point(pos.x, pos.y, goGuid);
-    //     this._quadTree.insert(point);
-    // }
+    public insertInteractionIntoQuadTree(pos: mw.Vector, goGuid: string) {
+        let point = new Point(pos.x, pos.y, goGuid);
+        this._quadTree.insert(point);
+    }
 
     registerInteractiveObj(goGuid: string, interactiveObj: BaseInteractiveObj) {
         this._interactiveObjs.set(goGuid, interactiveObj);
@@ -121,25 +121,25 @@ export class InteractiveObjModuleC extends ModuleC<InteractiveObjModuleS, null> 
 
     protected onUpdate(dt: number): void {
         //四叉树没有点就不判断
-        // if (this._quadTree.points.length == 0) return;
-        // if (++this.updateFlag % 10 != 0) return;
-        // // if (!this._needDetectingInteractionUI) return;
-        // //每10帧判断下
-        // this._detectingRect.x = Player.localPlayer.character.worldTransform.position.x;
-        // this._detectingRect.y = Player.localPlayer.character.worldTransform.position.y;
-        // let points = [];
-        // let finalPoints = this._quadTree.query(this._detectingRect, points);
-        // //先show现在的
-        // finalPoints.forEach((point) => {
-        //     this._interactiveObjs.get(point.goGuid).canActivate(true);
-        // });
-        // //再hide不在的
-        // this._lastShowPoints.forEach((point) => {
-        //     if (finalPoints.indexOf(point) == -1) {
-        //         this._interactiveObjs.get(point.goGuid).canActivate(false);
-        //     }
-        // });
-        // this._lastShowPoints = finalPoints;
+        if (this._quadTree.points.length == 0) return;
+        if (++this.updateFlag % 10 != 0) return;
+        // if (!this._needDetectingInteractionUI) return;
+        //每10帧判断下
+        this._detectingRect.x = Player.localPlayer.character.worldTransform.position.x;
+        this._detectingRect.y = Player.localPlayer.character.worldTransform.position.y;
+        let points = [];
+        let finalPoints = this._quadTree.query(this._detectingRect, points);
+        //先show现在的
+        finalPoints.forEach((point) => {
+            this._interactiveObjs.get(point.goGuid).activeMode.activate = true;
+        });
+        //再hide不在的
+        this._lastShowPoints.forEach((point) => {
+            if (finalPoints.indexOf(point) == -1) {
+                this._interactiveObjs.get(point.goGuid).activeMode.activate = false;
+            }
+        });
+        this._lastShowPoints = finalPoints;
     }
 
     public startInteraction(goGuid: string) {

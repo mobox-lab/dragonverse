@@ -1,10 +1,1 @@
-{
-  "ver": "1.1.0",
-  "uuid": "cc133a5b-a541-4fda-b503-f593bf2e1e37",
-  "importer": "typescript",
-  "isPlugin": false,
-  "loadPluginInWeb": true,
-  "loadPluginInNative": true,
-  "loadPluginInEditor": false,
-  "subMetas": {}
-}
+﻿{"Guid":"9EB7986F43E8DFE7B706CAAC98B6DB0A","Size":0,"sha1":"","Name":"StateBase.ts","Type":"JavaScript","Path":"../../../../MetaWorldSaved/Saved/MetaWorld/Project/Edit/DragonVerse/dragon-verse/JavaScripts/depend/hfsm/base/StateBase.ts","Icon":"","URL":"","Version":"1","Language":"","SortId":0,"TimeStamp":0,"ExtraParam":null}
