@@ -263,7 +263,7 @@ export default class NpcBehavior extends mw.Script {
             return;
         }
 
-        return GameConfig.DialogueInteractNode.getElement(talkId)?.content ?? "";
+        return i18n.lan(GameConfig.DialogueInteractNode.getElement(talkId)?.content) ?? "";
     }
 
     /**
