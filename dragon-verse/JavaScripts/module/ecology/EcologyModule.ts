@@ -1,9 +1,6 @@
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import { GameConfig } from "../../config/GameConfig";
-import EcologyAnimal from "./EcologyAnimal";
 import Gtk, { Regulator } from "../../util/GToolkit";
-import AreaManager from "../../gameplay/area/AreaManager";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Balancing from "../../depend/balancing/Balancing";
 import GameServiceConfig from "../../const/GameServiceConfig";
 
