@@ -305,7 +305,7 @@ type AreaData = {
 }
 AddGMCommand("导出", async (player: mw.Player, value: string) => {
     let arr: AreaData[] = [];
-    await getPoints(arr, "282E2C5E");
+    await getPoints(arr, "23963AF6");
     let str = JSON.stringify(arr);
     console.log("areaDatas:" + str);
 

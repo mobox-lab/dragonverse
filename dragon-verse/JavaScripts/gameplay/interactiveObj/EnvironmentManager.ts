@@ -125,6 +125,10 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
         this.setEnvironmentConfig("Fog: fogEnable", config.fogEnable, () => {
             if (Boolean(config.fogEnable)) {
                 Fog.enabled = Boolean(config.fogEnable);
+                //预设得先设置，不然会覆盖后面的设置
+                this.setEnvironmentConfig("Fog: fogPreset", config.fogPreset, () => {
+                    Fog.setPreset(config.fogPreset);
+                });
                 this.setEnvironmentConfig("Fog: density", config.density, () => {
                     Fog.density = config.density;
                 });
@@ -152,9 +156,7 @@ export default class EnvironmentManager extends Singleton<EnvironmentManager>() 
                 this.setEnvironmentConfig("Fog: directionalInscatteringStartDistance", config.directionalInscatteringStartDistance, () => {
                     Fog.directionalInscatteringStartDistance = config.directionalInscatteringStartDistance;
                 });
-                this.setEnvironmentConfig("Fog: fogPreset", config.fogPreset, () => {
-                    Fog.setPreset(config.fogPreset);
-                });
+
             } else {
                 Fog.enabled = false;
             }
