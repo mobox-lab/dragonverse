@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v1.0.7  
+v1.0.8  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -111,32 +111,30 @@ x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 
 ### 龙基 Dragon (Base)
 
-|       Name       | PropName           | Type    | Desc   |
-| :--------------: | :----------------- | ------- | ------ |
-|        ID        | Id                 | int     |        |
-|       形象       | Avatar             | string  |        |
-|     元素 ID      | ElementalId        | int     |        |
-|     品质 ID      | QualityId          | int     |        |
-| 生成区域 ID 集合 | AreaIds            | int[]   |        |
-|   首次生成冷却   | FirstGenerateCd    | int     | 秒 Sec |
-|     存在时间     | ExistenceTime      | int     | 秒 Sec |
-|     生成间隔     | GenerationInterval | int     | 秒 Sec |
-|    可捕捉次数    | HitPoint           | int     |        |
-|    翅膀 Guid     | wingGuid           | string  |        |
-|  翅膀 Transform  | wingTransform      | int[][] |        |
+|       Name        | PropName          | Type    | Desc |
+| :---------------: | :---------------- | ------- | ---- |
+|        ID         | Id                | int     |      |
+|       形象        | Avatar            | string  |      |
+|     背包物 ID     | BagId             | int     |      |
+|      元素 ID      | ElementalId       | int     |      |
+|      品质 ID      | QualityId         | int     |      |
+| 龙栖居地 ID 集合  | dragonHabitatIds  | int[]   |      |
+|    可捕捉次数     | HitPoint          | int     |      |
+|     翅膀 Guid     | wingGuid          | string  |      |
+|  翅膀 Transform   | wingTransform     | int[][] |      |
+| 捕捉成功率算法 ID | SuccessRateAlgoId | int     |      |
 
 - 翅膀 Transform
   - 为二维数组，长度为 3.
   - 分别为 位置 旋转 缩放.
 
-### 个性龙 CharacterfulDragon
+## 龙栖居地 DragonHabitat
 
-|       Name        | PropName          | Type | Desc     |
-| :---------------: | :---------------- | ---- | -------- |
-|        ID         | Id                | int  |          |
-|      龙基 Id      | DragonId          | int  | DragonID |
-|     背包物 ID     | BagId             | int  |          |
-| 捕捉成功率算法 ID | SuccessRateAlgoId | int  |          |
+|    Name     | PropName | Type  | Desc |
+| :---------: | :------- | ----- | ---- |
+|     ID      | Id       | int   |      |
+| 所含区域 ID | AreaIds  | int[] |      |
+|  承载容量   | Capacity | int   |      |
 
 ## 采集结果算法 CollectResultAlgo
 

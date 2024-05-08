@@ -4,6 +4,7 @@ import { CompanionController, ICompanionEntityCollection } from "./CompanionCont
 import { CompanionData } from "./CompanionData";
 import { CompanionHelper } from "./CompanionHelper";
 import { CompanionModule_C } from "./CompanionModule_C";
+import ForeignKeyIndexer from "../../const/ForeignKeyIndexer";
 
 export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData> implements ICompanionEntityCollection {
 
@@ -87,7 +88,7 @@ export class CompanionModule_S extends ModuleS<CompanionModule_C, CompanionData>
 
         let controller = this.getController(playerId);
         if (isShowUp) {
-            let dragonId = CompanionHelper.queryDragonIdByBagId(bagId);
+            let dragonId = ForeignKeyIndexer.getInstance().queryDragonByBagId(bagId);
             let config = GameConfig.Dragon.getElement(dragonId);
             if (!config) {
                 throw new Error(`can not find dragon config with id ${dragonId}`);

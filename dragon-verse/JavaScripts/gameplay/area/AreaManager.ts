@@ -231,10 +231,14 @@ export default class AreaManager extends Singleton<AreaManager>() {
                 );
                 break;
             case BagTypes.Dragon:
-                GameConfig.Dragon.getElement(id).areaIds?.forEach(
-                    (areaId) => {
-                        for (let shape of this.innerGetArea(areaId)) {
-                            if (GToolkit.is<IShape3>(shape, "boundingBoxVolume")) points.push(...shape.points());
+                GameConfig.Dragon.getElement(id).dragonHabitatIds?.forEach(
+                    (habitat) => {
+                        const habitatConfig = GameConfig.DragonHabitat.getElement(habitat);
+                        if (GToolkit.isNullOrUndefined(habitatConfig)) return;
+                        for (const areaId of habitatConfig.areaIds) {
+                            for (let shape of this.innerGetArea(areaId)) {
+                                if (GToolkit.is<IShape3>(shape, "boundingBoxVolume")) points.push(...shape.points());
+                            }
                         }
                     },
                 );
