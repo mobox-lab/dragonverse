@@ -3,6 +3,13 @@ import { GameConfig } from "../../config/GameConfig";
 import Gtk, { Regulator } from "../../util/GToolkit";
 import Balancing from "../../depend/balancing/Balancing";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import Area from "../../depend/area/shape/base/IArea";
+import AreaManager from "../../depend/area/AreaManager";
+import Enum = UE.Enum;
+import Enumerable from "linq";
+import EcologyAnimal from "./EcologyAnimal";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { IPoint3 } from "../../depend/area/shape/base/IPoint";
 
 export default class EcologyModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -76,11 +83,22 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
 //#region Member
     private _eventListeners: EventListener[] = [];
 
+    private _areaManager: AreaManager;
+
+    private get aM() {
+        if (!this._areaManager) {
+            this._areaManager = AreaManager.getInstance();
+        }
+        return this._areaManager;
+    }
+
     private _allConfigIds: number[];
 
     private _lastCheckMap: Map<number, number> = new Map();
 
     private _autoGenerationRegulator = new Regulator(GameServiceConfig.ECOLOGY_ANIMAL_AUTO_GENERATION_INTERVAL);
+
+    private _generatedAnimals: EcologyAnimal[] = [];
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -132,7 +150,7 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
 //#region Method
     public autoGenerate() {
         const gun = Balancing.getInstance().tryGetGun("EcologyAnimal Generation");
-        
+
         for (const configId of this._allConfigIds) {
             gun.press(this.getCheckGenerateHandler(configId));
         }
@@ -145,11 +163,35 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
             if (Gtk.isNullOrUndefined(lastTime)) lastTime = 0;
 
             let config = GameConfig.AnimalEcology.getElement(id);
-            if (Date.now() - lastTime > config.fadeTime) {
+            if (Date.now() - lastTime > config.generationInterval) {
                 lastTime = Date.now();
-                //TODO_LviatYi 待接入 AM.
+
+                let targetArea: number = undefined;
+                let iTargetArea = Enumerable
+                    .from(config.generationAreas)
+                    .select(areaId => {
+                        return ({
+                            areaId,
+                            space: this.aM.getAreaPointSetSize(areaId) -
+                                Enumerable.from(this._generatedAnimals)
+                                    .select(item => item.birthPosition)
+                                    .sum(p => this.aM.isPoint3DInAreaByPointSet(areaId, p) ? 1 : 0),
+                        });
+                    })
+                    .where(item => item.space > 0);
+                if (iTargetArea.any()) {
+                    targetArea = iTargetArea.maxBy(item => item.space).areaId;
+                }
+
+                let expectArray: IPoint3[] = Enumerable.from(this._generatedAnimals).select(item => item.birthPosition).toArray();
                 for (let i = 0; i < config.generationCount; ++i) {
-                    // new EcologyAnimal(id,)
+                    let pos = this.aM.getRandomPoint(targetArea, expectArray);
+                    if (!("z" in pos)) {
+                        Log4Ts.warn(EcologyModuleS, `currently only support 3D point as spawn point.`);
+                        return;
+                    }
+                    this._generatedAnimals.push(new EcologyAnimal(id, new mw.Vector(pos.x, pos.y, pos.z)));
+                    expectArray.push(pos);
                 }
                 this._lastCheckMap.set(id, lastTime);
             }

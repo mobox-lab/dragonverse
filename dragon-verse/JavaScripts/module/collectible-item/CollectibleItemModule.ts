@@ -2,12 +2,10 @@ import Enumerable from "linq";
 import UUID from "pure-uuid";
 import { GameConfig } from "../../config/GameConfig";
 import { EventDefine } from "../../const/EventDefine";
-import { BagTypes } from "../../const/ForeignKeyIndexer";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MainPanel from "../../ui/main/MainPanel";
 import GToolkit, { Regulator } from "../../util/GToolkit";
-import { IPoint3 } from "../../util/area/Shape";
 import { BagModuleS } from "../bag/BagModule";
 import CollectibleItem from "./CollectibleItem";
 import CollectibleItemTrigger from "./trigger/CollectibleItemTrigger";
@@ -17,6 +15,7 @@ import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import EventListener = mw.EventListener;
 import AreaManager from "../../depend/area/AreaManager";
 import Gtk from "../../util/GToolkit";
+import { IPoint3 } from "../../depend/area/shape/base/IPoint";
 
 export default class CollectibleItemModuleData extends Subdata {
     //@Decorator.persistence()

@@ -5,7 +5,6 @@ import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GToolkit, { Expression, Regulator } from "../../util/GToolkit";
-import { IPoint3 } from "../../util/area/Shape";
 import { BagModuleS } from "../bag/BagModule";
 import SceneDragon from "./SceneDragon";
 import SceneDragonBehavior from "./SceneDragonBehavior";
@@ -21,6 +20,7 @@ import GlobalTips from "../../depend/global-tips/GlobalTips";
 import AreaManager from "../../depend/area/AreaManager";
 import { GameConfig } from "../../config/GameConfig";
 import Gtk from "../../util/GToolkit";
+import { IPoint3 } from "../../depend/area/shape/base/IPoint";
 
 /**
  * 场景龙 相关事件.
