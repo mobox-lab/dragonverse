@@ -1,10 +1,12 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","name","bornAreaId","sceneEnvId","areaIds","capacity"],["","Language","","","",""],[1,"Main_Scene_Name",22,1,null,0],[2,"Main_Scene_Name1",23,2,[15],7],[3,"Main_Scene_Name2",24,3,[17],7],[4,"Main_Scene_Name3",25,4,[21],7],[5,"Main_Scene_Name4",26,5,[16],7],[6,"Main_Scene_Name5",27,6,[20],7],[7,"Main_Scene_Name6",28,7,[18,19],10],[8,"Main_Scene_Name7",0,8,null,0]];
+const EXCELDATA:Array<Array<any>> = [["id","name","foreshow","bornAreaId","sceneEnvId","areaIds","capacity"],["","Language","","","","",""],[1,"Main_Scene_Name",null,22,1,null,0],[2,"Main_Scene_Name1",null,23,2,[15],7],[3,"Main_Scene_Name2",null,24,3,[17],7],[4,"Main_Scene_Name3",null,25,4,[21],7],[5,"Main_Scene_Name4",null,26,5,[16],7],[6,"Main_Scene_Name5",null,27,6,[20],7],[7,"Main_Scene_Name6",null,28,7,[18,19],10],[8,"Main_Scene_Name7",null,0,8,null,0]];
 export interface ISceneElement extends IElementBase{
  	/**undefined*/
 	id:number
 	/**场景名称（多语言表key）*/
 	name:string
+	/**奶牛关传送播报（多语言表key）*/
+	foreshow:string
 	/**出生点区域 ID*/
 	bornAreaId:number
 	/**场景环境 ID*/
