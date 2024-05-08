@@ -2340,9 +2340,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
      * @private
      */
     private changeRankScore(playerId: number, deltaScore: number) {
-        const player = Player.getPlayer(playerId);
         const data = this.getPlayerData(playerId);
-        if (!player || !data || !deltaScore) return;
+        if (!data || !deltaScore) return;
 
         // TODO: CL - 暂时用 硬编码代替 enum
         // 获取当前属性值
@@ -2381,5 +2380,28 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         // 同步给属性同步模块
         EventManager.instance.call(EAttributeEvents_S.attr_change_s, playerId, 59, data.getAttrValue(59));
+    }
+
+    /**
+     * 购买门票
+     * @param {number} playerId
+     * @private
+     */
+    private payRankTicket(playerId: number) {
+        const player = Player.getPlayer(playerId);
+        const data = this.getPlayerData(playerId);
+        if (!player || !data) return;
+
+        const rankScore = data.getAttrValue(59);
+        const rank = PlayerManager.instance.getRankLevel(rankScore);
+        const rankCfg = GameConfig.Rank.getElement(rank);
+        if (!rankCfg) return;
+
+        this.changeRankScore(playerId, -rankCfg.rankTicket);
+    }
+
+    @Decorator.noReply()
+    public net_payRankTicket() {
+        this.payRankTicket(this.currentPlayerId);
     }
 }

@@ -1,9 +1,9 @@
 import { GameConfig } from "../../config/GameConfig";
 import { EnergyModuleC } from "../../module/Energy/EnergyModule";
 import { PlayerModuleC } from "../../module/PlayerModule/PlayerModuleC";
-import { Attribute } from "../../module/PlayerModule/sub_attribute/AttributeValueObject";
 import { MessageBox } from "../../tool/MessageBox";
 import { InteractLogic_C, InteractLogic_S, InteractObject } from "./InteractObject";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 /**触发模式 */
 enum TriggerMode {
@@ -50,11 +50,12 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         let rankCfg = GameConfig.Rank.getElement(rank);
         if (!rankCfg) return;
         let rankCost = rankCfg.rankTicket;
+        Log4Ts.log(Trigger_C, `rankCost: ${rankCost}`);
         if (rankCost && playerC.rankTicket) {
             let content = StringUtil.format(GameConfig.Language.Tips_rank_3.Value, rankCost);
             MessageBox.showTwoBtnMessage("", content, (res) => {
                 if (res) {
-                    playerC.payRankTicket(rankCost);
+                    playerC.newPayRankTicket();
                     this.interactNext(chara.player.playerId, true);
                 }
                 else {

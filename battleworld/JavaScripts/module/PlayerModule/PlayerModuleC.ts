@@ -6,7 +6,6 @@ import {
     EPlayerEvents_C,
     EPlayerFightState,
     EAttributeEvents_C,
-    EAreaEvents_S,
     EAreaEvent_C,
     EAreaId,
     EAnalyticsEvents,
@@ -57,11 +56,9 @@ import State_Action from "./FSM/PlayerStates/State_Action";
 import TriggerLand from "../LandModule/Land/TriggerLand";
 import { MainDeadMask } from "./UI/MainDeadMask";
 import { CameraManger } from "../../tool/CameraManger";
-import { MascotModuleC } from "../npc/mascotNpc/MascotModuleC";
 import { UnitManager } from "../npc/UnitManager";
 import { SpiderEffect } from "./UI/SpiderEffect";
 import { ERankNoticeType, RankNotice } from "./UI/rank/RankNotice";
-import { BuffManagerC } from "module_buff";
 import { BuffModuleC } from "../buffModule/BuffModuleC";
 
 /**不执行Motion回调的技能状态MotionID*/
@@ -1421,5 +1418,13 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
     public payRankTicket(rankCost: number) {
         this.rankTicket = false;
         this.reduceAttr(Attribute.EnumAttributeType.rankScore, rankCost);
+    }
+
+    /**
+     * 支付段位门票(new)
+     */
+    public newPayRankTicket() {
+        this.rankTicket = false;
+        this.server.net_payRankTicket();
     }
 }
