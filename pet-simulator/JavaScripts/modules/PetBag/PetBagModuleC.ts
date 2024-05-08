@@ -82,8 +82,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     }
 
 		private calcBuff() { 
-			this.server.net_bestFriendBuff(this.localPlayerId);
-			this.server.net_passBuff(this.localPlayerId);
+			this.server.net_bestFriendBuff();
+			this.server.net_passBuff();
 		}
 
     private devInit(): void {
@@ -193,8 +193,6 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 
     /**添加宠物 
      * @param id 宠物id
-     * @param atk 宠物攻击力
-     * @param name 宠物名字
     */
     public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
         await this.server.net_addPet(id, type, addTime);

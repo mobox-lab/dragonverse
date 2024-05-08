@@ -290,7 +290,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
 		/** 计算best friend词条战力 */
-		net_bestFriendBuff(playerId: number) {
+		net_bestFriendBuff() {
+			const playerId = this.currentPlayerId;
 			const playerData = this.getPlayerData(playerId)
 			let arr = playerData.sortBag();
 			let atk = 0;
@@ -324,7 +325,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 		}
 
 		/** 计算通行证词条 *0.5 */
-		net_passBuff(playerId: number) {
+		net_passBuff() {
+			const playerId = this.currentPlayerId;
 			const data = this.getPlayerData(playerId)
 			let arr = data.sortBagByAtk();
 			let atk = 0;
