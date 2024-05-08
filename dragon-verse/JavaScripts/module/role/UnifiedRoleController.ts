@@ -2,7 +2,6 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { AddBuffResult, BuffContainer } from "../../depend/buff/BuffContainer";
 import { CheckMoveBuff } from "../../buffs/CheckMoveBuff";
 import { WetBuff } from "../../buffs/WetBuff";
-import GameStart from "../../GameStart";
 import { EventDefine } from "../../const/EventDefine";
 import BuffBase from "../../depend/buff/Buff";
 import { BuffType } from "../../buffs/BuffType";
@@ -10,7 +9,6 @@ import GToolkit from "../../util/GToolkit";
 import Nolan from "../../depend/nolan/Nolan";
 import { ChatBuff } from "../../buffs/ChatBuff";
 import { MoveForbiddenBuff } from "../../buffs/MoveForbiddenBuff";
-import AreaManager from "../../gameplay/area/AreaManager";
 import RemoteFunction = mw.RemoteFunction;
 import Server = mw.Server;
 import GameServiceConfig from "../../const/GameServiceConfig";
@@ -376,8 +374,8 @@ export default class UnifiedRoleController extends mw.PlayerState {
 
     @RemoteFunction(Server)
     public respawn() {
-        const position = GToolkit.randomArrayItem(AreaManager.getInstance().getRespawnArea());
-        this.character.worldTransform.position = new Vector(position.x, position.y, position.z);
+        // const position = GToolkit.randomArrayItem(AreaManager.getInstance().getRespawnArea());
+        // this.character.worldTransform.position = new Vector(position.x, position.y, position.z);
     }
 
     @RemoteFunction(Server)
