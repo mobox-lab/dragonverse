@@ -1,9 +1,17 @@
+'''
+Author: haoran.zhang haoran.zhang@appshahe.com
+Date: 2024-04-12 18:06:31
+LastEditors: haoran.zhang haoran.zhang@appshahe.com
+LastEditTime: 2024-05-08 13:54:50
+FilePath: \pet-simulator\EditorTools\导出区域工具数据到表.py
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
 import os
 import pandas as pd
 import chardet
 import json
 
-filename = '../../../../Logs/MW_Client.log'  # 替换为您要读取的文件名
+filename = 'E:/Meta031.03/MetaWorldSaved/Saved/Logs/MW_Client.log'  # 替换为您要读取的文件名
 output_filename = 'DropPoint.xlsx'  # 替换为您要导出的文件名
 
 vehicleDataTag = "areaDatas:"  # 载具路径数据关键字
