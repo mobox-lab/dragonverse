@@ -23,8 +23,8 @@ export abstract class PortalTriggerWithProgress extends SharedInteractiveObj {
 
     private readonly _progressTag = "JumpProgress";
 
-    allPlayerEndInteractionInClient(): void {}
-    firstStartInteractionInClient(): void {}
+    allPlayerEndInteractionInClient(): void { }
+    firstStartInteractionInClient(): void { }
 
     private _delayTimer: any;
     protected startInteractionInServer(playerId: number): void {
@@ -75,6 +75,7 @@ export abstract class PortalTriggerWithProgress extends SharedInteractiveObj {
         if (this._isPlayingProgress) {
             actions.tweens.stopAllByTag(this._progressTag);
             this.onInterruptProgressInClient();
+            this._isPlayingProgress = false;
         }
 
         actions
@@ -85,13 +86,14 @@ export abstract class PortalTriggerWithProgress extends SharedInteractiveObj {
             })
             .start();
 
+
         finishCallBack();
     }
 
     /**
      * 播放 Progress 动画.
      */
-    private _isPlayingProgress: boolean = false;
+    protected _isPlayingProgress: boolean = false;
     public playProgress() {
         this._isPlayingProgress = true;
         let progressTask = actions

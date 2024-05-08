@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-05-06 18:28:34
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-05-07 19:19:58
+ * @LastEditTime : 2024-05-08 09:55:18
  * @FilePath     : \DragonVerse\dragon-verse\JavaScripts\gameplay\interactiveObj\TransferPortalUI.ts
  * @Description  : 奶牛关去中转关交互物
  */
@@ -14,6 +14,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Nolan from "../../depend/nolan/Nolan";
 import MainPanel from "../../ui/main/MainPanel";
 import { ActivateByUI, ActivateMode } from "./ActiveMode";
+import { InteractiveObjModuleC } from "./InteractiveObjModule";
 import { PortalTriggerWithProgress } from "./PortalTriggerWithProgress";
 import { showTransitionAnimation } from "./TransferPortalTrigger";
 
@@ -60,6 +61,7 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
     onProgressDoneInClient(): void {
         this.transferPlayer();
         this.activeMode.clickToEndInteraction();
+        this.activeMode.hideInteractionUI();
     }
     onProgressDoneInServer(playerId: number): void {
 
@@ -79,7 +81,15 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
     }
 
     showUI = () => {
-        UIService.getUI(MainPanel)?.switchToCowLevel(this.activeMode.clickToStartInteraction, this.respawn);
+        UIService.getUI(MainPanel)?.switchToCowLevel(this.clickToStartInteraction, this.respawn);
+    }
+
+    private clickToStartInteraction = () => {
+        if (this._isPlayingProgress) {
+            ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this.gameObject.gameObjectId);
+        } else {
+            ModuleService.getModule(InteractiveObjModuleC).startInteraction(this.gameObject.gameObjectId);
+        }
     }
 
     hideUI = () => {

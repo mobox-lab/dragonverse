@@ -1108,6 +1108,7 @@ export default class MainPanel extends MainPanel_Generate {
     public switchToCowLevel(transferCallBack: () => void, respawnCallBack: () => void) {
         this.mapCanvas.visibility = SlateVisibility.Collapsed;
         this.transferCanvas.visibility = SlateVisibility.Visible;
+        this.resetCanvas.visibility = SlateVisibility.Visible;
         this.btnCow.onClicked.clear();
         this.btnCow.onClicked.add(transferCallBack);
 

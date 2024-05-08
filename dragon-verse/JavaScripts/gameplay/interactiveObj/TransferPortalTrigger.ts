@@ -94,18 +94,19 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
                 {
                     let scene = GameConfig.Scene.getElement(1);
                     showTransitionAnimation(() => {
+                        //改变天空盒
+                        EnvironmentManager.getInstance().setEnvironment(scene.id);
+                        //显示场景名
+                        GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
+                            duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
+                            only: true,
+                        });
+                        UIService.getUI(MainPanel)?.backToMainScene();
                         Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
                         Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
                         Player.localPlayer.getPlayerState(UnifiedRoleController)?.respawn();
                     });
-                    //改变天空盒
-                    EnvironmentManager.getInstance().setEnvironment(scene.id);
-                    //显示场景名
-                    GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
-                        duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
-                        only: true,
-                    });
-                    UIService.getUI(MainPanel)?.backToMainScene();
+
                 }
                 break;
             case Destination.anyCowLevel:
