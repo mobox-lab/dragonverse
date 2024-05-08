@@ -344,6 +344,6 @@ AddGMCommand("显示转场", () => {
     UIService.show(CutScenePanel);
 });
 AddGMCommand("添加场景龙", () => { }, (player) => {
-    ModuleService.getModule(SceneDragonModuleS).generate(player.playerId, 1, 1, new Vector(2504, -19290, 1609), new UUID(4).toString());
+    ModuleService.getModule(SceneDragonModuleS)["generate"](player.playerId, 1, 1, new Vector(2504, -19290, 1609), new UUID(4).toString());
 });
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

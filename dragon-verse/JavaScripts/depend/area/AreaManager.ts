@@ -387,29 +387,25 @@ export default class AreaManager extends Singleton<AreaManager>() {
             ?.getAllElement() as unknown as IAreaConfigElement[])
             ?.forEach(
                 item => {
-                    try {
-                        let points3D = item
-                            ?.points
-                            ?.filter(p => p.length == 3)
-                            .map(p => ({
-                                x: p[0],
-                                y: p[1],
-                                z: p[2],
-                            })) ?? undefined;
-                        let points2D = item
-                            ?.points
-                            ?.filter(p => p.length == 2)
-                            .map(p => ({x: p[0], y: p[1]})) ?? undefined;
+                    let points3D = item
+                        ?.points
+                        ?.filter(p => p.length == 3)
+                        .map(p => ({
+                            x: p[0],
+                            y: p[1],
+                            z: p[2],
+                        })) ?? undefined;
+                    let points2D = item
+                        ?.points
+                        ?.filter(p => p.length == 2)
+                        .map(p => ({x: p[0], y: p[1]})) ?? undefined;
 
-                        !Gtk.isNullOrEmpty(points3D) && AreaManager
-                            .getInstance()
-                            .registerPointsToArea(item.id, points3D);
-                        !Gtk.isNullOrEmpty(points2D) && AreaManager
-                            .getInstance()
-                            .registerShapeToArea(item.id, points2D, item?.ordered ?? false);
-                    } catch (e) {
-                    } finally {
-                    }
+                    !Gtk.isNullOrEmpty(points3D) && AreaManager
+                        .getInstance()
+                        .registerPointsToArea(item.id, points3D);
+                    !Gtk.isNullOrEmpty(points2D) && AreaManager
+                        .getInstance()
+                        .registerShapeToArea(item.id, points2D, item?.ordered ?? false);
                 },
             );
 
