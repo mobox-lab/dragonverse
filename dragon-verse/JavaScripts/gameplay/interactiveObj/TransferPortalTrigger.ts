@@ -24,8 +24,8 @@ import AreaManager from "../../depend/area/AreaManager";
 import CowLevelPortalTrigger from "./CowLevelPortalTrigger";
 
 enum Destination {
-    anyCowLevel = 1,
-    mainScene = 2,
+    AnyCowLevel = 1,
+    MainScene = 2,
     // TransferScene = 3,
 }
 
@@ -34,8 +34,8 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
         displayName: "传送地点",
         group: "Config-Destination",
         enumType: {
-            "任意奶牛关": Destination.anyCowLevel,
-            "主场景": Destination.mainScene,
+            "任意奶牛关": Destination.AnyCowLevel,
+            "主场景": Destination.MainScene,
         },
     })
     public portalDestination: number = 2;
@@ -91,7 +91,7 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
     onProgressDoneInClient(): void {
 
         switch (this.portalDestination) {
-            case Destination.mainScene: {
+            case Destination.MainScene: {
                 let scene = GameConfig.Scene.getElement(1);
                 showTransitionAnimation(() => {
                     //改变天空盒
@@ -109,40 +109,11 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
 
             }
                 break;
-            case Destination.anyCowLevel: {
-                let scenes = GameConfig.Scene.getAllElement();
-                let cowLevelScene = scenes.map((element) => {
-                    if (
-                        element.id !== GameServiceConfig.MAIN_SCENE_ID &&
-                        element.id !== GameServiceConfig.TRANSFER_SCENE_ID
-                    ) {
-                        return element;
-                    }
-                });
+            case Destination.AnyCowLevel: {
 
-                let cowLevel = Math.floor(Math.random() * cowLevelScene.length);
-                let scene = cowLevelScene[cowLevel];
-                //播tips
 
-                if (scene.foreshow) GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.foreshow));
-                TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
-                    showTransitionAnimation(() => {
-                        //传送
-                        let dest = AreaManager.getInstance().getRandomPoint(scene.bornAreaId);
-                        if (!("z" in dest)) {
-                            Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
-                            return;
-                        }
-                        this.transferPlayer(Player.localPlayer.character, new Vector(dest.x, dest.y, dest.z));
-                        //改变天空盒
-                        EnvironmentManager.getInstance().setEnvironment(scene.sceneEnvId);
-                        GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
-                            duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
-                            only: true,
-                        });
-                        Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
-                    });
-                });
+
+
             }
                 break;
             default:
@@ -151,6 +122,42 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
     }
 
     onProgressDoneInServer(playerId: number): void {
+        if (this.portalDestination === Destination.AnyCowLevel) {
+            let scenes = GameConfig.Scene.getAllElement();
+            let cowLevelScene = scenes.filter((element) => {
+                return element.id !== GameServiceConfig.MAIN_SCENE_ID && element.id !== GameServiceConfig.TRANSFER_SCENE_ID
+            });
+
+            let cowLevel = Math.floor(Math.random() * cowLevelScene.length);
+            let scene = cowLevelScene[cowLevel];
+            this.transferToCowLevel(Player.getPlayer(playerId), scene.id);
+        }
+
+    }
+
+    @RemoteFunction(mw.Client)
+    public transferToCowLevel(player: Player, sceneId: number) {
+        let scene = GameConfig.Scene.getElement(sceneId);
+        //播tips
+        if (scene.foreshow) GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.foreshow));
+        TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
+            showTransitionAnimation(() => {
+                //传送
+                let dest = AreaManager.getInstance().getRandomPoint(scene.bornAreaId);
+                if (!("z" in dest)) {
+                    Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
+                    return;
+                }
+                this.transferPlayer(Player.localPlayer.character, new Vector(dest.x, dest.y, dest.z));
+                //改变天空盒
+                EnvironmentManager.getInstance().setEnvironment(scene.sceneEnvId);
+                GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
+                    duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
+                    only: true,
+                });
+                Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
+            });
+        });
     }
 
     protected transferPlayer(character: Character, location: Vector) {

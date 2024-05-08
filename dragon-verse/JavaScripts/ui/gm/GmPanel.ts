@@ -22,6 +22,8 @@ import { ObbyModuleC, ObbyModuleS } from "../../module/obby/ObbyModule";
 import Gtk from "../../util/GToolkit";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 import CutScenePanel from "../jump-game/CutScenePanel";
+import { SceneDragonModuleS } from "../../module/scene-dragon/SceneDragonModule";
+import UUID from "pure-uuid";
 
 /**
  * GM.
@@ -131,7 +133,7 @@ AddGMCommand(
         let module = mwext.ModuleService.getModule(CompanionModule_C);
         module.showUpCompanion(Number(index), true);
     },
-    (player: mw.Player, index: string) => {},
+    (player: mw.Player, index: string) => { },
     "宠物龙"
 );
 
@@ -163,12 +165,12 @@ AddGMCommand(
     (player, value) => {
         // ModuleService.getModule(QuestModuleC).updateRunningGameScore(Number(value));
     },
-    () => {}
+    () => { }
 );
 
 AddGMCommand(
     "加或删光暗龙",
-    (player, value) => {},
+    (player, value) => { },
     (player, value) => {
         ModuleService.getModule(QuestModuleS).testAddOrDeleteLightDarkDragon(player.playerId, Number(value));
     },
@@ -189,12 +191,12 @@ AddGMCommand(
     (player, value) => {
         console.log(HeadUIController.getInstance().getNickNameByPlayerId(Number(value)));
     },
-    () => {}
+    () => { }
 );
 
 AddGMCommand(
     "跳宠物模拟器",
-    () => {},
+    () => { },
     (player) => {
         const onFailed = (result: mw.TeleportResult) => {
             // 将错误信息发给所有参与的客户端
@@ -206,13 +208,13 @@ AddGMCommand(
                 }
             }
         };
-        TeleportService.asyncTeleportToScene("pet-simulator", [player.userId]).then(() => {}, onFailed);
+        TeleportService.asyncTeleportToScene("pet-simulator", [player.userId]).then(() => { }, onFailed);
     }
 );
 
 AddGMCommand(
     "跳Battle World",
-    () => {},
+    () => { },
     (player) => {
         const onFailed = (result: mw.TeleportResult) => {
             // 将错误信息发给所有参与的客户端
@@ -224,7 +226,7 @@ AddGMCommand(
                 }
             }
         };
-        TeleportService.asyncTeleportToScene("battleworld", [player.userId]).then(() => {}, onFailed);
+        TeleportService.asyncTeleportToScene("battleworld", [player.userId]).then(() => { }, onFailed);
     }
 );
 
@@ -340,5 +342,8 @@ AddGMCommand(
 );
 AddGMCommand("显示转场", () => {
     UIService.show(CutScenePanel);
+});
+AddGMCommand("添加场景龙", () => { }, (player) => {
+    ModuleService.getModule(SceneDragonModuleS).generate(player.playerId, 1, 1, new Vector(2504, -19290, 1609), new UUID(4).toString());
 });
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

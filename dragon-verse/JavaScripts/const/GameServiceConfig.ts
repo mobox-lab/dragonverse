@@ -27,9 +27,9 @@ export default class GameServiceConfig {
      */
     public static readonly COW_LEVEL_PORTAL_EFFECT_POS = new Vector(-355.7, 37.7, 878);
     /**
-     * 奶牛关雕像有传送门激活特效时长（秒）
+     * 奶牛关雕像有传送门激活特效时长(毫秒)
      */
-    public static readonly COW_LEVEL_PORTAL_EFFECT_DURATION = 0.6;
+    public static readonly COW_LEVEL_PORTAL_EFFECT_DURATION = 600;
     /**
      * 奶牛关雕像有传送门激活特效缩放最大值
      */
