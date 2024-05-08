@@ -2,11 +2,12 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import { oTraceError } from "../../util/LogManager";
-import { stringToNumberArr, utils } from "../../util/uitls";
+import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
 import { CollectModuleS } from "../PetCollect/CollectModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { petInfo } from "../Trading/TradingScript";
 import { AuthModuleS } from "../auth/AuthModule";
+import { EnchantBuff } from "./EnchantBuff";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
@@ -57,9 +58,19 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return arr;
     }
 
-    net_addPet(id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
-        this.addPet(this.currentPlayerId, id, atk, name, type, addTime);
-    }
+		net_addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+			let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
+
+			let atk: number = 0;
+			if (atkArr.length > 1)
+				atk = utils.GetRandomNum(atkArr[0], atkArr[1]);
+			else
+				atk = atkArr[0];
+
+			let nameId = utils.GetRandomNum(1, 200);
+			let name = utils.GetUIText(nameId);
+			this.addPet(this.currentPlayerId, id, atk, name, type, addTime);
+		}
 
 
     public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
@@ -278,8 +289,59 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             this.getAllClient().net_enchantNotice(playerId, id);
     }
 
+		/** 计算best friend词条战力 */
+		net_bestFriendBuff(playerId: number) {
+			const playerData = this.getPlayerData(playerId)
+			let arr = playerData.sortBag();
+			let atk = 0;
+			let petIds = [];
+			for (let i = 0; i < arr.length; i++) {
+				if (GlobalData.Enchant.bestPets.includes(arr[i].I)) {
+					petIds.push(arr[i].k);
+					if (atk == 0)
+						atk = EnchantBuff.getAtk(arr);
+				}
+			}
+			if (petIds.length == 0) return;
+
+			let delArr: number[] = [];
+
+			petIds.forEach((key) => {
+				let data = playerData.bagItemsByKey(key);
+				if (data.p.a == atk) {
+					delArr.push(key);
+				}
+			})
+			delArr.forEach((key) => {
+				let index = petIds.findIndex((value) => {
+					return value == key;
+				})
+				if (index != -1)
+					petIds.splice(index, 1);
+			})
+			if (petIds.length == 0) return;
+			this.changeAtk(numberArrToString(petIds), atk);
+		}
+
+		/** 计算通行证词条 *0.5 */
+		net_passBuff(playerId: number) {
+			const data = this.getPlayerData(playerId)
+			let arr = data.sortBagByAtk();
+			let atk = 0;
+			let petIds = [];
+			for (let i = 0; i < arr.length; i++) {
+				if (GlobalData.Enchant.passportPets.includes(arr[i].I)) {
+					petIds.push(arr[i].k);
+					if (atk == 0)
+						atk = arr[0].p.a * 0.5;
+				}
+			}
+			if (petIds.length == 0) return;
+			this.changeAtk(numberArrToString(petIds), atk);
+		}
+
     /**宠物更改攻击力 */
-    net_changeAtk(keys: string, atk: number) {
+    changeAtk(keys: string, atk: number) {
         if (isNaN(atk)) atk = 0;
         let keyArr = stringToNumberArr(keys);
         for (let i = 0; i < keyArr.length; i++) {

@@ -50,8 +50,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.achievementModuleC = ModuleService.getModule(AchievementModuleC);
     }
     protected onEnterScene(sceneType: number): void {
-        this.bestFriendBuff();
-        this.passBuff();
+			this.calcBuff()
     }
     private initUI() {
         this.bagUI = mw.UIService.getUI(P_Bag);
@@ -73,6 +72,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         })
 
     }
+
     /**词条buff初始化 */
     private enchantBuffInit() {
         let keys = this.data.CurFollowPets
@@ -80,54 +80,11 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
             EnchantBuff.equipUnPet(keys[id], true);
         }
     }
-    /**计算bestfriend词条战力*/
-    private bestFriendBuff() {
-        let arr = this.data.sortBag();
-        let atk = 0;
-        let petIds = [];
-        for (let i = 0; i < arr.length; i++) {
-            if (GlobalData.Enchant.bestPets.includes(arr[i].I)) {
-                petIds.push(arr[i].k);
-                if (atk == 0)
-                    atk = EnchantBuff.getAtk(arr);
-            }
-        }
-        if (petIds.length == 0) return;
 
-        let delArr: number[] = [];
-
-        petIds.forEach((key) => {
-            let data = this.data.bagItemsByKey(key);
-            if (data.p.a == atk) {
-                delArr.push(key);
-            }
-        })
-        delArr.forEach((key) => {
-            let index = petIds.findIndex((value) => {
-                return value == key;
-            })
-            if (index != -1)
-                petIds.splice(index, 1);
-        })
-        if (petIds.length == 0) return;
-        this.server.net_changeAtk(numberArrToString(petIds), atk);
-    }
-
-    /**计算通行证词条 *0.5 */
-    private passBuff() {
-        let arr = this.data.sortBagByAtk();
-        let atk = 0;
-        let petIds = [];
-        for (let i = 0; i < arr.length; i++) {
-            if (GlobalData.Enchant.passportPets.includes(arr[i].I)) {
-                petIds.push(arr[i].k);
-                if (atk == 0)
-                    atk = arr[0].p.a * 0.5;
-            }
-        }
-        if (petIds.length == 0) return;
-        this.server.net_changeAtk(numberArrToString(petIds), atk);
-    }
+		private calcBuff() { 
+			this.server.net_bestFriendBuff(this.localPlayerId);
+			this.server.net_passBuff(this.localPlayerId);
+		}
 
     private devInit(): void {
         utils.triInit(GlobalData.Dev.goldTriggerGuid, this.enterGoldTrigger.bind(this), this.leaveTrigger.bind(this));
@@ -185,11 +142,10 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
             mw.UIService.getUI(P_HudPetGift).setBagText(this.data.CurFollowPets.length, this.data.MaxFollowCount);
         })
     }
-
+		
     /**背包添加完毕 */
     private itemChange(isEquip: boolean, id: number, key: number) {
-        this.bestFriendBuff();
-        this.passBuff();
+        this.calcBuff()
         if (!isEquip) return;
 
         let arrId: number[] = [];
@@ -241,17 +197,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
      * @param name 宠物名字
     */
     public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
-        let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
-
-        let atk: number = 0;
-        if (atkArr.length > 1)
-            atk = utils.GetRandomNum(atkArr[0], atkArr[1])
-        else
-            atk = atkArr[0];
-
-        let nameId = utils.GetRandomNum(1, 200);
-        let name = utils.GetUIText(nameId)
-        await this.server.net_addPet(id, atk, name, type, addTime);
+        await this.server.net_addPet(id, type, addTime);
     }
 
     /**宠物公告 */
