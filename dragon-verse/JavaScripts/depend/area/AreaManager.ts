@@ -407,6 +407,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
                         !Gtk.isNullOrEmpty(points2D) && AreaManager
                             .getInstance()
                             .registerShapeToArea(item.id, points2D, item?.ordered ?? false);
+                    } catch (e) {
                     } finally {
                     }
                 },
