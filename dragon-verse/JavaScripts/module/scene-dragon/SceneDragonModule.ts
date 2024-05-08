@@ -668,7 +668,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             return;
         }
 
-        const habitat = GameConfig.DragonHabitat.getElement(habitatId);
+        const habitat = GameConfig.Scene.getElement(habitatId);
         if (!habitat) {
             Log4Ts.error(SceneDragonModuleS, `habitat not exist. habitatId: ${habitatId}`);
             return;

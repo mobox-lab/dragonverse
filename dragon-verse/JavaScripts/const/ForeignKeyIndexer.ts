@@ -160,12 +160,12 @@ export default class ForeignKeyIndexer extends Singleton<ForeignKeyIndexer>() {
             set.add(config.bagId);
             this._bagItemForDragonIndexCache.set(config.bagId, config.id);
 
-            for (const habitatId of config.dragonHabitatIds) {
-                if (this._dragonHabitatMap.has(habitatId)) {
+            for (const sceneId of config.sceneIds) {
+                if (this._dragonHabitatMap.has(sceneId)) {
                     this._dragonHabitatMap
-                        .get(habitatId)
+                        .get(sceneId)
                         .push(config.id);
-                } else this._dragonHabitatMap.set(habitatId, [config.id]);
+                } else this._dragonHabitatMap.set(sceneId, [config.id]);
             }
         }
 

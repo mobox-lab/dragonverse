@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : zewei.zhang
  * @Date         : 2024-05-06 18:28:34
  * @LastEditors  : zewei.zhang
@@ -17,6 +17,8 @@ import { ActivateByUI, ActivateMode } from "./ActiveMode";
 import { InteractiveObjModuleC } from "./InteractiveObjModule";
 import { PortalTriggerWithProgress } from "./PortalTriggerWithProgress";
 import { showTransitionAnimation } from "./TransferPortalTrigger";
+import AreaManager from "../../depend/area/AreaManager";
+import CowLevelPortalTrigger from "./CowLevelPortalTrigger";
 
 export default class TransferPortalUI extends PortalTriggerWithProgress {
     @Property({
@@ -33,7 +35,7 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
     })
     public isRefreshCameraRotation: boolean = true;
 
-    @Property({ displayName: "角色目标旋转", group: "Config-rotation" })
+    @Property({displayName: "角色目标旋转", group: "Config-rotation"})
     public endRotation: Rotation = Rotation.zero;
 
     @Property({
@@ -46,26 +48,33 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
     private _nolan: Nolan;
 
     private _currentCowLevelId: number = 0;
+
     onStartPortalInServer(playerId: number): void {
 
     }
+
     onStartPortalInClient(): void {
 
     }
+
     onInterruptProgressInClient(): void {
         this.activeMode.clickToEndInteraction();
     }
+
     onInterruptProgressInServer(playerId: number): void {
 
     }
+
     onProgressDoneInClient(): void {
         this.transferPlayer();
         this.activeMode.clickToEndInteraction();
         this.activeMode.hideInteractionUI();
     }
+
     onProgressDoneInServer(playerId: number): void {
 
     }
+
     activeMode: ActivateByUI;
 
     protected onStart(): void {
@@ -74,7 +83,7 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
         if (SystemUtil.isClient()) {
             this._nolan = Nolan.getInstance();
             Event.addLocalListener(EventDefine.PlayerEnterCowLevel, (sceneId: number) => {
-                this._currentCowLevelId = sceneId
+                this._currentCowLevelId = sceneId;
                 this.activeMode.showInteractionUI();
             });
         }
@@ -82,7 +91,7 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
 
     showUI = () => {
         UIService.getUI(MainPanel)?.switchToCowLevel(this.clickToStartInteraction, this.respawn);
-    }
+    };
 
     private clickToStartInteraction = () => {
         if (this._isPlayingProgress) {
@@ -90,20 +99,29 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
         } else {
             ModuleService.getModule(InteractiveObjModuleC).startInteraction(this.gameObject.gameObjectId);
         }
-    }
+    };
 
     hideUI = () => {
         UIService.getUI(MainPanel)?.switchToTransferLevel();
-    }
+    };
 
     respawn = () => {
         if (this._currentCowLevelId) {
-            Player.localPlayer.character.worldTransform.position = GameConfig.Scene.getElement(this._currentCowLevelId).bornLocation;
+            let dest = AreaManager.getInstance().getRandomPoint(GameConfig.Scene.getElement(this._currentCowLevelId).bornAreaId);
+            if (!("z" in dest)) {
+                Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
+                return;
+            }
+            Player.localPlayer.character.worldTransform.position = new mw.Vector(dest.x, dest.y, dest.z);
         }
-    }
+    };
 
     protected transferPlayer = () => {
-        let pos = GameConfig.Scene.getElement(GameServiceConfig.TRANSFER_SCENE_ID).bornLocation;
+        let dest = AreaManager.getInstance().getRandomPoint(GameConfig.Scene.getElement(GameServiceConfig.TRANSFER_SCENE_ID).bornAreaId);
+        if (!("z" in dest)) {
+            Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
+            return;
+        }
         //展示过场动画
         showTransitionAnimation(() => {
             let character = Player.localPlayer.character;
@@ -115,9 +133,9 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
 
                     character.addImpulse(velocity.clone().multiply(Vector.negOne), true);
                     character.worldTransform = new Transform(
-                        pos,
+                        new mw.Vector(dest.x, dest.y, dest["z"]),
                         this.isRefreshObjectRotation ? this.endRotation : character.worldTransform.rotation,
-                        character.worldTransform.scale
+                        character.worldTransform.scale,
                     );
 
                     if (this.isRefreshCameraRotation) this._nolan.lookToward(this.endRotation.rotateVector(Vector.forward));
@@ -133,6 +151,5 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
             }
         });
 
-
-    }
+    };
 }

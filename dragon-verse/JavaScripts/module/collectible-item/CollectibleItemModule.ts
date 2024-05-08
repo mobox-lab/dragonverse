@@ -481,7 +481,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             return;
         }
         if (!("z" in location)) {
-            Log4Ts.warn(CollectibleItemModuleS, `currently only support 3D point set.`);
+            Log4Ts.warn(CollectibleItemModuleS, `currently only support 3D point as spawn point.`);
             return;
         }
 

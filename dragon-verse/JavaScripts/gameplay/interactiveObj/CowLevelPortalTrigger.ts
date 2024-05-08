@@ -24,6 +24,8 @@ import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjMo
 import JumpGameTransition_Generate from "../../ui-generate/jumpGame/JumpGameTransition_generate";
 import { EventDefine } from "../../const/EventDefine";
 import UnifiedRoleController from "../../module/role/UnifiedRoleController";
+import Area from "../../depend/area/shape/base/IArea";
+import AreaManager from "../../depend/area/AreaManager";
 
 export default class CowLevelPortalTrigger extends PortalTrigger {
     @Property({
@@ -40,7 +42,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
     })
     public isRefreshCameraRotation: boolean = true;
 
-    @Property({ displayName: "角色目标旋转", group: "Config-rotation" })
+    @Property({displayName: "角色目标旋转", group: "Config-rotation"})
     public endRotation: Rotation = Rotation.zero;
 
     @Property({
@@ -81,7 +83,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                 {
                     loopCount: 1,
                     scale: GameServiceConfig.COW_LEVEL_PORTAL_EXPLODE_EFFECT_SCALE,
-                }
+                },
             );
             //加个冲量
             actions
@@ -98,6 +100,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
             ModuleService.getModule(InteractiveObjModuleS).net_stopInteraction(playerId, this.gameObject.gameObjectId);
         }
     }
+
     async onStartPortalInClient(): Promise<void> {
         if (ModuleService.getModule(BagModuleC).hasDragonBall()) {
             this.activeMode.activate = false;
@@ -106,7 +109,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
             effect.worldTransform.position = GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_POS;
             actions
                 .tween(effect.worldTransform)
-                .set({ scale: Vector.zero })
+                .set({scale: Vector.zero})
                 .to(GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_DURATION, {
                     scale: GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_SCALE_MAX,
                 })
@@ -131,8 +134,13 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                     TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
                         //显示一个转场ui动画
                         this.showTransitionAnimation(() => {
+                            let dest = AreaManager.getInstance().getRandomPoint(scene.bornAreaId);
+                            if (!("z" in dest)) {
+                                Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
+                                return;
+                            }
                             //传送
-                            this.transferPlayer(Player.localPlayer.character, scene.bornLocation);
+                            this.transferPlayer(Player.localPlayer.character, new Vector(dest.x, dest.y, dest.z));
                             //改变天空盒
                             EnvironmentManager.getInstance().setEnvironment(scene.id);
                             //显示场景名
@@ -143,7 +151,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                             effect.destroy();
                             //通知结束交互
                             ModuleService.getModule(InteractiveObjModuleC).stopInteraction(
-                                this.gameObject.gameObjectId
+                                this.gameObject.gameObjectId,
                             );
                             this.activeMode.activate = true;
 
@@ -170,7 +178,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                 character.worldTransform = new Transform(
                     location,
                     this.isRefreshObjectRotation ? this.endRotation : character.worldTransform.rotation,
-                    character.worldTransform.scale
+                    character.worldTransform.scale,
                 );
 
                 if (this.isRefreshCameraRotation) this._nolan.lookToward(this.endRotation.rotateVector(Vector.forward));
@@ -190,13 +198,13 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
         let ui = UIService.show(JumpGameTransition_Generate);
         actions
             .tween(ui.bImage)
-            .set({ renderOpacity: 0 })
-            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 1 })
+            .set({renderOpacity: 0})
+            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, {renderOpacity: 1})
             .call(() => {
                 callBack();
             })
             .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
-            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
+            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, {renderOpacity: 0})
             .call(() => {
                 UIService.hide(JumpGameTransition_Generate);
             })
@@ -207,15 +215,20 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
 
 AddGMCommand("传送奶牛关", (player, value) => {
     let scene = GameConfig.Scene.getElement(value);
+    let dest = AreaManager.getInstance().getRandomPoint(scene.bornAreaId);
+    if (!("z" in dest)) {
+        Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
+        return;
+    }
     if (Number(value) === 1) {
         Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
         Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
         Player.localPlayer.getPlayerState(UnifiedRoleController)?.respawn();
     } else {
         player.character.worldTransform = new Transform(
-            scene.bornLocation,
+            new Vector(dest.x, dest.y, dest.z),
             player.character.worldTransform.rotation,
-            player.character.worldTransform.scale
+            player.character.worldTransform.scale,
         );
     }
 
