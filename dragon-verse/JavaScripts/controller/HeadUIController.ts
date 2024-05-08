@@ -238,7 +238,8 @@ export class HeadUIController extends Singleton<HeadUIController>() {
         uiWidget.uiBehavior.bg.imageGuid = guid;
 
         //更新bg Size和Position，使其居中
-        Gtk.doWhenTrue(() => {
+
+        let interval = Gtk.doWhenTrue(() => {
             return uiWidget.uiBehavior.title.size.x > 0;
         }, () => {
             let size = uiWidget.uiBehavior.title.size;
@@ -249,7 +250,10 @@ export class HeadUIController extends Singleton<HeadUIController>() {
                 //字比图小，字要居中
                 uiWidget.uiBehavior.title.position = new Vector2((uiWidget.uiBehavior.bg.size.x - uiWidget.uiBehavior.title.size.x) / 2, uiWidget.uiBehavior.title.position.y);
             }
-        })
+        });
+        uiWidget.onDestroyDelegate.add(() => {
+            clearInterval(interval);
+        });
 
         if (lanKey) i18n.bind(uiWidget.uiBehavior.title, lanKey);
 
