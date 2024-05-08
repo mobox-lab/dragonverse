@@ -34,7 +34,7 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         }
     }
 
-    private onEnter(go: mw.GameObject) {
+    private async onEnter(go: mw.GameObject) {
 
         if ((go instanceof mw.Character) == false) {
             return;
@@ -46,16 +46,17 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) return;
         chara.movementEnabled = false;
         const playerC = ModuleService.getModule(PlayerModuleC);
+        const rankTicket = await playerC.getRankTicket();
         let [rank] = playerC.getRank();
         let rankCfg = GameConfig.Rank.getElement(rank);
         if (!rankCfg) return;
         let rankCost = rankCfg.rankTicket;
         Log4Ts.log(Trigger_C, `rankCost: ${rankCost}`);
-        if (rankCost && playerC.rankTicket) {
+        if (rankCost && rankTicket) {
             let content = StringUtil.format(GameConfig.Language.Tips_rank_3.Value, rankCost);
             MessageBox.showTwoBtnMessage("", content, (res) => {
                 if (res) {
-                    playerC.newPayRankTicket();
+                    playerC.payRankTicket();
                     this.interactNext(chara.player.playerId, true);
                 }
                 else {

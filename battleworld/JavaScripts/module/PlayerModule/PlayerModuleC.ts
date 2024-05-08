@@ -1194,7 +1194,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
         //本次段位分变化
         let score = rankScore - this._oldRankScore;
         this._oldRankScore = rankScore;
-        this.rankTicket = true;
 
         this.changeState(EPlayerState.Dead, [dead, npcId, score]);
         EventManager.instance.call(EPlayerEvents_C.Player_ChangeDeadState_C);
@@ -1415,16 +1414,15 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
     /**
      * 支付段位门票
      */
-    public payRankTicket(rankCost: number) {
-        this.rankTicket = false;
-        this.reduceAttr(Attribute.EnumAttributeType.rankScore, rankCost);
+    public payRankTicket() {
+        this.server.net_payRankTicket();
     }
 
     /**
-     * 支付段位门票(new)
+     * 获取门票
+     * @returns {Promise<boolean>}
      */
-    public newPayRankTicket() {
-        this.rankTicket = false;
-        this.server.net_payRankTicket();
+    public getRankTicket(): Promise<boolean> {
+        return this.server.net_getRankTicket();
     }
 }

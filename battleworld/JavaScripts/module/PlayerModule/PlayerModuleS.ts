@@ -82,6 +82,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     private _shopS: ShopModuleS = null;
     private mMotion: MotionModuleS = null;
 
+    /** 玩家加入战场门票 */
+    private playerTickets: Map<number, boolean> = new Map();
+
     onStart() {
         this.mAttribute = ModuleService.getModule(AttributeModuleS);
         this.mSkill = ModuleService.getModule(SkillModuleS);
@@ -253,6 +256,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this.resetdayRankScore(player.playerId);
 
         this.checkRankReward(player.playerId);
+
+        this.initPlayerTicket(player.playerId);
     }
 
     onPlayerLeft(player: mw.Player) {
@@ -267,6 +272,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this.stop_recover_Hp(playerID);
 
         this.left_playerProxy(playerID);
+
+        // 清除玩家门票
+        this.playerTickets.delete(playerID);
     }
 
     /**初始化玩家代理类 */
@@ -1919,6 +1927,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             sceneID,
             this.getPlayerAttr(playerID, Attribute.EnumAttributeType.rankScore)
         );
+        // 重置死亡玩家门票
+        this.initPlayerTicket(playerID);
 
         // 通知所有玩家该玩家死亡了
         let players = mw.Player.getAllPlayers();
@@ -2383,6 +2393,15 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     }
 
     /**
+     * 初始化玩家门票
+     * @param {number} playerId
+     * @private
+     */
+    private initPlayerTicket(playerId: number) {
+        this.playerTickets.set(playerId, true);
+    }
+
+    /**
      * 购买门票
      * @param {number} playerId
      * @private
@@ -2402,6 +2421,17 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
     @Decorator.noReply()
     public net_payRankTicket() {
-        this.payRankTicket(this.currentPlayerId);
+        const playerId = this.currentPlayerId;
+        this.playerTickets.set(playerId, false);
+        this.payRankTicket(playerId);
+    }
+
+    /**
+     * 查询门票权限
+     * @returns {Promise<boolean>}
+     */
+    public async net_getRankTicket(): Promise<boolean> {
+        const playerId = this.currentPlayerId;
+        return this.playerTickets.get(playerId) ?? true;
     }
 }
