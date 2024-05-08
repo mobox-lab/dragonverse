@@ -7,7 +7,6 @@ import {
     SuccessRateAlgoTypes,
 } from "../collectible-item/SuccessRateAlgoTypes";
 import { IDragonElement } from "../../config/Dragon";
-import { ICharacterfulDragonElement } from "../../config/CharacterfulDragon";
 
 /**
  * Scene Dragon instance.
@@ -121,7 +120,7 @@ export default class SceneDragon {
     public generate(id: number, location: Vector) {
         this._id = id;
         this._location = location;
-        this._hitPoint = this.getDragonConfig().hitPoint;
+        this._hitPoint = this.getConfig().hitPoint;
         this._generateTime = Date.now();
         this._isGenerated = true;
     }
@@ -174,41 +173,15 @@ export default class SceneDragon {
      * @param id
      */
     public static quality(id: number): QualityTypes {
-        return this.getDragonConfig(id).qualityId as QualityTypes;
+        return this.getConfig(id).qualityId as QualityTypes;
     };
-
-    /**
-     * 首次生成冷却. ms
-     * @config
-     * @param id
-     */
-    public static firstGenerateCd(id: number): number {
-        return this.getDragonConfig(id).firstGenerateCd * 1e3;
-    }
-
-    /**
-     * 最大存在时间 ms.
-     * @config
-     * @param id
-     */
-    public static maxExistenceTime(id: number): number {
-        return this.getDragonConfig(id).existenceTime * 1e3;
-    }
-
-    /**
-     * 生成间隔 ms.
-     * @param id
-     */
-    public static generationInterval(id: number): number {
-        return this.getDragonConfig(id).generationInterval * 1e3;
-    }
 
     /**
      * 捕捉消耗.
      * @param id
      */
     public static cost(id: number): number {
-        return this.getDragonConfig(id).cost;
+        return this.getConfig(id).cost;
     }
 
     /**
@@ -229,28 +202,11 @@ export default class SceneDragon {
     }
 
     /**
-     * 龙基 id.
-     * @config
-     * @param id
+     * 龙 配置.
+     * @param id 龙 id.
      */
-    public static dragonId(id: number): number {
-        return this.getConfig(id).dragonId;
-    }
-
-    /**
-     * 个性龙 配置.
-     * @param id 个性龙 id.
-     */
-    public static getConfig(id: number): ICharacterfulDragonElement {
-        return GameConfig.CharacterfulDragon.getElement(id);
-    }
-
-    /**
-     * 龙基 配置.
-     * @param id 个性龙 id.
-     */
-    public static getDragonConfig(id: number): IDragonElement {
-        return GameConfig.Dragon.getElement(this.getConfig(id).dragonId);
+    public static getConfig(id: number): IDragonElement {
+        return GameConfig.Dragon.getElement(id);
     }
 
     /**
@@ -261,12 +217,8 @@ export default class SceneDragon {
         return GameConfig.BagItem.getElement(this.getConfig(id).bagId);
     }
 
-    public getConfig(): ICharacterfulDragonElement {
+    public getConfig(): IDragonElement {
         return SceneDragon.getConfig(this._id);
-    }
-
-    public getDragonConfig(): IDragonElement {
-        return SceneDragon.getDragonConfig(this._id);
     }
 
     public getBagConfig(): IBagItemElement {

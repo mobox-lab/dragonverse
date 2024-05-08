@@ -22,6 +22,8 @@ import { PortalTrigger } from "./PortalTrigger";
 import EnvironmentManager from "./EnvironmentManager";
 import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjModule";
 import JumpGameTransition_Generate from "../../ui-generate/jumpGame/JumpGameTransition_generate";
+import { EventDefine } from "../../const/EventDefine";
+import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 
 export default class CowLevelPortalTrigger extends PortalTrigger {
     @Property({
@@ -144,6 +146,8 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                                 this.gameObject.gameObjectId
                             );
                             this.activeMode.activate = true;
+
+                            Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
                         });
                     });
                 })
@@ -201,6 +205,26 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
     }
 }
 
-AddGMCommand("tips", () => {
-    GlobalTips.getInstance().showGlobalTips("i18n.lan(scene.name)", { duration: 2e3, only: true });
+AddGMCommand("传送奶牛关", (player, value) => {
+    let scene = GameConfig.Scene.getElement(value);
+    if (Number(value) === 1) {
+        Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
+        Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
+        Player.localPlayer.getPlayerState(UnifiedRoleController)?.respawn();
+    } else {
+        player.character.worldTransform = new Transform(
+            scene.bornLocation,
+            player.character.worldTransform.rotation,
+            player.character.worldTransform.scale
+        );
+    }
+
+    Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
+    //改变天空盒
+    EnvironmentManager.getInstance().setEnvironment(scene.id);
+    //显示场景名
+    GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
+        duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
+        only: true,
+    });
 });

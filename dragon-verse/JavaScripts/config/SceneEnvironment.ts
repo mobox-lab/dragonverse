@@ -1,12 +1,12 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","sceneId","cloudColor","cloudDensity","cloudOpacity","cloudSpeed","cloudTextureID","cloudVisible","moonColor","moonIntensity","moonSize","moonTextureID","moonVisible","skyBoxPreset","skyDomeBottomColor","skyDomeBaseColor","skyDomeGradientEnabled","SkyDomeHorizontalFallOff","skyDomeIntensity","skyDomeMiddleColor","skyDomeTextureID","skyDomeTopColor","starIntensity","starDensity","starTextureID","starVisible","sunColor","sunIntensity","sunSize","sunTextureID","sunVisible","skyBoxYawAngle","postProcessPreset","bloom","saturation","contrast","blurEnabled","blurIntensity","depthOfFieldEnabled","depthOfFieldIntensity","focusPosition","focusDistance","fogEnable","density","heightFalloff","height","inscatteringColor","maxOpacity","startDistance","directionalInscatteringExponent","directionalInscatteringStartDistance","directionalInscatteringColor","fogPreset","lightingYawAngle","pitchAngle","lightColor","ev100","castShadowsEnabled","shadowsDistance","temperatureEnabled","temperature","directionalLightIntensity","directionalLightColor","skyLightIntensity","skyLightColor"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""],[1,1,new mw.Vector4(234,234,255,1),1,1,0.5,"178196",1,new mw.Vector4(255,255,255,1),5,19.41,"95624",1,0,new mw.Vector4(186,208,243,1),new mw.Vector4(188,188,188,1),1,20,1.17,new mw.Vector4(109,162,225,1),"195714",new mw.Vector4(59,117,198,1),0.68,26.14,null,0,new mw.Vector4(255,226,182,1),40,9,"184494",0,0,-1,1.5,1.2,1,0,0,0,0,0,0,0,0.33,0.44,-361.83,new mw.Vector4(0.063010,0.246201,0.434154,1.000000),1,4000,0,0,new mw.Vector4(0.000000,0.000000,0.000000,1.000000),0,-159.79,32.74,new mw.Vector4(200,228,250,1),-1.36,1,1500,1,5256.1,44.96,new mw.Vector4(255,255,255,0),1.62,new mw.Vector4(255,255,255,0)],[2,2,new mw.Vector4(255,196,149,1),1,0.5,0,"28450",1,new mw.Vector4(255,255,255,1),1,10,"95626",0,0,new mw.Vector4(255,204,152,1),new mw.Vector4(255,255,255,1),1,3,1,new mw.Vector4(225,184,195,1),"108338",new mw.Vector4(100,105,198,1),1,10,"14307",0,new mw.Vector4(255,227,156,1),20,6,"163437",1,0,-1,1.5,1.2,1,0,0,0,0,0,0,0,0.33,0.44,-361.83,new mw.Vector4(0.063010,0.246201,0.434154,1.000000),1,4000,0,0,new mw.Vector4(0.000000,0.000000,0.000000,1.000000),0,20,-20,new mw.Vector4(238,219,219,1),0,1,2800,1,4000,4,new mw.Vector4(255,255,255,0),1,new mw.Vector4(255,255,255,0)],[3,3,new mw.Vector4(184,198,255,1),1,1,0,"28450",1,new mw.Vector4(255,255,255,1),5,19.41,"95624",0,0,new mw.Vector4(161,183,243,1),new mw.Vector4(255,255,255,1),1,5,1,new mw.Vector4(103,156,246,1),"108338",new mw.Vector4(35,90,231,1),1,10,null,0,new mw.Vector4(255,226,182,1),1,10,"184494",1,0,-1,1.5,1.2,1,0,0,0,0,0,0,0,0.33,0.44,-361.83,new mw.Vector4(0.063010,0.246201,0.434154,1.000000),1,4000,0,0,new mw.Vector4(0.000000,0.000000,0.000000,1.000000),0,-135,-50,new mw.Vector4(255,255,255,0.95),0,1,2500,0,4368.6,4,new mw.Vector4(255,255,255,0),1,new mw.Vector4(255,255,255,0)],[4,4,new mw.Vector4(255,225,204,1),1,0,0.5,"178196",1,new mw.Vector4(255,255,255,1),5,19.41,"95624",0,0,new mw.Vector4(255,235,215,1),new mw.Vector4(188,188,188,1),1,3,1,new mw.Vector4(225,184,195,1),"59838",new mw.Vector4(59,117,198,1),1,10,null,0,new mw.Vector4(255,227,156,1),20,6,"184494",1,0,-1,1.5,1.2,1.03,0,0,0,0,0,0,0,0.33,0.44,-361.83,new mw.Vector4(0.063010,0.246201,0.434154,1.000000),1,4000,0,0,new mw.Vector4(0.000000,0.000000,0.000000,1.000000),0,78.58,-75.54,new mw.Vector4(250,248,242,1),-1.24,1,2000,1,1809.38,1.17,new mw.Vector4(255,255,255,0),1.4,new mw.Vector4(255,255,255,0)],[5,5,new mw.Vector4(228,234,255,1),1,1,0,"28450",1,new mw.Vector4(255,255,255,1),5,19.41,"95624",0,0,new mw.Vector4(186,208,243,1),new mw.Vector4(188,188,188,188),1,20,1.17,new mw.Vector4(154,178,243,1),"195714",new mw.Vector4(49,81,187,1),1,10,null,0,new mw.Vector4(255,226,182,1),40,9,"184494",1,0,-1,1.5,1.2,1,0,0,0,0,0,0,0,0.33,0.44,-361.83,new mw.Vector4(0.063010,0.246201,0.434154,1.000000),1,4000,0,0,new mw.Vector4(0.000000,0.000000,0.000000,1.000000),0,-135,-50,new mw.Vector4(255,255,255,1),0,1,2800,1,4478.65,4,new mw.Vector4(255,255,255,0),1,new mw.Vector4(255,255,255,0)],[6,6,new mw.Vector4(207,216,255,1),1,0,0.5,"178196",0,new mw.Vector4(192,96,141,1),2,47.85,"233556",1,0,new mw.Vector4(192,96,141,1),new mw.Vector4(255,207,255,1),1,5.07,2,new mw.Vector4(99,84,103,1),"59821",new mw.Vector4(0,0,0,1),0.72,14.6,"14307",1,new mw.Vector4(255,226,182,1),40,9,"184494",0,0,-1,4.48,1.09,1.33,0,0,0,0,0,0,0,0.33,0.44,-361.83,new mw.Vector4(0.063010,0.246201,0.434154,1.000000),1,4000,0,0,new mw.Vector4(0.000000,0.000000,0.000000,1.000000),0,2.52,-1.73,new mw.Vector4(135,162,199,1),-0.65,1,239.12,1,4368.6,44.96,new mw.Vector4(252,188,254,0),1,new mw.Vector4(255,255,255,0)]];
+const EXCELDATA:Array<Array<any>> = [["id","sceneId","cloudColor","cloudDensity","cloudOpacity","cloudSpeed","cloudTextureID","cloudVisible","moonColor","moonIntensity","moonSize","moonTextureID","moonVisible","skyBoxPreset","skyDomeBottomColor","skyDomeBaseColor","skyDomeGradientEnabled","SkyDomeHorizontalFallOff","skyDomeIntensity","skyDomeMiddleColor","skyDomeTextureID","skyDomeTopColor","starIntensity","starDensity","starTextureID","starVisible","sunColor","sunIntensity","sunSize","sunTextureID","sunVisible","skyBoxYawAngle","postProcessPreset","bloom","saturation","contrast","blurEnabled","blurIntensity","depthOfFieldEnabled","depthOfFieldIntensity","focusPosition","focusDistance","fogEnable","density","heightFalloff","height","inscatteringColor","maxOpacity","startDistance","directionalInscatteringExponent","directionalInscatteringStartDistance","directionalInscatteringColor","fogPreset","lightingYawAngle","pitchAngle","lightColor","ev100","castShadowsEnabled","shadowsDistance","temperatureEnabled","temperature","directionalLightIntensity","directionalLightColor","skyLightIntensity","skyLightColor"],["","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""],[1,1,"255|255|255|255",1,1,0.75,"178196",1,"255|255|255|255",1,10,null,0,0,"(R=0.052106,G=0.242233,B=0.944853,A=1.000000)","255|255|255|255",0,5.23,1,"(R=0.005605,G=0.020289,B=0.830770,A=1.000000)","209510","(R=0.001518,G=0.004025,B=0.076185,A=1.000000)",1,10,null,0,"(R=1.000000,G=0.687345,B=0.305147,A=1.000000)",40,10,"14309",1,137.93,-1,4,1.5,1.2,0,0,0,0,0,0,1,0.33,0.44,-361.83,"(R=0.063010,G=0.246201,B=0.434154,A=1.000000)",1,4000,0,0,"(R=0.000000,G=0.000000,B=0.000000,A=1.000000)",0,5.02,-27.81,"(R=1.000000,G=1.000000,B=1.000000,A=1.000000)",0,1,7500,1,6000,4,"255|255|255|0",1.5,"255|255|255|0"],[2,2,"235|235|255|255",1,1,0.5,"178196",1,"255|255|255|255",5,19.41,"95624",1,0,"186|208|243|255","188|188|188|255",1,20,1.17,"109|162|225|255","195714","59|117|198|255",0.68,26.14,null,0,"255|226|182|255",40,9,"184494",0,0,-1,1.5,1.2,1,0,0,0,0,0,0,0,0.33,0.44,-361.83,"16|63|111|255",1,4000,0,0,"0|0|0|255",0,-159.79,32.74,"200|228|250|255",-1.36,1,1500,1,5256.1,4,"255|255|255|0",1.62,"255|255|255|0"],[3,3,"255|197|150|255",1,0.5,0,"28450",1,"255|255|255|255",1,10,"95626",0,0,"255|204|155|255","255|255|255|255",1,3,1,"225|184|195|255","108338","100|105|198|255",1,10,"14307",0,"255|227|156|255",20,6,"163437",1,0,-1,1.5,1.2,1,0,0,0,0,0,0,0,0.33,0.44,-361.83,"16|63|111|255",1,4000,0,0,"0|0|0|255",0,20,-20,"238|219|219|255",0,1,2800,1,4000,4,"255|255|255|0",1,"255|255|255|0"],[4,4,"185|199|255|255",1,1,0,"28450",1,"255|255|255|255",5,19.41,"95624",0,0,"161|183|243|255","255|255|255|255",1,5,1,"103|156|246|255","108338","35|90|231|255",1,10,null,0,"255|226|182|255",1,10,"184494",1,0,-1,1.5,1.2,1,0,0,0,0,0,0,1,0.2,0,9000,"16|63|111|255",1,2000,0,0,"0|0|0|255",0,-135,-50,"255|255|255|242",0,1,2500,0,4368.6,4,"255|255|255|0",1,"255|255|255|0"],[5,5,"255|226|204|255",1,0,0.5,"178196",1,"255|255|255|255",5,19.41,"95624",0,0,"(R=1.000000,G=0.830770,B=0.679543,A=1.000000)","(R=0.500000,G=0.500000,B=0.500000,A=1.000000)",1,3,1,"(R=0.752942,G=0.479320,B=0.545725,A=1.000000)","59838","(R=0.127438,G=0.141263,B=0.564712,A=1.000000)",1,10,null,0,"255|227|156|255",20,6,"184494",1,0,-1,1.5,1.2,1.03,0,0,0,0,0,0,0,0.33,0.44,-361.83,"16|63|111|255",1,4000,0,0,"0|0|0|255",0,78.58,-75.54,"250|248|242|255",-1.24,1,2000,1,1809.38,1.17,"255|255|255|0",1.4,"255|255|255|0"],[6,6,"228|235|255|255",1,1,0,"28450",1,"255|255|255|255",5,19.41,"95624",0,0,"186|208|243|255","188|188|188|188",1,20,1.17,"154|178|243|255","195714","49|81|187|255",1,10,null,0,"255|226|182|255",40,9,"184494",1,0,-1,1.5,1.2,1,0,0,0,0,0,0,1,1,0.44,-361.83,"16|63|111|255",1,2000,0,0,"0|0|0|255",0,-135,-50,"255|255|255|255",0,1,2800,1,4478.65,4,"255|255|255|0",1,"255|255|255|0"],[7,7,"(R=0.623960,G=0.686685,B=1.000000,A=1.000000)",1,0,0.5,"178196",0,"(R=0.522794,G=0.116481,B=0.265481,A=1.000000)",2,47.85,"233556",1,0,"(R=0.089798,G=0.068563,B=0.117647,A=1.000000)","(R=1.000000,G=1.000000,B=1.000000,A=1.000000)",1,5.07,2,"(R=0.124772,G=0.088656,B=0.135633,A=1.000000)","59821","(R=0.000000,G=0.000000,B=0.000000,A=1.000000)",0.72,14.6,"14307",1,"255|226|182|255 ",40,9,"184494",0,0,-1,4.48,1.09,1.33,0,0,0,0,0,0,0,0.33,0.44,-361.83,"16|63|111|255 ",1,4000,0,0,"0|0|0|255 ",0,70,-1.73,"(R=0.242281,G=0.361307,B=0.571125,A=1.000000)",-0.65,1,239.12,1,4368.6,4,"(R=0.966020,G=0.501341,B=0.985294,A=0.000000)",1,"(R=1.000000,G=1.000000,B=1.000000,A=0.000000)"]];
 export interface ISceneEnvironmentElement extends IElementBase{
  	/**undefined*/
 	id:number
 	/**场景表id*/
 	sceneId:number
 	/**云颜色，rgba范围[0，1]*/
-	cloudColor:mw.Vector4
+	cloudColor:string
 	/**云密度[0，1]*/
 	cloudDensity:number
 	/**云透明度[0，1]*/
@@ -18,7 +18,7 @@ export interface ISceneEnvironmentElement extends IElementBase{
 	/**云是否可见（0：不可见，1：可见）*/
 	cloudVisible:number
 	/**月亮颜色*/
-	moonColor:mw.Vector4
+	moonColor:string
 	/**月亮亮度[0，2000]*/
 	moonIntensity:number
 	/**月亮大小[0，100]*/
@@ -31,9 +31,9 @@ export interface ISceneEnvironmentElement extends IElementBase{
 */
 	skyBoxPreset:number
 	/**天空下层颜色*/
-	skyDomeBottomColor:mw.Vector4
+	skyDomeBottomColor:string
 	/**天空盒整体颜色*/
-	skyDomeBaseColor:mw.Vector4
+	skyDomeBaseColor:string
 	/**是否开启渐变效果*/
 	skyDomeGradientEnabled:number
 	/**地平线渐出值[1，20]*/
@@ -41,11 +41,11 @@ export interface ISceneEnvironmentElement extends IElementBase{
 	/**天空盒亮度[0，100]*/
 	skyDomeIntensity:number
 	/**天空中层颜色*/
-	skyDomeMiddleColor:mw.Vector4
+	skyDomeMiddleColor:string
 	/** 天空盒贴图*/
 	skyDomeTextureID:string
 	/**天空顶层颜色*/
-	skyDomeTopColor:mw.Vector4
+	skyDomeTopColor:string
 	/**星星亮度[0，1]*/
 	starIntensity:number
 	/**星星密度[0，100]*/
@@ -55,7 +55,7 @@ export interface ISceneEnvironmentElement extends IElementBase{
 	/**是否开启星星*/
 	starVisible:number
 	/**太阳颜色*/
-	sunColor:mw.Vector4
+	sunColor:string
 	/**太阳光亮度[0，2000]*/
 	sunIntensity:number
 	/**太阳大小[0，100]*/
@@ -95,7 +95,7 @@ export interface ISceneEnvironmentElement extends IElementBase{
 	/**雾高度*/
 	height:number
 	/**雾散射颜色*/
-	inscatteringColor:mw.Vector4
+	inscatteringColor:string
 	/**雾最大透明度*/
 	maxOpacity:number
 	/**雾起始距离*/
@@ -105,7 +105,7 @@ export interface ISceneEnvironmentElement extends IElementBase{
 	/**太阳光散射初始距离*/
 	directionalInscatteringStartDistance:number
 	/**太阳光散射颜色*/
-	directionalInscatteringColor:mw.Vector4
+	directionalInscatteringColor:string
 	/**雾预设*/
 	fogPreset:number
 	/**灯光朝向角度（-180 ~ 180）*/
@@ -113,7 +113,7 @@ export interface ISceneEnvironmentElement extends IElementBase{
 	/**俯仰角度*/
 	pitchAngle:number
 	/**偏色值*/
-	lightColor:mw.Vector4
+	lightColor:string
 	/**曝光值*/
 	ev100:number
 	/**是否开启阴影*/
@@ -127,11 +127,11 @@ export interface ISceneEnvironmentElement extends IElementBase{
 	/**平行光强度*/
 	directionalLightIntensity:number
 	/**平行光颜色*/
-	directionalLightColor:mw.Vector4
+	directionalLightColor:string
 	/**天光强度*/
 	skyLightIntensity:number
 	/**天光颜色*/
-	skyLightColor:mw.Vector4
+	skyLightColor:string
  } 
 export class SceneEnvironmentConfig extends ConfigBase<ISceneEnvironmentElement>{
 	constructor(){

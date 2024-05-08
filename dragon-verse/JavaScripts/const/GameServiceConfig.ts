@@ -52,7 +52,7 @@ export default class GameServiceConfig {
     /**
      * 中转关在场景里的id
      */
-    public static readonly TRANSFER_SCENE_ID = 7;
+    public static readonly TRANSFER_SCENE_ID = 8;
     /**
      * 转场动画渐显时间（毫秒）
      */
@@ -395,6 +395,14 @@ export default class GameServiceConfig {
      */
     public static readonly THROW_BALL_PREFAB_GUID = "33BCE32D4124AAFB9091F1A6CD90E3D6";
 
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    //#region Ecology
+    /**
+     * 生态 动物 自动生成间隔.
+     * @type {number}
+     */
+    public static readonly ECOLOGY_ANIMAL_AUTO_GENERATION_INTERVAL = 5e3;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Bag

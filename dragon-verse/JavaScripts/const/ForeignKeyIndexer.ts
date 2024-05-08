@@ -43,6 +43,10 @@ export default class ForeignKeyIndexer extends Singleton<ForeignKeyIndexer>() {
 
     private _bagItemTypeSet: Map<BagTypes, Set<number>> = new Map<BagTypes, Set<number>>();
 
+    private _bagItemForDragonIndexCache: Map<number, number> = new Map();
+
+    private _dragonHabitatMap: Map<number, number[]> = new Map();
+
     private _characterIndexCache: Map<number, CharacterTypes> = new Map<number, CharacterTypes>();
 
     private _characterTypeSet: Map<CharacterTypes, Set<number>> = new Map<CharacterTypes, Set<number>>();
@@ -80,6 +84,15 @@ export default class ForeignKeyIndexer extends Singleton<ForeignKeyIndexer>() {
     }
 
     /**
+     * 查询背包物对应的龙.
+     * @param {number} bagId
+     * @return {number}
+     */
+    public queryDragonByBagId(bagId: number): number | undefined {
+        return this._bagItemForDragonIndexCache.get(bagId);
+    }
+
+    /**
      * 是否 背包物是指定类型.
      * @param bagId
      * @param type
@@ -113,6 +126,15 @@ export default class ForeignKeyIndexer extends Singleton<ForeignKeyIndexer>() {
     }
 
     /**
+     * 查询 栖居地 所拥有龙.
+     * @param {number} habitatId
+     * @return {number[]}
+     */
+    public queryDragonOfHabitat(habitatId: number): number[] {
+        return [...this._dragonHabitatMap.get(habitatId)];
+    }
+
+    /**
      * 是否 角色是指定类型.
      * @param bagId
      * @param type
@@ -132,10 +154,19 @@ export default class ForeignKeyIndexer extends Singleton<ForeignKeyIndexer>() {
     }
 
     private initDragonIndexer() {
-        const configs = GameConfig.CharacterfulDragon.getAllElement();
+        const configs = GameConfig.Dragon.getAllElement();
         const set = new Set<number>();
         for (const config of configs) {
             set.add(config.bagId);
+            this._bagItemForDragonIndexCache.set(config.bagId, config.id);
+
+            for (const habitatId of config.dragonHabitatIds) {
+                if (this._dragonHabitatMap.has(habitatId)) {
+                    this._dragonHabitatMap
+                        .get(habitatId)
+                        .push(config.id);
+                } else this._dragonHabitatMap.set(habitatId, [config.id]);
+            }
         }
 
         this._bagItemTypeSet.set(BagTypes.Dragon, set);

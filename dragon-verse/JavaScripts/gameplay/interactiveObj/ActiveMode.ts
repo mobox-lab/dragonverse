@@ -145,15 +145,18 @@ export class ActivateByUI extends ActivateMode {
     private showUI: () => void;
     private hideUI: () => void;
 
-    constructor(interactiveObj: GameObject, showUI: () => void, hideUI: () => void) {
+    constructor(interactiveObj: GameObject, showUI: () => void, hideUI: () => void, needControlByQuadTree: boolean) {
         super(interactiveObj);
         this.showUI = showUI;
         this.hideUI = hideUI;
 
         //插入到四叉树
-        // ModuleService.ready().then(() => {
-        //     ModuleService.getModule(InteractiveObjModuleC).insertInteractionIntoQuadTree(this._interactiveObj.worldTransform.position, this._interactiveObj.gameObjectId);
-        // })
+        if (needControlByQuadTree) {
+            ModuleService.ready().then(() => {
+                ModuleService.getModule(InteractiveObjModuleC).insertInteractionIntoQuadTree(this._interactiveObj.worldTransform.position, this._interactiveObj.gameObjectId);
+            })
+        }
+
     }
 
     public showInteractionUI() {
@@ -182,11 +185,11 @@ export class ActivateByUI extends ActivateMode {
         }
     }
 
-    public clickToStartInteraction() {
+    public clickToStartInteraction = () => {
         ModuleService.getModule(InteractiveObjModuleC).startInteraction(this._interactiveObj.gameObjectId);
     }
 
-    public clickToEndInteraction() {
+    public clickToEndInteraction = () => {
         ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this._interactiveObj.gameObjectId);
     }
 }
@@ -198,7 +201,7 @@ export class ActivateByUIAndTrigger extends ActivateByUI {
     private _trigger: mw.Trigger;
 
     constructor(interactiveObj: GameObject, showUI: () => void, hideUI: () => void) {
-        super(interactiveObj, showUI, hideUI);
+        super(interactiveObj, showUI, hideUI, false);
         if (SystemUtil.isClient()) {
             this._trigger = this._interactiveObj as mw.Trigger;
             this._trigger.onEnter.add(this.onEnter.bind(this));
@@ -250,13 +253,5 @@ export class ActivateByUIAndTrigger extends ActivateByUI {
                 this.hideInteractionUI();
             }
         }
-    }
-
-    public clickToStartInteraction() {
-        ModuleService.getModule(InteractiveObjModuleC).startInteraction(this._interactiveObj.gameObjectId);
-    }
-
-    public clickToEndInteraction() {
-        ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this._interactiveObj.gameObjectId);
     }
 }
