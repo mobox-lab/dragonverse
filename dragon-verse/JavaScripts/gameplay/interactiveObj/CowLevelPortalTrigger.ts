@@ -42,7 +42,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
     })
     public isRefreshCameraRotation: boolean = true;
 
-    @Property({displayName: "角色目标旋转", group: "Config-rotation"})
+    @Property({ displayName: "角色目标旋转", group: "Config-rotation" })
     public endRotation: Rotation = Rotation.zero;
 
     @Property({
@@ -109,7 +109,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
             effect.worldTransform.position = GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_POS;
             actions
                 .tween(effect.worldTransform)
-                .set({scale: Vector.zero})
+                .set({ scale: Vector.zero })
                 .to(GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_DURATION, {
                     scale: GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_SCALE_MAX,
                 })
@@ -129,20 +129,25 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                     let cowLevel = Math.floor(Math.random() * cowLevelScene.length);
                     let scene = cowLevelScene[cowLevel];
                     //播tips
-                    let tips = GameConfig.TipsPlaylist.findElement("environment", scene.id);
-                    if (tips) GlobalTips.getInstance().showGlobalTips(i18n.lan(tips.content));
+                    if (scene.foreshow) GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.foreshow));
                     TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
                         //显示一个转场ui动画
                         this.showTransitionAnimation(() => {
                             let dest = AreaManager.getInstance().getRandomPoint(scene.bornAreaId);
                             if (!("z" in dest)) {
                                 Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
+                                effect.destroy();
+                                //通知结束交互
+                                ModuleService.getModule(InteractiveObjModuleC).stopInteraction(
+                                    this.gameObject.gameObjectId,
+                                );
+                                this.activeMode.activate = true;
                                 return;
                             }
                             //传送
                             this.transferPlayer(Player.localPlayer.character, new Vector(dest.x, dest.y, dest.z));
                             //改变天空盒
-                            EnvironmentManager.getInstance().setEnvironment(scene.id);
+                            EnvironmentManager.getInstance().setEnvironment(scene.sceneEnvId);
                             //显示场景名
                             GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
                                 duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
@@ -198,13 +203,13 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
         let ui = UIService.show(JumpGameTransition_Generate);
         actions
             .tween(ui.bImage)
-            .set({renderOpacity: 0})
-            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, {renderOpacity: 1})
+            .set({ renderOpacity: 0 })
+            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 1 })
             .call(() => {
                 callBack();
             })
             .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
-            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, {renderOpacity: 0})
+            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
             .call(() => {
                 UIService.hide(JumpGameTransition_Generate);
             })
@@ -234,7 +239,7 @@ AddGMCommand("传送奶牛关", (player, value) => {
 
     Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
     //改变天空盒
-    EnvironmentManager.getInstance().setEnvironment(scene.id);
+    EnvironmentManager.getInstance().setEnvironment(scene.sceneEnvId);
     //显示场景名
     GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
         duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
