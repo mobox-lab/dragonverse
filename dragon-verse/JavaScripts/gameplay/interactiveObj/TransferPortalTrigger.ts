@@ -34,9 +34,8 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
         displayName: "传送地点",
         group: "Config-Destination",
         enumType: {
-            任意奶牛关: Destination.anyCowLevel,
-            主场景: Destination.mainScene,
-            // 中转关: Destination.TransferScene,
+            "任意奶牛关": Destination.anyCowLevel,
+            "主场景": Destination.mainScene,
         },
     })
     public portalDestination: number = 2;
@@ -55,7 +54,7 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
     })
     public isRefreshCameraRotation: boolean = true;
 
-    @Property({displayName: "角色目标旋转", group: "Config-rotation"})
+    @Property({ displayName: "角色目标旋转", group: "Config-rotation" })
     public endRotation: Rotation = Rotation.zero;
 
     @Property({
@@ -90,21 +89,13 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
     }
 
     onProgressDoneInClient(): void {
-        let pos: Vector;
+
         switch (this.portalDestination) {
-            // case Destination.TransferScene:
-            //     {
-            //         pos = GameConfig.Scene.getElement(GameServiceConfig.TRANSFER_SCENE_ID).bornLocation;
-            //         this.showTransitionAnimation(() => {
-            //             this.transferPlayer(Player.localPlayer.character, pos);
-            //         });
-            //     }
-            //     break;
             case Destination.mainScene: {
                 let scene = GameConfig.Scene.getElement(1);
                 showTransitionAnimation(() => {
                     //改变天空盒
-                    EnvironmentManager.getInstance().setEnvironment(scene.id);
+                    EnvironmentManager.getInstance().setEnvironment(scene.sceneEnvId);
                     //显示场景名
                     GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
                         duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
@@ -132,8 +123,8 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
                 let cowLevel = Math.floor(Math.random() * cowLevelScene.length);
                 let scene = cowLevelScene[cowLevel];
                 //播tips
-                let tips = GameConfig.TipsPlaylist.findElement("environment", scene.id);
-                if (tips) GlobalTips.getInstance().showGlobalTips(i18n.lan(tips.content));
+
+                if (scene.foreshow) GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.foreshow));
                 TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
                     showTransitionAnimation(() => {
                         //传送
@@ -144,7 +135,7 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
                         }
                         this.transferPlayer(Player.localPlayer.character, new Vector(dest.x, dest.y, dest.z));
                         //改变天空盒
-                        EnvironmentManager.getInstance().setEnvironment(scene.id);
+                        EnvironmentManager.getInstance().setEnvironment(scene.sceneEnvId);
                         GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
                             duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
                             only: true,
@@ -195,13 +186,13 @@ export function showTransitionAnimation(callBack: () => void) {
     let ui = UIService.show(JumpGameTransition_Generate);
     actions
         .tween(ui.bImage)
-        .set({renderOpacity: 0})
-        .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, {renderOpacity: 1})
+        .set({ renderOpacity: 0 })
+        .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 1 })
         .call(() => {
             callBack();
         })
         .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
-        .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, {renderOpacity: 0})
+        .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
         .call(() => {
             UIService.hide(JumpGameTransition_Generate);
         })

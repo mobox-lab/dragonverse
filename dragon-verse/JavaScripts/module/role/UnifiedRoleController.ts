@@ -24,6 +24,7 @@ import Waterween from "../../depend/waterween/Waterween";
 import AudioController, { SoundIDEnum } from "../../controller/audio/AudioController";
 import { RoleModuleS } from "./RoleModule";
 import GlobalProperty from "../../GlobalProperty";
+import AreaManager from "../../depend/area/AreaManager";
 
 
 /**
@@ -376,6 +377,12 @@ export default class UnifiedRoleController extends mw.PlayerState {
     public respawn() {
         // const position = GToolkit.randomArrayItem(AreaManager.getInstance().getRespawnArea());
         // this.character.worldTransform.position = new Vector(position.x, position.y, position.z);
+        let dest = AreaManager.getInstance().getRandomPoint(GameServiceConfig.AREA_ID_MAIN_SCENE_RESPAWN);
+        if (!("z" in dest)) {
+            Log4Ts.error(UnifiedRoleController, `currently only support 3D point as spawn point`);
+            return;
+        }
+        this.character.worldTransform.position = new Vector(dest.x, dest.y, dest.z);
     }
 
     @RemoteFunction(Server)
