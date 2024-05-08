@@ -63,8 +63,6 @@ export default class SceneDragon {
 
     private _location: Vector = null;
 
-    public autoDestroyTimerId: number = null;
-
     /**
      * 剩余可捕捉次数.
      */

@@ -44,6 +44,9 @@ import { InteractiveObjModuleC, InteractiveObjModuleS } from "./gameplay/interac
 import GlobalTips from "./depend/global-tips/GlobalTips";
 import Balancing from "./depend/balancing/Balancing";
 import GenderTypes = GtkTypes.GenderTypes;
+import Area from "./depend/area/shape/base/IArea";
+import { GameConfig } from "./config/GameConfig";
+import AreaManager from "./depend/area/AreaManager";
 
 AddGMCommand("TP 传送",
     null,
