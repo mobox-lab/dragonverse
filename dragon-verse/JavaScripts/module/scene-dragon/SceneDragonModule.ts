@@ -720,7 +720,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     }
 
     /**
-     * 注册 生成场景龙.
+     * 生成场景龙.
      * @desc 场景龙是私有的 场景龙的存在依赖 playerId 属性.
      * @param playerId
      * @param itemId
@@ -748,7 +748,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     }
 
     /**
-     * 注册 销毁场景龙.
+     * 销毁场景龙.
      * @param playerId
      * @param syncKey
      * @param natural 是否 因玩家退出栖居地销毁.

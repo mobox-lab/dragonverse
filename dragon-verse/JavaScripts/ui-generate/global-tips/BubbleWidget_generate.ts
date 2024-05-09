@@ -15,33 +15,26 @@ import UIScript = mw.UIScript;
 
 @UIBind('UI/global-tips/BubbleWidget.ui')
 export default class BubbleWidget_Generate extends UIScript {
-	private cnvTips_Internal: mw.Canvas
-	public get cnvTips(): mw.Canvas {
-		if(!this.cnvTips_Internal&&this.uiWidgetBase) {
-			this.cnvTips_Internal = this.uiWidgetBase.findChildByPath('cnvTips') as mw.Canvas
+	private canvasTip_Internal: mw.Canvas
+	public get canvasTip(): mw.Canvas {
+		if(!this.canvasTip_Internal&&this.uiWidgetBase) {
+			this.canvasTip_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip') as mw.Canvas
 		}
-		return this.cnvTips_Internal
+		return this.canvasTip_Internal
 	}
-	private imgBg_Internal: mw.Image
-	public get imgBg(): mw.Image {
-		if(!this.imgBg_Internal&&this.uiWidgetBase) {
-			this.imgBg_Internal = this.uiWidgetBase.findChildByPath('cnvTips/imgBg') as mw.Image
+	private imgTipBg_Internal: mw.Image
+	public get imgTipBg(): mw.Image {
+		if(!this.imgTipBg_Internal&&this.uiWidgetBase) {
+			this.imgTipBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip/imgTipBg') as mw.Image
 		}
-		return this.imgBg_Internal
+		return this.imgTipBg_Internal
 	}
-	private imgLight_Internal: mw.Image
-	public get imgLight(): mw.Image {
-		if(!this.imgLight_Internal&&this.uiWidgetBase) {
-			this.imgLight_Internal = this.uiWidgetBase.findChildByPath('cnvTips/imgLight') as mw.Image
+	private textDescription_Internal: mw.TextBlock
+	public get textDescription(): mw.TextBlock {
+		if(!this.textDescription_Internal&&this.uiWidgetBase) {
+			this.textDescription_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip/textDescription') as mw.TextBlock
 		}
-		return this.imgLight_Internal
-	}
-	private txtContent_Internal: mw.TextBlock
-	public get txtContent(): mw.TextBlock {
-		if(!this.txtContent_Internal&&this.uiWidgetBase) {
-			this.txtContent_Internal = this.uiWidgetBase.findChildByPath('cnvTips/txtContent') as mw.TextBlock
-		}
-		return this.txtContent_Internal
+		return this.textDescription_Internal
 	}
 
 
@@ -76,7 +69,7 @@ export default class BubbleWidget_Generate extends UIScript {
         
         // 文本多语言
         
-        this.initLanguage(this.txtContent)
+        this.initLanguage(this.textDescription)
         
 	
         // 静态文本多语言
@@ -85,7 +78,7 @@ export default class BubbleWidget_Generate extends UIScript {
 
     protected overrideTextSetter() {
         
-        overrideBubblingWidget(this.txtContent);
+        overrideBubblingWidget(this.textDescription);
         
 	
     }
@@ -97,7 +90,7 @@ export default class BubbleWidget_Generate extends UIScript {
         
         // 文本多语言
         
-        this.unregisterLanKey(this.txtContent)
+        this.unregisterLanKey(this.textDescription)
         
 	
         // 隐藏文本多语言
