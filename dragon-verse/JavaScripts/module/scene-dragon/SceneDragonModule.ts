@@ -1,12 +1,10 @@
 import Enumerable from "linq";
 import UUID from "pure-uuid";
 import { EventDefine } from "../../const/EventDefine";
-import { BagTypes } from "../../const/ForeignKeyIndexer";
+import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import AreaManager from "../../gameplay/area/AreaManager";
 import GToolkit, { Expression, Regulator } from "../../util/GToolkit";
-import { IPoint3 } from "../../util/area/Shape";
 import { BagModuleS } from "../bag/BagModule";
 import SceneDragon from "./SceneDragon";
 import SceneDragonBehavior from "./SceneDragonBehavior";
@@ -19,6 +17,10 @@ import Easing from "../../depend/easing/Easing";
 import EffectService = mw.EffectService;
 import { ThrowDragonBall } from "../../gameplay/archtype/action/ThrowDragonBall";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
+import AreaManager from "../../depend/area/AreaManager";
+import { GameConfig } from "../../config/GameConfig";
+import Gtk from "../../util/GToolkit";
+import { IPoint3 } from "../../depend/area/shape/base/IPoint";
 
 /**
  * 场景龙 相关事件.
@@ -220,9 +222,6 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
-        this._eventListeners.push(
-            Event.addLocalListener(EventDefine.DragonOutOfAliveRange, this.onDragonOutOfAliveRange),
-        );
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -528,25 +527,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Event Callback
-    private onDragonOutOfAliveRange = (syncKey: string) => {
-        Log4Ts.log(SceneDragonModuleC, `knows dragon out of alive range.syncKey: ${syncKey}`);
-        this.server.net_destroy(syncKey, false);
-    };
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-}
-
-/**
- * 场景龙 玩家记录.
- */
-class PlayerRecord {
-    public readonly enterTime: number;
-    public dragonSyncKeys: string[];
-
-    public constructor() {
-        this.enterTime = Date.now();
-        this.dragonSyncKeys = [];
-    }
 }
 
 export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonModuleData> {
@@ -557,12 +538,23 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     //#region Member
     private _bagModuleS: BagModuleS;
 
+    private _areaManager: AreaManager;
+
+    private get aM() {
+        if (!this._areaManager) {
+            this._areaManager = AreaManager.getInstance();
+        }
+        return this._areaManager;
+    }
+
     /**
      * 私有玩家场景龙存在映射.
      *  - key 玩家 PlayerId.
-     *  - value 该玩家现存所有场景龙.
+     *  - value 该玩家现存所有场景龙映射.
+     *      - key habitat id
+     *      - value syncKeys
      */
-    public existenceItemMap: Map<number, PlayerRecord> = new Map();
+    public existenceItemMap: Map<number, Map<number, string[]>> = new Map();
 
     /**
      * 全场景龙映射.
@@ -578,25 +570,6 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      *      - 未上锁时为 null.
      */
     private _syncLocker: Map<string, number> = new Map();
-
-    private _generateRegulator: Regulator = new Regulator(GameServiceConfig.TRY_GENERATE_INTERVAL);
-
-    /**
-     * 生成位置表.
-     * @desc 从制定标签锚点的子锚点收集.
-     * @desc key id.
-     * @desc value 生成位置.
-     * @private
-     */
-    private _generateLocationsMap: Map<number, IPoint3[]>;
-
-    private getValidGenerateLocation(id: number): IPoint3[] {
-        if (!this._generateLocationsMap) {
-            this._generateLocationsMap = AreaManager.getInstance().getGenerationPointMap(BagTypes.Dragon);
-        }
-
-        return this._generateLocationsMap.get(id);
-    }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -626,7 +599,6 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        //TODO_LviatYi
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -657,10 +629,13 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * @param playerId
      */
     private removePrivateRecord(playerId: number): void {
-        Enumerable.from(this.existenceItemMap.get(playerId)?.dragonSyncKeys ?? []).forEach((key) => {
-            this.syncItemMap.delete(key);
-            this._syncLocker.delete(key);
-        });
+        Enumerable.from(this.existenceItemMap.get(playerId).values())
+            .selectMany((arr) => arr)
+            .forEach((key) => {
+                this.syncItemMap.delete(key);
+                this._syncLocker.delete(key);
+            });
+
         this.existenceItemMap.delete(playerId);
     }
 
@@ -670,7 +645,78 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * @private
      */
     private addPlayerRecord(playerId: number): void {
-        this.existenceItemMap.set(playerId, new PlayerRecord());
+        this.existenceItemMap.set(playerId, new Map());
+    }
+
+    /**
+     * 栖居地生成场景龙.
+     * @param {number} habitatId
+     * @param {number} playerId
+     */
+    public habitatGenerate(habitatId: number, playerId: number) {
+        const record = this.existenceItemMap.get(playerId);
+        if (!record) {
+            Log4Ts.error(SceneDragonModuleS, `player record not exist in server. playerId: ${playerId}`);
+            return;
+        }
+
+        const habitat = GameConfig.Scene.getElement(habitatId);
+        if (!habitat) {
+            Log4Ts.error(SceneDragonModuleS, `habitat not exist. habitatId: ${habitatId}`);
+            return;
+        }
+
+        let generateCount = habitat.capacity - (record.get(habitatId)?.length ?? 0);
+        if (generateCount <= 0) {
+            Log4Ts.warn(SceneDragonModuleS, `habitat is full. habitatId: ${habitatId}`);
+            return;
+        }
+
+        let candidateDragonTypes = ForeignKeyIndexer.getInstance().queryDragonOfHabitat(habitatId);
+
+        let candidate: number[] = [];
+        while (generateCount > 0) {
+            candidate.push(Gtk.randomArrayItem(candidateDragonTypes));
+            --generateCount;
+        }
+
+        let candidatePoints = Gtk.randomShuffleArray(
+            Enumerable.from(habitat.areaIds)
+                .selectMany(areaId => this.aM.getAreaPointSet(areaId))
+                .toArray(),
+        );
+
+        let i = 0;
+        for (; i < candidate.length && i < candidatePoints.length; ++i) {
+            let dragonId = candidate[i];
+            let birthPoint = candidatePoints[i];
+            this.generate(playerId, dragonId, habitatId, birthPoint, new UUID(4).toString());
+        }
+
+        if (i < candidate.length) Log4Ts.log(SceneDragonModuleS, `candidate dragon is more than birth point.`);
+    }
+
+    /**
+     * 栖居地销毁场景龙.
+     * @param {number} habitatId
+     * @param {number} playerId
+     */
+    public habitatDestroy(habitatId: number, playerId: number) {
+        const record = this.existenceItemMap.get(playerId);
+        if (!record) {
+            Log4Ts.error(SceneDragonModuleS, `player record not exist in server. playerId: ${playerId}`);
+            return;
+        }
+
+        let dragonSyncKeys = record.get(habitatId);
+        if (Gtk.isNullOrEmpty(dragonSyncKeys)) {
+            Log4Ts.log(SceneDragonModuleS, `there is not dragon in habitat. habitatId: ${habitatId}`);
+            return;
+        }
+
+        for (const syncKey of dragonSyncKeys) {
+            this.destroy(playerId, syncKey, false);
+        }
     }
 
     /**
@@ -678,48 +724,26 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * @desc 场景龙是私有的 场景龙的存在依赖 playerId 属性.
      * @param playerId
      * @param itemId
+     * @param habitat
      * @param location 生成位置.
+     * @param syncKey 同步键.
      */
-    private generate(playerId: number, itemId: number, location: IPoint3 = undefined) {
+    private generate(playerId: number, itemId: number, habitat: number, location: IPoint3, syncKey: string): SceneDragon {
         Log4Ts.log(SceneDragonModuleS, `try generate item, itemId: ${itemId}.`);
 
-        //TODO_LviatYi 接入 AreaManager
-
-        if (location === null) {
-            Log4Ts.error(SceneDragonModuleS, `generate location is null.`);
+        let config = GameConfig.Dragon.getElement(itemId);
+        if (!config) {
+            Log4Ts.error(SceneDragonModuleS, `item config not exist. itemId: ${itemId}`);
             return;
         }
 
-        const syncKey = new UUID(4).toString();
         const item = new SceneDragon();
         item.generate(itemId, new Vector(location.x, location.y, location.z));
 
-        const playerPosition = Player.getPlayer(playerId)?.character.worldTransform.position ?? null;
-        if (
-            playerPosition === null ||
-            Vector.squaredDistance(item.location, playerPosition) > GameServiceConfig.SQR_SCENE_DRAGON_MAX_LIVE_DISTANCE
-        ) {
-            Log4Ts.log(
-                SceneDragonModuleS,
-                `generate item skipped.player is too far.`,
-                `id: ${item.id}.`,
-                `location: ${item.location}.`,
-            );
-            return;
-        }
-
-        const record = this.existenceItemMap.get(playerId);
-        if (!record) {
-            Log4Ts.error(SceneDragonModuleS, `player record not exist in server. playerId: ${playerId}`);
-            return;
-        }
-        record.dragonSyncKeys.push(syncKey);
-
+        Log4Ts.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
+        Gtk.tryGet(this.existenceItemMap.get(playerId), habitat, Array).push(syncKey);
         this.syncItemMap.set(syncKey, item);
         this._syncLocker.set(syncKey, null);
-
-        Log4Ts.log(SceneDragonModuleS, `generate item success. syncKey: ${syncKey}`);
-
         this.getClient(playerId).net_generate(syncKey, item.id, item.hitPoint, item.generateTime, item.location);
     }
 
@@ -727,7 +751,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * 注册 销毁场景龙.
      * @param playerId
      * @param syncKey
-     * @param natural 是否 因时间销毁.
+     * @param natural 是否 因玩家退出栖居地销毁.
      * @private
      */
     private destroy(playerId: number, syncKey: string, natural: boolean = true) {
@@ -737,17 +761,18 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             return;
         }
 
-        if (item.autoDestroyTimerId) {
-            clearTimeout(item.autoDestroyTimerId);
-            item.autoDestroyTimerId = null;
-        }
-
         let record = this.existenceItemMap.get(playerId);
         if (!record) {
             Log4Ts.error(SceneDragonModuleS, `player record not exist in server. playerId: ${playerId}`);
             return;
         }
-        if (!GToolkit.remove(record.dragonSyncKeys, syncKey)) {
+        let removed = false;
+        for (const habitatDragon of record.values()) {
+            if (GToolkit.remove(habitatDragon, syncKey)) {
+                removed = true;
+            }
+        }
+        if (!removed) {
             Log4Ts.log(
                 SceneDragonModuleS,
                 `destroy Collectible Item; ${item.id} whose generate time is ${item.generateTime},but it not exist in server`,

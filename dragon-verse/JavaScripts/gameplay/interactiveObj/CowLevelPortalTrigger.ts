@@ -24,6 +24,9 @@ import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjMo
 import JumpGameTransition_Generate from "../../ui-generate/jumpGame/JumpGameTransition_generate";
 import { EventDefine } from "../../const/EventDefine";
 import UnifiedRoleController from "../../module/role/UnifiedRoleController";
+import Area from "../../depend/area/shape/base/IArea";
+import AreaManager from "../../depend/area/AreaManager";
+import { SceneDragonModuleS } from "../../module/scene-dragon/SceneDragonModule";
 
 export default class CowLevelPortalTrigger extends PortalTrigger {
     @Property({
@@ -72,6 +75,23 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
 
     async onStartPortalInServer(playerId: number): Promise<void> {
         if (ModuleService.getModule(BagModuleS).hasDragonBall(playerId)) {
+            //
+            let scenes = GameConfig.Scene.getAllElement();
+            let cowLevelScene = scenes.map((element) => {
+                if (
+                    element.id !== GameServiceConfig.MAIN_SCENE_ID &&
+                    element.id !== GameServiceConfig.TRANSFER_SCENE_ID
+                ) {
+                    return element;
+                }
+            });
+
+            let cowLevel = Math.floor(Math.random() * cowLevelScene.length);
+            let scene = cowLevelScene[cowLevel];
+
+            this.startTransferToCowLevel(Player.getPlayer(playerId), scene.id);
+            //生成奶牛关龙
+            ModuleService.getModule(SceneDragonModuleS).habitatGenerate(scene.id, playerId);
         } else {
             //播一个爆炸特效
             let player = await Player.asyncGetPlayer(playerId);
@@ -81,7 +101,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                 {
                     loopCount: 1,
                     scale: GameServiceConfig.COW_LEVEL_PORTAL_EXPLODE_EFFECT_SCALE,
-                }
+                },
             );
             //加个冲量
             actions
@@ -98,6 +118,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
             ModuleService.getModule(InteractiveObjModuleS).net_stopInteraction(playerId, this.gameObject.gameObjectId);
         }
     }
+
     async onStartPortalInClient(): Promise<void> {
         if (ModuleService.getModule(BagModuleC).hasDragonBall()) {
             this.activeMode.activate = false;
@@ -126,15 +147,25 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                     let cowLevel = Math.floor(Math.random() * cowLevelScene.length);
                     let scene = cowLevelScene[cowLevel];
                     //播tips
-                    let tips = GameConfig.TipsPlaylist.findElement("environment", scene.id);
-                    if (tips) GlobalTips.getInstance().showGlobalTips(i18n.lan(tips.content));
+                    if (scene) GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.foreshow));
                     TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
                         //显示一个转场ui动画
                         this.showTransitionAnimation(() => {
-                            //传送
-                            this.transferPlayer(Player.localPlayer.character, scene.bornLocation);
+                            let dest = AreaManager.getInstance().getRandomPoint(scene.bornAreaId);
+                            if (!("z" in dest)) {
+                                Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
+                                effect.destroy();
+                                //通知结束交互
+                                ModuleService.getModule(InteractiveObjModuleC).stopInteraction(
+                                    this.gameObject.gameObjectId,
+                                );
+                                this.activeMode.activate = true;
+                                return;
+                            }
+
+                            this.transferPlayer(Player.localPlayer.character, new Vector(dest.x, dest.y, dest.z));
                             //改变天空盒
-                            EnvironmentManager.getInstance().setEnvironment(scene.id);
+                            EnvironmentManager.getInstance().setEnvironment(scene.sceneEnvId);
                             //显示场景名
                             GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
                                 duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
@@ -143,7 +174,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                             effect.destroy();
                             //通知结束交互
                             ModuleService.getModule(InteractiveObjModuleC).stopInteraction(
-                                this.gameObject.gameObjectId
+                                this.gameObject.gameObjectId,
                             );
                             this.activeMode.activate = true;
 
@@ -170,7 +201,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                 character.worldTransform = new Transform(
                     location,
                     this.isRefreshObjectRotation ? this.endRotation : character.worldTransform.rotation,
-                    character.worldTransform.scale
+                    character.worldTransform.scale,
                 );
 
                 if (this.isRefreshCameraRotation) this._nolan.lookToward(this.endRotation.rotateVector(Vector.forward));
@@ -203,28 +234,102 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
             .union()
             .start();
     }
+
+    @RemoteFunction(mw.Client)
+    async startTransferToCowLevel(player: Player, sceneId: number): Promise<void> {
+        if (ModuleService.getModule(BagModuleC).hasDragonBall()) {
+            this.activeMode.activate = false;
+
+            let effect = (await GameObject.asyncSpawn(GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_GUID)) as Effect;
+            effect.worldTransform.position = GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_POS;
+            actions
+                .tween(effect.worldTransform)
+                .set({ scale: Vector.zero })
+                .to(GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_DURATION, {
+                    scale: GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_SCALE_MAX,
+                })
+                .union()
+                .call(() => {
+                    //随机奶牛关
+                    let scene = GameConfig.Scene.getElement(sceneId);
+                    //播tips
+                    if (scene) GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.foreshow));
+                    TimeUtil.delaySecond(GameServiceConfig.COW_LEVEL_PORTAL_SHOW_TIPS_DURATION).then(() => {
+                        //显示一个转场ui动画
+                        this.showTransitionAnimation(() => {
+                            let dest = AreaManager.getInstance().getRandomPoint(scene.bornAreaId);
+                            if (!("z" in dest)) {
+                                Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
+                                effect.destroy();
+                                //通知结束交互
+                                ModuleService.getModule(InteractiveObjModuleC).stopInteraction(
+                                    this.gameObject.gameObjectId,
+                                );
+                                this.activeMode.activate = true;
+                                return;
+                            }
+                            //传送
+                            // ModuleService.getModule(SceneDragonModuleS).habitatGenerate
+                            this.transferPlayer(Player.localPlayer.character, new Vector(dest.x, dest.y, dest.z));
+                            //改变天空盒
+                            EnvironmentManager.getInstance().setEnvironment(scene.sceneEnvId);
+                            //显示场景名
+                            GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
+                                duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
+                                only: true,
+                            });
+                            effect.destroy();
+                            //通知结束交互
+                            ModuleService.getModule(InteractiveObjModuleC).stopInteraction(
+                                this.gameObject.gameObjectId,
+                            );
+                            this.activeMode.activate = true;
+
+                            Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
+                        });
+                    });
+                })
+                .start();
+        } else {
+            this.activeMode.hideInteractionUI();
+            GlobalTips.getInstance().showGlobalTips(i18n.resolves.hasNoDragonBall());
+        }
+    }
 }
 
 AddGMCommand("传送奶牛关", (player, value) => {
     let scene = GameConfig.Scene.getElement(value);
+    let dest = AreaManager.getInstance().getRandomPoint(scene.bornAreaId);
+    if (!("z" in dest)) {
+        Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
+        return;
+    }
     if (Number(value) === 1) {
         Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
         Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
         Player.localPlayer.getPlayerState(UnifiedRoleController)?.respawn();
     } else {
         player.character.worldTransform = new Transform(
-            scene.bornLocation,
+            new Vector(dest.x, dest.y, dest.z),
             player.character.worldTransform.rotation,
-            player.character.worldTransform.scale
+            player.character.worldTransform.scale,
         );
     }
 
     Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
     //改变天空盒
-    EnvironmentManager.getInstance().setEnvironment(scene.id);
+    EnvironmentManager.getInstance().setEnvironment(scene.sceneEnvId);
     //显示场景名
     GlobalTips.getInstance().showGlobalTips(i18n.lan(scene.name), {
         duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
         only: true,
     });
+}, (player, value) => {
+    let scene = GameConfig.Scene.getElement(value);
+    let dest = AreaManager.getInstance().getRandomPoint(scene.bornAreaId);
+    if (!("z" in dest)) {
+        Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);
+        return;
+    }
+    ModuleService.getModule(SceneDragonModuleS).habitatGenerate(scene.id, player.playerId);
 });

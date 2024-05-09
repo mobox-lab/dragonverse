@@ -7,14 +7,14 @@
  * @zewei.zhang
  * @LviatYi
  * @version 31.2.3
- * UI: UI/tip/tiptiptip.ui
+ * UI: UI/tip/BubbleWidgets.ui
  */
 
 import UIScript = mw.UIScript;
 
 
-@UIBind('UI/tip/tiptiptip.ui')
-export default class tiptiptip_Generate extends UIScript {
+@UIBind('UI/tip/BubbleWidgets.ui')
+export default class BubbleWidgets_Generate extends UIScript {
 	private canvasTip_Internal: mw.Canvas
 	public get canvasTip(): mw.Canvas {
 		if(!this.canvasTip_Internal&&this.uiWidgetBase) {

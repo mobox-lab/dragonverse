@@ -246,7 +246,7 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
     /**场景初始化MAp */
     private sceneInitMap: Map<number, boolean> = new Map<number, boolean>();
     /**区域资源点权重 */
-    private areaWeightMap: Map<number, number[]> = new Map<number, number[]>();
+    // private areaWeightMap: Map<number, number[]> = new Map<number, number[]>();
     /**脚本缓存池 */
     private scriptPool: resourceScript[] = [];
     /**刮痧map */
@@ -407,8 +407,8 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
         // }
 
         if (historyScenceId == 0) {
-            let type = this.randomCreate(areaId);
-            historyScenceId = this.getScenceUnitId(areaId, type);
+            historyScenceId = this.randomCreate(areaId);
+            // historyScenceId = this.getScenceUnitId(areaId, type);
         }
 
         let res = await this.getScript();
@@ -442,66 +442,73 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
 
     }
 
-    /**判断是区域一的前后部分，生成类型 */
-    public isAreaOneFront(pointId: number): number {
-        let X = GlobalData.SceneResource.areaY;
-        let loc = GameConfig.DropPoint.getElement(pointId).areaPoints;
-        if (loc.y >= X) {
-            return this.getResTypeByWeight(GlobalData.SceneResource.area1Weight);
-        } else {
-            return this.getResTypeByWeight(GlobalData.SceneResource.area2Weight);
-        }
+    // /**判断是区域一的前后部分，生成类型 */
+    // public isAreaOneFront(pointId: number): number {
+    //     let X = GlobalData.SceneResource.areaY;
+    //     let loc = GameConfig.DropPoint.getElement(pointId).areaPoints;
+    //     if (loc.y >= X) {
+    //         return this.getResTypeByWeight(GlobalData.SceneResource.area1Weight);
+    //     } else {
+    //         return this.getResTypeByWeight(GlobalData.SceneResource.area2Weight);
+    //     }
 
-    }
-    /**根据权重数组 返回资源类型 */
-    public getResTypeByWeight(weightArr: number[]): number {
-        let weight = 0;
-        weightArr.forEach((item) => {
-            weight += item;
-        })
-        let random = utils.GetRandomNum(0, weight);
-        let probability = 0;
-        for (let i = 0; i < weightArr.length; i++) {
-            probability += weightArr[i];
-            if (random <= probability) {
-                return GlobalData.SceneResource.resourceType[i];
-            }
-        }
-        console.error('lwj error返回 0 ');
-        return 0;
-    }
+    // }
+    // /**根据权重数组 返回资源类型 */
+    // public getResTypeByWeight(weightArr: number[]): number {
+    //     let weight = 0;
+    //     weightArr.forEach((item) => {
+    //         weight += item;
+    //     })
+    //     let random = utils.GetRandomNum(0, weight);
+    //     let probability = 0;
+    //     for (let i = 0; i < weightArr.length; i++) {
+    //         probability += weightArr[i];
+    //         if (random <= probability) {
+
+    //             return GlobalData.SceneResource.resourceType[i];
+    //         }
+    //     }
+    //     console.error('lwj error返回 0 ');
+    //     return 0;
+    // }
 
     /**随机生成 */
     private randomCreate(areaId: number) {
-        if (!this.areaWeightMap.has(areaId)) {
-            this.areaWeightMap.set(areaId, this.getAreaWeight(areaId));
-        }
+        // if (!this.areaWeightMap.has(areaId)) {
+        //     this.areaWeightMap.set(areaId, this.getAreaWeight(areaId));
+        // }
         let weight = 0;
-        let weightArr = this.areaWeightMap.get(areaId);
+        let weightArr = this.getAreaWeight(areaId);
         weightArr.forEach((item) => {
-            weight += item;
+            weight += item.weight;
         })
         let random = utils.GetRandomNum(0, weight);
         let probability = 0;
+        let sum = 0;
         for (let i = 0; i < weightArr.length; i++) {
-            probability += weightArr[i];
-            if (random <= probability) {
-                return GlobalData.SceneResource.resourceType[i];
+            probability += weightArr[i].weight;
+            if (random < probability && random >= sum) {
+                //表里不是配了吗，为啥再写一份？这样限制死了配表顺序还有type了
+                // return GlobalData.SceneResource.resourceType[i];
+                return weightArr[i].id;
             }
+            sum += weightArr[i].weight;
         }
-        return 0;
+        //意外情况就返回第一个
+        return 1;
     }
-    private getAreaWeight(areaId: number): number[] {
-        let cfgs = GameConfig.SceneUnit.getAllElement();
-        let weightArr: number[] = [];
-        let weight = 0;
+    private getAreaWeight(areaId: number): { id: number, weight: number }[] {
+        let cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
+        // let cfgs = GameConfig.SceneUnit.getAllElement();
+        let weightArr: { id: number, weight: number }[] = [];
+        // let weight = 0;
         cfgs.forEach((item) => {
-            if (item.AreaID == areaId) {
-                if (item.Weight != 0) {
-                    weight += item.Weight;
-                    weightArr.push(item.Weight);
-                }
-            }
+            // if (item.AreaID == areaId) {
+            // if (item.Weight != 0) {
+            // weight += item.Weight;
+            weightArr.push({ id: item.ID, weight: item.Weight });
+            // }
+            // }
         });
         return weightArr;
     }
@@ -526,17 +533,17 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
 
 
     /**根据areaId 与 Type 查找对应id */
-    public getScenceUnitId(areaId: number, type: number): number {
-        let cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
-        let cfg = cfgs.find((item) => {
-            let curType = item.resType;
-            return curType == type;
-        })
-        if (cfg)
-            return cfg.ID;
-        else
-            oTraceError('lwj 没有找到对应的场景单元点' + areaId + type);
-    }
+    // public getScenceUnitId(areaId: number, type: number): number {
+    //     let cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
+    //     let cfg = cfgs.find((item) => {
+    //         let curType = item.resType;
+    //         return curType == type;
+    //     })
+    //     if (cfg)
+    //         return cfg.ID;
+    //     else
+    //         oTraceError('lwj 没有找到对应的场景单元点' + areaId + type);
+    // }
 
     /**初始化巨大宝箱 */
     private initBigBox() {

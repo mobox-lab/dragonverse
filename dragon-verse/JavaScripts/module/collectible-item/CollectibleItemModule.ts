@@ -2,13 +2,10 @@ import Enumerable from "linq";
 import UUID from "pure-uuid";
 import { GameConfig } from "../../config/GameConfig";
 import { EventDefine } from "../../const/EventDefine";
-import { BagTypes } from "../../const/ForeignKeyIndexer";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import AreaManager from "../../gameplay/area/AreaManager";
 import MainPanel from "../../ui/main/MainPanel";
 import GToolkit, { Regulator } from "../../util/GToolkit";
-import { IPoint3 } from "../../util/area/Shape";
 import { BagModuleS } from "../bag/BagModule";
 import CollectibleItem from "./CollectibleItem";
 import CollectibleItemTrigger from "./trigger/CollectibleItemTrigger";
@@ -16,6 +13,9 @@ import PlayerInteractCollectibleItemEventArgs from "./trigger/PlayerInteractColl
 import GameObject = mw.GameObject;
 import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import EventListener = mw.EventListener;
+import AreaManager from "../../depend/area/AreaManager";
+import Gtk from "../../util/GToolkit";
+import { IPoint3 } from "../../depend/area/shape/base/IPoint";
 
 export default class CollectibleItemModuleData extends Subdata {
     //@Decorator.persistence()
@@ -205,7 +205,7 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
         CollectibleItemModuleC.CollectibleItemPrefabFactory(syncKey, item.id, item.location).then((value) => {
             if (!value) return;
 
-            this.syncItemMap.set(syncKey, { item: item, object: value });
+            this.syncItemMap.set(syncKey, {item: item, object: value});
         });
     }
 
@@ -245,12 +245,17 @@ export class CollectibleItemModuleC extends ModuleC<CollectibleItemModuleS, Coll
 }
 
 export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, CollectibleItemModuleData> {
-    //#region Constant
-    private static readonly GENERATION_HOLDER_TAG = "collectible-item-points";
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
     //#region Member
     private _bagModuleS: BagModuleS;
+
+    private _areaManager: AreaManager;
+
+    private get aM() {
+        if (!this._areaManager) {
+            this._areaManager = AreaManager.getInstance();
+        }
+        return this._areaManager;
+    }
 
     /**
      * 私有玩家采集物存在映射.
@@ -276,26 +281,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
 
     private _generateRegulator: Regulator = new Regulator(GameServiceConfig.TRY_GENERATE_INTERVAL);
 
-    /**
-     * 生成位置表.
-     * @desc key id.
-     * @desc value 生成位置.
-     * @private
-     */
-    private _generateLocationsMap: Map<number, IPoint3[]> = new Map();
-    private _generatedLocationsMap: Map<number, Set<number>> = new Map();
-
-    private getValidGenerateLocation(id: number, playerId: number): IPoint3 | null {
-        return GToolkit.randomArrayItem(
-            Enumerable.from(this._generateLocationsMap.get(id))
-                .where((point) => !this._generatedLocationsMap.get(playerId).has(this.getHash(point)))
-                .toArray(),
-        );
-    }
-
-    private getHash(point: IPoint3): number {
-        return point.x * 10000 + point.y * 100 + point.z;
-    }
+    private _generatedLocations: Map<number, IPoint3[]> = new Map();
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -340,14 +326,13 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
         // this._generateLocationsMap.delete(player.playerId);
-        this._generatedLocationsMap.delete(player.playerId);
+        this._generatedLocations.delete(player.playerId);
         this.removePrivateRecord(player.playerId);
     }
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-        this._generateLocationsMap = AreaManager.getInstance().getGenerationPointMap(BagTypes.CollectibleItem);
-        this._generatedLocationsMap.set(player.playerId, new Set());
+        this._generatedLocations.set(player.playerId, []);
         this.addPlayerRecord(player.playerId);
     }
 
@@ -367,7 +352,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         return Enumerable.from(this.existenceItemMap.get(playerId))
             .select((syncKey) => this.syncItemMap.get(syncKey))
             .where((item) => (item ? item.id === id : false))
-            .defaultIfEmpty({ generateTime: 0 } as CollectibleItem)
+            .defaultIfEmpty({generateTime: 0} as CollectibleItem)
             .max((item) => item.generateTime);
     }
 
@@ -453,8 +438,9 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
      * @desc 采集物是私有的 采集物的存在依赖 playerId 属性.
      * @param playerId
      * @param itemId
+     * @param location
      */
-    private generate(playerId: number, itemId: number) {
+    private generate(playerId: number, itemId: number, location: IPoint3 = undefined) {
         Log4Ts.log(
             CollectibleItemModuleS,
             `try generate item, itemId: ${itemId}.`,
@@ -462,16 +448,46 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
             () => `max count: ${CollectibleItem.maxExistenceCount(itemId)}.`,
         );
 
-        let location = this.getValidGenerateLocation(itemId, playerId);
-        if (location === null) {
+        let config = GameConfig.CollectibleItem.getElement(itemId);
+        if (!config) {
+            Log4Ts.error(CollectibleItemModuleS, `CollectibleItem config not found.`);
+            return;
+        }
+
+        let targetArea: number = undefined;
+        let iTargetArea = Enumerable
+            .from(config.areaIds)
+            .select(areaId => {
+                return ({
+                    areaId,
+                    space: this.aM.getAreaPointSetSize(areaId) -
+                        Enumerable.from(this._generatedLocations.get(playerId))
+                            .sum(p => this.aM.isPoint3DInAreaByPointSet(areaId, p) ? 1 : 0),
+                });
+            })
+            .where(item => item.space > 0);
+        if (iTargetArea.any()) {
+            targetArea = iTargetArea.maxBy(item => item.space).areaId;
+        }
+
+        if (targetArea === undefined) {
+            Log4Ts.log(CollectibleItemModuleS, `all area is full. playerId: ${playerId}.`);
+            return;
+        }
+        if (location === undefined) location = this.aM.getRandomPoint(targetArea, this._generatedLocations.get(playerId)) as IPoint3;
+        if (location === undefined) {
             Log4Ts.error(CollectibleItemModuleS, `generate location is null.`);
+            return;
+        }
+        if (!("z" in location)) {
+            Log4Ts.warn(CollectibleItemModuleS, `currently only support 3D point as spawn point.`);
             return;
         }
 
         const syncKey = new UUID(4).toString();
         const item = new CollectibleItem();
 
-        this._generatedLocationsMap.get(playerId)?.add(this.getHash(location));
+        this._generatedLocations.get(playerId)?.push(location);
         item.generate(itemId, new Vector(location.x, location.y, location.z));
 
         let array: string[] = this.existenceItemMap.get(playerId);
@@ -528,12 +544,7 @@ export class CollectibleItemModuleS extends ModuleS<CollectibleItemModuleC, Coll
         }
 
         const location = item.location;
-        // this._generateLocationsMap.get(playerId)?.get(item.id)?.push({
-        //     x: location.x,
-        //     y: location.y,
-        //     z: location.z,
-        // });
-        this._generatedLocationsMap.get(playerId)?.delete(this.getHash(location));
+        Gtk.remove(this._generatedLocations.get(playerId), location);
         item.destroy();
         Log4Ts.log(CollectibleItemModuleS, `destroy item success. syncKey: ${syncKey}`);
 

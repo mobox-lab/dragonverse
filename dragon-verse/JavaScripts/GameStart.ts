@@ -44,6 +44,11 @@ import { InteractiveObjModuleC, InteractiveObjModuleS } from "./gameplay/interac
 import GlobalTips from "./depend/global-tips/GlobalTips";
 import Balancing from "./depend/balancing/Balancing";
 import GenderTypes = GtkTypes.GenderTypes;
+import Area from "./depend/area/shape/base/IArea";
+import { GameConfig } from "./config/GameConfig";
+import AreaManager from "./depend/area/AreaManager";
+import EcologyModuleData, { EcologyModuleC, EcologyModuleS } from "./module/ecology/EcologyModule";
+import StatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
 
 AddGMCommand("TP 传送",
     null,
@@ -261,6 +266,7 @@ export default class GameStart extends mw.Script {
     private registerModule(): void {
         const moduleService = ModuleService;
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
+        moduleService.registerModule(StatisticModuleS, StatisticModuleC, StatisticModuleData);
         moduleService.registerModule(RoleModuleS, RoleModuleC, RoleModuleData);
         moduleService.registerModule(AuthModuleS, AuthModuleC, DragonVerseAuthModuleData);
         moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
@@ -273,6 +279,7 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
         moduleService.registerModule(PlayerSettingModuleS, PlayerSettingModuleC, PlayerSettingModuleData);
         moduleService.registerModule(InteractiveObjModuleS, InteractiveObjModuleC, null);
+        moduleService.registerModule(EcologyModuleS, EcologyModuleC, EcologyModuleData);
         if (SystemUtil.isClient()) {
             moduleService.getModule(RoleModuleC).delegateOnReady(() => {
                 this._moduleReady = true;

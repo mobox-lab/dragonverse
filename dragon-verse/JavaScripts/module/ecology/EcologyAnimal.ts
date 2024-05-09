@@ -67,7 +67,7 @@ export default class EcologyAnimal {
 
     private _createTime: number;
 
-    private _birthPosition: mw.Vector;
+    public birthPosition: mw.Vector;
 
     private _machine: FiniteStateMachine<EcologyAnimalStateParam>;
 
@@ -87,7 +87,7 @@ export default class EcologyAnimal {
         }
 
         this._createTime = Date.now();
-        this._birthPosition = birthPosition.clone();
+        this.birthPosition = birthPosition.clone();
         mw.GameObject
             .asyncSpawn(
                 this._config.prefabGuid,
@@ -130,7 +130,7 @@ export default class EcologyAnimal {
                 .aE(() => {
                     logEnterState(findPath, this._char.gameObjectId);
                     const d = this
-                        ._birthPosition
+                        .birthPosition
                         .clone()
                         .add(new RandomGenerator()
                             .randomCircle()
