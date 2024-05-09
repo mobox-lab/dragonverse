@@ -174,11 +174,11 @@ export default class PlayerBehavior extends mw.Script {
         this.pets = arrayToString(this.serverPets);
     }
 
-    /**销毁所有宠物 */
-    public destroyAllPet(): void {
-        this.serverPets.length = 0;
-        this.pets = "";
-    }
+    // /**销毁所有宠物 */
+    // public destroyAllPet(): void {
+    //     this.serverPets.length = 0;
+    //     this.pets = "";
+    // }
 
     /**玩家触发传送 */
     public teleport(id: number): void {

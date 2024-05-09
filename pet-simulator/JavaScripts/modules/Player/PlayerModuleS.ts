@@ -186,7 +186,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     public equipPets(playerId: number, petItems: petItemDataNew[]): boolean {
         if (petItems.length == 0) return false;
         if (petItems.length == 1) {
-            return this.net_equipPet(playerId, petItems[0].k, petItems[0].I, petItems[0].p.a, petItems[0].p.n);
+            return this.equipPet(playerId, petItems[0].k, petItems[0].I, petItems[0].p.a, petItems[0].p.n);
         }
         let guid = Player.getPlayer(playerId).character.gameObjectId;
         let be = this.gamePlayerBehaviors.get(guid);
@@ -200,19 +200,19 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     }
 
     /**装备当前宠物 */
-    public net_equipPet(playerId: number, key: number, id: number, atk: number, name: string): boolean {
+    public equipPet(playerId: number, key: number, id: number, atk: number, name: string): boolean {
         let guid = Player.getPlayer(playerId).character.gameObjectId;
         let be = this.gamePlayerBehaviors.get(guid);
         let nKey = key + "_" + id;
         return be.equipPet(nKey, atk, name);
     }
 
-    /**销毁所有宠物 */
-    public net_destroyAllPet(): void {
-        let guid = this.currentPlayer.character.gameObjectId;
-        let be = this.gamePlayerBehaviors.get(guid);
-        be.destroyAllPet();
-    }
+    // /**销毁所有宠物 */
+    // public net_destroyAllPet(): void {
+    //     let guid = this.currentPlayer.character.gameObjectId;
+    //     let be = this.gamePlayerBehaviors.get(guid);
+    //     be.destroyAllPet();
+    // }
 
     /**取消装备当前宠物 */
     public unEquipPet(playerId: number, petItems: petItemDataNew[]): void {
@@ -230,10 +230,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         if (diamond > 0) data.addDiamond(diamond);
     }
 
-    /**增加金币 */
-    public net_addGold(value: number, coinType: GlobalEnum.CoinType): void {
-        this.currentData.addGold(value, coinType);
-    }
+    // /**增加金币 */
+    // public net_addGold(value: number, coinType: GlobalEnum.CoinType): void {
+    //     this.currentData.addGold(value, coinType);
+    // }
 
     public async net_buyDollCoin(configId: number): Promise<boolean> {
         let config = GameConfig.GoodsTable.getElement(configId);

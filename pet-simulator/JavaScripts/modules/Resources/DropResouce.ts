@@ -24,7 +24,7 @@ export class DropManager {
 
     private typeValue: Map<GlobalEnum.CoinType, number> = new Map();
     private _drops: Set<Drop> = new Set();
-    private playerModule: PlayerModuleC = null;
+    private playerModuleC: PlayerModuleC = null;
 
     public get dropSize() {
         return this._drops.size;
@@ -39,7 +39,7 @@ export class DropManager {
 
     init(): void {
         this.resetValue();
-        this.playerModule = ModuleService.getModule(PlayerModuleC);
+        this.playerModuleC = ModuleService.getModule(PlayerModuleC);
     }
 
     /**在当前坐标一圈为方向创建掉落
@@ -128,7 +128,7 @@ export class DropManager {
             let gold2 = this.typeValue.get(GlobalEnum.CoinType.SecondWorldGold);
             let gold3 = this.typeValue.get(GlobalEnum.CoinType.ThirdWorldGold);
             let diamond = this.typeValue.get(GlobalEnum.CoinType.Diamond);
-            this.playerModule.addGoldAndDiamond(gold1, gold2, gold3, diamond);
+            this.playerModuleC.addGoldAndDiamond(gold1, gold2, gold3, diamond);
             this.resetValue();
         }
     }

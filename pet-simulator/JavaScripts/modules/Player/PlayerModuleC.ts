@@ -303,15 +303,15 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         this.server.net_playerTeleport(id);
     }
 
-    /**生成一个宠物 */
-    public creatPet(id: number): void {
-        this.server.net_equipPet(this.localPlayerId, utils.GetRandomNum(1, 1000), id, 200, "三七");
-    }
+    // /**生成一个宠物 */
+    // public creatPet(id: number): void {
+    //     this.server.net_equipPet(this.localPlayerId, utils.GetRandomNum(1, 1000), id, 200, "三七");
+    // }
 
-    /**销毁所有宠物 */
-    public destroyAllPet(): void {
-        this.server.net_destroyAllPet();
-    }
+    // /**销毁所有宠物 */
+    // public destroyAllPet(): void {
+    //     this.server.net_destroyAllPet();
+    // }
 
     public initBehaviors(player: PlayerBehavior): void {
         this.curBehavior = player;
@@ -344,10 +344,10 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         return await this.server.net_buyDollCoin(configId);
     }
 
-    /**增加金币 */
-    public addGold(value: number, coinType: GlobalEnum.CoinType): void {
-        if (value > 0) this.server.net_addGold(value, coinType);
-    }
+    // /**增加金币 */
+    // public addGold(value: number, coinType: GlobalEnum.CoinType): void {
+    //     if (value > 0) this.server.net_addGold(value, coinType);
+    // }
 
     /**查询金币数量 */
     public checkGold(coinType: GlobalEnum.CoinType) {
@@ -387,13 +387,13 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         return await this.server.net_reduceDiamond(value);
     }
 
-    public async clearGoldGem(): Promise<void> {
-        await this.reduceDiamond(this.data.diamond);
-        await this.reduceGold(this.data.gold, GlobalEnum.CoinType.FirstWorldGold);
-        await this.reduceGold(this.data.gold2, GlobalEnum.CoinType.SecondWorldGold);
-        await this.reduceGold(this.data.gold3, GlobalEnum.CoinType.ThirdWorldGold);
-        await this.reduceGold(this.data.summerCoin, GlobalEnum.CoinType.SummerGold);
-    }
+    // public async clearGoldGem(): Promise<void> {
+    //     await this.reduceDiamond(this.data.diamond);
+    //     await this.reduceGold(this.data.gold, GlobalEnum.CoinType.FirstWorldGold);
+    //     await this.reduceGold(this.data.gold2, GlobalEnum.CoinType.SecondWorldGold);
+    //     await this.reduceGold(this.data.gold3, GlobalEnum.CoinType.ThirdWorldGold);
+    //     await this.reduceGold(this.data.summerCoin, GlobalEnum.CoinType.SummerGold);
+    // }
 
     public async net_levelNotice(playerId: number, count: number) {
         let str = await PlayerNameManager.instance.getPlayerName(playerId);
