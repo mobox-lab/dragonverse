@@ -58,7 +58,7 @@ AddGMCommand(
         Log4Ts.log(GMPanel, `Hello world`);
     },
     null,
-    "CHello"
+    "CHello",
 );
 AddGMCommand(
     "Prompt",
@@ -66,7 +66,7 @@ AddGMCommand(
         GlobalTips.getInstance().showGlobalTips("hello world");
     },
     null,
-    "MainPanel"
+    "MainPanel",
 );
 
 AddGMCommand(
@@ -76,7 +76,7 @@ AddGMCommand(
         else Event.dispatchToLocal(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME);
     },
     null,
-    "MainPanel"
+    "MainPanel",
 );
 
 AddGMCommand(
@@ -85,7 +85,7 @@ AddGMCommand(
     (player, value) => {
         player.character.worldTransform.position = GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS;
     },
-    "MainPanel"
+    "MainPanel",
 );
 
 AddGMCommand(
@@ -94,7 +94,7 @@ AddGMCommand(
     (player, value) => {
         player.character.worldTransform.position = GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS;
     },
-    "MainPanel"
+    "MainPanel",
 );
 
 AddGMCommand(
@@ -103,10 +103,10 @@ AddGMCommand(
     (player) => {
         Log4Ts.log(GMPanel, `Back to player start.`);
         player.character.worldTransform.position = GameObject.findGameObjectById(
-            GMPanel.PLAYER_START_GUID
+            GMPanel.PLAYER_START_GUID,
         ).worldTransform.position;
     },
-    "传送"
+    "传送",
 );
 
 AddGMCommand(
@@ -115,7 +115,7 @@ AddGMCommand(
         Log4Ts.log(GMPanel, `Print current player location:`, player.character.worldTransform.position);
     },
     null,
-    "探针"
+    "探针",
 );
 
 AddGMCommand(
@@ -124,7 +124,7 @@ AddGMCommand(
         Log4Ts.log(GMPanel, `Print current player rotation:`, player.character.worldTransform.rotation);
     },
     null,
-    "探针"
+    "探针",
 );
 
 AddGMCommand(
@@ -133,8 +133,9 @@ AddGMCommand(
         let module = mwext.ModuleService.getModule(CompanionModule_C);
         module.showUpCompanion(Number(index), true);
     },
-    (player: mw.Player, index: string) => { },
-    "宠物龙"
+    (player: mw.Player, index: string) => {
+    },
+    "宠物龙",
 );
 
 AddGMCommand(
@@ -147,7 +148,7 @@ AddGMCommand(
         ModuleService.getModule(BagModuleC).addItem(id, Number(count));
     },
     undefined,
-    "背包"
+    "背包",
 );
 
 AddGMCommand(
@@ -157,7 +158,7 @@ AddGMCommand(
         // DialogueManager.getInstance().chat(1);
     },
     undefined,
-    "对话"
+    "对话",
 );
 
 AddGMCommand(
@@ -165,16 +166,18 @@ AddGMCommand(
     (player, value) => {
         // ModuleService.getModule(QuestModuleC).updateRunningGameScore(Number(value));
     },
-    () => { }
+    () => {
+    },
 );
 
 AddGMCommand(
     "加或删光暗龙",
-    (player, value) => { },
+    (player, value) => {
+    },
     (player, value) => {
         ModuleService.getModule(QuestModuleS).testAddOrDeleteLightDarkDragon(player.playerId, Number(value));
     },
-    "龙"
+    "龙",
 );
 
 AddGMCommand(
@@ -183,7 +186,7 @@ AddGMCommand(
         ModuleService.getModule(AuthModuleC).reportSubGameInfo(Date.now(), SubGameTypes.Parkour, Number(value) ?? 100);
     },
     undefined,
-    "Root 权限"
+    "Root 权限",
 );
 
 AddGMCommand(
@@ -191,12 +194,14 @@ AddGMCommand(
     (player, value) => {
         console.log(HeadUIController.getInstance().getNickNameByPlayerId(Number(value)));
     },
-    () => { }
+    () => {
+    },
 );
 
 AddGMCommand(
     "跳宠物模拟器",
-    () => { },
+    () => {
+    },
     (player) => {
         const onFailed = (result: mw.TeleportResult) => {
             // 将错误信息发给所有参与的客户端
@@ -208,13 +213,15 @@ AddGMCommand(
                 }
             }
         };
-        TeleportService.asyncTeleportToScene("pet-simulator", [player.userId]).then(() => { }, onFailed);
-    }
+        TeleportService.asyncTeleportToScene("pet-simulator", [player.userId]).then(() => {
+        }, onFailed);
+    },
 );
 
 AddGMCommand(
     "跳Battle World",
-    () => { },
+    () => {
+    },
     (player) => {
         const onFailed = (result: mw.TeleportResult) => {
             // 将错误信息发给所有参与的客户端
@@ -226,8 +233,9 @@ AddGMCommand(
                 }
             }
         };
-        TeleportService.asyncTeleportToScene("battleworld", [player.userId]).then(() => { }, onFailed);
-    }
+        TeleportService.asyncTeleportToScene("battleworld", [player.userId]).then(() => {
+        }, onFailed);
+    },
 );
 
 //#region TDD-Obby Coin & Ticket
@@ -237,7 +245,7 @@ AddGMCommand(
     (player) => {
         ModuleService.getModule(BagModuleS).dailyDrawObbyCoin(player.playerId);
     },
-    "TTD"
+    "TTD",
 );
 
 AddGMCommand(
@@ -251,7 +259,7 @@ AddGMCommand(
         data.lastDailyObbyCoinDrawTime = 0;
         data.save(false);
     },
-    "TTD"
+    "TTD",
 );
 
 AddGMCommand(
@@ -266,7 +274,7 @@ AddGMCommand(
             module.getClient(player).net_setObbyCoin(data.obbyCoin);
         }
     },
-    "TTD"
+    "TTD",
 );
 
 AddGMCommand(
@@ -275,7 +283,7 @@ AddGMCommand(
     (player) => {
         ModuleService.getModule(BagModuleS).dailyDrawObbyTicket(player.playerId);
     },
-    "TTD"
+    "TTD",
 );
 
 AddGMCommand(
@@ -289,7 +297,7 @@ AddGMCommand(
         data.lastDailyObbyTicketDrawTime = 0;
         data.save(false);
     },
-    "TTD"
+    "TTD",
 );
 
 AddGMCommand(
@@ -304,7 +312,7 @@ AddGMCommand(
             module.getClient(player).net_setObbyTicket(data.obbyTicket);
         }
     },
-    "TTD"
+    "TTD",
 );
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -324,13 +332,13 @@ AddGMCommand(
                     .toVector3()
                     .add(player.character.worldTransform.position),
                 new mw.Rotation(),
-                mw.Vector.one
+                mw.Vector.one,
             ),
         }).then((value) => {
-            Log4Ts.log({ name: "TTD" }, `ObbyStar Spawned: ${value}`);
+            Log4Ts.log({name: "TTD"}, `ObbyStar Spawned: ${value}`);
         });
     },
-    "TTD"
+    "TTD",
 );
 AddGMCommand(
     "重置所有 ObbyStar",
@@ -338,12 +346,9 @@ AddGMCommand(
     (player) => {
         Event.dispatchToLocal(EventDefine.ObbyStarReset, player);
     },
-    "TTD"
+    "TTD",
 );
 AddGMCommand("显示转场", () => {
     UIService.show(CutScenePanel);
-});
-AddGMCommand("添加场景龙", () => { }, (player) => {
-    ModuleService.getModule(SceneDragonModuleS)["generate"](player.playerId, 1, 1, new Vector(2504, -19290, 1609), new UUID(4).toString());
 });
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

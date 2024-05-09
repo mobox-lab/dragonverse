@@ -1,6 +1,6 @@
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import { GameConfig } from "../../config/GameConfig";
-import Gtk, { Regulator } from "../../util/GToolkit";
+import Gtk, { RandomGenerator, Regulator } from "../../util/GToolkit";
 import Balancing from "../../depend/balancing/Balancing";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Area from "../../depend/area/shape/base/IArea";
@@ -10,6 +10,27 @@ import Enumerable from "linq";
 import EcologyAnimal from "./EcologyAnimal";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { IPoint3 } from "../../depend/area/shape/base/IPoint";
+import { AddGMCommand } from "module_gm";
+
+AddGMCommand(
+    "生成 Animal",
+    undefined,
+    (player, value) => {
+        let id = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
+        if (isNaN(id)) id = undefined;
+
+        mwext.ModuleService.getModule(EcologyModuleS)
+            ["generateAnimal"](
+            id ?? Gtk.randomArrayItem(GameConfig.AnimalEcology.getAllElement()).id,
+            player
+                .character
+                .worldTransform
+                .position
+                .add(new RandomGenerator().randomCircle().toVector3(500)),
+        );
+    },
+    "Spawn",
+);
 
 export default class EcologyModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -193,17 +214,17 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
 
                 let expectArray: IPoint3[] = Enumerable.from(this._generatedAnimals).select(item => item.birthPosition).toArray();
                 for (let i = 0; i < config.generationCount; ++i) {
-                    let pos = this.aM.getRandomPoint(targetArea, expectArray);
-                    if (!("z" in pos)) {
-                        Log4Ts.warn(EcologyModuleS, `currently only support 3D point as spawn point.`);
-                        return;
-                    }
-                    this._generatedAnimals.push(new EcologyAnimal(id, new mw.Vector(pos.x, pos.y, pos.z)));
+                    let pos = this.aM.getRandom3DPoint(targetArea, expectArray);
+                    this.generateAnimal(id, new mw.Vector(pos.x, pos.y, pos.z));
                     expectArray.push(pos);
                 }
                 this._lastCheckMap.set(id, lastTime);
             }
         };
+    }
+
+    private generateAnimal(id: number, position: mw.Vector) {
+        this._generatedAnimals.push(new EcologyAnimal(id, position));
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

@@ -4,7 +4,7 @@ import { EventDefine } from "../../const/EventDefine";
 import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import GToolkit, { Expression, Regulator } from "../../util/GToolkit";
+import GToolkit, { Expression, RandomGenerator, Regulator } from "../../util/GToolkit";
 import { BagModuleS } from "../bag/BagModule";
 import SceneDragon from "./SceneDragon";
 import SceneDragonBehavior from "./SceneDragonBehavior";
@@ -21,6 +21,41 @@ import AreaManager from "../../depend/area/AreaManager";
 import { GameConfig } from "../../config/GameConfig";
 import Gtk from "../../util/GToolkit";
 import { IPoint3 } from "../../depend/area/shape/base/IPoint";
+import { AddGMCommand } from "module_gm";
+
+AddGMCommand(
+    "生成 场景龙",
+    undefined,
+    (player, value: string) => {
+        let id = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
+        if (isNaN(id)) id = undefined;
+        
+        ModuleService.getModule(SceneDragonModuleS)["generate"](
+            player.playerId,
+            id ?? Gtk.randomArrayItem(GameConfig.Dragon.getAllElement()).id,
+            0,
+            player
+                .character
+                .worldTransform
+                .position
+                .add(new RandomGenerator().randomCircle().toVector3(500)),
+            new UUID(4).toString(),
+        );
+    },
+    "Spawn");
+AddGMCommand(
+    "销毁 场景龙",
+    undefined,
+    (player, syncKey: string) => {
+        let id = Number(syncKey);
+        if (isNaN(id)) id = undefined;
+        ModuleService.getModule(SceneDragonModuleS)["destroy"](
+            player.playerId,
+            syncKey,
+            false,
+        );
+    },
+    "Spawn");
 
 /**
  * 场景龙 相关事件.
