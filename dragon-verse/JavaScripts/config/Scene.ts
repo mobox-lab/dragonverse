@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","name","foreshow","bornAreaId","sceneEnvId","areaIds","capacity"],["","Language","","","","",""],[1,"Main_Scene_Name",null,0,1,[9],3],[2,"Main_Scene_Name1",null,22,2,[15],7],[3,"Main_Scene_Name2",null,23,3,[17],7],[4,"Main_Scene_Name3",null,24,4,[21],7],[5,"Main_Scene_Name4",null,25,5,[16],7],[6,"Main_Scene_Name5",null,26,6,[20],7],[7,"Main_Scene_Name6",null,27,7,[18,19],10],[8,null,null,28,0,null,0]];
+const EXCELDATA:Array<Array<any>> = [["id","name","foreshow","bornAreaId","sceneEnvId","areaIds","capacity"],["","Language","","","","",""],[1,"Main_Scene_Name",null,0,1,[9],3],[2,"Main_Scene_Name1","Main_Scene_Name1",22,2,[15],7],[3,"Main_Scene_Name2","Main_Scene_Name2",23,3,[17],7],[4,"Main_Scene_Name3","Main_Scene_Name3",24,4,[21],7],[5,"Main_Scene_Name4","Main_Scene_Name4",25,5,[16],7],[6,"Main_Scene_Name5","Main_Scene_Name5",26,6,[20],7],[7,"Main_Scene_Name6","Main_Scene_Name6",27,7,[18,19],10],[8,null,null,28,0,null,0]];
 export interface ISceneElement extends IElementBase{
  	/**undefined*/
 	id:number
