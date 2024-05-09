@@ -74,7 +74,7 @@ export default class EcologyAnimal {
 
     private _char: mw.Character;
 
-    private _state: EcologyAnimalStateParam;
+    private _state: EcologyAnimalStateParam=new EcologyAnimalStateParam()
 
     private _destroyed: boolean = false;
 

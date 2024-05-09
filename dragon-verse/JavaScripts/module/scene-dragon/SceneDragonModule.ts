@@ -29,7 +29,7 @@ AddGMCommand(
     (player, value: string) => {
         let id = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
         if (isNaN(id)) id = undefined;
-        
+
         ModuleService.getModule(SceneDragonModuleS)["generate"](
             player.playerId,
             id ?? Gtk.randomArrayItem(GameConfig.Dragon.getAllElement()).id,
