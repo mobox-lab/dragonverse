@@ -6,6 +6,7 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import Gtk from "../../util/GToolkit";
 import bindYoact = Yoact.bindYoact;
 import { GameConfig } from "../../config/GameConfig";
+import createYoact = Yoact.createYoact;
 
 export class EcologyAnimalStateParam {
     /**
@@ -74,7 +75,7 @@ export default class EcologyAnimal {
 
     private _char: mw.Character;
 
-    private _state: EcologyAnimalStateParam = new EcologyAnimalStateParam();
+    private _state: EcologyAnimalStateParam = createYoact(new EcologyAnimalStateParam());
 
     private _destroyed: boolean = false;
 
@@ -89,7 +90,7 @@ export default class EcologyAnimal {
         this.birthPosition = birthPosition.clone();
         mw.GameObject
             .asyncSpawn(
-                this._config.prefabGuid,
+                "NPC",
                 {
                     replicates: true,
                     transform: new mw.Transform(
@@ -100,10 +101,11 @@ export default class EcologyAnimal {
                 })
             .then(value => {
                     if (this._destroyed || !value) {
-                        value.destroy();
+                        value?.destroy();
                         return;
                     }
                     this._char = value as mw.Character;
+                    Gtk.safeSetDescription(this._char, this._config.prefabGuid);
                     this._char.displayName = this._config.name;
                     this.initStateMachine();
                     mw.TimeUtil.onEnterFrame.add(this.onUpdate);
