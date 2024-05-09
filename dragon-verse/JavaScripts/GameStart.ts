@@ -28,7 +28,6 @@ import { Delegate } from "./depend/delegate/Delegate";
 import GToolkit, { GtkTypes } from "./util/GToolkit";
 import SystemUtil = mw.SystemUtil;
 import Nolan from "./depend/nolan/Nolan";
-import GameServiceConfig from "./const/GameServiceConfig";
 import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioController";
 import DialogifyManager from "./depend/dialogify/DialogifyManager";
 import DialoguePanelController from "./depend/dialogify/dialogue-panel-controller/DialoguePanelController";
@@ -39,11 +38,11 @@ import PlayerSettingModuleData, {
     PlayerSettingModuleC,
     PlayerSettingModuleS,
 } from "./module/player-setting/PlayerSettingModule";
-import KeyOperationManager from "./controller/key-operation-manager/KeyOperationManager";
 import { InteractiveObjModuleC, InteractiveObjModuleS } from "./gameplay/interactiveObj/InteractiveObjModule";
 import GlobalTips from "./depend/global-tips/GlobalTips";
 import Balancing from "./depend/balancing/Balancing";
-import GenderTypes = GtkTypes.GenderTypes;
+import EcologyModuleData, { EcologyModuleC, EcologyModuleS } from "./module/ecology/EcologyModule";
+import StatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
 
 AddGMCommand("TP 传送",
     null,
@@ -80,6 +79,13 @@ AddGMCommand("Language 切换语言",
     null,
     "多语言",
 );
+
+AddGMCommand("Global Tips | 冒泡提示",
+    (player, value) => {
+        GlobalTips.getInstance().showGlobalTips(value);
+    },
+    undefined,
+    "提示");
 
 @Component
 export default class GameStart extends mw.Script {
@@ -261,6 +267,7 @@ export default class GameStart extends mw.Script {
     private registerModule(): void {
         const moduleService = ModuleService;
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
+        moduleService.registerModule(StatisticModuleS, StatisticModuleC, StatisticModuleData);
         moduleService.registerModule(RoleModuleS, RoleModuleC, RoleModuleData);
         moduleService.registerModule(AuthModuleS, AuthModuleC, DragonVerseAuthModuleData);
         moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
@@ -273,6 +280,7 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
         moduleService.registerModule(PlayerSettingModuleS, PlayerSettingModuleC, PlayerSettingModuleData);
         moduleService.registerModule(InteractiveObjModuleS, InteractiveObjModuleC, null);
+        moduleService.registerModule(EcologyModuleS, EcologyModuleC, EcologyModuleData);
         if (SystemUtil.isClient()) {
             moduleService.getModule(RoleModuleC).delegateOnReady(() => {
                 this._moduleReady = true;

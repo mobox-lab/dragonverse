@@ -27,9 +27,9 @@ export default class GameServiceConfig {
      */
     public static readonly COW_LEVEL_PORTAL_EFFECT_POS = new Vector(-355.7, 37.7, 878);
     /**
-     * 奶牛关雕像有传送门激活特效时长（秒）
+     * 奶牛关雕像有传送门激活特效时长(毫秒)
      */
-    public static readonly COW_LEVEL_PORTAL_EFFECT_DURATION = 0.6;
+    public static readonly COW_LEVEL_PORTAL_EFFECT_DURATION = 600;
     /**
      * 奶牛关雕像有传送门激活特效缩放最大值
      */
@@ -44,6 +44,7 @@ export default class GameServiceConfig {
     public static readonly COW_LEVEL_PORTAL_SHOW_TIPS_DURATION = 2;
 
     //#endregion
+
     //#region Portal
     /**
      * 主场景在场景表里的id
@@ -66,6 +67,7 @@ export default class GameServiceConfig {
      */
     public static readonly TRANSITION_DELAY_DURATION = 500;
     //#endregion
+
     //#region Sub Game
     /**
      * 跳子游戏 进度条时长.
@@ -619,6 +621,16 @@ export default class GameServiceConfig {
     public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_CUSTOM = "164192";
 
     /**
+     * 主界面 解除静音按钮 图标 Guid.
+     */
+    public static readonly MAIN_PANEL_SOUND_BUTTON_IMG_GUID = "324601";
+
+    /**
+     * 主界面 静音按钮 图标 Guid.
+     */
+    public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = "324594";
+
+    /**
      * 地图界面 小地图左下点的世界坐标.
      */
     public static readonly MAP_SCENE_AS_MAP_LEFT_DOWN_POS: mw.Vector = new mw.Vector(27000, -26000, 0);
@@ -657,6 +669,16 @@ export default class GameServiceConfig {
      * 地图界面 地图按键位移距离.
      */
     public static readonly MAP_MOVE_PER_DIST = 40;
+
+    /**
+     * 对话界面 对话选项 Hover 态 图片 Guid.
+     */
+    public static readonly DIALOGUE_PANEL_OPTION_ON_HOVER_IMG_GUID = "324356";
+
+    /**
+     * 对话界面 对话选项 Normal 态 图片 Guid.
+     */
+    public static readonly DIALOGUE_PANEL_OPTION_NORMAL_IMG_GUID = "324342";
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -784,11 +806,11 @@ export default class GameServiceConfig {
     public static readonly OBBY_STAR_FLOAT_STAGE_DURATION = 2e3;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ //#region Role
 
-    public static readonly MAIN_PANEL_SOUND_BUTTON_IMG_GUID = "324601";
+    //#region Area
+    /**
+     * 主场景重生区域 Id.
+     */
+    public static readonly AREA_ID_MAIN_SCENE_RESPAWN = 14;
 
-    public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = "324594";
-
-    public static readonly DIALOGUE_PANEL_OPTION_ON_HOVER_IMG_GUID = "324356";
-
-    public static readonly DIALOGUE_PANEL_OPTION_NORMAL_IMG_GUID = "324342";
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

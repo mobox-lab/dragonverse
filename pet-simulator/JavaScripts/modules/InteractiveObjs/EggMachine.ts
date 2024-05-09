@@ -271,7 +271,7 @@ class EggM {
         if (isVis && this.curGold >= this.cfg.Price[0]) {
             this.lockEff.play();
         } else {
-            this.lockEff.stop();
+            this.lockEff?.stop();
         }
     }
 

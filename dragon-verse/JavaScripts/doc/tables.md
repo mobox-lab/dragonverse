@@ -111,30 +111,22 @@ x11|y11|x12|y12|x13|y13...x1m|y1m || x21|y21|x22|y22|x23|y23...x2n|y2n
 
 ### 龙基 Dragon (Base)
 
-|       Name        | PropName          | Type    | Desc |
-| :---------------: | :---------------- | ------- | ---- |
-|        ID         | Id                | int     |      |
-|       形象        | Avatar            | string  |      |
-|     背包物 ID     | BagId             | int     |      |
-|      元素 ID      | ElementalId       | int     |      |
-|      品质 ID      | QualityId         | int     |      |
-| 龙栖居地 ID 集合  | dragonHabitatIds  | int[]   |      |
-|    可捕捉次数     | HitPoint          | int     |      |
-|     翅膀 Guid     | wingGuid          | string  |      |
-|  翅膀 Transform   | wingTransform     | int[][] |      |
-| 捕捉成功率算法 ID | SuccessRateAlgoId | int     |      |
+|         Name         | PropName          | Type    | Desc |
+| :------------------: | :---------------- | ------- | ---- |
+|          ID          | Id                | int     |      |
+|         形象         | Avatar            | string  |      |
+|      背包物 ID       | BagId             | int     |      |
+|       元素 ID        | ElementalId       | int     |      |
+|       品质 ID        | QualityId         | int     |      |
+| 龙栖居地场景 ID 集合 | sceneIds          | int[]   |      |
+|      可捕捉次数      | HitPoint          | int     |      |
+|      翅膀 Guid       | wingGuid          | string  |      |
+|    翅膀 Transform    | wingTransform     | int[][] |      |
+|  捕捉成功率算法 ID   | SuccessRateAlgoId | int     |      |
 
 - 翅膀 Transform
   - 为二维数组，长度为 3.
   - 分别为 位置 旋转 缩放.
-
-## 龙栖居地 DragonHabitat
-
-|    Name     | PropName | Type  | Desc |
-| :---------: | :------- | ----- | ---- |
-|     ID      | Id       | int   |      |
-| 所含区域 ID | AreaIds  | int[] |      |
-|  承载容量   | Capacity | int   |      |
 
 ## 采集结果算法 CollectResultAlgo
 

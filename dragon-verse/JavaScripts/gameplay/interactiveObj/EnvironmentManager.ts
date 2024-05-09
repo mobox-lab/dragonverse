@@ -13,8 +13,8 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk, { Singleton } from "../../util/GToolkit";
 
 export default class EnvironmentManager extends Singleton<EnvironmentManager>() {
-    public setEnvironment(sceneConfigId: number) {
-        let config = GameConfig.SceneEnvironment.findElement("sceneId", sceneConfigId);
+    public setEnvironment(sceneEnvironmentId: number) {
+        let config = GameConfig.SceneEnvironment.getElement(sceneEnvironmentId);
         if (config == null) return;
         this.setSkyBox(config);
         this.setFog(config);

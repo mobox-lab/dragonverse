@@ -7,7 +7,6 @@ import {CollectResultAlgoConfig} from "./CollectResultAlgo";
 import {DialogueContentNodeConfig} from "./DialogueContentNode";
 import {DialogueFuncConfig} from "./DialogueFunc";
 import {DialogueInteractNodeConfig} from "./DialogueInteractNode";
-import {DragonHabitatConfig} from "./DragonHabitat";
 import {DragonConfig} from "./Dragon";
 import {ElementalConfig} from "./Elemental";
 import {GlobalConfig} from "./Global";
@@ -51,7 +50,6 @@ export class GameConfig{
 	public static get DialogueContentNode():DialogueContentNodeConfig{ return this.getConfig(DialogueContentNodeConfig) };
 	public static get DialogueFunc():DialogueFuncConfig{ return this.getConfig(DialogueFuncConfig) };
 	public static get DialogueInteractNode():DialogueInteractNodeConfig{ return this.getConfig(DialogueInteractNodeConfig) };
-	public static get DragonHabitat():DragonHabitatConfig{ return this.getConfig(DragonHabitatConfig) };
 	public static get Dragon():DragonConfig{ return this.getConfig(DragonConfig) };
 	public static get Elemental():ElementalConfig{ return this.getConfig(ElementalConfig) };
 	public static get Global():GlobalConfig{ return this.getConfig(GlobalConfig) };
