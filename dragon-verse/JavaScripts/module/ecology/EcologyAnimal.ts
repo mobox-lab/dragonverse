@@ -105,6 +105,7 @@ export default class EcologyAnimal {
                         return;
                     }
                     this._char = value as mw.Character;
+                    this._char.description.base.wholeBody = this._config.prefabGuid;
                     Gtk.safeSetDescription(this._char, this._config.prefabGuid);
                     this._char.displayName = this._config.name;
                     this.initStateMachine();
