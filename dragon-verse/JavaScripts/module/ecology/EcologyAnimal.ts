@@ -6,7 +6,6 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import Gtk from "../../util/GToolkit";
 import bindYoact = Yoact.bindYoact;
 import { GameConfig } from "../../config/GameConfig";
-import Transform = UE.Transform;
 
 export class EcologyAnimalStateParam {
     /**
