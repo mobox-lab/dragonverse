@@ -186,6 +186,9 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
                     .where(item => item.space > 0);
                 if (iTargetArea.any()) {
                     targetArea = iTargetArea.maxBy(item => item.space).areaId;
+                } else {
+                    Log4Ts.warn(EcologyModuleS, `there is no valid area in config. animal id: ${id}`);
+                    return;
                 }
 
                 let expectArray: IPoint3[] = Enumerable.from(this._generatedAnimals).select(item => item.birthPosition).toArray();
