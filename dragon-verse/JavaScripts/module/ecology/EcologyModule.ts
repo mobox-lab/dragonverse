@@ -16,7 +16,7 @@ AddGMCommand(
     "生成 Animal",
     undefined,
     (player, value) => {
-        let id = Number(value);
+        let id = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
         if (isNaN(id)) id = undefined;
 
         mwext.ModuleService.getModule(EcologyModuleS)

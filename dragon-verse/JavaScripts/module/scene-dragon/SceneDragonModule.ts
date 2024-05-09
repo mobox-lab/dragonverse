@@ -27,8 +27,9 @@ AddGMCommand(
     "生成 场景龙",
     undefined,
     (player, value: string) => {
-        let id = Number(value);
+        let id = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
         if (isNaN(id)) id = undefined;
+        
         ModuleService.getModule(SceneDragonModuleS)["generate"](
             player.playerId,
             id ?? Gtk.randomArrayItem(GameConfig.Dragon.getAllElement()).id,
