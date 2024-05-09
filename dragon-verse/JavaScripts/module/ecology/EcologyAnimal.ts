@@ -90,7 +90,7 @@ export default class EcologyAnimal {
         this.birthPosition = birthPosition.clone();
         mw.GameObject
             .asyncSpawn(
-                "NPC",
+                "Character",
                 {
                     replicates: true,
                     transform: new mw.Transform(
