@@ -660,6 +660,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
      */
     @Decorator.noReply()
     net_setPlayerAttr(type: Attribute.EnumAttributeType, value: number) {
+        // 目前没有直接设置 rankScore 的调用， 预防客户端直接操作 rankScore
+        if (type === Attribute.EnumAttributeType.rankScore) return;
         this.setPlayerAttr(this.currentPlayerId, type, value);
     }
     /**
@@ -978,28 +980,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         }
 
         let calValue = data.getAttrValue(type) - value;
+        // 防止客户端操作 rankScore
+        if (type == Attribute.EnumAttributeType.rankScore) return;
         // 段位分处理
-        if (type == Attribute.EnumAttributeType.rankScore || type == Attribute.EnumAttributeType.dayRankScore) {
+        if (type == Attribute.EnumAttributeType.dayRankScore) {
             calValue = Math.round(Math.max(0, calValue));
         }
-        // TODO: CL - 去掉 rankScore
-        if (type == Attribute.EnumAttributeType.rankScore) {
-            this.reducePlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, value);
-
-            data.setAttrValue(type, calValue);
-
-            let newRank = PlayerManager.instance.getRankLevel(calValue);
-            ModuleService.getModule(AuthModuleS).reportBWRankData(playerID, newRank, calValue, 1);
-
-            EventManager.instance.call(
-                EAttributeEvents_S.attr_change_s,
-                playerID,
-                Attribute.EnumAttributeType.rankScore,
-                data.getAttrValue(Attribute.EnumAttributeType.rankScore)
-            );
-            return;
-        }
-
         data.setAttrValue(type, calValue);
 
         if (isSave) {
@@ -1070,35 +1056,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
             return;
         }
-        // 段位分处理
-        // TODO: CL - 去掉 rankScore
+        // 防止客户端操作 rankScore
         if (type == Attribute.EnumAttributeType.rankScore) {
-            value = Math.round(
-                Math.min(value, Globaldata.maxRankScore - data.getAttrValue(Attribute.EnumAttributeType.dayRankScore))
-            );
-            this.addPlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, value);
-            let oldRank = PlayerManager.instance.getRankLevel(curAttrValue);
-            curAttrValue = Math.round(curAttrValue + value);
-            data.setAttrValue(type, curAttrValue, isSave);
-
-            //升段位发公告
-            let newRank = PlayerManager.instance.getRankLevel(curAttrValue);
-            ModuleService.getModule(AuthModuleS).reportBWRankData(playerID, newRank, curAttrValue, 1);
-            if (newRank > oldRank) {
-                this.getAllClient().net_startNotice(
-                    ERankNoticeType.LevelUp,
-                    newRank,
-                    this.mAttribute.getAttrValue(playerID, Attribute.EnumAttributeType.playerName)
-                );
-            }
-            this.checkRankReward(playerID);
-            // 同步
-            EventManager.instance.call(
-                EAttributeEvents_S.attr_change_s,
-                playerID,
-                Attribute.EnumAttributeType.rankScore,
-                data.getAttrValue(Attribute.EnumAttributeType.rankScore)
-            );
             return;
         }
 
@@ -2291,12 +2250,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         let calScore = cfg.rankIntegral[deadRank - 1];
         let mulCfg = GameConfig.MultipleKill.getAllElement();
         let addRate = mulCfg[Math.min(this.getPlayerData(attackId).getKillCount(), mulCfg.length) - 1].Factor;
-        this.addPlayerAttr(attackId, Attribute.EnumAttributeType.rankScore, Math.round(calScore * addRate));
-        this.reducePlayerAttr(
-            deadId,
-            Attribute.EnumAttributeType.rankScore,
-            Math.round(calScore * Globaldata.rankScoreRate)
-        );
+        // 击杀加分， 被击杀减分
+        this.changeRankScore(attackId, Math.round(calScore * addRate));
+        this.changeRankScore(deadId, -Math.round(calScore * Globaldata.rankScoreRate));
     }
     /**
      * 检查段位，解锁段位奖励
@@ -2355,7 +2311,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         // TODO: CL - 暂时用 硬编码代替 enum
         // 获取当前属性值
-        const currentScore = data.getAttrValue(59);
+        const currentScore = data.getAttrValue(Attribute.EnumAttributeType.rankScore);
         let calCurrentScore: number;
 
         if (deltaScore < 0) {
@@ -2369,7 +2325,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             calCurrentScore = Math.round(currentScore + calDeltaScore);
         }
         // 设置新的属性值
-        data.setAttrValue(59, calCurrentScore);
+        data.setAttrValue(Attribute.EnumAttributeType.rankScore, calCurrentScore);
 
         // 计算并更新玩家等级
         const newRank = PlayerManager.instance.getRankLevel(calCurrentScore);
@@ -2389,7 +2345,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         }
 
         // 同步给属性同步模块
-        EventManager.instance.call(EAttributeEvents_S.attr_change_s, playerId, 59, data.getAttrValue(59));
+        EventManager.instance.call(EAttributeEvents_S.attr_change_s, playerId, Attribute.EnumAttributeType.rankScore, data.getAttrValue(Attribute.EnumAttributeType.rankScore));
     }
 
     /**
@@ -2411,7 +2367,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         const data = this.getPlayerData(playerId);
         if (!player || !data) return;
 
-        const rankScore = data.getAttrValue(59);
+        const rankScore = data.getAttrValue(Attribute.EnumAttributeType.rankScore);
         const rank = PlayerManager.instance.getRankLevel(rankScore);
         const rankCfg = GameConfig.Rank.getElement(rank);
         if (!rankCfg) return;
