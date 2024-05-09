@@ -74,7 +74,7 @@ export default class EcologyAnimal {
 
     private _char: mw.Character;
 
-    private _state: EcologyAnimalStateParam=new EcologyAnimalStateParam()
+    private _state: EcologyAnimalStateParam = new EcologyAnimalStateParam();
 
     private _destroyed: boolean = false;
 
@@ -99,11 +99,12 @@ export default class EcologyAnimal {
                     ),
                 })
             .then(value => {
-                    if (this._destroyed) {
+                    if (this._destroyed || !value) {
                         value.destroy();
                         return;
                     }
                     this._char = value as mw.Character;
+                    this._char.displayName = this._config.name;
                     this.initStateMachine();
                     mw.TimeUtil.onEnterFrame.add(this.onUpdate);
                 },
