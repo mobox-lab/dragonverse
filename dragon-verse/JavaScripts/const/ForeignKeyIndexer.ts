@@ -131,7 +131,7 @@ export default class ForeignKeyIndexer extends Singleton<ForeignKeyIndexer>() {
      * @return {number[]}
      */
     public queryDragonOfHabitat(habitatId: number): number[] {
-        return [...this._dragonHabitatMap.get(habitatId)];
+        return [...this._dragonHabitatMap.get(habitatId) ?? []];
     }
 
     /**

@@ -94,6 +94,8 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
 
     private _allConfigIds: number[];
 
+    private _gameStartTime: number;
+
     private _lastCheckMap: Map<number, number> = new Map();
 
     private _autoGenerationRegulator = new Regulator(GameServiceConfig.ECOLOGY_ANIMAL_AUTO_GENERATION_INTERVAL);
@@ -109,6 +111,7 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
     protected onJStart(): void {
 //#region Member init
         this._allConfigIds = GameConfig.AnimalEcology.getAllElement().map(item => item.id);
+        this._gameStartTime = Date.now();
 //#endregion ------------------------------------------------------------------------------------------ 
 
 //#region Event Subscribe
@@ -159,12 +162,14 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
 
     private getCheckGenerateHandler(id: number) {
         return () => {
+            let config = GameConfig.AnimalEcology.getElement(id);
+            let now = Date.now();
+            if (now - this._gameStartTime < config.startGenerationTime) return;
+
             let lastTime = this._lastCheckMap.get(id);
             if (Gtk.isNullOrUndefined(lastTime)) lastTime = 0;
-
-            let config = GameConfig.AnimalEcology.getElement(id);
-            if (Date.now() - lastTime > config.generationInterval) {
-                lastTime = Date.now();
+            if (now - lastTime > config.generationInterval) {
+                lastTime = now;
 
                 let targetArea: number = undefined;
                 let iTargetArea = Enumerable

@@ -236,11 +236,6 @@ export default class SceneDragonBehavior extends mw.Script {
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
 
-        if (this.regulator.request() && !this.checkAlive()) {
-            Log4Ts.log(SceneDragonBehavior, `dragon out of alive range. syncKey: ${this.syncKey}`);
-            Event.dispatchToLocal(EventDefine.DragonOutOfAliveRange, this.syncKey);
-        }
-
         this._machine?.update(dt);
         this.state.idleStamina += dt * SceneDragonBehaviorState.IDLE_STAMINA_RECOVERY;
     }
