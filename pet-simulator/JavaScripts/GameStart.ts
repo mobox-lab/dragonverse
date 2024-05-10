@@ -157,8 +157,6 @@ export default class GameStart extends mw.Script {
                 ui.text = langueConfig.Value;
             });
             ChatService.asyncEnableChatWindow(false);
-            InputUtil.mouseLockOptionEnabled = false;
-            InputUtil.isCursorVisible = true;
 
         }
 
