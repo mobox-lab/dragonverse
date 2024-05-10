@@ -1,10 +1,19 @@
 
 
 import { GameConfig } from "../../config/GameConfig";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import HUDpetGift_Generate from "../../ui-generate/hud/HUDpetGift_generate";
+import PetStateItemUI_Generate from "../../ui-generate/hud/PetStateItemUI_generate";
 import { utils } from "../../util/uitls";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
+import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 
+export enum PetState {
+    /**攻击 */
+    Attack = 1,
+    /**休息 */
+    Rest = 2,
+}
 export class P_HudPetGift extends HUDpetGift_Generate {
 
     /**领取按钮 */
@@ -30,6 +39,9 @@ export class P_HudPetGift extends HUDpetGift_Generate {
         this.mCanvas_Point.visibility = mw.SlateVisibility.Collapsed;
         this.onRedPointAC.add(this.addRedPoint, this);
 
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
+            ModuleService.getModule(PetBagModuleC).showBag();
+        });
     }
     /**添加红点提示 */
     public addRedPoint(key: number) {
@@ -110,4 +122,24 @@ export class P_HudPetGift extends HUDpetGift_Generate {
         }
     }
 
-}
+
+    private _lastAttackTarget: Map<number, number> = new Map();
+
+    setBattlePets(currentFollowPetIds: number[]) {
+        this.petStateCanvas.removeAllChildren();
+        currentFollowPetIds.forEach(petId => {
+            let petStateItem = UIService.create(PetStateItemUI_Generate);
+            let pet = GameConfig.PetARR.getElement(petId);
+            if (pet) {
+                petStateItem.petImg.imageGuid = pet.uiGuid;
+            }
+
+            this.petStateCanvas.addChild(petStateItem.uiObject);
+        });
+    }
+
+    changePetState(petId: number, state: PetState) {
+
+    }
+
+}   
