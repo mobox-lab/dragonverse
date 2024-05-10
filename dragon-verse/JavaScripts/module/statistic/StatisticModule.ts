@@ -22,6 +22,13 @@ export default class StatisticModuleData extends JModuleData {
 
     @Decorator.persistence()
     maybeCheatingReason: string[];
+
+    protected onJDataInit(): void {
+        super.onJDataInit();
+        this.playerEnteredCounterS = 0;
+        this.playerElapsedTimeS = 0;
+        this.maybeCheatingReason = [];
+    }
 }
 
 interface PlayerIntervalData {

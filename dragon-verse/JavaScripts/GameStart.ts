@@ -43,6 +43,7 @@ import GlobalTips from "./depend/global-tips/GlobalTips";
 import Balancing from "./depend/balancing/Balancing";
 import EcologyModuleData, { EcologyModuleC, EcologyModuleS } from "./module/ecology/EcologyModule";
 import StatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
+import GuideModuleData, { GuideModuleC, GuideModuleS } from "./module/guide/GuideModule";
 
 AddGMCommand("TP 传送",
     null,
@@ -281,6 +282,7 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(PlayerSettingModuleS, PlayerSettingModuleC, PlayerSettingModuleData);
         moduleService.registerModule(InteractiveObjModuleS, InteractiveObjModuleC, null);
         moduleService.registerModule(EcologyModuleS, EcologyModuleC, EcologyModuleData);
+        moduleService.registerModule(GuideModuleS, GuideModuleC, GuideModuleData);
         if (SystemUtil.isClient()) {
             moduleService.getModule(RoleModuleC).delegateOnReady(() => {
                 this._moduleReady = true;

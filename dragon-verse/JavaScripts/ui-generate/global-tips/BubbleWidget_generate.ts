@@ -15,24 +15,24 @@ import UIScript = mw.UIScript;
 
 @UIBind('UI/global-tips/BubbleWidget.ui')
 export default class BubbleWidget_Generate extends UIScript {
-	private canvasTip_Internal: mw.Canvas
-	public get canvasTip(): mw.Canvas {
-		if(!this.canvasTip_Internal&&this.uiWidgetBase) {
-			this.canvasTip_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip') as mw.Canvas
+	private cnvTips_Internal: mw.Canvas
+	public get cnvTips(): mw.Canvas {
+		if(!this.cnvTips_Internal&&this.uiWidgetBase) {
+			this.cnvTips_Internal = this.uiWidgetBase.findChildByPath('cnvTips') as mw.Canvas
 		}
-		return this.canvasTip_Internal
+		return this.cnvTips_Internal
 	}
 	private imgTipBg_Internal: mw.Image
 	public get imgTipBg(): mw.Image {
 		if(!this.imgTipBg_Internal&&this.uiWidgetBase) {
-			this.imgTipBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip/imgTipBg') as mw.Image
+			this.imgTipBg_Internal = this.uiWidgetBase.findChildByPath('cnvTips/imgTipBg') as mw.Image
 		}
 		return this.imgTipBg_Internal
 	}
 	private textDescription_Internal: mw.TextBlock
 	public get textDescription(): mw.TextBlock {
 		if(!this.textDescription_Internal&&this.uiWidgetBase) {
-			this.textDescription_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasTip/textDescription') as mw.TextBlock
+			this.textDescription_Internal = this.uiWidgetBase.findChildByPath('cnvTips/textDescription') as mw.TextBlock
 		}
 		return this.textDescription_Internal
 	}

@@ -643,7 +643,7 @@ export default class MainPanel extends MainPanel_Generate {
         Gtk.trySetVisibility(this.obbySkillCanvas, false);
         // Gtk.trySetVisibility(this.playcount, false);
         // Gtk.trySetVisibility(this.coincount, false);
-        Gtk.trySetVisibility(this.btnDragonBall, false);
+        // Gtk.trySetVisibility(this.btnDragonBall, false);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 

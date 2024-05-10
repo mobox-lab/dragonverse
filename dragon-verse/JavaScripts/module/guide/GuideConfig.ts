@@ -1,5 +1,5 @@
 import { AddGMCommand } from "module_gm";
-import { GtkTypes } from "../../util/GToolkit";
+import Gtk, { GtkTypes } from "../../util/GToolkit";
 import OperationGuider from "../../depend/guide/OperationGuider";
 import { OperationTypes } from "../../controller/key-operation-manager/KeyOperationManager";
 import { TaskOptionalTypes } from "../../depend/guide/base/OperationGuideTaskGroup";
@@ -8,17 +8,63 @@ import { StatisticModuleC } from "../statistic/StatisticModule";
 import CutsceneOperationGuideTask from "../../depend/guide/cutscene/CutsceneOperationGuideTask";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 import i18n from "../../language/i18n";
+import Tf = GtkTypes.Tf;
 
 //#region Config 策划配置项
+
+//#region Controller Config
+/**
+ * 引导线组件 预制体 Guid.
+ * @type {string}
+ */
+const GUIDELINE_COMPONENT_PREFAB_GUID = "1CD734AF477D0D32F630329B981F3D28";
+
+/**
+ * 引导线组件 预制体 长度.
+ * @type {string}
+ */
+const GUIDELINE_COMPONENT_PREFAB_LENGTH = 166;
+
+/**
+ * 引导线预制体生成间隔.
+ * @type {number}
+ */
+const GUIDELINE_PREFAB_INTERVAL = 300;
+
+/**
+ * 最小引导线预制体生成间隔.
+ * @type {number}
+ */
+const MIN_GUIDELINE_PREFAB_INTERVAL = 160;
+
+/**
+ * 默认超时时间.
+ * @type {number}
+ */
+const DEFAULT_TIMEOUT = Gtk.timeConvert(5, Tf.M, Tf.Ms);
+
+/**
+ * 根组测试间隔.
+ * @type {number}
+ */
+const ROOT_GROUP_TEST_INTERVAL = 3e3;
+
+/**
+ * 存活检查间隔.
+ * @type {number}
+ */
+const ALIVE_CHECK_INTERVAL = 6e3;
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
 /**
  * 操作引导生效次数.
  */
-const GOperationTeachValidCount = 3;
+const G_OPERATION_TEACH_VALID_COUNT = 3;
 
 /**
  * 操作引导提示间隔.
  */
-const GOperationTeachInterval = 5e3;
+const G_OPERATION_TEACH_INTERVAL = 5e3;
 
 /**
  * 操作引导提示.
@@ -68,18 +114,26 @@ const loadGuide = () => {
         let talkedDone = false;
         let operationGuided: boolean = false;
 
+        manager
+            .sGl(GUIDELINE_COMPONENT_PREFAB_GUID)
+            .sGlLen(GUIDELINE_COMPONENT_PREFAB_LENGTH)
+            .sTstItv(ROOT_GROUP_TEST_INTERVAL)
+            .sGlItv(GUIDELINE_PREFAB_INTERVAL)
+            .sMinGlItv(MIN_GUIDELINE_PREFAB_INTERVAL)
+            .sDfSeTout(DEFAULT_TIMEOUT);
+
 //#region 操作引导
 
         manager
-            .addTaskGroup(
+            .aTG(
                 GuideStep.GOperationTeach,
                 TaskOptionalTypes.Sequence,
                 () => {
                     let gm = mwext.ModuleService.getModule(GuideModuleC);
                     let sm = mwext.ModuleService.getModule(StatisticModuleC);
-                    return !operationGuided && gm && sm && gm.isReady && sm.isReady && sm.getPlayerEnteredCounter() <= GOperationTeachValidCount;
+                    return !operationGuided && gm && sm && gm.isReady && sm.isReady && sm.getPlayerEnteredCounter() <= G_OPERATION_TEACH_VALID_COUNT;
                 })
-            .insertTaskToGroup(
+            .iTG(
                 GuideStep.GOperationTeach,
                 new CutsceneOperationGuideTask(
                     GuideStep.COperationTips,
@@ -88,7 +142,7 @@ const loadGuide = () => {
                             GlobalTips.getInstance().showGlobalTips(i18n.lan(OperationTeachTips[counter - 1]));
                             if (counter >= OperationTeachTips.length) talkedDone = true;
                         },
-                        GOperationTeachInterval)
+                        G_OPERATION_TEACH_INTERVAL)
                     .sFd((completed) => operationGuided = true),
             );
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

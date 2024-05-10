@@ -27,7 +27,7 @@ const autoRegisterSelf = () => {
         GlobalTips.getInstance()
             .setBubbleWidget(CustomGlobalTips)
             .setGlobalTipsContainer(GlobalTipsPanel)
-            .showGlobalTips(i18n.lan(tips.content), {duration: GameServiceConfig.ONLY_TIPS_DURATION});
+            .showGlobalTips(i18n.lan(tips.content), { duration: GameServiceConfig.ONLY_TIPS_DURATION });
     }, 3000);
 };
 

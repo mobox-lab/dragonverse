@@ -22,6 +22,7 @@ import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 import MainPanel from "../../ui/main/MainPanel";
 import AreaManager from "../../depend/area/AreaManager";
 import CowLevelPortalTrigger from "./CowLevelPortalTrigger";
+import { SceneDragonModuleS } from "../../module/scene-dragon/SceneDragonModule";
 
 enum Destination {
     AnyCowLevel = 1,
@@ -131,6 +132,8 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
             let cowLevel = Math.floor(Math.random() * cowLevelScene.length);
             let scene = cowLevelScene[cowLevel];
             this.transferToCowLevel(Player.getPlayer(playerId), scene.id);
+            ModuleService.getModule(SceneDragonModuleS).habitatGenerate(scene.id, playerId);
+            Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, playerId, scene.id);
         }
 
     }

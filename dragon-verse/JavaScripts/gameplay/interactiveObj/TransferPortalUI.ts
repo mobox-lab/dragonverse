@@ -19,6 +19,7 @@ import { PortalTriggerWithProgress } from "./PortalTriggerWithProgress";
 import { showTransitionAnimation } from "./TransferPortalTrigger";
 import AreaManager from "../../depend/area/AreaManager";
 import CowLevelPortalTrigger from "./CowLevelPortalTrigger";
+import { SceneDragonModuleS } from "../../module/scene-dragon/SceneDragonModule";
 
 export default class TransferPortalUI extends PortalTriggerWithProgress {
     @Property({
@@ -35,7 +36,7 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
     })
     public isRefreshCameraRotation: boolean = true;
 
-    @Property({displayName: "角色目标旋转", group: "Config-rotation"})
+    @Property({ displayName: "角色目标旋转", group: "Config-rotation" })
     public endRotation: Rotation = Rotation.zero;
 
     @Property({
@@ -47,7 +48,14 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
 
     private _nolan: Nolan;
 
+    /**
+     * 客户端存当前玩家所在奶牛关
+     */
     private _currentCowLevelId: number = 0;
+    /**
+     * 服务端存玩家和对应的奶牛关
+     */
+    private _currentCowLevel: Map<number, number> = new Map();
 
     onStartPortalInServer(playerId: number): void {
 
@@ -72,7 +80,10 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
     }
 
     onProgressDoneInServer(playerId: number): void {
-
+        if (this._currentCowLevel.has(playerId)) {
+            ModuleService.getModule(SceneDragonModuleS).habitatDestroy(this._currentCowLevel.get(playerId), playerId);
+            this._currentCowLevel.delete(playerId);
+        }
     }
 
     activeMode: ActivateByUI;
@@ -87,6 +98,9 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
                 this.activeMode.showInteractionUI();
             });
         }
+        Event.addLocalListener(EventDefine.PlayerEnterCowLevel, (playerId: number, sceneId: number) => {
+            this._currentCowLevel.set(playerId, sceneId);
+        });
     }
 
     showUI = () => {
@@ -94,6 +108,7 @@ export default class TransferPortalUI extends PortalTriggerWithProgress {
     };
 
     private clickToStartInteraction = () => {
+
         if (this._isPlayingProgress) {
             ModuleService.getModule(InteractiveObjModuleC).stopInteraction(this.gameObject.gameObjectId);
         } else {
