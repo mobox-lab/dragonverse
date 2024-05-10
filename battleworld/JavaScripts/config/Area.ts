@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","areaName","bgmId","bornPoint","fogId","skyBoxId","light","changeTime","changeCount","rotation"],["","Language","","","","","","","",""],[1,"battal_world_nameLV_20",34,new mw.Vector(211283,22022,2891),4,0,1,0,0,new mw.Vector(0,0,70)],[2,"battal_world_nameLV_21",31,new mw.Vector(216479,-8159,35170),1,0,1,0,0,null]];
+const EXCELDATA:Array<Array<any>> = [["id","areaName","bgmId","bornPoint","fogId","skyBoxId","light","changeTime","changeCount","rotation"],["","Language","","","","","","","",""],[1,"battal_world_nameLV_20",34,new mw.Vector(231146,18953,3034),4,0,1,0,0,new mw.Vector(0,0,70)],[2,"battal_world_nameLV_21",31,new mw.Vector(212355,18550.12,2758.65),1,0,1,0,0,null]];
 export interface IAreaElement extends IElementBase{
  	/**id*/
 	id:number

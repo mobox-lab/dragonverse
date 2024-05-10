@@ -71,6 +71,132 @@ export default class HUDpetGift_Generate extends UIScript {
 		}
 		return this.mText_Gift_Internal
 	}
+	private mCanvas_PetSelect_Internal: mw.Canvas
+	public get mCanvas_PetSelect(): mw.Canvas {
+		if(!this.mCanvas_PetSelect_Internal&&this.uiWidgetBase) {
+			this.mCanvas_PetSelect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect') as mw.Canvas
+		}
+		return this.mCanvas_PetSelect_Internal
+	}
+	private canvas_Pet1_Internal: mw.Canvas
+	public get canvas_Pet1(): mw.Canvas {
+		if(!this.canvas_Pet1_Internal&&this.uiWidgetBase) {
+			this.canvas_Pet1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet1') as mw.Canvas
+		}
+		return this.canvas_Pet1_Internal
+	}
+	private btnPet1_Internal: mw.Button
+	public get btnPet1(): mw.Button {
+		if(!this.btnPet1_Internal&&this.uiWidgetBase) {
+			this.btnPet1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet1/btnPet1') as mw.Button
+		}
+		return this.btnPet1_Internal
+	}
+	private imgPet1_Internal: mw.Image
+	public get imgPet1(): mw.Image {
+		if(!this.imgPet1_Internal&&this.uiWidgetBase) {
+			this.imgPet1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet1/imgPet1') as mw.Image
+		}
+		return this.imgPet1_Internal
+	}
+	private imgAttack1_Internal: mw.Image
+	public get imgAttack1(): mw.Image {
+		if(!this.imgAttack1_Internal&&this.uiWidgetBase) {
+			this.imgAttack1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet1/imgAttack1') as mw.Image
+		}
+		return this.imgAttack1_Internal
+	}
+	private canvas_Pet2_Internal: mw.Canvas
+	public get canvas_Pet2(): mw.Canvas {
+		if(!this.canvas_Pet2_Internal&&this.uiWidgetBase) {
+			this.canvas_Pet2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet2') as mw.Canvas
+		}
+		return this.canvas_Pet2_Internal
+	}
+	private btnPet2_Internal: mw.Button
+	public get btnPet2(): mw.Button {
+		if(!this.btnPet2_Internal&&this.uiWidgetBase) {
+			this.btnPet2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet2/btnPet2') as mw.Button
+		}
+		return this.btnPet2_Internal
+	}
+	private imgPet2_Internal: mw.Image
+	public get imgPet2(): mw.Image {
+		if(!this.imgPet2_Internal&&this.uiWidgetBase) {
+			this.imgPet2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet2/imgPet2') as mw.Image
+		}
+		return this.imgPet2_Internal
+	}
+	private imgAttack2_Internal: mw.Image
+	public get imgAttack2(): mw.Image {
+		if(!this.imgAttack2_Internal&&this.uiWidgetBase) {
+			this.imgAttack2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet2/imgAttack2') as mw.Image
+		}
+		return this.imgAttack2_Internal
+	}
+	private canvas_Pet3_Internal: mw.Canvas
+	public get canvas_Pet3(): mw.Canvas {
+		if(!this.canvas_Pet3_Internal&&this.uiWidgetBase) {
+			this.canvas_Pet3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet3') as mw.Canvas
+		}
+		return this.canvas_Pet3_Internal
+	}
+	private btnPet3_Internal: mw.Button
+	public get btnPet3(): mw.Button {
+		if(!this.btnPet3_Internal&&this.uiWidgetBase) {
+			this.btnPet3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet3/btnPet3') as mw.Button
+		}
+		return this.btnPet3_Internal
+	}
+	private imgPet3_Internal: mw.Image
+	public get imgPet3(): mw.Image {
+		if(!this.imgPet3_Internal&&this.uiWidgetBase) {
+			this.imgPet3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet3/imgPet3') as mw.Image
+		}
+		return this.imgPet3_Internal
+	}
+	private imgAttack3_Internal: mw.Image
+	public get imgAttack3(): mw.Image {
+		if(!this.imgAttack3_Internal&&this.uiWidgetBase) {
+			this.imgAttack3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet3/imgAttack3') as mw.Image
+		}
+		return this.imgAttack3_Internal
+	}
+	private canvas_Pet4_Internal: mw.Canvas
+	public get canvas_Pet4(): mw.Canvas {
+		if(!this.canvas_Pet4_Internal&&this.uiWidgetBase) {
+			this.canvas_Pet4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet4') as mw.Canvas
+		}
+		return this.canvas_Pet4_Internal
+	}
+	private btnPet4_Internal: mw.Button
+	public get btnPet4(): mw.Button {
+		if(!this.btnPet4_Internal&&this.uiWidgetBase) {
+			this.btnPet4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet4/btnPet4') as mw.Button
+		}
+		return this.btnPet4_Internal
+	}
+	private imgPet4_Internal: mw.Image
+	public get imgPet4(): mw.Image {
+		if(!this.imgPet4_Internal&&this.uiWidgetBase) {
+			this.imgPet4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet4/imgPet4') as mw.Image
+		}
+		return this.imgPet4_Internal
+	}
+	private imgAttack4_Internal: mw.Image
+	public get imgAttack4(): mw.Image {
+		if(!this.imgAttack4_Internal&&this.uiWidgetBase) {
+			this.imgAttack4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_PetSelect/canvas_Pet4/imgAttack4') as mw.Image
+		}
+		return this.imgAttack4_Internal
+	}
+	private petStateCanvas_Internal: mw.Canvas
+	public get petStateCanvas(): mw.Canvas {
+		if(!this.petStateCanvas_Internal&&this.uiWidgetBase) {
+			this.petStateCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/ScrollBox/petStateCanvas') as mw.Canvas
+		}
+		return this.petStateCanvas_Internal
+	}
 
 
 
@@ -99,6 +225,30 @@ export default class HUDpetGift_Generate extends UIScript {
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_Gift");
 		})
 		this.mBtn_Gift.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.btnPet1.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btnPet1");
+		})
+		this.btnPet1.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.btnPet2.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btnPet2");
+		})
+		this.btnPet2.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.btnPet3.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btnPet3");
+		})
+		this.btnPet3.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.btnPet4.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btnPet4");
+		})
+		this.btnPet4.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 
