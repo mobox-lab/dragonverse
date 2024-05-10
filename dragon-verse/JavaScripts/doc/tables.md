@@ -7,7 +7,7 @@ export_on_save:
 
 Dragon Verse 配置表程序侧定义文档
 
-v1.0.8  
+v1.0.10  
 by LviatYi
 
 阅读该文档时，推荐安装以下字体：
@@ -300,20 +300,21 @@ $$
 
 ## 动物生态 AnimalEcology
 
-|        Name        | PropName            | Type   | Desc               |
-| :----------------: | :------------------ | ------ | ------------------ |
-|      动物 ID       | id                  | int    |                    |
-|        名称        | name                | string |                    |
-|      生成区域      | generationAreas     | int[]  | 目前仅支持点集区域 |
-|  生成起始时间 ms   | startGenerationTime | int    |                    |
-|  单次生成间隔 ms   | generationInterval  | int    |                    |
-|    单次生成数量    | generationCount     | int    |                    |
-|  自动消失时长 ms   | fadeTime            | int    |                    |
-|      运动范围      | movementRadius      | int    |                    |
-|  速度可采样值 m/s  | speed               | int[]  |                    |
-| 休憩时长可采样值 s | restTime            | int[]  |                    |
-|     形象 Guid      | avatarGuid          | string |                    |
-|     动画 Guid      | animGuid            | string |                    |
+|        Name        | PropName            | Type    | Desc               |
+| :----------------: | :------------------ | ------- | ------------------ |
+|      动物 ID       | id                  | int     |                    |
+|        名称        | name                | string  |                    |
+|      生成区域      | generationAreas     | int[]   | 目前仅支持点集区域 |
+|  生成起始时间 ms   | startGenerationTime | int     |                    |
+|  单次生成间隔 ms   | generationInterval  | int     |                    |
+|    单次生成数量    | generationCount     | int     |                    |
+|  自动消失时长 ms   | fadeTime            | int     |                    |
+|      运动范围      | movementRadius      | int     |                    |
+|  速度可采样值 m/s  | speed               | int[]   |                    |
+| 休憩时长可采样值 s | restTime            | int[]   |                    |
+|     形象 Guid      | avatarGuid          | string  |                    |
+|     动画 Guid      | animGuid            | string  |                    |
+|    模型偏移修正    | meshOffset          | vector3 |                    |
 
 - **movementRadius** 以生成区域为中心 在运动范围内的寻路点有效。
 - **speed** 运动速度 从中采样下次运动的速度。
