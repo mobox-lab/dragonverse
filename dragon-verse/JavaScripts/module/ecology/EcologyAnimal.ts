@@ -189,7 +189,7 @@ export default class EcologyAnimal {
                         undefined,
                         this._char);
 
-                    let dest = hit[0]?.position??undefined;
+                    let dest = hit[0]?.position ?? undefined;
                     if (Gtk.isNullOrUndefined(dest)) this._state.walkValid = false;
 
                     this._state.walkValid = undefined;

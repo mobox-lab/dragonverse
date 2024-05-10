@@ -181,15 +181,6 @@ AddGMCommand(
 );
 
 AddGMCommand(
-    "上报跑酷信息",
-    (player, value) => {
-        ModuleService.getModule(AuthModuleC).reportSubGameInfo(Date.now(), SubGameTypes.Parkour, Number(value) ?? 100);
-    },
-    undefined,
-    "Root 权限",
-);
-
-AddGMCommand(
     "获取名字",
     (player, value) => {
         console.log(HeadUIController.getInstance().getNickNameByPlayerId(Number(value)));

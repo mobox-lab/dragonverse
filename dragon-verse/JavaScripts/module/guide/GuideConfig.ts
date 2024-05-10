@@ -10,6 +10,63 @@ import GlobalTips from "../../depend/global-tips/GlobalTips";
 import i18n from "../../language/i18n";
 import Tf = GtkTypes.Tf;
 
+//#region TTD & GM
+
+AddGMCommand("Dont Use Guide | Guide",
+    () => {
+        manager.useGuide(false);
+        manager.finishCurrent();
+    },
+    undefined,
+    "Guide",
+);
+
+AddGMCommand("Use Guide | Guide",
+    () => {
+        manager.useGuide(true);
+        manager.finishCurrent();
+    },
+    undefined,
+    "Guide",
+);
+
+AddGMCommand("Step All | Guide",
+    () => {
+        Gtk.enumVals(GuideStep)
+            .forEach(step => {
+                Gtk.enumVals(GuideStep)
+                    .forEach(step => {
+                        manager["_taskDoneMap"].set(step, true);
+                        manager.onComplete.invoke(step);
+                    });
+            });
+        manager.finishCurrent();
+    },
+    undefined,
+    "Guide",
+);
+
+AddGMCommand("Reset All | Guide",
+    () => {
+        Gtk.enumVals(GuideStep)
+            .forEach(step => {
+                manager["_taskDoneMap"].set(step, false);
+            });
+    },
+    undefined,
+    "Guide",
+);
+
+AddGMCommand("Operation Teach | Guide",
+    () => {
+        manager.resetComplete(GuideStep.GOperationTeach);
+        manager.requestNext(GuideStep.GOperationTeach);
+    },
+    undefined,
+    "Guide",
+);
+//#endregion
+
 //#region Config 策划配置项
 
 //#region Controller Config
