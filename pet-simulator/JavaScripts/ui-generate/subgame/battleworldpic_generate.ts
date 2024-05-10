@@ -6,16 +6,9 @@
 
 
 
-@UIBind('UI/WorldUI/EggInteract.ui')
-export default class EggInteract_Generate extends UIScript {
-		private clickImg_Internal: mw.Image
-	public get clickImg(): mw.Image {
-		if(!this.clickImg_Internal&&this.uiWidgetBase) {
-			this.clickImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/clickImg') as mw.Image
-		}
-		return this.clickImg_Internal
-	}
-
+@UIBind('UI/subgame/battleworldpic.ui')
+export default class battleworldpic_Generate extends UIScript {
+	
 
 
 	public showAction: mw.Action1<mw.UIScript> = new mw.Action1<mw.UIScript>();
@@ -40,9 +33,6 @@ export default class EggInteract_Generate extends UIScript {
 		
 		//文本多语言
 		
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/clickImg/TextBlock") as any);
-		
-	
 
 	}
 	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

@@ -91,7 +91,7 @@ export namespace GlobalData {
         /**宠物行动栏，出战时颜色 */
         public static attackingPetStateImgColor: LinearColor = LinearColor.colorHexToLinearColor("#FED43F");
         /**宠物行动栏，悬浮时缩放 */
-        public static petStateImgHoverScale: Vector2 = new Vector2(0.7, 0.7);
+        public static petStateImgHoverScale: Vector2 = new Vector2(0.9, 0.9);
         /**宠物行动栏，非悬浮时缩放 */
         public static petStateImgNormalScale: Vector2 = Vector2.one;
 

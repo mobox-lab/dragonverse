@@ -15,6 +15,13 @@ export default class PetStateItemUI_Generate extends UIScript {
 		}
 		return this.itemCanvas_Internal
 	}
+	private bgLineimg_Internal: mw.Image
+	public get bgLineimg(): mw.Image {
+		if(!this.bgLineimg_Internal&&this.uiWidgetBase) {
+			this.bgLineimg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/bgLineimg') as mw.Image
+		}
+		return this.bgLineimg_Internal
+	}
 	private bgImg_Internal: mw.Image
 	public get bgImg(): mw.Image {
 		if(!this.bgImg_Internal&&this.uiWidgetBase) {
