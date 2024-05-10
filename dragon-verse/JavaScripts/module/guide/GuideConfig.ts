@@ -144,28 +144,6 @@ export enum GuideStep {
 
 const manager = OperationGuider.getInstance();
 
-//#region TTD & GM
-
-AddGMCommand("Dont Use Guide | Guide",
-    () => {
-        manager.useGuide(false);
-        manager.finishCurrent();
-    },
-    undefined,
-    "Guide",
-);
-
-AddGMCommand("Use Guide | Guide",
-    () => {
-        manager.useGuide(true);
-        manager.finishCurrent();
-    },
-    undefined,
-    "Guide",
-);
-
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
 const loadGuide = () => {
     if (SystemUtil.isClient()) {
         let talkedDone = false;
