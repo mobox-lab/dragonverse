@@ -132,6 +132,7 @@ export default class EcologyAnimal {
                     }
                     this._char = value as mw.Character;
                     this._char.description.base.wholeBody = this._config.avatarGuid;
+                    this._char.collisionExtent = new Vector(60, 60, 129.871);
                     for (let i = 0; i < this._config.animGuid?.length ?? 0; ++i) {
                         let animation = this._char.loadAnimation(this._config.animGuid[i]);
                         this._animations.push(animation);
