@@ -132,7 +132,7 @@ export default class EcologyAnimal {
                     }
                     this._char = value as mw.Character;
                     this._char.description.base.wholeBody = this._config.avatarGuid;
-                    this._char.collisionExtent = new Vector(60, 60, 129.871);
+                    if (this._config.meshOffset) this._char.meshOffset = this._config.meshOffset.clone();
                     for (let i = 0; i < this._config.animGuid?.length ?? 0; ++i) {
                         let animation = this._char.loadAnimation(this._config.animGuid[i]);
                         this._animations.push(animation);
@@ -189,7 +189,7 @@ export default class EcologyAnimal {
                         undefined,
                         this._char);
 
-                    let dest = hit[0].position;
+                    let dest = hit[0]?.position??undefined;
                     if (Gtk.isNullOrUndefined(dest)) this._state.walkValid = false;
 
                     this._state.walkValid = undefined;
