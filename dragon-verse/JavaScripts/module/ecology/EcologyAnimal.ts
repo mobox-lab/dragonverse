@@ -7,6 +7,26 @@ import Gtk from "../../util/GToolkit";
 import bindYoact = Yoact.bindYoact;
 import { GameConfig } from "../../config/GameConfig";
 import createYoact = Yoact.createYoact;
+import Animator = lighter.animation.Animator;
+import GameServiceConfig from "../../const/GameServiceConfig";
+
+/**
+ * 生态动物动画类型.
+ */
+export enum EcologyAnimalAnimationTypes {
+    /**
+     * 空闲.
+     */
+    Idle,
+    /**
+     * 走.
+     */
+    Walk,
+    /**
+     * 跑.
+     */
+    Run,
+}
 
 export class EcologyAnimalStateParam {
     /**
@@ -65,6 +85,12 @@ export enum EcologyAnimalStatus {
 export default class EcologyAnimal {
     private _config: IAnimalEcologyElement;
 
+    public get configValid(): boolean {
+        return !Gtk.isNullOrUndefined(this._config);
+    }
+
+    private _animations: mw.Animation[] = [];
+
     private _createTime: number;
 
     public birthPosition: mw.Vector;
@@ -105,8 +131,11 @@ export default class EcologyAnimal {
                         return;
                     }
                     this._char = value as mw.Character;
-                    this._char.description.base.wholeBody = this._config.prefabGuid;
-                    Gtk.safeSetDescription(this._char, this._config.prefabGuid);
+                    this._char.description.base.wholeBody = this._config.avatarGuid;
+                    for (let i = 0; i < this._config.animGuid.length; ++i) {
+                        this._animations.push(this._char.loadAnimation(this._config.animGuid[i]));
+                    }
+
                     this._char.displayName = this._config.name;
                     this.initStateMachine();
                     mw.TimeUtil.onEnterFrame.add(this.onUpdate);
@@ -126,6 +155,7 @@ export default class EcologyAnimal {
             .aE(() => {
                 logEnterState(idle, this._char.gameObjectId);
                 this._state.resetWaitedTime(this._config);
+                this._animations[EcologyAnimalAnimationTypes.Idle]?.play();
             })
             .aU((dt) => this._state.waitedTime += dt);
         const findPath =
@@ -166,7 +196,13 @@ export default class EcologyAnimal {
         const run = new State<EcologyAnimalStateParam>(EcologyAnimalStatus.Move)
             .aE(() => {
                 logEnterState(run, this._char.gameObjectId);
-                this._char.maxWalkSpeed = Gtk.randomArrayItem(this._config.speed) ?? 500;
+                let speed = Gtk.randomArrayItem(this._config.speed) ?? 500;
+                this._char.maxWalkSpeed = speed;
+                if (speed > GameServiceConfig.ECOLOGY_ANIMAL_RUN_SPEED_THRESHOLD) {
+                    this._animations[EcologyAnimalAnimationTypes.Run]?.play();
+                } else {
+                    this._animations[EcologyAnimalAnimationTypes.Walk]?.play();
+                }
             })
             .aEx(() => mw.Navigation.stopNavigateTo(this._char));
         const dead = new State<EcologyAnimalStateParam>(EcologyAnimalStatus.Dead)
@@ -192,7 +228,7 @@ export default class EcologyAnimal {
 }
 
 function logEnterState(state: State<EcologyAnimalStateParam>, guid: string) {
-    Log4Ts.log(EcologyAnimal,
-        `enter ${state.name} state.`,
-        `guid: ${guid}.`);
+    // Log4Ts.log(EcologyAnimal,
+    //     `enter ${state.name} state.`,
+    //     `guid: ${guid}.`);
 }

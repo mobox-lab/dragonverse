@@ -26,7 +26,7 @@ AddGMCommand(
                 .character
                 .worldTransform
                 .position
-                .add(new RandomGenerator().randomCircle().toVector3(500)),
+                .add(new RandomGenerator().randomCircle().handle(v => v * 200).toVector3(200)),
         );
     },
     "Spawn",
@@ -215,6 +215,10 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
                 let expectArray: IPoint3[] = Enumerable.from(this._generatedAnimals).select(item => item.birthPosition).toArray();
                 for (let i = 0; i < config.generationCount; ++i) {
                     let pos = this.aM.getRandom3DPoint(targetArea, expectArray);
+                    if (Gtk.isNullOrUndefined(pos)) {
+                        Log4Ts.log(EcologyModuleS, `there is no valid point in area for animal generate. animal id: ${id}. expectArray: ${expectArray}`);
+                        return;
+                    }
                     this.generateAnimal(id, new mw.Vector(pos.x, pos.y, pos.z));
                     expectArray.push(pos);
                 }
@@ -224,7 +228,8 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
     }
 
     private generateAnimal(id: number, position: mw.Vector) {
-        this._generatedAnimals.push(new EcologyAnimal(id, position));
+        let animal = new EcologyAnimal(id, position);
+        animal.configValid && this._generatedAnimals.push(animal);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
