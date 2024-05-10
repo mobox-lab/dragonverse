@@ -70,7 +70,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.hudPetUI.setBagText(this.data.CurFollowPets.length, this.data.MaxFollowCount);
 
         let ids = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key).I);
-        UIService.getUI(P_HudPetGift)?.setBattlePets(ids);
+        UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, ids);
 
         this.enchantUI.enchantAc.add(this.addEnchant.bind(this));
         this.enchantUI.onUpdateAc.add((canUpdate: boolean) => {
@@ -381,7 +381,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.bagUI.setCanvasItem(this.data.sortBag(), this.data.CurFollowPets);
 
         let ids = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key).I);
-        UIService.getUI(P_HudPetGift)?.setBattlePets(ids);
+        UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, ids);
 
         let arr = keys.concat();
         for (let id = 0; id < arr.length; id++) {

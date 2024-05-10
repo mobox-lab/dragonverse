@@ -8,24 +8,31 @@
 
 @UIBind('UI/hud/PetStateItemUI.ui')
 export default class PetStateItemUI_Generate extends UIScript {
-		private bgImg_Internal: mw.Image
+		private itemCanvas_Internal: mw.Canvas
+	public get itemCanvas(): mw.Canvas {
+		if(!this.itemCanvas_Internal&&this.uiWidgetBase) {
+			this.itemCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas') as mw.Canvas
+		}
+		return this.itemCanvas_Internal
+	}
+	private bgImg_Internal: mw.Image
 	public get bgImg(): mw.Image {
 		if(!this.bgImg_Internal&&this.uiWidgetBase) {
-			this.bgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/bgImg') as mw.Image
+			this.bgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/bgImg') as mw.Image
 		}
 		return this.bgImg_Internal
 	}
 	private petImg_Internal: mw.Image
 	public get petImg(): mw.Image {
 		if(!this.petImg_Internal&&this.uiWidgetBase) {
-			this.petImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/petImg') as mw.Image
+			this.petImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/petImg') as mw.Image
 		}
 		return this.petImg_Internal
 	}
 	private attackImg_Internal: mw.Image
 	public get attackImg(): mw.Image {
 		if(!this.attackImg_Internal&&this.uiWidgetBase) {
-			this.attackImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/attackImg') as mw.Image
+			this.attackImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/attackImg') as mw.Image
 		}
 		return this.attackImg_Internal
 	}

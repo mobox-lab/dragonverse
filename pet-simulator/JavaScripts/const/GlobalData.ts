@@ -86,6 +86,15 @@ export namespace GlobalData {
 
     /**宠物 */
     export class pet {
+        /**宠物行动栏，休息时颜色 */
+        public static restingPetStateImgColor: LinearColor = LinearColor.gray;
+        /**宠物行动栏，出战时颜色 */
+        public static attackingPetStateImgColor: LinearColor = LinearColor.yellow;
+        /**宠物行动栏，悬浮时缩放 */
+        public static petStateImgHoverScale: Vector2 = new Vector2(0.7, 0.7);
+        /**宠物行动栏，非悬浮时缩放 */
+        public static petStateImgNormalScale: Vector2 = Vector2.one;
+
         //扭蛋开出来龙娘的姿势
         public static petShowStanceGuid: string = "144180";
         //龙娘攻击动画

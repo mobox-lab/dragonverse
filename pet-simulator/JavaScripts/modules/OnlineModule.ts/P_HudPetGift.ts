@@ -1,19 +1,17 @@
 
 
 import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import HUDpetGift_Generate from "../../ui-generate/hud/HUDpetGift_generate";
 import PetStateItemUI_Generate from "../../ui-generate/hud/PetStateItemUI_generate";
 import { utils } from "../../util/uitls";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
+import { PetState } from "../Player/PetBehavior";
 
-export enum PetState {
-    /**攻击 */
-    Attack = 1,
-    /**休息 */
-    Rest = 2,
-}
+
 export class P_HudPetGift extends HUDpetGift_Generate {
 
     /**领取按钮 */
@@ -124,22 +122,76 @@ export class P_HudPetGift extends HUDpetGift_Generate {
 
 
     private _lastAttackTarget: Map<number, number> = new Map();
-
-    setBattlePets(currentFollowPetIds: number[]) {
+    private _battlePetUIs: Map<number, PetStateItemUI_Generate> = new Map();
+    private _petState: Map<number, PetState> = new Map();
+    setBattlePets(keys: number[], petArrIds: number[]) {
         this.petStateCanvas.removeAllChildren();
-        currentFollowPetIds.forEach(petId => {
+        this._battlePetUIs.clear();
+        this._petState.clear();
+        this._lastAttackTarget.clear();
+        petArrIds.forEach((petId, index) => {
+            //petId是宠物表的id，keys存了对应宠物的唯一id
             let petStateItem = UIService.create(PetStateItemUI_Generate);
             let pet = GameConfig.PetARR.getElement(petId);
             if (pet) {
                 petStateItem.petImg.imageGuid = pet.uiGuid;
             }
+            petStateItem.attackImg.visibility = mw.SlateVisibility.Collapsed;
+            petStateItem.bgImg.imageColor = GlobalData.pet.restingPetStateImgColor;
+
+            petStateItem.mBtn_Pet.onHovered.add(() => {
+                petStateItem.itemCanvas.renderScale = GlobalData.pet.petStateImgHoverScale;
+            });
+            petStateItem.mBtn_Pet.onUnhovered.add(() => {
+                petStateItem.itemCanvas.renderScale = GlobalData.pet.petStateImgNormalScale;
+            });
+
+            petStateItem.mBtn_Pet.onClicked.add(() => {
+                //只检查上次攻击的目标存不存在，内部会检查是否存在资源
+                //是否正在攻击
+
+                if (this._petState.get(keys[index]) === PetState.Idle && this._lastAttackTarget.has(keys[index])) {
+                    //攻击目标
+                    let attackTarget = this._lastAttackTarget.get(keys[index]);
+                    if (attackTarget) Event.dispatchToLocal(GlobalEnum.EventName.PetAttack, keys[index], attackTarget);
+                } else if (this._petState.get(keys[index]) === PetState.Attack) {
+                    Event.dispatchToLocal(GlobalEnum.EventName.CancelPetAttack, keys[index]);
+                }
+            });
+
+
 
             this.petStateCanvas.addChild(petStateItem.uiObject);
+            this._battlePetUIs.set(keys[index], petStateItem);
+            this._petState.set(keys[index], PetState.Idle);
         });
     }
 
-    changePetState(petId: number, state: PetState) {
-
+    private _clearTimeOut: any;
+    changePetState(key: number, state: PetState, attackTarget?: number) {
+        if (!this._battlePetUIs.has(key)) return;
+        let ui = this._battlePetUIs.get(key);
+        switch (state) {
+            case PetState.Attack:
+                ui.attackImg.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+                ui.bgImg.imageColor = GlobalData.pet.attackingPetStateImgColor;
+                this._lastAttackTarget.set(key, attackTarget);
+                //开始计时
+                if (this._clearTimeOut) {
+                    //如果有清除上一次的计时器，重新开始计时
+                    clearTimeout(this._clearTimeOut);
+                    this._clearTimeOut = null;
+                }
+                this._clearTimeOut = setTimeout(() => {
+                    this._lastAttackTarget.set(key, null);
+                }, 30e3);
+                break;
+            case PetState.Idle:
+                ui.attackImg.visibility = mw.SlateVisibility.Collapsed;
+                ui.bgImg.imageColor = GlobalData.pet.restingPetStateImgColor;
+                break;
+        }
+        this._petState.set(key, state);
     }
 
 }   
