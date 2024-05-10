@@ -114,19 +114,9 @@ export default class GameServiceConfig {
     //#region Auth
 
     /**
-     * P12 通信 最短 子游戏信息上传 间隔.
+     * 外源服务器 通信 最短通信 间隔.
      */
-    public static readonly MIN_SUB_GAME_INFO_INTERVAL = 1e3;
-
-    /**
-     * P12 通信 每日最大 Code 验证次数.
-     */
-    public static readonly DAILY_MAX_TRIAL_COUNT = 100;
-
-    /**
-     * P12 通信 每小时最大 Code 验证次数.
-     */
-    public static readonly HOUR_MAX_TRIAL_COUNT = 10;
+    public static readonly MIN_OTHER_REQUEST_INTERVAL = 1e3;
 
     /**
      * 最长等待授权时间.
@@ -800,5 +790,12 @@ export default class GameServiceConfig {
      */
     public static readonly AREA_ID_MAIN_SCENE_RESPAWN = 14;
 
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    //#region Global Config
+    /**
+     * 是否发布.
+     */
+    public static isRelease: boolean = undefined;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

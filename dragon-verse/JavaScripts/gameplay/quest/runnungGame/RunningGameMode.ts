@@ -11,7 +11,6 @@ import { TimeManager } from "../../../controller/TimeManager";
 import { SubGameTypes } from "../../../const/SubGameTypes";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
 import MainPanel from "../../../ui/main/MainPanel";
-import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 
 /**
  * 跑酷游戏状态
@@ -124,11 +123,6 @@ export class RunningGameMode {
                 this.onStart();
                 break;
             case RunningGameStatus.End:
-                ModuleService.getModule(AuthModuleC).reportSubGameInfo(
-                    TimeManager.getInstance().currentTime,
-                    SubGameTypes.Parkour,
-                    this.playScore,
-                );
                 // UIService.getUI(MainPanel)?.enableReset(true);
                 Event.dispatchToLocal(EventDefine.OnRuningGameEnd);
                 break;
