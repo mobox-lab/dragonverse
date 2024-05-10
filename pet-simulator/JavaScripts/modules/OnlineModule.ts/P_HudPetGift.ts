@@ -138,7 +138,7 @@ export class P_HudPetGift extends HUDpetGift_Generate {
             }
             petStateItem.attackImg.visibility = mw.SlateVisibility.Collapsed;
             petStateItem.bgImg.imageColor = GlobalData.pet.restingPetStateImgColor;
-
+            petStateItem.bgLineImg.imageColor = GlobalData.pet.restingPetStateImgBorderColor;
             petStateItem.mBtn_Pet.onHovered.add(() => {
                 petStateItem.itemCanvas.renderScale = GlobalData.pet.petStateImgHoverScale;
             });
@@ -175,6 +175,7 @@ export class P_HudPetGift extends HUDpetGift_Generate {
             case PetState.Attack:
                 ui.attackImg.visibility = mw.SlateVisibility.SelfHitTestInvisible;
                 ui.bgImg.imageColor = GlobalData.pet.attackingPetStateImgColor;
+                ui.bgLineImg.imageColor = GlobalData.pet.attackingPetStateImgBorderColor;
                 this._lastAttackTarget.set(key, attackTarget);
                 //开始计时
                 if (this._clearTimeOut) {
@@ -189,6 +190,7 @@ export class P_HudPetGift extends HUDpetGift_Generate {
             case PetState.Idle:
                 ui.attackImg.visibility = mw.SlateVisibility.Collapsed;
                 ui.bgImg.imageColor = GlobalData.pet.restingPetStateImgColor;
+                ui.bgLineImg.imageColor = GlobalData.pet.restingPetStateImgBorderColor;
                 break;
         }
         this._petState.set(key, state);
