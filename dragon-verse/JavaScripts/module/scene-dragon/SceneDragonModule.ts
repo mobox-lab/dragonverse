@@ -38,7 +38,7 @@ AddGMCommand(
                 .character
                 .worldTransform
                 .position
-                .add(new RandomGenerator().randomCircle().toVector3(500)),
+                .add(new RandomGenerator().randomCircle().handle(v => v * 200).toVector3(500)),
             new UUID(4).toString(),
         );
     },
