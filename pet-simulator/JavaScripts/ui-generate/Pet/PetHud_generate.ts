@@ -57,27 +57,6 @@ export default class PetHud_Generate extends UIScript {
 		}
 		return this.mBtn_collect_Internal
 	}
-	private mCanvas_Trade_Internal: mw.Canvas
-	public get mCanvas_Trade(): mw.Canvas {
-		if(!this.mCanvas_Trade_Internal&&this.uiWidgetBase) {
-			this.mCanvas_Trade_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Trade') as mw.Canvas
-		}
-		return this.mCanvas_Trade_Internal
-	}
-	private mPic_TradeIcon_Internal: mw.Image
-	public get mPic_TradeIcon(): mw.Image {
-		if(!this.mPic_TradeIcon_Internal&&this.uiWidgetBase) {
-			this.mPic_TradeIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Trade/mPic_TradeIcon') as mw.Image
-		}
-		return this.mPic_TradeIcon_Internal
-	}
-	private mBtn_Trade_Internal: mw.Button
-	public get mBtn_Trade(): mw.Button {
-		if(!this.mBtn_Trade_Internal&&this.uiWidgetBase) {
-			this.mBtn_Trade_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Trade/mBtn_Trade') as mw.Button
-		}
-		return this.mBtn_Trade_Internal
-	}
 	private mCanvas_achve_Internal: mw.Canvas
 	public get mCanvas_achve(): mw.Canvas {
 		if(!this.mCanvas_achve_Internal&&this.uiWidgetBase) {
@@ -98,6 +77,27 @@ export default class PetHud_Generate extends UIScript {
 			this.mBtn_achve_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_achve/mBtn_achve') as mw.Button
 		}
 		return this.mBtn_achve_Internal
+	}
+	private mCanvas_Trade_Internal: mw.Canvas
+	public get mCanvas_Trade(): mw.Canvas {
+		if(!this.mCanvas_Trade_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Trade_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Trade') as mw.Canvas
+		}
+		return this.mCanvas_Trade_Internal
+	}
+	private mPic_TradeIcon_Internal: mw.Image
+	public get mPic_TradeIcon(): mw.Image {
+		if(!this.mPic_TradeIcon_Internal&&this.uiWidgetBase) {
+			this.mPic_TradeIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Trade/mPic_TradeIcon') as mw.Image
+		}
+		return this.mPic_TradeIcon_Internal
+	}
+	private mBtn_Trade_Internal: mw.Button
+	public get mBtn_Trade(): mw.Button {
+		if(!this.mBtn_Trade_Internal&&this.uiWidgetBase) {
+			this.mBtn_Trade_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mCanvas_Trade/mBtn_Trade') as mw.Button
+		}
+		return this.mBtn_Trade_Internal
 	}
 
 
@@ -129,16 +129,16 @@ export default class PetHud_Generate extends UIScript {
 		this.mBtn_collect.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
-		this.mBtn_Trade.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_Trade");
-		})
-		this.mBtn_Trade.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
 		this.mBtn_achve.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_achve");
 		})
 		this.mBtn_achve.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.mBtn_Trade.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Trade");
+		})
+		this.mBtn_Trade.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 
