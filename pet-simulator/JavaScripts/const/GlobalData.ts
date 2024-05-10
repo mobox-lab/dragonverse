@@ -87,9 +87,9 @@ export namespace GlobalData {
     /**宠物 */
     export class pet {
         /**宠物行动栏，休息时颜色 */
-        public static restingPetStateImgColor: LinearColor = LinearColor.gray;
+        public static restingPetStateImgColor: LinearColor = LinearColor.colorHexToLinearColor("#B5B5B5");
         /**宠物行动栏，出战时颜色 */
-        public static attackingPetStateImgColor: LinearColor = LinearColor.yellow;
+        public static attackingPetStateImgColor: LinearColor = LinearColor.colorHexToLinearColor("#FED43F");
         /**宠物行动栏，悬浮时缩放 */
         public static petStateImgHoverScale: Vector2 = new Vector2(0.7, 0.7);
         /**宠物行动栏，非悬浮时缩放 */
