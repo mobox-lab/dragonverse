@@ -494,8 +494,8 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
             }
             sum += weightArr[i].weight;
         }
-        //意外情况就返回第一个
-        return 1;
+        //=probability的话就返回最后一个
+        return weightArr[weightArr.length - 1].id;
     }
     private getAreaWeight(areaId: number): { id: number, weight: number }[] {
         let cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);

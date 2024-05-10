@@ -5,7 +5,7 @@ import { TimeManager } from "./controller/TimeManager";
 import { VectorExt } from "./declaration/vectorext";
 import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
 import i18n, { LanguageTypes } from "./language/i18n";
-import DragonVerseAuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
+import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
 import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
 import CollectibleItemModuleData, {
     CollectibleItemModuleC,
@@ -28,27 +28,22 @@ import { Delegate } from "./depend/delegate/Delegate";
 import GToolkit, { GtkTypes } from "./util/GToolkit";
 import SystemUtil = mw.SystemUtil;
 import Nolan from "./depend/nolan/Nolan";
-import GameServiceConfig from "./const/GameServiceConfig";
 import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioController";
 import DialogifyManager from "./depend/dialogify/DialogifyManager";
 import DialoguePanelController from "./depend/dialogify/dialogue-panel-controller/DialoguePanelController";
-import GlobalProperty from "./GlobalProperty";
 import ObbyModuleData, { ObbyModuleC, ObbyModuleS } from "./module/obby/ObbyModule";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
 import PlayerSettingModuleData, {
     PlayerSettingModuleC,
     PlayerSettingModuleS,
 } from "./module/player-setting/PlayerSettingModule";
-import KeyOperationManager from "./controller/key-operation-manager/KeyOperationManager";
 import { InteractiveObjModuleC, InteractiveObjModuleS } from "./gameplay/interactiveObj/InteractiveObjModule";
 import GlobalTips from "./depend/global-tips/GlobalTips";
 import Balancing from "./depend/balancing/Balancing";
-import GenderTypes = GtkTypes.GenderTypes;
-import Area from "./depend/area/shape/base/IArea";
-import { GameConfig } from "./config/GameConfig";
-import AreaManager from "./depend/area/AreaManager";
 import EcologyModuleData, { EcologyModuleC, EcologyModuleS } from "./module/ecology/EcologyModule";
 import StatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
+import GuideModuleData, { GuideModuleC, GuideModuleS } from "./module/guide/GuideModule";
+import GameServiceConfig from "./const/GameServiceConfig";
 
 AddGMCommand("TP 传送",
     null,
@@ -85,6 +80,13 @@ AddGMCommand("Language 切换语言",
     null,
     "多语言",
 );
+
+AddGMCommand("Global Tips | 冒泡提示",
+    (player, value) => {
+        GlobalTips.getInstance().showGlobalTips(value);
+    },
+    undefined,
+    "提示");
 
 @Component
 export default class GameStart extends mw.Script {
@@ -137,7 +139,7 @@ export default class GameStart extends mw.Script {
     onStart(): void {
         Log4Ts.log(GameStart, `this is ${SystemUtil.isClient() ? "client" : "server"}`);
         this.useUpdate = true;
-        GlobalProperty.getInstance().isRelease = this.isRelease;
+        GameServiceConfig.isRelease = this.isRelease;
         this.initialize();
 
     }
@@ -268,7 +270,7 @@ export default class GameStart extends mw.Script {
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
         moduleService.registerModule(StatisticModuleS, StatisticModuleC, StatisticModuleData);
         moduleService.registerModule(RoleModuleS, RoleModuleC, RoleModuleData);
-        moduleService.registerModule(AuthModuleS, AuthModuleC, DragonVerseAuthModuleData);
+        moduleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
         moduleService.registerModule(CollectibleItemModuleS, CollectibleItemModuleC, CollectibleItemModuleData);
         moduleService.registerModule(SceneDragonModuleS, SceneDragonModuleC, SceneDragonModuleData);
@@ -280,6 +282,7 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(PlayerSettingModuleS, PlayerSettingModuleC, PlayerSettingModuleData);
         moduleService.registerModule(InteractiveObjModuleS, InteractiveObjModuleC, null);
         moduleService.registerModule(EcologyModuleS, EcologyModuleC, EcologyModuleData);
+        moduleService.registerModule(GuideModuleS, GuideModuleC, GuideModuleData);
         if (SystemUtil.isClient()) {
             moduleService.getModule(RoleModuleC).delegateOnReady(() => {
                 this._moduleReady = true;

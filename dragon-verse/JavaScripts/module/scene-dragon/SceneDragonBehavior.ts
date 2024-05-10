@@ -17,7 +17,6 @@ import Animation = mw.Animation;
 import Navigation = mw.Navigation;
 import GameObject = mw.GameObject;
 import GToolkit, {Regulator} from "../../util/GToolkit";
-import GlobalProperty from "../../GlobalProperty";
 
 class SceneDragonBehaviorState {
     //#region Constant
@@ -356,7 +355,7 @@ export default class SceneDragonBehavior extends mw.Script {
                 this._deathStance.play();
                 EffectService.playAtPosition(
                     GameServiceConfig.SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_ID,
-                    GToolkit.detectGameObjectVerticalTerrain(obj, undefined, undefined, !GlobalProperty.getInstance().isRelease)?.position
+                    GToolkit.detectGameObjectVerticalTerrain(obj, undefined, undefined, !GameServiceConfig.isRelease)?.position
                     ?? obj.worldTransform.position.clone()
                         .add(GameServiceConfig.SCENE_DRAGON_DEATH_WAIT_LIGHT_EFFECT_LOCATION_OFFSET),
                     {

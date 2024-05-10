@@ -12,9 +12,11 @@ import { TaskModuleData } from "./TaskModuleData";
 import { Task_ModuleS } from "./Task_ModuleS";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { GlobalEnum } from "../../const/Enum";
+import { P_PetHud } from "../Hud/P_PetHud";
+import { P_HudUI } from "../Hud/P_HudUI";
 
 
-export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData>{
+export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
 
     /**任务商店UI */
     private taskShopUI: P_TaskShop = null;
@@ -73,6 +75,7 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData>{
             }
             worldUI.onTaskComplete(info, count);
         }
+        UIService.getUI(P_HudUI).updateTaskPoint();
     }
 
     /**任务商店购买 */
@@ -132,6 +135,14 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData>{
     /**隐藏任务商店 */
     public hideTaskShop(): void {
         this.taskShopUI.hide();
+    }
+
+    /**
+     * 获取任务币数量
+     * @returns taskPoint
+     */
+    public getTaskPoint(): number {
+        return this.data.getTaskPoint();
     }
 
 }

@@ -114,19 +114,9 @@ export default class GameServiceConfig {
     //#region Auth
 
     /**
-     * P12 通信 最短 子游戏信息上传 间隔.
+     * 外源服务器 通信 最短通信 间隔.
      */
-    public static readonly MIN_SUB_GAME_INFO_INTERVAL = 1e3;
-
-    /**
-     * P12 通信 每日最大 Code 验证次数.
-     */
-    public static readonly DAILY_MAX_TRIAL_COUNT = 100;
-
-    /**
-     * P12 通信 每小时最大 Code 验证次数.
-     */
-    public static readonly HOUR_MAX_TRIAL_COUNT = 10;
+    public static readonly MIN_OTHER_REQUEST_INTERVAL = 1e3;
 
     /**
      * 最长等待授权时间.
@@ -402,9 +392,13 @@ export default class GameServiceConfig {
     //#region Ecology
     /**
      * 生态 动物 自动生成间隔.
-     * @type {number}
      */
     public static readonly ECOLOGY_ANIMAL_AUTO_GENERATION_INTERVAL = 5e3;
+
+    /**
+     * 生态 动物 跑动速度阈值.
+     */
+    public static readonly ECOLOGY_ANIMAL_RUN_SPEED_THRESHOLD = 250;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Bag
@@ -531,7 +525,6 @@ export default class GameServiceConfig {
     //#region UI
     /**
      * 独占提示框 存在时长. ms
-     * @type {number}
      */
     public static readonly ONLY_TIPS_DURATION = 5e3;
 
@@ -592,31 +585,26 @@ export default class GameServiceConfig {
 
     /**
      * 主界面 交互按钮 捕捉 图标 Guid.
-     * @type {string}
      */
     public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_CATCH = "164192";
 
     /**
      * 主界面 交互按钮 对话 图标 Guid.
-     * @type {string}
      */
     public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_TALK = "324347";
 
     /**
      * 主界面 交互按钮 采集 图标 Guid.
-     * @type {string}
      */
     public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_COLLECT = "266693";
 
     /**
      * 主界面 交互按钮 传送 图标 Guid.
-     * @type {string}
      */
     public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_TRANSPORT = "267515";
 
     /**
      * 主界面 交互按钮 自定义 默认 图标 Guid.
-     * @type {string}
      */
     public static readonly MAIN_PANEL_INTERACTION_ICON_GUID_CUSTOM = "164192";
 
@@ -685,7 +673,6 @@ export default class GameServiceConfig {
     //#region Obby
     /**
      * 布娃娃 持续时长. ms
-     * @type {number}
      */
     public static readonly RAGDOLL_SUSTAIN_DURATION = 2e3;
 
@@ -751,19 +738,16 @@ export default class GameServiceConfig {
 
     /**
      * 跑酷星星收集特效 Guid.
-     * @type {string}
      */
     public static readonly OBBY_STAR_COLLECT_EFFECT_GUID = "151580";
 
     /**
      * 跑酷星星触碰特效 Guid.
-     * @type {string}
      */
     public static readonly OBBY_STAR_TOUCH_EFFECT_GUID = "155715";
 
     /**
      * 跑酷星星触碰特效 缩放.
-     * @type {Vector}
      */
     public static get OBBY_STAR_TOUCH_EFFECT_SCALE() {
         return new Vector(1.0, 1.0, 1.0);
@@ -771,37 +755,31 @@ export default class GameServiceConfig {
 
     /**
      * 跑酷星星收集音效 Id.
-     * @type {string}
      */
     public static readonly OBBY_STAR_COLLECT_SOUND_ID = 29;
 
     /**
      * 跑酷星星飞行加速度.
-     * @type {number}
      */
     public static readonly OBBY_STAR_FLY_ACCELERATED = 1200;
 
     /**
      * 跑酷星星飞行最大速度.
-     * @type {number}
      */
     public static readonly OBBY_STAR_FLY_MAX_SPEED = 3000;
 
     /**
      * 跑酷星星自旋速度. °/s
-     * @type {number}
      */
     public static readonly OBBY_STAR_SELF_ROTATION_SPEED = 90;
 
     /**
      * 跑酷星星漂浮最大距离.
-     * @type {number}
      */
     public static readonly OBBY_STAR_FLOAT_MAX_DIST = 50;
 
     /**
      * 跑酷星星漂浮阶段时间.
-     * @type {number}
      */
     public static readonly OBBY_STAR_FLOAT_STAGE_DURATION = 2e3;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ //#region Role
@@ -812,5 +790,12 @@ export default class GameServiceConfig {
      */
     public static readonly AREA_ID_MAIN_SCENE_RESPAWN = 14;
 
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    //#region Global Config
+    /**
+     * 是否发布.
+     */
+    public static isRelease: boolean = undefined;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

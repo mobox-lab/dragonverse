@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","name","name_trs","generationAreas","startGenerationTime","generationInterval","generationCount","fadeTime","movementRadius","pathFindRadius","speed","restTime","prefabGuid"],["","Language","","","","","","","","","","",""],[1,"TestAnimalName0001","粉猪",[-50,-15371,1068,0,-492,-15953,1130,0,-471,-14422,1026],0,60000,1,60000,10,[1],[1],[3,2,5],"159590"],[2,"TestAnimalName0002","橘猫",[-2461,-11936,480,0,-2673,-11203,440,0,-1908,-12482,530],0,60000,2,60000,10,[1],[2,1,3],[2,3,1],"159750"],[3,"TestAnimalName0003","狗狗",[-2673,-11203,440,0,-2835,-10598,440,0,-3227,-10666,3400],0,60000,2,60000,10,[1],[1,2,3],[1,2,3],"159842"],[4,"TestAnimalName0004","垂耳兔",[-3797,-9219,690,0,-3811,-8544,908,0,-1747,-7508,844,0,-2399,-6110,882],0,60000,2,60000,10,[1],[3,21],[1,2,3],"160045"],[5,"TestAnimalName0001","粉猪",[-3090,-6200,990,0,-3533,-5161,1131,0,-4460,-3301,1337,0,-4038,-5173,1202],60000,60000,1,60000,10,[1],[1],[3,2,5],"159590"],[6,"TestAnimalName0002","橘猫",[-858,-7036,714,0,-2389,-8190,940,0,-3963,-7967,1011],60000,60000,2,60000,10,[1],[2,1,3],[2,3,1],"159750"],[7,"TestAnimalName0003","狗狗",[4092,-1276,647,0,4951,-226,962,0,-3373,-9083,731],60000,60000,2,60000,10,[1],[1,2,3],[1,2,3],"159842"],[8,"TestAnimalName0004","垂耳兔",[4551,5857,1636,0,5564,4225,1684,0,5577,735,1317],60000,60000,1,60000,10,[1],[3,21],[1,2,3],"160045"],[9,"TestAnimalName0001","粉猪",[1731,7838,1564,0,-66,7976,1553,0,6303,3548,1691],120000,60000,2,60000,10,[1],[1],[3,2,5],"159590"],[10,"TestAnimalName0002","橘猫",[-11272,6585,3358,0,-9615,9185,3873,0,5035,5120,1652],120000,60000,2,60000,10,[1],[2,1,3],[2,3,1],"159750"],[11,"TestAnimalName0003","狗狗",[-10249,441,2078,0,-8841,-1131,1679,0,-11098,1544,2448],120000,60000,2,60000,10,[1],[1,2,3],[1,2,3],"159842"]];
+const EXCELDATA:Array<Array<any>> = [["id","name","name_trs","generationAreas","startGenerationTime","generationInterval","generationCount","fadeTime","movementRadius","speed","restTime","avatarGuid","animGuid","meshOffset"],["","Language","","","","","","","","","","","",""],[1,"TestAnimalName0001",null,[29,33,39],0,300000,8,300000,5000,[100],[5,3,6],"159590",["150833","150830","150834"],new mw.Vector(0,0,-60)],[2,"TestAnimalName0002",null,[30,34,40],0,300000,8,300000,5000,[100,200,400],[3,4,5],"159750",["181301","181390","235648"],null],[3,"TestAnimalName0003",null,[31,35,41],0,300000,8,300000,5000,[100,200,400],[3,2,4],"159842",["150778","150775","150774"],null],[4,"TestAnimalName0004",null,[32,38],0,300000,8,300000,5000,[100,200,400],[2,3,4],"160045",["181301","181390","235648"],null]];
 export interface IAnimalEcologyElement extends IElementBase{
  	/**动物 ID*/
 	id:number
@@ -19,14 +19,16 @@ export interface IAnimalEcologyElement extends IElementBase{
 	fadeTime:number
 	/**运动范围*/
 	movementRadius:number
-	/**寻路范围可采样值*/
-	pathFindRadius:Array<number>
 	/**速度可采样值 m/s*/
 	speed:Array<number>
-	/**休憩时长可采样值*/
+	/**休憩时长可采样值 s*/
 	restTime:Array<number>
-	/**预制体 Guid*/
-	prefabGuid:string
+	/**形象 Guid*/
+	avatarGuid:string
+	/**动画 Guid 等待|走|跑*/
+	animGuid:Array<string>
+	/**模型偏移修正*/
+	meshOffset:mw.Vector
  } 
 export class AnimalEcologyConfig extends ConfigBase<IAnimalEcologyElement>{
 	constructor(){

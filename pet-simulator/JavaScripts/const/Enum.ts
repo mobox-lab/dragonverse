@@ -16,6 +16,14 @@ export namespace GlobalEnum {
         AttackDestroy = "AttackDestroy",
         /**刮痧公告 */
         GuaShaNotice = "GuaShaNotice",
+        /**
+         * 控制宠物取消攻击
+         */
+        CancelPetAttack = "CancelPetAttack",
+        /**
+         * 控制宠物攻击
+         */
+        PetAttack = "PetAttack",
     }
 
     /**药水BUFF类型 */

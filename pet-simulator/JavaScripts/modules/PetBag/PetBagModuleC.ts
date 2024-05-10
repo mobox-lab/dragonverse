@@ -18,6 +18,7 @@ import { EnchantBuff } from "./EnchantBuff";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
 import Gtk from "../../util/GToolkit";
+import { P_HudPet2 } from "../Hud/P_HudPet2";
 
 export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     private achievementModuleC: AchievementModuleC = null;
@@ -66,6 +67,10 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         })
         this.fuseUI.onShowAC.add(this.enterFuseTrigger.bind(this));
         this.hudPetUI.setBagText(this.data.CurFollowPets.length, this.data.MaxFollowCount);
+
+        let ids = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key).I);
+        UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, ids);
+
         this.enchantUI.enchantAc.add(this.addEnchant.bind(this));
         this.enchantUI.onUpdateAc.add((canUpdate: boolean) => {
             this.canUpdate = canUpdate;
@@ -318,6 +323,9 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         console.warn(`lwj S段事件 变  ${isEquip}    key ${keys}`);
         mw.UIService.getUI(P_HudPetGift).setBagText(this.data.CurFollowPets.length, this.data.MaxFollowCount);
         this.bagUI.setCanvasItem(this.data.sortBag(), this.data.CurFollowPets);
+
+        let ids = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key).I);
+        UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, ids);
 
         let arr = keys.concat();
         for (let id = 0; id < arr.length; id++) {
