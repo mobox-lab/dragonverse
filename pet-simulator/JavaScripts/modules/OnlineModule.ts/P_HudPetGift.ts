@@ -149,7 +149,6 @@ export class P_HudPetGift extends HUDpetGift_Generate {
             petStateItem.mBtn_Pet.onClicked.add(() => {
                 //只检查上次攻击的目标存不存在，内部会检查是否存在资源
                 //是否正在攻击
-
                 if (this._petState.get(keys[index]) === PetState.Idle && this._lastAttackTarget.has(keys[index])) {
                     //攻击目标
                     let attackTarget = this._lastAttackTarget.get(keys[index]);
@@ -159,15 +158,13 @@ export class P_HudPetGift extends HUDpetGift_Generate {
                 }
             });
 
-
-
             this.petStateCanvas.addChild(petStateItem.uiObject);
             this._battlePetUIs.set(keys[index], petStateItem);
             this._petState.set(keys[index], PetState.Idle);
         });
     }
 
-    private _clearTimeOut: any;
+    private _clearTimeout: any;
     changePetState(key: number, state: PetState, attackTarget?: number) {
         if (!this._battlePetUIs.has(key)) return;
         let ui = this._battlePetUIs.get(key);
@@ -178,12 +175,12 @@ export class P_HudPetGift extends HUDpetGift_Generate {
                 ui.bgLineImg.imageColor = GlobalData.pet.attackingPetStateImgBorderColor;
                 this._lastAttackTarget.set(key, attackTarget);
                 //开始计时
-                if (this._clearTimeOut) {
+                if (this._clearTimeout) {
                     //如果有清除上一次的计时器，重新开始计时
-                    clearTimeout(this._clearTimeOut);
-                    this._clearTimeOut = null;
+                    clearTimeout(this._clearTimeout);
+                    this._clearTimeout = null;
                 }
-                this._clearTimeOut = setTimeout(() => {
+                this._clearTimeout = setTimeout(() => {
                     this._lastAttackTarget.set(key, null);
                 }, 30e3);
                 break;
