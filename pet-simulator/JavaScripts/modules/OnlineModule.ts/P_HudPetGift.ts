@@ -1,9 +1,16 @@
 
 
 import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import HUDpetGift_Generate from "../../ui-generate/hud/HUDpetGift_generate";
+import PetStateItemUI_Generate from "../../ui-generate/hud/PetStateItemUI_generate";
 import { utils } from "../../util/uitls";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
+import { PetBagModuleC } from "../PetBag/PetBagModuleC";
+import { PetState } from "../Player/PetBehavior";
+
 
 export class P_HudPetGift extends HUDpetGift_Generate {
 
@@ -30,6 +37,9 @@ export class P_HudPetGift extends HUDpetGift_Generate {
         this.mCanvas_Point.visibility = mw.SlateVisibility.Collapsed;
         this.onRedPointAC.add(this.addRedPoint, this);
 
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
+            ModuleService.getModule(PetBagModuleC).showBag();
+        });
     }
     /**添加红点提示 */
     public addRedPoint(key: number) {
@@ -110,4 +120,77 @@ export class P_HudPetGift extends HUDpetGift_Generate {
         }
     }
 
-}
+
+    private _lastAttackTarget: Map<number, number> = new Map();
+    private _battlePetUIs: Map<number, PetStateItemUI_Generate> = new Map();
+    private _petState: Map<number, PetState> = new Map();
+    setBattlePets(keys: number[], petArrIds: number[]) {
+        this.petStateCanvas.removeAllChildren();
+        this._battlePetUIs.clear();
+        this._petState.clear();
+        this._lastAttackTarget.clear();
+        petArrIds.forEach((petId, index) => {
+            //petId是宠物表的id，keys存了对应宠物的唯一id
+            let petStateItem = UIService.create(PetStateItemUI_Generate);
+            let pet = GameConfig.PetARR.getElement(petId);
+            if (pet) {
+                petStateItem.petImg.imageGuid = pet.uiGuid;
+            }
+            petStateItem.attackImg.visibility = mw.SlateVisibility.Collapsed;
+            petStateItem.bgImg.imageColor = GlobalData.pet.restingPetStateImgColor;
+            petStateItem.bgLineImg.imageColor = GlobalData.pet.restingPetStateImgBorderColor;
+            petStateItem.mBtn_Pet.onHovered.add(() => {
+                petStateItem.itemCanvas.renderScale = GlobalData.pet.petStateImgHoverScale;
+            });
+            petStateItem.mBtn_Pet.onUnhovered.add(() => {
+                petStateItem.itemCanvas.renderScale = GlobalData.pet.petStateImgNormalScale;
+            });
+
+            petStateItem.mBtn_Pet.onClicked.add(() => {
+                //只检查上次攻击的目标存不存在，内部会检查是否存在资源
+                //是否正在攻击
+                if (this._petState.get(keys[index]) === PetState.Idle && this._lastAttackTarget.has(keys[index])) {
+                    //攻击目标
+                    let attackTarget = this._lastAttackTarget.get(keys[index]);
+                    if (attackTarget) Event.dispatchToLocal(GlobalEnum.EventName.PetAttack, keys[index], attackTarget);
+                } else if (this._petState.get(keys[index]) === PetState.Attack) {
+                    Event.dispatchToLocal(GlobalEnum.EventName.CancelPetAttack, keys[index]);
+                }
+            });
+
+            this.petStateCanvas.addChild(petStateItem.uiObject);
+            this._battlePetUIs.set(keys[index], petStateItem);
+            this._petState.set(keys[index], PetState.Idle);
+        });
+    }
+
+    private _clearTimeout: any;
+    changePetState(key: number, state: PetState, attackTarget?: number) {
+        if (!this._battlePetUIs.has(key)) return;
+        let ui = this._battlePetUIs.get(key);
+        switch (state) {
+            case PetState.Attack:
+                ui.attackImg.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+                ui.bgImg.imageColor = GlobalData.pet.attackingPetStateImgColor;
+                ui.bgLineImg.imageColor = GlobalData.pet.attackingPetStateImgBorderColor;
+                this._lastAttackTarget.set(key, attackTarget);
+                //开始计时
+                if (this._clearTimeout) {
+                    //如果有清除上一次的计时器，重新开始计时
+                    clearTimeout(this._clearTimeout);
+                    this._clearTimeout = null;
+                }
+                this._clearTimeout = setTimeout(() => {
+                    this._lastAttackTarget.set(key, null);
+                }, 30e3);
+                break;
+            case PetState.Idle:
+                ui.attackImg.visibility = mw.SlateVisibility.Collapsed;
+                ui.bgImg.imageColor = GlobalData.pet.restingPetStateImgColor;
+                ui.bgLineImg.imageColor = GlobalData.pet.restingPetStateImgBorderColor;
+                break;
+        }
+        this._petState.set(key, state);
+    }
+
+}   

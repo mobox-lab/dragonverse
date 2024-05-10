@@ -11,24 +11,17 @@ export default class StatisticModuleData extends JModuleData {
      * @type {number}
      */
     @Decorator.persistence()
-    playerEnteredCounterS: number;
+    playerEnteredCounterS: number = 0;
 
     /**
      * 玩家游戏时长.
      * @type {number}
      */
     @Decorator.persistence()
-    playerElapsedTimeS: number;
+    playerElapsedTimeS: number = 0;
 
     @Decorator.persistence()
-    maybeCheatingReason: string[];
-
-    protected onJDataInit(): void {
-        super.onJDataInit();
-        this.playerEnteredCounterS = 0;
-        this.playerElapsedTimeS = 0;
-        this.maybeCheatingReason = [];
-    }
+    maybeCheatingReason: string[] = [];
 }
 
 interface PlayerIntervalData {

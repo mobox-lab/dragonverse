@@ -5,7 +5,7 @@ import { TimeManager } from "./controller/TimeManager";
 import { VectorExt } from "./declaration/vectorext";
 import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
 import i18n, { LanguageTypes } from "./language/i18n";
-import DragonVerseAuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
+import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
 import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";
 import CollectibleItemModuleData, {
     CollectibleItemModuleC,
@@ -31,7 +31,6 @@ import Nolan from "./depend/nolan/Nolan";
 import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioController";
 import DialogifyManager from "./depend/dialogify/DialogifyManager";
 import DialoguePanelController from "./depend/dialogify/dialogue-panel-controller/DialoguePanelController";
-import GlobalProperty from "./GlobalProperty";
 import ObbyModuleData, { ObbyModuleC, ObbyModuleS } from "./module/obby/ObbyModule";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
 import PlayerSettingModuleData, {
@@ -44,6 +43,7 @@ import Balancing from "./depend/balancing/Balancing";
 import EcologyModuleData, { EcologyModuleC, EcologyModuleS } from "./module/ecology/EcologyModule";
 import StatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
 import GuideModuleData, { GuideModuleC, GuideModuleS } from "./module/guide/GuideModule";
+import GameServiceConfig from "./const/GameServiceConfig";
 
 AddGMCommand("TP 传送",
     null,
@@ -139,7 +139,7 @@ export default class GameStart extends mw.Script {
     onStart(): void {
         Log4Ts.log(GameStart, `this is ${SystemUtil.isClient() ? "client" : "server"}`);
         this.useUpdate = true;
-        GlobalProperty.getInstance().isRelease = this.isRelease;
+        GameServiceConfig.isRelease = this.isRelease;
         this.initialize();
 
     }
@@ -270,7 +270,7 @@ export default class GameStart extends mw.Script {
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
         moduleService.registerModule(StatisticModuleS, StatisticModuleC, StatisticModuleData);
         moduleService.registerModule(RoleModuleS, RoleModuleC, RoleModuleData);
-        moduleService.registerModule(AuthModuleS, AuthModuleC, DragonVerseAuthModuleData);
+        moduleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);
         moduleService.registerModule(CollectibleItemModuleS, CollectibleItemModuleC, CollectibleItemModuleData);
         moduleService.registerModule(SceneDragonModuleS, SceneDragonModuleC, SceneDragonModuleData);

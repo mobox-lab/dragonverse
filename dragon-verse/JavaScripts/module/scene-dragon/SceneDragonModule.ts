@@ -664,7 +664,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * @param playerId
      */
     private removePrivateRecord(playerId: number): void {
-        Enumerable.from(this.existenceItemMap.get(playerId).values())
+        Enumerable.from(this.existenceItemMap.get(playerId)?.values())
             .selectMany((arr) => arr)
             .forEach((key) => {
                 this.syncItemMap.delete(key);

@@ -57,33 +57,12 @@ export default class Fusepanel_Generate extends UIScript {
 		}
 		return this.probabilityCanvas_Internal
 	}
-	private mText_Normal_Internal: mw.TextBlock
-	public get mText_Normal(): mw.TextBlock {
-		if(!this.mText_Normal_Internal&&this.uiWidgetBase) {
-			this.mText_Normal_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Normal') as mw.TextBlock
+	private mText_Love_Probability_Internal: mw.TextBlock
+	public get mText_Love_Probability(): mw.TextBlock {
+		if(!this.mText_Love_Probability_Internal&&this.uiWidgetBase) {
+			this.mText_Love_Probability_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Love_Probability') as mw.TextBlock
 		}
-		return this.mText_Normal_Internal
-	}
-	private mText_Normal_Probability_Internal: mw.TextBlock
-	public get mText_Normal_Probability(): mw.TextBlock {
-		if(!this.mText_Normal_Probability_Internal&&this.uiWidgetBase) {
-			this.mText_Normal_Probability_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Normal_Probability') as mw.TextBlock
-		}
-		return this.mText_Normal_Probability_Internal
-	}
-	private mText_Rainbow_Internal: mw.TextBlock
-	public get mText_Rainbow(): mw.TextBlock {
-		if(!this.mText_Rainbow_Internal&&this.uiWidgetBase) {
-			this.mText_Rainbow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Rainbow') as mw.TextBlock
-		}
-		return this.mText_Rainbow_Internal
-	}
-	private mText_Rainbow_Probability_Internal: mw.TextBlock
-	public get mText_Rainbow_Probability(): mw.TextBlock {
-		if(!this.mText_Rainbow_Probability_Internal&&this.uiWidgetBase) {
-			this.mText_Rainbow_Probability_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Rainbow_Probability') as mw.TextBlock
-		}
-		return this.mText_Rainbow_Probability_Internal
+		return this.mText_Love_Probability_Internal
 	}
 	private mText_Love_Internal: mw.TextBlock
 	public get mText_Love(): mw.TextBlock {
@@ -92,12 +71,33 @@ export default class Fusepanel_Generate extends UIScript {
 		}
 		return this.mText_Love_Internal
 	}
-	private mText_Love_Probability_Internal: mw.TextBlock
-	public get mText_Love_Probability(): mw.TextBlock {
-		if(!this.mText_Love_Probability_Internal&&this.uiWidgetBase) {
-			this.mText_Love_Probability_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Love_Probability') as mw.TextBlock
+	private mText_Rainbow_Probability_Internal: mw.TextBlock
+	public get mText_Rainbow_Probability(): mw.TextBlock {
+		if(!this.mText_Rainbow_Probability_Internal&&this.uiWidgetBase) {
+			this.mText_Rainbow_Probability_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Rainbow_Probability') as mw.TextBlock
 		}
-		return this.mText_Love_Probability_Internal
+		return this.mText_Rainbow_Probability_Internal
+	}
+	private mText_Rainbow_Internal: mw.TextBlock
+	public get mText_Rainbow(): mw.TextBlock {
+		if(!this.mText_Rainbow_Internal&&this.uiWidgetBase) {
+			this.mText_Rainbow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Rainbow') as mw.TextBlock
+		}
+		return this.mText_Rainbow_Internal
+	}
+	private mText_Normal_Probability_Internal: mw.TextBlock
+	public get mText_Normal_Probability(): mw.TextBlock {
+		if(!this.mText_Normal_Probability_Internal&&this.uiWidgetBase) {
+			this.mText_Normal_Probability_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Normal_Probability') as mw.TextBlock
+		}
+		return this.mText_Normal_Probability_Internal
+	}
+	private mText_Normal_Internal: mw.TextBlock
+	public get mText_Normal(): mw.TextBlock {
+		if(!this.mText_Normal_Internal&&this.uiWidgetBase) {
+			this.mText_Normal_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Normal') as mw.TextBlock
+		}
+		return this.mText_Normal_Internal
 	}
 
 
@@ -140,22 +140,22 @@ export default class Fusepanel_Generate extends UIScript {
 		this.initLanguage(this.mText_Money)
 		
 	
-		this.initLanguage(this.mText_Normal)
-		
-	
-		this.initLanguage(this.mText_Normal_Probability)
-		
-	
-		this.initLanguage(this.mText_Rainbow)
-		
-	
-		this.initLanguage(this.mText_Rainbow_Probability)
+		this.initLanguage(this.mText_Love_Probability)
 		
 	
 		this.initLanguage(this.mText_Love)
 		
 	
-		this.initLanguage(this.mText_Love_Probability)
+		this.initLanguage(this.mText_Rainbow_Probability)
+		
+	
+		this.initLanguage(this.mText_Rainbow)
+		
+	
+		this.initLanguage(this.mText_Normal_Probability)
+		
+	
+		this.initLanguage(this.mText_Normal)
 		
 	
 		//文本多语言

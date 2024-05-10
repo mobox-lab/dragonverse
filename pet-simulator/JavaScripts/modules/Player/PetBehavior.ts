@@ -18,6 +18,7 @@ import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
 import Log4Ts from '../../depend/log4ts/Log4Ts';
 import { EnergyModuleC } from '../Energy/EnergyModule';
 import GToolkit from '../../util/GToolkit';
+import { P_HudPetGift } from '../OnlineModule.ts/P_HudPetGift';
 
 /**宠物状态 */
 export enum PetState {
@@ -29,7 +30,7 @@ export enum PetState {
     Attack = 2,
 }
 
-export default class PetBehaviour {
+export default class PetBehavior {
 
     public petName: string = "";
     private petTitle: string = "";
@@ -62,6 +63,15 @@ export default class PetBehaviour {
     private clipDis: number = 2000;
     /**翅膀特效 */
     private _wing: Effect;
+
+    /**
+     * 控制宠物攻击事件
+     */
+    private _attackListener: EventListener = null;
+    /**
+     * 控制宠物取消攻击事件
+     */
+    private _cancelAttackListener: EventListener = null;
 
     public get PetGameObj(): mw.GameObject {
         return this.pet;
@@ -171,6 +181,14 @@ export default class PetBehaviour {
                 }
             })
         }
+
+        this._attackListener = Event.addLocalListener(GlobalEnum.EventName.PetAttack, (key: number, target: number) => {
+            if (this.key === key) this.addTarget(target);
+        });
+
+        this._cancelAttackListener = Event.addLocalListener(GlobalEnum.EventName.CancelPetAttack, (key: number) => {
+            if (this.key === key) this.changeToIdle();
+        });
     }
     private setQuality(type: number) {
         const quality = GlobalEnum.PetQuality
@@ -234,6 +252,9 @@ export default class PetBehaviour {
         this.isReady = false;
         this._attackPrivot = null;
         this.tarResPoint = 0;
+
+        Event.removeListener(this._attackListener);
+        Event.removeListener(this._cancelAttackListener);
     }
 
     /**宠物出现在玩家身后 */
@@ -307,6 +328,7 @@ export default class PetBehaviour {
             this.currentEffect = null;
         }
         this.changeIdle();
+
     }
 
     public changeIdle(): void {
@@ -319,6 +341,7 @@ export default class PetBehaviour {
         this.accelerateNum = 0;
         this.isStop = false;
         if (this.attackPrivot) this.attackPrivot.localTransform.rotation = mw.Rotation.zero;
+        UIService.getUI(P_HudPetGift)?.changePetState(this.key, PetState.Idle);
     }
 
     //当前显影状态
@@ -376,7 +399,7 @@ export default class PetBehaviour {
             return;
         }
         this.isMove = false;
-        this.chanegToPos(dt, petTransform, endPos, endRot);
+        this.changeToPos(dt, petTransform, endPos, endRot);
         this.lastMoveState = this.owner.isMoving;
 
     }
@@ -402,7 +425,7 @@ export default class PetBehaviour {
             }
 
             if (this.owner.isMoving) {
-                this.chanegToPos(dt, startTransform, endPos, endRot);
+                this.changeToPos(dt, startTransform, endPos, endRot);
             } else {
                 this.moveto(endPos, endRot);
             }
@@ -413,11 +436,11 @@ export default class PetBehaviour {
         let move = mw.Vector.multiply(dir, speed);
         endPos.x = currentPos.x + move.x;
         endPos.y = currentPos.y + move.y;
-        this.chanegToPos(dt, startTransform, endPos, endRot);
+        this.changeToPos(dt, startTransform, endPos, endRot);
         return false;
     }
 
-    private chanegToPos(dt: number, petTransform: mw.Transform, endPos: mw.Vector, endRot: mw.Rotation): void {
+    private changeToPos(dt: number, petTransform: mw.Transform, endPos: mw.Vector, endRot: mw.Rotation): void {
         if (this.attackTween) {
             this.attackTween.stop();
             this.attackTween = null;
@@ -462,7 +485,7 @@ export default class PetBehaviour {
     /**增加目标 */
     public addTarget(resPoint: number): void {
         if (!ModuleService.getModule(EnergyModuleC).isAfford()) {
-            Log4Ts.error(PetBehaviour, "体力不足！");
+            Log4Ts.error(PetBehavior, "体力不足！");
             this.changeToIdle();
             this.attackRotY = 0;
             return;
@@ -499,6 +522,8 @@ export default class PetBehaviour {
         this.targetPos = this.keepOnGround(this.targetPos, targetPos);
         if (this.owner != this.currentChar) return;
         if (!this.arrow) this.arrow = new Arrow(this.position, targetPos);
+        //开始攻击
+        UIService.getUI(P_HudPetGift)?.changePetState(this.key, PetState.Attack, resPoint);
     }
 
     private getRandomPointOnCircle(center: mw.Vector, radius: number, end: mw.Vector): void {
@@ -677,7 +702,6 @@ export default class PetBehaviour {
                     this._ani.stop();
                     return;
                 }
-                // this._attackAni.play();
                 //播放特效
                 this.playAttackEffect();
             });
@@ -750,14 +774,14 @@ export default class PetBehaviour {
                     if (this.attackPrivot) this.attackPrivot.localTransform.rotation = mw.Rotation.zero;
                     this.changeToIdle();
                     energyModuleC.consume(0, true);
-                    Log4Ts.error(PetBehaviour, "挖完了！");
+                    Log4Ts.error(PetBehavior, "挖完了！");
                     return true;
                 } else {
                     energyModuleC.consume();
-                    Log4Ts.error(PetBehaviour, "扣1体力");
+                    Log4Ts.error(PetBehavior, "扣1体力");
                 }
             } else {
-                Log4Ts.error(PetBehaviour, "体力不足！");
+                Log4Ts.error(PetBehavior, "体力不足！");
                 return true;
             }
         }

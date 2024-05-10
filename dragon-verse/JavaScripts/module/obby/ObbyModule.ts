@@ -589,7 +589,6 @@ export class ObbyModuleS extends JModuleS<ObbyModuleC, ObbyModuleData> {
             let levels = this._playerArrivedCheckPoint.get(playerId);
             //重置为0
             this._playerArrivedCheckPoint.set(playerId, 0);
-            ModuleService.getModule(AuthModuleS).reportRainbowLeapInfo(playerId, data.totalStarCount, 1);
             return {
                 currentCount,
                 duration: Date.now() - this._playerStartTimeMap.get(playerId),
