@@ -365,7 +365,7 @@ export class Globaldata {
     /** 展示npc动作 */
     public static npc_modelAnim: string = "232755";
     /** 展示npc位置 */
-    public static npc_modelPos: Vector = new Vector(209877.88, 20959.30, 2642.37);
+    public static npc_modelPos: Vector = new Vector(224081.41, 17612.64, 1880.37);
 
     /**----------------------------------其他----------------------------------------- */
     /**满星数量TODO*/
