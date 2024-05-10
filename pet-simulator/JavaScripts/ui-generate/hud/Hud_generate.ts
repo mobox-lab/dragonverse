@@ -134,6 +134,13 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.mCanvas_starcoin_Internal
 	}
+	private taskShopBtn_Internal: mw.Button
+	public get taskShopBtn(): mw.Button {
+		if(!this.taskShopBtn_Internal&&this.uiWidgetBase) {
+			this.taskShopBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin/taskShopBtn') as mw.Button
+		}
+		return this.taskShopBtn_Internal
+	}
 	private imgStarbg_Internal: mw.Image
 	public get imgStarbg(): mw.Image {
 		if(!this.imgStarbg_Internal&&this.uiWidgetBase) {
@@ -357,6 +364,12 @@ export default class Hud_Generate extends UIScript {
 			Event.dispatchToLocal("PlayButtonClick", "mRefresh_Btn");
 		})
 		this.mRefresh_Btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.taskShopBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "taskShopBtn");
+		})
+		this.taskShopBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		this.tips_btn.onClicked.add(()=>{
