@@ -133,7 +133,15 @@ export default class EcologyAnimal {
                     this._char = value as mw.Character;
                     this._char.description.base.wholeBody = this._config.avatarGuid;
                     for (let i = 0; i < this._config.animGuid.length; ++i) {
-                        this._animations.push(this._char.loadAnimation(this._config.animGuid[i]));
+                        let animation = this._char.loadAnimation(this._config.animGuid[i]);
+                        this._animations.push(animation);
+                        switch (i as EcologyAnimalAnimationTypes) {
+                            case EcologyAnimalAnimationTypes.Idle:
+                            case EcologyAnimalAnimationTypes.Walk:
+                            case EcologyAnimalAnimationTypes.Run:
+                                animation.loop = 0;
+                                break;
+                        }
                     }
 
                     this._char.displayName = this._config.name;
