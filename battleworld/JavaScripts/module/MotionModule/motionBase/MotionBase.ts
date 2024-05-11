@@ -1340,7 +1340,7 @@ export class ServerMotion {
 
         let dir = this.owner.getForward;
 
-        let from = this.owner.modelLocaction;;
+        let from = this.owner.modelLocaction;
 
 
         let result = await TriggerHelper.isInAreaInd(sheet, from, dir);

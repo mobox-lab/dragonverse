@@ -47,12 +47,12 @@ export class WeaponModuleS extends ModuleS<WeaponModuleC, WeaponModuleData> {
 
         pData.clearGift();
 
-        let value = await ModuleService.getModule(AuthModuleS)?.getMoboxDragonAbility(player.playerId) ?? null;
-        if (value == null || value < 0) {
-            console.error("initPlayerWeapon getMoboxDragonAbility fail");
-            pData.save(true);
-            return;
-        }
+        // let value = await ModuleService.getModule(AuthModuleS)?.getMoboxDragonAbility(player.playerId) ?? null;
+        // if (value == null || value < 0) {
+        //     console.error("initPlayerWeapon getMoboxDragonAbility fail");
+        //     pData.save(true);
+        //     return;
+        // }
 
         const cfgs = GameConfig.WeaponDragonAbility.getAllElement();
         for (let i = 0; i < cfgs.length; i++) {
@@ -63,18 +63,18 @@ export class WeaponModuleS extends ModuleS<WeaponModuleC, WeaponModuleData> {
                 console.error("initPlayerBuff cfg is null");
                 continue;
             }
-            if ((value >= dragonAbilityRange[0] && value <= dragonAbilityRange[1]) || (i === cfgs.length - 1 && value >= dragonAbilityRange[1])) {
-                for (let j = 0; j < addWeapon.length; j++) {
-                    let cfg = GameConfig.Weapon.getElement(addWeapon[j]);
-                    if (GToolkit.isNullOrUndefined(cfg)) {
-                        console.error("initPlayerBuff cfg is null");
-                        continue;
-                    }
-
-                    pData.addGift(addWeapon[j]);
-                }
-                break;
-            }
+            // if ((value >= dragonAbilityRange[0] && value <= dragonAbilityRange[1]) || (i === cfgs.length - 1 && value >= dragonAbilityRange[1])) {
+            //     for (let j = 0; j < addWeapon.length; j++) {
+            //         let cfg = GameConfig.Weapon.getElement(addWeapon[j]);
+            //         if (GToolkit.isNullOrUndefined(cfg)) {
+            //             console.error("initPlayerBuff cfg is null");
+            //             continue;
+            //         }
+            //
+            //         pData.addGift(addWeapon[j]);
+            //     }
+            //     break;
+            // }
         }
         pData.save(true);
     }
