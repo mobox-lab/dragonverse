@@ -58,7 +58,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return arr;
     }
 
-		net_addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+		@Decorator.noReply()
+    public net_addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
 			let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
 
 			let atk: number = 0;

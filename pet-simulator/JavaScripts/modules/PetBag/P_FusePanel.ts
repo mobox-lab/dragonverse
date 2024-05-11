@@ -14,6 +14,7 @@ import {petItemDataNew} from "./PetBagModuleData";
 
 import {PetBag_Item} from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import { PetBagModuleS } from "./PetBagModuleS";
 
 export class P_FusePanel extends Fusepanel_Generate {
     private achievementModuleC: AchievementModuleC = null;
@@ -188,7 +189,7 @@ export class P_FusePanel extends Fusepanel_Generate {
         let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
         AnalyticsTool.action_buy_pet(allLength, endPetId);
         this.achievementModuleC.broadcastAchievementBlendType(endPetId);
-        await ModuleService.getModule(PetBagModuleC).addPet(endPetId, GlobalEnum.PetGetType.Fusion, this._earliestObtainTime);
+        await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId, GlobalEnum.PetGetType.Fusion, this._earliestObtainTime);
     }
 
     /**根据各宠物攻击力权重获得宠物 */

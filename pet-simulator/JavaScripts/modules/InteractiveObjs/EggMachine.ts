@@ -14,6 +14,7 @@ import { AreaModuleC } from "../AreaDivide/AreaModuleC";
 import { AreaModuleData } from "../AreaDivide/AreaModuleData";
 import { BagTool } from "../PetBag/BagTool";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
+import { PetBagModuleS } from '../PetBag/PetBagModuleS';
 import { CollectModuleData } from "../PetCollect/CollectModuleData";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
@@ -474,6 +475,7 @@ class EggM {
     private async buyEgg(guid: number) {
         let isCan: boolean = true;
         let petMC = ModuleService.getModule(PetBagModuleC)
+        let petMS = ModuleService.getModule(PetBagModuleS)
 
         if (petMC.getCurPetNum() >= petMC.getBagCapacity()) {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_4.Value);
@@ -493,7 +495,7 @@ class EggM {
         this.getEgg(petId);
         EggMachineTween.instance.startTween(this.petEgg, petId, eggId);
 
-        petMC.addPet(petId, this.cfg.AreaID);
+        petMS.net_addPet(petId, this.cfg.AreaID);
 
         AnalyticsTool.action_buy_item(this.cfgID);
         this.broadcastExecuteAchievement(petId);

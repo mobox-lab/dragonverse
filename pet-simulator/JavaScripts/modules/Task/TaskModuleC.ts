@@ -14,6 +14,7 @@ import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { GlobalEnum } from "../../const/Enum";
 import { P_PetHud } from "../Hud/P_PetHud";
 import { P_HudUI } from "../Hud/P_HudUI";
+import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 
 
 export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
@@ -123,7 +124,7 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
     public buyGashapon(id: number): void {
         let info = GameConfig.TaskShop.getElement(id);
         let petId = EggMachineTween.instance.startTween_Special(info.Award, GlobalEnum.SpecialEgg.Task);
-        ModuleService.getModule(PetBagModuleC).addPet(petId);
+        ModuleService.getModule(PetBagModuleS).net_addPet(petId);
     }
 
     /**显示任务商店 */

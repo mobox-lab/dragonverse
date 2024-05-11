@@ -1,5 +1,6 @@
 ﻿import { GlobalEnum } from "../../const/Enum";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
+import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import AchievementData from "./AchievementData";
 import AchievementModuleC from "./AchievementModuleC";
@@ -10,11 +11,13 @@ export default class AchievementModuleS extends ModuleS<
 > {
   private playerModuleS: PlayerModuleS = null;
   private petBagModuleC: PetBagModuleC = null; // TODO: Change to PetBagModuleS
+  private petBagModuleS: PetBagModuleS = null;
 
   /** 当脚本被实例后，会在第一帧更新前调用此函数 */
   protected onStart(): void {
     this.playerModuleS = ModuleService.getModule(PlayerModuleS);
     this.petBagModuleC = ModuleService.getModule(PetBagModuleC);
+    this.petBagModuleS = ModuleService.getModule(PetBagModuleS);
   }
 
   /**
@@ -79,7 +82,7 @@ export default class AchievementModuleS extends ModuleS<
         this.petBagModuleC.addBagCapacity(reward);
         break;
       case GlobalEnum.AchievementReward.PetExpand:
-        this.petBagModuleC.addPet(reward);
+        this.petBagModuleS.net_addPet(reward);
         break;
       default:
         break;

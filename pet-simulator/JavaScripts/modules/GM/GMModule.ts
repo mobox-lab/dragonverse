@@ -15,6 +15,7 @@ import { Task_ModuleC } from "../Task/TaskModuleC";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { AuthModuleS, ConsumeTypes } from "../auth/AuthModule";
 import { BuffModuleS } from "../buff/BuffModuleS";
+import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 
 
 //主面板
@@ -36,7 +37,7 @@ AddGMCommand("成就", (player: mw.Player, value: string) => {
 AddGMCommand("添加宠物", (player: mw.Player, value: string) => {
     let id = Number(value);
     if (!id) id = 1;
-    ModuleService.getModule(PetBagModuleC).addPet(id);
+    ModuleService.getModule(PetBagModuleS).net_addPet(id);
 }, (player: mw.Player, value: string) => {
 
 }, "全服");

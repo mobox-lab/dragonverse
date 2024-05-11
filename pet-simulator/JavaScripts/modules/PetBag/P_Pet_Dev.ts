@@ -14,6 +14,7 @@ import {petItemDataNew} from "./PetBagModuleData";
 
 import {PetBag_Item} from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import { PetBagModuleS } from "./PetBagModuleS";
 
 export class P_Pet_Dev extends Dev_Generate {
     private achievementModuleC: AchievementModuleC = null;
@@ -89,7 +90,7 @@ export class P_Pet_Dev extends Dev_Generate {
         let endPetId = this.isGold ? petInfo.goldID : petInfo.RainBowId;
         if (random <= this.curRate) {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
-            await ModuleService.getModule(PetBagModuleC).addPet(endPetId,
+            await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId,
                 this.isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow, earliestObtainTime);
         } else {
             isSucc = false;
