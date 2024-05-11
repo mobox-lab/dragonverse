@@ -138,6 +138,10 @@ export default class GameLauncher extends mw.Script {
 
             let player = await Player.asyncGetLocalPlayer();
             await player.character.asyncReady();
+
+            //锁住鼠标
+            InputUtil.isLockMouse = true;
+            InputUtil.mouseLockOptionEnabled = false;
         }
 
         // 设置玩家数据存储位置

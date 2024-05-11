@@ -11,6 +11,7 @@ import { AttributeModuleC } from "../../AttributeModule/AttributeModuleC";
 import { Attribute } from "../sub_attribute/AttributeValueObject";
 import { EPlayerState } from "../FSM/PlyerState";
 import { EFirstDo } from "../../AnalyticsModule/AnalyticsTool";
+import { MouseLockController } from "../../../controller/MouseLockController";
 
 enum EBtnType {
     /**按下释放技能 */
@@ -123,7 +124,8 @@ export class MainUISkillButton {
         //     mw.InputUtil.unbindButton(mw.Keys.RightMouseButton);
         // }
         if (this._btnDataCfg && this._btnDataCfg.btnType == 1) {
-            this.btn_invoke.removeKey(Keys.Q);
+            this.btn_invoke.removeKey(Keys.LeftMouseButton);
+            MouseLockController.getInstance().unRegisterNeedLeftMouseButton();
             // mw.InputUtil.unbindButton(mw.Keys.Q);
         } else if (this._btnDataCfg && this._btnDataCfg.id == 1) {
             //是跳跃
@@ -131,7 +133,8 @@ export class MainUISkillButton {
             // InputUtil.unbindButton(Keys.SpaceBar);
         } else if (this._btnDataCfg && this._btnDataCfg.id == 2) {
             //是冲刺
-            this.btn_invoke.removeKey(Keys.C);
+            this.btn_invoke.removeKey(Keys.RightShift);
+            this.btn_invoke.removeKey(Keys.LeftShift);
             // InputUtil.unbindButton(Keys.C);
         }
     }
@@ -154,7 +157,8 @@ export class MainUISkillButton {
         this._btnDataCfg = GameConfig.MotionBtnData.getElement(btnDataId);
 
         if (this._btnDataCfg && this._btnDataCfg.btnType == 1) {
-            this.btn_invoke.addKey(mw.Keys.Q);
+            this.btn_invoke.addKey(mw.Keys.LeftMouseButton);
+            MouseLockController.getInstance().registerNeedLeftMouseButton(this.btn_invoke);
             // mw.InputUtil.bindButton(mw.Keys.Q, this.btn_invoke);
         } else if (this._btnDataCfg && this._btnDataCfg.id == 1) {
             //是跳跃
@@ -162,7 +166,8 @@ export class MainUISkillButton {
             // InputUtil.bindButton(Keys.SpaceBar, this.btn_invoke);
         } else if (this._btnDataCfg && this._btnDataCfg.id == 2) {
             //是冲刺
-            this.btn_invoke.addKey(Keys.C);
+            this.btn_invoke.addKey(Keys.LeftShift);
+            this.btn_invoke.addKey(Keys.RightShift);
             // InputUtil.bindButton(Keys.C, this.btn_invoke);
         }
 
