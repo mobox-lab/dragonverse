@@ -88,7 +88,7 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
                 if (skillCfg == null) {
                     return;
                 }
-                (this[`mSelectBtn${i}`] as Button).normalImageGuid = btnDataCfg.btnIcon;
+                (this[`mSelectBtn${i}`] as Button).normalImageGuid = skillLibCfg.changeIconGuid;
                 (this[`skill${i}`] as TextBlock).text = skillCfg.Name;
             }
         }

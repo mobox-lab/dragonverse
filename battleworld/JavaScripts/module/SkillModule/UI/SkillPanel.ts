@@ -47,7 +47,7 @@ class ItemSkillSelect extends ItemSkillSelect_Generate implements VList.IItemRen
             return;
         }
 
-        this.bg_1_1.imageGuid = this.getBgImageGuid(skillLibCfg.weaponType);
+        this.bg_1_1.imageGuid = skillLibCfg.selectIconGuid
 
         this.mSkillName.text = motionSkillCfg.Name;
 
