@@ -2,9 +2,9 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 安妮熊
+ * AUTHOR: 断桥烟雨
  * UI: UI/Main/Main_HUD.ui
- * TIME: 2024.04.19-17.15.38
+ * TIME: 2024.05.11-14.43.10
  */
 
  
@@ -424,12 +424,54 @@
 		}
 		return this.canvasDan_Internal
 	}
+	private imgDan_Internal: mw.Image
+	public get imgDan(): mw.Image {
+		if(!this.imgDan_Internal&&this.uiWidgetBase) {
+			this.imgDan_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasRecord/canvasDan/imgDan') as mw.Image
+		}
+		return this.imgDan_Internal
+	}
+	private imgDanIcon_Internal: mw.Image
+	public get imgDanIcon(): mw.Image {
+		if(!this.imgDanIcon_Internal&&this.uiWidgetBase) {
+			this.imgDanIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasRecord/canvasDan/imgDanIcon') as mw.Image
+		}
+		return this.imgDanIcon_Internal
+	}
+	private textDanNum_Internal: mw.TextBlock
+	public get textDanNum(): mw.TextBlock {
+		if(!this.textDanNum_Internal&&this.uiWidgetBase) {
+			this.textDanNum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasRecord/canvasDan/textDanNum') as mw.TextBlock
+		}
+		return this.textDanNum_Internal
+	}
 	private canvasKillRecord_Internal: mw.Canvas
 	public get canvasKillRecord(): mw.Canvas {
 		if(!this.canvasKillRecord_Internal&&this.uiWidgetBase) {
 			this.canvasKillRecord_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasRecord/canvasKillRecord') as mw.Canvas
 		}
 		return this.canvasKillRecord_Internal
+	}
+	private imgKill_Internal: mw.Image
+	public get imgKill(): mw.Image {
+		if(!this.imgKill_Internal&&this.uiWidgetBase) {
+			this.imgKill_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasRecord/canvasKillRecord/imgKill') as mw.Image
+		}
+		return this.imgKill_Internal
+	}
+	private imgKillIcon_Internal: mw.Image
+	public get imgKillIcon(): mw.Image {
+		if(!this.imgKillIcon_Internal&&this.uiWidgetBase) {
+			this.imgKillIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasRecord/canvasKillRecord/imgKillIcon') as mw.Image
+		}
+		return this.imgKillIcon_Internal
+	}
+	private textKillNum_Internal: mw.TextBlock
+	public get textKillNum(): mw.TextBlock {
+		if(!this.textKillNum_Internal&&this.uiWidgetBase) {
+			this.textKillNum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasRecord/canvasKillRecord/textKillNum') as mw.TextBlock
+		}
+		return this.textKillNum_Internal
 	}
 	private canvasPayMoney_Internal: mw.Canvas
 	public get canvasPayMoney(): mw.Canvas {
@@ -784,6 +826,12 @@
 		
 	
 		this.initLanguage(this.roomIdText)
+		
+	
+		this.initLanguage(this.textDanNum)
+		
+	
+		this.initLanguage(this.textKillNum)
 		
 	
 		this.initLanguage(this.mMCoin)
