@@ -1,9 +1,6 @@
 name: Package Dragon Verse
 on:
   push:
-    branches:
-      - dev/**
-      - develop/**
     tags:
       - v*
   workflow_dispatch:
@@ -21,7 +18,8 @@ jobs:
         run: |
           find . -type f -name ".project_backup" | while read filename; do
             newname="${filename%_backup}"
-            echo "generate .project at $(pwd)"
+            filedir=$(dirname "$filename")
+            echo "generate .project at $filedir"
             cp "$filename" "$newname"
           done
 
