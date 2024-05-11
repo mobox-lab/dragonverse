@@ -131,7 +131,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     }
 
     /**定时器 不受帧率影响  */
-    private onLogicUpdate() {}
+    private onLogicUpdate() { }
 
     protected onUpdate(dt: number): void {
         for (const [key, value] of this.playerProxyMap) {
@@ -1815,6 +1815,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         }
         // 清理击杀数量
         playerData.clearKillCount();
+        this.getClient(playerID).net_updateKillCount(playerData.getKillCount());
 
         if (this.playerProxyMap.has(playerID)) {
             this.playerProxyMap.get(playerID).playerDead();
@@ -1824,6 +1825,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             let pData = this.getPlayerData(sceneID);
             if (pData) {
                 pData.addKillCount();
+                this.getClient(sceneID).net_updateKillCount(pData.getKillCount());
             }
 
             // 增加技能点

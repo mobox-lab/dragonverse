@@ -172,12 +172,25 @@ export class MainUI extends Main_HUD_Generate {
             }, GameConfig.Language.Deposit_2.Value);
         });
 
+        EventManager.instance.add(EAttributeEvents_C.Attribute_RankScore_Change_C, (playerId: number, rankScore: number) => {
+            Player.asyncGetLocalPlayer().then(player => {
+                if (playerId == player.playerId) {
+                    this.textDanNum.text = rankScore.toString();
+                    let level = PlayerManager.instance.getRankLevel(rankScore);
+                    this.imgDanIcon.imageGuid = GameConfig.Rank.getElement(level).rankImgID;
+                }
+            });
+        }, this);
     }
     private _authModuleC: AuthModuleC;
 
     private get authModuleC(): AuthModuleC | null {
         if (!this._authModuleC) this._authModuleC = ModuleService.getModule(AuthModuleC);
         return this._authModuleC;
+    }
+
+    public updateKillCount(killCount: number) {
+        this.textKillNum.text = killCount.toString();
     }
 
     /**
