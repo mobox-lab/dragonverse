@@ -145,7 +145,7 @@ export default class EcologyAnimal {
                         }
                     }
 
-                    this._char.displayName = this._config.name;
+                    this._char.displayName = "";
                     this.initStateMachine();
                     mw.TimeUtil.onEnterFrame.add(this.onUpdate);
                 },
@@ -171,6 +171,7 @@ export default class EcologyAnimal {
             new State<EcologyAnimalStateParam>(EcologyAnimalStatus.FindPath)
                 .aE(() => {
                     logEnterState(findPath, this._char.gameObjectId);
+                    this._state.walkValid = undefined;
                     const d = this
                         .birthPosition
                         .clone()
@@ -189,10 +190,12 @@ export default class EcologyAnimal {
                         undefined,
                         this._char);
 
-                    let dest = hit[0]?.position??undefined;
-                    if (Gtk.isNullOrUndefined(dest)) this._state.walkValid = false;
+                    let dest = hit[0]?.position ?? undefined;
+                    if (Gtk.isNullOrUndefined(dest)) {
+                        this._state.walkValid = false;
+                        return;
+                    }
 
-                    this._state.walkValid = undefined;
                     mw.Navigation.navigateTo(
                         this._char,
                         dest,

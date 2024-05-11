@@ -22,8 +22,6 @@ import stopEffect = Yoact.stopEffect;
 import MainPanel from "../../ui/main/MainPanel";
 import Waterween from "../../depend/waterween/Waterween";
 import AudioController, { SoundIDEnum } from "../../controller/audio/AudioController";
-import { RoleModuleS } from "./RoleModule";
-import GlobalProperty from "../../GlobalProperty";
 import AreaManager from "../../depend/area/AreaManager";
 
 
@@ -496,7 +494,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
             position,
             charPosition,
             false,
-            !GlobalProperty.getInstance().isRelease,
+            !GameServiceConfig.isRelease,
             undefined,
             false,
             false)[0] ?? null;

@@ -13,9 +13,7 @@ import YoactArray from "../../depend/yoact/YoactArray";
 import ForeignKeyIndexer, {BagTypes} from "../../const/ForeignKeyIndexer";
 import {EventDefine} from "../../const/EventDefine";
 import {AuthModuleS} from "../auth/AuthModule";
-import GameStart from "../../GameStart";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import GlobalProperty from "../../GlobalProperty";
 import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 
 export class BagItemUnique implements IUnique {
@@ -439,7 +437,7 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall() {
-        return !GlobalProperty.getInstance().isRelease || this.dragonBallYoact.count > 0;
+        return !GameServiceConfig.isRelease || this.dragonBallYoact.count > 0;
     }
 
     /**
@@ -655,7 +653,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall(playerId: number) {
-        return !GlobalProperty.getInstance().isRelease || this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
+        return !GameServiceConfig.isRelease || this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
     }
 
     /**

@@ -1,15 +1,17 @@
 import CryptoJS from "crypto-js";
 import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import { SubGameTypes } from "../../const/SubGameTypes";
 import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
 import FixedQueue from "../../depend/queue/FixedQueue";
 import i18n from "../../language/i18n";
-import GToolkit, { Expression, GtkTypes } from "../../util/GToolkit";
+import GToolkit, { Expression, GtkTypes, Regulator } from "../../util/GToolkit";
 import noReply = mwext.Decorator.noReply;
 import { TimeManager } from "../../controller/TimeManager";
-import GlobalProperty from "../../GlobalProperty";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
+import Gtk from "../../util/GToolkit";
+import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import { Yoact } from "../../depend/yoact/Yoact";
+import createYoact = Yoact.createYoact;
 
 type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
 
@@ -36,81 +38,81 @@ class SaltToken {
 }
 
 /**
- * 子游戏信息 记录请求.
+ * 加密信息.
  */
 interface EncryptedData {
     encryptData: string;
 }
 
+//#region Param Interface
 /**
- * 子游戏信息.
+ * 一般用户数据查询请求参数.
  */
-interface SubGameInfo {
-    /**
-     * 用户 uuid.
-     */
+interface UserDataQueryRequestParam {
     userId: string;
-    /**
-     * 闯关的积分.
-     */
-    point: number;
-    /**
-     * 这是第几个小游戏，目前只能填 6.
-     */
-    gameNum: number;
-    /**
-     * 完成时间.
-     */
-    achievedAt: number;
-    /**
-     * 当前签名时间.
-     */
-    timestamp: number;
 }
 
 /**
- * Code 验证回复.
+ * 一般查询返回数据.
  */
-interface CodeVerifyResponse {
-    code: number;
-    message: string;
-    data: boolean;
+interface QueryResponse<D = undefined> {
+    code: number,
+    message: string,
+    data?: D
 }
 
 /**
- * 彩虹跳跳乐 排行榜更新参数.
+ * 体力上限查询返回值.
  */
-interface RainbowLeapRankUpdateParams {
+interface QueryStaminaLimitRespData {
+    /**
+     * 钱包地址.
+     */
+    walletAddress: string,
+
+    /**
+     * 体力上限恢复时长预期. s
+     */
+    gameStaminaRecoverySec: number,
+
+    /**
+     * 体力上限.
+     */
+    stamina: 200,
+}
+
+/**
+ * 体力上限查询请求参数.
+ */
+interface PetSimulatorRankDataRequestParam {
     userId: string;
     userName: string;
-    headUrl: string;
-    star: number;
+    userAvatar: string;
+    petName: string;
+    petRarity: number;
+    petOriginalAttack: number;
     round: number;
-    requestTs: number;
+    /**
+     * 宠物获得时间. s
+     */
+    recordTime: number;
 }
 
-export default class DragonVerseAuthModuleData extends mwext.Subdata {
+//#endregion
+
+export default class AuthModuleData extends JModuleData {
     /**
      * 已经发布的正式数据版本号.
      * 以版本发布时间 升序排列.
      * RV.
      */
-    public static readonly RELEASE_VERSIONS: number[] = [1, 202401051219, 202403181323];
+    public static readonly RELEASE_VERSIONS: number[] = [2024510151409];
 
     /**
      * 版本升级办法.
      * UVM[n] : 从 RV[n] 升级到 RV[n+1] 的方法.
      */
-    public static readonly UPDATE_VERSION_METHOD: DataUpgradeMethod<DragonVerseAuthModuleData>[] = [
-        (data: DragonVerseAuthModuleData) => {
-            data.holdUserId = null;
-            data.holdPlayerId = null;
-            data.holdNickName = null;
-        },
-        (data: DragonVerseAuthModuleData) => {
-            data["enterEnable"] = undefined;
-        },
-    ];
+    public static readonly UPDATE_VERSION_METHOD: DataUpgradeMethod<AuthModuleData>[] = [];
 
     @Decorator.persistence()
     public holdUserId: string;
@@ -121,134 +123,8 @@ export default class DragonVerseAuthModuleData extends mwext.Subdata {
     @Decorator.persistence()
     public holdNickName: string;
 
-    /**
-     * 玩家 Code 验证请求时间记录.
-     */
     @Decorator.persistence()
-    public codeVerifyReqData: number[] = [];
-
-    //#region Sub data
-    protected initDefaultData(): void {
-        super.initDefaultData();
-        this.holdUserId = null;
-        this.holdPlayerId = null;
-        this.holdNickName = null;
-    }
-
-    protected onDataInit(): void {
-        super.onDataInit();
-        this.checkVersion();
-    }
-
-    /**
-     * 定义为最新版本号.
-     * 为什么不做成只读属性而是个 getter 呢.
-     */
-    public get version(): number {
-        return DragonVerseAuthModuleData.RELEASE_VERSIONS[DragonVerseAuthModuleData.RELEASE_VERSIONS.length - 1];
-    }
-
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-    /**
-     * 数据版本检查.
-     */
-    public checkVersion() {
-        if (this.currentVersion === this.version) return;
-
-        Log4Ts.log(
-            DragonVerseAuthModuleData,
-            `数据准备升级`,
-            () => `当前版本: ${this.currentVersion}`,
-            () => `最新版本: ${this.version}.`
-        );
-
-        const startIndex = DragonVerseAuthModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
-        if (startIndex < 0) {
-            Log4Ts.error(
-                DragonVerseAuthModuleData,
-                `数据号版本异常`,
-                `不是已发布的版本号`,
-                () => `当前版本: ${this.currentVersion}.`
-            );
-            return;
-        }
-
-        for (let i = startIndex; i < DragonVerseAuthModuleData.UPDATE_VERSION_METHOD.length - 1; ++i) {
-            DragonVerseAuthModuleData.UPDATE_VERSION_METHOD[i](this);
-            this.currentVersion = DragonVerseAuthModuleData.RELEASE_VERSIONS[i + 1];
-        }
-    }
-}
-
-/**
- * 请求频率守卫.
- *
- * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
- * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
- * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
- * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
- * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
- * @author LviatYi
- * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
- * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- */
-class RequestGuard {
-    private _q: FixedQueue<number> = new FixedQueue<number>(GameServiceConfig.DAILY_MAX_TRIAL_COUNT);
-    private _p: number = -1;
-
-    public req(time: number = undefined): boolean {
-        const now = time ?? TimeManager.getInstance().currentTime;
-        if (now < this._q.back()) {
-            // 失序.
-            return false;
-        }
-
-        this._p -= this._q.shiftAll(
-            (item) =>
-                now - item >
-                GToolkit.timeConvert(
-                    1,
-                    GtkTypes.TimeFormatDimensionFlags.Day,
-                    GtkTypes.TimeFormatDimensionFlags.Millisecond
-                )
-        );
-        let p = this._p;
-        while (true) {
-            const item = this._q.get(++p);
-            if (
-                item === null ||
-                now - item <=
-                    GToolkit.timeConvert(
-                        1,
-                        GtkTypes.TimeFormatDimensionFlags.Hour,
-                        GtkTypes.TimeFormatDimensionFlags.Millisecond
-                    )
-            )
-                break;
-        }
-        this._p = p - 1;
-
-        if (this._q.length - this._p - 1 < GameServiceConfig.HOUR_MAX_TRIAL_COUNT) {
-            this._q.push(time);
-            return true;
-        }
-
-        return false;
-    }
-
-    public init(data: number[]): this {
-        this._q.length = 0;
-        for (const d of data) {
-            this.req(d);
-        }
-
-        return this;
-    }
-
-    public toArray() {
-        return this._q.toArray();
-    }
+    public holdAddress: string;
 }
 
 /**
@@ -270,11 +146,13 @@ class RequestGuard {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModuleData> {
+export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
     //#region Member
     private _originToken: string = null;
 
     private _lastSubGameReportTime: number = 0;
+
+    public staminaLimit: { data: number } = createYoact({data: 0});
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -283,9 +161,7 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
         super.onAwake();
     }
 
-    protected onStart(): void {
-        super.onStart();
-
+    protected onJStart(): void {
         //#region Member init
         this.server.net_initPlayerData(AccountService.getNickName());
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -335,33 +211,17 @@ export class AuthModuleC extends mwext.ModuleC<AuthModuleS, DragonVerseAuthModul
         Event.dispatchToLocal(EventDefine.PlayerEnableEnter);
     }
 
-    /**
-     * 上报子游戏信息.
-     * @param clientTimeStamp
-     * @param subGameType
-     * @param value
-     */
-    public reportSubGameInfo(clientTimeStamp: number, subGameType: SubGameTypes, value: number) {
-        const now = TimeManager.getInstance().currentTime;
-        const thanLastReport = now - this._lastSubGameReportTime;
-        if (thanLastReport <= GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL) {
-            return;
-        }
-        this._lastSubGameReportTime = now;
-        this.server.net_reportSubGameInfo(clientTimeStamp, subGameType, value);
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
-    public net_verifyFail() {
-        GlobalTips.getInstance().showGlobalTips(i18n.lan("verifyCodeFail"));
+    public net_changeStaminaLimit(value: number) {
+        this.staminaLimit.data = value;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModuleData> {
+export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     //#region Constant
     /**
      * 验证时间容差.
@@ -373,86 +233,71 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
     /**
      * 测试用 P12 端 Url.
      */
-    private static readonly TEST_P12_URL = "https://modragon-api-test.mobox.app";
+    private static readonly TEST_P12_DOMAIN = "https://modragon-api-test.mobox.app";
 
     /**
      * 发布用 P12 端 Url.
      */
-    private static readonly RELEASE_P12_URL = "https://modragon-api.mobox.app";
+    private static readonly RELEASE_P12_DOMAIN = "https://modragon-api.mobox.app";
 
     /**
-     * 测试用 mobox NFT Url.
-     * @type {string}
+     * PGE 查询 体力上限 Uri.
      * @private
      */
-    private static readonly TEST_MOBOX_NFT_URL = "http://16.163.58.210:8087";
+    private static readonly PGE_STAMINA_LIMIT_URI = "/pge-game/stamina/obtain-in-game";
 
     /**
-     * 发布用 mobox NFT Url.
-     * @type {string}
+     * PGE 汇报 宠物模拟器排行榜 Uri.
      * @private
      */
-    private static readonly RELEASE_MOBOX_NFT_URL = "https://nft-api.mobox.io";
+    private static readonly PGE_P_S_RANK_REPORT_URI = "/pge-game/rank/pet/update";
 
     /**
-     * Code 验证 Url 后缀.
+     * PGE 汇报 无限乱斗排行榜 Uri.
      * @private
      */
-    private static readonly CODE_VERIFY_URL_SUFFIX = "/modragon/code/status";
+    private static readonly PGE_B_W_RANK_REPORT_URI = "/pge-game/rank/fight/update";
 
     /**
-     * 子游戏信息汇报 Url 后缀.
-     * @private
+     * 测试用 体力上限查询 Url.
      */
-    private static readonly SUB_GAME_REPORT_URL_SUFFIX = "/modragon/achievement";
-
-    /**
-     * 彩虹跳跳乐 信息汇报 Url 后缀.
-     * @type {string}
-     * @private
-     */
-    private static readonly RAINBOW_LEAP_REPORT_URL_SUFFIX = "/mo-rank/rainbow-leap/update";
-
-    /**
-     * 测试用 Code 验证 Url.
-     */
-    private static get TEST_CODE_VERIFY_URL() {
-        return this.TEST_P12_URL + this.CODE_VERIFY_URL_SUFFIX;
+    private static get TEST_PGE_STAMINA_LIMIT_URL() {
+        return this.TEST_P12_DOMAIN + this.PGE_STAMINA_LIMIT_URI;
     }
 
     /**
-     * 发布用 Code 验证 Url.
+     * 发布用 体力上限查询 Url.
      */
-    private static get RELEASE_CODE_VERIFY_URL() {
-        return this.RELEASE_P12_URL + this.CODE_VERIFY_URL_SUFFIX;
+    private static get RELEASE_PGE_STAMINA_LIMIT_URL() {
+        return this.RELEASE_P12_DOMAIN + this.PGE_STAMINA_LIMIT_URI;
     }
 
     /**
-     * 测试用 子游戏信息汇报 Url.
+     * 测试用 汇报 宠物模拟器排行榜 Url.
      */
-    private static get TEST_SUB_GAME_REPORT_URL() {
-        return this.TEST_P12_URL + this.SUB_GAME_REPORT_URL_SUFFIX;
+    private static get TEST_PGE_P_S_RANK_REPORT_URL() {
+        return this.TEST_P12_DOMAIN + this.PGE_P_S_RANK_REPORT_URI;
     }
 
     /**
-     * 发布用 子游戏信息汇报 Url.
+     * 发布用 汇报 宠物模拟器排行榜 Url.
      */
-    private static get RELEASE_SUB_GAME_REPORT_URL() {
-        return this.RELEASE_P12_URL + this.SUB_GAME_REPORT_URL_SUFFIX;
+    private static get RELEASE_PGE_P_S_RANK_REPORT_URL() {
+        return this.RELEASE_P12_DOMAIN + this.PGE_P_S_RANK_REPORT_URI;
     }
 
     /**
-     * 测试用 彩虹跳跳乐 信息汇报 Url.
+     * 测试用 汇报 无限乱斗排行榜 Url.
      */
-    private static get TEST_RAINBOW_LEAP_REPORT_URL() {
-        return this.TEST_MOBOX_NFT_URL + this.RAINBOW_LEAP_REPORT_URL_SUFFIX;
+    private static get TEST_PGE_B_W_RANK_REPORT_URL() {
+        return this.TEST_P12_DOMAIN + this.PGE_B_W_RANK_REPORT_URI;
     }
 
     /**
-     * 发布用 彩虹跳跳乐 信息汇报 Url.
+     * 发布用 汇报 无限乱斗排行榜 Url.
      */
-    private static get RELEASE_RAINBOW_LEAP_REPORT_URL() {
-        return this.RELEASE_MOBOX_NFT_URL + this.RAINBOW_LEAP_REPORT_URL_SUFFIX;
+    private static get RELEASE_PGE_B_W_RANK_REPORT_URL() {
+        return this.RELEASE_P12_DOMAIN + this.PGE_B_W_RANK_REPORT_URI;
     }
 
     /**
@@ -462,7 +307,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
+            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -496,9 +341,17 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Member
-    private _codeVerifyMap: Map<number, RequestGuard> = new Map<number, RequestGuard>();
+    private _playerRequestRegulatorMap: Map<number, number> = new Map();
 
-    private _subGameReportMap: Map<number, number> = new Map<number, number>();
+    /**
+     * 玩家体力上限表.
+     */
+    public playerStaminaLimitMap: Map<number, number> = new Map();
+
+    /**
+     * 玩家体力恢复预期时长表.
+     */
+    public playerStaminaRecoveryMap: Map<number, number> = new Map();
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -506,8 +359,7 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         super.onAwake();
     }
 
-    protected onStart(): void {
-        super.onStart();
+    protected onJStart(): void {
         AuthModuleS.getSensitiveData();
         //#region Member init
         //#endregion ------------------------------------------------------------------------------------------
@@ -542,18 +394,13 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
 
         const playerData = this.getPlayerData(player);
         if (playerData) {
-            playerData.codeVerifyReqData = this._codeVerifyMap.get(player.playerId).toArray();
-            playerData.save(false);
         } else {
             Log4Ts.log(AuthModuleS, `there is no data for player ${player.playerId}.`);
         }
-        this._codeVerifyMap.delete(player.playerId);
-        this._subGameReportMap.delete(player.playerId);
     }
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-        this._codeVerifyMap.set(player.playerId, new RequestGuard().init(this.getPlayerData(player).codeVerifyReqData));
     }
 
     protected onPlayerJoined(player: Player): void {
@@ -582,17 +429,17 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         GToolkit.doUntilTrue(
             () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
             this.getCodeVerifyAesKey,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
         );
         GToolkit.doUntilTrue(
             () => !GToolkit.isNullOrEmpty(this.CLIENT_ID),
             this.getClientId,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
         );
         GToolkit.doUntilTrue(
             () => !GToolkit.isNullOrEmpty(this.SECRET),
             this.querySecret,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
         );
     }
 
@@ -650,12 +497,12 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
+            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (GToolkit.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
+            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
             return false;
         }
 
@@ -672,108 +519,103 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         return e.ciphertext.toString(CryptoJS.enc.Base64);
     }
 
-    /**
-     * 上报子游戏信息.
-     * @param playerId 玩家 Id.
-     * @param clientTimeStamp 客户端完成时间戳.
-     * @param subGameType 子游戏类型.
-     * @param value 汇报值.
-     */
-    public async reportSubGameInfo(
-        playerId: number,
-        clientTimeStamp: number,
-        subGameType: SubGameTypes,
-        value: number
-    ) {
-        // if (!this.subGameIntervalCheck(playerId)) {
-        //     Log4Ts.log(AuthModuleS, `report sub game info too frequently.`);
-        //     return;
-        // }
-        // const uid = Player.getPlayer(playerId)?.userId ?? null;
-        // if (GToolkit.isNullOrEmpty(uid)) {
-        //     Log4Ts.error(AuthModuleS, `can't find player ${playerId} when report sub game info.`);
-        //     return;
-        // }
-        // const reportInfo: SubGameInfo = {
-        //     userId: uid,
-        //     point: value,
-        //     gameNum: subGameType,
-        //     achievedAt: clientTimeStamp,
-        //     timestamp: Date.now(),
-        // };
-        // const secret = this.getSecret(JSON.stringify(reportInfo));
-        // const body: SubGameRequest = {
-        //     secret: secret,
-        // };
-        //
-        // const resp = await fetch(`${GlobalProperty.getInstance().isRelease ?
-        //         AuthModuleS.RELEASE_SUB_GAME_REPORT_URL :
-        //         AuthModuleS.TEST_SUB_GAME_REPORT_URL}`,
-        //     {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json;charset=UTF-8",
-        //         },
-        //         body: JSON.stringify(body),
-        //     });
-        //
-        // const respInJson = await resp.json();
-        // Log4Ts.log(AuthModuleS, `get resp when report sub game info. ${JSON.stringify(respInJson)}`);
-    }
-
-    /**
-     * 上报彩虹跑酷信息.
-     * @param playerId 玩家 Id.
-     * @param star 星星数量.
-     * @param round 轮次.
-     */
-    public async reportRainbowLeapInfo(playerId: number, star: number, round: number) {
-        if (!this.subGameIntervalCheck(playerId)) {
-            Log4Ts.log(AuthModuleS, `report rainbow leap info too frequently.`);
-            return;
-        }
-        const player = Player.getPlayer(playerId) ?? null;
-        if (GToolkit.isNullOrUndefined(player)) {
-            Log4Ts.error(AuthModuleS, `can't find player ${playerId} when report rainbow leap info.`);
+    public async queryRegisterStaminaLimit(playerId: number) {
+        const userId = Player.getPlayer(playerId)?.userId ?? undefined;
+        if (Gtk.isNullOrEmpty(userId)) {
+            logEPlayerNotExist(playerId);
             return;
         }
 
-        const reportInfo: RainbowLeapRankUpdateParams = {
-            userId: player.userId,
-            userName: player.nickname,
-            headUrl: player["avatarUrl"],
-            star,
-            round,
-            requestTs: Math.ceil(Date.now() / 1000),
+        const requestParam: UserDataQueryRequestParam = {
+            userId: userId,
         };
-        const encryptData = this.getSecret(JSON.stringify(reportInfo));
-        const body: EncryptedData = {
-            encryptData,
+        const encryptBody = {
+            encryptData: this.getSecret(JSON.stringify(requestParam)),
         };
 
         const resp = await fetch(
             `${
-                GlobalProperty.getInstance().isRelease
-                    ? AuthModuleS.RELEASE_RAINBOW_LEAP_REPORT_URL
-                    : AuthModuleS.TEST_RAINBOW_LEAP_REPORT_URL
+                GameServiceConfig.isRelease
+                    ? AuthModuleS.RELEASE_PGE_STAMINA_LIMIT_URL
+                    : AuthModuleS.TEST_PGE_STAMINA_LIMIT_URL
             }`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
                 },
-                body: JSON.stringify(body),
-            }
+                body: JSON.stringify(encryptBody),
+            },
         );
+        const respInJson = await resp.json<QueryResponse<QueryStaminaLimitRespData>>();
+        Log4Ts.log(AuthModuleS, `get resp when query stamina limit. ${JSON.stringify(respInJson)}`);
 
-        const respInJson = await resp.json();
-        Log4Ts.log(AuthModuleS, `get resp when report rainbow leap info. ${JSON.stringify(respInJson)}`);
+        if (Gtk.isNullOrUndefined(respInJson?.data?.stamina))
+            Log4Ts.log(AuthModuleS, `invalid value when query stamina limit for user ${userId}.`);
+        else {
+            this.playerStaminaLimitMap.set(playerId, respInJson.data.stamina);
+            this.getClient(playerId)?.net_changeStaminaLimit(respInJson.data.stamina);
+        }
+        if (Gtk.isNullOrUndefined(respInJson?.data?.gameStaminaRecoverySec))
+            Log4Ts.log(AuthModuleS, `invalid value when query recovery time limit for user ${userId}.`);
+        else this.playerStaminaRecoveryMap.set(playerId, respInJson.data.gameStaminaRecoverySec);
+
+        let data = this.getPlayerData(playerId);
+        if (!Gtk.isNullOrEmpty(respInJson?.data?.walletAddress ?? undefined) && data.holdAddress !== respInJson.data.walletAddress) {
+            data.holdAddress = respInJson.data.walletAddress;
+            data.save(false);
+        }
     }
 
-    private subGameIntervalCheck(playerId: number): boolean {
-        const thanLastReport = Date.now() - (this._subGameReportMap.get(playerId) ?? 0);
-        if (thanLastReport <= GameServiceConfig.MIN_SUB_GAME_INFO_INTERVAL) return false;
-        this._subGameReportMap.set(playerId, Date.now());
+    public async reportPetSimulatorRankData(playerId: number, petName: string, petRarity: number, petOriginalAttack: number, recordTime: number, round: number) {
+        const player = Player.getPlayer(playerId) ?? null;
+        if (GToolkit.isNullOrUndefined(player)) {
+            Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
+            return;
+        }
+        const userId = player.userId;
+        const userName = player.nickname;
+        const userAvatar = player["avatarUrl"];
+        const requestParam: PetSimulatorRankDataRequestParam = {
+            userId,
+            userName,
+            userAvatar,
+            petName,
+            petRarity,
+            petOriginalAttack,
+            recordTime,
+            round,
+        };
+        const encryptBody: EncryptedData = {
+            encryptData: this.getSecret(JSON.stringify(requestParam)),
+        };
+        const resp = await fetch(`${GameServiceConfig.isRelease ?
+                AuthModuleS.RELEASE_PGE_P_S_RANK_REPORT_URL :
+                AuthModuleS.TEST_PGE_P_S_RANK_REPORT_URL}`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                },
+                body: JSON.stringify(encryptBody),
+            });
+
+        const respInJson = await resp.json<QueryResponse>();
+        Log4Ts.log(AuthModuleS, `get resp when report p.s. rank info. ${JSON.stringify(respInJson)}`);
+    }
+
+    public async reportBattleWorldRankData() {
+
+    }
+
+    private checkRequestRegulator(playerId: number): boolean {
+        let last = this._playerRequestRegulatorMap.get(playerId) ?? 0;
+        let now = Date.now();
+        if (now - last < GameServiceConfig.MIN_OTHER_REQUEST_INTERVAL) {
+            return false;
+        }
+
+        this._playerRequestRegulatorMap.set(playerId, now);
         return true;
     }
 
@@ -786,23 +628,18 @@ export class AuthModuleS extends mwext.ModuleS<AuthModuleC, DragonVerseAuthModul
         return Promise.resolve(`token-${playerId}-${uid}`);
     }
 
-    /**
-     * 上报子游戏信息.
-     * @param clientTimeStamp 客户端完成时间戳.
-     * @param subGameType 子游戏类型.
-     * @param value 汇报值.
-     */
-    @noReply()
-    public net_reportSubGameInfo(clientTimeStamp: number, subGameType: SubGameTypes, value: number) {
-        this.reportSubGameInfo(this.currentPlayerId, clientTimeStamp, subGameType, value);
-    }
-
     @noReply()
     public net_initPlayerData(nickName: string) {
         this.currentData.holdUserId = this.currentPlayer.userId;
         this.currentData.holdPlayerId = this.currentPlayerId;
         this.currentData.holdNickName = nickName;
         this.currentData.save(false);
+    }
+
+    @noReply()
+    public net_requestRefreshStaminaLimit() {
+        if (!this.checkRequestRegulator(this.currentPlayerId)) return;
+        this.queryRegisterStaminaLimit(this.currentPlayerId);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -815,7 +652,7 @@ function logState(
     showTime: boolean,
     playerId: number,
     uid: string = undefined,
-    code: string = undefined
+    code: string = undefined,
 ): void {
     let logFunc: Function;
     switch (logType) {
@@ -848,4 +685,8 @@ function logState(
     if (showTime) result.push(() => `time: ${Date.now().toString()}`);
 
     logFunc(announcer, ...result);
+}
+
+function logEPlayerNotExist(playerId: number) {
+    Log4Ts.error(AuthModuleS, `can't find player ${playerId}.`);
 }

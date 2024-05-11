@@ -353,9 +353,9 @@ export class Globaldata {
 
     /**--------------------------------------NPC--------------------------------- */
     /** 寻路x轴范围 */
-    public static npc_pathRangeX: Vector2 = new Vector2(207866.44, 215557.70);
+    public static npc_pathRangeX: Vector2 = new Vector2(208629.66, 214883.66);
     /** 寻路y轴范围 */
-    public static npc_pathRangeY: Vector2 = new Vector2(6778.77, 14290.39);
+    public static npc_pathRangeY: Vector2 = new Vector2(21949.57, 15423.57);
     /** npc默认重力系数 */
     public static npc_gravityScale: number = 1;
     /** 展示npc头顶ui渲染缩放 */
@@ -365,7 +365,7 @@ export class Globaldata {
     /** 展示npc动作 */
     public static npc_modelAnim: string = "232755";
     /** 展示npc位置 */
-    public static npc_modelPos: Vector = new Vector(209877.88, 20959.30, 2642.37);
+    public static npc_modelPos: Vector = new Vector(224081.41, 17612.64, 1880.37);
 
     /**----------------------------------其他----------------------------------------- */
     /**满星数量TODO*/

@@ -159,7 +159,7 @@ export default class GameStart extends mw.Script {
             ChatService.asyncEnableChatWindow(false);
             InputUtil.mouseLockOptionEnabled = false;
             InputUtil.isCursorVisible = true;
-
+            InputUtil.isLockMouse = false;
         }
 
         this.useUpdate = true;

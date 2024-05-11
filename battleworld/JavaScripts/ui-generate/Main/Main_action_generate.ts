@@ -4,7 +4,7 @@
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * AUTHOR: 断桥烟雨
  * UI: UI/Main/Main_action.ui
- * TIME: 2024.01.31-10.04.14
+ * TIME: 2024.05.11-14.43.09
  */
 
  
@@ -73,6 +73,34 @@
 			this.dashname_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill2/dashname') as mw.TextBlock
 		}
 		return this.dashname_Internal
+	}
+	private mSkillCd1_Internal: mw.Image
+	public get mSkillCd1(): mw.Image {
+		if(!this.mSkillCd1_Internal&&this.uiWidgetBase) {
+			this.mSkillCd1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSkillCd1') as mw.Image
+		}
+		return this.mSkillCd1_Internal
+	}
+	private mSkillCd2_Internal: mw.Image
+	public get mSkillCd2(): mw.Image {
+		if(!this.mSkillCd2_Internal&&this.uiWidgetBase) {
+			this.mSkillCd2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSkillCd2') as mw.Image
+		}
+		return this.mSkillCd2_Internal
+	}
+	private mSkillCd3_Internal: mw.Image
+	public get mSkillCd3(): mw.Image {
+		if(!this.mSkillCd3_Internal&&this.uiWidgetBase) {
+			this.mSkillCd3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSkillCd3') as mw.Image
+		}
+		return this.mSkillCd3_Internal
+	}
+	private mSkillCd4_Internal: mw.Image
+	public get mSkillCd4(): mw.Image {
+		if(!this.mSkillCd4_Internal&&this.uiWidgetBase) {
+			this.mSkillCd4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSkillCd4') as mw.Image
+		}
+		return this.mSkillCd4_Internal
 	}
 	private mCanvasSkill3_Internal: mw.UserWidget
 	public get mCanvasSkill3(): mw.UserWidget {
