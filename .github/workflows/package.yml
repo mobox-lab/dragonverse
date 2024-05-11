@@ -6,12 +6,13 @@ on:
       - develop/**
     tags:
       - v*
+  workflow_dispatch:
 jobs:
   package:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Generate .projectassembly
         run: cp .projectassembly_backup .projectassembly
