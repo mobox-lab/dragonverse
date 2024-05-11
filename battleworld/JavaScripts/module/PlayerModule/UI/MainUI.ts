@@ -176,6 +176,8 @@ export class MainUI extends Main_HUD_Generate {
             Player.asyncGetLocalPlayer().then(player => {
                 if (playerId == player.playerId) {
                     this.textDanNum.text = rankScore.toString();
+                    let level = PlayerManager.instance.getRankLevel(rankScore);
+                    this.imgDanIcon.imageGuid = GameConfig.Rank.getElement(level).rankImgID;
                 }
             });
         }, this);
