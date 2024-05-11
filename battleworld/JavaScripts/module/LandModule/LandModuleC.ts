@@ -26,7 +26,7 @@ import PickUpSkill from "./PickUp/PickUpSkill";
  * 1.拾取物 pickup （属性同步脚本，同步流程，同步随机技能球6个，血包3个，金钱3个）
  * 2.地形运动 && buff 
  */
-export class LandModuleC extends ModuleC<LandModuleS, null>{
+export class LandModuleC extends ModuleC<LandModuleS, null> {
 
     /**玩家模块*/
     private playerModuleC: PlayerModuleC = null;
@@ -146,7 +146,7 @@ export class LandModuleC extends ModuleC<LandModuleS, null>{
                     let pillInfo = pickUpPill.getPillInfo();
                     value = pickUpPill.attributeValue;
                     pickUpInfo = pillInfo;
-                    EventManager.instance.call(EModule_Events.land_pickUp_pill, pillInfo.attributeID);
+                    EventManager.instance.call(EModule_Events.land_pickUp_pill, pillInfo);
                     //104: 攻击加成    103: 减伤加成    102: 最大生命值加成    107: 最大能量值加成
                     // console.error(`rkc--------------属性加成：${attributeID}   ${value}`);
 

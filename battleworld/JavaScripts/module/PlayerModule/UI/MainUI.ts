@@ -47,7 +47,8 @@ import { SettingModuleC } from "../../SetingModule/SetingMoudleC";
 import { JumpGamePanel } from "../../../ui/jump-game/JumpGamePanel";
 import Gtk from "../../../util/GToolkit";
 import { SkillModuleC } from "../../SkillModule/SkillModuleC";
-
+import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
+type PillUIInfo = { text: TextBlock, img: Image, num: number, name: TextBlock, duration: number, time: TextBlock, mask: MaskButton, timer: number };
 export class MainUI extends Main_HUD_Generate {
 
     private playerMD: PlayerModuleC;
@@ -204,6 +205,8 @@ export class MainUI extends Main_HUD_Generate {
                 ModuleService.getModule(SkillModuleC).discardSkillLib();
             }
         });
+
+        this.mCavasTrans.visibility = mw.SlateVisibility.Collapsed;
     }
 
     private _authModuleC: AuthModuleC;
@@ -703,7 +706,8 @@ export class MainUI extends Main_HUD_Generate {
     /*******************************************************丹药*********************************************************/
 
     /** 记录了增加的丹药类型对应的UI，目前先暂时这样写，后续考虑调整为动态生成 */
-    private pillMap: Map<Attribute.EnumAttributeType, { text: TextBlock, img: Image, num: number }> = new Map();
+
+    private pillMap: Map<Attribute.EnumAttributeType, PillUIInfo> = new Map();
 
     /**
      * 初始化丹药的映射关系
@@ -714,21 +718,41 @@ export class MainUI extends Main_HUD_Generate {
             text: this.mText_Long_Num,
             img: this.mImage_Long,
             num: 0,
+            name: this.textAttack,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Long,
+            mask: this.mMask_Trans_Long,
+            timer: -1
         });
         this.pillMap.set(Attribute.EnumAttributeType.defMultiple, {
             text: this.mText_Tortoise_Num,
             img: this.mImage_Tortoise,
             num: 0,
+            name: this.textDefend,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Tortoise,
+            mask: this.mMask_Trans_Tortoise,
+            timer: -1
         });
         this.pillMap.set(Attribute.EnumAttributeType.maxHpAdd, {
             text: this.mText_Bone_Num,
             img: this.mImage_Bone,
             num: 0,
+            name: this.textHeart,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Bone,
+            mask: this.mMask_Trans_Bone,
+            timer: -1
         });
         this.pillMap.set(Attribute.EnumAttributeType.maxEnergyAdd, {
             text: this.mText_Qi_Num,
             img: this.mImage_Qi,
             num: 0,
+            name: this.textBlue,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Qi,
+            mask: this.mMask_Trans_Qi,
+            timer: -1
         });
         this.refreshPillVisible();
     }
@@ -737,8 +761,8 @@ export class MainUI extends Main_HUD_Generate {
      * 更新丹药的UI
      * @param pillType 拾取的丹药类型，-1表示清空显示
      */
-    private listen_land_pickUp_pill(pillType: number) {
-        if (pillType == -1) {
+    private listen_land_pickUp_pill(pillInfo: PillInfo) {
+        if (!pillInfo) {
             for (let [_, second] of this.pillMap) {
                 if (second && second.text) {
                     second.num = 0;
@@ -746,10 +770,11 @@ export class MainUI extends Main_HUD_Generate {
                 }
             }
         } else {
-            const pillValue = this.pillMap.get(pillType);
-            if (pillType) {
+            if (pillInfo.attributeID) {
+                const pillValue = this.pillMap.get(pillInfo.attributeID);
                 pillValue.num++;
                 pillValue.text.text = pillValue.num.toFixed();
+                pillValue.duration = pillInfo.duration;
             }
         }
         this.refreshPillVisible();
@@ -778,10 +803,37 @@ export class MainUI extends Main_HUD_Generate {
                 if (second.num > 0) {
                     second.text.visibility = SlateVisibility.Visible;
                     second.img.visibility = SlateVisibility.Visible;
+                    second.name.visibility = SlateVisibility.Visible;
                     canvasShouldShow = true;
+                    let oriDuration = second.duration;
+                    if (second.timer === -1) {
+                        second.timer = TimeUtil.setInterval(() => {
+                            console.log(second.name.text, second.mask.fanShapedValue)
+                            second.duration -= 0.1;
+                            second.mask.fanShapedValue = (oriDuration - second.duration) / oriDuration;
+                            second.time.text = `${second.duration.toFixed(1)}s`;
+                            if (second.duration <= 0) {
+                                second.text.visibility = SlateVisibility.Collapsed;
+                                second.img.visibility = SlateVisibility.Collapsed;
+                                second.time.text = "";
+                                second.name.visibility = SlateVisibility.Collapsed;
+                                second.mask.fanShapedValue = 0;
+                                TimeUtil.clearInterval(second.timer);
+                                second.timer = -1;
+                            }
+                        }, 0.1);
+                    }
+
                 } else {
                     second.text.visibility = SlateVisibility.Collapsed;
                     second.img.visibility = SlateVisibility.Collapsed;
+                    second.name.visibility = SlateVisibility.Collapsed;
+                    second.mask.fanShapedValue = 1;
+                    second.time.text = "";
+                    if (second.timer !== -1) {
+                        TimeUtil.clearInterval(second.timer);
+                        second.timer = -1;
+                    }
                 }
             }
         }
