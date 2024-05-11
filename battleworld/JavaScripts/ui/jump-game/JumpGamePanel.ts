@@ -2,12 +2,13 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-03-01 11:30:29
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-03-01 16:10:48
+ * @LastEditTime : 2024-05-11 15:42:46
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\ui\jump-game\JumpGamePanel.ts
  * @Description  : 跳房间界面
  */
 
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import { MouseLockController } from "../../controller/MouseLockController";
 import { JumpRoomModuleC } from "../../module/jump-room/JumpRoomModule";
 import JumpGamePanel_Generate from "../../ui-generate/jumpGame/JumpGamePanel_generate";
 import GToolkit from "../../util/GToolkit";
@@ -26,10 +27,12 @@ export class JumpGamePanel extends JumpGamePanel_Generate {
     onShow() {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hide(JumpGamePanel);
-        })
+        });
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
     onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 }

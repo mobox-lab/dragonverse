@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-01-31 11:20:52
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-02-05 18:29:04
+ * @LastEditTime : 2024-05-11 15:50:32
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\ui\BuyEnergyPanel.ts
  * @Description  : 购买战斗次数
  */
@@ -10,6 +10,7 @@
 import { GameConfig } from "../config/GameConfig";
 import { Globaldata } from "../const/Globaldata";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
+import { MouseLockController } from "../controller/MouseLockController";
 import { EnergyModuleC } from "../module/Energy/EnergyModule";
 import { ShopModuleC } from "../module/ShopModule/ShopModuleC";
 import { MessageBox } from "../tool/MessageBox";
@@ -65,21 +66,23 @@ export default class BuyEnergyPanel extends BuyPanel_Generate {
     onShow() {
         this.mainCanvas.visibility = SlateVisibility.Visible;
         this.mCanvas_undo.visibility = SlateVisibility.Hidden;
-        //计算下能不能买
-        let currEnergy = ModuleService.getModule(EnergyModuleC).currEnergy();
-        let configs = GameConfig.GoodsTable.getAllElement();
-        configs.forEach(item => {
-            let btn = this._selectButtons.get(item.id);
-            if (!btn) return;
-            if (currEnergy + item.buyCount > Globaldata.ENERGY_MAX) {
-                btn.enable = false;
-            } else {
-                btn.enable = true;
-            }
-        });
+        // //计算下能不能买
+        // let currEnergy = ModuleService.getModule(EnergyModuleC).currEnergy();
+        // let configs = GameConfig.GoodsTable.getAllElement();
+        // configs.forEach(item => {
+        //     let btn = this._selectButtons.get(item.id);
+        //     if (!btn) return;
+        //     if (currEnergy + item.buyCount > Globaldata.ENERGY_MAX) {
+        //         btn.enable = false;
+        //     } else {
+        //         btn.enable = true;
+        //     }
+        // });
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
     onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 }

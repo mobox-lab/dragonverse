@@ -76,8 +76,6 @@ export default class BagPanel extends BagMain_Generate {
             }
         });
 
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => { });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => { });
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Widget bind
