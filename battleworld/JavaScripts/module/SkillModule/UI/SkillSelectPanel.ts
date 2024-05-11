@@ -67,7 +67,7 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
         if (skillCfg == null) {
             return;
         }
-        this.bg.imageGuid = this.getBgImageGuid(skillLibCfg.weaponType);
+        this.bg.imageGuid = skillLibCfg.selectIconGuid;
         let msg = GameConfig.Language.SkillSelect_1.Value;
 
         let msg2 = StringUtil.format(msg, skillCfg.Name);
@@ -89,7 +89,7 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
                 if (skillCfg == null) {
                     return;
                 }
-                (this[`mSelectBtn${i}`] as Button).normalImageGuid = skillLibCfg.changeIconGuid;
+                (this[`mSelectBtn${i}`] as Button).normalImageGuid = btnDataCfg.btnIcon;
                 (this[`skill${i}`] as TextBlock).text = skillCfg.Name;
             }
         }
