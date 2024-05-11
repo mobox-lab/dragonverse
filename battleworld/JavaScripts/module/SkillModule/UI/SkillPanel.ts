@@ -2,6 +2,7 @@ import { GameConfig } from "../../../config/GameConfig";
 import { EAnalyticsEvents, EPlayerEvents_C } from "../../../const/Enum";
 import { Globaldata } from "../../../const/Globaldata";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
+import { MouseLockController } from "../../../controller/MouseLockController";
 import { EventManager } from "../../../tool/EventManager";
 import { VList } from "../../../tool/NodeList";
 import { TimerTool } from "../../../tool/TimerTool";
@@ -208,6 +209,8 @@ export class SkillPanel extends SkillPanel_Generate {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hideUI(this);
         })
+
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
     private refresh_nodeList() {
@@ -228,6 +231,8 @@ export class SkillPanel extends SkillPanel_Generate {
 
         this.onAction_closePanel.call();
         this.onAction_closePanel.clear();
+
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 
 }

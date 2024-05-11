@@ -112,7 +112,7 @@ export class MainUI extends Main_HUD_Generate {
         // 重置摇杆
         EventManager.instance.add(EPlayerEvents_C.PlayerEvent_ResetJoyStick_C, this.listen_resetJoyStick, this);
         // 玩家段位分变化
-        EventManager.instance.add(EAttributeEvents_C.Attribute_RankScore_Change_C, this.listen_rankScore, this);
+        // EventManager.instance.add(EAttributeEvents_C.Attribute_RankScore_Change_C, this.listen_rankScore, this);
         // // 怒气值变化
         // EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
 
@@ -181,6 +181,13 @@ export class MainUI extends Main_HUD_Generate {
                 }
             });
         }, this);
+
+        this.textKillNum.text = "0";
+
+        KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
+        KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = false));
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => (InputUtil.isLockMouse = true));
     }
     private _authModuleC: AuthModuleC;
 

@@ -1,6 +1,7 @@
 ﻿import { GameConfig } from "../../../config/GameConfig";
 import { EAnalyticsEvents, EAttributeEvents_C, EEquipPartType, EModule_Events } from "../../../const/Enum";
 import { Globaldata } from "../../../const/Globaldata";
+import { MouseLockController } from "../../../controller/MouseLockController";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import { CameraManger } from "../../../tool/CameraManger";
 import { EventManager } from "../../../tool/EventManager";
@@ -87,8 +88,9 @@ export class ShopView extends UIRole_Generate {
         AnalyticsTool.send_ts_page(EPageName.shop);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hideUI(this);
+        });
 
-        })
+        MouseLockController.getInstance().needMouseUnlock();
 
         UIService.getUI(ActionUI)?.setAbilitiesVisible(false);
     }
@@ -109,6 +111,8 @@ export class ShopView extends UIRole_Generate {
         })
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         UIService.getUI(ActionUI)?.setAbilitiesVisible(true);
+
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 
     /**
