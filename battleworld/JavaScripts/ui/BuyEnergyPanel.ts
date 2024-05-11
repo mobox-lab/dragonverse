@@ -66,18 +66,18 @@ export default class BuyEnergyPanel extends BuyPanel_Generate {
     onShow() {
         this.mainCanvas.visibility = SlateVisibility.Visible;
         this.mCanvas_undo.visibility = SlateVisibility.Hidden;
-        //计算下能不能买
-        let currEnergy = ModuleService.getModule(EnergyModuleC).currEnergy();
-        let configs = GameConfig.GoodsTable.getAllElement();
-        configs.forEach(item => {
-            let btn = this._selectButtons.get(item.id);
-            if (!btn) return;
-            if (currEnergy + item.buyCount > Globaldata.ENERGY_MAX) {
-                btn.enable = false;
-            } else {
-                btn.enable = true;
-            }
-        });
+        // //计算下能不能买
+        // let currEnergy = ModuleService.getModule(EnergyModuleC).currEnergy();
+        // let configs = GameConfig.GoodsTable.getAllElement();
+        // configs.forEach(item => {
+        //     let btn = this._selectButtons.get(item.id);
+        //     if (!btn) return;
+        //     if (currEnergy + item.buyCount > Globaldata.ENERGY_MAX) {
+        //         btn.enable = false;
+        //     } else {
+        //         btn.enable = true;
+        //     }
+        // });
         MouseLockController.getInstance().needMouseUnlock();
     }
 
