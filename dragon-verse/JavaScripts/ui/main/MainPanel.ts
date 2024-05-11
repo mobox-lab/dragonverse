@@ -351,8 +351,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                { dist: null, duration: 1e3 },
-                { dist: 0, duration: 0.5e3 },
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
             ],
             1,
         );
@@ -366,8 +366,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                { dist: null, duration: 1e3 },
-                { dist: 0, duration: 0.5e3 },
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
             ],
             1,
         );
@@ -384,11 +384,11 @@ export default class MainPanel extends MainPanel_Generate {
         });
 
         const dist = [
-            { dist: 0.3, duration: 0.1e3 },
-            { dist: 0.4, duration: 0.1e3 },
-            { dist: 0.2, duration: 0.1e3 },
-            { dist: 0.5, duration: 0.1e3 },
-            { dist: 0.3, duration: 0.1e3 },
+            {dist: 0.3, duration: 0.1e3},
+            {dist: 0.4, duration: 0.1e3},
+            {dist: 0.2, duration: 0.1e3},
+            {dist: 0.5, duration: 0.1e3},
+            {dist: 0.3, duration: 0.1e3},
         ];
         this._effectImgTasks.push(
             Waterween.group(
@@ -1054,6 +1054,7 @@ export default class MainPanel extends MainPanel_Generate {
     };
 
     jump() {
+        if (!this.btnJump.enable) return;
         if (!(Player.localPlayer.character.getCurrentState() === CharacterStateType.Swimming)) {
             this._character.changeState(CharacterStateType.Jumping);
         } else {
