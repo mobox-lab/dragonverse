@@ -70,6 +70,7 @@ import BattleWorldAuthModuleData, { AuthModuleC, AuthModuleS } from "./module/au
 import BattleWorldEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
 import { SettingModuleData } from "./module/SetingModule/SettingModuleData";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
+import GameServiceConfig from "./const/GameServiceConfig";
 
 declare global {
     var UE: any;
@@ -119,8 +120,8 @@ export default class GameLauncher extends mw.Script {
     async onStart() {
 
         Globaldata.isOpenGm = this.gmSwitch;
-        Globaldata.isRelease = this.isRelease;
-        Globaldata.isBeta = this.isBeta;
+        GameServiceConfig.isRelease = this.isRelease;
+        GameServiceConfig.isBeta = this.isBeta;
         mwaction;
         // 开启作弊检测
         //this.checkCheat();

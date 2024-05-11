@@ -47,17 +47,6 @@ export class Globaldata {
     public static logLevel: number = 0;
     /**是否开启GM */
     public static isOpenGm: boolean = false;
-
-    /**
-     * 是否 发布.
-     * @type {boolean}
-     */
-    public static isRelease = false;
-    /**
-     * 是否 beta 发布.
-     * @type {boolean}
-     */
-    public static isBeta = false;
     /**相机缩放最大距离 */
     public static targetArmMaxLen: number = 2400;
     /**相机缩放最短距离 */
@@ -549,11 +538,6 @@ export class Globaldata {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Energy
-    /**
-     * 体力容量.
-     * @type {number}
-     */
-    public static readonly ENERGY_MAX: number = 24;
 
     /**
      * 体力系数采样数量.

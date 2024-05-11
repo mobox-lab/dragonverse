@@ -116,7 +116,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         EventManager.instance.add(
             EPlayerEvents_S.PlayerEvent_CalculateSkillLibAdd_S,
             this.listen_recalculate_equipSkill,
-            this
+            this,
         );
         // 俯冲表现开关
         EventManager.instance.add(EPlayerEvents_S.PlayerEvent_DiveVisible_S, this.listen_diveVisible, this);
@@ -124,14 +124,15 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         EventManager.instance.add(
             EPlayerEvents_S.PlayerEvent_ChangePlayerFSMState_S,
             this.listen_playerChangeFSMState,
-            this
+            this,
         );
         // 获取玩家名字，发段位公告
         EventManager.instance.add(EPlayerEvents_S.PlayerEvent_GetPlayerName_S, this.listen_getPlayerName, this);
     }
 
     /**定时器 不受帧率影响  */
-    private onLogicUpdate() {}
+    private onLogicUpdate() {
+    }
 
     protected onUpdate(dt: number): void {
         for (const [key, value] of this.playerProxyMap) {
@@ -160,6 +161,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     private listen_addGold(pId: number, addGold: number, isNotice: boolean = true) {
         this.calculateAttrValue(pId, Attribute.EnumAttributeType.money, addGold);
     }
+
     /**
      * 减少玩家金币
      * @param pId 玩家id
@@ -204,12 +206,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         // 根据类型进行计算结果限制
         switch (attrType) {
-            case Attribute.EnumAttributeType.money:
-                {
-                    endValue = MathUtil.clamp(endValue, 0, Globaldata.playerMaxMoney);
-                    // 同步给属性同步模块
-                    EventManager.instance.call(EAttributeEvents_S.attr_change_s, pId, attrType, endValue);
-                }
+            case Attribute.EnumAttributeType.money: {
+                endValue = MathUtil.clamp(endValue, 0, Globaldata.playerMaxMoney);
+                // 同步给属性同步模块
+                EventManager.instance.call(EAttributeEvents_S.attr_change_s, pId, attrType, endValue);
+            }
                 break;
             default:
                 break;
@@ -414,7 +415,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             releaseId,
             beHurtId,
             motionEffectId,
-            hurtData.atkVal_replace
+            hurtData.atkVal_replace,
         )[0];
 
         if (motionEffectCfg && motionEffectCfg.Damage > 0) {
@@ -429,8 +430,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttrIT(beHurtId, Attribute.EnumAttributeType.hp, Math.abs(atkVal));
             this.dispatchSceneUnitInjure(
                 beHurtId,
-                [{ from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal }],
-                [beHurtId]
+                [{from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal}],
+                [beHurtId],
             );
             return;
         }
@@ -464,7 +465,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         releasePlayer: mw.Player,
         beHurtId: number,
         motionEffectCfg: IMotionEffectElement,
-        hurtData: THurtData
+        hurtData: THurtData,
     ) {
         if (motionEffectCfg == null) {
             return;
@@ -539,7 +540,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             mw.Vector.multiply(
                 Globaldata.tmpVector2,
                 motionEffectCfg.Impulse * impulseCoefficient,
-                Globaldata.tmpVector2
+                Globaldata.tmpVector2,
             );
 
             beHurtUnit.addImpulse(Globaldata.tmpVector2, true);
@@ -607,7 +608,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             true,
             startLoc,
             targetLoc,
-            hurterId
+            hurterId,
         );
     }
 
@@ -639,8 +640,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttr(playerID, Attribute.EnumAttributeType.hp, drainLifeHp);
             this.dispatchSceneUnitInjure(
                 playerID,
-                [{ from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal }],
-                [playerID]
+                [{from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal}],
+                [playerID],
             );
         }
     }
@@ -654,6 +655,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     net_setPlayerAttr(type: Attribute.EnumAttributeType, value: number) {
         this.setPlayerAttr(this.currentPlayerId, type, value);
     }
+
     /**
      * 增加玩家属性（单个）
      */
@@ -661,6 +663,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     net_addPlayerAttr(type: Attribute.EnumAttributeType, value: number) {
         this.addPlayerAttr(this.currentPlayerId, type, value);
     }
+
     /**
      *减少玩家属性（单个）
      */
@@ -669,10 +672,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         type: Attribute.EnumAttributeType,
         value: number,
         sceneID?: number,
-        hurtSourceData: THurtSourceData = null
+        hurtSourceData: THurtSourceData = null,
     ) {
         this.reducePlayerAttr(this.currentPlayerId, type, value, sceneID, EDefineType.none, hurtSourceData);
     }
+
     /**
      *增加玩家属性（多个）
      */
@@ -680,6 +684,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     net_addPlayerAttrByArray(attrArray: Attribute.AttributeArray) {
         this.addPlayerAttrByArray(this.currentPlayerId, attrArray);
     }
+
     /**
      *减少玩家属性（多个）
      */
@@ -700,7 +705,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         playerID: number,
         type: Attribute.EnumAttributeType,
         isAdd: boolean = true,
-        t_normalValue_replace: number = null
+        t_normalValue_replace: number = null,
     ): number {
         let player = Player.getPlayer(playerID);
         if (player == null) {
@@ -792,6 +797,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         }
         this.addPlayerAttrIT(playerID, type, value, true);
     }
+
     /**
      * 增加玩家属性（多个）
      * @param playerID
@@ -852,7 +858,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         value: number,
         sceneID?: number,
         defineType: EDefineType = EDefineType.none,
-        hurtSourceData: THurtSourceData = null
+        hurtSourceData: THurtSourceData = null,
     ) {
         let player = Player.getPlayer(playerID);
         if (player == null) {
@@ -957,7 +963,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         playerID: number,
         type: Attribute.EnumAttributeType,
         value: number,
-        isSave: boolean = true
+        isSave: boolean = true,
     ) {
         let player = Player.getPlayer(playerID);
         if (player == null) {
@@ -980,13 +986,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             data.setAttrValue(type, calValue);
 
             let newRank = PlayerManager.instance.getRankLevel(calValue);
-            ModuleService.getModule(AuthModuleS).reportBWRankData(playerID, newRank, calValue, 1);
+            ModuleService.getModule(AuthModuleS).reportBattleWorldRankData(playerID, newRank, calValue, 1);
 
             EventManager.instance.call(
                 EAttributeEvents_S.attr_change_s,
                 playerID,
                 Attribute.EnumAttributeType.rankScore,
-                data.getAttrValue(Attribute.EnumAttributeType.rankScore)
+                data.getAttrValue(Attribute.EnumAttributeType.rankScore),
             );
             return;
         }
@@ -1018,7 +1024,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         playerID: number,
         type: Attribute.EnumAttributeType,
         value: number,
-        isSave: boolean = true
+        isSave: boolean = true,
     ) {
         let player = Player.getPlayer(playerID);
         if (player == null) {
@@ -1056,7 +1062,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                 EAttributeEvents_S.attr_change_s,
                 playerID,
                 Attribute.EnumAttributeType.money,
-                data.getAttrValue(Attribute.EnumAttributeType.money)
+                data.getAttrValue(Attribute.EnumAttributeType.money),
             );
 
             return;
@@ -1064,7 +1070,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         // 段位分处理
         if (type == Attribute.EnumAttributeType.rankScore) {
             value = Math.round(
-                Math.min(value, Globaldata.maxRankScore - data.getAttrValue(Attribute.EnumAttributeType.dayRankScore))
+                Math.min(value, Globaldata.maxRankScore - data.getAttrValue(Attribute.EnumAttributeType.dayRankScore)),
             );
             this.addPlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, value);
             let oldRank = PlayerManager.instance.getRankLevel(curAttrValue);
@@ -1073,12 +1079,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
             //升段位发公告
             let newRank = PlayerManager.instance.getRankLevel(curAttrValue);
-            ModuleService.getModule(AuthModuleS).reportBWRankData(playerID, newRank, curAttrValue, 1);
+            ModuleService.getModule(AuthModuleS).reportBattleWorldRankData(playerID, newRank, curAttrValue, 1);
             if (newRank > oldRank) {
                 this.getAllClient().net_startNotice(
                     ERankNoticeType.LevelUp,
                     newRank,
-                    this.mAttribute.getAttrValue(playerID, Attribute.EnumAttributeType.playerName)
+                    this.mAttribute.getAttrValue(playerID, Attribute.EnumAttributeType.playerName),
                 );
             }
             this.checkRankReward(playerID);
@@ -1087,7 +1093,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                 EAttributeEvents_S.attr_change_s,
                 playerID,
                 Attribute.EnumAttributeType.rankScore,
-                data.getAttrValue(Attribute.EnumAttributeType.rankScore)
+                data.getAttrValue(Attribute.EnumAttributeType.rankScore),
             );
             return;
         }
@@ -1122,7 +1128,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         sceneID?: number,
         defineType: EDefineType = EDefineType.none,
         isasync: boolean = true,
-        hurtSourceData: THurtSourceData = null
+        hurtSourceData: THurtSourceData = null,
     ) {
         //oTrace("reducePlayerAttrIT______________", playerID, type, value, sceneID, defineType, isasync)
         let player = Player.getPlayer(playerID);
@@ -1190,7 +1196,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                     if (tureDamage) {
                         let tureDamageAdd = DamageManger.instance.getAttr(
                             sceneID,
-                            Attribute.EnumAttributeType.tureDamageAdd
+                            Attribute.EnumAttributeType.tureDamageAdd,
                         );
                         defVal += tureDamage + tureDamageAdd;
                         //console.error(`defVal_________________________真实伤害2${defVal}`, tureDamage, tureDamageAdd);
@@ -1244,7 +1250,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                                 EAttributeEvents_S.AttrEvent_CalculateAttr_S,
                                 sceneID,
                                 Attribute.EnumAttributeType.angerValue,
-                                angleValue
+                                angleValue,
                             );
                         }
 
@@ -1255,7 +1261,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                                 EAttributeEvents_S.AttrEvent_CalculateAttr_S,
                                 playerID,
                                 Attribute.EnumAttributeType.angerValue,
-                                angleValue
+                                angleValue,
                             );
                         }
                     }
@@ -1291,7 +1297,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                     killCount,
                     hurtSourceData.skillId,
                     surviveTime,
-                    player
+                    player,
                 );
             }
 
@@ -1333,7 +1339,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         playerID: number,
         type: Attribute.EnumAttributeType,
         value: number,
-        isasync: boolean = true
+        isasync: boolean = true,
     ) {
         //oTrace("addPlayerAttrIT______________", playerID, type, value, isasync)
 
@@ -1376,6 +1382,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         //oTrace(`getHpPercent______________`, maxHp, pecenthp)
         return pecenthp;
     }
+
     /**
      * 重新计算玩家 血量
      * @param playerID
@@ -1405,11 +1412,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         oTrace(`recalculateHpEnergey______true`, this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp));
         attrVo.setAttribute(
             Attribute.EnumAttributeType.hp,
-            this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp)
+            this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp),
         );
         attrVo.setAttribute(
             Attribute.EnumAttributeType.energy,
-            this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxEnergy)
+            this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxEnergy),
         );
 
         this.syncChangePlayerAttr(playerID, Attribute.EnumAttributeType.energy);
@@ -1545,7 +1552,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         player: mw.Player,
         isrecalculateHpEnergy: boolean = true,
         nowjobId: number = null,
-        prejobId: number = null
+        prejobId: number = null,
     ) {
         //oTrace(`recalculateAllAttribute______________${player.playerId}`, isrecalculateHpEnergy, nowjobId, prejobId);
 
@@ -1591,11 +1598,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         if (isrecalculateHpEnergy) {
             attrVo.setAttribute(
                 Attribute.EnumAttributeType.hp,
-                this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp)
+                this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp),
             );
             attrVo.setAttribute(
                 Attribute.EnumAttributeType.energy,
-                this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxEnergy)
+                this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxEnergy),
             );
         } else {
             if (attroPre) {
@@ -1831,7 +1838,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                 EPlayerEvents_S.PlayerEvent_CalculateAttr_S,
                 sceneID,
                 Attribute.EnumAttributeType.weaponSkillPoints,
-                1
+                1,
             );
 
             // 击杀人的武器id
@@ -1843,7 +1850,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                 sceneID,
                 killerWeaponId,
                 playerID,
-                pData.getKillCount()
+                pData.getKillCount(),
             );
             // 击杀特效
             this.playKillEffect(sceneID, player);
@@ -1863,7 +1870,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             EAttributeEvents_S.AttrEvent_CalculateAttr_S,
             killerId,
             Attribute.EnumAttributeType.massacreValue,
-            Globaldata.massacre_killPlayerAddValue
+            Globaldata.massacre_killPlayerAddValue,
         );
 
         // 增加悬赏金币
@@ -1900,7 +1907,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             EAttributeEvents_S.attr_change_s,
             playerID,
             Attribute.EnumAttributeType.angerValue,
-            0
+            0,
         );
 
         this.stop_recover_Hp(playerID);
@@ -1915,7 +1922,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this.getClient(playerID).net_playerDead(
             0,
             sceneID,
-            this.getPlayerAttr(playerID, Attribute.EnumAttributeType.rankScore)
+            this.getPlayerAttr(playerID, Attribute.EnumAttributeType.rankScore),
         );
 
         // 通知所有玩家该玩家死亡了
@@ -1932,6 +1939,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             tmpClient.net_otherPlayerDead(playerID);
         }
     }
+
     // 玩家请求复活
     public request_resurgence(playerID: number, sceneID: number) {
         let player = Player.getPlayer(playerID);
@@ -1944,7 +1952,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             EAttributeEvents_S.attr_change_s,
             playerID,
             Attribute.EnumAttributeType.isCanChangeWeapon,
-            0
+            0,
         );
 
         this.deadPlayer.delete(playerID);
@@ -1956,14 +1964,14 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         let attrVo = this.playerAttributeMap.get(playerID);
         attrVo.setAttribute(
             Attribute.EnumAttributeType.hp,
-            this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp)
+            this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp),
         );
 
         EventManager.instance.call(
             EAttributeEvents_S.attr_change_s,
             playerID,
             Attribute.EnumAttributeType.isPlayerHeadUI,
-            1
+            1,
         );
 
         // 清空杀戮值
@@ -1971,7 +1979,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             EAttributeEvents_S.attr_change_s,
             playerID,
             Attribute.EnumAttributeType.massacreValue,
-            0
+            0,
         );
 
         // 传送玩家位置
@@ -2033,6 +2041,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         this.hpRecoverIntreval.set(playerID, key);
     }
+
     /**
      * 停止恢复血量
      */
@@ -2050,6 +2059,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         TimeUtil.clearInterval(key);
         this.hpRecoverIntreval.delete(playerID);
     }
+
     /**
      * 血量变化修改战斗属性
      * 玩家血量相关属性发生变化，刷新玩家战斗状态，重新同步玩家血量数据
@@ -2066,6 +2076,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         pData.state = null;
         this.checkPlayerRestTick(playerID);
     }
+
     /**
      * 玩家受击脱战后1秒恢复生命值1%的血量
      * 1 玩家攻击怪或被怪攻击，进入战斗状态
@@ -2081,6 +2092,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.checkPlayerRestTick(player);
         }
     }
+
     private checkPlayerRestTick(playerID: number) {
         if (!Player.getPlayer(playerID)) {
             return;
@@ -2192,16 +2204,15 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         playerID: number,
         type: Attribute.EnumAttributeType,
         addType: EItemAddType,
-        value: number
+        value: number,
     ) {
         switch (addType) {
-            case EItemAddType.per:
-                {
-                    if (type == Attribute.EnumAttributeType.hp) {
-                        let maxHp = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp);
-                        value = maxHp * value;
-                    }
+            case EItemAddType.per: {
+                if (type == Attribute.EnumAttributeType.hp) {
+                    let maxHp = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp);
+                    value = maxHp * value;
                 }
+            }
                 break;
             default:
                 break;
@@ -2283,9 +2294,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this.reducePlayerAttr(
             deadId,
             Attribute.EnumAttributeType.rankScore,
-            Math.round(calScore * Globaldata.rankScoreRate)
+            Math.round(calScore * Globaldata.rankScoreRate),
         );
     }
+
     /**
      * 检查段位，解锁段位奖励
      */
@@ -2304,6 +2316,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         let id = PlayerManager.instance.getRankLevel(rankScore);
         return id;
     }
+
     /**
      * 获得玩家名字时发段位公告
      */

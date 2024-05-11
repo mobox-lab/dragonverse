@@ -18,6 +18,7 @@ import BuffEnergyTips_Generate from "../../ui-generate/common/BuffEnergyTips_gen
 import GToolkit from "../../util/GToolkit";
 import { JumpGamePanel } from "../../ui/JumpGamePanel";
 import { Task_ModuleC } from "../Task/TaskModuleC";
+import Gtk from "../../util/GToolkit";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -86,7 +87,7 @@ export class P_HudUI extends Hud_Generate {
         this.mBtn_skid.onClicked.add(() => {
             this.onSkateboardAction.call();
         });
-        this.mRefresh_Btn.onClicked.add(() => this.authModuleC?.queryCurrency());
+        // this.mRefresh_Btn.onClicked.add(() => this.authModuleC?.queryCurrency());
         // this.mBtn_petspeed.visibility = mw.SlateVisibility.Visible;
         let isEnable: boolean = true;
         // this.mBtn_petspeed.touchMethod = (mw.ButtonTouchMethod.DownAndUp);
@@ -129,14 +130,17 @@ export class P_HudUI extends Hud_Generate {
             this.mCanvas_coin.renderScale = value;
         }).easing(cubicBezier(bezier[0], bezier[1], bezier[2], bezier[3])).yoyo(true).repeat(1);
         this.mBtn_Transmit.touchMethod = (mw.ButtonTouchMethod.DownAndUp);
-        this.mText_stamina2.text = GlobalData.Energy.ENERGY_MAX.toString();
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mText_stamina2,
+                ModuleService.getModule(AuthModuleC).staminaLimit.data.toString()));
+
         this.setGMBtn();
         this.startFastTranBtnTween();
-        bindYoact(() => {
-            GToolkit.trySetText(this.mText_Mcoin, GlobalData.Global.isRelease || GlobalData.Global.isBeta ?
-                utils.formatNumber(this.authModuleC?.currency.count) :
-                ((this.authModuleC?.currency.count ?? 0).toFixed(2).toString()));
-        });
+        // bindYoact(() => {
+        //     GToolkit.trySetText(this.mText_Mcoin, GlobalData.Global.isRelease || GlobalData.Global.isBeta ?
+        //         utils.formatNumber(this.authModuleC?.currency.count) :
+        //         ((this.authModuleC?.currency.count ?? 0).toFixed(2).toString()));
+        // });
         this.jumpRoomBtn.onClicked.add(() => {
             UIService.show(JumpGamePanel);
         });
@@ -242,7 +246,7 @@ export class P_HudUI extends Hud_Generate {
         let startAngle = GlobalData.TweenFastTranBtn.startAngle;
         let endAngle = GlobalData.TweenFastTranBtn.endAngle;
         let time = GlobalData.TweenFastTranBtn.tweenTime;
-        this.leftToRightTween = new mw.Tween({ angle: startAngle }).to({ angle: endAngle }, time * 1000)
+        this.leftToRightTween = new mw.Tween({angle: startAngle}).to({angle: endAngle}, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -252,7 +256,7 @@ export class P_HudUI extends Hud_Generate {
                 }
             })
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
-        this.rightToLeftTween = new mw.Tween({ angle: endAngle }).to({ angle: startAngle }, time * 1000)
+        this.rightToLeftTween = new mw.Tween({angle: endAngle}).to({angle: startAngle}, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })

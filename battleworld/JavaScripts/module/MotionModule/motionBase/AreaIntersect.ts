@@ -1,4 +1,4 @@
-import { PlayerManagerExtesion, } from '../../../Modified027Editor/ModifiedPlayer';
+import { PlayerManagerExtesion } from "../../../Modified027Editor/ModifiedPlayer";
 import { oTraceError } from "odin";
 import { GameConfig } from "../../../config/GameConfig";
 import { IMotionEffectElement } from "../../../config/MotionEffect";
@@ -18,18 +18,17 @@ import { MotionUtil } from "../MotionUtil";
 import { MotionEffectManager } from "./MotionEffectManager";
 import { Constants } from "../../../tool/Constants";
 import { Globaldata } from "../../../const/Globaldata";
-import { AttributeModuleC } from '../../AttributeModule/AttributeModuleC';
-import { Attribute } from '../../PlayerModule/sub_attribute/AttributeValueObject';
-import { THurtData } from '../../PlayerModule/PlayerModuleS';
-import { util } from '../../../tool/Utils';
-import { MascotModuleC } from '../../npc/mascotNpc/MascotModuleC';
-import { UnitManager } from '../../npc/UnitManager';
-
-
+import { AttributeModuleC } from "../../AttributeModule/AttributeModuleC";
+import { Attribute } from "../../PlayerModule/sub_attribute/AttributeValueObject";
+import { THurtData } from "../../PlayerModule/PlayerModuleS";
+import { util } from "../../../tool/Utils";
+import { MascotModuleC } from "../../npc/mascotNpc/MascotModuleC";
+import { UnitManager } from "../../npc/UnitManager";
+import GameServiceConfig from "../../../const/GameServiceConfig";
 
 /**
  * 区域检测
- * 
+ *
  */
 export class AreaIntersect {
     public static _areaArrs: AreaIntersect[] = [];
@@ -57,16 +56,14 @@ export class AreaIntersect {
         this._areaPool.push(area);
     }
 
-
     private _endKey: any = null;
     /**伤害判定该key */
     private _hurtCheckKey: any = null;
 
-
     private _areaLoc: mw.Vector = null;
     private _areaRot: mw.Rotation = null;
 
-    private _motionEffectCfg: IMotionEffectElement = null
+    private _motionEffectCfg: IMotionEffectElement = null;
 
     /**区域检测开始时间 */
     private _checkTimeStamp: number = 0;
@@ -158,7 +155,6 @@ export class AreaIntersect {
             AreaIntersect.pushToPool(this);
         }
 
-
     }
 
     /**检测回收 容错处理   往后延1秒*/
@@ -172,8 +168,6 @@ export class AreaIntersect {
         AreaIntersect.pushToPool(this);
 
     }
-
-
 
     /**区域检测 */
     protected async areaIntersect(form: mw.GameObject | mw.Vector) {
@@ -200,25 +194,22 @@ export class AreaIntersect {
             skillId: this.bindSkillId,
             motionId: this._motionId,
             motionEffectId: this._areaCheckData.effectid,
-        }
+        };
 
         switch (this._areaCheckData.type) {
-            case 0:
-                {
-                    hurtData.maxCheckDis = util.calculateLongestDiagonalLength(this._areaCheckData.LWH.x, this._areaCheckData.LWH.y, this._areaCheckData.LWH.z);
-                    hurtData.triggerPos = triggerLoc;
-                }
+            case 0: {
+                hurtData.maxCheckDis = util.calculateLongestDiagonalLength(this._areaCheckData.LWH.x, this._areaCheckData.LWH.y, this._areaCheckData.LWH.z);
+                hurtData.triggerPos = triggerLoc;
+            }
                 break;
-            case 1:
-                {
-                    hurtData.maxCheckDis = this._areaCheckData.range;
-                    hurtData.triggerPos = triggerLoc;
-                }
+            case 1: {
+                hurtData.maxCheckDis = this._areaCheckData.range;
+                hurtData.triggerPos = triggerLoc;
+            }
                 break;
-            case 2:
-                {
-                    hurtData.triggerPos = this._areaCheckData.offsetLoc;
-                }
+            case 2: {
+                hurtData.triggerPos = this._areaCheckData.offsetLoc;
+            }
                 break;
             default:
                 break;
@@ -237,11 +228,9 @@ export class AreaIntersect {
         }
     }
 
-
-
     /**
      * 过滤攻击目标到数组中
-     * 
+     *
      * @returns 筛选目标数组id
      */
     private async filter_attacks(form: mw.GameObject | mw.Vector) {
@@ -254,7 +243,7 @@ export class AreaIntersect {
             return null;
         }
         //可视化trigger
-        if (SystemUtil.isPIE && !Globaldata.isRelease && Globaldata.showSkillRange) {
+        if (SystemUtil.isPIE && !GameServiceConfig.isRelease && Globaldata.showSkillRange) {
 
             if (this._areaCheckData.type === 0) {
                 //计算八个顶点
@@ -280,8 +269,6 @@ export class AreaIntersect {
                 QueryUtil.lineTrace(p2, p3, true, true);
                 QueryUtil.lineTrace(p3, p8, true, true);
 
-
-
                 // GameObject.asyncSpawn("197386", { transform: trigger.worldTransform.clone() }).then((obj) => {
                 //     let model = obj as Model;
                 //     model.setOutline(true, LinearColor.red, 5);
@@ -295,7 +282,6 @@ export class AreaIntersect {
                 QueryUtil.sphereOverlap(trigger.worldTransform.position, trigger.worldTransform.scale.x * 50, true);
             }
         }
-
 
         // 可破坏交互物
         let destroys = RP_DestroyManager.instance.getCurAreaDestroys();
@@ -342,7 +328,7 @@ export class AreaIntersect {
             let players = MotionUtil.getCurAreaPlayers();
             for (let index = 0; index < players.length; index++) {
                 let player = players[index];
-                let tentativeTrigger = player.character
+                let tentativeTrigger = player.character;
                 if (player.character == null) continue;
                 if (!trigger.checkInArea(tentativeTrigger)) continue;
 
@@ -362,8 +348,6 @@ export class AreaIntersect {
 
         return triggerLoc;
     }
-
-
 
     /**
      * 绑定触发器
@@ -397,7 +381,7 @@ export class AreaIntersect {
                 }
             }
 
-            trigger.localTransform.position = (this._areaCheckData.offsetLoc)
+            trigger.localTransform.position = (this._areaCheckData.offsetLoc);
             trigger.localTransform.rotation = (new mw.Rotation(this._areaCheckData.offsetRot));
         } else {
             trigger.worldTransform.position = target as mw.Vector;
@@ -424,12 +408,11 @@ export class AreaIntersect {
         return trigger;
     }
 
-
     /**
      * 排除攻击目标
-     * @param area 
-     * @param sceneUnitID 
-     * @returns 如果被过滤返回true 
+     * @param area
+     * @param sceneUnitID
+     * @returns 如果被过滤返回true
      */
     private filter_enemyCheck(sceneUnitID: number) {
         // 法术场类型 才做校验
@@ -451,21 +434,21 @@ export class AreaIntersect {
                 case 0:// 只命中自己
                     return sceneUnitID != releasePlayerId;
                 case 1:// 命中除自己外所有目标（npc，其它玩家）
-                    {
-                        if (sceneUnitID == releasePlayerId) {
-                            return true;
-                        } else {
-                            return false;
-                        }
+                {
+                    if (sceneUnitID == releasePlayerId) {
+                        return true;
+                    } else {
+                        return false;
                     }
+                }
                 case 2:// 友方包含自己( 其它玩家、玩家自己 )
-                    {
-                        if (sceneUnitID == releasePlayerId) {
-                            return false;
-                        } else {
-                            return true;
-                        }
+                {
+                    if (sceneUnitID == releasePlayerId) {
+                        return false;
+                    } else {
+                        return true;
                     }
+                }
                 case 3:// 友方不包含自己 ( 其它玩家 )
                     return sceneUnitID > 0 && sceneUnitID == releasePlayerId;
                 case 4:// 所有人
@@ -475,10 +458,6 @@ export class AreaIntersect {
             }
         }
     }
-
-
-
-
 
     /**清理区域检测key */
     private clear_areaCheckKey() {
