@@ -100,9 +100,8 @@ export class MessageBox extends MessageBox_Generate {
         MouseLockController.getInstance().needMouseUnlock();
     }
 
-    public hide() {
+    public onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
-        mw.UIService.hideUI(this);
         MouseLockController.getInstance().cancelMouseUnlock();
     }
 }
