@@ -1,17 +1,132 @@
 import CryptoJS from "crypto-js";
-import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
-import FixedQueue from "../../depend/queue/FixedQueue";
-import i18n from "../../language/i18n";
-import GToolkit, { Expression, GtkTypes, Regulator } from "../../util/GToolkit";
-import noReply = mwext.Decorator.noReply;
-import { TimeManager } from "../../controller/TimeManager";
-import GlobalTips from "../../depend/global-tips/GlobalTips";
-import Gtk from "../../util/GToolkit";
+import Gtk, { Expression } from "../../util/GToolkit";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import { Yoact } from "../../depend/yoact/Yoact";
+import { AddGMCommand } from "module_gm";
+import noReply = mwext.Decorator.noReply;
 import createYoact = Yoact.createYoact;
+
+//#region TTD & GM
+AddGMCommand(
+    "refresh dragon ball | Auth",
+    undefined,
+    (player, args) => {
+        Log4Ts.log(AuthModuleS, `query dragon ball...`);
+        mwext.ModuleService
+            .getModule(AuthModuleS)
+            .queryUserDragonBall(player.playerId)
+            .then((value) => {
+                Log4Ts.log(
+                    AuthModuleS,
+                    `query dragon ball success.`,
+                    `user dragon ball: ${JSON.stringify(value)}`,
+                );
+            });
+    },
+    "Root");
+
+AddGMCommand(
+    "query user dragon | Auth",
+    undefined,
+    (player, args) => {
+        Log4Ts.log(AuthModuleS, `query user dragon...`);
+        mwext.ModuleService
+            .getModule(AuthModuleS)
+            .queryUserDragon(player.playerId)
+            .then((value) => {
+                Log4Ts.log(
+                    AuthModuleS,
+                    `query user dragon success.`,
+                    `user dragons: ${JSON.stringify(value)}`,
+                );
+            });
+    },
+    "Root");
+
+AddGMCommand(
+    "request catch dragon | Auth",
+    undefined,
+    (player, args) => {
+        Log4Ts.log(AuthModuleS, `try catch dragon...`);
+        mwext.ModuleService
+            .getModule(AuthModuleS)
+            .queryRegisterStaminaLimit(player.playerId)
+            .then((value) => {
+                Log4Ts.log(
+                    AuthModuleS,
+                    `try catch dragon success.`,
+                    `user dragon ball: ${JSON.stringify(value)}`,
+                );
+            });
+    },
+    "Root");
+
+AddGMCommand(
+    "refresh stamina limit | Auth",
+    undefined,
+    (player, args) => {
+        Log4Ts.log(AuthModuleS, `query stamina limit...`);
+        mwext.ModuleService
+            .getModule(AuthModuleS)
+            .queryRegisterStaminaLimit(player.playerId)
+            .then(() => {
+                Log4Ts.log(
+                    AuthModuleS,
+                    `query stamina limit success.`,
+                    `current stamina limit: ${mwext.ModuleService.getModule(AuthModuleS).playerStaminaLimitMap.get(player.playerId)}`,
+                );
+            });
+    },
+    "Root");
+
+AddGMCommand(
+    "report ps | Auth",
+    undefined,
+    (player, args) => {
+        Log4Ts.log(AuthModuleS, `report ps rank data...`);
+        mwext.ModuleService
+            .getModule(AuthModuleS)
+            .reportPetSimulatorRankData(
+                player.playerId,
+                "pig",
+                0,
+                999,
+                Date.now(),
+                0,
+            )
+            .then(() => {
+                Log4Ts.log(
+                    AuthModuleS,
+                    `report ps rank data success.`,
+                );
+            });
+    },
+    "Root");
+
+AddGMCommand(
+    "report bw | Auth",
+    undefined,
+    (player, args) => {
+        Log4Ts.log(AuthModuleS, `report ps rank data...`);
+        mwext.ModuleService
+            .getModule(AuthModuleS)
+            .reportBattleWorldRankData(
+                player.playerId,
+                0,
+                999,
+                0,
+            )
+            .then(() => {
+                Log4Ts.log(
+                    AuthModuleS,
+                    `report bw rank data success.`,
+                );
+            });
+    },
+    "Root");
+//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
 
@@ -48,14 +163,14 @@ interface EncryptedData {
 /**
  * 一般用户数据查询请求参数.
  */
-interface UserDataQueryRequestParam {
+interface UserDataQueryReq {
     userId: string;
 }
 
 /**
  * 一般查询返回数据.
  */
-interface QueryResponse<D = undefined> {
+interface QueryResp<D = undefined> {
     code: number,
     message: string,
     data?: D
@@ -82,9 +197,9 @@ interface QueryStaminaLimitRespData {
 }
 
 /**
- * 体力上限查询请求参数.
+ * 汇报 宠物模拟器排行榜 请求参数.
  */
-interface PetSimulatorRankDataRequestParam {
+interface PetSimulatorRankDataReq {
     userId: string;
     userName: string;
     userAvatar: string;
@@ -96,6 +211,90 @@ interface PetSimulatorRankDataRequestParam {
      * 宠物获得时间. s
      */
     recordTime: number;
+}
+
+/**
+ * 汇报 无限乱斗排行榜 请求参数.
+ */
+interface UpdateBattleWorldRankDataReq {
+    userId: string;
+    userName: string;
+    userAvatar: string;
+    grade: number;
+    gradeOriginalPower: number;
+    round: number;
+    recordTime: number;
+}
+
+/**
+ * 抓根宝 返回值.
+ */
+interface DragonBallRespData {
+    /**
+     * 未领取.
+     */
+    unclaim: 0,
+
+    /**
+     * 总发放.
+     */
+    total: 4,
+
+    /**
+     * 未使用.
+     */
+    unUsed: 0
+}
+
+/**
+ * 抓取龙 请求参数.
+ */
+interface CatchDragonReq extends UserDataQueryReq {
+    /**
+     * DragonId.
+     */
+    dragonPalId: number;
+
+    /**
+     * 客户端抓取时间. ms
+     */
+    catchTimeStamp: number;
+
+    /**
+     * 来源地.
+     * @desc 游戏或场景
+     */
+    attributionType: "pge" | "game" | string;
+}
+
+/**
+ * 查询 用户龙 返回值.
+ */
+interface UserDragonRespData {
+    /**
+     * 用户龙列表.
+     */
+    DragonPalList: {
+        /**
+         * DragonId.
+         */
+        dragonPalId: number,
+
+        /**
+         * 数量.
+         */
+        amount: number,
+
+        /**
+         * 抓取时间. ms
+         */
+        catchTimeStamp: number,
+
+        /**
+         * 是否休眠.
+         */
+        sleep: boolean
+    };
 }
 
 //#endregion
@@ -179,7 +378,6 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
         this.server.net_getToken().then((value) => {
             this._originToken = value;
         });
-        this.releasePlayer();
     }
 
     protected onDestroy(): void {
@@ -196,19 +394,8 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     //#region Method
 
-    private generateSaltToken(): SaltToken {
-        const time = TimeManager.getInstance().currentTime;
-        return new SaltToken(AuthModuleS.encryptToken(this._originToken, time), time);
-    }
-
-    /**
-     * 放行玩家.
-     * 容忍重复调用.
-     * @private
-     */
-    private releasePlayer() {
-        logState(AuthModuleC, "log", `release player. enjoy!`, true, Player.localPlayer.playerId);
-        Event.dispatchToLocal(EventDefine.PlayerEnableEnter);
+    public refreshStaminaLimit() {
+        this.server.net_requestRefreshStaminaLimit();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -231,73 +418,133 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly TIME_TOLERATE: number = 1e3 * 10;
 
     /**
-     * 测试用 P12 端 Url.
+     * 测试用 P12 端 域名.
      */
-    private static readonly TEST_P12_DOMAIN = "https://modragon-api-test.mobox.app";
+    private static readonly TEST_P12_DOMAIN = "http://modragon-api-test.mobox.app";
 
     /**
-     * 发布用 P12 端 Url.
+     * 发布用 P12 端 域名.
      */
-    private static readonly RELEASE_P12_DOMAIN = "https://modragon-api.mobox.app";
+    private static readonly RELEASE_P12_DOMAIN = "http://modragon-api.mobox.app";
 
     /**
-     * PGE 查询 体力上限 Uri.
+     * 查询 体力上限 Uri.
      * @private
      */
-    private static readonly PGE_STAMINA_LIMIT_URI = "/pge-game/stamina/obtain-in-game";
+    private static readonly STAMINA_LIMIT_URI = "/pge-game/stamina/obtain-in-game";
 
     /**
-     * PGE 汇报 宠物模拟器排行榜 Uri.
+     * 汇报 宠物模拟器排行榜 Uri.
      * @private
      */
-    private static readonly PGE_P_S_RANK_REPORT_URI = "/pge-game/rank/pet/update";
+    private static readonly P_S_RANK_REPORT_URI = "/pge-game/rank/pet/update";
 
     /**
-     * PGE 汇报 无限乱斗排行榜 Uri.
+     * 汇报 无限乱斗排行榜 Uri.
      * @private
      */
-    private static readonly PGE_B_W_RANK_REPORT_URI = "/pge-game/rank/fight/update";
+    private static readonly B_W_RANK_REPORT_URI = "/pge-game/rank/fight/update";
+
+    /**
+     * 查询 用户 抓根宝 信息 Uri.
+     * @private
+     */
+    private static readonly QUERY_DRAGON_BALL_DATA_URI = "/pge-game/dragon-verse-capture-ball/get-dragon-capture-ball";
+
+    /**
+     * 请求 抓龙 Uri.
+     * @private
+     */
+    private static readonly CATCH_DRAGON_URI = "/pge-game/dragon-verse-pal/get-pal";
+
+    /**
+     * 查询 用户背包龙 Uri.
+     * @private
+     */
+    private static readonly QUERY_USER_DRAGON_URI = "/pge-game/dragon-verse-pal/get-user-dragon-pal";
+
+    /**
+     * 测试用 查询 用户 抓根宝 信息 Url.
+     */
+    private static get TEST_QUERY_DRAGON_BALL_DATA_URL() {
+        return this.TEST_P12_DOMAIN + this.QUERY_DRAGON_BALL_DATA_URI;
+    }
+
+    /**
+     * 发布用 查询 用户 抓根宝 信息 Url.
+     */
+    private static get RELEASE_QUERY_DRAGON_BALL_DATA_URL() {
+        return this.RELEASE_P12_DOMAIN + this.QUERY_DRAGON_BALL_DATA_URI;
+    }
+
+    /**
+     * 测试用 请求 抓龙 Url.
+     */
+    private static get TEST_CATCH_DRAGON_URL() {
+        return this.TEST_P12_DOMAIN + this.CATCH_DRAGON_URI;
+    }
+
+    /**
+     * 发布用 请求 抓龙 Url.
+     */
+    private static get RELEASE_CATCH_DRAGON_URL() {
+        return this.RELEASE_P12_DOMAIN + this.CATCH_DRAGON_URI;
+    }
+
+    /**
+     * 测试用 查询 用户背包龙 Url.
+     */
+    private static get TEST_QUERY_USER_DRAGON_URL() {
+        return this.TEST_P12_DOMAIN + this.QUERY_USER_DRAGON_URI;
+    }
+
+    /**
+     * 发布用 查询 用户背包龙 Url.
+     */
+    private static get RELEASE_QUERY_USER_DRAGON_URL() {
+        return this.RELEASE_P12_DOMAIN + this.QUERY_USER_DRAGON_URI;
+    }
 
     /**
      * 测试用 体力上限查询 Url.
      */
-    private static get TEST_PGE_STAMINA_LIMIT_URL() {
-        return this.TEST_P12_DOMAIN + this.PGE_STAMINA_LIMIT_URI;
+    private static get TEST_STAMINA_LIMIT_URL() {
+        return this.TEST_P12_DOMAIN + this.STAMINA_LIMIT_URI;
     }
 
     /**
      * 发布用 体力上限查询 Url.
      */
-    private static get RELEASE_PGE_STAMINA_LIMIT_URL() {
-        return this.RELEASE_P12_DOMAIN + this.PGE_STAMINA_LIMIT_URI;
+    private static get RELEASE_STAMINA_LIMIT_URL() {
+        return this.RELEASE_P12_DOMAIN + this.STAMINA_LIMIT_URI;
     }
 
     /**
      * 测试用 汇报 宠物模拟器排行榜 Url.
      */
-    private static get TEST_PGE_P_S_RANK_REPORT_URL() {
-        return this.TEST_P12_DOMAIN + this.PGE_P_S_RANK_REPORT_URI;
+    private static get TEST_P_S_RANK_REPORT_URL() {
+        return this.TEST_P12_DOMAIN + this.P_S_RANK_REPORT_URI;
     }
 
     /**
      * 发布用 汇报 宠物模拟器排行榜 Url.
      */
-    private static get RELEASE_PGE_P_S_RANK_REPORT_URL() {
-        return this.RELEASE_P12_DOMAIN + this.PGE_P_S_RANK_REPORT_URI;
+    private static get RELEASE_P_S_RANK_REPORT_URL() {
+        return this.RELEASE_P12_DOMAIN + this.P_S_RANK_REPORT_URI;
     }
 
     /**
      * 测试用 汇报 无限乱斗排行榜 Url.
      */
-    private static get TEST_PGE_B_W_RANK_REPORT_URL() {
-        return this.TEST_P12_DOMAIN + this.PGE_B_W_RANK_REPORT_URI;
+    private static get TEST_B_W_RANK_REPORT_URL() {
+        return this.TEST_P12_DOMAIN + this.B_W_RANK_REPORT_URI;
     }
 
     /**
      * 发布用 汇报 无限乱斗排行榜 Url.
      */
-    private static get RELEASE_PGE_B_W_RANK_REPORT_URL() {
-        return this.RELEASE_P12_DOMAIN + this.PGE_B_W_RANK_REPORT_URI;
+    private static get RELEASE_B_W_RANK_REPORT_URL() {
+        return this.RELEASE_P12_DOMAIN + this.B_W_RANK_REPORT_URI;
     }
 
     /**
@@ -306,7 +553,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @param saltTime
      */
     public static encryptToken(token: string, saltTime: number): string {
-        if (GToolkit.isNullOrEmpty(token)) {
+        if (Gtk.isNullOrEmpty(token)) {
             Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
             return null;
         }
@@ -325,7 +572,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @param saltTime
      */
     public static decryptToken(saltToken: string, saltTime: number): string {
-        if (GToolkit.isNullOrEmpty(saltToken)) {
+        if (Gtk.isNullOrEmpty(saltToken)) {
             return null;
         }
         //TODO_LviatYi decrypt token with time salt
@@ -349,7 +596,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     public playerStaminaLimitMap: Map<number, number> = new Map();
 
     /**
-     * 玩家体力恢复预期时长表.
+     * 玩家体力恢复预期时长表. s
      */
     public playerStaminaRecoveryMap: Map<number, number> = new Map();
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -360,8 +607,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     protected onJStart(): void {
-        AuthModuleS.getSensitiveData();
         //#region Member init
+        AuthModuleS.getSensitiveData();
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
@@ -399,12 +646,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         }
     }
 
-    protected onPlayerEnterGame(player: Player): void {
-        super.onPlayerEnterGame(player);
-    }
-
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
+    }
+
+    protected onPlayerEnterGame(player: Player): void {
+        super.onPlayerEnterGame(player);
+
+        this.queryRegisterStaminaLimit(player.playerId);
     }
 
     private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
@@ -419,26 +668,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private static CODE_VERIFY_AES_IV = "";
 
-    private static CLIENT_ID = "";
-
-    private static SECRET = "";
-
     public static readonly KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL = 5e3;
 
     private static getSensitiveData() {
-        GToolkit.doUntilTrue(
-            () => !GToolkit.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
+        Gtk.doUntilTrue(
+            () => !Gtk.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
             this.getCodeVerifyAesKey,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
-        );
-        GToolkit.doUntilTrue(
-            () => !GToolkit.isNullOrEmpty(this.CLIENT_ID),
-            this.getClientId,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
-        );
-        GToolkit.doUntilTrue(
-            () => !GToolkit.isNullOrEmpty(this.SECRET),
-            this.querySecret,
             AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
         );
     }
@@ -447,7 +682,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then((value) => {
             Log4Ts.log(AuthModuleS, `value`, value.code);
             if (value.code === 200) {
-                if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
                     AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
                     AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16)
                         .split("")
@@ -456,32 +691,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 } else {
                     Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey Failed`);
                     DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
-                }
-            }
-        });
-    }
-
-    private static getClientId() {
-        DataStorage.asyncGetData(AuthModuleS.CLIENT_ID_STORAGE_KEY).then((value) => {
-            if (value.code === 200) {
-                if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                    AuthModuleS.CLIENT_ID = value.data;
-                } else {
-                    Log4Ts.log(AuthModuleS, `getClientId Failed`);
-                    DataStorage.asyncSetData(AuthModuleS.CLIENT_ID_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
-                }
-            }
-        });
-    }
-
-    private static querySecret() {
-        DataStorage.asyncGetData(AuthModuleS.SECRET_STORAGE_KEY).then((value) => {
-            if (value.code === 200) {
-                if (!GToolkit.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                    AuthModuleS.SECRET = value.data;
-                } else {
-                    Log4Ts.log(AuthModuleS, `querySecret Failed`);
-                    DataStorage.asyncSetData(AuthModuleS.SECRET_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
                 }
             }
         });
@@ -501,7 +710,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
-        if (GToolkit.isNullOrEmpty(token)) {
+        if (Gtk.isNullOrEmpty(token)) {
             Log4Ts.log({name: "AuthModule"}, `token invalid.`);
             return false;
         }
@@ -519,36 +728,74 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return e.ciphertext.toString(CryptoJS.enc.Base64);
     }
 
+    public async queryUserDragonBall(playerId: number): Promise<DragonBallRespData> {
+        const userId = this.queryUserId(playerId);
+        if (Gtk.isNullOrUndefined(userId)) return;
+
+        const requestParam: UserDataQueryReq = {
+            userId,
+        };
+
+        const respInJson = await
+            this.correspondHandler<QueryResp<DragonBallRespData>>(
+                requestParam,
+                AuthModuleS.RELEASE_QUERY_DRAGON_BALL_DATA_URL,
+                AuthModuleS.TEST_QUERY_DRAGON_BALL_DATA_URL,
+            );
+
+        return respInJson.data;
+    }
+
+    public async reqWebCatchDragon(playerId: number, dragonId: number, attributionType: string): Promise<DragonBallRespData> {
+        const userId = this.queryUserId(playerId);
+        if (Gtk.isNullOrUndefined(userId)) return;
+
+        const requestParam: UserDataQueryReq = {
+            userId,
+        };
+
+        const respInJson = await
+            this.correspondHandler<QueryResp<DragonBallRespData>>(
+                requestParam,
+                AuthModuleS.RELEASE_CATCH_DRAGON_URL,
+                AuthModuleS.TEST_CATCH_DRAGON_URL,
+            );
+
+        return respInJson.data;
+    }
+
+    public async queryUserDragon(playerId: number): Promise<UserDragonRespData> {
+        const userId = this.queryUserId(playerId);
+        if (Gtk.isNullOrUndefined(userId)) return;
+
+        const requestParam: UserDataQueryReq = {
+            userId,
+        };
+
+        const respInJson = await
+            this.correspondHandler<QueryResp<UserDragonRespData>>(
+                requestParam,
+                AuthModuleS.RELEASE_QUERY_USER_DRAGON_URL,
+                AuthModuleS.TEST_QUERY_USER_DRAGON_URL,
+            );
+
+        return respInJson.data;
+    }
+
     public async queryRegisterStaminaLimit(playerId: number) {
-        const userId = Player.getPlayer(playerId)?.userId ?? undefined;
-        if (Gtk.isNullOrEmpty(userId)) {
-            logEPlayerNotExist(playerId);
-            return;
-        }
+        const userId = this.queryUserId(playerId);
+        if (Gtk.isNullOrUndefined(userId)) return;
 
-        const requestParam: UserDataQueryRequestParam = {
-            userId: userId,
-        };
-        const encryptBody = {
-            encryptData: this.getSecret(JSON.stringify(requestParam)),
+        const requestParam: UserDataQueryReq = {
+            userId,
         };
 
-        const resp = await fetch(
-            `${
-                GameServiceConfig.isRelease
-                    ? AuthModuleS.RELEASE_PGE_STAMINA_LIMIT_URL
-                    : AuthModuleS.TEST_PGE_STAMINA_LIMIT_URL
-            }`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charset=UTF-8",
-                },
-                body: JSON.stringify(encryptBody),
-            },
-        );
-        const respInJson = await resp.json<QueryResponse<QueryStaminaLimitRespData>>();
-        Log4Ts.log(AuthModuleS, `get resp when query stamina limit. ${JSON.stringify(respInJson)}`);
+        const respInJson = await
+            this.correspondHandler<QueryResp<QueryStaminaLimitRespData>>(
+                requestParam,
+                AuthModuleS.RELEASE_STAMINA_LIMIT_URL,
+                AuthModuleS.TEST_STAMINA_LIMIT_URL,
+            );
 
         if (Gtk.isNullOrUndefined(respInJson?.data?.stamina))
             Log4Ts.log(AuthModuleS, `invalid value when query stamina limit for user ${userId}.`);
@@ -561,51 +808,99 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         else this.playerStaminaRecoveryMap.set(playerId, respInJson.data.gameStaminaRecoverySec);
 
         let data = this.getPlayerData(playerId);
-        if (!Gtk.isNullOrEmpty(respInJson?.data?.walletAddress ?? undefined) && data.holdAddress !== respInJson.data.walletAddress) {
+        if (!Gtk.isNullOrEmpty(respInJson?.data?.walletAddress ?? undefined) &&
+            (data?.holdAddress ?? undefined) !== respInJson.data.walletAddress) {
             data.holdAddress = respInJson.data.walletAddress;
             data.save(false);
         }
     }
 
-    public async reportPetSimulatorRankData(playerId: number, petName: string, petRarity: number, petOriginalAttack: number, recordTime: number, round: number) {
-        const player = Player.getPlayer(playerId) ?? null;
-        if (GToolkit.isNullOrUndefined(player)) {
-            Log4Ts.error(AuthModuleS, `player not exist. id: ${playerId}`);
-            return;
-        }
-        const userId = player.userId;
+    public async reportPetSimulatorRankData(
+        playerId: number,
+        petName: string,
+        petRarity: number,
+        petOriginalAttack: number,
+        recordTime: number,
+        round: number) {
+        const userId = this.queryUserId(playerId);
+        if (Gtk.isNullOrEmpty(userId)) return;
+
+        const player = Player.getPlayer(playerId);
         const userName = player.nickname;
         const userAvatar = player["avatarUrl"];
-        const requestParam: PetSimulatorRankDataRequestParam = {
+        const requestParam: PetSimulatorRankDataReq = {
             userId,
             userName,
             userAvatar,
             petName,
             petRarity,
             petOriginalAttack,
-            recordTime,
+            recordTime: recordTime / 1000,
             round,
         };
-        const encryptBody: EncryptedData = {
-            encryptData: this.getSecret(JSON.stringify(requestParam)),
+
+        this.correspondHandler<QueryResp>(requestParam,
+            AuthModuleS.RELEASE_B_W_RANK_REPORT_URL,
+            AuthModuleS.TEST_B_W_RANK_REPORT_URL,
+        );
+    }
+
+    public async reportBattleWorldRankData(playerId: number, grade: number, gradeOriginalPower: number, round: number) {
+        const userId = this.queryUserId(playerId);
+        if (Gtk.isNullOrEmpty(userId)) return;
+
+        const player = Player.getPlayer(playerId);
+        const userName = player.nickname;
+        const userAvatar = player["avatarUrl"];
+        const requestParam: UpdateBattleWorldRankDataReq = {
+            userId,
+            userName,
+            userAvatar,
+            grade,
+            gradeOriginalPower,
+            round,
+            recordTime: Math.floor(Date.now() / 1000),
         };
-        const resp = await fetch(`${GameServiceConfig.isRelease ?
-                AuthModuleS.RELEASE_PGE_P_S_RANK_REPORT_URL :
-                AuthModuleS.TEST_PGE_P_S_RANK_REPORT_URL}`,
+
+        this.correspondHandler<QueryResp>(requestParam,
+            AuthModuleS.RELEASE_B_W_RANK_REPORT_URL,
+            AuthModuleS.TEST_B_W_RANK_REPORT_URL,
+        );
+    }
+
+    private queryUserId(playerId: number): string | undefined {
+        if (!GameServiceConfig.isRelease && !GameServiceConfig.isBeta) return "1025696";
+
+        const userId = Player.getPlayer(playerId)?.userId ?? undefined;
+        if (Gtk.isNullOrEmpty(userId)) {
+            logEPlayerNotExist(playerId);
+            return undefined;
+        }
+        return userId;
+    }
+
+    private async correspondHandler<D = object>(reqParam: object, releaseUrl: string, testUrl: string) {
+        const encryptBody = {
+            encryptData: this.getSecret(JSON.stringify(reqParam)),
+        };
+
+        const resp = await fetch(
+            `${
+                GameServiceConfig.isRelease || GameServiceConfig.isBeta
+                    ? releaseUrl
+                    : testUrl
+            }`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
                 },
                 body: JSON.stringify(encryptBody),
-            });
+            },
+        );
 
-        const respInJson = await resp.json<QueryResponse>();
-        Log4Ts.log(AuthModuleS, `get resp when report p.s. rank info. ${JSON.stringify(respInJson)}`);
-    }
-
-    public async reportBattleWorldRankData() {
-
+        Log4Ts.log(AuthModuleS, `get resp. ${JSON.stringify(resp)}`);
+        return await resp.json<D>();
     }
 
     private checkRequestRegulator(playerId: number): boolean {

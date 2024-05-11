@@ -95,6 +95,9 @@ export default class GameStart extends mw.Script {
     @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
+    @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
+    public isBeta: boolean = false;
+
     @mw.Property({
         displayName: "语言",
         group: "发布",
@@ -140,8 +143,8 @@ export default class GameStart extends mw.Script {
         Log4Ts.log(GameStart, `this is ${SystemUtil.isClient() ? "client" : "server"}`);
         this.useUpdate = true;
         GameServiceConfig.isRelease = this.isRelease;
+        GameServiceConfig.isBeta = this.isBeta;
         this.initialize();
-
     }
 
     protected onUpdate(dt: number): void {
@@ -157,7 +160,7 @@ export default class GameStart extends mw.Script {
      * @private
      */
     private initialize() {
-        if (this.isRelease) {
+        if (GameServiceConfig.isRelease || GameServiceConfig.isBeta) {
             this.isOnline = true;
             this.isShowGMPanel = false;
             i18n.release();
@@ -212,7 +215,7 @@ export default class GameStart extends mw.Script {
 
         UIService.show(MainPanel);
         //#region GodMode
-        if (!this.isRelease) {
+        if (!GameServiceConfig.isRelease) {
             this.registerTestKeyT();
             this.registerGodModeG();
             this.registerGodModeShift();

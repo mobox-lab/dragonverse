@@ -1,9 +1,11 @@
-import setTimeout = mw.setTimeout;
 import ModuleService = mwext.ModuleService;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { Globaldata } from "../../const/Globaldata";
 import { EventManager } from "../../tool/EventManager";
 import { EAttributeEvents_C } from "../../const/Enum";
+import { AuthModuleS } from "../auth/AuthModule";
+import Gtk, { GtkTypes } from "../../util/GToolkit";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 export default class BattleWorldEnergyModuleData extends mwext.Subdata {
     //@Decorator.persistence()
@@ -32,7 +34,7 @@ export default class BattleWorldEnergyModuleData extends mwext.Subdata {
 
     protected initDefaultData(): void {
         super.initDefaultData();
-        this.battleWorldEnergy = Globaldata.ENERGY_MAX;
+        this.battleWorldEnergy = 0;
         const now = Date.now();
         this.lastRecoveryTime = now;
     }
@@ -152,6 +154,14 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BattleWorldEnerg
     private _eventListeners: EventListener[] = [];
 
     private _intervalHolder: Map<number, number> = new Map();
+
+    private _authModuleS: AuthModuleS;
+
+    private get authModuleS(): AuthModuleS | null {
+        if (!this._authModuleS) this._authModuleS = ModuleService.getModule(AuthModuleS);
+        return this._authModuleS;
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -191,36 +201,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BattleWorldEnerg
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-        const d = this.getPlayerData(player);
-        const playerId = player.playerId;
-
-        const recovery = () => {
-            const energyRecoveryIntervalMs = Globaldata.ENERGY_RECOVERY_INTERVAL_MS ;
-            const now = Date.now();
-            const duration = now - d.lastRecoveryTime;
-            let timeout: number;
-            if (duration < energyRecoveryIntervalMs) {
-                timeout = energyRecoveryIntervalMs - duration;
-            } else {
-                if (d.battleWorldEnergy < Globaldata.ENERGY_MAX) {
-                    Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.battleWorldEnergy}`);
-                    d.battleWorldEnergy = Math.min(
-                        Globaldata.ENERGY_MAX,
-                        d.battleWorldEnergy + Math.max(
-                            Math.floor(duration / energyRecoveryIntervalMs),
-                            0));
-                }
-                d.lastRecoveryTime = now;
-                timeout = energyRecoveryIntervalMs;
-                this.getClient(playerId).net_recovery(d.battleWorldEnergy);
-                d.save(false);
-            }
-            this._intervalHolder.set(
-                playerId,
-                setTimeout(recovery, timeout),
-            );
-        };
-        recovery();
+        this.initPlayerEnergy(player.playerId);
     }
 
     protected onPlayerLeft(player: Player): void {
@@ -236,8 +217,10 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BattleWorldEnerg
     public consume(playerId: number, count: number, firstTime: number) {
         const d = this.getPlayerData(playerId);
         if (!d) return;
-        if (d.battleWorldEnergy >= Globaldata.ENERGY_MAX) d.lastRecoveryTime = firstTime;
-        d.consume(count);
+        if (d.battleWorldEnergy >= (this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0) &&
+            d.consume(count) > 0)
+            d.lastRecoveryTime = firstTime;
+
         d.save(false);
         Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${d.battleWorldEnergy}`);
     }
@@ -248,6 +231,47 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BattleWorldEnerg
         d.battleWorldEnergy += val;
         d.save(false);
         this.getClient(playerId).net_recovery(d.battleWorldEnergy);
+    }
+
+    private initPlayerEnergy(playerId: number) {
+        const d = this.getPlayerData(playerId);
+        if (Gtk.isNullOrUndefined(d)) return;
+        let refreshInterval = GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
+            Globaldata.ENERGY_RECOVERY_INTERVAL_MS :
+            30 * GtkTypes.Interval.PerSec;
+        this.authModuleS
+            .queryRegisterStaminaLimit(playerId)
+            .then(() => {
+                let autoRecoveryHandler = () => {
+                    let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
+                    let recoveryDuration = this.authModuleS.playerStaminaRecoveryMap.get(playerId) ?? 0;
+                    if (recoveryDuration <= 0) {
+                        return;
+                    }
+                    const now = Date.now();
+                    const duration = now - d.lastRecoveryTime;
+                    let delay: number = 0;
+
+                    if (d.battleWorldEnergy < limit) {
+                        Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.battleWorldEnergy}`);
+                        d.battleWorldEnergy = Math.min(
+                            limit,
+                            d.battleWorldEnergy +
+                            limit / recoveryDuration / 1e3
+                            * Math.max(Math.floor(duration / refreshInterval), 0));
+
+                        delay = duration % refreshInterval;
+                        d.lastRecoveryTime = now - delay;
+                        this.getClient(playerId).net_recovery(d.battleWorldEnergy);
+                        d.save(false);
+                    }
+
+                    if (this._intervalHolder.has(playerId)) mw.clearTimeout(this._intervalHolder.get(playerId));
+                    this._intervalHolder.set(playerId, mw.setTimeout(autoRecoveryHandler, refreshInterval - delay));
+                };
+
+                autoRecoveryHandler();
+            });
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

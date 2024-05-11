@@ -305,7 +305,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
     }
 
     /**玩家被单端npc攻击 */
-    private listen_beAttackClientNpc(attkerid: number, beAttackpId: number, motionEffectId: number) {}
+    private listen_beAttackClientNpc(attkerid: number, beAttackpId: number, motionEffectId: number) { }
 
     /**
      * 控制玩家移动
@@ -786,14 +786,14 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
 
         if (release) {
             if (charge == false) {
-                result = await this.motionMD.invoke_motion(skillCfg.id, () => {});
+                result = await this.motionMD.invoke_motion(skillCfg.id, () => { });
             } else {
                 result = await this.motionMD.invoke_motion_charge(skillCfg.id, () => {
                     this.changeState(EPlayerState.Idle);
                 });
             }
         } else {
-            result = await this.motionMD.invoke_motion(skillCfg.id, () => {});
+            result = await this.motionMD.invoke_motion(skillCfg.id, () => { });
         }
 
         // 释放成功才记录
@@ -1421,5 +1421,13 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
     public payRankTicket(rankCost: number) {
         this.rankTicket = false;
         this.reduceAttr(Attribute.EnumAttributeType.rankScore, rankCost);
+    }
+
+    /**
+     * 更新玩家击杀数
+     * @param killCount 击杀数
+     */
+    public net_updateKillCount(killCount: number) {
+        UIService.getUI(MainUI).updateKillCount(killCount);
     }
 }

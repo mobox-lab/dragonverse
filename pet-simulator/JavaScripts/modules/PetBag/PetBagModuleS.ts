@@ -11,7 +11,6 @@ import { EnchantBuff } from "./EnchantBuff";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
-
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
     /**玩家id、 true:装备 false: 卸下 、宠物数据*/
@@ -22,7 +21,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     /**玩家获取宠物事件 */
     public onGetPetAC: Action2<number, number> = new Action2();
 
-
     // private passMS: PassModuleS = null;
     private taskMS: Task_ModuleS = null;
 
@@ -30,7 +28,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         this.taskMS = ModuleService.getModule(Task_ModuleS);
         // this.passMS = ModuleService.getModule(PassModuleS)
     }
-
 
     protected onPlayerEnterGame(player: mw.Player): void {
 
@@ -73,7 +70,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 			this.addPet(this.currentPlayerId, id, atk, name, type, addTime);
 		}
 
-
     public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
         let data = this.getPlayerData(playerID);
         data.addBagItem(id, atk, name, addTime);
@@ -87,7 +83,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             let pet = data.bagItemsByKey(petKey);
             let petConfig = GameConfig.PetARR.getElement(pet.I);
             if (petConfig) {
-                ModuleService.getModule(AuthModuleS).reportPetRankData(playerID, pet.p.n, petConfig.QualityType, pet.p.a, pet.obtainTime, currRound);
+                ModuleService.getModule(AuthModuleS).reportPetSimulatorRankData(
+                    playerID,
+                    pet.p.n,
+                    petConfig.QualityType,
+                    pet.p.a,
+                    pet.obtainTime,
+                    currRound);
             }
         }
 
@@ -104,7 +106,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
         this.petNotice(playerID, id);
     }
-
 
     /**根据id添加宠物 自动计算名字*/
     public addPetById(playerID: number, id: number, type?: GlobalEnum.PetGetType) {
@@ -171,7 +172,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             this.getAllClient().net_petNotice(playerId, id, tipsType);
     }
 
-
     net_deletePet(keys: number[]) {
         this.deletePet(this.currentPlayerId, keys);
     }
@@ -194,7 +194,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         data.save(true);
         data.BagItemChangeAC.call(false, 1, 1);
     }
-
 
     /**根据概率返回本次是否成功 */
     private isSuccess(probability: number): boolean {
@@ -361,7 +360,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             let petConfig = GameConfig.PetARR.getElement(pet.I);
             if (petConfig) {
                 const currRound = this.currentData.calRound(Date.now());
-                ModuleService.getModule(AuthModuleS).reportPetRankData(this.currentPlayerId, pet.p.n, petConfig.DevType, pet.p.a, pet.obtainTime, currRound);
+                ModuleService.getModule(AuthModuleS).reportPetSimulatorRankData(
+                    this.currentPlayerId,
+                    pet.p.n,
+                    petConfig.DevType,
+                    pet.p.a,
+                    pet.obtainTime,
+                    currRound);
             }
         }
 

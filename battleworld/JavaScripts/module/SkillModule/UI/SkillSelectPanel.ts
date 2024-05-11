@@ -1,6 +1,7 @@
 import { GameConfig } from "../../../config/GameConfig";
 import { Globaldata } from "../../../const/Globaldata";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
+import { MouseLockController } from "../../../controller/MouseLockController";
 import SkillSelectPanel_Generate from "../../../ui-generate/Skill/SkillSelectPanel_generate";
 import { AnalyticsTool, EClickEvent } from "../../AnalyticsModule/AnalyticsTool";
 import { SkillModuleC } from "../SkillModuleC";
@@ -88,18 +89,21 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
                 if (skillCfg == null) {
                     return;
                 }
-                (this[`mSelectBtn${i}`] as Button).normalImageGuid = btnDataCfg.btnIcon;
+                (this[`mSelectBtn${i}`] as Button).normalImageGuid = skillLibCfg.changeIconGuid;
                 (this[`skill${i}`] as TextBlock).text = skillCfg.Name;
             }
         }
 
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hide(SkillSelectPanel);
-        })
+        });
+
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
     onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 
     private getBgImageGuid(weaponId: number): string {

@@ -9,8 +9,7 @@ import { PetSimulatorPlayerModuleData } from "./PlayerModuleData";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
-import { AuthModuleS, ConsumeTypes } from "../auth/AuthModule";
-
+import { AuthModuleS } from "../auth/AuthModule";
 
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModuleData> {
 
@@ -25,12 +24,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
             } else {
                 this.unEquipPet(playerId, petItems);
             }
-        })
+        });
         this.petBagModule.onPetRenameAC.add((playerId, key, id, name) => {
             this.renamePet(playerId, key, id, name);
         });
         this.initScence();
     }
+
     /**当前游戏中玩家 */
     private gamePlayerBehaviors: Map<string, PlayerBehavior> = new Map<string, PlayerBehavior>();
 
@@ -44,6 +44,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         this.checkPlayerWealth(player);
         ModuleService.getModule(Task_ModuleS).strengthenCount(player, total);
     }
+
     /**检查玩家财富埋点 */
     private checkPlayerWealth(player: mw.Player): void {
         let data = this.getPlayerData(player);
@@ -63,13 +64,14 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
         this.getClient(player).net_sendPoint();
     }
+
     private checkCoinCount(data: PetSimulatorPlayerModuleData, value: number, coinType: GlobalEnum.BuryingPointCoin): void {
         let id = 1;
 
         while (true) {
             let cfg = GameConfig.Gradient.getElement(id);
             if (!cfg) break;
-            let tar: number = 0
+            let tar: number = 0;
             switch (coinType) {
                 case GlobalEnum.BuryingPointCoin.FirstWorldGold:
                     tar = cfg.Coinnum_1;
@@ -107,6 +109,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         let be = this.gamePlayerBehaviors.get(guid);
         be.teleport(id);
     }
+
     public net_setPlaza(isPlaza: boolean): void {
         this.currentData.isPlaza = isPlaza;
         this.currentData.save(false);
@@ -114,12 +117,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
     private async playerInit(player: mw.Player, name: string): Promise<void> {
         let be = await this.playerCreateBehavirs(player.character.gameObjectId);
-        if (!name) name = "三七"
+        if (!name) name = "三七";
         be.nickName = name;
         let petIds = this.petBagModule.getPlayerCurEquipPets(player.playerId);
         petIds.forEach(petItem => {
             be.equipPet(petItem.k + "_" + petItem.I, petItem.p.a, petItem.p.n);
-        })
+        });
     }
 
     /**升级 */
@@ -129,6 +132,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
         this.levelUpNotice(this.currentPlayerId);
     }
+
     /**升级公告 */
     public levelUpNotice(playerId: number) {
 
@@ -141,7 +145,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
     protected onPlayerLeft(player: mw.Player): void {
         try {
-            let areaId = AreaDivideManager.instance.checkPointInArea(player.character.worldTransform.position)
+            let areaId = AreaDivideManager.instance.checkPointInArea(player.character.worldTransform.position);
             this.getPlayerData(player).playerQuitLoc = areaId;
             this.getPlayerData(player).save(false);
 
@@ -236,16 +240,18 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     // }
 
     public async net_buyDollCoin(configId: number): Promise<boolean> {
-        let config = GameConfig.GoodsTable.getElement(configId);
-        if (!config) return false;
-        let playerId = this.currentPlayerId;
-        let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, config.price, ConsumeTypes.DollMachine);
-        if (res) {
-            this.getPlayerData(playerId).addGold(config.buyCount, GlobalEnum.CoinType.SummerGold);
-            return true;
-        } else {
-            return false;
-        }
+        // let config = GameConfig.GoodsTable.getElement(configId);
+        // if (!config) return false;
+        // let playerId = this.currentPlayerId;
+        // let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, config.price, ConsumeTypes.DollMachine);
+        // if (res) {
+        //     this.getPlayerData(playerId).addGold(config.buyCount, GlobalEnum.CoinType.SummerGold);
+        //     return true;
+        // } else {
+        //     return false;
+        // }
+
+        return false;
 
     }
 
@@ -273,12 +279,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         let data = this.getPlayerData(playerId);
         data.addGold(value, coinType);
     }
+
     public addDiamond(playerId: number, value: number): void {
         let data = this.getPlayerData(playerId);
         data.addDiamond(value);
     }
-
-
 
     /**装卸滑板 */
     public net_skateboard(): boolean {

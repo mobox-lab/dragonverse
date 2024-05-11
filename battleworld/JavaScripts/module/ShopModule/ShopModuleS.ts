@@ -2,10 +2,9 @@
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
-import { AuthModuleS, ConsumeTypes } from "../auth/AuthModule";
+import { AuthModuleS } from "../auth/AuthModule";
 import { ShopModuleC } from "./ShopModuleC";
 import { ShopModuleData } from "./ShopModuleData";
-
 
 /**
  * 商城模块S
@@ -64,15 +63,16 @@ export class ShopModuleS extends mwext.ModuleS<ShopModuleC, ShopModuleData> {
     }
 
     public async net_buyBattleTimes(itemId: number): Promise<boolean> {
-        let config = GameConfig.GoodsTable.getElement(itemId);
-        if (!config) return false;
-        let playerId = this.currentPlayerId;
-        let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, config.price,ConsumeTypes.BattleWorldEnergy);
-        if (res) {
-            ModuleService.getModule(EnergyModuleS).addEnergy(playerId, config.buyCount);
-            return true;
-        } else {
-            return false;
-        }
+        // let config = GameConfig.GoodsTable.getElement(itemId);
+        // if (!config) return false;
+        // let playerId = this.currentPlayerId;
+        // let res = await ModuleService.getModule(AuthModuleS).pay(this.currentPlayerId, config.price,ConsumeTypes.BattleWorldEnergy);
+        // if (res) {
+        //     ModuleService.getModule(EnergyModuleS).addEnergy(playerId, config.buyCount);
+        //     return true;
+        // } else {
+        //     return false;
+        // }
+        return false;
     }
 }

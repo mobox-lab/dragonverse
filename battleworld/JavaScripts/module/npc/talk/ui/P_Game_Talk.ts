@@ -4,6 +4,7 @@ import { ITabTalkElement } from "../../../../config/TabTalk";
 import { EModule_Events } from "../../../../const/Enum";
 import { Globaldata } from "../../../../const/Globaldata";
 import KeyOperationManager from "../../../../controller/key-operation-manager/KeyOperationManager";
+import { MouseLockController } from "../../../../controller/MouseLockController";
 import { EventManager } from "../../../../tool/EventManager";
 import { util } from "../../../../tool/Utils";
 import P_Game_Talk_Generate from "../../../../ui-generate/talk/P_Game_Talk_generate";
@@ -38,12 +39,14 @@ export class P_Game_Talk extends P_Game_Talk_Generate {
     onShow() {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hideUI(this);
-        })
+        });
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
     onHide() {
         EventManager.instance.call(EModule_Events.ui_hideTalk, this.npcId, this.config);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 
     /**
