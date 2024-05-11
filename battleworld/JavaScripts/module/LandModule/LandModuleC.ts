@@ -76,6 +76,7 @@ export class LandModuleC extends ModuleC<LandModuleS, null>{
     /**
      * 拾取掉落物
      */
+    // TODO: CL - 服务端验证金币
     private listen_pickUp(pickUpType: EPickUpType, pickUp: PickUpBase, pickScript: PickUp) {
 
         if (pickUp == null) {
