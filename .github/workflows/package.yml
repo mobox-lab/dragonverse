@@ -1,0 +1,34 @@
+name: Package Dragon Verse
+on:
+  push:
+    branches:
+      - dev/**
+      - develop/**
+    tags:
+      - v*
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Generate .projectassembly
+        run: cp .projectassembly_backup .projectassembly
+
+      - name: Generate All .project
+        run: |
+          find . -type f -name ".project_backup" | while read filename; do
+            newname="${filename%_backup}"
+            echo "generate .project at $(pwd)"
+            cp "$filename" "$newname"
+          done
+
+      - name: Package Project Files
+        run: zip -r DragonVerse.zip .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: DragonVerseZip
+          path: DragonVerse.zip
