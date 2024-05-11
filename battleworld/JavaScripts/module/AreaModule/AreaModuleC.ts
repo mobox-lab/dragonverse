@@ -153,30 +153,39 @@ export class AreaModuleC extends ModuleC<AreaModuleS, null> {
 
         if (playerLoc == null) return;
 
-        if (playerLoc.z < Globaldata.playerBottomZ + this.localPlayer.character.getBoundingBoxExtent().z * 0.5) {
-            //掉一半血传送回战场随机点位
-            let hp = this.playerModuleC.getAttr(Attribute.EnumAttributeType.hp);
-            if (hp <= 0) {
+
+
+        // if (playerLoc.z < Globaldata.playerBottomZ + this.localPlayer.character.getBoundingBoxExtent().z * 0.5) {
+        let triggers = GameObject.findGameObjectsByTag("deadTrigger");
+        for (let i = 0; i < triggers.length; i++) {
+            let trigger = triggers[i] as mw.Trigger;
+            if (trigger.checkInArea(Player.localPlayer.character)) {
+                //掉一半血传送回战场随机点位
+                let hp = this.playerModuleC.getAttr(Attribute.EnumAttributeType.hp);
+                if (hp <= 0) {
+                    return;
+                }
+                let maxHP = this.playerModuleC.getAttr(Attribute.EnumAttributeType.maxHp);
+
+                if (hp > maxHP * 0.5) {
+                    let position = await ModuleService.getModule(LandModuleC).getrandomPostion();
+                    UIService.getUI(MainUI)?.setCoinAndEnergyVisible(false);
+                    this.setLocation(position);
+                } else {
+
+                }
+
+                let hurtSourceData: THurtSourceData = {
+                    source: EHurtSource.sea,
+                    skillId: 0,
+                    skillEffectId: 0,
+                }
+                this.playerModuleC.reduceAttr(Attribute.EnumAttributeType.hp, maxHP * 0.5, true, 0, hurtSourceData);
                 return;
             }
-            let maxHP = this.playerModuleC.getAttr(Attribute.EnumAttributeType.maxHp);
-
-            if (hp > maxHP * 0.5) {
-                let position = await ModuleService.getModule(LandModuleC).getrandomPostion();
-                UIService.getUI(MainUI)?.setCoinAndEnergyVisible(false);
-                this.setLocation(position);
-            } else {
-
-            }
-
-            let hurtSourceData: THurtSourceData = {
-                source: EHurtSource.sea,
-                skillId: 0,
-                skillEffectId: 0,
-            }
-            this.playerModuleC.reduceAttr(Attribute.EnumAttributeType.hp, maxHP * 0.5, true, 0, hurtSourceData);
-            return;
         }
+
+        // }
     }
 
     /**

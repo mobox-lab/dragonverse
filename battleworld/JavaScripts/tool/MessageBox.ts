@@ -1,4 +1,5 @@
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
+import { MouseLockController } from "../controller/MouseLockController";
 import MessageBox_Generate from "../ui-generate/common/MessageBox_generate";
 
 
@@ -91,16 +92,17 @@ export class MessageBox extends MessageBox_Generate {
     }
 
     public show() {
-        KeyOperationManager.getInstance().onKeyUp( this, Keys.Escape, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.resListener(false);
             mw.UIService.hideUI(this);
         });
         mw.UIService.showUI(this, mw.UILayerSystem);
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
     public hide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         mw.UIService.hideUI(this);
-
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 }

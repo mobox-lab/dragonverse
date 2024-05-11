@@ -53,22 +53,22 @@ export default class ActionUI extends Main_action_Generate {
             let button = rootCanvas.getChildByName("Btn_invoke") as mw.Button;
             switch (i) {
                 case 3: {
-                    button.addKey(Keys.E);
+                    button.addKey(Keys.One);
                     (rootCanvas.getChildByName("ShortCutKey") as TextBlock).text = Keys.E.toString();
                     break;
                 }
                 case 4: {
-                    button.addKey(Keys.R);
+                    button.addKey(Keys.Two);
                     (rootCanvas.getChildByName("ShortCutKey") as TextBlock).text = Keys.R.toString();
                     break;
                 }
                 case 5: {
-                    button.addKey(Keys.T);
+                    button.addKey(Keys.Three);
                     (rootCanvas.getChildByName("ShortCutKey") as TextBlock).text = Keys.T.toString();
                     break;
                 }
                 case 6: {
-                    button.addKey(Keys.Y);
+                    button.addKey(Keys.Four);
                     (rootCanvas.getChildByName("ShortCutKey") as TextBlock).text = Keys.Y.toString();
                     break;
                 }
