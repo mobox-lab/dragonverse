@@ -1,9 +1,6 @@
 name: Package Dragon Verse
 on:
   push:
-    branches:
-      - dev/**
-      - develop/**
     tags:
       - v*
   workflow_dispatch:
@@ -21,7 +18,8 @@ jobs:
         run: |
           find . -type f -name ".project_backup" | while read filename; do
             newname="${filename%_backup}"
-            echo "generate .project at $(pwd)"
+            filedir=$(dirname "$filename")
+            echo "generate .project at $filedir"
             cp "$filename" "$newname"
           done
 
@@ -52,5 +50,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./DragonVerse.zip
-          asset_name: ./DragonVerse.zip
+          asset_name: DragonVerse.zip
           asset_content_type: application/zip
