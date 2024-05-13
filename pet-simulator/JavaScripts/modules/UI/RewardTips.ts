@@ -207,7 +207,7 @@ export class RewardTipsManager  extends Singleton<RewardTipsManager>(){
 				return this;
 		}
 
-    public getUI(type: GlobalEnum.CoinType, count: number) {
+		public getUI = (type: GlobalEnum.CoinType, count: number) => {
         if (type == GlobalEnum.CoinType.FirstWorldGold) {
             this.firstGoldTips.startTween(count);
         } else if (type == GlobalEnum.CoinType.SecondWorldGold) {

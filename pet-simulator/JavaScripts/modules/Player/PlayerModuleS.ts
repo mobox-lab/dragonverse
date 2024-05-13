@@ -297,7 +297,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     }
 		
     /**装卸滑板 */
-    public async net_getPetArr(player?: mw.Player) {
+    public getPetArr(player?: mw.Player) {
 			if(!player) return null
 			return this.getPlayerBehavior(player).PetArr
     }
