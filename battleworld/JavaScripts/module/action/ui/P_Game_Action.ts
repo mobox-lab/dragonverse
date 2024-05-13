@@ -5,7 +5,7 @@ import { EventManager } from "../../../tool/EventManager";
 import { Notice } from "../../../tool/Notice";
 import { util } from "../../../tool/Utils";
 import P_Game_Action_Generate from "../../../ui-generate/action/P_Game_Action_generate";
- 
+
 // import { VehicleManager } from "../../VehicleModule/VehicleManager";
 import { ActionItem } from "./ActionItem";
 
