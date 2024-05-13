@@ -9,28 +9,35 @@ import { SoundManager } from "../../util/SoundManager";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { RewardTipsManager } from "../UI/RewardTips";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { PlayerModuleS } from "../Player/PlayerModuleS";
+export class DropManagerC extends ModuleC<DropManagerS, null> {
 
+}
+export class DropManagerS extends ModuleS<DropManagerC, null>{
+    // private static _instance: DropManagerS = null;
 
-export class DropManager {
-    private static _instance: DropManager = null;
-
-    public static getInstance(): DropManager {
-        if (this._instance == null) {
-            this._instance = new DropManager();
-            this._instance.init();
-        }
-        return this._instance;
-    }
+    // public static getInstance(): DropManagerS {
+    //     if (this._instance == null) {
+    //         this._instance = new DropManagerS();
+    //         this._instance.init();
+    //     }
+    //     return this._instance;
+    // }
 
     private typeValue: Map<GlobalEnum.CoinType, number> = new Map();
     private _drops: Set<Drop> = new Set();
-    private playerModuleC: PlayerModuleC = null;
+    private playerMS: PlayerModuleS = null;
 
     public get dropSize() {
         return this._drops.size;
     }
 
-    start() {
+		protected onStart(): void {
+			this.playerMS = ModuleService.getModule(PlayerModuleS);
+		}
+
+		@Decorator.noReply()
+    public net_start() {
         TimeUtil.setInterval(() => {
             this.comparePlayerDis();
             this.compareDis();
@@ -39,8 +46,7 @@ export class DropManager {
 
     init(): void {
         this.resetValue();
-        this.playerModuleC = ModuleService.getModule(PlayerModuleC);
-    }
+     }
 
     /**在当前坐标一圈为方向创建掉落
      * @param pos 当前坐标
@@ -48,7 +54,8 @@ export class DropManager {
      * @param value 掉落总值
      * @param count 掉落数量
      */
-    public createDrop(pos: mw.Vector, type: GlobalEnum.CoinType, allValue: number, count: number, isBox: boolean = false): void {
+		@Decorator.noReply()
+    public net_createDrop(pos: mw.Vector, type: GlobalEnum.CoinType, allValue: number, count: number, isBox: boolean = false): void {
         if (count <= 0 || allValue <= 0) return;
         let val = Math.ceil(allValue / count);
         let needCount = GlobalData.DropAni.frameNum;
@@ -105,7 +112,7 @@ export class DropManager {
     private _maxGold: number = GlobalData.SceneResource.goldMax;
 
     /**轮询 */
-    public onUpdate(dt: number): void {
+    public onResourceUpdate(dt: number): void {
         this.absorbUpdate(dt);
         this._drops.forEach((drop: Drop) => {
             if (drop.isDestroy) {
@@ -128,7 +135,7 @@ export class DropManager {
             let gold2 = this.typeValue.get(GlobalEnum.CoinType.SecondWorldGold);
             let gold3 = this.typeValue.get(GlobalEnum.CoinType.ThirdWorldGold);
             let diamond = this.typeValue.get(GlobalEnum.CoinType.Diamond);
-            this.playerModuleC.addGoldAndDiamond(gold1, gold2, gold3, diamond);
+            this.playerMS.absorbAll(gold1, gold2, gold3, diamond);
             this.resetValue();
         }
     }
@@ -144,7 +151,7 @@ export class DropManager {
     /**比较与玩家的距离 */
     private comparePlayerDis(): void {
         if (this._drops.size <= 0) return;
-        let playerBe = PlayerModuleC.curPlayer;
+        let playerBe = PlayerModuleC.curPlayer; // TODO: Check all PlayerModuleC.curPlayer 
         if (!playerBe) return;
         let playerPos = playerBe.currentTransform.position;
         this._drops.forEach((element: Drop) => {
@@ -409,7 +416,7 @@ class Drop {
             this.bonceUpdate(dt);
         }
         this.petAbsorb();
-        let ownerPos = PlayerModuleC.curPlayer.currentTransform.position;
+        let ownerPos = PlayerModuleC.curPlayer.currentTransform.position; // TODO: Check all PlayerModuleC.curPlayer
         this.distanceAbsorb(ownerPos);
     }
 
@@ -438,7 +445,7 @@ class Drop {
     private petAbsorb() {
         let arr = GlobalData.Enchant.petAutoBuffKeys;
         if (arr.length <= 0) return;
-        let curPetArr = PlayerModuleC.curPlayer.PetArr;
+        let curPetArr = PlayerModuleC.curPlayer.PetArr; // TODO: Check all PlayerModuleC.curPlayer
 
         arr.forEach((key) => {
             let pet = curPetArr.find((value) => {
@@ -460,23 +467,23 @@ class Drop {
         this.canUpdate = false;
         this._isLand = false;
         this._moveToTween.stop();
+				if (this._gold > 0) {
+						const val = Math.round(this._gold * GlobalData.Buff.goldBuff);
+						Log4Ts.log(Drop, `add gold count ${val}`);
+						ModuleService.getModule(DropManagerS).addGold(val, this.type);
+						RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
+				}
+				if (this._diamond > 0) {
+						const val = Math.round(this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond);
+						Log4Ts.log(Drop, `add diamond count ${val}`);
+						ModuleService.getModule(DropManagerS).addDiamond(val);
+						RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
+				}
         this._moveToTween = new mw.Tween(targetPos).to(ownerPos, this._flyToPlayerTime)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete(() => {
-                if (this._gold > 0) {
-                    const val = Math.round(this._gold * GlobalData.Buff.goldBuff);
-                    Log4Ts.log(Drop, `add gold count ${val}`);
-                    DropManager.getInstance().addGold(val, this.type);
-                    RewardTipsManager.instance.getUI(this.type, val);
-                }
-                if (this._diamond > 0) {
-                    const val = Math.round(this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond);
-                    Log4Ts.log(Drop, `add diamond count ${val}`);
-                    RewardTipsManager.instance.getUI(this.type, val);
-                    DropManager.getInstance().addDiamond(val);
-                }
-                this.destroy();
+								this.destroy();
                 SoundManager.instance.play3DSound(GlobalData.Music.resourceEnterPlayer, getPos(this.model));
             }).start().easing(cubicBezier(this._flyToTweenBezier[0], this._flyToTweenBezier[1], this._flyToTweenBezier[2], this._flyToTweenBezier[3]));
     }

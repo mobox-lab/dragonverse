@@ -9,11 +9,11 @@ import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
-import { DropManager } from "./DropResouce";
 import { BonusUI, ResourceUIPool } from "./scenceUnitUI";
 import { GlobalData } from '../../const/GlobalData';
 import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
 import { PlayerManagerExtesion } from '../../Modified027Editor/ModifiedPlayer';
+import { DropManagerS } from './DropResouce';
 ;
 export class Resource {
 
@@ -391,10 +391,12 @@ export default class resourceScript extends mw.Script {
         let goldCount = Math.ceil(rewardArr[0]);
         let gemCount = Math.ceil(rewardArr[1]);
         if (goldCount > 0) {
-            DropManager.getInstance().createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox);
+					 	ModuleService.getModule(DropManagerS).net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox) // TODO: Check
+            // DropManager.getInstance().createDrop();
         }
         if (gemCount > 0) {
-            DropManager.getInstance().createDrop(this.resObj.worldTransform.position, GlobalEnum.CoinType.Diamond, gemVal, gemCount, this.isbigBox);
+						ModuleService.getModule(DropManagerS).net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox) // TODO: Check
+            // DropManager.getInstance().createDrop(this.resObj.worldTransform.position, GlobalEnum.CoinType.Diamond, gemVal, gemCount, this.isbigBox);
         }
     }
     /**判断几世界的金币 */

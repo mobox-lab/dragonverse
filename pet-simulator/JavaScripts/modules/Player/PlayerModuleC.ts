@@ -327,19 +327,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
 
     }
 
-    /**
-     * 增加钻石和金币 (TODO：设计后续优化)
-     * @param gold1 第一世界金币
-     * @param gold2 第二世界金币
-     * @param gold3 第三世界金币
-     * @param diamond 钻石
-     */
-    public addGoldAndDiamond(gold1: number, gold2: number, gold3: number, diamond: number): void {
-        if (gold1 > 0 || gold2 > 0 || gold3 > 0 || diamond > 0) {
-            this.server.net_addGoldAndDiamond(gold1, gold2, gold3, diamond);
-        }
-    }
-
     public async buyDollCoin(configId: number): Promise<boolean> {
         return await this.server.net_buyDollCoin(configId);
     }

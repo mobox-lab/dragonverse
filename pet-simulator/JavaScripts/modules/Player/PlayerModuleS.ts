@@ -225,14 +225,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         be.unEquipPets(petItems);
     }
 
-    /**增加金币和钻石 */
-    public net_addGoldAndDiamond(gold1: number, gold2: number, gold3: number, diamond: number): void {
-        let data = this.currentData;
-        if (gold1 > 0) data.addGold(gold1, GlobalEnum.CoinType.FirstWorldGold);
-        if (gold2 > 0) data.addGold(gold2, GlobalEnum.CoinType.SecondWorldGold);
-        if (gold3 > 0) data.addGold(gold3, GlobalEnum.CoinType.ThirdWorldGold);
-        if (diamond > 0) data.addDiamond(diamond);
-    }
+		public absorbAll(gold1: number, gold2: number, gold3: number, diamond: number) {
+				let data = this.currentData;
+				if (gold1 > 0) data.addGold(gold1, GlobalEnum.CoinType.FirstWorldGold);
+				if (gold2 > 0) data.addGold(gold2, GlobalEnum.CoinType.SecondWorldGold);
+				if (gold3 > 0) data.addGold(gold3, GlobalEnum.CoinType.ThirdWorldGold);
+				if (diamond > 0) data.addDiamond(diamond);
+		}	
 
     // /**增加金币 */
     // public net_addGold(value: number, coinType: GlobalEnum.CoinType): void {

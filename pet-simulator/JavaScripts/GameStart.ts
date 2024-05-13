@@ -45,6 +45,7 @@ import PetSimulatorEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./mo
 import PetSimulatorAuthModuleData, { AuthModuleC, AuthModuleS } from "./modules/auth/AuthModule";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./modules/jump-room/JumpRoomModule";
 import GameServiceConfig from "./const/GameServiceConfig";
+import { DropManagerC, DropManagerS } from "./modules/Resources/DropResouce";
 
 // declare global {
 //     var UE: any;
@@ -222,7 +223,8 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PetSimulatorPlayerModuleData);
         ModuleService.registerModule(PetBagModuleS, PetBagModuleC, PetBagModuleData);
         ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PetSimulatorEnergyModuleData);
-        ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
+        ModuleService.registerModule(Task_ModuleS, Task_ModuleC, TaskModuleData);
+        ModuleService.registerModule(DropManagerS, DropManagerC, null);
     }
 
     /**

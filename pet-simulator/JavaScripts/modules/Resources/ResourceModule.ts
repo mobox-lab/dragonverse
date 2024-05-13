@@ -1,19 +1,19 @@
-import { SpawnManager, SpawnInfo, } from '../../Modified027Editor/ModifiedSpawn';
 import { oTraceWarning } from "odin";
+import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
 import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import { oTraceError } from "../../util/LogManager";
 import { utils } from "../../util/uitls";
-import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
-import { DropManager } from "./DropResouce";
-import resourceScript, { Resource, SceneResourceMap } from "./resource";
-import { BonusUI } from "./scenceUnitUI";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
-import { GlobalEnum } from "../../const/Enum";
-import { Task_ModuleS } from "../Task/Task_ModuleS";
+import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
+import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
+import { DropManagerS } from "./DropResouce";
+import resourceScript, { SceneResourceMap } from "./resource";
+import { BonusUI } from "./scenceUnitUI";
 
 export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
 
@@ -26,7 +26,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     protected onStart(): void {
         AreaDivideManager.instance.onAreaChangeAC.add(this.areaChange.bind(this));
         BonusUI.instance;
-        DropManager.getInstance().start();
+				ModuleService.getModule(DropManagerS).net_start();
         Event.addLocalListener(GlobalEnum.EventName.AttackDestroy, () => {
             this.breakCount++;
             if (this.breakCount == 3) {
@@ -229,7 +229,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     }
 
     protected onUpdate(dt: number): void {
-        DropManager.getInstance().onUpdate(dt);
+				this.server.net_onResourceUpdate(dt)
     }
 
 }
@@ -531,7 +531,6 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
 
     }
 
-
     /**根据areaId 与 Type 查找对应id */
     // public getScenceUnitId(areaId: number, type: number): number {
     //     let cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
@@ -601,6 +600,10 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
     public guaShaNotice(playerId: number, sceneId: number) {
 
     }
-
+	
+		@Decorator.noReply()
+		public net_onResourceUpdate(dt) {
+				ModuleService.getModule(DropManagerS).onResourceUpdate(dt); 
+		}
 
 }
