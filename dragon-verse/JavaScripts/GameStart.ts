@@ -98,6 +98,9 @@ export default class GameStart extends mw.Script {
     @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
     public isBeta: boolean = false;
 
+    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
+    public isUseTestUrl: boolean = true;
+
     @mw.Property({
         displayName: "语言",
         group: "发布",
@@ -144,6 +147,7 @@ export default class GameStart extends mw.Script {
         this.useUpdate = true;
         GameServiceConfig.isRelease = this.isRelease;
         GameServiceConfig.isBeta = this.isBeta;
+        GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
         this.initialize();
     }
 

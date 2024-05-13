@@ -886,7 +886,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const resp = await fetch(
             `${
-                GameServiceConfig.isRelease || GameServiceConfig.isBeta
+                GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl
                     ? releaseUrl
                     : testUrl
             }`,
