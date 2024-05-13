@@ -1,6 +1,7 @@
 import { IActionElement } from "../../../config/Action";
 import { GameConfig } from "../../../config/GameConfig";
 import { EModule_Events } from "../../../const/Enum";
+import { MouseLockController } from "../../../controller/MouseLockController";
 import { EventManager } from "../../../tool/EventManager";
 import { Notice } from "../../../tool/Notice";
 import { util } from "../../../tool/Utils";
@@ -34,6 +35,14 @@ export class P_Game_Action extends P_Game_Action_Generate {
             item.onClick.clear();
             item.onClick.add(this.clickItem, this);
         }
+    }
+
+    onShow() {
+        MouseLockController.getInstance().needMouseUnlock();
+    }
+
+    onHide() {
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 
     /**

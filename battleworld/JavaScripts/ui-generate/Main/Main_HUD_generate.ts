@@ -4,7 +4,7 @@
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
  * AUTHOR: 断桥烟雨
  * UI: UI/Main/Main_HUD.ui
- * TIME: 2024.05.11-19.19.41
+ * TIME: 2024.05.13-17.05.15
  */
 
  
@@ -277,6 +277,48 @@
 		}
 		return this.mText_Trans_Time_cd_Long_Internal
 	}
+	private canvasLevelF_Internal: mw.Canvas
+	public get canvasLevelF(): mw.Canvas {
+		if(!this.canvasLevelF_Internal&&this.uiWidgetBase) {
+			this.canvasLevelF_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/canvasLevelF') as mw.Canvas
+		}
+		return this.canvasLevelF_Internal
+	}
+	private fLevel01_Internal: mw.Image
+	public get fLevel01(): mw.Image {
+		if(!this.fLevel01_Internal&&this.uiWidgetBase) {
+			this.fLevel01_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/canvasLevelF/fLevel01') as mw.Image
+		}
+		return this.fLevel01_Internal
+	}
+	private fLevel02_Internal: mw.Image
+	public get fLevel02(): mw.Image {
+		if(!this.fLevel02_Internal&&this.uiWidgetBase) {
+			this.fLevel02_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/canvasLevelF/fLevel02') as mw.Image
+		}
+		return this.fLevel02_Internal
+	}
+	private fLevel03_Internal: mw.Image
+	public get fLevel03(): mw.Image {
+		if(!this.fLevel03_Internal&&this.uiWidgetBase) {
+			this.fLevel03_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/canvasLevelF/fLevel03') as mw.Image
+		}
+		return this.fLevel03_Internal
+	}
+	private fLevel04_Internal: mw.Image
+	public get fLevel04(): mw.Image {
+		if(!this.fLevel04_Internal&&this.uiWidgetBase) {
+			this.fLevel04_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/canvasLevelF/fLevel04') as mw.Image
+		}
+		return this.fLevel04_Internal
+	}
+	private fLevel05_Internal: mw.Image
+	public get fLevel05(): mw.Image {
+		if(!this.fLevel05_Internal&&this.uiWidgetBase) {
+			this.fLevel05_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/canvasLevelF/fLevel05') as mw.Image
+		}
+		return this.fLevel05_Internal
+	}
 	private canvasDefend_Internal: mw.Canvas
 	public get canvasDefend(): mw.Canvas {
 		if(!this.canvasDefend_Internal&&this.uiWidgetBase) {
@@ -318,6 +360,48 @@
 			this.mText_Trans_Time_cd_Tortoise_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/mText_Trans_Time_cd_Tortoise') as mw.TextBlock
 		}
 		return this.mText_Trans_Time_cd_Tortoise_Internal
+	}
+	private canvasLevelD_Internal: mw.Canvas
+	public get canvasLevelD(): mw.Canvas {
+		if(!this.canvasLevelD_Internal&&this.uiWidgetBase) {
+			this.canvasLevelD_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/canvasLevelD') as mw.Canvas
+		}
+		return this.canvasLevelD_Internal
+	}
+	private dLevel01_Internal: mw.Image
+	public get dLevel01(): mw.Image {
+		if(!this.dLevel01_Internal&&this.uiWidgetBase) {
+			this.dLevel01_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/canvasLevelD/dLevel01') as mw.Image
+		}
+		return this.dLevel01_Internal
+	}
+	private dLevel02_Internal: mw.Image
+	public get dLevel02(): mw.Image {
+		if(!this.dLevel02_Internal&&this.uiWidgetBase) {
+			this.dLevel02_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/canvasLevelD/dLevel02') as mw.Image
+		}
+		return this.dLevel02_Internal
+	}
+	private dLevel03_Internal: mw.Image
+	public get dLevel03(): mw.Image {
+		if(!this.dLevel03_Internal&&this.uiWidgetBase) {
+			this.dLevel03_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/canvasLevelD/dLevel03') as mw.Image
+		}
+		return this.dLevel03_Internal
+	}
+	private dLevel04_Internal: mw.Image
+	public get dLevel04(): mw.Image {
+		if(!this.dLevel04_Internal&&this.uiWidgetBase) {
+			this.dLevel04_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/canvasLevelD/dLevel04') as mw.Image
+		}
+		return this.dLevel04_Internal
+	}
+	private dLevel05_Internal: mw.Image
+	public get dLevel05(): mw.Image {
+		if(!this.dLevel05_Internal&&this.uiWidgetBase) {
+			this.dLevel05_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/canvasLevelD/dLevel05') as mw.Image
+		}
+		return this.dLevel05_Internal
 	}
 	private canvasHeart_Internal: mw.Canvas
 	public get canvasHeart(): mw.Canvas {
@@ -361,6 +445,48 @@
 		}
 		return this.mText_Trans_Time_cd_Bone_Internal
 	}
+	private canvasLevelH_Internal: mw.Canvas
+	public get canvasLevelH(): mw.Canvas {
+		if(!this.canvasLevelH_Internal&&this.uiWidgetBase) {
+			this.canvasLevelH_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/canvasLevelH') as mw.Canvas
+		}
+		return this.canvasLevelH_Internal
+	}
+	private hLevel01_Internal: mw.Image
+	public get hLevel01(): mw.Image {
+		if(!this.hLevel01_Internal&&this.uiWidgetBase) {
+			this.hLevel01_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/canvasLevelH/hLevel01') as mw.Image
+		}
+		return this.hLevel01_Internal
+	}
+	private hLevel02_Internal: mw.Image
+	public get hLevel02(): mw.Image {
+		if(!this.hLevel02_Internal&&this.uiWidgetBase) {
+			this.hLevel02_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/canvasLevelH/hLevel02') as mw.Image
+		}
+		return this.hLevel02_Internal
+	}
+	private hLevel03_Internal: mw.Image
+	public get hLevel03(): mw.Image {
+		if(!this.hLevel03_Internal&&this.uiWidgetBase) {
+			this.hLevel03_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/canvasLevelH/hLevel03') as mw.Image
+		}
+		return this.hLevel03_Internal
+	}
+	private hLevel04_Internal: mw.Image
+	public get hLevel04(): mw.Image {
+		if(!this.hLevel04_Internal&&this.uiWidgetBase) {
+			this.hLevel04_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/canvasLevelH/hLevel04') as mw.Image
+		}
+		return this.hLevel04_Internal
+	}
+	private hLevel05_Internal: mw.Image
+	public get hLevel05(): mw.Image {
+		if(!this.hLevel05_Internal&&this.uiWidgetBase) {
+			this.hLevel05_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/canvasLevelH/hLevel05') as mw.Image
+		}
+		return this.hLevel05_Internal
+	}
 	private canvasBlue_Internal: mw.Canvas
 	public get canvasBlue(): mw.Canvas {
 		if(!this.canvasBlue_Internal&&this.uiWidgetBase) {
@@ -402,6 +528,48 @@
 			this.mText_Trans_Time_cd_Qi_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/mText_Trans_Time_cd_Qi') as mw.TextBlock
 		}
 		return this.mText_Trans_Time_cd_Qi_Internal
+	}
+	private canvasLevelB_Internal: mw.Canvas
+	public get canvasLevelB(): mw.Canvas {
+		if(!this.canvasLevelB_Internal&&this.uiWidgetBase) {
+			this.canvasLevelB_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/canvasLevelB') as mw.Canvas
+		}
+		return this.canvasLevelB_Internal
+	}
+	private bLevel01_Internal: mw.Image
+	public get bLevel01(): mw.Image {
+		if(!this.bLevel01_Internal&&this.uiWidgetBase) {
+			this.bLevel01_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/canvasLevelB/bLevel01') as mw.Image
+		}
+		return this.bLevel01_Internal
+	}
+	private bLevel02_Internal: mw.Image
+	public get bLevel02(): mw.Image {
+		if(!this.bLevel02_Internal&&this.uiWidgetBase) {
+			this.bLevel02_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/canvasLevelB/bLevel02') as mw.Image
+		}
+		return this.bLevel02_Internal
+	}
+	private bLevel03_Internal: mw.Image
+	public get bLevel03(): mw.Image {
+		if(!this.bLevel03_Internal&&this.uiWidgetBase) {
+			this.bLevel03_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/canvasLevelB/bLevel03') as mw.Image
+		}
+		return this.bLevel03_Internal
+	}
+	private bLevel04_Internal: mw.Image
+	public get bLevel04(): mw.Image {
+		if(!this.bLevel04_Internal&&this.uiWidgetBase) {
+			this.bLevel04_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/canvasLevelB/bLevel04') as mw.Image
+		}
+		return this.bLevel04_Internal
+	}
+	private bLevel05_Internal: mw.Image
+	public get bLevel05(): mw.Image {
+		if(!this.bLevel05_Internal&&this.uiWidgetBase) {
+			this.bLevel05_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/canvasLevelB/bLevel05') as mw.Image
+		}
+		return this.bLevel05_Internal
 	}
 	private pointCanvas_Internal: mw.Canvas
 	public get pointCanvas(): mw.Canvas {
