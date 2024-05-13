@@ -746,7 +746,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return respInJson.data;
     }
 
-    public async reqWebCatchDragon(playerId: number, dragonId: number, attributionType: string): Promise<DragonBallRespData> {
+    public async reqWebCatchDragon(playerId: number): Promise<DragonBallRespData> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
