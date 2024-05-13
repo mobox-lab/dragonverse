@@ -2,7 +2,7 @@
  * @Author       : zewei.zhang
  * @Date         : 2024-03-01 11:30:29
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-05-11 15:42:46
+ * @LastEditTime : 2024-05-13 13:34:08
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\ui\jump-game\JumpGamePanel.ts
  * @Description  : 跳房间界面
  */
@@ -14,6 +14,7 @@ import JumpGamePanel_Generate from "../../ui-generate/jumpGame/JumpGamePanel_gen
 import GToolkit from "../../util/GToolkit";
 
 export class JumpGamePanel extends JumpGamePanel_Generate {
+    public isShowing: boolean = false;
     onStart() {
         this.jumpButtonVerify.onClicked.add(() => {
             if (!GToolkit.isNullOrEmpty(this.roomIdInputBox.text)) {
@@ -29,10 +30,12 @@ export class JumpGamePanel extends JumpGamePanel_Generate {
             UIService.hide(JumpGamePanel);
         });
         MouseLockController.getInstance().needMouseUnlock();
+        this.isShowing = true;
     }
 
     onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         MouseLockController.getInstance().cancelMouseUnlock();
+        this.isShowing = false;
     }
 }
