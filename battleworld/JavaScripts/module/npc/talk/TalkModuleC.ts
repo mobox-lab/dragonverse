@@ -3,6 +3,7 @@ import { GameConfig } from "../../../config/GameConfig";
 import { INpcDialogElement } from "../../../config/NpcDialog";
 import { ITabTalkElement } from "../../../config/TabTalk";
 import { EModule_Events } from "../../../const/Enum";
+import { Globaldata } from "../../../const/Globaldata";
 import { ClickUIPools } from "../../../rptool/InteractiveObjs/ClickUIs";
 import { EventManager } from "../../../tool/EventManager";
 import { checkTriggerGo } from "../../../tool/Utils";
@@ -93,7 +94,7 @@ export class TalkModuleC extends ModuleC<TalkModuleS, null> {
             return;
         }
         if (ele.talkOffset == null) ele.talkOffset = mw.Vector.zero;
-        ClickUIPools.instance.show("", ele.btntext, obj, ele.talkOffset, () => {
+        ClickUIPools.instance.show(Globaldata.talkUIGuid, ele.btntext, obj, ele.talkOffset, () => {
             ClickUIPools.instance.hide(obj);
             // EventManager.instance.call(EModule_Events.ui_openMainView, false);
             this.talkUI.setData(ele);
