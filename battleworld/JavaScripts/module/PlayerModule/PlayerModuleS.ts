@@ -2319,7 +2319,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
      * @param {number} deltaScore -- 变化的 rank 分，增加/减少 +- 来判断
      * @private
      */
-    private changeRankScore(playerId: number, deltaScore: number) {
+    public changeRankScore(playerId: number, deltaScore: number) {
         const data = this.getPlayerData(playerId);
         if (!data || !deltaScore) return;
 
@@ -2343,7 +2343,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         // 计算并更新玩家等级
         const newRank = PlayerManager.instance.getRankLevel(calCurrentScore);
-        ModuleService.getModule(AuthModuleS).reportBWRankData(playerId, newRank, calCurrentScore, 1);
+        ModuleService.getModule(AuthModuleS).reportBattleWorldRankData(playerId, newRank, calCurrentScore, 1);
 
         // 如果是增加属性值并且玩家等级上升，触发升级通知
         if (deltaScore > 0) {
@@ -2387,6 +2387,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         if (!rankCfg) return;
 
         this.changeRankScore(playerId, -rankCfg.rankTicket);
+        Event.dispatchToClient(player, EModule_Events_S.payTicketSuccessful, playerId);
     }
 
     @Decorator.noReply()

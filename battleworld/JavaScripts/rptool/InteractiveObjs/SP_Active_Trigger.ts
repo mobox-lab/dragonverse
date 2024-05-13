@@ -3,6 +3,7 @@ import { EnergyModuleC } from "../../module/Energy/EnergyModule";
 import { PlayerModuleC } from "../../module/PlayerModule/PlayerModuleC";
 import { MessageBox } from "../../tool/MessageBox";
 import { InteractLogic_C, InteractLogic_S, InteractObject } from "./InteractObject";
+import { EModule_Events_S } from "../../const/Enum";
 
 /**触发模式 */
 enum TriggerMode {
@@ -31,17 +32,17 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
             this.gameObject.onEnter.add(this.onEnter.bind(this));
             this.gameObject.onLeave.add(this.onLeave.bind(this));
         }
+
+        Event.addServerListener(EModule_Events_S.payTicketSuccessful, this.payTicketCallback.bind(this));
     }
 
     private async onEnter(go: mw.GameObject) {
 
-        if ((go instanceof mw.Character) == false) {
-            return;
-        }
+
+        if (!(go instanceof mw.Character)) return;
         let chara = go as mw.Character;
-        if (chara.player.playerId != Player.localPlayer.playerId) {
-            return;
-        }
+        if (chara.player.playerId != Player.localPlayer.playerId)return;
+
         if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) return;
         chara.movementEnabled = false;
         const playerC = ModuleService.getModule(PlayerModuleC);
@@ -55,9 +56,7 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
             MessageBox.showTwoBtnMessage("", content, (res) => {
                 if (res) {
                     playerC.payRankTicket();
-                    this.interactNext(chara.player.playerId, true);
-                }
-                else {
+                } else {
                     chara.movementEnabled = true;
                 }
             });
@@ -77,6 +76,14 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         chara.movementEnabled = true;
     }
 
+    /**
+     * 门票支付成功通知
+     * @param {number} playerId
+     * @private
+     */
+    private payTicketCallback(playerId: number) {
+        this.interactNext(playerId, true);
+    }
 
 }
 //服务端

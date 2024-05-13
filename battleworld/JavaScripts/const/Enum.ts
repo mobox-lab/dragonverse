@@ -1,4 +1,3 @@
-
 export enum EBagSkillEvents_C {
     /**回收武器限制条件 */
     bagSkill_putWeaponCond = "bagSkill_putWeaponCond",
@@ -27,7 +26,6 @@ export enum EAnalyticsEvents_S {
     /**第一次做某事 */
     firstDo_S = "firstDo_S",
 }
-
 
 export enum EBulletEvents_S {
     /**子弹格挡反弹 */
@@ -69,7 +67,6 @@ export enum EWeaponEvent_C {
     /**玩家控制手部武器显示隐藏了 */
     WeaponEvent_HasVisibleHandleWeapon_C = "WeaponEvent_HasVisibleHandleWeapon_C",
 }
-
 
 export enum EWeaponEvent_S {
     /**玩家武器发生变化 */
@@ -134,7 +131,6 @@ export enum EAttributeEvents_S {
     AttrEvent_CalculateAttr_S = "AttrEvent_CalculateAttr_S",
 }
 
-
 export enum EMotionEvents_C {
     /**技能设置玩家移动 */
     motion_setMovement_c = "motion_setMovement_c",
@@ -185,7 +181,6 @@ export enum EModule_Events {
     /**删除通过ID数组删除背包内数据 */
     bag_subItemByArr = "bag_subItemByArr",
 
-
     /**添加快捷栏 */
     prop_addQuick = "prop_addQuick",
     /**移除快捷栏 */
@@ -196,7 +191,6 @@ export enum EModule_Events {
     prop_change_propId = "prop_change_propId",
     /**刷新快捷栏 */
     prop_refreshQuick = "prop_refreshQuick",
-
 
     /**丢弃物品 */
     drop_discard = "drop_discard",
@@ -220,8 +214,6 @@ export enum EModule_Events {
     /**移除装备 */
     equip_removeEquip = "equip_removeEquip",
 
-
-
     /**添加挂件 */
     equip_addPendant = "equip_addPendant",
     /**移除挂件 */
@@ -230,12 +222,10 @@ export enum EModule_Events {
     /**打开职业界面 */
     job_openJobView = "job_openJobView",
 
-
     /**控制玩家当前武器隐藏 */
     weapon_hide = "weapon_hide",
     /**控制玩家当前武器显示 */
     weapon_show = "weapon_show",
-
 
     weapon_showScale = "weapon_showScale",
     /**攻击后收刀 */
@@ -376,7 +366,6 @@ export enum EModule_Events {
     /**客户端销毁宠物 */
     destroyPet = "destroyPet",
 
-
     /**打开通行证任务 */
     ui_openSeasonPass = "ui_openSeasonPass",
     /**打开悬赏令界面 */
@@ -454,15 +443,11 @@ export enum EModule_Events_S {
     /**玩家区域改变 */
     area_changeArea = "area_changeArea",
 
-
-
     /**快捷栏选项改变 */
     prop_change_propId = "prop_change_propId",
 
-
     /**技能发射子弹 */
     skill_fireBullet = "skill_fireBullet",
-
 
     /**场景单位被攻击 */
     sceneUnit_beAttack = "sceneUnit_beAttack",
@@ -479,18 +464,19 @@ export enum EModule_Events_S {
     /**显示或隐藏按钮红点 装态*/
     changeRedDotState = "changeRedDotState",
 
-
     /**服务端加钱 */
     add_Money_S = "add_Money_S",
     /**服务端击中可破坏物 */
     hitMeshObj_S = "hitMeshObj_S",
-
 
     /**玩家离开游戏 */
     player_LeftGame = "player_LeftGame",
 
     /**装扮道具失效 */
     pickUp_dressUp_timeout = "pickUp_dressUp_timeout",
+
+    /** 门票支付成功*/
+    payTicketSuccessful = "pay_ticket_successful",
 
 }
 
@@ -527,8 +513,6 @@ export enum EAreaEvents_S {
     area_setPlayerAreaId_s = "area_setPlayerAreaId_s",
 
 }
-
-
 
 export enum EPlayerEvents_C {
 
@@ -613,13 +597,11 @@ export enum EPlayerEvents_S {
     PlayerEvent_GetPlayerName_S = "PlayerEvent_GetPlayerName_S",
 }
 
-
 /**场景单位模块事件 服务器端 */
 export enum EUnitEvents_S {
     /**子弹攻击到npc */
     unit_bulletHit = "unit_bulletHit",
 }
-
 
 /**motin 事件回调 */
 export enum EMotion_Events {
@@ -665,7 +647,6 @@ export enum ELandCommon_Event_C {
     LaneCommonEvent_Opcatity_C = "LaneCommonEvent_Opcatity_C",
 }
 
-
 /**道具增益方式 */
 export enum EItemAddType {
     /**直接增加 */
@@ -673,7 +654,6 @@ export enum EItemAddType {
     /**按百分比增加 */
     per = 2,
 }
-
 
 /**日志名称 */
 export enum ELogName {
@@ -696,6 +676,7 @@ export enum EAreaId {
     /**战斗区 */
     Battle = 2,
 }
+
 export enum EbackType {
     /**主动取消回城 */
     selfCancle = 1,
@@ -712,7 +693,6 @@ export enum EDefineType {
     define = 2,
 }
 
-
 /**玩家战斗状态 */
 export enum EPlayerFightState {
     none = 0,
@@ -723,8 +703,6 @@ export enum EPlayerFightState {
     /**正常状态 */
     normal = 3,
 }
-
-
 
 /**装备部位类型 */
 export enum EEquipPartType {
@@ -740,7 +718,6 @@ export enum EEquipPartType {
     pet = 5,
 }
 
-
 /**对话持久存储数据枚举 */
 export enum TalkDataEnum {
     /**空舞 */
@@ -750,7 +727,6 @@ export enum TalkDataEnum {
     /**等级二次觉醒（属性点上限300，玩家等级220，职业卡精通等级220） */
     UnlockLevel2 = "3",
 }
-
 
 export enum ESkillTargetType {
     self = 0,
@@ -763,8 +739,6 @@ export enum ESkillTargetType {
     /**所有人 */
     all,
 }
-
-
 
 /**NPC动画状态 */
 export enum EnumSceneUnitAnimationState {
@@ -779,8 +753,6 @@ export enum EnumSceneUnitAnimationState {
     dizziness,
     chess, //追击动画
 }
-
-
 
 /**
  * 全局属性脚本类型
@@ -857,7 +829,7 @@ export enum ELandBuffType {
     hpOnce = 2,
     /**
      * 减速
-      */
+     */
     speed = 3,
     /**
      * 冲量跳跃
