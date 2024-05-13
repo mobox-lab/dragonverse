@@ -13,7 +13,7 @@ import { P_RewardPanel, RewardState } from "./P_RewardPanel";
 
 
 
-export class OnlineMoudleC extends ModuleC<OnlineMoudleS, OnlineModuleData>{
+export class OnlineMoudleC extends ModuleC<OnlineMoudleS, OnlineModuleData> {
 
     private onlineUI: P_HudPetGift;
     private rewardPanel: P_RewardPanel;
@@ -21,7 +21,7 @@ export class OnlineMoudleC extends ModuleC<OnlineMoudleS, OnlineModuleData>{
 
     protected onStart(): void {
         this.onlineUI = mw.UIService.getUI(P_HudPetGift)
-        this.rewardPanel = mw.UIService.create(P_RewardPanel);
+        this.rewardPanel = mw.UIService.getUI(P_RewardPanel);
         this.initEvents();
     }
 
