@@ -20,8 +20,33 @@ export default class StatisticModuleData extends JModuleData {
     @Decorator.persistence()
     playerElapsedTimeS: number = 0;
 
+    /**
+     * 玩家登录记录.
+     */
     @Decorator.persistence()
-    maybeCheatingReason: string[] = [];
+    playerLoginRecord: [number, number][] = [];
+
+    get playerTodayOnlineTime() {
+        const now = Date.now();
+        return this.playerLoginRecord.reduce((previousValue, currentValue, currentIndex, array) => {
+                let startTime: number;
+                if (!Gtk.isSameTime(currentValue[1], now, GtkTypes.Tf.D)) {
+                    return previousValue;
+                } else if (Gtk.isSameTime(currentValue[0], now, GtkTypes.Tf.D)) {
+                    return previousValue - currentValue[0] + currentValue[1];
+                } else {
+                    return previousValue - new Date().setHours(0, 0, 0, 0).valueOf() + currentValue[1];
+                }
+            },
+            0);
+    }
+
+    // /**
+    //  * 疑似作弊原因.
+    //  * @type {string[]}
+    //  */
+    // @Decorator.persistence()
+    // maybeCheatingReason: string[] = [];
 }
 
 interface PlayerIntervalData {
@@ -189,7 +214,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, StatisticModule
                 `playerId: ${playerId}`,
                 `client elapsedTime: ${data.elapsedTime}`,
                 `server elapsedTime: ${Date.now() - enteredTime}`];
-            this.getPlayerData(playerId).maybeCheatingReason.push(playerMaybeCheatingReason.join());
+            // this.getPlayerData(playerId).maybeCheatingReason.push(playerMaybeCheatingReason.join());
             Log4Ts.warn(StatisticModuleS, ...playerMaybeCheatingReason);
         }
     }
