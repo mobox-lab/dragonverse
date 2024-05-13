@@ -2,7 +2,7 @@
  * @Author       : fengqi.han
  * @Date         : 2023-12-12 15:50:18
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-05-11 15:52:24
+ * @LastEditTime : 2024-05-13 13:20:37
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\module\PlayerModule\UI\rank\RankPanel.ts
  * @Description  : 段位系统ui面板
  */
@@ -25,6 +25,8 @@ export class RankPanel extends Rank_main_Generate {
     private _perRankRate: number = 0;
     /** 段位配置 */
     private _cfgArr: IRankElement[] = [];
+
+    public isShowing: boolean = false;
 
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void {
@@ -124,11 +126,13 @@ export class RankPanel extends Rank_main_Generate {
             UIService.hideUI(this);
         });
         MouseLockController.getInstance().needMouseUnlock();
+        this.isShowing = true;
     }
 
     onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         MouseLockController.getInstance().cancelMouseUnlock();
+        this.isShowing = false;
     }
 
     /**

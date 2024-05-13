@@ -48,6 +48,8 @@ import { JumpGamePanel } from "../../../ui/jump-game/JumpGamePanel";
 import Gtk from "../../../util/GToolkit";
 import { SkillModuleC } from "../../SkillModule/SkillModuleC";
 import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
+import SetingUI from "../../SetingModule/UI/SetingUI";
+import { P_Game_Action } from "../../action/ui/P_Game_Action";
 type PillUIInfo = { text: TextBlock, img: Image, num: number, name: TextBlock, duration: number, time: TextBlock, mask: MaskButton, timer: number };
 export class MainUI extends Main_HUD_Generate {
 
@@ -74,11 +76,21 @@ export class MainUI extends Main_HUD_Generate {
         });
         // 动作
         this.mActionBtn.onClicked.add(() => {
-            EventManager.instance.call(EModule_Events.action_open);
+            if (UIService.getUI(P_Game_Action).isOpenAction) {
+                UIService.hide(P_Game_Action);
+                UIService.getUI(P_Game_Action).isOpenAction = false;
+            } else {
+                EventManager.instance.call(EModule_Events.action_open);
+            }
         });
         // 设置
         this.mBtn_Setting.onClicked.add(() => {
-            EventManager.instance.call(EModule_Events.SetingModuleC_showSetingUI);
+            if (UIService.getUI(SetingUI)?.isShowing) {
+                UIService.getUI(SetingUI)?.onBack();
+            } else {
+                EventManager.instance.call(EModule_Events.SetingModuleC_showSetingUI);
+            }
+
         });
         // 重置
         this.mBtn_Reborn.onClicked.add(() => {
@@ -106,7 +118,11 @@ export class MainUI extends Main_HUD_Generate {
 
         // 打开段位UI
         this.mBtn_Rank.onClicked.add(() => {
-            UIService.show(RankPanel);
+            if (UIService.getUI(RankPanel)?.isShowing) {
+                UIService.hide(RankPanel)
+            } else {
+                UIService.show(RankPanel);
+            }
         });
 
         this.playerMD.onAttributeChanged.add(this.onPlayerAttrChanged, this);
@@ -153,7 +169,12 @@ export class MainUI extends Main_HUD_Generate {
         });
 
         this.jumpRoomBtn.onClicked.add(() => {
-            UIService.show(JumpGamePanel);
+            if (UIService.getUI(JumpGamePanel).isShowing) {
+                UIService.hide(JumpGamePanel);
+            } else {
+                UIService.show(JumpGamePanel);
+            }
+
         });
 
         this.canUpdate = true;
