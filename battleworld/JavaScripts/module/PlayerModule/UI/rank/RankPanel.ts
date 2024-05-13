@@ -2,7 +2,7 @@
  * @Author       : fengqi.han
  * @Date         : 2023-12-12 15:50:18
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-01-31 10:08:51
+ * @LastEditTime : 2024-05-11 15:52:24
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\module\PlayerModule\UI\rank\RankPanel.ts
  * @Description  : 段位系统ui面板
  */
@@ -10,6 +10,7 @@
 import { GameConfig } from "../../../../config/GameConfig";
 import { IRankElement } from "../../../../config/Rank";
 import KeyOperationManager from "../../../../controller/key-operation-manager/KeyOperationManager";
+import { MouseLockController } from "../../../../controller/MouseLockController";
 import Rank_main_Generate from "../../../../ui-generate/Rank/Rank_main_generate";
 import { AnalyticsTool, EClickEvent, EPageName } from "../../../AnalyticsModule/AnalyticsTool";
 import { PlayerHeadUIModuleC } from "../../../PlayerHeadUIModule/PlayerHeadUIModuleC";
@@ -121,11 +122,13 @@ export class RankPanel extends Rank_main_Generate {
 
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hideUI(this);
-        })
+        });
+        MouseLockController.getInstance().needMouseUnlock();
     }
 
     onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 
     /**

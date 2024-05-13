@@ -1197,7 +1197,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
 
         this.changeState(EPlayerState.Dead, [dead, npcId, score]);
         EventManager.instance.call(EPlayerEvents_C.Player_ChangeDeadState_C);
-        EventManager.instance.call(EModule_Events.land_pickUp_pill, -1);
+        EventManager.instance.call(EModule_Events.land_pickUp_pill, null);
 
         // 埋点：核心循环结束
         EventManager.instance.call(EAnalyticsEvents.coreStepEnd);

@@ -1,7 +1,18 @@
 import { GameConfig } from "../config/GameConfig";
 
 export class Globaldata {
-
+    /**
+     * 购买武器UI图片guid
+     */
+    public static buyWeaponUIGuid: string = "133379";
+    /**
+     * 开炮ui图片guid
+     */
+    public static fireWeaponUIGuid: string = "71962";
+    /**
+     * 对话ui图片guid
+     */
+    public static talkUIGuid: string = "324347";
     /**
      * 相机移动速度([0,1])
      */
@@ -47,17 +58,6 @@ export class Globaldata {
     public static logLevel: number = 0;
     /**是否开启GM */
     public static isOpenGm: boolean = false;
-
-    /**
-     * 是否 发布.
-     * @type {boolean}
-     */
-    public static isRelease = false;
-    /**
-     * 是否 beta 发布.
-     * @type {boolean}
-     */
-    public static isBeta = false;
     /**相机缩放最大距离 */
     public static targetArmMaxLen: number = 2400;
     /**相机缩放最短距离 */
@@ -549,11 +549,6 @@ export class Globaldata {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Energy
-    /**
-     * 体力容量.
-     * @type {number}
-     */
-    public static readonly ENERGY_MAX: number = 24;
 
     /**
      * 体力系数采样数量.

@@ -1,10 +1,10 @@
 import { GlobalData } from "../../const/GlobalData";
-import Regulator from "../../depend/regulator/Regulator";
-import setTimeout = mw.setTimeout;
-import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import ModuleService = mwext.ModuleService;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Global = GlobalData.Global;
+import GameServiceConfig from "../../const/GameServiceConfig";
+import { AuthModuleS } from "../auth/AuthModule";
+import { GtkTypes } from "../../util/GToolkit";
+import Gtk from "../../util/GToolkit";
 
 export default class PetSimulatorEnergyModuleData extends mwext.Subdata {
     //@Decorator.persistence()
@@ -21,6 +21,7 @@ export default class PetSimulatorEnergyModuleData extends mwext.Subdata {
     }
 
     public consume(count: number = 1): number {
+        if (count <= 0) return 0;
         const curr = this.petSimulatorEnergy;
         if (curr < count) {
             this.petSimulatorEnergy = 0;
@@ -33,7 +34,7 @@ export default class PetSimulatorEnergyModuleData extends mwext.Subdata {
 
     protected initDefaultData(): void {
         super.initDefaultData();
-        this.petSimulatorEnergy = GlobalData.Energy.ENERGY_MAX;
+        this.petSimulatorEnergy = 0;
         const now = Date.now();
         this.lastRecoveryTime = now;
     }
@@ -54,7 +55,9 @@ export default class PetSimulatorEnergyModuleData extends mwext.Subdata {
 export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, PetSimulatorEnergyModuleData> {
     //#region Member
     private _eventListeners: EventListener[] = [];
+
     private _ctr: number = 0;
+
     private _ctrAliveTime: number = 0;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -152,11 +155,11 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PetSimulatorEner
 
     private _intervalHolder: Map<number, number> = new Map();
 
-    private _petBagModule: PetBagModuleS;
+    private _authModuleS: AuthModuleS;
 
-    private petBagModule(): PetBagModuleS | null {
-        if (!this._petBagModule) this._petBagModule = ModuleService.getModule(PetBagModuleS);
-        return this._petBagModule;
+    private get authModuleS(): AuthModuleS | null {
+        if (!this._authModuleS) this._authModuleS = ModuleService.getModule(AuthModuleS);
+        return this._authModuleS;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -198,45 +201,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PetSimulatorEner
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-        const d = this.getPlayerData(player);
-        const playerId = player.playerId;
-
-        const recovery = () => {
-            if (!this.petBagModule()) {
-                this._intervalHolder.set(
-                    playerId,
-                    setTimeout(recovery, GlobalData.Energy.ENERGY_INVALID_RE_ALIVE_DURATION),
-                );
-                return;
-            }
-
-            const energyRecoveryIntervalMs = GlobalData.Global.isRelease || GlobalData.Global.isBeta ?
-                GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS :
-                30 * 1e3;
-            const now = Date.now();
-            const duration = now - d.lastRecoveryTime;
-            let timeout: number;
-            if (duration < energyRecoveryIntervalMs) {
-                timeout = energyRecoveryIntervalMs - duration;
-            } else {
-                if (d.petSimulatorEnergy < GlobalData.Energy.ENERGY_MAX) {
-                    Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.petSimulatorEnergy}`);
-                    d.petSimulatorEnergy = Math.min(
-                        GlobalData.Energy.ENERGY_MAX,
-                        d.petSimulatorEnergy + (this.petBagModule().getPlayerEnergyRecoveryCoefficient(playerId))
-                        * Math.max(Math.floor(duration / energyRecoveryIntervalMs), 0));
-                }
-                d.lastRecoveryTime = now;
-                timeout = energyRecoveryIntervalMs;
-                this.getClient(playerId).net_recovery(d.petSimulatorEnergy);
-                d.save(false);
-            }
-            this._intervalHolder.set(
-                playerId,
-                setTimeout(recovery, timeout),
-            );
-        };
-        recovery();
+        this.initPlayerEnergy(player.playerId);
     }
 
     protected onPlayerLeft(player: Player): void {
@@ -252,8 +217,10 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PetSimulatorEner
     public consume(playerId: number, count: number, firstTime: number) {
         const d = this.getPlayerData(playerId);
         if (!d) return;
-        if (d.petSimulatorEnergy >= GlobalData.Energy.ENERGY_MAX) d.lastRecoveryTime = firstTime;
-        d.consume(count);
+        if (d.petSimulatorEnergy >= (this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0) &&
+            d.consume(count) > 0)
+            d.lastRecoveryTime = firstTime;
+
         d.save(false);
         Log4Ts.log(EnergyModuleS, `consume ${count} energy. current: ${d.petSimulatorEnergy}`);
     }
@@ -264,6 +231,47 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PetSimulatorEner
         d.petSimulatorEnergy += val;
         d.save(false);
         this.getClient(playerId).net_recovery(d.petSimulatorEnergy);
+    }
+
+    private initPlayerEnergy(playerId: number) {
+        const d = this.getPlayerData(playerId);
+        if (Gtk.isNullOrUndefined(d)) return;
+        let refreshInterval = GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
+            GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS :
+            30 * GtkTypes.Interval.PerSec;
+        this.authModuleS
+            .queryRegisterStaminaLimit(playerId)
+            .then(() => {
+                let autoRecoveryHandler = () => {
+                    let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
+                    let recoveryDuration = this.authModuleS.playerStaminaRecoveryMap.get(playerId) ?? 0;
+                    if (recoveryDuration <= 0) {
+                        return;
+                    }
+                    const now = Date.now();
+                    const duration = now - d.lastRecoveryTime;
+                    let delay: number = 0;
+
+                    if (d.petSimulatorEnergy < limit) {
+                        Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.petSimulatorEnergy}`);
+                        d.petSimulatorEnergy = Math.min(
+                            limit,
+                            d.petSimulatorEnergy +
+                            limit / recoveryDuration / 1e3
+                            * Math.max(Math.floor(duration / refreshInterval), 0));
+
+                        delay = duration % refreshInterval;
+                        d.lastRecoveryTime = now - delay;
+                        this.getClient(playerId).net_recovery(d.petSimulatorEnergy);
+                        d.save(false);
+                    }
+
+                    if (this._intervalHolder.has(playerId)) mw.clearTimeout(this._intervalHolder.get(playerId));
+                    this._intervalHolder.set(playerId, mw.setTimeout(autoRecoveryHandler, refreshInterval - delay));
+                };
+
+                autoRecoveryHandler();
+            });
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

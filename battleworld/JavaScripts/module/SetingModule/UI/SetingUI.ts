@@ -6,6 +6,7 @@ import { AnalyticsTool, EPageName } from "../../AnalyticsModule/AnalyticsTool";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import { SettingModuleC } from "../SetingMoudleC";
 import { MainUI } from "../../PlayerModule/UI/MainUI";
+import { MouseLockController } from "../../../controller/MouseLockController";
 
 /**设置*/
 export default class SetingUI extends Setting_Main_Generate {
@@ -68,7 +69,9 @@ export default class SetingUI extends Setting_Main_Generate {
         AnalyticsTool.send_ts_page(EPageName.setting);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.onBack();
-        })
+        });
+
+        MouseLockController.getInstance().needMouseUnlock();
 
         this.tempCameraSpeed = Globaldata.cameraRotateSpeed;
     }
@@ -129,6 +132,7 @@ export default class SetingUI extends Setting_Main_Generate {
         }
         mw.UIService.hideUI(this);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+        MouseLockController.getInstance().cancelMouseUnlock();
     }
 
     onSaturationClicked() {

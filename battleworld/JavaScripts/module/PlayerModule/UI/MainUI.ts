@@ -1,4 +1,13 @@
-import { EAnalyticsEvents, EAreaEvent_C, EAreaId, EAttributeEvents_C, EModule_Events, EPlayerEvents_C, ESkillEvent_C, EbackType } from "../../../const/Enum";
+import {
+    EAnalyticsEvents,
+    EAreaEvent_C,
+    EAreaId,
+    EAttributeEvents_C,
+    EModule_Events,
+    EPlayerEvents_C,
+    ESkillEvent_C,
+    EbackType,
+} from "../../../const/Enum";
 import { EventManager } from "../../../tool/EventManager";
 import { PlayerModuleC } from "../PlayerModuleC";
 import { BattleWorldPlayerModuleData } from "../PlayerModuleData";
@@ -12,7 +21,14 @@ import { ChangeMoldeBuffC } from "../../buffModule/Buff/CustomBuff/ChangeMoldeBu
 import { MotionModuleC } from "../../MotionModule/MotionModuleC";
 import { SkillPanel } from "../../SkillModule/UI/SkillPanel";
 import Main_HUD_Generate from "../../../ui-generate/Main/Main_HUD_generate";
-import { AnalyticsTool, EClickEvent, ECoreStep, EFirstDo, EMovementType, EPageName } from "../../AnalyticsModule/AnalyticsTool";
+import {
+    AnalyticsTool,
+    EClickEvent,
+    ECoreStep,
+    EFirstDo,
+    EMovementType,
+    EPageName,
+} from "../../AnalyticsModule/AnalyticsTool";
 import { RankPanel } from "./rank/RankPanel";
 import { PlayerManager } from "../PlayerManager";
 import { GameConfig } from "../../../config/GameConfig";
@@ -29,7 +45,10 @@ import Tips from "../../../tool/P_Tips";
 import { GlobalAttrHelpler } from "../../attr/GlobalAttrHelpler";
 import { SettingModuleC } from "../../SetingModule/SetingMoudleC";
 import { JumpGamePanel } from "../../../ui/jump-game/JumpGamePanel";
-
+import Gtk from "../../../util/GToolkit";
+import { SkillModuleC } from "../../SkillModule/SkillModuleC";
+import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
+type PillUIInfo = { text: TextBlock, img: Image, num: number, name: TextBlock, duration: number, time: TextBlock, mask: MaskButton, timer: number };
 export class MainUI extends Main_HUD_Generate {
 
     private playerMD: PlayerModuleC;
@@ -112,7 +131,7 @@ export class MainUI extends Main_HUD_Generate {
         // 重置摇杆
         EventManager.instance.add(EPlayerEvents_C.PlayerEvent_ResetJoyStick_C, this.listen_resetJoyStick, this);
         // 玩家段位分变化
-        EventManager.instance.add(EAttributeEvents_C.Attribute_RankScore_Change_C, this.listen_rankScore, this);
+        // EventManager.instance.add(EAttributeEvents_C.Attribute_RankScore_Change_C, this.listen_rankScore, this);
         // // 怒气值变化
         // EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
 
@@ -135,8 +154,7 @@ export class MainUI extends Main_HUD_Generate {
 
         this.jumpRoomBtn.onClicked.add(() => {
             UIService.show(JumpGamePanel);
-        })
-
+        });
 
         this.canUpdate = true;
 
@@ -150,25 +168,18 @@ export class MainUI extends Main_HUD_Generate {
 
         this.registerRedDot();
 
-        this.mBattle.text = Globaldata.ENERGY_MAX.toString();
+        Yoact.bindYoact(() => {
+            Gtk.trySetText(this.mBattle, mwext.ModuleService.getModule(AuthModuleC).staminaLimit.data.toString());
+        });
 
         this.mBtn_Battle_Add.onClicked.add(() => {
             UIService.show(BuyEnergyPanel);
-        })
-
-        bindYoact(() => {
-            GToolkit.trySetText(this.mMCoin,
-                ((this.authModuleC?.currency.count ?? 0).toFixed(2).toString()));
-        });
-
-        this.mBtn_MCoin_Refresh.onClicked.add(() => {
-            this.authModuleC.queryCurrency();
         });
 
         this.mBtn_MCoin_Add.onClicked.add(() => {
             MessageBox.showOneBtnMessage(GameConfig.Language.Tips_Text_1.Value, GameConfig.Language.Deposit_1.Value, () => {
                 StringUtil.clipboardCopy(Globaldata.copyUrl);
-                Tips.show(GameConfig.Language.Copy_Success_Text_1.Value)
+                Tips.show(GameConfig.Language.Copy_Success_Text_1.Value);
             }, GameConfig.Language.Deposit_2.Value);
         });
 
@@ -181,7 +192,23 @@ export class MainUI extends Main_HUD_Generate {
                 }
             });
         }, this);
+
+        this.textKillNum.text = "0";
+
+        KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
+        KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = false));
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => (InputUtil.isLockMouse = true));
+
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.G, () => {
+            if (this.mSkillSelectBox.visibility === SlateVisibility.SelfHitTestInvisible) {
+                ModuleService.getModule(SkillModuleC).discardSkillLib();
+            }
+        });
+
+        this.mCavasTrans.visibility = mw.SlateVisibility.Collapsed;
     }
+
     private _authModuleC: AuthModuleC;
 
     private get authModuleC(): AuthModuleC | null {
@@ -204,6 +231,7 @@ export class MainUI extends Main_HUD_Generate {
     public setCameraSpeed(value: number) {
         this.mTouchPad.inputScale = new Vector2(value, value);
     }
+
     /**
      * 注册红点
      */
@@ -212,14 +240,12 @@ export class MainUI extends Main_HUD_Generate {
     //     UIService.getUI(RankPanel);
     // }
 
-
     onShow() {
         this.listen_askillPoints_change(0, 0);
 
         // 埋点
         AnalyticsTool.send_ts_page(EPageName.main);
     }
-
 
     /**
      * 版本号
@@ -250,7 +276,7 @@ export class MainUI extends Main_HUD_Generate {
 
     private update_gmPlayerInfo() {
         let msg = "";
-        msg = `最大移动速度：${mw.Player.localPlayer.character.maxWalkSpeed}`
+        msg = `最大移动速度：${mw.Player.localPlayer.character.maxWalkSpeed}`;
 
         this.mAttackNum.text = msg;
     }
@@ -278,8 +304,6 @@ export class MainUI extends Main_HUD_Generate {
         this.mSkillSelctCount.text = pointCount.toString();
     }
 
-
-
     /*******************************************************血条&&能量&&金币*********************************************************/
 
     /**显示受伤UI*/
@@ -294,10 +318,10 @@ export class MainUI extends Main_HUD_Generate {
 
     onUpdate() {
         this.cur_life_val = this.mBar_Life_back.currentValue;
-        this.mBar_Life_back.currentValue = util.lerp(this.cur_life_val, this.target_life, 0.1)
+        this.mBar_Life_back.currentValue = util.lerp(this.cur_life_val, this.target_life, 0.1);
 
         this.cur_Magic_val = this.mBar_Magic_back.currentValue;
-        this.mBar_Magic_back.currentValue = util.lerp(this.cur_Magic_val, this.target_Magic, 0.1)
+        this.mBar_Magic_back.currentValue = util.lerp(this.cur_Magic_val, this.target_Magic, 0.1);
     }
 
     /**
@@ -305,8 +329,8 @@ export class MainUI extends Main_HUD_Generate {
      */
     public player_hpChange() {
 
-        let max = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.maxHp)
-        let hp = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.hp)
+        let max = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.maxHp);
+        let hp = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.hp);
 
         if (max == null || hp == null || max == 0) {
             return;
@@ -370,7 +394,7 @@ export class MainUI extends Main_HUD_Generate {
 
     /**
      * 储备属性变化
-     * 金币  
+     * 金币
      */
     private onReserveAttrChanged() {
         this.mGold.text = `${this.playerData.getAttrValue(Attribute.EnumAttributeType.money)}`;
@@ -378,7 +402,7 @@ export class MainUI extends Main_HUD_Generate {
 
     /**
      * 储备属性变化
-     * 金币  
+     * 金币
      */
     private listen_goldChanged(value: number) {
         this.mGold.text = `${value}`;
@@ -406,7 +430,6 @@ export class MainUI extends Main_HUD_Generate {
     /**是否再回城中*/
     private isBacking: boolean = false;
 
-
     /**
      * 初始化回城
      */
@@ -418,16 +441,15 @@ export class MainUI extends Main_HUD_Generate {
     }
 
     /**
-    * 区域变化
-    * @param curAreaID 
-    */
+     * 区域变化
+     * @param curAreaID
+     */
     private listen_area_changeArea(curAreaID: number) {
         curAreaID == EAreaId.Safe ? this.backCanvas.visibility = mw.SlateVisibility.Collapsed : this.backCanvas.visibility = mw.SlateVisibility.Visible;
     }
 
-
     /**
-     * 打断回城 
+     * 打断回城
      */
     private listen_player_back_brake(backType: EbackType = EbackType.break) {
 
@@ -442,7 +464,6 @@ export class MainUI extends Main_HUD_Generate {
             this.back_ui_cd.clear();
             this.back_ui_cd = null;
 
-
             // 关闭回城动作
             EventManager.instance.call(EModule_Events.player_move, null);
         }
@@ -450,7 +471,6 @@ export class MainUI extends Main_HUD_Generate {
             this.back_btn_cd.clear();
             this.back_btn_cd.clear();
         }
-
 
         this.backBtmCanvas.visibility = mw.SlateVisibility.Collapsed;
 
@@ -474,7 +494,9 @@ export class MainUI extends Main_HUD_Generate {
      * 回城
      */
     private back() {
-        if (this.reBackTween && this.reBackTween.isPlaying()) { return; }
+        if (this.reBackTween && this.reBackTween.isPlaying()) {
+            return;
+        }
         if (PlyerState.dfaultState == EPlayerState.run) return;
         this.startbackTween(EbackType.break);
         this.startBackBtnTimer(EbackType.break);
@@ -483,7 +505,9 @@ export class MainUI extends Main_HUD_Generate {
         this.mBar_Back.currentValue = 1;
         this.mText_Back_Time.text = `${Globaldata.player_backTime}s`;
 
-        if (this.back_ui_cd) { this.back_ui_cd.clear(); }
+        if (this.back_ui_cd) {
+            this.back_ui_cd.clear();
+        }
         this.back_ui_cd = new util.IntervalElement(Globaldata.player_backTime, 0.1, () => {
 
             // 关闭回城动作
@@ -517,7 +541,7 @@ export class MainUI extends Main_HUD_Generate {
 
     /**
      * 遮罩动画
-     * @param backType 
+     * @param backType
      */
     private startbackTween(backType: EbackType) {
         if (this.reBackTween) {
@@ -542,7 +566,9 @@ export class MainUI extends Main_HUD_Generate {
         this.mText_Back_Time_cd.visibility = mw.SlateVisibility.Visible;
         let time = backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
         this.mText_Back_Time_cd.text = `${time.toFixed(0)}s`;
-        if (this.back_btn_cd) { this.back_btn_cd.clear(); }
+        if (this.back_btn_cd) {
+            this.back_btn_cd.clear();
+        }
         this.back_btn_cd = new util.IntervalElement(time, 1, () => {
             this.mText_Back_Time_cd.visibility = mw.SlateVisibility.Collapsed;
         }, (time: number) => {
@@ -601,7 +627,7 @@ export class MainUI extends Main_HUD_Generate {
         this.rebornTween.start();
 
         this.mVirtualJoystickPanel.onInputDir.clear();
-        this.playerMD.setMove(true)
+        this.playerMD.setMove(true);
         this.playerMD.changeState(EPlayerState.Idle);
 
         let player = Player.localPlayer;
@@ -630,9 +656,8 @@ export class MainUI extends Main_HUD_Generate {
         this.mVirtualJoystickPanel.resetJoyStick();
     }
 
-
     /**
-     * 设置摇杆禁用  
+     * 设置摇杆禁用
      * @param disable true 禁用 false 启用
      */
     public setJoystickDisable(disable: boolean) {
@@ -681,17 +706,54 @@ export class MainUI extends Main_HUD_Generate {
     /*******************************************************丹药*********************************************************/
 
     /** 记录了增加的丹药类型对应的UI，目前先暂时这样写，后续考虑调整为动态生成 */
-    private pillMap: Map<Attribute.EnumAttributeType, { text: TextBlock, img: Image, num: number }> = new Map();
+
+    private pillMap: Map<Attribute.EnumAttributeType, PillUIInfo> = new Map();
 
     /**
      * 初始化丹药的映射关系
      */
     private initPill() {
         //先暂时这样写着，后面不考虑用这种方式，考虑获取丹药时生成UI放到canvas中显示
-        this.pillMap.set(Attribute.EnumAttributeType.atkAdd, { text: this.mText_Long_Num, img: this.mImage_Long, num: 0 });
-        this.pillMap.set(Attribute.EnumAttributeType.defMultiple, { text: this.mText_Tortoise_Num, img: this.mImage_Tortoise, num: 0 });
-        this.pillMap.set(Attribute.EnumAttributeType.maxHpAdd, { text: this.mText_Bone_Num, img: this.mImage_Bone, num: 0 });
-        this.pillMap.set(Attribute.EnumAttributeType.maxEnergyAdd, { text: this.mText_Qi_Num, img: this.mImage_Qi, num: 0 });
+        this.pillMap.set(Attribute.EnumAttributeType.atkAdd, {
+            text: this.mText_Long_Num,
+            img: this.mImage_Long,
+            num: 0,
+            name: this.textAttack,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Long,
+            mask: this.mMask_Trans_Long,
+            timer: -1
+        });
+        this.pillMap.set(Attribute.EnumAttributeType.defMultiple, {
+            text: this.mText_Tortoise_Num,
+            img: this.mImage_Tortoise,
+            num: 0,
+            name: this.textDefend,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Tortoise,
+            mask: this.mMask_Trans_Tortoise,
+            timer: -1
+        });
+        this.pillMap.set(Attribute.EnumAttributeType.maxHpAdd, {
+            text: this.mText_Bone_Num,
+            img: this.mImage_Bone,
+            num: 0,
+            name: this.textHeart,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Bone,
+            mask: this.mMask_Trans_Bone,
+            timer: -1
+        });
+        this.pillMap.set(Attribute.EnumAttributeType.maxEnergyAdd, {
+            text: this.mText_Qi_Num,
+            img: this.mImage_Qi,
+            num: 0,
+            name: this.textBlue,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Qi,
+            mask: this.mMask_Trans_Qi,
+            timer: -1
+        });
         this.refreshPillVisible();
     }
 
@@ -699,8 +761,8 @@ export class MainUI extends Main_HUD_Generate {
      * 更新丹药的UI
      * @param pillType 拾取的丹药类型，-1表示清空显示
      */
-    private listen_land_pickUp_pill(pillType: number) {
-        if (pillType == -1) {
+    private listen_land_pickUp_pill(pillInfo: PillInfo) {
+        if (!pillInfo) {
             for (let [_, second] of this.pillMap) {
                 if (second && second.text) {
                     second.num = 0;
@@ -708,10 +770,11 @@ export class MainUI extends Main_HUD_Generate {
                 }
             }
         } else {
-            const pillValue = this.pillMap.get(pillType);
-            if (pillType) {
+            if (pillInfo.attributeID) {
+                const pillValue = this.pillMap.get(pillInfo.attributeID);
                 pillValue.num++;
                 pillValue.text.text = pillValue.num.toFixed();
+                pillValue.duration = pillInfo.duration;
             }
         }
         this.refreshPillVisible();
@@ -740,10 +803,37 @@ export class MainUI extends Main_HUD_Generate {
                 if (second.num > 0) {
                     second.text.visibility = SlateVisibility.Visible;
                     second.img.visibility = SlateVisibility.Visible;
+                    second.name.visibility = SlateVisibility.Visible;
                     canvasShouldShow = true;
+                    let oriDuration = second.duration;
+                    if (second.timer === -1) {
+                        second.timer = TimeUtil.setInterval(() => {
+                            console.log(second.name.text, second.mask.fanShapedValue)
+                            second.duration -= 0.1;
+                            second.mask.fanShapedValue = (oriDuration - second.duration) / oriDuration;
+                            second.time.text = `${second.duration.toFixed(1)}s`;
+                            if (second.duration <= 0) {
+                                second.text.visibility = SlateVisibility.Collapsed;
+                                second.img.visibility = SlateVisibility.Collapsed;
+                                second.time.text = "";
+                                second.name.visibility = SlateVisibility.Collapsed;
+                                second.mask.fanShapedValue = 0;
+                                TimeUtil.clearInterval(second.timer);
+                                second.timer = -1;
+                            }
+                        }, 0.1);
+                    }
+
                 } else {
                     second.text.visibility = SlateVisibility.Collapsed;
                     second.img.visibility = SlateVisibility.Collapsed;
+                    second.name.visibility = SlateVisibility.Collapsed;
+                    second.mask.fanShapedValue = 1;
+                    second.time.text = "";
+                    if (second.timer !== -1) {
+                        TimeUtil.clearInterval(second.timer);
+                        second.timer = -1;
+                    }
                 }
             }
         }
@@ -775,6 +865,7 @@ export class MainUI extends Main_HUD_Generate {
         let cfg = GameConfig.Rank.getElement(rank);
         this.mPoint.text = cfg.rankName + rankScore;
     }
+
     /*******************************************************怒气********************************************************* */
 
     /**玩家怒气值发生变化 */
@@ -795,6 +886,5 @@ export class MainUI extends Main_HUD_Generate {
         this.mCanvasMCoin.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
         this.mCanvasBattle.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
     }
-
 
 }

@@ -6,11 +6,9 @@ import { RunningGameData, RunningGameEndPanel } from "../../../ui/runningGame/Ru
 import { RunningGameGamingPanel } from "../../../ui/runningGame/RunningGameGamingPanel";
 import { RunningGamePreparePanel } from "../../../ui/runningGame/RunningGamePreparePanel";
 import { RunningGameController } from "./RuninngGameController";
-import { AuthModuleC } from "../../../module/auth/AuthModule";
-import { TimeManager } from "../../../controller/TimeManager";
-import { SubGameTypes } from "../../../const/SubGameTypes";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
 import MainPanel from "../../../ui/main/MainPanel";
+import CharacterStateType = mw.CharacterStateType;
 
 /**
  * 跑酷游戏状态
@@ -136,7 +134,7 @@ export class RunningGameMode {
             const character = Player.localPlayer.character;
             UIService.getUI(MainPanel)?.enableReset(false);
             UIService.getUI(MainPanel)?.enableJump(false);
-            character.switchToFlying();
+            character.changeState(CharacterStateType.Flying)
             this._companionPairBagIdCache = this.companionModule.getCurrentShowupBagId();
             if (this._companionPairBagIdCache !== 0) this.companionModule.showUpCompanion(this._companionPairBagIdCache, false);
             this._gameController = new RunningGameController(character);

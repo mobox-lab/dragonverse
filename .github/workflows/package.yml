@@ -1,0 +1,54 @@
+name: Package Dragon Verse
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate .projectassembly
+        run: cp .projectassembly_backup .projectassembly
+
+      - name: Generate All .project
+        run: |
+          find . -type f -name ".project_backup" | while read filename; do
+            newname="${filename%_backup}"
+            filedir=$(dirname "$filename")
+            echo "generate .project at $filedir"
+            cp "$filename" "$newname"
+          done
+
+      - name: Package Project Files
+        run: zip -r DragonVerse.zip .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonVerseZip
+          path: DragonVerse.zip
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./DragonVerse.zip
+          asset_name: DragonVerse.zip
+          asset_content_type: application/zip
