@@ -20,7 +20,7 @@ import { PetBagModuleData } from "./modules/PetBag/PetBagModuleData";
 import { CollectModuleS } from "./modules/PetCollect/CollectModuleS";
 import { CollectModuleC } from "./modules/PetCollect/CollectModuleC";
 import { CollectModuleData } from "./modules/PetCollect/CollectModuleData";
-import { OnlineMoudleS } from "./modules/OnlineModule.ts/OnlineModuleS";
+import { OnlineModuleS } from "./modules/OnlineModule.ts/OnlineModuleS";
 import { OnlineModuleC } from "./modules/OnlineModule.ts/OnlineModuleC";
 import { OnlineModuleData } from "./modules/OnlineModule.ts/OnlineModuleData";
 import { TradingModuleS } from "./modules/Trading/TradingModuleS";
@@ -45,6 +45,7 @@ import PetSimulatorEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./mo
 import PetSimulatorAuthModuleData, { AuthModuleC, AuthModuleS } from "./modules/auth/AuthModule";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./modules/jump-room/JumpRoomModule";
 import GameServiceConfig from "./const/GameServiceConfig";
+import PsStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./modules/statistic/StatisticModule";
 
 // declare global {
 //     var UE: any;
@@ -216,7 +217,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(InputModuleS, InputModuleC, null);
         ModuleService.registerModule(ResourceModuleS, ResourceModuleC, null);
         ModuleService.registerModule(CollectModuleS, CollectModuleC, CollectModuleData);
-        ModuleService.registerModule(OnlineMoudleS, OnlineModuleC, OnlineModuleData);
+        ModuleService.registerModule(OnlineModuleS, OnlineModuleC, OnlineModuleData);
         ModuleService.registerModule(TradingModuleS, TradingModuleC, TradingModuleData);
         ModuleService.registerModule(BuffModuleS, BuffModuleC, BuffData);
         ModuleService.registerModule(AchievementModuleS, AchievementModuleC, AchievementData);
@@ -227,6 +228,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(PetBagModuleS, PetBagModuleC, PetBagModuleData);
         ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PetSimulatorEnergyModuleData);
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
+        ModuleService.registerModule(StatisticModuleS, StatisticModuleC, PsStatisticModuleData);
     }
 
     /**

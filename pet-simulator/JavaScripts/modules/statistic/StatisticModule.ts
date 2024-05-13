@@ -3,7 +3,7 @@ import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
 
-export default class DvStatisticModuleData extends JModuleData {
+export default class PsStatisticModuleData extends JModuleData {
     //@Decorator.persistence()
     //public isSave: bool;
 
@@ -111,7 +111,7 @@ interface PlayerIntervalData {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class StatisticModuleC extends JModuleC<StatisticModuleS, DvStatisticModuleData> {
+export class StatisticModuleC extends JModuleC<StatisticModuleS, PsStatisticModuleData> {
 //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -186,7 +186,7 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, DvStatisticModu
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class StatisticModuleS extends JModuleS<StatisticModuleC, DvStatisticModuleData> {
+export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModuleData> {
 //#region Member
     private _eventListeners: EventListener[] = [];
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
