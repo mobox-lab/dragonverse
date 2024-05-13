@@ -19,6 +19,7 @@ import GToolkit from "../../util/GToolkit";
 import { JumpGamePanel } from "../../ui/JumpGamePanel";
 import { Task_ModuleC } from "../Task/TaskModuleC";
 import Gtk from "../../util/GToolkit";
+import { P_Transmit } from "../AreaDivide/P_Transmit";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -70,7 +71,11 @@ export class P_HudUI extends Hud_Generate {
             this.onJumpAction.call();
         });
         this.mBtn_Transmit.onClicked.add(() => {
-            this.ontransmitAC.call();
+            if (!UIService.getUI(P_Transmit, false) || !UIService.getUI(P_Transmit).visible) {
+                this.ontransmitAC.call();
+            } else {
+                UIService.getUI(P_Transmit).hide();
+            }
         });
         this.mBtn_FastTran.onClicked.add(() => {
             this.onFastTranAC.call();
@@ -142,7 +147,12 @@ export class P_HudUI extends Hud_Generate {
         //         ((this.authModuleC?.currency.count ?? 0).toFixed(2).toString()));
         // });
         this.jumpRoomBtn.onClicked.add(() => {
-            UIService.show(JumpGamePanel);
+            if (!UIService.getUI(JumpGamePanel, false) || !UIService.getUI(JumpGamePanel).visible) {
+                UIService.show(JumpGamePanel);
+            } else {
+                UIService.hide(JumpGamePanel);
+            }
+
         });
 
         KeyOperationManager.getInstance().onKeyPress(this, Keys.W, () => {
@@ -246,7 +256,7 @@ export class P_HudUI extends Hud_Generate {
         let startAngle = GlobalData.TweenFastTranBtn.startAngle;
         let endAngle = GlobalData.TweenFastTranBtn.endAngle;
         let time = GlobalData.TweenFastTranBtn.tweenTime;
-        this.leftToRightTween = new mw.Tween({angle: startAngle}).to({angle: endAngle}, time * 1000)
+        this.leftToRightTween = new mw.Tween({ angle: startAngle }).to({ angle: endAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -256,7 +266,7 @@ export class P_HudUI extends Hud_Generate {
                 }
             })
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
-        this.rightToLeftTween = new mw.Tween({angle: endAngle}).to({angle: startAngle}, time * 1000)
+        this.rightToLeftTween = new mw.Tween({ angle: endAngle }).to({ angle: startAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
