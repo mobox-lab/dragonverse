@@ -19,6 +19,8 @@ export default class SetingUI extends Setting_Main_Generate {
 
     private tempCameraSpeed: number = 0;
 
+    public isShowing: boolean = false;
+
     onStart() {
 
 
@@ -74,6 +76,7 @@ export default class SetingUI extends Setting_Main_Generate {
         MouseLockController.getInstance().needMouseUnlock();
 
         this.tempCameraSpeed = Globaldata.cameraRotateSpeed;
+        this.isShowing = true;
     }
 
     listen_cameraTargetArmLength(value: number) {
@@ -133,6 +136,8 @@ export default class SetingUI extends Setting_Main_Generate {
         mw.UIService.hideUI(this);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         MouseLockController.getInstance().cancelMouseUnlock();
+
+        this.isShowing = false;
     }
 
     onSaturationClicked() {
