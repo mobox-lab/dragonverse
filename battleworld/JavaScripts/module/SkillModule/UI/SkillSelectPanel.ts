@@ -67,7 +67,7 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
         if (skillCfg == null) {
             return;
         }
-        this.bg.imageGuid = skillLibCfg.selectIconGuid;
+        this.bg.imageGuid = skillLibCfg.changeIconGuid;
         let msg = GameConfig.Language.SkillSelect_1.Value;
 
         let msg2 = StringUtil.format(msg, skillCfg.Name);
