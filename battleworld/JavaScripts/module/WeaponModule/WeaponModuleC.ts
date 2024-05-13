@@ -190,11 +190,15 @@ export class WeaponModuleC extends ModuleC<WeaponModuleS, WeaponModuleData> {
                 }
             });
 
-            // trigger.onLeave.add((obj: mw.GameObject) => {
-            //     if (obj instanceof mw.Character) {
-            //         this.trigger_leave(cfg, obj);
-            //     }
-            // });
+            trigger.onLeave.add((obj: mw.GameObject) => {
+                if (obj instanceof mw.Character) {
+                    if (obj.player == null) return;
+                    if (obj.player.playerId != mw.Player.localPlayer.playerId) {
+                        return;
+                    }
+                    ClickUIPools.instance.hide(obj);
+                }
+            });
 
             let data: IWeaponTriggerData = {
                 cfg: cfg,
@@ -225,6 +229,8 @@ export class WeaponModuleC extends ModuleC<WeaponModuleS, WeaponModuleData> {
         }
 
     }
+
+
 
     /**
      * 玩家进入触发器
