@@ -30,7 +30,7 @@ export type LandParce = {
  * 1.拾取物 pickup （属性同步脚本，同步流程，同步随机技能球6个，血包3个，金钱3个）
  * 2.地形运动 && buff 
  */
-export class LandModuleS extends ModuleS<LandModuleC, null>{
+export class LandModuleS extends ModuleS<LandModuleC, null> {
 
     /**玩家模块*/
     private playerModules: PlayerModuleS = null;
@@ -113,6 +113,7 @@ export class LandModuleS extends ModuleS<LandModuleC, null>{
             let obj = await GameObject.asyncFindGameObjectById(element.Guid);
             if (obj == null) {
                 console.error("initLandParces go == null");
+                return;
             }
             this.landParcess.push({
                 cfgId: element.Id, obj: obj,
@@ -297,6 +298,10 @@ export class LandModuleS extends ModuleS<LandModuleC, null>{
             case EPickUpType.attribute:
                 {
                     const pillInfo = pickUpInfo as PillInfo;
+                    //计数，一个属性最多只能加5次
+                    let currentAdd = this._pillDurationMap.get(this.currentPlayerId)?.filter(element => element.attributeID === pillInfo.attributeID);
+                    if (currentAdd && currentAdd.length >= 5) return;
+
                     //给对应的加成类型加数据
                     this.playerModules.addPlayerAttr(this.currentPlayerId, pillInfo.attributeID, pillInfo.attributeValue);
                     let info = this._playerPillMap.get(this.currentPlayerId);

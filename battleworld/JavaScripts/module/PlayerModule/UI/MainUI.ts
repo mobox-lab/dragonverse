@@ -50,7 +50,7 @@ import { SkillModuleC } from "../../SkillModule/SkillModuleC";
 import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
 import SetingUI from "../../SetingModule/UI/SetingUI";
 import { P_Game_Action } from "../../action/ui/P_Game_Action";
-type PillUIInfo = { text: TextBlock, img: Image, num: number, name: TextBlock, duration: number, time: TextBlock, mask: MaskButton, timer: number };
+type PillUIInfo = { text: TextBlock, img: Image, num: number, name: TextBlock, duration: number, time: TextBlock, mask: MaskButton, timer: number, levelCanvas: Canvas };
 export class MainUI extends Main_HUD_Generate {
 
     private playerMD: PlayerModuleC;
@@ -743,7 +743,8 @@ export class MainUI extends Main_HUD_Generate {
             duration: 0,
             time: this.mText_Trans_Time_cd_Long,
             mask: this.mMask_Trans_Long,
-            timer: -1
+            timer: -1,
+            levelCanvas: this.canvasLevelF
         });
         this.pillMap.set(Attribute.EnumAttributeType.defMultiple, {
             text: this.mText_Tortoise_Num,
@@ -753,7 +754,8 @@ export class MainUI extends Main_HUD_Generate {
             duration: 0,
             time: this.mText_Trans_Time_cd_Tortoise,
             mask: this.mMask_Trans_Tortoise,
-            timer: -1
+            timer: -1,
+            levelCanvas: this.canvasLevelD
         });
         this.pillMap.set(Attribute.EnumAttributeType.maxHpAdd, {
             text: this.mText_Bone_Num,
@@ -763,7 +765,8 @@ export class MainUI extends Main_HUD_Generate {
             duration: 0,
             time: this.mText_Trans_Time_cd_Bone,
             mask: this.mMask_Trans_Bone,
-            timer: -1
+            timer: -1,
+            levelCanvas: this.canvasLevelH
         });
         this.pillMap.set(Attribute.EnumAttributeType.maxEnergyAdd, {
             text: this.mText_Qi_Num,
@@ -773,7 +776,8 @@ export class MainUI extends Main_HUD_Generate {
             duration: 0,
             time: this.mText_Trans_Time_cd_Qi,
             mask: this.mMask_Trans_Qi,
-            timer: -1
+            timer: -1,
+            levelCanvas: this.canvasLevelB
         });
         this.refreshPillVisible();
     }
@@ -787,14 +791,14 @@ export class MainUI extends Main_HUD_Generate {
             for (let [_, second] of this.pillMap) {
                 if (second && second.text) {
                     second.num = 0;
-                    second.text.text = second.num.toFixed();
+                    // second.text.text = second.num.toFixed();
                 }
             }
         } else {
             if (pillInfo.attributeID) {
                 const pillValue = this.pillMap.get(pillInfo.attributeID);
                 pillValue.num++;
-                pillValue.text.text = pillValue.num.toFixed();
+                // pillValue.text.text = pillValue.num.toFixed();
                 pillValue.duration = pillInfo.duration;
             }
         }
@@ -809,7 +813,7 @@ export class MainUI extends Main_HUD_Generate {
         const pillValue = this.pillMap.get(pillType);
         if (pillType) {
             pillValue.num--;
-            pillValue.text.text = pillValue.num.toFixed();
+            // pillValue.text.text = pillValue.num.toFixed();
         }
         this.refreshPillVisible();
     }
@@ -822,10 +826,11 @@ export class MainUI extends Main_HUD_Generate {
         for (let [_, second] of this.pillMap) {
             if (second && second.text && second.img) {
                 if (second.num > 0) {
-                    second.text.visibility = SlateVisibility.Visible;
+                    // second.text.visibility = SlateVisibility.Visible;
                     second.img.visibility = SlateVisibility.Visible;
                     second.name.visibility = SlateVisibility.Visible;
                     canvasShouldShow = true;
+                    this.setBuffLevel(second.levelCanvas, second.num);
                     let oriDuration = second.duration;
                     if (second.timer === -1) {
                         second.timer = TimeUtil.setInterval(() => {
@@ -834,11 +839,12 @@ export class MainUI extends Main_HUD_Generate {
                             second.mask.fanShapedValue = (oriDuration - second.duration) / oriDuration;
                             second.time.text = `${second.duration.toFixed(1)}s`;
                             if (second.duration <= 0) {
-                                second.text.visibility = SlateVisibility.Collapsed;
+                                // second.text.visibility = SlateVisibility.Collapsed;
                                 second.img.visibility = SlateVisibility.Collapsed;
                                 second.time.text = "";
                                 second.name.visibility = SlateVisibility.Collapsed;
                                 second.mask.fanShapedValue = 0;
+                                second.levelCanvas.visibility = SlateVisibility.Collapsed;
                                 TimeUtil.clearInterval(second.timer);
                                 second.timer = -1;
                             }
@@ -846,11 +852,12 @@ export class MainUI extends Main_HUD_Generate {
                     }
 
                 } else {
-                    second.text.visibility = SlateVisibility.Collapsed;
+                    // second.text.visibility = SlateVisibility.Collapsed;
                     second.img.visibility = SlateVisibility.Collapsed;
                     second.name.visibility = SlateVisibility.Collapsed;
                     second.mask.fanShapedValue = 1;
                     second.time.text = "";
+                    second.levelCanvas.visibility = SlateVisibility.Collapsed;
                     if (second.timer !== -1) {
                         TimeUtil.clearInterval(second.timer);
                         second.timer = -1;
@@ -908,4 +915,24 @@ export class MainUI extends Main_HUD_Generate {
         this.mCanvasBattle.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
     }
 
+    private setBuffLevel(parentCanvas: Canvas, level: number) {
+        if (level === 0) {
+            parentCanvas.visibility = SlateVisibility.Collapsed;
+            return;
+        }
+        if (level <= parentCanvas.getChildrenCount()) {
+            this.showBuffLevel(parentCanvas, level);
+        }
+    }
+
+    private showBuffLevel(parentCanvas: Canvas, showLevel: number) {
+        parentCanvas.visibility = SlateVisibility.Visible;
+        for (let i = 0; i < parentCanvas.getChildrenCount(); i++) {
+            if (i <= showLevel - 1) {
+                parentCanvas.getChildAt(i).visibility = SlateVisibility.Visible;
+            } else {
+                parentCanvas.getChildAt(i).visibility = SlateVisibility.Collapsed;
+            }
+        }
+    }
 }
