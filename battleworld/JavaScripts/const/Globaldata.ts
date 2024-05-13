@@ -1,7 +1,18 @@
 import { GameConfig } from "../config/GameConfig";
 
 export class Globaldata {
-
+    /**
+     * 购买武器UI图片guid
+     */
+    public static buyWeaponUIGuid: string = "133379";
+    /**
+     * 开炮ui图片guid
+     */
+    public static fireWeaponUIGuid: string = "71962";
+    /**
+     * 对话ui图片guid
+     */
+    public static talkUIGuid: string = "324347";
     /**
      * 相机移动速度([0,1])
      */
