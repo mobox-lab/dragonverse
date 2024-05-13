@@ -6,7 +6,6 @@ import { ObjectPoolServices } from "../../Tools/ObjectPool";
 import { oTraceError } from "../../util/LogManager";
 import { cubicBezier, getPos, setPos } from "../../util/MoveUtil";
 import { SoundManager } from "../../util/SoundManager";
-import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { RewardTipsManager } from "../UI/RewardTips";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
@@ -39,7 +38,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null>{
 		@Decorator.noReply()
     public net_start() {
         TimeUtil.setInterval(() => {
-            this.comparePlayerDis();
+            this.comparePlayerDis(this.currentPlayer);
             this.compareDis();
         }, 3);
     }
@@ -120,7 +119,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null>{
                 ObjectPoolServices.getPool(Drop).return(drop);
                 return;
             }
-            drop.update(dt);
+            drop.update(dt, this.currentPlayer);
         });
     }
 
@@ -149,11 +148,10 @@ export class DropManagerS extends ModuleS<DropManagerC, null>{
     }
 
     /**比较与玩家的距离 */
-    private comparePlayerDis(): void {
+    private comparePlayerDis(playerBe?: mw.Player): void {
         if (this._drops.size <= 0) return;
-        let playerBe = PlayerModuleC.curPlayer; // TODO: Check all PlayerModuleC.curPlayer 
-        if (!playerBe) return;
-        let playerPos = playerBe.currentTransform.position;
+				if (!playerBe) return
+				const playerPos = playerBe.character.worldTransform.position;
         this._drops.forEach((element: Drop) => {
             let dis = mw.Vector.squaredDistance(playerPos, getPos(element.model));
             if (dis >= GlobalData.DropAni.playerDistance * GlobalData.DropAni.playerDistance) {
@@ -408,17 +406,18 @@ class Drop {
         }
     }
 
-    /**更新 */
-    update(dt: number): void {
-        if (!this.canUpdate) return;
-        this.judgeDestroy(dt);
-        if (this._isStartJump) {
-            this.bonceUpdate(dt);
-        }
-        this.petAbsorb();
-        let ownerPos = PlayerModuleC.curPlayer.currentTransform.position; // TODO: Check all PlayerModuleC.curPlayer
-        this.distanceAbsorb(ownerPos);
-    }
+		/**更新 */
+		async update(dt: number, player?: mw.Player) {
+				if (!this.canUpdate) return;
+				this.judgeDestroy(dt);
+				if (this._isStartJump) {
+					this.bonceUpdate(dt);
+				}
+				await this.petAbsorb(player);
+				if (!player) return
+				const ownerPos = player.character.worldTransform.position;
+				this.distanceAbsorb(ownerPos);
+		}
 
     /**当前落地后时间 */
     private _landTime: number = 0;
@@ -433,29 +432,30 @@ class Drop {
     }
 
     /**判断距离吸收 */
-    private distanceAbsorb(loc: mw.Vector): void {
+    private distanceAbsorb(loc: mw.Vector, player?: mw.Player): void {
         let targetPos = getPos(this.model);
         let dis = mw.Vector.distance(loc, targetPos);
         if (dis <= this._maxDis) {
-            this.flyToPlayer(dis, targetPos, loc);
+            this.flyToPlayer(dis, targetPos, loc, player);
         }
     }
 
-    /**宠物吸收 */
-    private petAbsorb() {
-        let arr = GlobalData.Enchant.petAutoBuffKeys;
-        if (arr.length <= 0) return;
-        let curPetArr = PlayerModuleC.curPlayer.PetArr; // TODO: Check all PlayerModuleC.curPlayer
-
-        arr.forEach((key) => {
-            let pet = curPetArr.find((value) => {
-                return value.key == key;
-            });
-            if (pet) {
-                this.distanceAbsorb(pet.PetGameObj?.tempLocation);
-            }
-        });
-    }
+		/**宠物吸收 */
+		private async petAbsorb(player?: mw.Player) {
+				let arr = GlobalData.Enchant.petAutoBuffKeys;
+				if (arr.length <= 0) return;
+				// let curPetArr = PlayerModuleC.curPlayer.PetArr; // TODO: Check all PlayerModuleC.curPlayer
+				const curPetArr = await ModuleService.getModule(PlayerModuleS).net_getPetArr(player);
+				if (!curPetArr?.length) return
+				arr.forEach((key) => {
+						let pet = curPetArr.find((value) => {
+								return value.key == key;
+						});
+						if (pet) {
+								this.distanceAbsorb(pet.PetGameObj?.tempLocation, player);
+						}
+				});
+		}
 
     /**飞往tween贝塞尔 */
     private _flyToTweenBezier: number[] = GlobalData.DropAni.flyToPlayerBezier;
@@ -463,7 +463,7 @@ class Drop {
     private _flyToPlayerTime: number = GlobalData.DropAni.flyToPlayerTime;
 
     /**飞向玩家 */
-    public flyToPlayer(dis: number, targetPos: mw.Vector, ownerPos: mw.Vector): void {
+    public flyToPlayer(dis: number, targetPos: mw.Vector, ownerPos: mw.Vector, player?:mw.Player): void {
         this.canUpdate = false;
         this._isLand = false;
         this._moveToTween.stop();
@@ -471,13 +471,16 @@ class Drop {
 						const val = Math.round(this._gold * GlobalData.Buff.goldBuff);
 						Log4Ts.log(Drop, `add gold count ${val}`);
 						ModuleService.getModule(DropManagerS).addGold(val, this.type);
-						RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
+						// RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
+						mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, { type: this.type, count: val });
 				}
 				if (this._diamond > 0) {
 						const val = Math.round(this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond);
 						Log4Ts.log(Drop, `add diamond count ${val}`);
 						ModuleService.getModule(DropManagerS).addDiamond(val);
-						RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
+						// RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
+						mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, { type: this.type, count: val });
+
 				}
         this._moveToTween = new mw.Tween(targetPos).to(ownerPos, this._flyToPlayerTime)
             .onUpdate((value: mw.Vector) => {

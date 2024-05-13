@@ -295,4 +295,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     public net_getPlayerNameById(id: number) {
         this.getClient(id).net_getPlayerName();
     }
+		
+    /**装卸滑板 */
+    public async net_getPetArr(player?: mw.Player) {
+			if(!player) return null
+			return this.getPlayerBehavior(player).PetArr
+    }
+
 }

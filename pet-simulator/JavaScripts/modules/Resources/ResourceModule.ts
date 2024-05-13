@@ -14,6 +14,7 @@ import { P_GlobalTips } from "../UI/P_GlobalTips";
 import { DropManagerS } from "./DropResouce";
 import resourceScript, { SceneResourceMap } from "./resource";
 import { BonusUI } from "./scenceUnitUI";
+import { RewardTipsManager } from "../UI/RewardTips";
 
 export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
 
@@ -24,6 +25,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     private guaShaArr: number[] = [];
 
     protected onStart(): void {
+				RewardTipsManager.instance.registerEvent();
         AreaDivideManager.instance.onAreaChangeAC.add(this.areaChange.bind(this));
         BonusUI.instance;
 				ModuleService.getModule(DropManagerS).net_start();

@@ -1,7 +1,8 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import { Singleton, utils } from "../../util/uitls";
+import { Singleton } from "../../util/GToolkit";
+ import {  utils } from "../../util/uitls";
 import { P_HudUI } from "../Hud/P_HudUI";
 
 /**拾取奖励 ui  */
@@ -158,9 +159,15 @@ export class RewardTips {
     }
 }
 
-
-@Singleton()
-export class RewardTipsManager {
+export class RewardTipsManager  extends Singleton<RewardTipsManager>(){
+    /**
+     * 全局提示事件名.
+     * @desc 事件参数 [string, IGlobalTipsOption]
+     * - {string} content 提示内容.
+     * - {IGlobalTipsOption} option 提示选项.
+     * @type {string}
+     */
+    public static readonly EVENT_NAME_REWARD_TIPS_GET_UI = "EventNameRewardTipsGetUi";
 
     public static instance: RewardTipsManager;
 
@@ -170,6 +177,7 @@ export class RewardTipsManager {
     private diamondTips: RewardTips;
 
     constructor() {
+				super();
         this.firstGoldTips = new RewardTips(new mw.Vector(0, 100));
         this.firstGoldTips.setImg(GlobalEnum.CoinType.FirstWorldGold)
         this.secondGoldTips = new RewardTips(new mw.Vector(0, 100));
@@ -180,6 +188,24 @@ export class RewardTipsManager {
         this.diamondTips.setImg(GlobalEnum.CoinType.Diamond)
     }
 
+		/**
+		 * 注册事件.
+		 * @return {this}
+		 */
+		public registerEvent(): this {
+				if (mw.SystemUtil.isClient()) {
+						mw.Event.addLocalListener(
+							RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI,
+								this.getUI
+						);
+						mw.Event.addServerListener(
+							RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI,
+								this.getUI
+						);
+				}
+
+				return this;
+		}
 
     public getUI(type: GlobalEnum.CoinType, count: number) {
         if (type == GlobalEnum.CoinType.FirstWorldGold) {
