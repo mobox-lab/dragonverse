@@ -499,7 +499,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 					allPetIds.push(minAtkDiffPetId);
 			}
 			let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
-			// ModuleService.getModule(AchievementModuleS).broadcastAchievementBlendType(endPetId); // TODO: 重构 AchievementModuleC.broadcastAchievementBlendType 到 S 端，主要是有个C端的toast
+			mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE", endPetId);
+			// ModuleService.getModule(AchievementModuleS).broadcastAchievementBlendType(endPetId); // TODO: 重构 AchievementModuleC.broadcastAchievementBlendType 到 S 端，主要是有个C端的toast 现在先用dispatchToClient 发事件代替
 			await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId, GlobalEnum.PetGetType.Fusion, earliestObtainTime);
 	}
 
