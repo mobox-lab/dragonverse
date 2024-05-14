@@ -290,6 +290,17 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
             });
     }
 
+    /**
+     * 是否 足够消耗.
+     * @param playerId
+     * @param {number} cost
+     *  - 1 default.
+     * @return {boolean}
+     */
+    public isAfford(playerId: number, cost?: number): boolean {
+        return this.getPlayerData(playerId)?.isAfford(cost) ?? false;
+    }
+
     public consume(playerId: number, cost: number, firstTime: number = undefined) {
         firstTime = firstTime ?? Date.now();
         const d = this.getPlayerData(playerId);
