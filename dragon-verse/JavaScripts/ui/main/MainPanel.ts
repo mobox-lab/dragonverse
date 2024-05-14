@@ -250,7 +250,12 @@ export default class MainPanel extends MainPanel_Generate {
         });
 
         this.btnMap.onClicked.add(() => {
-            UIService.getUI(MapPanel)?.showBigMap();
+            if (!UIService.getUI(MapPanel) || !UIService.getUI(MapPanel).cnvMap.visible) {
+                UIService.getUI(MapPanel)?.showBigMap();
+            } else {
+                UIService.getUI(MapPanel)?.showMiniMap();
+            }
+
         });
 
         this._nolan = Nolan.getInstance();
@@ -351,8 +356,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1,
         );
@@ -366,8 +371,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1,
         );
@@ -384,11 +389,11 @@ export default class MainPanel extends MainPanel_Generate {
         });
 
         const dist = [
-            {dist: 0.3, duration: 0.1e3},
-            {dist: 0.4, duration: 0.1e3},
-            {dist: 0.2, duration: 0.1e3},
-            {dist: 0.5, duration: 0.1e3},
-            {dist: 0.3, duration: 0.1e3},
+            { dist: 0.3, duration: 0.1e3 },
+            { dist: 0.4, duration: 0.1e3 },
+            { dist: 0.2, duration: 0.1e3 },
+            { dist: 0.5, duration: 0.1e3 },
+            { dist: 0.3, duration: 0.1e3 },
         ];
         this._effectImgTasks.push(
             Waterween.group(
@@ -427,7 +432,12 @@ export default class MainPanel extends MainPanel_Generate {
         this.btnCode.visibility = SlateVisibility.Hidden;
 
         this.btnJumpGame.onClicked.add(() => {
-            UIService.show(JumpGamePanel);
+            if (!UIService.getUI(JumpGamePanel, false) || !UIService.getUI(JumpGamePanel).visible) {
+                UIService.show(JumpGamePanel);
+            } else {
+                UIService.hide(JumpGamePanel);
+            }
+
         });
 
         this.init();
@@ -950,8 +960,12 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     public showBag() {
-        if (ModuleService.getModule(BagModuleC)?.isReady ?? false) {
-            UIService?.show(BagPanel);
+        if ((ModuleService.getModule(BagModuleC)?.isReady ?? false)) {
+            if (!UIService.getUI(BagPanel, false) || !UIService.getUI(BagPanel).visible) {
+                UIService?.show(BagPanel);
+            } else {
+                UIService.hide(BagPanel);
+            }
         }
     }
 

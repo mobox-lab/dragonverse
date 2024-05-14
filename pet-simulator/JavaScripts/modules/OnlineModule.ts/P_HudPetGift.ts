@@ -10,6 +10,7 @@ import { utils } from "../../util/uitls";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { PetState } from "../Player/PetBehavior";
+import { P_RewardPanel } from "./P_RewardPanel";
 
 
 export class P_HudPetGift extends HUDpetGift_Generate {
@@ -27,9 +28,12 @@ export class P_HudPetGift extends HUDpetGift_Generate {
     async onStart() {
         this.layer = mw.UILayerScene;
         this.mBtn_Gift.onClicked.add(() => {
-            this.onBtnAC.call();
+            if (!UIService.getUI(P_RewardPanel, false) || !UIService.getUI(P_RewardPanel).visible) {
+                this.onBtnAC.call();
+            } else {
+                UIService.getUI(P_RewardPanel).mBtn_Close.onClicked.broadcast();
+            }
         });
-
         this.mBtn_Pet.onClicked.add(() => {
             this.onOpenBagAC.call(this.redPointArr);
         })

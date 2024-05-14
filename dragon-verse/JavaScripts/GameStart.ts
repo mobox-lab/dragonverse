@@ -41,7 +41,7 @@ import { InteractiveObjModuleC, InteractiveObjModuleS } from "./gameplay/interac
 import GlobalTips from "./depend/global-tips/GlobalTips";
 import Balancing from "./depend/balancing/Balancing";
 import EcologyModuleData, { EcologyModuleC, EcologyModuleS } from "./module/ecology/EcologyModule";
-import StatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
+import DvStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
 import GuideModuleData, { GuideModuleC, GuideModuleS } from "./module/guide/GuideModule";
 import GameServiceConfig from "./const/GameServiceConfig";
 
@@ -98,6 +98,9 @@ export default class GameStart extends mw.Script {
     @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
     public isBeta: boolean = false;
 
+    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
+    public isUseTestUrl: boolean = true;
+
     @mw.Property({
         displayName: "语言",
         group: "发布",
@@ -144,6 +147,7 @@ export default class GameStart extends mw.Script {
         this.useUpdate = true;
         GameServiceConfig.isRelease = this.isRelease;
         GameServiceConfig.isBeta = this.isBeta;
+        GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
         this.initialize();
     }
 
@@ -271,7 +275,7 @@ export default class GameStart extends mw.Script {
     private registerModule(): void {
         const moduleService = ModuleService;
         // moduleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerData);
-        moduleService.registerModule(StatisticModuleS, StatisticModuleC, StatisticModuleData);
+        moduleService.registerModule(StatisticModuleS, StatisticModuleC, DvStatisticModuleData);
         moduleService.registerModule(RoleModuleS, RoleModuleC, RoleModuleData);
         moduleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         moduleService.registerModule(BagModuleS, BagModuleC, BagModuleData);

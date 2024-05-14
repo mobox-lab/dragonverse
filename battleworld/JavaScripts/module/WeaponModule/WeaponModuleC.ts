@@ -2,6 +2,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { IWeaponTriggerElement } from "../../config/WeaponTrigger";
 import { EAnalyticsEvents, EAttributeEvents_C, EEquipEvents_C, EModule_Events, EPlayerEvents_C, EWeaponEvent_C } from "../../const/Enum";
 import { Globaldata } from "../../const/Globaldata";
+import { ClickUIPools } from "../../rptool/InteractiveObjs/ClickUIs";
 import { EventManager } from "../../tool/EventManager";
 import { MessageBox } from "../../tool/MessageBox";
 import { Notice } from "../../tool/Notice";
@@ -16,7 +17,7 @@ import { WeaponProxy } from "./WeaponProxy";
 /**
  * 武器模块
  */
-export class WeaponModuleC extends ModuleC<WeaponModuleS, WeaponModuleData>{
+export class WeaponModuleC extends ModuleC<WeaponModuleS, WeaponModuleData> {
 
     /**玩家属性同步模块 */
     private mAttribute: AttributeModuleC = null;
@@ -189,11 +190,15 @@ export class WeaponModuleC extends ModuleC<WeaponModuleS, WeaponModuleData>{
                 }
             });
 
-            // trigger.onLeave.add((obj: mw.GameObject) => {
-            //     if (obj instanceof mw.Character) {
-            //         this.trigger_leave(cfg, obj);
-            //     }
-            // });
+            trigger.onLeave.add((obj: mw.GameObject) => {
+                if (obj instanceof mw.Character) {
+                    if (obj.player == null) return;
+                    if (obj.player.playerId != mw.Player.localPlayer.playerId) {
+                        return;
+                    }
+                    ClickUIPools.instance.hide(obj);
+                }
+            });
 
             let data: IWeaponTriggerData = {
                 cfg: cfg,
@@ -225,6 +230,8 @@ export class WeaponModuleC extends ModuleC<WeaponModuleS, WeaponModuleData>{
 
     }
 
+
+
     /**
      * 玩家进入触发器
      * @param cfg 武器配置
@@ -237,46 +244,52 @@ export class WeaponModuleC extends ModuleC<WeaponModuleS, WeaponModuleData>{
             return;
         }
 
-        // 玩家选择武器后需要死亡才能再次选武器
-        let isCanChangeWeapon = this.mAttribute.getAttributeValue(Attribute.EnumAttributeType.isCanChangeWeapon);
-        if (isCanChangeWeapon == 1) {
-            let tipText = GameConfig.Language.WeaponTip_4.Value;
-            Notice.showDownNotice(tipText);
-            return;
-        }
+        ClickUIPools.instance.show(Globaldata.buyWeaponUIGuid, GameConfig.Language.Shop_btn_5.Value, chara, mw.Vector.zero, () => {
+            ClickUIPools.instance.hide(chara);
 
-        let ownWeaponIds = this.data.getOwnWeaponIds();
-        if (ownWeaponIds.includes(cfg.weaponId)) {
-
-            // 当前装备的武器id
-            let curEquipWeaponId = this.data.getEquipWeaponId();
-            if (curEquipWeaponId == cfg.weaponId) {
-                // 如果拥有直接替换成基础的武器
-                this.server.net_changeWeaponId(1);
-            } else {
-                this.server.net_changeWeaponId(cfg.weaponId);
+            // 玩家选择武器后需要死亡才能再次选武器
+            let isCanChangeWeapon = this.mAttribute.getAttributeValue(Attribute.EnumAttributeType.isCanChangeWeapon);
+            if (isCanChangeWeapon == 1) {
+                let tipText = GameConfig.Language.WeaponTip_4.Value;
+                Notice.showDownNotice(tipText);
+                return;
             }
-            return;
-        }
 
-        // 判断玩家金币是否足够
-        let money = this.mAttribute.getAttributeValue(Attribute.EnumAttributeType.money);
-        if (money < cfg.sellValue) {
-            let tipText = GameConfig.Language.Shop_tips_2.Value;
-            Notice.showDownNotice(tipText);
-            return;
-        }
+            let ownWeaponIds = this.data.getOwnWeaponIds();
+            if (ownWeaponIds.includes(cfg.weaponId)) {
 
-
-        let tittle = GameConfig.Language.Shop_btn_5.Value;
-        let content = GameConfig.Language.WeaponTip_2.Value;
-        let content1 = StringUtil.format(content, cfg.sellValue);
-
-        MessageBox.showTwoBtnMessage(tittle, content1, (res) => {
-            if (res) {
-                this.shopWeapon(cfg.weaponId);
+                // 当前装备的武器id
+                let curEquipWeaponId = this.data.getEquipWeaponId();
+                if (curEquipWeaponId == cfg.weaponId) {
+                    // 如果拥有直接替换成基础的武器
+                    this.server.net_changeWeaponId(1);
+                } else {
+                    this.server.net_changeWeaponId(cfg.weaponId);
+                }
+                return;
             }
+
+            // 判断玩家金币是否足够
+            let money = this.mAttribute.getAttributeValue(Attribute.EnumAttributeType.money);
+            if (money < cfg.sellValue) {
+                let tipText = GameConfig.Language.Shop_tips_2.Value;
+                Notice.showDownNotice(tipText);
+                return;
+            }
+
+
+            let tittle = GameConfig.Language.Shop_btn_5.Value;
+            let content = GameConfig.Language.WeaponTip_2.Value;
+            let content1 = StringUtil.format(content, cfg.sellValue);
+
+            MessageBox.showTwoBtnMessage(tittle, content1, (res) => {
+                if (res) {
+                    this.shopWeapon(cfg.weaponId);
+                }
+            });
         });
+
+
     }
 
     /**

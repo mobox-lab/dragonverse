@@ -1,8 +1,10 @@
 import { GameConfig } from "../../config/GameConfig";
+import { Globaldata } from "../../const/Globaldata";
 import { EnergyModuleC } from "../../module/Energy/EnergyModule";
 import { PlayerModuleC } from "../../module/PlayerModule/PlayerModuleC";
 import { Attribute } from "../../module/PlayerModule/sub_attribute/AttributeValueObject";
 import { MessageBox } from "../../tool/MessageBox";
+import { ClickUIPools } from "./ClickUIs";
 import { InteractLogic_C, InteractLogic_S, InteractObject } from "./InteractObject";
 
 /**触发模式 */
@@ -43,27 +45,33 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         if (chara.player.playerId != Player.localPlayer.playerId) {
             return;
         }
+
+
         if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) return;
-        chara.movementEnabled = false;
-        const playerC = ModuleService.getModule(PlayerModuleC);
-        let [rank] = playerC.getRank();
-        let rankCfg = GameConfig.Rank.getElement(rank);
-        if (!rankCfg) return;
-        let rankCost = rankCfg.rankTicket;
-        if (rankCost && playerC.rankTicket) {
-            let content = StringUtil.format(GameConfig.Language.Tips_rank_3.Value, rankCost);
-            MessageBox.showTwoBtnMessage("", content, (res) => {
-                if (res) {
-                    playerC.payRankTicket(rankCost);
-                    this.interactNext(chara.player.playerId, true);
-                }
-                else {
-                    chara.movementEnabled = true;
-                }
-            });
-            return;
-        }
-        this.interactNext(chara.player.playerId, true);
+        ClickUIPools.instance.show(Globaldata.fireWeaponUIGuid, GameConfig.Language.Scene_name_1.Value, go, Vector.zero, () => {
+            ClickUIPools.instance.hide(go);
+            chara.movementEnabled = false;
+            const playerC = ModuleService.getModule(PlayerModuleC);
+            let [rank] = playerC.getRank();
+            let rankCfg = GameConfig.Rank.getElement(rank);
+            if (!rankCfg) return;
+            let rankCost = rankCfg.rankTicket;
+            if (rankCost && playerC.rankTicket) {
+                let content = StringUtil.format(GameConfig.Language.Tips_rank_3.Value, rankCost);
+                MessageBox.showTwoBtnMessage("", content, (res) => {
+                    if (res) {
+                        playerC.payRankTicket(rankCost);
+                        this.interactNext(chara.player.playerId, true);
+                    }
+                    else {
+                        chara.movementEnabled = true;
+                    }
+                });
+                return;
+            }
+            this.interactNext(chara.player.playerId, true);
+        });
+
     }
 
     private onLeave(go: mw.GameObject) {
@@ -75,6 +83,7 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
             return;
         }
         chara.movementEnabled = true;
+        ClickUIPools.instance.hide(go);
     }
 
 

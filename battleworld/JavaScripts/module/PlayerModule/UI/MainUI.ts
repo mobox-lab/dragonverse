@@ -47,7 +47,10 @@ import { SettingModuleC } from "../../SetingModule/SetingMoudleC";
 import { JumpGamePanel } from "../../../ui/jump-game/JumpGamePanel";
 import Gtk from "../../../util/GToolkit";
 import { SkillModuleC } from "../../SkillModule/SkillModuleC";
-
+import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
+import SetingUI from "../../SetingModule/UI/SetingUI";
+import { P_Game_Action } from "../../action/ui/P_Game_Action";
+type PillUIInfo = { text: TextBlock, img: Image, num: number, name: TextBlock, duration: number, time: TextBlock, mask: MaskButton, timer: number, levelCanvas: Canvas };
 export class MainUI extends Main_HUD_Generate {
 
     private playerMD: PlayerModuleC;
@@ -73,11 +76,21 @@ export class MainUI extends Main_HUD_Generate {
         });
         // 动作
         this.mActionBtn.onClicked.add(() => {
-            EventManager.instance.call(EModule_Events.action_open);
+            if (UIService.getUI(P_Game_Action).isOpenAction) {
+                UIService.hide(P_Game_Action);
+                UIService.getUI(P_Game_Action).isOpenAction = false;
+            } else {
+                EventManager.instance.call(EModule_Events.action_open);
+            }
         });
         // 设置
         this.mBtn_Setting.onClicked.add(() => {
-            EventManager.instance.call(EModule_Events.SetingModuleC_showSetingUI);
+            if (UIService.getUI(SetingUI)?.isShowing) {
+                UIService.getUI(SetingUI)?.onBack();
+            } else {
+                EventManager.instance.call(EModule_Events.SetingModuleC_showSetingUI);
+            }
+
         });
         // 重置
         this.mBtn_Reborn.onClicked.add(() => {
@@ -105,7 +118,11 @@ export class MainUI extends Main_HUD_Generate {
 
         // 打开段位UI
         this.mBtn_Rank.onClicked.add(() => {
-            UIService.show(RankPanel);
+            if (UIService.getUI(RankPanel)?.isShowing) {
+                UIService.hide(RankPanel)
+            } else {
+                UIService.show(RankPanel);
+            }
         });
 
         this.playerMD.onAttributeChanged.add(this.onPlayerAttrChanged, this);
@@ -152,7 +169,12 @@ export class MainUI extends Main_HUD_Generate {
         });
 
         this.jumpRoomBtn.onClicked.add(() => {
-            UIService.show(JumpGamePanel);
+            if (UIService.getUI(JumpGamePanel).isShowing) {
+                UIService.hide(JumpGamePanel);
+            } else {
+                UIService.show(JumpGamePanel);
+            }
+
         });
 
         this.canUpdate = true;
@@ -204,6 +226,8 @@ export class MainUI extends Main_HUD_Generate {
                 ModuleService.getModule(SkillModuleC).discardSkillLib();
             }
         });
+
+        this.mCavasTrans.visibility = mw.SlateVisibility.Collapsed;
     }
 
     private _authModuleC: AuthModuleC;
@@ -703,7 +727,8 @@ export class MainUI extends Main_HUD_Generate {
     /*******************************************************丹药*********************************************************/
 
     /** 记录了增加的丹药类型对应的UI，目前先暂时这样写，后续考虑调整为动态生成 */
-    private pillMap: Map<Attribute.EnumAttributeType, { text: TextBlock, img: Image, num: number }> = new Map();
+
+    private pillMap: Map<Attribute.EnumAttributeType, PillUIInfo> = new Map();
 
     /**
      * 初始化丹药的映射关系
@@ -714,21 +739,45 @@ export class MainUI extends Main_HUD_Generate {
             text: this.mText_Long_Num,
             img: this.mImage_Long,
             num: 0,
+            name: this.textAttack,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Long,
+            mask: this.mMask_Trans_Long,
+            timer: -1,
+            levelCanvas: this.canvasLevelF
         });
         this.pillMap.set(Attribute.EnumAttributeType.defMultiple, {
             text: this.mText_Tortoise_Num,
             img: this.mImage_Tortoise,
             num: 0,
+            name: this.textDefend,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Tortoise,
+            mask: this.mMask_Trans_Tortoise,
+            timer: -1,
+            levelCanvas: this.canvasLevelD
         });
         this.pillMap.set(Attribute.EnumAttributeType.maxHpAdd, {
             text: this.mText_Bone_Num,
             img: this.mImage_Bone,
             num: 0,
+            name: this.textHeart,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Bone,
+            mask: this.mMask_Trans_Bone,
+            timer: -1,
+            levelCanvas: this.canvasLevelH
         });
         this.pillMap.set(Attribute.EnumAttributeType.maxEnergyAdd, {
             text: this.mText_Qi_Num,
             img: this.mImage_Qi,
             num: 0,
+            name: this.textBlue,
+            duration: 0,
+            time: this.mText_Trans_Time_cd_Qi,
+            mask: this.mMask_Trans_Qi,
+            timer: -1,
+            levelCanvas: this.canvasLevelB
         });
         this.refreshPillVisible();
     }
@@ -737,19 +786,20 @@ export class MainUI extends Main_HUD_Generate {
      * 更新丹药的UI
      * @param pillType 拾取的丹药类型，-1表示清空显示
      */
-    private listen_land_pickUp_pill(pillType: number) {
-        if (pillType == -1) {
+    private listen_land_pickUp_pill(pillInfo: PillInfo) {
+        if (!pillInfo) {
             for (let [_, second] of this.pillMap) {
                 if (second && second.text) {
                     second.num = 0;
-                    second.text.text = second.num.toFixed();
+                    // second.text.text = second.num.toFixed();
                 }
             }
         } else {
-            const pillValue = this.pillMap.get(pillType);
-            if (pillType) {
+            if (pillInfo.attributeID) {
+                const pillValue = this.pillMap.get(pillInfo.attributeID);
                 pillValue.num++;
-                pillValue.text.text = pillValue.num.toFixed();
+                // pillValue.text.text = pillValue.num.toFixed();
+                pillValue.duration = pillInfo.duration;
             }
         }
         this.refreshPillVisible();
@@ -763,7 +813,7 @@ export class MainUI extends Main_HUD_Generate {
         const pillValue = this.pillMap.get(pillType);
         if (pillType) {
             pillValue.num--;
-            pillValue.text.text = pillValue.num.toFixed();
+            // pillValue.text.text = pillValue.num.toFixed();
         }
         this.refreshPillVisible();
     }
@@ -776,12 +826,42 @@ export class MainUI extends Main_HUD_Generate {
         for (let [_, second] of this.pillMap) {
             if (second && second.text && second.img) {
                 if (second.num > 0) {
-                    second.text.visibility = SlateVisibility.Visible;
-                    second.img.visibility = SlateVisibility.Visible;
+                    // second.text.visibility = SlateVisibility.Visible;
+                    // second.img.visibility = SlateVisibility.Visible;
+                    second.name.visibility = SlateVisibility.Visible;
                     canvasShouldShow = true;
+                    this.setBuffLevel(second.levelCanvas, second.num);
+                    let oriDuration = second.duration;
+                    if (second.timer === -1) {
+                        second.timer = TimeUtil.setInterval(() => {
+                            console.log(second.name.text, second.mask.fanShapedValue)
+                            second.duration -= 0.1;
+                            second.mask.fanShapedValue = (oriDuration - second.duration) / oriDuration;
+                            second.time.text = `${second.duration.toFixed(1)}s`;
+                            if (second.duration <= 0) {
+                                // second.text.visibility = SlateVisibility.Collapsed;
+                                // second.img.visibility = SlateVisibility.Collapsed;
+                                second.time.text = "";
+                                second.name.visibility = SlateVisibility.Collapsed;
+                                second.mask.fanShapedValue = 0;
+                                second.levelCanvas.visibility = SlateVisibility.Collapsed;
+                                TimeUtil.clearInterval(second.timer);
+                                second.timer = -1;
+                            }
+                        }, 0.1);
+                    }
+
                 } else {
-                    second.text.visibility = SlateVisibility.Collapsed;
-                    second.img.visibility = SlateVisibility.Collapsed;
+                    // second.text.visibility = SlateVisibility.Collapsed;
+                    // second.img.visibility = SlateVisibility.Collapsed;
+                    second.name.visibility = SlateVisibility.Collapsed;
+                    second.mask.fanShapedValue = 1;
+                    second.time.text = "";
+                    second.levelCanvas.visibility = SlateVisibility.Collapsed;
+                    if (second.timer !== -1) {
+                        TimeUtil.clearInterval(second.timer);
+                        second.timer = -1;
+                    }
                 }
             }
         }
@@ -835,4 +915,24 @@ export class MainUI extends Main_HUD_Generate {
         this.mCanvasBattle.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
     }
 
+    private setBuffLevel(parentCanvas: Canvas, level: number) {
+        if (level === 0) {
+            parentCanvas.visibility = SlateVisibility.Collapsed;
+            return;
+        }
+        if (level <= parentCanvas.getChildrenCount()) {
+            this.showBuffLevel(parentCanvas, level);
+        }
+    }
+
+    private showBuffLevel(parentCanvas: Canvas, showLevel: number) {
+        parentCanvas.visibility = SlateVisibility.Visible;
+        for (let i = 0; i < parentCanvas.getChildrenCount(); i++) {
+            if (i <= showLevel - 1) {
+                parentCanvas.getChildAt(i).visibility = SlateVisibility.Visible;
+            } else {
+                parentCanvas.getChildAt(i).visibility = SlateVisibility.Collapsed;
+            }
+        }
+    }
 }
