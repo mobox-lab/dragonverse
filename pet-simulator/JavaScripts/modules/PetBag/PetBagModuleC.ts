@@ -1,4 +1,3 @@
-
 import { GameConfig } from "../../config/GameConfig";
 import { oTraceError } from "../../util/LogManager";
 import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
@@ -44,27 +43,30 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.devInit();
         this.enchantBuffInit();
     }
+
     private initData() {
         GameObject.asyncFindGameObjectById(GlobalData.Enchant.effectGuid).then((eff) => {
             this.effect = eff as mw.Effect;
-        })
+        });
         this.achievementModuleC = ModuleService.getModule(AchievementModuleC);
     }
+
     protected onEnterScene(sceneType: number): void {
-			this.calcBuff()
+        this.calcBuff();
     }
+
     private initUI() {
         this.bagUI = mw.UIService.getUI(P_Bag);
         this.devUI = mw.UIService.getUI(P_Pet_Dev);
         this.fuseUI = mw.UIService.getUI(P_FusePanel);
         this.enchantUI = mw.UIService.getUI(P_Enchants);
-        this.hudPetUI = mw.UIService.getUI(P_HudPetGift)
+        this.hudPetUI = mw.UIService.getUI(P_HudPetGift);
         this.bagUI.onEquipAC.add(this.equipEvent.bind(this));
         this.bagUI.onReNameAC.add(this.reNameEvent.bind(this));
         this.bagUI.onDelAC.add(this.delEvent.bind(this));
         this.bagUI.hideAC.add(() => {
             this.hudPetUI.clearRedPoint();
-        })
+        });
         this.fuseUI.onShowAC.add(this.enterFuseTrigger.bind(this));
         this.hudPetUI.setBagText(this.data.CurFollowPets.length, this.data.MaxFollowCount);
 
@@ -74,22 +76,22 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.enchantUI.enchantAc.add(this.addEnchant.bind(this));
         this.enchantUI.onUpdateAc.add((canUpdate: boolean) => {
             this.canUpdate = canUpdate;
-        })
+        });
 
     }
 
     /**词条buff初始化 */
     private enchantBuffInit() {
-        let keys = this.data.CurFollowPets
+        let keys = this.data.CurFollowPets;
         for (let id = 0; id < keys.length; id++) {
             EnchantBuff.equipUnPet(keys[id], true);
         }
     }
 
-		private calcBuff() { 
-			this.server.net_bestFriendBuff();
-			this.server.net_passBuff();
-		}
+    private calcBuff() {
+        this.server.net_bestFriendBuff();
+        this.server.net_passBuff();
+    }
 
     private devInit(): void {
         utils.triInit(GlobalData.Dev.goldTriggerGuid, this.enterGoldTrigger.bind(this), this.leaveTrigger.bind(this));
@@ -121,10 +123,12 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         let petItems = this.data.sortBag();
         mw.UIService.getUI(P_Pet_Dev).show(petItems, false);
     }
+
     private enterEnchantTrigger() {
         let petItems = this.data.sortBag();
         this.enchantUI.showPanel(petItems);
     }
+
     private leaveEnchantTrigger() {
         // if (this.enchantUI.visible)
         //     this.enchantUI.hide();
@@ -145,12 +149,12 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.data.PetFollowCountChangeAC.add(() => {
             this.bagUI.setEquipNum(this.data.MaxFollowCount);
             mw.UIService.getUI(P_HudPetGift).setBagText(this.data.CurFollowPets.length, this.data.MaxFollowCount);
-        })
+        });
     }
-		
+
     /**背包添加完毕 */
     private itemChange(isEquip: boolean, id: number, key: number) {
-        this.calcBuff()
+        this.calcBuff();
         if (!isEquip) return;
 
         let arrId: number[] = [];
@@ -162,7 +166,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 
                 let index = this.data.CurFollowPets.findIndex((value) => {
                     return value == element.k;
-                })
+                });
                 if (index == -1) {
                     arrId.push(element.k);
                     if (arrId.length + this.data.CurFollowPets.length >= this.data.MaxFollowCount)
@@ -173,9 +177,16 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 
         }
         this.hudPetUI.onRedPointAC.call(key);
-        AnalyticsTool.action_get_item(id, this.getCurPetNum())
+        AnalyticsTool.action_get_item(id, this.getCurPetNum());
 
+        let name = this.data.bagItemsByKey(key)?.p?.n ?? undefined;
+        if (Gtk.isNullOrEmpty(name)) {
+            let nameId = utils.GetRandomNum(1, 200);
+            let name = utils.GetUIText(nameId);
+            this.reNameEvent(key, name);
+        }
     }
+
     private trainChange() {
         this.trainArr = this.data.trainPet;
     }
@@ -196,9 +207,9 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         return arr;
     }
 
-    /**添加宠物 
+    /**添加宠物
      * @param id 宠物id
-    */
+     */
     public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
         await this.server.net_addPet(id, type, addTime);
     }
@@ -231,7 +242,6 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         mw.UIService.getUI(P_GlobalTips).showTips(str);
     }
 
-
     public async net_enchantNotice(playerId: number, enchantIds: number[]) {
         const ids = GlobalData.Notice.enchantBuff;
         let name = await PlayerNameManager.instance.getPlayerNameAsync(playerId);
@@ -243,11 +253,10 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
                 str = GameConfig.Language.World_Tips_15.Value;
             if (id == ids[2])
                 str = GameConfig.Language.World_Tips_16.Value;
-        })
+        });
         str = name + " " + str;
         mw.UIService.getUI(P_GlobalTips).showTips(str);
     }
-
 
     //************** 宠物背包*************/
 
@@ -270,6 +279,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     private reNameEvent(key: number, name: string) {
         this.server.net_petRename(key, name);
     }
+
     /**是否可删除 */
     public async delEvent(keys: number[]) {
         if (keys.length == this.getCurPetNum() && keys.length == 1) {
@@ -287,6 +297,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         // this.bagUI.cancelDel();
         return true;
     }
+
     /**是否可融合强化 */
     public async fuseEvent(keys: number[]) {
         if (keys.length == this.getCurPetNum()) {
@@ -311,7 +322,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         arr.sort((a, b) => {
             let atk = b.p.a - a.p.a;
             return atk;
-        })
+        });
         let result: number[] = [];
         for (let i = 1; i < arr.length; i++) {
             result.push(arr[i].k);
@@ -371,6 +382,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         }
 
     }
+
     protected onUpdate(dt: number): void {
         if (!this.canUpdate) return;
         if (this.effect != null) {

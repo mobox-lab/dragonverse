@@ -65,9 +65,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 			else
 				atk = atkArr[0];
 
-			let nameId = utils.GetRandomNum(1, 200);
-			let name = utils.GetUIText(nameId);
-			this.addPet(this.currentPlayerId, id, atk, name, type, addTime);
+
+			this.addPet(this.currentPlayerId, id, atk, undefined, type, addTime);
 		}
 
     public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
