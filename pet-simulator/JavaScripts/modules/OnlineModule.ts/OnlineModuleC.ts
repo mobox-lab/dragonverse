@@ -53,10 +53,6 @@ export class OnlineModuleC extends ModuleC<OnlineModuleS, OnlineModuleData> {
             if (curId <= item) curId = item;
             this.rewardPanel.itemArr[item - 1].startCountDown(RewardState.rewarded);
         });
-        this.data.WaitGetArr.forEach((item) => {
-            if (curId <= item) curId = item;
-            this.rewardPanel.itemArr[item - 1].startCountDown(RewardState.canReward);
-        });
 
         let len = GameConfig.TimeReward.getAllElement().length;
         if (curId >= len) {
@@ -66,17 +62,10 @@ export class OnlineModuleC extends ModuleC<OnlineModuleS, OnlineModuleData> {
                 this.rewardPanel.itemArr[i].startCountDown(
                     RewardState.counting,
                     this.data.todayOnlineTime);
-                // this.rewardPanel.itemArr[i].onCanGetAC.add((id: number) => {
-                //     this.stateChange(id, RewardState.canReward);
-                // });
             }
         }
 
         this.checkCanGet();
-    }
-
-    private net_stateChange(id: number, state: RewardState) {
-
     }
 
     /**检查是否有可领取的 */
