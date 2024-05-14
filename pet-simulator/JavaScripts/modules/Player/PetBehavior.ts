@@ -19,6 +19,7 @@ import Log4Ts from '../../depend/log4ts/Log4Ts';
 import { EnergyModuleC } from '../Energy/EnergyModule';
 import GToolkit from '../../util/GToolkit';
 import { P_HudPetGift } from '../OnlineModule.ts/P_HudPetGift';
+import { TipsManager } from '../Hud/P_TipUI';
 
 /**宠物状态 */
 export enum PetState {
@@ -486,6 +487,7 @@ export default class PetBehavior {
     public addTarget(resPoint: number): void {
         if (!ModuleService.getModule(EnergyModuleC).isAfford()) {
             Log4Ts.error(PetBehavior, "体力不足！");
+            TipsManager.instance.showTip(GameConfig.Language.StaminaNotEnough.Value);
             this.changeToIdle();
             this.attackRotY = 0;
             return;

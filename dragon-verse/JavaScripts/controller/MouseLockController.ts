@@ -22,6 +22,10 @@ export class MouseLockController {
             ADialoguePanelController.ControllerExitDialogueEventName,
             this.cancelMouseUnlock.bind(this)
         );
+        Event.addLocalListener(
+            DialogifyManager.LeaveDialogueEventName,
+            this.cancelMouseUnlock.bind(this)
+        );
     }
 
     public static getInstance(): MouseLockController {
@@ -37,8 +41,8 @@ export class MouseLockController {
         //录一次就行
         if (this._needMouseUnlock.length === 1) {
             //为了防止松开alt会导致鼠标锁定
-            KeyOperationManager.getInstance().onKeyUp(null, Keys.LeftAlt, () => {});
-            KeyOperationManager.getInstance().onKeyUp(null, Keys.RightAlt, () => {});
+            KeyOperationManager.getInstance().onKeyUp(null, Keys.LeftAlt, () => { });
+            KeyOperationManager.getInstance().onKeyUp(null, Keys.RightAlt, () => { });
         }
     }
 

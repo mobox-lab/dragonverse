@@ -2,6 +2,7 @@ import { PlayerManagerExtesion, } from '../../Modified027Editor/ModifiedPlayer';
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
+import WallInteract_Generate from '../../ui-generate/WorldUI/WallInteract_generate';
 import { oTraceError } from "../../util/LogManager";
 import MessageBox from "../../util/MessageBox";
 import { numberArrToString, utils } from "../../util/uitls";
@@ -19,7 +20,7 @@ import { AreaModuleS } from "./AreaModuleS";
 import { P_Transmit, P_TransmitTips } from "./P_Transmit";
 
 
-export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData>{
+export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
 
     private transmitUI: P_Transmit = null;
     /**玩家进行传送 */
@@ -124,7 +125,7 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData>{
         let trigger_7 = await GameObject.asyncFindGameObjectById("1D27E537") as mw.Trigger;
         let trigger_8 = await GameObject.asyncFindGameObjectById("38D42710") as mw.Trigger;
         //三世界-》一世界
-        let trigger_9 = await GameObject.asyncFindGameObjectById("155F1359") as mw.Trigger;
+        // let trigger_9 = await GameObject.asyncFindGameObjectById("155F1359") as mw.Trigger;
         //解锁三世界
         let trigger_10 = await GameObject.asyncFindGameObjectById("16AE3F2D") as mw.Trigger;
 
@@ -137,8 +138,8 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData>{
         trigger_8.onEnter.add((obj: mw.GameObject) => { this.enterWorldTrigger(obj, trigger_8, 2003, new mw.Vector(0, -200)) });
         trigger_10.onEnter.add((obj: mw.GameObject) => { this.enterWorldTrigger(obj, trigger_10, 3001, new mw.Vector(0, -200)) });
         trigger_4.onEnter.add((obj: mw.GameObject) => { this.enterWorldTrigger(obj, trigger_4, 1001) });
-        trigger_9.onEnter.add((obj: mw.GameObject) => { this.enterWorldTrigger(obj, trigger_9, 1001) });
-        trigger_9.onLeave.add(this.exitTrigger.bind(this));
+        // trigger_9.onEnter.add((obj: mw.GameObject) => { this.enterWorldTrigger(obj, trigger_9, 1001) });
+        // trigger_9.onLeave.add(this.exitTrigger.bind(this));
         trigger_10.onLeave.add(this.exitTrigger.bind(this));
         trigger_1.onLeave.add(this.exitTrigger.bind(this));
         trigger_2.onLeave.add(this.exitTrigger.bind(this));
@@ -171,8 +172,8 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData>{
         }
         let char = obj as mw.Character;
         if (char != Player.localPlayer.character) return;
-        InterBtn.instance.show(trigger, () => {
-
+        let ui = UIService.show(WallInteract_Generate);
+        ui.mBtn_Interact.onClicked.add(() => {
             if (trigger.gameObjectId == "2503B6A9" || trigger.gameObjectId == "155F1359") {
                 MessageBox.showTwoBtnMessage(GameConfig.Language.Portol_Tip_3.Value, (res) => {
                     if (res) {
@@ -195,7 +196,33 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData>{
                 this.onTransmit.call(1);
             }
 
-        }, offest);
+            UIService.hide(WallInteract_Generate);
+        });
+        // InterBtn.instance.show(trigger, () => {
+
+        //     if (trigger.gameObjectId == "2503B6A9" || trigger.gameObjectId == "155F1359") {
+        //         MessageBox.showTwoBtnMessage(GameConfig.Language.Portol_Tip_3.Value, (res) => {
+        //             if (res) {
+        //                 let transformLoc = GameConfig.AreaDivide.getElement(locId).Loc.add(new mw.Vector(0, 0, 100));
+        //                 Player.localPlayer.character.worldTransform.position = transformLoc;
+        //                 this.onTransmit.call(1);
+        //             }
+        //         });
+        //     } else if (locId == 3001) {
+        //         MessageBox.showTwoBtnMessage(GameConfig.Language.Portol_Tip_4.Value, (res) => {
+        //             if (res) {
+        //                 let transformLoc = GameConfig.AreaDivide.getElement(locId).Loc.add(new mw.Vector(0, 0, 100));
+        //                 Player.localPlayer.character.worldTransform.position = transformLoc;
+        //                 this.onTransmit.call(1);
+        //             }
+        //         });
+        //     } else {
+        //         let transformLoc = GameConfig.AreaDivide.getElement(locId).Loc.clone().add(new mw.Vector(0, 0, 100));
+        //         Player.localPlayer.character.worldTransform.position = transformLoc;
+        //         this.onTransmit.call(1);
+        //     }
+
+        // }, offest);
 
         if (locId == 2002) {
             this.unlockArea([2001, 2002])
@@ -211,7 +238,8 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData>{
         }
         let char = obj as mw.Character;
         if (char != Player.localPlayer.character) return;
-        InterBtn.instance.hide();
+        // InterBtn.instance.hide();
+        UIService.hide(WallInteract_Generate);
     }
 
     //初始化区域

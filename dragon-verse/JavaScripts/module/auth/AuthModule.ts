@@ -6,7 +6,6 @@ import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModul
 import { Yoact } from "../../depend/yoact/Yoact";
 import { AddGMCommand } from "module_gm";
 import noReply = mwext.Decorator.noReply;
-import createYoact = Yoact.createYoact;
 import { GameConfig } from "../../config/GameConfig";
 
 //#region TTD & GM
@@ -919,7 +918,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     public requestRefreshStaminaLimit(playerId: number) {
         if (!this.checkRequestRegulator(playerId)) return;
-        return this.queryRegisterStaminaLimit(this.currentPlayerId);
+        return this.queryRegisterStaminaLimit(playerId);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
