@@ -290,7 +290,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
             });
     }
 
-    public consume(playerId: number, cost: number, firstTime: number) {
+    public consume(playerId: number, cost: number, firstTime: number = undefined) {
+        firstTime = firstTime ?? Date.now();
         const d = this.getPlayerData(playerId);
         if (!d) return;
         if (d.energy >= (this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0) &&
