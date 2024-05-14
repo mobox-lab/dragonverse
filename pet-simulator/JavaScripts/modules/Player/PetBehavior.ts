@@ -773,11 +773,11 @@ export default class PetBehavior {
                     this.resPos = null;
                     if (this.attackPrivot) this.attackPrivot.localTransform.rotation = mw.Rotation.zero;
                     this.changeToIdle();
-                    energyModuleC.consume(0, true);
+                    // energyModuleC.consume(0, true);
                     Log4Ts.error(PetBehavior, "挖完了！");
                     return true;
                 } else {
-                    energyModuleC.consume();
+                    // energyModuleC.consume();
                     Log4Ts.error(PetBehavior, "扣1体力");
                 }
             } else {
