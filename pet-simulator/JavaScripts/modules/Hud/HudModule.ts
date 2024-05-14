@@ -20,7 +20,8 @@ import { PetBagModuleS } from '../PetBag/PetBagModuleS';
 
 export class HudModuleS extends ModuleS<HudModuleC, null>{
 	@Decorator.noReply()
-	public net_addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+	public net_addInitPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+		if(!GlobalData.pet.initPets.includes(id)) return;
 		ModuleService.getModule(PetBagModuleS).net_addPet(id, type, addTime)
 	}
 }
@@ -99,9 +100,9 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
     /**初始UI选择 */
     private initPet(id: number): void {
         if (id == 1) {
-            this.server.net_addPet(GlobalData.pet.initPets[0]);
+            this.server.net_addInitPet(GlobalData.pet.initPets[0]);
         } else {
-            this.server.net_addPet(GlobalData.pet.initPets[1]);
+            this.server.net_addInitPet(GlobalData.pet.initPets[1]);
         }
         this.guideUI.hide();
         this.hudUI.show();
