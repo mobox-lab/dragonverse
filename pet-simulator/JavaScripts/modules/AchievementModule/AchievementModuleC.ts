@@ -388,7 +388,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
      * 广播融合类型成就（融合成功数=9&融合传奇宠物数=20）
      * @param endPetId 融合后的宠物ID 
      */
-    public broadcastAchievementBlendType(endPetId: number): void {
+    public broadcastAchievementBlendType(endPetId: number): void {// TODO: 重构 AchievementModuleC.broadcastAchievementBlendType 到 S 端，主要是有个 C 端的toast
         this.onExecuteAchievementAction.call(GlobalEnum.AchievementType.FusionNum, 1);//融合成功数
         let cfg = GameConfig.PetARR.getElement(endPetId);
         if (cfg.QualityType == GlobalEnum.PetQuality.Legend) {
