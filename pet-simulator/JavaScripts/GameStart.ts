@@ -223,7 +223,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(AchievementModuleS, AchievementModuleC, AchievementData);
         ModuleService.registerModule(Task_ModuleS, Task_ModuleC, TaskModuleData);
         ModuleService.registerModule(RankModuleS, RankModuleC, null);
-        ModuleService.registerModule(DollMachineModuleS, DollMachineModuleC, null);
+        // ModuleService.registerModule(DollMachineModuleS, DollMachineModuleC, null);
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PetSimulatorPlayerModuleData);
         ModuleService.registerModule(PetBagModuleS, PetBagModuleC, PetBagModuleData);
         ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PetSimulatorEnergyModuleData);

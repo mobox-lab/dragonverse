@@ -246,9 +246,19 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, DvStatisticModu
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
-        const d = this.getPlayerData(player);
-        d.recordLeave(Date.now());
-        d.save(false);
+        let now = Date.now();
+        Gtk.queryModuleData<{
+            playerLoginRecord: [number, number][],
+            playerElapsedTimeS: number
+        }>(DvStatisticModuleData.name, player.userId).then((d) => {
+            d.playerLoginRecord[0][1] = now;
+            d.playerElapsedTimeS += (d.playerLoginRecord[0][1] ?? now) - d.playerLoginRecord[0][0];
+            if (d.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
+                d.playerLoginRecord.pop();
+            }
+            Gtk.updateModuleData(DvStatisticModuleData.name, player.userId, d);
+        });
+
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
