@@ -69,7 +69,6 @@ class RewardItem extends GiftItem_Generate {
 
 
     public onItemBtnAC: Action1<number> = new Action1();
-    public onCanGetAC: Action1<number> = new Action1();
 
     private timeInter: any;
 
@@ -148,7 +147,6 @@ class RewardItem extends GiftItem_Generate {
             } else {
                 this.clearTimeInter();
                 this.curState = RewardState.canReward;
-                this.onCanGetAC.call(this.Id);
                 this.startCountDown(this.curState);
             }
         }, 1);

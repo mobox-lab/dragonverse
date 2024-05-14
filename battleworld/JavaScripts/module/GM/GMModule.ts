@@ -30,10 +30,9 @@ import { BuffModuleC } from "../buffModule/BuffModuleC";
 import { EPlayerState } from "../PlayerModule/FSM/PlyerState";
 import { MascotModuleS } from "../npc/mascotNpc/MascotModuleS";
 import { PlayerHeadUIModuleC } from "../PlayerHeadUIModule/PlayerHeadUIModuleC";
-import { EnergyModuleC } from "../Energy/EnergyModule";
+import { EnergyModuleC, EnergyModuleS } from "../Energy/EnergyModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import WoodUnit from "../npc/WoodUnit";
-
 
 export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
 
@@ -45,14 +44,12 @@ export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> 
         mw.UIService.showUI(this["_view"], mw.UILayerSystem);
     }
 
-
 }
 
 export class GMModuleData extends Subdata {
 
     @Decorator.persistence()
     public isSuperGM: boolean = false;
-
 
 }
 
@@ -71,7 +68,6 @@ export class GMModuleC extends ModuleC<GMModuleS, GMModuleData> {
         GM.start(GMBasePanelUI);
         EventManager.instance.add(EModule_Events.gm_HideShowUI, this.listen_hideShowUI.bind(this));
     }
-
 
     private listen_hideShowUI() {
         let gmUI = mw.UIService.getUI(GMHUD_Generate);
@@ -103,7 +99,6 @@ export class GM_ParrySuccTime {
     public static parrySuccTime_After: number = null;
 }
 
-
 AddGMCommand("打开技能编辑器", (player: mw.Player, value: string) => {
     EventManager.instance.call(EModule_Events.gm_HideShowUI);
     MotionManager.instance.showEditor();
@@ -118,12 +113,10 @@ AddGMCommand("发射子弹id", (player: mw.Player, value: string) => {
     ModuleService.getModule(BulletModuleS).gm_fireSkillBullet(player, Number(value));
 }, "编辑器");
 
-
 AddGMCommand("id|旋转x|旋转y|z", (player: mw.Player, value: string) => {
 
     let values = value.split("|");
     let id = Number(values[0]);
-
 
     let effectCfg = GameConfig.Effect.getElement(id);
 
@@ -157,7 +150,6 @@ AddGMCommand("播放特效表id", (player: mw.Player, value: string) => {
     let values = value.split("|");
     let id = Number(values[0]);
 
-
     let effectCfg = GameConfig.Effect.getElement(id);
 
     if (effectCfg == null) {
@@ -171,7 +163,6 @@ AddGMCommand("播放特效表id", (player: mw.Player, value: string) => {
 }, (player: mw.Player, value: string) => {
 
 }, "配置表");
-
 
 AddGMCommand("修改时间膨胀，格式：延时|持续时间", (player: mw.Player, value: string) => {
     if (!value) {
@@ -202,7 +193,6 @@ AddGMCommand("无敌1取消0", (player: mw.Player, value: string) => {
     DataCenterC.getData(BattleWorldPlayerModuleData).isInvincible = va == 1;
 
 }, (player: mw.Player, value: string) => {
-
 
     let va = Number(value[0]);
 
@@ -262,7 +252,6 @@ AddGMCommand("自杀", (player: mw.Player, value: string) => {
     EventManager.instance.call(EModule_Events.hurtPlayer, damage);
 }, (player: mw.Player, value: string) => {
 
-
 }, "玩家");
 
 AddGMCommand("自杀并释放技能", (player: mw.Player, value: string) => {
@@ -276,7 +265,6 @@ AddGMCommand("自杀并释放技能", (player: mw.Player, value: string) => {
     EventManager.instance.call(EMotion_Events.MotionInvokeMotion, 308);
 
 }, (player: mw.Player, value: string) => {
-
 
 }, "玩家");
 
@@ -343,7 +331,6 @@ AddGMCommand("增加怒气值", (player: mw.Player, value: string) => {
     EventManager.instance.call(EAttributeEvents_S.AttrEvent_CalculateAttr_S, player.playerId, Attribute.EnumAttributeType.angerValue, Number(value));
 }, "玩家");
 
-
 AddGMCommand("装备武器id", (player: mw.Player, value: string) => {
 
 }, (player: mw.Player, value: string) => {
@@ -380,7 +367,6 @@ AddGMCommand("npc重随", (player: mw.Player, value: string) => {
     unit.getModel().worldTransform.position = pos[0];
 }, "地形");
 
-
 AddGMCommand("清除所有地形效果", (player: mw.Player, value: string) => {
 }, (player: mw.Player, value: string) => {
     ModuleService.getModule(LandModuleS).gm_recycle();
@@ -401,7 +387,6 @@ AddGMCommand("输出地形服务端", (player: mw.Player, value: string) => {
     ModuleService.getModule(LandModuleS).gm_loglandPos(Number(value));
 }, "地形");
 
-
 AddGMCommand("玩家加BUFF(buffID)", null, (player: mw.Player, value: string) => {
     if (!value) {
         console.error(" 数据有问题 ！！！！！！！！！");
@@ -419,7 +404,6 @@ AddGMCommand("怪加BUFF(buffID)", (player: mw.Player, value: string) => {
     let buffID = Number(value);
     ModuleService.getModule(BuffModuleC).createBuffOnScenceUnit(buffID, -1, true);
 }, null, "Buff");
-
 
 AddGMCommand("相机旋转", (player: mw.Player, value: string) => {
     let values = value.split("|");
@@ -440,7 +424,6 @@ AddGMCommand("相机相对位置偏移", (player: mw.Player, value: string) => {
 
 }, "相机");
 
-
 AddGMCommand("fps", (player: mw.Player, value: string) => {
     UE.KismetSystemLibrary.ExecuteConsoleCommand(player.character["actor"], "stat FPS");
 }, null, "调试");
@@ -458,7 +441,6 @@ AddGMCommand("打开碰撞体", (player: mw.Player, value: string) => {
 AddGMCommand("设置网络延迟", (player: mw.Player, value: string) => {
     UE.KismetSystemLibrary.ExecuteConsoleCommand(player.character["actor"], `net pktlag=${Number(value)}`);
 }, null, "调试");
-
 
 AddGMCommand("输入命令", (player: mw.Player, value: string) => {
     if (StringUtil.isEmpty(value)) {
@@ -486,11 +468,11 @@ AddGMCommand("跳Pet-Simulator", () => {
             const player = Player.getPlayer(userId);
             if (player) {
                 Event.dispatchToClient(player, "onJumpGameFailed", result.message);
-                Log4Ts.log({ name: "GM" }, "onJumpGameFailed", result.message);
+                Log4Ts.log({name: "GM"}, "onJumpGameFailed", result.message);
             }
         }
     };
-    TeleportService.asyncTeleportToScene("pet-simulator", [player.userId],).then(() => {
+    TeleportService.asyncTeleportToScene("pet-simulator", [player.userId]).then(() => {
     }, onFailed);
 });
 
@@ -502,14 +484,13 @@ AddGMCommand("跳DragonVerse", () => {
             const player = Player.getPlayer(userId);
             if (player) {
                 Event.dispatchToClient(player, "onJumpGameFailed", result.message);
-                Log4Ts.log({ name: "GM" }, "onJumpGameFailed", result.message);
+                Log4Ts.log({name: "GM"}, "onJumpGameFailed", result.message);
             }
         }
     };
-    TeleportService.asyncTeleportToScene("dragon-verse", [player.userId],).then(() => {
+    TeleportService.asyncTeleportToScene("dragon-verse", [player.userId]).then(() => {
     }, onFailed);
 });
-
 
 AddGMCommand("技能释放", (player: mw.Player, value: string) => {
 
@@ -538,13 +519,12 @@ AddGMCommand("击杀提示：数量", null, (player: mw.Player, value: string) =
     EventManager.instance.call(ENotice_Events_S.NoticeEvent_KillTip_S, killId, 0, beKillId, Number(value));
 }, "击杀提示");
 
-
-
-AddGMCommand("扣体力", (player, value) => {
-    ModuleService.getModule(EnergyModuleC).consume(Number(value), true);
-    EventManager.instance.call(EAttributeEvents_C.Attribute_Energy_Change_C);
-
-});
+AddGMCommand("扣体力",
+    undefined,
+    (player, value) => {
+        ModuleService.getModule(EnergyModuleS).consume(player.playerId, Number(value));
+        EventManager.instance.call(EAttributeEvents_C.Attribute_Energy_Change_C);
+    });
 
 AddGMCommand("加木桩", async () => {
 
@@ -553,8 +533,8 @@ AddGMCommand("加木桩", async () => {
     if (!prefabNpc) return;
     await prefabNpc.initUnit(Globaldata.guide_npcId, Globaldata.guide_woodPrefabGuid);
     prefabNpc.setModelLocation(Globaldata.wood_bornPos);
-})
+});
 
 AddGMCommand("显示/隐藏技能范围", (player, value) => {
     Globaldata.showSkillRange = !!value;
-})
+});

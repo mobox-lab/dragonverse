@@ -67,7 +67,7 @@ import { InteractiveModuleC } from "./module/InteractiveModule/InteractiveModule
 import { AntiCheatSystem } from "./tool/AntiCheatSystem";
 import * as mwaction from "mwaction";
 import BattleWorldAuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
-import BattleWorldEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
+import BWEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
 import { SettingModuleData } from "./module/SetingModule/SettingModuleData";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
 import GameServiceConfig from "./const/GameServiceConfig";
@@ -113,6 +113,8 @@ export default class GameLauncher extends mw.Script {
     @mw.Property({ displayName: "是否 beta 发布", group: "发布" })
     public isBeta: boolean = false;
 
+    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
+    public isUseTestUrl: boolean = true;
 
     @mw.Property({ displayName: "是否开启RPC统计" })
     public isRecordRPC: boolean = false;
@@ -122,6 +124,7 @@ export default class GameLauncher extends mw.Script {
         Globaldata.isOpenGm = this.gmSwitch;
         GameServiceConfig.isRelease = this.isRelease;
         GameServiceConfig.isBeta = this.isBeta;
+        GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
         mwaction;
         // 开启作弊检测
         //this.checkCheat();
@@ -198,7 +201,7 @@ export default class GameLauncher extends mw.Script {
         // ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
         // ModuleService.registerModule(GuideModuleS2, GuideModuleC2, null);
         ModuleService.registerModule(InteractiveModuleS, InteractiveModuleC, null);
-        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, BattleWorldEnergyModuleData);
+        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, BWEnergyModuleData);
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
     }
 

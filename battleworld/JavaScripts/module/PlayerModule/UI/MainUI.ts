@@ -50,7 +50,19 @@ import { SkillModuleC } from "../../SkillModule/SkillModuleC";
 import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
 import SetingUI from "../../SetingModule/UI/SetingUI";
 import { P_Game_Action } from "../../action/ui/P_Game_Action";
-type PillUIInfo = { text: TextBlock, img: Image, num: number, name: TextBlock, duration: number, time: TextBlock, mask: MaskButton, timer: number };
+
+type PillUIInfo = {
+    text: TextBlock,
+    img: Image,
+    num: number,
+    name: TextBlock,
+    duration: number,
+    time: TextBlock,
+    mask: MaskButton,
+    timer: number,
+    levelCanvas: Canvas
+};
+
 export class MainUI extends Main_HUD_Generate {
 
     private playerMD: PlayerModuleC;
@@ -119,7 +131,7 @@ export class MainUI extends Main_HUD_Generate {
         // 打开段位UI
         this.mBtn_Rank.onClicked.add(() => {
             if (UIService.getUI(RankPanel)?.isShowing) {
-                UIService.hide(RankPanel)
+                UIService.hide(RankPanel);
             } else {
                 UIService.show(RankPanel);
             }
@@ -190,7 +202,7 @@ export class MainUI extends Main_HUD_Generate {
         this.registerRedDot();
 
         Yoact.bindYoact(() => {
-            Gtk.trySetText(this.mBattle, mwext.ModuleService.getModule(AuthModuleC).staminaLimit.data.toString());
+            Gtk.trySetText(this.mBattle, mwext.ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data.toString());
         });
 
         this.mBtn_Battle_Add.onClicked.add(() => {
@@ -569,7 +581,7 @@ export class MainUI extends Main_HUD_Generate {
             this.reBackTween.stop();
         }
         let time = backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
-        this.reBackTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, time * 1000).onUpdate((data) => {
+        this.reBackTween = new mw.Tween({alpha: 0}).to({alpha: 1}, time * 1000).onUpdate((data) => {
             this.mMask_Back.fanShapedValue = data.alpha;
         }).onComplete(() => {
             this.mMask_Back.fanShapedValue = 1;
@@ -617,7 +629,7 @@ export class MainUI extends Main_HUD_Generate {
      */
     private initReset() {
         this.mMask_Reborn.visibility = mw.SlateVisibility.Collapsed;
-        this.rebornTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
+        this.rebornTween = new mw.Tween({alpha: 0}).to({alpha: 1}, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
             this.mMask_Reborn.fanShapedValue = data.alpha;
         }).onComplete(() => {
             this.mMask_Reborn.fanShapedValue = 1;
@@ -743,7 +755,8 @@ export class MainUI extends Main_HUD_Generate {
             duration: 0,
             time: this.mText_Trans_Time_cd_Long,
             mask: this.mMask_Trans_Long,
-            timer: -1
+            timer: -1,
+            levelCanvas: this.canvasLevelF,
         });
         this.pillMap.set(Attribute.EnumAttributeType.defMultiple, {
             text: this.mText_Tortoise_Num,
@@ -753,7 +766,8 @@ export class MainUI extends Main_HUD_Generate {
             duration: 0,
             time: this.mText_Trans_Time_cd_Tortoise,
             mask: this.mMask_Trans_Tortoise,
-            timer: -1
+            timer: -1,
+            levelCanvas: this.canvasLevelD,
         });
         this.pillMap.set(Attribute.EnumAttributeType.maxHpAdd, {
             text: this.mText_Bone_Num,
@@ -763,7 +777,8 @@ export class MainUI extends Main_HUD_Generate {
             duration: 0,
             time: this.mText_Trans_Time_cd_Bone,
             mask: this.mMask_Trans_Bone,
-            timer: -1
+            timer: -1,
+            levelCanvas: this.canvasLevelH,
         });
         this.pillMap.set(Attribute.EnumAttributeType.maxEnergyAdd, {
             text: this.mText_Qi_Num,
@@ -773,7 +788,8 @@ export class MainUI extends Main_HUD_Generate {
             duration: 0,
             time: this.mText_Trans_Time_cd_Qi,
             mask: this.mMask_Trans_Qi,
-            timer: -1
+            timer: -1,
+            levelCanvas: this.canvasLevelB,
         });
         this.refreshPillVisible();
     }
@@ -787,14 +803,14 @@ export class MainUI extends Main_HUD_Generate {
             for (let [_, second] of this.pillMap) {
                 if (second && second.text) {
                     second.num = 0;
-                    second.text.text = second.num.toFixed();
+                    // second.text.text = second.num.toFixed();
                 }
             }
         } else {
             if (pillInfo.attributeID) {
                 const pillValue = this.pillMap.get(pillInfo.attributeID);
                 pillValue.num++;
-                pillValue.text.text = pillValue.num.toFixed();
+                // pillValue.text.text = pillValue.num.toFixed();
                 pillValue.duration = pillInfo.duration;
             }
         }
@@ -809,7 +825,7 @@ export class MainUI extends Main_HUD_Generate {
         const pillValue = this.pillMap.get(pillType);
         if (pillType) {
             pillValue.num--;
-            pillValue.text.text = pillValue.num.toFixed();
+            // pillValue.text.text = pillValue.num.toFixed();
         }
         this.refreshPillVisible();
     }
@@ -822,23 +838,25 @@ export class MainUI extends Main_HUD_Generate {
         for (let [_, second] of this.pillMap) {
             if (second && second.text && second.img) {
                 if (second.num > 0) {
-                    second.text.visibility = SlateVisibility.Visible;
-                    second.img.visibility = SlateVisibility.Visible;
+                    // second.text.visibility = SlateVisibility.Visible;
+                    // second.img.visibility = SlateVisibility.Visible;
                     second.name.visibility = SlateVisibility.Visible;
                     canvasShouldShow = true;
+                    this.setBuffLevel(second.levelCanvas, second.num);
                     let oriDuration = second.duration;
                     if (second.timer === -1) {
                         second.timer = TimeUtil.setInterval(() => {
-                            console.log(second.name.text, second.mask.fanShapedValue)
+                            console.log(second.name.text, second.mask.fanShapedValue);
                             second.duration -= 0.1;
                             second.mask.fanShapedValue = (oriDuration - second.duration) / oriDuration;
                             second.time.text = `${second.duration.toFixed(1)}s`;
                             if (second.duration <= 0) {
-                                second.text.visibility = SlateVisibility.Collapsed;
-                                second.img.visibility = SlateVisibility.Collapsed;
+                                // second.text.visibility = SlateVisibility.Collapsed;
+                                // second.img.visibility = SlateVisibility.Collapsed;
                                 second.time.text = "";
                                 second.name.visibility = SlateVisibility.Collapsed;
                                 second.mask.fanShapedValue = 0;
+                                second.levelCanvas.visibility = SlateVisibility.Collapsed;
                                 TimeUtil.clearInterval(second.timer);
                                 second.timer = -1;
                             }
@@ -846,11 +864,12 @@ export class MainUI extends Main_HUD_Generate {
                     }
 
                 } else {
-                    second.text.visibility = SlateVisibility.Collapsed;
-                    second.img.visibility = SlateVisibility.Collapsed;
+                    // second.text.visibility = SlateVisibility.Collapsed;
+                    // second.img.visibility = SlateVisibility.Collapsed;
                     second.name.visibility = SlateVisibility.Collapsed;
                     second.mask.fanShapedValue = 1;
                     second.time.text = "";
+                    second.levelCanvas.visibility = SlateVisibility.Collapsed;
                     if (second.timer !== -1) {
                         TimeUtil.clearInterval(second.timer);
                         second.timer = -1;
@@ -900,7 +919,7 @@ export class MainUI extends Main_HUD_Generate {
     // }
 
     private changeEnergy() {
-        this.mBattle_1.text = ModuleService.getModule(EnergyModuleC).currEnergy().toString();
+        this.mBattle_1.text = Math.floor(ModuleService.getModule(EnergyModuleC).currEnergy()).toString();
     }
 
     public setCoinAndEnergyVisible(visible: boolean) {
@@ -908,4 +927,24 @@ export class MainUI extends Main_HUD_Generate {
         this.mCanvasBattle.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
     }
 
+    private setBuffLevel(parentCanvas: Canvas, level: number) {
+        if (level === 0) {
+            parentCanvas.visibility = SlateVisibility.Collapsed;
+            return;
+        }
+        if (level <= parentCanvas.getChildrenCount()) {
+            this.showBuffLevel(parentCanvas, level);
+        }
+    }
+
+    private showBuffLevel(parentCanvas: Canvas, showLevel: number) {
+        parentCanvas.visibility = SlateVisibility.Visible;
+        for (let i = 0; i < parentCanvas.getChildrenCount(); i++) {
+            if (i <= showLevel - 1) {
+                parentCanvas.getChildAt(i).visibility = SlateVisibility.Visible;
+            } else {
+                parentCanvas.getChildAt(i).visibility = SlateVisibility.Collapsed;
+            }
+        }
+    }
 }

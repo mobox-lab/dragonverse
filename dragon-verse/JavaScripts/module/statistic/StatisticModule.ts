@@ -1,8 +1,9 @@
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
-export default class StatisticModuleData extends JModuleData {
+export default class DvStatisticModuleData extends JModuleData {
     //@Decorator.persistence()
     //public isSave: bool;
 
@@ -20,8 +21,82 @@ export default class StatisticModuleData extends JModuleData {
     @Decorator.persistence()
     playerElapsedTimeS: number = 0;
 
+    /**
+     * 玩家登录记录.
+     */
     @Decorator.persistence()
-    maybeCheatingReason: string[] = [];
+    playerLoginRecord: [number, number][] = [];
+
+    /**
+     * 上次登录时间.
+     * @return {number}
+     */
+    public get playerLastEnteredTime(): number {
+        return this.playerLoginRecord[0][0];
+    }
+
+    /**
+     * 游玩时长.
+     * @return {number}
+     */
+    public get playerLastedPlayTime(): number {
+        return (this.playerLoginRecord[0][1] ?? Date.now()) -
+            this.playerLoginRecord[0][0];
+    }
+
+    /**
+     * 获取今日总在线时长.
+     * @return {number}
+     */
+    public get playerTodayOnlineTime(): number {
+        const now = Date.now();
+        let todayCounter = 0;
+        for (let i = 0; i < this.playerLoginRecord.length; ++i) {
+            const [enter, leave] = this.playerLoginRecord[i];
+            if (i !== 0 &&
+                leave === undefined)
+                continue;
+
+            if (!Gtk.isSameTime(leave,
+                now,
+                GtkTypes.Tf.D))
+                break;
+
+            if (Gtk.isSameTime(enter,
+                now,
+                GtkTypes.Tf.D)) {
+                todayCounter = todayCounter
+                    - enter
+                    + leave ?? now;
+            } else {
+                todayCounter = todayCounter
+                    - new Date().setHours(0, 0, 0, 0)
+                    + leave ?? now;
+                break;
+            }
+        }
+        return todayCounter;
+    }
+
+    public recordEnter(now: number) {
+        ++this.playerEnteredCounterS;
+        this.playerLoginRecord.unshift([now, undefined]);
+    }
+
+    public recordLeave(now: number) {
+        this.playerLoginRecord[0][1] = now;
+        this.playerElapsedTimeS += this.playerLastedPlayTime;
+        if (this.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
+            this.playerLoginRecord.pop();
+        }
+    }
+
+    // /**
+    //  * 疑似作弊原因.
+    //  * @type {string[]}
+    //  */
+    // @Decorator.persistence()
+    // maybeCheatingReason: string[] = [];
 }
 
 interface PlayerIntervalData {
@@ -51,7 +126,7 @@ interface PlayerIntervalData {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class StatisticModuleC extends JModuleC<StatisticModuleS, StatisticModuleData> {
+export class StatisticModuleC extends JModuleC<StatisticModuleS, DvStatisticModuleData> {
 //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -88,6 +163,9 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, StatisticModule
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
+
+        const now = Date.now();
+        this.data.recordEnter(now);
     }
 
     protected onDestroy(): void {
@@ -119,15 +197,9 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, StatisticModule
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class StatisticModuleS extends JModuleS<StatisticModuleC, StatisticModuleData> {
+export class StatisticModuleS extends JModuleS<StatisticModuleC, DvStatisticModuleData> {
 //#region Member
     private _eventListeners: EventListener[] = [];
-
-    /**
-     * 玩家进入时间.
-     * @type {Map<number, [number, number]>}
-     */
-    private _playerEnteredTime: Map<number, number> = new Map();
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -166,30 +238,54 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, StatisticModule
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
 
-        this._playerEnteredTime.set(player.playerId, Date.now());
-        ++this.getPlayerData(player).playerEnteredCounterS;
+        const now = Date.now();
+        const d = this.getPlayerData(player);
+        d.recordEnter(now);
+        d.save(false);
     }
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
-        this.getPlayerData(player).playerElapsedTimeS += Date.now() - this._playerEnteredTime.get(player.playerId);
+        let now = Date.now();
+        Gtk.queryModuleData<{
+            playerLoginRecord: [number, number][],
+            playerElapsedTimeS: number
+        }>(DvStatisticModuleData.name, player.userId).then((d) => {
+            d.playerLoginRecord[0][1] = now;
+            d.playerElapsedTimeS += (d.playerLoginRecord[0][1] ?? now) - d.playerLoginRecord[0][0];
+            if (d.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
+                d.playerLoginRecord.pop();
+            }
+            Gtk.updateModuleData(DvStatisticModuleData.name, player.userId, d);
+        });
+
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Method
+    public getPlayerData(player: mw.Player | string | number): DvStatisticModuleData {
+        return super.getPlayerData(player);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
     public net_reportPlayerDataInterval(data: PlayerIntervalData) {
         let playerId = this.currentPlayerId;
-        let enteredTime = this._playerEnteredTime.get(playerId);
+
+        const d = this.getPlayerData(playerId);
+        if (!d) {
+            Log4Ts.warn(StatisticModuleS, `player data not found. playerId: ${playerId}`);
+            return;
+        }
+        let enteredTime = d.playerLastEnteredTime;
         if (Math.abs(Date.now() - enteredTime - data.elapsedTime) > GtkTypes.Interval.PerHour) {
             let playerMaybeCheatingReason = [`player maybe cheating.`,
                 `playerId: ${playerId}`,
                 `client elapsedTime: ${data.elapsedTime}`,
                 `server elapsedTime: ${Date.now() - enteredTime}`];
-            this.getPlayerData(playerId).maybeCheatingReason.push(playerMaybeCheatingReason.join());
+            // this.getPlayerData(playerId).maybeCheatingReason.push(playerMaybeCheatingReason.join());
             Log4Ts.warn(StatisticModuleS, ...playerMaybeCheatingReason);
         }
     }

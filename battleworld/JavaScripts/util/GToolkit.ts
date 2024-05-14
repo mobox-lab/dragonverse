@@ -15,7 +15,7 @@
  * @see https://github.com/LviatYi/MetaWorldNPT/tree/main/MetaWorldNPT/JavaScripts/util
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 31.9.15
+ * @version 31.10.1
  * @beta
  */
 class GToolkit {
@@ -661,6 +661,52 @@ class GToolkit {
         }
 
         return existPatchByTag.timerId;
+    }
+
+    /**
+     * whether the two times are equal.
+     * @param {number} lhs
+     * @param {number} rhs
+     * @param {GtkTypes.TimeFormatDimensionFlagsLike} precision
+     * @return {boolean}
+     */
+    public isSameTime(lhs: number,
+                      rhs: number,
+                      precision: GtkTypes.TimeFormatDimensionFlagsLike = GtkTypes.Tf.D) {
+        if (precision === GtkTypes.Tf.Ms) return lhs === rhs;
+        let lhsDate = new Date(lhs);
+        let rhsDate = new Date(rhs);
+        switch (precision) {
+            case GtkTypes.Tf.Y:
+                return lhsDate.getFullYear() === rhsDate.getFullYear();
+            case GtkTypes.Tf.Mon:
+                return lhsDate.getFullYear() === rhsDate.getFullYear() &&
+                    lhsDate.getMonth() === rhsDate.getMonth();
+            case GtkTypes.Tf.D:
+                return lhsDate.getFullYear() === rhsDate.getFullYear() &&
+                    lhsDate.getMonth() === rhsDate.getMonth() &&
+                    lhsDate.getDate() === rhsDate.getDate();
+            case GtkTypes.Tf.H:
+                return lhsDate.getFullYear() === rhsDate.getFullYear() &&
+                    lhsDate.getMonth() === rhsDate.getMonth() &&
+                    lhsDate.getDate() === rhsDate.getDate() &&
+                    lhsDate.getHours() === rhsDate.getHours();
+            case GtkTypes.Tf.M:
+                return lhsDate.getFullYear() === rhsDate.getFullYear() &&
+                    lhsDate.getMonth() === rhsDate.getMonth() &&
+                    lhsDate.getDate() === rhsDate.getDate() &&
+                    lhsDate.getHours() === rhsDate.getHours() &&
+                    lhsDate.getMinutes() === rhsDate.getMinutes();
+            case GtkTypes.Tf.S:
+                return lhsDate.getFullYear() === rhsDate.getFullYear() &&
+                    lhsDate.getMonth() === rhsDate.getMonth() &&
+                    lhsDate.getDate() === rhsDate.getDate() &&
+                    lhsDate.getHours() === rhsDate.getHours() &&
+                    lhsDate.getMinutes() === rhsDate.getMinutes() &&
+                    lhsDate.getSeconds() === rhsDate.getSeconds();
+            default:
+                return false;
+        }
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -2230,7 +2276,7 @@ class GToolkit {
      * @param {string} defaultValue
      * @return {Promise<string>}
      */
-    public async queryOtherSceneModuleData<T extends object>(moduleDataName: string, userId: string, defaultValue: T = {} as T): Promise<T> {
+    public async queryModuleData<T extends object>(moduleDataName: string, userId: string, defaultValue: T = {} as T): Promise<T> {
         const data = await DataStorage.asyncGetData(this.getModuleDataKey(userId, moduleDataName));
         if (data.code !== mw.DataStorageResultCode.Success) return Promise.reject(`Query failed. error code: ${data.code}.`);
 
@@ -2245,7 +2291,7 @@ class GToolkit {
      * @param {string} value
      * @return {Promise<boolean>}
      */
-    public async updateOtherSceneModuleData(moduleDataName: string, userId: string, value: object): Promise<boolean> {
+    public async updateModuleData(moduleDataName: string, userId: string, value: object): Promise<boolean> {
         const data: mw.DataStorageResultCode = await DataStorage.asyncSetData(this.getModuleDataKey(userId, moduleDataName), value);
         if (data !== mw.DataStorageResultCode.Success) {
             console.warn(`update other game module data failed. error code: ${data}`);
@@ -2399,6 +2445,10 @@ export namespace GtkTypes {
          * 月.
          */
         Month = 1 << 6,
+        /**
+         * 年.
+         */
+        Year = 1 << 7,
     }
 
     /**
@@ -2430,6 +2480,10 @@ export namespace GtkTypes {
          * 月.
          */
         Mon = 1 << 6,
+        /**
+         * 年.
+         */
+        Y = 1 << 7,
     }
 
     /**

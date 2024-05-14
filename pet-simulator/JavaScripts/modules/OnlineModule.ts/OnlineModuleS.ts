@@ -1,6 +1,4 @@
-
-
-import { OnlineMoudleC } from "./OnlineModuleC";
+import { OnlineModuleC } from "./OnlineModuleC";
 import { OnlineModuleData } from "./OnlineModuleData";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { GameConfig } from "../../config/GameConfig";
@@ -10,24 +8,33 @@ import { RewardState } from "./P_RewardPanel";
 import { GlobalEnum } from "../../const/Enum";
 import { oTraceError } from "../../util/LogManager";
 import { AreaModuleData } from "../AreaDivide/AreaModuleData";
+import { StatisticModuleS } from "../statistic/StatisticModule";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
+export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
 
+    private _statisticModuleS: StatisticModuleS;
 
-export class OnlineMoudleS extends ModuleS<OnlineMoudleC, OnlineModuleData>{
+    private get statisticModuleS(): StatisticModuleS | null {
+        if (!this._statisticModuleS) this._statisticModuleS = ModuleService.getModule(StatisticModuleS);
+        return this._statisticModuleS;
+    }
 
     /**玩家在线时间Map */
     private playerOnlineTimeMap: Map<number, number> = new Map();
 
-    private playerMS: PlayerModuleS = null;
+    private _playerModuleS: PlayerModuleS;
 
-    protected onStart(): void {
-        this.playerMS = ModuleService.getModule(PlayerModuleS);
+    private get playerModuleS(): PlayerModuleS | null {
+        if (!this._playerModuleS) this._playerModuleS = ModuleService.getModule(PlayerModuleS);
+        return this._playerModuleS;
     }
 
     protected onPlayerEnterGame(player: mw.Player): void {
         this.startOnlineTime(player);
         this.setPlayerOnline(player);
     }
+
     protected onPlayerLeft(player: mw.Player): void {
         try {
             this.stopOnlineTime(player);
@@ -36,7 +43,7 @@ export class OnlineMoudleS extends ModuleS<OnlineMoudleC, OnlineModuleData>{
         }
     }
 
-    /**开始计时玩家在线时间 */
+    /** 开始计时玩家在线时间 */
     private startOnlineTime(player: mw.Player) {
         let id = player.playerId;
         let nowTime = TimeUtil.elapsedTime();
@@ -45,7 +52,8 @@ export class OnlineMoudleS extends ModuleS<OnlineMoudleC, OnlineModuleData>{
             this.playerOnlineTimeMap.set(id, nowTime);
         }
     }
-    /**停止计时玩家在线时间 */
+
+    /** 停止计时玩家在线时间 */
     private stopOnlineTime(player: mw.Player) {
         let id = player.playerId;
         let data = this.getPlayerData(player);
@@ -53,30 +61,24 @@ export class OnlineMoudleS extends ModuleS<OnlineMoudleC, OnlineModuleData>{
 
         if (this.playerOnlineTimeMap.has(id)) {
             let startTime = this.playerOnlineTimeMap.get(id);
-            let onlineTime = Math.floor(nowTime - startTime);
+            let onlineTime = nowTime - startTime;
             this.playerOnlineTimeMap.delete(id);
             data.addOnlineTime(onlineTime);
-            console.error('lwj  玩家退出 游玩时间：“ ' + onlineTime);
+            console.log("lwj  玩家退出 游玩时间：" + onlineTime);
         }
     }
 
-    /**设置玩家上线 */
+    /** 设置玩家上线 */
     public setPlayerOnline(player: mw.Player) {
-
         let data = this.getPlayerData(player);
 
         let curDay = utils.getTodayNumber();
         let curHour = utils.getTodayHour();
 
         if (curDay > data.curLoginTime) {  //新的一天
-            if (data.curLoginHour < 4) {
+            if (data.curLoginHour < 4 || curHour > 4) {
                 data.setCurDay(curDay, curHour, true);
-                this.playerMS.addGold(player.playerId, 1, GlobalEnum.CoinType.SummerGold);
-                return;
-            }
-            if (curHour > 4) {
-                data.setCurDay(curDay, curHour, true);
-                this.playerMS.addGold(player.playerId, 1, GlobalEnum.CoinType.SummerGold);
+                this.playerModuleS.addGold(player.playerId, 1, GlobalEnum.CoinType.SummerGold);
                 return;
             }
             data.setCurDay(curDay, curHour, false);
@@ -89,43 +91,40 @@ export class OnlineMoudleS extends ModuleS<OnlineMoudleC, OnlineModuleData>{
         }
     }
 
-    net_StateChange(id: number, state: RewardState) {
-        switch (state) {
-            case RewardState.canReward:
-                this.currentData.addWaitGet(id);
-                break;
-            case RewardState.rewarded:
-                this.currentData.addHasGet(id);
-                this.getReward(this.currentPlayerId, id);
-                // ModuleService.getModule(PassModuleS).onTaskUpdateAC.call(
-                //   this.currentPlayerId, GlobalEnum.VipTaskType.OnlineTime, id);
-                break;
-            default:
-                break;
-
+    net_requestAccept(id: number) {
+        let cfg = GameConfig.TimeReward.getElement(id);
+        if (!cfg) {
+            Log4Ts.warn(OnlineModuleS, `reward not exist. config id: ${id}`);
+            return;
         }
-    }
+        if (cfg.Time >
+            (this.statisticModuleS.getPlayerData(this.currentPlayerId)?.playerTodayOnlineTime ?? 0)) {
+            Log4Ts.warn(OnlineModuleS, `reward insufficient time requirement`);
+            return;
+        }
 
-
-    /**获得奖励 */
-    net_GetReward(id: number) {
         this.getReward(this.currentPlayerId, id);
     }
 
     private getReward(playerId: number, id: number) {
         let cfg = GameConfig.TimeReward.getElement(id);
+        if (!cfg) {
+            Log4Ts.log(OnlineModuleS, `reward not exist. config id: ${id}`);
+            return;
+        }
+        this.currentData.addHasGet(id);
         let arr = cfg.RewardArr;
         let type = this.judgeGold(playerId);
         let tipsArr: number[] = [];
         let rewardCount: number[] = [];
 
         if (arr[0]) {
-            this.playerMS.addGold(playerId, arr[0], type);
+            this.playerModuleS.addGold(playerId, arr[0], type);
             tipsArr.push(267);
             rewardCount.push(arr[0]);
         }
         if (arr[1]) {
-            this.playerMS.addDiamond(playerId, arr[1]);
+            this.playerModuleS.addDiamond(playerId, arr[1]);
             tipsArr.push(268);
             rewardCount.push(arr[1]);
         }
@@ -133,17 +132,17 @@ export class OnlineMoudleS extends ModuleS<OnlineMoudleC, OnlineModuleData>{
             let arrAtk = GameConfig.PetARR.getElement(arr[2]).PetAttack;
             let atk = 0;
             if (arrAtk.length > 1)
-                atk = utils.GetRandomNum(arrAtk[0], arrAtk[1])
+                atk = utils.GetRandomNum(arrAtk[0], arrAtk[1]);
             else
                 atk = arrAtk[0];
             let nameId = utils.GetRandomNum(1, 200);
             let name = GameConfig.Language.getElement(nameId).Value;
-            ModuleService.getModule(PetBagModuleS).addPet(playerId, arr[2], atk, name)
+            ModuleService.getModule(PetBagModuleS).addPet(playerId, arr[2], atk, name);
             tipsArr.push(269);
             rewardCount.push(0);
         }
         if (arr[3]) {
-            this.playerMS.addGold(playerId, arr[3], GlobalEnum.CoinType.SummerGold);
+            this.playerModuleS.addGold(playerId, arr[3], GlobalEnum.CoinType.SummerGold);
             tipsArr.push(766);
             rewardCount.push(0);
         }

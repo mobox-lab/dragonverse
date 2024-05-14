@@ -20,8 +20,8 @@ import { PetBagModuleData } from "./modules/PetBag/PetBagModuleData";
 import { CollectModuleS } from "./modules/PetCollect/CollectModuleS";
 import { CollectModuleC } from "./modules/PetCollect/CollectModuleC";
 import { CollectModuleData } from "./modules/PetCollect/CollectModuleData";
-import { OnlineMoudleS } from "./modules/OnlineModule.ts/OnlineModuleS";
-import { OnlineMoudleC } from "./modules/OnlineModule.ts/OnlineModuleC";
+import { OnlineModuleS } from "./modules/OnlineModule.ts/OnlineModuleS";
+import { OnlineModuleC } from "./modules/OnlineModule.ts/OnlineModuleC";
 import { OnlineModuleData } from "./modules/OnlineModule.ts/OnlineModuleData";
 import { TradingModuleS } from "./modules/Trading/TradingModuleS";
 import { TradingModuleC } from "./modules/Trading/TradingModuleC";
@@ -41,10 +41,11 @@ import { RankModuleC } from "./modules/Rank/RankModuleC";
 import { DollMachineModuleC } from "./modules/DollMachine/DollMachineModuleC";
 import { DollMachineModuleS } from "./modules/DollMachine/DollMachineModuleS";
 import * as mwaction from "mwaction";
-import PetSimulatorEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./modules/Energy/EnergyModule";
+import PSEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./modules/Energy/EnergyModule";
 import PetSimulatorAuthModuleData, { AuthModuleC, AuthModuleS } from "./modules/auth/AuthModule";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./modules/jump-room/JumpRoomModule";
 import GameServiceConfig from "./const/GameServiceConfig";
+import PsStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./modules/statistic/StatisticModule";
 
 // declare global {
 //     var UE: any;
@@ -72,6 +73,9 @@ export default class GameStart extends mw.Script {
 
     @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
     public isBeta: boolean = false;
+
+    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
+    public isUseTestUrl: boolean = true;
 
     @mw.Property({displayName: "是否开启主页GM开关按钮"})
     private isOpenGm = false;
@@ -126,6 +130,7 @@ export default class GameStart extends mw.Script {
         LogManager.instance.setLogLevel(1);
         GameServiceConfig.isRelease = this.isRelease;
         GameServiceConfig.isBeta = this.isBeta;
+        GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
         GlobalData.Global.isSameGoBack = this.isSameGoBack;
         GlobalData.Global.isOpenCollectMachine = this.isOpenCollectMachine;
         GlobalData.Global.isShowGM = this.isOpenGm;
@@ -212,17 +217,18 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(InputModuleS, InputModuleC, null);
         ModuleService.registerModule(ResourceModuleS, ResourceModuleC, null);
         ModuleService.registerModule(CollectModuleS, CollectModuleC, CollectModuleData);
-        ModuleService.registerModule(OnlineMoudleS, OnlineMoudleC, OnlineModuleData);
+        ModuleService.registerModule(OnlineModuleS, OnlineModuleC, OnlineModuleData);
         ModuleService.registerModule(TradingModuleS, TradingModuleC, TradingModuleData);
         ModuleService.registerModule(BuffModuleS, BuffModuleC, BuffData);
         ModuleService.registerModule(AchievementModuleS, AchievementModuleC, AchievementData);
         ModuleService.registerModule(Task_ModuleS, Task_ModuleC, TaskModuleData);
         ModuleService.registerModule(RankModuleS, RankModuleC, null);
-        ModuleService.registerModule(DollMachineModuleS, DollMachineModuleC, null);
+        // ModuleService.registerModule(DollMachineModuleS, DollMachineModuleC, null);
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PetSimulatorPlayerModuleData);
         ModuleService.registerModule(PetBagModuleS, PetBagModuleC, PetBagModuleData);
-        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PetSimulatorEnergyModuleData);
+        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PSEnergyModuleData);
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
+        ModuleService.registerModule(StatisticModuleS, StatisticModuleC, PsStatisticModuleData);
     }
 
     /**

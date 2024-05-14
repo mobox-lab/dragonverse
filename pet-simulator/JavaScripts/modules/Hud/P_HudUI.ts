@@ -19,6 +19,7 @@ import GToolkit from "../../util/GToolkit";
 import { JumpGamePanel } from "../../ui/JumpGamePanel";
 import { Task_ModuleC } from "../Task/TaskModuleC";
 import Gtk from "../../util/GToolkit";
+import { P_Transmit } from "../AreaDivide/P_Transmit";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -70,7 +71,11 @@ export class P_HudUI extends Hud_Generate {
             this.onJumpAction.call();
         });
         this.mBtn_Transmit.onClicked.add(() => {
-            this.ontransmitAC.call();
+            if (!UIService.getUI(P_Transmit, false) || !UIService.getUI(P_Transmit).visible) {
+                this.ontransmitAC.call();
+            } else {
+                UIService.getUI(P_Transmit).hide();
+            }
         });
         this.mBtn_FastTran.onClicked.add(() => {
             this.onFastTranAC.call();
@@ -132,7 +137,8 @@ export class P_HudUI extends Hud_Generate {
         this.mBtn_Transmit.touchMethod = (mw.ButtonTouchMethod.DownAndUp);
         Yoact.bindYoact(() =>
             Gtk.trySetText(this.mText_stamina2,
-                ModuleService.getModule(AuthModuleC).staminaLimit.data.toString()));
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
+                    .toString()));
 
         this.setGMBtn();
         this.startFastTranBtnTween();
@@ -142,7 +148,12 @@ export class P_HudUI extends Hud_Generate {
         //         ((this.authModuleC?.currency.count ?? 0).toFixed(2).toString()));
         // });
         this.jumpRoomBtn.onClicked.add(() => {
-            UIService.show(JumpGamePanel);
+            if (!UIService.getUI(JumpGamePanel, false) || !UIService.getUI(JumpGamePanel).visible) {
+                UIService.show(JumpGamePanel);
+            } else {
+                UIService.hide(JumpGamePanel);
+            }
+
         });
 
         KeyOperationManager.getInstance().onKeyPress(this, Keys.W, () => {

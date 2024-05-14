@@ -3,10 +3,6 @@ export class OnlineModuleData extends Subdata {
 
 
     @Decorator.persistence()
-    private waitGetArr: number[] = [];
-
-
-    @Decorator.persistence()
     private hasGetArr: number[] = [];
 
     /**今天在线时间 */
@@ -29,10 +25,6 @@ export class OnlineModuleData extends Subdata {
 
     protected initDefaultData(): void {
 
-    }
-    /**待领取数组 */
-    public get WaitGetArr(): number[] {
-        return this.waitGetArr;
     }
     /**已领取数组 */
     public get HasGetArr(): number[] {
@@ -58,7 +50,6 @@ export class OnlineModuleData extends Subdata {
         if (isUpdate) {
             this.todayOnlineTime = 0;
             this.hasGetArr.length = 0;
-            this.waitGetArr.length = 0;
         }
         this.curLoginTime = day;
         this.curLoginHour = hour;
@@ -69,25 +60,12 @@ export class OnlineModuleData extends Subdata {
     /**添加已领取 */
     public addHasGet(id: number) {
         let index = this.hasGetArr.indexOf(id, 0)
-        if (index == -1) {
+        if (index === -1) {
             this.hasGetArr.push(id);
             //删除id
-            let index2 = this.waitGetArr.indexOf(id, 0)
-            if (index2 != -1) {
-                this.waitGetArr.splice(index2, 1);
-            }
+
             this.save(true);
             this.onHasGetAC.call();
-        }
-    }
-
-    /**添加待领取 */
-    public addWaitGet(id: number) {
-        let index = this.waitGetArr.indexOf(id, 0)
-
-        if (index == -1) {
-            this.waitGetArr.push(id);
-            this.save(true);
         }
     }
 

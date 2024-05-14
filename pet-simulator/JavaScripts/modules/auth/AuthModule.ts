@@ -7,6 +7,7 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import { AddGMCommand } from "module_gm";
 import noReply = mwext.Decorator.noReply;
 import createYoact = Yoact.createYoact;
+import { GameConfig } from "../../config/GameConfig";
 
 //#region TTD & GM
 AddGMCommand(
@@ -50,9 +51,18 @@ AddGMCommand(
     undefined,
     (player, args) => {
         Log4Ts.log(AuthModuleS, `try catch dragon...`);
+        let allDragonConfig = GameConfig["Dragon"]?.getAllElement() ?? [];
+        if (allDragonConfig.length === 0) {
+            Log4Ts.warn(AuthModuleS, `there is no valid dragon config.`);
+            return;
+        }
         mwext.ModuleService
             .getModule(AuthModuleS)
-            .queryRegisterStaminaLimit(player.playerId)
+            .reqWebCatchDragon(
+                player.playerId,
+                Gtk.randomArrayItem(allDragonConfig)["id"],
+                Date.now(),
+            )
             .then((value) => {
                 Log4Ts.log(
                     AuthModuleS,
@@ -351,8 +361,6 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     private _lastSubGameReportTime: number = 0;
 
-    public staminaLimit: { data: number } = createYoact({data: 0});
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -393,18 +401,9 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
-
-    public refreshStaminaLimit() {
-        this.server.net_requestRefreshStaminaLimit();
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
-    public net_changeStaminaLimit(value: number) {
-        this.staminaLimit.data = value;
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -653,7 +652,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
 
-        this.queryRegisterStaminaLimit(player.playerId);
+        // this.queryRegisterStaminaLimit(player.playerId);
     }
 
     private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
@@ -746,12 +745,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return respInJson.data;
     }
 
-    public async reqWebCatchDragon(playerId: number): Promise<DragonBallRespData> {
+    public async reqWebCatchDragon(playerId: number,
+                                   dragonPalId: number,
+                                   catchTimeStamp: number): Promise<DragonBallRespData> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
-        const requestParam: UserDataQueryReq = {
+        const requestParam: CatchDragonReq = {
             userId,
+            dragonPalId,
+            catchTimeStamp,
+            attributionType: "game",
         };
 
         const respInJson = await
@@ -801,7 +805,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             Log4Ts.log(AuthModuleS, `invalid value when query stamina limit for user ${userId}.`);
         else {
             this.playerStaminaLimitMap.set(playerId, respInJson.data.stamina);
-            this.getClient(playerId)?.net_changeStaminaLimit(respInJson.data.stamina);
         }
         if (Gtk.isNullOrUndefined(respInJson?.data?.gameStaminaRecoverySec))
             Log4Ts.log(AuthModuleS, `invalid value when query recovery time limit for user ${userId}.`);
@@ -886,7 +889,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const resp = await fetch(
             `${
-                GameServiceConfig.isRelease || GameServiceConfig.isBeta
+                GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl
                     ? releaseUrl
                     : testUrl
             }`,
@@ -914,6 +917,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return true;
     }
 
+    public requestRefreshStaminaLimit(playerId: number) {
+        if (!this.checkRequestRegulator(playerId)) return;
+        return this.queryRegisterStaminaLimit(this.currentPlayerId);
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
@@ -929,12 +937,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.currentData.holdPlayerId = this.currentPlayerId;
         this.currentData.holdNickName = nickName;
         this.currentData.save(false);
-    }
-
-    @noReply()
-    public net_requestRefreshStaminaLimit() {
-        if (!this.checkRequestRegulator(this.currentPlayerId)) return;
-        this.queryRegisterStaminaLimit(this.currentPlayerId);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
