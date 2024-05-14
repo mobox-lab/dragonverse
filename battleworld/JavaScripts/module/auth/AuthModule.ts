@@ -7,6 +7,7 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import { AddGMCommand } from "module_gm";
 import noReply = mwext.Decorator.noReply;
 import createYoact = Yoact.createYoact;
+import { GameConfig } from "../../config/GameConfig";
 
 //#region TTD & GM
 AddGMCommand(
@@ -50,9 +51,18 @@ AddGMCommand(
     undefined,
     (player, args) => {
         Log4Ts.log(AuthModuleS, `try catch dragon...`);
+        let allDragonConfig = GameConfig.Dragon.getAllElement();
+        if (allDragonConfig.length === 0) {
+            Log4Ts.warn(AuthModuleS, `there is no valid dragon config.`);
+            return;
+        }
         mwext.ModuleService
             .getModule(AuthModuleS)
-            .queryRegisterStaminaLimit(player.playerId)
+            .reqWebCatchDragon(
+                player.playerId,
+                Gtk.randomArrayItem(allDragonConfig).id,
+                Date.now(),
+            )
             .then((value) => {
                 Log4Ts.log(
                     AuthModuleS,
@@ -653,7 +663,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
 
-        this.queryRegisterStaminaLimit(player.playerId);
+        // this.queryRegisterStaminaLimit(player.playerId);
     }
 
     private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
@@ -746,12 +756,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return respInJson.data;
     }
 
-    public async reqWebCatchDragon(playerId: number): Promise<DragonBallRespData> {
+    public async reqWebCatchDragon(playerId: number,
+                                   dragonPalId: number,
+                                   catchTimeStamp: number): Promise<DragonBallRespData> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
-        const requestParam: UserDataQueryReq = {
+        const requestParam: CatchDragonReq = {
             userId,
+            dragonPalId,
+            catchTimeStamp,
+            attributionType: "game",
         };
 
         const respInJson = await
