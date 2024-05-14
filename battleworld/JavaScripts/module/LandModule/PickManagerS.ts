@@ -83,16 +83,18 @@ export class PickManagerS {
 
     /**场景是否有该拾取物 */
     public isHasPickUp(pickScriptGuid: string) {
-        if (this.pickUpMap.has(pickScriptGuid)) {
-            return true;
-        }
+        if (this.pickUpMap.has(pickScriptGuid)) return true;
 
-        if (this.dropMap.has(pickScriptGuid)) {
-            return true;
-        }
-
-        return false;
+        return this.dropMap.has(pickScriptGuid);
     }
+
+    /**拾取物的预制体信息*/
+    public getPickupPrefab(pickScriptGuid: string) {
+        let pickUpScript = this.getPickUp(pickScriptGuid);
+        if (pickUpScript == null) return;
+        return pickUpScript.pickUpPrefabInfo;
+    }
+
 
     /**获取当前在场景中的 pickup */
     private getPickUp(pickScriptGuid: string) {

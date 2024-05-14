@@ -270,9 +270,8 @@ export class LandModuleS extends ModuleS<LandModuleC, null>{
 
         // 校验避免重复拾取
         let isHasPickUp = PickManagerS.instance.isHasPickUp(onlyGuid);
-        if (isHasPickUp == false) {
-            return;
-        }
+        if (!isHasPickUp) return;
+        const pickUpGuid = PickManagerS.instance.getPickupPrefab(onlyGuid);
 
         switch (pickType) {
             case EPickUpType.skill:
@@ -283,6 +282,13 @@ export class LandModuleS extends ModuleS<LandModuleC, null>{
                 break;
             case EPickUpType.hp:
                 {
+                    // 使用预制体的 guid 获取 excel 配置
+                    const config = GameConfig.PropDrop.findElement("dropGuid", pickUpGuid);
+                    if (!config) return;
+                    const hp = JSON.parse(config.extends);
+                    // 校验输入和配置是否一致
+                    if (hp.value !== value) return;
+
                     let addvalue = 0;
                     let maxHp = this.playerModules.getPlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.maxHp);
                     addvalue = maxHp * value * 0.01;
@@ -291,12 +297,26 @@ export class LandModuleS extends ModuleS<LandModuleC, null>{
                 break;
             case EPickUpType.money:
                 {
+                    // 使用预制体的 guid 获取 excel 配置
+                    const config = GameConfig.PropDrop.findElement("dropGuid", pickUpGuid);
+                    if (!config) return;
+                    const money = JSON.parse(config.extends);
+                    // 校验输入和配置是否一致
+                    if (money.value !== value) return;
+
                     this.playerModules.addPlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.money, value);
                 }
                 break;
             case EPickUpType.attribute:
                 {
+                    // 使用预制体的 guid 获取 excel 配置
+                    const config = GameConfig.PropDrop.findElement("dropGuid", pickUpGuid);
+                    if (!config) return;
+                    const attr: PillInfo = JSON.parse(config.extends);
                     const pillInfo = pickUpInfo as PillInfo;
+                    // 校验输入和配置是否一致
+                    if (attr.attributeID !== pillInfo.attributeID || attr.attributeValue !== pillInfo.attributeValue || attr.duration !== pillInfo.duration) return;
+
                     //给对应的加成类型加数据
                     this.playerModules.addPlayerAttr(this.currentPlayerId, pillInfo.attributeID, pillInfo.attributeValue);
                     let info = this._playerPillMap.get(this.currentPlayerId);

@@ -2323,7 +2323,6 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         const data = this.getPlayerData(playerId);
         if (!data || !deltaScore) return;
 
-        // TODO: CL - 暂时用 硬编码代替 enum
         // 获取当前属性值
         const currentScore = data.getAttrValue(Attribute.EnumAttributeType.rankScore);
         let calCurrentScore: number;

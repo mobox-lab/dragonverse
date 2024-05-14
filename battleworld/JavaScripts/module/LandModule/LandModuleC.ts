@@ -103,11 +103,8 @@ export class LandModuleC extends ModuleC<LandModuleS, null> {
                 {
                     value = (pickUp as PickUpHp).hpPercent;
 
-                    console.log('hpPercent: ', value);
-
-                    if (value == null || value == undefined || isNaN(value)) { // TODO待排查原因
-                        return;
-                    }
+                    // TODO待排查原因
+                    if (value == null || isNaN(value)) return;
 
                     let addvalue = 0;
                     let maxHp = this.playerModuleC.getAttr(Attribute.EnumAttributeType.maxHp);
@@ -147,7 +144,6 @@ export class LandModuleC extends ModuleC<LandModuleS, null> {
                 {
                     let pickUpPill = pickUp as PickUpPill;
                     let pillInfo = pickUpPill.getPillInfo();
-                    console.log("pillInfo: ", JSON.stringify(pillInfo));
                     value = pickUpPill.attributeValue;
                     pickUpInfo = pillInfo;
                     EventManager.instance.call(EModule_Events.land_pickUp_pill, pillInfo);
@@ -194,9 +190,8 @@ export class LandModuleC extends ModuleC<LandModuleS, null> {
             default:
                 break;
         }
-        if (value == null || value == undefined || isNaN(value)) { // TODO待排查原因
-            return;
-        }
+        // TODO待排查原因
+        if (value == null || isNaN(value)) return;
 
 
         this.server.net_pickUp(pickScript.guid, pickUpType, value, pickUpInfo);
