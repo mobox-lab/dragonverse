@@ -51,7 +51,7 @@ AddGMCommand(
     undefined,
     (player, args) => {
         Log4Ts.log(AuthModuleS, `try catch dragon...`);
-        let allDragonConfig = GameConfig.Dragon.getAllElement();
+        let allDragonConfig = GameConfig["Dragon"]?.getAllElement() ?? [];
         if (allDragonConfig.length === 0) {
             Log4Ts.warn(AuthModuleS, `there is no valid dragon config.`);
             return;
@@ -60,7 +60,7 @@ AddGMCommand(
             .getModule(AuthModuleS)
             .reqWebCatchDragon(
                 player.playerId,
-                Gtk.randomArrayItem(allDragonConfig).id,
+                Gtk.randomArrayItem(allDragonConfig)["id"],
                 Date.now(),
             )
             .then((value) => {
