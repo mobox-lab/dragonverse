@@ -49,7 +49,7 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
 
 
         if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) {
-            Notice.showDownNotice(tipText);
+            Notice.showDownNotice(GameConfig.Language.StaminaNotEnough.Value);
             return;
         }
         ClickUIPools.instance.show(Globaldata.fireWeaponUIGuid, GameConfig.Language.Scene_name_1.Value, go, Vector.zero, () => {
