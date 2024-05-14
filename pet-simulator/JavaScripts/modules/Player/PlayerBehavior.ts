@@ -1,4 +1,4 @@
-import { GeneralManager, } from '../../Modified027Editor/ModifiedStaticAPI';
+import { GeneralManager } from "../../Modified027Editor/ModifiedStaticAPI";
 import { oTraceError } from "odin";
 import { GlobalData } from "../../const/GlobalData";
 import { SoundManager } from "../../util/SoundManager";
@@ -9,7 +9,9 @@ import { Accelerate, LongPress, rateEff } from "./Accelerate";
 import PetBehavior, { PetState } from "./PetBehavior";
 import { PlayerModuleC } from "./PlayerModuleC";
 import { Skateboard } from "./Skateboard";
-
+import { EnergyModuleS } from "../Energy/EnergyModule";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { EnchantBuff } from "../PetBag/EnchantBuff";
 
 export class petInfo {
     key: string = "";
@@ -25,27 +27,26 @@ export class petInfo {
     }
 }
 
-
 @Component
 export default class PlayerBehavior extends mw.Script {
 
     /**玩家ID */
-    @mw.Property({ replicated: true, onChanged: "onInitClientHelper" })
+    @mw.Property({replicated: true, onChanged: "onInitClientHelper"})
     public charGuid: string = "";
-    @mw.Property({ replicated: true, onChanged: "onNameChanged" })
+    @mw.Property({replicated: true, onChanged: "onNameChanged"})
     public nickName: string = "";
 
     /**当前玩家 */
     private owner: mw.Character = null;
 
     /**当前所有宠物id 字符串表示 用逗号隔开 */
-    @mw.Property({ replicated: true, onChanged: "onPetsChange" })
+    @mw.Property({replicated: true, onChanged: "onPetsChange"})
     private pets: string = "";
 
     /**当前所有宠物 */
     private serverPets: petInfo[] = [];
     /**滑板装备状态 */
-    @mw.Property({ replicated: true, onChanged: "onSkateboardChanged" })
+    @mw.Property({replicated: true, onChanged: "onSkateboardChanged"})
     public skateboardState: boolean = false;
 
     /**当前自己已跟随宠物数组 只能客户端获取 */
@@ -70,7 +71,6 @@ export default class PlayerBehavior extends mw.Script {
         this.skateboardState = !this.skateboardState;
         return this.skateboardState;
     }
-
 
     public renamePet(key: number, id: number, name: string): void {
         for (let pet of this.serverPets) {
@@ -109,7 +109,7 @@ export default class PlayerBehavior extends mw.Script {
         let str: string[] = [];
         petItems.forEach(petItem => {
             str.push(petItem.k + "_" + petItem.I);
-        })
+        });
         this.unEquipPet(str);
         // this.serverPets.length = 0;
         // this.pets = "";
@@ -128,7 +128,7 @@ export default class PlayerBehavior extends mw.Script {
             let index = this.serverPets.findIndex(pet => pet.key == element);
             if (index != -1)
                 this.serverPets.splice(index, 1);
-        })
+        });
         this.pets = arrayToString(this.serverPets);
         return true;
     }
@@ -188,13 +188,12 @@ export default class PlayerBehavior extends mw.Script {
         this.pets = arrayToString(this.serverPets, true);
     }
 
-
     private serverUpdate(dt: number): void {
 
     }
 
     private serverDestroy(): void {
-        oTraceError("PlayerBehavior serverDestroy")
+        oTraceError("PlayerBehavior serverDestroy");
     }
 
     //----------------------client----------------------
@@ -211,6 +210,7 @@ export default class PlayerBehavior extends mw.Script {
     public set currentTransform(tran: mw.Transform) {
         this._currentTransform = tran;
     };
+
     public get currentTransform(): mw.Transform {
         if (!this._currentTransform) this._currentTransform = this.currentChar.worldTransform;
         return this._currentTransform;
@@ -266,9 +266,9 @@ export default class PlayerBehavior extends mw.Script {
 
     /**
      * 点击可破坏物
-     * @param res 
+     * @param res
      * @param isTouch
-     * @returns 
+     * @returns
      */
     public onClickDestroyable(res: resourceScript, isTouch: boolean): void {
         let targetPos = res.Obj.worldTransform.position;
@@ -320,7 +320,6 @@ export default class PlayerBehavior extends mw.Script {
         this.changePetTarget(pet.petId, 0);
     }
 
-
     /**初始化完成回调 客户端初始化*/
     private async onInitClientHelper() {
         this.owner = (await GameObject.asyncFindGameObjectById(this.charGuid)) as mw.Character;
@@ -331,7 +330,7 @@ export default class PlayerBehavior extends mw.Script {
     }
 
     private clientDestroy(): void {
-        oTraceError("PlayerBehavior clientDestroy")
+        oTraceError("PlayerBehavior clientDestroy");
         this.owner = null;
         if (this.moveSoundId) SoundService.stop3DSound(this.moveSoundId);
         this.myFollowPets.forEach(pet => {
@@ -345,11 +344,11 @@ export default class PlayerBehavior extends mw.Script {
 
     private async onNameChanged(): Promise<void> {
         if (Player.localPlayer.character.gameObjectId == this.charGuid) {
-            oTraceError("PlayerBehavior onNameChanged")
-            Player.localPlayer.character.overheadUI.setVisibility(mw.PropertyStatus.Off)
+            oTraceError("PlayerBehavior onNameChanged");
+            Player.localPlayer.character.overheadUI.setVisibility(mw.PropertyStatus.Off);
             return;
         }
-        oTraceError("PlayerBehavior onNameChanged other")
+        oTraceError("PlayerBehavior onNameChanged other");
         if (!this.owner) {
             this.owner = (await GameObject.asyncFindGameObjectById(this.charGuid)) as mw.Character;
             if (!this.owner) {
@@ -384,13 +383,13 @@ export default class PlayerBehavior extends mw.Script {
             this.pets = this.pets.replace("/teleport2", "");
             this.myFollowPets.forEach(pet => {
                 pet.destroy();
-            })
+            });
             this.myFollowPets.length = 0;
         }
         if (this.pets == "") {
             this.myFollowPets.forEach(pet => {
                 pet.destroy();
-            })
+            });
             this.myFollowPets.length = 0;
             return;
         }
@@ -442,7 +441,7 @@ export default class PlayerBehavior extends mw.Script {
         this.idlePets.length = 0;
         this.myFollowPets.forEach(pet => {
             if (pet.isReady && pet.state == PetState.Idle) this.idlePets.push(pet);
-        })
+        });
         if (this.idlePets.length == 0) return;
         let disOffest = disOffests[this.idlePets.length - 1];
         this.idlePets.forEach((pet, index) => {
@@ -455,7 +454,7 @@ export default class PlayerBehavior extends mw.Script {
         try {
             this.playerMoveJump();
         } catch (error) {
-            console.error(error)
+            console.error(error);
         }
         this.changeFollowDis();
         if (this.myFollowPets.length <= 0) {
@@ -580,7 +579,34 @@ export default class PlayerBehavior extends mw.Script {
         if (SystemUtil.isServer()) this.serverDestroy();
     }
 
+    @RemoteFunction(mw.Server)
+    petReqAttack(petBehavior: PetBehavior) {
+        const index = this.PetArr.indexOf(petBehavior);
+        if (index < 0) return;
 
+        let energyModuleS = ModuleService.getModule(EnergyModuleS);
+        if (energyModuleS.isAfford(this.owner.player.playerId)) {
+            let res = petBehavior.targetRes.injured(petBehavior.owner.player.playerId,
+                petBehavior.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(petBehavior.key).damageAdd / 100), petBehavior.key);
+            if (res) {
+                petBehavior._targetRes = null;
+                petBehavior.targetPos = null;
+                petBehavior.resPos = null;
+                if (petBehavior.attackPrivot) petBehavior.attackPrivot.localTransform.rotation = mw.Rotation.zero;
+
+                energyModuleS.consume(petBehavior.owner.player.playerId, 0);
+                Log4Ts.error(PetBehavior, "挖完了！");
+                return true;
+            } else {
+                energyModuleS.consume(this.owner.player.playerId, 1);
+                Log4Ts.error(PetBehavior, "扣1体力");
+            }
+        } else {
+            Log4Ts.error(PetBehavior, "体力不足！");
+            return true;
+        }
+
+    }
 }
 
 let isFirst = true;
