@@ -136,7 +136,7 @@ class TransferImpulse_C extends InteractLogic_C<SP_TransferImpulse> {
                 // 埋点
                 EventManager.instance.call(EAnalyticsEvents.firstDo, EFirstDo.Portal);
                 //扣体力
-                ModuleService.getModule(EnergyModuleC).consume(1, true);
+                // ModuleService.getModule(EnergyModuleC).consume(1, true);
                 //通知ui，体力变更
                 EventManager.instance.call(EAttributeEvents_C.Attribute_Energy_Change_C);
                 //隐藏ui
