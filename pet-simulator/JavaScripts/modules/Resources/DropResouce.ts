@@ -33,6 +33,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null>{
 
 		protected onStart(): void {
 			this.playerMS = ModuleService.getModule(PlayerModuleS);
+			this.init()
 		}
 
     public start() {
@@ -468,7 +469,7 @@ class Drop {
         this._moveToTween.stop();
 				if (this._gold > 0) {
 						const val = Math.round(this._gold * GlobalData.Buff.goldBuff);
-						Log4Ts.log(Drop, `add gold count ${val}`);
+						Log4Ts.log(Drop, `add gold count ${val}  type ${this.type}`);
 						ModuleService.getModule(DropManagerS).addGold(val, this.type);
 						// RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
 						mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, this.type, val);
