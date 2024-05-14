@@ -7,11 +7,11 @@ import { TipsManager } from "../Hud/P_TipUI";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { BuffModuleC } from "../buff/BuffModuleC";
 import { OnlineModuleData } from "./OnlineModuleData";
-import { OnlineMoudleS } from "./OnlineModuleS";
+import { OnlineModuleS } from "./OnlineModuleS";
 import { P_HudPetGift } from "./P_HudPetGift";
 import { P_RewardPanel, RewardState } from "./P_RewardPanel";
 
-export class OnlineModuleC extends ModuleC<OnlineMoudleS, OnlineModuleData> {
+export class OnlineModuleC extends ModuleC<OnlineModuleS, OnlineModuleData> {
 
     private onlineUI: P_HudPetGift;
     private rewardPanel: P_RewardPanel;
@@ -76,6 +76,7 @@ export class OnlineModuleC extends ModuleC<OnlineMoudleS, OnlineModuleData> {
     }
 
     private net_stateChange(id: number, state: RewardState) {
+
     }
 
     /**检查是否有可领取的 */

@@ -9,17 +9,10 @@ import { GlobalEnum } from "../../const/Enum";
 import { oTraceError } from "../../util/LogManager";
 import { AreaModuleData } from "../AreaDivide/AreaModuleData";
 
-export class OnlineMoudleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
+export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
 
     /**玩家在线时间Map */
     private playerOnlineTimeMap: Map<number, number> = new Map();
-
-    /**
-     * 玩家下一次奖励计时器.
-     * @type {Map<number, number>}
-     * @private
-     */
-    private _playerNextRewardTimerMap: Map<number, number> = new Map();
 
     private _playerModuleS: PlayerModuleS;
 
