@@ -10,7 +10,7 @@ import { GameConfig } from "../../config/GameConfig";
 
 //#region TTD & GM
 AddGMCommand(
-    "refresh dragon ball | Auth",``
+    "refresh dragon ball | Auth",
     undefined,
     (player, args) => {
         Log4Ts.log(AuthModuleS, `query dragon ball...`);
