@@ -31,49 +31,64 @@ export default class DvStatisticModuleData extends JModuleData {
      * 上次登录时间.
      * @return {number}
      */
-    get playerLastEnteredTime(): number {
-        return this.playerLoginRecord[this.playerLoginRecord.length - 1][0];
+    public get playerLastEnteredTime(): number {
+        return this.playerLoginRecord[0][0];
     }
 
     /**
      * 游玩时长.
      * @return {number}
      */
-    get playerLastedPlayTime(): number {
-        return (this.playerLoginRecord[this.playerLoginRecord.length - 1][1] ?? Date.now()) -
-            this.playerLoginRecord[this.playerLoginRecord.length - 1][0];
+    public get playerLastedPlayTime(): number {
+        return (this.playerLoginRecord[0][1] ?? Date.now()) -
+            this.playerLoginRecord[0][0];
     }
 
     /**
      * 获取今日总在线时长.
      * @return {number}
      */
-    get playerTodayOnlineTime(): number {
+    public get playerTodayOnlineTime(): number {
         const now = Date.now();
-        return this.playerLoginRecord
-            .reduce((previousValue,
-                     currentValue,
-                     currentIndex) => {
-                    if (currentIndex !== this.playerLoginRecord.length - 1 &&
-                        currentValue[1] === undefined)
-                        return previousValue;
-                    if (!Gtk.isSameTime(currentValue[1],
-                        now,
-                        GtkTypes.Tf.D)) {
-                        return previousValue;
-                    } else if (Gtk.isSameTime(currentValue[0],
-                        now,
-                        GtkTypes.Tf.D)) {
-                        return previousValue
-                            - currentValue[0]
-                            + currentValue[1] ?? now;
-                    } else {
-                        return previousValue
-                            - new Date().setHours(0, 0, 0, 0)
-                            + currentValue[1] ?? now;
-                    }
-                },
-                0);
+        let todayCounter = 0;
+        for (let i = 0; i < this.playerLoginRecord.length; ++i) {
+            const [enter, leave] = this.playerLoginRecord[i];
+            if (i !== 0 &&
+                leave === undefined)
+                continue;
+
+            if (!Gtk.isSameTime(leave,
+                now,
+                GtkTypes.Tf.D))
+                break;
+
+            if (Gtk.isSameTime(enter,
+                now,
+                GtkTypes.Tf.D)) {
+                todayCounter = todayCounter
+                    - enter
+                    + leave ?? now;
+            } else {
+                todayCounter = todayCounter
+                    - new Date().setHours(0, 0, 0, 0)
+                    + leave ?? now;
+                break;
+            }
+        }
+        return todayCounter;
+    }
+
+    public recordEnter(now: number) {
+        ++this.playerEnteredCounterS;
+        this.playerLoginRecord.unshift([now, undefined]);
+    }
+
+    public recordLeave(now: number) {
+        this.playerLoginRecord[0][1] = now;
+        this.playerElapsedTimeS += this.playerLastedPlayTime;
+        if (this.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
+            this.playerLoginRecord.pop();
+        }
     }
 
     // /**
@@ -150,11 +165,7 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, DvStatisticModu
         super.onEnterScene(sceneType);
 
         const now = Date.now();
-
-        this.data.playerLoginRecord.push([now, undefined]);
-        if (this.data.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
-            this.data.playerLoginRecord.shift();
-        }
+        this.data.recordEnter(now);
     }
 
     protected onDestroy(): void {
@@ -229,19 +240,14 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, DvStatisticModu
 
         const now = Date.now();
         const d = this.getPlayerData(player);
-        ++d.playerEnteredCounterS;
-        d.playerLoginRecord.push([now, undefined]);
-        if (d.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
-            d.playerLoginRecord.shift();
-        }
+        d.recordEnter(now);
         d.save(false);
     }
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
         const d = this.getPlayerData(player);
-        d.playerLoginRecord[d.playerLoginRecord.length - 1][1] = Date.now();
-        d.playerElapsedTimeS += d.playerLastedPlayTime;
+        d.recordLeave(Date.now());
         d.save(false);
     }
 
