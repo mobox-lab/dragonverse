@@ -25,10 +25,10 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     private guaShaArr: number[] = [];
 
     protected onStart(): void {
-				RewardTipsManager.instance.registerEvent();
+ 				RewardTipsManager.getInstance().registerEvent();
         AreaDivideManager.instance.onAreaChangeAC.add(this.areaChange.bind(this));
         BonusUI.instance;
-				ModuleService.getModule(DropManagerS).net_start();
+				this.server.net_start()
         Event.addLocalListener(GlobalEnum.EventName.AttackDestroy, () => {
             this.breakCount++;
             if (this.breakCount == 3) {
@@ -608,4 +608,8 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
 				ModuleService.getModule(DropManagerS).onResourceUpdate(dt); 
 		}
 
+		@Decorator.noReply()
+		public net_start() {
+				ModuleService.getModule(DropManagerS).start();
+		}
 }

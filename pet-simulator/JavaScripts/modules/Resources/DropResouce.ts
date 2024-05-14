@@ -35,8 +35,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null>{
 			this.playerMS = ModuleService.getModule(PlayerModuleS);
 		}
 
-		@Decorator.noReply()
-    public net_start() {
+    public start() {
         TimeUtil.setInterval(() => {
             this.comparePlayerDis(this.currentPlayer);
             this.compareDis();

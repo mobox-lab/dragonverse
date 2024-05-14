@@ -19,7 +19,10 @@ import GameIngo_Generate from "../../ui-generate/common/GameIngo_generate";
 import { PetBagModuleS } from '../PetBag/PetBagModuleS';
 
 export class HudModuleS extends ModuleS<HudModuleC, null>{
-
+	@Decorator.noReply()
+	public net_addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+		ModuleService.getModule(PetBagModuleS).net_addPet(id, type, addTime)
+	}
 }
 
 export class HudModuleC extends ModuleC<HudModuleS, null>{
@@ -29,7 +32,6 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
     /**玩家模块 */
     private playerModule: PlayerModuleC = null;
     private petBagModule: PetBagModuleC = null;
-    private petBagModuleS: PetBagModuleS = null;
     private hudPetUI: P_HudPetGift = null;
     /**引导UI */
     private guideUI: P_Guide = null;
@@ -46,8 +48,8 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
         this.hudUI.onFastTranAC.add(this.fastTransmit.bind(this));
         this.playerModule = ModuleService.getModule(PlayerModuleC);
         this.petBagModule = ModuleService.getModule(PetBagModuleC);
-        this.petBagModuleS = ModuleService.getModule(PetBagModuleS);
-        this.playerModule.onGoldChange.add((coinType: GlobalEnum.CoinType, gold: number) => {
+ 
+				this.playerModule.onGoldChange.add((coinType: GlobalEnum.CoinType, gold: number) => {
             if (coinType == GlobalEnum.CoinType.SummerGold) return;
             this.hudUI.changeGold(gold);
             if (coinType != GlobalEnum.CoinType.FirstWorldGold) return;
@@ -97,9 +99,9 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
     /**初始UI选择 */
     private initPet(id: number): void {
         if (id == 1) {
-            this.petBagModuleS.net_addPet(GlobalData.pet.initPets[0]);
+            this.server.net_addPet(GlobalData.pet.initPets[0]);
         } else {
-            this.petBagModuleS.net_addPet(GlobalData.pet.initPets[1]);
+            this.server.net_addPet(GlobalData.pet.initPets[1]);
         }
         this.guideUI.hide();
         this.hudUI.show();

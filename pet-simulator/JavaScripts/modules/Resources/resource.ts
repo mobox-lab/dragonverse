@@ -379,6 +379,10 @@ export default class resourceScript extends mw.Script {
         }
     }
 
+    @RemoteFunction(mw.Server)
+    private net_createDrop(pos: mw.Vector, type: GlobalEnum.CoinType, allValue: number, count: number, isBox: boolean = false) {
+			ModuleService.getModule(DropManagerS).net_createDrop(pos, type, allValue, count, isBox) // TODO: Check
+		}
     /**奖励掉落物 
      * @param state 攻击阶段
      * @param resType 资源类型
@@ -386,18 +390,15 @@ export default class resourceScript extends mw.Script {
      * @param gemVal 钻石价值
     */
     private playReward(state: GlobalEnum.ResourceAttackStage, resType: number, goldVal: number, gemVal: number) {
-
         let rewardArr = this.getDropCountByLevel(state, resType);
         let goldCount = Math.ceil(rewardArr[0]);
         let gemCount = Math.ceil(rewardArr[1]);
         if (goldCount > 0) {
-					 	ModuleService.getModule(DropManagerS).net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox) // TODO: Check
-            // DropManager.getInstance().createDrop();
-        }
+					this.net_createDrop( this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox
+					)       }
         if (gemCount > 0) {
-						ModuleService.getModule(DropManagerS).net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox) // TODO: Check
-            // DropManager.getInstance().createDrop(this.resObj.worldTransform.position, GlobalEnum.CoinType.Diamond, gemVal, gemCount, this.isbigBox);
-        }
+					this.net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox)
+				}
     }
     /**判断几世界的金币 */
     private judgeGold(): GlobalEnum.CoinType {
