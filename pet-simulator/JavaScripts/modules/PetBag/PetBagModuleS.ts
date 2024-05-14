@@ -56,19 +56,19 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return arr;
     }
 
-		@Decorator.noReply()
+    @Decorator.noReply()
     public net_addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
-			let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
+        let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
 
-			let atk: number = 0;
-			if (atkArr.length > 1)
-				atk = utils.GetRandomNum(atkArr[0], atkArr[1]);
-			else
-				atk = atkArr[0];
+        let atk: number = 0;
+        if (atkArr.length > 1)
+            atk = utils.GetRandomNum(atkArr[0], atkArr[1]);
+        else
+            atk = atkArr[0];
 
 
-			this.addPet(this.currentPlayerId, id, atk, undefined, type, addTime);
-		}
+        this.addPet(this.currentPlayerId, id, atk, undefined, type, addTime);
+    }
 
     public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
         let data = this.getPlayerData(playerID);
@@ -195,6 +195,11 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         data.BagItemChangeAC.call(false, 1, 1);
     }
 
+
+    public hasPet(playerId: number, key: number): boolean {
+        return this.getPlayerData(playerId).bagItemsByKey(key) !== null;
+    }
+
     /**根据概率返回本次是否成功 */
     private isSuccess(probability: number): boolean {
         let random = Math.random() * 100;
@@ -289,58 +294,58 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             this.getAllClient().net_enchantNotice(playerId, id);
     }
 
-		/** 计算best friend词条战力 */
-		net_bestFriendBuff() {
-			const playerId = this.currentPlayerId;
-			const playerData = this.getPlayerData(playerId)
-			let arr = playerData.sortBag();
-			let atk = 0;
-			let petIds = [];
-			for (let i = 0; i < arr.length; i++) {
-				if (GlobalData.Enchant.bestPets.includes(arr[i].I)) {
-					petIds.push(arr[i].k);
-					if (atk == 0)
-						atk = EnchantBuff.getAtk(arr);
-				}
-			}
-			if (petIds.length == 0) return;
+    /** 计算best friend词条战力 */
+    net_bestFriendBuff() {
+        const playerId = this.currentPlayerId;
+        const playerData = this.getPlayerData(playerId)
+        let arr = playerData.sortBag();
+        let atk = 0;
+        let petIds = [];
+        for (let i = 0; i < arr.length; i++) {
+            if (GlobalData.Enchant.bestPets.includes(arr[i].I)) {
+                petIds.push(arr[i].k);
+                if (atk == 0)
+                    atk = EnchantBuff.getAtk(arr);
+            }
+        }
+        if (petIds.length == 0) return;
 
-			let delArr: number[] = [];
+        let delArr: number[] = [];
 
-			petIds.forEach((key) => {
-				let data = playerData.bagItemsByKey(key);
-				if (data.p.a == atk) {
-					delArr.push(key);
-				}
-			})
-			delArr.forEach((key) => {
-				let index = petIds.findIndex((value) => {
-					return value == key;
-				})
-				if (index != -1)
-					petIds.splice(index, 1);
-			})
-			if (petIds.length == 0) return;
-			this.changeAtk(numberArrToString(petIds), atk);
-		}
+        petIds.forEach((key) => {
+            let data = playerData.bagItemsByKey(key);
+            if (data.p.a == atk) {
+                delArr.push(key);
+            }
+        })
+        delArr.forEach((key) => {
+            let index = petIds.findIndex((value) => {
+                return value == key;
+            })
+            if (index != -1)
+                petIds.splice(index, 1);
+        })
+        if (petIds.length == 0) return;
+        this.changeAtk(numberArrToString(petIds), atk);
+    }
 
-		/** 计算通行证词条 *0.5 */
-		net_passBuff() {
-			const playerId = this.currentPlayerId;
-			const data = this.getPlayerData(playerId)
-			let arr = data.sortBagByAtk();
-			let atk = 0;
-			let petIds = [];
-			for (let i = 0; i < arr.length; i++) {
-				if (GlobalData.Enchant.passportPets.includes(arr[i].I)) {
-					petIds.push(arr[i].k);
-					if (atk == 0)
-						atk = arr[0].p.a * 0.5;
-				}
-			}
-			if (petIds.length == 0) return;
-			this.changeAtk(numberArrToString(petIds), atk);
-		}
+    /** 计算通行证词条 *0.5 */
+    net_passBuff() {
+        const playerId = this.currentPlayerId;
+        const data = this.getPlayerData(playerId)
+        let arr = data.sortBagByAtk();
+        let atk = 0;
+        let petIds = [];
+        for (let i = 0; i < arr.length; i++) {
+            if (GlobalData.Enchant.passportPets.includes(arr[i].I)) {
+                petIds.push(arr[i].k);
+                if (atk == 0)
+                    atk = arr[0].p.a * 0.5;
+            }
+        }
+        if (petIds.length == 0) return;
+        this.changeAtk(numberArrToString(petIds), atk);
+    }
 
     /**宠物更改攻击力 */
     changeAtk(keys: string, atk: number) {
@@ -383,124 +388,124 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     //************** 合成宠物*************/
-		
+
     /**判断获得的宠物类型 普通0 黄金1 彩虹2 */
     private judgePetType(curSelectPets: petItemDataNew[]): number {
-				let count = curSelectPets.length;
-				let specialCount = 0;
-				curSelectPets.forEach(item => {
-						let type = GameConfig.PetARR.getElement(item.I).DevType;
-						if (type === GlobalEnum.PetDevType.Love || type === GlobalEnum.PetDevType.Rainbow) {
-								specialCount++;
-						}
-				});
+        let count = curSelectPets.length;
+        let specialCount = 0;
+        curSelectPets.forEach(item => {
+            let type = GameConfig.PetARR.getElement(item.I).DevType;
+            if (type === GlobalEnum.PetDevType.Love || type === GlobalEnum.PetDevType.Rainbow) {
+                specialCount++;
+            }
+        });
 
-				//普通宠物的权重
-				let normalWeight = -10 * count + 80;
-				if (normalWeight < 0) normalWeight = 0;
-				//黄金宠物的权重
-				let goldWeight = -4 * count + 52;
-				if (goldWeight < 0) goldWeight = 0;
-				//彩虹宠物的权重
-				// let rainbowWeight = -2 * count + 32;
-				let rainbowWeight = 14 * count - 32 + 5 * specialCount;
-				if (rainbowWeight < 0) rainbowWeight = 0;
-				let totalWeight = normalWeight + goldWeight + rainbowWeight;
-				let random = Math.random() * totalWeight;
-				if (random < normalWeight) {
-						return 0;
-				}
-				if (random < normalWeight + goldWeight) {
-						return 1;
-				}
-				return 2;
-		}
+        //普通宠物的权重
+        let normalWeight = -10 * count + 80;
+        if (normalWeight < 0) normalWeight = 0;
+        //黄金宠物的权重
+        let goldWeight = -4 * count + 52;
+        if (goldWeight < 0) goldWeight = 0;
+        //彩虹宠物的权重
+        // let rainbowWeight = -2 * count + 32;
+        let rainbowWeight = 14 * count - 32 + 5 * specialCount;
+        if (rainbowWeight < 0) rainbowWeight = 0;
+        let totalWeight = normalWeight + goldWeight + rainbowWeight;
+        let random = Math.random() * totalWeight;
+        if (random < normalWeight) {
+            return 0;
+        }
+        if (random < normalWeight + goldWeight) {
+            return 1;
+        }
+        return 2;
+    }
 
     /**根据各宠物攻击力权重获得宠物 */
     private getPetByAtkWeight(allPetIds: number[], maxCount: number): number {
-			let count = maxCount / 2;
-			let allPetAtk = 0;
-			let petAtkWeights: number[] = [];
-			allPetIds.forEach(id => {
-					let pet = GameConfig.PetARR.getElement(id);
-					let wight = pet.PetAttack[0] * count;
-					allPetAtk += wight;
-					petAtkWeights.push(wight);
-			});
-			let random = Math.random() * allPetAtk;
-			let totalWeight = 0;
-			for (let i = 0; i < petAtkWeights.length; i++) {
-					totalWeight += petAtkWeights[i];
-					if (random < totalWeight) {
-							return allPetIds[i];
-					}
-			}
-	}
+        let count = maxCount / 2;
+        let allPetAtk = 0;
+        let petAtkWeights: number[] = [];
+        allPetIds.forEach(id => {
+            let pet = GameConfig.PetARR.getElement(id);
+            let wight = pet.PetAttack[0] * count;
+            allPetAtk += wight;
+            petAtkWeights.push(wight);
+        });
+        let random = Math.random() * allPetAtk;
+        let totalWeight = 0;
+        for (let i = 0; i < petAtkWeights.length; i++) {
+            totalWeight += petAtkWeights[i];
+            if (random < totalWeight) {
+                return allPetIds[i];
+            }
+        }
+    }
     /**合成宠物 */
-		@Decorator.noReply()
+    @Decorator.noReply()
     public async net_fusePet(curSelectPets: petItemDataNew[], earliestObtainTime: number) {
-			/**最多相同id的宠物数量 */
-			let maxSameIdCount = 0;
-			/**所有宠物攻击力的合 */
-			let allPetAtk = 0;
-			let countMap = new Map<number, number>();
-			let devType = this.judgePetType(curSelectPets);
-			let allLength = curSelectPets.length;
-			for (let i = 0; i < curSelectPets.length; i++) {
-					let pet = curSelectPets[i];
-					if (!countMap.has(pet.I)) {
-							countMap.set(pet.I, 1);
-					} else {
-							let count = countMap.get(pet.I);
-							countMap.set(pet.I, count + 1);
-							if (count + 1 > maxSameIdCount) {
-									maxSameIdCount = count + 1;
-							}
-					}
-					allPetAtk += pet.p.a;
-			}
-			if (maxSameIdCount == 0) maxSameIdCount = 1;
-			let minAtk = allPetAtk / GlobalData.Fuse.minDamageRate;
-			let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
-			let allPetIds: number[] = [];
-			/**与最大攻击力差值 */
-					//获取ts最大整数数值
-			let max = Number.MAX_VALUE;
-			let allMaxAtkDiff = max;
-			/**攻击力差值最小的宠物id */
-			let allMinAtkDiffPetId = 1;
-			/**稀有度相同的最大攻击力差值 */
-			let sameMaxAtkDiff = max;
-			/**稀有度相同的攻击力差值最小的宠物id */
-			let sameMinAtkDiffPetId = 0;
-			GameConfig.PetARR.getAllElement().forEach(item => {
-					if (item.IfFuse) {
-							let atks = item.PetAttack;
-							let min = atks[0];
-							let max = atks[1];
-							if (min >= minAtk && max <= maxAtk && item.DevType == devType) {
-									allPetIds.push(item.id);
-							}
-							let diff = Math.abs(max - maxAtk);
-							if (diff < allMaxAtkDiff) {
-									allMaxAtkDiff = diff;
-									allMinAtkDiffPetId = item.id;
-							}
-							if (item.DevType == devType) {
-									if (diff < sameMaxAtkDiff) {
-											sameMaxAtkDiff = diff;
-											sameMinAtkDiffPetId = item.id;
-									}
-							}
-					}
-			});
-			if (allPetIds.length == 0) {
-					let minAtkDiffPetId = sameMinAtkDiffPetId == 0 ? allMinAtkDiffPetId : sameMinAtkDiffPetId;
-					allPetIds.push(minAtkDiffPetId);
-			}
-			let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
-			// ModuleService.getModule(AchievementModuleS).broadcastAchievementBlendType(endPetId); // TODO: 重构 AchievementModuleC.broadcastAchievementBlendType 到 S 端，主要是有个C端的toast
-			await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId, GlobalEnum.PetGetType.Fusion, earliestObtainTime);
-	}
+        /**最多相同id的宠物数量 */
+        let maxSameIdCount = 0;
+        /**所有宠物攻击力的合 */
+        let allPetAtk = 0;
+        let countMap = new Map<number, number>();
+        let devType = this.judgePetType(curSelectPets);
+        let allLength = curSelectPets.length;
+        for (let i = 0; i < curSelectPets.length; i++) {
+            let pet = curSelectPets[i];
+            if (!countMap.has(pet.I)) {
+                countMap.set(pet.I, 1);
+            } else {
+                let count = countMap.get(pet.I);
+                countMap.set(pet.I, count + 1);
+                if (count + 1 > maxSameIdCount) {
+                    maxSameIdCount = count + 1;
+                }
+            }
+            allPetAtk += pet.p.a;
+        }
+        if (maxSameIdCount == 0) maxSameIdCount = 1;
+        let minAtk = allPetAtk / GlobalData.Fuse.minDamageRate;
+        let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
+        let allPetIds: number[] = [];
+        /**与最大攻击力差值 */
+        //获取ts最大整数数值
+        let max = Number.MAX_VALUE;
+        let allMaxAtkDiff = max;
+        /**攻击力差值最小的宠物id */
+        let allMinAtkDiffPetId = 1;
+        /**稀有度相同的最大攻击力差值 */
+        let sameMaxAtkDiff = max;
+        /**稀有度相同的攻击力差值最小的宠物id */
+        let sameMinAtkDiffPetId = 0;
+        GameConfig.PetARR.getAllElement().forEach(item => {
+            if (item.IfFuse) {
+                let atks = item.PetAttack;
+                let min = atks[0];
+                let max = atks[1];
+                if (min >= minAtk && max <= maxAtk && item.DevType == devType) {
+                    allPetIds.push(item.id);
+                }
+                let diff = Math.abs(max - maxAtk);
+                if (diff < allMaxAtkDiff) {
+                    allMaxAtkDiff = diff;
+                    allMinAtkDiffPetId = item.id;
+                }
+                if (item.DevType == devType) {
+                    if (diff < sameMaxAtkDiff) {
+                        sameMaxAtkDiff = diff;
+                        sameMinAtkDiffPetId = item.id;
+                    }
+                }
+            }
+        });
+        if (allPetIds.length == 0) {
+            let minAtkDiffPetId = sameMinAtkDiffPetId == 0 ? allMinAtkDiffPetId : sameMinAtkDiffPetId;
+            allPetIds.push(minAtkDiffPetId);
+        }
+        let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
+        // ModuleService.getModule(AchievementModuleS).broadcastAchievementBlendType(endPetId); // TODO: 重构 AchievementModuleC.broadcastAchievementBlendType 到 S 端，主要是有个C端的toast
+        await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId, GlobalEnum.PetGetType.Fusion, earliestObtainTime);
+    }
 
 }

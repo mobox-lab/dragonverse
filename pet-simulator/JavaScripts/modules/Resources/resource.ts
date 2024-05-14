@@ -14,6 +14,8 @@ import { GlobalData } from '../../const/GlobalData';
 import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
 import { PlayerManagerExtesion } from '../../Modified027Editor/ModifiedPlayer';
 import { DropManagerS } from './DropResouce';
+import { PetSimulatorPlayerModuleData } from '../Player/PlayerModuleData';
+import { PetBagModuleS } from '../PetBag/PetBagModuleS';
 ;
 export class Resource {
 
@@ -107,7 +109,38 @@ export default class resourceScript extends mw.Script {
     }
 
     @RemoteFunction(mw.Server)
-    private net_injured(playerID: number, damage: number) {
+    private net_injured(playerID: number, key: number) {
+
+        //不用这个damage了，自己算
+        //GlobalData.LevelUp.petDamage 去存档里取
+        //力量对应升级表的id：3
+        let petDamage = DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(3);
+        // damage = this.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(this.key).damageAdd / 100);
+        //this.attackDamage 得取对应的宠物
+        //校验一下key在不在背包里
+        ModuleService.getModule(PetBagModuleS).
+
+
+            damage = petDamage * (1 + EnchantBuff.getPetBuff(this.key).damageAdd / 100);
+        if (isNaN(damage))
+            damage = 0;
+        if (this.cfgId == 0) return true;
+        if (this.isbigBox) {
+            damage *= GlobalData.Buff.damageBuff * (1 + EnchantBuff.getPetBuff(key).boxDamageAdd / 100);
+        } else
+            damage *= GlobalData.Buff.damageBuff;
+        this.getRewardByAttack(damage, key);
+
+        let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
+        if (damage > allHp / 3) {
+            damage = allHp / 3;
+        }
+        let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate
+        if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
+            damage = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate - allHp * 2 / 3;
+        }
+        //------------------------
+
 
         let damageInfoIndex = this.damageArr.findIndex((item) => {
             return item.playerId == playerID
@@ -381,8 +414,8 @@ export default class resourceScript extends mw.Script {
 
     @RemoteFunction(mw.Server)
     private net_createDrop(pos: mw.Vector, type: GlobalEnum.CoinType, allValue: number, count: number, isBox: boolean = false) {
-			ModuleService.getModule(DropManagerS).net_createDrop(pos, type, allValue, count, isBox) // TODO: Check
-		}
+        ModuleService.getModule(DropManagerS).net_createDrop(pos, type, allValue, count, isBox) // TODO: Check
+    }
     /**奖励掉落物 
      * @param state 攻击阶段
      * @param resType 资源类型
@@ -394,11 +427,12 @@ export default class resourceScript extends mw.Script {
         let goldCount = Math.ceil(rewardArr[0]);
         let gemCount = Math.ceil(rewardArr[1]);
         if (goldCount > 0) {
-					this.net_createDrop( this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox
-					)       }
+            this.net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox
+            )
+        }
         if (gemCount > 0) {
-					this.net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox)
-				}
+            this.net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox)
+        }
     }
     /**判断几世界的金币 */
     private judgeGold(): GlobalEnum.CoinType {
@@ -622,24 +656,24 @@ export default class resourceScript extends mw.Script {
      * @param key 宠物key
      */
     public injured(playerId: number, damage: number, key: number): boolean {
-        if (isNaN(damage))
-            damage = 0;
-        if (this.cfgId == 0) return true;
-        if (this.isbigBox) {
-            damage *= GlobalData.Buff.damageBuff * (1 + EnchantBuff.getPetBuff(key).boxDamageAdd / 100);
-        } else
-            damage *= GlobalData.Buff.damageBuff;
-        this.getRewardByAttack(damage, key);
+        // if (isNaN(damage))
+        //     damage = 0;
+        // if (this.cfgId == 0) return true;
+        // if (this.isbigBox) {
+        //     damage *= GlobalData.Buff.damageBuff * (1 + EnchantBuff.getPetBuff(key).boxDamageAdd / 100);
+        // } else
+        //     damage *= GlobalData.Buff.damageBuff;
+        // this.getRewardByAttack(damage, key);
 
-        let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
-        if (damage > allHp / 3) {
-            damage = allHp / 3;
-        }
-        let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate
-        if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
-            damage = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate - allHp * 2 / 3;
-        }
-        this.net_injured(playerId, damage);
+        // let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
+        // if (damage > allHp / 3) {
+        //     damage = allHp / 3;
+        // }
+        // let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate
+        // if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
+        //     damage = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate - allHp * 2 / 3;
+        // }
+        this.net_injured(playerId, key);
         SoundManager.instance.playAtkSound(GlobalData.Music.resourceDestroy, GameConfig.DropPoint.getElement(this._pointId).areaPoints);
         if (this.curHp <= 0) return true;
         if (this.curHp - damage <= 0) return true;
