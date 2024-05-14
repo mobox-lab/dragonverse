@@ -41,7 +41,7 @@ import { RankModuleC } from "./modules/Rank/RankModuleC";
 import { DollMachineModuleC } from "./modules/DollMachine/DollMachineModuleC";
 import { DollMachineModuleS } from "./modules/DollMachine/DollMachineModuleS";
 import * as mwaction from "mwaction";
-import PetSimulatorEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./modules/Energy/EnergyModule";
+import PSEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./modules/Energy/EnergyModule";
 import PetSimulatorAuthModuleData, { AuthModuleC, AuthModuleS } from "./modules/auth/AuthModule";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./modules/jump-room/JumpRoomModule";
 import GameServiceConfig from "./const/GameServiceConfig";
@@ -226,7 +226,7 @@ export default class GameStart extends mw.Script {
         // ModuleService.registerModule(DollMachineModuleS, DollMachineModuleC, null);
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PetSimulatorPlayerModuleData);
         ModuleService.registerModule(PetBagModuleS, PetBagModuleC, PetBagModuleData);
-        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PetSimulatorEnergyModuleData);
+        ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PSEnergyModuleData);
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
         ModuleService.registerModule(StatisticModuleS, StatisticModuleC, PsStatisticModuleData);
     }
