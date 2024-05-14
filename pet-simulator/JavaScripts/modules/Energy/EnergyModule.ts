@@ -16,6 +16,9 @@ export default class PetSimulatorEnergyModuleData extends mwext.Subdata {
     @Decorator.persistence()
     public petSimulatorEnergy: number = 0;
 
+    @Decorator.persistence()
+    public lastMaxStamina: number = undefined;
+
     public isAfford(cost: number = 1): boolean {
         return this.petSimulatorEnergy > 0;
     }
@@ -242,6 +245,14 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PetSimulatorEner
         this.authModuleS
             .queryRegisterStaminaLimit(playerId)
             .then(() => {
+                const currentMax = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
+                if (d.lastMaxStamina !== undefined && d.lastMaxStamina < currentMax) {
+                    d.petSimulatorEnergy = Math.min(
+                        d.petSimulatorEnergy + currentMax - d.lastMaxStamina,
+                        currentMax);
+                }
+                d.lastMaxStamina = currentMax;
+
                 let autoRecoveryHandler = () => {
                     let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
                     let recoveryDuration = this.authModuleS.playerStaminaRecoveryMap.get(playerId) ?? 0;

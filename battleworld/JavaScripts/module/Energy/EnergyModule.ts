@@ -7,7 +7,7 @@ import { AuthModuleS } from "../auth/AuthModule";
 import Gtk, { GtkTypes } from "../../util/GToolkit";
 import GameServiceConfig from "../../const/GameServiceConfig";
 
-export default class BattleWorldEnergyModuleData extends mwext.Subdata {
+export default class BWEnergyModuleData extends mwext.Subdata {
     //@Decorator.persistence()
     //public isSave: bool;
 
@@ -17,11 +17,15 @@ export default class BattleWorldEnergyModuleData extends mwext.Subdata {
     @Decorator.persistence()
     public battleWorldEnergy: number = 0;
 
+    @Decorator.persistence()
+    public lastMaxStamina: number = undefined;
+
     public isAfford(cost: number = 1): boolean {
         return this.battleWorldEnergy > 0;
     }
 
     public consume(count: number = 1): number {
+        if (count <= 0) return 0;
         const curr = this.battleWorldEnergy;
         if (curr < count) {
             this.battleWorldEnergy = 0;
@@ -52,7 +56,7 @@ export default class BattleWorldEnergyModuleData extends mwext.Subdata {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BattleWorldEnergyModuleData> {
+export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BWEnergyModuleData> {
     //#region Member
     private _eventListeners: EventListener[] = [];
     private _ctr: number = 0;
@@ -149,7 +153,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BattleWorldEnerg
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BattleWorldEnergyModuleData> {
+export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleData> {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -242,6 +246,14 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BattleWorldEnerg
         this.authModuleS
             .queryRegisterStaminaLimit(playerId)
             .then(() => {
+                const currentMax = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
+                if (d.lastMaxStamina !== undefined && d.lastMaxStamina < currentMax) {
+                    d.battleWorldEnergy = Math.min(
+                        d.battleWorldEnergy + currentMax - d.lastMaxStamina,
+                        currentMax);
+                }
+                d.lastMaxStamina = currentMax;
+
                 let autoRecoveryHandler = () => {
                     let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
                     let recoveryDuration = this.authModuleS.playerStaminaRecoveryMap.get(playerId) ?? 0;
