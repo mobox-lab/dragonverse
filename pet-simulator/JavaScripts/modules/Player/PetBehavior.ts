@@ -1,4 +1,4 @@
-import { GeneralManager } from "../../Modified027Editor/ModifiedStaticAPI";
+import { GeneralManager, } from '../../Modified027Editor/ModifiedStaticAPI';
 import { oTraceError } from "odin";
 import { GameConfig } from "../../config/GameConfig";
 import { IPetARRElement } from "../../config/PetARR";
@@ -14,12 +14,12 @@ import { HUDInfo, HUDManager } from "./HUDManager";
 import PlayerBehavior from "./PlayerBehavior";
 import { GlobalEnum } from "../../const/Enum";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
-import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { EnergyModuleC, EnergyModuleS } from "../Energy/EnergyModule";
-import GToolkit from "../../util/GToolkit";
-import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
-import { TipsManager } from "../Hud/P_TipUI";
+import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
+import Log4Ts from '../../depend/log4ts/Log4Ts';
+import { EnergyModuleC } from '../Energy/EnergyModule';
+import GToolkit from '../../util/GToolkit';
+import { P_HudPetGift } from '../OnlineModule.ts/P_HudPetGift';
+import { TipsManager } from '../Hud/P_TipUI';
 
 /**宠物状态 */
 export enum PetState {
@@ -34,45 +34,45 @@ export enum PetState {
 export default class PetBehavior {
 
     public petName: string = "";
-    public petTitle: string = "";
-    public pet: mw.Character | GameObject = null;
+    private petTitle: string = "";
+    private pet: mw.Character | GameObject = null;
     /**头顶UI */
-    public headUI: HUDInfo = null;
-    public _state: PetState = PetState.Idle;
+    private headUI: HUDInfo = null;
+    private _state: PetState = PetState.Idle;
     /**当前主人 */
-    public owner: mw.Character = null;
-    public currentChar: mw.Character = null;
+    private owner: mw.Character = null;
+    private currentChar: mw.Character = null;
     /**距离主人坐标 */
     public disPos: mw.Vector = mw.Vector.zero;
     /**宠物id */
-    public _petId: string = "";
+    private _petId: string = "";
     /**宠物信息 */
-    public petInfo: IPetARRElement = null;
+    private petInfo: IPetARRElement = null;
     public isReady: boolean = false;
-    public height: number = GlobalData.pet.petHeight;
+    private height: number = GlobalData.pet.petHeight;
     /**当前特效 */
-    public currentEffectIds: mw.Effect[] = [];
+    private currentEffectIds: mw.Effect[] = [];
     /**主人行为脚本 */
-    public ownerBe: PlayerBehavior = null;
-    public attackDamage: number = 20;
+    private ownerBe: PlayerBehavior = null;
+    private attackDamage: number = 20;
     /**当前身上的加速特效数量 */
     public accelerateNum: number = 0;
     public addAttackSpeed: number = 1;
     /**宠物key */
     public key: number;
     /**当前裁剪距离 */
-    public clipDis: number = 2000;
+    private clipDis: number = 2000;
     /**翅膀特效 */
-    public _wing: Effect;
+    private _wing: Effect;
 
     /**
      * 控制宠物攻击事件
      */
-    public _attackListener: EventListener = null;
+    private _attackListener: EventListener = null;
     /**
      * 控制宠物取消攻击事件
      */
-    public _cancelAttackListener: EventListener = null;
+    private _cancelAttackListener: EventListener = null;
 
     public get PetGameObj(): mw.GameObject {
         return this.pet;
@@ -131,7 +131,7 @@ export default class PetBehavior {
                 utils.setClipDistance(this.pet, this.clipDis);
                 if (this.owner.worldTransform && owner.worldTransform.position)
                     try {
-                        setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos));
+                        setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
                     } catch (error) {
                     }
                 if (this.petInfo.PetEffect) {
@@ -172,7 +172,7 @@ export default class PetBehavior {
                 utils.addOutlineExcept(this.pet, true);
                 if (this.owner.worldTransform && owner.worldTransform.position)
                     try {
-                        setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos));
+                        setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
                     } catch (error) {
                     }
                 if (this.petInfo.PetEffect) {
@@ -180,7 +180,7 @@ export default class PetBehavior {
                         this.currentEffectIds.push(EffectManager.instance.playEffOnObjScene(id, this.pet, this.clipDis));
                     });
                 }
-            });
+            })
         }
 
         this._attackListener = Event.addLocalListener(GlobalEnum.EventName.PetAttack, (key: number, target: number) => {
@@ -191,9 +191,8 @@ export default class PetBehavior {
             if (this.key === key) this.changeToIdle();
         });
     }
-
-    public setQuality(type: number) {
-        const quality = GlobalEnum.PetQuality;
+    private setQuality(type: number) {
+        const quality = GlobalEnum.PetQuality
         let str: string;
         switch (type) {
             case quality.Normal:
@@ -222,10 +221,10 @@ export default class PetBehavior {
         if (!this.pet.tempLocation) {
             this.pet.tempLocation = this.pet.worldTransform.position;
 
-        }
-        ;
+        };
         return this.pet.tempLocation;
     }
+
 
     public get state(): PetState {
         return this._state;
@@ -277,11 +276,10 @@ export default class PetBehavior {
         setTransform(this.pet, petTransform);
     }
 
-    public ownerTransform: Transform = null;
-    public _isPlayingAni: boolean = false;
-    public _ani: Animation;
-    public _petArrived: boolean = false;
-
+    private ownerTransform: Transform = null;
+    private _isPlayingAni: boolean = false;
+    private _ani: Animation;
+    private _petArrived: boolean = false;
     public update(dt: number, transform: Transform): void {
         this.ownerTransform = transform.clone();
         if (!this.owner || !this.pet) return;
@@ -307,7 +305,7 @@ export default class PetBehavior {
 
         //播走路动画逻辑
         if (!this._petArrived && !this._isPlayingAni && this.pet instanceof Character) {
-            this._ani = this.pet.loadAnimation("272622");
+            this._ani = this.pet.loadAnimation("272622")
             this._ani.loop = 0;
             this._ani.play();
             this._isPlayingAni = true;
@@ -318,10 +316,10 @@ export default class PetBehavior {
     }
 
     //上一帧玩家移动状态
-    public lastMoveState: boolean = false;
+    private lastMoveState: boolean = false;
 
     /**改变为跟随状态 */
-    public changeToIdle(): void {
+    private changeToIdle(): void {
         if (!this.owner) return;
         if (this.owner == this.currentChar) {
             this.ownerBe.onPetBackNormal(this);
@@ -348,7 +346,7 @@ export default class PetBehavior {
     }
 
     //当前显影状态
-    public isVisible: boolean = true;
+    private isVisible: boolean = true;
 
     /**宠物显影 */
     public changeVisible(isVisible: boolean): void {
@@ -357,7 +355,7 @@ export default class PetBehavior {
         this.isVisible = isVisible;
         if (isVisible) {
             this.headUI.show();
-            utils.showAllChildExcept(this.pet, true, "attackInClient");
+            utils.showAllChildExcept(this.pet, true, "attack");
         } else {
             this.headUI.hide();
             utils.showAllChildExcept(this.pet, false);
@@ -365,7 +363,7 @@ export default class PetBehavior {
     }
 
     /**跟随玩家idle状态 */
-    public idleUpdate(dt: number): void {
+    private idleUpdate(dt: number): void {
         if (this.isStop && !this.owner.isMoving) return;
         if (this.isMove) return;
         if (!this.disPos) return;
@@ -408,7 +406,7 @@ export default class PetBehavior {
     }
 
     /**移动至玩家身后 */
-    public movetoOwnerUpdate(dt: number, startTransform: mw.Transform, endTransform: mw.Transform): boolean {
+    private movetoOwnerUpdate(dt: number, startTransform: mw.Transform, endTransform: mw.Transform): boolean {
         const currentPos = startTransform.position;
         let endPos = endTransform.position;
         let endRot = endTransform.rotation;//11ms
@@ -443,7 +441,7 @@ export default class PetBehavior {
         return false;
     }
 
-    public changeToPos(dt: number, petTransform: mw.Transform, endPos: mw.Vector, endRot: mw.Rotation): void {
+    private changeToPos(dt: number, petTransform: mw.Transform, endPos: mw.Vector, endRot: mw.Rotation): void {
         if (this.attackTween) {
             this.attackTween.stop();
             this.attackTween = null;
@@ -465,21 +463,22 @@ export default class PetBehavior {
         setTransform(this.pet, petTransform);
     }
 
+
     public tarResPoint: number = 0;
     /**资源点坐标 */
-    public resPos: mw.Vector = null;
+    private resPos: mw.Vector = null;
     /**目标点坐标 */
-    public targetPos: mw.Vector = null;
+    private targetPos: mw.Vector = null;
     /**当前宠物移动速度 */
-    public speed: number = 1000;
+    private speed: number = 1000;
     /**当前宠物追击速度 */
-    public chaseSpeed: number = 1000;
+    private chaseSpeed: number = 1000;
     /**当前引导 */
-    public arrow: Arrow;
+    private arrow: Arrow;
     /**当前特效 */
-    public currentEffect: number = null;
+    private currentEffect: number = null;
     /**当前目标资源 */
-    public _targetRes: resourceScript = null;
+    private _targetRes: resourceScript = null;
     public get targetRes(): resourceScript {
         return this._targetRes;
     }
@@ -529,7 +528,7 @@ export default class PetBehavior {
         UIService.getUI(P_HudPetGift)?.changePetState(this.key, PetState.Attack, resPoint);
     }
 
-    public getRandomPointOnCircle(center: mw.Vector, radius: number, end: mw.Vector): void {
+    private getRandomPointOnCircle(center: mw.Vector, radius: number, end: mw.Vector): void {
         const angle = Math.random() * Math.PI * 2; // 随机生成一个角度
         const x = center.x + radius * Math.cos(angle); // 计算x坐标
         const z = center.z; //  z坐标与圆心相同
@@ -537,8 +536,10 @@ export default class PetBehavior {
         end.set(x, y, z);
     }
 
+
+
     //移动到资源点
-    public moveToRes(dt: number): void {
+    private moveToRes(dt: number): void {
         if (!this.targetPos) return;
         let petTransform = getTransform(this.pet);
         petTransform.lookAt(this.resPos);
@@ -555,7 +556,7 @@ export default class PetBehavior {
         let moveDis = this.chaseSpeed * dt;
         if (dis < moveDis) {
             if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character && this.pet instanceof Character) {
-                let pos = this.targetPos.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight));
+                let pos = this.targetPos.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight))
                 this.arrow?.update(pos, this.resPos);
             } else {
                 this.arrow?.update(this.targetPos, this.resPos);
@@ -580,7 +581,7 @@ export default class PetBehavior {
 
         endPos = this.keepOnGround(endPos);
         if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character && this.pet instanceof Character) {
-            let pos = this.position.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight));
+            let pos = this.position.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight))
             this.arrow?.update(pos, this.resPos);
         } else {
             this.arrow?.update(this.position, this.resPos);
@@ -600,13 +601,13 @@ export default class PetBehavior {
         this._petArrived = false;
     }
 
-    public endPos: mw.Vector = mw.Vector.zero;
-    public endRot: mw.Rotation = mw.Rotation.zero;
-    public isMove: boolean = false;
+    private endPos: mw.Vector = mw.Vector.zero;
+    private endRot: mw.Rotation = mw.Rotation.zero;
+    private isMove: boolean = false;
 
     public isStop: boolean = false;
 
-    public moveto(endPos: mw.Vector, endRot: mw.Rotation): void {
+    private moveto(endPos: mw.Vector, endRot: mw.Rotation): void {
         this.stopMove();
         this.endPos = endPos;
         this.endRot = endRot;
@@ -615,7 +616,7 @@ export default class PetBehavior {
     }
 
     /**移动至endPos和endRot */
-    public movetoUpdate(dt: number): void {
+    private movetoUpdate(dt: number): void {
         if (!this.isMove) return;
         let petTransform = getTransform(this.pet);
         if (petTransform.position.equals(this.endPos, 30)) {
@@ -640,20 +641,19 @@ export default class PetBehavior {
 
     }
 
-    public _attackPrivot: mw.GameObject = null;
-    public attackTween: mw.Tween<{ y: number }> = null;
-    public attackRotY: number = 0;
-
+    private _attackPrivot: mw.GameObject = null;
+    private attackTween: mw.Tween<{ y: number }> = null;
+    private attackRotY: number = 0;
     /**攻击点 */
-    public get attackPrivot(): mw.GameObject {
+    private get attackPrivot(): mw.GameObject {
         if (!this._attackPrivot) {
-            this._attackPrivot = this.pet.getChildByName("attackInClient");
+            this._attackPrivot = this.pet.getChildByName("attack");
         }
         return this._attackPrivot;
     }
 
     /**攻击轮询 */
-    public attackUpdate(dt: number): void {
+    private attackUpdate(dt: number): void {
         if (!this.targetRes) return;
         if (!this.isResAlive()) return;
         if (!this.attackTween) {
@@ -669,20 +669,19 @@ export default class PetBehavior {
         }
     }
 
-    public _attackAni: Animation;
-
-    public attackTweenInit(): void {
+    private _attackAni: Animation;
+    private attackTweenInit(): void {
 
         if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
             const bezier = GlobalData.pet.attackBezier;
             let time = GlobalData.pet.attackTime;
             if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
-            this.attackTween = new mw.Tween<{ y: number }>({y: 0}).to({
-                y: [-30, 0],
+            this.attackTween = new mw.Tween<{ y: number }>({ y: 0 }).to({
+                y: [-30, 0]
             }, time).onUpdate((obj) => {
                 this.attackRotY = obj.y;
             }).onComplete(() => {
-                if (!this.attackInClient()) {
+                if (this.attack()) {
                     this.changeToIdle();
                     this.attackRotY = 0;
                     return;
@@ -699,7 +698,7 @@ export default class PetBehavior {
             if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
             this._attackAni.speed = this._attackAni.length * 1000 / time;
             this._attackAni.onFinish.add(() => {
-                if (this.attackInClient()) {
+                if (this.attack()) {
                     this.changeToIdle();
                     this.attackRotY = 0;
                     this._ani.stop();
@@ -714,7 +713,7 @@ export default class PetBehavior {
     }
 
     /**播放攻击特效 */
-    public playAttackEffect(): void {
+    private playAttackEffect(): void {
         if (this.owner != this.currentChar) return;
         if (this.currentEffect) {
             EffectService.stop(this.currentEffect);
@@ -729,8 +728,8 @@ export default class PetBehavior {
                 1,
                 GlobalData.pet.attackEffectOffset[index][this.petInfo.QualityType - 1],
                 GlobalData.pet.attackEffectRotation[index][this.petInfo.QualityType - 1],
-                GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1],
-            );
+                GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1]
+            )
         } else if (this.petInfo.CharacterType === 1) {
 
             this.currentEffect = GeneralManager.rpcPlayEffectOnGameObject(
@@ -739,14 +738,14 @@ export default class PetBehavior {
                 1,
                 GlobalData.pet.chaAttackEffectOffset[index][this.petInfo.QualityType - 1],
                 GlobalData.pet.chaAttackEffectRotation[index][this.petInfo.QualityType - 1],
-                GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1],
-            );
+                GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1]
+            )
         }
 
     }
 
     /**判断资源是否还活着 */
-    public isResAlive(): boolean {
+    private isResAlive(): boolean {
         if (!this.targetRes || this.targetRes.Obj == null) {
             this.changeToIdle();
             return false;
@@ -760,15 +759,31 @@ export default class PetBehavior {
     }
 
     /**攻击 */
-    public attackInClient(): boolean {
+    private attack(): boolean {
         if (this.owner != this.currentChar) return false;
         if (!this.targetRes) {
             this.changeToIdle();
-            return false;
+            return true;
         } else {
             let energyModuleC = ModuleService.getModule(EnergyModuleC);
             if (energyModuleC.isAfford()) {
-                this.ownerBe.petReqAttack(this);
+                let res = this.targetRes.injured(this.owner.player.playerId,
+                    this.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(this.key).damageAdd / 100), this.key);
+                if (res) {
+                    this._targetRes = null;
+                    this.targetPos = null;
+                    this.resPos = null;
+                    if (this.attackPrivot) this.attackPrivot.localTransform.rotation = mw.Rotation.zero;
+                    this.changeToIdle();
+                    // energyModuleC.consume(0, true);
+                    Log4Ts.error(PetBehavior, "挖完了！");
+                    return true;
+                } else {
+                    // energyModuleC.consume();
+                    Log4Ts.error(PetBehavior, "扣1体力");
+                }
+            } else {
+                Log4Ts.error(PetBehavior, "体力不足！");
                 return true;
             }
         }
@@ -776,7 +791,7 @@ export default class PetBehavior {
     }
 
     /**宠物坐标保持在地面 大消耗点 100次调用7ms */
-    public keepOnGround(endPos: mw.Vector, currentPos?: mw.Vector): mw.Vector {
+    private keepOnGround(endPos: mw.Vector, currentPos?: mw.Vector): mw.Vector {
         if (!currentPos) currentPos = this.ownerTransform.position;
         if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject && utils.frameCount < GlobalData.pet.gravityFrame && (this.owner != this.currentChar)) {
             endPos.z = currentPos.z - this.owner.collisionExtent.z;
@@ -801,7 +816,7 @@ export default class PetBehavior {
         return endPos;
     }
 
-    public async onInfoChange(): Promise<void> {
+    private async onInfoChange(): Promise<void> {
         if (!this.headUI) {
             if (!this.pet) return;
             let guid = this.pet.gameObjectId;
@@ -813,7 +828,7 @@ export default class PetBehavior {
     }
 
     /**蹦跶 */
-    public jump(dt: number, currentPos: mw.Vector, currentRot: mw.Rotation): void {
+    private jump(dt: number, currentPos: mw.Vector, currentRot: mw.Rotation): void {
         if (!this.moveEnd || !this.endTween) this.startMove();
         if (!this.moveEnd) return;
         if (this.moveEnd.jumpHeight <= 0 && this.petInfo.MoveWay == 1) {
@@ -824,28 +839,28 @@ export default class PetBehavior {
     }
 
     /**顺序 */
-    public order: number = 0;
+    private order: number = 0;
 
-    public moveEnd: endInfo = new endInfo(0, 0);
+    private moveEnd: endInfo = new endInfo(0, 0);
 
-    public endTween: mw.Tween<endInfo> = null;
+    private endTween: mw.Tween<endInfo> = null;
 
     /**开始移动 */
-    public startMove(): void {
+    private startMove(): void {
         this.order = 0;
         this.endTween?.stop();
         this.tweenInit();
     }
 
     /**停止移动 */
-    public stopMove(): void {
+    private stopMove(): void {
         this.order = 0;
         this.endTween?.stop();
         this.endTween = null;
         this.moveEnd = null;
     }
 
-    public tweenInit(): void {
+    private tweenInit(): void {
         const endInfos = this.petInfo.MoveWay == 1 ? GlobalData.pet.jumpOrder : GlobalData.pet.flyOrder;
         const bezier = this.petInfo.MoveWay == 1 ? GlobalData.pet.jumpBezier : GlobalData.pet.flyBezier;
         const time = this.petInfo.MoveWay == 1 ? GlobalData.pet.jumpTime : GlobalData.pet.flyTime;
