@@ -827,7 +827,7 @@ export class MainUI extends Main_HUD_Generate {
             if (second && second.text && second.img) {
                 if (second.num > 0) {
                     // second.text.visibility = SlateVisibility.Visible;
-                    second.img.visibility = SlateVisibility.Visible;
+                    // second.img.visibility = SlateVisibility.Visible;
                     second.name.visibility = SlateVisibility.Visible;
                     canvasShouldShow = true;
                     this.setBuffLevel(second.levelCanvas, second.num);
@@ -840,7 +840,7 @@ export class MainUI extends Main_HUD_Generate {
                             second.time.text = `${second.duration.toFixed(1)}s`;
                             if (second.duration <= 0) {
                                 // second.text.visibility = SlateVisibility.Collapsed;
-                                second.img.visibility = SlateVisibility.Collapsed;
+                                // second.img.visibility = SlateVisibility.Collapsed;
                                 second.time.text = "";
                                 second.name.visibility = SlateVisibility.Collapsed;
                                 second.mask.fanShapedValue = 0;
@@ -853,7 +853,7 @@ export class MainUI extends Main_HUD_Generate {
 
                 } else {
                     // second.text.visibility = SlateVisibility.Collapsed;
-                    second.img.visibility = SlateVisibility.Collapsed;
+                    // second.img.visibility = SlateVisibility.Collapsed;
                     second.name.visibility = SlateVisibility.Collapsed;
                     second.mask.fanShapedValue = 1;
                     second.time.text = "";
