@@ -1006,7 +1006,7 @@ export namespace GlobalData {
         public static effectRotate: number = 60;
 
         /**宠物自动吸收数组  不用填*/
-        public static petAutoBuffKeys: number[] = [];
+        public static petAutoBuffKeys: Map<number, number[]> = new Map();
     }
 
     /**任务相关 */

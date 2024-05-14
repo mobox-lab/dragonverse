@@ -1,4 +1,4 @@
-import { GeneralManager, } from '../../Modified027Editor/ModifiedStaticAPI';
+import { GeneralManager } from "../../Modified027Editor/ModifiedStaticAPI";
 import { IEffectElement } from "../../config/Effect";
 import { GameConfig } from "../../config/GameConfig";
 import { ISceneUnitElement } from "../../config/SceneUnit";
@@ -10,11 +10,13 @@ import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { BonusUI, ResourceUIPool } from "./scenceUnitUI";
-import { GlobalData } from '../../const/GlobalData';
-import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
-import { PlayerManagerExtesion } from '../../Modified027Editor/ModifiedPlayer';
-import { DropManagerS } from './DropResouce';
+import { GlobalData } from "../../const/GlobalData";
+import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
+import { PlayerManagerExtesion } from "../../Modified027Editor/ModifiedPlayer";
+import { DropManagerS } from "./DropResouce";
+
 ;
+
 export class Resource {
 
     private static _instance: Resource;
@@ -39,7 +41,7 @@ export class Resource {
                 } else {
                     console.error(`lwj 未找到资源cfg${cfgId}的indedx${index}}`);
                 }
-            })
+            });
         }
         return res;
     }
@@ -60,31 +62,33 @@ enum ScaleLevel {
     Max,
 }
 
-
 /**伤害记录 */
 export class DamageRecode {
-    constructor(public playerId: number, public damage: number) { }
+    constructor(public playerId: number, public damage: number) {
+    }
 }
+
 /**场景资源Arr */
 export const SceneResourceMap: Map<number, resourceScript[]> = new Map<number, resourceScript[]>();
 
 @Component
 export default class resourceScript extends mw.Script {
 
-    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
+    @mw.Property({replicated: true, onChanged: "onHpChanged"})
     public curHp: number = 0;
-    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
+    @mw.Property({replicated: true, onChanged: "onSceneChanged"})
     private scenePointId: string = "";
 
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     public isbigBox: boolean = false;
 
     /**伤害记录 */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     private damageArr: DamageRecode[] = [];
 
     private _rate: number = 1;
     private rateEff: number;
+
     public get rate(): number {
         return this._rate;
     }
@@ -110,15 +114,15 @@ export default class resourceScript extends mw.Script {
     private net_injured(playerID: number, damage: number) {
 
         let damageInfoIndex = this.damageArr.findIndex((item) => {
-            return item.playerId == playerID
-        })
+            return item.playerId == playerID;
+        });
         if (damageInfoIndex == -1) {
             this.damageArr.push(new DamageRecode(playerID, damage));
         } else {
             this.damageArr[damageInfoIndex] = new DamageRecode(
                 playerID,
-                this.damageArr[damageInfoIndex].damage + damage
-            )
+                this.damageArr[damageInfoIndex].damage + damage,
+            );
         }
         if (this.curHp <= 0) {
             return;
@@ -144,7 +148,7 @@ export default class resourceScript extends mw.Script {
 
         for (let i = 0; i < this.damageArr.length; i++) {
             player = Player.getPlayer(this.damageArr[i].playerId);
-            this.overGetReward(player)
+            this.overGetReward(player);
         }
     }
 
@@ -168,8 +172,7 @@ export default class resourceScript extends mw.Script {
         await TimeUtil.delaySecond(3);
         if (this.isbigBox) {
             this.onDead.call(this.scenePointId, playerId);
-        }
-        else
+        } else
             this.onDead.call(playerId);
         this.scenePointId = "";
         this._rate = 1;
@@ -178,6 +181,7 @@ export default class resourceScript extends mw.Script {
 
     //----------------------------only client-----------------------------------
     private attInterval: any;
+
     /**该客户端玩家造成伤害 */
     @RemoteFunction(mw.Client)
     private client_injured(player: mw.Player, curHp: number, rate: number) {
@@ -188,7 +192,7 @@ export default class resourceScript extends mw.Script {
         }
         this.attInterval = setTimeout(() => {
             this.stopGuaSha();
-        }, 2000)
+        }, 2000);
 
         this.getCurHpRateC(curHp);
         if (this.resObj == null || this._cfgId == 0) return;
@@ -199,9 +203,8 @@ export default class resourceScript extends mw.Script {
     @RemoteFunction(mw.Client)
     private overGetReward(player: mw.Player) {
         this.getCurHpRateC(0);
-        Event.dispatchToLocal(GlobalEnum.EventName.AttackDestroy)
+        Event.dispatchToLocal(GlobalEnum.EventName.AttackDestroy);
     }
-
 
     //----------------------------client-----------------------------------
     private resObj: mw.GameObject = null;
@@ -239,14 +242,17 @@ export default class resourceScript extends mw.Script {
     public get pointId(): number {
         return this._pointId;
     }
+
     public get location(): mw.Vector {
         return this.curPos;
     }
+
     public get cfgId(): number {
         return this._cfgId;
     }
+
     public get Obj() {
-        return this.resObj
+        return this.resObj;
     }
 
     private async onHpChanged(): Promise<void> {
@@ -262,7 +268,7 @@ export default class resourceScript extends mw.Script {
                 this.cfg = null;
             }
             if (this.toiletMan) {
-                this.toiletManDead(this.recycleResourceModel.bind(this, true))
+                this.toiletManDead(this.recycleResourceModel.bind(this, true));
             } else
                 this.recycleResourceModel(true);
             return;
@@ -283,6 +289,7 @@ export default class resourceScript extends mw.Script {
 
     /**刮痧interval */
     private interval: any;
+
     /**开始刮痧计时 */
     public startGuaSha() {
         if (this.interval) return;
@@ -298,7 +305,7 @@ export default class resourceScript extends mw.Script {
                 let gemVal = Math.ceil((this.rewardGem * rate) / 3 - this.guaShaRewardGem);
                 this.guaShaRewardGem += gemVal;
                 this.playReward(GlobalEnum.ResourceAttackStage.GuaSha, this.ResourceType, 0, gemVal);
-            }, GlobalData.SceneResource.guaShaTime)
+            }, GlobalData.SceneResource.guaShaTime);
             return;
         }
 
@@ -309,14 +316,14 @@ export default class resourceScript extends mw.Script {
                 let goldVal = Math.ceil((this.rewardGold * rate) / 3 - this.guaShaRewardGold);
                 this.guaShaRewardGold += goldVal;
                 this.playReward(GlobalEnum.ResourceAttackStage.GuaSha, this.ResourceType, goldVal, 0);
-            }
-            else {
+            } else {
                 let gemVal = Math.ceil((this.rewardGem * rate) / 3 - this.guaShaRewardGem);
                 this.guaShaRewardGold += gemVal;
                 this.playReward(GlobalEnum.ResourceAttackStage.GuaSha, this.ResourceType, 0, gemVal);
             }
-        }, GlobalData.SceneResource.guaShaTime)
+        }, GlobalData.SceneResource.guaShaTime);
     }
+
     /**停止刮痧计时 */
     public stopGuaSha() {
         if (!this.interval) return;
@@ -381,25 +388,28 @@ export default class resourceScript extends mw.Script {
 
     @RemoteFunction(mw.Server)
     private net_createDrop(pos: mw.Vector, type: GlobalEnum.CoinType, allValue: number, count: number, isBox: boolean = false) {
-			ModuleService.getModule(DropManagerS).net_createDrop(pos, type, allValue, count, isBox) // TODO: Check
-		}
-    /**奖励掉落物 
+        ModuleService.getModule(DropManagerS).net_createDrop(pos, type, allValue, count, isBox); // TODO: Check
+    }
+
+    /**奖励掉落物
      * @param state 攻击阶段
      * @param resType 资源类型
      * @param goldval 金币价值
      * @param gemVal 钻石价值
-    */
+     */
     private playReward(state: GlobalEnum.ResourceAttackStage, resType: number, goldVal: number, gemVal: number) {
         let rewardArr = this.getDropCountByLevel(state, resType);
         let goldCount = Math.ceil(rewardArr[0]);
         let gemCount = Math.ceil(rewardArr[1]);
         if (goldCount > 0) {
-					this.net_createDrop( this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox
-					)       }
+            this.net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox,
+            );
+        }
         if (gemCount > 0) {
-					this.net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox)
-				}
+            this.net_createDrop(this.resObj.worldTransform.position, this.judgeGold(), goldVal, goldCount, this.isbigBox);
+        }
     }
+
     /**判断几世界的金币 */
     private judgeGold(): GlobalEnum.CoinType {
         let coinType = GlobalEnum.CoinType;
@@ -415,6 +425,7 @@ export default class resourceScript extends mw.Script {
         }
         return goldType;
     }
+
     /**根据攻击阶段、类型返回掉落个数 */
     private getDropCountByLevel(state: GlobalEnum.ResourceAttackStage, type: number): number[] {
         let cfgID: number = 0;
@@ -456,21 +467,20 @@ export default class resourceScript extends mw.Script {
         let allRate: number = 1;
         switch (this.rate) {
             case 3:
-                allRate = cfg.Stagetimes[0]
+                allRate = cfg.Stagetimes[0];
                 break;
             case 5:
-                allRate = cfg.Stagetimes[1]
+                allRate = cfg.Stagetimes[1];
                 break;
             case 25:
-                allRate = cfg.Stagetimes[2]
+                allRate = cfg.Stagetimes[2];
                 break;
             case 100:
-                allRate = cfg.Stagetimes[3]
+                allRate = cfg.Stagetimes[3];
                 break;
             default:
                 break;
         }
-
 
         let goldcount: number = 0;
         let gemcount: number = 0;
@@ -502,7 +512,7 @@ export default class resourceScript extends mw.Script {
             default:
                 break;
         }
-        return [goldcount, gemcount]
+        return [goldcount, gemcount];
     }
 
     private onSceneChanged() {
@@ -539,6 +549,7 @@ export default class resourceScript extends mw.Script {
         }
         this.createObjANDStart();
     }
+
     /**创建默认资源*/
     public async createDefaultObj(): Promise<boolean> {
         if (!this.cfg || this.isStart || this.resObj != null) {
@@ -561,6 +572,7 @@ export default class resourceScript extends mw.Script {
 
         return true;
     }
+
     /**创建正常区域资源 */
     public async createObjANDStart(): Promise<boolean> {
         if (this.cfg?.AreaID != AreaDivideManager.instance.CurAreaId) {
@@ -590,7 +602,7 @@ export default class resourceScript extends mw.Script {
         const time = GlobalData.ResourceAni.dropTweenTime[this.order];
         let start = endInfos[this.order];
         let end = endInfos[this.order + 1];
-        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
+        this.endTween = new mw.Tween({z: start}).to({z: end}, time).onUpdate((obj) => {
             this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
         }).onComplete(() => {
             this.order++;
@@ -616,6 +628,7 @@ export default class resourceScript extends mw.Script {
             }
         }, 2000);
     }
+
     /**攻击
      * @param playerId 玩家id
      * @param damage 伤害
@@ -626,7 +639,7 @@ export default class resourceScript extends mw.Script {
             damage = 0;
         if (this.cfgId == 0) return true;
         if (this.isbigBox) {
-            damage *= GlobalData.Buff.damageBuff * (1 + EnchantBuff.getPetBuff(key).boxDamageAdd / 100);
+            damage *= GlobalData.Buff.damageBuff * (1 + EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100);
         } else
             damage *= GlobalData.Buff.damageBuff;
         this.getRewardByAttack(damage, key);
@@ -635,7 +648,7 @@ export default class resourceScript extends mw.Script {
         if (damage > allHp / 3) {
             damage = allHp / 3;
         }
-        let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate
+        let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate;
         if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
             damage = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate - allHp * 2 / 3;
         }
@@ -645,6 +658,7 @@ export default class resourceScript extends mw.Script {
         if (this.curHp - damage <= 0) return true;
         return false;
     }
+
     /**显示模型状态 */
     private objState(curHp: number) {
         if (!this.cfg && this._cfgId)
@@ -695,7 +709,7 @@ export default class resourceScript extends mw.Script {
     /**判断资源类型 C&S */
     public get ResourceType(): number {
         if (!this.cfg) return 3;
-        this._ResourceType = this.cfg.resType
+        this._ResourceType = this.cfg.resType;
         return this._ResourceType;
     }
 
@@ -719,7 +733,7 @@ export default class resourceScript extends mw.Script {
         let pow = 0;
 
         if (this.cfg.AreaID < 2000) {
-            pow = 0.28
+            pow = 0.28;
         } else if (this.cfg.AreaID > 2000) {
             pow = 0.23;
         }
@@ -737,33 +751,30 @@ export default class resourceScript extends mw.Script {
             }
 
             if (item != 2) {
-                let temp2 = this.cfg.WaveValue[index] + Math.log(attack)
-                let random = utils.GetRandomNum(0, temp2)
+                let temp2 = this.cfg.WaveValue[index] + Math.log(attack);
+                let random = utils.GetRandomNum(0, temp2);
 
                 if (this.rate == 1) {
                     this.rewardGold = (50 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
-                        * (1 + EnchantBuff.getPetBuff(key).goldAdd / 100);
+                        * (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, key).goldAdd / 100);
                 } else {
                     this.rewardGold = (50 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
-                        * (1 + EnchantBuff.getPetBuff(key).goldAdd / 100) * (1 + EnchantBuff.getPetBuff(key).rateGoldAdd / 100);
+                        * (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, key).goldAdd / 100) * (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, key).rateGoldAdd / 100);
                 }
                 this.rewardGold = Number(this.rewardGold.toFixed(1));
             } else {
                 //  let random = utils.GetRandomNum(0, this.cfg.WaveValue[index])
                 this.rewardGem = Number((this.cfg.DiamondReward * crit * this.rate).toFixed(1));
             }
-        })
+        });
         if (this.ResourceType == GlobalEnum.DestructorType.Gold4) {
-            this.rewardGold *= (1 + EnchantBuff.getPetBuff(key).fourGoldAdd / 100);
-            this.rewardGem *= (1 + EnchantBuff.getPetBuff(key).fourGoldAdd / 100);
+            this.rewardGold *= (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, key).fourGoldAdd / 100);
+            this.rewardGem *= (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, key).fourGoldAdd / 100);
         }
 
         //oTraceError('lwj 奖励 ' + this.rewardGem + " " + this.rewardGold);
 
     }
-
-
-
 
     /**播放资源倍率特效 */
     private playEffect() {
@@ -778,6 +789,7 @@ export default class resourceScript extends mw.Script {
         this.rateEff = GeneralManager.rpcPlayEffectAtLocation(cfg.EffectID, this.curPos, cfg.EffectTime, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
 
     }
+
     /**击打过程中特效 */
     private playProcessEffect() {
         let random = MathUtil.randomInt(0, 100);
@@ -788,6 +800,7 @@ export default class resourceScript extends mw.Script {
         let cfg = GameConfig.Effect.getElement(1);
         GeneralManager.rpcPlayEffectOnGameObject(cfg.EffectID, this.resObj, cfg.EffectTime, cfg.EffectLocation, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
     }
+
     /**阶段特效 */
     private playCritEffectByLevel() {
         let cfg = GameConfig.Effect.getElement(13);
@@ -797,6 +810,7 @@ export default class resourceScript extends mw.Script {
             GeneralManager.rpcPlayEffectOnGameObject(cfg.EffectID, this.resObj, cfg.EffectTime, cfg.EffectLocation, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
         }
     }
+
     /**最后一击暴击特效 */
     private playCritEffectByLast() {
         if (!this.isCrit) return;
@@ -805,6 +819,7 @@ export default class resourceScript extends mw.Script {
         GeneralManager.rpcPlayEffectAtLocation(cfg.EffectID, this.resObj.worldTransform.position, cfg.EffectTime, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
 
     }
+
     /**添加场景资源 */
     private addScenceResource(areaID: number) {
         if (areaID == 0) return;
@@ -818,21 +833,23 @@ export default class resourceScript extends mw.Script {
         }
         arr.push(this);
     }
+
     /**移除场景资源 */
     private removeScenceResource(areaID: number, resourceScript: resourceScript) {
         let arr = SceneResourceMap.get(areaID);
         if (!arr) return;
         let index = arr.findIndex((item) => {
             return item == resourceScript;
-        })
+        });
         if (index != -1) {
             arr.splice(index, 1);
         }
     }
+
     /**回收破坏物模型 */
     public async recycleResourceModel(isAwait: boolean = false) {
         if (this.endTween) {
-            console.error('lwj tween is playing');
+            console.error("lwj tween is playing");
             this.endTween.stop();
             this.endTween = null;
         }
@@ -854,7 +871,6 @@ export default class resourceScript extends mw.Script {
             this.rateEff = null;
         }
     }
-
 
     /*************马桶人 **********/
 
@@ -881,6 +897,7 @@ export default class resourceScript extends mw.Script {
             }
         }
     }
+
     /**马桶人受击动画 */
     private toiletManHit() {
         if (!this.toiletMan) return;
@@ -891,6 +908,7 @@ export default class resourceScript extends mw.Script {
         this.toiletManAnima = PlayerManagerExtesion.loadAnimationExtesion(this.toiletMan, aniGuid, false);
         this.toiletManAnima.play();
     }
+
     /**马桶人死亡动画 */
     private toiletManDead(fun: () => {}) {
         if (!this.toiletMan) return;
@@ -902,17 +920,17 @@ export default class resourceScript extends mw.Script {
         this.toiletManAnima.play();
         this.toiletManAnima.onFinish.add(() => {
             fun();
-        })
+        });
     }
+
     /**马桶人销毁 */
     private toiletManDestroy() {
         if (!this.toiletMan) return;
-        this.toiletMan.worldTransform.position = new mw.Vector(555, -66, -300)
+        this.toiletMan.worldTransform.position = new mw.Vector(555, -66, -300);
         this.toiletMan = null;
         this.toiletManAnima?.onFinish.clear();
         this.toiletManAnima = null;
     }
-
 
     //----------------------------life cycle-----------------------------------
 
@@ -927,6 +945,5 @@ export default class resourceScript extends mw.Script {
     protected onUpdate(dt: number): void {
 
     }
-
 
 }

@@ -84,7 +84,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     private enchantBuffInit() {
         let keys = this.data.CurFollowPets;
         for (let id = 0; id < keys.length; id++) {
-            EnchantBuff.equipUnPet(keys[id], true);
+            EnchantBuff.equipUnPet(Player.localPlayer.playerId, keys[id], true);
         }
     }
 
@@ -341,7 +341,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         let arr = keys.concat();
         for (let id = 0; id < arr.length; id++) {
             const element = arr[id];
-            EnchantBuff.equipUnPet(element, isEquip);
+            EnchantBuff.equipUnPet(Player.localPlayer.playerId, element, isEquip);
         }
     }
 

@@ -5,8 +5,8 @@ import { stringToBuff } from "../../util/uitls";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { RewardTipsManager } from "../UI/RewardTips";
 import { BagTool } from "./BagTool";
-import { PetBagModuleData, petItemDataNew, } from "./PetBagModuleData";
-
+import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
+import Gtk from "../../util/GToolkit";
 
 type petBuff = {
     /**伤害加成 */
@@ -33,6 +33,7 @@ type petBuff = {
     bestFriend?: number,
 
 }
+
 enum enchantType {
     /**其他 */
     other = 0,
@@ -54,6 +55,7 @@ enum enchantType {
     rateGoldAdd = 8,
 
 }
+
 enum specialEnchantId {
     /**王权 */
     id_43 = 43,
@@ -65,66 +67,81 @@ enum specialEnchantId {
     id_46 = 46,
 }
 
-
 /**宠物词条buff */
 export class EnchantBuff {
-
     /**宠物词条buff */
-    private static petBuff: Map<number, petBuff> = new Map<number, petBuff>();
+    private static playerPetBuff: Map<number, Map<number, petBuff>> = new Map();
     private static interval: any;
 
-
-    /**装备 卸载宠物 
+    /**装备 卸载宠物
      * @param key 宠物key
      * @param isEquip 是否装备
-    */
-    public static equipUnPet(key: number, isEquip: boolean) {
+     */
+    public static equipUnPet(playerId: number, key: number, isEquip: boolean) {
+        const petBuff = Gtk.tryGet(this.playerPetBuff, playerId, () => new Map<number, petBuff>());
+
         if (!isEquip) {
             // 卸载
-            if (!this.petBuff.has(key)) return;
+            if (!petBuff.has(key)) return;
 
-            let buff = this.petBuff.get(key);
-            this.delBuff(key, buff);
-            this.petBuff.delete(key);
+            let buff = petBuff.get(key);
+            this.delBuff(playerId, key, buff);
+            petBuff.delete(key);
 
         } else {
             // 装备
-            let buff: petBuff = { damageAdd: 0, goldAdd: 0, diamondAdd: 0, critAdd: 0, moveSpeedAdd: 0, boxDamageAdd: 0, fourGoldAdd: 0, rateGoldAdd: 0, autoCollect: false, randomDiamond: false, bestFriend: 0 }
-            let petData = DataCenterC.getData(PetBagModuleData).bagItemsByKey(key);
+            let buff: petBuff = {
+                damageAdd: 0,
+                goldAdd: 0,
+                diamondAdd: 0,
+                critAdd: 0,
+                moveSpeedAdd: 0,
+                boxDamageAdd: 0,
+                fourGoldAdd: 0,
+                rateGoldAdd: 0,
+                autoCollect: false,
+                randomDiamond: false,
+                bestFriend: 0,
+            };
+            let petData = SystemUtil.isClient() ?
+                DataCenterC.getData(PetBagModuleData).bagItemsByKey(key) :
+                DataCenterS.getData(playerId, PetBagModuleData).bagItemsByKey(key);
             if (!petData || !petData.p.b || petData.p.b.length == 0) return;
 
             let curBuff = stringToBuff(BagTool.getStr(petData));
             curBuff.forEach(element => {
-                this.addBuff(key, buff, { id: element.id, level: element.level });
-            })
-            this.petBuff.set(key, buff);
+                this.addBuff(playerId, key, buff, {id: element.id, level: element.level});
+            });
+            petBuff.set(key, buff);
         }
     }
 
-    /**判断是否是最好的朋友词条 */
-    public static isBestFriend(key: number): boolean {
-        let petData = DataCenterC.getData(PetBagModuleData).bagItemsByKey(key);
-        if (!petData || petData.p.b.length) return false;
-
-        let curBuff = stringToBuff(BagTool.getStr(petData));
-        let isBest = false;
-        curBuff.forEach(element => {
-            if (element.id == specialEnchantId.id_46) {
-                isBest = true;
-            }
-        })
-        return isBest;
-    }
     /**获取宠物词条buff */
-    public static getPetBuff(key: number): petBuff {
-        if (this.petBuff.has(key))
-            return this.petBuff.get(key);
+    public static getPetBuff(playerId: number, key: number): petBuff {
+        const petBuff = Gtk.tryGet(this.playerPetBuff, playerId, () => new Map());
+        if (petBuff.has(key))
+            return petBuff.get(key);
         else
-            return { damageAdd: 0, goldAdd: 0, diamondAdd: 0, critAdd: 0, moveSpeedAdd: 0, boxDamageAdd: 0, fourGoldAdd: 0, rateGoldAdd: 0, autoCollect: false, randomDiamond: false, bestFriend: 0 };
+            return {
+                damageAdd: 0,
+                goldAdd: 0,
+                diamondAdd: 0,
+                critAdd: 0,
+                moveSpeedAdd: 0,
+                boxDamageAdd: 0,
+                fourGoldAdd: 0,
+                rateGoldAdd: 0,
+                autoCollect: false,
+                randomDiamond: false,
+                bestFriend: 0,
+            };
     }
 
     /** 添加词条buff*/
-    private static addBuff(key: number, buff: petBuff, item: { id: number; level: number; }): petBuff {
+    private static addBuff(playerId: number, key: number, buff: petBuff, item: {
+        id: number;
+        level: number;
+    }): petBuff {
 
         let speciaId = GlobalData.Enchant.specialEnchantId;
         if (item.id >= speciaId[0] && item.id <= speciaId[1]) {
@@ -139,7 +156,7 @@ export class EnchantBuff {
             }
             if (item.id == specialEnchantId.id_44) {
                 if (!buff.autoCollect) buff.autoCollect = true;
-                GlobalData.Enchant.petAutoBuffKeys.push(key);
+                Gtk.tryGet(GlobalData.Enchant.petAutoBuffKeys, playerId, () => []).push(key);
             }
             if (item.id == specialEnchantId.id_45) {
                 if (!buff.randomDiamond) buff.randomDiamond = true;
@@ -159,7 +176,6 @@ export class EnchantBuff {
 
             return buff;
         }
-
 
         let cfg = GameConfig.Enchants.getElement(item.id);
         switch (cfg.EnchantType) {
@@ -206,8 +222,7 @@ export class EnchantBuff {
                     atk = 0;
                 }
                 atks.push(atk);
-            }
-            else {
+            } else {
                 let min = Math.min.apply(null, atks);
                 if (min < atk) {
                     let index = atks.indexOf(min);
@@ -215,7 +230,6 @@ export class EnchantBuff {
                 }
             }
         }
-
 
         let atk = 0;
         atks.forEach(element => {
@@ -225,9 +239,8 @@ export class EnchantBuff {
         return atk / atks.length * 1.5;
     }
 
-
     /**移除词条buff */
-    private static delBuff(key: number, buff: petBuff) {
+    private static delBuff(playerId: number, key: number, buff: petBuff) {
         if (buff.damageAdd) buff.damageAdd = 0;
         if (buff.goldAdd) buff.goldAdd = 0;
         if (buff.diamondAdd) buff.diamondAdd = 0;
@@ -241,8 +254,8 @@ export class EnchantBuff {
         if (buff.rateGoldAdd) buff.rateGoldAdd = 0;
         if (buff.autoCollect) {
             buff.autoCollect = false;
-            let index = GlobalData.Enchant.petAutoBuffKeys.indexOf(key);
-            if (index != -1) GlobalData.Enchant.petAutoBuffKeys.splice(index, 1);
+            let index = Gtk.tryGet(GlobalData.Enchant.petAutoBuffKeys, playerId, () => []).indexOf(key);
+            if (index != -1) Gtk.tryGet(GlobalData.Enchant.petAutoBuffKeys, playerId, () => []).splice(index, 1);
         }
         if (buff.randomDiamond) {
             buff.randomDiamond = false;
@@ -272,7 +285,7 @@ export class EnchantBuff {
             let count = MathUtil.randomInt(data.randomDiamondNum[0], data.randomDiamondNum[1] + 1);
             ModuleService.getModule(PlayerModuleC).addDiamond(count);
             RewardTipsManager.instance.getUI(GlobalEnum.CoinType.Diamond, count);
-        }, time)
+        }, time);
     }
 
     /**伤害加成 */
@@ -282,6 +295,7 @@ export class EnchantBuff {
         damageAdd += cfg.Degree;
         return damageAdd;
     }
+
     /**金币加成 */
     private static addGoldAdd(goldAdd: number, item: { id: number; level: number; }): number {
         if (!goldAdd) goldAdd = 0;
@@ -289,6 +303,7 @@ export class EnchantBuff {
         goldAdd += cfg.Degree;
         return goldAdd;
     }
+
     /**钻石加成 */
     private static addDiamondAdd(diamondAdd: number, item: { id: number; level: number; }): number {
         if (!diamondAdd) diamondAdd = 0;
@@ -296,6 +311,7 @@ export class EnchantBuff {
         diamondAdd += cfg.Degree;
         return diamondAdd;
     }
+
     /**暴击加成 */
     private static addCritAdd(critAdd: number, item: { id: number; level: number; }): number {
         if (!critAdd) critAdd = 0;
@@ -304,6 +320,7 @@ export class EnchantBuff {
         GlobalData.SceneResource.critWeight *= (1 + critAdd / 100);
         return critAdd;
     }
+
     /**移动速度加成 */
     private static addMoveSpeedAdd(moveSpeedAdd: number, item: { id: number; level: number; }): number {
         if (!moveSpeedAdd) moveSpeedAdd = 0;
@@ -311,6 +328,7 @@ export class EnchantBuff {
         moveSpeedAdd += cfg.Degree;
         return moveSpeedAdd;
     }
+
     /**宝箱伤害加成 */
     private static addBoxDamageAdd(boxDamageAdd: number, item: { id: number; level: number; }): number {
         if (!boxDamageAdd) boxDamageAdd = 0;
@@ -318,6 +336,7 @@ export class EnchantBuff {
         boxDamageAdd += cfg.Degree;
         return boxDamageAdd;
     }
+
     /**四级金币宝箱加成 */
     private static addFourGoldAdd(fourGoldAdd: number, item: { id: number; level: number; }): number {
         if (!fourGoldAdd) fourGoldAdd = 0;
@@ -325,6 +344,7 @@ export class EnchantBuff {
         fourGoldAdd += cfg.Degree;
         return fourGoldAdd;
     }
+
     /**倍率资源加成金币 */
     private static addRateGoldAdd(rateGoldAdd: number, item: { id: number; level: number; }): number {
         if (!rateGoldAdd) rateGoldAdd = 0;
@@ -332,9 +352,5 @@ export class EnchantBuff {
         rateGoldAdd += cfg.Degree;
         return rateGoldAdd;
     }
-
-
-
-
 
 }
