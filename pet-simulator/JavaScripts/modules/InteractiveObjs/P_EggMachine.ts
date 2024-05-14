@@ -1,14 +1,14 @@
-import {GameConfig} from "../../config/GameConfig";
-import {GlobalEnum} from "../../const/Enum";
-import {GlobalData} from "../../const/GlobalData";
+import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import PetGet_Generate from "../../ui-generate/Pet/PetGet_generate";
 import EggInfo_Generate from "../../ui-generate/WorldUI/EggInfo_generate";
 import EggInteract_Generate from "../../ui-generate/WorldUI/EggInteract_generate";
-import {cubicBezier} from "../../util/MoveUtil";
-import {Singleton} from "../../util/uitls";
-import {DollMachineModuleC} from "../DollMachine/DollMachineModuleC";
-import {P_HudUI} from "../Hud/P_HudUI";
+import { cubicBezier } from "../../util/MoveUtil";
+import { Singleton } from "../../util/uitls";
+import { DollMachineModuleC } from "../DollMachine/DollMachineModuleC";
+import { P_HudUI } from "../Hud/P_HudUI";
 
 
 /**蛋信息 UI */
@@ -88,7 +88,7 @@ export class P_EggGet extends PetGet_Generate {
         let flashBezier = GlobalData.EggMachine.flashTweenBezier;
         this.flashTween = new mw.Tween<{
             alapr: number
-        }>({alapr: 1}).to({alapr: 0}, GlobalData.EggMachine.flashTweenTime).onUpdate((obj) => {
+        }>({ alapr: 1 }).to({ alapr: 0 }, GlobalData.EggMachine.flashTweenTime).onUpdate((obj) => {
             this.mPic_Flash.renderOpacity = obj.alapr;
         }).onComplete(() => {
             this.flashEnd();
@@ -97,7 +97,7 @@ export class P_EggGet extends PetGet_Generate {
         let infoBezier = GlobalData.EggMachine.petInfoTweenBezier;
         this.infoTween = new mw.Tween<{
             scale: number
-        }>({scale: 0}).to({scale: 1}, GlobalData.EggMachine.petInfoTweenTime).onUpdate((obj) => {
+        }>({ scale: 0 }).to({ scale: 1 }, GlobalData.EggMachine.petInfoTweenTime).onUpdate((obj) => {
             this.mCanvas.renderScale = new mw.Vector2(obj.scale, obj.scale);
         }).onComplete(() => {
             this.infoEnd();
@@ -207,6 +207,6 @@ export class InterBtn {
         this.root.visibility = (mw.SlateVisibility.Collapsed);
         KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
         //由于都是f键绑在null上，需要把娃娃机的f键再注册上
-        ModuleService.getModule(DollMachineModuleC).setDollMachineShortcutKey();
+        ModuleService.getModule(DollMachineModuleC)?.setDollMachineShortcutKey();
     }
 }
