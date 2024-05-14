@@ -28,6 +28,7 @@ export default class CloudEffect extends mw.Script {
 
     private _isFiring: boolean = false;
 
+    private _inTrigger: boolean = false;
     protected onStart(): void {
         this.gameObject.getChildren().forEach((element) => {
             if (element.name === "clouds") {
@@ -56,6 +57,7 @@ export default class CloudEffect extends mw.Script {
                 if (this.getCanDestroyClouds()) {
                     this.showFireBtn();
                 }
+                this._inTrigger = true;
             }
         });
         this._trigger.onLeave.add((go) => {
@@ -64,6 +66,7 @@ export default class CloudEffect extends mw.Script {
                 // ProximityPrompts.close();
                 mw.UIService.getUI(MainPanel)?.disableCustom();
                 PromotTips.hideTips();
+                this._inTrigger = false;
             }
         });
 
@@ -232,10 +235,14 @@ export default class CloudEffect extends mw.Script {
                             EffectService.playAtPosition("89080", target.worldTransform.position, { loopCount: 1 });
                             (go as Effect).forceStop();
                             this.destroyClouds(anchorGuid);
-                            if (this.getCanDestroyClouds()) {
+                            this._isFiring = false;
+                            if (this.getCanDestroyClouds() && this._inTrigger) {
                                 //如果还有云朵，继续显示按钮
-                                this._isFiring = false;
+
+
                                 this.showFireBtn();
+                            } else {
+                                mw.UIService.getUI(MainPanel)?.disableCustom();
                             }
                         })
                         .start();
