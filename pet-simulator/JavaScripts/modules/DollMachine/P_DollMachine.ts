@@ -2,8 +2,8 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import CoinUI_Generate from "../../ui-generate/Catching/CoinUI_generate";
 import ControlUI_Generate from "../../ui-generate/Catching/ControlUI_generate";
 import BuyCoinPanel from "../../ui/BuyCoinPanel";
-import {utils} from "../../util/uitls";
-import {DollMachineModuleC} from "./DollMachineModuleC";
+import { utils } from "../../util/uitls";
+import { DollMachineModuleC } from "./DollMachineModuleC";
 
 
 export enum MoveType {
@@ -90,11 +90,11 @@ export class P_DollMachine extends ControlUI_Generate {
             KeyOperationManager.getInstance().unregisterKey(this, Keys.Right);
             KeyOperationManager.getInstance().unregisterKey(this, Keys.F);
             //结束了抓娃娃的f键注册上
-            ModuleService.getModule(DollMachineModuleC).setDollMachineShortcutKey();
+            ModuleService.getModule(DollMachineModuleC)?.setDollMachineShortcutKey();
         });
 
         this.skipBtn.onClicked.add(() => {
-            ModuleService.getModule(DollMachineModuleC).skipPlay(this.machineId);
+            ModuleService.getModule(DollMachineModuleC)?.skipPlay(this.machineId);
         });
 
     }

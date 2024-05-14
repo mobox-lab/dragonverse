@@ -46,7 +46,7 @@ export default class PSEnergyModuleData extends mwext.Subdata {
         if (this.lastMaxStamina === undefined ||
             this.lastMaxStamina < currentLimit) {
             this.energy = Math.min(
-                this.energy + currentLimit - this.lastMaxStamina,
+                this.energy + currentLimit - (this.lastMaxStamina ?? 0),
                 currentLimit);
         }
         if (this.lastMaxStamina !== currentLimit) {
@@ -61,6 +61,7 @@ export default class PSEnergyModuleData extends mwext.Subdata {
         this.energy = 0;
         this.lastRecoveryTime = Date.now();
     }
+
 }
 
 /**
@@ -79,9 +80,9 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, PSEnergyModuleDa
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    public viewEnergy: { data: number } = createYoact({data: 0});
+    public viewEnergy: { data: number } = createYoact({ data: 0 });
 
-    public viewEnergyLimit: { data: number } = createYoact({data: 0});
+    public viewEnergyLimit: { data: number } = createYoact({ data: 0 });
 
     private _requestRegulator = new Regulator(1e3);
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -342,8 +343,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
                 let d = this.getPlayerData(playerId);
                 if (d?.tryUpdateLimit(limit)
                     ?? false) this.syncEnergyToClient(playerId,
-                    d.energy,
-                    limit);
+                        d.energy,
+                        limit);
             });
     }
 

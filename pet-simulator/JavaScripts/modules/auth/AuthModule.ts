@@ -6,7 +6,6 @@ import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModul
 import { Yoact } from "../../depend/yoact/Yoact";
 import { AddGMCommand } from "module_gm";
 import noReply = mwext.Decorator.noReply;
-import createYoact = Yoact.createYoact;
 import { GameConfig } from "../../config/GameConfig";
 
 //#region TTD & GM

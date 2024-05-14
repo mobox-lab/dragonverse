@@ -46,7 +46,7 @@ export default class BWEnergyModuleData extends mwext.Subdata {
         if (this.lastMaxStamina === undefined ||
             this.lastMaxStamina < currentLimit) {
             this.energy = Math.min(
-                this.energy + currentLimit - this.lastMaxStamina,
+                this.energy + currentLimit - (this.lastMaxStamina ?? 0),
                 currentLimit);
         }
         if (this.lastMaxStamina !== currentLimit) {
