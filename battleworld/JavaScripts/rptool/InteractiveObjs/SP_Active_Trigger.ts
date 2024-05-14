@@ -4,6 +4,7 @@ import { EnergyModuleC } from "../../module/Energy/EnergyModule";
 import { PlayerModuleC } from "../../module/PlayerModule/PlayerModuleC";
 import { Attribute } from "../../module/PlayerModule/sub_attribute/AttributeValueObject";
 import { MessageBox } from "../../tool/MessageBox";
+import { Notice } from "../../tool/Notice";
 import { ClickUIPools } from "./ClickUIs";
 import { InteractLogic_C, InteractLogic_S, InteractObject } from "./InteractObject";
 
@@ -47,7 +48,10 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         }
 
 
-        if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) return;
+        if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) {
+            Notice.showDownNotice(GameConfig.Language.StaminaNotEnough.Value);
+            return;
+        }
         ClickUIPools.instance.show(Globaldata.fireWeaponUIGuid, GameConfig.Language.Scene_name_1.Value, go, Vector.zero, () => {
             ClickUIPools.instance.hide(go);
             chara.movementEnabled = false;
