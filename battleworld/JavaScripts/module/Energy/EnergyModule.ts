@@ -335,7 +335,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
     public net_requestRefreshStaminaLimit() {
         let playerId = this.currentPlayerId;
         this.authModuleS
-            .requestRefreshStaminaLimit(playerId)
+            .requestRefreshStaminaLimit(this.currentPlayerId)
             .then(() => {
                 let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
                 let d = this.getPlayerData(playerId);
