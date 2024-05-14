@@ -442,7 +442,7 @@ class Drop {
 
     /**宠物吸收 */
     private petAbsorb(player: mw.Player) {
-        let arr = GlobalData.Enchant.petAutoBuffKeys;
+        let arr = GlobalData.Enchant.petAutoBuffKeys.get(player.playerId);
         if (arr.length <= 0) return;
         // let curPetArr = PlayerModuleC.curPlayer.PetArr; // TODO: Check all PlayerModuleC.curPlayer
         const curPetArr = ModuleService.getModule(PlayerModuleS).getPetArr(player);
@@ -467,19 +467,19 @@ class Drop {
         this.canUpdate = false;
         this._isLand = false;
         this._moveToTween.stop();
-				if (this._gold > 0) {
-						const val = Math.round(this._gold * GlobalData.Buff.goldBuff);
-						Log4Ts.log(Drop, `add gold count ${val}  type ${this.type}`);
-						ModuleService.getModule(DropManagerS).addGold(val, this.type);
-						// RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
-						mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, this.type, val);
-				}
-				if (this._diamond > 0) {
-						const val = Math.round(this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond);
-						Log4Ts.log(Drop, `add diamond count ${val}`);
-						ModuleService.getModule(DropManagerS).addDiamond(val);
-						// RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
-						mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, this.type, val);
+        if (this._gold > 0) {
+            const val = Math.round(this._gold * GlobalData.Buff.goldBuff);
+            Log4Ts.log(Drop, `add gold count ${val}  type ${this.type}`);
+            ModuleService.getModule(DropManagerS).addGold(val, this.type);
+            // RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
+            mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, this.type, val);
+        }
+        if (this._diamond > 0) {
+            const val = Math.round(this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond);
+            Log4Ts.log(Drop, `add diamond count ${val}`);
+            ModuleService.getModule(DropManagerS).addDiamond(val);
+            // RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
+            mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, this.type, val);
 
         }
         this._moveToTween = new mw.Tween(targetPos).to(ownerPos, this._flyToPlayerTime)
