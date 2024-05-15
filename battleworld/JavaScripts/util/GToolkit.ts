@@ -15,7 +15,7 @@
  * @see https://github.com/LviatYi/MetaWorldNPT/tree/main/MetaWorldNPT/JavaScripts/util
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 31.10.1
+ * @version 31.10.2
  * @beta
  */
 class GToolkit {
@@ -479,10 +479,12 @@ class GToolkit {
      * @param {()=>V} generate
      * @return {V}
      */
-    public tryGet<K, V>(map: Map<K, V>, key: K, generate: () => V): V {
+    public tryGet<K, V>(map: Map<K, V>, key: K, generate: Expression<V> | V): V {
         let result = map.get(key);
         if (result === undefined) {
-            result = generate();
+            result = typeof generate === "function" ?
+                (generate as Expression<V>)() :
+                generate;
             map.set(key, result);
         }
 
