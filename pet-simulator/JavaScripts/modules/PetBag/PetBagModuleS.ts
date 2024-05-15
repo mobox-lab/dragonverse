@@ -5,6 +5,7 @@ import { oTraceError } from "../../util/LogManager";
 import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
 import AchievementModuleS from "../AchievementModule/AchievementModuleS";
 import { CollectModuleS } from "../PetCollect/CollectModuleS";
+import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { petInfo } from "../Trading/TradingScript";
 import { AuthModuleS } from "../auth/AuthModule";
@@ -445,8 +446,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
     }
 
-    /**合成宠物 */
-    @Decorator.noReply()
+    /** 原 P_FusePanel.net_fusePet 合成宠物 */
     public async net_fusePet(curSelectPets: petItemDataNew[], earliestObtainTime: number) {
         /**最多相同id的宠物数量 */
         let maxSameIdCount = 0;
@@ -522,4 +522,28 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
     }
 
+		/** 原 P_Pet_Dev.startDev 合成宠物 */
+		public async net_isAffordDiamond(cost: number): Promise<boolean> {
+				if (cost <= 0) return false;
+				return await ModuleService.getModule(PlayerModuleS).net_reduceDiamond(cost);
+		}
+
+		/** 原 P_Pet_Dev.startDev 合成宠物 */
+		public async net_fuseDevPet(curPetId: number, isGold: boolean, curRate: number, earliestObtainTime: number, petIds: number[]) {
+        let random = MathUtil.randomInt(0, 100);
+        const petInfo = GameConfig.PetARR.getElement(curPetId);
+        let isSucc: boolean = true;
+        let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
+        if (random <= curRate) {
+            // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
+						mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
+            await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId,
+                isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow, earliestObtainTime);
+        } else {
+            isSucc = false;
+            // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
+						mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseFailed");
+        }
+				mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE", endPetId, isSucc, petIds);
+		}
 }

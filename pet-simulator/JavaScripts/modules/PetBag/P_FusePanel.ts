@@ -14,7 +14,6 @@ import {petItemDataNew} from "./PetBagModuleData";
 
 import {PetBag_Item} from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-import { PetBagModuleS } from "./PetBagModuleS";
 
 export class P_FusePanel extends Fusepanel_Generate {
     private achievementModuleC: AchievementModuleC = null;
@@ -114,7 +113,7 @@ export class P_FusePanel extends Fusepanel_Generate {
                     this.curSelectPets.length = 0;
                     return;
                 }
-                await ModuleService.getModule(PetBagModuleS).net_fusePet(this.curSelectPets,this._earliestObtainTime);
+                await ModuleService.getModule(PetBagModuleC).fusePet(this.curSelectPets, this._earliestObtainTime);	// 原 fusePet
                 this.changeCost();
                 setTimeout(() => {
                     this.onShowAC.call();

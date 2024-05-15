@@ -27,6 +27,9 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
 				mw.Event.addServerListener("FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
 					 this.broadcastAchievementBlendType
 				);
+				mw.Event.addServerListener("FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE",
+					 this.broadcastAchievementChangeType
+				);
     }
 
     /**初始化数据 */
@@ -405,7 +408,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
      * @param isSucc 是否成功
      * @param petIds 使用的宠物ID
      */
-    public broadcastAchievementChangeType(endPetId: number, isSucc: boolean, petIds: number[]): void {
+    public broadcastAchievementChangeType = (endPetId: number, isSucc: boolean, petIds: number[]): void => {
         this.broadcastAchievementType_Num(endPetId, isSucc);
         this.broadcastAchievementType_Only(endPetId, isSucc, petIds);
     }

@@ -41,6 +41,9 @@ export class P_Pet_Dev extends Dev_Generate {
             this.onClickDev();
         });
         this.achievementModuleC = ModuleService.getModule(AchievementModuleC);
+				mw.Event.addServerListener("P_PET_DEV_SHOW_FUSE_MESSAGE",
+					 this.showFuseMessage
+				);
     }
 
     /**点击按钮进行合成 */
@@ -56,9 +59,23 @@ export class P_Pet_Dev extends Dev_Generate {
         });
     }
 
+		public showFuseMessage = (type: "devFuseSuccess" | "devFuseFailed") => {
+				switch (type) {
+						case "devFuseSuccess": {
+								MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
+								break;
+						}
+						case "devFuseFailed": {
+								MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
+								break;
+						}
+						default: break;
+				}
+		}
+
     /**开始合成 */
     private async startDev() {
-        let isSuccess = await ModuleService.getModule(PlayerModuleC).reduceDiamond(this.curCost);
+        let isSuccess = await ModuleService.getModule(PetBagModuleC).isAffordDiamond(this.curCost);
         if (!isSuccess) {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
                 super.show();
@@ -78,26 +95,12 @@ export class P_Pet_Dev extends Dev_Generate {
                 earliestObtainTime = item.obtainTime;
             }
         });
-
         let isCanDel = await ModuleService.getModule(PetBagModuleC).fuseEvent(keys);
         this.curSelectPets.length = 0;
         if (!isCanDel) {
             return;
         }
-        let random = MathUtil.randomInt(0, 100);
-        const petInfo = GameConfig.PetARR.getElement(this.curPetId);
-        let isSucc: boolean = true;
-        let endPetId = this.isGold ? petInfo.goldID : petInfo.RainBowId;
-        if (random <= this.curRate) {
-            MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
-            await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId,
-                this.isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow, earliestObtainTime);
-        } else {
-            isSucc = false;
-            MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
-        }
-        this.achievementModuleC.broadcastAchievementChangeType(endPetId, isSucc, petIds);
-        AnalyticsTool.action_upgrade_pet(endPetId, isSucc);
+				await ModuleService.getModule(PetBagModuleC).fuseDevPet(this.curPetId, this.isGold, this.curRate, earliestObtainTime, petIds);
     }
 
     public show(petItems: petItemDataNew[], isGold: boolean, ...param: any[]): void {
