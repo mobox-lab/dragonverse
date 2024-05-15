@@ -11,7 +11,6 @@ import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
 import Enchant = GlobalData.Enchant;
-import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModuleData> {
 

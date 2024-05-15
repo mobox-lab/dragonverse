@@ -447,7 +447,6 @@ class DropInClient extends DropItem {
         if (this._isStartJump) {
             this.bonceUpdate(dt);
         }
-        let curPetArr = PlayerModuleC.curPlayer.PetArr; // TO
 
         if (distanceAbsorb(
             Player.localPlayer.playerId,
