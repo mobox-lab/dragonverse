@@ -398,7 +398,7 @@ export namespace GlobalData {
         /**初始化资源点刷新间隔 */
         public static initResourceRefresh: number = 0.5;
         /**每个区域资源上限个数 */
-        public static maxResourceCount: number = 200;
+        public static maxResourceCount: number = 10;
         /**每个区域资源下限个数 */
         public static minResourceCount: number = 52;
         /**默认区域数组 */
@@ -850,17 +850,50 @@ export namespace GlobalData {
         /**升级触发器guid */
         public static triggerGuid: string = "3F878EA2";
         /**吸收范围 */
-        public static levelRange: number = 1;
+        public static levelRangeMap: Map<number, number> = new Map();
+
+        public static levelRange(playerId: number) {
+            return Gtk.tryGet(this.levelRangeMap, playerId, 1);
+        }
+
         /**更多钻石 */
-        public static moreDiamond: number = 1;
+        public static moreDiamondMap: Map<number, number> = new Map();
+
+        public static moreDiamond(playerId: number) {
+            return Gtk.tryGet(this.moreDiamondMap, playerId, 1);
+        };
+
         /**宠物攻击力 */
-        public static petDamage: number = 1;
+        public static petDamageMap: Map<number, number> = new Map();
+
+        public static petDamage(playerId: number) {
+            return Gtk.tryGet(this.petDamageMap, playerId, 1);
+        };
+
         /**宠物攻击速度 */
-        public static petAttackSpeed: number = 1;
+        public static petAttackSpeedMap: Map<number, number> = new Map();
+
+        public static petAttackSpeed(playerId: number) {
+            return Gtk.tryGet(this.petAttackSpeedMap, playerId, 1);
+        };
+
         /**宠物存储量 */
-        public static petStorage: number = 1;
+        public static petStorageMap: Map<number, number> = new Map();
+
+        public static petStorage(playerId: number) {
+            return Gtk.tryGet(this.petStorageMap, playerId, 1);
+        };
+
         /**最高等级 */
         public static maxLevel: number = 5;
+
+        public static clearPlayer(playerId: number) {
+            this.levelRangeMap.delete(playerId);
+            this.moreDiamondMap.delete(playerId);
+            this.petDamageMap.delete(playerId);
+            this.petAttackSpeedMap.delete(playerId);
+            this.petStorageMap.delete(playerId);
+        }
     }
 
     /**合成 */
@@ -1044,7 +1077,15 @@ export namespace GlobalData {
         public static effectRotate: number = 60;
 
         /**宠物自动吸收数组  不用填*/
-        public static petAutoBuffKeys: Map<number, number[]> = new Map();
+        public static petAutoBuffKeysMap: Map<number, number[]> = new Map();
+
+        public static petAutoBuffKeys(playerId: number) {
+            return Gtk.tryGet(Enchant.petAutoBuffKeysMap, playerId, () => []);
+        };
+
+        public static clearPlayer(playerId: number) {
+            this.petAutoBuffKeysMap.delete(playerId);
+        }
     }
 
     /**任务相关 */

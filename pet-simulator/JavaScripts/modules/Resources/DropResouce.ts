@@ -9,6 +9,7 @@ import { SoundManager } from "../../util/SoundManager";
 import { RewardTipsManager } from "../UI/RewardTips";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
+import RemoteFunction = mw.RemoteFunction;
 
 export class DropManagerC extends ModuleC<DropManagerS, null> {
 
@@ -36,6 +37,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
     protected onStart(): void {
         this.playerMS = ModuleService.getModule(PlayerModuleS);
         this.init();
+        this.start();
     }
 
     public start() {
@@ -64,6 +66,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
             this.needCount(needCount);
             for (let i = 0; i < needCount; i++) {
                 let drop = ObjectPoolServices.getPool(Drop).spawn();
+                drop.ownerId = this.currentPlayer.playerId;
                 drop.poolInit(pos.clone(), type, val, isBox);
                 this._drops.add(drop);
                 count--;
@@ -113,7 +116,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
     private _maxGold: number = GlobalData.SceneResource.goldMax;
 
     /**轮询 */
-    public onResourceUpdate(dt: number): void {
+    public onUpdate(dt: number): void {
         this.absorbUpdate(dt);
         this._drops.forEach((drop: Drop) => {
             if (drop.isDestroy) {
@@ -121,7 +124,8 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
                 ObjectPoolServices.getPool(Drop).return(drop);
                 return;
             }
-            drop.update(dt, this.currentPlayer);
+
+            drop.update(dt);
         });
     }
 
@@ -212,6 +216,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
 }
 
 class Drop {
+    public ownerId: number;
 
     /**金币值 */
     private _gold: number = 0;
@@ -242,8 +247,8 @@ class Drop {
     /**当前模型 */
     public model: mw.Effect = null;
 
-    private get _maxDis(): number {
-        return GlobalData.DropAni.resourceToPlayer * GlobalData.LevelUp.levelRange;
+    private maxDis(playerId: number): number {
+        return GlobalData.DropAni.resourceToPlayer * GlobalData.LevelUp.levelRange(playerId);
     }
 
     private canUpdate: boolean = false;
@@ -407,14 +412,19 @@ class Drop {
     }
 
     /**更新 */
-    async update(dt: number, player?: mw.Player) {
+    async update(dt: number) {
         if (!this.canUpdate) return;
         this.judgeDestroy(dt);
         if (this._isStartJump) {
             this.bonceUpdate(dt);
         }
+
+        let player = mw.Player.getPlayer(this.ownerId);
+        if (!player) {
+            this.destroy();
+            return;
+        }
         await this.petAbsorb(player);
-        if (!player) return;
         const ownerPos = player.character.worldTransform.position;
         this.distanceAbsorb(ownerPos, player);
     }
@@ -435,14 +445,29 @@ class Drop {
     private distanceAbsorb(loc: mw.Vector, player: mw.Player): void {
         let targetPos = getPos(this.model);
         let dis = mw.Vector.distance(loc, targetPos);
-        if (dis <= this._maxDis) {
-            this.flyToPlayer(dis, targetPos, loc, player);
+        if (dis <= this.maxDis(player.playerId)) {
+            if (this._gold > 0) {
+                const val = Math.round(this._gold * GlobalData.Buff.goldBuff);
+                Log4Ts.log(Drop, `add gold count ${val}  type ${this.type}`);
+                ModuleService.getModule(DropManagerS).addGold(val, this.type);
+                // RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
+                mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, this.type, val);
+            }
+            if (this._diamond > 0) {
+                const val = Math.round(this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond(player.playerId));
+                Log4Ts.log(Drop, `add diamond count ${val}`);
+                ModuleService.getModule(DropManagerS).addDiamond(val);
+                // RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
+                mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, this.type, val);
+
+            }
+            this.flyToPlayer(dis, targetPos, loc);
         }
     }
 
     /**宠物吸收 */
     private petAbsorb(player: mw.Player) {
-        let arr = GlobalData.Enchant.petAutoBuffKeys.get(player.playerId);
+        let arr = GlobalData.Enchant.petAutoBuffKeys(player.playerId);
         if (arr.length <= 0) return;
         // let curPetArr = PlayerModuleC.curPlayer.PetArr; // TODO: Check all PlayerModuleC.curPlayer
         const curPetArr = ModuleService.getModule(PlayerModuleS).getPetArr(player);
@@ -463,25 +488,12 @@ class Drop {
     private _flyToPlayerTime: number = GlobalData.DropAni.flyToPlayerTime;
 
     /**飞向玩家 */
-    public flyToPlayer(dis: number, targetPos: mw.Vector, ownerPos: mw.Vector, player: mw.Player): void {
+    @RemoteFunction(mw.Client)
+    public flyToPlayer(dis: number, targetPos: mw.Vector, ownerPos: mw.Vector): void {
         this.canUpdate = false;
         this._isLand = false;
         this._moveToTween.stop();
-        if (this._gold > 0) {
-            const val = Math.round(this._gold * GlobalData.Buff.goldBuff);
-            Log4Ts.log(Drop, `add gold count ${val}  type ${this.type}`);
-            ModuleService.getModule(DropManagerS).addGold(val, this.type);
-            // RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
-            mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, this.type, val);
-        }
-        if (this._diamond > 0) {
-            const val = Math.round(this._diamond * GlobalData.Buff.goldBuff * GlobalData.LevelUp.moreDiamond);
-            Log4Ts.log(Drop, `add diamond count ${val}`);
-            ModuleService.getModule(DropManagerS).addDiamond(val);
-            // RewardTipsManager.instance.getUI(this.type, val); // TODO: Check UI
-            mw.Event.dispatchToClient(player, RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI, this.type, val);
 
-        }
         this._moveToTween = new mw.Tween(targetPos).to(ownerPos, this._flyToPlayerTime)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);

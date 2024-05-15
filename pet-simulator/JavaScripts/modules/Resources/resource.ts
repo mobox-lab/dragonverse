@@ -113,6 +113,7 @@ export default class resourceScript extends mw.Script {
         this.damageArr.length = 0;
 
         this.scenePointId = cfgId + "_" + pointId + "_" + this._rate;
+        this._cfgId = cfgId;
         let unitInfo = GameConfig.SceneUnit.getElement(cfgId);
         this.curHp = unitInfo.HP;
         this.cfg = unitInfo;
@@ -127,7 +128,10 @@ export default class resourceScript extends mw.Script {
         //不用这个damage了，自己算
         //GlobalData.LevelUp.petDamage 去存档里取
         //力量对应升级表的id：3
-        let petDamage = DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(3);
+        // let petDamage = GameConfig.Upgrade.getElement(3)
+        //         .Upgradenum[DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(3) ]
+        //     ?? 1;
+        let petDamage = DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(3) + 1;
         // damage = this.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(this.key).damageAdd / 100);
         //this.attackDamage 得取对应的宠物
         //校验一下key在不在背包里

@@ -9,8 +9,9 @@ import { PetSimulatorPlayerModuleData } from "./PlayerModuleData";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
-import { AuthModuleS } from "../auth/AuthModule";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
+import Enchant = GlobalData.Enchant;
+import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModuleData> {
 
@@ -127,11 +128,38 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     }
 
     /**升级 */
-    public net_levelUp(id: number): void {
+    public async net_levelUp(id: number): Promise<boolean> {
+        const cfg = GameConfig.Upgrade.getElement(id);
+        if (!cfg) return false;
+
+        let cost = cfg.Diamond[this.currentData.getLevelData(id)] ?? 0;
+        if (!this.currentData.reduceDiamond(cost)) return false;
+
         ModuleService.getModule(Task_ModuleS).strengthen(this.currentPlayer, GlobalEnum.StrengthenType.LevelUp);
         this.currentData.levelUp(id);
 
+        let config = GameConfig.Upgrade.getAllElement()[id];
+        let upgrade = config?.Upgradenum[this.currentData.getLevelData(id) - 1] ?? 0;
+        switch (id) {
+            case 0:
+                GlobalData.LevelUp.levelRangeMap.set(this.currentPlayerId, 1 + upgrade);
+                break;
+            case 1:
+                GlobalData.LevelUp.moreDiamondMap.set(this.currentPlayerId, 1 + upgrade);
+                break;
+            case 2:
+                GlobalData.LevelUp.petDamageMap.set(this.currentPlayerId, 1 + upgrade);
+                break;
+            case 3:
+                GlobalData.LevelUp.petAttackSpeedMap.set(this.currentPlayerId, 1 + upgrade);
+                break;
+            case 4:
+                ModuleService.getModule(PetBagModuleS).addBagCapacity(this.currentPlayerId, config.PetNum);
+                break;
+        }
+
         this.levelUpNotice(this.currentPlayerId);
+        return true;
     }
 
     /**升级公告 */
@@ -160,6 +188,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
             GlobalData.SceneResource.clearPlayer(player.playerId);
             GlobalData.Buff.clearPlayer(player.playerId);
             EnchantBuff.clearPlayer(player.playerId);
+            Enchant.clearPlayer(player.playerId);
+            GlobalData.LevelUp.clearPlayer(player.playerId);
         } catch (error) {
             oTraceError(error);
         }

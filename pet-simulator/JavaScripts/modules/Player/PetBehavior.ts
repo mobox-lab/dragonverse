@@ -677,7 +677,7 @@ export default class PetBehavior {
         if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
             const bezier = GlobalData.pet.attackBezier;
             let time = GlobalData.pet.attackTime;
-            if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
+            if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed(Player.localPlayer.playerId) / this.addAttackSpeed;
             this.attackTween = new mw.Tween<{ y: number }>({y: 0}).to({
                 y: [-30, 0],
             }, time).onUpdate((obj) => {
@@ -697,7 +697,7 @@ export default class PetBehavior {
             this._attackAni = this.pet.loadAnimation(GlobalData.pet.chaAttackAnimGuid);
             this._attackAni.loop = 1;
             let time = GlobalData.pet.attackTime;
-            if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
+            if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed(Player.localPlayer.playerId) / this.addAttackSpeed;
             this._attackAni.speed = this._attackAni.length * 1000 / time;
             this._attackAni.onFinish.add(() => {
                 if (this.attack()) {
@@ -772,7 +772,7 @@ export default class PetBehavior {
                 let res = this.targetRes.injured(
                     this.owner.player.playerId,
                     this.attackDamage
-                    * GlobalData.LevelUp.petDamage
+                    * GlobalData.LevelUp.petDamage(Player.localPlayer.playerId)
                     * (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, this.key).damageAdd / 100),
                     this.key);
                 if (res) {

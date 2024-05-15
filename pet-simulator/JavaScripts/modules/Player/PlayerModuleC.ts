@@ -250,7 +250,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         let cfg = GameConfig.Gradient.getElement(cfgid);
     }
 
-
     /**显示升级界面 */
     public showLevelUp(): void {
         let infos = GameConfig.Upgrade.getAllElement();
@@ -262,15 +261,17 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
     }
 
     /**单个进度升级 */
-    public async levelUp(id: number, cost: number): Promise<void> {
-        let isSuccess = await this.reduceDiamond(cost);
-        if (isSuccess) {
-            this.server.net_levelUp(id);
-            oTraceError("[升级]");
-            this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.UpgradeNum, 1);//升级次数
-        } else {
-            MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
-        }
+    public async levelUp(id: number): Promise<void> {
+        this.server.net_levelUp(id).then(value => {
+                if (value) {
+                    oTraceError("[升级]");
+                    this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.UpgradeNum, 1);//升级次数
+                } else {
+                    MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
+                }
+            },
+        );
+
     }
 
     /**单个进度变化 */
@@ -280,16 +281,16 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         if (upgrade == null) upgrade = 0;
         switch (id) {
             case 0:
-                GlobalData.LevelUp.levelRange = 1 + upgrade;
+                GlobalData.LevelUp.levelRangeMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 1:
-                GlobalData.LevelUp.moreDiamond = 1 + upgrade;
+                GlobalData.LevelUp.moreDiamondMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 2:
-                GlobalData.LevelUp.petDamage = 1 + upgrade;
+                GlobalData.LevelUp.petDamageMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 3:
-                GlobalData.LevelUp.petAttackSpeed = 1 + upgrade;
+                GlobalData.LevelUp.petAttackSpeedMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 4:
                 ModuleService.getModule(PetBagModuleC).addBagCapacity(info.PetNum);

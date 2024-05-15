@@ -1,5 +1,5 @@
 import { oTraceWarning } from "odin";
-import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
+import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
@@ -25,17 +25,17 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     private guaShaArr: number[] = [];
 
     protected onStart(): void {
- 				RewardTipsManager.getInstance().registerEvent();
+        RewardTipsManager.getInstance().registerEvent();
         AreaDivideManager.instance.onAreaChangeAC.add(this.areaChange.bind(this));
         BonusUI.instance;
-				this.server.net_start()
+        // this.server.net_start()
         Event.addLocalListener(GlobalEnum.EventName.AttackDestroy, () => {
             this.breakCount++;
             if (this.breakCount == 3) {
                 this.uis.forEach((item) => {
                     item.parent = null;
                     GameObjPool.despawn(item);
-                })
+                });
             }
             AnalyticsTool.game_over(this.breakCount);
         });
@@ -51,13 +51,15 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
                 this.guaShaArr.push(cfg);
                 this.server.net_noticeGuaSha(cfg, isLife);
             }
-        })
+        });
     }
+
     protected onEnterScene(sceneType: number): void {
         this.guideClickDestroyable();
     }
 
     private objs: mw.GameObject[] = [];
+
     /**引导点击破坏物 */
     public guideClickDestroyable(): void {
         let PlayerData = DataCenterC.getData(PetSimulatorPlayerModuleData);
@@ -95,7 +97,9 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
         }
 
     }
+
     private uis: mw.GameObject[] = [];
+
     private async createObj() {
         if (this.uis.length < 10) {
             let is = await AssetUtil.asyncDownloadAsset("86D759734C10E0628324CD8DBA68FC43");
@@ -105,6 +109,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
             this.uis.push(ui);
         }
     }
+
     private async create() {
         let ui = await SpawnManager.modifyPoolAsyncSpawn("86D759734C10E0628324CD8DBA68FC43", GameObjPoolSourceType.Prefab);
         ui.worldTransform.position = new Vector(0, 0, -5000);
@@ -118,7 +123,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
 
     private areaChange(preId: number, curId: number) {
 
-        this.server.net_createArea(preId, curId)
+        this.server.net_createArea(preId, curId);
         //开始生成资源
         if (curId == 1001) {
             //初始点
@@ -130,11 +135,12 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
 
         this.checkAreaRecycle(preId, curId);
     }
+
     /**通过区域id 找资源Map */
     public async getResMapByAreaId(areaId: number) {
         let isHas = SceneResourceMap.has(areaId);
         if (!isHas) {
-            oTraceError('lwj MAp 没有找到对应的资源点' + areaId);
+            oTraceError("lwj MAp 没有找到对应的资源点" + areaId);
             return;
         }
         let resArr = SceneResourceMap.get(areaId);
@@ -190,13 +196,13 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     private returnResMapByAreaId(areaId: number) {
 
         if (GlobalData.SceneResource.clientIgnoreAreaArr.includes(areaId)) {
-            oTraceError('lwj  该区域不需要回收' + areaId);
+            oTraceError("lwj  该区域不需要回收" + areaId);
             return;
         }
 
         let isHas = SceneResourceMap.has(areaId);
         if (!isHas) {
-            oTraceError('lwj  没有找到对应的资源点 回收 ' + areaId);
+            oTraceError("lwj  没有找到对应的资源点 回收 " + areaId);
             return;
         }
         let resArr = SceneResourceMap.get(areaId);
@@ -205,7 +211,6 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
             element.recycleResourceModel();
         }
     }
-
 
     public async net_guaShaNotice(playerId: number, cfg: number) {
         let name = await PlayerNameManager.instance.getPlayerName(playerId);
@@ -230,14 +235,13 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
         mw.UIService.getUI(P_GlobalTips).showTips(str);
     }
 
-    protected onUpdate(dt: number): void {
-				this.server.net_onResourceUpdate(dt)
-    }
+    // protected onUpdate(dt: number): void {
+    // 			this.server.net_onResourceUpdate(dt)
+    // }
 
 }
 
-
-export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
+export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
 
     /**资源区域Map 个数 areaID,pointID */
     private areaMap: Map<number, number> = new Map<number, number>();
@@ -261,7 +265,7 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
      * @param boolean 是否是巨大宝箱
      * @param number 玩家id
      */
-    public onAttackDestroy: Action2<boolean, number> = new Action2()
+    public onAttackDestroy: Action2<boolean, number> = new Action2();
 
     protected onPlayerEnterGame(player: mw.Player): void {
         if (!this.isHasPlayer) {
@@ -325,6 +329,7 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
         let arr = this.areaHistoryMap.get(areaId);
         arr.push(sceneId);
     }
+
     /**获取历史记录 */
     public getHistoryRes(areaId: number): number {
         if (!this.areaHistoryMap.has(areaId)) {
@@ -358,14 +363,14 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
         }
 
         let probability = 0;
-        let random = MathUtil.randomFloat(0, 99)
+        let random = MathUtil.randomFloat(0, 99);
         for (let i = 0; i < rate.length; i++) {
             probability += rate[i];
             if (random <= probability) {
                 return cfgs[i].ID;
             }
         }
-        oTraceError('lwj 获取历史记录失败' + scenceID + "  " + rate + "  " + random);
+        oTraceError("lwj 获取历史记录失败" + scenceID + "  " + rate + "  " + random);
         return 0;
     }
 
@@ -391,9 +396,8 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
         }
         let count = this.areaMap.get(areaId);
 
-
         if (count >= GlobalData.SceneResource.maxResourceCount) {
-            oTraceWarning('lwj 超过上限');
+            oTraceWarning("lwj 超过上限");
             return;
         }
         let historyScenceId = this.getHistoryRes(areaId);
@@ -419,7 +423,7 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
 
         res.initServer(pointId, historyScenceId);
         res.onDead.add((playerId: number) => {
-            let count = this.areaMap.get(areaId)
+            let count = this.areaMap.get(areaId);
             count--;
             this.areaMap.set(areaId, count);
 
@@ -427,7 +431,7 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
             this.returnAreaResCount(areaId, pointId, historyScenceId);
 
             if (count < GlobalData.SceneResource.minResourceCount) {
-                oTraceError('lwj 低于下限');
+                oTraceError("lwj 低于下限");
                 this.areaRandomRefresh(areaId);
             }
             this.onAttackDestroy.call(false, playerId);
@@ -440,7 +444,7 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
             //         ModuleService.getModule(PassModuleS).onTaskUpdateAC.call(playerId, GlobalEnum.VipTaskType.illRes, 1);
             //     }
             // }
-        })
+        });
 
     }
 
@@ -483,7 +487,7 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
         let weightArr = this.getAreaWeight(areaId);
         weightArr.forEach((item) => {
             weight += item.weight;
-        })
+        });
         let random = utils.GetRandomNum(0, weight);
         let probability = 0;
         let sum = 0;
@@ -499,6 +503,7 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
         //=probability的话就返回最后一个
         return weightArr[weightArr.length - 1].id;
     }
+
     private getAreaWeight(areaId: number): { id: number, weight: number }[] {
         let cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
         // let cfgs = GameConfig.SceneUnit.getAllElement();
@@ -508,13 +513,12 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
             // if (item.AreaID == areaId) {
             // if (item.Weight != 0) {
             // weight += item.Weight;
-            weightArr.push({ id: item.ID, weight: item.Weight });
+            weightArr.push({id: item.ID, weight: item.Weight});
             // }
             // }
         });
         return weightArr;
     }
-
 
     /**
      * 玩家进入区域
@@ -523,9 +527,11 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
      */
     public net_createArea(preId: number, currentId: number) {
 
-        if (GlobalData.SceneResource.ignoreAreaArr.includes(currentId)) { return }
+        if (GlobalData.SceneResource.ignoreAreaArr.includes(currentId)) {
+            return;
+        }
 
-        let isHas = this.sceneInitMap.has(currentId)
+        let isHas = this.sceneInitMap.has(currentId);
         if (!isHas) {
             this.sceneInitMap.set(currentId, true);
             this.areaFirstRefresh(currentId);
@@ -557,7 +563,7 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
 
     /**创建宝箱 */
     private async createBigBox(pointId: number, cfgId: number) {
-        let res = await this.getScript()
+        let res = await this.getScript();
         res.initServer(pointId, cfgId, true);
         res.onDead.add((str: string, playerId: number) => {
             let arr = str.split("_");
@@ -581,6 +587,7 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
         }
         return script;
     }
+
     /**回收脚本 */
     public returnScript(script: resourceScript) {
         this.scriptPool.push(script);
@@ -602,14 +609,14 @@ export class ResourceModuleS extends ModuleS<ResourceModuleC, null> {
     public guaShaNotice(playerId: number, sceneId: number) {
 
     }
-	
-		@Decorator.noReply()
-		public net_onResourceUpdate(dt) {
-				ModuleService.getModule(DropManagerS).onResourceUpdate(dt); 
-		}
 
-		@Decorator.noReply()
-		public net_start() {
-				ModuleService.getModule(DropManagerS).start();
-		}
+    // @Decorator.noReply()
+    // public net_onResourceUpdate(dt) {
+    // 		ModuleService.getModule(DropManagerS).onResourceUpdate(dt);
+    // }
+    //
+    // @Decorator.noReply()
+    // public net_start() {
+    // 		ModuleService.getModule(DropManagerS).start();
+    // }
 }

@@ -6,7 +6,6 @@ import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { Task_ModuleC } from "./TaskModuleC";
 import { TaskModuleData } from "./TaskModuleData";
 
-
 enum TaskType {
     /**打破破坏物 */
     BreakDestroy = 1,
@@ -20,7 +19,7 @@ enum TaskType {
     Trade = 5,
 }
 
-export class Task_ModuleS extends ModuleS<Task_ModuleC, TaskModuleData>{
+export class Task_ModuleS extends ModuleS<Task_ModuleC, TaskModuleData> {
 
     /**所有任务 */
     private allTask: Map<TaskType, number[]> = new Map<TaskType, number[]>();
@@ -74,12 +73,12 @@ export class Task_ModuleS extends ModuleS<Task_ModuleC, TaskModuleData>{
 
     /**增加宠物装备量 */
     private addPetEquipCount(award: number, player: mw.Player): void {
-        ModuleService.getModule(PetBagModuleS).net_addSlot(player);
+        ModuleService.getModule(PetBagModuleS).addSlot(player);
     }
 
     /**增加宠物容量 */
     private addPetCount(award: number, player: mw.Player): void {
-        ModuleService.getModule(PetBagModuleS).net_addBagCapacity(award, player);
+        ModuleService.getModule(PetBagModuleS).addBagCapacity(player.playerId, award);
     }
 
     /**购买钻石 */
@@ -92,7 +91,7 @@ export class Task_ModuleS extends ModuleS<Task_ModuleC, TaskModuleData>{
      * @param player 玩家
      * @param breakId 破坏物id
      * @param sceneId 区域id
-     * @returns 
+     * @returns
      */
     public breakDestroy(player: mw.Player, breakId: number, sceneId?: number): void {
         this.checkTaskComplete(player, TaskType.BreakDestroy, breakId, sceneId);

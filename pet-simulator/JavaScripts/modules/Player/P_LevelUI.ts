@@ -6,7 +6,6 @@ import TypeItem_Generate from "../../ui-generate/LevelUp/TypeItem_generate";
 import { utils } from "../../util/uitls";
 import { PlayerModuleC } from "./PlayerModuleC";
 
-
 export class P_LevelUI extends LevelUI_Generate {
 
     private itemsMap: Map<number, P_levelItem> = new Map<number, P_levelItem>();
@@ -14,7 +13,7 @@ export class P_LevelUI extends LevelUI_Generate {
     onStart(): void {
         this.mBtn_Close.onClicked.add(() => {
             this.hide();
-        })
+        });
         this.initItems();
     }
 
@@ -66,7 +65,7 @@ class P_levelItem extends TypeItem_Generate {
         this.mTxt_Itro.text = info.name;
         this.mBtn_Levelup.onClicked.add(() => {
             this.upgrade();
-        })
+        });
         //ui控件导出改了，get的时候才会去找控件对象，先提前get下
         this.mImage_Piece_0;
         this.mImage_Piece_1;
@@ -76,8 +75,7 @@ class P_levelItem extends TypeItem_Generate {
     }
 
     private upgrade(): void {
-        let cost = this.info.Diamond[this.curLevel];
-        ModuleService.getModule(PlayerModuleC).levelUp(this.curId, cost);
+        ModuleService.getModule(PlayerModuleC).levelUp(this.curId);
     }
 
     /**设置进度 */

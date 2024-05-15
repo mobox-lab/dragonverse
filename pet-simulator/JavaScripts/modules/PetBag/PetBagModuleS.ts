@@ -204,14 +204,18 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return false;
     }
 
-    net_addBagCapacity(count: number, player: mw.Player = null) {
-        if (player) {
-            return this.getPlayerData(player).addCapacity(count);
-        }
-        this.currentData.addCapacity(count);
+    net_addBagCapacity(count: number) {
+        this.addBagCapacity(this.currentPlayerId, count);
     }
 
-    net_addSlot(player: mw.Player = null, num: number = 1) {
+    addBagCapacity(playerId: number, count: number, player: mw.Player = null) {
+        const d = this.getPlayerData(playerId);
+        if (!d) return;
+
+        d.addCapacity(count);
+    }
+
+    addSlot(player: mw.Player = null, num: number = 1) {
         if (player) {
             return this.getPlayerData(player).addPetFollowCount(num);
         }

@@ -159,7 +159,7 @@ export class EnchantBuff {
             }
             if (item.id == specialEnchantId.id_44) {
                 if (!buff.autoCollect) buff.autoCollect = true;
-                Gtk.tryGet(GlobalData.Enchant.petAutoBuffKeys, playerId, () => []).push(key);
+                GlobalData.Enchant.petAutoBuffKeys(playerId).push(key);
             }
             if (item.id == specialEnchantId.id_45) {
                 if (!buff.randomDiamond) buff.randomDiamond = true;
@@ -257,8 +257,8 @@ export class EnchantBuff {
         if (buff.rateGoldAdd) buff.rateGoldAdd = 0;
         if (buff.autoCollect) {
             buff.autoCollect = false;
-            let index = Gtk.tryGet(GlobalData.Enchant.petAutoBuffKeys, playerId, () => []).indexOf(key);
-            if (index != -1) Gtk.tryGet(GlobalData.Enchant.petAutoBuffKeys, playerId, () => []).splice(index, 1);
+            let index = GlobalData.Enchant.petAutoBuffKeys(playerId).indexOf(key);
+            if (index != -1) GlobalData.Enchant.petAutoBuffKeys(playerId).splice(index, 1);
         }
         if (buff.randomDiamond) {
             buff.randomDiamond = false;
