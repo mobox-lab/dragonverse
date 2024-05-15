@@ -380,7 +380,11 @@ export default class resourceScript extends mw.Script {
         if (this.resObj == null || this._cfgId == 0 || !this.cfg) return;
         this.refreshGuaSha(playerId);
 
-        this.playProcessEffect();
+        let random = MathUtil.randomInt(0, 100);
+        let critRate = GlobalData.SceneResource.normalWeight;
+        if (random < critRate) {
+            this.playProcessEffect();
+        }
 
         if (this.curHp <= 0) {
             this.stopGuaSha(playerId);
@@ -826,17 +830,14 @@ export default class resourceScript extends mw.Script {
     }
 
     /**击打过程中特效 */
+    @RemoteFunction(mw.Client)
     private playProcessEffect() {
-        let random = MathUtil.randomInt(0, 100);
-        let critRate = GlobalData.SceneResource.normalWeight;
-        if (random > critRate) {
-            return;
-        }
         let cfg = GameConfig.Effect.getElement(1);
         GeneralManager.rpcPlayEffectOnGameObject(cfg.EffectID, this.resObj, cfg.EffectTime, cfg.EffectLocation, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
     }
 
     /**阶段特效 */
+    @RemoteFunction(mw.Client)
     private playCritEffectByLevel() {
         let cfg = GameConfig.Effect.getElement(13);
         GeneralManager.rpcPlayEffectOnGameObject(cfg.EffectID, this.resObj, cfg.EffectTime, cfg.EffectLocation, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
@@ -847,6 +848,7 @@ export default class resourceScript extends mw.Script {
     }
 
     /**最后一击暴击特效 */
+    @RemoteFunction(mw.Client)
     private playCritEffectByLast() {
         if (!this.isCrit) return;
         BonusUI.instance.showBonusUI(this);
