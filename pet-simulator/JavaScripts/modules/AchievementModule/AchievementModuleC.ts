@@ -413,6 +413,9 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
         this.broadcastAchievementType_Only(endPetId, isSucc, petIds);
     }
 
+    public net_broadcastAchievement_destroy(destroyType: GlobalEnum.DestructorType):void{
+        this.broadcastAchievement_destory(destroyType);
+    }
     /**
      * 广播成就破坏物
      * @param destoryType 破坏物类型

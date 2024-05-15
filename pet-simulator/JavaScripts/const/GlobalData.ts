@@ -388,8 +388,8 @@ export namespace GlobalData {
         public static groundHeight: number = 55;
         /**掉的高度 */
         public static dropHeight: number = 1000;
-        /**金币存在上限 */
-        public static goldMax: number = 2000;
+
+        public static dropItemMax: number = 2000;
 
         /**权重数组1-2级钻石 1-6级金币、 */
         public static weightArr: number[] = [8, 4, 26, 22, 18, 10, 8, 4];
@@ -681,10 +681,6 @@ export namespace GlobalData {
 
     /**大宝箱 */
     export class BigBox {
-        /**宝箱位置 DropPoint表id*/
-        public static boxLocationId: number[] = [750, 751, 752, 1018, 1019, 1020, 1021, 1022, 1023, 1210, 1335];
-        /**宝箱id SceneUnit表Id*/
-        public static boxId: number[] = [65, 66, 67, 124, 125, 126, 127, 128, 129, 154, 171];
         /**X秒后 再次出现 */
         public static boxAppearTime: number = 5;
     }
@@ -1079,7 +1075,7 @@ export namespace GlobalData {
         /**宠物自动吸收数组  不用填*/
         public static petAutoBuffKeysMap: Map<number, number[]> = new Map();
 
-        public static petAutoBuffKeys(playerId: number) {
+        public static petAutoBuffKeys(playerId: number): number[] {
             return Gtk.tryGet(Enchant.petAutoBuffKeysMap, playerId, () => []);
         };
 

@@ -43,6 +43,9 @@ export default class AchievementModuleS extends ModuleS<
     this.currentData.save(true);
   }
 
+  public broadcastAchievement_destroy(playerId:number,destroyType: GlobalEnum.DestructorType): void {
+    this.getClient(playerId).net_broadcastAchievement_destroy(destroyType)
+  }
   /**
    * 获取成就奖励
    * @param achievementReward 成就奖励类型

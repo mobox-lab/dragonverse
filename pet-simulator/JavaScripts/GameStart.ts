@@ -47,6 +47,8 @@ import { JumpRoomModuleC, JumpRoomModuleS } from "./modules/jump-room/JumpRoomMo
 import GameServiceConfig from "./const/GameServiceConfig";
 import PsStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./modules/statistic/StatisticModule";
 import { DropManagerC, DropManagerS } from "./modules/Resources/DropResouce";
+import Balancing from "./depend/balancing/Balancing";
+import { GtkTypes } from "./util/GToolkit";
 
 // declare global {
 //     var UE: any;
@@ -168,6 +170,11 @@ export default class GameStart extends mw.Script {
             InputUtil.mouseLockOptionEnabled = false;
             InputUtil.isCursorVisible = true;
             InputUtil.isLockMouse = false;
+
+            Balancing.getInstance()
+                .registerUpdater((callback) => {
+                    mw.TimeUtil.onEnterFrame.add(callback);
+                }).setThreshold(GtkTypes.Interval.Hz60);
         }
 
         this.useUpdate = true;

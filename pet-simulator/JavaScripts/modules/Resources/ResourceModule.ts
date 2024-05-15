@@ -5,13 +5,11 @@ import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import { oTraceError } from "../../util/LogManager";
 import { utils } from "../../util/uitls";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
-import { DropManagerS } from "./DropResouce";
 import resourceScript, { SceneResourceMap } from "./resource";
 import { BonusUI } from "./scenceUnitUI";
 import { RewardTipsManager } from "../UI/RewardTips";
@@ -38,21 +36,19 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
                     GameObjPool.despawn(item);
                 });
             }
-            AnalyticsTool.game_over(this.breakCount);
         });
-        Event.addLocalListener(GlobalEnum.EventName.GuaShaNotice, (cfg: number, isLife: boolean) => {
-            let isHas = this.guaShaArr.includes(cfg);
-
-            if (!isLife && isHas) {
-                this.guaShaArr.splice(this.guaShaArr.indexOf(cfg), 1);
-                this.server.net_noticeGuaSha(cfg, isLife);
-                return;
-            }
-            if (!isHas) {
-                this.guaShaArr.push(cfg);
-                this.server.net_noticeGuaSha(cfg, isLife);
-            }
-        });
+        Event.addLocalListener(GlobalEnum.EventName.GuaShaNotice,
+            (cfg: number, isLife: boolean) => {
+                if (this.guaShaArr.includes(cfg)) {
+                    if (!isLife) {
+                        this.guaShaArr.splice(this.guaShaArr.indexOf(cfg), 1);
+                        mwext.ModuleService.getModule(ResourceModuleS).net_noticeGuaSha(cfg, false);
+                    }
+                } else {
+                    this.guaShaArr.push(cfg);
+                    mwext.ModuleService.getModule(ResourceModuleS).net_noticeGuaSha(cfg, isLife);
+                }
+            });
     }
 
     protected onEnterScene(sceneType: number): void {
@@ -65,20 +61,20 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     public guideClickDestroyable(): void {
         let PlayerData = DataCenterC.getData(PetSimulatorPlayerModuleData);
         let isNewPlayer = PlayerData.gold == 0;
-        if (!isNewPlayer) {
-            return;
-        }
-        this.createObj();
+        if (!isNewPlayer) return;
 
-        SceneResourceMap.get(1002)?.forEach((item) => {
-            if (item.cfgId == 3) {
-                let pointCfg = GameConfig.DropPoint.getElement(item.pointId);
-                if (pointCfg.areaPoints.y >= GlobalData.SceneResource.areaY) {
-                    if (this.objs.indexOf(item.Obj) == -1 && this.objs.length <= 10)
-                        this.objs.push(item.Obj);
+        this.createObj();
+        SceneResourceMap
+            .get(1002)
+            ?.forEach((item) => {
+                if (item.cfgId == 3) {
+                    let pointCfg = GameConfig.DropPoint.getElement(item.pointId);
+                    if (pointCfg.areaPoints.y >= GlobalData.SceneResource.areaY) {
+                        if (this.objs.indexOf(item.Obj) == -1 && this.objs.length <= 10)
+                            this.objs.push(item.Obj);
+                    }
                 }
-            }
-        });
+            });
 
         for (let i = this.curIndex; i < this.objs.length; i++) {
             const element = this.objs[i];
@@ -229,6 +225,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
                 break;
             case element[3]:
                 str = GameConfig.Language.World_Tips_9.Value;
+                break;
             default:
                 break;
         }
@@ -257,7 +254,7 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
     /**脚本缓存池 */
     private scriptPool: resourceScript[] = [];
     /**刮痧map */
-    private guaShaArr: number[] = [];
+    private handledMap: number[] = [];
 
     /**当前是否有玩家加入 */
     private isHasPlayer: boolean = false;
@@ -334,22 +331,17 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
         let scenceID = arr.shift();
 
         let cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
-        let delArr = [];
-        for (let i = 0; i < cfgs.length; i++) {
-            const element = cfgs[i].ID;
-            if (GlobalData.BigBox.boxId.includes(element)) {
-                delArr.push(i);
+
+        for (let i = cfgs.length - 1; i >= 0; --i) {
+            if (isSceneUnitIdIsBigBox(cfgs[i].ID)) {
+                cfgs.splice(i, 1);
             }
         }
-        for (let i = delArr.length - 1; i >= 0; i--) {
-            cfgs.splice(delArr[i], 1);
-        }
-
         let otherProbability = 100 - GlobalData.SceneResource.sameProbability;
         let rate: number[] = [];
         for (let id = 0; id < cfgs.length; id++) {
             const element = cfgs[id].ID;
-            if (GlobalData.BigBox.boxId.includes(element)) continue;
+            if (isSceneUnitIdIsBigBox(element)) continue;
             if (element == scenceID) {
                 rate.push(GlobalData.SceneResource.sameProbability);
             } else
@@ -442,36 +434,6 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
 
     }
 
-    // /**判断是区域一的前后部分，生成类型 */
-    // public isAreaOneFront(pointId: number): number {
-    //     let X = GlobalData.SceneResource.areaY;
-    //     let loc = GameConfig.DropPoint.getElement(pointId).areaPoints;
-    //     if (loc.y >= X) {
-    //         return this.getResTypeByWeight(GlobalData.SceneResource.area1Weight);
-    //     } else {
-    //         return this.getResTypeByWeight(GlobalData.SceneResource.area2Weight);
-    //     }
-
-    // }
-    // /**根据权重数组 返回资源类型 */
-    // public getResTypeByWeight(weightArr: number[]): number {
-    //     let weight = 0;
-    //     weightArr.forEach((item) => {
-    //         weight += item;
-    //     })
-    //     let random = utils.GetRandomNum(0, weight);
-    //     let probability = 0;
-    //     for (let i = 0; i < weightArr.length; i++) {
-    //         probability += weightArr[i];
-    //         if (random <= probability) {
-
-    //             return GlobalData.SceneResource.resourceType[i];
-    //         }
-    //     }
-    //     console.error('lwj error返回 0 ');
-    //     return 0;
-    // }
-
     /**随机生成 */
     private randomCreate(areaId: number) {
         // if (!this.areaWeightMap.has(areaId)) {
@@ -533,43 +495,32 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
 
     }
 
-    /**根据areaId 与 Type 查找对应id */
-    // public getScenceUnitId(areaId: number, type: number): number {
-    //     let cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
-    //     let cfg = cfgs.find((item) => {
-    //         let curType = item.resType;
-    //         return curType == type;
-    //     })
-    //     if (cfg)
-    //         return cfg.ID;
-    //     else
-    //         oTraceError('lwj 没有找到对应的场景单元点' + areaId + type);
-    // }
-
     /**初始化巨大宝箱 */
     private initBigBox() {
-
-        let locArrId = GlobalData.BigBox.boxLocationId;
-        GlobalData.BigBox.boxId.forEach((item, index) => {
-            this.createBigBox(locArrId[index], item);
-        });
+        GameConfig
+            .SceneUnit
+            .getAllElement()
+            .filter(item => isBigBox(item.resType))
+            .map(item => item.ID)
+            .forEach(id => this.createBigBox(id));
     }
 
     /**创建宝箱 */
-    private async createBigBox(pointId: number, cfgId: number) {
+    private async createBigBox(cfgId: number, pointId?: number) {
         let res = await this.getScript();
-        res.initServer(pointId, cfgId, true);
+        pointId = pointId ?? this.getAreaResValidPoints(GameConfig.SceneUnit.getElement(cfgId)?.AreaID ?? 0)?.[0] ?? undefined;
+        if (Gtk.isNullOrUndefined(pointId)) return;
+
+        res.initServer(pointId, cfgId);
         res.onDead.add((str: string, playerId: number) => {
             let arr = str.split("_");
             let cfgId = Number(arr[0]);
-            let pointId = Number(arr[1]);
             this.returnScript(res);
             setTimeout(() => {
-                this.createBigBox(pointId, cfgId);
+                this.createBigBox(cfgId, pointId);
             }, GlobalData.BigBox.boxAppearTime * 1000);
             let areaId = GameConfig.SceneUnit.getElement(cfgId).AreaID;
             ModuleService.getModule(Task_ModuleS).breakDestroy(Player.getPlayer(playerId), cfgId, areaId);
-            // ModuleService.getModule(PassModuleS).onTaskUpdateAC.call(playerId, GlobalEnum.VipTaskType.Box, 1);
         });
     }
 
@@ -587,15 +538,11 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
         this.scriptPool.push(script);
     }
 
-    public net_noticeGuaSha(cfg: number, isLife: boolean) {
-        let isHas = this.guaShaArr.includes(cfg);
-
-        if (!isHas && isLife) {
-            this.guaShaArr.push(cfg);
+    public net_noticeGuaSha(cfg: number, alive: boolean) {
+        if (!alive) Gtk.remove(this.handledMap, cfg);
+        else {
+            if (this.handledMap.includes(cfg)) return;
             this.getAllClient().net_guaShaNotice(this.currentPlayerId, cfg);
-        }
-        if (!isLife && isHas) {
-            this.guaShaArr.splice(this.guaShaArr.indexOf(cfg), 1);
         }
     }
 
@@ -613,4 +560,12 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
     // public net_start() {
     // 		ModuleService.getModule(DropManagerS).start();
     // }
+}
+
+export function isBigBox(resType: number): boolean {
+    return resType > 8;
+}
+
+export function isSceneUnitIdIsBigBox(configId: number): boolean {
+    return (GameConfig.SceneUnit.getElement(configId)?.resType > 8) ?? false;
 }
