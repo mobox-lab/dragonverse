@@ -20,6 +20,7 @@ import { EnergyModuleC } from "../Energy/EnergyModule";
 import GToolkit from "../../util/GToolkit";
 import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
 import { TipsManager } from "../Hud/P_TipUI";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**宠物状态 */
 export enum PetState {
@@ -767,7 +768,7 @@ export default class PetBehavior {
             return true;
         } else {
             let energyModuleC = ModuleService.getModule(EnergyModuleC);
-            if (energyModuleC.isAfford()) {
+            if (energyModuleC.consumeViewEnergy(GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
                 let res = this.targetRes.injured(
                     this.owner.player.playerId,
                     this.attackDamage
