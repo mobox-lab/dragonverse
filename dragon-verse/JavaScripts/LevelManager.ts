@@ -19,7 +19,7 @@ export class LevelManager {
 
     public async init() {
         this._deathTrigger = await GameObject.asyncFindGameObjectById("2E949904") as Trigger
-        this._deathTrigger.onEnter.add((other: GameObject) => {
+        this._deathTrigger?.onEnter.add((other: GameObject) => {
             // 当进入的物体是角色类型
             if (other instanceof Character) {
                 // 让角色死亡
