@@ -398,7 +398,7 @@ export namespace GlobalData {
         /**初始化资源点刷新间隔 */
         public static initResourceRefresh: number = 0.5;
         /**每个区域资源上限个数 */
-        public static maxResourceCount: number = 10;
+        public static maxResourceCount: number = 200;
         /**每个区域资源下限个数 */
         public static minResourceCount: number = 52;
         /**默认区域数组 */

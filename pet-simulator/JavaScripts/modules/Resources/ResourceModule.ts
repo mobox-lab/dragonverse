@@ -287,11 +287,9 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
     /**当前区域首次刷新至上限 */
     private async areaFirstRefresh(areaId: number) {
         let size = GlobalData.SceneResource.maxResourceCount;
-        let need = size;
-        if (this.areaPointMap.has(areaId)) {
-            let hasCount = this.areaPointMap.get(areaId);
-            need = size - hasCount.length;
-        }
+        let need = Math.min(
+            this.getAreaResCount(areaId),
+            size - (this.areaMap.get(areaId) ?? 0));
         for (let i = 0; i < need; i++) {
             await this.areaRandomRefresh(areaId);
         }
