@@ -5,10 +5,9 @@ import { BuffModuleC } from "./BuffModuleC";
 import { GlobalData } from "../../const/GlobalData";
 import { AuthModuleS } from "../auth/AuthModule";
 import { GameConfig } from "../../config/GameConfig";
-
+import { EnchantBuff } from "../PetBag/EnchantBuff";
 
 export class BuffModuleS extends ModuleS<BuffModuleC, BuffData> {
-
 
     onPlayerEnterGame(player: mw.Player): void {
         let playerId = player.playerId;
@@ -20,13 +19,12 @@ export class BuffModuleS extends ModuleS<BuffModuleC, BuffData> {
     }
 
     onPlayerLeft(player: mw.Player): void {
-
     }
 
     /**
      * 根据龙力值初始玩家buff
-     * @param playerId 
-     * @returns 
+     * @param playerId
+     * @returns
      */
     private async initPlayerBuff(playerId: number) {
         // let value = await ModuleService.getModule(AuthModuleS).getMoboxDragonAbility(playerId);
@@ -77,7 +75,12 @@ export class BuffModuleS extends ModuleS<BuffModuleC, BuffData> {
         // }
     }
 
-    public addBuff(playerId: number, buffId:number) {
+    public addBuff(playerId: number, buffId: number) {
         this.getClient(playerId).net_addPlayerBuff([buffId]);
+        const config = GameConfig.Buff.getElement(buffId);
+        if (!config) return;
+        if ((config?.type ?? undefined) === GlobalEnum.BuffType.Damage) {
+            GlobalData.Buff.damageBuffMap.set(playerId, 1 + config.param / 100);
+        }
     }
 }

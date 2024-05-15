@@ -10,6 +10,7 @@ import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
 import { AuthModuleS } from "../auth/AuthModule";
+import { EnchantBuff } from "../PetBag/EnchantBuff";
 
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModuleData> {
 
@@ -155,6 +156,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
                 be.destroy();
                 this.gamePlayerBehaviors.delete(guid);
             }
+
+            GlobalData.SceneResource.clearPlayer(player.playerId);
+            GlobalData.Buff.clearPlayer(player.playerId);
+            EnchantBuff.clearPlayer(player.playerId);
         } catch (error) {
             oTraceError(error);
         }
@@ -225,13 +230,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         be.unEquipPets(petItems);
     }
 
-		public absorbAll(gold1: number, gold2: number, gold3: number, diamond: number) {
-				let data = this.currentData;
-				if (gold1 > 0) data.addGold(gold1, GlobalEnum.CoinType.FirstWorldGold);
-				if (gold2 > 0) data.addGold(gold2, GlobalEnum.CoinType.SecondWorldGold);
-				if (gold3 > 0) data.addGold(gold3, GlobalEnum.CoinType.ThirdWorldGold);
-				if (diamond > 0) data.addDiamond(diamond);
-		}	
+    public absorbAll(gold1: number, gold2: number, gold3: number, diamond: number) {
+        let data = this.currentData;
+        if (gold1 > 0) data.addGold(gold1, GlobalEnum.CoinType.FirstWorldGold);
+        if (gold2 > 0) data.addGold(gold2, GlobalEnum.CoinType.SecondWorldGold);
+        if (gold3 > 0) data.addGold(gold3, GlobalEnum.CoinType.ThirdWorldGold);
+        if (diamond > 0) data.addDiamond(diamond);
+    }
 
     // /**增加金币 */
     // public net_addGold(value: number, coinType: GlobalEnum.CoinType): void {
@@ -295,11 +300,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     public net_getPlayerNameById(id: number) {
         this.getClient(id).net_getPlayerName();
     }
-		
+
     /**装卸滑板 */
     public getPetArr(player?: mw.Player) {
-			if(!player) return null
-			return this.getPlayerBehavior(player).PetArr
+        if (!player) return null;
+        return this.getPlayerBehavior(player).PetArr;
     }
 
 }

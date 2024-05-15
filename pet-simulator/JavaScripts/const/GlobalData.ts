@@ -1,6 +1,7 @@
 import { GameConfig } from "../config/GameConfig";
 import { RankType } from "../modules/Rank/RankModuleS";
 import { GlobalEnum } from "./Enum";
+import Gtk from "../util/GToolkit";
 
 export class EggEndInfo {
     /**坐标z轴偏移 */
@@ -410,7 +411,12 @@ export namespace GlobalData {
         /**最后一击暴击权重  与下边一样 不可改*/
         public static critWeightUndef: number = 20;
         /**最后一击暴击权重  可改，与上同步*/
-        public static critWeight: number = 20;
+        public static critWeightMap: Map<number, number> = new Map();
+
+        public static critWeight(playerId: number) {
+            return Gtk.tryGet(this.critWeightMap, playerId, () => 20);
+        }
+
         /**正常击打特效权重 */
         public static normalWeight: number = 70;
 
@@ -418,7 +424,28 @@ export namespace GlobalData {
         public static guaShaTime: number = 6;
 
         /**1/3暴击 倍率 */
-        public static critRate: number = 3;
+        public static critRateMap: Map<number, number> = new Map();
+
+        public static critRate(playerId: number) {
+            return Gtk.tryGet(this.critRateMap, playerId, () => 20);
+        }
+
+        public static critMap: Map<number, boolean> = new Map();
+
+        public static isCrit(playerId: number) {
+            return Gtk.tryGet(
+                this.critMap,
+                playerId,
+                () =>
+                    MathUtil.randomInt(0, 100) <
+                    GlobalData.SceneResource.critWeight(playerId));
+        }
+
+        public static clearPlayer(playerId: number) {
+            this.critRateMap.delete(playerId);
+            this.critWeightMap.delete(playerId);
+            this.critMap.delete(playerId);
+        }
 
         /**资源点补充生成 与上次相同的概率  总100% */
         public static sameProbability: number = 50;
@@ -774,7 +801,18 @@ export namespace GlobalData {
         /**金币buff */
         public static goldBuff: number = 1;
         /**伤害buff */
-        public static damageBuff: number = 1;
+        public static damageBuffMap: Map<number, number> = new Map();
+
+        public static damageBuff(playerId?: number) {
+            playerId = playerId ?? mw.Player.localPlayer.playerId;
+
+            return Gtk.tryGet(Buff.damageBuffMap, playerId, () => 1);
+        }
+
+        public static clearPlayer(playerId: number) {
+            this.damageBuffMap.delete(playerId);
+        }
+
         /**当期幸运、增加概率|权重值 */
         public static curSmallLuckyBuff: number[] = [0, 0];
         /**当前超级 增加值 */

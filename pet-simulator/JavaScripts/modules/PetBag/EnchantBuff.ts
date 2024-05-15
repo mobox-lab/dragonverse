@@ -119,10 +119,9 @@ export class EnchantBuff {
     /**获取宠物词条buff */
     public static getPetBuff(playerId: number, key: number): petBuff {
         const petBuff = Gtk.tryGet(this.playerPetBuff, playerId, () => new Map());
-        if (petBuff.has(key))
-            return petBuff.get(key);
-        else
-            return {
+        return Gtk.tryGet(petBuff,
+            key,
+            () => ({
                 damageAdd: 0,
                 goldAdd: 0,
                 diamondAdd: 0,
@@ -134,7 +133,11 @@ export class EnchantBuff {
                 autoCollect: false,
                 randomDiamond: false,
                 bestFriend: 0,
-            };
+            }));
+    }
+
+    public static clearPlayer(playerId: number) {
+        this.playerPetBuff.delete(playerId);
     }
 
     /** 添加词条buff*/
@@ -189,7 +192,7 @@ export class EnchantBuff {
                 buff.diamondAdd = this.addDiamondAdd(buff.diamondAdd, item);
                 break;
             case enchantType.critAdd:
-                buff.critAdd = this.addCritAdd(buff.critAdd, item);
+                buff.critAdd = this.addCritAdd(playerId, buff.critAdd, item);
                 break;
             case enchantType.moveSpeedAdd:
                 buff.moveSpeedAdd = this.addMoveSpeedAdd(buff.moveSpeedAdd, item);
@@ -245,7 +248,7 @@ export class EnchantBuff {
         if (buff.goldAdd) buff.goldAdd = 0;
         if (buff.diamondAdd) buff.diamondAdd = 0;
         if (buff.critAdd) {
-            GlobalData.SceneResource.critWeight = GlobalData.SceneResource.critWeightUndef;
+            GlobalData.SceneResource.critWeightMap.set(playerId, GlobalData.SceneResource.critWeightUndef);
             buff.critAdd = 0;
         }
         if (buff.moveSpeedAdd) buff.moveSpeedAdd = 0;
@@ -313,11 +316,11 @@ export class EnchantBuff {
     }
 
     /**暴击加成 */
-    private static addCritAdd(critAdd: number, item: { id: number; level: number; }): number {
+    private static addCritAdd(playerId: number, critAdd: number, item: { id: number; level: number; }): number {
         if (!critAdd) critAdd = 0;
         let cfg = GameConfig.Enchants.getElement(item.id);
         critAdd += cfg.Degree;
-        GlobalData.SceneResource.critWeight *= (1 + critAdd / 100);
+        GlobalData.SceneResource.critWeightMap.set(playerId, GlobalData.SceneResource.critWeight(playerId) * (1 + critAdd / 100));
         return critAdd;
     }
 

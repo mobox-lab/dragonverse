@@ -768,8 +768,12 @@ export default class PetBehavior {
         } else {
             let energyModuleC = ModuleService.getModule(EnergyModuleC);
             if (energyModuleC.isAfford()) {
-                let res = this.targetRes.injured(this.owner.player.playerId,
-                    this.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, this.key).damageAdd / 100), this.key);
+                let res = this.targetRes.injured(
+                    this.owner.player.playerId,
+                    this.attackDamage
+                    * GlobalData.LevelUp.petDamage
+                    * (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, this.key).damageAdd / 100),
+                    this.key);
                 if (res) {
                     this._targetRes = null;
                     this.targetPos = null;
