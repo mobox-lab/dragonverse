@@ -15,6 +15,7 @@ import { DropManagerS } from "./DropResouce";
 import resourceScript, { SceneResourceMap } from "./resource";
 import { BonusUI } from "./scenceUnitUI";
 import { RewardTipsManager } from "../UI/RewardTips";
+import Gtk from "../../util/GToolkit";
 
 export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
 
@@ -288,7 +289,7 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
     private async areaFirstRefresh(areaId: number) {
         let size = GlobalData.SceneResource.maxResourceCount;
         let need = Math.min(
-            this.getAreaResCount(areaId),
+            this.getAreaResValidPoints(areaId).length,
             size - (this.areaMap.get(areaId) ?? 0));
         for (let i = 0; i < need; i++) {
             await this.areaRandomRefresh(areaId);
@@ -297,19 +298,14 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
 
     /**当前区域随机生成一个 */
     private async areaRandomRefresh(areaId: number) {
-        let cfgId = this.getAreaResCount(areaId);
+        let cfgId = this.getAreaResValidPoints(areaId).shift();
         await TimeUtil.delaySecond(GlobalData.SceneResource.initResourceRefresh);
         this.addTranArea(areaId, cfgId);
     }
 
-    /**获取当前区域的剩余资源点 */
-    private getAreaResCount(areaId: number): number {
-        if (!this.areaPointMap.has(areaId)) {
-            this.areaPointMap.set(areaId, this.getAreaResIds(areaId));
-        }
-        let cfgs = this.areaPointMap.get(areaId);
-        //从该Array中取出第一个元素
-        return cfgs.shift();
+    /**获取当前区域的所有剩余资源点 */
+    public getAreaResValidPoints(areaId: number): number[] {
+        return Gtk.tryGet(this.areaPointMap, areaId, () => this.getAreaResIds(areaId));
     }
 
     /**返还当前区域资源点 */
