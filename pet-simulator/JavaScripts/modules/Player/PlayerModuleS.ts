@@ -307,7 +307,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     }
 
     /**减少钻石 */
-    public net_reduceDiamond(value: number): boolean {
+    public reduceDiamond(value: number): boolean {
         return this.currentData.reduceDiamond(value);
     }
 

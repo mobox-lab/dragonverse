@@ -12,8 +12,16 @@ import { AuthModuleS } from "../auth/AuthModule";
 import { EnchantBuff } from "./EnchantBuff";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
+import { PlayerModuleC } from "../Player/PlayerModuleC";
+import MessageBox from "../../util/MessageBox";
 
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
+    private _playerModuleS: PlayerModuleS;
+
+    private get playerModuleS(): PlayerModuleS | null {
+        if (!this._playerModuleS) this._playerModuleS = ModuleService.getModule(PlayerModuleS);
+        return this._playerModuleS;
+    }
 
     /**玩家id、 true:装备 false: 卸下 、宠物数据*/
     public onEquipChangeAC: Action3<number, boolean, petItemDataNew[]> = new Action3();
@@ -59,7 +67,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     @Decorator.noReply()
-    public net_addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+    public net_addPetWithMissingInfo(playerId: number, id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
         let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
 
         let atk: number = 0;
@@ -68,7 +76,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         else
             atk = atkArr[0];
 
-        this.addPet(this.currentPlayerId, id, atk, undefined, type, addTime);
+        this.addPet(playerId, id, atk, undefined, type, addTime);
     }
 
     public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
@@ -447,7 +455,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     /** 原 P_FusePanel.net_fusePet 合成宠物 */
-    public async net_fusePet(curSelectPets: petItemDataNew[], earliestObtainTime: number) {
+    public async net_fusePet(curSelectPets: petItemDataNew[], earliestObtainTime: number): Promise<boolean> {
+        const playerId: number = this.currentPlayerId;
+        if (!this.playerModuleS.reduceDiamond(GlobalData.Fuse.cost)) return false;
+
+        const data = this.currentData;
+        if (curSelectPets.length >= data.CurBagCapacity) return false;
+
         /**最多相同id的宠物数量 */
         let maxSameIdCount = 0;
         /**所有宠物攻击力的合 */
@@ -510,7 +524,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
         mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE", endPetId);
         // ModuleService.getModule(AchievementModuleS).broadcastAchievementBlendType(endPetId); // TODO: 重构 AchievementModuleC.broadcastAchievementBlendType 到 S 端，主要是有个C端的toast 现在先用dispatchToClient 发事件代替
-        await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId, GlobalEnum.PetGetType.Fusion, earliestObtainTime);
+
+        ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(endPetId,
+            GlobalEnum.PetGetType.Fusion,
+            earliestObtainTime);
     }
 
     /**词条buff初始化 */
@@ -522,28 +539,23 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
     }
 
-		/** 原 P_Pet_Dev.startDev 合成宠物 */
-		public async net_isAffordDiamond(cost: number): Promise<boolean> {
-				if (cost <= 0) return false;
-				return await ModuleService.getModule(PlayerModuleS).net_reduceDiamond(cost);
-		}
-
-		/** 原 P_Pet_Dev.startDev 合成宠物 */
-		public async net_fuseDevPet(curPetId: number, isGold: boolean, curRate: number, earliestObtainTime: number, petIds: number[]) {
+    /** 原 P_Pet_Dev.startDev 合成宠物 */
+    public async net_fuseDevPet(curPetId: number, isGold: boolean, curRate: number, earliestObtainTime: number, petIds: number[]) {
         let random = MathUtil.randomInt(0, 100);
         const petInfo = GameConfig.PetARR.getElement(curPetId);
         let isSucc: boolean = true;
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
         if (random <= curRate) {
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
-						mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
-            await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId,
+            mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
+            await ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(endPetId,
                 isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow, earliestObtainTime);
         } else {
             isSucc = false;
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
-						mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseFailed");
+            mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseFailed");
         }
-				mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE", endPetId, isSucc, petIds);
-		}
+        mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE", endPetId, isSucc, petIds);
+    }
 }
+

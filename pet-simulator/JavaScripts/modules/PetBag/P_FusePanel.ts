@@ -1,23 +1,19 @@
-﻿import {GameConfig} from "../../config/GameConfig";
-import {GlobalEnum} from "../../const/Enum";
-import {GlobalData} from "../../const/GlobalData";
+﻿import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
 import Fusepanel_Generate from "../../ui-generate/Fuse/Fusepanel_generate";
 import MessageBox from "../../util/MessageBox";
-import {utils} from "../../util/uitls";
+import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
-import {AnalyticsTool} from "../Analytics/AnalyticsTool";
-import {PlayerModuleC} from "../Player/PlayerModuleC";
-import {PetBagItem} from "./P_Bag";
-import {PetBagModuleC} from "./PetBagModuleC";
-import {petItemDataNew} from "./PetBagModuleData";
+import { PlayerModuleC } from "../Player/PlayerModuleC";
+import { PetBagItem } from "./P_Bag";
+import { PetBagModuleC } from "./PetBagModuleC";
+import { petItemDataNew } from "./PetBagModuleData";
 
-
-import {PetBag_Item} from "./P_BagItem";
+import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 export class P_FusePanel extends Fusepanel_Generate {
-    private achievementModuleC: AchievementModuleC = null;
-
     /**当前容器中的所有item */
     private petItems: PetBag_Item[] = [];
     /**当前选中的所有宠物 */
@@ -32,7 +28,6 @@ export class P_FusePanel extends Fusepanel_Generate {
         this.mBtn_Fuse.onClicked.add(() => {
             this.onClickFuse();
         });
-        this.achievementModuleC = ModuleService.getModule(AchievementModuleC);
     }
 
     public show(petItems: petItemDataNew[], ...param: any[]): void {
@@ -100,28 +95,29 @@ export class P_FusePanel extends Fusepanel_Generate {
             return;
         }
         this.hide();
-        MessageBox.showTwoBtnMessage(GameConfig.Language.Text_Fuse_UI_2.Value, async (res: boolean) => {
-            if (res) {
-                let isSuccess = await ModuleService.getModule(PlayerModuleC).reduceDiamond(GlobalData.Fuse.cost);
-                if (!isSuccess) {
-                    MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
-                    return;
-                }
-                let isCanDel = await this.delSelectPet();
+        MessageBox.showTwoBtnMessage(
+            GameConfig.Language.Text_Fuse_UI_2.Value,
+            async (res: boolean) => {
 
-                if (!isCanDel) {
-                    this.curSelectPets.length = 0;
-                    return;
-                }
-                await ModuleService.getModule(PetBagModuleC).fusePet(this.curSelectPets, this._earliestObtainTime);	// 原 fusePet
-                this.changeCost();
-                setTimeout(() => {
-                    this.onShowAC.call();
-                }, 500);
-            } else {
-                super.show();
-            }
-        });
+                if (res) {
+                    if (!ModuleService
+                        .getModule(PetBagModuleC)
+                        .checkFuseAble(this.curSelectPets.map(item => item.k))) {
+                        MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_11.Value);
+                        return;
+                    }
+
+                    if (await ModuleService
+                        .getModule(PetBagModuleC)
+                        .fusePet(this.curSelectPets, this._earliestObtainTime)) {
+
+                        this.changeCost();
+                        setTimeout(() => this.onShowAC.call(), 500);
+                    } else {
+                        this.curSelectPets.length = 0;
+                    }
+                } else super.show();
+            });
     }
 
     // /**合成宠物 */
@@ -213,53 +209,43 @@ export class P_FusePanel extends Fusepanel_Generate {
     // }
 
     /**判断获得的宠物类型 普通0 黄金1 彩虹2 */
-    // private judgePetType(): number {
-    //     let count = this.curSelectPets.length;
-    //     let specialCount = 0;
-    //     this.curSelectPets.forEach(item => {
-    //         let type = GameConfig.PetARR.getElement(item.I).DevType;
-    //         if (type === GlobalEnum.PetDevType.Love || type === GlobalEnum.PetDevType.Rainbow) {
-    //             specialCount++;
-    //         }
-    //     });
+        // private judgePetType(): number {
+        //     let count = this.curSelectPets.length;
+        //     let specialCount = 0;
+        //     this.curSelectPets.forEach(item => {
+        //         let type = GameConfig.PetARR.getElement(item.I).DevType;
+        //         if (type === GlobalEnum.PetDevType.Love || type === GlobalEnum.PetDevType.Rainbow) {
+        //             specialCount++;
+        //         }
+        //     });
 
-    //     //普通宠物的权重
-    //     let normalWeight = -10 * count + 80;
-    //     if (normalWeight < 0) normalWeight = 0;
-    //     //黄金宠物的权重
-    //     let goldWeight = -4 * count + 52;
-    //     if (goldWeight < 0) goldWeight = 0;
-    //     //彩虹宠物的权重
-    //     // let rainbowWeight = -2 * count + 32;
-    //     let rainbowWeight = 14 * count - 32 + 5 * specialCount;
-    //     if (rainbowWeight < 0) rainbowWeight = 0;
-    //     let totalWeight = normalWeight + goldWeight + rainbowWeight;
-    //     let random = Math.random() * totalWeight;
-    //     if (random < normalWeight) {
-    //         return 0;
-    //     }
-    //     if (random < normalWeight + goldWeight) {
-    //         return 1;
-    //     }
-    //     return 2;
-    // }
+        //     //普通宠物的权重
+        //     let normalWeight = -10 * count + 80;
+        //     if (normalWeight < 0) normalWeight = 0;
+        //     //黄金宠物的权重
+        //     let goldWeight = -4 * count + 52;
+        //     if (goldWeight < 0) goldWeight = 0;
+        //     //彩虹宠物的权重
+        //     // let rainbowWeight = -2 * count + 32;
+        //     let rainbowWeight = 14 * count - 32 + 5 * specialCount;
+        //     if (rainbowWeight < 0) rainbowWeight = 0;
+        //     let totalWeight = normalWeight + goldWeight + rainbowWeight;
+        //     let random = Math.random() * totalWeight;
+        //     if (random < normalWeight) {
+        //         return 0;
+        //     }
+        //     if (random < normalWeight + goldWeight) {
+        //         return 1;
+        //     }
+        //     return 2;
+        // }
 
     private _earliestObtainTime: number = 0;
 
     /**删除选中宠物 */
-    private async delSelectPet() {
-        let keys = [];
-        this.curSelectPets.forEach(item => {
-            keys.push(item.k);
-        });
-
-        this._earliestObtainTime = this.curSelectPets[0].obtainTime;
-        this.curSelectPets.forEach(item => {
-            if (item.obtainTime < this._earliestObtainTime) {
-                this._earliestObtainTime = item.obtainTime;
-            }
-        });
-        return await ModuleService.getModule(PetBagModuleC).fuseEvent(keys);
+    private delSelectPet(): number[] {
+        return this.curSelectPets.map(item => item.k);
+        // return await ModuleService.getModule(PetBagModuleC).checkFuseAble(keys);
     }
 
     /**改变花费 */

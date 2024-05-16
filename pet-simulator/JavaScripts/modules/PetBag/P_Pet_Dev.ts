@@ -75,7 +75,7 @@ export class P_Pet_Dev extends Dev_Generate {
 
     /**开始合成 */
     private async startDev() {
-        let isSuccess = await ModuleService.getModule(PetBagModuleC).isAffordDiamond(this.curCost);
+        let isSuccess = ModuleService.getModule(PlayerModuleC).isDiamondEnough(this.curCost);
         if (!isSuccess) {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
                 super.show();
@@ -95,12 +95,18 @@ export class P_Pet_Dev extends Dev_Generate {
                 earliestObtainTime = item.obtainTime;
             }
         });
-        let isCanDel = await ModuleService.getModule(PetBagModuleC).fuseEvent(keys);
+
+        let isCanDel = ModuleService
+            .getModule(PetBagModuleC)
+            .checkFuseAble(this.curSelectPets.map(item => item.k))
+
         this.curSelectPets.length = 0;
+
         if (!isCanDel) {
+            MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_11.Value);
             return;
         }
-				await ModuleService.getModule(PetBagModuleC).fuseDevPet(this.curPetId, this.isGold, this.curRate, earliestObtainTime, petIds);
+        await ModuleService.getModule(PetBagModuleC).fuseDevPet(this.curPetId, this.isGold, this.curRate, earliestObtainTime, petIds);
     }
 
     public show(petItems: petItemDataNew[], isGold: boolean, ...param: any[]): void {

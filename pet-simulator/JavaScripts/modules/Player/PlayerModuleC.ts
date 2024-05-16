@@ -374,7 +374,8 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
 
     /**减少钻石 */
     public async reduceDiamond(value: number): Promise<boolean> {
-        return await this.server.net_reduceDiamond(value);
+        // return await this.server.net_reduceDiamond(value);
+        return false;
     }
 
     // public async clearGoldGem(): Promise<void> {

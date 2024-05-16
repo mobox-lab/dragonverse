@@ -85,7 +85,7 @@ export default class AchievementModuleS extends ModuleS<
         this.petBagModuleC.addBagCapacity(reward);
         break;
       case GlobalEnum.AchievementReward.PetExpand:
-        this.petBagModuleS.net_addPet(reward);
+        this.petBagModuleS.net_addPetWithMissingInfo(reward);
         break;
       default:
         break;

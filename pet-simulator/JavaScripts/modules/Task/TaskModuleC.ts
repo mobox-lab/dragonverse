@@ -124,7 +124,7 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
     public buyGashapon(id: number): void {
         let info = GameConfig.TaskShop.getElement(id);
         let petId = EggMachineTween.instance.startTween_Special(info.Award, GlobalEnum.SpecialEgg.Task);
-        ModuleService.getModule(PetBagModuleS).net_addPet(petId);
+        ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(petId);
     }
 
     /**显示任务商店 */

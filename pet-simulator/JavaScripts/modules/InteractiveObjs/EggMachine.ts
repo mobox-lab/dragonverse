@@ -495,7 +495,7 @@ class EggM {
         this.getEgg(petId);
         EggMachineTween.instance.startTween(this.petEgg, petId, eggId);
 
-        petMS.net_addPet(petId, this.cfg.AreaID);
+        petMS.net_addPetWithMissingInfo(petId, this.cfg.AreaID);
 
         AnalyticsTool.action_buy_item(this.cfgID);
         this.broadcastExecuteAchievement(petId);

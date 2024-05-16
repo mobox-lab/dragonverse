@@ -211,7 +211,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
      * @param id 宠物id
      */
     public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
-        await this.server.net_addPet(id, type, addTime);
+        await this.server.net_addPetWithMissingInfo(id, type, addTime);
     }
 
     /**宠物公告 */
@@ -299,13 +299,11 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     }
 
     /**是否可融合强化 */
-    public async fuseEvent(keys: number[]) {
-        if (keys.length == this.getCurPetNum()) {
-            MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_11.Value);
+    public checkFuseAble(keys: number[]) {
+        if (keys.length === this.getCurPetNum()) {
             return false;
         }
         this.hudPetUI.removeRedPoint(keys);
-        await this.server.net_deletePet(keys);
         return true;
     }
 
@@ -356,20 +354,15 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     }
 
     /** 原 P_FusePanel.fusePet 合成宠物 */
-		public async fusePet(curSelectPets: petItemDataNew[], earliestObtainTime: number) {
-				await this.server.net_fusePet(curSelectPets, earliestObtainTime);	// 原 fusePet
-		}
-
-    /** 原 P_Pet_Dev.startDev 调用 */
-    public async isAffordDiamond(cost: number) {
-				return await this.server.net_isAffordDiamond(cost)			
-		}
+    public async fusePet(curSelectPets: petItemDataNew[], earliestObtainTime: number): Promise<boolean> {
+        return this.server.net_fusePet(curSelectPets, earliestObtainTime);	// 原 fusePet
+    }
 
     /** 原 P_Pet_Dev.startDev 调用 */
     public async fuseDevPet(curPetId: number, isGold: boolean, curRate: number, earliestObtainTime: number, petIds: number[]) {
-				await this.server.net_fuseDevPet(curPetId, isGold, curRate, earliestObtainTime, petIds)			
-		}
-		
+        await this.server.net_fuseDevPet(curPetId, isGold, curRate, earliestObtainTime, petIds);
+    }
+
     /****************附魔***********/
 
     /**

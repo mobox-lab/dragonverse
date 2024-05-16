@@ -22,7 +22,7 @@ export class HudModuleS extends ModuleS<HudModuleC, null>{
 	@Decorator.noReply()
 	public net_addInitPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
 		if(!GlobalData.pet.initPets.includes(id)) return;
-		ModuleService.getModule(PetBagModuleS).net_addPet(id, type, addTime)
+		ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(id, type, addTime)
 	}
 }
 

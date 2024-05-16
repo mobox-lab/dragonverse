@@ -35,7 +35,7 @@ AddGMCommand("成就", (player: mw.Player, value: string) => {
 AddGMCommand("添加宠物", (player: mw.Player, value: string) => {
     let id = Number(value);
     if (!id) id = 1;
-    ModuleService.getModule(PetBagModuleS).net_addPet(id);
+    ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(id);
 }, (player: mw.Player, value: string) => {
 
 }, "全服");
