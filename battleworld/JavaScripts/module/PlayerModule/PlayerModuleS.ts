@@ -43,6 +43,8 @@ import { EquipModuleS } from "../EquipModule/EquipModuleS";
 import { ERankNoticeType } from "./UI/rank/RankNotice";
 import { MotionModuleS } from "../MotionModule/MotionModuleS";
 import { AuthModuleS } from "../auth/AuthModule";
+import { EnergyModuleS } from "../Energy/EnergyModule";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**玩家伤害信息 */
 export type THurtData = {
@@ -65,6 +67,8 @@ export type THurtData = {
 export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModuleData> {
     /**玩家代理类map */
     private playerProxyMap: Map<number, PlayerProxyS> = new Map();
+
+    private _fightingPlayerSet: Set<number> = new Set();
 
     private playerAttributeMap: Map<number, Attribute.AttributeValueObject> = new Map();
     private deadPlayer: Set<number> = new Set();
@@ -134,7 +138,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     }
 
     /**定时器 不受帧率影响  */
-    private onLogicUpdate() {}
+    private onLogicUpdate() { }
 
     protected onUpdate(dt: number): void {
         for (const [key, value] of this.playerProxyMap) {
@@ -262,6 +266,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
     onPlayerLeft(player: mw.Player) {
         let playerID = player.playerId;
+        this._fightingPlayerSet.delete(playerID);
 
         PlayerManager.instance.removePlayer(playerID);
 
@@ -437,7 +442,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttrIT(beHurtId, Attribute.EnumAttributeType.hp, Math.abs(atkVal));
             this.dispatchSceneUnitInjure(
                 beHurtId,
-                [{from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal}],
+                [{ from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal }],
                 [beHurtId],
             );
             return;
@@ -647,7 +652,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttr(playerID, Attribute.EnumAttributeType.hp, drainLifeHp);
             this.dispatchSceneUnitInjure(
                 playerID,
-                [{from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal}],
+                [{ from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal }],
                 [playerID],
             );
         }
@@ -1784,10 +1789,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         if (!player) {
             return;
         }
+
         let playerData = this.getPlayerData(playerID);
         if (!playerData) {
             return;
         }
+
         // 清理击杀数量
         playerData.clearKillCount();
         this.getClient(playerID).net_updateKillCount(playerData.getKillCount());
@@ -1831,6 +1838,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         }
 
         this.setPlayerDeadState(playerID, sceneID);
+        this._fightingPlayerSet.delete(playerID);
     }
 
     /**结算杀戮信息 */
@@ -2263,8 +2271,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         let mulCfg = GameConfig.MultipleKill.getAllElement();
         let addRate = mulCfg[Math.min(this.getPlayerData(attackId).getKillCount(), mulCfg.length) - 1].Factor;
         // 击杀加分， 被击杀减分
-        this.changeRankScore(attackId, Math.round(calScore * addRate));
-        this.changeRankScore(deadId, -Math.round(calScore * Globaldata.rankScoreRate));
+        if (this._fightingPlayerSet.has(attackId)) {
+            this.changeRankScore(attackId, Math.round(calScore * addRate));
+        }
+        if (this._fightingPlayerSet.has(deadId)) {
+            this.changeRankScore(deadId, -Math.round(calScore * Globaldata.rankScoreRate));
+        }
     }
 
     /**
@@ -2387,6 +2399,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         this.changeRankScore(playerId, -rankCfg.rankTicket);
         Event.dispatchToClient(player, EModule_Events_S.payTicketSuccessful, playerId);
+        this.net_playerJoinFighting(playerId);
     }
 
     @Decorator.noReply()
@@ -2403,5 +2416,14 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     public async net_getRankTicket(): Promise<boolean> {
         const playerId = this.currentPlayerId;
         return this.playerTickets.get(playerId) ?? true;
+    }
+
+    @Decorator.noReply()
+    public net_playerJoinFighting(playerId: number) {
+        const ems = ModuleService.getModule(EnergyModuleS);
+        if (ems.isAfford(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING)) {
+            ems.consume(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING)
+            this._fightingPlayerSet.add(playerId);
+        }
     }
 }

@@ -164,7 +164,7 @@ export class MainUI extends Main_HUD_Generate {
         // EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
 
         Yoact.bindYoact(() =>
-            Gtk.trySetText(this.mBattle_2,
+            Gtk.trySetText(this.mBattle,
                 Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
                     .toString()));
         Yoact.bindYoact(() =>

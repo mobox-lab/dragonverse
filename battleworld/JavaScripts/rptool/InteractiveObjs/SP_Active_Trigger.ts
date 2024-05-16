@@ -68,6 +68,7 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
                 });
                 return;
             }
+            ModuleService.getModule(PlayerModuleC).playerJoinFighting();
             this.interactNext(chara.player.playerId, true);
         });
     }
@@ -100,6 +101,10 @@ class Trigger_S extends InteractLogic_S<SP_Trigger> {
 
     }
     protected onStart(): void {
+
+    }
+
+    private onEnter(go: mw.GameObject) {
 
     }
 

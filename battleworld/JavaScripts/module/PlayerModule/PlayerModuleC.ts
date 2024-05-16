@@ -1433,4 +1433,8 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
     public net_updateKillCount(killCount: number) {
         UIService.getUI(MainUI).updateKillCount(killCount);
     }
+
+    public playerJoinFighting() {
+        this.server.net_playerJoinFighting(Player.localPlayer.playerId);
+    }
 }
