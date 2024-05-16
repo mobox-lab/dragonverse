@@ -166,11 +166,11 @@ AddGMCommand(
 );
 AddGMCommand(
     "增加钻石",
+    (player: mw.Player, value: string) => { },
     (player: mw.Player, value: string) => {
         let val = Number(value);
         ModuleService.getModule(PlayerModuleS).addDiamond(player.playerId, val);
     },
-    (player: mw.Player, value: string) => { },
     "货币"
 );
 
