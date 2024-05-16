@@ -120,6 +120,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         let be = await this.playerCreateBehavirs(player.character.gameObjectId);
         if (!name) name = "三七";
         be.nickName = name;
+        const data = this.getPlayerData(player);
+        if (!data) return;
+        GlobalData.LevelUp.initPlayer(player.playerId, data.levelData);
         let petIds = this.petBagModule.getPlayerCurEquipPets(player.playerId);
         petIds.forEach(petItem => {
             be.equipPet(petItem.k + "_" + petItem.I, petItem.p.a, petItem.p.n);
@@ -128,7 +131,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
     /**升级 */
     public async net_levelUp(id: number): Promise<boolean> {
-        const cfg = GameConfig.Upgrade.getElement(id);
+        const cfg = GameConfig.Upgrade.getElement(id + 1);
         if (!cfg) return false;
 
         let cost = cfg.Diamond[this.currentData.getLevelData(id)] ?? 0;

@@ -6,6 +6,20 @@ import ModuleService = mwext.ModuleService;
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import { Globaldata } from "../../const/Globaldata";
+import { AddGMCommand } from "module_gm";
+
+AddGMCommand("Change Energy",
+    undefined,
+    (player, value) => {
+        let v = parseInt(value);
+        if (Number.isNaN(v)) {
+            v = 200;
+        }
+        Log4Ts.log(EnergyModuleS, `try add energy to player ${player.playerId}. by GM. value: ${v}`);
+
+        ModuleService.getModule(EnergyModuleS).addEnergy(player.playerId, v);
+    },
+);
 
 export default class BWEnergyModuleData extends mwext.Subdata {
     //@Decorator.persistence()
