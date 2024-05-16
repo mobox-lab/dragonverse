@@ -74,10 +74,10 @@ export class DamageRecord {
 }
 
 /**场景资源Arr */
-export const SceneResourceMap: Map<number, resourceScript[]> = new Map<number, resourceScript[]>();
+export const SceneResourceMap: Map<number, ResourceScript[]> = new Map<number, ResourceScript[]>();
 
 @Component
-export default class resourceScript extends mw.Script {
+export default class ResourceScript extends mw.Script {
 
     @mw.Property({replicated: true, onChanged: "onHpChanged"})
     public curHp: number = 0;
@@ -114,8 +114,9 @@ export default class resourceScript extends mw.Script {
         this.randomRate(cfgId);
         this.damageArr.length = 0;
 
-        this.scenePointId = cfgId + "_" + pointId + "_" + this._rate;
+        this.pointId = pointId;
         this._cfgId = cfgId;
+        this.scenePointId = cfgId + "_" + pointId + "_" + this._rate;
         let unitInfo = GameConfig.SceneUnit.getElement(cfgId);
         this.curHp = unitInfo.HP;
         this.cfg = unitInfo;
@@ -138,7 +139,7 @@ export default class resourceScript extends mw.Script {
         //校验一下key在不在背包里
         let res = ModuleService.getModule(PetBagModuleS).getPet(playerID, key);
         if (!res) {
-            Log4Ts.error(resourceScript, `pet not exist. playerID:${playerID}, key:${key}`);
+            Log4Ts.error(ResourceScript, `pet not exist. playerID:${playerID}, key:${key}`);
             return;
         }
         let damage = res.p.a * petDamage * (1 + EnchantBuff.getPetBuff(playerID, key).damageAdd / 100);
@@ -173,7 +174,7 @@ export default class resourceScript extends mw.Script {
             );
         }
         if (this.curHp <= 0) return;
-        this.curHp -= damage;
+        this.curHp -= damage * 100;
         if (this.curHp <= 0) {
             this.curHp = 0;
             this.net_dead(playerID);
@@ -266,7 +267,16 @@ export default class resourceScript extends mw.Script {
     private allChild: mw.GameObject[] = [];
     private isStart: boolean = false;
     /**当前坐标 */
-    private curPos: mw.Vector = new mw.Vector();
+    private _curPos: mw.Vector = undefined;
+
+    public get curPos() {
+        if (!this.pointId) return undefined;
+        if (!this._curPos) {
+            this._curPos = GameConfig.DropPoint.getElement(this.pointId).areaPoints;
+        }
+        return this._curPos;
+    }
+
     private _cfgId: number = 0;
     private cfg: ISceneUnitElement = null;
 
@@ -285,14 +295,7 @@ export default class resourceScript extends mw.Script {
     public onGuaSha: mw.Action = new mw.Action();
 
     /**当前坐标id */
-    private _pointId: number = 0;
-    public get pointId(): number {
-        return this._pointId;
-    }
-
-    public get location(): mw.Vector {
-        return this.curPos;
-    }
+    public pointId: number = 0;
 
     public get cfgId(): number {
         return this._cfgId;
@@ -303,13 +306,13 @@ export default class resourceScript extends mw.Script {
     }
 
     private async onHpChanged(): Promise<void> {
-
+        this.objState(this.curHp);
         if (this.curHp <= 0) {
             this.onGuaSha.call(false);
             this.curHp = 0;
             this.lastDamage.set(Player.localPlayer.playerId, 0);
             this._cfgId = 0;
-            this._pointId = 0;
+            this.pointId = 0;
             if (this.cfg) {
                 this.removeScenceResource(this.cfg.AreaID, this);
                 this.cfg = null;
@@ -377,7 +380,7 @@ export default class resourceScript extends mw.Script {
 
     /**通过血量判断攻击阶段 */
     private checkHpStage(playerId: number) {
-        if (this.resObj == null || this._cfgId == 0 || !this.cfg) return;
+        if (this._cfgId == 0 || !this.cfg) return;
         this.refreshGuaSha(playerId);
 
         let random = MathUtil.randomInt(0, 100);
@@ -390,8 +393,6 @@ export default class resourceScript extends mw.Script {
             this.stopGuaSha(playerId);
 
             this.playCritEffectByLevel();
-
-            this.resObj.getChildByName("2")?.setVisibility(mw.PropertyStatus.Off);
 
             let myRate = this.getDamageRate(playerId);
             this.playCritEffectByLast();
@@ -429,7 +430,7 @@ export default class resourceScript extends mw.Script {
                 .getModule(DropManagerS)
                 .createDrop(
                     playerId,
-                    this.resObj.worldTransform.position,
+                    this.curPos,
                     this.judgeGold(),
                     goldVal,
                     goldCount,
@@ -440,7 +441,7 @@ export default class resourceScript extends mw.Script {
                 .getModule(DropManagerS)
                 .createDrop(
                     playerId,
-                    this.resObj.worldTransform.position,
+                    this.curPos,
                     GlobalEnum.CoinType.Diamond,
                     gemVal,
                     gemCount,
@@ -557,15 +558,12 @@ export default class resourceScript extends mw.Script {
 
         let arr = this.scenePointId.split("_");
         this._cfgId = Number(arr[0]);
-        this._pointId = Number(arr[1]);
+        this.pointId = Number(arr[1]);
         this._rate = Number(arr[2]);
         this.guaShaRewardGem = 0;
         this.guaShaRewardGold = 0;
         this.onGuaSha.clear();
         this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
-        let point = GameConfig.DropPoint.getElement(this._pointId).areaPoints;
-
-        this.curPos.set(point.x, point.y, point.z);
 
         //先存起来，等玩家进入范围后，再遍历 一点点得到出现
         this.addScenceResource(this.cfg.AreaID);
@@ -603,7 +601,6 @@ export default class resourceScript extends mw.Script {
         this.order = 0;
         this.tweenInit();
         this.switchVisible(true);
-        this.objState(this.curHp);
 
         return true;
     }
@@ -690,9 +687,9 @@ export default class resourceScript extends mw.Script {
         this.net_injured(playerId, key);
         SoundManager.instance.playAtkSound(
             GlobalData.Music.resourceDestroy,
-            GameConfig.DropPoint.getElement(this._pointId).areaPoints);
+            this.curPos);
         if (this.curHp <= 0) return true;
-        if (this.curHp - damage <= 0) return true;
+        if (this.curHp - damage * 100 <= 0) return true;
         return false;
     }
 
@@ -702,11 +699,14 @@ export default class resourceScript extends mw.Script {
             this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
         if (!this.cfg) return;
 
-        if (curHp < this.cfg.HP && curHp > this.cfg.HP * 1 / 3) {
+        if (curHp < this.cfg.HP && curHp > this.cfg.HP / 3) {
             this.resObj.getChildByName("1")?.setVisibility(mw.PropertyStatus.Off);
         }
-        if (curHp <= this.cfg.HP * 1 / 3) {
+        if (curHp <= this.cfg.HP / 3) {
             this.resObj.getChildByName("1")?.setVisibility(mw.PropertyStatus.Off);
+            this.resObj.getChildByName("2")?.setVisibility(mw.PropertyStatus.Off);
+        }
+        if (curHp <= 0) {
             this.resObj.getChildByName("2")?.setVisibility(mw.PropertyStatus.Off);
         }
     }
@@ -872,7 +872,7 @@ export default class resourceScript extends mw.Script {
     }
 
     /**移除场景资源 */
-    private removeScenceResource(areaID: number, resourceScript: resourceScript) {
+    private removeScenceResource(areaID: number, resourceScript: ResourceScript) {
         let arr = SceneResourceMap.get(areaID);
         if (!arr) return;
         let index = arr.findIndex((item) => {

@@ -10,7 +10,7 @@ import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
-import resourceScript, { SceneResourceMap } from "./resource";
+import ResourceScript, { SceneResourceMap } from "./resource";
 import { BonusUI } from "./scenceUnitUI";
 import { RewardTipsManager } from "../UI/RewardTips";
 import Gtk from "../../util/GToolkit";
@@ -252,7 +252,7 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
     /**区域资源点权重 */
     // private areaWeightMap: Map<number, number[]> = new Map<number, number[]>();
     /**脚本缓存池 */
-    private scriptPool: resourceScript[] = [];
+    private scriptPool: ResourceScript[] = [];
     /**刮痧map */
     private handledMap: number[] = [];
 
@@ -525,16 +525,16 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
     }
 
     /**获取脚本 */
-    public async getScript(): Promise<resourceScript> {
+    public async getScript(): Promise<ResourceScript> {
         let script = this.scriptPool.shift();
         if (!script) {
-            script = await mw.Script.spawnScript(resourceScript, true);
+            script = await mw.Script.spawnScript(ResourceScript, true);
         }
         return script;
     }
 
     /**回收脚本 */
-    public returnScript(script: resourceScript) {
+    public returnScript(script: ResourceScript) {
         this.scriptPool.push(script);
     }
 

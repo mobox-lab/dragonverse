@@ -3,12 +3,12 @@ import { GlobalData } from "../../const/GlobalData";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { P_HudUI } from "../Hud/P_HudUI";
-import resourceScript, { SceneResourceMap } from "../Resources/resource";
+import ResourceScript, { SceneResourceMap } from "../Resources/resource";
 
 class resTime {
-    public res: resourceScript;
+    public res: ResourceScript;
     public time: number;
-    constructor(res: resourceScript, time: number) {
+    constructor(res: ResourceScript, time: number) {
         this.res = res;
         this.time = time;
     }
@@ -16,7 +16,7 @@ class resTime {
 
 export class InputModuleC extends ModuleC<InputModuleS, null> {
 
-    public onLineTraceAC: Action2<resourceScript, boolean> = new Action2<resourceScript, boolean>();
+    public onLineTraceAC: Action2<ResourceScript, boolean> = new Action2<ResourceScript, boolean>();
     // private touch: mw.TouchInput = null;
     private touchNum: number = 0;
     private oldPointSize: number = 0;
@@ -82,7 +82,7 @@ export class InputModuleC extends ModuleC<InputModuleS, null> {
         }
     }
     /**判断是否按住可击中物体 */
-    private isHitObject(v3: mw.ConvertScreenResult, tarLoc: mw.Vector): resourceScript {
+    private isHitObject(v3: mw.ConvertScreenResult, tarLoc: mw.Vector): ResourceScript {
         let hits = QueryUtil.lineTrace(v3.worldPosition, tarLoc, true, GlobalData.LineTrace.isShowLineTrace);
         for (let hit of hits) {
             if (!hit.gameObject) continue;
@@ -105,7 +105,7 @@ export class InputModuleC extends ModuleC<InputModuleS, null> {
         return null;
     }
     /**获取目标资源 */
-    public getTargetRes(areaId: number, hit: mw.HitResult): resourceScript {
+    public getTargetRes(areaId: number, hit: mw.HitResult): ResourceScript {
         let arr = SceneResourceMap.get(areaId);
         if (arr)
             console.error(`lwj 射线检测 arrLen = ${arr.length} areaId = ${areaId} `);

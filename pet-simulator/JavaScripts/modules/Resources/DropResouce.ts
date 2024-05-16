@@ -7,22 +7,16 @@ import { oTraceError } from "../../util/LogManager";
 import { cubicBezier, getPos, setPos } from "../../util/MoveUtil";
 import { SoundManager } from "../../util/SoundManager";
 import { RewardTipsManager } from "../UI/RewardTips";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import Gtk, { GtkTypes, RandomGenerator } from "../../util/GToolkit";
-import RemoteFunction = mw.RemoteFunction;
-import CoinType = GlobalEnum.CoinType;
-import { PlayerModuleC } from "../Player/PlayerModuleC";
-import PetBehavior from "../Player/PetBehavior";
-import pet = GlobalData.pet;
-import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import ModuleService = mwext.ModuleService;
 import Balancing from "../../depend/balancing/Balancing";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class DropManagerC extends mwext.ModuleC<DropManagerS, null> {
     private _dropItems: DropInClient[] = [];
 
-    public createDrop(params: DropGenerateParam[]) {
+    public net_createDrop(params: DropGenerateParam[]) {
 
         const gun = Balancing.getInstance().tryGetGun("dropItemGeneration");
         for (const {startPos, endPos, type, value} of params) {
@@ -98,6 +92,7 @@ export class DropManagerS extends mwext.ModuleS<DropManagerC, null> {
             let drop: DropInServer;
             if (playerDrops.length < GlobalData.SceneResource.dropItemMax) {
                 drop = new DropInServer(playerId, 0, type);
+                playerDrops.push(drop);
                 generates.push(drop);
             } else {
                 if (!sameTypeDrops) {
@@ -120,7 +115,7 @@ export class DropManagerS extends mwext.ModuleS<DropManagerC, null> {
         }
 
         this.getClient(playerId)
-            .createDrop(generates.map(item => {
+            .net_createDrop(generates.map(item => {
                     let radiusSample = isBox ? GlobalData.DropAni.randomRadiusBig : GlobalData.DropAni.randomRadius;
                     let radius = Gtk.random(radiusSample[0], radiusSample[1]);
                     const angle = new RandomGenerator().randomCircle().handle(val => val * radius).toVector2();
@@ -293,7 +288,7 @@ class DropInClient extends DropItem {
         return GlobalData.DropAni.resourceToPlayer * GlobalData.LevelUp.levelRange(playerId);
     }
 
-    private canUpdate: boolean = false;
+    private canUpdate: boolean = true;
     public isDestroy: boolean = false;
 
     /**是否已落地 */
@@ -515,8 +510,9 @@ class DropInClient extends DropItem {
  * 判断距离吸收.
  */
 function distanceAbsorb(playerId: number, obj: GameObject, targetLoc: mw.Vector): boolean {
-    let targetPos = getPos(obj);
+    let targetPos = obj.worldTransform.position;
     let dis = mw.Vector.distance(targetLoc, targetPos);
+    Log4Ts.log(distanceAbsorb, `distance with player ${playerId} is ${dis}`);
     return dis <=
         GlobalData.DropAni.resourceToPlayer
         * GlobalData.LevelUp.levelRange(playerId);

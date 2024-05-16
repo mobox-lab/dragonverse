@@ -9,7 +9,7 @@ import { cubicBezier, getRot, getTransform, setPos, setRot, setTransform } from 
 import { SoundManager } from "../../util/SoundManager";
 import { utils } from "../../util/uitls";
 import { VectorUtil } from "../../util/VectorUtil";
-import resourceScript, { SceneResourceMap } from "../Resources/resource";
+import ResourceScript, { SceneResourceMap } from "../Resources/resource";
 import { HUDInfo, HUDManager } from "./HUDManager";
 import PlayerBehavior from "./PlayerBehavior";
 import { GlobalEnum } from "../../const/Enum";
@@ -480,8 +480,8 @@ export default class PetBehavior {
     /**当前特效 */
     private currentEffect: number = null;
     /**当前目标资源 */
-    private _targetRes: resourceScript = null;
-    public get targetRes(): resourceScript {
+    private _targetRes: ResourceScript = null;
+    public get targetRes(): ResourceScript {
         return this._targetRes;
     }
 
@@ -518,7 +518,7 @@ export default class PetBehavior {
         }
         let targetPos = cfg.areaPoints;
         this._targetRes = res;
-        this.resPos = res.location;
+        this.resPos = res.curPos;
         const dis = GlobalData.pet.attackDistance;
         //以资源点为圆心，距离为半径，在圆上随机一个点
         if (!this.targetPos) this.targetPos = new mw.Vector();
