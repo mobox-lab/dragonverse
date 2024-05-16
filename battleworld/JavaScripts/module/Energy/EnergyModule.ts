@@ -353,11 +353,6 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
 
     //#region Net Method
     @mwext.Decorator.noReply()
-    public net_consume(count: number, firstTime: number) {
-        this.consume(this.currentPlayerId, count, firstTime);
-    }
-
-    @mwext.Decorator.noReply()
     public net_requestRefreshStaminaLimit() {
         let playerId = this.currentPlayerId;
         this.authModuleS
