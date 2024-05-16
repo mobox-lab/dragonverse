@@ -23,6 +23,7 @@ import MainPanel from "../../ui/main/MainPanel";
 import AreaManager from "../../depend/area/AreaManager";
 import CowLevelPortalTrigger from "./CowLevelPortalTrigger";
 import { SceneDragonModuleS } from "../../module/scene-dragon/SceneDragonModule";
+import { MapManager } from "../map/MapManager";
 
 enum Destination {
     AnyCowLevel = 1,
@@ -106,6 +107,8 @@ export default class TransferPortalTrigger extends PortalTriggerWithProgress {
                     Event.dispatchToLocal(EventDefine.PlayerReset, Player.localPlayer.playerId);
                     Event.dispatchToServer(EventDefine.PlayerReset, Player.localPlayer.playerId);
                     Player.localPlayer.getPlayerState(UnifiedRoleController)?.respawn();
+                    //回主场景显示天空盒
+                    MapManager.instance.showMap();
                 });
 
             }
