@@ -559,7 +559,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
         if (!this.playerModuleS.reduceDiamond(GlobalData.Fuse.cost)) return false;
 
-        this.petBagModuleS.deletePet(playerId, [key]);
+        this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
 
         const data = this.currentData;
         if (curSelectPets.length >= data.CurBagCapacity) return false;

@@ -126,6 +126,8 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, PSEnergyModuleDa
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
+
+        this.viewEnergy.data = this.data.energy;
     }
 
     protected onDestroy(): void {
