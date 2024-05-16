@@ -22,6 +22,7 @@ import PlayerBehavior from "./PlayerBehavior";
 import { PetSimulatorPlayerModuleData } from "./PlayerModuleData";
 import { PlayerModuleS } from "./PlayerModuleS";
 import { IGradientElement } from "../../config/Gradient";
+import Player = mw.Player;
 
 /**玩家模块 */
 export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModuleData> {
@@ -85,6 +86,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
             this.onLevelChange(id, grade);
             AnalyticsTool.action_upgrade_skill(id + 1, this.data.getLevelData(id));
         });
+        GlobalData.LevelUp.initPlayer(Player.localPlayer.playerId, this.data.levelData);
         this.hudUI = mw.UIService.getUI(P_HudUI);
         this.hudUI.mClickAction.add(this.onClickAttackSpeed, this);
         this.hudUI.mLongPressAction.add(this.onLongPressAttackSpeed, this);

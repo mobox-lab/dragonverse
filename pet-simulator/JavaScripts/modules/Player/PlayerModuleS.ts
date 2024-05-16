@@ -131,7 +131,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
     /**升级 */
     public async net_levelUp(id: number): Promise<boolean> {
-        const cfg = GameConfig.Upgrade.getElement(id);
+        const cfg = GameConfig.Upgrade.getElement(id + 1);
         if (!cfg) return false;
 
         let cost = cfg.Diamond[this.currentData.getLevelData(id)] ?? 0;
