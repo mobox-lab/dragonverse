@@ -79,9 +79,9 @@ export const SceneResourceMap: Map<number, ResourceScript[]> = new Map<number, R
 @Component
 export default class ResourceScript extends mw.Script {
 
-    @mw.Property({replicated: true, onChanged: "onHpChanged"})
+    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
     public curHp: number = 0;
-    @mw.Property({replicated: true, onChanged: "onSceneChanged"})
+    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
     private scenePointId: string = "";
 
     public get isBigBox(): boolean {
@@ -89,7 +89,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     /**伤害记录 */
-    @mw.Property({replicated: true})
+    @mw.Property({ replicated: true })
     private damageArr: DamageRecord[] = [];
 
     private _rate: number = 1;
@@ -174,7 +174,7 @@ export default class ResourceScript extends mw.Script {
             );
         }
         if (this.curHp <= 0) return;
-        this.curHp -= damage * 100;
+        this.curHp -= damage;
         if (this.curHp <= 0) {
             this.curHp = 0;
             this.net_dead(playerID);
@@ -332,13 +332,13 @@ export default class ResourceScript extends mw.Script {
     public getDamageRate(playerId: number): number {
         if (this.cfg.HP === 0) return 0;
         return this
-                .damageArr
-                .reduce((previousValue,
-                         currentValue) => {
-                        return previousValue +
-                            (currentValue.playerId === playerId ? currentValue.damage : 0);
-                    },
-                    0)
+            .damageArr
+            .reduce((previousValue,
+                currentValue) => {
+                return previousValue +
+                    (currentValue.playerId === playerId ? currentValue.damage : 0);
+            },
+                0)
             / this.cfg.HP;
     }
 
@@ -629,7 +629,7 @@ export default class ResourceScript extends mw.Script {
         const time = GlobalData.ResourceAni.dropTweenTime[this.order];
         let start = endInfos[this.order];
         let end = endInfos[this.order + 1];
-        this.endTween = new mw.Tween({z: start}).to({z: end}, time).onUpdate((obj) => {
+        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
             this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
         }).onComplete(() => {
             this.order++;
@@ -684,7 +684,7 @@ export default class ResourceScript extends mw.Script {
             GlobalData.Music.resourceDestroy,
             this.curPos);
         if (this.curHp <= 0) return true;
-        if (this.curHp - damage * 100 <= 0) return true;
+        if (this.curHp - damage <= 0) return true;
         return false;
     }
 
