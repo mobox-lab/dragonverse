@@ -141,7 +141,6 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
 
     /**轮询 */
     public onUpdate(dt: number): void {
-        this.absorbUpdate(dt);
         Player.getAllPlayers().forEach((player) => {
             let drops: DropInServer[] = Gtk.tryGet(this._drops, player.playerId, () => []);
 
@@ -173,22 +172,6 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
     protected onPlayerLeft(player: mw.Player): void {
         super.onPlayerLeft(player);
         this._clientDropCreateFunctionMap.delete(player.playerId);
-    }
-
-    /**吸收金币轮询 */
-    private absorbUpdate(dt: number): void {
-        if (!this._isStartAbsorb) return;
-        this._absorbTime += dt;
-        if (this._absorbTime >= this._absorbInterval) {
-            this._absorbTime = 0;
-            this._isStartAbsorb = false;
-            let gold1 = this.typeValue.get(GlobalEnum.CoinType.FirstWorldGold);
-            let gold2 = this.typeValue.get(GlobalEnum.CoinType.SecondWorldGold);
-            let gold3 = this.typeValue.get(GlobalEnum.CoinType.ThirdWorldGold);
-            let diamond = this.typeValue.get(GlobalEnum.CoinType.Diamond);
-            this.playerMS.absorbAll(gold1, gold2, gold3, diamond);
-            this.resetValue();
-        }
     }
 
     /**重置金币钻石值 */
