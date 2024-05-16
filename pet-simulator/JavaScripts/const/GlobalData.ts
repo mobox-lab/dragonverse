@@ -395,11 +395,11 @@ export namespace GlobalData {
         /**资源类型 */
         public static resourceType: number[] = [1, 2, 3, 4, 5, 6, 7, 8];
         /**初始化资源点刷新间隔 */
-        public static initResourceRefresh: number = 0.5;
+        public static initResourceRefresh: number = 0.1;
         /**每个区域资源上限个数 */
         public static maxResourceCount: number = 200;
         /**每个区域资源下限个数 */
-        public static minResourceCount: number = 52;
+        public static minResourceCount: number = 20;
         /**默认区域数组 */
         public static defaultAreaArr: number[] = [1002, 2002];
         /**忽略区域数组 */
