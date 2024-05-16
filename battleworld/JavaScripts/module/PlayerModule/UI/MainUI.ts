@@ -933,7 +933,8 @@ export class MainUI extends Main_HUD_Generate {
     }
 
     public setCoinAndEnergyVisible(visible: boolean) {
-        this.mCanvasMCoin.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
+        // this.mCanvasMCoin.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
+        this.mCanvasMCoin.visibility = SlateVisibility.Hidden;
         this.mCanvasBattle.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
     }
 
