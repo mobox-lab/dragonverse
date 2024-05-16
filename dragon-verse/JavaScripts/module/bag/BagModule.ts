@@ -1,20 +1,18 @@
-import ModuleC = mwext.ModuleC;
-import ModuleS = mwext.ModuleS;
-import Subdata = mwext.Subdata;
 import createYoact = Yoact.createYoact;
 import Enumerable from "linq";
-import {IBagItemElement} from "../../config/BagItem";
-import {GameConfig} from "../../config/GameConfig";
+import { IBagItemElement } from "../../config/BagItem";
+import { GameConfig } from "../../config/GameConfig";
 import ByteArray from "../../depend/byteArray/ByteArray";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import IUnique from "../../depend/yoact/IUnique";
-import {Yoact} from "../../depend/yoact/Yoact";
+import { Yoact } from "../../depend/yoact/Yoact";
 import YoactArray from "../../depend/yoact/YoactArray";
-import ForeignKeyIndexer, {BagTypes} from "../../const/ForeignKeyIndexer";
-import {EventDefine} from "../../const/EventDefine";
-import {AuthModuleS} from "../auth/AuthModule";
+import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
+import { EventDefine } from "../../const/EventDefine";
+import { AuthModuleS } from "../auth/AuthModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
+import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -97,19 +95,10 @@ export class HandbookItemUnique implements IUnique {
 
 type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
 
-export default class BagModuleData extends Subdata {
+export default class BagModuleData extends JModuleData {
     public static config(bagId: number): IBagItemElement {
         return GameConfig.BagItem.getElement(bagId);
     }
-
-    /**
-     * 已经发布的正式数据版本号.
-     * 以版本发布时间 升序排列.
-     * RV.
-     */
-    public static readonly RELEASE_VERSIONS: number[] = [
-        202312061339,
-    ];
 
     /**
      * 版本升级办法.
@@ -154,22 +143,13 @@ export default class BagModuleData extends Subdata {
         this.initHandBook();
     }
 
-    protected onDataInit(): void {
-        super.onDataInit();
-        this.checkVersion();
-    }
-
     public save(syncToClient: boolean): this {
         this.handbookStr = this.handbook.toString();
         return super.save(syncToClient);
     }
 
-    /**
-     * 定义为最新版本号.
-     * 为什么不做成只读属性而是个 getter 呢.
-     */
-    public get version(): number {
-        return BagModuleData.RELEASE_VERSIONS[BagModuleData.RELEASE_VERSIONS.length - 1];
+    public get releasedVersions() {
+        return [202312061339];
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -190,34 +170,6 @@ export default class BagModuleData extends Subdata {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     /**
-     * 数据版本检查.
-     */
-    public checkVersion() {
-        if (this.currentVersion === this.version) return;
-
-        Log4Ts.log(BagModuleData,
-            `数据准备升级`,
-            () => `当前版本: ${this.currentVersion}`,
-            () => `最新版本: ${this.version}.`,
-        );
-
-        const startIndex = BagModuleData.RELEASE_VERSIONS.indexOf(this.currentVersion);
-        if (startIndex < 0) {
-            Log4Ts.error(
-                BagModuleData,
-                `数据号版本异常`,
-                `不是已发布的版本号`,
-                () => `当前版本: ${this.currentVersion}.`);
-            return;
-        }
-
-        for (let i = startIndex; i < BagModuleData.UPDATE_VERSION_METHOD.length - 1; ++i) {
-            BagModuleData.UPDATE_VERSION_METHOD[i](this);
-            this.currentVersion = BagModuleData.RELEASE_VERSIONS[i + 1];
-        }
-    }
-
-    /**
      * 添加物品.
      * 不会使结果 <0.
      * @param bagId
@@ -228,6 +180,18 @@ export default class BagModuleData extends Subdata {
             this.itemsMap[bagId] = 0;
         }
         this.itemsMap[bagId] += count;
+        if (this.itemsMap[bagId] < 0) {
+            this.itemsMap[bagId] = 0;
+        }
+    }
+
+    /**
+     * 设置物品.
+     * @param {number} bagId
+     * @param {number} count
+     */
+    public setItem(bagId: number, count: number) {
+        this.itemsMap[bagId] = count;
         if (this.itemsMap[bagId] < 0) {
             this.itemsMap[bagId] = 0;
         }
@@ -247,7 +211,7 @@ export default class BagModuleData extends Subdata {
      * @param bagId
      */
     public hasItem(bagId: number): boolean {
-        return this.itemsMap[bagId] > 0;
+        return this.getItemCount(bagId) > 0;
     }
 
     public removeItem(bagId: number) {
@@ -326,7 +290,7 @@ export default class BagModuleData extends Subdata {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
+export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
     //#region Member
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
     public handbookYoact: YoactArray<HandbookItemUnique> = new YoactArray<HandbookItemUnique>();
@@ -335,21 +299,15 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     public obbyCoinYoact: { count: number } = Yoact.createYoact({count: 0});
     public obbyTicketYoact: { count: number } = Yoact.createYoact({count: 0});
 
-    private _isReady: boolean = false;
-
-    public get isReady() {
-        return this._isReady;
-    }
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
     protected onAwake(): void {
-         super.onAwake();
+        super.onAwake();
     }
 
-    protected onStart(): void {
-        super.onStart();
+    protected onJStart(): void {
+        super.onJStart();
 
         //#region Member init
         this.bagItemYoact.setAll(BagItemUnique.arrayFromObject(this.data));
@@ -358,7 +316,6 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         this.dragonBallYoact.count = this.getItemCount(GameServiceConfig.DRAGON_BALL_BAG_ID);
         this.obbyCoinYoact.count = this.data.obbyCoin;
         this.obbyTicketYoact.count = this.data.obbyTicket;
-        this._isReady = true;
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
@@ -459,7 +416,9 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
         } else {
             if (count === null) return;
 
-            const handbookItem = this.handbookYoact.getItem(bagId);
+            const handbookItem = count > 0 ?
+                this.handbookYoact.getItem(bagId) :
+                undefined;
             if (handbookItem && !handbookItem.collected) {
                 handbookItem.collected = true;
                 Log4Ts.log(BagModuleC, `record item. id: ${bagId}.`);
@@ -513,9 +472,15 @@ export class BagModuleC extends ModuleC<BagModuleS, BagModuleData> {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
+export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
     //#region Member
-    private _authModule: AuthModuleS;
+    private _authModuleS: AuthModuleS;
+
+    private get authModuleS(): AuthModuleS | null {
+        if (!this._authModuleS) this._authModuleS = ModuleService.getModule(AuthModuleS);
+        return this._authModuleS;
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -523,11 +488,10 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         super.onAwake();
     }
 
-    protected onStart(): void {
-        super.onStart();
+    protected onJStart(): void {
+        super.onJStart();
 
         //#region Member init
-        ModuleService.ready().then(() => this._authModule = ModuleService.getModule(AuthModuleS));
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
@@ -557,10 +521,36 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         super.onPlayerEnterGame(player);
         this.dailyDrawObbyCoin(player.playerId);
         this.dailyDrawObbyTicket(player.playerId);
+
+        this.authModuleS?.queryUserDragonBall(player.playerId)
+            .then((value) => {
+                const data = this.getPlayerData(player.playerId);
+                if (!data) Log4Ts.warn(BagModuleS, `player not found. playerId: ${player.playerId}.`);
+                else {
+                    // data.addItem();
+                }
+            });
     }
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
+
+        Log4Ts.log(BagModuleS,
+            `player entered. playerId: ${player.playerId}.`,
+            `query user dragon ball...`);
+        this.authModuleS
+            ?.queryUserDragonBall(player.playerId)
+            .then(value => {
+                    Log4Ts.log(BagModuleS,
+                        `query user dragon ball success.`,
+                        `playerId: ${player.playerId}.`,
+                        `value: ${value}.`);
+                    this.setItem(
+                        player.playerId,
+                        GameServiceConfig.DRAGON_BALL_BAG_ID,
+                        value.unUsed);
+                },
+            );
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -577,6 +567,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
      */
     public addItem(playerId: number, bagId: number, count: number, autoRemove: boolean = true) {
         const playerData = this.getPlayerData(playerId);
+        if (!this.checkPlayerExist(playerData)) return;
         Log4Ts.log(BagModuleS,
             () => `add item. playerId: ${playerId}. `,
             () => `id: ${bagId}. `,
@@ -584,14 +575,6 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
             () => `target count: ${playerData.getItemCount(bagId) + count}.`,
             () => `autoRemove: ${autoRemove}.`,
         );
-
-        // if (GlobalProperty.getInstance().isRelease && (!this._authModule?.enableEnter(playerId) ?? true)) {
-        //     Log4Ts.warn(BagModuleS,
-        //         `has no auth permission when add item. rejected.`,
-        //         `playerId: ${playerId}`,
-        //     );
-        //     return;
-        // }
 
         if (!playerData.getItemCount(bagId) &&
             count > 0 &&
@@ -614,12 +597,52 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
     }
 
     /**
+     * 设置物品.
+     * @param {number} playerId
+     * @param {number} bagId
+     * @param {number} count
+     * @param {boolean} autoRemove
+     * @private
+     */
+    public setItem(playerId: number, bagId: number, count: number, autoRemove: boolean = true) {
+        const playerData = this.getPlayerData(playerId);
+        if (!this.checkPlayerExist(playerData)) return;
+        Log4Ts.log(BagModuleS,
+            () => `set item. playerId: ${playerId}. `,
+            () => `id: ${bagId}. `,
+            () => `current count: ${playerData.getItemCount(bagId)}. `,
+            () => `target count: ${playerData.getItemCount(bagId) + count}.`,
+            () => `autoRemove: ${autoRemove}.`,
+        );
+
+        if (!playerData.getItemCount(bagId) &&
+            count > 0 &&
+            playerData.recordItem(bagId)) {
+            Log4Ts.log(BagModuleS, `record item. id: ${bagId}.`);
+        }
+
+        this.getClient(playerId).net_setRecord(bagId, playerData.handbook.getValue(bagId));
+
+        playerData.setItem(bagId, count);
+        if (autoRemove && playerData.getItemCount(bagId) === 0) {
+            playerData.removeItem(bagId);
+        }
+        playerData.save(false);
+
+        this.getClient(playerId).net_setItem(
+            bagId,
+            playerData.getItemCount(bagId),
+            autoRemove);
+    }
+
+    /**
      * 移除物品
      * @param playerId
      * @param bagId
      */
     public removeItem(playerId: number, bagId: number) {
         const playerData = this.getPlayerData(playerId);
+        if (!this.checkPlayerExist(playerData)) return;
         Log4Ts.log(BagModuleS, `add item`,
             () => `playerId: ${playerId}`,
             () => `id: ${bagId}`,
@@ -631,7 +654,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
         this.getClient(playerId).net_setItem(
             bagId,
             playerData.getItemCount(bagId),
-            true
+            true,
         );
     }
 
@@ -689,8 +712,9 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
     }
 
     /**
-     * 消耗Obby金币
+     * 消耗 Obby 金币
      * @param playerId
+     * @param count
      */
     public consumeObbyCoin(playerId: number, count: number): boolean {
         const playerData = this.getPlayerData(playerId);
@@ -703,8 +727,7 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
     }
 
     /**
-     * 消耗Obby入场券
-     * @param playerId
+     * 消耗 Obby 入场券
      */
     public net_consumeObbyTicket(): Promise<boolean> {
         //判断需不需要消耗次数
@@ -783,6 +806,17 @@ export class BagModuleS extends ModuleS<BagModuleC, BagModuleData> {
     public getItemCount(playerId: number, bagId: number): number {
         const data = this.getPlayerData(playerId);
         return data.getItemCount(bagId);
+    }
+
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    //#region Log
+    private checkPlayerExist(player: mw.Player | mwext.Subdata): boolean {
+        if (!player) {
+            Log4Ts.warn(BagModuleS, `player not found.`);
+            return false;
+        }
+        return true;
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

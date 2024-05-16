@@ -43,7 +43,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
     })
     public isRefreshCameraRotation: boolean = true;
 
-    @Property({ displayName: "角色目标旋转", group: "Config-rotation" })
+    @Property({displayName: "角色目标旋转", group: "Config-rotation"})
     public endRotation: Rotation = Rotation.zero;
 
     @Property({
@@ -79,7 +79,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
             let scenes = GameConfig.Scene.getAllElement();
             let cowLevelScene = scenes.filter((element) => {
                 return element.id !== GameServiceConfig.MAIN_SCENE_ID &&
-                    element.id !== GameServiceConfig.TRANSFER_SCENE_ID
+                    element.id !== GameServiceConfig.TRANSFER_SCENE_ID;
             });
 
             let cowLevel = Math.floor(Math.random() * cowLevelScene.length);
@@ -153,13 +153,13 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
         let ui = UIService.show(JumpGameTransition_Generate);
         actions
             .tween(ui.bImage)
-            .set({ renderOpacity: 0 })
-            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 1 })
+            .set({renderOpacity: 0})
+            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, {renderOpacity: 1})
             .call(() => {
                 callBack();
             })
             .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
-            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
+            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, {renderOpacity: 0})
             .call(() => {
                 UIService.hide(JumpGameTransition_Generate);
             })
@@ -176,7 +176,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
             effect.worldTransform.position = GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_POS;
             actions
                 .tween(effect.worldTransform)
-                .set({ scale: Vector.zero })
+                .set({scale: Vector.zero})
                 .to(GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_DURATION, {
                     scale: GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_SCALE_MAX,
                 })
@@ -248,7 +248,6 @@ AddGMCommand("传送奶牛关", (player, value) => {
         );
     }
 
-
     //改变天空盒
     EnvironmentManager.getInstance().setEnvironment(scene.sceneEnvId);
     //显示场景名
@@ -259,6 +258,10 @@ AddGMCommand("传送奶牛关", (player, value) => {
     Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
 }, (player, value) => {
     let scene = GameConfig.Scene.getElement(value);
+    if (!scene) {
+        Log4Ts.error(CowLevelPortalTrigger, `scene not exist. sceneId: ${value}`);
+        return;
+    }
     let dest = AreaManager.getInstance().getRandomPoint(scene.bornAreaId);
     if (!("z" in dest)) {
         Log4Ts.error(CowLevelPortalTrigger, `currently only support 3D point as spawn point`);

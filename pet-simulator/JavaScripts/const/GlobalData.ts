@@ -184,7 +184,7 @@ export namespace GlobalData {
         /**平滑值 */
         public static smoothValue: number = 0.4;
         /**引导线场景guid */
-        public static guideLineS: string = "0220A800";
+        public static guideLineS: string = "1C65E763";
         /**光圈特效guid */
         public static lightCircleS: string = "88780";
         /**宠物攻击时与资源点距离 */

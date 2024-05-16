@@ -43,6 +43,8 @@ export class MouseLockController {
             //为了防止松开alt会导致鼠标锁定
             KeyOperationManager.getInstance().onKeyUp(null, Keys.LeftAlt, () => { });
             KeyOperationManager.getInstance().onKeyUp(null, Keys.RightAlt, () => { });
+            KeyOperationManager.getInstance().onKeyUp(null, Keys.LeftCommand, () => { });
+            KeyOperationManager.getInstance().onKeyUp(null, Keys.RightCommand, () => { });
         }
     }
 
@@ -52,6 +54,8 @@ export class MouseLockController {
             InputUtil.isLockMouse = true;
             KeyOperationManager.getInstance().unregisterKey(null, Keys.LeftAlt);
             KeyOperationManager.getInstance().unregisterKey(null, Keys.RightAlt);
+            KeyOperationManager.getInstance().unregisterKey(null, Keys.LeftCommand);
+            KeyOperationManager.getInstance().unregisterKey(null, Keys.RightCommand);
         }
     }
 }
