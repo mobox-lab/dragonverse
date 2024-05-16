@@ -82,6 +82,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     private _shopS: ShopModuleS = null;
     private mMotion: MotionModuleS = null;
 
+    /** 玩家加入战场门票 */
+    private playerTickets: Map<number, boolean> = new Map();
+
     onStart() {
         this.mAttribute = ModuleService.getModule(AttributeModuleS);
         this.mSkill = ModuleService.getModule(SkillModuleS);
@@ -131,8 +134,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     }
 
     /**定时器 不受帧率影响  */
-    private onLogicUpdate() {
-    }
+    private onLogicUpdate() {}
 
     protected onUpdate(dt: number): void {
         for (const [key, value] of this.playerProxyMap) {
@@ -254,6 +256,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this.resetdayRankScore(player.playerId);
 
         this.checkRankReward(player.playerId);
+
+        this.initPlayerTicket(player.playerId);
     }
 
     onPlayerLeft(player: mw.Player) {
@@ -268,6 +272,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this.stop_recover_Hp(playerID);
 
         this.left_playerProxy(playerID);
+
+        // 清除玩家门票
+        this.playerTickets.delete(playerID);
     }
 
     /**初始化玩家代理类 */
@@ -653,6 +660,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
      */
     @Decorator.noReply()
     net_setPlayerAttr(type: Attribute.EnumAttributeType, value: number) {
+        // 目前没有直接设置 rankScore 的调用， 预防客户端直接操作 rankScore
+        if (type === Attribute.EnumAttributeType.rankScore) return;
         this.setPlayerAttr(this.currentPlayerId, type, value);
     }
 
@@ -976,27 +985,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         }
 
         let calValue = data.getAttrValue(type) - value;
+        // 防止客户端操作 rankScore
+        if (type == Attribute.EnumAttributeType.rankScore) return;
         // 段位分处理
-        if (type == Attribute.EnumAttributeType.rankScore || type == Attribute.EnumAttributeType.dayRankScore) {
+        if (type == Attribute.EnumAttributeType.dayRankScore) {
             calValue = Math.round(Math.max(0, calValue));
         }
-        if (type == Attribute.EnumAttributeType.rankScore) {
-            this.reducePlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, value);
-
-            data.setAttrValue(type, calValue);
-
-            let newRank = PlayerManager.instance.getRankLevel(calValue);
-            ModuleService.getModule(AuthModuleS).reportBattleWorldRankData(playerID, newRank, calValue, 1);
-
-            EventManager.instance.call(
-                EAttributeEvents_S.attr_change_s,
-                playerID,
-                Attribute.EnumAttributeType.rankScore,
-                data.getAttrValue(Attribute.EnumAttributeType.rankScore),
-            );
-            return;
-        }
-
         data.setAttrValue(type, calValue);
 
         if (isSave) {
@@ -1067,34 +1061,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
             return;
         }
-        // 段位分处理
+        // 防止客户端操作 rankScore
         if (type == Attribute.EnumAttributeType.rankScore) {
-            value = Math.round(
-                Math.min(value, Globaldata.maxRankScore - data.getAttrValue(Attribute.EnumAttributeType.dayRankScore)),
-            );
-            this.addPlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, value);
-            let oldRank = PlayerManager.instance.getRankLevel(curAttrValue);
-            curAttrValue = Math.round(curAttrValue + value);
-            data.setAttrValue(type, curAttrValue, isSave);
-
-            //升段位发公告
-            let newRank = PlayerManager.instance.getRankLevel(curAttrValue);
-            ModuleService.getModule(AuthModuleS).reportBattleWorldRankData(playerID, newRank, curAttrValue, 1);
-            if (newRank > oldRank) {
-                this.getAllClient().net_startNotice(
-                    ERankNoticeType.LevelUp,
-                    newRank,
-                    this.mAttribute.getAttrValue(playerID, Attribute.EnumAttributeType.playerName),
-                );
-            }
-            this.checkRankReward(playerID);
-            // 同步
-            EventManager.instance.call(
-                EAttributeEvents_S.attr_change_s,
-                playerID,
-                Attribute.EnumAttributeType.rankScore,
-                data.getAttrValue(Attribute.EnumAttributeType.rankScore),
-            );
             return;
         }
 
@@ -1926,6 +1894,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             sceneID,
             this.getPlayerAttr(playerID, Attribute.EnumAttributeType.rankScore),
         );
+        // 重置死亡玩家门票
+        this.initPlayerTicket(playerID);
 
         // 通知所有玩家该玩家死亡了
         let players = mw.Player.getAllPlayers();
@@ -2292,12 +2262,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         let calScore = cfg.rankIntegral[deadRank - 1];
         let mulCfg = GameConfig.MultipleKill.getAllElement();
         let addRate = mulCfg[Math.min(this.getPlayerData(attackId).getKillCount(), mulCfg.length) - 1].Factor;
-        this.addPlayerAttr(attackId, Attribute.EnumAttributeType.rankScore, Math.round(calScore * addRate));
-        this.reducePlayerAttr(
-            deadId,
-            Attribute.EnumAttributeType.rankScore,
-            Math.round(calScore * Globaldata.rankScoreRate),
-        );
+        // 击杀加分， 被击杀减分
+        this.changeRankScore(attackId, Math.round(calScore * addRate));
+        this.changeRankScore(deadId, -Math.round(calScore * Globaldata.rankScoreRate));
     }
 
     /**
@@ -2344,5 +2311,97 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             rotation: effCfg.weaRot.toRotation(),
             scale: effCfg.weaScale,
         });
+    }
+
+    /**
+     * 修改 Rank 得分
+     * @param {number} playerId -- 玩家ID
+     * @param {number} deltaScore -- 变化的 rank 分，增加/减少 +- 来判断
+     * @private
+     */
+    public changeRankScore(playerId: number, deltaScore: number) {
+        const data = this.getPlayerData(playerId);
+        if (!data || !deltaScore) return;
+
+        // 获取当前属性值
+        const currentScore = data.getAttrValue(Attribute.EnumAttributeType.rankScore);
+        let calCurrentScore: number;
+
+        if (deltaScore < 0) {
+            // 如果 变化值 是负值，减少属性值
+            this.reducePlayerAttr(playerId, Attribute.EnumAttributeType.dayRankScore, Math.abs(deltaScore));
+            calCurrentScore = Math.round(Math.max(0, currentScore + deltaScore));
+        } else {
+            // 如果 变化值 是正值，增加属性值
+            const calDeltaScore = Math.round(Math.min(deltaScore, Globaldata.maxRankScore - data.getAttrValue(Attribute.EnumAttributeType.dayRankScore)));
+            this.addPlayerAttr(playerId, Attribute.EnumAttributeType.dayRankScore, calDeltaScore);
+            calCurrentScore = Math.round(currentScore + calDeltaScore);
+        }
+        // 设置新的属性值
+        data.setAttrValue(Attribute.EnumAttributeType.rankScore, calCurrentScore);
+
+        // 计算并更新玩家等级
+        const newRank = PlayerManager.instance.getRankLevel(calCurrentScore);
+        ModuleService.getModule(AuthModuleS).reportBattleWorldRankData(playerId, newRank, calCurrentScore, 1);
+
+        // 如果是增加属性值并且玩家等级上升，触发升级通知
+        if (deltaScore > 0) {
+            const oldRank = PlayerManager.instance.getRankLevel(currentScore);
+            if (newRank > oldRank) {
+                this.getAllClient().net_startNotice(
+                    ERankNoticeType.LevelUp,
+                    newRank,
+                    this.mAttribute.getAttrValue(playerId, Attribute.EnumAttributeType.playerName),
+                );
+            }
+            this.checkRankReward(playerId);
+        }
+
+        // 同步给属性同步模块
+        EventManager.instance.call(EAttributeEvents_S.attr_change_s, playerId, Attribute.EnumAttributeType.rankScore, data.getAttrValue(Attribute.EnumAttributeType.rankScore));
+    }
+
+    /**
+     * 初始化玩家门票
+     * @param {number} playerId
+     * @private
+     */
+    private initPlayerTicket(playerId: number) {
+        this.playerTickets.set(playerId, true);
+    }
+
+    /**
+     * 购买门票
+     * @param {number} playerId
+     * @private
+     */
+    private payRankTicket(playerId: number) {
+        const player = Player.getPlayer(playerId);
+        const data = this.getPlayerData(playerId);
+        if (!player || !data) return;
+
+        const rankScore = data.getAttrValue(Attribute.EnumAttributeType.rankScore);
+        const rank = PlayerManager.instance.getRankLevel(rankScore);
+        const rankCfg = GameConfig.Rank.getElement(rank);
+        if (!rankCfg) return;
+
+        this.changeRankScore(playerId, -rankCfg.rankTicket);
+        Event.dispatchToClient(player, EModule_Events_S.payTicketSuccessful, playerId);
+    }
+
+    @Decorator.noReply()
+    public net_payRankTicket() {
+        const playerId = this.currentPlayerId;
+        this.playerTickets.set(playerId, false);
+        this.payRankTicket(playerId);
+    }
+
+    /**
+     * 查询门票权限
+     * @returns {Promise<boolean>}
+     */
+    public async net_getRankTicket(): Promise<boolean> {
+        const playerId = this.currentPlayerId;
+        return this.playerTickets.get(playerId) ?? true;
     }
 }

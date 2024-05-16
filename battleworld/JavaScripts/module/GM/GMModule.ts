@@ -228,13 +228,8 @@ AddGMCommand("改变段位分", null, (player: mw.Player, value: string) => {
         return;
     }
     let v2 = Number(value);
-    if (v2 > 0) {
-        ModuleService.getModule(PlayerModuleS).setPlayerAttr(player.playerId, Attribute.EnumAttributeType.dayRankScore, 0);
-        ModuleService.getModule(PlayerModuleS).addPlayerAttr(player.playerId, Attribute.EnumAttributeType.rankScore, Math.round(v2));
-    } else {
-        ModuleService.getModule(PlayerModuleS).setPlayerAttr(player.playerId, Attribute.EnumAttributeType.dayRankScore, 0);
-        ModuleService.getModule(PlayerModuleS).reducePlayerAttr(player.playerId, Attribute.EnumAttributeType.rankScore, Math.round(-v2));
-    }
+    ModuleService.getModule(PlayerModuleS).setPlayerAttr(player.playerId, Attribute.EnumAttributeType.dayRankScore, 0);
+    ModuleService.getModule(PlayerModuleS).changeRankScore(player.playerId, v2);
 
 }, "玩家");
 

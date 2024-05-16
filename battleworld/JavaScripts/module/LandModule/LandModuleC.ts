@@ -76,6 +76,7 @@ export class LandModuleC extends ModuleC<LandModuleS, null> {
     /**
      * 拾取掉落物
      */
+    // TODO: CL - 服务端验证金币
     private listen_pickUp(pickUpType: EPickUpType, pickUp: PickUpBase, pickScript: PickUp) {
 
         if (pickUp == null) {
@@ -102,9 +103,8 @@ export class LandModuleC extends ModuleC<LandModuleS, null> {
                 {
                     value = (pickUp as PickUpHp).hpPercent;
 
-                    if (value == null || value == undefined || isNaN(value)) { // TODO待排查原因
-                        return;
-                    }
+                    // TODO待排查原因
+                    if (value == null || isNaN(value)) return;
 
                     let addvalue = 0;
                     let maxHp = this.playerModuleC.getAttr(Attribute.EnumAttributeType.maxHp);
@@ -190,9 +190,8 @@ export class LandModuleC extends ModuleC<LandModuleS, null> {
             default:
                 break;
         }
-        if (value == null || value == undefined || isNaN(value)) { // TODO待排查原因
-            return;
-        }
+        // TODO待排查原因
+        if (value == null || isNaN(value)) return;
 
 
         this.server.net_pickUp(pickScript.guid, pickUpType, value, pickUpInfo);
