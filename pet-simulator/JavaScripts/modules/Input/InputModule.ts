@@ -3,7 +3,7 @@ import { GlobalData } from "../../const/GlobalData";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { P_HudUI } from "../Hud/P_HudUI";
-import resourceScript, { SceneResourceMap } from "../Resources/resource";
+import resourceScript, { SceneResourceMap } from "../Resources/Resource";
 
 class resTime {
     public res: resourceScript;
