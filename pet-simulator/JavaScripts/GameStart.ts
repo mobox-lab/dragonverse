@@ -7,7 +7,7 @@ import { PlayerModuleC } from "./modules/Player/PlayerModuleC";
 import { PlayerModuleS } from "./modules/Player/PlayerModuleS";
 import { LogManager as mLogManager, oTrace, oTraceError, oTraceWarning } from "./util/LogManager";
 import { GameObjectFactory } from "./modules/Resources/GameObjectPool";
-import { Resource } from "./modules/Resources/resource";
+import { Resource } from "./modules/Resources/Resource";
 import { AreaModuleS } from "./modules/AreaDivide/AreaModuleS";
 import { AreaModuleC } from "./modules/AreaDivide/AreaModuleC";
 import { AreaModuleData } from "./modules/AreaDivide/AreaModuleData";

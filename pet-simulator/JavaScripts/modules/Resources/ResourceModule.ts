@@ -10,7 +10,7 @@ import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
-import ResourceScript, { SceneResourceMap } from "./resource";
+import ResourceScript, { SceneResourceMap } from "./Resource";
 import { BonusUI } from "./scenceUnitUI";
 import { RewardTipsManager } from "../UI/RewardTips";
 import Gtk from "../../util/GToolkit";

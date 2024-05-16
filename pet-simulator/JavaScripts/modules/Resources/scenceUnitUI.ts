@@ -2,7 +2,7 @@ import { SpawnManager, SpawnInfo, } from '../../Modified027Editor/ModifiedSpawn'
 
 import { oTraceError } from "odin";
 import { GameConfig } from "../../config/GameConfig";
-import ResourceScript, { } from "./resource";
+import ResourceScript, { } from "./Resource";
 import { Singleton, utils } from "../../util/uitls";
 import { GlobalData } from "../../const/GlobalData";
 
