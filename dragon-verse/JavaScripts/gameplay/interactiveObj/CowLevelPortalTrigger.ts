@@ -27,6 +27,7 @@ import UnifiedRoleController from "../../module/role/UnifiedRoleController";
 import Area from "../../depend/area/shape/base/IArea";
 import AreaManager from "../../depend/area/AreaManager";
 import { SceneDragonModuleS } from "../../module/scene-dragon/SceneDragonModule";
+import { MapManager } from "../map/MapManager";
 
 export default class CowLevelPortalTrigger extends PortalTrigger {
     @Property({
@@ -43,7 +44,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
     })
     public isRefreshCameraRotation: boolean = true;
 
-    @Property({displayName: "角色目标旋转", group: "Config-rotation"})
+    @Property({ displayName: "角色目标旋转", group: "Config-rotation" })
     public endRotation: Rotation = Rotation.zero;
 
     @Property({
@@ -153,13 +154,13 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
         let ui = UIService.show(JumpGameTransition_Generate);
         actions
             .tween(ui.bImage)
-            .set({renderOpacity: 0})
-            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, {renderOpacity: 1})
+            .set({ renderOpacity: 0 })
+            .to(GameServiceConfig.TRANSITION_FADE_IN_DURATION, { renderOpacity: 1 })
             .call(() => {
                 callBack();
             })
             .delay(GameServiceConfig.TRANSITION_DELAY_DURATION)
-            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, {renderOpacity: 0})
+            .to(GameServiceConfig.TRANSITION_FADE_OUT_DURATION, { renderOpacity: 0 })
             .call(() => {
                 UIService.hide(JumpGameTransition_Generate);
             })
@@ -176,7 +177,7 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
             effect.worldTransform.position = GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_POS;
             actions
                 .tween(effect.worldTransform)
-                .set({scale: Vector.zero})
+                .set({ scale: Vector.zero })
                 .to(GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_DURATION, {
                     scale: GameServiceConfig.COW_LEVEL_PORTAL_EFFECT_SCALE_MAX,
                 })
@@ -211,6 +212,9 @@ export default class CowLevelPortalTrigger extends PortalTrigger {
                                 only: true,
                             });
                             effect.destroy();
+
+                            //小地图不显示
+                            MapManager.instance.hideMap();
                             //通知结束交互
                             ModuleService.getModule(InteractiveObjModuleC).stopInteraction(
                                 this.gameObject.gameObjectId,
@@ -255,6 +259,7 @@ AddGMCommand("传送奶牛关", (player, value) => {
         duration: GameServiceConfig.COW_LEVEL_PORTAL_SHOW_SCENE_NAME_DURATION,
         only: true,
     });
+    MapManager.instance.hideMap();
     Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, scene.id);
 }, (player, value) => {
     let scene = GameConfig.Scene.getElement(value);
