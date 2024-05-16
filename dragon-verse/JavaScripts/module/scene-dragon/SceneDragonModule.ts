@@ -22,6 +22,7 @@ import { GameConfig } from "../../config/GameConfig";
 import Gtk from "../../util/GToolkit";
 import { IPoint3 } from "../../depend/area/shape/base/IPoint";
 import { AddGMCommand } from "module_gm";
+import { AuthModuleS } from "../auth/AuthModule";
 
 AddGMCommand(
     "生成 场景龙",
@@ -380,9 +381,11 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         this._currentBall?.do();
         //#endregion
 
-        this.server.net_tryCatch(syncKey).then((value) => {
-            if (value) this._currentCatchResultSyncKey = syncKey;
-        });
+        this.server
+            .net_tryCatch(syncKey, now)
+            .then((value) => {
+                if (value) this._currentCatchResultSyncKey = syncKey;
+            });
     }
 
     /**
@@ -571,7 +574,19 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Member
+    private _authModuleS: AuthModuleS;
+
+    private get authModuleS(): AuthModuleS | null {
+        if (!this._authModuleS) this._authModuleS = ModuleService.getModule(AuthModuleS);
+        return this._authModuleS;
+    }
+
     private _bagModuleS: BagModuleS;
+
+    private get bagModuleS(): BagModuleS | null {
+        if (!this._bagModuleS) this._bagModuleS = ModuleService.getModule(BagModuleS);
+        return this._bagModuleS;
+    }
 
     private _areaManager: AreaManager;
 
@@ -620,7 +635,6 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         super.onStart();
 
         //#region Member init
-        this._bagModuleS = ModuleService.getModule(BagModuleS);
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
@@ -825,7 +839,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
-    public net_tryCatch(syncKey: string): Promise<boolean> {
+    public async net_tryCatch(syncKey: string, catchTime: number): Promise<boolean> {
         const currPlayerId = this.currentPlayerId;
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
@@ -839,7 +853,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             `syncKey: ${syncKey}`,
             `${item.info()}`,
         );
-        if (!this._bagModuleS.hasDragonBall(currPlayerId)) {
+        if (!(this.bagModuleS?.hasDragonBall(currPlayerId) ?? false)) {
             Log4Ts.warn(SceneDragonModuleS, `dragon ball is not enough.`);
             return Promise.resolve(false);
         }
@@ -848,15 +862,29 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             return Promise.resolve(false);
         }
 
-        this._bagModuleS.addItem(currPlayerId, GameServiceConfig.DRAGON_BALL_BAG_ID, -1);
-        const success: boolean = GToolkit.randomWeight([SceneDragon.successRateAlgo(item.id)()], 1) === 0;
-        if (!success) {
+        const randomSuccess: boolean = GToolkit.randomWeight([SceneDragon.successRateAlgo(item.id)()], 1) === 0;
+        if (!randomSuccess) {
             Log4Ts.log(SceneDragonModuleC, `catch fail. failed the success rate check.`);
             return Promise.resolve(false);
-        } else {
-            Log4Ts.log(SceneDragonModuleS, `item locked.`);
+        }
+
+        Log4Ts.log(SceneDragonModuleS, `request catch scene dragon in p12...`);
+
+        const [result, currentCount] = (await this.authModuleS
+            .requestWebCatchDragon(currPlayerId,
+                item.id,
+                catchTime));
+
+        if (currentCount !== undefined) this.bagModuleS?.setItem(currPlayerId,
+            GameServiceConfig.DRAGON_BALL_BAG_ID,
+            currentCount?.unUsed ?? 0);
+
+        if (result) {
+            Log4Ts.log(SceneDragonModuleS, `catch success. item locked.`);
             this._syncLocker.set(syncKey, currPlayerId);
-            return Promise.resolve(true);
+        } else {
+            Log4Ts.log(SceneDragonModuleC, `catch fail. failed the web request.`);
+            return Promise.resolve(false);
         }
     }
 
@@ -881,7 +909,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         this._syncLocker.delete(syncKey);
 
         item.catch();
-        this._bagModuleS.addItem(currPlayerId, item.getBagConfig().id, 1);
+        this.bagModuleS?.addItem(currPlayerId, item.getBagConfig().id, 1);
         if (!item.isCatchable) {
             this.destroy(currPlayerId, syncKey, false);
         }

@@ -57,7 +57,7 @@ AddGMCommand(
         }
         mwext.ModuleService
             .getModule(AuthModuleS)
-            .reqWebCatchDragon(
+            .requestWebCatchDragon(
                 player.playerId,
                 Gtk.randomArrayItem(allDragonConfig)["id"],
                 Date.now(),
@@ -181,7 +181,7 @@ interface UserDataQueryReq {
  */
 interface QueryResp<D = undefined> {
     code: number,
-    message: string,
+    message: "success" | string,
     data?: D
 }
 
@@ -744,9 +744,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return respInJson.data;
     }
 
-    public async reqWebCatchDragon(playerId: number,
-                                   dragonPalId: number,
-                                   catchTimeStamp: number): Promise<DragonBallRespData> {
+    public async requestWebCatchDragon(playerId: number,
+                                       dragonPalId: number,
+                                       catchTimeStamp: number): Promise<[boolean, DragonBallRespData]> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
@@ -764,7 +764,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 AuthModuleS.TEST_CATCH_DRAGON_URL,
             );
 
-        return respInJson.data;
+        return [respInJson.message === "success", respInJson.data];
     }
 
     public async queryUserDragon(playerId: number): Promise<UserDragonRespData> {

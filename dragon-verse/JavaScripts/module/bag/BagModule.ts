@@ -522,7 +522,7 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
         this.dailyDrawObbyCoin(player.playerId);
         this.dailyDrawObbyTicket(player.playerId);
 
-        this.authModuleS.queryUserDragonBall(player.playerId)
+        this.authModuleS?.queryUserDragonBall(player.playerId)
             .then((value) => {
                 const data = this.getPlayerData(player.playerId);
                 if (!data) Log4Ts.warn(BagModuleS, `player not found. playerId: ${player.playerId}.`);
@@ -539,7 +539,7 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
             `player entered. playerId: ${player.playerId}.`,
             `query user dragon ball...`);
         this.authModuleS
-            .queryUserDragonBall(player.playerId)
+            ?.queryUserDragonBall(player.playerId)
             .then(value => {
                     Log4Ts.log(BagModuleS,
                         `query user dragon ball success.`,
@@ -604,7 +604,7 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
      * @param {boolean} autoRemove
      * @private
      */
-    private setItem(playerId: number, bagId: number, count: number, autoRemove: boolean = true) {
+    public setItem(playerId: number, bagId: number, count: number, autoRemove: boolean = true) {
         const playerData = this.getPlayerData(playerId);
         if (!this.checkPlayerExist(playerData)) return;
         Log4Ts.log(BagModuleS,
