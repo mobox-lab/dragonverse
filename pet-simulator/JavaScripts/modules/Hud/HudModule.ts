@@ -1,4 +1,4 @@
-import { ModifiedCameraSystem } from '../../Modified027Editor/ModifiedCamera';
+import { ModifiedCameraSystem } from "../../Modified027Editor/ModifiedCamera";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
@@ -16,12 +16,20 @@ import { P_Guide } from "./P_Guide";
 import { P_HudUI } from "./P_HudUI";
 
 import GameIngo_Generate from "../../ui-generate/common/GameIngo_generate";
+import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 
-export class HudModuleS extends ModuleS<HudModuleC, null>{
-
+export class HudModuleS extends ModuleS<HudModuleC, null> {
+    @Decorator.noReply()
+    public net_addInitPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+        if (!GlobalData.pet.initPets.includes(id)) return;
+        ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(this.currentPlayerId,
+            id,
+            type,
+            addTime);
+    }
 }
 
-export class HudModuleC extends ModuleC<HudModuleS, null>{
+export class HudModuleC extends ModuleC<HudModuleS, null> {
 
     /**当前hudUI */
     private hudUI: P_HudUI = null;
@@ -38,12 +46,13 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
         this.hudPetUI = mw.UIService.getUI(P_HudPetGift);
         this.guideUI.pickPetAction.add((id) => {
             this.initPet(id);
-        })
+        });
         this.hudUI.onJumpAction.add(this.jump.bind(this));
         this.hudUI.ontransmitAC.add(this.transmit.bind(this));
         this.hudUI.onFastTranAC.add(this.fastTransmit.bind(this));
         this.playerModule = ModuleService.getModule(PlayerModuleC);
         this.petBagModule = ModuleService.getModule(PetBagModuleC);
+
         this.playerModule.onGoldChange.add((coinType: GlobalEnum.CoinType, gold: number) => {
             if (coinType == GlobalEnum.CoinType.SummerGold) return;
             this.hudUI.changeGold(gold);
@@ -53,7 +62,6 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
         this.playerModule.onDiamondChange.add(diamond => {
             this.hudUI.changeDiamond(diamond);
         });
-
 
     }
 
@@ -67,7 +75,7 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
         SoundManager.instance.playBGM(GlobalData.Music.bgm);
         Event.addLocalListener("PlayButtonClick", () => {
             SoundManager.instance.playSound(GlobalData.Music.click);
-        })
+        });
         let bagCount = this.petBagModule.getCurPetNum();
         if (bagCount > 0) {
             this.hudUI.show();
@@ -94,9 +102,9 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
     /**初始UI选择 */
     private initPet(id: number): void {
         if (id == 1) {
-            this.petBagModule.addPet(GlobalData.pet.initPets[0]);
+            this.server.net_addInitPet(GlobalData.pet.initPets[0]);
         } else {
-            this.petBagModule.addPet(GlobalData.pet.initPets[1]);
+            this.server.net_addInitPet(GlobalData.pet.initPets[1]);
         }
         this.guideUI.hide();
         this.hudUI.show();
@@ -143,7 +151,6 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
             }
         });
     }
-
 
     protected onUpdate(dt: number): void {
         //当前dt对应的一秒帧数

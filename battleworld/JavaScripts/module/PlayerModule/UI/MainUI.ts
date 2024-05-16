@@ -163,8 +163,14 @@ export class MainUI extends Main_HUD_Generate {
         // // 怒气值变化
         // EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
 
-        EventManager.instance.add(EAttributeEvents_C.Attribute_Energy_Change_C, this.changeEnergy, this);
-        this.changeEnergy();
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mBattle,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
+                    .toString()));
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mBattle_1,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data)
+                    .toString()));
 
         this.onReserveAttrChanged();
 
@@ -585,7 +591,7 @@ export class MainUI extends Main_HUD_Generate {
             this.reBackTween.stop();
         }
         let time = backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
-        this.reBackTween = new mw.Tween({alpha: 0}).to({alpha: 1}, time * 1000).onUpdate((data) => {
+        this.reBackTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, time * 1000).onUpdate((data) => {
             this.mMask_Back.fanShapedValue = data.alpha;
         }).onComplete(() => {
             this.mMask_Back.fanShapedValue = 1;
@@ -633,7 +639,7 @@ export class MainUI extends Main_HUD_Generate {
      */
     private initReset() {
         this.mMask_Reborn.visibility = mw.SlateVisibility.Collapsed;
-        this.rebornTween = new mw.Tween({alpha: 0}).to({alpha: 1}, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
+        this.rebornTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
             this.mMask_Reborn.fanShapedValue = data.alpha;
         }).onComplete(() => {
             this.mMask_Reborn.fanShapedValue = 1;

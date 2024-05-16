@@ -4,7 +4,8 @@ import { GlobalData } from "../../const/GlobalData";
 import { SoundManager } from "../../util/SoundManager";
 import { VectorUtil } from "../../util/VectorUtil";
 import { petItemDataNew } from "../PetBag/PetBagModuleData";
-import resourceScript from "../Resources/Resource";
+import ResourceScript from "../Resources/Resource";
+
 import { Accelerate, LongPress, rateEff } from "./Accelerate";
 import PetBehavior, { PetState } from "./PetBehavior";
 import { PlayerModuleC } from "./PlayerModuleC";
@@ -174,11 +175,11 @@ export default class PlayerBehavior extends mw.Script {
         this.pets = arrayToString(this.serverPets);
     }
 
-    /**销毁所有宠物 */
-    public destroyAllPet(): void {
-        this.serverPets.length = 0;
-        this.pets = "";
-    }
+    // /**销毁所有宠物 */
+    // public destroyAllPet(): void {
+    //     this.serverPets.length = 0;
+    //     this.pets = "";
+    // }
 
     /**玩家触发传送 */
     public teleport(id: number): void {
@@ -270,7 +271,7 @@ export default class PlayerBehavior extends mw.Script {
      * @param isTouch
      * @returns 
      */
-    public onClickDestroyable(res: resourceScript, isTouch: boolean): void {
+    public onClickDestroyable(res: ResourceScript, isTouch: boolean): void {
         let targetPos = res.Obj.worldTransform.position;
         if (isTouch) {
             this.changeAllPetTarget(res.pointId);

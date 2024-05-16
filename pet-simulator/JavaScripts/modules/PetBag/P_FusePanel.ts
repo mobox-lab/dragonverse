@@ -1,23 +1,19 @@
-﻿import {GameConfig} from "../../config/GameConfig";
-import {GlobalEnum} from "../../const/Enum";
-import {GlobalData} from "../../const/GlobalData";
+﻿import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
 import Fusepanel_Generate from "../../ui-generate/Fuse/Fusepanel_generate";
 import MessageBox from "../../util/MessageBox";
-import {utils} from "../../util/uitls";
+import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
-import {AnalyticsTool} from "../Analytics/AnalyticsTool";
-import {PlayerModuleC} from "../Player/PlayerModuleC";
-import {PetBagItem} from "./P_Bag";
-import {PetBagModuleC} from "./PetBagModuleC";
-import {petItemDataNew} from "./PetBagModuleData";
+import { PlayerModuleC } from "../Player/PlayerModuleC";
+import { PetBagItem } from "./P_Bag";
+import { PetBagModuleC } from "./PetBagModuleC";
+import { petItemDataNew } from "./PetBagModuleData";
 
-
-import {PetBag_Item} from "./P_BagItem";
+import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 export class P_FusePanel extends Fusepanel_Generate {
-    private achievementModuleC: AchievementModuleC = null;
-
     /**当前容器中的所有item */
     private petItems: PetBag_Item[] = [];
     /**当前选中的所有宠物 */
@@ -32,7 +28,6 @@ export class P_FusePanel extends Fusepanel_Generate {
         this.mBtn_Fuse.onClicked.add(() => {
             this.onClickFuse();
         });
-        this.achievementModuleC = ModuleService.getModule(AchievementModuleC);
     }
 
     public show(petItems: petItemDataNew[], ...param: any[]): void {
@@ -91,175 +86,50 @@ export class P_FusePanel extends Fusepanel_Generate {
     /**点击按钮进行合成 */
     private onClickFuse() {
         if (this.curSelectPets.length < GlobalData.Fuse.minFuseCount) return;
-        let isDiamondEnough = ModuleService.getModule(PlayerModuleC).isDiamondEnough(GlobalData.Fuse.cost);
-        if (!isDiamondEnough) {
+
+        if (!ModuleService
+            .getModule(PlayerModuleC)
+            .isDiamondEnough(GlobalData.Fuse.cost)) {
             this.hide();
-            MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
-                super.show();
-            });
+            MessageBox.showOneBtnMessage(
+                GameConfig.Language.Text_Fuse_UI_3.Value,
+                () => super.show());
             return;
         }
+
         this.hide();
-        MessageBox.showTwoBtnMessage(GameConfig.Language.Text_Fuse_UI_2.Value, async (res: boolean) => {
-            if (res) {
-                let isSuccess = await ModuleService.getModule(PlayerModuleC).reduceDiamond(GlobalData.Fuse.cost);
-                if (!isSuccess) {
-                    MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
-                    return;
-                }
-                let isCanDel = await this.delSelectPet();
-
-                if (!isCanDel) {
-                    this.curSelectPets.length = 0;
-                    return;
-                }
-                await this.fusePet();
-                this.changeCost();
-                setTimeout(() => {
-                    this.onShowAC.call();
-                }, 500);
-            } else {
-                super.show();
-            }
-        });
-    }
-
-    /**合成宠物 */
-    private async fusePet() {
-        /**最多相同id的宠物数量 */
-        let maxSameIdCount = 0;
-        /**所有宠物攻击力的合 */
-        let allPetAtk = 0;
-        let countMap = new Map<number, number>();
-        let devType = this.judgePetType();
-        let allLength = this.curSelectPets.length;
-        for (let i = 0; i < this.curSelectPets.length; i++) {
-            let pet = this.curSelectPets[i];
-            if (!countMap.has(pet.I)) {
-                countMap.set(pet.I, 1);
-            } else {
-                let count = countMap.get(pet.I);
-                countMap.set(pet.I, count + 1);
-                if (count + 1 > maxSameIdCount) {
-                    maxSameIdCount = count + 1;
-                }
-            }
-            allPetAtk += pet.p.a;
-        }
-        if (maxSameIdCount == 0) maxSameIdCount = 1;
-        let minAtk = allPetAtk / GlobalData.Fuse.minDamageRate;
-        let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
-        let allPetIds: number[] = [];
-        /**与最大攻击力差值 */
-            //获取ts最大整数数值
-        let max = Number.MAX_VALUE;
-        let allMaxAtkDiff = max;
-        /**攻击力差值最小的宠物id */
-        let allMinAtkDiffPetId = 1;
-        /**稀有度相同的最大攻击力差值 */
-        let sameMaxAtkDiff = max;
-        /**稀有度相同的攻击力差值最小的宠物id */
-        let sameMinAtkDiffPetId = 0;
-        GameConfig.PetARR.getAllElement().forEach(item => {
-            if (item.IfFuse) {
-                let atks = item.PetAttack;
-                let min = atks[0];
-                let max = atks[1];
-                if (min >= minAtk && max <= maxAtk && item.DevType == devType) {
-                    allPetIds.push(item.id);
-                }
-                let diff = Math.abs(max - maxAtk);
-                if (diff < allMaxAtkDiff) {
-                    allMaxAtkDiff = diff;
-                    allMinAtkDiffPetId = item.id;
-                }
-                if (item.DevType == devType) {
-                    if (diff < sameMaxAtkDiff) {
-                        sameMaxAtkDiff = diff;
-                        sameMinAtkDiffPetId = item.id;
+        MessageBox.showTwoBtnMessage(
+            GameConfig.Language.Text_Fuse_UI_2.Value,
+            async (res: boolean) => {
+                if (res) {
+                    const curSelectKeys = this.curSelectPets.map(item => item.k);
+                    if (!ModuleService
+                        .getModule(PetBagModuleC)
+                        .checkFuseAble(curSelectKeys)) {
+                        MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_11.Value);
+                        return;
                     }
-                }
-            }
-        });
-        if (allPetIds.length == 0) {
-            let minAtkDiffPetId = sameMinAtkDiffPetId == 0 ? allMinAtkDiffPetId : sameMinAtkDiffPetId;
-            allPetIds.push(minAtkDiffPetId);
-        }
-        let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
-        AnalyticsTool.action_buy_pet(allLength, endPetId);
-        this.achievementModuleC.broadcastAchievementBlendType(endPetId);
-        await ModuleService.getModule(PetBagModuleC).addPet(endPetId, GlobalEnum.PetGetType.Fusion, this._earliestObtainTime);
-    }
 
-    /**根据各宠物攻击力权重获得宠物 */
-    private getPetByAtkWeight(allPetIds: number[], maxCount: number): number {
-        let count = maxCount / 2;
-        let allPetAtk = 0;
-        let petAtkWeights: number[] = [];
-        allPetIds.forEach(id => {
-            let pet = GameConfig.PetARR.getElement(id);
-            let wight = pet.PetAttack[0] * count;
-            allPetAtk += wight;
-            petAtkWeights.push(wight);
-        });
-        let random = Math.random() * allPetAtk;
-        let totalWeight = 0;
-        for (let i = 0; i < petAtkWeights.length; i++) {
-            totalWeight += petAtkWeights[i];
-            if (random < totalWeight) {
-                return allPetIds[i];
-            }
-        }
-    }
+                    if (await ModuleService
+                        .getModule(PetBagModuleC)
+                        .fusePet(curSelectKeys, this._earliestObtainTime)) {
 
-    /**判断获得的宠物类型 普通0 黄金1 彩虹2 */
-    private judgePetType(): number {
-        let count = this.curSelectPets.length;
-        let specialCount = 0;
-        this.curSelectPets.forEach(item => {
-            let type = GameConfig.PetARR.getElement(item.I).DevType;
-            if (type === GlobalEnum.PetDevType.Love || type === GlobalEnum.PetDevType.Rainbow) {
-                specialCount++;
-            }
-        });
+                        this.changeCost();
+                        setTimeout(() => this.onShowAC.call(), 500);
+                    }
 
-        //普通宠物的权重
-        let normalWeight = -10 * count + 80;
-        if (normalWeight < 0) normalWeight = 0;
-        //黄金宠物的权重
-        let goldWeight = -4 * count + 52;
-        if (goldWeight < 0) goldWeight = 0;
-        //彩虹宠物的权重
-        // let rainbowWeight = -2 * count + 32;
-        let rainbowWeight = 14 * count - 32 + 5 * specialCount;
-        if (rainbowWeight < 0) rainbowWeight = 0;
-        let totalWeight = normalWeight + goldWeight + rainbowWeight;
-        let random = Math.random() * totalWeight;
-        if (random < normalWeight) {
-            return 0;
-        }
-        if (random < normalWeight + goldWeight) {
-            return 1;
-        }
-        return 2;
+                    this.curSelectPets.length = 0;
+
+                } else super.show();
+            });
     }
 
     private _earliestObtainTime: number = 0;
 
     /**删除选中宠物 */
-    private async delSelectPet() {
-        let keys = [];
-        this.curSelectPets.forEach(item => {
-            keys.push(item.k);
-        });
-
-        this._earliestObtainTime = this.curSelectPets[0].obtainTime;
-        this.curSelectPets.forEach(item => {
-            if (item.obtainTime < this._earliestObtainTime) {
-                this._earliestObtainTime = item.obtainTime;
-            }
-        });
-        return await ModuleService.getModule(PetBagModuleC).fuseEvent(keys);
+    private delSelectPet(): number[] {
+        return this.curSelectPets.map(item => item.k);
+        // return await ModuleService.getModule(PetBagModuleC).checkFuseAble(keys);
     }
 
     /**改变花费 */

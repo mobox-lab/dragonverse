@@ -97,7 +97,7 @@ export class CollectModuleS extends ModuleS<CollectModuleC, CollectModuleData>{
 
     public net_addLevle(val: number) {
         this.currentData.addLevle(val);
-        ModuleService.getModule(PetBagModuleS).net_addSlot(this.currentPlayer, val);
+        ModuleService.getModule(PetBagModuleS).addSlot(this.currentPlayer, val);
     }
 
     /**********全服数据 *************** */

@@ -1,4 +1,4 @@
-import { GeneralManager, } from '../../Modified027Editor/ModifiedStaticAPI';
+import { GeneralManager } from "../../Modified027Editor/ModifiedStaticAPI";
 import { oTraceError } from "odin";
 import { GameConfig } from "../../config/GameConfig";
 import { IPetARRElement } from "../../config/PetARR";
@@ -9,17 +9,18 @@ import { cubicBezier, getRot, getTransform, setPos, setRot, setTransform } from 
 import { SoundManager } from "../../util/SoundManager";
 import { utils } from "../../util/uitls";
 import { VectorUtil } from "../../util/VectorUtil";
-import resourceScript, { SceneResourceMap } from "../Resources/Resource";
+import ResourceScript, { SceneResourceMap } from "../Resources/Resource";
 import { HUDInfo, HUDManager } from "./HUDManager";
 import PlayerBehavior from "./PlayerBehavior";
 import { GlobalEnum } from "../../const/Enum";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
-import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
-import Log4Ts from '../../depend/log4ts/Log4Ts';
-import { EnergyModuleC } from '../Energy/EnergyModule';
-import GToolkit from '../../util/GToolkit';
-import { P_HudPetGift } from '../OnlineModule.ts/P_HudPetGift';
-import { TipsManager } from '../Hud/P_TipUI';
+import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { EnergyModuleC } from "../Energy/EnergyModule";
+import GToolkit from "../../util/GToolkit";
+import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
+import { TipsManager } from "../Hud/P_TipUI";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**宠物状态 */
 export enum PetState {
@@ -111,7 +112,7 @@ export default class PetBehavior {
         this.owner = owner;
         this.currentChar = currentChar;
         this.clipDis = owner == currentChar ? GlobalData.Global.selfPetCutDistance : GlobalData.Global.otherPetCutDistance;
-        this.speed = this.petInfo.PetSpeed * (1 + EnchantBuff.getPetBuff(this.key).moveSpeedAdd / 100);
+        this.speed = this.petInfo.PetSpeed * (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, this.key).moveSpeedAdd / 100);
         this.chaseSpeed = this.petInfo.PetChase;
         if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character) {
             SpawnManager.modifyPoolAsyncSpawn("Character").then(cha => {
@@ -131,7 +132,7 @@ export default class PetBehavior {
                 utils.setClipDistance(this.pet, this.clipDis);
                 if (this.owner.worldTransform && owner.worldTransform.position)
                     try {
-                        setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
+                        setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos));
                     } catch (error) {
                     }
                 if (this.petInfo.PetEffect) {
@@ -172,7 +173,7 @@ export default class PetBehavior {
                 utils.addOutlineExcept(this.pet, true);
                 if (this.owner.worldTransform && owner.worldTransform.position)
                     try {
-                        setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos))
+                        setPos(this.pet, this.owner.worldTransform.transformPosition(this.disPos));
                     } catch (error) {
                     }
                 if (this.petInfo.PetEffect) {
@@ -180,7 +181,7 @@ export default class PetBehavior {
                         this.currentEffectIds.push(EffectManager.instance.playEffOnObjScene(id, this.pet, this.clipDis));
                     });
                 }
-            })
+            });
         }
 
         this._attackListener = Event.addLocalListener(GlobalEnum.EventName.PetAttack, (key: number, target: number) => {
@@ -191,8 +192,9 @@ export default class PetBehavior {
             if (this.key === key) this.changeToIdle();
         });
     }
+
     private setQuality(type: number) {
-        const quality = GlobalEnum.PetQuality
+        const quality = GlobalEnum.PetQuality;
         let str: string;
         switch (type) {
             case quality.Normal:
@@ -221,10 +223,10 @@ export default class PetBehavior {
         if (!this.pet.tempLocation) {
             this.pet.tempLocation = this.pet.worldTransform.position;
 
-        };
+        }
+        ;
         return this.pet.tempLocation;
     }
-
 
     public get state(): PetState {
         return this._state;
@@ -280,6 +282,7 @@ export default class PetBehavior {
     private _isPlayingAni: boolean = false;
     private _ani: Animation;
     private _petArrived: boolean = false;
+
     public update(dt: number, transform: Transform): void {
         this.ownerTransform = transform.clone();
         if (!this.owner || !this.pet) return;
@@ -305,7 +308,7 @@ export default class PetBehavior {
 
         //播走路动画逻辑
         if (!this._petArrived && !this._isPlayingAni && this.pet instanceof Character) {
-            this._ani = this.pet.loadAnimation("272622")
+            this._ani = this.pet.loadAnimation("272622");
             this._ani.loop = 0;
             this._ani.play();
             this._isPlayingAni = true;
@@ -463,7 +466,6 @@ export default class PetBehavior {
         setTransform(this.pet, petTransform);
     }
 
-
     public tarResPoint: number = 0;
     /**资源点坐标 */
     private resPos: mw.Vector = null;
@@ -478,14 +480,14 @@ export default class PetBehavior {
     /**当前特效 */
     private currentEffect: number = null;
     /**当前目标资源 */
-    private _targetRes: resourceScript = null;
-    public get targetRes(): resourceScript {
+    private _targetRes: ResourceScript = null;
+    public get targetRes(): ResourceScript {
         return this._targetRes;
     }
 
     /**增加目标 */
     public addTarget(resPoint: number): void {
-        if (!ModuleService.getModule(EnergyModuleC).isAfford()) {
+        if (!ModuleService.getModule(EnergyModuleC).isAfford(GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
             Log4Ts.error(PetBehavior, "体力不足！");
             TipsManager.instance.showTip(GameConfig.Language.StaminaNotEnough.Value);
             this.changeToIdle();
@@ -516,7 +518,7 @@ export default class PetBehavior {
         }
         let targetPos = cfg.areaPoints;
         this._targetRes = res;
-        this.resPos = res.location;
+        this.resPos = res.curPos;
         const dis = GlobalData.pet.attackDistance;
         //以资源点为圆心，距离为半径，在圆上随机一个点
         if (!this.targetPos) this.targetPos = new mw.Vector();
@@ -536,8 +538,6 @@ export default class PetBehavior {
         end.set(x, y, z);
     }
 
-
-
     //移动到资源点
     private moveToRes(dt: number): void {
         if (!this.targetPos) return;
@@ -556,7 +556,7 @@ export default class PetBehavior {
         let moveDis = this.chaseSpeed * dt;
         if (dis < moveDis) {
             if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character && this.pet instanceof Character) {
-                let pos = this.targetPos.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight))
+                let pos = this.targetPos.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight));
                 this.arrow?.update(pos, this.resPos);
             } else {
                 this.arrow?.update(this.targetPos, this.resPos);
@@ -581,7 +581,7 @@ export default class PetBehavior {
 
         endPos = this.keepOnGround(endPos);
         if (this.petInfo.CharacterType === GlobalData.PetCharacterType.Character && this.pet instanceof Character) {
-            let pos = this.position.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight))
+            let pos = this.position.clone().subtract(new Vector(0, 0, this.pet.description.advance.bodyFeatures.body.height * GlobalData.pet.chaUnitHeight));
             this.arrow?.update(pos, this.resPos);
         } else {
             this.arrow?.update(this.position, this.resPos);
@@ -644,6 +644,7 @@ export default class PetBehavior {
     private _attackPrivot: mw.GameObject = null;
     private attackTween: mw.Tween<{ y: number }> = null;
     private attackRotY: number = 0;
+
     /**攻击点 */
     private get attackPrivot(): mw.GameObject {
         if (!this._attackPrivot) {
@@ -670,14 +671,15 @@ export default class PetBehavior {
     }
 
     private _attackAni: Animation;
+
     private attackTweenInit(): void {
 
         if (this.petInfo.CharacterType === GlobalData.PetCharacterType.GameObject) {
             const bezier = GlobalData.pet.attackBezier;
             let time = GlobalData.pet.attackTime;
-            if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
+            if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed(Player.localPlayer.playerId) / this.addAttackSpeed;
             this.attackTween = new mw.Tween<{ y: number }>({ y: 0 }).to({
-                y: [-30, 0]
+                y: [-30, 0],
             }, time).onUpdate((obj) => {
                 this.attackRotY = obj.y;
             }).onComplete(() => {
@@ -695,7 +697,7 @@ export default class PetBehavior {
             this._attackAni = this.pet.loadAnimation(GlobalData.pet.chaAttackAnimGuid);
             this._attackAni.loop = 1;
             let time = GlobalData.pet.attackTime;
-            if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed / this.addAttackSpeed;
+            if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed(Player.localPlayer.playerId) / this.addAttackSpeed;
             this._attackAni.speed = this._attackAni.length * 1000 / time;
             this._attackAni.onFinish.add(() => {
                 if (this.attack()) {
@@ -728,8 +730,8 @@ export default class PetBehavior {
                 1,
                 GlobalData.pet.attackEffectOffset[index][this.petInfo.QualityType - 1],
                 GlobalData.pet.attackEffectRotation[index][this.petInfo.QualityType - 1],
-                GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1]
-            )
+                GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1],
+            );
         } else if (this.petInfo.CharacterType === 1) {
 
             this.currentEffect = GeneralManager.rpcPlayEffectOnGameObject(
@@ -738,8 +740,8 @@ export default class PetBehavior {
                 1,
                 GlobalData.pet.chaAttackEffectOffset[index][this.petInfo.QualityType - 1],
                 GlobalData.pet.chaAttackEffectRotation[index][this.petInfo.QualityType - 1],
-                GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1]
-            )
+                GlobalData.pet.attackEffectScale[index][this.petInfo.QualityType - 1],
+            );
         }
 
     }
@@ -766,9 +768,13 @@ export default class PetBehavior {
             return true;
         } else {
             let energyModuleC = ModuleService.getModule(EnergyModuleC);
-            if (energyModuleC.isAfford()) {
-                let res = this.targetRes.injured(this.owner.player.playerId,
-                    this.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(this.key).damageAdd / 100), this.key);
+            if (energyModuleC.consumeViewEnergy(GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
+                let res = this.targetRes.injured(
+                    this.owner.player.playerId,
+                    this.attackDamage
+                    * GlobalData.LevelUp.petDamage(Player.localPlayer.playerId)
+                    * (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, this.key).damageAdd / 100),
+                    this.key);
                 if (res) {
                     this._targetRes = null;
                     this.targetPos = null;

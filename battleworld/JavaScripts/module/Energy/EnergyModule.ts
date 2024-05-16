@@ -6,6 +6,20 @@ import ModuleService = mwext.ModuleService;
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import { Globaldata } from "../../const/Globaldata";
+import { AddGMCommand } from "module_gm";
+
+AddGMCommand("Change Energy",
+    undefined,
+    (player, value) => {
+        let v = parseInt(value);
+        if (Number.isNaN(v)) {
+            v = 200;
+        }
+        Log4Ts.log(EnergyModuleS, `try add energy to player ${player.playerId}. by GM. value: ${v}`);
+
+        ModuleService.getModule(EnergyModuleS).addEnergy(player.playerId, v);
+    },
+);
 
 export default class BWEnergyModuleData extends mwext.Subdata {
     //@Decorator.persistence()
@@ -111,6 +125,8 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BWEnergyModuleDa
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
+        
+        this.viewEnergy.data = this.data.energy;
     }
 
     protected onDestroy(): void {
@@ -290,13 +306,24 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
             });
     }
 
+    /**
+     * 是否 足够消耗.
+     * @param playerId
+     * @param {number} cost
+     *  - 1 default.
+     * @return {boolean}
+     */
+    public isAfford(playerId: number, cost?: number): boolean {
+        return this.getPlayerData(playerId)?.isAfford(cost) ?? false;
+    }
+
     public consume(playerId: number, cost: number, firstTime: number = undefined) {
         firstTime = firstTime ?? Date.now();
         const d = this.getPlayerData(playerId);
         if (!d) return;
-        if (d.energy >= (this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0) &&
-            d.consume(cost) > 0)
-            d.lastRecoveryTime = firstTime;
+
+        let needRefresh = d.energy >= (this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0);
+        if (d.consume(cost) > 0 && needRefresh) d.lastRecoveryTime = firstTime;
 
         d.save(false);
         this.syncEnergyToClient(
@@ -304,7 +331,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
             d.energy);
         Log4Ts.log(EnergyModuleS,
             `consume ${cost} energy to player ${playerId}.`,
-            ` current: ${d.energy}`);
+            `current: ${d.energy}`);
     }
 
     public addEnergy(playerId: number, val: number) {
@@ -327,11 +354,6 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
-    @mwext.Decorator.noReply()
-    public net_consume(count: number, firstTime: number) {
-        this.consume(this.currentPlayerId, count, firstTime);
-    }
-
     @mwext.Decorator.noReply()
     public net_requestRefreshStaminaLimit() {
         let playerId = this.currentPlayerId;

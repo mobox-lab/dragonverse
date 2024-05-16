@@ -22,6 +22,7 @@ import PlayerBehavior from "./PlayerBehavior";
 import { PetSimulatorPlayerModuleData } from "./PlayerModuleData";
 import { PlayerModuleS } from "./PlayerModuleS";
 import { IGradientElement } from "../../config/Gradient";
+import Player = mw.Player;
 
 /**玩家模块 */
 export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModuleData> {
@@ -85,6 +86,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
             this.onLevelChange(id, grade);
             AnalyticsTool.action_upgrade_skill(id + 1, this.data.getLevelData(id));
         });
+        GlobalData.LevelUp.initPlayer(Player.localPlayer.playerId, this.data.levelData);
         this.hudUI = mw.UIService.getUI(P_HudUI);
         this.hudUI.mClickAction.add(this.onClickAttackSpeed, this);
         this.hudUI.mLongPressAction.add(this.onLongPressAttackSpeed, this);
@@ -250,7 +252,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         let cfg = GameConfig.Gradient.getElement(cfgid);
     }
 
-
     /**显示升级界面 */
     public showLevelUp(): void {
         let infos = GameConfig.Upgrade.getAllElement();
@@ -262,15 +263,17 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
     }
 
     /**单个进度升级 */
-    public async levelUp(id: number, cost: number): Promise<void> {
-        let isSuccess = await this.reduceDiamond(cost);
-        if (isSuccess) {
-            this.server.net_levelUp(id);
-            oTraceError("[升级]");
-            this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.UpgradeNum, 1);//升级次数
-        } else {
-            MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
-        }
+    public async levelUp(id: number): Promise<void> {
+        this.server.net_levelUp(id).then(value => {
+                if (value) {
+                    oTraceError("[升级]");
+                    this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.UpgradeNum, 1);//升级次数
+                } else {
+                    MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
+                }
+            },
+        );
+
     }
 
     /**单个进度变化 */
@@ -280,16 +283,16 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         if (upgrade == null) upgrade = 0;
         switch (id) {
             case 0:
-                GlobalData.LevelUp.levelRange = 1 + upgrade;
+                GlobalData.LevelUp.levelRangeMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 1:
-                GlobalData.LevelUp.moreDiamond = 1 + upgrade;
+                GlobalData.LevelUp.moreDiamondMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 2:
-                GlobalData.LevelUp.petDamage = 1 + upgrade;
+                GlobalData.LevelUp.petDamageMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 3:
-                GlobalData.LevelUp.petAttackSpeed = 1 + upgrade;
+                GlobalData.LevelUp.petAttackSpeedMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 4:
                 ModuleService.getModule(PetBagModuleC).addBagCapacity(info.PetNum);
@@ -303,15 +306,15 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         this.server.net_playerTeleport(id);
     }
 
-    /**生成一个宠物 */
-    public creatPet(id: number): void {
-        this.server.net_equipPet(this.localPlayerId, utils.GetRandomNum(1, 1000), id, 200, "三七");
-    }
+    // /**生成一个宠物 */
+    // public creatPet(id: number): void {
+    //     this.server.net_equipPet(this.localPlayerId, utils.GetRandomNum(1, 1000), id, 200, "三七");
+    // }
 
-    /**销毁所有宠物 */
-    public destroyAllPet(): void {
-        this.server.net_destroyAllPet();
-    }
+    // /**销毁所有宠物 */
+    // public destroyAllPet(): void {
+    //     this.server.net_destroyAllPet();
+    // }
 
     public initBehaviors(player: PlayerBehavior): void {
         this.curBehavior = player;
@@ -327,27 +330,14 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
 
     }
 
-    /**
-     * 增加钻石和金币 (TODO：设计后续优化)
-     * @param gold1 第一世界金币
-     * @param gold2 第二世界金币
-     * @param gold3 第三世界金币
-     * @param diamond 钻石
-     */
-    public addGoldAndDiamond(gold1: number, gold2: number, gold3: number, diamond: number): void {
-        if (gold1 > 0 || gold2 > 0 || gold3 > 0 || diamond > 0) {
-            this.server.net_addGoldAndDiamond(gold1, gold2, gold3, diamond);
-        }
-    }
-
     public async buyDollCoin(configId: number): Promise<boolean> {
         return await this.server.net_buyDollCoin(configId);
     }
 
-    /**增加金币 */
-    public addGold(value: number, coinType: GlobalEnum.CoinType): void {
-        if (value > 0) this.server.net_addGold(value, coinType);
-    }
+    // /**增加金币 */
+    // public addGold(value: number, coinType: GlobalEnum.CoinType): void {
+    //     if (value > 0) this.server.net_addGold(value, coinType);
+    // }
 
     /**查询金币数量 */
     public checkGold(coinType: GlobalEnum.CoinType) {
@@ -384,16 +374,17 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
 
     /**减少钻石 */
     public async reduceDiamond(value: number): Promise<boolean> {
-        return await this.server.net_reduceDiamond(value);
+        // return await this.server.net_reduceDiamond(value);
+        return false;
     }
 
-    public async clearGoldGem(): Promise<void> {
-        await this.reduceDiamond(this.data.diamond);
-        await this.reduceGold(this.data.gold, GlobalEnum.CoinType.FirstWorldGold);
-        await this.reduceGold(this.data.gold2, GlobalEnum.CoinType.SecondWorldGold);
-        await this.reduceGold(this.data.gold3, GlobalEnum.CoinType.ThirdWorldGold);
-        await this.reduceGold(this.data.summerCoin, GlobalEnum.CoinType.SummerGold);
-    }
+    // public async clearGoldGem(): Promise<void> {
+    //     await this.reduceDiamond(this.data.diamond);
+    //     await this.reduceGold(this.data.gold, GlobalEnum.CoinType.FirstWorldGold);
+    //     await this.reduceGold(this.data.gold2, GlobalEnum.CoinType.SecondWorldGold);
+    //     await this.reduceGold(this.data.gold3, GlobalEnum.CoinType.ThirdWorldGold);
+    //     await this.reduceGold(this.data.summerCoin, GlobalEnum.CoinType.SummerGold);
+    // }
 
     public async net_levelNotice(playerId: number, count: number) {
         let str = await PlayerNameManager.instance.getPlayerName(playerId);

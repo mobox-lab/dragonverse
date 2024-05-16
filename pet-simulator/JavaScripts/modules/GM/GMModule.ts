@@ -1,20 +1,20 @@
-﻿import { Bubble } from "module_bubble";
-import { AddGMCommand, GM, GMBasePanel } from "module_gm";
+﻿import { DebugConsole } from "debug_console";
+import { Bubble } from "module_bubble";
+import { AddGMCommand, GMBasePanel } from "module_gm";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GMHUD_Generate from "../../ui-generate/common/GM/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/common/GM/GMItem_generate";
 import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
-import { PetBagModuleC } from "../PetBag/PetBagModuleC";
-import { PlayerModuleC } from "../Player/PlayerModuleC";
+import { EnergyModuleS } from "../Energy/EnergyModule";
+import { PetBagModuleS } from "../PetBag/PetBagModuleS";
+import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { Task_ModuleC } from "../Task/TaskModuleC";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
-import { DebugConsole } from "debug_console";
-import { EnergyModuleS } from "../Energy/EnergyModule";
 import { AuthModuleS } from "../auth/AuthModule";
 import { BuffModuleS } from "../buff/BuffModuleS";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 //主面板
 export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
@@ -32,54 +32,58 @@ AddGMCommand("成就", (player: mw.Player, value: string) => {
 
 }, "成就");
 
-AddGMCommand("添加宠物", (player: mw.Player, value: string) => {
-    let id = Number(value);
-    if (!id) id = 1;
-    ModuleService.getModule(PetBagModuleC).addPet(id);
-}, (player: mw.Player, value: string) => {
-
-}, "全服");
+AddGMCommand("添加宠物",
+    undefined,
+    (player: mw.Player, value: string) => {
+        let id = Number(value);
+        if (!id) id = 1;
+        ModuleService
+            .getModule(PetBagModuleS)
+            .net_addPetWithMissingInfo(player.playerId, id);
+    },
+    "全服");
 
 AddGMCommand("攻击破坏物", (player: mw.Player, value: string) => {
 
 }, (player: mw.Player, value: string) => {
 
 }, "破坏物");
-AddGMCommand("生成", (player: mw.Player, value: string) => {
-    let id = Number(value);
-    if (!id) id = 1;
-    ModuleService.getModule(PlayerModuleC).creatPet(id);
-}, (player: mw.Player, value: string) => {
 
-}, "宠物生成");
-AddGMCommand("单一个子节点", (player: mw.Player, value: string) => {
-    let id = Number(value);
-    if (!id) id = 1;
-    ModuleService.getModule(PlayerModuleC).creatPet(2);
-}, (player: mw.Player, value: string) => {
+// AddGMCommand("生成", (player: mw.Player, value: string) => {
+//     let id = Number(value);
+//     if (!id) id = 1;
+//     ModuleService.getModule(PlayerModuleC).creatPet(id);
+// }, (player: mw.Player, value: string) => {
 
-}, "宠物生成");
-AddGMCommand("模型", (player: mw.Player, value: string) => {
-    let id = Number(value);
-    if (!id) id = 1;
-    ModuleService.getModule(PlayerModuleC).creatPet(3);
-}, (player: mw.Player, value: string) => {
+// }, "宠物生成");
+// AddGMCommand("单一个子节点", (player: mw.Player, value: string) => {
+//     let id = Number(value);
+//     if (!id) id = 1;
+//     ModuleService.getModule(PlayerModuleC).creatPet(2);
+// }, (player: mw.Player, value: string) => {
 
-}, "宠物生成");
-AddGMCommand("克隆", (player: mw.Player, value: string) => {
-    let id = Number(value);
-    if (!id) id = 1;
-    ModuleService.getModule(PlayerModuleC).creatPet(4);
-}, (player: mw.Player, value: string) => {
+// }, "宠物生成");
+// AddGMCommand("模型", (player: mw.Player, value: string) => {
+//     let id = Number(value);
+//     if (!id) id = 1;
+//     ModuleService.getModule(PlayerModuleC).creatPet(3);
+// }, (player: mw.Player, value: string) => {
 
-}, "宠物生成");
-AddGMCommand("销毁所有宠物", (player: mw.Player, value: string) => {
-    let id = Number(value);
-    if (!id) id = 2;
-    ModuleService.getModule(PlayerModuleC).destroyAllPet();
-}, (player: mw.Player, value: string) => {
+// }, "宠物生成");
+// AddGMCommand("克隆", (player: mw.Player, value: string) => {
+//     let id = Number(value);
+//     if (!id) id = 1;
+//     ModuleService.getModule(PlayerModuleC).creatPet(4);
+// }, (player: mw.Player, value: string) => {
+// }, "宠物生成");
 
-}, "宠物生成");
+// AddGMCommand("销毁所有宠物", (player: mw.Player, value: string) => {
+//     let id = Number(value);
+//     if (!id) id = 2;
+//     ModuleService.getModule(PlayerModuleC).destroyAllPet();
+// }, (player: mw.Player, value: string) => {
+// }, "宠物生成");
+
 AddGMCommand("跳跃高度", (player: mw.Player, value: string) => {
     let id = Number(value);
     if (!id) id = 80;
@@ -118,36 +122,69 @@ AddGMCommand("平滑", (player: mw.Player, value: string) => {
 }, (player: mw.Player, value: string) => {
 
 }, "宠物");
-AddGMCommand("增加金币(第一世界)", (player: mw.Player, value: string) => {
-    let id = Number(value);
-    ModuleService.getModule(PlayerModuleC).addGold(id, GlobalEnum.CoinType.FirstWorldGold);
-    ModuleService.getModule(PlayerModuleC).addGold(id, GlobalEnum.CoinType.SummerGold);
-}, (player: mw.Player, value: string) => {
+AddGMCommand(
+    "增加金币(第一世界)",
+    (player: mw.Player, value: string) => {
+    },
+    (player: mw.Player, value: string) => {
+        let val = Number(value);
+        ModuleService.getModule(PlayerModuleS).addGold(
+            player.playerId,
+            val,
+            GlobalEnum.CoinType.FirstWorldGold,
+        );
+        ModuleService.getModule(PlayerModuleS).addGold(
+            player.playerId,
+            val,
+            GlobalEnum.CoinType.SummerGold,
+        );
+    },
 
-}, "货币");
-AddGMCommand("增加金币(第二世界)", (player: mw.Player, value: string) => {
-    let id = Number(value);
-    ModuleService.getModule(PlayerModuleC).addGold(id, GlobalEnum.CoinType.SecondWorldGold);
-}, (player: mw.Player, value: string) => {
+    "货币",
+);
+AddGMCommand(
+    "增加金币(第二世界)",
+    (player: mw.Player, value: string) => {
+        let val = Number(value);
+        ModuleService.getModule(PlayerModuleS).addGold(
+            player.playerId,
+            val,
+            GlobalEnum.CoinType.SecondWorldGold,
+        );
+    },
+    (player: mw.Player, value: string) => {
+    },
+    "货币",
+);
+AddGMCommand(
+    "增加金币(第三世界)",
+    (player: mw.Player, value: string) => {
+        let val = Number(value);
+        ModuleService.getModule(PlayerModuleS).addGold(
+            player.playerId,
+            val,
+            GlobalEnum.CoinType.ThirdWorldGold,
+        );
+    },
+    (player: mw.Player, value: string) => {
+    },
+    "货币",
+);
+AddGMCommand(
+    "增加钻石",
+    (player: mw.Player, value: string) => {
+    },
+    (player: mw.Player, value: string) => {
+        let val = Number(value);
+        ModuleService.getModule(PlayerModuleS).addDiamond(player.playerId, val);
+    },
+    "货币",
+);
 
-}, "货币");
-AddGMCommand("增加金币(第三世界)", (player: mw.Player, value: string) => {
-    let id = Number(value);
-    ModuleService.getModule(PlayerModuleC).addGold(id, GlobalEnum.CoinType.ThirdWorldGold);
-}, (player: mw.Player, value: string) => {
-
-}, "货币");
-AddGMCommand("增加钻石", (player: mw.Player, value: string) => {
-    let id = Number(value);
-    ModuleService.getModule(PlayerModuleC).addDiamond(id);
-}, (player: mw.Player, value: string) => {
-
-}, "货币");
-AddGMCommand("清空货币", (player: mw.Player, value: string) => {
-    ModuleService.getModule(PlayerModuleC).clearGoldGem();
-}, (player: mw.Player, value: string) => {
-
-}, "货币");
+// AddGMCommand("清空货币", (player: mw.Player, value: string) => {
+//     ModuleService.getModule(PlayerModuleC).clearGoldGem();
+// }, (player: mw.Player, value: string) => {
+// }, "货币");
 
 AddGMCommand("聊天气泡", (player: mw.Player, value: string) => {
     let id = Number(value);
