@@ -487,7 +487,7 @@ export default class PetBehavior {
 
     /**增加目标 */
     public addTarget(resPoint: number): void {
-        if (!ModuleService.getModule(EnergyModuleC).isAfford()) {
+        if (!ModuleService.getModule(EnergyModuleC).isAfford(GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
             Log4Ts.error(PetBehavior, "体力不足！");
             TipsManager.instance.showTip(GameConfig.Language.StaminaNotEnough.Value);
             this.changeToIdle();
@@ -678,7 +678,7 @@ export default class PetBehavior {
             const bezier = GlobalData.pet.attackBezier;
             let time = GlobalData.pet.attackTime;
             if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed(Player.localPlayer.playerId) / this.addAttackSpeed;
-            this.attackTween = new mw.Tween<{ y: number }>({y: 0}).to({
+            this.attackTween = new mw.Tween<{ y: number }>({ y: 0 }).to({
                 y: [-30, 0],
             }, time).onUpdate((obj) => {
                 this.attackRotY = obj.y;
