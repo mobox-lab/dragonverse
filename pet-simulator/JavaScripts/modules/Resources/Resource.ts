@@ -6,13 +6,11 @@ import { GlobalEnum } from "../../const/Enum";
 import { cubicBezier } from "../../util/MoveUtil";
 import { SoundManager } from "../../util/SoundManager";
 import { utils } from "../../util/uitls";
-import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { BonusUI, ResourceUIPool } from "./scenceUnitUI";
 import { GlobalData } from "../../const/GlobalData";
 import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
-import { PlayerManagerExtesion } from "../../Modified027Editor/ModifiedPlayer";
 import { DropManagerS } from "./DropResouce";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
@@ -59,18 +57,7 @@ export class Resource {
 
 }
 
-/**破坏阶段 */
-enum ScaleLevel {
-    /**最小 */
-    Min,
-    /**中等 */
-    Middle,
-    /**最大 */
-    Max,
-}
-
-/**伤害记录 */
-export class DamageRecord {
+class DamageRecord {
     constructor(public playerId: number, public damage: number) {
     }
 }
@@ -81,9 +68,9 @@ export const SceneResourceMap: Map<number, ResourceScript[]> = new Map<number, R
 @Component
 export default class ResourceScript extends mw.Script {
 
-    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
+    @mw.Property({replicated: true, onChanged: "onHpChanged"})
     public curHp: number = 0;
-    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
+    @mw.Property({replicated: true, onChanged: "onSceneChanged"})
     private scenePointId: string = "";
 
     public get isBigBox(): boolean {
@@ -91,7 +78,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     /**伤害记录 */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     private damageArr: DamageRecord[] = [];
 
     private _rate: number = 1;
@@ -324,10 +311,7 @@ export default class ResourceScript extends mw.Script {
                 this.removeScenceResource(this.cfg.AreaID, this);
                 this.cfg = null;
             }
-            if (this.toiletMan) {
-                this.toiletManDead(this.recycleResourceModel.bind(this, true));
-            } else
-                this.recycleResourceModel(true);
+            this.recycleResourceModel(true);
             return;
         }
         if (this.resObj == null && !this.isStart && this.cfg) {
@@ -339,13 +323,13 @@ export default class ResourceScript extends mw.Script {
     public getDamageRate(playerId: number): number {
         if (this.cfg.HP === 0) return 0;
         return this
-            .damageArr
-            .reduce((previousValue,
-                currentValue) => {
-                return previousValue +
-                    (currentValue.playerId === playerId ? currentValue.damage : 0);
-            },
-                0)
+                .damageArr
+                .reduce((previousValue,
+                         currentValue) => {
+                        return previousValue +
+                            (currentValue.playerId === playerId ? currentValue.damage : 0);
+                    },
+                    0)
             / this.cfg.HP;
     }
 
@@ -636,7 +620,7 @@ export default class ResourceScript extends mw.Script {
         const time = GlobalData.ResourceAni.dropTweenTime[this.order];
         let start = endInfos[this.order];
         let end = endInfos[this.order + 1];
-        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
+        this.endTween = new mw.Tween({z: start}).to({z: end}, time).onUpdate((obj) => {
             this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
         }).onComplete(() => {
             this.order++;
@@ -653,7 +637,6 @@ export default class ResourceScript extends mw.Script {
         this.endTween = null;
         this.resObj.worldTransform.position = this.curPos;
         this.switchCollider(true);
-        this.initToiletMan();
         setTimeout(() => {
             if (this.resObj == null) return;
             let dis = mw.Vector.squaredDistance(this.curPos, this.Obj.worldTransform.position);
@@ -896,7 +879,6 @@ export default class ResourceScript extends mw.Script {
             this.switchVisible(false);
             this.switchCollider(false);
             this.isStart = false;
-            this.toiletManDestroy();
             if (isAwait) {
                 await TimeUtil.delaySecond(3);
                 Resource.instance.returnResource(this.resObj);
@@ -909,66 +891,6 @@ export default class ResourceScript extends mw.Script {
             EffectService.stop(this.rateEff);
             this.rateEff = null;
         }
-    }
-
-    /*************马桶人 **********/
-
-    private toiletMan: mw.Character = null;
-
-    /**受击死亡动画数组 */
-    private hitAniArr: string[] = GlobalData.SceneResource.toiletDieAni;
-    /**马桶人受击动画 */
-    private toiletManAnima: mw.Animation = null;
-
-    /**初始化马桶人 */
-    private initToiletMan() {
-        if (this._cfgId && !this.cfg)
-            this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
-        if (this.resourceType == GlobalEnum.DestructorType.Gold5) {
-            let toilet = this.resObj.getChildByName("马桶人.asset");
-            if (toilet) {
-                this.toiletMan = toilet as mw.Character;
-                this.toiletMan.displayName = "";
-                this.toiletMan.complexMovementEnabled = (false);
-                let actor = this.resObj.getChildByName("空锚点");
-                this.toiletMan.worldTransform.position = actor.worldTransform.position;
-                this.toiletMan.worldTransform.rotation = actor.worldTransform.rotation;
-            }
-        }
-    }
-
-    /**马桶人受击动画 */
-    private toiletManHit() {
-        if (!this.toiletMan) return;
-        if (this.toiletManAnima && this.toiletManAnima.isPlaying) return;
-        //随机01两个数
-        let random = MathUtil.randomInt(0, 2);
-        let aniGuid = this.hitAniArr[random];
-        this.toiletManAnima = PlayerManagerExtesion.loadAnimationExtesion(this.toiletMan, aniGuid, false);
-        this.toiletManAnima.play();
-    }
-
-    /**马桶人死亡动画 */
-    private toiletManDead(fun: () => {}) {
-        if (!this.toiletMan) return;
-        if (this.toiletManAnima) {
-            this.toiletManAnima.stop();
-        }
-        this.toiletManAnima = PlayerManagerExtesion.loadAnimationExtesion(this.toiletMan, this.hitAniArr[2], false);
-        this.toiletManAnima.speed = GlobalData.SceneResource.dieAniRate;
-        this.toiletManAnima.play();
-        this.toiletManAnima.onFinish.add(() => {
-            fun();
-        });
-    }
-
-    /**马桶人销毁 */
-    private toiletManDestroy() {
-        if (!this.toiletMan) return;
-        this.toiletMan.worldTransform.position = new mw.Vector(555, -66, -300);
-        this.toiletMan = null;
-        this.toiletManAnima?.onFinish.clear();
-        this.toiletManAnima = null;
     }
 
     //----------------------------life cycle-----------------------------------

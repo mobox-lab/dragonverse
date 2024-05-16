@@ -873,22 +873,23 @@ export namespace GlobalData {
             return Gtk.tryGet(this.petAttackSpeedMap, playerId, 1);
         };
 
-        /**宠物存储量 */
-        public static petStorageMap: Map<number, number> = new Map();
-
-        public static petStorage(playerId: number) {
-            return Gtk.tryGet(this.petStorageMap, playerId, 1);
-        };
 
         /**最高等级 */
         public static maxLevel: number = 5;
+
+        public static initPlayer(playerId: number,
+                                 levelData: number[]) {
+            this.levelRangeMap.set(playerId,levelData[0]);
+            this.moreDiamondMap.set(playerId,levelData[1]);
+            this.petDamageMap.set(playerId,levelData[2]);
+            this.petAttackSpeedMap.set(playerId,levelData[3]);
+        }
 
         public static clearPlayer(playerId: number) {
             this.levelRangeMap.delete(playerId);
             this.moreDiamondMap.delete(playerId);
             this.petDamageMap.delete(playerId);
             this.petAttackSpeedMap.delete(playerId);
-            this.petStorageMap.delete(playerId);
         }
     }
 
