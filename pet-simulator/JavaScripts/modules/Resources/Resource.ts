@@ -361,10 +361,10 @@ export default class ResourceScript extends mw.Script {
 
             let goldVal = Math.ceil((this.rewardGold * rate) / 3 - this.guaShaRewardGold);
             this.guaShaRewardGold += goldVal;
-            this.playReward(playerId, GlobalEnum.ResourceAttackStage.GuaSha, this.ResourceType, goldVal, 0);
+            this.playReward(playerId, GlobalEnum.ResourceAttackStage.GuaSha, goldVal, 0);
             let gemVal = Math.ceil((this.rewardGem * rate) / 3 - this.guaShaRewardGem);
             this.guaShaRewardGem += gemVal;
-            this.playReward(playerId, GlobalEnum.ResourceAttackStage.GuaSha, this.ResourceType, 0, gemVal);
+            this.playReward(playerId, GlobalEnum.ResourceAttackStage.GuaSha, 0, gemVal);
         }, GlobalData.SceneResource.guaShaTime);
 
         this.interval.set(playerId, interval);
@@ -402,11 +402,10 @@ export default class ResourceScript extends mw.Script {
             this.playReward(
                 playerId,
                 GlobalEnum.ResourceAttackStage.Destroy,
-                this.ResourceType,
                 (this.rewardGold - this.guaShaRewardGold) * myRate,
                 (this.rewardGem - this.guaShaRewardGem) * myRate);
             this.stopGuaSha(playerId);
-            ModuleService.getModule(AchievementModuleS).broadcastAchievement_destroy(playerId, this.ResourceType);
+            ModuleService.getModule(AchievementModuleS).broadcastAchievement_destroy(playerId, this.resourceType);
             this.guaShaRewardGem = 0;
             this.guaShaRewardGold = 0;
         }
@@ -416,19 +415,19 @@ export default class ResourceScript extends mw.Script {
      * 奖励掉落物
      * @param playerId 指定玩家.
      * @param state 攻击阶段
-     * @param resType 资源类型
      * @param goldVal 金币价值
      * @param gemVal 钻石价值
      */
     private playReward(
         playerId: number,
         state: GlobalEnum.ResourceAttackStage,
-        resType: number,
         goldVal: number,
         gemVal: number) {
-        let rewardArr = this.getDropCountByStage(state, resType);
-        let goldCount = Math.ceil(rewardArr[0]);
-        let gemCount = Math.ceil(rewardArr[1]);
+        let rewardArr = this.getDropCountByStage(state);
+        goldVal = Math.ceil(goldVal);
+        gemVal = Math.ceil(gemVal);
+        let goldCount = Math.min(Math.ceil(rewardArr[0]), goldVal);
+        let gemCount = Math.min(Math.ceil(rewardArr[1]), gemVal);
         if (goldCount > 0) {
             ModuleService
                 .getModule(DropManagerS)
@@ -469,10 +468,13 @@ export default class ResourceScript extends mw.Script {
         return goldType;
     }
 
-    /**根据攻击阶段、类型返回掉落个数 */
-    private getDropCountByStage(state: GlobalEnum.ResourceAttackStage, type: number): number[] {
+    /**
+     * 根据攻击阶段、类型返回掉落个数
+     */
+    private getDropCountByStage(
+        state: GlobalEnum.ResourceAttackStage): number[] {
         let cfgID: number = 0;
-        switch (type) {
+        switch (this.resourceType) {
             case 1:
                 cfgID = 7;
                 break;
@@ -498,30 +500,20 @@ export default class ResourceScript extends mw.Script {
                 cfgID = 6;
                 break;
             default:
+                cfgID = 9;
                 break;
-        }
-
-        if (this.isBigBox) {
-            cfgID = 9;
         }
 
         let cfg = GameConfig.Coindown.getElement(cfgID);
         let allRate: number = 1;
-        switch (this.rate) {
-            case 3:
-                allRate = cfg.Stagetimes[0];
-                break;
-            case 5:
-                allRate = cfg.Stagetimes[1];
-                break;
-            case 25:
-                allRate = cfg.Stagetimes[2];
-                break;
-            case 100:
-                allRate = cfg.Stagetimes[3];
-                break;
-            default:
-                break;
+        if (this.rate <= 3) {
+            allRate = cfg.Stagetimes[0];
+        } else if (this.rate <= 5) {
+            allRate = cfg.Stagetimes[1];
+        } else if (this.rate <= 25) {
+            allRate = cfg.Stagetimes[2];
+        } else if (this.rate <= 100) {
+            allRate = cfg.Stagetimes[3];
         }
 
         let goldcount: number = 0;
@@ -542,7 +534,6 @@ export default class ResourceScript extends mw.Script {
                 gemcount = cfg.Stepdiamond * allRate;
                 break;
             case GlobalEnum.ResourceAttackStage.Destroy:
-
                 if (this.isCrit) {
                     goldcount = cfg.Lastcoin * cfg.Crittimes * allRate;
                     gemcount = cfg.Lastdaimond * cfg.Crittimes * allRate;
@@ -750,7 +741,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     /**判断资源类型 C&S */
-    public get ResourceType(): number {
+    public get resourceType(): number {
         return this.cfg ? 3 : this.cfg.resType;
     }
 
@@ -810,7 +801,7 @@ export default class ResourceScript extends mw.Script {
                 this.rewardGem = Number((this.cfg.DiamondReward * crit * this.rate).toFixed(1));
             }
         });
-        if (this.ResourceType == GlobalEnum.DestructorType.Gold4) {
+        if (this.resourceType == GlobalEnum.DestructorType.Gold4) {
             this.rewardGold *= (1 + EnchantBuff.getPetBuff(playerId, key).fourGoldAdd / 100);
             this.rewardGem *= (1 + EnchantBuff.getPetBuff(playerId, key).fourGoldAdd / 100);
         }
@@ -824,7 +815,7 @@ export default class ResourceScript extends mw.Script {
         if (this._rate == 1) return;
 
         let cfg: IEffectElement = null;
-        if (this.ResourceType == 1 || this.ResourceType == 2) {
+        if (this.resourceType == 1 || this.resourceType == 2) {
             cfg = GameConfig.Effect.getElement(3);
         } else {
             cfg = GameConfig.Effect.getElement(2);
@@ -845,7 +836,7 @@ export default class ResourceScript extends mw.Script {
     private playCritEffectByLevel() {
         let cfg = GameConfig.Effect.getElement(13);
         GeneralManager.rpcPlayEffectOnGameObject(cfg.EffectID, this.resObj, cfg.EffectTime, cfg.EffectLocation, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
-        if (this.ResourceType > 2) {
+        if (this.resourceType > 2) {
             cfg = GameConfig.Effect.getElement(9);
             GeneralManager.rpcPlayEffectOnGameObject(cfg.EffectID, this.resObj, cfg.EffectTime, cfg.EffectLocation, cfg.EffectRotate.toRotation(), cfg.EffectLarge);
         }
@@ -926,7 +917,7 @@ export default class ResourceScript extends mw.Script {
     private initToiletMan() {
         if (this._cfgId && !this.cfg)
             this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
-        if (this.ResourceType == GlobalEnum.DestructorType.Gold5) {
+        if (this.resourceType == GlobalEnum.DestructorType.Gold5) {
             let toilet = this.resObj.getChildByName("马桶人.asset");
             if (toilet) {
                 this.toiletMan = toilet as mw.Character;
