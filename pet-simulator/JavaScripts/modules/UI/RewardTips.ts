@@ -2,7 +2,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import { Singleton } from "../../util/GToolkit";
- import {  utils } from "../../util/uitls";
+import { utils } from "../../util/uitls";
 import { P_HudUI } from "../Hud/P_HudUI";
 
 /**拾取奖励 ui  */
@@ -159,7 +159,7 @@ export class RewardTips {
     }
 }
 
-export class RewardTipsManager  extends Singleton<RewardTipsManager>(){
+export class RewardTipsManager extends Singleton<RewardTipsManager>() {
     /**
      * 全局提示事件名.
      * @desc 事件参数 [string, IGlobalTipsOption]
@@ -169,7 +169,7 @@ export class RewardTipsManager  extends Singleton<RewardTipsManager>(){
      */
     public static readonly EVENT_NAME_REWARD_TIPS_GET_UI = "EventNameRewardTipsGetUi";
 
-    public static instance: RewardTipsManager;
+    // public static instance: RewardTipsManager;
 
     private firstGoldTips: RewardTips;
     private secondGoldTips: RewardTips;
@@ -177,7 +177,7 @@ export class RewardTipsManager  extends Singleton<RewardTipsManager>(){
     private diamondTips: RewardTips;
 
     constructor() {
-				super();
+        super();
         this.firstGoldTips = new RewardTips(new mw.Vector(0, 100));
         this.firstGoldTips.setImg(GlobalEnum.CoinType.FirstWorldGold)
         this.secondGoldTips = new RewardTips(new mw.Vector(0, 100));
@@ -188,26 +188,26 @@ export class RewardTipsManager  extends Singleton<RewardTipsManager>(){
         this.diamondTips.setImg(GlobalEnum.CoinType.Diamond)
     }
 
-		/**
-		 * 注册事件.
-		 * @return {this}
-		 */
-		public registerEvent(): this {
-				if (mw.SystemUtil.isClient()) {
-						mw.Event.addLocalListener(
-							RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI,
-								this.getUI
-						);
-						mw.Event.addServerListener(
-							RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI,
-								this.getUI
-						);
-				}
+    /**
+     * 注册事件.
+     * @return {this}
+     */
+    public registerEvent(): this {
+        if (mw.SystemUtil.isClient()) {
+            mw.Event.addLocalListener(
+                RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI,
+                this.getUI
+            );
+            mw.Event.addServerListener(
+                RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI,
+                this.getUI
+            );
+        }
 
-				return this;
-		}
+        return this;
+    }
 
-		public getUI = (type: GlobalEnum.CoinType, count: number) => {
+    public getUI = (type: GlobalEnum.CoinType, count: number) => {
         if (type == GlobalEnum.CoinType.FirstWorldGold) {
             this.firstGoldTips.startTween(count);
         } else if (type == GlobalEnum.CoinType.SecondWorldGold) {

@@ -361,7 +361,7 @@ export namespace GlobalData {
         /**一帧喷多少个 */
         public static frameNum: number = 2;
         /**销毁时间 */
-        public static destroyTime: number = 60;
+        public static destroyTime: number = 60e3;
         /**销毁距离 */
         public static destroyDistance: number = 300;
         /**个数达到X 开始判断距离，进行叠 */

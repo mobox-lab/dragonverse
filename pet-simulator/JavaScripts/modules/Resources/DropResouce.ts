@@ -19,7 +19,8 @@ export class DropManagerC extends mwext.ModuleC<DropManagerS, null> {
     public net_createDrop(params: DropGenerateParam[]) {
 
         const gun = Balancing.getInstance().tryGetGun("dropItemGeneration");
-        for (const {startPos, endPos, type, value} of params) {
+
+        for (const { startPos, endPos, type, value } of params) {
             gun.press(() => {
                 let drop = ObjectPoolServices.getPool(DropInClient).spawn();
                 drop.poolInit(startPos.clone(), endPos.clone(), type, value);
@@ -32,9 +33,10 @@ export class DropManagerC extends mwext.ModuleC<DropManagerS, null> {
 
     onUpdate(dt: number) {
         for (let i = this._dropItems.length - 1; i >= 0; --i) {
-            const drop = this._dropItems[0];
+            const drop = this._dropItems[i];
             if (drop.timeout || drop.update(dt)) {
                 this._dropItems.splice(i, 1);
+                ObjectPoolServices.getPool(DropInClient).return(drop);
             }
         }
     }
@@ -77,11 +79,11 @@ export class DropManagerS extends mwext.ModuleS<DropManagerC, null> {
      * @param isBox
      */
     public createDrop(playerId: number,
-                      pos: mw.Vector,
-                      type: GlobalEnum.CoinType,
-                      allValue: number,
-                      count: number,
-                      isBox: boolean = false): void {
+        pos: mw.Vector,
+        type: GlobalEnum.CoinType,
+        allValue: number,
+        count: number,
+        isBox: boolean = false): void {
         if (count <= 0 || allValue <= 0) return;
         let val = Math.ceil(allValue / count);
         let generates: DropInServer[] = [];
@@ -116,20 +118,20 @@ export class DropManagerS extends mwext.ModuleS<DropManagerC, null> {
 
         this.getClient(playerId)
             .net_createDrop(generates.map(item => {
-                    let radiusSample = isBox ? GlobalData.DropAni.randomRadiusBig : GlobalData.DropAni.randomRadius;
-                    let radius = Gtk.random(radiusSample[0], radiusSample[1]);
-                    const angle = new RandomGenerator().randomCircle().handle(val => val * radius).toVector2();
-                    let startLoc = pos;
-                    const endLoc = new mw.Vector(startLoc.x + angle.x, startLoc.y + angle.y, pos.z + GlobalData.DropAni.resourceY); //地面高度
-                    item.position = endLoc;
+                let radiusSample = isBox ? GlobalData.DropAni.randomRadiusBig : GlobalData.DropAni.randomRadius;
+                let radius = Gtk.random(radiusSample[0], radiusSample[1]);
+                const angle = new RandomGenerator().randomCircle().handle(val => val * radius).toVector2();
+                let startLoc = pos;
+                const endLoc = new mw.Vector(startLoc.x + angle.x, startLoc.y + angle.y, pos.z + GlobalData.DropAni.resourceY); //地面高度
+                item.position = endLoc;
 
-                    return {
-                        startPos: startLoc,
-                        endPos: endLoc,
-                        type,
-                        value: item.value,
-                    };
-                },
+                return {
+                    startPos: startLoc,
+                    endPos: endLoc,
+                    type,
+                    value: item.value,
+                };
+            },
             ));
     }
 
@@ -237,8 +239,8 @@ class DropInServer extends DropItem {
     public position: mw.Vector;
 
     constructor(public owner: number,
-                public value: number,
-                public type: GlobalEnum.CoinType) {
+        public value: number,
+        public type: GlobalEnum.CoinType) {
         super();
     }
 
@@ -288,7 +290,7 @@ class DropInClient extends DropItem {
         return GlobalData.DropAni.resourceToPlayer * GlobalData.LevelUp.levelRange(playerId);
     }
 
-    private canUpdate: boolean = true;
+    private canUpdate: boolean = false;
     public isDestroy: boolean = false;
 
     /**是否已落地 */
@@ -306,6 +308,7 @@ class DropInClient extends DropItem {
 
     private _value: number;
 
+
     public async poolInit(targetPos: mw.Vector, endPos: mw.Vector, type: GlobalEnum.CoinType, value: number) {
         this.isDestroy = false;
         this._isStartJump = false;
@@ -315,6 +318,8 @@ class DropInClient extends DropItem {
         this._type = type;
         this._isLand = false;
         this._value = value;
+        this.canUpdate = false;
+
         if (type == GlobalEnum.CoinType.FirstWorldGold) {
             let guid = GameConfig.Coins.getElement(1).Effect;
             this.model = await SpawnManager.modifyPoolAsyncSpawn(guid, GameObjPoolSourceType.Asset);
@@ -338,6 +343,7 @@ class DropInClient extends DropItem {
     private _moveToTween: mw.Tween<mw.Vector> = null;
 
     private init(endPoint: mw.Vector): void {
+
         let heights = GlobalData.DropAni.heightRandoms;
         let height = MathUtil.randomFloat(heights[0], heights[1]);
 
@@ -385,7 +391,7 @@ class DropInClient extends DropItem {
         let startLoc = getPos(this.model);
         let endLoc = mw.Vector.add(startLoc, mw.Vector.multiply(dir, dis));
         this._moveToTween.stop();
-        this._moveToTween = new mw.Tween(startLoc).to({x: endLoc.x, y: endLoc.y}, time)
+        this._moveToTween = new mw.Tween(startLoc).to({ x: endLoc.x, y: endLoc.y }, time)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete(() => {
@@ -409,11 +415,11 @@ class DropInClient extends DropItem {
 
         startPos.z = this.targetPos.z + GlobalData.DropAni.resourceY;
 
-        this._moveToTween = new mw.Tween(startPos).to({z: startPos.z + height}, GlobalData.DropAni.bonceUpTime)
+        this._moveToTween = new mw.Tween(startPos).to({ z: startPos.z + height }, GlobalData.DropAni.bonceUpTime)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete((obj) => {
-                this._moveToTween = new mw.Tween(obj).to({z: this.targetPos.z + GlobalData.DropAni.resourceY}, GlobalData.DropAni.bonceDownTime)
+                this._moveToTween = new mw.Tween(obj).to({ z: this.targetPos.z + GlobalData.DropAni.resourceY }, GlobalData.DropAni.bonceDownTime)
                     .onUpdate((value: mw.Vector) => {
                         setPos(this.model, value);
                     }).onComplete(() => {
@@ -480,12 +486,12 @@ class DropInClient extends DropItem {
                 setPos(this.model, value);
             }).onComplete(() => {
                 if (this.type === GlobalEnum.CoinType.Diamond) {
-                    RewardTipsManager.instance.getUI(this.type, this._value * GlobalData.LevelUp.moreDiamond(Player.localPlayer.playerId));
+                    RewardTipsManager.getInstance().getUI(this.type, this._value * GlobalData.LevelUp.moreDiamond(Player.localPlayer.playerId));
                 } else if (this.type === GlobalEnum.CoinType.ThirdWorldGold
                     || this.type === GlobalEnum.CoinType.SecondWorldGold
                     || this.type === GlobalEnum.CoinType.FirstWorldGold
                     || this.type === GlobalEnum.CoinType.SummerGold) {
-                    RewardTipsManager.instance.getUI(this.type, this._value * GlobalData.Buff.goldBuff);
+                    RewardTipsManager.getInstance().getUI(this.type, this._value * GlobalData.Buff.goldBuff);
                 }
                 ;
                 this.destroy();
@@ -512,7 +518,7 @@ class DropInClient extends DropItem {
 function distanceAbsorb(playerId: number, obj: GameObject, targetLoc: mw.Vector): boolean {
     let targetPos = obj.worldTransform.position;
     let dis = mw.Vector.distance(targetLoc, targetPos);
-    Log4Ts.log(distanceAbsorb, `distance with player ${playerId} is ${dis}`);
+    // Log4Ts.log(distanceAbsorb, `distance with player ${playerId} is ${dis}`);
     return dis <=
         GlobalData.DropAni.resourceToPlayer
         * GlobalData.LevelUp.levelRange(playerId);
