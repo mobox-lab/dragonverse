@@ -110,7 +110,7 @@ export class EnchantBuff {
 
             let curBuff = stringToBuff(BagTool.getStr(petData));
             curBuff.forEach(element => {
-                this.addBuff(playerId, key, buff, {id: element.id, level: element.level});
+                this.addBuff(playerId, key, buff, { id: element.id, level: element.level });
             });
             petBuff.set(key, buff);
         }
@@ -287,7 +287,7 @@ export class EnchantBuff {
         this.interval = TimeUtil.setInterval(() => {
             let count = MathUtil.randomInt(data.randomDiamondNum[0], data.randomDiamondNum[1] + 1);
             ModuleService.getModule(PlayerModuleC).addDiamond(count);
-            RewardTipsManager.instance.getUI(GlobalEnum.CoinType.Diamond, count);
+            RewardTipsManager.getInstance().getUI(GlobalEnum.CoinType.Diamond, count);
         }, time);
     }
 
