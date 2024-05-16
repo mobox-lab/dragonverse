@@ -306,9 +306,9 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
         firstTime = firstTime ?? Date.now();
         const d = this.getPlayerData(playerId);
         if (!d) return;
-        if (d.energy >= (this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0) &&
-            d.consume(cost) > 0)
-            d.lastRecoveryTime = firstTime;
+
+        let needRefresh = d.energy >= (this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0);
+        if (d.consume(cost) > 0 && needRefresh) d.lastRecoveryTime = firstTime;
 
         d.save(false);
         this.syncEnergyToClient(
@@ -316,7 +316,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
             d.energy);
         Log4Ts.log(EnergyModuleS,
             `consume ${cost} energy to player ${playerId}.`,
-            ` current: ${d.energy}`);
+            `current: ${d.energy}`);
     }
 
     public addEnergy(playerId: number, val: number) {
