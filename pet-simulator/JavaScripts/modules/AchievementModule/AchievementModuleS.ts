@@ -43,7 +43,7 @@ export default class AchievementModuleS extends ModuleS<
     this.currentData.save(true);
   }
 
-  public broadcastAchievement_destroy(playerId:number,destroyType: GlobalEnum.DestructorType): void {
+  public broadcastAchievement_destroy(playerId: number, destroyType: GlobalEnum.DestructorType): void {
     this.getClient(playerId).net_broadcastAchievement_destroy(destroyType)
   }
   /**
@@ -85,7 +85,7 @@ export default class AchievementModuleS extends ModuleS<
         this.petBagModuleC.addBagCapacity(reward);
         break;
       case GlobalEnum.AchievementReward.PetExpand:
-        this.petBagModuleS.net_addPet(reward);
+        this.petBagModuleS.net_addPet(this.currentPlayerId, reward);
         break;
       default:
         break;

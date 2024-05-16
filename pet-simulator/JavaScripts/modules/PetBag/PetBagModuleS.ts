@@ -9,6 +9,7 @@ import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { petInfo } from "../Trading/TradingScript";
 import { AuthModuleS } from "../auth/AuthModule";
+import { BagTool } from "./BagTool";
 import { EnchantBuff } from "./EnchantBuff";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
@@ -59,7 +60,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     @Decorator.noReply()
-    public net_addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+    public net_addPet(playerId: number, id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
         let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
 
         let atk: number = 0;
@@ -67,8 +68,85 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             atk = utils.GetRandomNum(atkArr[0], atkArr[1]);
         else
             atk = atkArr[0];
+        let nameId = utils.GetRandomNum(1, 200);
+        let name = utils.GetUIText(nameId)
+        this.addPet(playerId, id, atk, name, type, addTime);
+    }
+    /** 
+     * @description: s端购买扭蛋
+     * @param cfgId 扭蛋配置id
+     * @return 
+     */
+    public async net_buyEgg(cfgId: number): Promise<number | null> {
+        let cfg = GameConfig.EggMachine.getElement(cfgId);
+        let price = cfg.Price[0];
+        if (!price) return null;
+        let playerId = this.currentPlayerId;
+        let res = await ModuleService.getModule(PlayerModuleS).net_reduceGold(price, this.judgeGold(cfgId));
+        if (res) {
+            let petId = this.calcProbability(cfgId);
+            this.net_addPet(playerId, petId, cfg.AreaID);
+            return petId;
+        }
+        return null;
+    }
 
-        this.addPet(this.currentPlayerId, id, atk, undefined, type, addTime);
+    private hasSmallRate: boolean = false;
+    /**计算最小概率 */
+    private calcMinProbability(cfgId: number): boolean {
+        let cfg = GameConfig.EggMachine.getElement(cfgId);
+        if (cfg.Weight2 == 0) {
+            this.hasSmallRate = false;
+            return false;
+        }
+        this.hasSmallRate = true;
+
+        let random = MathUtil.randomFloat(0, 100);
+        let addRate = cfg.Weight2 + GlobalData.Buff.curSmallLuckyBuff[0] + GlobalData.Buff.curSuperLuckyBuff[0];
+        if (random <= addRate) {
+            return true;
+        }
+        return false;
+    }
+
+    /**计算概率
+    * @returns 返回宠物表id
+    * */
+    private calcProbability(cfgId: number): number {
+        let cfg = GameConfig.EggMachine.getElement(cfgId);
+        if (this.calcMinProbability(cfgId)) {
+            return cfg.petArr[cfg.petArr.length - 1];
+        }
+        //计算总权重
+        let curWeight = cfg.Weight.concat();
+        if (this.hasSmallRate) {
+            //加后2个
+            curWeight[curWeight.length - 1] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
+            curWeight[curWeight.length - 2] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
+        } else {
+            //加后3个
+            curWeight[curWeight.length - 1] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
+            curWeight[curWeight.length - 2] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
+            curWeight[curWeight.length - 3] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
+        }
+
+        let index = BagTool.calculateWeight(curWeight);
+        return cfg.petArr[index];
+    }
+
+    private judgeGold(cfgId: number): GlobalEnum.CoinType {
+        let coinType = GlobalEnum.CoinType;
+
+        let goldType = coinType.FirstWorldGold;
+        let cfg = GameConfig.EggMachine.getElement(cfgId);
+        if (cfg.AreaID < 2000) {
+            goldType = coinType.FirstWorldGold;
+        } else if (cfg.AreaID < 3000) {
+            goldType = coinType.SecondWorldGold;
+        } else if (cfg.AreaID < 4000) {
+            goldType = coinType.ThirdWorldGold;
+        }
+        return goldType;
     }
 
     public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
@@ -473,7 +551,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
         let allPetIds: number[] = [];
         /**与最大攻击力差值 */
-            //获取ts最大整数数值
+        //获取ts最大整数数值
         let max = Number.MAX_VALUE;
         let allMaxAtkDiff = max;
         /**攻击力差值最小的宠物id */
@@ -510,7 +588,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
         mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE", endPetId);
         // ModuleService.getModule(AchievementModuleS).broadcastAchievementBlendType(endPetId); // TODO: 重构 AchievementModuleC.broadcastAchievementBlendType 到 S 端，主要是有个C端的toast 现在先用dispatchToClient 发事件代替
-        await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId, GlobalEnum.PetGetType.Fusion, earliestObtainTime);
+        await ModuleService.getModule(PetBagModuleS).net_addPet(this.currentPlayerId, endPetId, GlobalEnum.PetGetType.Fusion, earliestObtainTime);
     }
 
     /**词条buff初始化 */
@@ -522,28 +600,28 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
     }
 
-		/** 原 P_Pet_Dev.startDev 合成宠物 */
-		public async net_isAffordDiamond(cost: number): Promise<boolean> {
-				if (cost <= 0) return false;
-				return await ModuleService.getModule(PlayerModuleS).net_reduceDiamond(cost);
-		}
+    /** 原 P_Pet_Dev.startDev 合成宠物 */
+    public async net_isAffordDiamond(cost: number): Promise<boolean> {
+        if (cost <= 0) return false;
+        return await ModuleService.getModule(PlayerModuleS).net_reduceDiamond(cost);
+    }
 
-		/** 原 P_Pet_Dev.startDev 合成宠物 */
-		public async net_fuseDevPet(curPetId: number, isGold: boolean, curRate: number, earliestObtainTime: number, petIds: number[]) {
+    /** 原 P_Pet_Dev.startDev 合成宠物 */
+    public async net_fuseDevPet(curPetId: number, isGold: boolean, curRate: number, earliestObtainTime: number, petIds: number[]) {
         let random = MathUtil.randomInt(0, 100);
         const petInfo = GameConfig.PetARR.getElement(curPetId);
         let isSucc: boolean = true;
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
         if (random <= curRate) {
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
-						mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
-            await ModuleService.getModule(PetBagModuleS).net_addPet(endPetId,
+            mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
+            await ModuleService.getModule(PetBagModuleS).net_addPet(this.currentPlayerId, endPetId,
                 isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow, earliestObtainTime);
         } else {
             isSucc = false;
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
-						mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseFailed");
+            mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseFailed");
         }
-				mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE", endPetId, isSucc, petIds);
-		}
+        mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE", endPetId, isSucc, petIds);
+    }
 }

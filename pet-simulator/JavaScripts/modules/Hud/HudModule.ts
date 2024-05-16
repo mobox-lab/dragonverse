@@ -18,15 +18,15 @@ import { P_HudUI } from "./P_HudUI";
 import GameIngo_Generate from "../../ui-generate/common/GameIngo_generate";
 import { PetBagModuleS } from '../PetBag/PetBagModuleS';
 
-export class HudModuleS extends ModuleS<HudModuleC, null>{
-	@Decorator.noReply()
-	public net_addInitPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
-		if(!GlobalData.pet.initPets.includes(id)) return;
-		ModuleService.getModule(PetBagModuleS).net_addPet(id, type, addTime)
-	}
+export class HudModuleS extends ModuleS<HudModuleC, null> {
+    @Decorator.noReply()
+    public net_addInitPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+        if (!GlobalData.pet.initPets.includes(id)) return;
+        ModuleService.getModule(PetBagModuleS).net_addPet(this.currentPlayerId, id, type, addTime);
+    }
 }
 
-export class HudModuleC extends ModuleC<HudModuleS, null>{
+export class HudModuleC extends ModuleC<HudModuleS, null> {
 
     /**当前hudUI */
     private hudUI: P_HudUI = null;
@@ -49,8 +49,8 @@ export class HudModuleC extends ModuleC<HudModuleS, null>{
         this.hudUI.onFastTranAC.add(this.fastTransmit.bind(this));
         this.playerModule = ModuleService.getModule(PlayerModuleC);
         this.petBagModule = ModuleService.getModule(PetBagModuleC);
- 
-				this.playerModule.onGoldChange.add((coinType: GlobalEnum.CoinType, gold: number) => {
+
+        this.playerModule.onGoldChange.add((coinType: GlobalEnum.CoinType, gold: number) => {
             if (coinType == GlobalEnum.CoinType.SummerGold) return;
             this.hudUI.changeGold(gold);
             if (coinType != GlobalEnum.CoinType.FirstWorldGold) return;

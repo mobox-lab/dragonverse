@@ -403,102 +403,42 @@ class EggM {
         ui.setVisibility(isVis ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
     }
 
-    /**计算概率
-    * @returns 返回宠物表id
-    * */
-    private calcProbability(): number {
 
-        if (this.calcMinProbability()) {
-            return this.cfg.petArr[this.cfg.petArr.length - 1];
-        }
-        //计算总权重
-        let curWeight = this.cfg.Weight.concat();
-        if (this.hasSmallRate) {
-            //加后2个
-            curWeight[curWeight.length - 1] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
-            curWeight[curWeight.length - 2] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
-        } else {
-            //加后3个
-            curWeight[curWeight.length - 1] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
-            curWeight[curWeight.length - 2] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
-            curWeight[curWeight.length - 3] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
-        }
 
-        let index = BagTool.calculateWeight(curWeight);
-        return this.cfg.petArr[index];
-    }
 
-    /**计算最小概率 */
-    private calcMinProbability(): boolean {
-
-        if (this.cfg.Weight2 == 0) {
-            this.hasSmallRate = false;
-            return false;
-        }
-        this.hasSmallRate = true;
-
-        let random = MathUtil.randomFloat(0, 100);
-        let addRate = this.cfg.Weight2 + GlobalData.Buff.curSmallLuckyBuff[0] + GlobalData.Buff.curSuperLuckyBuff[0];
-        if (random <= addRate) {
-            return true;
-        }
-        return false;
-    }
 
     private checkCanBuy() {
-        let guid = this.cfg.Price[0];
+        let price = this.cfg.Price[0];
         let mgs = "";
-        if (guid > 0) {
-            mgs = utils.Format(GameConfig.Language.Text_messagebox_3.Value, utils.formatNumber(guid));
+        if (price > 0) {
+            mgs = utils.Format(GameConfig.Language.Text_messagebox_3.Value, utils.formatNumber(price));
         }
         MessageBox.showTwoBtnMessage(mgs, (res) => {
             if (res)
-                this.buyEgg(guid);
+                this.buyEgg(price);
         })
     }
-    //判断几世界金币
-    private judgeGold(): GlobalEnum.CoinType {
-        let coinType = GlobalEnum.CoinType;
 
-        let goldType = coinType.FirstWorldGold;
 
-        if (this.cfg.AreaID < 2000) {
-            goldType = coinType.FirstWorldGold;
-        } else if (this.cfg.AreaID < 3000) {
-            goldType = coinType.SecondWorldGold;
-        } else if (this.cfg.AreaID < 4000) {
-            goldType = coinType.ThirdWorldGold;
-        }
-        return goldType;
-    }
+    private async buyEgg(price: number) {
 
-    private async buyEgg(guid: number) {
-        let isCan: boolean = true;
-        let petMC = ModuleService.getModule(PetBagModuleC)
-        let petMS = ModuleService.getModule(PetBagModuleS)
+        let petMC = ModuleService.getModule(PetBagModuleC);
 
         if (petMC.getCurPetNum() >= petMC.getBagCapacity()) {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_4.Value);
             return;
         }
 
-        isCan = await ModuleService.getModule(PlayerModuleC).reduceGold(guid, this.judgeGold());
-
-        if (!isCan) {
+        let res = await petMC.buyEgg(this.cfgID);
+        if (res !== null) {
+            this.hasArr.push(res);
+            this.getEgg(res);
+            EggMachineTween.instance.startTween(this.petEgg, res, this.cfg.id);
+            AnalyticsTool.action_buy_item(this.cfgID);
+            this.broadcastExecuteAchievement(res);
+        } else {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_4.Value);
-            return;
         }
-
-        let petId = this.calcProbability();
-        let eggId = this.cfg.id;
-        this.hasArr.push(petId);
-        this.getEgg(petId);
-        EggMachineTween.instance.startTween(this.petEgg, petId, eggId);
-
-        petMS.net_addPet(petId, this.cfg.AreaID);
-
-        AnalyticsTool.action_buy_item(this.cfgID);
-        this.broadcastExecuteAchievement(petId);
     }
 
     /**广播成就 (开蛋次数|孵化出稀有宠物|孵化出稀有宠物|孵化出传说宠物|孵化出神话宠物)*/

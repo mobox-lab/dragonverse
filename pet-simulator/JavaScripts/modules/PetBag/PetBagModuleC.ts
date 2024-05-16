@@ -211,7 +211,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
      * @param id 宠物id
      */
     public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
-        await this.server.net_addPet(id, type, addTime);
+        await this.server.net_addPet(Player.localPlayer.playerId, id, type, addTime);
     }
 
     /**宠物公告 */
@@ -356,20 +356,20 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     }
 
     /** 原 P_FusePanel.fusePet 合成宠物 */
-		public async fusePet(curSelectPets: petItemDataNew[], earliestObtainTime: number) {
-				await this.server.net_fusePet(curSelectPets, earliestObtainTime);	// 原 fusePet
-		}
+    public async fusePet(curSelectPets: petItemDataNew[], earliestObtainTime: number) {
+        await this.server.net_fusePet(curSelectPets, earliestObtainTime);	// 原 fusePet
+    }
 
     /** 原 P_Pet_Dev.startDev 调用 */
     public async isAffordDiamond(cost: number) {
-				return await this.server.net_isAffordDiamond(cost)			
-		}
+        return await this.server.net_isAffordDiamond(cost)
+    }
 
     /** 原 P_Pet_Dev.startDev 调用 */
     public async fuseDevPet(curPetId: number, isGold: boolean, curRate: number, earliestObtainTime: number, petIds: number[]) {
-				await this.server.net_fuseDevPet(curPetId, isGold, curRate, earliestObtainTime, petIds)			
-		}
-		
+        await this.server.net_fuseDevPet(curPetId, isGold, curRate, earliestObtainTime, petIds)
+    }
+
     /****************附魔***********/
 
     /**
@@ -396,6 +396,10 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
             });
         }
 
+    }
+
+    async buyEgg(cfgId: number): Promise<number | null> {
+        return await this.server.net_buyEgg(cfgId);
     }
 
     protected onUpdate(dt: number): void {
