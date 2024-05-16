@@ -20,6 +20,7 @@ import { JumpGamePanel } from "../../ui/JumpGamePanel";
 import { Task_ModuleC } from "../Task/TaskModuleC";
 import Gtk from "../../util/GToolkit";
 import { P_Transmit } from "../AreaDivide/P_Transmit";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -139,6 +140,14 @@ export class P_HudUI extends Hud_Generate {
             Gtk.trySetText(this.mText_stamina2,
                 Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
                     .toString()));
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mText_stamina,
+                (GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
+                    Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data) :
+                    ModuleService.getModule(EnergyModuleC).viewEnergy.data
+                )
+                    .toString()));
+
 
         this.setGMBtn();
         this.startFastTranBtnTween();
@@ -257,7 +266,7 @@ export class P_HudUI extends Hud_Generate {
         let startAngle = GlobalData.TweenFastTranBtn.startAngle;
         let endAngle = GlobalData.TweenFastTranBtn.endAngle;
         let time = GlobalData.TweenFastTranBtn.tweenTime;
-        this.leftToRightTween = new mw.Tween({angle: startAngle}).to({angle: endAngle}, time * 1000)
+        this.leftToRightTween = new mw.Tween({ angle: startAngle }).to({ angle: endAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -267,7 +276,7 @@ export class P_HudUI extends Hud_Generate {
                 }
             })
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
-        this.rightToLeftTween = new mw.Tween({angle: endAngle}).to({angle: startAngle}, time * 1000)
+        this.rightToLeftTween = new mw.Tween({ angle: endAngle }).to({ angle: startAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -351,7 +360,7 @@ export class P_HudUI extends Hud_Generate {
             if (!this.mTween.isPlaying()) this.mTween.start();
         }
 
-        GToolkit.trySetText(this.mText_stamina, this.energyModuleC ? `${this.energyModuleC.currEnergy()}` : "0");
+        // GToolkit.trySetText(this.mText_stamina, this.energyModuleC ? `${this.energyModuleC.currEnergy()}` : "0");
     }
 
     protected onShow(...params: any[]): void {
