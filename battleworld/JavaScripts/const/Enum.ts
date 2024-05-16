@@ -123,8 +123,8 @@ export enum EAttributeEvents_C {
     Attribute_AngerValue_C = "Attribute_AngerValue_C",
     /**玩家爆气状态 */
     Attribute_gasExplosion_C = "Attribute_gasExplosion_C",
-    /**玩家体力变化 */
-    Attribute_Energy_Change_C = "Attribute_Energy_Change_C",
+    // /**玩家体力变化 */
+    // Attribute_Energy_Change_C = "Attribute_Energy_Change_C",
 }
 
 export enum EAttributeEvents_S {
