@@ -21,6 +21,8 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk from "../../util/GToolkit";
 import AchievementModuleS from "../AchievementModule/AchievementModuleS";
 import { ResourceModuleS } from "./ResourceModule";
+import { EnergyModuleS } from "../Energy/EnergyModule";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 export class Resource {
 
@@ -127,6 +129,11 @@ export default class ResourceScript extends mw.Script {
 
     @RemoteFunction(mw.Server)
     private net_injured(playerID: number, key: number) {
+        if (!ModuleService.getModule(EnergyModuleS).isAfford(playerID, GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
+            Log4Ts.log(Resource, `Stamina is not enough. playerID:${playerID}`);
+            return;
+        }
+        ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_PET_ATTACK);
         //不用这个damage了，自己算
         //GlobalData.LevelUp.petDamage 去存档里取
         //力量对应升级表的id：3
