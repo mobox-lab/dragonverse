@@ -211,7 +211,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
      * @param id 宠物id
      */
     public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
-        await this.server.net_addPetWithMissingInfo(id, type, addTime);
+        await this.server.net_addPetWithMissingInfo(Player.localPlayer.playerId, id, type, addTime);
     }
 
     /**宠物公告 */
@@ -389,6 +389,10 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
             });
         }
 
+    }
+
+    async buyEgg(cfgId: number): Promise<number | null> {
+        return await this.server.net_buyEgg(cfgId);
     }
 
     protected onUpdate(dt: number): void {
