@@ -12,6 +12,9 @@ import { BagTool } from "./BagTool";
 import { EnchantBuff } from "./EnchantBuff";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
+import { PlayerModuleC } from "../Player/PlayerModuleC";
+import MessageBox from "../../util/MessageBox";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     private _playerModuleS: PlayerModuleS;
@@ -19,6 +22,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     private get playerModuleS(): PlayerModuleS | null {
         if (!this._playerModuleS) this._playerModuleS = ModuleService.getModule(PlayerModuleS);
         return this._playerModuleS;
+    }
+
+    private _petBagModuleS: PetBagModuleS;
+
+    private get petBagModuleS(): PetBagModuleS | null {
+        if (!this._petBagModuleS) this._petBagModuleS = ModuleService.getModule(PetBagModuleS);
+        return this._petBagModuleS;
     }
 
     /**玩家id、 true:装备 false: 卸下 、宠物数据*/
@@ -74,9 +84,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         else
             atk = atkArr[0];
         let nameId = utils.GetRandomNum(1, 200);
-        let name = utils.GetUIText(nameId)
+        let name = utils.GetUIText(nameId);
         this.addPet(playerId, id, atk, name, type, addTime);
     }
+
     /**
      * @description: s端购买扭蛋
      * @param cfgId 扭蛋配置id
@@ -97,6 +108,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     private hasSmallRate: boolean = false;
+
     /**计算最小概率 */
     private calcMinProbability(cfgId: number): boolean {
         let cfg = GameConfig.EggMachine.getElement(cfgId);
@@ -115,8 +127,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     /**计算概率
-    * @returns 返回宠物表id
-    * */
+     * @returns 返回宠物表id
+     * */
     private calcProbability(cfgId: number): number {
         let cfg = GameConfig.EggMachine.getElement(cfgId);
         if (this.calcMinProbability(cfgId)) {
@@ -530,9 +542,24 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     /** 原 P_FusePanel.net_fusePet 合成宠物 */
-    public async net_fusePet(curSelectPets: petItemDataNew[], earliestObtainTime: number): Promise<boolean> {
-        const playerId: number = this.currentPlayerId;
+    public async net_fusePet(curSelectPetKeys: number[],
+                             earliestObtainTime: number): Promise<boolean> {
+        const playerId = this.currentPlayerId;
+        const curSelectPets = curSelectPetKeys
+            .map(key => this.currentData
+                .bagItemsByKey(key))
+            .filter(item => item !== undefined);
+
+        if (curSelectPetKeys.length !== curSelectPets.length) {
+            Log4Ts.warn(PetBagModuleS,
+                `some pet not found.`,
+                `player selected: ${curSelectPetKeys}.`,
+                `found: ${curSelectPets}.`);
+            return false;
+        }
         if (!this.playerModuleS.reduceDiamond(GlobalData.Fuse.cost)) return false;
+
+        this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
 
         const data = this.currentData;
         if (curSelectPets.length >= data.CurBagCapacity) return false;
@@ -543,7 +570,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let allPetAtk = 0;
         let countMap = new Map<number, number>();
         let devType = this.judgePetType(curSelectPets);
-        let allLength = curSelectPets.length;
         for (let i = 0; i < curSelectPets.length; i++) {
             let pet = curSelectPets[i];
             if (!countMap.has(pet.I)) {
@@ -562,7 +588,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
         let allPetIds: number[] = [];
         /**与最大攻击力差值 */
-        //获取ts最大整数数值
+            //获取ts最大整数数值
         let max = Number.MAX_VALUE;
         let allMaxAtkDiff = max;
         /**攻击力差值最小的宠物id */
@@ -571,38 +597,46 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let sameMaxAtkDiff = max;
         /**稀有度相同的攻击力差值最小的宠物id */
         let sameMinAtkDiffPetId = 0;
-        GameConfig.PetARR.getAllElement().forEach(item => {
-            if (item.IfFuse) {
-                let atks = item.PetAttack;
-                let min = atks[0];
-                let max = atks[1];
-                if (min >= minAtk && max <= maxAtk && item.DevType == devType) {
-                    allPetIds.push(item.id);
-                }
-                let diff = Math.abs(max - maxAtk);
-                if (diff < allMaxAtkDiff) {
-                    allMaxAtkDiff = diff;
-                    allMinAtkDiffPetId = item.id;
-                }
-                if (item.DevType == devType) {
-                    if (diff < sameMaxAtkDiff) {
-                        sameMaxAtkDiff = diff;
-                        sameMinAtkDiffPetId = item.id;
+        GameConfig
+            .PetARR
+            .getAllElement()
+            .forEach(item => {
+                if (item.IfFuse) {
+                    let atks = item.PetAttack;
+                    let min = atks[0];
+                    let max = atks[1];
+                    if (min >= minAtk && max <= maxAtk && item.DevType == devType) {
+                        allPetIds.push(item.id);
+                    }
+                    let diff = Math.abs(max - maxAtk);
+                    if (diff < allMaxAtkDiff) {
+                        allMaxAtkDiff = diff;
+                        allMinAtkDiffPetId = item.id;
+                    }
+                    if (item.DevType == devType) {
+                        if (diff < sameMaxAtkDiff) {
+                            sameMaxAtkDiff = diff;
+                            sameMinAtkDiffPetId = item.id;
+                        }
                     }
                 }
-            }
-        });
+            });
         if (allPetIds.length == 0) {
             let minAtkDiffPetId = sameMinAtkDiffPetId == 0 ? allMinAtkDiffPetId : sameMinAtkDiffPetId;
             allPetIds.push(minAtkDiffPetId);
         }
         let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
-        mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE", endPetId);
-        // ModuleService.getModule(AchievementModuleS).broadcastAchievementBlendType(endPetId); // TODO: 重构 AchievementModuleC.broadcastAchievementBlendType 到 S 端，主要是有个C端的toast 现在先用dispatchToClient 发事件代替
+        mw.Event.dispatchToClient(this.currentPlayer,
+            "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
+            endPetId);
 
-        ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(endPetId,
-            GlobalEnum.PetGetType.Fusion,
-            earliestObtainTime);
+        this.playerModuleS;
+        this.petBagModuleS
+            .net_addPetWithMissingInfo(
+                playerId,
+                endPetId,
+                GlobalEnum.PetGetType.Fusion,
+                earliestObtainTime);
     }
 
     /**词条buff初始化 */
@@ -615,7 +649,32 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     /** 原 P_Pet_Dev.startDev 合成宠物 */
-    public async net_fuseDevPet(curPetId: number, isGold: boolean, curRate: number, earliestObtainTime: number, petIds: number[]) {
+    public async net_fuseDevPet(curSelectPetKeys: number[],
+                                curPetId: number,
+                                isGold: boolean,
+                                curRate: number): Promise<boolean> {
+        const curSelectPets = curSelectPetKeys
+            .map(key => this.currentData
+                .bagItemsByKey(key))
+            .filter(item => item !== undefined);
+
+        if (curSelectPetKeys.length !== curSelectPets.length) {
+            Log4Ts.warn(PetBagModuleS, `some pet not found.`,
+                `player selected: ${curSelectPetKeys}.`,
+                `found: ${curSelectPets}.`);
+            return false;
+        }
+
+        let petIds: number[] = curSelectPets.map(item => item.I);
+
+        //计算最早的获取时间
+        let earliestObtainTime = curSelectPets[0].obtainTime;
+        curSelectPets.forEach(item => {
+            if (item.obtainTime < earliestObtainTime) {
+                earliestObtainTime = item.obtainTime;
+            }
+        });
+
         let random = MathUtil.randomInt(0, 100);
         const petInfo = GameConfig.PetARR.getElement(curPetId);
         let isSucc: boolean = true;
@@ -623,14 +682,18 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         if (random <= curRate) {
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
-            await ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(this.currentPlayerId, endPetId,
-                isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow, earliestObtainTime);
+            ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(
+                this.currentPlayerId,
+                endPetId,
+                isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow,
+                earliestObtainTime);
         } else {
             isSucc = false;
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseFailed");
         }
         mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE", endPetId, isSucc, petIds);
+        return true;
     }
 }
 

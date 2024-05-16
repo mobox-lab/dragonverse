@@ -354,13 +354,13 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     }
 
     /** 原 P_FusePanel.fusePet 合成宠物 */
-    public async fusePet(curSelectPets: petItemDataNew[], earliestObtainTime: number): Promise<boolean> {
+    public async fusePet(curSelectPets: number[], earliestObtainTime: number): Promise<boolean> {
         return this.server.net_fusePet(curSelectPets, earliestObtainTime);	// 原 fusePet
     }
 
     /** 原 P_Pet_Dev.startDev 调用 */
-    public async fuseDevPet(curPetId: number, isGold: boolean, curRate: number, earliestObtainTime: number, petIds: number[]) {
-        await this.server.net_fuseDevPet(curPetId, isGold, curRate, earliestObtainTime, petIds);
+    public async fuseDevPet(curSelectKeys: number[], curPetId: number, isGold: boolean, curRate: number): Promise<boolean> {
+        return this.server.net_fuseDevPet(curSelectKeys, curPetId, isGold, curRate);
     }
 
     /****************附魔***********/

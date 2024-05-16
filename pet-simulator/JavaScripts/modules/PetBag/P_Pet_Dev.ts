@@ -1,18 +1,17 @@
-﻿import {GameConfig} from "../../config/GameConfig";
-import {GlobalEnum} from "../../const/Enum";
-import {GlobalData} from "../../const/GlobalData";
+﻿import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
 import Dev_Generate from "../../ui-generate/Pet/Dev_generate";
 import MessageBox from "../../util/MessageBox";
-import {utils} from "../../util/uitls";
+import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
-import {AnalyticsTool} from "../Analytics/AnalyticsTool";
-import {PlayerModuleC} from "../Player/PlayerModuleC";
-import {PetBagItem} from "./P_Bag";
-import {PetBagModuleC} from "./PetBagModuleC";
-import {petItemDataNew} from "./PetBagModuleData";
+import { AnalyticsTool } from "../Analytics/AnalyticsTool";
+import { PlayerModuleC } from "../Player/PlayerModuleC";
+import { PetBagItem } from "./P_Bag";
+import { PetBagModuleC } from "./PetBagModuleC";
+import { petItemDataNew } from "./PetBagModuleData";
 
-
-import {PetBag_Item} from "./P_BagItem";
+import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { PetBagModuleS } from "./PetBagModuleS";
 
@@ -41,9 +40,9 @@ export class P_Pet_Dev extends Dev_Generate {
             this.onClickDev();
         });
         this.achievementModuleC = ModuleService.getModule(AchievementModuleC);
-				mw.Event.addServerListener("P_PET_DEV_SHOW_FUSE_MESSAGE",
-					 this.showFuseMessage
-				);
+        mw.Event.addServerListener("P_PET_DEV_SHOW_FUSE_MESSAGE",
+            this.showFuseMessage,
+        );
     }
 
     /**点击按钮进行合成 */
@@ -59,54 +58,49 @@ export class P_Pet_Dev extends Dev_Generate {
         });
     }
 
-		public showFuseMessage = (type: "devFuseSuccess" | "devFuseFailed") => {
-				switch (type) {
-						case "devFuseSuccess": {
-								MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
-								break;
-						}
-						case "devFuseFailed": {
-								MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
-								break;
-						}
-						default: break;
-				}
-		}
+    public showFuseMessage = (type: "devFuseSuccess" | "devFuseFailed") => {
+        switch (type) {
+            case "devFuseSuccess": {
+                MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
+                break;
+            }
+            case "devFuseFailed": {
+                MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
+                break;
+            }
+            default:
+                break;
+        }
+    };
 
     /**开始合成 */
     private async startDev() {
-        let isSuccess = ModuleService.getModule(PlayerModuleC).isDiamondEnough(this.curCost);
-        if (!isSuccess) {
-            MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
-                super.show();
-            });
+        if (!ModuleService
+            .getModule(PlayerModuleC)
+            .isDiamondEnough(this.curCost)) {
+            MessageBox.showOneBtnMessage(
+                GameConfig.Language.Text_Fuse_UI_3.Value,
+                () => super.show());
             return;
         }
-        let keys: number[] = [];
-        let petIds: number[] = [];
-        this.curSelectPets.forEach(item => {
-            keys.push(item.k);
-            petIds.push(item.I);
-        });
-        //计算最早的获取时间
-        let earliestObtainTime = this.curSelectPets[0].obtainTime;
-        this.curSelectPets.forEach(item => {
-            if (item.obtainTime < earliestObtainTime) {
-                earliestObtainTime = item.obtainTime;
-            }
-        });
+        const curSelectKeys = this.curSelectPets.map(item => item.k);
 
-        let isCanDel = ModuleService
+        if (!ModuleService
             .getModule(PetBagModuleC)
-            .checkFuseAble(this.curSelectPets.map(item => item.k))
-
-        this.curSelectPets.length = 0;
-
-        if (!isCanDel) {
+            .checkFuseAble(curSelectKeys)) {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_11.Value);
             return;
         }
-        await ModuleService.getModule(PetBagModuleC).fuseDevPet(this.curPetId, this.isGold, this.curRate, earliestObtainTime, petIds);
+
+        this.hide();
+        this.curSelectPets.length = 0;
+
+        await ModuleService
+            .getModule(PetBagModuleC)
+            .fuseDevPet(curSelectKeys,
+                this.curPetId,
+                this.isGold,
+                this.curRate);
     }
 
     public show(petItems: petItemDataNew[], isGold: boolean, ...param: any[]): void {

@@ -125,6 +125,8 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BWEnergyModuleDa
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
+        
+        this.viewEnergy.data = this.data.energy;
     }
 
     protected onDestroy(): void {
@@ -352,11 +354,6 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
-    @mwext.Decorator.noReply()
-    public net_consume(count: number, firstTime: number) {
-        this.consume(this.currentPlayerId, count, firstTime);
-    }
-
     @mwext.Decorator.noReply()
     public net_requestRefreshStaminaLimit() {
         let playerId = this.currentPlayerId;
