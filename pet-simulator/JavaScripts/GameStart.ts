@@ -46,6 +46,9 @@ import PetSimulatorAuthModuleData, { AuthModuleC, AuthModuleS } from "./modules/
 import { JumpRoomModuleC, JumpRoomModuleS } from "./modules/jump-room/JumpRoomModule";
 import GameServiceConfig from "./const/GameServiceConfig";
 import PsStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./modules/statistic/StatisticModule";
+import { DropManagerC, DropManagerS } from "./modules/Resources/DropResouce";
+import Balancing from "./depend/balancing/Balancing";
+import { GtkTypes } from "./util/GToolkit";
 
 // declare global {
 //     var UE: any;
@@ -142,17 +145,20 @@ export default class GameStart extends mw.Script {
         mwaction;
 
         DataStorage.setTemporaryStorage(!this.isOnline);
+
+        //初始化表格语言
+        GameConfig.initLanguage(Number(this.selectedLanguageIndex), (key) => {
+            let ele = GameConfig.Language.getElement(key);
+            if (ele == null)
+                return "unknow_" + key;
+            return ele.Value;
+        });
+
         if (mw.SystemUtil.isClient()) {
             if (GlobalData.Global.selectedLanguageIndex == -1) {
                 GlobalData.Global.selectedLanguageIndex = this.getSystemLanguageIndex();
             }
-            //初始化表格语言
-            GameConfig.initLanguage(Number(this.selectedLanguageIndex), (key) => {
-                let ele = GameConfig.Language.getElement(key);
-                if (ele == null)
-                    return "unknow_" + key;
-                return ele.Value;
-            });
+
             mw.UIScript.addBehavior("lan", (ui: mw.StaleButton | mw.TextBlock) => {
                 if (ui == null) return;
                 let key: string = ui.text;
@@ -167,6 +173,11 @@ export default class GameStart extends mw.Script {
             InputUtil.mouseLockOptionEnabled = false;
             InputUtil.isCursorVisible = true;
             InputUtil.isLockMouse = false;
+
+            Balancing.getInstance()
+                .registerUpdater((callback) => {
+                    mw.TimeUtil.onEnterFrame.add(callback);
+                }).setThreshold(GtkTypes.Interval.Hz60);
         }
 
         this.useUpdate = true;
@@ -227,7 +238,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PetSimulatorPlayerModuleData);
         ModuleService.registerModule(PetBagModuleS, PetBagModuleC, PetBagModuleData);
         ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PSEnergyModuleData);
-        ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
+        ModuleService.registerModule(DropManagerS, DropManagerC, null);
         ModuleService.registerModule(StatisticModuleS, StatisticModuleC, PsStatisticModuleData);
     }
 

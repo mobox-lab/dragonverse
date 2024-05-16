@@ -20,6 +20,7 @@ import { JumpGamePanel } from "../../ui/JumpGamePanel";
 import { Task_ModuleC } from "../Task/TaskModuleC";
 import Gtk from "../../util/GToolkit";
 import { P_Transmit } from "../AreaDivide/P_Transmit";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -92,40 +93,6 @@ export class P_HudUI extends Hud_Generate {
         this.mBtn_skid.onClicked.add(() => {
             this.onSkateboardAction.call();
         });
-        // this.mRefresh_Btn.onClicked.add(() => this.authModuleC?.queryCurrency());
-        // this.mBtn_petspeed.visibility = mw.SlateVisibility.Visible;
-        let isEnable: boolean = true;
-        // this.mBtn_petspeed.touchMethod = (mw.ButtonTouchMethod.DownAndUp);
-        let timer: number = null;
-        let isTouch: boolean = false;
-        // this.mBtn_petspeed.onPressed.add(() => {
-        //     if (!isEnable) return;
-        //     isTouch = false;
-        //     if (timer) {
-        //         clearTimeout(timer);
-        //         timer = null;
-        //     }
-        //     timer = setTimeout(() => {
-        //         isTouch = true;
-        //         this.mLongPressAction.call();
-        //     }, GlobalData.SpeedUp.longPressTime);
-        // });
-        // this.mBtn_petspeed.onReleased.add(() => {
-        //     if (!isEnable) return;
-        //     if (timer) {
-        //         clearTimeout(timer);
-        //         timer = null;
-        //     }
-        //     if (!isTouch) {
-        //         this.mClickAction.call();
-        //         isEnable = false;
-        //         TimeUtil.delaySecond(GlobalData.SpeedUp.clickInterval).then(() => {
-        //             isEnable = true;
-        //         });
-        //     } else {
-        //         this.mReleaseAction.call();
-        //     }
-        // });
         this.mCanvas_fasttran.visibility = mw.SlateVisibility.Collapsed;
         this.canUpdate = true;
         let minSize = GlobalData.hudUI.canvasSize;
@@ -139,6 +106,12 @@ export class P_HudUI extends Hud_Generate {
             Gtk.trySetText(this.mText_stamina2,
                 Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
                     .toString()));
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mText_stamina,
+                (GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
+                        Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data) :
+                        ModuleService.getModule(EnergyModuleC).viewEnergy.data.toFixed(2)
+                ).toString()));
 
         this.setGMBtn();
         this.startFastTranBtnTween();
@@ -351,7 +324,7 @@ export class P_HudUI extends Hud_Generate {
             if (!this.mTween.isPlaying()) this.mTween.start();
         }
 
-        GToolkit.trySetText(this.mText_stamina, this.energyModuleC ? `${this.energyModuleC.currEnergy()}` : "0");
+        // GToolkit.trySetText(this.mText_stamina, this.energyModuleC ? `${this.energyModuleC.currEnergy()}` : "0");
     }
 
     protected onShow(...params: any[]): void {

@@ -99,15 +99,15 @@ export class BuffModuleC extends ModuleC<BuffModuleS, BuffData> {
         }
         switch (Number(cfg.type)) {
             case GlobalEnum.BuffType.Gold:
-                GlobalData.Buff.goldBuff = 1 + cfg.param/100;
+                GlobalData.Buff.goldBuff = 1 + cfg.param / 100;
                 break;
             case GlobalEnum.BuffType.Damage:
-                GlobalData.Buff.damageBuff = 1 + cfg.param/100;
+                GlobalData.Buff.damageBuffMap.set(Player.localPlayer.playerId, 1 + cfg.param / 100);
                 break;
             default:
                 break;
         }
-        console.log("startBuff=========",cfg.type,cfg.param);
+        console.log("startBuff=========", cfg.type, cfg.param);
     }
 
     /**
@@ -126,7 +126,7 @@ export class BuffModuleC extends ModuleC<BuffModuleS, BuffData> {
         }
         switch (Number(cfg.type)) {
             case GlobalEnum.BuffType.Damage:
-                GlobalData.Buff.damageBuff = 1;
+                GlobalData.Buff.damageBuffMap.set(Player.localPlayer.playerId, 1);
                 break;
             case GlobalEnum.BuffType.Gold:
                 GlobalData.Buff.goldBuff = 1;

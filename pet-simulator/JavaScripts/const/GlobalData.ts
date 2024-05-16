@@ -1,6 +1,7 @@
 import { GameConfig } from "../config/GameConfig";
 import { RankType } from "../modules/Rank/RankModuleS";
 import { GlobalEnum } from "./Enum";
+import Gtk from "../util/GToolkit";
 
 export class EggEndInfo {
     /**坐标z轴偏移 */
@@ -360,7 +361,7 @@ export namespace GlobalData {
         /**一帧喷多少个 */
         public static frameNum: number = 2;
         /**销毁时间 */
-        public static destroyTime: number = 60;
+        public static destroyTime: number = 60e3;
         /**销毁距离 */
         public static destroyDistance: number = 300;
         /**个数达到X 开始判断距离，进行叠 */
@@ -387,8 +388,8 @@ export namespace GlobalData {
         public static groundHeight: number = 55;
         /**掉的高度 */
         public static dropHeight: number = 1000;
-        /**金币存在上限 */
-        public static goldMax: number = 2000;
+
+        public static dropItemMax: number = 2000;
 
         /**权重数组1-2级钻石 1-6级金币、 */
         public static weightArr: number[] = [8, 4, 26, 22, 18, 10, 8, 4];
@@ -410,7 +411,12 @@ export namespace GlobalData {
         /**最后一击暴击权重  与下边一样 不可改*/
         public static critWeightUndef: number = 20;
         /**最后一击暴击权重  可改，与上同步*/
-        public static critWeight: number = 20;
+        public static critWeightMap: Map<number, number> = new Map();
+
+        public static critWeight(playerId: number) {
+            return Gtk.tryGet(this.critWeightMap, playerId, () => 20);
+        }
+
         /**正常击打特效权重 */
         public static normalWeight: number = 70;
 
@@ -418,7 +424,28 @@ export namespace GlobalData {
         public static guaShaTime: number = 6;
 
         /**1/3暴击 倍率 */
-        public static critRate: number = 3;
+        public static critRateMap: Map<number, number> = new Map();
+
+        public static critRate(playerId: number) {
+            return Gtk.tryGet(this.critRateMap, playerId, () => 20);
+        }
+
+        public static critMap: Map<number, boolean> = new Map();
+
+        public static isCrit(playerId: number) {
+            return Gtk.tryGet(
+                this.critMap,
+                playerId,
+                () =>
+                    MathUtil.randomInt(0, 100) <
+                    GlobalData.SceneResource.critWeight(playerId));
+        }
+
+        public static clearPlayer(playerId: number) {
+            this.critRateMap.delete(playerId);
+            this.critWeightMap.delete(playerId);
+            this.critMap.delete(playerId);
+        }
 
         /**资源点补充生成 与上次相同的概率  总100% */
         public static sameProbability: number = 50;
@@ -654,10 +681,6 @@ export namespace GlobalData {
 
     /**大宝箱 */
     export class BigBox {
-        /**宝箱位置 DropPoint表id*/
-        public static boxLocationId: number[] = [750, 751, 752, 1018, 1019, 1020, 1021, 1022, 1023, 1210, 1335];
-        /**宝箱id SceneUnit表Id*/
-        public static boxId: number[] = [65, 66, 67, 124, 125, 126, 127, 128, 129, 154, 171];
         /**X秒后 再次出现 */
         public static boxAppearTime: number = 5;
     }
@@ -774,7 +797,18 @@ export namespace GlobalData {
         /**金币buff */
         public static goldBuff: number = 1;
         /**伤害buff */
-        public static damageBuff: number = 1;
+        public static damageBuffMap: Map<number, number> = new Map();
+
+        public static damageBuff(playerId?: number) {
+            playerId = playerId ?? mw.Player.localPlayer.playerId;
+
+            return Gtk.tryGet(Buff.damageBuffMap, playerId, () => 1);
+        }
+
+        public static clearPlayer(playerId: number) {
+            this.damageBuffMap.delete(playerId);
+        }
+
         /**当期幸运、增加概率|权重值 */
         public static curSmallLuckyBuff: number[] = [0, 0];
         /**当前超级 增加值 */
@@ -812,17 +846,51 @@ export namespace GlobalData {
         /**升级触发器guid */
         public static triggerGuid: string = "3F878EA2";
         /**吸收范围 */
-        public static levelRange: number = 1;
+        public static levelRangeMap: Map<number, number> = new Map();
+
+        public static levelRange(playerId: number) {
+            return Gtk.tryGet(this.levelRangeMap, playerId, 1);
+        }
+
         /**更多钻石 */
-        public static moreDiamond: number = 1;
+        public static moreDiamondMap: Map<number, number> = new Map();
+
+        public static moreDiamond(playerId: number) {
+            return Gtk.tryGet(this.moreDiamondMap, playerId, 1);
+        };
+
         /**宠物攻击力 */
-        public static petDamage: number = 1;
+        public static petDamageMap: Map<number, number> = new Map();
+
+        public static petDamage(playerId: number) {
+            return Gtk.tryGet(this.petDamageMap, playerId, 1);
+        };
+
         /**宠物攻击速度 */
-        public static petAttackSpeed: number = 1;
-        /**宠物存储量 */
-        public static petStorage: number = 1;
+        public static petAttackSpeedMap: Map<number, number> = new Map();
+
+        public static petAttackSpeed(playerId: number) {
+            return Gtk.tryGet(this.petAttackSpeedMap, playerId, 1);
+        };
+
+
         /**最高等级 */
         public static maxLevel: number = 5;
+
+        public static initPlayer(playerId: number,
+                                 levelData: number[]) {
+            this.levelRangeMap.set(playerId,levelData[0]);
+            this.moreDiamondMap.set(playerId,levelData[1]);
+            this.petDamageMap.set(playerId,levelData[2]);
+            this.petAttackSpeedMap.set(playerId,levelData[3]);
+        }
+
+        public static clearPlayer(playerId: number) {
+            this.levelRangeMap.delete(playerId);
+            this.moreDiamondMap.delete(playerId);
+            this.petDamageMap.delete(playerId);
+            this.petAttackSpeedMap.delete(playerId);
+        }
     }
 
     /**合成 */
@@ -1006,7 +1074,15 @@ export namespace GlobalData {
         public static effectRotate: number = 60;
 
         /**宠物自动吸收数组  不用填*/
-        public static petAutoBuffKeys: number[] = [];
+        public static petAutoBuffKeysMap: Map<number, number[]> = new Map();
+
+        public static petAutoBuffKeys(playerId: number): number[] {
+            return Gtk.tryGet(Enchant.petAutoBuffKeysMap, playerId, () => []);
+        };
+
+        public static clearPlayer(playerId: number) {
+            this.petAutoBuffKeysMap.delete(playerId);
+        }
     }
 
     /**任务相关 */

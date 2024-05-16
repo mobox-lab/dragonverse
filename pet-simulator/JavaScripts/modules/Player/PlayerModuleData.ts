@@ -1,7 +1,8 @@
 ﻿import { MapEx, oTraceError } from "odin";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-
+import { GameConfig } from "../../config/GameConfig";
+import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 
 export class PetSimulatorPlayerModuleData extends Subdata {
 
@@ -172,7 +173,5 @@ export class PetSimulatorPlayerModuleData extends Subdata {
         this.save(isSync);
         this.onDiamondChange.call();
     }
-
-
 
 }

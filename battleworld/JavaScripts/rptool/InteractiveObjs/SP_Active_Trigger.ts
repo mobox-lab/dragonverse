@@ -2,11 +2,11 @@ import { GameConfig } from "../../config/GameConfig";
 import { Globaldata } from "../../const/Globaldata";
 import { EnergyModuleC } from "../../module/Energy/EnergyModule";
 import { PlayerModuleC } from "../../module/PlayerModule/PlayerModuleC";
-import { Attribute } from "../../module/PlayerModule/sub_attribute/AttributeValueObject";
 import { MessageBox } from "../../tool/MessageBox";
 import { Notice } from "../../tool/Notice";
 import { ClickUIPools } from "./ClickUIs";
 import { InteractLogic_C, InteractLogic_S, InteractObject } from "./InteractObject";
+import { EModule_Events_S } from "../../const/Enum";
 
 /**触发模式 */
 enum TriggerMode {
@@ -35,47 +35,42 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
             this.gameObject.onEnter.add(this.onEnter.bind(this));
             this.gameObject.onLeave.add(this.onLeave.bind(this));
         }
+
+        Event.addServerListener(EModule_Events_S.payTicketSuccessful, this.payTicketCallback.bind(this));
     }
 
     private onEnter(go: mw.GameObject) {
 
-        if ((go instanceof mw.Character) == false) {
-            return;
-        }
+        if (!(go instanceof mw.Character)) return;
         let chara = go as mw.Character;
-        if (chara.player.playerId != Player.localPlayer.playerId) {
-            return;
-        }
 
+        if (chara.player.playerId != Player.localPlayer.playerId) return;
+        if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) return;
 
-        if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) {
-            Notice.showDownNotice(GameConfig.Language.StaminaNotEnough.Value);
-            return;
-        }
-        ClickUIPools.instance.show(Globaldata.fireWeaponUIGuid, GameConfig.Language.Scene_name_1.Value, go, Vector.zero, () => {
+        ClickUIPools.instance.show(Globaldata.fireWeaponUIGuid, GameConfig.Language.Scene_name_1.Value, go, Vector.zero, async () => {
+
             ClickUIPools.instance.hide(go);
             chara.movementEnabled = false;
             const playerC = ModuleService.getModule(PlayerModuleC);
+            const rankTicket = await playerC.getRankTicket();
             let [rank] = playerC.getRank();
             let rankCfg = GameConfig.Rank.getElement(rank);
             if (!rankCfg) return;
             let rankCost = rankCfg.rankTicket;
-            if (rankCost && playerC.rankTicket) {
+            if (rankCost && rankTicket) {
                 let content = StringUtil.format(GameConfig.Language.Tips_rank_3.Value, rankCost);
                 MessageBox.showTwoBtnMessage("", content, (res) => {
                     if (res) {
-                        playerC.payRankTicket(rankCost);
-                        this.interactNext(chara.player.playerId, true);
-                    }
-                    else {
+                        playerC.payRankTicket();
+                    } else {
                         chara.movementEnabled = true;
                     }
                 });
                 return;
             }
+            ModuleService.getModule(PlayerModuleC).playerJoinFighting();
             this.interactNext(chara.player.playerId, true);
         });
-
     }
 
     private onLeave(go: mw.GameObject) {
@@ -90,6 +85,14 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         ClickUIPools.instance.hide(go);
     }
 
+    /**
+     * 门票支付成功通知
+     * @param {number} playerId
+     * @private
+     */
+    private payTicketCallback(playerId: number) {
+        this.interactNext(playerId, true);
+    }
 
 }
 //服务端
@@ -98,6 +101,10 @@ class Trigger_S extends InteractLogic_S<SP_Trigger> {
 
     }
     protected onStart(): void {
+
+    }
+
+    private onEnter(go: mw.GameObject) {
 
     }
 

@@ -228,13 +228,8 @@ AddGMCommand("改变段位分", null, (player: mw.Player, value: string) => {
         return;
     }
     let v2 = Number(value);
-    if (v2 > 0) {
-        ModuleService.getModule(PlayerModuleS).setPlayerAttr(player.playerId, Attribute.EnumAttributeType.dayRankScore, 0);
-        ModuleService.getModule(PlayerModuleS).addPlayerAttr(player.playerId, Attribute.EnumAttributeType.rankScore, Math.round(v2));
-    } else {
-        ModuleService.getModule(PlayerModuleS).setPlayerAttr(player.playerId, Attribute.EnumAttributeType.dayRankScore, 0);
-        ModuleService.getModule(PlayerModuleS).reducePlayerAttr(player.playerId, Attribute.EnumAttributeType.rankScore, Math.round(-v2));
-    }
+    ModuleService.getModule(PlayerModuleS).setPlayerAttr(player.playerId, Attribute.EnumAttributeType.dayRankScore, 0);
+    ModuleService.getModule(PlayerModuleS).changeRankScore(player.playerId, v2);
 
 }, "玩家");
 
@@ -473,7 +468,7 @@ AddGMCommand("跳Pet-Simulator", () => {
             const player = Player.getPlayer(userId);
             if (player) {
                 Event.dispatchToClient(player, "onJumpGameFailed", result.message);
-                Log4Ts.log({name: "GM"}, "onJumpGameFailed", result.message);
+                Log4Ts.log({ name: "GM" }, "onJumpGameFailed", result.message);
             }
         }
     };
@@ -489,7 +484,7 @@ AddGMCommand("跳DragonVerse", () => {
             const player = Player.getPlayer(userId);
             if (player) {
                 Event.dispatchToClient(player, "onJumpGameFailed", result.message);
-                Log4Ts.log({name: "GM"}, "onJumpGameFailed", result.message);
+                Log4Ts.log({ name: "GM" }, "onJumpGameFailed", result.message);
             }
         }
     };
@@ -523,13 +518,6 @@ AddGMCommand("击杀提示：数量", null, (player: mw.Player, value: string) =
     }
     EventManager.instance.call(ENotice_Events_S.NoticeEvent_KillTip_S, killId, 0, beKillId, Number(value));
 }, "击杀提示");
-
-AddGMCommand("扣体力",
-    undefined,
-    (player, value) => {
-        ModuleService.getModule(EnergyModuleS).consume(player.playerId, Number(value));
-        EventManager.instance.call(EAttributeEvents_C.Attribute_Energy_Change_C);
-    });
 
 AddGMCommand("加木桩", async () => {
 

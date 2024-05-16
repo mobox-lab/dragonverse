@@ -14,7 +14,7 @@ import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { GlobalEnum } from "../../const/Enum";
 import { P_PetHud } from "../Hud/P_PetHud";
 import { P_HudUI } from "../Hud/P_HudUI";
-
+import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 
 export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
 
@@ -58,7 +58,7 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
         GlobalData.Task.worldUI.forEach(async (guid, sceneId) => {
             let uI = new worldUI(guid, sceneId, data);
             this.worldUIs.set(sceneId, uI);
-        })
+        });
     }
 
     /**单个任务完成回调 */
@@ -86,7 +86,7 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
         MessageBox.showTwoBtnMessage(utils.Format(GameConfig.Language.Task_shop_13.Value, price), async (res) => {
             if (res) {
                 if (id == 2) {//买蛋，判断背包是否已满
-                    let petMC = ModuleService.getModule(PetBagModuleC)
+                    let petMC = ModuleService.getModule(PetBagModuleC);
                     if (petMC.getCurPetNum() >= petMC.getBagCapacity()) {
                         MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_4.Value);
                         return;
@@ -97,7 +97,7 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
             } else {
                 this.showTaskShop();
             }
-        })
+        });
     }
 
     /**购买失败 */
@@ -123,7 +123,11 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
     public buyGashapon(id: number): void {
         let info = GameConfig.TaskShop.getElement(id);
         let petId = EggMachineTween.instance.startTween_Special(info.Award, GlobalEnum.SpecialEgg.Task);
-        ModuleService.getModule(PetBagModuleC).addPet(petId);
+        ModuleService
+            .getModule(PetBagModuleS)
+            .net_addPetWithMissingInfo(
+                Player.localPlayer.playerId,
+                petId);
     }
 
     /**显示任务商店 */
@@ -214,7 +218,7 @@ class worldUI {
                         itemImg = this.img3;
                         break;
                 }
-                this.texts.set(task.id, { text: itemText, img: itemImg });
+                this.texts.set(task.id, {text: itemText, img: itemImg});
                 this.onTaskComplete(task, count);
                 if (id >= 3) break;
                 id++;

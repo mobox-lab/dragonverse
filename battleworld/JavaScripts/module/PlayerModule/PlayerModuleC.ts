@@ -6,7 +6,6 @@ import {
     EPlayerEvents_C,
     EPlayerFightState,
     EAttributeEvents_C,
-    EAreaEvents_S,
     EAreaEvent_C,
     EAreaId,
     EAnalyticsEvents,
@@ -57,11 +56,9 @@ import State_Action from "./FSM/PlayerStates/State_Action";
 import TriggerLand from "../LandModule/Land/TriggerLand";
 import { MainDeadMask } from "./UI/MainDeadMask";
 import { CameraManger } from "../../tool/CameraManger";
-import { MascotModuleC } from "../npc/mascotNpc/MascotModuleC";
 import { UnitManager } from "../npc/UnitManager";
 import { SpiderEffect } from "./UI/SpiderEffect";
 import { ERankNoticeType, RankNotice } from "./UI/rank/RankNotice";
-import { BuffManagerC } from "module_buff";
 import { BuffModuleC } from "../buffModule/BuffModuleC";
 
 /**不执行Motion回调的技能状态MotionID*/
@@ -1197,7 +1194,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
         //本次段位分变化
         let score = rankScore - this._oldRankScore;
         this._oldRankScore = rankScore;
-        this.rankTicket = true;
 
         this.changeState(EPlayerState.Dead, [dead, npcId, score]);
         EventManager.instance.call(EPlayerEvents_C.Player_ChangeDeadState_C);
@@ -1418,9 +1414,16 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
     /**
      * 支付段位门票
      */
-    public payRankTicket(rankCost: number) {
-        this.rankTicket = false;
-        this.reduceAttr(Attribute.EnumAttributeType.rankScore, rankCost);
+    public payRankTicket() {
+        this.server.net_payRankTicket();
+    }
+
+    /**
+     * 获取门票
+     * @returns {Promise<boolean>}
+     */
+    public getRankTicket(): Promise<boolean> {
+        return this.server.net_getRankTicket();
     }
 
     /**
@@ -1429,5 +1432,9 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
      */
     public net_updateKillCount(killCount: number) {
         UIService.getUI(MainUI).updateKillCount(killCount);
+    }
+
+    public playerJoinFighting() {
+        this.server.net_playerJoinFighting(Player.localPlayer.playerId);
     }
 }

@@ -9,7 +9,8 @@ import { PetSimulatorPlayerModuleData } from "./PlayerModuleData";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
-import { AuthModuleS } from "../auth/AuthModule";
+import { EnchantBuff } from "../PetBag/EnchantBuff";
+import Enchant = GlobalData.Enchant;
 
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModuleData> {
 
@@ -119,6 +120,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         let be = await this.playerCreateBehavirs(player.character.gameObjectId);
         if (!name) name = "三七";
         be.nickName = name;
+        const data = this.getPlayerData(player);
+        if (!data) return;
+        GlobalData.LevelUp.initPlayer(player.playerId, data.levelData);
         let petIds = this.petBagModule.getPlayerCurEquipPets(player.playerId);
         petIds.forEach(petItem => {
             be.equipPet(petItem.k + "_" + petItem.I, petItem.p.a, petItem.p.n);
@@ -126,11 +130,38 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     }
 
     /**升级 */
-    public net_levelUp(id: number): void {
+    public async net_levelUp(id: number): Promise<boolean> {
+        const cfg = GameConfig.Upgrade.getElement(id + 1);
+        if (!cfg) return false;
+
+        let cost = cfg.Diamond[this.currentData.getLevelData(id)] ?? 0;
+        if (!this.currentData.reduceDiamond(cost)) return false;
+
         ModuleService.getModule(Task_ModuleS).strengthen(this.currentPlayer, GlobalEnum.StrengthenType.LevelUp);
         this.currentData.levelUp(id);
 
+        let config = GameConfig.Upgrade.getAllElement()[id];
+        let upgrade = config?.Upgradenum[this.currentData.getLevelData(id) - 1] ?? 0;
+        switch (id) {
+            case 0:
+                GlobalData.LevelUp.levelRangeMap.set(this.currentPlayerId, 1 + upgrade);
+                break;
+            case 1:
+                GlobalData.LevelUp.moreDiamondMap.set(this.currentPlayerId, 1 + upgrade);
+                break;
+            case 2:
+                GlobalData.LevelUp.petDamageMap.set(this.currentPlayerId, 1 + upgrade);
+                break;
+            case 3:
+                GlobalData.LevelUp.petAttackSpeedMap.set(this.currentPlayerId, 1 + upgrade);
+                break;
+            case 4:
+                ModuleService.getModule(PetBagModuleS).addBagCapacity(this.currentPlayerId, config.PetNum);
+                break;
+        }
+
         this.levelUpNotice(this.currentPlayerId);
+        return true;
     }
 
     /**升级公告 */
@@ -155,6 +186,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
                 be.destroy();
                 this.gamePlayerBehaviors.delete(guid);
             }
+
+            GlobalData.SceneResource.clearPlayer(player.playerId);
+            GlobalData.Buff.clearPlayer(player.playerId);
+            EnchantBuff.clearPlayer(player.playerId);
+            Enchant.clearPlayer(player.playerId);
+            GlobalData.LevelUp.clearPlayer(player.playerId);
         } catch (error) {
             oTraceError(error);
         }
@@ -190,7 +227,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     public equipPets(playerId: number, petItems: petItemDataNew[]): boolean {
         if (petItems.length == 0) return false;
         if (petItems.length == 1) {
-            return this.net_equipPet(playerId, petItems[0].k, petItems[0].I, petItems[0].p.a, petItems[0].p.n);
+            return this.equipPet(playerId, petItems[0].k, petItems[0].I, petItems[0].p.a, petItems[0].p.n);
         }
         let guid = Player.getPlayer(playerId).character.gameObjectId;
         let be = this.gamePlayerBehaviors.get(guid);
@@ -204,19 +241,19 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     }
 
     /**装备当前宠物 */
-    public net_equipPet(playerId: number, key: number, id: number, atk: number, name: string): boolean {
+    public equipPet(playerId: number, key: number, id: number, atk: number, name: string): boolean {
         let guid = Player.getPlayer(playerId).character.gameObjectId;
         let be = this.gamePlayerBehaviors.get(guid);
         let nKey = key + "_" + id;
         return be.equipPet(nKey, atk, name);
     }
 
-    /**销毁所有宠物 */
-    public net_destroyAllPet(): void {
-        let guid = this.currentPlayer.character.gameObjectId;
-        let be = this.gamePlayerBehaviors.get(guid);
-        be.destroyAllPet();
-    }
+    // /**销毁所有宠物 */
+    // public net_destroyAllPet(): void {
+    //     let guid = this.currentPlayer.character.gameObjectId;
+    //     let be = this.gamePlayerBehaviors.get(guid);
+    //     be.destroyAllPet();
+    // }
 
     /**取消装备当前宠物 */
     public unEquipPet(playerId: number, petItems: petItemDataNew[]): void {
@@ -225,8 +262,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         be.unEquipPets(petItems);
     }
 
-    /**增加金币和钻石 */
-    public net_addGoldAndDiamond(gold1: number, gold2: number, gold3: number, diamond: number): void {
+    public absorbAll(gold1: number, gold2: number, gold3: number, diamond: number) {
         let data = this.currentData;
         if (gold1 > 0) data.addGold(gold1, GlobalEnum.CoinType.FirstWorldGold);
         if (gold2 > 0) data.addGold(gold2, GlobalEnum.CoinType.SecondWorldGold);
@@ -234,10 +270,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         if (diamond > 0) data.addDiamond(diamond);
     }
 
-    /**增加金币 */
-    public net_addGold(value: number, coinType: GlobalEnum.CoinType): void {
-        this.currentData.addGold(value, coinType);
-    }
+    // /**增加金币 */
+    // public net_addGold(value: number, coinType: GlobalEnum.CoinType): void {
+    //     this.currentData.addGold(value, coinType);
+    // }
 
     public async net_buyDollCoin(configId: number): Promise<boolean> {
         // let config = GameConfig.GoodsTable.getElement(configId);
@@ -271,7 +307,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     }
 
     /**减少钻石 */
-    public net_reduceDiamond(value: number): boolean {
+    public reduceDiamond(value: number): boolean {
         return this.currentData.reduceDiamond(value);
     }
 
@@ -296,4 +332,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     public net_getPlayerNameById(id: number) {
         this.getClient(id).net_getPlayerName();
     }
+
+    /**装卸滑板 */
+    public getPetArr(player?: mw.Player) {
+        if (!player) return null;
+        return this.getPlayerBehavior(player).PetArr;
+    }
+
 }

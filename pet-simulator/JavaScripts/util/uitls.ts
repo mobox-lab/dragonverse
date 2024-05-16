@@ -1,6 +1,6 @@
-import {GeneralManager,} from "../Modified027Editor/ModifiedStaticAPI";
-import {GameConfig} from "../config/GameConfig";
-import {GlobalData} from "../const/GlobalData";
+import { GeneralManager, } from "../Modified027Editor/ModifiedStaticAPI";
+import { GameConfig } from "../config/GameConfig";
+import { GlobalData } from "../const/GlobalData";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 
 export class utils {
@@ -14,9 +14,9 @@ export class utils {
 
         posY = posY ? posY : mw.getViewportSize().y / 10;//视口大小
 
-        new mw.Tween({y: posY})
+        new mw.Tween({ y: posY })
 
-            .to({y: 0})
+            .to({ y: 0 })
 
             .duration(duration)
 
@@ -203,7 +203,7 @@ export class utils {
     /**将number转换成时间 00:00*/
     public static parseTime(time: number): string {
         const minutes = Math.floor(time / 60);
-        const seconds = time % 60;
+        const seconds = Math.floor(time % 60);
         return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
     }
 
@@ -403,11 +403,11 @@ export class ImgColorTween {
     private startSRBG2 = mw.LinearColor.colorHexToLinearColor("#111236"); //颜色3
     private endSRGB2 = mw.LinearColor.colorHexToLinearColor("#FF0055");
     private tween2: mw.Tween<{ x: number; y: number; z: number; }> = new mw.Tween
-    ({x: this.startSRBG2.r, y: this.startSRBG2.g, z: this.startSRBG2.b}).to({
-        x: this.endSRGB2.r,
-        y: this.endSRGB2.g,
-        z: this.endSRGB2.b
-    }, 800)
+        ({ x: this.startSRBG2.r, y: this.startSRBG2.g, z: this.startSRBG2.b }).to({
+            x: this.endSRGB2.r,
+            y: this.endSRGB2.g,
+            z: this.endSRGB2.b
+        }, 800)
         .onUpdate((v) => {
             let sRGBColor: mw.LinearColor = mw.LinearColor.white;
             sRGBColor.r = Number((v.x));
@@ -420,11 +420,11 @@ export class ImgColorTween {
     private startSRBG1 = mw.LinearColor.colorHexToLinearColor("#E89839");  //颜色2
     private endSRGB1 = mw.LinearColor.colorHexToLinearColor("#111236");
     private tween1: mw.Tween<{ x: number; y: number; z: number; }> = new mw.Tween
-    ({x: this.startSRBG1.r, y: this.startSRBG1.g, z: this.startSRBG1.b}).to({
-        x: this.endSRGB1.r,
-        y: this.endSRGB1.g,
-        z: this.endSRGB1.b
-    }, 800)
+        ({ x: this.startSRBG1.r, y: this.startSRBG1.g, z: this.startSRBG1.b }).to({
+            x: this.endSRGB1.r,
+            y: this.endSRGB1.g,
+            z: this.endSRGB1.b
+        }, 800)
         .onUpdate((v) => {
             let sRGBColor: mw.LinearColor = mw.LinearColor.white;
             sRGBColor.r = Number((v.x));
@@ -437,7 +437,7 @@ export class ImgColorTween {
     private startSRBG = mw.LinearColor.colorHexToLinearColor("#FF0055");  //颜色1
     private endSRGB = mw.LinearColor.colorHexToLinearColor("#E89839");
 
-    private tween = new mw.Tween({x: this.startSRBG.r, y: this.startSRBG.g, z: this.startSRBG.b}).to({
+    private tween = new mw.Tween({ x: this.startSRBG.r, y: this.startSRBG.g, z: this.startSRBG.b }).to({
         x: this.endSRGB.r,
         y: this.endSRGB.g,
         z: this.endSRGB.b
@@ -603,7 +603,7 @@ export function stringToBuff(str: string): { id: number, level: number }[] {
         let item = element.split("_");
         let id = Number(item[0]);
         let level = Number(item[1]);
-        buff.push({id: id, level: level});
+        buff.push({ id: id, level: level });
     });
 
     return buff;

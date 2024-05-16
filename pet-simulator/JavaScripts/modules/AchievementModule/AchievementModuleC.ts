@@ -4,19 +4,15 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { oTraceError } from "../../util/LogManager";
 import { utils } from "../../util/uitls";
+import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { TipsManager } from "../Hud/P_TipUI";
-import { PetBagModuleC } from "../PetBag/PetBagModuleC";
-import { PlayerModuleC } from "../Player/PlayerModuleC";
-import AchievementData, { Achievement, AchievementNew } from "./AchievementData";
+import AchievementData, { AchievementNew } from "./AchievementData";
 import AchievementModuleS from "./AchievementModuleS";
 import CompletedPanel from "./ui/CompletedPanel";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 
 
 export default class AchievementModuleC extends ModuleC<AchievementModuleS, AchievementData> {
-    private playerModuleC: PlayerModuleC = null;
-    private petBagModuleC: PetBagModuleC = null;
     private completedPanel: CompletedPanel = null;
     /**执行成就（参数成就类型-对应次数） */
     public onExecuteAchievementAction: Action2<GlobalEnum.AchievementType, number> = new Action2<GlobalEnum.AchievementType, number>();
@@ -28,12 +24,16 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
         oTraceError("[AchievementModuleC--onStart]");
         this.initDatas();
         this.bindActions();
+				mw.Event.addServerListener("FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
+					 this.broadcastAchievementBlendType
+				);
+				mw.Event.addServerListener("FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE",
+					 this.broadcastAchievementChangeType
+				);
     }
 
     /**初始化数据 */
     private initDatas(): void {
-        this.playerModuleC = ModuleService.getModule(PlayerModuleC);
-        this.petBagModuleC = ModuleService.getModule(PetBagModuleC);
         this.completedPanel = mw.UIService.getUI(CompletedPanel);
         this.initAchievements();
     }
@@ -61,7 +61,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
             }
         });
 
-        this.onAchievementRewardAction.add(this.getAchievementReward.bind(this));
+        this.onAchievementRewardAction.add(this.server.net_getAchievementReward.bind(this));
     }
 
     /**成就表数据 */
@@ -308,36 +308,6 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
         TipsManager.instance.showTip(utils.Format(tipsTxt, rewardAmount));
     }
 
-    /**
-     * 获取成就奖励
-     * @param achievementReward 成就奖励类型 
-     * @param reward 奖励数量
-     */
-    private getAchievementReward(achievementReward: GlobalEnum.AchievementReward, reward: number): void {
-        switch (achievementReward) {
-            case GlobalEnum.AchievementReward.FirstWorldGold:
-                this.playerModuleC.addGold(reward, GlobalEnum.CoinType.FirstWorldGold);
-                break;
-            case GlobalEnum.AchievementReward.SecondWorldGold:
-                this.playerModuleC.addGold(reward, GlobalEnum.CoinType.SecondWorldGold);
-                break;
-            case GlobalEnum.AchievementReward.ThirdWorldGold:
-                this.playerModuleC.addGold(reward, GlobalEnum.CoinType.ThirdWorldGold);
-                break;
-            case GlobalEnum.AchievementReward.Diamond:
-                this.playerModuleC.addDiamond(reward);
-                break;
-            case GlobalEnum.AchievementReward.BagExpand:
-                this.petBagModuleC.addBagCapacity(reward)
-                break;
-            case GlobalEnum.AchievementReward.PetExpand:
-                this.petBagModuleC.addPet(reward);
-                break;
-            default:
-                break;
-        }
-    }
-
     /**临时存一份成就数据在客户端 */
     private getAchievementDataFromServer(): void {
         if (this.data.AchievementStage == null) return;
@@ -424,7 +394,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
      * 广播融合类型成就（融合成功数=9&融合传奇宠物数=20）
      * @param endPetId 融合后的宠物ID 
      */
-    public broadcastAchievementBlendType(endPetId: number): void {
+    public broadcastAchievementBlendType = (endPetId: number) => {// TODO: 重构 AchievementModuleC.broadcastAchievementBlendType 到 S 端，主要是有个 C 端的toast 现在先用的 Event
         this.onExecuteAchievementAction.call(GlobalEnum.AchievementType.FusionNum, 1);//融合成功数
         let cfg = GameConfig.PetARR.getElement(endPetId);
         if (cfg.QualityType == GlobalEnum.PetQuality.Legend) {
@@ -438,11 +408,14 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
      * @param isSucc 是否成功
      * @param petIds 使用的宠物ID
      */
-    public broadcastAchievementChangeType(endPetId: number, isSucc: boolean, petIds: number[]): void {
+    public broadcastAchievementChangeType = (endPetId: number, isSucc: boolean, petIds: number[]): void => {
         this.broadcastAchievementType_Num(endPetId, isSucc);
         this.broadcastAchievementType_Only(endPetId, isSucc, petIds);
     }
 
+    public net_broadcastAchievement_destroy(destroyType: GlobalEnum.DestructorType):void{
+        this.broadcastAchievement_destory(destroyType);
+    }
     /**
      * 广播成就破坏物
      * @param destoryType 破坏物类型

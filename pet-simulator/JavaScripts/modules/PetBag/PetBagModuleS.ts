@@ -2,15 +2,34 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import { oTraceError } from "../../util/LogManager";
-import { stringToNumberArr, utils } from "../../util/uitls";
+import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
 import { CollectModuleS } from "../PetCollect/CollectModuleS";
+import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { petInfo } from "../Trading/TradingScript";
 import { AuthModuleS } from "../auth/AuthModule";
+import { BagTool } from "./BagTool";
+import { EnchantBuff } from "./EnchantBuff";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
+import { PlayerModuleC } from "../Player/PlayerModuleC";
+import MessageBox from "../../util/MessageBox";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
+    private _playerModuleS: PlayerModuleS;
+
+    private get playerModuleS(): PlayerModuleS | null {
+        if (!this._playerModuleS) this._playerModuleS = ModuleService.getModule(PlayerModuleS);
+        return this._playerModuleS;
+    }
+
+    private _petBagModuleS: PetBagModuleS;
+
+    private get petBagModuleS(): PetBagModuleS | null {
+        if (!this._petBagModuleS) this._petBagModuleS = ModuleService.getModule(PetBagModuleS);
+        return this._petBagModuleS;
+    }
 
     /**玩家id、 true:装备 false: 卸下 、宠物数据*/
     public onEquipChangeAC: Action3<number, boolean, petItemDataNew[]> = new Action3();
@@ -39,6 +58,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             }
             this.onEquipChangeAC.call(player.playerId, isEquip, arr);
         });
+        this.enchantBuffInit(player);
     }
 
     /**获取玩家已经装备宠物数组 */
@@ -54,8 +74,96 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return arr;
     }
 
-    net_addPet(id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
-        this.addPet(this.currentPlayerId, id, atk, name, type, addTime);
+    @Decorator.noReply()
+    public net_addPetWithMissingInfo(playerId: number, id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+        let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
+
+        let atk: number = 0;
+        if (atkArr.length > 1)
+            atk = utils.GetRandomNum(atkArr[0], atkArr[1]);
+        else
+            atk = atkArr[0];
+        let nameId = utils.GetRandomNum(1, 200);
+        let name = utils.GetUIText(nameId);
+        this.addPet(playerId, id, atk, name, type, addTime);
+    }
+
+    /**
+     * @description: s端购买扭蛋
+     * @param cfgId 扭蛋配置id
+     * @return
+     */
+    public async net_buyEgg(cfgId: number): Promise<number | null> {
+        let cfg = GameConfig.EggMachine.getElement(cfgId);
+        let price = cfg.Price[0];
+        if (!price) return null;
+        let playerId = this.currentPlayerId;
+        let res = await ModuleService.getModule(PlayerModuleS).net_reduceGold(price, this.judgeGold(cfgId));
+        if (res) {
+            let petId = this.calcProbability(cfgId);
+            this.net_addPetWithMissingInfo(playerId, petId, cfg.AreaID);
+            return petId;
+        }
+        return null;
+    }
+
+    private hasSmallRate: boolean = false;
+
+    /**计算最小概率 */
+    private calcMinProbability(cfgId: number): boolean {
+        let cfg = GameConfig.EggMachine.getElement(cfgId);
+        if (cfg.Weight2 == 0) {
+            this.hasSmallRate = false;
+            return false;
+        }
+        this.hasSmallRate = true;
+
+        let random = MathUtil.randomFloat(0, 100);
+        let addRate = cfg.Weight2 + GlobalData.Buff.curSmallLuckyBuff[0] + GlobalData.Buff.curSuperLuckyBuff[0];
+        if (random <= addRate) {
+            return true;
+        }
+        return false;
+    }
+
+    /**计算概率
+     * @returns 返回宠物表id
+     * */
+    private calcProbability(cfgId: number): number {
+        let cfg = GameConfig.EggMachine.getElement(cfgId);
+        if (this.calcMinProbability(cfgId)) {
+            return cfg.petArr[cfg.petArr.length - 1];
+        }
+        //计算总权重
+        let curWeight = cfg.Weight.concat();
+        if (this.hasSmallRate) {
+            //加后2个
+            curWeight[curWeight.length - 1] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
+            curWeight[curWeight.length - 2] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
+        } else {
+            //加后3个
+            curWeight[curWeight.length - 1] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
+            curWeight[curWeight.length - 2] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
+            curWeight[curWeight.length - 3] += (GlobalData.Buff.curSmallLuckyBuff[1] + GlobalData.Buff.curSuperLuckyBuff[1]);
+        }
+
+        let index = BagTool.calculateWeight(curWeight);
+        return cfg.petArr[index];
+    }
+
+    private judgeGold(cfgId: number): GlobalEnum.CoinType {
+        let coinType = GlobalEnum.CoinType;
+
+        let goldType = coinType.FirstWorldGold;
+        let cfg = GameConfig.EggMachine.getElement(cfgId);
+        if (cfg.AreaID < 2000) {
+            goldType = coinType.FirstWorldGold;
+        } else if (cfg.AreaID < 3000) {
+            goldType = coinType.SecondWorldGold;
+        } else if (cfg.AreaID < 4000) {
+            goldType = coinType.ThirdWorldGold;
+        }
+        return goldType;
     }
 
     public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
@@ -192,14 +300,18 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return false;
     }
 
-    net_addBagCapacity(count: number, player: mw.Player = null) {
-        if (player) {
-            return this.getPlayerData(player).addCapacity(count);
-        }
-        this.currentData.addCapacity(count);
+    net_addBagCapacity(count: number) {
+        this.addBagCapacity(this.currentPlayerId, count);
     }
 
-    net_addSlot(player: mw.Player = null, num: number = 1) {
+    addBagCapacity(playerId: number, count: number, player: mw.Player = null) {
+        const d = this.getPlayerData(playerId);
+        if (!d) return;
+
+        d.addCapacity(count);
+    }
+
+    addSlot(player: mw.Player = null, num: number = 1) {
         if (player) {
             return this.getPlayerData(player).addPetFollowCount(num);
         }
@@ -277,8 +389,65 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             this.getAllClient().net_enchantNotice(playerId, id);
     }
 
+    /** 计算best friend词条战力 */
+    net_bestFriendBuff() {
+        const playerId = this.currentPlayerId;
+        const playerData = this.getPlayerData(playerId);
+        let arr = playerData.sortBag();
+        let atk = 0;
+        let petIds = [];
+        for (let i = 0; i < arr.length; i++) {
+            if (GlobalData.Enchant.bestPets.includes(arr[i].I)) {
+                petIds.push(arr[i].k);
+                if (atk == 0)
+                    atk = EnchantBuff.getAtk(arr);
+            }
+        }
+        if (petIds.length == 0) return;
+
+        let delArr: number[] = [];
+
+        petIds.forEach((key) => {
+            let data = playerData.bagItemsByKey(key);
+            if (data.p.a == atk) {
+                delArr.push(key);
+            }
+        });
+        delArr.forEach((key) => {
+            let index = petIds.findIndex((value) => {
+                return value == key;
+            });
+            if (index != -1)
+                petIds.splice(index, 1);
+        });
+        if (petIds.length == 0) return;
+        this.changeAtk(numberArrToString(petIds), atk);
+    }
+
+    /** 计算通行证词条 *0.5 */
+    net_passBuff() {
+        const playerId = this.currentPlayerId;
+        const data = this.getPlayerData(playerId);
+        let arr = data.sortBagByAtk();
+        let atk = 0;
+        let petIds = [];
+        for (let i = 0; i < arr.length; i++) {
+            if (GlobalData.Enchant.passportPets.includes(arr[i].I)) {
+                petIds.push(arr[i].k);
+                if (atk == 0)
+                    atk = arr[0].p.a * 0.5;
+            }
+        }
+        if (petIds.length == 0) return;
+        this.changeAtk(numberArrToString(petIds), atk);
+    }
+
+    public getPet(playerId: number, key: number): petItemDataNew {
+        return this.getPlayerData(playerId)?.bagItemsByKey(key) ?? undefined;
+    }
+
     /**宠物更改攻击力 */
-    net_changeAtk(keys: string, atk: number) {
+    changeAtk(keys: string, atk: number) {
         if (isNaN(atk)) atk = 0;
         let keyArr = stringToNumberArr(keys);
         for (let i = 0; i < keyArr.length; i++) {
@@ -317,4 +486,214 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return this.getPlayerData(playerId)?.getEnergyRecoveryCoefficient() ?? 0;
     }
 
+    //************** 合成宠物*************/
+
+    /**判断获得的宠物类型 普通0 黄金1 彩虹2 */
+    private judgePetType(curSelectPets: petItemDataNew[]): number {
+        let count = curSelectPets.length;
+        let specialCount = 0;
+        curSelectPets.forEach(item => {
+            let type = GameConfig.PetARR.getElement(item.I).DevType;
+            if (type === GlobalEnum.PetDevType.Love || type === GlobalEnum.PetDevType.Rainbow) {
+                specialCount++;
+            }
+        });
+
+        //普通宠物的权重
+        let normalWeight = -10 * count + 80;
+        if (normalWeight < 0) normalWeight = 0;
+        //黄金宠物的权重
+        let goldWeight = -4 * count + 52;
+        if (goldWeight < 0) goldWeight = 0;
+        //彩虹宠物的权重
+        // let rainbowWeight = -2 * count + 32;
+        let rainbowWeight = 14 * count - 32 + 5 * specialCount;
+        if (rainbowWeight < 0) rainbowWeight = 0;
+        let totalWeight = normalWeight + goldWeight + rainbowWeight;
+        let random = Math.random() * totalWeight;
+        if (random < normalWeight) {
+            return 0;
+        }
+        if (random < normalWeight + goldWeight) {
+            return 1;
+        }
+        return 2;
+    }
+
+    /**根据各宠物攻击力权重获得宠物 */
+    private getPetByAtkWeight(allPetIds: number[], maxCount: number): number {
+        let count = maxCount / 2;
+        let allPetAtk = 0;
+        let petAtkWeights: number[] = [];
+        allPetIds.forEach(id => {
+            let pet = GameConfig.PetARR.getElement(id);
+            let wight = pet.PetAttack[0] * count;
+            allPetAtk += wight;
+            petAtkWeights.push(wight);
+        });
+        let random = Math.random() * allPetAtk;
+        let totalWeight = 0;
+        for (let i = 0; i < petAtkWeights.length; i++) {
+            totalWeight += petAtkWeights[i];
+            if (random < totalWeight) {
+                return allPetIds[i];
+            }
+        }
+    }
+
+    /** 原 P_FusePanel.net_fusePet 合成宠物 */
+    public async net_fusePet(curSelectPetKeys: number[],
+                             earliestObtainTime: number): Promise<boolean> {
+        const playerId = this.currentPlayerId;
+        const curSelectPets = curSelectPetKeys
+            .map(key => this.currentData
+                .bagItemsByKey(key))
+            .filter(item => item !== undefined);
+
+        if (curSelectPetKeys.length !== curSelectPets.length) {
+            Log4Ts.warn(PetBagModuleS,
+                `some pet not found.`,
+                `player selected: ${curSelectPetKeys}.`,
+                `found: ${curSelectPets}.`);
+            return false;
+        }
+        if (!this.playerModuleS.reduceDiamond(GlobalData.Fuse.cost)) return false;
+
+        this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
+
+        const data = this.currentData;
+        if (curSelectPets.length >= data.CurBagCapacity) return false;
+
+        /**最多相同id的宠物数量 */
+        let maxSameIdCount = 0;
+        /**所有宠物攻击力的合 */
+        let allPetAtk = 0;
+        let countMap = new Map<number, number>();
+        let devType = this.judgePetType(curSelectPets);
+        for (let i = 0; i < curSelectPets.length; i++) {
+            let pet = curSelectPets[i];
+            if (!countMap.has(pet.I)) {
+                countMap.set(pet.I, 1);
+            } else {
+                let count = countMap.get(pet.I);
+                countMap.set(pet.I, count + 1);
+                if (count + 1 > maxSameIdCount) {
+                    maxSameIdCount = count + 1;
+                }
+            }
+            allPetAtk += pet.p.a;
+        }
+        if (maxSameIdCount == 0) maxSameIdCount = 1;
+        let minAtk = allPetAtk / GlobalData.Fuse.minDamageRate;
+        let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
+        let allPetIds: number[] = [];
+        /**与最大攻击力差值 */
+            //获取ts最大整数数值
+        let max = Number.MAX_VALUE;
+        let allMaxAtkDiff = max;
+        /**攻击力差值最小的宠物id */
+        let allMinAtkDiffPetId = 1;
+        /**稀有度相同的最大攻击力差值 */
+        let sameMaxAtkDiff = max;
+        /**稀有度相同的攻击力差值最小的宠物id */
+        let sameMinAtkDiffPetId = 0;
+        GameConfig
+            .PetARR
+            .getAllElement()
+            .forEach(item => {
+                if (item.IfFuse) {
+                    let atks = item.PetAttack;
+                    let min = atks[0];
+                    let max = atks[1];
+                    if (min >= minAtk && max <= maxAtk && item.DevType == devType) {
+                        allPetIds.push(item.id);
+                    }
+                    let diff = Math.abs(max - maxAtk);
+                    if (diff < allMaxAtkDiff) {
+                        allMaxAtkDiff = diff;
+                        allMinAtkDiffPetId = item.id;
+                    }
+                    if (item.DevType == devType) {
+                        if (diff < sameMaxAtkDiff) {
+                            sameMaxAtkDiff = diff;
+                            sameMinAtkDiffPetId = item.id;
+                        }
+                    }
+                }
+            });
+        if (allPetIds.length == 0) {
+            let minAtkDiffPetId = sameMinAtkDiffPetId == 0 ? allMinAtkDiffPetId : sameMinAtkDiffPetId;
+            allPetIds.push(minAtkDiffPetId);
+        }
+        let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
+        mw.Event.dispatchToClient(this.currentPlayer,
+            "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
+            endPetId);
+
+        this.playerModuleS;
+        this.petBagModuleS
+            .net_addPetWithMissingInfo(
+                playerId,
+                endPetId,
+                GlobalEnum.PetGetType.Fusion,
+                earliestObtainTime);
+    }
+
+    /**词条buff初始化 */
+    private enchantBuffInit(player: mw.Player) {
+        const data = this.getPlayerData(player);
+        let keys = data.CurFollowPets;
+        for (let id = 0; id < keys.length; id++) {
+            EnchantBuff.equipUnPet(player.playerId, keys[id], true);
+        }
+    }
+
+    /** 原 P_Pet_Dev.startDev 合成宠物 */
+    public async net_fuseDevPet(curSelectPetKeys: number[],
+                                curPetId: number,
+                                isGold: boolean,
+                                curRate: number): Promise<boolean> {
+        const curSelectPets = curSelectPetKeys
+            .map(key => this.currentData
+                .bagItemsByKey(key))
+            .filter(item => item !== undefined);
+
+        if (curSelectPetKeys.length !== curSelectPets.length) {
+            Log4Ts.warn(PetBagModuleS, `some pet not found.`,
+                `player selected: ${curSelectPetKeys}.`,
+                `found: ${curSelectPets}.`);
+            return false;
+        }
+
+        let petIds: number[] = curSelectPets.map(item => item.I);
+
+        //计算最早的获取时间
+        let earliestObtainTime = curSelectPets[0].obtainTime;
+        curSelectPets.forEach(item => {
+            if (item.obtainTime < earliestObtainTime) {
+                earliestObtainTime = item.obtainTime;
+            }
+        });
+
+        let random = MathUtil.randomInt(0, 100);
+        const petInfo = GameConfig.PetARR.getElement(curPetId);
+        let isSucc: boolean = true;
+        let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
+        if (random <= curRate) {
+            // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
+            mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
+            ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(
+                this.currentPlayerId,
+                endPetId,
+                isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow,
+                earliestObtainTime);
+        } else {
+            isSucc = false;
+            // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
+            mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseFailed");
+        }
+        mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE", endPetId, isSucc, petIds);
+        return true;
+    }
 }
+
