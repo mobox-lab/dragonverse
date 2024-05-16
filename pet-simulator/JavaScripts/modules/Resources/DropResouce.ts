@@ -44,16 +44,10 @@ export class DropManagerC extends ModuleC<DropManagerS, null> {
 export class DropManagerS extends ModuleS<DropManagerC, null> {
     private typeValue: Map<GlobalEnum.CoinType, number> = new Map();
     private _drops: Map<number, DropInServer[]> = new Map();
-    private playerMS: PlayerModuleS = null;
 
     private _clientDropCreateFunctionMap: Map<number, (params: DropGenerateParam[][]) => void> = new Map();
 
-    public get dropSize() {
-        return this._drops.size;
-    }
-
     protected onStart(): void {
-        this.playerMS = ModuleService.getModule(PlayerModuleS);
         this.init();
     }
 
