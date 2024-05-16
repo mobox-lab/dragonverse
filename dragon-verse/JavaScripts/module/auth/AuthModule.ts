@@ -242,17 +242,17 @@ interface DragonBallRespData {
     /**
      * 未领取.
      */
-    unclaim: 0,
+    unclaim: number,
 
     /**
      * 总发放.
      */
-    total: 4,
+    total: number,
 
     /**
      * 未使用.
      */
-    unUsed: 0
+    unUsed: number
 }
 
 /**
@@ -905,7 +905,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return await resp.json<D>();
     }
 
-    private checkRequestRegulator(playerId: number): boolean {
+    public checkRequestRegulator(playerId: number): boolean {
         let last = this._playerRequestRegulatorMap.get(playerId) ?? 0;
         let now = Date.now();
         if (now - last < GameServiceConfig.MIN_OTHER_REQUEST_INTERVAL) {
