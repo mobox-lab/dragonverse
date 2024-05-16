@@ -24,6 +24,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return this._playerModuleS;
     }
 
+    private _petBagModuleS: PetBagModuleS;
+
+    private get petBagModuleS(): PetBagModuleS | null {
+        if (!this._petBagModuleS) this._petBagModuleS = ModuleService.getModule(PetBagModuleS);
+        return this._petBagModuleS;
+    }
+
     /**玩家id、 true:装备 false: 卸下 、宠物数据*/
     public onEquipChangeAC: Action3<number, boolean, petItemDataNew[]> = new Action3();
 
@@ -535,19 +542,24 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     /** 原 P_FusePanel.net_fusePet 合成宠物 */
-    public async net_fusePet(curSelectPetKeys: number[], earliestObtainTime: number): Promise<boolean> {
+    public async net_fusePet(curSelectPetKeys: number[],
+                             earliestObtainTime: number): Promise<boolean> {
+        const playerId = this.currentPlayerId;
         const curSelectPets = curSelectPetKeys
             .map(key => this.currentData
                 .bagItemsByKey(key))
             .filter(item => item !== undefined);
 
         if (curSelectPetKeys.length !== curSelectPets.length) {
-            Log4Ts.warn(PetBagModuleS, `some pet not found.`,
+            Log4Ts.warn(PetBagModuleS,
+                `some pet not found.`,
                 `player selected: ${curSelectPetKeys}.`,
                 `found: ${curSelectPets}.`);
             return false;
         }
         if (!this.playerModuleS.reduceDiamond(GlobalData.Fuse.cost)) return false;
+
+        this.petBagModuleS.deletePet(playerId, [key]);
 
         const data = this.currentData;
         if (curSelectPets.length >= data.CurBagCapacity) return false;
@@ -558,7 +570,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let allPetAtk = 0;
         let countMap = new Map<number, number>();
         let devType = this.judgePetType(curSelectPets);
-        let allLength = curSelectPets.length;
         for (let i = 0; i < curSelectPets.length; i++) {
             let pet = curSelectPets[i];
             if (!countMap.has(pet.I)) {
@@ -619,8 +630,11 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
             endPetId);
 
-        ModuleService.getModule(PetBagModuleS)
-            .net_addPetWithMissingInfo(endPetId,
+        this.playerModuleS;
+        this.petBagModuleS
+            .net_addPetWithMissingInfo(
+                playerId,
+                endPetId,
                 GlobalEnum.PetGetType.Fusion,
                 earliestObtainTime);
     }
