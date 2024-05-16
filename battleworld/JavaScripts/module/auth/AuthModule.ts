@@ -801,7 +801,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             );
 
         if (Gtk.isNullOrUndefined(respInJson?.data?.stamina))
-            Log4Ts.log(AuthModuleS, `invalid value when query stamina limit for user ${userId}.`);
+            Log4Ts.log(AuthModuleS,
+                `invalid value when query stamina limit for user ${userId}.`,
+                `reason: ${JSON.stringify(respInJson)}`);
         else {
             this.playerStaminaLimitMap.set(playerId, respInJson.data.stamina);
         }
