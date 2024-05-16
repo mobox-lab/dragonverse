@@ -9,7 +9,7 @@ import { cubicBezier, getRot, getTransform, setPos, setRot, setTransform } from 
 import { SoundManager } from "../../util/SoundManager";
 import { utils } from "../../util/uitls";
 import { VectorUtil } from "../../util/VectorUtil";
-import resourceScript, { SceneResourceMap } from "../Resources/resource";
+import resourceScript, { SceneResourceMap } from "../Resources/Resource";
 import { HUDInfo, HUDManager } from "./HUDManager";
 import PlayerBehavior from "./PlayerBehavior";
 import { GlobalEnum } from "../../const/Enum";

@@ -6,7 +6,7 @@ import { oTraceError } from "../../util/LogManager";
 import { utils } from "../../util/uitls";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { DropManager } from "./DropResouce";
-import resourceScript, { Resource, SceneResourceMap } from "./resource";
+import resourceScript, { Resource, SceneResourceMap } from "./Resource";
 import { BonusUI } from "./scenceUnitUI";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { GlobalEnum } from "../../const/Enum";
