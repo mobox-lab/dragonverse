@@ -378,7 +378,10 @@ export default class ResourceScript extends mw.Script {
         this.interval.delete(playerId);
     }
 
-    /**通过血量判断攻击阶段 */
+    /**
+     * 通过血量判断攻击阶段.
+     * @param {number} playerId
+     */
     private checkHpStage(playerId: number) {
         if (this._cfgId == 0 || !this.cfg) return;
         this.refreshGuaSha(playerId);
@@ -409,7 +412,8 @@ export default class ResourceScript extends mw.Script {
         }
     }
 
-    /** 奖励掉落物
+    /**
+     * 奖励掉落物
      * @param playerId 指定玩家.
      * @param state 攻击阶段
      * @param resType 资源类型

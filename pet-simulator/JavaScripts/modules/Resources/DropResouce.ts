@@ -13,7 +13,7 @@ import ModuleService = mwext.ModuleService;
 import Balancing from "../../depend/balancing/Balancing";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 
-export class DropManagerC extends mwext.ModuleC<DropManagerS, null> {
+export class DropManagerC extends ModuleC<DropManagerS, null> {
     private _dropItems: DropInClient[] = [];
 
     public net_createDrop(params: DropGenerateParam[]) {
@@ -42,20 +42,12 @@ export class DropManagerC extends mwext.ModuleC<DropManagerS, null> {
     }
 }
 
-export class DropManagerS extends mwext.ModuleS<DropManagerC, null> {
-    // private static _instance: DropManagerS = null;
-
-    // public static getInstance(): DropManagerS {
-    //     if (this._instance == null) {
-    //         this._instance = new DropManagerS();
-    //         this._instance.init();
-    //     }
-    //     return this._instance;
-    // }
-
+export class DropManagerS extends ModuleS<DropManagerC, null> {
     private typeValue: Map<GlobalEnum.CoinType, number> = new Map();
     private _drops: Map<number, DropInServer[]> = new Map();
     private playerMS: PlayerModuleS = null;
+
+    private _clientDropCreateFunctionMap: Map<number, (params: DropGenerateParam[][]) => void> = new Map();
 
     public get dropSize() {
         return this._drops.size;
@@ -70,7 +62,8 @@ export class DropManagerS extends mwext.ModuleS<DropManagerC, null> {
         this.resetValue();
     }
 
-    /**在当前坐标一圈为方向创建掉落
+    /**
+     * 在当前坐标一圈为方向创建掉落
      * @param playerId
      * @param pos 当前坐标
      * @param type 掉落类型
@@ -116,8 +109,9 @@ export class DropManagerS extends mwext.ModuleS<DropManagerC, null> {
             allValue -= diff;
         }
 
-        this.getClient(playerId)
-            .net_createDrop(generates.map(item => {
+
+        Gtk.patchDo(
+            generates.map(item => {
                 let radiusSample = isBox ? GlobalData.DropAni.randomRadiusBig : GlobalData.DropAni.randomRadius;
                 let radius = Gtk.random(radiusSample[0], radiusSample[1]);
                 const angle = new RandomGenerator().randomCircle().handle(val => val * radius).toVector2();
@@ -131,8 +125,11 @@ export class DropManagerS extends mwext.ModuleS<DropManagerC, null> {
                     type,
                     value: item.value,
                 };
-            },
-            ));
+            }),
+            this._clientDropCreateFunctionMap.get(playerId),
+            GtkTypes.Interval.Hz60,
+            false,
+        );
     }
 
     /**吸收增加金币间隔 */
@@ -161,6 +158,21 @@ export class DropManagerS extends mwext.ModuleS<DropManagerC, null> {
                 this._drops.delete(playerId);
             }
         }
+    }
+
+    protected onPlayerEnterGame(player: mw.Player): void {
+        super.onPlayerEnterGame(player);
+
+        this._clientDropCreateFunctionMap.set(
+            player.playerId,
+            (params: DropGenerateParam[][]) => this
+                .getClient(player.playerId)
+                ?.net_createDrop(params.flat()));
+    }
+
+    protected onPlayerLeft(player: mw.Player): void {
+        super.onPlayerLeft(player);
+        this._clientDropCreateFunctionMap.delete(player.playerId);
     }
 
     /**吸收金币轮询 */
@@ -211,7 +223,6 @@ export class DropManagerS extends mwext.ModuleS<DropManagerC, null> {
             this._isStartAbsorb = true;
         }
     }
-
 }
 
 interface DropGenerateParam {
@@ -272,7 +283,6 @@ class DropInServer extends DropItem {
  * 客户端掉落物
  */
 class DropInClient extends DropItem {
-
     constructor() {
         super();
     }
