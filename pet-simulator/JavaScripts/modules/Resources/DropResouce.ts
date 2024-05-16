@@ -11,6 +11,8 @@ import { PlayerModuleS } from "../Player/PlayerModuleS";
 import Gtk, { GtkTypes, RandomGenerator } from "../../util/GToolkit";
 import ModuleService = mwext.ModuleService;
 import Balancing from "../../depend/balancing/Balancing";
+import { DollMachineModuleS } from "../DollMachine/DollMachineModuleS";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class DropManagerC extends ModuleC<DropManagerS, null> {
     private _dropItems: DropInClient[] = [];
@@ -19,7 +21,7 @@ export class DropManagerC extends ModuleC<DropManagerS, null> {
 
         const gun = Balancing.getInstance().tryGetGun("dropItemGeneration");
 
-        for (const {startPos, endPos, type, value} of params) {
+        for (const { startPos, endPos, type, value } of params) {
             gun.press(() => {
                 let drop = ObjectPoolServices.getPool(DropInClient).spawn();
                 drop.poolInit(startPos.clone(), endPos.clone(), type, value);
@@ -65,11 +67,11 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
      * @param isBox
      */
     public createDrop(playerId: number,
-                      pos: mw.Vector,
-                      type: GlobalEnum.CoinType,
-                      allValue: number,
-                      count: number,
-                      isBox: boolean = false): void {
+        pos: mw.Vector,
+        type: GlobalEnum.CoinType,
+        allValue: number,
+        count: number,
+        isBox: boolean = false): void {
         if (count <= 0 || allValue <= 0) return;
         let val = Math.ceil(allValue / count);
         let generates: DropInServer[] = [];
@@ -225,8 +227,8 @@ class DropInServer extends DropItem {
     public position: mw.Vector;
 
     constructor(public owner: number,
-                public value: number,
-                public type: GlobalEnum.CoinType) {
+        public value: number,
+        public type: GlobalEnum.CoinType) {
         super();
     }
 
@@ -248,6 +250,7 @@ class DropInServer extends DropItem {
                     pms.addDiamond(this.owner, this.value);
                     break;
             }
+            Log4Ts.log(DollMachineModuleS, `player ${this.owner} get ${this.value} ${this.type}`);
             return true;
         }
         return false;
@@ -375,7 +378,7 @@ class DropInClient extends DropItem {
         let startLoc = getPos(this.model);
         let endLoc = mw.Vector.add(startLoc, mw.Vector.multiply(dir, dis));
         this._moveToTween.stop();
-        this._moveToTween = new mw.Tween(startLoc).to({x: endLoc.x, y: endLoc.y}, time)
+        this._moveToTween = new mw.Tween(startLoc).to({ x: endLoc.x, y: endLoc.y }, time)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete(() => {
@@ -399,11 +402,11 @@ class DropInClient extends DropItem {
 
         startPos.z = this.targetPos.z + GlobalData.DropAni.resourceY;
 
-        this._moveToTween = new mw.Tween(startPos).to({z: startPos.z + height}, GlobalData.DropAni.bonceUpTime)
+        this._moveToTween = new mw.Tween(startPos).to({ z: startPos.z + height }, GlobalData.DropAni.bonceUpTime)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete((obj) => {
-                this._moveToTween = new mw.Tween(obj).to({z: this.targetPos.z + GlobalData.DropAni.resourceY}, GlobalData.DropAni.bonceDownTime)
+                this._moveToTween = new mw.Tween(obj).to({ z: this.targetPos.z + GlobalData.DropAni.resourceY }, GlobalData.DropAni.bonceDownTime)
                     .onUpdate((value: mw.Vector) => {
                         setPos(this.model, value);
                     }).onComplete(() => {
@@ -438,6 +441,7 @@ class DropInClient extends DropItem {
             Player.localPlayer.character,
             getPos(this.model))) {
             this.flyToPlayer(getPos(this.model), Player.localPlayer.character.worldTransform.position);
+            Log4Ts.log(DropInClient, `player ${Player.localPlayer.playerId} get ${this._value} ${this.type}`);
             return true;
         }
         return false;
