@@ -48,15 +48,9 @@ export class AreaModuleS extends ModuleS<AreaModuleC, null> {
 
     }
 
-    private _lastTime = 0;
     private _currentInMagmaPlayers: Map<number, number> = new Map();
     protected onUpdate(dt: number): void {
-        this._lastTime += dt;
-        if (this._lastTime % GameServiceConfig.MAGMA_TRIGGER_HURT_INTERVAL === 0) {
-            // 岩浆伤害判定
-            this._currentInMagmaPlayers.forEach(element => {
-            });
-        }
+
     }
     protected onPlayerLeft(player: mw.Player): void {
         if (this._currentInMagmaPlayers.has(player.playerId)) {
