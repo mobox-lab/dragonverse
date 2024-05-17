@@ -663,6 +663,23 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
         this.addPlayerRecord(player.playerId);
+
+        this.authModuleS.queryUserDragon(player.playerId)
+            .then(value => {
+                    if (Gtk.isNullOrUndefined(value)) return;
+                    const data = Enumerable
+                        .from(value.DragonPalList)
+                        .select(item => {
+                            return {
+                                id: ForeignKeyIndexer.getInstance().queryDragonByPalId(item.dragonPalId),
+                                amount: item.amount,
+                            };
+                        })
+                        .toArray();
+
+                    this.bagModuleS.resetDragonData(player.playerId, data);
+                },
+            );
     }
 
     protected onPlayerJoined(player: Player): void {
@@ -882,6 +899,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         if (result) {
             Log4Ts.log(SceneDragonModuleS, `catch success. item locked.`);
             this._syncLocker.set(syncKey, currPlayerId);
+            return Promise.resolve(true);
         } else {
             Log4Ts.log(SceneDragonModuleC, `catch fail. failed the web request.`);
             return Promise.resolve(false);

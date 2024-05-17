@@ -295,9 +295,9 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
     public handbookYoact: YoactArray<HandbookItemUnique> = new YoactArray<HandbookItemUnique>();
 
-    public dragonBallYoact: { count: number } = createYoact({ count: 0 });
-    public obbyCoinYoact: { count: number } = Yoact.createYoact({ count: 0 });
-    public obbyTicketYoact: { count: number } = Yoact.createYoact({ count: 0 });
+    public dragonBallYoact: { count: number } = createYoact({count: 0});
+    public obbyCoinYoact: { count: number } = Yoact.createYoact({count: 0});
+    public obbyTicketYoact: { count: number } = Yoact.createYoact({count: 0});
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -441,6 +441,12 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
         this.selfSetItem(bagId, autoRemove && !count ? null : count);
     }
 
+    public net_setItems(data: [number, number][], autoRemove: boolean = true) {
+        for (const [bagId, count] of data) {
+            this.selfSetItem(bagId, autoRemove && !count ? null : count);
+        }
+    }
+
     public net_setRecord(bagId: number, value: number) {
         const handbookItem = this.handbookYoact.getItem(bagId);
         if (!handbookItem) return;
@@ -543,15 +549,15 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
         this.authModuleS
             ?.queryUserDragonBall(player.playerId)
             .then(value => {
-                Log4Ts.log(BagModuleS,
-                    `query user dragon ball success.`,
-                    `playerId: ${player.playerId}.`,
-                    `value: ${value}.`);
-                this.setItem(
-                    player.playerId,
-                    GameServiceConfig.DRAGON_BALL_BAG_ID,
-                    value.unUsed);
-            },
+                    Log4Ts.log(BagModuleS,
+                        `query user dragon ball success.`,
+                        `playerId: ${player.playerId}.`,
+                        `value: ${value}.`);
+                    this.setItem(
+                        player.playerId,
+                        GameServiceConfig.DRAGON_BALL_BAG_ID,
+                        value.unUsed);
+                },
             );
     }
 
@@ -675,6 +681,44 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
     }
 
     /**
+     * 获取背包物品对应数量
+     * @param playerId 玩家id
+     * @param bagId 物品id
+     * @return 数量
+     */
+    public getItemCount(playerId: number, bagId: number): number {
+        const data = this.getPlayerData(playerId);
+        return data.getItemCount(bagId);
+    }
+
+    /**
+     * 重置玩家 背包龙数据.
+     * @param playerId 玩家id
+     * @param {{id: number, amount: number}[]} data
+     */
+    public resetDragonData(playerId: number, data: { id: number, amount: number }[]) {
+        const playerData = this.getPlayerData(playerId);
+        if (!playerData) return;
+
+        const map = new Map<number, number>();
+        data.forEach(value => map.set(value.id, (map.get(value.id) ?? 0) + value.amount));
+
+        const filledData = Enumerable.from(GameConfig.Dragon.getAllElement())
+            .select(item => ([item.bagId, map.get(item.bagId) ?? 0] as [number, number]))
+            .doAction(data => {
+                if (data[0] > 0)
+                    playerData.removeItem(data[0]);
+                else playerData.setItem(
+                    data[0],
+                    data[1]);
+            })
+            .toArray();
+
+        playerData.save(false);
+        this.getClient(playerId).net_setItems(filledData, true);
+    }
+
+    /**
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall(playerId: number) {
@@ -725,25 +769,6 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
             return true;
         } else {
             return false;
-        }
-    }
-
-    /**
-     * 消耗 Obby 入场券
-     */
-    public net_consumeObbyTicket(): Promise<boolean> {
-        //判断需不需要消耗次数
-        if (DataCenterS.getData(this.currentPlayerId, ObbyModuleData).leaveObbyByExitGame === true) {
-            ModuleService.getModule(ObbyModuleS).enterObbyWithoutTicket(this.currentPlayerId);
-            return Promise.resolve(true);
-        } else {
-            const playerData = this.getPlayerData(this.currentPlayerId);
-            if (playerData.obbyTicket >= 1) {
-                this.addObbyTicket(this.currentPlayerId, -1);
-                return Promise.resolve(true);
-            } else {
-                return Promise.resolve(false);
-            }
         }
     }
 
@@ -800,14 +825,22 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
     }
 
     /**
-     * @description: 获取背包物品对应数量
-     * @param playerId 玩家id
-     * @param bagId 物品id
-     * @return 数量
+     * 消耗 Obby 入场券
      */
-    public getItemCount(playerId: number, bagId: number): number {
-        const data = this.getPlayerData(playerId);
-        return data.getItemCount(bagId);
+    public net_consumeObbyTicket(): Promise<boolean> {
+        //判断需不需要消耗次数
+        if (DataCenterS.getData(this.currentPlayerId, ObbyModuleData).leaveObbyByExitGame === true) {
+            ModuleService.getModule(ObbyModuleS).enterObbyWithoutTicket(this.currentPlayerId);
+            return Promise.resolve(true);
+        } else {
+            const playerData = this.getPlayerData(this.currentPlayerId);
+            if (playerData.obbyTicket >= 1) {
+                this.addObbyTicket(this.currentPlayerId, -1);
+                return Promise.resolve(true);
+            } else {
+                return Promise.resolve(false);
+            }
+        }
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
