@@ -303,7 +303,7 @@ interface UserDragonRespData {
          * 是否休眠.
          */
         sleep: boolean
-    };
+    }[];
 }
 
 //#endregion
@@ -787,7 +787,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 AuthModuleS.TEST_QUERY_USER_DRAGON_URL,
             );
 
-        return respInJson.data;
+        return respInJson.message === "success" ?
+            respInJson.data :
+            undefined;
     }
 
     public async queryRegisterStaminaLimit(playerId: number) {
