@@ -78,6 +78,27 @@ export default class MapPanel_Generate extends UIScript {
 		}
 		return this.imgSymbol5_Internal
 	}
+	private imgSymbol6_Internal: mw.Image
+	public get imgSymbol6(): mw.Image {
+		if(!this.imgSymbol6_Internal&&this.uiWidgetBase) {
+			this.imgSymbol6_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapMesh/markCanvas/imgSymbol6') as mw.Image
+		}
+		return this.imgSymbol6_Internal
+	}
+	private imgSymbol7_Internal: mw.Image
+	public get imgSymbol7(): mw.Image {
+		if(!this.imgSymbol7_Internal&&this.uiWidgetBase) {
+			this.imgSymbol7_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapMesh/markCanvas/imgSymbol7') as mw.Image
+		}
+		return this.imgSymbol7_Internal
+	}
+	private imgSymbol8_Internal: mw.Image
+	public get imgSymbol8(): mw.Image {
+		if(!this.imgSymbol8_Internal&&this.uiWidgetBase) {
+			this.imgSymbol8_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMap/cnvMapHolder/cnvMapMesh/markCanvas/imgSymbol8') as mw.Image
+		}
+		return this.imgSymbol8_Internal
+	}
 	private cnvMapPlayerArrowContainer_Internal: mw.Canvas
 	public get cnvMapPlayerArrowContainer(): mw.Canvas {
 		if(!this.cnvMapPlayerArrowContainer_Internal&&this.uiWidgetBase) {

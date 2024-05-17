@@ -148,6 +148,13 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnDragonBall_Internal
 	}
+	private pressF_Internal: mw.TextBlock
+	public get pressF(): mw.TextBlock {
+		if(!this.pressF_Internal&&this.uiWidgetBase) {
+			this.pressF_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvDragonBall/pressF') as mw.TextBlock
+		}
+		return this.pressF_Internal
+	}
 	private txtDragonBallNum_Internal: mw.TextBlock
 	public get txtDragonBallNum(): mw.TextBlock {
 		if(!this.txtDragonBallNum_Internal&&this.uiWidgetBase) {
@@ -504,6 +511,9 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.textcoin)
         
 	
+        this.initLanguage(this.pressF)
+        
+	
         this.initLanguage(this.txtDragonBallNum)
         
 	
@@ -556,6 +566,9 @@ export default class MainPanel_Generate extends UIScript {
         
 	
         overrideBubblingWidget(this.textcoin);
+        
+	
+        overrideBubblingWidget(this.pressF);
         
 	
         overrideBubblingWidget(this.txtDragonBallNum);
@@ -634,6 +647,9 @@ export default class MainPanel_Generate extends UIScript {
         
 	
         this.unregisterLanKey(this.textcoin)
+        
+	
+        this.unregisterLanKey(this.pressF)
         
 	
         this.unregisterLanKey(this.txtDragonBallNum)
