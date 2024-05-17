@@ -148,7 +148,7 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
      * @param player 玩家
      * @returns 随机位置
      */
-    public getrandomPostion(player: Player): Vector {
+    public getRandomPosition(player: Player): Vector {
         let cfgs = GameConfig.LandParcel.getAllElement().filter((value) => { return value.PortalSwitch == 1 });
         //透明 && buff 不传送
         let cfgids: number[] = cfgs.map((value) => { return value.Id })
