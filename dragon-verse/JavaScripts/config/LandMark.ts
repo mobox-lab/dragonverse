@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","uiName","description"],["","","Language"],[1,"imgSymbol1","Maptext001"],[2,"imgSymbol2","Maptext002"],[3,"imgSymbol3","Maptext003"],[4,"imgSymbol4","Maptext004"],[5,"imgSymbol5","Maptext005"],[6,"imgSymbol6","Maptext006"],[7,"imgSymbol7","Maptext007"],[8,"imgSymbol8","Maptext008"]];
+const EXCELDATA:Array<Array<any>> = [["id","uiName","description"],["","","Language"],[1,"imgSymbol6","Maptext006"],[2,"imgSymbol7","Maptext007"]];
 export interface ILandMarkElement extends IElementBase{
  	/**id*/
 	id:number
