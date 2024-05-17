@@ -239,7 +239,10 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
         let char = obj as mw.Character;
         if (char != Player.localPlayer.character) return;
         // InterBtn.instance.hide();
+        let ui = UIService.getUI(WallInteract_Generate, false);
+        ui.mBtn_Interact.onClicked.clear();
         UIService.hide(WallInteract_Generate);
+
     }
 
     //初始化区域

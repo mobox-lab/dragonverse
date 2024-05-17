@@ -348,6 +348,7 @@ export class utils {
                 if (other == Player.localPlayer.character) {
                     enterCB();
                     KeyOperationManager.getInstance().onKeyDown(null, Keys.F, () => {
+                        leaveCB();
                         enterCB();
                     });
                 }
