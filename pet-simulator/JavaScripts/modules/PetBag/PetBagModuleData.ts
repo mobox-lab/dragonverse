@@ -245,7 +245,7 @@ export class PetBagModuleData extends Subdata {
     }
 
     public calRound(obtainTime: number): number {
-        return 1;
+        return 0;
     }
 
     public addBagItemByPetData(petData: petItemDataNew): boolean {

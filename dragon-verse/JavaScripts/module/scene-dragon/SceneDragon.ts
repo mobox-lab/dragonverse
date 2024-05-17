@@ -200,6 +200,15 @@ export default class SceneDragon {
     }
 
     /**
+     * 业务后端 id.
+     * @config
+     * @param id
+     */
+    public static dragonPalId(id: number): number {
+        return this.getConfig(id).dragonPalId;
+    }
+
+    /**
      * 龙 配置.
      * @param id 龙 id.
      */

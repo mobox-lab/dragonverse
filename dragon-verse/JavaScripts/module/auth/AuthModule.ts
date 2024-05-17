@@ -59,7 +59,7 @@ AddGMCommand(
             .getModule(AuthModuleS)
             .requestWebCatchDragon(
                 player.playerId,
-                Gtk.randomArrayItem(allDragonConfig)["id"],
+                Gtk.randomArrayItem(allDragonConfig)["dragonPalId"],
                 Date.now(),
             )
             .then((value) => {
@@ -303,7 +303,7 @@ interface UserDragonRespData {
          * 是否休眠.
          */
         sleep: boolean
-    };
+    }[];
 }
 
 //#endregion
@@ -849,8 +849,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         };
 
         this.correspondHandler<QueryResp>(requestParam,
-            AuthModuleS.RELEASE_B_W_RANK_REPORT_URL,
-            AuthModuleS.TEST_B_W_RANK_REPORT_URL,
+            AuthModuleS.RELEASE_P_S_RANK_REPORT_URL,
+            AuthModuleS.TEST_P_S_RANK_REPORT_URL,
         );
     }
 

@@ -872,7 +872,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         const [result, currentCount] = (await this.authModuleS
             .requestWebCatchDragon(currPlayerId,
-                item.id,
+                item.getConfig().dragonPalId,
                 catchTime));
 
         if (result && !Gtk.isNullOrUndefined(currentCount?.unUsed)) this.bagModuleS?.setItem(currPlayerId,

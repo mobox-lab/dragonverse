@@ -45,6 +45,8 @@ export default class ForeignKeyIndexer extends Singleton<ForeignKeyIndexer>() {
 
     private _bagItemForDragonIndexCache: Map<number, number> = new Map();
 
+    private _dragonPalIdForDragonIndexCache: Map<number, number> = new Map();
+
     private _dragonHabitatMap: Map<number, number[]> = new Map();
 
     private _characterIndexCache: Map<number, CharacterTypes> = new Map<number, CharacterTypes>();
@@ -90,6 +92,15 @@ export default class ForeignKeyIndexer extends Singleton<ForeignKeyIndexer>() {
      */
     public queryDragonByBagId(bagId: number): number | undefined {
         return this._bagItemForDragonIndexCache.get(bagId);
+    }
+
+    /**
+     * 查询业务后端 Id 对应的龙.
+     * @param {number} dragonPalId
+     * @return {number}
+     */
+    public queryDragonByPalId(dragonPalId: number): number | undefined {
+        return this._dragonPalIdForDragonIndexCache.get(dragonPalId);
     }
 
     /**
@@ -159,6 +170,7 @@ export default class ForeignKeyIndexer extends Singleton<ForeignKeyIndexer>() {
         for (const config of configs) {
             set.add(config.bagId);
             this._bagItemForDragonIndexCache.set(config.bagId, config.id);
+            this._dragonPalIdForDragonIndexCache.set(config.dragonPalId, config.id);
 
             for (const sceneId of config.sceneIds) {
                 if (this._dragonHabitatMap.has(sceneId)) {

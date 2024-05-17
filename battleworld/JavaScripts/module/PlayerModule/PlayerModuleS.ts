@@ -138,7 +138,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     }
 
     /**定时器 不受帧率影响  */
-    private onLogicUpdate() { }
+    private onLogicUpdate() {
+    }
 
     protected onUpdate(dt: number): void {
         for (const [key, value] of this.playerProxyMap) {
@@ -442,7 +443,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttrIT(beHurtId, Attribute.EnumAttributeType.hp, Math.abs(atkVal));
             this.dispatchSceneUnitInjure(
                 beHurtId,
-                [{ from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal }],
+                [{from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal}],
                 [beHurtId],
             );
             return;
@@ -652,7 +653,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttr(playerID, Attribute.EnumAttributeType.hp, drainLifeHp);
             this.dispatchSceneUnitInjure(
                 playerID,
-                [{ from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal }],
+                [{from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal}],
                 [playerID],
             );
         }
@@ -2354,7 +2355,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         // 计算并更新玩家等级
         const newRank = PlayerManager.instance.getRankLevel(calCurrentScore);
-        ModuleService.getModule(AuthModuleS).reportBattleWorldRankData(playerId, newRank, calCurrentScore, 1);
+        ModuleService.getModule(AuthModuleS).reportBattleWorldRankData(
+            playerId,
+            newRank,
+            calCurrentScore,
+            0);
 
         // 如果是增加属性值并且玩家等级上升，触发升级通知
         if (deltaScore > 0) {
@@ -2422,7 +2427,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     public net_playerJoinFighting(playerId: number) {
         const ems = ModuleService.getModule(EnergyModuleS);
         if (ems.isAfford(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING)) {
-            ems.consume(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING)
+            ems.consume(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING);
             this._fightingPlayerSet.add(playerId);
         }
     }
