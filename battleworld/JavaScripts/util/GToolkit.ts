@@ -15,7 +15,7 @@
  * @see https://github.com/LviatYi/MetaWorldNPT/tree/main/MetaWorldNPT/JavaScripts/util
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- * @version 31.11.1
+ * @version 31.11.2
  * @beta
  */
 class GToolkit {
@@ -2117,9 +2117,9 @@ class GToolkit {
      */
     public detectVerticalTerrain(startPoint: mw.Vector,
                                  length: number = 1000,
-                                 self: mw.GameObject = null,
+                                 self: mw.GameObject = undefined,
                                  ignoreObjectGuids: string[] = [],
-                                 debug: boolean = false): mw.HitResult | null {
+                                 debug: boolean = false): mw.HitResult | undefined {
         return QueryUtil.lineTrace(
             startPoint,
             this.newWithZ(startPoint, startPoint.z - length),
@@ -2127,7 +2127,41 @@ class GToolkit {
             debug,
             self ? [self.gameObjectId, ...ignoreObjectGuids] : [...ignoreObjectGuids],
             false,
-            false)[0] ?? null;
+            false)[0] ?? undefined;
+    }
+
+    /**
+     * 垂直地形采样.
+     * 从起始平台创建一条垂直向下的射线 返回命中到任何其他物体的命中点位置.
+     * @param {IPoint2} startPoint
+     * @param {number} platform
+     * @param {number} length
+     * @param {string[]} ignores
+     * @param {boolean} ignoreByType
+     * @param {boolean} traceSkeletonOnly
+     * @param {mw.GameObject} self
+     * @param {boolean} down
+     * @param {boolean} debug
+     * @return {mw.HitResult[] | undefined}
+     */
+    public sampleVerticalTerrain(startPoint: IPoint2,
+                                 platform: number,
+                                 length: number,
+                                 down: boolean = true,
+                                 ignores: string[] = undefined,
+                                 ignoreByType: boolean = false,
+                                 traceSkeletonOnly: boolean = false,
+                                 self: mw.GameObject = undefined,
+                                 debug: boolean = false): mw.HitResult[] | undefined {
+        return QueryUtil.lineTrace(
+            new Vector(startPoint.x, startPoint.y, platform),
+            new Vector(startPoint.x, startPoint.y, platform + (down ? (-length) : length)),
+            true,
+            debug,
+            ignores,
+            ignoreByType,
+            traceSkeletonOnly,
+            self) ?? undefined;
     }
 
     /**
@@ -2589,6 +2623,25 @@ export interface IColor {
     g: number,
     b: number,
     a?: number
+}
+
+export type AnyPoint = IPoint2 | IPoint3;
+
+/**
+ * Point in 2D.
+ */
+export interface IPoint2 {
+    x: number;
+    y: number;
+}
+
+/**
+ * Point in 3D.
+ */
+export interface IPoint3 {
+    x: number;
+    y: number;
+    z: number;
 }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
