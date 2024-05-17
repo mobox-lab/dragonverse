@@ -1,5 +1,5 @@
 import { GameConfig } from "../../config/GameConfig";
-import { EAreaEvents_S, EAreaId, EAttributeEvents_S, EBuffEvent_S, EModule_Events_S, EPlayerEvents_S } from "../../const/Enum";
+import { EAreaEvents_S, EAreaId, EAttributeEvents_S, EBuffEvent_S, EDefineType, EModule_Events_S, EPlayerEvents_S } from "../../const/Enum";
 import { EventManager } from "../../tool/EventManager";
 import { PlayerManager } from "../PlayerModule/PlayerManager";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
@@ -10,6 +10,8 @@ import { Globaldata } from "../../const/Globaldata";
 import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import { EHurtSource, THurtSourceData } from "../AnalyticsModule/AnalyticsTool";
 import { LandModuleS } from "../LandModule/LandModuleS";
+import GameServiceConfig from "../../const/GameServiceConfig";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 /**
  * 区域判定模块
@@ -24,11 +26,123 @@ export class AreaModuleS extends ModuleS<AreaModuleC, null> {
 
 
     protected onStart(): void {
-
-
         EventManager.instance.add(EAreaEvents_S.Area_SetBattleAreaId, this.listen_SetBattleAreaId, this);
+        this.initTrigger();
+    }
+
+    private initTrigger() {
+        Log4Ts.log(AreaModuleS, `initTrigger`);
+        let triggers = GameObject.findGameObjectsByTag("DeadTrigger");
+        for (let i = 0; i < triggers.length; i++) {
+            let trigger = triggers[i] as mw.Trigger;
+            trigger.onEnter.add(this.deadTriggerEnter.bind(this));
+        }
+
+        let magmaTriggers = GameObject.findGameObjectsByTag("MagmaTrigger");
+        for (let i = 0; i < magmaTriggers.length; i++) {
+            Log4Ts.log(AreaModuleS, `set magma trigger`);
+            let trigger = magmaTriggers[i] as mw.Trigger;
+            trigger.onEnter.add(this.magmaTriggerEnter.bind(this));
+            trigger.onLeave.add(this.magmaTriggerLeave.bind(this));
+        }
 
     }
+
+    private _currentInMagmaPlayers: Map<number, number> = new Map();
+    protected onUpdate(dt: number): void {
+
+    }
+    protected onPlayerLeft(player: mw.Player): void {
+        if (this._currentInMagmaPlayers.has(player.playerId)) {
+            let interval = this._currentInMagmaPlayers.get(player.playerId);
+            if (interval) {
+                TimeUtil.clearInterval(interval);
+            }
+            this._currentInMagmaPlayers.delete(player.playerId);
+        }
+    }
+
+    /** 
+     * @description: 岩浆触发器进入
+     * @param obj
+     * @return 
+     */
+    private magmaTriggerEnter(obj: GameObject) {
+        if (obj instanceof Character && obj.player !== undefined) {
+            //上个interval
+            Log4Ts.log(AreaModuleS, `enter magma trigger`);
+            let flag = TimeUtil.setInterval(() => {
+                let hurtSourceData: THurtSourceData = {
+                    source: EHurtSource.sea,
+                    skillId: 0,
+                    skillEffectId: 0,
+                }
+                ModuleService.getModule(PlayerModuleS).reducePlayerAttr(obj.player.playerId, Attribute.EnumAttributeType.hp, GameServiceConfig.MAGMA_TRIGGER_HURT, 0, EDefineType.none, hurtSourceData);
+
+            }, GameServiceConfig.MAGMA_TRIGGER_HURT_INTERVAL / 1e3);
+            //立即扣一次
+            let hurtSourceData: THurtSourceData = {
+                source: EHurtSource.sea,
+                skillId: 0,
+                skillEffectId: 0,
+            }
+            ModuleService.getModule(PlayerModuleS).reducePlayerAttr(obj.player.playerId, Attribute.EnumAttributeType.hp, GameServiceConfig.MAGMA_TRIGGER_HURT, 0, EDefineType.none, hurtSourceData);
+
+            this._currentInMagmaPlayers.set(obj.player.playerId, flag);
+        }
+    }
+    /** 
+     * @description: 岩浆触发器离开
+     * @param obj
+     * @return 
+     */
+    private magmaTriggerLeave(obj: GameObject) {
+        if (obj instanceof Character && obj.player !== undefined) {
+            if (this._currentInMagmaPlayers.has(obj.player.playerId)) {
+                let interval = this._currentInMagmaPlayers.get(obj.player.playerId);
+                if (interval) {
+                    TimeUtil.clearInterval(interval);
+                }
+                this._currentInMagmaPlayers.delete(obj.player.playerId);
+            }
+        }
+    }
+
+    /** 
+     * @description: 地底死亡触发器
+     * @param obj
+     * @return 
+     */
+    private deadTriggerEnter(obj: GameObject) {
+        if (obj instanceof Character && obj.player !== undefined) {
+            let player = obj.player;
+            if (obj.player.playerId === player.playerId) {
+                //掉一半血传送回战场随机点位
+                let hp = ModuleService.getModule(PlayerModuleS).getPlayerAttr(player.playerId, Attribute.EnumAttributeType.hp);
+                if (hp <= 0) {
+                    return;
+                }
+                let maxHP = ModuleService.getModule(PlayerModuleS).getPlayerAttr(player.playerId, Attribute.EnumAttributeType.maxHp);
+
+                if (hp > maxHP * 0.5) {
+                    let position = ModuleService.getModule(LandModuleS).getRandomPosition(player);
+                    // UIService.getUI(MainUI)?.setCoinAndEnergyVisible(false);
+                    // this.setLocation(position);
+                    player.character.worldTransform.position = position;
+                } else {
+
+                }
+
+                let hurtSourceData: THurtSourceData = {
+                    source: EHurtSource.sea,
+                    skillId: 0,
+                    skillEffectId: 0,
+                }
+                ModuleService.getModule(PlayerModuleS).reducePlayerAttr(player.playerId, Attribute.EnumAttributeType.hp, maxHP * 0.5, 0, EDefineType.none, hurtSourceData);
+            }
+        }
+    }
+
 
     private listen_SetBattleAreaId(pId: number) {
         this.setPlayerAreaId(pId, EAreaId.Battle);
