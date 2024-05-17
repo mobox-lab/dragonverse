@@ -4,6 +4,7 @@ import { IEggMachineElement } from "../../config/EggMachine";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
+import Gtk from '../../util/GToolkit';
 import { oTraceError } from "../../util/LogManager";
 import MessageBox from "../../util/MessageBox";
 import { Singleton, utils } from "../../util/uitls";
@@ -118,6 +119,7 @@ export default class EggMachine extends mw.Script {
     }
     private async findObj(guid: string, str: string) {
         GameObject.asyncFindGameObjectById(guid).then((obj) => {
+            if (Gtk.isNullOrUndefined(obj)) return;
             let UIWidget = obj as mw.UIWidget;
             (UIWidget.getTargetUIWidget().rootContent.findChildByPath("TextBlock") as mw.TextBlock).text = str;
         })

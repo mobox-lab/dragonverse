@@ -849,28 +849,28 @@ export namespace GlobalData {
         public static levelRangeMap: Map<number, number> = new Map();
 
         public static levelRange(playerId: number) {
-            return Gtk.tryGet(this.levelRangeMap, playerId, 1);
+            return Gtk.tryGet(this.levelRangeMap, playerId, 0) + 1;
         }
 
         /**更多钻石 */
         public static moreDiamondMap: Map<number, number> = new Map();
 
         public static moreDiamond(playerId: number) {
-            return Gtk.tryGet(this.moreDiamondMap, playerId, 1);
+            return Gtk.tryGet(this.moreDiamondMap, playerId, 0) + 1;
         };
 
         /**宠物攻击力 */
         public static petDamageMap: Map<number, number> = new Map();
 
         public static petDamage(playerId: number) {
-            return Gtk.tryGet(this.petDamageMap, playerId, 1);
+            return Gtk.tryGet(this.petDamageMap, playerId, 0) + 1;
         };
 
         /**宠物攻击速度 */
         public static petAttackSpeedMap: Map<number, number> = new Map();
 
         public static petAttackSpeed(playerId: number) {
-            return Gtk.tryGet(this.petAttackSpeedMap, playerId, 1);
+            return Gtk.tryGet(this.petAttackSpeedMap, playerId, 0) + 1;
         };
 
 
@@ -878,11 +878,11 @@ export namespace GlobalData {
         public static maxLevel: number = 5;
 
         public static initPlayer(playerId: number,
-                                 levelData: number[]) {
-            this.levelRangeMap.set(playerId,levelData[0]);
-            this.moreDiamondMap.set(playerId,levelData[1]);
-            this.petDamageMap.set(playerId,levelData[2]);
-            this.petAttackSpeedMap.set(playerId,levelData[3]);
+            levelData: number[]) {
+            this.levelRangeMap.set(playerId, levelData[0]);
+            this.moreDiamondMap.set(playerId, levelData[1]);
+            this.petDamageMap.set(playerId, levelData[2]);
+            this.petAttackSpeedMap.set(playerId, levelData[3]);
         }
 
         public static clearPlayer(playerId: number) {
