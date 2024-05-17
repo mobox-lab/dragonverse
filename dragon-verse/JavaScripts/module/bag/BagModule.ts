@@ -295,9 +295,9 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
     public handbookYoact: YoactArray<HandbookItemUnique> = new YoactArray<HandbookItemUnique>();
 
-    public dragonBallYoact: { count: number } = createYoact({count: 0});
-    public obbyCoinYoact: { count: number } = Yoact.createYoact({count: 0});
-    public obbyTicketYoact: { count: number } = Yoact.createYoact({count: 0});
+    public dragonBallYoact: { count: number } = createYoact({ count: 0 });
+    public obbyCoinYoact: { count: number } = Yoact.createYoact({ count: 0 });
+    public obbyTicketYoact: { count: number } = Yoact.createYoact({ count: 0 });
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -394,7 +394,9 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall() {
-        return !GameServiceConfig.isRelease || this.dragonBallYoact.count > 0;
+        return !GameServiceConfig.isRelease ||
+            !GameServiceConfig.isBeta ||
+            this.dragonBallYoact.count > 0;
     }
 
     /**
@@ -541,15 +543,15 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
         this.authModuleS
             ?.queryUserDragonBall(player.playerId)
             .then(value => {
-                    Log4Ts.log(BagModuleS,
-                        `query user dragon ball success.`,
-                        `playerId: ${player.playerId}.`,
-                        `value: ${value}.`);
-                    this.setItem(
-                        player.playerId,
-                        GameServiceConfig.DRAGON_BALL_BAG_ID,
-                        value.unUsed);
-                },
+                Log4Ts.log(BagModuleS,
+                    `query user dragon ball success.`,
+                    `playerId: ${player.playerId}.`,
+                    `value: ${value}.`);
+                this.setItem(
+                    player.playerId,
+                    GameServiceConfig.DRAGON_BALL_BAG_ID,
+                    value.unUsed);
+            },
             );
     }
 
