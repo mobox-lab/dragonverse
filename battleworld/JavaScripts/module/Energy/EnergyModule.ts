@@ -5,8 +5,8 @@ import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
 import ModuleService = mwext.ModuleService;
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
-import { Globaldata } from "../../const/Globaldata";
 import { AddGMCommand } from "module_gm";
+import { Globaldata } from "../../const/Globaldata";
 
 AddGMCommand("Change Energy",
     undefined,
@@ -76,6 +76,7 @@ export default class BWEnergyModuleData extends mwext.Subdata {
         this.energy = 0;
         this.lastRecoveryTime = Date.now();
     }
+
 }
 
 /**
@@ -268,7 +269,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
         if (Gtk.isNullOrUndefined(d)) return;
         let refreshInterval = GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
             Globaldata.ENERGY_RECOVERY_INTERVAL_MS :
-            30 * GtkTypes.Interval.PerSec;
+            5 * GtkTypes.Interval.PerSec;
         this.authModuleS
             .requestRefreshStaminaLimit(playerId)
             .then(() => {
@@ -287,6 +288,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
                                 limit,
                                 d.energy +
                                 limit / recoveryDuration / 1e3
+                                * refreshInterval
                                 * Math.max(Math.floor(duration / refreshInterval), 0));
 
                             delay = duration % refreshInterval;

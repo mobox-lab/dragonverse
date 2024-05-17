@@ -269,7 +269,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
         if (Gtk.isNullOrUndefined(d)) return;
         let refreshInterval = GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
             GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS :
-            30 * GtkTypes.Interval.PerSec;
+            5 * GtkTypes.Interval.PerSec;
         this.authModuleS
             .requestRefreshStaminaLimit(playerId)
             .then(() => {
@@ -288,6 +288,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
                                 limit,
                                 d.energy +
                                 limit / recoveryDuration / 1e3
+                                * refreshInterval
                                 * Math.max(Math.floor(duration / refreshInterval), 0));
 
                             delay = duration % refreshInterval;

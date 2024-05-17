@@ -560,7 +560,7 @@ export class Globaldata {
      * 体力 恢复间隔. min
      * @type {number}
      */
-    public static readonly ENERGY_RECOVERY_INTERVAL: number = 30;
+    public static readonly ENERGY_RECOVERY_INTERVAL: number = 2;
 
     /**
      * 体力 恢复间隔. ms
