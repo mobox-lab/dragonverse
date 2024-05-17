@@ -124,7 +124,7 @@ class ClickUI {
     public constructor(root: mw.UserWidgetPrefab) {
         this.root = root;
         this.btn = this.root.findChildByPath("RootCanvas/mBtn_interact") as mw.StaleButton;
-        this.text = this.root.findChildByPath("RootCanvas/mBtn_interact/mText_get") as mw.TextBlock;
+        this.text = this.root.findChildByPath("RootCanvas/mText_get") as mw.TextBlock;
         this.img = this.root.findChildByPath("RootCanvas/Image_1") as mw.Image;
         this.btn.onClicked.add(() => {
             this.callBack();
