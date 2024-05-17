@@ -18,7 +18,7 @@ import ModuleService = mwext.ModuleService;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk from "../../util/GToolkit";
 import AchievementModuleS from "../AchievementModule/AchievementModuleS";
-import { ResourceModuleS } from "./ResourceModule";
+import { memorizePointIdToLocation, ResourceModuleS } from "./ResourceModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 
@@ -266,7 +266,7 @@ export default class ResourceScript extends mw.Script {
     public get curPos() {
         if (!this.pointId) return undefined;
         if (!this._curPos) {
-            this._curPos = GameConfig.DropPoint.getElement(this.pointId).areaPoints;
+            this._curPos = memorizePointIdToLocation(this.pointId).clone();
         }
         return this._curPos;
     }

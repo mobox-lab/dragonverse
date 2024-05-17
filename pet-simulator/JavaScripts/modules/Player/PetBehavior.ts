@@ -21,6 +21,7 @@ import GToolkit from "../../util/GToolkit";
 import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
 import { TipsManager } from "../Hud/P_TipUI";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import { memorizePointIdToLocation } from "../Resources/ResourceModule";
 
 /**宠物状态 */
 export enum PetState {
@@ -516,7 +517,7 @@ export default class PetBehavior {
             oTraceError("宠物找不到资源点" + resPoint);
             return;
         }
-        let targetPos = cfg.areaPoints;
+        let targetPos = memorizePointIdToLocation(resPoint).clone();
         this._targetRes = res;
         this.resPos = res.curPos;
         const dis = GlobalData.pet.attackDistance;
@@ -678,7 +679,7 @@ export default class PetBehavior {
             const bezier = GlobalData.pet.attackBezier;
             let time = GlobalData.pet.attackTime;
             if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed(Player.localPlayer.playerId) / this.addAttackSpeed;
-            this.attackTween = new mw.Tween<{ y: number }>({ y: 0 }).to({
+            this.attackTween = new mw.Tween<{ y: number }>({y: 0}).to({
                 y: [-30, 0],
             }, time).onUpdate((obj) => {
                 this.attackRotY = obj.y;

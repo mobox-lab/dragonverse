@@ -14,6 +14,9 @@ import ResourceScript, { SceneResourceMap } from "./Resource";
 import { BonusUI } from "./scenceUnitUI";
 import { RewardTipsManager } from "../UI/RewardTips";
 import Gtk from "../../util/GToolkit";
+import { IPoint2 } from "../../depend/area/shape/base/IPoint";
+import { dimensionComeDown } from "../../depend/area/AreaManager";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
 
@@ -469,7 +472,7 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             // if (item.AreaID == areaId) {
             // if (item.Weight != 0) {
             // weight += item.Weight;
-            weightArr.push({ id: item.ID, weight: item.Weight });
+            weightArr.push({id: item.ID, weight: item.Weight});
             // }
             // }
         });
@@ -568,4 +571,26 @@ export function isBigBox(resType: number): boolean {
 
 export function isSceneUnitIdIsBigBox(configId: number): boolean {
     return (GameConfig.SceneUnit.getElement(configId)?.resType > 8) ?? false;
+}
+
+export function comeDown(pointId: number) {
+    const pointConfig = GameConfig.DropPoint.getElement(pointId);
+    if (!pointConfig) return undefined;
+    dimensionComeDown(
+        pointConfig.areaPoints,
+        GameConfig.AreaDivide.getElement(pointConfig.areaID)?.dropItemPlatform ?? 0,
+        GameServiceConfig.DROP_POINT_SAMPLE_LENGTH,
+        true,
+        GameServiceConfig.DROP_POINT_SAMPLE_FILTER_TAGS,
+        GameServiceConfig.DROP_POINT_SAMPLE_IGNORE_TAGS,
+        GameServiceConfig.DROP_POINT_SAMPLE_IGNORE_GUIDS,
+        false,
+        !GameServiceConfig.isBeta && !GameServiceConfig.isRelease,
+    );
+}
+
+const memorizePointIdToLocationMap = new Map<number, mw.Vector>();
+
+export function memorizePointIdToLocation(pointId: number): Readonly<mw.Vector> {
+    return Gtk.tryGet(memorizePointIdToLocationMap, pointId, () => comeDown(pointId));
 }
