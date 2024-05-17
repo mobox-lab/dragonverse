@@ -19,6 +19,7 @@ AddGMCommand("Change Energy",
 
         ModuleService.getModule(EnergyModuleS).addEnergy(player.playerId, v);
     },
+    "Energy",
 );
 
 export default class PSEnergyModuleData extends mwext.Subdata {

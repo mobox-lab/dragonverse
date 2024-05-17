@@ -19,6 +19,7 @@ AddGMCommand("Change Energy",
 
         ModuleService.getModule(EnergyModuleS).addEnergy(player.playerId, v);
     },
+    "Energy",
 );
 
 export default class BWEnergyModuleData extends mwext.Subdata {
@@ -125,7 +126,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BWEnergyModuleDa
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
-        
+
         this.viewEnergy.data = this.data.energy;
     }
 
