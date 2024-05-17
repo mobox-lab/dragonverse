@@ -266,7 +266,7 @@ export default class ResourceScript extends mw.Script {
     public get curPos() {
         if (!this.pointId) return undefined;
         if (!this._curPos) {
-            this._curPos = memorizePointIdToLocation(this.pointId).clone();
+            this._curPos = memorizePointIdToLocation(this.pointId)?.clone();
         }
         return this._curPos;
     }

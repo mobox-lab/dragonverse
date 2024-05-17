@@ -10,6 +10,7 @@
     "crypto-js": "^4.2.0",
     "linq": "^4.0.2",
     "@types/uuid": "^9.0.7",
-    "pure-uuid": "^1.8.1"
+    "pure-uuid": "^1.8.1",
+    "robust-predicates": "^3.0.2"
   }
 }

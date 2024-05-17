@@ -512,21 +512,21 @@ export default class PetBehavior {
         let res = SceneResourceMap.get(cfg.areaID).find((item) => {
             return item.pointId == resPoint;
         });
-        if (!res) {
+        if (!res || !res.curPos) {
             this.changeToIdle();
             oTraceError("宠物找不到资源点" + resPoint);
             return;
         }
-        let targetPos = memorizePointIdToLocation(resPoint).clone();
-        this._targetRes = res;
         this.resPos = res.curPos;
+
+        this._targetRes = res;
         const dis = GlobalData.pet.attackDistance;
         //以资源点为圆心，距离为半径，在圆上随机一个点
         if (!this.targetPos) this.targetPos = new mw.Vector();
-        this.getRandomPointOnCircle(targetPos, dis, this.targetPos);
-        this.targetPos = this.keepOnGround(this.targetPos, targetPos);
+        this.getRandomPointOnCircle(this.resPos, dis, this.targetPos);
+        this.targetPos = this.keepOnGround(this.targetPos, this.resPos);
         if (this.owner != this.currentChar) return;
-        if (!this.arrow) this.arrow = new Arrow(this.position, targetPos);
+        if (!this.arrow) this.arrow = new Arrow(this.position, this.resPos);
         //开始攻击
         UIService.getUI(P_HudPetGift)?.changePetState(this.key, PetState.Attack, resPoint);
     }

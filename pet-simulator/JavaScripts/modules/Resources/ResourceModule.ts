@@ -17,6 +17,7 @@ import Gtk from "../../util/GToolkit";
 import { IPoint2 } from "../../depend/area/shape/base/IPoint";
 import { dimensionComeDown } from "../../depend/area/AreaManager";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
 
@@ -299,7 +300,12 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
     /**当前区域随机生成一个 */
     private async areaRandomRefresh(areaId: number) {
         let cfgId = this.getAreaResValidPoints(areaId).shift();
+        if (memorizePointIdToLocation(cfgId) === undefined) {
+            Log4Ts.warn(ResourceModuleS, `point by id ${cfgId} is not found. whose area id is ${areaId}`);
+            return;
+        }
         await TimeUtil.delaySecond(GlobalData.SceneResource.initResourceRefresh);
+
         this.addTranArea(areaId, cfgId);
     }
 
@@ -573,10 +579,10 @@ export function isSceneUnitIdIsBigBox(configId: number): boolean {
     return (GameConfig.SceneUnit.getElement(configId)?.resType > 8) ?? false;
 }
 
-export function comeDown(pointId: number) {
+export function comeDown(pointId: number): mw.Vector | undefined {
     const pointConfig = GameConfig.DropPoint.getElement(pointId);
     if (!pointConfig) return undefined;
-    dimensionComeDown(
+    return dimensionComeDown(
         pointConfig.areaPoints,
         GameConfig.AreaDivide.getElement(pointConfig.areaID)?.dropItemPlatform ?? 0,
         GameServiceConfig.DROP_POINT_SAMPLE_LENGTH,
