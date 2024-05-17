@@ -875,7 +875,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
                 item.id,
                 catchTime));
 
-        if (currentCount !== undefined) this.bagModuleS?.setItem(currPlayerId,
+        if (result && !Gtk.isNullOrUndefined(currentCount?.unUsed)) this.bagModuleS?.setItem(currPlayerId,
             GameServiceConfig.DRAGON_BALL_BAG_ID,
             currentCount?.unUsed ?? 0);
 

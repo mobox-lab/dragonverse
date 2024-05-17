@@ -166,7 +166,6 @@ export default class GameStart extends mw.Script {
     private initialize() {
         if (GameServiceConfig.isRelease || GameServiceConfig.isBeta) {
             this.isOnline = true;
-            this.isShowGMPanel = false;
             i18n.release();
         }
 

@@ -764,7 +764,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 AuthModuleS.TEST_CATCH_DRAGON_URL,
             );
 
-        return [respInJson.message === "success", respInJson.data];
+        const success = respInJson.message === "success";
+        if (!success) {
+            Log4Ts.warn(AuthModuleS, `report catch failed. result: ${respInJson.message}`);
+        }
+
+        return [success, respInJson.data];
     }
 
     public async queryUserDragon(playerId: number): Promise<UserDragonRespData> {

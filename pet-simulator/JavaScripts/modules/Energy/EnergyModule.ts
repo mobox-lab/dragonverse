@@ -190,9 +190,12 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, PSEnergyModuleDa
         this.data.energy = energy;
         this.viewEnergy.data = energy;
 
+        Log4Ts.log(EnergyModuleC, `synced energy from server. current is ${energy}.`);
+
         if (energyLimit !== undefined) {
             this.data.lastMaxStamina = energyLimit;
             this.viewEnergyLimit.data = energyLimit;
+            Log4Ts.log(EnergyModuleC, `synced energy limit from server. current is ${energyLimit}.`);
         }
     }
 
