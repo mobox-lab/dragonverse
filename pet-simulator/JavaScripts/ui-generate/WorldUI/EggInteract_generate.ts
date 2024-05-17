@@ -8,12 +8,26 @@
 
 @UIBind('UI/WorldUI/EggInteract.ui')
 export default class EggInteract_Generate extends UIScript {
-		private clickImg_Internal: mw.Image
+		private button_Internal: mw.Button
+	public get button(): mw.Button {
+		if(!this.button_Internal&&this.uiWidgetBase) {
+			this.button_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/button') as mw.Button
+		}
+		return this.button_Internal
+	}
+	private clickImg_Internal: mw.Image
 	public get clickImg(): mw.Image {
 		if(!this.clickImg_Internal&&this.uiWidgetBase) {
 			this.clickImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/clickImg') as mw.Image
 		}
 		return this.clickImg_Internal
+	}
+	private textBlock_Internal: mw.TextBlock
+	public get textBlock(): mw.TextBlock {
+		if(!this.textBlock_Internal&&this.uiWidgetBase) {
+			this.textBlock_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/clickImg/textBlock') as mw.TextBlock
+		}
+		return this.textBlock_Internal
 	}
 
 
@@ -33,16 +47,22 @@ export default class EggInteract_Generate extends UIScript {
 		
 		//按钮添加点击
 		
+		this.button.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "button");
+		})
+		this.button.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 
 		//按钮多语言
 		
 		//文本多语言
 		
-		//文本多语言
-		
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/clickImg/TextBlock") as any);
+		this.initLanguage(this.textBlock)
 		
 	
+		//文本多语言
+		
 
 	}
 	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

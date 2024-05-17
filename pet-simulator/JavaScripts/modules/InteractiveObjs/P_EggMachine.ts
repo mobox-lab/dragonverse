@@ -156,8 +156,8 @@ export class P_EggGet extends PetGet_Generate {
 
 @Singleton()
 export class InterBtn {
-    public root: mw.UserWidgetPrefab = null;
-    private btn: mw.StaleButton = null;
+    public root: EggInteract_Generate = null;
+    private btn: mw.Button = null;
     private callBack: Function = null;
     private obj: mw.GameObject = null;
     private inter: any;
@@ -165,10 +165,10 @@ export class InterBtn {
     public static instance: InterBtn;
 
     constructor() {
-        this.root = mw.createUIByName("WorldUI/EggInteract");
-        this.root.size = new mw.Vector(100, 100);
-        this.btn = (this.root.findChildByPath("RootCanvas/Button")) as mw.StaleButton;
-        mw.UIService.getUI(P_HudUI, false).rootCanvas.addChild(this.root);
+        this.root = UIService.create(EggInteract_Generate);
+        this.root.uiObject.size = new mw.Vector(100, 100);
+        this.btn = this.root.button;
+        mw.UIService.getUI(P_HudUI, false).rootCanvas.addChild(this.root.uiObject);
         this.btn.onClicked.add(() => {
             this.callBack();
         });
@@ -182,7 +182,7 @@ export class InterBtn {
         this.callBack = callBack;
         this.clear();
         this.inter = TimeUtil.setInterval(this.update.bind(this), 0.05);
-        this.root.visibility = (mw.SlateVisibility.SelfHitTestInvisible);
+        this.root.uiObject.visibility = (mw.SlateVisibility.SelfHitTestInvisible);
         //挂null上的key是全局的，先把娃娃机的取消掉
         KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
         KeyOperationManager.getInstance().onKeyUp(null, Keys.F, () => {
@@ -193,7 +193,7 @@ export class InterBtn {
 
     private update() {
         let pos = mw.InputUtil.projectWorldPositionToWidgetPosition(this.obj.worldTransform.position, false).screenPosition;
-        this.root.position = pos.subtract(this.root.size.multiply(0.5).add(this.offset));
+        this.root.uiObject.position = pos.subtract(this.root.uiObject.size.multiply(0.5).add(this.offset));
     }
 
     private clear() {
@@ -204,7 +204,7 @@ export class InterBtn {
 
     public hide(): void {
         this.clear();
-        this.root.visibility = (mw.SlateVisibility.Collapsed);
+        this.root.uiObject.visibility = (mw.SlateVisibility.Collapsed);
         KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
         //由于都是f键绑在null上，需要把娃娃机的f键再注册上
         ModuleService.getModule(DollMachineModuleC)?.setDollMachineShortcutKey();
