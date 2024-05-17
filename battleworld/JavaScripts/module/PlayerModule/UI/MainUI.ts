@@ -172,6 +172,14 @@ export class MainUI extends Main_HUD_Generate {
                 Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data)
                     .toString()));
 
+        this.mBtn_Battle_Add.onClicked.add(() => {
+            // this.mBtn_Battle_Add.enable = false;
+            ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
+            // setTimeout(() => {
+            //     this.mBtn_Battle_Add.enable = true;
+            // }, 5e3);
+        });
+
         this.onReserveAttrChanged();
 
         this.initBack();

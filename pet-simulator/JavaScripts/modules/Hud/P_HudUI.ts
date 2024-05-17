@@ -109,9 +109,13 @@ export class P_HudUI extends Hud_Generate {
         Yoact.bindYoact(() =>
             Gtk.trySetText(this.mText_stamina,
                 (GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
-                        Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data) :
-                        ModuleService.getModule(EnergyModuleC).viewEnergy.data.toFixed(2)
+                    Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data) :
+                    ModuleService.getModule(EnergyModuleC).viewEnergy.data.toFixed(2)
                 ).toString()));
+
+        this.btn_Fresh.onClicked.add(() => {
+            ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
+        });
 
         this.setGMBtn();
         this.startFastTranBtnTween();
@@ -230,7 +234,7 @@ export class P_HudUI extends Hud_Generate {
         let startAngle = GlobalData.TweenFastTranBtn.startAngle;
         let endAngle = GlobalData.TweenFastTranBtn.endAngle;
         let time = GlobalData.TweenFastTranBtn.tweenTime;
-        this.leftToRightTween = new mw.Tween({angle: startAngle}).to({angle: endAngle}, time * 1000)
+        this.leftToRightTween = new mw.Tween({ angle: startAngle }).to({ angle: endAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
@@ -240,7 +244,7 @@ export class P_HudUI extends Hud_Generate {
                 }
             })
             .easing(cubicBezier(bezierData[0], bezierData[1], bezierData[2], bezierData[3]));
-        this.rightToLeftTween = new mw.Tween({angle: endAngle}).to({angle: startAngle}, time * 1000)
+        this.rightToLeftTween = new mw.Tween({ angle: endAngle }).to({ angle: startAngle }, time * 1000)
             .onUpdate((v) => {
                 this.mBtn_FastTran.renderTransformAngle = v.angle;
             })
