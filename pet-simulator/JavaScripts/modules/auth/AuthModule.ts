@@ -910,8 +910,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             },
         );
 
-        Log4Ts.log(AuthModuleS, `get resp. ${JSON.stringify(resp)}`);
-        return await resp.json<D>();
+        const respJson= await resp.json<D>();
+        Log4Ts.log(AuthModuleS, `get resp. ${JSON.stringify(respJson)}`);
+        return respJson;
     }
 
     public checkRequestRegulator(playerId: number): boolean {

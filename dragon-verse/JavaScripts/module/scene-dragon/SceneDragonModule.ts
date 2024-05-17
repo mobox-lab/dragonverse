@@ -899,6 +899,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         if (result) {
             Log4Ts.log(SceneDragonModuleS, `catch success. item locked.`);
             this._syncLocker.set(syncKey, currPlayerId);
+            return Promise.resolve(true);
         } else {
             Log4Ts.log(SceneDragonModuleC, `catch fail. failed the web request.`);
             return Promise.resolve(false);
