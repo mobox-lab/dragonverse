@@ -693,6 +693,7 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
 
     /**
      * 重置玩家 背包龙数据.
+     * @param playerId 玩家id
      * @param {{id: number, amount: number}[]} data
      */
     public resetDragonData(playerId: number, data: { id: number, amount: number }[]) {

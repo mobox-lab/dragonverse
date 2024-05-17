@@ -677,7 +677,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
                         })
                         .toArray();
 
-                    this.bagModuleS.resetDragonData(data);
+                    this.bagModuleS.resetDragonData(player.playerId, data);
                 },
             );
     }
