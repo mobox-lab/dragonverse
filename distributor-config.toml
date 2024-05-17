@@ -13,3 +13,7 @@ to = ["./pet-simulator/JavaScripts/controller/key-operation-manager", "./battlew
 [[items]]
 from = '.\dragon-verse\JavaScripts\module\auth\AuthModule.ts'
 to = ['.\pet-simulator\JavaScripts\modules\auth\AuthModule.ts', '.\battleworld\JavaScripts\module\auth\AuthModule.ts']
+
+[[items]]
+from = '.\dragon-verse\JavaScripts\depend\area'
+to = ['.\pet-simulator\JavaScripts\depend\area']
