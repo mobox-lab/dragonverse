@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.3
+ * @version 31.4.0
  * UI: UI/main/MainPanel.ui
  */
 
@@ -469,38 +469,61 @@ export default class MainPanel_Generate extends UIScript {
     }
 
     protected initTextLan() {
-        // 文本按钮多语言
+        // 文本按钮
         
         this.initLanguage(this.btnCode);
+        this.btnCode.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btnFindPath);
+        this.btnFindPath.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btnShield);
+        this.btnShield.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btnReset);
+        this.btnReset.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btnBag);
+        this.btnBag.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btnJumpGame);
+        this.btnJumpGame.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btnMap);
+        this.btnMap.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btnSound);
+        this.btnSound.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btnCow);
+        this.btnCow.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        // 静态文本按钮多语言
+        // 按钮
         
-        // 文本多语言
+        this.btnJump.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
+        this.btnSetting.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
+        this.btnDragonBall.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
+        this.btnInteract.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
+        // 未暴露的文本按钮
+        
+        // 文本控件
         
         this.initLanguage(this.playtimecount)
         
@@ -547,7 +570,7 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.roomIdText)
         
 	
-        // 静态文本多语言
+        // 未暴露的文本控件
         
         this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/resetCanvas/TextBlock_1_1") as mw.TextBlock);
         
@@ -559,49 +582,49 @@ export default class MainPanel_Generate extends UIScript {
 
     protected overrideTextSetter() {
         
-        overrideBubblingWidget(this.playtimecount);
+        overrideTextBlockTextSetter(this.playtimecount);
         
 	
-        overrideBubblingWidget(this.playtimecount_1);
+        overrideTextBlockTextSetter(this.playtimecount_1);
         
 	
-        overrideBubblingWidget(this.textcoin);
+        overrideTextBlockTextSetter(this.textcoin);
         
 	
-        overrideBubblingWidget(this.pressF);
+        overrideTextBlockTextSetter(this.pressF);
         
 	
-        overrideBubblingWidget(this.txtDragonBallNum);
+        overrideTextBlockTextSetter(this.txtDragonBallNum);
         
 	
-        overrideBubblingWidget(this.cost);
+        overrideTextBlockTextSetter(this.cost);
         
 	
-        overrideBubblingWidget(this.cost_1);
+        overrideTextBlockTextSetter(this.cost_1);
         
 	
-        overrideBubblingWidget(this.textRoom);
+        overrideTextBlockTextSetter(this.textRoom);
         
 	
-        overrideBubblingWidget(this.textMap);
+        overrideTextBlockTextSetter(this.textMap);
         
 	
-        overrideBubblingWidget(this.textSound);
+        overrideTextBlockTextSetter(this.textSound);
         
 	
-        overrideBubblingWidget(this.textCow);
+        overrideTextBlockTextSetter(this.textCow);
         
 	
-        overrideBubblingWidget(this.txtInteractContent);
+        overrideTextBlockTextSetter(this.txtInteractContent);
         
 	
-        overrideBubblingWidget(this.txtInteractKeyTips);
+        overrideTextBlockTextSetter(this.txtInteractKeyTips);
         
 	
-        overrideBubblingWidget(this.txtOperationFeedback);
+        overrideTextBlockTextSetter(this.txtOperationFeedback);
         
 	
-        overrideBubblingWidget(this.roomIdText);
+        overrideTextBlockTextSetter(this.roomIdText);
         
 	
     }
@@ -717,7 +740,7 @@ function findPropertyDescriptor(obj: unknown, prop: string): PropertyDescriptor 
     return null;
 }
 
-function overrideBubblingWidget(textWidget: mw.TextBlock) {
+function overrideTextBlockTextSetter(textWidget: mw.TextBlock) {
     const originSetter = findPropertyDescriptor(textWidget, "text")?.set;
     if (!originSetter) return;
     Object.defineProperty(textWidget, "text", {
@@ -725,5 +748,6 @@ function overrideBubblingWidget(textWidget: mw.TextBlock) {
             if (textWidget.text === value) return;
             originSetter.call(textWidget, value);
         },
+        get: findPropertyDescriptor(textWidget, "text")?.get,
     });
 }

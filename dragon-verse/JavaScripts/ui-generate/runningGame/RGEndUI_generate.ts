@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.3
+ * @version 31.4.0
  * UI: UI/runningGame/RGEndUI.ui
  */
 
@@ -168,17 +168,21 @@ export default class RGEndUI_Generate extends UIScript {
     }
 
     protected initTextLan() {
-        // 文本按钮多语言
+        // 文本按钮
         
         this.initLanguage(this.mBackButton);
+        this.mBackButton.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.mAgainButton);
+        this.mAgainButton.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        // 静态文本按钮多语言
+        // 按钮
         
-        // 文本多语言
+        // 未暴露的文本按钮
+        
+        // 文本控件
         
         this.initLanguage(this.mText)
         
@@ -198,7 +202,7 @@ export default class RGEndUI_Generate extends UIScript {
         this.initLanguage(this.mNew)
         
 	
-        // 静态文本多语言
+        // 未暴露的文本控件
         
         this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvas/mInfoCanvas/TextBlock_1") as mw.TextBlock);
         
@@ -216,22 +220,22 @@ export default class RGEndUI_Generate extends UIScript {
 
     protected overrideTextSetter() {
         
-        overrideBubblingWidget(this.mText);
+        overrideTextBlockTextSetter(this.mText);
         
 	
-        overrideBubblingWidget(this.mTrans);
+        overrideTextBlockTextSetter(this.mTrans);
         
 	
-        overrideBubblingWidget(this.mSpeedUp);
+        overrideTextBlockTextSetter(this.mSpeedUp);
         
 	
-        overrideBubblingWidget(this.mTime);
+        overrideTextBlockTextSetter(this.mTime);
         
 	
-        overrideBubblingWidget(this.mScore);
+        overrideTextBlockTextSetter(this.mScore);
         
 	
-        overrideBubblingWidget(this.mNew);
+        overrideTextBlockTextSetter(this.mNew);
         
 	
     }
@@ -305,7 +309,7 @@ function findPropertyDescriptor(obj: unknown, prop: string): PropertyDescriptor 
     return null;
 }
 
-function overrideBubblingWidget(textWidget: mw.TextBlock) {
+function overrideTextBlockTextSetter(textWidget: mw.TextBlock) {
     const originSetter = findPropertyDescriptor(textWidget, "text")?.set;
     if (!originSetter) return;
     Object.defineProperty(textWidget, "text", {
@@ -313,5 +317,6 @@ function overrideBubblingWidget(textWidget: mw.TextBlock) {
             if (textWidget.text === value) return;
             originSetter.call(textWidget, value);
         },
+        get: findPropertyDescriptor(textWidget, "text")?.get,
     });
 }

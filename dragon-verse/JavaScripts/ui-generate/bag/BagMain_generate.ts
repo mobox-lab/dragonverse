@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.3
+ * @version 31.4.0
  * UI: UI/bag/BagMain.ui
  */
 
@@ -161,32 +161,41 @@ export default class BagMain_Generate extends UIScript {
     }
 
     protected initTextLan() {
-        // 文本按钮多语言
+        // 文本按钮
         
         this.initLanguage(this.btn1);
+        this.btn1.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btn2);
+        this.btn2.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btn3);
+        this.btn3.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btn4);
+        this.btn4.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btn5);
+        this.btn5.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.mBtnOpt);
+        this.mBtnOpt.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.mBtnClose);
+        this.mBtnClose.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        // 静态文本按钮多语言
+        // 按钮
         
-        // 文本多语言
+        // 未暴露的文本按钮
+        
+        // 文本控件
         
         this.initLanguage(this.mName)
         
@@ -197,19 +206,19 @@ export default class BagMain_Generate extends UIScript {
         this.initLanguage(this.mDesc)
         
 	
-        // 静态文本多语言
+        // 未暴露的文本控件
         
     }
 
     protected overrideTextSetter() {
         
-        overrideBubblingWidget(this.mName);
+        overrideTextBlockTextSetter(this.mName);
         
 	
-        overrideBubblingWidget(this.mNum);
+        overrideTextBlockTextSetter(this.mNum);
         
 	
-        overrideBubblingWidget(this.mDesc);
+        overrideTextBlockTextSetter(this.mDesc);
         
 	
     }
@@ -277,7 +286,7 @@ function findPropertyDescriptor(obj: unknown, prop: string): PropertyDescriptor 
     return null;
 }
 
-function overrideBubblingWidget(textWidget: mw.TextBlock) {
+function overrideTextBlockTextSetter(textWidget: mw.TextBlock) {
     const originSetter = findPropertyDescriptor(textWidget, "text")?.set;
     if (!originSetter) return;
     Object.defineProperty(textWidget, "text", {
@@ -285,5 +294,6 @@ function overrideBubblingWidget(textWidget: mw.TextBlock) {
             if (textWidget.text === value) return;
             originSetter.call(textWidget, value);
         },
+        get: findPropertyDescriptor(textWidget, "text")?.get,
     });
 }

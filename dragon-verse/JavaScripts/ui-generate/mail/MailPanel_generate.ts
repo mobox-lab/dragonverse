@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.3
+ * @version 31.4.0
  * UI: UI/mail/MailPanel.ui
  */
 
@@ -350,23 +350,35 @@ export default class MailPanel_Generate extends UIScript {
     }
 
     protected initTextLan() {
-        // 文本按钮多语言
+        // 文本按钮
         
         this.initLanguage(this.mailButtonDelete_1);
+        this.mailButtonDelete_1.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.mailButtonReceive_1);
+        this.mailButtonReceive_1.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.mailButtonReceive_2);
+        this.mailButtonReceive_2.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.mailButtonDelete_2);
+        this.mailButtonDelete_2.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        // 静态文本按钮多语言
+        // 按钮
         
-        // 文本多语言
+        this.mailButtonDetailClose.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
+        this.mailButtonClose.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
+        // 未暴露的文本按钮
+        
+        // 文本控件
         
         this.initLanguage(this.mailPanelTitle)
         
@@ -407,49 +419,49 @@ export default class MailPanel_Generate extends UIScript {
         this.initLanguage(this.mailAnnex_7)
         
 	
-        // 静态文本多语言
+        // 未暴露的文本控件
         
     }
 
     protected overrideTextSetter() {
         
-        overrideBubblingWidget(this.mailPanelTitle);
+        overrideTextBlockTextSetter(this.mailPanelTitle);
         
 	
-        overrideBubblingWidget(this.mailTitle);
+        overrideTextBlockTextSetter(this.mailTitle);
         
 	
-        overrideBubblingWidget(this.mailTime);
+        overrideTextBlockTextSetter(this.mailTime);
         
 	
-        overrideBubblingWidget(this.mailDetailTitle);
+        overrideTextBlockTextSetter(this.mailDetailTitle);
         
 	
-        overrideBubblingWidget(this.mailDetailTime);
+        overrideTextBlockTextSetter(this.mailDetailTime);
         
 	
-        overrideBubblingWidget(this.mailBodyMain);
+        overrideTextBlockTextSetter(this.mailBodyMain);
         
 	
-        overrideBubblingWidget(this.mailAnnex_1);
+        overrideTextBlockTextSetter(this.mailAnnex_1);
         
 	
-        overrideBubblingWidget(this.mailAnnex_2);
+        overrideTextBlockTextSetter(this.mailAnnex_2);
         
 	
-        overrideBubblingWidget(this.mailAnnex_3);
+        overrideTextBlockTextSetter(this.mailAnnex_3);
         
 	
-        overrideBubblingWidget(this.mailAnnex_4);
+        overrideTextBlockTextSetter(this.mailAnnex_4);
         
 	
-        overrideBubblingWidget(this.mailAnnex_5);
+        overrideTextBlockTextSetter(this.mailAnnex_5);
         
 	
-        overrideBubblingWidget(this.mailAnnex_6);
+        overrideTextBlockTextSetter(this.mailAnnex_6);
         
 	
-        overrideBubblingWidget(this.mailAnnex_7);
+        overrideTextBlockTextSetter(this.mailAnnex_7);
         
 	
     }
@@ -538,7 +550,7 @@ function findPropertyDescriptor(obj: unknown, prop: string): PropertyDescriptor 
     return null;
 }
 
-function overrideBubblingWidget(textWidget: mw.TextBlock) {
+function overrideTextBlockTextSetter(textWidget: mw.TextBlock) {
     const originSetter = findPropertyDescriptor(textWidget, "text")?.set;
     if (!originSetter) return;
     Object.defineProperty(textWidget, "text", {
@@ -546,5 +558,6 @@ function overrideBubblingWidget(textWidget: mw.TextBlock) {
             if (textWidget.text === value) return;
             originSetter.call(textWidget, value);
         },
+        get: findPropertyDescriptor(textWidget, "text")?.get,
     });
 }

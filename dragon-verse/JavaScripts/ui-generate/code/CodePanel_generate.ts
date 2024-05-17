@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.3
+ * @version 31.4.0
  * UI: UI/code/CodePanel.ui
  */
 
@@ -182,14 +182,23 @@ export default class CodePanel_Generate extends UIScript {
     }
 
     protected initTextLan() {
-        // 文本按钮多语言
+        // 文本按钮
         
         this.initLanguage(this.codeButtonVerify);
+        this.codeButtonVerify.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        // 静态文本按钮多语言
+        // 按钮
         
-        // 文本多语言
+        this.codeButtonPaste.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
+        this.codeButtonClose.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
+        // 未暴露的文本按钮
+        
+        // 文本控件
         
         this.initLanguage(this.codeTitle)
         
@@ -215,34 +224,34 @@ export default class CodePanel_Generate extends UIScript {
         this.initLanguage(this.codeCondition3)
         
 	
-        // 静态文本多语言
+        // 未暴露的文本控件
         
     }
 
     protected overrideTextSetter() {
         
-        overrideBubblingWidget(this.codeTitle);
+        overrideTextBlockTextSetter(this.codeTitle);
         
 	
-        overrideBubblingWidget(this.codeMainBody);
+        overrideTextBlockTextSetter(this.codeMainBody);
         
 	
-        overrideBubblingWidget(this.codeNum);
+        overrideTextBlockTextSetter(this.codeNum);
         
 	
-        overrideBubblingWidget(this.codePaste);
+        overrideTextBlockTextSetter(this.codePaste);
         
 	
-        overrideBubblingWidget(this.codeRule);
+        overrideTextBlockTextSetter(this.codeRule);
         
 	
-        overrideBubblingWidget(this.codeCondition1);
+        overrideTextBlockTextSetter(this.codeCondition1);
         
 	
-        overrideBubblingWidget(this.codeCondition2);
+        overrideTextBlockTextSetter(this.codeCondition2);
         
 	
-        overrideBubblingWidget(this.codeCondition3);
+        overrideTextBlockTextSetter(this.codeCondition3);
         
 	
     }
@@ -307,7 +316,7 @@ function findPropertyDescriptor(obj: unknown, prop: string): PropertyDescriptor 
     return null;
 }
 
-function overrideBubblingWidget(textWidget: mw.TextBlock) {
+function overrideTextBlockTextSetter(textWidget: mw.TextBlock) {
     const originSetter = findPropertyDescriptor(textWidget, "text")?.set;
     if (!originSetter) return;
     Object.defineProperty(textWidget, "text", {
@@ -315,5 +324,6 @@ function overrideBubblingWidget(textWidget: mw.TextBlock) {
             if (textWidget.text === value) return;
             originSetter.call(textWidget, value);
         },
+        get: findPropertyDescriptor(textWidget, "text")?.get,
     });
 }

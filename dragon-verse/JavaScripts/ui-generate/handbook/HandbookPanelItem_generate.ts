@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.3
+ * @version 31.4.0
  * UI: UI/handbook/HandbookPanelItem.ui
  */
 
@@ -77,14 +77,17 @@ export default class HandbookPanelItem_Generate extends UIScript {
     }
 
     protected initTextLan() {
-        // 文本按钮多语言
+        // 文本按钮
         
         this.initLanguage(this.mBgBtn);
+        this.mBgBtn.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        // 静态文本按钮多语言
+        // 按钮
         
-        // 文本多语言
+        // 未暴露的文本按钮
+        
+        // 文本控件
         
         this.initLanguage(this.mTextName)
         
@@ -92,16 +95,16 @@ export default class HandbookPanelItem_Generate extends UIScript {
         this.initLanguage(this.mTextLevel)
         
 	
-        // 静态文本多语言
+        // 未暴露的文本控件
         
     }
 
     protected overrideTextSetter() {
         
-        overrideBubblingWidget(this.mTextName);
+        overrideTextBlockTextSetter(this.mTextName);
         
 	
-        overrideBubblingWidget(this.mTextLevel);
+        overrideTextBlockTextSetter(this.mTextLevel);
         
 	
     }
@@ -148,7 +151,7 @@ function findPropertyDescriptor(obj: unknown, prop: string): PropertyDescriptor 
     return null;
 }
 
-function overrideBubblingWidget(textWidget: mw.TextBlock) {
+function overrideTextBlockTextSetter(textWidget: mw.TextBlock) {
     const originSetter = findPropertyDescriptor(textWidget, "text")?.set;
     if (!originSetter) return;
     Object.defineProperty(textWidget, "text", {
@@ -156,5 +159,6 @@ function overrideBubblingWidget(textWidget: mw.TextBlock) {
             if (textWidget.text === value) return;
             originSetter.call(textWidget, value);
         },
+        get: findPropertyDescriptor(textWidget, "text")?.get,
     });
 }

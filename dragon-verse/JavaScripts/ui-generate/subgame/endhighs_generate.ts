@@ -6,7 +6,7 @@
  * Template Author
  * @zewei.zhang
  * @LviatYi
- * @version 31.2.3
+ * @version 31.4.0
  * UI: UI/subgame/endhighs.ui
  */
 
@@ -203,14 +203,17 @@ export default class endhighs_Generate extends UIScript {
     }
 
     protected initTextLan() {
-        // 文本按钮多语言
+        // 文本按钮
         
         this.initLanguage(this.mBackButton);
+        this.mBackButton.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        // 静态文本按钮多语言
+        // 按钮
         
-        // 文本多语言
+        // 未暴露的文本按钮
+        
+        // 文本控件
         
         this.initLanguage(this.texttime_1)
         
@@ -242,40 +245,40 @@ export default class endhighs_Generate extends UIScript {
         this.initLanguage(this.youWinText)
         
 	
-        // 静态文本多语言
+        // 未暴露的文本控件
         
     }
 
     protected overrideTextSetter() {
         
-        overrideBubblingWidget(this.texttime_1);
+        overrideTextBlockTextSetter(this.texttime_1);
         
 	
-        overrideBubblingWidget(this.texttime_1_1);
+        overrideTextBlockTextSetter(this.texttime_1_1);
         
 	
-        overrideBubblingWidget(this.texttime);
+        overrideTextBlockTextSetter(this.texttime);
         
 	
-        overrideBubblingWidget(this.textnumt);
+        overrideTextBlockTextSetter(this.textnumt);
         
 	
-        overrideBubblingWidget(this.textcircle);
+        overrideTextBlockTextSetter(this.textcircle);
         
 	
-        overrideBubblingWidget(this.textnumc);
+        overrideTextBlockTextSetter(this.textnumc);
         
 	
-        overrideBubblingWidget(this.textcount);
+        overrideTextBlockTextSetter(this.textcount);
         
 	
-        overrideBubblingWidget(this.textnum);
+        overrideTextBlockTextSetter(this.textnum);
         
 	
-        overrideBubblingWidget(this.gameOverText);
+        overrideTextBlockTextSetter(this.gameOverText);
         
 	
-        overrideBubblingWidget(this.youWinText);
+        overrideTextBlockTextSetter(this.youWinText);
         
 	
     }
@@ -346,7 +349,7 @@ function findPropertyDescriptor(obj: unknown, prop: string): PropertyDescriptor 
     return null;
 }
 
-function overrideBubblingWidget(textWidget: mw.TextBlock) {
+function overrideTextBlockTextSetter(textWidget: mw.TextBlock) {
     const originSetter = findPropertyDescriptor(textWidget, "text")?.set;
     if (!originSetter) return;
     Object.defineProperty(textWidget, "text", {
@@ -354,5 +357,6 @@ function overrideBubblingWidget(textWidget: mw.TextBlock) {
             if (textWidget.text === value) return;
             originSetter.call(textWidget, value);
         },
+        get: findPropertyDescriptor(textWidget, "text")?.get,
     });
 }
