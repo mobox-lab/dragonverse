@@ -202,6 +202,7 @@ export class MapPanel extends MapPanel_Generate implements IKeyInteractive {
 
         this._imgs.forEach(element => {
             let usedTipsUI: tipLandMap_Generate;
+            if (GameConfig.LandMark.findElement("uiName", element.name) === undefined) return;
             KeyOperationManager.getInstance().onWidgetEntered(element, () => {
                 for (let i = 0; i < 3; i++) {
                     let ui = this._mapTips[i];
