@@ -43,6 +43,9 @@ export class P_Pet_Dev extends Dev_Generate {
         mw.Event.addServerListener("P_PET_DEV_SHOW_FUSE_MESSAGE",
             this.showFuseMessage,
         );
+        mw.Event.addServerListener("P_PET_DEV_CHANGE_PANEL_UI",
+            this.changePanelUI,
+        );
     }
 
     /**点击按钮进行合成 */
@@ -99,8 +102,7 @@ export class P_Pet_Dev extends Dev_Generate {
             .getModule(PetBagModuleC)
             .fuseDevPet(curSelectKeys,
                 this.curPetId,
-                this.isGold,
-                this.curRate);
+                this.isGold);
     }
 
     public show(petItems: petItemDataNew[], isGold: boolean, ...param: any[]): void {
@@ -130,8 +132,9 @@ export class P_Pet_Dev extends Dev_Generate {
             petItem.init(item);
             this.petItems.push(petItem);
         });
-        this.curCount = 0;
-        this.changeCost(this.curCount, 0);
+				this.curCount = 0;
+				this.curPetId = 0;
+        this.changeCost(this.curCount);
         super.show(...param);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
@@ -170,16 +173,22 @@ export class P_Pet_Dev extends Dev_Generate {
             }
         }
         this.curCount > 0 ? this.curSelectPets.push(bagItem.petData) : this.curSelectPets.length = 0;
-        this.changeCost(this.curCount, bagItem.petData.I);
+        this.curPetId = bagItem.petData.I;
+				this.changeCost(this.curCount);
     }
 
-    /**改变花费 */
-    public changeCost(count: number, petId: number) {
+		/**改变花费 */
+		public changePanelUI = (cost: number, rate: number) => {
+				this.curCost = cost;
+				this.curRate = rate;
+				this.mTextBlock_Diamond.text = cost + "";
+				this.mTextBlock_Rate.text = rate + "%";
+		}
+
+    /** 更改显示的花费 */
+    public changeCost(count: number) {
         if (count <= 0) {
-            this.curCost = 0;
-            this.curRate = 0;
-            this.mTextBlock_Rate.text = "0%";
-            this.mTextBlock_Diamond.text = "0";
+						this.changePanelUI(0, 0);
             return;
         }
         let rates = GlobalData.Dev.goldProbability;
@@ -187,11 +196,7 @@ export class P_Pet_Dev extends Dev_Generate {
         if (count > rates.length) count = rates.length;
         let rate = rates[count - 1];
         let cost = costs[count - 1];
-        this.curCost = cost;
-        this.curRate = rate;
-        this.mTextBlock_Rate.text = rate + "%";
-        this.mTextBlock_Diamond.text = cost + "";
-        this.curPetId = petId;
+				this.changePanelUI(cost, rate);
     }
 
     protected onShow(...params: any[]): void {
