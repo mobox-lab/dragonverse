@@ -6,14 +6,11 @@ import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
 import { CollectModuleS } from "../PetCollect/CollectModuleS";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
-import { petInfo } from "../Trading/TradingScript";
 import { AuthModuleS } from "../auth/AuthModule";
 import { BagTool } from "./BagTool";
 import { EnchantBuff } from "./EnchantBuff";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
-import { PlayerModuleC } from "../Player/PlayerModuleC";
-import MessageBox from "../../util/MessageBox";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk from "../../util/GToolkit";
 

@@ -1,7 +1,6 @@
 import { GameConfig } from "../../config/GameConfig";
 import { numberArrToString, stringToNumberArr } from "../../util/uitls";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
-import { stringToArray } from "../Trading/TradingScript";
 import { AreaModuleC } from "./AreaModuleC";
 import { AreaModuleData } from "./AreaModuleData";
 

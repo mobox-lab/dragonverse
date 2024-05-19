@@ -10,10 +10,10 @@ import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { CollectModuleC } from "../PetCollect/CollectModuleC";
 import { P_Collect } from "../PetCollect/P_Collect";
 import { P_LevelUI } from "../Player/P_LevelUI";
-import { P_TradingChooseMain } from "../Trading/P_TradeChoose";
-import { P_HistoryTrade, P_historyRecord } from "../Trading/P_TradeHistory";
-import { P_Trading } from "../Trading/P_Trading";
-import { TradingModuleC } from "../Trading/TradingModuleC";
+// import { P_TradingChooseMain } from "../Trading/P_TradeChoose";
+// import { P_HistoryTrade, P_historyRecord } from "../Trading/P_TradeHistory";
+// import { P_Trading } from "../Trading/P_Trading";
+// import { TradingModuleC } from "../Trading/TradingModuleC";
 import { P_HudUI } from "./P_HudUI";
 
 
@@ -21,25 +21,25 @@ import { P_HudUI } from "./P_HudUI";
 export class P_PetHud extends PetHud_Generate {
 
     onStart(): void {
-        mw.UIService.getUI(P_TradingChooseMain).showAction.add(() => {
-            mw.UIService.getUI(P_Bag).hide();
-            mw.UIService.getUI(P_Collect).hide();
-            mw.UIService.getUI(AchievementPanel).hide();
-            mw.UIService.getUI(P_HudUI).setVis(false);
-            mw.UIService.getUI(P_HudPetGift).hide();
-            this.mBtn_Trade.enable = false;
-            this.show();
-        })
-        mw.UIService.getUI(P_TradingChooseMain).hideAction.add(() => {
-            mw.UIService.getUI(P_HudUI).setVis(true);
-            mw.UIService.getUI(P_HudPetGift).show();
-            this.mBtn_Trade.enable = true;
-            this.hide();
-        })
+        // mw.UIService.getUI(P_TradingChooseMain).showAction.add(() => {
+        //     mw.UIService.getUI(P_Bag).hide();
+        //     mw.UIService.getUI(P_Collect).hide();
+        //     mw.UIService.getUI(AchievementPanel).hide();
+        //     mw.UIService.getUI(P_HudUI).setVis(false);
+        //     mw.UIService.getUI(P_HudPetGift).hide();
+        //     this.mBtn_Trade.enable = false;
+        //     this.show();
+        // })
+        // mw.UIService.getUI(P_TradingChooseMain).hideAction.add(() => {
+        //     mw.UIService.getUI(P_HudUI).setVis(true);
+        //     mw.UIService.getUI(P_HudPetGift).show();
+        //     this.mBtn_Trade.enable = true;
+        //     this.hide();
+        // })
         mw.UIService.getUI(P_Bag).showAction.add(() => {
             mw.UIService.getUI(P_Collect).hide();
             mw.UIService.getUI(AchievementPanel).hide();
-            mw.UIService.getUI(P_TradingChooseMain).hide();
+            // mw.UIService.getUI(P_TradingChooseMain).hide();
             mw.UIService.getUI(P_HudUI).setVis(false);
             mw.UIService.getUI(P_HudPetGift).hide();
             this.mBtn_pet.enable = false;
@@ -54,7 +54,7 @@ export class P_PetHud extends PetHud_Generate {
         mw.UIService.getUI(P_Collect).showAction.add(() => {
             mw.UIService.getUI(P_Bag).hide();
             mw.UIService.getUI(AchievementPanel).hide();
-            mw.UIService.getUI(P_TradingChooseMain).hide();
+            // mw.UIService.getUI(P_TradingChooseMain).hide();
             mw.UIService.getUI(P_HudUI).setVis(false);
             mw.UIService.getUI(P_HudPetGift).hide();
             this.mBtn_collect.enable = false;
@@ -69,7 +69,7 @@ export class P_PetHud extends PetHud_Generate {
         mw.UIService.getUI(AchievementPanel).showAction.add(() => {
             mw.UIService.getUI(P_Bag).hide();
             mw.UIService.getUI(P_Collect).hide();
-            mw.UIService.getUI(P_TradingChooseMain).hide();
+            // mw.UIService.getUI(P_TradingChooseMain).hide();
             mw.UIService.getUI(P_HudUI).setVis(false);
             mw.UIService.getUI(P_HudPetGift).hide();
             this.mBtn_achve.enable = false;
@@ -81,36 +81,36 @@ export class P_PetHud extends PetHud_Generate {
             this.mBtn_achve.enable = true;
             this.hide();
         })
-        mw.UIService.getUI(P_Trading).showAction.add(() => {
-            if (mw.UIService.getUI(P_HudPetGift).visible) {
-                mw.UIService.getUI(P_HudPetGift).hide();
-                mw.UIService.getUI(P_HudUI).setVis(false);
-            }
-        })
-        mw.UIService.getUI(P_Trading).hideAction.add(() => {
-            mw.UIService.getUI(P_HudUI).setVis(true);
-            mw.UIService.getUI(P_HudPetGift).show();
-        })
-        mw.UIService.getUI(P_historyRecord).showAction.add(() => {
-            mw.UIService.getUI(P_TradingChooseMain).hide();
-            mw.UIService.getUI(P_HudUI).setVis(false);
-            mw.UIService.getUI(P_HudPetGift).hide();
-            this.hide();
-        })
-        mw.UIService.getUI(P_historyRecord).hideAction.add(() => {
-            mw.UIService.getUI(P_TradingChooseMain).show();
-
-        })
-        mw.UIService.getUI(P_HistoryTrade).showAction.add(() => {
-            mw.UIService.getUI(P_historyRecord).hide();
-            mw.UIService.getUI(P_TradingChooseMain).hide();
-            mw.UIService.getUI(P_HudUI).setVis(false);
-            mw.UIService.getUI(P_HudPetGift).hide();
-            this.hide()
-        })
-        mw.UIService.getUI(P_HistoryTrade).hideAction.add(() => {
-            mw.UIService.getUI(P_historyRecord).show();
-        })
+        // mw.UIService.getUI(P_Trading).showAction.add(() => {
+        //     if (mw.UIService.getUI(P_HudPetGift).visible) {
+        //         mw.UIService.getUI(P_HudPetGift).hide();
+        //         mw.UIService.getUI(P_HudUI).setVis(false);
+        //     }
+        // })
+        // mw.UIService.getUI(P_Trading).hideAction.add(() => {
+        //     mw.UIService.getUI(P_HudUI).setVis(true);
+        //     mw.UIService.getUI(P_HudPetGift).show();
+        // })
+        // mw.UIService.getUI(P_historyRecord).showAction.add(() => {
+        //     mw.UIService.getUI(P_TradingChooseMain).hide();
+        //     mw.UIService.getUI(P_HudUI).setVis(false);
+        //     mw.UIService.getUI(P_HudPetGift).hide();
+        //     this.hide();
+        // })
+        // mw.UIService.getUI(P_historyRecord).hideAction.add(() => {
+        //     mw.UIService.getUI(P_TradingChooseMain).show();
+        //
+        // })
+        // mw.UIService.getUI(P_HistoryTrade).showAction.add(() => {
+        //     mw.UIService.getUI(P_historyRecord).hide();
+        //     mw.UIService.getUI(P_TradingChooseMain).hide();
+        //     mw.UIService.getUI(P_HudUI).setVis(false);
+        //     mw.UIService.getUI(P_HudPetGift).hide();
+        //     this.hide()
+        // })
+        // mw.UIService.getUI(P_HistoryTrade).hideAction.add(() => {
+        //     mw.UIService.getUI(P_historyRecord).show();
+        // })
         mw.UIService.getUI(P_Pet_Dev).hideAction.add(() => {
             mw.UIService.getUI(P_HudUI).show();
             mw.UIService.getUI(P_HudPetGift).show();
@@ -174,9 +174,9 @@ export class P_PetHud extends PetHud_Generate {
         this.mBtn_collect.onClicked.add(() => {
             ModuleService.getModule(CollectModuleC).showCollectUI();
         });
-        this.mBtn_Trade.onClicked.add(async () => {
-            await ModuleService.getModule(TradingModuleC).showChoosePlayerUI();
-        });
+        // this.mBtn_Trade.onClicked.add(async () => {
+        //     await ModuleService.getModule(TradingModuleC).showChoosePlayerUI();
+        // });
         this.mBtn_achve.onClicked.add(() => {
             mw.UIService.getUI(AchievementPanel).show();
         });

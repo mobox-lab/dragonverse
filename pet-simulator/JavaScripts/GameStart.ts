@@ -23,7 +23,6 @@ import { CollectModuleData } from "./modules/PetCollect/CollectModuleData";
 import { OnlineModuleS } from "./modules/OnlineModule.ts/OnlineModuleS";
 import { OnlineModuleC } from "./modules/OnlineModule.ts/OnlineModuleC";
 import { OnlineModuleData } from "./modules/OnlineModule.ts/OnlineModuleData";
-import { TradingModuleData } from "./modules/Trading/TradingModuleData";
 import { BuffModuleS } from "./modules/buff/BuffModuleS";
 import { BuffModuleC } from "./modules/buff/BuffModuleC";
 import { BuffData } from "./modules/buff/BuffData";
