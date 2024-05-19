@@ -26,9 +26,6 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
                 this.unEquipPet(playerId, petItems);
             }
         });
-        this.petBagModule.onPetRenameAC.add((playerId, key, id, name) => {
-            this.renamePet(playerId, key, id, name);
-        });
         this.initScence();
     }
 
@@ -218,7 +215,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
     }
 
-    private renamePet(playerId: number, key: number, id: number, name: string): void {
+    public renamePet(playerId: number, key: number, id: number, name: string): void {
         let guid = Player.getPlayer(playerId).character.gameObjectId;
         let be = this.gamePlayerBehaviors.get(guid);
         be.renamePet(key, id, name);

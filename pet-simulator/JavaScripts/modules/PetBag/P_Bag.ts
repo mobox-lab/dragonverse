@@ -1,18 +1,18 @@
-import {UIPool} from "../../Tools/UIPool";
-import {GameConfig} from "../../config/GameConfig";
-import {GlobalData} from "../../const/GlobalData";
+import { UIPool } from "../../Tools/UIPool";
+import { GameConfig } from "../../config/GameConfig";
+import { GlobalData } from "../../const/GlobalData";
 import BagEmpty_Generate from "../../ui-generate/Pet/BagEmpty_generate";
 import PetBagPanel_Generate from "../../ui-generate/Pet/PetBagPanel_generate";
 import ReName_Generate from "../../ui-generate/Pet/ReName_generate";
 import MessageBox from "../../util/MessageBox";
-import {Singleton, stringToBuff, utils} from "../../util/uitls";
-import {AnalyticsTool, ButtonAnaly, Page} from "../Analytics/AnalyticsTool";
-import {P_PetHover} from "../PetCollect/P_Collect";
-import {PetBagModuleData, petItemDataNew,} from "./PetBagModuleData";
+import { Singleton, stringToBuff, utils } from "../../util/uitls";
+import { AnalyticsTool, ButtonAnaly, Page } from "../Analytics/AnalyticsTool";
+import { P_PetHover } from "../PetCollect/P_Collect";
+import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
-import {PetBag_Item} from "./P_BagItem";
+import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-
+import { PetBagModuleC } from "./PetBagModuleC";
 
 export class P_Bag extends PetBagPanel_Generate {
 
@@ -38,7 +38,6 @@ export class P_Bag extends PetBagPanel_Generate {
 
     public showAC: Action = new Action();
     public hideAC: Action = new Action();
-
 
     private data: PetBagModuleData = null;
 
@@ -79,7 +78,6 @@ export class P_Bag extends PetBagPanel_Generate {
         this.data = DataCenterC.getData(PetBagModuleData);
     }
 
-
     /**
      * 设置背包item
      * @param dataArr 数据
@@ -116,7 +114,6 @@ export class P_Bag extends PetBagPanel_Generate {
 
         this.tipsTween(tipsArr);
     }
-
 
     /**装备或卸载宠物时播放的过渡动画 */
     private playUIAnimation(newData: petItemDataNew[], oldList: PetBag_Item[], equipKeys: number[]) {
@@ -181,7 +178,6 @@ export class P_Bag extends PetBagPanel_Generate {
         }
     }
 
-
     /**直接刷新UI */
     private refreshItem(newData: petItemDataNew[], oldList: PetBag_Item[], equipKeys: number[]) {
         let len = newData.length;
@@ -234,7 +230,6 @@ export class P_Bag extends PetBagPanel_Generate {
         }
     }
 
-
     /**向itemList中添加item */
     private addItem(uiData: petItemDataNew, count: number): PetBag_Item {
         let itemUI = mw.UIService.create(PetBag_Item);
@@ -248,7 +243,6 @@ export class P_Bag extends PetBagPanel_Generate {
         this.itemArr.push(itemUI);
         return itemUI;
     }
-
 
     /**item设置位置 */
     private setItemPos(item: mw.Widget, count: number): number {
@@ -300,7 +294,6 @@ export class P_Bag extends PetBagPanel_Generate {
         return new mw.Vector2(x, y);
     }
 
-
     /**ui提示显隐动画 */
     public tipsTween(keys: number[]) {
         keys.forEach((key) => {
@@ -331,7 +324,6 @@ export class P_Bag extends PetBagPanel_Generate {
         this.mListCanvas.size = new mw.Vector2(size.x, y + 200);
 
     }
-
 
     /**子元素点击事件 */
     private onClickItem(item: PetBag_Item) {
@@ -396,8 +388,8 @@ export class P_Bag extends PetBagPanel_Generate {
     private onReName(item: PetBag_Item) {
         if (this.reNameUI == null) {
             this.reNameUI = mw.UIService.create(P_ReName);
-            this.reNameUI.onReNameAC.add((itemData: PetBag_Item, name: string) => {
-                this.onReNameAC.call(itemData.petData.k, name);
+            this.reNameUI.onReNameAC.add((itemData: petItemDataNew, name: string) => {
+                this.onReNameAC.call(itemData.k, name);
             });
         }
 
@@ -521,7 +513,6 @@ export class P_Bag extends PetBagPanel_Generate {
         }
     }
 
-
     /**设置装备按钮样式 */
     private setEquipBtnVis(isHas: boolean) {
         if (isHas) {
@@ -578,7 +569,6 @@ export class P_Bag extends PetBagPanel_Generate {
         let needArr = str[0] ? str[0].split(" ") : [];
 
         this.setEquipBtnVis(needArr.length == 0 ? true : false);
-
 
     }
 
@@ -656,13 +646,12 @@ export class PetBagItem {
     }
 }
 
-
 class P_ReName extends ReName_Generate {
 
-    public onReNameAC: Action2<PetBag_Item, string> = new Action2();
+    public onReNameAC: Action2<petItemDataNew, string> = new Action2();
 
     private preName: string = "";
-    private item: PetBag_Item;
+    private item: petItemDataNew;
 
     onStart() {
 
@@ -691,8 +680,9 @@ class P_ReName extends ReName_Generate {
     }
 
     public showCurName(item: PetBag_Item) {
-        this.item = item;
-        let name = item.petData.p.n;
+        let k = item.petData.k;
+        this.item = ModuleService.getModule(PetBagModuleC)["data"].bagItemsByKey(k);
+        let name = this.item.p.n;
         if (!name) {
             name = GameConfig.PetARR.getElement(item.petData.I).petName;
         }
