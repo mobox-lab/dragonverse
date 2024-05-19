@@ -57,11 +57,11 @@ export default class enterGame extends mw.Script {
                 let str = StringUtil.format(GameConfig.Language.Text_messagebox_1.Value, utils.formatNumber(GlobalData.UnlockSquare.diamond));
                 MessageBox.showTwoBtnMessage(str, async (res) => {
                     if (res) {
-                        let isSuccess = await playerMC.reduceDiamond(GlobalData.UnlockSquare.diamond);
-                        if (!isSuccess) {
-                            MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
-                            return;
-                        }
+                        // let isSuccess = await playerMC.reduceDiamond(GlobalData.UnlockSquare.diamond);
+                        // if (!isSuccess) {
+                        //     MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
+                        //     return;
+                        // }
                         playerMC.setPlaza(true);
                         MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_1.Value);
                     } else {

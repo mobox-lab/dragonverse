@@ -652,7 +652,9 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     public async net_fuseDevPet(curSelectPetKeys: number[],
                                 curPetId: number,
                                 isGold: boolean,
-                                curRate: number): Promise<boolean> {
+                                curRate: number, 
+																curCost: number): Promise<boolean> {
+				const playerId = this.currentPlayerId;
         const curSelectPets = curSelectPetKeys
             .map(key => this.currentData
                 .bagItemsByKey(key))
@@ -664,6 +666,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 `found: ${curSelectPets}.`);
             return false;
         }
+        if (!this.playerModuleS.reduceDiamond(curCost)) return false;
 
         let petIds: number[] = curSelectPets.map(item => item.I);
 
@@ -681,6 +684,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
         if (random <= curRate) {
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
+						this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
             ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(
                 this.currentPlayerId,
