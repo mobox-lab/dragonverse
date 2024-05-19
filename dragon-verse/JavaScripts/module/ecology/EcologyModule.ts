@@ -3,9 +3,7 @@ import { GameConfig } from "../../config/GameConfig";
 import Gtk, { RandomGenerator, Regulator } from "../../util/GToolkit";
 import Balancing from "../../depend/balancing/Balancing";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Area from "../../depend/area/shape/base/IArea";
 import AreaManager from "../../depend/area/AreaManager";
-import Enum = UE.Enum;
 import Enumerable from "linq";
 import EcologyAnimal from "./EcologyAnimal";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
@@ -143,6 +141,11 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
     protected onUpdate(dt: number): void {
         super.onUpdate(dt);
 
+        for (let i = this._generatedAnimals.length - 1; i >= 0; --i) {
+            const ani = this._generatedAnimals[i];
+            if (ani.destroyed) this._generatedAnimals.splice(i, 1);
+        }
+
         this._autoGenerationRegulator.request() && this.autoGenerate();
     }
 
@@ -195,15 +198,15 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
                 let targetArea: number = undefined;
                 let iTargetArea = Enumerable
                     .from(config.generationAreas)
-                    .select(areaId => {
-                        return ({
-                            areaId,
-                            space: this.aM.getAreaPointSetSize(areaId) -
-                                Enumerable.from(this._generatedAnimals)
-                                    .select(item => item.birthPosition)
-                                    .sum(p => this.aM.isPoint3DInAreaByPointSet(areaId, p) ? 1 : 0),
-                        });
-                    })
+                    .select(areaId => ({
+                        areaId,
+                        space: this.aM.getAreaPointSetSize(areaId) -
+                            Enumerable.from(this._generatedAnimals)
+                                .select(item => item.birthPosition)
+                                .sum(p =>
+                                    this.aM.isPoint3DInAreaByPointSet(areaId, p)
+                                        ? 1 : 0),
+                    }))
                     .where(item => item.space > 0);
                 if (iTargetArea.any()) {
                     targetArea = iTargetArea.maxBy(item => item.space).areaId;
@@ -212,7 +215,9 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
                     return;
                 }
 
-                let expectArray: IPoint3[] = Enumerable.from(this._generatedAnimals).select(item => item.birthPosition).toArray();
+                let expectArray: IPoint3[] = Enumerable
+                    .from(this._generatedAnimals)
+                    .select(item => item.birthPosition).toArray();
                 for (let i = 0; i < config.generationCount; ++i) {
                     let pos = this.aM.getRandom3DPoint(targetArea, expectArray);
                     if (Gtk.isNullOrUndefined(pos)) {
