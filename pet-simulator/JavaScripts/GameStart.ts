@@ -240,6 +240,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(EnergyModuleS, EnergyModuleC, PSEnergyModuleData);
         ModuleService.registerModule(DropManagerS, DropManagerC, null);
         ModuleService.registerModule(StatisticModuleS, StatisticModuleC, PsStatisticModuleData);
+        ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
     }
 
     /**
