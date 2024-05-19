@@ -60,7 +60,7 @@ export default class PsStatisticModuleData extends JModuleData {
             if (!Gtk.isSameTime(leave,
                 now,
                 GtkTypes.Tf.D))
-                break;
+                continue;
 
             if (Gtk.isSameTime(enter,
                 now,
@@ -72,7 +72,7 @@ export default class PsStatisticModuleData extends JModuleData {
                 todayCounter = todayCounter
                     - new Date().setHours(0, 0, 0, 0)
                     + leave ?? now;
-                break;
+                continue;
             }
         }
         return todayCounter;
