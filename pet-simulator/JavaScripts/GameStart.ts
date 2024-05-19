@@ -23,8 +23,6 @@ import { CollectModuleData } from "./modules/PetCollect/CollectModuleData";
 import { OnlineModuleS } from "./modules/OnlineModule.ts/OnlineModuleS";
 import { OnlineModuleC } from "./modules/OnlineModule.ts/OnlineModuleC";
 import { OnlineModuleData } from "./modules/OnlineModule.ts/OnlineModuleData";
-import { TradingModuleS } from "./modules/Trading/TradingModuleS";
-import { TradingModuleC } from "./modules/Trading/TradingModuleC";
 import { TradingModuleData } from "./modules/Trading/TradingModuleData";
 import { BuffModuleS } from "./modules/buff/BuffModuleS";
 import { BuffModuleC } from "./modules/buff/BuffModuleC";
@@ -38,8 +36,6 @@ import { Task_ModuleS } from "./modules/Task/Task_ModuleS";
 import { LogManager } from "odin";
 import { RankModuleS } from "./modules/Rank/RankModuleS";
 import { RankModuleC } from "./modules/Rank/RankModuleC";
-import { DollMachineModuleC } from "./modules/DollMachine/DollMachineModuleC";
-import { DollMachineModuleS } from "./modules/DollMachine/DollMachineModuleS";
 import * as mwaction from "mwaction";
 import PSEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./modules/Energy/EnergyModule";
 import PetSimulatorAuthModuleData, { AuthModuleC, AuthModuleS } from "./modules/auth/AuthModule";
@@ -71,38 +67,38 @@ export default class GameStart extends mw.Script {
     @mw.Property()
     private isOnline: boolean = false;
 
-    @mw.Property({ displayName: "是否发布", group: "发布" })
+    @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
-    @mw.Property({ displayName: "是否 Beta 发布", group: "发布" })
+    @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
     public isBeta: boolean = false;
 
-    @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
+    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
     public isUseTestUrl: boolean = true;
 
-    @mw.Property({ displayName: "是否开启主页GM开关按钮" })
+    @mw.Property({displayName: "是否开启主页GM开关按钮"})
     private isOpenGm = false;
-    @mw.Property({ displayName: "是否免费送滑板" })
+    @mw.Property({displayName: "是否免费送滑板"})
     private isFreeSkateboard = false;
-    @mw.Property({ displayName: "是否使用平台形象" })
+    @mw.Property({displayName: "是否使用平台形象"})
     private isUseAvatar = true;
-    @mw.Property({ displayName: "是否使海外发布" })
+    @mw.Property({displayName: "是否使海外发布"})
     private isOverSea = true;
-    @mw.Property({ displayName: "是否同去同回" })
+    @mw.Property({displayName: "是否同去同回"})
     private isSameGoBack = false;
-    @mw.Property({ displayName: "是否开启收集图鉴机器" })
+    @mw.Property({displayName: "是否开启收集图鉴机器"})
     private isOpenCollectMachine = true;
     @mw.Property({
         displayName: "语言类型",
         group: "Odin设置",
-        selectOptions: { "系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3" },
+        selectOptions: {"系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3"},
     })
     private selectedLanguageIndex: string = "-1";
 
     @mw.Property({
         displayName: "Log级别",
         group: "Odin设置",
-        selectOptions: { "None": "0", "Error": "1", "Warn": "2", "Log": "3" },
+        selectOptions: {"None": "0", "Error": "1", "Warn": "2", "Log": "3"},
     })
     private logLevel: string = "0";
 
@@ -229,7 +225,6 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(ResourceModuleS, ResourceModuleC, null);
         ModuleService.registerModule(CollectModuleS, CollectModuleC, CollectModuleData);
         ModuleService.registerModule(OnlineModuleS, OnlineModuleC, OnlineModuleData);
-        ModuleService.registerModule(TradingModuleS, TradingModuleC, TradingModuleData);
         ModuleService.registerModule(BuffModuleS, BuffModuleC, BuffData);
         ModuleService.registerModule(AchievementModuleS, AchievementModuleC, AchievementData);
         ModuleService.registerModule(Task_ModuleS, Task_ModuleC, TaskModuleData);
