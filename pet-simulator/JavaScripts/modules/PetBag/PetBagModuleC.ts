@@ -359,8 +359,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     }
 
     /** 原 P_Pet_Dev.startDev 调用 */
-    public async fuseDevPet(curSelectKeys: number[], curPetId: number, isGold: boolean, curRate: number, curCost: number): Promise<boolean> {
-        return this.server.net_fuseDevPet(curSelectKeys, curPetId, isGold, curRate, curCost);
+    public async fuseDevPet(curSelectKeys: number[], curPetId: number, isGold: boolean): Promise<boolean> {
+        return this.server.net_fuseDevPet(curSelectKeys, curPetId, isGold);
     }
 
     /****************附魔***********/

@@ -648,12 +648,26 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
     }
 
+		public changeFuseDevCost(player: mw.Player, count: number, isGold: boolean) {
+				if (count <= 0) {
+						mw.Event.dispatchToClient(player, "P_PET_DEV_CHANGE_PANEL_UI", 0, 0);
+						return { rate: 0, cost: 0 }
+				}
+				let rates = GlobalData.Dev.goldProbability;
+				let costs = isGold ? GlobalData.Dev.goldCost : GlobalData.Dev.rainbowCost;
+				if (count > rates.length) count = rates.length;
+				let rate = rates[count - 1];
+				let cost = costs[count - 1];
+				console.log('changeFuseDevCost cost rate isGold',cost,rate, isGold)
+				mw.Event.dispatchToClient(player, "P_PET_DEV_CHANGE_PANEL_UI", cost, rate);
+				return { rate, cost }
+		}
+
     /** 原 P_Pet_Dev.startDev 合成宠物 */
     public async net_fuseDevPet(curSelectPetKeys: number[],
                                 curPetId: number,
-                                isGold: boolean,
-                                curRate: number, 
-																curCost: number): Promise<boolean> {
+                                isGold: boolean): Promise<boolean> {
+				const player = this.currentPlayer;
 				const playerId = this.currentPlayerId;
         const curSelectPets = curSelectPetKeys
             .map(key => this.currentData
@@ -666,11 +680,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 `found: ${curSelectPets}.`);
             return false;
         }
-        if (!this.playerModuleS.reduceDiamond(curCost)) return false;
-
+        
+				if(!curSelectPets?.length) return false;
         let petIds: number[] = curSelectPets.map(item => item.I);
+				const { rate, cost } = this.changeFuseDevCost(player, petIds.length, isGold);
+   
+				if (!this.playerModuleS.reduceDiamond(cost)) return false;
 
-        //计算最早的获取时间
+				//计算最早的获取时间
         let earliestObtainTime = curSelectPets[0].obtainTime;
         curSelectPets.forEach(item => {
             if (item.obtainTime < earliestObtainTime) {
@@ -682,7 +699,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         const petInfo = GameConfig.PetARR.getElement(curPetId);
         let isSucc: boolean = true;
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
-        if (random <= curRate) {
+        if (random <= rate) {
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
 						this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
