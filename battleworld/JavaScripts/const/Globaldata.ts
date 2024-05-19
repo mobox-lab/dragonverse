@@ -413,9 +413,9 @@ export class Globaldata {
 
     /**----------------------------------------地形相关----------------------------------------------- */
     /**隐藏到显示的延迟时间 */
-    public static showToHideDelayTime: number = 3000;
+    public static showToHideDelayTime: number = 10000;
     /**开启碰撞延迟时间 */
-    public static landCollisionTime: number = 1000;
+    public static landCollisionTime: number = 10000;
 
 
     /**------------------------------------------杀戮悬赏------------------------------------------------ */
