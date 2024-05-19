@@ -60,18 +60,14 @@ export default class PsStatisticModuleData extends JModuleData {
             if (!Gtk.isSameTime(leave,
                 now,
                 GtkTypes.Tf.D))
-                continue;
+                break;
 
             if (Gtk.isSameTime(enter,
                 now,
                 GtkTypes.Tf.D)) {
-                todayCounter = todayCounter
-                    - enter
-                    + leave ?? now;
+                todayCounter = todayCounter + (leave ?? now) - enter;
             } else {
-                todayCounter = todayCounter
-                    - new Date().setHours(0, 0, 0, 0)
-                    + leave ?? now;
+                todayCounter = todayCounter + (leave ?? now) - new Date().setHours(0, 0, 0, 0);
                 continue;
             }
         }
@@ -80,7 +76,14 @@ export default class PsStatisticModuleData extends JModuleData {
 
     public recordEnter(now: number) {
         ++this.playerEnteredCounterS;
-        this.playerLoginRecord.unshift([now, undefined]);
+				const records = this.playerLoginRecord;
+				if(!records?.length) {
+						records.unshift([now, undefined])
+						return;
+				}
+				const [_, lastLeave] = records[0];
+				if(!lastLeave) records[0][1] = now; // 补数据, 若上次没有
+				records.unshift([now, undefined]);
     }
 
     public recordLeave(now: number) {
