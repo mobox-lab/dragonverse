@@ -105,6 +105,10 @@ export default class EcologyAnimal {
 
     private _destroyed: boolean = false;
 
+    public get destroyed(): boolean {
+        return this._destroyed;
+    }
+
     constructor(id: number, birthPosition: mw.Vector) {
         this._config = GameConfig.AnimalEcology.getElement(id);
         if (Gtk.isNullOrUndefined(this._config)) {
