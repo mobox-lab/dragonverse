@@ -114,8 +114,8 @@ export default class PlayerSettingModuleData extends Subdata {
     //@Decorator.persistence()
     //public isSave: bool;
 
-    @Decorator.persistence()
-    language: LanguageTypes = LanguageTypes.Chinese;
+    // @Decorator.persistence()
+    // language: LanguageTypes = LanguageTypes.Chinese;
 
     /**
      * 音乐音量.
@@ -132,12 +132,13 @@ export default class PlayerSettingModuleData extends Subdata {
     soundEffectVolume: number;
 
     protected initDefaultData(): void {
-        this.language = LanguageTypes.Chinese;
+        // this.language = LanguageTypes.Chinese;
         this.bgmVolume = 1;
         this.soundEffectVolume = 1;
     }
 
-    protected onDataInit(): void {}
+    protected onDataInit(): void {
+    }
 }
 
 /**
@@ -181,8 +182,8 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
         super.onStart();
 
         //#region Member init
-        this.set("language", this.data.language)
-            .set("bgm-volume", this.data.bgmVolume)
+        // this.set("language", this.data.language)
+        this.set("bgm-volume", this.data.bgmVolume)
             .set("mute-bgm-volume", !this.data.bgmVolume)
             .set("sound-effect-volume", this.data.soundEffectVolume)
             .set("mute-sound-effect-volume", !this.data.soundEffectVolume)
@@ -219,7 +220,9 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
 
     //#region Method
     private saveData() {
-        this.server.net_save(this.data.language, this.data.bgmVolume, this.data.soundEffectVolume);
+        this.server.net_save(undefined,
+            this.data.bgmVolume,
+            this.data.soundEffectVolume);
     }
 
     /**
@@ -269,7 +272,7 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
                         this.data.soundEffectVolume = (item.setVal as boolean) ? 0 : 1;
                         break;
                     case "language":
-                        this.data.language = item.setVal as LanguageTypes;
+                        // this.data.language = item.setVal as LanguageTypes;
                         break;
                     default:
                         Log4Ts.error(PlayerSettingModuleC, `unsupported setting item when save.`);
@@ -387,11 +390,12 @@ export class PlayerSettingModuleS extends ModuleS<PlayerSettingModuleC, PlayerSe
 
     //#region Net Method
     public net_save(language: LanguageTypes, bgmVolume: number, soundEffectVolume: number) {
-        this.currentData.language = language;
+        // this.currentData.language = language;
         this.currentData.bgmVolume = bgmVolume;
         this.currentData.soundEffectVolume = soundEffectVolume;
 
         this.currentData.save(false);
     }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

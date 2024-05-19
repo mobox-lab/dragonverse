@@ -5,7 +5,6 @@ import { WetBuff } from "../../buffs/WetBuff";
 import { EventDefine } from "../../const/EventDefine";
 import BuffBase from "../../depend/buff/Buff";
 import { BuffType } from "../../buffs/BuffType";
-import GToolkit from "../../util/GToolkit";
 import Nolan from "../../depend/nolan/Nolan";
 import { ChatBuff } from "../../buffs/ChatBuff";
 import { MoveForbiddenBuff } from "../../buffs/MoveForbiddenBuff";
