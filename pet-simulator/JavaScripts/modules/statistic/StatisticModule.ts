@@ -53,8 +53,8 @@ export default class PsStatisticModuleData extends JModuleData {
         let todayCounter = 0;
         for (let i = 0; i < this.playerLoginRecord.length; ++i) {
             const [enter, leave] = this.playerLoginRecord[i];
-            if (i !== 0 &&
-                leave === undefined)
+            if (i === 0 &&
+                Gtk.isNullOrUndefined(leave))
                 continue;
 
             if (!Gtk.isSameTime(leave,
@@ -68,22 +68,22 @@ export default class PsStatisticModuleData extends JModuleData {
                 todayCounter = todayCounter + (leave ?? now) - enter;
             } else {
                 todayCounter = todayCounter + (leave ?? now) - new Date().setHours(0, 0, 0, 0);
-                continue;
+                break;
             }
         }
         return todayCounter;
     }
 
     public recordEnter(now: number) {
-				++this.playerEnteredCounterS;
-				const records = this.playerLoginRecord;
-				if(!records?.length) {
-					records.unshift([now, undefined])
-						return;					
-				}
-				const [_, lastLeave] = records[0];
-				if(!lastLeave) records[0][1] = now; // 若上次没记录到 leave 数据则补数据
-				records.unshift([now, undefined]);
+        ++this.playerEnteredCounterS;
+        const records = this.playerLoginRecord;
+        if (!records?.length) {
+            records.unshift([now, undefined]);
+            return;
+        }
+        const [_, lastLeave] = records[0];
+        if (Gtk.isNullOrUndefined(lastLeave)) records[0][1] = now; // 若上次没记录到 leave 数据则补数据
+        records.unshift([now, undefined]);
     }
 
     public recordLeave(now: number) {
