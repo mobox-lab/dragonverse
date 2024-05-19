@@ -15,6 +15,7 @@ import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import MessageBox from "../../util/MessageBox";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Gtk from "../../util/GToolkit";
 
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     private _playerModuleS: PlayerModuleS;
@@ -172,34 +173,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         this.taskMS.getPet(Player.getPlayer(playerID), id, type);
         ModuleService.getModule(CollectModuleS).addPet(playerID, id, type);
         this.onGetPetAC.call(type, playerID);
-        //找到最高的战力
-        const currRound = data.calRound(Date.now());
-        let petKey = data.getMaxAttackPet(currRound);
-        if (petKey != 0) {
-            let pet = data.bagItemsByKey(petKey);
-            let petConfig = GameConfig.PetARR.getElement(pet.I);
-            if (petConfig) {
-                ModuleService.getModule(AuthModuleS).reportPetSimulatorRankData(
-                    playerID,
-                    pet.p.n,
-                    petConfig.QualityType,
-                    pet.p.a,
-                    pet.obtainTime,
-                    currRound);
-            }
-        }
 
-        // if (type > 1000) {
-        //     //扭蛋
-        //     this.passMS.onTaskUpdateAC.call(playerID, GlobalEnum.VipTaskType.OpenEgg, 1);
-        // } else if (type == GlobalEnum.PetGetType.Fusion) {
-        //     this.passMS.onTaskUpdateAC.call(playerID, GlobalEnum.VipTaskType.PetFusion, 1);
-        // } else if (type == GlobalEnum.PetGetType.Love) {
-        //     this.passMS.onTaskUpdateAC.call(playerID, GlobalEnum.VipTaskType.LovePet, 1);
-        // } else if (type == GlobalEnum.PetGetType.Rainbow) {
-        //     this.passMS.onTaskUpdateAC.call(playerID, GlobalEnum.VipTaskType.RainbowPet, 1);
-        // }
-
+        this.reportMaxAttackPetInfo(playerID, data);
         this.petNotice(playerID, id);
     }
 
@@ -216,30 +191,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let nameId = utils.GetRandomNum(1, 200);
         let name = GameConfig.Language.getElement(nameId).Value;
         this.addPet(playerID, id, atk, name, type);
-    }
-
-    /**删除\添加宠物  交易用*/
-    public deleteAddPet(playerID: number, delPets: number[], addPets: petInfo[]) {
-        let data = this.getPlayerData(playerID);
-
-        let unEquipPets: number[] = [];
-        for (let i = 0; i < delPets.length; i++) {
-            const element = delPets[i];
-            if (data.CurFollowPets.includes(element)) {
-                unEquipPets.push(element);
-            }
-        }
-        data.unEquipPet(unEquipPets);
-        data.removeBagItem(delPets);
-
-        for (let i = 0; i < addPets.length; i++) {
-            const element = addPets[i];
-            let isSuccess = this.getPlayerData(playerID).addBagItemByTrade(element.id, element.attack, "Trade");
-            if (!isSuccess) break;
-        }
-        this.getPlayerData(playerID).save(true);
-        if (addPets.length > 0)
-            this.getPlayerData(playerID).BagItemChangeAC.call(true, 1, 1);
     }
 
     /**宠物公告 */
@@ -275,17 +226,16 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     public deletePet(playerId: number, keys: number[]) {
         let data = this.getPlayerData(playerId);
 
-        let unEquipPets: number[] = [];
-        for (let i = 0; i < keys.length; i++) {
-            const element = keys[i];
-            if (data.CurFollowPets.includes(element)) {
-                unEquipPets.push(element);
-            }
-        }
-        if (unEquipPets.length > 0) {
-            data.unEquipPet(unEquipPets);
-        }
+        let delAbleKeys = data.getFilteredDelAbleKeys(keys);
+        if (Gtk.isNullOrEmpty(delAbleKeys)) return;
+
+        let unEquipPets: number[] = delAbleKeys
+            .filter(element => data.CurFollowPets.includes(element));
+
+        if (!Gtk.isNullOrEmpty(unEquipPets)) data.unEquipPet(unEquipPets);
+
         data.removeBagItem(keys);
+        this.reportMaxAttackPetInfo(playerId, data);
 
         data.save(true);
         data.BagItemChangeAC.call(false, 1, 1);
@@ -694,6 +644,25 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
         mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE", endPetId, isSucc, petIds);
         return true;
+    }
+
+    public reportMaxAttackPetInfo(playerID: number, data: PetBagModuleData) {
+        const currRound = data.calRound(Date.now());
+        let petKey = data.getMaxAttackPet(currRound);
+        if (petKey != 0) {
+            let pet = data.bagItemsByKey(petKey);
+            let petConfig = GameConfig.PetARR.getElement(pet.I);
+            if (petConfig) {
+                ModuleService.getModule(AuthModuleS)
+                    .reportPetSimulatorRankData(
+                        playerID,
+                        pet.p.n,
+                        petConfig.QualityType,
+                        pet.p.a,
+                        pet.obtainTime,
+                        currRound);
+            }
+        }
     }
 }
 

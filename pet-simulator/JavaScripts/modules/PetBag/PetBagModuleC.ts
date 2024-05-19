@@ -177,7 +177,6 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 
         }
         this.hudPetUI.onRedPointAC.call(key);
-        AnalyticsTool.action_get_item(id, this.getCurPetNum());
 
         let name = this.data.bagItemsByKey(key)?.p?.n ?? undefined;
         if (Gtk.isNullOrEmpty(name)) {
@@ -282,20 +281,15 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 
     /**是否可删除 */
     public async delEvent(keys: number[]) {
-        if (keys.length == this.getCurPetNum() && keys.length == 1) {
+        keys = this.data.getFilteredDelAbleKeys(keys);
+        if (keys === undefined) {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_11.Value);
             return false;
         }
-        if (keys.length == this.getCurPetNum()) {
-            keys = this.delPet(keys);
-        }
+
         this.hudPetUI.removeRedPoint(keys);
         // 设置数据
-        await this.server.net_deletePet(keys);
-        // 重新设置背包
-        // this.bagUI.setCanvasItem(this.data.sortBag(), this.data.CurFollowPets);
-        // this.bagUI.cancelDel();
-        return true;
+        this.server.net_deletePet(keys);
     }
 
     /**是否可融合强化 */
