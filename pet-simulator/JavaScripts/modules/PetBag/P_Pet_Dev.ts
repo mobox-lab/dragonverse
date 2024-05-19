@@ -100,7 +100,8 @@ export class P_Pet_Dev extends Dev_Generate {
             .fuseDevPet(curSelectKeys,
                 this.curPetId,
                 this.isGold,
-                this.curRate);
+                this.curRate, 
+								this.curCost);
     }
 
     public show(petItems: petItemDataNew[], isGold: boolean, ...param: any[]): void {
