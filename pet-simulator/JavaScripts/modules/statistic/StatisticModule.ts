@@ -75,14 +75,14 @@ export default class PsStatisticModuleData extends JModuleData {
     }
 
     public recordEnter(now: number) {
-        ++this.playerEnteredCounterS;
+				++this.playerEnteredCounterS;
 				const records = this.playerLoginRecord;
 				if(!records?.length) {
-						records.unshift([now, undefined])
-						return;
+					records.unshift([now, undefined])
+						return;					
 				}
 				const [_, lastLeave] = records[0];
-				if(!lastLeave) records[0][1] = now; // 补数据, 若上次没有
+				if(!lastLeave) records[0][1] = now; // 若上次没记录到 leave 数据则补数据
 				records.unshift([now, undefined]);
     }
 
