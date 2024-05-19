@@ -5,7 +5,7 @@ export default class GameServiceConfig {
     /**
      * 进入战场体力消耗值.
      */
-    public static readonly STAMINA_COST_ENTER_FIGHTING = 30;
+    public static readonly STAMINA_COST_ENTER_FIGHTING = 20;
     /**
      * 岩浆伤害判定间隔(毫秒).
      */

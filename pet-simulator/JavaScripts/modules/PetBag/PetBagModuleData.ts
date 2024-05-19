@@ -3,10 +3,6 @@ import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import { oTraceError } from "../../util/LogManager";
 import { stringToNumberArr, utils } from "../../util/uitls";
-import PetQuality = GlobalEnum.PetQuality;
-import PetDevType = GlobalEnum.PetDevType;
-import Energy = GlobalData.Energy;
-import { AuthModuleS } from "../auth/AuthModule";
 
 export enum BagItemKey {
     itemStart = 100
@@ -180,6 +176,17 @@ export class PetBagModuleData extends Subdata {
         this.save(false);
     }
 
+    public getFilteredDelAbleKeys(keys: number[], sortByAttack: boolean = false): number[] | undefined {
+        if (keys.length == this.CurBagCapacity) return undefined;
+
+        let resultPetInfo: petItemDataNew[] = keys
+            .map(k => this.bagItemsByKey(k) ?? undefined)
+            .filter(item => item != undefined);
+        if (sortByAttack) {
+            resultPetInfo.sort((a, b) => b.p.a - a.p.a);
+        }
+        return resultPetInfo.map(item => item.k);
+    }
 
     /**根据Key获取物品 */
     public bagItemsByKey(key: number): petItemDataNew {
@@ -189,7 +196,6 @@ export class PetBagModuleData extends Subdata {
     setItem(key: number, item: petItemDataNew) {
         this.bagContainerNew[key] = item;
     }
-
 
     /**添加宠物背包元素
      * @param id 宠物表id
@@ -219,7 +225,6 @@ export class PetBagModuleData extends Subdata {
         }
         let type = GameConfig.PetARR.getElement(id).QualityType;
         this.randomEnchant(this.bagContainerNew[index], type);
-
 
         this.save(true);
         this.BagItemChangeAC.call(true, id, index);
@@ -310,7 +315,6 @@ export class PetBagModuleData extends Subdata {
         }
         return -1;
     }
-
 
     /**返回第一个空的索引，否则返回-1 */
     private getFirstEmptyIndex(): number {
@@ -511,7 +515,6 @@ export class PetBagModuleData extends Subdata {
             }
             buff.push(index);
         }
-
 
         if (type == quality.Myth) {
             if (enchantData.bestPets.includes(petItem.I))
