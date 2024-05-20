@@ -32,6 +32,7 @@ import CollectibleItem from "../../module/collectible-item/CollectibleItem";
 import DialogifyManager from "../../depend/dialogify/DialogifyManager";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 import { ActivateByUIAndTrigger, ActivateMode } from "../../gameplay/interactiveObj/ActiveMode";
+import ADialoguePanelController from "../../depend/dialogify/dialogue-panel-controller/ADialoguePanelController";
 
 /**
  * 交互类型.
@@ -484,6 +485,20 @@ export default class MainPanel extends MainPanel_Generate {
                 () => this._currentInteractType === InteractType.Npc && (this._currentInteractType = InteractType.Null),
             ),
         );
+
+        this._eventListeners.push(
+            Event.addLocalListener(DialogifyManager.PlayerEnterOfficialDialogueEventName, () => {
+                KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
+                    DialogifyManager.getInstance().exit();
+                });
+            }),
+            Event.addLocalListener(DialogifyManager.LeaveDialogueEventName, () => {
+                KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+            }),
+            Event.addLocalListener(ADialoguePanelController.ControllerExitDialogueEventName, () => {
+                KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+            })
+        )
         //#endregion ------------------------------------------------------------------------------------------
     }
 
