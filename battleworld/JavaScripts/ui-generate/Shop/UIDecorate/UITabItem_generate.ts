@@ -23,6 +23,13 @@
 		}
 		return this.mImgBg_Internal
 	}
+	private mBtnPlace1_Internal: mw.Button
+	public get mBtnPlace1(): mw.Button {
+		if(!this.mBtnPlace1_Internal&&this.uiWidgetBase) {
+			this.mBtnPlace1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPlace1/mBtnPlace1') as mw.Button
+		}
+		return this.mBtnPlace1_Internal
+	}
 	private mTextPlace1_Internal: mw.TextBlock
 	public get mTextPlace1(): mw.TextBlock {
 		if(!this.mTextPlace1_Internal&&this.uiWidgetBase) {
@@ -36,13 +43,6 @@
 			this.mImgRed1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPlace1/mImgRed1') as mw.Image
 		}
 		return this.mImgRed1_Internal
-	}
-	private mBtnPlace1_Internal: mw.Button
-	public get mBtnPlace1(): mw.Button {
-		if(!this.mBtnPlace1_Internal&&this.uiWidgetBase) {
-			this.mBtnPlace1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPlace1/mBtnPlace1') as mw.Button
-		}
-		return this.mBtnPlace1_Internal
 	}
 
 
