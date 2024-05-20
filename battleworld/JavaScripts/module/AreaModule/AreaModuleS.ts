@@ -69,7 +69,9 @@ export class AreaModuleS extends ModuleS<AreaModuleC, null> {
      */
     private magmaTriggerEnter(obj: GameObject) {
         if (obj instanceof Character && obj.player !== undefined) {
-            //上个interval
+            //如果已经在岩浆里面了，就不再扣血
+            //加个interval
+            if (this._currentInMagmaPlayers.has(obj.player.playerId)) return;
             Log4Ts.log(AreaModuleS, `enter magma trigger`);
             let flag = TimeUtil.setInterval(() => {
                 let hurtSourceData: THurtSourceData = {
@@ -99,6 +101,7 @@ export class AreaModuleS extends ModuleS<AreaModuleC, null> {
     private magmaTriggerLeave(obj: GameObject) {
         if (obj instanceof Character && obj.player !== undefined) {
             if (this._currentInMagmaPlayers.has(obj.player.playerId)) {
+                Log4Ts.log(AreaModuleS, `leave magma trigger`);
                 let interval = this._currentInMagmaPlayers.get(obj.player.playerId);
                 if (interval) {
                     TimeUtil.clearInterval(interval);
