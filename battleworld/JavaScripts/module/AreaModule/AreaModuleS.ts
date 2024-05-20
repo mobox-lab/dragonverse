@@ -129,11 +129,10 @@ export class AreaModuleS extends ModuleS<AreaModuleC, null> {
                 // }
                 let maxHP = ModuleService.getModule(PlayerModuleS).getPlayerAttr(player.playerId, Attribute.EnumAttributeType.maxHp);
 
+                // let position = ModuleService.getModule(LandModuleS).getRandomPosition(player);
 
-                let position = ModuleService.getModule(LandModuleS).getRandomPosition(player);
-
-                player.character.worldTransform.position = position;
-
+                // player.character.worldTransform.position = position;
+                this.getClient(player).net_dropLand();
                 let hurtSourceData: THurtSourceData = {
                     source: EHurtSource.sea,
                     skillId: 0,
