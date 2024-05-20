@@ -7,6 +7,7 @@ import { Notice } from "../../tool/Notice";
 import { ClickUIPools } from "./ClickUIs";
 import { InteractLogic_C, InteractLogic_S, InteractObject } from "./InteractObject";
 import { EModule_Events_S } from "../../const/Enum";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**触发模式 */
 enum TriggerMode {
@@ -37,6 +38,7 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         }
 
         Event.addServerListener(EModule_Events_S.payTicketSuccessful, this.payTicketCallback.bind(this));
+        Event.addServerListener(EModule_Events_S.reduceEnergySuccessful, this.enterGame.bind(this));
     }
 
     private onEnter(go: mw.GameObject) {
@@ -45,7 +47,7 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         let chara = go as mw.Character;
 
         if (chara.player.playerId != Player.localPlayer.playerId) return;
-        if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) {
+        if (ModuleService.getModule(EnergyModuleC).currEnergy() < GameServiceConfig.STAMINA_COST_ENTER_FIGHTING) {
             Notice.showDownNotice(GameConfig.Language.StaminaNotEnough.Value);
             return;
         }
@@ -73,8 +75,12 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
                 return;
             }
             ModuleService.getModule(PlayerModuleC).playerJoinFighting();
-            this.interactNext(chara.player.playerId, true);
+            // this.interactNext(chara.player.playerId, true);
         });
+    }
+
+    private enterGame() {
+        this.interactNext(Player.localPlayer.playerId, true);
     }
 
     private onLeave(go: mw.GameObject) {

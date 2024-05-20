@@ -444,7 +444,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttrIT(beHurtId, Attribute.EnumAttributeType.hp, Math.abs(atkVal));
             this.dispatchSceneUnitInjure(
                 beHurtId,
-                [{from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal}],
+                [{ from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal }],
                 [beHurtId],
             );
             return;
@@ -654,7 +654,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttr(playerID, Attribute.EnumAttributeType.hp, drainLifeHp);
             this.dispatchSceneUnitInjure(
                 playerID,
-                [{from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal}],
+                [{ from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal }],
                 [playerID],
             );
         }
@@ -2449,6 +2449,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         if (ems.isAfford(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING)) {
             ems.consume(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING);
             this._fightingPlayerSet.add(playerId);
+            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.reduceEnergySuccessful);
         }
     }
 }
