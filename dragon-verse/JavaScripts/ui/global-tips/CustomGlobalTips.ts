@@ -20,13 +20,13 @@ export default class CustomGlobalTips extends BubbleWidget_Generate implements I
 }
 
 const autoRegisterSelf = () => {
-    let tips = Gtk.randomArrayItem(GameConfig.TipsPlaylist.getAllElement());
+    // let tips = Gtk.randomArrayItem(GameConfig.TipsPlaylist.getAllElement());
     TimeUtil.onEnterFrame.remove(autoRegisterSelf);
     setTimeout(() => {
         GlobalTips.getInstance()
             .setBubbleWidget(CustomGlobalTips)
-            .setGlobalTipsContainer(GlobalTipsPanel)
-            .showGlobalTips(i18n.lan(tips.content), {duration: GameServiceConfig.ONLY_TIPS_DURATION});
+            .setGlobalTipsContainer(GlobalTipsPanel);
+        // .showGlobalTips(i18n.lan(tips.content), {duration: GameServiceConfig.ONLY_TIPS_DURATION});
     }, 3000);
 };
 
