@@ -509,11 +509,9 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
         if (!this.playerModuleS.reduceDiamond(GlobalData.Fuse.cost)) return false;
 
-        this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
-
         const data = this.currentData;
         if (curSelectPets.length >= data.CurBagCapacity) return false;
-
+				
         /**最多相同id的宠物数量 */
         let maxSameIdCount = 0;
         /**所有宠物攻击力的合 */
@@ -580,13 +578,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
             endPetId);
 
-        this.playerModuleS;
+				this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
         this.petBagModuleS
             .net_addPetWithMissingInfo(
                 playerId,
                 endPetId,
                 GlobalEnum.PetGetType.Fusion,
                 earliestObtainTime);
+				return true;
     }
 
     /**词条buff初始化 */
