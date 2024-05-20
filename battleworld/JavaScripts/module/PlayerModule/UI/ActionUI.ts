@@ -239,6 +239,10 @@ export default class ActionUI extends Main_action_Generate {
                     item.outerSetVisible(visible);
                 }
             })
+            this.mSkillCd1.visibility = mw.SlateVisibility.Visible;
+            this.mSkillCd2.visibility = mw.SlateVisibility.Visible;
+            this.mSkillCd3.visibility = mw.SlateVisibility.Visible;
+            this.mSkillCd4.visibility = mw.SlateVisibility.Visible;
         } else {
             this.weaponSkillBtns.forEach(item => {
                 if (item.currentVisible !== visible) {
@@ -250,6 +254,10 @@ export default class ActionUI extends Main_action_Generate {
                     item.outerSetVisible(visible);
                 }
             })
+            this.mSkillCd1.visibility = mw.SlateVisibility.Collapsed;
+            this.mSkillCd2.visibility = mw.SlateVisibility.Collapsed;
+            this.mSkillCd3.visibility = mw.SlateVisibility.Collapsed;
+            this.mSkillCd4.visibility = mw.SlateVisibility.Collapsed;
         }
 
     }
