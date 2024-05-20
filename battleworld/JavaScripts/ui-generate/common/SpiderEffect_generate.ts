@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 一只黄鹂鸣翠柳
  * UI: UI/common/SpiderEffect.ui
- * TIME: 2023.12.08-15.05.39
  */
 
  

@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 冷风吹
  * UI: UI/Rank/Rank_mainItem.ui
- * TIME: 2023.12.12-16.58.20
  */
 
  

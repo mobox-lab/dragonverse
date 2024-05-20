@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 提着兔子去北京
  * UI: UI/notice/DoubleKillPanel.ui
- * TIME: 2023.11.21-21.37.30
  */
 
  

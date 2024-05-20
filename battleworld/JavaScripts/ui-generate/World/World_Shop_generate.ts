@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 杰克马（影月宗 护法 野百合团）
  * UI: UI/World/World_Shop.ui
- * TIME: 2023.12.05-16.18.15
  */
 
  

@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 真爱与自由
  * UI: UI/effect/DamageDigitView.ui
- * TIME: 2023.12.15-19.34.56
  */
 
  

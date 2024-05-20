@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 帅你一脸(影月宗·大师)
  * UI: UI/Shop/UIDecorate/UITabItem.ui
- * TIME: 2023.11.16-18.17.40
  */
 
  

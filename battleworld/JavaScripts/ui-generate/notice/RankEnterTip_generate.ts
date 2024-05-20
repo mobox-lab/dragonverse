@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 冷风吹
  * UI: UI/notice/RankEnterTip.ui
- * TIME: 2023.12.14-16.52.15
  */
 
  

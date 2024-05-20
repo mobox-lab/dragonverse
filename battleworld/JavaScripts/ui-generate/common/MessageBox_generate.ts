@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 断桥烟雨
  * UI: UI/common/MessageBox.ui
- * TIME: 2024.01.31-14.36.05
  */
 
  

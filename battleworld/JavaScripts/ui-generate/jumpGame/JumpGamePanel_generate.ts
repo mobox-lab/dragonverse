@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 断桥烟雨
  * UI: UI/jumpGame/JumpGamePanel.ui
- * TIME: 2024.03.01-16.10.34
  */
 
  

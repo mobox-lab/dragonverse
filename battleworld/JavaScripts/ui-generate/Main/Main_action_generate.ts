@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 断桥烟雨
  * UI: UI/Main/Main_action.ui
- * TIME: 2024.05.11-14.43.09
  */
 
  

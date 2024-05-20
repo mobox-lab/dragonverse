@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: AnSakura
  * UI: UI/guideModule/GuideDialog.ui
- * TIME: 2023.12.28-10.22.05
  */
 
  

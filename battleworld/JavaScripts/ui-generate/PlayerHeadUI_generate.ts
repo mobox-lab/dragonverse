@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 冷风吹
  * UI: UI/PlayerHeadUI.ui
- * TIME: 2023.12.20-15.03.29
  */
 
  
@@ -46,6 +44,13 @@
 		}
 		return this.mEnemy_bar_hp_Internal
 	}
+	private imgBackGround_Internal: mw.Image
+	public get imgBackGround(): mw.Image {
+		if(!this.imgBackGround_Internal&&this.uiWidgetBase) {
+			this.imgBackGround_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mEnemyHP/imgBackGround') as mw.Image
+		}
+		return this.imgBackGround_Internal
+	}
 	private mOwnHP_Internal: mw.Canvas
 	public get mOwnHP(): mw.Canvas {
 		if(!this.mOwnHP_Internal&&this.uiWidgetBase) {
@@ -80,6 +85,13 @@
 			this.mOwn_bar_hp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mOwnHP/mOwn_bar_hp') as mw.ProgressBar
 		}
 		return this.mOwn_bar_hp_Internal
+	}
+	private imgOBackGround_Internal: mw.Image
+	public get imgOBackGround(): mw.Image {
+		if(!this.imgOBackGround_Internal&&this.uiWidgetBase) {
+			this.imgOBackGround_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mOwnHP/imgOBackGround') as mw.Image
+		}
+		return this.imgOBackGround_Internal
 	}
 	private mBox_Internal: mw.Canvas
 	public get mBox(): mw.Canvas {

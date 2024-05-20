@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 一只黄鹂鸣翠柳
  * UI: UI/Skill/SkillPanel.ui
- * TIME: 2023.12.27-15.47.46
  */
 
  

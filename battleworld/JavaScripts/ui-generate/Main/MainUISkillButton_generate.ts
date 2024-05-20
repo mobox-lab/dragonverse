@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 断桥烟雨
  * UI: UI/Main/MainUISkillButton.ui
- * TIME: 2024.01.30-17.14.16
  */
 
  

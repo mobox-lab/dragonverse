@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 冷风吹
  * UI: UI/common/redPoint.ui
- * TIME: 2024.01.03-11.21.15
  */
 
  

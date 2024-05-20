@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 帅你一脸(影月宗·大师)
  * UI: UI/World/World_Marine.ui
- * TIME: 2023.11.15-14.12.50
  */
 
  

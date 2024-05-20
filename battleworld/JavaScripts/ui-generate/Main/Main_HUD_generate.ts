@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 断桥烟雨
  * UI: UI/Main/Main_HUD.ui
- * TIME: 2024.05.13-17.05.15
  */
 
  
@@ -249,6 +247,13 @@
 		}
 		return this.mImage_Long_Internal
 	}
+	private mMask_Trans_Long_Internal: mw.MaskButton
+	public get mMask_Trans_Long(): mw.MaskButton {
+		if(!this.mMask_Trans_Long_Internal&&this.uiWidgetBase) {
+			this.mMask_Trans_Long_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/mMask_Trans_Long') as mw.MaskButton
+		}
+		return this.mMask_Trans_Long_Internal
+	}
 	private mText_Long_Num_Internal: mw.TextBlock
 	public get mText_Long_Num(): mw.TextBlock {
 		if(!this.mText_Long_Num_Internal&&this.uiWidgetBase) {
@@ -262,13 +267,6 @@
 			this.textAttack_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/textAttack') as mw.TextBlock
 		}
 		return this.textAttack_Internal
-	}
-	private mMask_Trans_Long_Internal: mw.MaskButton
-	public get mMask_Trans_Long(): mw.MaskButton {
-		if(!this.mMask_Trans_Long_Internal&&this.uiWidgetBase) {
-			this.mMask_Trans_Long_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasAttack/mMask_Trans_Long') as mw.MaskButton
-		}
-		return this.mMask_Trans_Long_Internal
 	}
 	private mText_Trans_Time_cd_Long_Internal: mw.TextBlock
 	public get mText_Trans_Time_cd_Long(): mw.TextBlock {
@@ -333,6 +331,13 @@
 		}
 		return this.mImage_Tortoise_Internal
 	}
+	private mMask_Trans_Tortoise_Internal: mw.MaskButton
+	public get mMask_Trans_Tortoise(): mw.MaskButton {
+		if(!this.mMask_Trans_Tortoise_Internal&&this.uiWidgetBase) {
+			this.mMask_Trans_Tortoise_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/mMask_Trans_Tortoise') as mw.MaskButton
+		}
+		return this.mMask_Trans_Tortoise_Internal
+	}
 	private mText_Tortoise_Num_Internal: mw.TextBlock
 	public get mText_Tortoise_Num(): mw.TextBlock {
 		if(!this.mText_Tortoise_Num_Internal&&this.uiWidgetBase) {
@@ -346,13 +351,6 @@
 			this.textDefend_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/textDefend') as mw.TextBlock
 		}
 		return this.textDefend_Internal
-	}
-	private mMask_Trans_Tortoise_Internal: mw.MaskButton
-	public get mMask_Trans_Tortoise(): mw.MaskButton {
-		if(!this.mMask_Trans_Tortoise_Internal&&this.uiWidgetBase) {
-			this.mMask_Trans_Tortoise_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasDefend/mMask_Trans_Tortoise') as mw.MaskButton
-		}
-		return this.mMask_Trans_Tortoise_Internal
 	}
 	private mText_Trans_Time_cd_Tortoise_Internal: mw.TextBlock
 	public get mText_Trans_Time_cd_Tortoise(): mw.TextBlock {
@@ -417,6 +415,13 @@
 		}
 		return this.mImage_Bone_Internal
 	}
+	private mMask_Trans_Bone_Internal: mw.MaskButton
+	public get mMask_Trans_Bone(): mw.MaskButton {
+		if(!this.mMask_Trans_Bone_Internal&&this.uiWidgetBase) {
+			this.mMask_Trans_Bone_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/mMask_Trans_Bone') as mw.MaskButton
+		}
+		return this.mMask_Trans_Bone_Internal
+	}
 	private mText_Bone_Num_Internal: mw.TextBlock
 	public get mText_Bone_Num(): mw.TextBlock {
 		if(!this.mText_Bone_Num_Internal&&this.uiWidgetBase) {
@@ -430,13 +435,6 @@
 			this.textHeart_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/textHeart') as mw.TextBlock
 		}
 		return this.textHeart_Internal
-	}
-	private mMask_Trans_Bone_Internal: mw.MaskButton
-	public get mMask_Trans_Bone(): mw.MaskButton {
-		if(!this.mMask_Trans_Bone_Internal&&this.uiWidgetBase) {
-			this.mMask_Trans_Bone_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasHeart/mMask_Trans_Bone') as mw.MaskButton
-		}
-		return this.mMask_Trans_Bone_Internal
 	}
 	private mText_Trans_Time_cd_Bone_Internal: mw.TextBlock
 	public get mText_Trans_Time_cd_Bone(): mw.TextBlock {
@@ -501,6 +499,13 @@
 		}
 		return this.mImage_Qi_Internal
 	}
+	private mMask_Trans_Qi_Internal: mw.MaskButton
+	public get mMask_Trans_Qi(): mw.MaskButton {
+		if(!this.mMask_Trans_Qi_Internal&&this.uiWidgetBase) {
+			this.mMask_Trans_Qi_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/mMask_Trans_Qi') as mw.MaskButton
+		}
+		return this.mMask_Trans_Qi_Internal
+	}
 	private mText_Qi_Num_Internal: mw.TextBlock
 	public get mText_Qi_Num(): mw.TextBlock {
 		if(!this.mText_Qi_Num_Internal&&this.uiWidgetBase) {
@@ -514,13 +519,6 @@
 			this.textBlue_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/textBlue') as mw.TextBlock
 		}
 		return this.textBlue_Internal
-	}
-	private mMask_Trans_Qi_Internal: mw.MaskButton
-	public get mMask_Trans_Qi(): mw.MaskButton {
-		if(!this.mMask_Trans_Qi_Internal&&this.uiWidgetBase) {
-			this.mMask_Trans_Qi_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasBlue/mMask_Trans_Qi') as mw.MaskButton
-		}
-		return this.mMask_Trans_Qi_Internal
 	}
 	private mText_Trans_Time_cd_Qi_Internal: mw.TextBlock
 	public get mText_Trans_Time_cd_Qi(): mw.TextBlock {
@@ -760,6 +758,13 @@
 		}
 		return this.mBattle_2_Internal
 	}
+	private mBtn_Battle_Refresh_Internal: mw.Button
+	public get mBtn_Battle_Refresh(): mw.Button {
+		if(!this.mBtn_Battle_Refresh_Internal&&this.uiWidgetBase) {
+			this.mBtn_Battle_Refresh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasBattle/mBtn_Battle_Refresh') as mw.Button
+		}
+		return this.mBtn_Battle_Refresh_Internal
+	}
 	private mBtn_Battle_Add_Internal: mw.Button
 	public get mBtn_Battle_Add(): mw.Button {
 		if(!this.mBtn_Battle_Add_Internal&&this.uiWidgetBase) {
@@ -950,6 +955,12 @@
 	
 		this.mBtn_MCoin_Refresh.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_MCoin_Refresh");
+		})
+		
+		
+	
+		this.mBtn_Battle_Refresh.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Battle_Refresh");
 		})
 		
 		

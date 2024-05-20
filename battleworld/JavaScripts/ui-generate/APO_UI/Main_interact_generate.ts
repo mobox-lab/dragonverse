@@ -2,9 +2,7 @@
 /**
  * AUTO GENERATE BY UI EDITOR.
  * WARNING: DO NOT MODIFY THIS FILE,MAY CAUSE CODE LOST.
- * AUTHOR: 断桥烟雨
  * UI: UI/APO_UI/Main_interact.ui
- * TIME: 2024.05.13-10.58.19
  */
 
  
@@ -17,13 +15,6 @@
 			this.mBtn_interact_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_interact') as mw.Button
 		}
 		return this.mBtn_interact_Internal
-	}
-	private mText_get_Internal: mw.TextBlock
-	public get mText_get(): mw.TextBlock {
-		if(!this.mText_get_Internal&&this.uiWidgetBase) {
-			this.mText_get_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_interact/mText_get') as mw.TextBlock
-		}
-		return this.mText_get_Internal
 	}
 	private btnInteractive_Internal: mw.StaleButton
 	public get btnInteractive(): mw.StaleButton {
@@ -38,6 +29,13 @@
 			this.imgHoverround_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgHoverround') as mw.Image
 		}
 		return this.imgHoverround_Internal
+	}
+	private mText_get_Internal: mw.TextBlock
+	public get mText_get(): mw.TextBlock {
+		if(!this.mText_get_Internal&&this.uiWidgetBase) {
+			this.mText_get_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_get') as mw.TextBlock
+		}
+		return this.mText_get_Internal
 	}
 
 
