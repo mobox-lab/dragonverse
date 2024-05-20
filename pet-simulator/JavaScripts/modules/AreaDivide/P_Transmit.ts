@@ -1,13 +1,13 @@
-import {IAreaWorldElement} from "../../config/AreaWorld";
-import {GameConfig} from "../../config/GameConfig";
-import {GlobalEnum} from "../../const/Enum";
-import {GlobalData} from "../../const/GlobalData";
+import { IAreaWorldElement } from "../../config/AreaWorld";
+import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import TransmitMain_Generate from "../../ui-generate/Transmit/TransmitMain_generate";
 import WorldtipsUI_Generate from "../../ui-generate/WorldUI/WorldtipsUI_generate";
-import {cubicBezier} from "../../util/MoveUtil";
-import {utils} from "../../util/uitls";
-import {AreaModuleData} from "../AreaDivide/AreaModuleData";
+import { cubicBezier } from "../../util/MoveUtil";
+import { utils } from "../../util/uitls";
+import { AreaModuleData } from "../AreaDivide/AreaModuleData";
 
 /**传送ui */
 export class P_Transmit extends TransmitMain_Generate {
@@ -163,7 +163,7 @@ export class P_TransmitTips extends WorldtipsUI_Generate {
     /**透明度tween */
     public tweenOpacity() {
         const bezier = GlobalData.TransferPoint.tipsTweenBezier;
-        let tween = new mw.Tween({o: 0}).to({o: 1}, GlobalData.TransferPoint.tipsTime * 1000)
+        let tween = new mw.Tween({ o: 0 }).to({ o: 1 }, GlobalData.TransferPoint.tipsTime * 1000)
             .onUpdate((value) => {
                 this.mText_Worldname.renderOpacity = value.o;
             }).onComplete((obj) => {
@@ -190,6 +190,10 @@ class WorldItem {
         this.btn.onClicked.add(() => {
             this.onBtnAC.call(cfg.id);
         });
+        //临时屏蔽第二第三世界
+        if (this.cfg.id > 1) {
+            this.btn.onClicked.clear();
+        }
         this.updateUI();
     }
 
