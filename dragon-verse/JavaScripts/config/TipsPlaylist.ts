@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","content","environment"],["","",""],[1,"Tiptext001",0],[2,"Tiptext002",0],[3,"Tiptext003",0],[4,"Tiptext004",0],[5,"Tiptext005",0],[6,"Tiptext006",0]];
+const EXCELDATA:Array<Array<any>> = [["id","content","environment"],["","",""],[1,null,0],[2,null,0],[3,null,0],[4,null,0],[5,null,0],[6,null,0]];
 export interface ITipsPlaylistElement extends IElementBase{
  	/**undefined*/
 	id:number
