@@ -45,6 +45,7 @@ import { MotionModuleS } from "../MotionModule/MotionModuleS";
 import { AuthModuleS } from "../auth/AuthModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import Gtk from "../../util/GToolkit";
 
 /**玩家伤害信息 */
 export type THurtData = {
@@ -2262,23 +2263,40 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     }
 
     /**
-     * 击杀与被击杀玩家段位分计算,解锁段位奖励
+     * 结算段位分.
+     * @param {number} attackerId 攻击者 Id.
+     * @param {number} deadId 死亡者 Id.
+     *      - undefined 时为场景 Unit.
      */
-    private rankScoreCal(deadId: number, attackId: number) {
-        let attackRank = this.getRankLevel(attackId);
-        let deadRank = this.getRankLevel(deadId);
-        let cfg = GameConfig.Rank.getElement(attackRank);
-        if (!cfg) return;
-        //双方段位分变化
-        let calScore = cfg.rankIntegral[deadRank - 1];
+    public rankScoreCal(attackerId: number, deadId: number = undefined) {
+        let attackerRank = this.getRankLevel(attackerId);
+        let attackerRankCfg = GameConfig.Rank.getElement(attackerRank);
+        let deadRank = deadId ? this.getRankLevel(deadId) : undefined;
+        let deadRankCfg = deadId ? GameConfig.Rank.getElement(deadRank) : undefined;
+
+        if (!attackerRankCfg ||
+            deadRank !== undefined && !deadRankCfg ||
+            deadRank === undefined && attackerRank > 2) return;
+
+        let attackerScore = deadRank ?
+            attackerRankCfg.rankIntegral[deadRank - 1] :
+            GameServiceConfig.RANK_SCORE_BOT_KILLED;
         let mulCfg = GameConfig.MultipleKill.getAllElement();
-        let addRate = mulCfg[Math.min(this.getPlayerData(attackId).getKillCount(), mulCfg.length) - 1].Factor;
+        let addRate = Gtk.safeIndexItem(
+            this.getPlayerData(attackerId).getKillCount(),
+            mulCfg,
+            "cut")
+            ?.Factor ?? 1;
         // 击杀加分， 被击杀减分
-        if (this._fightingPlayerSet.has(attackId)) {
-            this.changeRankScore(attackId, Math.round(calScore * addRate));
+        if (this._fightingPlayerSet.has(attackerId)) {
+            this.changeRankScore(attackerId, Math.round(attackerScore * addRate));
         }
-        if (this._fightingPlayerSet.has(deadId)) {
-            this.changeRankScore(deadId, -Math.round(calScore * Globaldata.rankScoreRate));
+
+        if (!Gtk.isNullOrUndefined(deadId)) {
+            let deadScore = deadRankCfg.rankIntegral[attackerRank - 1];
+            if (this._fightingPlayerSet.has(deadId)) {
+                this.changeRankScore(deadId, -Math.round(deadScore));
+            }
         }
     }
 
