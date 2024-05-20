@@ -23,7 +23,7 @@ export class DropManagerC extends ModuleC<DropManagerS, null> {
 
         for (const { startPos, endPos, type, value } of params) {
             gun.press(() => {
-                let drop = ObjectPoolServices.getPool(DropInClient).spawn();
+                let drop = new DropInClient();
                 drop.poolInit(startPos.clone(), endPos.clone(), type, value);
                 this._dropItems.push(drop);
             });
@@ -35,10 +35,13 @@ export class DropManagerC extends ModuleC<DropManagerS, null> {
     onUpdate(dt: number) {
         for (let i = this._dropItems.length - 1; i >= 0; --i) {
             const drop = this._dropItems[i];
-            if (drop.timeout || drop.update(dt)) {
+            if (drop.timeout) {
                 this._dropItems.splice(i, 1);
-                ObjectPoolServices.getPool(DropInClient).return(drop);
+                drop.destroy();
+            } else {
+                drop.update(dt);
             }
+
         }
     }
 }
@@ -430,8 +433,8 @@ class DropInClient extends DropItem {
 
     /**更新 */
     update(dt: number) {
-        if (!this.canUpdate) return false;
-        this.judgeDestroy(dt);
+        if (!this.canUpdate) return;
+        // this.judgeDestroy(dt);
         if (this._isStartJump) {
             this.bonceUpdate(dt);
         }
@@ -442,9 +445,7 @@ class DropInClient extends DropItem {
             getPos(this.model))) {
             this.flyToPlayer(getPos(this.model), Player.localPlayer.character.worldTransform.position);
             Log4Ts.log(DropInClient, `player ${Player.localPlayer.playerId} get ${this._value} ${this.type}`);
-            return true;
         }
-        return false;
     }
 
     /**当前落地后时间 */
@@ -496,6 +497,8 @@ class DropInClient extends DropItem {
         // this._value = 0;
         // this._diamond = 0;
         GameObjPool.despawn(this.model);
+        clearTimeout(this.autoDestroyTimer);
+        this.timeout = false;
     }
 
 }
