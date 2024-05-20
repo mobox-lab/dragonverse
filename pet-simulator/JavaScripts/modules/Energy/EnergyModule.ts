@@ -35,7 +35,7 @@ export default class PSEnergyModuleData extends mwext.Subdata {
     public lastMaxStamina: number = undefined;
 
     public isAfford(cost: number = 1): boolean {
-        return this.energy > cost;
+        return this.energy >= cost;
     }
 
     public consume(count: number = 1): number {
@@ -93,9 +93,9 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, PSEnergyModuleDa
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    public viewEnergy: { data: number } = createYoact({data: 0});
+    public viewEnergy: { data: number } = createYoact({ data: 0 });
 
-    public viewEnergyLimit: { data: number } = createYoact({data: 0});
+    public viewEnergyLimit: { data: number } = createYoact({ data: 0 });
 
     private _requestRegulator = new Regulator(1e3);
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -370,8 +370,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
                 let d = this.getPlayerData(playerId);
                 if (d?.tryUpdateLimit(limit)
                     ?? false) this.syncEnergyToClient(playerId,
-                    d.energy,
-                    limit);
+                        d.energy,
+                        limit);
             });
     }
 
