@@ -649,9 +649,9 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         const petInfo = GameConfig.PetARR.getElement(curPetId);
         let isSucc: boolean = true;
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
+				this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
         if (random <= rate) {
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
-            this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
             ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(
                 this.currentPlayerId,
