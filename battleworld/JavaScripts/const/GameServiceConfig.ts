@@ -9,6 +9,17 @@
 import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
+
+    //#region Shop
+    /**
+     * 商店tab普通底图guid.
+     */
+    public static readonly SHOP_TAB_NORMAL_GUID = "295324";
+    /**
+     * 商店tab选中底图guid.
+     */
+    public static readonly SHOP_TAB_SELECTED_GUID = "341310";
+
     //#region Magma
 
     /**

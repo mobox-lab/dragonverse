@@ -1,4 +1,5 @@
 ﻿import { EEquipPartType } from "../../../const/Enum";
+import GameServiceConfig from "../../../const/GameServiceConfig";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import { IItemRender } from "../../../tool/UIMultiScroller";
 import { util } from "../../../tool/Utils";
@@ -54,13 +55,13 @@ export class TabItem extends UITabItem_Generate implements IItemRender {
 
     onStart() {
         this.mBtnPlace1.touchMethod = mw.ButtonTouchMethod.PreciseTap;
-        this.mBtnPlace1.text = "";
+        // this.mBtnPlace1.text = "";
     }
 
     setData(data: any): void {
         this.mTextPlace1.text = util.getLanguageByKey(data);
     }
-    get clickObj(): mw.StaleButton {
+    get clickObj(): mw.Button {
         return this.mBtnPlace1;
     }
 
@@ -68,10 +69,13 @@ export class TabItem extends UITabItem_Generate implements IItemRender {
         this.isSelected = bool;
 
         let renderOpacity = bool ? 1 : 0;
-        this.mBtnPlace1.renderOpacity = renderOpacity;
+        // this.mBtnPlace1.renderOpacity = renderOpacity;
 
-        let imageColort = bool ? mw.LinearColor.black : mw.LinearColor.white;
-        this.mImgBg.imageColor = imageColort;
+        // let imageColort = bool ? mw.LinearColor.black : mw.LinearColor.white;
+        // this.mImgBg.imageColor = imageColort;
+
+        let imageGuid = bool ? GameServiceConfig.SHOP_TAB_SELECTED_GUID : GameServiceConfig.SHOP_TAB_NORMAL_GUID;
+        this.mImgBg.imageGuid = imageGuid;
     }
 
     updateData(): void {

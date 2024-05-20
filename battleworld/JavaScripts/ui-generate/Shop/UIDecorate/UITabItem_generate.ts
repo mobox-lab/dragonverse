@@ -23,10 +23,10 @@
 		}
 		return this.mImgBg_Internal
 	}
-	private mBtnPlace1_Internal: mw.StaleButton
-	public get mBtnPlace1(): mw.StaleButton {
+	private mBtnPlace1_Internal: mw.Button
+	public get mBtnPlace1(): mw.Button {
 		if(!this.mBtnPlace1_Internal&&this.uiWidgetBase) {
-			this.mBtnPlace1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPlace1/mBtnPlace1') as mw.StaleButton
+			this.mBtnPlace1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPlace1/mBtnPlace1') as mw.Button
 		}
 		return this.mBtnPlace1_Internal
 	}
@@ -56,15 +56,14 @@
 	protected initButtons() {
 		//按钮添加点击
 		
+		//按钮添加点击
+		
 		this.mBtnPlace1.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtnPlace1");
 		})
-		this.initLanguage(this.mBtnPlace1);
-		//this.mBtnPlace1.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
 		
 	
-		//按钮添加点击
-		
 
 		//按钮多语言
 		
