@@ -35,12 +35,18 @@ export class ShopModuleC extends ModuleC<ShopModuleS, ShopModuleData> {
             trigger.onEnter.add((cha: Character) => {
                 if (cha && cha.player) {
                     if (cha.player != this.localPlayer) return;
+                    if (UIService.getUI(ShopView).visible) {
+                        return;
+                    }
                     mw.UIService.showUI(this._shopView);
                 }
             })
             trigger.onLeave.add((cha: Character) => {
                 if (cha && cha.player) {
                     if (cha.player != this.localPlayer) return;
+                    if (!UIService.getUI(ShopView).visible) {
+                        return;
+                    }
                     mw.UIService.hideUI(this._shopView);
                 }
             })
