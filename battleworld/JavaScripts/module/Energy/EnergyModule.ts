@@ -22,7 +22,7 @@ AddGMCommand("Change Energy",
     "Energy",
 );
 
-export default class BWEnergyModuleData extends mwext.Subdata {
+export default class BwEnergyModuleData extends mwext.Subdata {
     //@Decorator.persistence()
     //public isSave: bool;
 
@@ -76,7 +76,6 @@ export default class BWEnergyModuleData extends mwext.Subdata {
         this.energy = 0;
         this.lastRecoveryTime = Date.now();
     }
-
 }
 
 /**
@@ -91,7 +90,7 @@ export default class BWEnergyModuleData extends mwext.Subdata {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BWEnergyModuleData> {
+export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BwEnergyModuleData> {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -129,6 +128,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BWEnergyModuleDa
         super.onEnterScene(sceneType);
 
         this.viewEnergy.data = this.data.energy;
+        this.viewEnergyLimit.data = this.data.lastMaxStamina;
     }
 
     protected onDestroy(): void {
@@ -199,11 +199,10 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BWEnergyModuleDa
         }
     }
 
-
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleData> {
+export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleData> {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -272,7 +271,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BWEnergyModuleDa
         const d = this.getPlayerData(playerId);
         if (Gtk.isNullOrUndefined(d)) return;
         let refreshInterval = GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
-            Globaldata.ENERGY_RECOVERY_INTERVAL_MS :
+            GameServiceConfig.ENERGY_RECOVERY_INTERVAL_MS :
             5 * GtkTypes.Interval.PerSec;
         this.authModuleS
             .requestRefreshStaminaLimit(playerId)

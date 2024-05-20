@@ -1,11 +1,8 @@
 import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
-    //#region Global Config
-    /**
-     * 进入战场体力消耗值.
-     */
-    public static readonly STAMINA_COST_ENTER_FIGHTING = 20;
+    //#region MAGMA
+
     /**
      * 岩浆伤害判定间隔(毫秒).
      */
@@ -15,6 +12,28 @@ export default class GameServiceConfig {
      * 岩浆伤害
      */
     public static readonly MAGMA_TRIGGER_HURT = 2;
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+    //#region Stamina
+
+    /**
+     * 体力 恢复间隔. min
+     * @type {number}
+     */
+    public static readonly ENERGY_RECOVERY_INTERVAL: number = 2;
+
+    /**
+     * 体力 恢复间隔. ms
+     * @type {number}
+     */
+    public static get ENERGY_RECOVERY_INTERVAL_MS(): number {
+        return this.ENERGY_RECOVERY_INTERVAL * 60 * 1000;
+    };
+
+    /**
+     * 进入战场体力消耗值.
+     */
+    public static readonly STAMINA_COST_ENTER_FIGHTING = 20;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
