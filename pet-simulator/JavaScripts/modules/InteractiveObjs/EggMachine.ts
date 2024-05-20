@@ -272,7 +272,7 @@ class EggM {
     /**设置手指特效显示 */
     private setFingerEff(isVis: boolean) {
         if (isVis && this.curGold >= this.cfg.Price[0]) {
-            this.lockEff.play();
+            this.lockEff?.play();
         } else {
             this.lockEff?.stop();
         }
