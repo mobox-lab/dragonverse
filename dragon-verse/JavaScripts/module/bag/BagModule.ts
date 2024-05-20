@@ -697,7 +697,7 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
         const filledData = Enumerable.from(GameConfig.Dragon.getAllElement())
             .select(item => ([item.bagId, map.get(item.id) ?? 0] as [number, number]))
             .doAction(data => {
-                if (data[0] > 0)
+                if (data[1] <= 0)
                     playerData.removeItem(data[0]);
                 else playerData.setItem(
                     data[0],
