@@ -45,7 +45,11 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         let chara = go as mw.Character;
 
         if (chara.player.playerId != Player.localPlayer.playerId) return;
-        if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) return;
+        if (ModuleService.getModule(EnergyModuleC).currEnergy() <= 0) {
+            Notice.showDownNotice(GameConfig.Language.StaminaNotEnough.Value);
+            return;
+        }
+
 
         ClickUIPools.instance.show(Globaldata.fireWeaponUIGuid, GameConfig.Language.Scene_name_1.Value, go, Vector.zero, async () => {
 
@@ -101,10 +105,6 @@ class Trigger_S extends InteractLogic_S<SP_Trigger> {
 
     }
     protected onStart(): void {
-
-    }
-
-    private onEnter(go: mw.GameObject) {
 
     }
 
