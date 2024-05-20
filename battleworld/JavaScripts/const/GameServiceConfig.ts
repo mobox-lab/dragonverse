@@ -6,12 +6,12 @@ export default class GameServiceConfig {
     /**
      * 岩浆伤害判定间隔(毫秒).
      */
-    public static readonly MAGMA_TRIGGER_HURT_INTERVAL = 500;
+    public static readonly MAGMA_TRIGGER_HURT_INTERVAL = 200;
 
     /**
      * 岩浆伤害
      */
-    public static readonly MAGMA_TRIGGER_HURT = 1;
+    public static readonly MAGMA_TRIGGER_HURT = 2;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Stamina
