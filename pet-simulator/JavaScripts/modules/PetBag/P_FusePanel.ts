@@ -111,15 +111,12 @@ export class P_FusePanel extends Fusepanel_Generate {
                     }
 
                     if (await ModuleService
-                        .getModule(PetBagModuleC)
-                        .fusePet(curSelectKeys, this._earliestObtainTime)) {
-
-                        this.changeCost();
-                        setTimeout(() => this.onShowAC.call(), 500);
-                    }
-
-                    this.curSelectPets.length = 0;
-
+											.getModule(PetBagModuleC)
+											.fusePet(curSelectKeys, this._earliestObtainTime)) {
+												this.curSelectPets.length = 0;
+										}
+										this.changeCost();
+										setTimeout(() => this.onShowAC.call(), 500);
                 } else super.show();
             });
     }
