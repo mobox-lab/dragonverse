@@ -1,3 +1,11 @@
+/*
+ * @Author: haoran.zhang haoran.zhang@appshahe.com
+ * @Date: 2024-05-20 10:33:14
+ * @LastEditors: haoran.zhang haoran.zhang@appshahe.com
+ * @LastEditTime: 2024-05-20 13:42:55
+ * @FilePath: \battleworld\JavaScripts\const\GameServiceConfig.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
@@ -11,7 +19,7 @@ export default class GameServiceConfig {
     /**
      * 岩浆伤害
      */
-    public static readonly MAGMA_TRIGGER_HURT = 2;
+    public static readonly MAGMA_TRIGGER_HURT = 10;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Stamina

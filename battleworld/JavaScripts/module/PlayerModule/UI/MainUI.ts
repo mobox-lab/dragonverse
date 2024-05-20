@@ -50,6 +50,7 @@ import { SkillModuleC } from "../../SkillModule/SkillModuleC";
 import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
 import SetingUI from "../../SetingModule/UI/SetingUI";
 import { P_Game_Action } from "../../action/ui/P_Game_Action";
+import { SkillSelectPanel } from "../../SkillModule/UI/SkillSelectPanel";
 
 type PillUIInfo = {
     text: TextBlock,
@@ -254,7 +255,12 @@ export class MainUI extends Main_HUD_Generate {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.RightCommand, () => (InputUtil.isLockMouse = true));
 
         KeyOperationManager.getInstance().onKeyUp(this, Keys.G, () => {
-            if (this.mSkillSelectBox.visibility === SlateVisibility.SelfHitTestInvisible) {
+            if (UIService.getUI(SkillPanel).visible) {
+                UIService.getUI(SkillPanel).mWaiveBtn.onClicked.broadcast();
+            } else if (UIService.getUI(SkillSelectPanel).visible) {
+                UIService.getUI(SkillSelectPanel).mDiscardBtn.onClicked.broadcast();
+            } else if (this.mSkillSelectBox.visibility === SlateVisibility.SelfHitTestInvisible) {
+                //最后判断技能选择按钮，优先panel
                 ModuleService.getModule(SkillModuleC).discardSkillLib();
             }
         });
@@ -601,7 +607,7 @@ export class MainUI extends Main_HUD_Generate {
             this.reBackTween.stop();
         }
         let time = backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
-        this.reBackTween = new mw.Tween({alpha: 0}).to({alpha: 1}, time * 1000).onUpdate((data) => {
+        this.reBackTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, time * 1000).onUpdate((data) => {
             this.mMask_Back.fanShapedValue = data.alpha;
         }).onComplete(() => {
             this.mMask_Back.fanShapedValue = 1;
@@ -649,7 +655,7 @@ export class MainUI extends Main_HUD_Generate {
      */
     private initReset() {
         this.mMask_Reborn.visibility = mw.SlateVisibility.Collapsed;
-        this.rebornTween = new mw.Tween({alpha: 0}).to({alpha: 1}, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
+        this.rebornTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
             this.mMask_Reborn.fanShapedValue = data.alpha;
         }).onComplete(() => {
             this.mMask_Reborn.fanShapedValue = 1;

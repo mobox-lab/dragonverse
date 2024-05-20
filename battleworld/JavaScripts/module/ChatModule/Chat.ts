@@ -47,9 +47,9 @@ abstract class ChatClient extends ChatPFDef {
             //     this.showText(msg);
             // });
 
-            InputUtil.onKeyDown(mw.Keys.B, () => {
-                this.showText("测试文字");
-            });
+            // InputUtil.onKeyDown(mw.Keys.B, () => {
+            //     this.showText("测试文字");
+            // });
         }
     }
 
