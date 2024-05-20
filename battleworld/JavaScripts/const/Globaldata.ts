@@ -104,8 +104,6 @@ export class Globaldata {
     public static playerMaxMoney: number = 9999999999;
     /**玩家每日获取段位分限制 */
     public static maxRankScore: number = 1000;
-    /**扣除段位分系数 */
-    public static rankScoreRate: number = 0.7;
     /**玩家默认重力系数 */
     public static dfgravityScale: number = 2.5;
     /**血量回复值（非战斗状态每0.2恢复一次，战斗状态0.5秒恢复一次）*/

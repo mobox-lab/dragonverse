@@ -1,4 +1,4 @@
-﻿/** 
+﻿/**
  * @Author       : fengqi.han
  * @Date         : 2023-11-30 17:44:50
  * @LastEditors  : fengqi.han
@@ -25,12 +25,13 @@ import { UnitManager } from "../UnitManager";
 import { EUnitState } from "../UnitState";
 import { UnitStateMachine } from "../UnitStateMachine";
 import { MascotModuleC } from "./MascotModuleC";
+import { GtkTypes, Regulator } from "../../../util/GToolkit";
 
 export class MascotModuleS extends ModuleS<MascotModuleC, null> {
     /** 吉祥物npc配置 */
     private _cfg: IMascotNpcElement[] = [];
     /** 每个类型npc创建计时 */
-    private _creaTime: number[] = [];
+    private _createRegulator: Regulator[] = [];
     /** 每个类型npc数量 */
     private _npcNum: number[] = [];
 
@@ -43,16 +44,19 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
     protected onStart(): void {
         this._cfg = GameConfig.MascotNpc.getAllElement();
         for (let i = 0; i < this._cfg.length; i++) {
-            this._creaTime.push(0);
+            this._createRegulator.push(new Regulator(this._cfg[i].InterTime ?? GtkTypes.Interval.PerMin));
             this._npcNum.push(0);
         }
 
         TimeUtil.setInterval(() => {
-            this.checkCreate();
             this.logicUpdate(0.5);
         }, 0.5);
 
         EventManager.instance.add(EModule_Events_S.sceneUnit_beAttack, this.unitBeAttack.bind(this));
+    }
+
+    protected onUpdate() {
+        this.checkCreate();
     }
 
     private async create(cfg: IMascotNpcElement, num: number) {
@@ -69,7 +73,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
             if (effId) {
                 effId.forEach((id) => {
                     util.playEffectAtLocation(id, pos);
-                })
+                });
             }
             let sc = this._unitPool.length ? this._unitPool.pop() : await Script.spawnScript(SceneUnit, true);
             sc.gameObject = npc;
@@ -85,16 +89,14 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
      */
     private checkCreate() {
         for (let i = 0; i < this._cfg.length; i++) {
-            this._creaTime[i]++;
-            if (this._creaTime[i] != this._cfg[i].InterTime) continue;
-            if (this._npcNum[i] >= this._cfg[i].MaxNum) {
-                this._creaTime[i] = 0;
-                continue;
+            if (this._npcNum[i] < this._cfg[i].MaxNum &&
+                this._createRegulator[i].request()) {
+                let createNum = Math.min(
+                    this._cfg[i].MaxNum - this._npcNum[i],
+                    this._cfg[i].CreateNum);
+                this.create(this._cfg[i], createNum);
+                this._npcNum[i] += createNum;
             }
-            let createNum = Math.min(this._cfg[i].MaxNum - this._npcNum[i], this._cfg[i].CreateNum)
-            this.create(this._cfg[i], createNum);
-            this._creaTime[i] = 0;
-            this._npcNum[i] += createNum;
         }
     }
 
@@ -105,7 +107,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
     private logicUpdate(dt: number) {
         this._logicMap.forEach((value, key) => {
             value.update(dt);
-        })
+        });
     }
 
     /**
@@ -117,9 +119,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
     private unitBeAttack(attackId: number, beAttackIds: number[], hurtData: THurtData) {
 
         let player = mw.Player.getPlayer(attackId);
-        if (player == null) {
-            return;
-        }
+        if (player == null) return;
         let damageDatas: HitDamageInfo[] = null;
         let hitIds: number[] = null;
         for (let i = 0; i < beAttackIds.length; i++) {
@@ -149,7 +149,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
                     const buffId = motionEffectCfg.BuffID[index];
 
                     ModuleService.getModule(BuffModuleS).createBuff(buffId, attackId, beAttackIds[i],
-                        { castPId: attackId, buffParamType: null, value: null, pos: hurtData.triggerPos });
+                        {castPId: attackId, buffParamType: null, value: null, pos: hurtData.triggerPos});
                 }
             }
 
@@ -158,22 +158,24 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
 
             //计算伤害！！
             let atkarr: [number, boolean] = DamageManger.instance.getAtkAndCrit(attackId, beAttackIds[i], motionEffectId, hurtData.atkVal_replace);
-            let atkVal = atkarr[0] // 伤害 
-            let iscrit = atkarr[1] // 暴击 
+            let atkVal = atkarr[0]; // 伤害
+            let iscrit = atkarr[1]; // 暴击
             unit.onHurt(atkVal);
+            if (unit.isDead()) ModuleService
+                .getModule(PlayerModuleS)
+                .rankScoreCal(attackId, undefined);
             logic.updateEscape();
 
             if (damageDatas == null) {
                 damageDatas = [];
             }
 
-
             let damageData: HitDamageInfo = {
                 from: attackId,
                 target: beAttackIds[i],
                 value: atkVal,
-                type: EnumDamageType.normal
-            }
+                type: EnumDamageType.normal,
+            };
             damageDatas.push(damageData);
             if (hitIds == null) {
                 hitIds = [];
@@ -195,7 +197,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
         if (unit == null) {
             return;
         }
-        return unit.getValue(type, isAdd)
+        return unit.getValue(type, isAdd);
     }
 
     //增加怪物即时属性
@@ -237,7 +239,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
         }
     }
 
-    /** 
+    /**
      * 获取npc脚本（服务端）
      */
     public getUnit(unitId: number): IUnitBase {
@@ -262,8 +264,8 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
         if (unit && unit instanceof SceneUnit) {
             this._unitPool.push(unit);
             this._npcNum[unit.cfgId - 1]--;
+            this._createRegulator[unit.cfgId - 1]?.request();
         }
-
 
         if (this._logicMap.has(unitId)) {
             this._logicMap.delete(unitId);
