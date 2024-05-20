@@ -285,8 +285,17 @@ export default class PetBehavior {
     private _petArrived: boolean = false;
 
     public update(dt: number, transform: Transform): void {
+
+
         this.ownerTransform = transform.clone();
         if (!this.owner || !this.pet) return;
+        //头顶名字显影逻辑
+        let res = QueryUtil.lineTrace(Camera.currentCamera.worldTransform.position, this.pet.worldTransform.position, true, false);
+        if (res.length > 0) {
+            this.headUI.hide();
+        } else {
+            this.headUI.show();
+        }
         if (this.accelerateNum > 0) {
             this.addAttackSpeed = GlobalData.SpeedUp.petAttackSpeed;
             this.headUI?.startSpeed();
@@ -679,7 +688,7 @@ export default class PetBehavior {
             const bezier = GlobalData.pet.attackBezier;
             let time = GlobalData.pet.attackTime;
             if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed(Player.localPlayer.playerId) / this.addAttackSpeed;
-            this.attackTween = new mw.Tween<{ y: number }>({y: 0}).to({
+            this.attackTween = new mw.Tween<{ y: number }>({ y: 0 }).to({
                 y: [-30, 0],
             }, time).onUpdate((obj) => {
                 this.attackRotY = obj.y;

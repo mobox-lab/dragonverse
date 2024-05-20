@@ -525,23 +525,14 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
         super.onPlayerLeft(player);
     }
 
+    protected onPlayerJoined(player: Player): void {
+        super.onPlayerJoined(player);
+    }
+
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
         this.dailyDrawObbyCoin(player.playerId);
         this.dailyDrawObbyTicket(player.playerId);
-
-        this.authModuleS?.queryUserDragonBall(player.playerId)
-            .then((value) => {
-                const data = this.getPlayerData(player.playerId);
-                if (!data) Log4Ts.warn(BagModuleS, `player not found. playerId: ${player.playerId}.`);
-                else {
-                    // data.addItem();
-                }
-            });
-    }
-
-    protected onPlayerJoined(player: Player): void {
-        super.onPlayerJoined(player);
 
         Log4Ts.log(BagModuleS,
             `player entered. playerId: ${player.playerId}.`,
@@ -696,15 +687,15 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
      * @param playerId 玩家id
      * @param {{id: number, amount: number}[]} data
      */
-    public resetDragonData(playerId: number, data: { id: number, amount: number }[]) {
+    public resetDragonData(playerId: number, data: { dragonId: number, amount: number }[]) {
         const playerData = this.getPlayerData(playerId);
         if (!playerData) return;
 
         const map = new Map<number, number>();
-        data.forEach(value => map.set(value.id, (map.get(value.id) ?? 0) + value.amount));
+        data.forEach(value => map.set(value.dragonId, (map.get(value.dragonId) ?? 0) + value.amount));
 
         const filledData = Enumerable.from(GameConfig.Dragon.getAllElement())
-            .select(item => ([item.bagId, map.get(item.bagId) ?? 0] as [number, number]))
+            .select(item => ([item.bagId, map.get(item.id) ?? 0] as [number, number]))
             .doAction(data => {
                 if (data[0] > 0)
                     playerData.removeItem(data[0]);

@@ -100,7 +100,9 @@ export class AreaModuleS extends ModuleS<AreaModuleC, null> {
      */
     private magmaTriggerLeave(obj: GameObject) {
         if (obj instanceof Character && obj.player !== undefined) {
-            if (this._currentInMagmaPlayers.has(obj.player.playerId)) {
+            //需要检测所有触发器是否在里面
+            if (this._currentInMagmaPlayers.has(obj.player.playerId) && GameObject.findGameObjectsByTag("MagmaTrigger").filter((trigger) => (trigger as Trigger).checkInArea(obj)).length === 0) {
+
                 Log4Ts.log(AreaModuleS, `leave magma trigger`);
                 let interval = this._currentInMagmaPlayers.get(obj.player.playerId);
                 if (interval) {
@@ -121,21 +123,16 @@ export class AreaModuleS extends ModuleS<AreaModuleC, null> {
             let player = obj.player;
             if (obj.player.playerId === player.playerId) {
                 //掉一半血传送回战场随机点位
-                let hp = ModuleService.getModule(PlayerModuleS).getPlayerAttr(player.playerId, Attribute.EnumAttributeType.hp);
-                if (hp <= 0) {
-                    return;
-                }
+                // let hp = ModuleService.getModule(PlayerModuleS).getPlayerAttr(player.playerId, Attribute.EnumAttributeType.hp);
+                // if (hp <= 0) {
+                //     return;
+                // }
                 let maxHP = ModuleService.getModule(PlayerModuleS).getPlayerAttr(player.playerId, Attribute.EnumAttributeType.maxHp);
 
-                if (hp > maxHP * 0.5) {
-                    let position = ModuleService.getModule(LandModuleS).getRandomPosition(player);
-                    // UIService.getUI(MainUI)?.setCoinAndEnergyVisible(false);
-                    // this.setLocation(position);
-                    player.character.worldTransform.position = position;
-                } else {
+                // let position = ModuleService.getModule(LandModuleS).getRandomPosition(player);
 
-                }
-
+                // player.character.worldTransform.position = position;
+                this.getClient(player).net_dropLand();
                 let hurtSourceData: THurtSourceData = {
                     source: EHurtSource.sea,
                     skillId: 0,

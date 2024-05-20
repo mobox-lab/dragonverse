@@ -671,7 +671,9 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
                         .from(value.DragonPalList)
                         .select(item => {
                             return {
-                                id: ForeignKeyIndexer.getInstance().queryDragonByPalId(item.dragonPalId),
+                                dragonId: ForeignKeyIndexer
+                                    .getInstance()
+                                    .queryDragonByPalId(item.dragonPalId),
                                 amount: item.amount,
                             };
                         })
