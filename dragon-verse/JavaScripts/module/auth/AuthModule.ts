@@ -880,7 +880,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private queryUserId(playerId: number): string | undefined {
-        if (!GameServiceConfig.isRelease && !GameServiceConfig.isBeta) return "1025696";
+        if (!GameServiceConfig.isRelease && !GameServiceConfig.isBeta) return "2033226";
 
         const userId = Player.getPlayer(playerId)?.userId ?? undefined;
         if (Gtk.isNullOrEmpty(userId)) {

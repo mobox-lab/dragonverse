@@ -1,4 +1,3 @@
-import { GlobalData } from "../../const/GlobalData";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { AuthModuleS } from "../auth/AuthModule";
@@ -76,7 +75,6 @@ export default class PSEnergyModuleData extends mwext.Subdata {
         this.energy = 0;
         this.lastRecoveryTime = Date.now();
     }
-
 }
 
 /**
@@ -129,6 +127,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, PSEnergyModuleDa
         super.onEnterScene(sceneType);
 
         this.viewEnergy.data = this.data.energy;
+        this.viewEnergyLimit.data = this.data.lastMaxStamina;
     }
 
     protected onDestroy(): void {
@@ -271,7 +270,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
         const d = this.getPlayerData(playerId);
         if (Gtk.isNullOrUndefined(d)) return;
         let refreshInterval = GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
-            GlobalData.Energy.ENERGY_RECOVERY_INTERVAL_MS :
+            GameServiceConfig.ENERGY_RECOVERY_INTERVAL_MS :
             5 * GtkTypes.Interval.PerSec;
         this.authModuleS
             .requestRefreshStaminaLimit(playerId)

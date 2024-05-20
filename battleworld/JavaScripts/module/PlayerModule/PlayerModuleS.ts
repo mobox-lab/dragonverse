@@ -1211,32 +1211,34 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                 };
 
                 if (hurtSourceData) {
-                    let skillEffectConfig = GameConfig.MotionEffect.getElement(hurtSourceData.skillEffectId);
-                    if (skillEffectConfig) {
-                        damageData.effectId = skillEffectConfig.hitEffectId;
-                        damageData.soundId = skillEffectConfig.hitSountId;
+                    if (hurtSourceData.skillEffectId !== 0) {
+                        let skillEffectConfig = GameConfig.MotionEffect.getElement(hurtSourceData.skillEffectId);
+                        if (skillEffectConfig) {
+                            damageData.effectId = skillEffectConfig.hitEffectId;
+                            damageData.soundId = skillEffectConfig.hitSountId;
 
-                        // 增加怒气
-                        if (skillEffectConfig.angerAdd1 > 0 && this.mMotion.isExplosiveGas(sceneID) == false) {
-                            // 释放该技能的增加怒气
-                            let angleValue = defVal * skillEffectConfig.angerAdd1;
-                            EventManager.instance.call(
-                                EAttributeEvents_S.AttrEvent_CalculateAttr_S,
-                                sceneID,
-                                Attribute.EnumAttributeType.angerValue,
-                                angleValue,
-                            );
-                        }
+                            // 增加怒气
+                            if (skillEffectConfig.angerAdd1 > 0 && this.mMotion.isExplosiveGas(sceneID) == false) {
+                                // 释放该技能的增加怒气
+                                let angleValue = defVal * skillEffectConfig.angerAdd1;
+                                EventManager.instance.call(
+                                    EAttributeEvents_S.AttrEvent_CalculateAttr_S,
+                                    sceneID,
+                                    Attribute.EnumAttributeType.angerValue,
+                                    angleValue,
+                                );
+                            }
 
-                        if (skillEffectConfig.angerAdd2 > 0 && this.mMotion.isExplosiveGas(playerID) == false) {
-                            // 受到该技能伤害的增加怒气
-                            let angleValue = defVal * skillEffectConfig.angerAdd2;
-                            EventManager.instance.call(
-                                EAttributeEvents_S.AttrEvent_CalculateAttr_S,
-                                playerID,
-                                Attribute.EnumAttributeType.angerValue,
-                                angleValue,
-                            );
+                            if (skillEffectConfig.angerAdd2 > 0 && this.mMotion.isExplosiveGas(playerID) == false) {
+                                // 受到该技能伤害的增加怒气
+                                let angleValue = defVal * skillEffectConfig.angerAdd2;
+                                EventManager.instance.call(
+                                    EAttributeEvents_S.AttrEvent_CalculateAttr_S,
+                                    playerID,
+                                    Attribute.EnumAttributeType.angerValue,
+                                    angleValue,
+                                );
+                            }
                         }
                     }
                 }
