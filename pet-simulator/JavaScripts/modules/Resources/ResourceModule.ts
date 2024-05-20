@@ -154,7 +154,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
                 isInit = await element.createObjANDStart();
             }
             if (isInit) {
-                await TimeUtil.delaySecond(0.8);
+                await TimeUtil.delaySecond(GlobalData.SceneResource.initResourceRefresh);
             }
         }
     }
