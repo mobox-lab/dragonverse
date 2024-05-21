@@ -531,3 +531,11 @@ AddGMCommand("加木桩", async () => {
 AddGMCommand("显示/隐藏技能范围", (player, value) => {
     Globaldata.showSkillRange = !!value;
 });
+
+AddGMCommand("改名", (player, value) => {
+    ModuleService.getModule(PlayerHeadUIModuleC).getHeadUIWidget(Player.localPlayer.playerId).then(ui => {
+        ui.mOwnName_txt.text = value;
+    });
+}, () => {
+
+})
