@@ -68,9 +68,9 @@ export const SceneResourceMap: Map<number, ResourceScript[]> = new Map<number, R
 @Component
 export default class ResourceScript extends mw.Script {
 
-    @mw.Property({replicated: true, onChanged: "onHpChanged"})
+    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
     public curHp: number = 0;
-    @mw.Property({replicated: true, onChanged: "onSceneChanged"})
+    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
     private scenePointId: string = "";
 
     public get isBigBox(): boolean {
@@ -78,7 +78,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     /**伤害记录 */
-    @mw.Property({replicated: true})
+    @mw.Property({ replicated: true })
     private damageArr: DamageRecord[] = [];
 
     private _rate: number = 1;
@@ -170,7 +170,7 @@ export default class ResourceScript extends mw.Script {
         if (this.curHp <= 0) return;
         this.curHp -= damage;
         if (this.curHp <= 0) {
-            this.curHp = 0;
+            // this.curHp = 0;
             this.net_dead(playerID);
 
             let player: mw.Player = null;
@@ -323,13 +323,13 @@ export default class ResourceScript extends mw.Script {
     public getDamageRate(playerId: number): number {
         if (this.cfg.HP === 0) return 0;
         return this
-                .damageArr
-                .reduce((previousValue,
-                         currentValue) => {
-                        return previousValue +
-                            (currentValue.playerId === playerId ? currentValue.damage : 0);
-                    },
-                    0)
+            .damageArr
+            .reduce((previousValue,
+                currentValue) => {
+                return previousValue +
+                    (currentValue.playerId === playerId ? currentValue.damage : 0);
+            },
+                0)
             / this.cfg.HP;
     }
 
@@ -343,7 +343,7 @@ export default class ResourceScript extends mw.Script {
 
     /**开始刮痧计时 */
     public refreshGuaSha(playerId: number) {
-        if (!this.interval.has(playerId)) return;
+        if (this.interval.has(playerId)) return;
         let interval = TimeUtil.setInterval(() => {
             let rate = this.getDamageRate(playerId);
             if (this.isBigBox) {
@@ -620,7 +620,7 @@ export default class ResourceScript extends mw.Script {
         const time = GlobalData.ResourceAni.dropTweenTime[this.order];
         let start = endInfos[this.order];
         let end = endInfos[this.order + 1];
-        this.endTween = new mw.Tween({z: start}).to({z: end}, time).onUpdate((obj) => {
+        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
             this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
         }).onComplete(() => {
             this.order++;
@@ -652,6 +652,7 @@ export default class ResourceScript extends mw.Script {
      * @param key 宠物key
      */
     public injured(playerId: number, damage: number, key: number): boolean {
+        if (this.curHp <= 0) return true;
         if (isNaN(damage))
             damage = 0;
         if (this.cfgId == 0) return true;
@@ -673,8 +674,8 @@ export default class ResourceScript extends mw.Script {
         SoundManager.instance.playAtkSound(
             GlobalData.Music.resourceDestroy,
             this.curPos);
-        if (this.curHp <= 0) return true;
-        if (this.curHp - damage <= 0) return true;
+
+        // if (this.curHp - damage <= 0) return true;
         return false;
     }
 

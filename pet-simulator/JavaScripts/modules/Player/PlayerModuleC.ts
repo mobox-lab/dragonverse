@@ -265,13 +265,13 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
     /**单个进度升级 */
     public async levelUp(id: number): Promise<void> {
         this.server.net_levelUp(id).then(value => {
-                if (value) {
-                    oTraceError("[升级]");
-                    this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.UpgradeNum, 1);//升级次数
-                } else {
-                    MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
-                }
-            },
+            if (value) {
+                oTraceError("[升级]");
+                this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.UpgradeNum, 1);//升级次数
+            } else {
+                MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
+            }
+        },
         );
 
     }
@@ -283,16 +283,16 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         if (upgrade == null) upgrade = 0;
         switch (id) {
             case 0:
-                GlobalData.LevelUp.levelRangeMap.set(Player.localPlayer.playerId, 1 + upgrade);
+                GlobalData.LevelUp.levelRangeMap.set(Player.localPlayer.playerId, upgrade);
                 break;
             case 1:
-                GlobalData.LevelUp.moreDiamondMap.set(Player.localPlayer.playerId, 1 + upgrade);
+                GlobalData.LevelUp.moreDiamondMap.set(Player.localPlayer.playerId, upgrade);
                 break;
             case 2:
-                GlobalData.LevelUp.petDamageMap.set(Player.localPlayer.playerId, 1 + upgrade);
+                GlobalData.LevelUp.petDamageMap.set(Player.localPlayer.playerId, upgrade);
                 break;
             case 3:
-                GlobalData.LevelUp.petAttackSpeedMap.set(Player.localPlayer.playerId, 1 + upgrade);
+                GlobalData.LevelUp.petAttackSpeedMap.set(Player.localPlayer.playerId, upgrade);
                 break;
             case 4:
                 ModuleService.getModule(PetBagModuleC).addBagCapacity(info.PetNum);

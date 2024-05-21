@@ -23,7 +23,6 @@ import Waterween from "../../depend/waterween/Waterween";
 import AudioController, { SoundIDEnum } from "../../controller/audio/AudioController";
 import AreaManager from "../../depend/area/AreaManager";
 
-
 /**
  * Unified Role State Controller.
  * 统一角色状态控制器.
@@ -43,7 +42,7 @@ export default class UnifiedRoleController extends mw.PlayerState {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient })
+    @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.registerInClient})
     private _playerId: number;
 
     public get playerId(): number {
@@ -103,8 +102,9 @@ export default class UnifiedRoleController extends mw.PlayerState {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Role State Member
-    @mw.Property({ replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove })
+    @mw.Property({replicated: true, onChanged: UnifiedRoleController.prototype.roleIsMove})
     isMove: boolean = false;
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -138,7 +138,6 @@ export default class UnifiedRoleController extends mw.PlayerState {
     private _swimExecuteOnce: boolean = false;
 
     private onEnterFrame(dt: number): void {
-
 
         // const keyBoard = KeyboardManager.getInstance();
 
@@ -259,13 +258,13 @@ export default class UnifiedRoleController extends mw.PlayerState {
             }
         });
         this.initMovementStateMachine();
-        this.character.onMovementModeChange.add(
+        this.character.onStateChanged.add(
             mode => {
                 switch (mode) {
-                    case mw.MovementMode.Walk:
+                    case mw.CharacterStateType.Running:
                         break;
-                    case mw.MovementMode.Swim:
-                    case mw.MovementMode.Fly:
+                    case mw.CharacterStateType.Swimming:
+                    case mw.CharacterStateType.Flying:
                         this._movementState.isSprint = false;
                         break;
                 }
@@ -311,11 +310,11 @@ export default class UnifiedRoleController extends mw.PlayerState {
                 this._movementState.sprintEffectId = EffectService.playOnGameObject(
                     GameServiceConfig.ROLE_SPRINT_EFFECT_GUID,
                     this.character, {
-                    slotType: GameServiceConfig.ROLE_SPRINT_EFFECT_SLOT_TYPE,
-                    loopCount: 0,
-                    scale: GameServiceConfig.ROLE_SPRINT_EFFECT_SCALE,
-                    position: GameServiceConfig.ROLE_SPRINT_EFFECT_POSITION_OFFSET,
-                });
+                        slotType: GameServiceConfig.ROLE_SPRINT_EFFECT_SLOT_TYPE,
+                        loopCount: 0,
+                        scale: GameServiceConfig.ROLE_SPRINT_EFFECT_SCALE,
+                        position: GameServiceConfig.ROLE_SPRINT_EFFECT_POSITION_OFFSET,
+                    });
                 UIService.getUI(MainPanel)?.showSprintUiEffect(true);
             })
             .aU((dt) => {
