@@ -170,7 +170,7 @@ export default class ResourceScript extends mw.Script {
         if (this.curHp <= 0) return;
         this.curHp -= damage;
         if (this.curHp <= 0) {
-            this.curHp = 0;
+            // this.curHp = 0;
             this.net_dead(playerID);
 
             let player: mw.Player = null;
@@ -652,6 +652,7 @@ export default class ResourceScript extends mw.Script {
      * @param key 宠物key
      */
     public injured(playerId: number, damage: number, key: number): boolean {
+        if (this.curHp <= 0) return true;
         if (isNaN(damage))
             damage = 0;
         if (this.cfgId == 0) return true;
@@ -673,8 +674,8 @@ export default class ResourceScript extends mw.Script {
         SoundManager.instance.playAtkSound(
             GlobalData.Music.resourceDestroy,
             this.curPos);
-        if (this.curHp <= 0) return true;
-        if (this.curHp - damage <= 0) return true;
+
+        // if (this.curHp - damage <= 0) return true;
         return false;
     }
 
