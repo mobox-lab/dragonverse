@@ -12,6 +12,7 @@ import bindYoact = Yoact.bindYoact;
 import stopEffect = Yoact.stopEffect;
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 import { MouseLockController } from "../../controller/MouseLockController";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 export default class BagPanel extends BagMain_Generate {
     //#region Constant
@@ -89,11 +90,14 @@ export default class BagPanel extends BagMain_Generate {
 
     protected onShow() {
         this._scrollView.resetSelect();
-
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
+            this.mBtnClose.onClicked.broadcast();
+        });
         MouseLockController.getInstance().needMouseUnlock();
     }
 
     protected onHide() {
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         MouseLockController.getInstance().cancelMouseUnlock();
     }
 

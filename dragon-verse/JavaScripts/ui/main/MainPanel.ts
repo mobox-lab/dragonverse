@@ -1144,7 +1144,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.transferCanvas.visibility = SlateVisibility.Visible;
         this.resetCanvas.visibility = SlateVisibility.Visible;
         this.btnCow.onClicked.clear();
-        this.btnCow.addKey(Keys.Escape);
+        this.btnCow.addKey(Keys.T);
         this.btnCow.onClicked.add(transferCallBack);
 
         this.btnReset.onClicked.clear();
@@ -1155,14 +1155,15 @@ export default class MainPanel extends MainPanel_Generate {
         this.resetCanvas.visibility = SlateVisibility.Collapsed;
         this.transferCanvas.visibility = SlateVisibility.Collapsed;
         this.mapCanvas.visibility = SlateVisibility.Collapsed;
-        this.btnCow.removeKey(Keys.Escape);
+        this.btnCow.removeKey(Keys.T);
+        this.btnReset.onClicked.clear();
     }
 
     public backToMainScene() {
         this.resetCanvas.visibility = SlateVisibility.Visible;
         this.transferCanvas.visibility = SlateVisibility.Collapsed;
         this.mapCanvas.visibility = SlateVisibility.Visible;
-        this.btnCow.removeKey(Keys.Escape);
+        this.btnCow.removeKey(Keys.T);
         this.btnReset.onClicked.clear();
         this.btnReset.onClicked.add(respawn);
     }
