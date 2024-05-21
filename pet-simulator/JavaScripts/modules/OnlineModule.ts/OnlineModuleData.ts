@@ -66,7 +66,6 @@ export class OnlineModuleData extends Subdata {
     }
 
     public addOnlineTime(time: number) {
-				// TODO: 累计在线时间会不会超上限？怎么处理？
 				this.totalOnlineTime += time;
 	      this.save(true);
     }
