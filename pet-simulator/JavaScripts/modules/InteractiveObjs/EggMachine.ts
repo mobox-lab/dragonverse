@@ -178,11 +178,11 @@ class EggM {
         EggMachineTween.instance.onTweenAc.add((isStart: boolean) => {
             if (this.islock()) return;
             if (isStart) {
-                this.petEgg.setVisibility(mw.PropertyStatus.Off);
+                this.petEgg?.setVisibility(mw.PropertyStatus.Off);
                 this.worldUI_1.setVisibility(mw.PropertyStatus.Off);
             }
             else {
-                this.petEgg.setVisibility(mw.PropertyStatus.On);
+                this.petEgg?.setVisibility(mw.PropertyStatus.On);
                 this.setEggState(false);
                 this.playeEff(false);
             }
