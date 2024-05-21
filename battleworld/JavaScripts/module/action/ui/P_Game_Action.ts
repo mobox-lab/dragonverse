@@ -1,6 +1,7 @@
 import { IActionElement } from "../../../config/Action";
 import { GameConfig } from "../../../config/GameConfig";
 import { EModule_Events } from "../../../const/Enum";
+import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import { MouseLockController } from "../../../controller/MouseLockController";
 import { EventManager } from "../../../tool/EventManager";
 import { Notice } from "../../../tool/Notice";
@@ -39,10 +40,14 @@ export class P_Game_Action extends P_Game_Action_Generate {
 
     onShow() {
         MouseLockController.getInstance().needMouseUnlock();
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
+            this.mCloseBtn.onClicked.broadcast();
+        })
     }
 
     onHide() {
         MouseLockController.getInstance().cancelMouseUnlock();
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
     /**

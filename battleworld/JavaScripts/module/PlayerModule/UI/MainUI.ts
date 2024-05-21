@@ -260,8 +260,8 @@ export class MainUI extends Main_HUD_Generate {
             } else if (UIService.getUI(SkillSelectPanel).visible) {
                 UIService.getUI(SkillSelectPanel).mDiscardBtn.onClicked.broadcast();
             } else if (this.mSkillSelectBox.visibility === SlateVisibility.SelfHitTestInvisible) {
-                //最后判断技能选择按钮，优先panel
-                ModuleService.getModule(SkillModuleC).discardSkillLib();
+                // //最后判断技能选择按钮，优先panel
+                // ModuleService.getModule(SkillModuleC).discardSkillLib();
             }
         });
 
