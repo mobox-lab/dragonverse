@@ -17,7 +17,8 @@ import { PillInfo } from "./PickUp/PickUpPill";
 import { DressUpInfo } from "./PickUp/PickUpDressUp";
 import { PickManagerS } from "./PickManagerS";
 import { LandManagerS } from "./Land/LandManagerS";
-
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Gtk from "../../util/GToolkit";
 
 export type LandParce = {
     cfgId: number, obj: GameObject, BloodSwitch: boolean, SkillSwitch: boolean, GoldSwitch: boolean,
@@ -28,7 +29,7 @@ export type LandParce = {
 /**
  * 关卡模块 S
  * 1.拾取物 pickup （属性同步脚本，同步流程，同步随机技能球6个，血包3个，金钱3个）
- * 2.地形运动 && buff 
+ * 2.地形运动 && buff
  */
 export class LandModuleS extends ModuleS<LandModuleC, null> {
 
@@ -38,8 +39,6 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
     /**地形*/
     public landParcess: LandParce[] = [];
 
-
-
     /**回收key */
     private recyclePickUpkey: any = null;
 
@@ -47,6 +46,7 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
     private _skillTime: number = 0;
 
     protected onStart(): void {
+        Log4Ts.log(LandModuleS, `start`);
         this.Init();
     }
 
@@ -78,15 +78,13 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
 
         this.createDestructible();
 
-
         // 初始化显示隐藏的管理类
         LandManagerS.instance.init();
     }
 
-
     /**
-    * 拾取物刷新
-    */
+     * 拾取物刷新
+     */
     private startRefashPlckup() {
         this.recyclePickUpkey = setTimeout(() => {
             this.recycleAllPickUp();
@@ -125,7 +123,7 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
                 PortalSwitch: element.PortalSwitch == 1,
                 LowPillSwitch: element.LowPillSwitch == 1,
                 Destroy: element.Destroy == 1,
-                Trans: element.Trans == 1
+                Trans: element.Trans == 1,
             });
         }
     }
@@ -149,11 +147,19 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
      * @returns 随机位置
      */
     public getRandomPosition(player: Player): Vector {
-        let cfgs = GameConfig.LandParcel.getAllElement().filter((value) => { return value.PortalSwitch == 1 });
+        let cfgs = GameConfig.LandParcel.getAllElement().filter((value) => {
+            return value.PortalSwitch == 1;
+        });
         //透明 && buff 不传送
-        let cfgids: number[] = cfgs.map((value) => { return value.Id })
-            .filter((value) => { return !TriggerLand.landIds.includes(value) })
-            .filter((value) => { return !ShowHiddenLand.landIds.includes(value) });
+        let cfgids: number[] = cfgs.map((value) => {
+            return value.Id;
+        })
+            .filter((value) => {
+                return !TriggerLand.landIds.includes(value);
+            })
+            .filter((value) => {
+                return !ShowHiddenLand.landIds.includes(value);
+            });
 
         let randomIndex = MathUtil.randomInt(0, cfgids.length);
         if (cfgids.length <= 0) {
@@ -161,7 +167,9 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
         }
 
         let guid = GameConfig.LandParcel.getElement(cfgids[randomIndex]).Guid;
-        let objfind: GameObject = this.landParcess.find((value) => { return value?.obj?.gameObjectId == guid })?.obj;
+        let objfind: GameObject = this.landParcess.find((value) => {
+            return value?.obj?.gameObjectId == guid;
+        })?.obj;
         if (!objfind) {
             objfind = GameObject.findGameObjectById(guid);
         }
@@ -197,6 +205,7 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
         await this.randomPickupType(EPickUpType.attribute);
         await this.randomPickupType(EPickUpType.dressUp);
     }
+
     private checkCreSkill(dt: number) {
         this._skillTime += dt;
         if (this._skillTime >= Globaldata.land_creSkill_time) {
@@ -206,49 +215,65 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
             }
         }
     }
+
     /**
      * 随机拾取物一种
      */
     private async randomPickupType(pickUpType: EPickUpType) {
-        let lands: number[] = []
+        let lands: number[] = [];
         let count = 0;
         switch (pickUpType) {
-            case EPickUpType.skill:
-                {
-                    lands = this.landParcess.filter((value) => { return value.SkillSwitch && !PickManagerS.instance.hasLandPick(value.cfgId) }).map((item) => { return item.cfgId });
-                    count = Globaldata.land_pickup_skll_count - PickManagerS.instance.skillNum;
-                }
+            case EPickUpType.skill: {
+                lands = this.landParcess.filter((value) => {
+                    return value.SkillSwitch && !PickManagerS.instance.hasLandPick(value.cfgId);
+                }).map((item) => {
+                    return item.cfgId;
+                });
+                count = Globaldata.land_pickup_skll_count - PickManagerS.instance.skillNum;
+            }
                 break;
-            case EPickUpType.hp:
-                {
-                    lands = this.landParcess.filter((value) => { return value.BloodSwitch }).map((item) => { return item.cfgId });
-                    count = Globaldata.land_pickup_hp_count;
-                }
+            case EPickUpType.hp: {
+                lands = this.landParcess.filter((value) => {
+                    return value.BloodSwitch;
+                }).map((item) => {
+                    return item.cfgId;
+                });
+                count = Globaldata.land_pickup_hp_count;
+            }
                 break;
-            case EPickUpType.money:
-                {
-                    lands = this.landParcess.filter((value) => { return value.GoldSwitch }).map((item) => { return item.cfgId });
-                    count = Globaldata.land_pickup_money_count;
-                }
+            case EPickUpType.money: {
+                lands = this.landParcess.filter((value) => {
+                    return value.GoldSwitch;
+                }).map((item) => {
+                    return item.cfgId;
+                });
+                count = Globaldata.land_pickup_money_count;
+            }
                 break;
-            case EPickUpType.attribute:
-                {
-                    lands = this.landParcess.filter((value) => { return value.LowPillSwitch }).map((item) => { return item.cfgId });
-                    count = Globaldata.land_pickup_primary_pill_count;
-                }
+            case EPickUpType.attribute: {
+                lands = this.landParcess.filter((value) => {
+                    return value.LowPillSwitch;
+                }).map((item) => {
+                    return item.cfgId;
+                });
+                count = Globaldata.land_pickup_primary_pill_count;
+            }
                 break;
-            case EPickUpType.dressUp:
-                {
-                    lands = this.landParcess.filter((value) => { return value.Trans }).map((item) => { return item.cfgId });
-                    count = Globaldata.land_dressup_count;
-                }
+            case EPickUpType.dressUp: {
+                lands = this.landParcess.filter((value) => {
+                    return value.Trans;
+                }).map((item) => {
+                    return item.cfgId;
+                });
+                count = Globaldata.land_dressup_count;
+            }
                 break;
             default:
                 break;
         }
 
         if (lands.length < count) {
-            console.error("随机拾取物数量超过配置数量", pickUpType)
+            console.error("随机拾取物数量超过配置数量", pickUpType);
             return;
         }
 
@@ -260,14 +285,13 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
 
     }
 
-
     /**
-    * 拾取技能
-    * @param value  技能id 
-    */
+     * 拾取技能
+     * @param value  技能id
+     */
     @Decorator.noReply()
     public net_pickUp(onlyGuid: string, pickType: EPickUpType,
-        value: number, pickUpInfo: IPickUpInfo) {
+                      value: number, pickUpInfo: IPickUpInfo) {
 
         // 校验避免重复拾取
         let isHasPickUp = PickManagerS.instance.isHasPickUp(onlyGuid);
@@ -275,79 +299,78 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
         const pickUpGuid = PickManagerS.instance.getPickupPrefab(onlyGuid);
 
         switch (pickType) {
-            case EPickUpType.skill:
-                {
-                    // 拾取技能求
-                    EventManager.instance.call(ESkillEvent_S.SkillEvent_PickUpSkillBall_S, this.currentPlayerId);
-                }
+            case EPickUpType.skill: {
+                // 拾取技能求
+                EventManager.instance.call(ESkillEvent_S.SkillEvent_PickUpSkillBall_S, this.currentPlayerId);
+            }
                 break;
-            case EPickUpType.hp:
-                {
-                    // 使用预制体的 guid 获取 excel 配置
-                    const config = GameConfig.PropDrop.findElement("dropGuid", pickUpGuid);
-                    if (!config) return;
-                    const hp = JSON.parse(config.extends);
-                    // 校验输入和配置是否一致
-                    if (hp.value !== value) return;
+            case EPickUpType.hp: {
+                // 使用预制体的 guid 获取 excel 配置
+                const config = GameConfig.PropDrop.findElement("dropGuid", pickUpGuid);
+                if (!config) return;
+                const hp = JSON.parse(config.extends);
+                // 校验输入和配置是否一致
+                if (hp.value !== value) return;
 
-                    let addvalue = 0;
-                    let maxHp = this.playerModules.getPlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.maxHp);
-                    addvalue = maxHp * value * 0.01;
-                    this.playerModules.addPlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.hp, addvalue);
-                }
+                let addvalue = 0;
+                let maxHp = this.playerModules.getPlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.maxHp);
+                addvalue = maxHp * value * 0.01;
+                this.playerModules.addPlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.hp, addvalue);
+            }
                 break;
-            case EPickUpType.money:
-                {
-                    // 使用预制体的 guid 获取 excel 配置
-                    const config = GameConfig.PropDrop.findElement("dropGuid", pickUpGuid);
-                    if (!config) return;
-                    const money = JSON.parse(config.extends);
-                    // 校验输入和配置是否一致
-                    if (money.value !== value) return;
+            case EPickUpType.money: {
+                // 使用预制体的 guid 获取 excel 配置
+                const config = GameConfig.PropDrop.findElement("dropGuid", pickUpGuid);
+                if (!config) return;
+                const money = JSON.parse(config.extends);
+                // 校验输入和配置是否一致
+                if (money.value !== value) return;
 
-                    this.playerModules.addPlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.money, value);
-                }
+                this.playerModules.addPlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.money, value);
+            }
                 break;
-            case EPickUpType.attribute:
-                {
-                    // 使用预制体的 guid 获取 excel 配置
-                    const config = GameConfig.PropDrop.findElement("dropGuid", pickUpGuid);
-                    if (!config) return;
-                    const attr: PillInfo = JSON.parse(config.extends);
-                    const pillInfo = pickUpInfo as PillInfo;
-                    // 校验输入和配置是否一致
-                    if (attr.attributeID !== pillInfo.attributeID || attr.attributeValue !== pillInfo.attributeValue || attr.duration !== pillInfo.duration) return;
+            case EPickUpType.attribute: {
+                // 使用预制体的 guid 获取 excel 配置
+                const config = GameConfig.PropDrop.findElement("dropGuid", pickUpGuid);
+                if (!config) return;
+                const attr: PillInfo = JSON.parse(config.extends);
+                const pillInfo = pickUpInfo as PillInfo;
+                // 校验输入和配置是否一致
+                if (attr.attributeID !== pillInfo.attributeID || attr.attributeValue !== pillInfo.attributeValue || attr.duration !== pillInfo.duration) return;
 
-                    //计数，一个属性最多只能加5次
-                    let currentAdd = this._pillDurationMap.get(this.currentPlayerId)?.filter(element => element.attributeID === pillInfo.attributeID);
-                    if (currentAdd && currentAdd.length >= 5) return;
+                //计数，一个属性最多只能加5次
+                let currentAdd = this._pillDurationMap.get(this.currentPlayerId)?.filter(element => element.attributeID === pillInfo.attributeID);
+                if (currentAdd && currentAdd.length >= 5) return;
 
-                    //给对应的加成类型加数据
-                    this.playerModules.addPlayerAttr(this.currentPlayerId, pillInfo.attributeID, pillInfo.attributeValue);
-                    let info = this._playerPillMap.get(this.currentPlayerId);
-                    if (!info) {
-                        info = new Map();
-                        this._playerPillMap.set(this.currentPlayerId, info);
-                    }
-                    //计算一下丹药给到的加成
-                    let addValue = info.get(pillInfo.attributeID);
-                    if (!addValue == null) addValue = 0;
-                    addValue += pillInfo.attributeValue;
-                    info.set(pillInfo.attributeID, addValue);
-                    //加入计时
-                    let durationArray = this._pillDurationMap.get(this.currentPlayerId);
-                    if (!durationArray) {
-                        durationArray = [];
-                        this._pillDurationMap.set(this.currentPlayerId, durationArray);
-                    }
-                    durationArray.push({ attributeID: pillInfo.attributeID, value: pillInfo.attributeValue, duration: pillInfo.duration });
+                //给对应的加成类型加数据
+                this.playerModules.addPlayerAttr(this.currentPlayerId, pillInfo.attributeID, pillInfo.attributeValue);
+                let info = this._playerPillMap.get(this.currentPlayerId);
+                if (!info) {
+                    info = new Map();
+                    this._playerPillMap.set(this.currentPlayerId, info);
                 }
+                //计算一下丹药给到的加成
+                let addValue = info.get(pillInfo.attributeID);
+                if (!addValue == null) addValue = 0;
+                addValue += pillInfo.attributeValue;
+                info.set(pillInfo.attributeID, addValue);
+                //加入计时
+                let durationArray = this._pillDurationMap.get(this.currentPlayerId);
+                if (!durationArray) {
+                    durationArray = [];
+                    this._pillDurationMap.set(this.currentPlayerId, durationArray);
+                }
+                durationArray.push({
+                    attributeID: pillInfo.attributeID,
+                    value: pillInfo.attributeValue,
+                    duration: pillInfo.duration,
+                });
+            }
                 break;
-            case EPickUpType.dressUp:
-                {
-                    const dressUpInfo = pickUpInfo as DressUpInfo;
-                    EventManager.instance.call(EModule_Events.land_pickUp_dressUp, this.currentPlayerId, dressUpInfo);
-                }
+            case EPickUpType.dressUp: {
+                const dressUpInfo = pickUpInfo as DressUpInfo;
+                EventManager.instance.call(EModule_Events.land_pickUp_dressUp, this.currentPlayerId, dressUpInfo);
+            }
                 break;
             default:
                 break;
@@ -357,7 +380,6 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
         PickManagerS.instance.recyclePickUp(onlyGuid);
 
     }
-
 
     /**
      * 回收所有拾取物
@@ -369,7 +391,7 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
     /**
      * 玩家死亡，清除丹药加成的属性
      * @param playerID 玩家id
-     * @param sceneID 
+     * @param sceneID
      */
     private listen_player_deadState(playerID: number, sceneID: number) {
         //玩家死亡后，需要清除丹药给到的加成
@@ -475,8 +497,8 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
     private recycleParceskey: any = null;
 
     /**
-    * 地形刷新
-    */
+     * 地形刷新
+     */
     private startMoveParces() {
         this.recycleParceskey = setTimeout(() => {
             this.recycleAllLand();
@@ -498,22 +520,28 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
         }, (Globaldata.land_Parcess_refash_time - Globaldata.land_Parcess_refash__tip_time) * 1000);
     }
 
-    /** 
+    /**
      * 随机地形
-     * 
+     *
      */
     private async creatParces() {
         //地块运动和显隐
         let runCfgArr = GameConfig.LandRun.getAllElement();
         let cfg = runCfgArr[MathUtil.randomInt(0, runCfgArr.length)];
 
-        let landParcess = this.landParcess.filter((value) => { return value.RunSwitch == true }).map((item) => { return item.cfgId });
+        let landParcess = this.landParcess.filter((value) => {
+            return value.RunSwitch == true;
+        }).map((item) => {
+            return item.cfgId;
+        });
         let landParcessRandomIds = util.getRandomCountArrayFormArray(landParcess, Globaldata.land_Parcess_count);
 
         for (let index = 0; index < cfg.landId.length; index++) {
             const id = cfg.landId[index];
 
-            let parent: GameObject = this.landParcess.find((value) => { return value.cfgId == id }).obj;
+            let parent: GameObject = this.landParcess.find((value) => {
+                return value.cfgId == id;
+            }).obj;
 
             if (cfg.runtype == 2) {
                 //平移
@@ -545,15 +573,20 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
 
                 if (dir == 1) {
                     speed = new Vector(speedValue, 0, 0);
-                } if (dir == 2) {
+                }
+                if (dir == 2) {
                     speed = new Vector(-speedValue, 0, 0);
-                } if (dir == 3) {
+                }
+                if (dir == 3) {
                     speed = new Vector(0, speedValue, 0);
-                } if (dir == 4) {
+                }
+                if (dir == 4) {
                     speed = new Vector(0, -speedValue, 0);
-                } if (dir == 5) {
+                }
+                if (dir == 5) {
                     speed = new Vector(0, 0, speedValue);
-                } if (dir == 6) {
+                }
+                if (dir == 6) {
                     speed = new Vector(0, 0, -speedValue);
                 }
 
@@ -583,8 +616,11 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
     /**
      * 随机无运动逻辑的地块位置
      */
-    public noRunRandom(num: number): Vector[] {
-        let landParcess = this.landParcess.filter((value) => { return !value.RunSwitch && value.cfgId <= 100 });
+    public noRunRandom(num: number): mw.Vector[] | undefined {
+        let landParcess = this.landParcess?.filter((value) => {
+            return !value.RunSwitch && value.cfgId <= 100;
+        });
+        if (Gtk.isNullOrEmpty(landParcess)) return undefined;
         let result: Vector[] = [];
         while (num--) {
             let index = MathUtil.randomInt(0, landParcess.length);
@@ -629,7 +665,11 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
      * 重新创建新的破坏物
      */
     private async createDestructible() {
-        let landParcessIds = this.landParcess.filter((value) => { return value.Destroy == true }).map((item) => { return item.cfgId });
+        let landParcessIds = this.landParcess.filter((value) => {
+            return value.Destroy == true;
+        }).map((item) => {
+            return item.cfgId;
+        });
         let landParcessRandomIds = util.getRandomCountArrayFormArray(landParcessIds, Globaldata.land_destroy_count);
         for (let i = 0; i < landParcessRandomIds.length; i++) {
             const prefab = await GameObjPool.asyncSpawn("987B143C437B3C52A6A3E7AF24399447", GameObjPoolSourceType.Prefab);
@@ -669,14 +709,22 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
 
     /**
      * 创建地形BUFF
-     * @param landParcessRandomIds 
+     * @param landParcessRandomIds
      */
     private async creatLandBuff(landParcessRandomIds: number[]) {
-        let landParcessBuff = this.landParcess.filter((value) => { return value.BuffSwitch == true }).map((item) => { return item.cfgId });
-        landParcessBuff = landParcessBuff.filter((value) => { return !landParcessRandomIds.includes(value) });
+        let landParcessBuff = this.landParcess.filter((value) => {
+            return value.BuffSwitch == true;
+        }).map((item) => {
+            return item.cfgId;
+        });
+        landParcessBuff = landParcessBuff.filter((value) => {
+            return !landParcessRandomIds.includes(value);
+        });
         let landParcessBuffRandomIds = util.getRandomCountArrayFormArray(landParcessBuff, Globaldata.land_Parcess_Buffcount);
 
-        let buffIds = GameConfig.LandBuff.getAllElement().map((item) => { return item.Id });// let buffRandomIds = util.getRandomCountArrayFormArray(buffIds, Globaldata.land_Parcess_Buffcount);
+        let buffIds = GameConfig.LandBuff.getAllElement().map((item) => {
+            return item.Id;
+        });// let buffRandomIds = util.getRandomCountArrayFormArray(buffIds, Globaldata.land_Parcess_Buffcount);
         for (let index = 0; index < landParcessBuffRandomIds.length; index++) {
             const element = landParcessBuffRandomIds[index];
             let t_index = MathUtil.randomInt(0, buffIds.length);   // let id = buffRandomIds[index];
@@ -703,11 +751,7 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
         this.landParcessBuffs = [];
     }
 
-
-
-
     //*********************************************************测试gm************************************************************ */
-
 
     private land: PickUp | MoveLand | ShowHiddenLand | TriggerLand = null;
 
@@ -727,23 +771,20 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
         }
 
         switch (pickType) {
-            case 1:
-                {
-                    this.land = await mw.Script.spawnScript(PickUp, true) as PickUp;
-                    this.land.creat(landId, EPickUpType.hp);
-                }
+            case 1: {
+                this.land = await mw.Script.spawnScript(PickUp, true) as PickUp;
+                this.land.creat(landId, EPickUpType.hp);
+            }
                 break;
-            case 2:
-                {
-                    this.land = await mw.Script.spawnScript(PickUp, true) as PickUp;
-                    this.land.creat(landId, EPickUpType.money);
-                }
+            case 2: {
+                this.land = await mw.Script.spawnScript(PickUp, true) as PickUp;
+                this.land.creat(landId, EPickUpType.money);
+            }
                 break;
-            case 3:
-                {
-                    this.land = await mw.Script.spawnScript(PickUp, true) as PickUp;
-                    this.land.creat(landId, EPickUpType.skill);
-                }
+            case 3: {
+                this.land = await mw.Script.spawnScript(PickUp, true) as PickUp;
+                this.land.creat(landId, EPickUpType.skill);
+            }
                 break;
             default:
                 break;
@@ -755,7 +796,9 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
      */
     public async gm_land(gmtype: number, landId: number, x: number, y: number, z: number, time: number) {
 
-        let go: GameObject = this.landParcess.find((value) => { return value.cfgId == landId }).obj;
+        let go: GameObject = this.landParcess.find((value) => {
+            return value.cfgId == landId;
+        }).obj;
 
         if (this.land) {
             this.land.recycle();
@@ -766,17 +809,15 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
         }
 
         switch (gmtype) {
-            case 1:
-                {
-                    this.land = new MoveLand();
-                    this.land.creat(go, new Vector(x, y, z), time);
-                }
+            case 1: {
+                this.land = new MoveLand();
+                this.land.creat(go, new Vector(x, y, z), time);
+            }
                 break;
-            case 2:
-                {
-                    this.land = await mw.Script.spawnScript(ShowHiddenLand, true) as ShowHiddenLand;
-                    this.land.creat(landId);
-                }
+            case 2: {
+                this.land = await mw.Script.spawnScript(ShowHiddenLand, true) as ShowHiddenLand;
+                this.land.creat(landId);
+            }
                 break;
             default:
                 break;
@@ -824,8 +865,8 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
     }
 
     /**
-      * gm 重启地形效果
-      */
+     * gm 重启地形效果
+     */
     public gm_reStart() {
 
         this.gm_recycle();
@@ -837,8 +878,8 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
     }
 
     /**
-     * 编辑器BUG: 
-     * 父类有旋转，子节点服务器调用物体坐标时候，物体会抖动一下产生偏移 
+     * 编辑器BUG:
+     * 父类有旋转，子节点服务器调用物体坐标时候，物体会抖动一下产生偏移
      */
     public gm_loglandPos(id: number) {
         let guid = GameConfig.LandParcel.getElement(id).Guid;
