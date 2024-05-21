@@ -74,21 +74,7 @@ export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
 
         let curDay = utils.getTodayNumber();
         let curHour = utils.getTodayHour();
-
-        if (curDay > data.curLoginTime) {  //新的一天
-            if (data.curLoginHour < 4 || curHour > 4) {
-                data.setCurDay(curDay, curHour, true);
-                this.playerModuleS.addGold(player.playerId, 1, GlobalEnum.CoinType.SummerGold);
-                return;
-            }
-            data.setCurDay(curDay, curHour, false);
-        } else {  //不是新的一天
-            if (data.curLoginHour < 4 && curHour >= 4) {
-                data.setCurDay(curDay, curHour, true);
-                return;
-            }
-            data.setCurDay(curDay, curHour, false);
-        }
+     		data.setCurDay(curDay, curHour);
     }
 
     net_requestAccept(id: number) {

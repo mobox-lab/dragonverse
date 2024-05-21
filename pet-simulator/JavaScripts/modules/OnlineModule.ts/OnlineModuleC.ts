@@ -61,7 +61,7 @@ export class OnlineModuleC extends ModuleC<OnlineModuleS, OnlineModuleData> {
             for (let i = curId; i < len; i++) {
                 this.rewardPanel.itemArr[i].startCountDown(
                     RewardState.counting,
-                    this.data.todayOnlineTime);
+                    this.data.totalOnlineTime);
             }
         }
 
