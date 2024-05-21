@@ -30,6 +30,9 @@ export class SceneWall {
 
     private async findObj() {
         this.gameObj = await GameObject.asyncFindGameObjectById(this.cfg.Guid);
+        if (this.gameObj == null) {
+            return;
+        }
         this.wall = this.gameObj.getChildByName("墙") as mw.GameObject;
         this.worldUI = this.gameObj.getChildByName("世界UI") as mw.UIWidget;
 
