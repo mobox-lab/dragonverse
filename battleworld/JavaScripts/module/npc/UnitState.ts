@@ -1,4 +1,4 @@
-﻿/** 
+﻿/**
  * @Author       : fengqi.han
  * @Date         : 2023-11-30 10:06:15
  * @LastEditors  : fengqi.han
@@ -20,6 +20,7 @@ import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { UnitStateMachine } from "./UnitStateMachine";
 import { MascotModuleS } from "./mascotNpc/MascotModuleS";
+import Gtk from "../../util/GToolkit";
 
 export enum EUnitState {
     /** 正常寻路 */
@@ -119,6 +120,7 @@ export abstract class UnitStateBase implements IFSMState {
             this._pathFailNum++;
             if (this._pathFailNum >= 8) {
                 let posArr = ModuleService.getModule(LandModuleS).noRunRandom(1);
+                if (Gtk.isNullOrUndefined(posArr))return;
                 this.model.worldTransform.position = posArr[0];
                 this._pathFailNum = 0;
             }
@@ -249,7 +251,7 @@ export class UnitStateBlowUp extends UnitStateBase {
     }
 }
 
-/** 
+/**
  * 获取最近的玩家的距离
  */
 function getNearPlayerXY(center: mw.Vector): [mw.Player | undefined, number] {
