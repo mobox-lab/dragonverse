@@ -444,7 +444,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttrIT(beHurtId, Attribute.EnumAttributeType.hp, Math.abs(atkVal));
             this.dispatchSceneUnitInjure(
                 beHurtId,
-                [{ from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal }],
+                [{from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal}],
                 [beHurtId],
             );
             return;
@@ -654,7 +654,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttr(playerID, Attribute.EnumAttributeType.hp, drainLifeHp);
             this.dispatchSceneUnitInjure(
                 playerID,
-                [{ from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal }],
+                [{from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal}],
                 [playerID],
             );
         }
@@ -1838,7 +1838,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             // 结算杀戮
             this.settle_massacre(sceneID, playerID);
             // 段位分结算
-            this.rankScoreCal(playerID, sceneID);
+            this.rankScoreCal(sceneID, playerID);
         }
 
         this.setPlayerDeadState(playerID, sceneID);
