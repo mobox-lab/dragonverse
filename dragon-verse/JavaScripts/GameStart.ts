@@ -44,6 +44,15 @@ import EcologyModuleData, { EcologyModuleC, EcologyModuleS } from "./module/ecol
 import DvStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
 import GuideModuleData, { GuideModuleC, GuideModuleS } from "./module/guide/GuideModule";
 import GameServiceConfig from "./const/GameServiceConfig";
+import GMHUD_Generate from "./ui-generate/gm/GMHUD_generate";
+
+AddGMCommand("Hide GM",
+    (player, value) => {
+        Log4Ts.log({name: "GM"}, `Hide GM Panel by cmd.`);
+        mw.UIService.hide(GMHUD_Generate);
+    },
+    undefined,
+    "Root");
 
 AddGMCommand("TP 传送",
     null,
