@@ -280,7 +280,7 @@ class EggM {
 
     private async findObj() {
         this.petEgg = await GameObject.asyncFindGameObjectById(this.cfg.SceneID[1]);
-
+        if (this.petEgg == null) return;
         this.gameObject = this.petEgg.parent.getChildByName("扭蛋交互")
 
         this.trigger = this.gameObject.getChildByName("触发器") as mw.Trigger;
