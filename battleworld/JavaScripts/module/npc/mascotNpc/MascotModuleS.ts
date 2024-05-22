@@ -46,7 +46,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
         Log4Ts.log(MascotModuleS, `start`);
         this._cfg = GameConfig.MascotNpc.getAllElement();
         for (let i = 0; i < this._cfg.length; i++) {
-            this._createRegulator.push(new Regulator(this._cfg[i].InterTime ?? GtkTypes.Interval.PerMin));
+            this._createRegulator.push(new Regulator(this._cfg[i].InterTime * 1e3 ?? GtkTypes.Interval.PerMin));
             this._npcNum.push(0);
         }
 
@@ -153,7 +153,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
                     const buffId = motionEffectCfg.BuffID[index];
 
                     ModuleService.getModule(BuffModuleS).createBuff(buffId, attackId, beAttackIds[i],
-                        {castPId: attackId, buffParamType: null, value: null, pos: hurtData.triggerPos});
+                        { castPId: attackId, buffParamType: null, value: null, pos: hurtData.triggerPos });
                 }
             }
 
