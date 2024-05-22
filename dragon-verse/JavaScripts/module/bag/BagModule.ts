@@ -394,8 +394,7 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall() {
-        return !GameServiceConfig.isRelease ||
-            !GameServiceConfig.isBeta ||
+        return !(GameServiceConfig.isRelease || GameServiceConfig.isBeta) ||
             this.dragonBallYoact.count > 0;
     }
 
