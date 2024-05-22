@@ -46,6 +46,7 @@ import { AuthModuleS } from "../auth/AuthModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Gtk from "../../util/GToolkit";
+import { AreaModuleS } from "../AreaModule/AreaModuleS";
 
 /**玩家伤害信息 */
 export type THurtData = {
@@ -1990,6 +1991,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             }
             otherClient.net_otherPlayerResurgence(playerID);
         }
+        //传送改s端
+        let cfg = GameConfig.Area.getElement(EAreaId.Safe);
+        if (cfg == null || cfg.bornPoint == null) {
+            return;
+        }
+        player.character.worldTransform.position = cfg.bornPoint;
+        // ModuleService.getModule(AreaModuleS).setPlayerAreaId(playerID, EAreaId.Safe);
 
         this.getClient(playerID).net_Resurgence(sceneID);
         // 可移动

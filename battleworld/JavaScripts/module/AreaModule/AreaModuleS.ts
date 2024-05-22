@@ -156,7 +156,7 @@ export class AreaModuleS extends ModuleS<AreaModuleC, null> {
         this.setPlayerAreaId(this.currentPlayerId, areaId);
     }
 
-    private setPlayerAreaId(pId: number, areaId: EAreaId) {
+    public setPlayerAreaId(pId: number, areaId: EAreaId) {
         EventManager.instance.call(EAttributeEvents_S.attr_change_s, pId, Attribute.EnumAttributeType.areaId, areaId);
         EventManager.instance.call(EModule_Events_S.area_changeArea, pId, areaId);
 
