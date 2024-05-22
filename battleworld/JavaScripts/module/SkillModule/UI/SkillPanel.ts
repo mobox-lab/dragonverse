@@ -10,6 +10,7 @@ import ItemSkillSelect_Generate from "../../../ui-generate/Skill/ItemSkillSelect
 import SkillPanel_Generate from "../../../ui-generate/Skill/SkillPanel_generate";
 import { AnalyticsTool, EClickEvent, EFirstDo } from "../../AnalyticsModule/AnalyticsTool";
 import { AttributeModuleC } from "../../AttributeModule/AttributeModuleC";
+import { Attribute } from "../../PlayerModule/sub_attribute/AttributeValueObject";
 import { SkillModuleC } from "../SkillModuleC";
 import { SkillSelectPanel } from "./SkillSelectPanel";
 
@@ -131,7 +132,7 @@ export class SkillPanel extends SkillPanel_Generate {
             }
 
             UIService.hideUI(this);
-
+            EventManager.instance.call(EPlayerEvents_C.Player_RefreshSkillPoints);
             // 埋点
             AnalyticsTool.send_ts_action_click(EClickEvent.skillretract);
 
@@ -145,9 +146,9 @@ export class SkillPanel extends SkillPanel_Generate {
             if (this.isGuiding == true) {
                 return;
             }
-
-            UIService.hideUI(this);
+            // this.mAttribute.setAttrValue(Attribute.EnumAttributeType.weaponSkillPoints, this.mAttribute.getAttributeValue(Attribute.EnumAttributeType.weaponSkillPoints) - 1);
             this.mSkillModule.discardSkillLib();
+            UIService.hideUI(this);
         });
 
         // 显示详情
@@ -207,7 +208,7 @@ export class SkillPanel extends SkillPanel_Generate {
 
         EventManager.instance.call(EPlayerEvents_C.Player_RefreshSkillPoints);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
-            UIService.hideUI(this);
+            this.mCollapsedBtn.onClicked.broadcast();
         })
 
         MouseLockController.getInstance().needMouseUnlock();
@@ -226,7 +227,7 @@ export class SkillPanel extends SkillPanel_Generate {
     }
 
     onHide() {
-        EventManager.instance.call(EPlayerEvents_C.Player_RefreshSkillPoints);
+        // EventManager.instance.call(EPlayerEvents_C.Player_RefreshSkillPoints);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
 
         this.onAction_closePanel.call();

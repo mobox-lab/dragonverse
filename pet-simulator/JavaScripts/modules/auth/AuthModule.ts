@@ -597,6 +597,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * 玩家体力恢复预期时长表. s
      */
     public playerStaminaRecoveryMap: Map<number, number> = new Map();
+
+    /**
+     * 用户 PS 上报函数.
+     * @type {Map<string, () => void>}
+     */
+    public userPSRankDataReporter: Map<string, () => void> = new Map();
+
+    /**
+     * 用户 BW 上报函数.
+     * @type {Map<string, () => void>}
+     */
+    public userBWRankDataReporter: Map<string, () => void> = new Map();
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -891,6 +904,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             round,
         };
 
+        Gtk.waitDo(requestParam,
+            this.userPSRankDataReporter.get(userId));
+    }
+
+    private async innerReportPetSimulatorRankData(requestParam: PetSimulatorRankDataReq) {
         this.correspondHandler<QueryResp>(requestParam,
             AuthModuleS.RELEASE_P_S_RANK_REPORT_URL,
             AuthModuleS.TEST_P_S_RANK_REPORT_URL,
