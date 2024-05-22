@@ -127,7 +127,13 @@ export default class ResourceScript extends mw.Script {
         // let petDamage = GameConfig.Upgrade.getElement(3)
         //         .Upgradenum[DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(3) ]
         //     ?? 1;
-        let petDamage = DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(3) + 1;
+        //在存档里是下标从0开始
+        let level = DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(2);
+        //在表里是下标从1开始
+        let info = GameConfig.Upgrade.getElement(3);
+        let upgrade = info.Upgradenum[level - 1];
+        if (upgrade == null) upgrade = 0;
+        let petDamage = upgrade + 1;
         // damage = this.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(this.key).damageAdd / 100);
         //this.attackDamage 得取对应的宠物
         //校验一下key在不在背包里
