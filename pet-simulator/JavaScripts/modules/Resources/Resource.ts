@@ -384,6 +384,7 @@ export default class ResourceScript extends mw.Script {
     /**
      * 通过血量判断攻击阶段.
      * @param {number} playerId
+     * @param ratio 倍率.
      */
     private checkHpStage(playerId: number, ratio: number = 1) {
         if (this._cfgId == 0 || !this.cfg) return;
@@ -400,15 +401,15 @@ export default class ResourceScript extends mw.Script {
 
             this.playCritEffectByLevel();
 
-            let myRate = this.getDamageRate(playerId);
             this.playCritEffectByLast();
             this.playReward(
                 playerId,
                 GlobalEnum.ResourceAttackStage.Destroy,
-                (this.rewardGold - this.guaShaRewardGold) * myRate * ratio,
-                (this.rewardGem - this.guaShaRewardGem) * myRate * ratio);
+                (this.rewardGold - this.guaShaRewardGold) * ratio,
+                (this.rewardGem - this.guaShaRewardGem) * ratio);
             this.stopGuaSha(playerId);
-            ModuleService.getModule(AchievementModuleS).broadcastAchievement_destroy(playerId, this.resourceType);
+            ModuleService.getModule(AchievementModuleS)
+                .broadcastAchievement_destroy(playerId, this.resourceType);
             this.guaShaRewardGem = 0;
             this.guaShaRewardGold = 0;
         }
