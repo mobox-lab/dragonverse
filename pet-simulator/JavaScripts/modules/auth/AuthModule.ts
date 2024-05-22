@@ -208,7 +208,7 @@ interface QueryStaminaLimitRespData {
 /**
  * 汇报 宠物模拟器排行榜 请求参数.
  */
-interface PetSimulatorRankDataReq {
+interface UpdatePetSimulatorRankDataReq {
     userId: string;
     userName: string;
     userAvatar: string;
@@ -602,13 +602,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * 用户 PS 上报函数.
      * @type {Map<string, () => void>}
      */
-    public userPSRankDataReporter: Map<string, () => void> = new Map();
+    public userPSRankDataReporter: Map<string, (requestParam: UpdatePetSimulatorRankDataReq) => void> = new Map();
 
     /**
      * 用户 BW 上报函数.
      * @type {Map<string, () => void>}
      */
-    public userBWRankDataReporter: Map<string, () => void> = new Map();
+    public userBWRankDataReporter: Map<string, (requestParam: UpdateBattleWorldRankDataReq) => void> = new Map();
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -650,15 +650,22 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
 
-        const playerData = this.getPlayerData(player);
-        if (playerData) {
-        } else {
-            Log4Ts.log(AuthModuleS, `there is no data for player ${player.playerId}.`);
-        }
+        mw.setTimeout(() => {
+                this.userPSRankDataReporter.delete(player.userId);
+                this.userBWRankDataReporter.delete(player.userId);
+            },
+            GameServiceConfig.REPORT_REQUEST_WAIT_TIME * 2);
     }
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
+        this.userPSRankDataReporter.set(player.userId,
+            requestParam => {
+                this.innerReportPetSimulatorRankData(requestParam);
+            });
+        this.userBWRankDataReporter.set(player.userId,
+            requestParam =>
+                this.innerReportBattleWorldRankData(requestParam));
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -893,7 +900,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const player = Player.getPlayer(playerId);
         const userName = player.nickname;
         const userAvatar = player["avatarUrl"];
-        const requestParam: PetSimulatorRankDataReq = {
+        const requestParam: UpdatePetSimulatorRankDataReq = {
             userId,
             userName,
             userAvatar,
@@ -905,10 +912,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         };
 
         Gtk.waitDo(requestParam,
-            this.userPSRankDataReporter.get(userId));
+            this.userPSRankDataReporter.get(userId),
+            GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
     }
 
-    private async innerReportPetSimulatorRankData(requestParam: PetSimulatorRankDataReq) {
+    private async innerReportPetSimulatorRankData(requestParam: UpdatePetSimulatorRankDataReq) {
         this.correspondHandler<QueryResp>(requestParam,
             AuthModuleS.RELEASE_P_S_RANK_REPORT_URL,
             AuthModuleS.TEST_P_S_RANK_REPORT_URL,
@@ -932,6 +940,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             recordTime: Math.floor(Date.now() / 1000),
         };
 
+        Gtk.waitDo(requestParam,
+            this.userBWRankDataReporter.get(userId),
+            GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
+
+    }
+
+    public async innerReportBattleWorldRankData(requestParam: UpdateBattleWorldRankDataReq) {
         this.correspondHandler<QueryResp>(requestParam,
             AuthModuleS.RELEASE_B_W_RANK_REPORT_URL,
             AuthModuleS.TEST_B_W_RANK_REPORT_URL,

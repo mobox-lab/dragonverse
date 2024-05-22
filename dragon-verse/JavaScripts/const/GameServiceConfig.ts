@@ -136,6 +136,12 @@ export default class GameServiceConfig {
      */
     public static readonly GUARD_PATROL_INTERVAL = GToolkit.timeConvert(3, GtkTypes.Tf.M, GtkTypes.Tf.Ms);
 
+    /**
+     * 上报等待间隔.
+     * @type {number}
+     */
+    public static readonly REPORT_REQUEST_WAIT_TIME = 1e3;
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Generate
