@@ -177,6 +177,11 @@ export default class GameServiceConfig {
     public static readonly PARTNER_DRAGON_FOLLOW_OFFSET = 500;
 
     /**
+     * 伙伴龙 刷新跟随距离 倍率.
+     */
+    public static readonly PARTNER_DRAGON_FOLLOW_OFFSET_RATIO = 3;
+
+    /**
      * 伙伴龙 跟随终点 容纳偏移 噪音.
      */
     public static readonly PARTNER_DRAGON_FOLLOW_NOISE = 50;

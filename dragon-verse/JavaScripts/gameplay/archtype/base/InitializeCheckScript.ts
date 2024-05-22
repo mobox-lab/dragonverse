@@ -18,8 +18,6 @@ export abstract class InitializeCheckerScript extends mw.Script {
 
     protected onStart(): void {
         let proto = this.constructor["__proto__"];
-        const name = proto.name;
-
         while (proto) {
             let name = proto.name;
             if (name === "InitializeCheckerScript") {

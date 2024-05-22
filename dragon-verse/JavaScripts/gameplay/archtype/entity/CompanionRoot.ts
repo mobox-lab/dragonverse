@@ -2,16 +2,16 @@ import { State } from "../../../depend/hfsm/State";
 import { StateMachine } from "../../../depend/hfsm/StateMachine";
 import i18n from "../../../language/i18n";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
-import GToolkit from "../../../util/GToolkit";
+import GToolkit, { Regulator } from "../../../util/GToolkit";
 import { SyncRootEntity } from "../base/SyncRootEntity";
 import { CompanionStateEnum, CompanionViewController } from "./CompanionController";
 import { CompanionState } from "./CompanionState";
 import DragonEntity from "./DragonEntity";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../../const/GameServiceConfig";
+import UnifiedRoleController from "../../../module/role/UnifiedRoleController";
 
 class BaseCompanionState extends State<CompanionStateEnum> {
-
 
     declare fsm: CompanionLogicController;
 
@@ -26,13 +26,11 @@ class InitializeState extends BaseCompanionState {
         });
     }
 
-
 }
 
 class CompanionIdleState extends BaseCompanionState {
 
     protected onEnter(): void {
-
 
     }
 
@@ -45,15 +43,11 @@ class CompanionIdleState extends BaseCompanionState {
         }
     }
 
-
 }
-
 
 class CompanionFollowState extends BaseCompanionState {
 
-
     private printSampler: mw.Vector[] = [];
-
 
     public onEnter(): void {
 
@@ -62,14 +56,18 @@ class CompanionFollowState extends BaseCompanionState {
     }
 
     protected onLogic(): void {
+        const localPlayer = Player.localPlayer;
+        let follower: mw.Character = this.fsm.follower as mw.Character;
+
+        if (localPlayer?.character === follower &&
+            ((this.fsm.target as mw.Character)?.maxWalkSpeed ?? -1) !== (follower?.maxWalkSpeed ?? -2)) {
+            (this.fsm.target as mw.Character).maxWalkSpeed = follower.maxWalkSpeed;
+        }
 
         let shift = this.printSampler.shift();
         if (shift) {
             this.printSampler.push(shift);
         }
-
-        let follower: mw.Character = this.fsm.follower as mw.Character;
-
 
         if ((!shift || shift.squaredDistanceTo(this.fsm.follower.worldTransform.position) > GameServiceConfig.PARTNER_DRAGON_FOLLOW_NOISE ** 2) &&
             (follower.isMoving && !follower.isJumping)) {
@@ -81,18 +79,17 @@ class CompanionFollowState extends BaseCompanionState {
             }
         }
 
-
         let distance = this.fsm.target.worldTransform.position.subtract(this.fsm.follower.worldTransform.position);
         distance.z = 0;
 
-        if (distance.sqrLength >= (GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET * 2) ** 2 && this.printSampler.length >= 5) {
+        if (distance.sqrLength >= (GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET * GameServiceConfig.PARTNER_DRAGON_FOLLOW_OFFSET_RATIO) ** 2 &&
+            this.printSampler.length >= 5) {
             this.fsm.target.worldTransform.position = this.fsm.selectInitializePoint();
         }
 
         if (distance.sqrLength < (this.fsm.state.offsetNum) ** 2) {
             this.fsm.requestStateChange(CompanionStateEnum.Idle, true);
         }
-
 
     }
 
@@ -116,7 +113,6 @@ class CompanionFollowState extends BaseCompanionState {
 
 }
 
-
 export class CompanionLogicController extends StateMachine<void, CompanionStateEnum, string> {
 
     public follower: mw.GameObject;
@@ -126,7 +122,6 @@ export class CompanionLogicController extends StateMachine<void, CompanionStateE
     public target: mw.GameObject;
 
     public state: CompanionState;
-
 
     setup(follower: mw.GameObject, target: mw.GameObject, reporter: CompanionRoot) {
 
@@ -141,7 +136,6 @@ export class CompanionLogicController extends StateMachine<void, CompanionStateE
         this.target.worldTransform.position = this.selectInitializePoint();
         this.init();
     }
-
 
     protected changeState(name: CompanionStateEnum): void {
         super.changeState(name);
@@ -173,7 +167,6 @@ export class CompanionLogicController extends StateMachine<void, CompanionStateE
             .add(Camera.currentCamera.worldTransform.position);
     }
 
-
     private reportCompanionState() {
         this.reporter.changeLogicState(this.state);
     }
@@ -182,10 +175,11 @@ export class CompanionLogicController extends StateMachine<void, CompanionStateE
 @mw.Component
 export default class CompanionRoot extends SyncRootEntity<CompanionState> {
 
-
     private _logicController: CompanionLogicController;
 
     public _wing: mw.GameObject;
+
+    private _testRegulator: Regulator = new Regulator(1e3);
 
     protected async onInitialize() {
         if (mw.SystemUtil.isClient()) {
@@ -210,7 +204,6 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
                 }, 10);
             }
 
-
             prefab.addMovement(mw.Vector.forward);
             prefab.maxWalkSpeed = GameServiceConfig.PARTNER_DRAGON_MAX_WALK_SPEED;
             if (this.isLocalPlayer()) {
@@ -228,11 +221,12 @@ export default class CompanionRoot extends SyncRootEntity<CompanionState> {
                 value.setHosted(this);
             });
 
-
         }
     }
 
     protected onUpdate(dt: number): void {
-        this._logicController?.logic();
+        if (this._testRegulator.request()) {
+            this._logicController?.logic();
+        }
     }
 }
