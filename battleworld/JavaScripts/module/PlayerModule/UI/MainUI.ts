@@ -64,7 +64,7 @@ let currentLockType: MouseLockType = MouseLockType.Press;
 AddGMCommand(
     "Mouse Lock Type",
     (player, value) => {
-        const v = Gtk.isNullOrUndefined(value) ? undefined : Number(value);
+        const v = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
         let type: MouseLockType;
         if (v === 0 || v === 1) {
             type = v;
@@ -79,7 +79,12 @@ AddGMCommand(
             }
         }
 
-        Log4Ts.log(MainUI, `request to change mouse lock type to ${MouseLockType[type]}.`);
+        Log4Ts.log(MainPanel,
+            `request to change mouse lock type to ${MouseLockType[type]}.`,
+            `option param:`,
+            `   0: ${MouseLockType[MouseLockType.Press]}`,
+            `   1: ${MouseLockType[MouseLockType.Tap]}`,
+        );
         if (type === currentLockType) return;
         else currentLockType = type;
 
