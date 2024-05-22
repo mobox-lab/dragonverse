@@ -69,19 +69,19 @@ AddGMCommand(
         KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.RightAlt);
         KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.RightCommand);
         if (currentLockType === MouseLockType.Press) {
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightCommand, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(this, Keys.RightCommand, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.LeftCommand, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.RightAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.RightCommand, () => (InputUtil.isLockMouse = true));
         } else {
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
         }
     },
     undefined,
