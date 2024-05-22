@@ -45,7 +45,7 @@ let currentLockType: MouseLockType = MouseLockType.Press;
 AddGMCommand(
     "Mouse Lock Type",
     (player, value) => {
-        const v = Number(value);
+        const v = Gtk.isNullOrUndefined(value) ? undefined : Number(value);
         let type: MouseLockType;
         if (v === 0 || v === 1) {
             type = v;
