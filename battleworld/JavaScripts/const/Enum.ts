@@ -478,8 +478,8 @@ export enum EModule_Events_S {
     /** 门票支付成功*/
     payTicketSuccessful = "pay_ticket_successful",
 
-    /**扣体力成功 */
-    reduceEnergySuccessful = "reduce_energy_successful",
+    /**进入战场事件 */
+    enterGame = "enterGame",
 }
 
 export enum EBagSkillEvents {

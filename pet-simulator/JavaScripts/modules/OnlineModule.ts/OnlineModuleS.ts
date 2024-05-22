@@ -65,14 +65,15 @@ export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
             this.playerOnlineTimeMap.delete(id);
             data.addOnlineTime(onlineTime);
             console.log("lwj  玩家退出 游玩时间：" + onlineTime);
+						console.log("玩家总游玩时间：" + data.totalOnlineTime);
+
         }
     }
 
     /** 设置玩家上线 */
     public setPlayerOnline(player: mw.Player) {
         let data = this.getPlayerData(player);
-
-        let curDay = utils.getTodayNumber();
+				let curDay = utils.getTodayNumber();
         let curHour = utils.getTodayHour();
      		data.setCurDay(curDay, curHour);
     }
@@ -83,8 +84,9 @@ export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
             Log4Ts.warn(OnlineModuleS, `reward not exist. config id: ${id}`);
             return;
         }
-        if (cfg.Time >
-            (this.statisticModuleS.getPlayerData(this.currentPlayerId)?.playerTodayOnlineTime ?? 0)) {
+				const player = this.currentPlayer;
+				let data = this.getPlayerData(player);
+        if (cfg.Time > (data.totalOnlineTime ?? 0)) {
             Log4Ts.warn(OnlineModuleS, `reward insufficient time requirement`);
             return;
         }

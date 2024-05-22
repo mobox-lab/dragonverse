@@ -249,7 +249,7 @@ export class ShopView extends UIRole_Generate {
         //装备预览
         if (pendantId && pendantId.length > 0) {
             pendantId.forEach((value) => {
-                EventManager.instance.call(EModule_Events.equip_addPendant, Player.localPlayer.playerId, value);
+                EventManager.instance.call(EModule_Events.equip_addPendant, Player.localPlayer.playerId, value, true);
             });
         }
     }

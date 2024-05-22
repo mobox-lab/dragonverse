@@ -5,6 +5,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { EModule_Events, ELogName } from "../../const/Enum";
 import { EventManager } from "../../tool/EventManager";
 import { Singleton } from "../../tool/FunctionUtil";
+import { Globaldata } from '../../const/Globaldata';
 
 
 @Singleton()
@@ -66,7 +67,7 @@ export class EquipManager {
 
 
     /**添加挂件 */
-    public async listen_addPendant(pId: number, pendantId: number, isAddWeapon: boolean = false) {
+    public async listen_addPendant(pId: number, pendantId: number, isShopPreview: boolean = false) {
         let player = await Player.asyncGetPlayer(pId);
         if (player == null) {
             return null;
@@ -103,6 +104,13 @@ export class EquipManager {
         this.addPendantRecord(pId, pendentKey, newPendant);
         this._pendentVisableMap.set(pId, false);
 
+        if (isShopPreview) {
+            //检测下是否在商店触发器内
+            let trigger = GameObject.findGameObjectById(Globaldata.shop_trigger_guid) as Trigger;
+            if (!trigger.checkInArea(Player.localPlayer.character)) {
+                this.listen_removePendant(pId, pendantId);
+            }
+        }
     }
 
 

@@ -2446,14 +2446,16 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     @Decorator.noReply()
     public net_playerJoinFighting(playerId: number) {
         if (this._fightingPlayerSet.has(playerId)) {
-            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.reduceEnergySuccessful)
+            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, true)
             return;
         };
         const ems = ModuleService.getModule(EnergyModuleS);
         if (ems.isAfford(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING)) {
             ems.consume(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING);
             this._fightingPlayerSet.add(playerId);
-            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.reduceEnergySuccessful);
+            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, true);
+        } else {
+            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, false);
         }
     }
 }
