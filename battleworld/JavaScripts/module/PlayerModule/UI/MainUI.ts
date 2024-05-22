@@ -79,7 +79,7 @@ AddGMCommand(
             }
         }
 
-        Log4Ts.log(MainPanel,
+        Log4Ts.log(MainUI,
             `request to change mouse lock type to ${MouseLockType[type]}.`,
             `option param:`,
             `   0: ${MouseLockType[MouseLockType.Press]}`,
