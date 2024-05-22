@@ -212,7 +212,7 @@ class EggM {
     }
     /**价格ui显示 */
     private goldUIInit() {
-        let priceUI = this.worldUI_2.getTargetUIWidget().rootContent;
+        let priceUI = this.worldUI_2?.getTargetUIWidget().rootContent;
         this.setWorldUIVis(this.worldUI_2, true);
         //设置价格
         let priceTxt = priceUI.findChildByPath("Canvas/mText_Price") as mw.TextBlock;
