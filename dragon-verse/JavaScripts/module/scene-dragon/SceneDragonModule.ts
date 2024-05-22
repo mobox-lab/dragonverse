@@ -663,25 +663,6 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
         this.addPlayerRecord(player.playerId);
-
-        this.authModuleS.queryUserDragon(player.playerId)
-            .then(value => {
-                    if (Gtk.isNullOrUndefined(value)) return;
-                    const data = Enumerable
-                        .from(value.DragonPalList)
-                        .select(item => {
-                            return {
-                                dragonId: ForeignKeyIndexer
-                                    .getInstance()
-                                    .queryDragonByPalId(item.dragonPalId),
-                                amount: item.amount,
-                            };
-                        })
-                        .toArray();
-
-                    this.bagModuleS.resetDragonData(player.playerId, data);
-                },
-            );
     }
 
     protected onPlayerJoined(player: Player): void {

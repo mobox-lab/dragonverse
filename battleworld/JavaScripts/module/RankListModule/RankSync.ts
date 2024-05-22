@@ -18,7 +18,7 @@ export class RankModelInfo {
 export default class RankSync extends Script {
 
     /** 段位第一名userid */
-    @mw.Property({replicated: true, onChanged: "onScoreFirstChange"})
+    @mw.Property({ replicated: true, onChanged: "onScoreFirstChange" })
     public rankScoreFirst: string = "";
     /** model数据map */
     private _modelMap: Map<number, RankModelInfo> = new Map();
@@ -56,7 +56,7 @@ export default class RankSync extends Script {
         modelInfo.model.setCollision(CollisionStatus.Off);
         modelInfo.model.complexMovementEnabled = false;
         modelInfo.model.displayName = "";
-        modelInfo.uiWidget = await mw.GameObject.asyncSpawn("UIWidget", {replicates: false}) as mw.UIWidget;
+        modelInfo.uiWidget = await mw.GameObject.asyncSpawn("UIWidget", { replicates: false }) as mw.UIWidget;
         let ani = modelInfo.model.loadAnimation(Globaldata.npc_modelAnim);
         ani.loop = 0;
 
@@ -67,7 +67,8 @@ export default class RankSync extends Script {
         modelInfo.uiWidget.widgetSpace = WidgetSpaceMode.OverheadUI;
         modelInfo.model.attachToSlot(modelInfo.uiWidget, HumanoidSlotType.Root);
         modelInfo.uiWidget.localTransform.position = new Vector(0, 0, modelInfo.model.collisionExtent.z);
-
+        //隐藏血条
+        modelInfo.ui.mOwnHP.visibility = SlateVisibility.Collapsed;
         //数据
         this._modelMap.set(ranking, modelInfo);
         this._animationMap.set(ranking, ani);
