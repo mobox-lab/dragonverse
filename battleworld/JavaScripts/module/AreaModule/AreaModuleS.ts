@@ -192,7 +192,12 @@ export class AreaModuleS extends ModuleS<AreaModuleC, null> {
         EventManager.instance.call(EBuffEvent_S.BuffEvent_RemoveAllBuff_S, this.currentPlayerId);
         this.currentPlayer.character.worldTransform.position = cfg.bornPoint;
 
-
+        let currentHp = ModuleService.getModule(PlayerModuleS).getPlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.hp);
+        let maxHp = ModuleService.getModule(PlayerModuleS).getPlayerAttr(this.currentPlayerId, Attribute.EnumAttributeType.maxHp);
+        if (currentHp < maxHp) {
+            //说明不是战斗状态
+            ModuleService.getModule(PlayerModuleS).exitFight(this.currentPlayerId);
+        }
         EventManager.instance.call(EAttributeEvents_S.attr_change_s, this.currentPlayerId, Attribute.EnumAttributeType.areaId, EAreaId.Safe);
         EventManager.instance.call(EModule_Events_S.area_changeArea, this.currentPlayerId, EAreaId.Safe);
     }

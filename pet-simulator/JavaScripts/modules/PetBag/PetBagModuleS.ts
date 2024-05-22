@@ -92,7 +92,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     public async net_buyEgg(cfgId: number): Promise<number | null> {
         let cfg = GameConfig.EggMachine.getElement(cfgId);
         let price = cfg.Price[0];
-        if (!price) return null;
+        if (!price || price === 0) return null;
         let playerId = this.currentPlayerId;
         let res = await ModuleService.getModule(PlayerModuleS).net_reduceGold(price, this.judgeGold(cfgId));
         if (res) {
@@ -511,7 +511,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
         const data = this.currentData;
         if (curSelectPets.length >= data.CurBagCapacity) return false;
-				
+
         /**最多相同id的宠物数量 */
         let maxSameIdCount = 0;
         /**所有宠物攻击力的合 */
@@ -578,14 +578,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
             endPetId);
 
-				this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
+        this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
         this.petBagModuleS
             .net_addPetWithMissingInfo(
                 playerId,
                 endPetId,
                 GlobalEnum.PetGetType.Fusion,
                 earliestObtainTime);
-				return true;
+        return true;
     }
 
     /**词条buff初始化 */
@@ -648,7 +648,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         const petInfo = GameConfig.PetARR.getElement(curPetId);
         let isSucc: boolean = true;
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
-				this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
+        this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
         if (random <= rate) {
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");

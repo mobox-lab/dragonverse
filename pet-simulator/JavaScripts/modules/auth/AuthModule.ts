@@ -654,7 +654,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         // this.queryRegisterStaminaLimit(player.playerId);
     }
 
-    private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
+    private static readonly CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY = "CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY";
+
+    private static readonly CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY = "CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY";
 
     private static readonly CLIENT_ID_STORAGE_KEY = "CLIENT_ID_STORAGE_KEY";
 
@@ -662,36 +664,67 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private static readonly PLACE_HOLDER = "REPLACE_IT";
 
-    private static CODE_VERIFY_AES_KEY = "";
+    private static CODE_VERIFY_TEST_AES_KEY = "";
 
-    private static CODE_VERIFY_AES_IV = "";
+    private static CODE_VERIFY_RELEASE_AES_KEY = "";
+
+    private static CODE_VERIFY_TEST_AES_IV = "";
+
+    private static CODE_VERIFY_RELEASE_AES_IV = "";
 
     public static readonly KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL = 5e3;
 
     private static getSensitiveData() {
         Gtk.doUntilTrue(
-            () => !Gtk.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
-            this.getCodeVerifyAesKey,
+            () => !Gtk.isNullOrEmpty(this.CODE_VERIFY_TEST_AES_KEY),
+            this.getTestCodeVerifyAesKey,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        Gtk.doUntilTrue(
+            () => !Gtk.isNullOrEmpty(this.CODE_VERIFY_RELEASE_AES_KEY),
+            this.getReleaseCodeVerifyAesKey,
             AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
         );
     }
 
-    private static getCodeVerifyAesKey() {
-        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then((value) => {
-            Log4Ts.log(AuthModuleS, `value`, value.code);
-            if (value.code === 200) {
-                if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                    AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
-                    AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16)
-                        .split("")
-                        .reverse()
-                        .join("");
-                } else {
-                    Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey Failed`);
-                    DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
+    private static getTestCodeVerifyAesKey() {
+        DataStorage
+            .asyncGetData(AuthModuleS.CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY)
+            .then((value) => {
+                Log4Ts.log(AuthModuleS, `value`, value.code);
+                if (value.code === 200) {
+                    if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.CODE_VERIFY_TEST_AES_KEY = value.data;
+                        AuthModuleS.CODE_VERIFY_TEST_AES_IV = AuthModuleS.CODE_VERIFY_TEST_AES_KEY.slice(0, 16)
+                            .split("")
+                            .reverse()
+                            .join("");
+                    } else {
+                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey for test Failed`);
+                        DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
+                    }
                 }
-            }
-        });
+            });
+    }
+
+    private static getReleaseCodeVerifyAesKey() {
+        DataStorage
+            .asyncGetData(AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY)
+            .then((value) => {
+                Log4Ts.log(AuthModuleS, `value`, value.code);
+                if (value.code === 200) {
+                    if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY = value.data;
+                        AuthModuleS.CODE_VERIFY_RELEASE_AES_IV = AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY.slice(0, 16)
+                            .split("")
+                            .reverse()
+                            .join("");
+                    } else {
+                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey for release Failed`);
+                        DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
+                    }
+                }
+            });
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -718,11 +751,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private getSecret(message: string) {
-        const e = CryptoJS.AES.encrypt(message, CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY), {
-            iv: CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_IV),
-            mode: CryptoJS.mode.CBC,
-            padding: CryptoJS.pad.Pkcs7,
-        });
+        const e = CryptoJS.AES.encrypt(
+            message,
+            CryptoJS.enc.Utf8.parse(GameServiceConfig.isRelease ?
+                AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY :
+                AuthModuleS.CODE_VERIFY_TEST_AES_KEY),
+            {
+                iv: CryptoJS.enc.Utf8.parse(GameServiceConfig.isRelease ?
+                    AuthModuleS.CODE_VERIFY_RELEASE_AES_IV :
+                    AuthModuleS.CODE_VERIFY_TEST_AES_IV,
+                ),
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7,
+            });
         return e.ciphertext.toString(CryptoJS.enc.Base64);
     }
 

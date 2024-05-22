@@ -21,6 +21,7 @@ import AchievementModuleS from "../AchievementModule/AchievementModuleS";
 import { memorizePointIdToLocation, ResourceModuleS } from "./ResourceModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import Enumerable from "linq";
 
 export class Resource {
 
@@ -68,9 +69,9 @@ export const SceneResourceMap: Map<number, ResourceScript[]> = new Map<number, R
 @Component
 export default class ResourceScript extends mw.Script {
 
-    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
+    @mw.Property({replicated: true, onChanged: "onHpChanged"})
     public curHp: number = 0;
-    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
+    @mw.Property({replicated: true, onChanged: "onSceneChanged"})
     private scenePointId: string = "";
 
     public get isBigBox(): boolean {
@@ -78,7 +79,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     /**伤害记录 */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     private damageArr: DamageRecord[] = [];
 
     private _rate: number = 1;
@@ -181,9 +182,14 @@ export default class ResourceScript extends mw.Script {
 
             let player: mw.Player = null;
 
+            let totalDamage = this
+                .damageArr
+                ?.reduce((previousValue, currentValue) => {
+                    return previousValue + currentValue.damage;
+                }, 0) ?? 0;
             for (let i = 0; i < this.damageArr.length; i++) {
                 player = mw.Player.getPlayer(this.damageArr[i].playerId);
-                this.checkHpStage(player.playerId);
+                this.checkHpStage(player.playerId, this.damageArr[i].damage / totalDamage);
                 this.overGetReward(player);
             }
             return;
@@ -329,13 +335,13 @@ export default class ResourceScript extends mw.Script {
     public getDamageRate(playerId: number): number {
         if (this.cfg.HP === 0) return 0;
         return this
-            .damageArr
-            .reduce((previousValue,
-                currentValue) => {
-                return previousValue +
-                    (currentValue.playerId === playerId ? currentValue.damage : 0);
-            },
-                0)
+                .damageArr
+                .reduce((previousValue,
+                         currentValue) => {
+                        return previousValue +
+                            (currentValue.playerId === playerId ? currentValue.damage : 0);
+                    },
+                    0)
             / this.cfg.HP;
     }
 
@@ -379,7 +385,7 @@ export default class ResourceScript extends mw.Script {
      * 通过血量判断攻击阶段.
      * @param {number} playerId
      */
-    private checkHpStage(playerId: number) {
+    private checkHpStage(playerId: number, ratio: number = 1) {
         if (this._cfgId == 0 || !this.cfg) return;
         this.refreshGuaSha(playerId);
 
@@ -399,8 +405,8 @@ export default class ResourceScript extends mw.Script {
             this.playReward(
                 playerId,
                 GlobalEnum.ResourceAttackStage.Destroy,
-                (this.rewardGold - this.guaShaRewardGold) * myRate,
-                (this.rewardGem - this.guaShaRewardGem) * myRate);
+                (this.rewardGold - this.guaShaRewardGold) * myRate * ratio,
+                (this.rewardGem - this.guaShaRewardGem) * myRate * ratio);
             this.stopGuaSha(playerId);
             ModuleService.getModule(AchievementModuleS).broadcastAchievement_destroy(playerId, this.resourceType);
             this.guaShaRewardGem = 0;
@@ -626,7 +632,7 @@ export default class ResourceScript extends mw.Script {
         const time = GlobalData.ResourceAni.dropTweenTime[this.order];
         let start = endInfos[this.order];
         let end = endInfos[this.order + 1];
-        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
+        this.endTween = new mw.Tween({z: start}).to({z: end}, time).onUpdate((obj) => {
             this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
         }).onComplete(() => {
             this.order++;
