@@ -2446,7 +2446,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     @Decorator.noReply()
     public net_playerJoinFighting(playerId: number) {
         if (this._fightingPlayerSet.has(playerId)) {
-            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, true)
+            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, true);
             return;
         };
         const ems = ModuleService.getModule(EnergyModuleS);
@@ -2457,5 +2457,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         } else {
             Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, false);
         }
+    }
+
+    public exitFight(playerId: number) {
+        this._fightingPlayerSet.delete(playerId);
     }
 }
