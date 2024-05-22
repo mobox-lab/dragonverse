@@ -179,7 +179,7 @@ class EggM {
             if (this.islock()) return;
             if (isStart) {
                 this.petEgg?.setVisibility(mw.PropertyStatus.Off);
-                this.worldUI_1.setVisibility(mw.PropertyStatus.Off);
+                this.worldUI_1?.setVisibility(mw.PropertyStatus.Off);
             }
             else {
                 this.petEgg?.setVisibility(mw.PropertyStatus.On);
@@ -247,11 +247,11 @@ class EggM {
     /**设置蛋状态 */
     private async setEggState(isLock: boolean) {
         if (isLock) {
-            this.unLockEgg.setVisibility(mw.PropertyStatus.On);
-            this.petEgg.setVisibility(mw.PropertyStatus.Off);
+            this.unLockEgg?.setVisibility(mw.PropertyStatus.On);
+            this.petEgg?.setVisibility(mw.PropertyStatus.Off);
         } else {
             this.unLockEgg?.setVisibility(mw.PropertyStatus.Off);
-            this.petEgg.setVisibility(mw.PropertyStatus.On);
+            this.petEgg?.setVisibility(mw.PropertyStatus.On);
         }
     }
     /**特效状态 */
