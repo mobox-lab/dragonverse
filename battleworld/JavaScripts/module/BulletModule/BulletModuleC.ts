@@ -201,9 +201,9 @@ export class BulletModuleC extends ModuleC<BulletModuleS, null>
 
     /**
      * 筛选玩家攻击
-     * @param hitTarget 
-     * @param readlFireId 
-     * @returns 
+     * @param hitTarget
+     * @param readlFireId
+     * @returns
      */
     private filter_selfFire(readlFireId: number, hitTarget: mw.GameObject, configId: number) {
         if (PlayerManagerExtesion.isCharacter(hitTarget)) {
@@ -325,7 +325,7 @@ export class BulletModuleC extends ModuleC<BulletModuleS, null>
      * 检测爆炸
      * @param bullet 子弹对象
      * @param simulate 是否模拟 不是自己发射的就是模拟
-     * @returns 
+     * @returns
      */
     private check_hitBomb(bullet: BulletC, simulate: boolean) {
         if (bullet.staticConfig.hitBombId == null
@@ -420,7 +420,7 @@ export class BulletModuleC extends ModuleC<BulletModuleS, null>
     /**
      * 监听玩家motion发射子弹
      * @param skillId 改子弹由哪个技能发出
-     * 
+     *
      */
     private listen_skill_fireBullet(skillId: number, motionId: number, sheet: MotionFrameNode_FlyEntity, to: string) {
 
@@ -430,7 +430,7 @@ export class BulletModuleC extends ModuleC<BulletModuleS, null>
 
         /**
          * 终点计算方式:
-         * 0：以玩家正方向来计算终点 
+         * 0：以玩家正方向来计算终点
          * 1：屏幕中心检测到的目标点（类似射击游戏）
          */
 
