@@ -1159,7 +1159,7 @@ export namespace GlobalData {
         ]);
         /**排行榜item的图标guid  */
         public static itemImageGuids: Map<string, string> = new Map([
-            [RankType.Collect, "175740"],
+            [RankType.Collect, "343791"],
             [RankType.Diamond, "175740"],
         ]);
 
