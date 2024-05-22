@@ -51,6 +51,61 @@ import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
 import SetingUI from "../../SetingModule/UI/SetingUI";
 import { P_Game_Action } from "../../action/ui/P_Game_Action";
 import { SkillSelectPanel } from "../../SkillModule/UI/SkillSelectPanel";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import { AddGMCommand } from "module_gm";
+
+enum MouseLockType {
+    Press,
+    Tap
+}
+
+let currentLockType: MouseLockType = MouseLockType.Press;
+
+AddGMCommand(
+    "Mouse Lock Type",
+    (player, value) => {
+        const v = Number(value);
+        let type: MouseLockType;
+        if (v === 0 || v === 1) {
+            type = v;
+        } else {
+            switch (currentLockType) {
+                case MouseLockType.Press:
+                    type = MouseLockType.Tap;
+                    break;
+                case MouseLockType.Tap:
+                    type = MouseLockType.Press;
+                    break;
+            }
+        }
+
+        Log4Ts.log(MainUI, `request to change mouse lock type to ${MouseLockType[type]}.`);
+        if (type === currentLockType) return;
+        else currentLockType = type;
+
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.LeftAlt);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.LeftCommand);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.RightAlt);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.RightCommand);
+        if (currentLockType === MouseLockType.Press) {
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.RightCommand, () => (InputUtil.isLockMouse = true));
+        } else {
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+        }
+    },
+    undefined,
+    "Mouse",
+);
 
 type PillUIInfo = {
     text: TextBlock,

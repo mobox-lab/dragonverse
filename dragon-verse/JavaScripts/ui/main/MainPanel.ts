@@ -33,6 +33,60 @@ import DialogifyManager from "../../depend/dialogify/DialogifyManager";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 import { ActivateByUIAndTrigger, ActivateMode } from "../../gameplay/interactiveObj/ActiveMode";
 import ADialoguePanelController from "../../depend/dialogify/dialogue-panel-controller/ADialoguePanelController";
+import { AddGMCommand } from "module_gm";
+
+enum MouseLockType {
+    Press,
+    Tap
+}
+
+let currentLockType: MouseLockType = MouseLockType.Press;
+
+AddGMCommand(
+    "Mouse Lock Type",
+    (player, value) => {
+        const v = Number(value);
+        let type: MouseLockType;
+        if (v === 0 || v === 1) {
+            type = v;
+        } else {
+            switch (currentLockType) {
+                case MouseLockType.Press:
+                    type = MouseLockType.Tap;
+                    break;
+                case MouseLockType.Tap:
+                    type = MouseLockType.Press;
+                    break;
+            }
+        }
+
+        Log4Ts.log(MainPanel, `request to change mouse lock type to ${MouseLockType[type]}.`);
+        if (type === currentLockType) return;
+        else currentLockType = type;
+
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.LeftAlt);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.LeftCommand);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.RightAlt);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.RightCommand);
+        if (currentLockType === MouseLockType.Press) {
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(this, Keys.RightCommand, () => (InputUtil.isLockMouse = true));
+        } else {
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+        }
+    },
+    undefined,
+    "Mouse",
+);
 
 /**
  * 交互类型.
@@ -361,8 +415,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                { dist: null, duration: 1e3 },
-                { dist: 0, duration: 0.5e3 },
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
             ],
             1,
         );
@@ -376,8 +430,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                { dist: null, duration: 1e3 },
-                { dist: 0, duration: 0.5e3 },
+                {dist: null, duration: 1e3},
+                {dist: 0, duration: 0.5e3},
             ],
             1,
         );
@@ -394,11 +448,11 @@ export default class MainPanel extends MainPanel_Generate {
         });
 
         const dist = [
-            { dist: 0.3, duration: 0.1e3 },
-            { dist: 0.4, duration: 0.1e3 },
-            { dist: 0.2, duration: 0.1e3 },
-            { dist: 0.5, duration: 0.1e3 },
-            { dist: 0.3, duration: 0.1e3 },
+            {dist: 0.3, duration: 0.1e3},
+            {dist: 0.4, duration: 0.1e3},
+            {dist: 0.2, duration: 0.1e3},
+            {dist: 0.5, duration: 0.1e3},
+            {dist: 0.3, duration: 0.1e3},
         ];
         this._effectImgTasks.push(
             Waterween.group(
@@ -497,8 +551,8 @@ export default class MainPanel extends MainPanel_Generate {
             }),
             Event.addLocalListener(ADialoguePanelController.ControllerExitDialogueEventName, () => {
                 KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
-            })
-        )
+            }),
+        );
         //#endregion ------------------------------------------------------------------------------------------
     }
 
