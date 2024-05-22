@@ -64,7 +64,7 @@ let currentLockType: MouseLockType = MouseLockType.Press;
 AddGMCommand(
     "Mouse Lock Type",
     (player, value) => {
-        const v = Number(value);
+        const v = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
         let type: MouseLockType;
         if (v === 0 || v === 1) {
             type = v;
@@ -79,7 +79,12 @@ AddGMCommand(
             }
         }
 
-        Log4Ts.log(MainUI, `request to change mouse lock type to ${MouseLockType[type]}.`);
+        Log4Ts.log(MainUI,
+            `request to change mouse lock type to ${MouseLockType[type]}.`,
+            `option param:`,
+            `   0: ${MouseLockType[MouseLockType.Press]}`,
+            `   1: ${MouseLockType[MouseLockType.Tap]}`,
+        );
         if (type === currentLockType) return;
         else currentLockType = type;
 
@@ -88,19 +93,19 @@ AddGMCommand(
         KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.RightAlt);
         KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.RightCommand);
         if (currentLockType === MouseLockType.Press) {
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(this, Keys.RightAlt, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightCommand, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(this, Keys.RightCommand, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.LeftCommand, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.RightAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.RightCommand, () => (InputUtil.isLockMouse = true));
         } else {
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.LeftCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(this, Keys.RightCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
         }
     },
     undefined,
@@ -662,7 +667,7 @@ export class MainUI extends Main_HUD_Generate {
             this.reBackTween.stop();
         }
         let time = backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
-        this.reBackTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, time * 1000).onUpdate((data) => {
+        this.reBackTween = new mw.Tween({alpha: 0}).to({alpha: 1}, time * 1000).onUpdate((data) => {
             this.mMask_Back.fanShapedValue = data.alpha;
         }).onComplete(() => {
             this.mMask_Back.fanShapedValue = 1;
@@ -710,7 +715,7 @@ export class MainUI extends Main_HUD_Generate {
      */
     private initReset() {
         this.mMask_Reborn.visibility = mw.SlateVisibility.Collapsed;
-        this.rebornTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
+        this.rebornTween = new mw.Tween({alpha: 0}).to({alpha: 1}, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
             this.mMask_Reborn.fanShapedValue = data.alpha;
         }).onComplete(() => {
             this.mMask_Reborn.fanShapedValue = 1;
