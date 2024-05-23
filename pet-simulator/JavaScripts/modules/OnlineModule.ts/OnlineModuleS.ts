@@ -1,15 +1,13 @@
+import { GameConfig } from "../../config/GameConfig";
+import { GlobalEnum } from "../../const/Enum";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { numberArrToString, utils } from "../../util/uitls";
+import { AreaModuleData } from "../AreaDivide/AreaModuleData";
+import { PetBagModuleS } from "../PetBag/PetBagModuleS";
+import { PlayerModuleS } from "../Player/PlayerModuleS";
+import { StatisticModuleS } from "../statistic/StatisticModule";
 import { OnlineModuleC } from "./OnlineModuleC";
 import { OnlineModuleData } from "./OnlineModuleData";
-import { PlayerModuleS } from "../Player/PlayerModuleS";
-import { GameConfig } from "../../config/GameConfig";
-import { PetBagModuleS } from "../PetBag/PetBagModuleS";
-import { numberArrToString, utils } from "../../util/uitls";
-import { RewardState } from "./P_RewardPanel";
-import { GlobalEnum } from "../../const/Enum";
-import { oTraceError } from "../../util/LogManager";
-import { AreaModuleData } from "../AreaDivide/AreaModuleData";
-import { StatisticModuleS } from "../statistic/StatisticModule";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
 
@@ -19,10 +17,7 @@ export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
         if (!this._statisticModuleS) this._statisticModuleS = ModuleService.getModule(StatisticModuleS);
         return this._statisticModuleS;
     }
-
-    /**玩家在线时间Map */
-    private playerOnlineTimeMap: Map<number, number> = new Map();
-
+ 
     private _playerModuleS: PlayerModuleS;
 
     private get playerModuleS(): PlayerModuleS | null {
@@ -31,43 +26,7 @@ export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
     }
 
     protected onPlayerEnterGame(player: mw.Player): void {
-        this.startOnlineTime(player);
         this.setPlayerOnline(player);
-    }
-
-    protected onPlayerLeft(player: mw.Player): void {
-        try {
-            this.stopOnlineTime(player);
-        } catch (error) {
-            oTraceError(error);
-        }
-    }
-
-    /** 开始计时玩家在线时间 */
-    private startOnlineTime(player: mw.Player) {
-        let id = player.playerId;
-        let nowTime = TimeUtil.elapsedTime();
-
-        if (!this.playerOnlineTimeMap.has(id)) {
-            this.playerOnlineTimeMap.set(id, nowTime);
-        }
-    }
-
-    /** 停止计时玩家在线时间 */
-    private stopOnlineTime(player: mw.Player) {
-        let id = player.playerId;
-        let data = this.getPlayerData(player);
-        let nowTime = TimeUtil.elapsedTime();
-
-        if (this.playerOnlineTimeMap.has(id)) {
-            let startTime = this.playerOnlineTimeMap.get(id);
-            let onlineTime = nowTime - startTime;
-            this.playerOnlineTimeMap.delete(id);
-            data.addOnlineTime(onlineTime);
-            console.log("lwj  玩家退出 游玩时间：" + onlineTime);
-						console.log("玩家总游玩时间：" + data.totalOnlineTime);
-
-        }
     }
 
     /** 设置玩家上线 */
@@ -78,19 +37,18 @@ export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
      		data.setCurDay(curDay, curHour);
     }
 
-    net_requestAccept(id: number) {
+    net_requestAccept(id: number) { 
         let cfg = GameConfig.TimeReward.getElement(id);
         if (!cfg) {
             Log4Ts.warn(OnlineModuleS, `reward not exist. config id: ${id}`);
             return;
-        }
-				const player = this.currentPlayer;
-				let data = this.getPlayerData(player);
-        if (cfg.Time > (data.totalOnlineTime ?? 0)) {
+        } 
+        const playerTotalOnlineTime = this.statisticModuleS.getPlayerData(this.currentPlayerId)?.playerTotalOnlineTime
+        // console.log('=====net_requestAccept=== playerTotalOnlineTime', playerTotalOnlineTime)
+        if (cfg.Time > (playerTotalOnlineTime ?? 0)) {
             Log4Ts.warn(OnlineModuleS, `reward insufficient time requirement`);
             return;
         }
-
         this.getReward(this.currentPlayerId, id);
     }
 

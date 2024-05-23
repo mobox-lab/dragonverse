@@ -15,20 +15,22 @@ export default class PsStatisticModuleData extends JModuleData {
     playerEnteredCounterS: number = 0;
 
     /**
-     * 玩家游戏时长.
+     * 玩家游戏时长. ms
      * @type {number}
      */
     @Decorator.persistence()
     playerElapsedTimeS: number = 0;
 
     /**
-     * 玩家登录记录.
+     * 玩家登录记录. ms
+     * [进入时间, 离开时间].
+     * @type {[number, number][]}
      */
     @Decorator.persistence()
     playerLoginRecord: [number, number][] = [];
 
     /**
-     * 上次登录时间.
+     * 上次登录时间. ms
      * @return {number}
      */
     public get playerLastEnteredTime(): number {
@@ -36,7 +38,7 @@ export default class PsStatisticModuleData extends JModuleData {
     }
 
     /**
-     * 本次游玩时长.
+     * 本次游玩时长. ms
      * @return {number}
      */
     public get playerLastedPlayTime(): number {
@@ -45,18 +47,18 @@ export default class PsStatisticModuleData extends JModuleData {
     }
 
     /**
-     * 总游玩时长.
+     * 总游玩时长. ms
      * @return {number}
      */
     public get playerTotalOnlineTime(): number {
         return this.playerElapsedTimeS +
-        this.playerLoginRecord[0][1] === undefined ?
-            this.playerLastedPlayTime :
-            0;
+       (this.playerLoginRecord[0][1] === undefined ?
+           this.playerLastedPlayTime :
+           0);
     }
 
     /**
-     * 获取今日总在线时长.
+     * 获取今日总在线时长. ms
      * @return {number}
      */
     public get playerTodayOnlineTime(): number {

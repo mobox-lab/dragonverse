@@ -5,9 +5,9 @@ export class OnlineModuleData extends Subdata {
     @Decorator.persistence()
     private hasGetArr: number[] = [];
 
-    /**累计在线时间 */
-    @Decorator.persistence()
-    public totalOnlineTime: number = 0;
+    // /**累计在线时间 */
+    // @Decorator.persistence()
+    // public totalOnlineTime: number = 0;
 
     /**当前登录日期 可做上次登陆使用*/
     @Decorator.persistence()
@@ -65,8 +65,8 @@ export class OnlineModuleData extends Subdata {
         }
     }
 
-    public addOnlineTime(time: number) {
-				this.totalOnlineTime += time;
-	      this.save(true);
-    }
+    // public addOnlineTime(time: number) {
+    //     this.totalOnlineTime += time;
+	  //     this.save(true);
+    // }
 }
