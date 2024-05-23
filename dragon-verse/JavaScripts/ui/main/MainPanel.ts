@@ -1037,6 +1037,10 @@ export default class MainPanel extends MainPanel_Generate {
      */
     public enableReset(enable = true) {
         Gtk.trySetVisibility(this.resetCanvas, enable);
+        this.btnReset.onClicked.clear();
+        if (enable) {
+            this.btnReset.onClicked.add(respawn);
+        }
     }
 
     public showBag() {
