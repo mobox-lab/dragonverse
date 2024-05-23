@@ -280,7 +280,7 @@ class EggM {
 
     private async findObj() {
         this.petEgg = await GameObject.asyncFindGameObjectById(this.cfg.SceneID[1]);
-        if (this.petEgg == null) return;
+        if (this.petEgg == null || !this.petEgg.parent) return;
         this.gameObject = this.petEgg.parent.getChildByName("扭蛋交互")
 
         this.trigger = this.gameObject.getChildByName("触发器") as mw.Trigger;
@@ -402,7 +402,7 @@ class EggM {
     }
 
     private setWorldUIVis(ui: mw.UIWidget, isVis: boolean) {
-        ui.setVisibility(isVis ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
+        ui?.setVisibility(isVis ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
     }
 
 

@@ -295,7 +295,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
                 GlobalData.LevelUp.petAttackSpeedMap.set(Player.localPlayer.playerId, upgrade);
                 break;
             case 4:
-                ModuleService.getModule(PetBagModuleC).addBagCapacity(info.PetNum);
+                // ModuleService.getModule(PetBagModuleC).addBagCapacity(info.PetNum);
                 break;
         }
         mw.UIService.getUI(P_LevelUI).initItem(id, level);

@@ -313,7 +313,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     private async onHpChanged(): Promise<void> {
-        this.objState(this.curHp);
+        // this.objState(this.curHp);
         if (this.curHp <= 0) {
             this.onGuaSha.call(false);
             this.curHp = 0;
