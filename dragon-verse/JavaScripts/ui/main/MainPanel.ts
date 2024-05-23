@@ -297,15 +297,17 @@ export default class MainPanel extends MainPanel_Generate {
             this.btnSound.enable = false;
             // 判断是否静音
             let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
-            this.btnSound.disableImageGuid = res
-                ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID
-                : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+            this.btnSound.pressedImageGuid = res
+                ? GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID
+                : GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID;
             res = !res;
             ModuleService.getModule(PlayerSettingModuleC).setMute(res);
             AudioController.getInstance().mute(res);
             this.btnSound.normalImageGuid = res
                 ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID
                 : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+            this.btnSound.normalImageSize = new Vector2(88, 96);
+            this.btnSound.pressedImageSize = new Vector2(88, 96);
             this.btnSound.enable = true;
         });
 
@@ -420,8 +422,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1,
         );
@@ -435,8 +437,8 @@ export default class MainPanel extends MainPanel_Generate {
                 this.txtOperationFeedback.renderOpacity = val;
             },
             [
-                {dist: null, duration: 1e3},
-                {dist: 0, duration: 0.5e3},
+                { dist: null, duration: 1e3 },
+                { dist: 0, duration: 0.5e3 },
             ],
             1,
         );
@@ -453,11 +455,11 @@ export default class MainPanel extends MainPanel_Generate {
         });
 
         const dist = [
-            {dist: 0.3, duration: 0.1e3},
-            {dist: 0.4, duration: 0.1e3},
-            {dist: 0.2, duration: 0.1e3},
-            {dist: 0.5, duration: 0.1e3},
-            {dist: 0.3, duration: 0.1e3},
+            { dist: 0.3, duration: 0.1e3 },
+            { dist: 0.4, duration: 0.1e3 },
+            { dist: 0.2, duration: 0.1e3 },
+            { dist: 0.5, duration: 0.1e3 },
+            { dist: 0.3, duration: 0.1e3 },
         ];
         this._effectImgTasks.push(
             Waterween.group(
