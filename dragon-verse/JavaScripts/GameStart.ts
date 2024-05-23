@@ -93,13 +93,13 @@ AddGMCommand("Global Tips | 冒泡提示",
 export default class GameStart extends mw.Script {
     //#region Dev Config
 
-    @mw.Property({ displayName: "是否发布", group: "发布" })
+    @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
-    @mw.Property({ displayName: "是否 Beta 发布", group: "发布" })
+    @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
     public isBeta: boolean = false;
 
-    @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
+    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
     public isUseTestUrl: boolean = true;
 
     @mw.Property({
@@ -113,22 +113,22 @@ export default class GameStart extends mw.Script {
     // @mw.Property({ displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel })
     // public graphicsLevel: GraphicsLevel = GraphicsLevel.Cinematic3;
 
-    @mw.Property({ displayName: "线上存储", group: "发布" })
+    @mw.Property({displayName: "线上存储", group: "发布"})
     public isOnline: boolean = false;
 
-    @mw.Property({ displayName: "是否 GM", group: "调试" })
+    @mw.Property({displayName: "是否 GM", group: "调试"})
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({ displayName: "服务端日志等级", group: "调试", enumType: DebugLevels })
+    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: DebugLevels})
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "客户端日志等级", group: "调试", enumType: DebugLevels })
+    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: DebugLevels})
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "上帝模式 冲刺速度倍率", group: "调试" })
+    @mw.Property({displayName: "上帝模式 冲刺速度倍率", group: "调试"})
     public godModeSprintRatio: number = 10;
 
-    @mw.Property({ displayName: "上帝模式 闪现位移距离", group: "调试" })
+    @mw.Property({displayName: "上帝模式 闪现位移距离", group: "调试"})
     public godModeFlashDist: number = 1000;
 
     private _godMode: boolean = false;
@@ -258,6 +258,20 @@ export default class GameStart extends mw.Script {
     private initializeServer() {
         Log4Ts.debugLevel = this.serverLogLevel;
         DataStorage.setTemporaryStorage(!this.isOnline);
+
+        GameObject.asyncFindGameObjectById("0B48E050").then((value) => {
+                const effect = value as mw.Effect;
+                effect.loopCount = 1;
+                setInterval(
+                    () => {
+                        Log4Ts.log(GameStart, `force re awake effect at ${new Date()}`);
+                        effect.play();
+                    },
+                    effect.timeLength < 1e3 ?
+                        GtkTypes.Interval.PerMin / 2 :
+                        effect.timeLength);
+            },
+        );
     }
 
     private whenModuleReady(callback: Delegate.SimpleDelegateFunction<void>) {
@@ -359,7 +373,9 @@ export default class GameStart extends mw.Script {
             }
         });
     }
+
     private isGMVisible: boolean = true;
+
     private registerGMVisibleKey() {
         InputUtil.onKeyUp(mw.Keys.F12, () => {
             this.isGMVisible = !this.isGMVisible;
