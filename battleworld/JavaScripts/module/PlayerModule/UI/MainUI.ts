@@ -554,7 +554,7 @@ export class MainUI extends Main_HUD_Generate {
      */
     private initBack() {
         this.mMask_Back.visibility = mw.SlateVisibility.Collapsed;
-        this.backCanvas.visibility = mw.SlateVisibility.Collapsed;
+        // this.backCanvas.visibility = mw.SlateVisibility.Collapsed;
         this.backBtmCanvas.visibility = mw.SlateVisibility.Collapsed;
         this.mText_Back_Time_cd.visibility = mw.SlateVisibility.Collapsed;
     }
@@ -564,7 +564,7 @@ export class MainUI extends Main_HUD_Generate {
      * @param curAreaID
      */
     private listen_area_changeArea(curAreaID: number) {
-        curAreaID == EAreaId.Safe ? this.backCanvas.visibility = mw.SlateVisibility.Collapsed : this.backCanvas.visibility = mw.SlateVisibility.Visible;
+        // curAreaID == EAreaId.Safe ? this.backCanvas.visibility = mw.SlateVisibility.Collapsed : this.backCanvas.visibility = mw.SlateVisibility.Visible;
     }
 
     /**
@@ -667,7 +667,7 @@ export class MainUI extends Main_HUD_Generate {
             this.reBackTween.stop();
         }
         let time = backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
-        this.reBackTween = new mw.Tween({alpha: 0}).to({alpha: 1}, time * 1000).onUpdate((data) => {
+        this.reBackTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, time * 1000).onUpdate((data) => {
             this.mMask_Back.fanShapedValue = data.alpha;
         }).onComplete(() => {
             this.mMask_Back.fanShapedValue = 1;
@@ -715,7 +715,7 @@ export class MainUI extends Main_HUD_Generate {
      */
     private initReset() {
         this.mMask_Reborn.visibility = mw.SlateVisibility.Collapsed;
-        this.rebornTween = new mw.Tween({alpha: 0}).to({alpha: 1}, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
+        this.rebornTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
             this.mMask_Reborn.fanShapedValue = data.alpha;
         }).onComplete(() => {
             this.mMask_Reborn.fanShapedValue = 1;
