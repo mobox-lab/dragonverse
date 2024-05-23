@@ -52,9 +52,9 @@ export default class PsStatisticModuleData extends JModuleData {
      */
     public get playerTotalOnlineTime(): number {
         return this.playerElapsedTimeS +
-       (this.playerLoginRecord[0][1] === undefined ?
-           this.playerLastedPlayTime :
-           0);
+            (this.playerLoginRecord[0][1] === undefined ?
+                this.playerLastedPlayTime :
+                0);
     }
 
     /**
