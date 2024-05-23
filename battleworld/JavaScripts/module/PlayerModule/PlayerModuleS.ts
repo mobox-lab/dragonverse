@@ -2258,7 +2258,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     private resetdayRankScore(playerID: number) {
         let curDate = new Date();
         let timeZone = -curDate.getTimezoneOffset() / 60;
-        let ddl = curDate.setHours(8 + timeZone);
+        let ddl = curDate.setHours(8 + timeZone, 0, 0, 0);
 
         let lastDate = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.loginTime);
         //跨天判断
