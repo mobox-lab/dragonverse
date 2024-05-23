@@ -36,12 +36,23 @@ export default class PsStatisticModuleData extends JModuleData {
     }
 
     /**
-     * 游玩时长.
+     * 本次游玩时长.
      * @return {number}
      */
     public get playerLastedPlayTime(): number {
         return (this.playerLoginRecord[0][1] ?? Date.now()) -
             this.playerLoginRecord[0][0];
+    }
+
+    /**
+     * 总游玩时长.
+     * @return {number}
+     */
+    public get playerTotalOnlineTime(): number {
+        return this.playerElapsedTimeS +
+        this.playerLoginRecord[0][1] === undefined ?
+            this.playerLastedPlayTime :
+            0;
     }
 
     /**
