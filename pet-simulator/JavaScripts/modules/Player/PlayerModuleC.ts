@@ -283,16 +283,16 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         if (upgrade == null) upgrade = 0;
         switch (id) {
             case 0:
-                GlobalData.LevelUp.levelRangeMap.set(Player.localPlayer.playerId, upgrade);
+                GlobalData.LevelUp.levelRangeMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 1:
-                GlobalData.LevelUp.moreDiamondMap.set(Player.localPlayer.playerId, upgrade);
+                GlobalData.LevelUp.moreDiamondMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 2:
-                GlobalData.LevelUp.petDamageMap.set(Player.localPlayer.playerId, upgrade);
+                GlobalData.LevelUp.petDamageMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 3:
-                GlobalData.LevelUp.petAttackSpeedMap.set(Player.localPlayer.playerId, upgrade);
+                GlobalData.LevelUp.petAttackSpeedMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 4:
                 // ModuleService.getModule(PetBagModuleC).addBagCapacity(info.PetNum);

@@ -849,28 +849,28 @@ export namespace GlobalData {
         public static levelRangeMap: Map<number, number> = new Map();
 
         public static levelRange(playerId: number) {
-            return Gtk.tryGet(this.levelRangeMap, playerId, 0) + 1;
+            return Gtk.tryGet(this.levelRangeMap, playerId, 0);
         }
 
         /**更多钻石 */
         public static moreDiamondMap: Map<number, number> = new Map();
 
         public static moreDiamond(playerId: number) {
-            return Gtk.tryGet(this.moreDiamondMap, playerId, 0) + 1;
+            return Gtk.tryGet(this.moreDiamondMap, playerId, 0);
         };
 
         /**宠物攻击力 */
         public static petDamageMap: Map<number, number> = new Map();
 
         public static petDamage(playerId: number) {
-            return Gtk.tryGet(this.petDamageMap, playerId, 0) + 1;
+            return Gtk.tryGet(this.petDamageMap, playerId, 0);
         };
 
         /**宠物攻击速度 */
         public static petAttackSpeedMap: Map<number, number> = new Map();
 
         public static petAttackSpeed(playerId: number) {
-            return Gtk.tryGet(this.petAttackSpeedMap, playerId, 0) + 1;
+            return Gtk.tryGet(this.petAttackSpeedMap, playerId, 0);
         };
 
 
@@ -879,10 +879,12 @@ export namespace GlobalData {
 
         public static initPlayer(playerId: number,
             levelData: number[]) {
-            this.levelRangeMap.set(playerId, levelData[0]);
-            this.moreDiamondMap.set(playerId, levelData[1]);
-            this.petDamageMap.set(playerId, levelData[2]);
-            this.petAttackSpeedMap.set(playerId, levelData[3]);
+            let upgradeData = GameConfig.Upgrade.getAllElement().map(v => v.Upgradenum);
+
+            this.levelRangeMap.set(playerId, (upgradeData[0][levelData[0] - 1] ?? 0) + 1);
+            this.moreDiamondMap.set(playerId, (upgradeData[1][levelData[1] - 1] ?? 0) + 1);
+            this.petDamageMap.set(playerId, (upgradeData[2][levelData[2] - 1] ?? 0) + 1);
+            this.petAttackSpeedMap.set(playerId, (upgradeData[3][levelData[3] - 1] ?? 0) + 1);
         }
 
         public static clearPlayer(playerId: number) {
