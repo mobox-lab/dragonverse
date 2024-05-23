@@ -243,7 +243,7 @@ export class AreaIntersect {
             return null;
         }
         //可视化trigger
-        if (SystemUtil.isPIE && !GameServiceConfig.isRelease && Globaldata.showSkillRange) {
+        if (SystemUtil.isPIE && !GameServiceConfig.isRelease && !GameServiceConfig.isBeta && Globaldata.showSkillRange) {
 
             if (this._areaCheckData.type === 0) {
                 //计算八个顶点
@@ -434,21 +434,21 @@ export class AreaIntersect {
                 case 0:// 只命中自己
                     return sceneUnitID != releasePlayerId;
                 case 1:// 命中除自己外所有目标（npc，其它玩家）
-                {
-                    if (sceneUnitID == releasePlayerId) {
-                        return true;
-                    } else {
-                        return false;
+                    {
+                        if (sceneUnitID == releasePlayerId) {
+                            return true;
+                        } else {
+                            return false;
+                        }
                     }
-                }
                 case 2:// 友方包含自己( 其它玩家、玩家自己 )
-                {
-                    if (sceneUnitID == releasePlayerId) {
-                        return false;
-                    } else {
-                        return true;
+                    {
+                        if (sceneUnitID == releasePlayerId) {
+                            return false;
+                        } else {
+                            return true;
+                        }
                     }
-                }
                 case 3:// 友方不包含自己 ( 其它玩家 )
                     return sceneUnitID > 0 && sceneUnitID == releasePlayerId;
                 case 4:// 所有人
