@@ -1037,6 +1037,10 @@ export default class MainPanel extends MainPanel_Generate {
      */
     public enableReset(enable = true) {
         Gtk.trySetVisibility(this.resetCanvas, enable);
+        this.btnReset.onClicked.clear();
+        if (enable) {
+            this.btnReset.onClicked.add(respawn);
+        }
     }
 
     public showBag() {
@@ -1150,7 +1154,8 @@ export default class MainPanel extends MainPanel_Generate {
     jump() {
         if (!this.btnJump.enable) return;
         if (!(Player.localPlayer.character.getCurrentState() === CharacterStateType.Swimming)) {
-            this._character.changeState(CharacterStateType.Jumping);
+            // this._character.changeState(CharacterStateType.Jumping);
+            this.character.jump();
         } else {
             actions
                 .tween(Player.localPlayer.character.worldTransform)
@@ -1158,7 +1163,8 @@ export default class MainPanel extends MainPanel_Generate {
                     position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)),
                 })
                 .call(() => {
-                    this._character.changeState(CharacterStateType.Jumping);
+                    // this._character.changeState(CharacterStateType.Jumping);
+                    this.character.jump();
                 })
                 .start();
         }
