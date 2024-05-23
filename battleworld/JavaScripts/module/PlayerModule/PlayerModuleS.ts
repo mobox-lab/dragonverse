@@ -2298,7 +2298,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         }
 
         if (!Gtk.isNullOrUndefined(deadId)) {
-            let deadScore = deadRankCfg.rankIntegral[attackerRank - 1];
+            let deadScore = deadRankCfg.rankIntegralReduce[attackerRank - 1];
             if (this._fightingPlayerSet.has(deadId)) {
                 this.changeRankScore(deadId, -Math.round(deadScore));
             }
