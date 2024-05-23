@@ -22,7 +22,7 @@ export class GeneralManager {
         sound.isLoop;// 先通过vscodeF2替换为 loop 再替换为 isLoop
         let transform: Transform;
         transform.position;// 先通过vscodeF2替换为 location 再替换为 position
-        class module extends ModuleC<null, null>{
+        class module extends ModuleC<null, null> {
             protected get localPlayer(): mw.Player {// 先通过vscodeF2替换为 currentPlayer 再替换为 localPlayer
                 return null;
             }
@@ -168,7 +168,7 @@ export class GeneralManager {
         }
         if (camera) {
             end = camera.worldTransform.position.add(camera.worldTransform.getForwardVector().multiply(shootRange));
-            const hits = QueryUtil.lineTrace(camera.worldTransform.position, end, false, true, [], false, false, chara);
+            const hits = QueryUtil.lineTrace(camera.worldTransform.position, end, false, false, [], false, false, chara);
             dir = end.subtract(start);
             if (hits.length > 0) {
                 dir = hits[0].impactPoint.subtract(start);
