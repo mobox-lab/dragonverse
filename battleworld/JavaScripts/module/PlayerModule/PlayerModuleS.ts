@@ -2288,7 +2288,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             GameServiceConfig.RANK_SCORE_BOT_KILLED;
         let mulCfg = GameConfig.MultipleKill.getAllElement();
         let addRate = Gtk.safeIndexItem(
-            this.getPlayerData(attackerId).getKillCount(),
+            this.getPlayerData(attackerId).getKillCount() - 1,
             mulCfg,
             "cut")
             ?.Factor ?? 1;
