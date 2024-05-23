@@ -262,22 +262,13 @@ export default class GameStart extends mw.Script {
         GameObject.asyncFindGameObjectById("0B48E050").then((value) => {
                 const effect = value as mw.Effect;
                 effect.loopCount = 1;
-                let finish = false;
                 setInterval(
                     () => {
-                        if (finish) {
-                            Log4Ts.log(GameStart, `force re awake effect at ${new Date()}`);
-                            effect.play();
-                            effect.onFinish.add(() => {
-                                Log4Ts.log(GameStart, `effect finished at ${new Date()}`);
-                                finish = true;
-                            });
-                        } else {
-                            Log4Ts.log(GameStart, `not finish.`);
-                        }
+                        Log4Ts.log(GameStart, `force re awake effect at ${new Date()}`);
+                        effect.play();
                     },
                     effect.timeLength < 1e3 ?
-                        GtkTypes.Interval.PerMin :
+                        GtkTypes.Interval.PerMin / 2 :
                         effect.timeLength);
             },
         );
