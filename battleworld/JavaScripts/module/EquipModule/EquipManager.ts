@@ -90,6 +90,16 @@ export class EquipManager {
         //ts报错兼容
         if (!newPendant) return;
         await newPendant.asyncReady();
+
+        if (isShopPreview) {
+            //检测下是否在商店触发器内
+            let trigger = GameObject.findGameObjectById(Globaldata.shop_trigger_guid) as Trigger;
+            if (!trigger.checkInArea(Player.localPlayer.character)) {
+                newPendant.destroy();
+                return;
+            }
+        }
+
         newPendant.setCollision(mw.PropertyStatus.Off);
 
         character.attachToSlot(newPendant, pendantCfg.slot);
@@ -103,14 +113,6 @@ export class EquipManager {
 
         this.addPendantRecord(pId, pendentKey, newPendant);
         this._pendentVisableMap.set(pId, false);
-
-        if (isShopPreview) {
-            //检测下是否在商店触发器内
-            let trigger = GameObject.findGameObjectById(Globaldata.shop_trigger_guid) as Trigger;
-            if (!trigger.checkInArea(Player.localPlayer.character)) {
-                this.listen_removePendant(pId, pendantId);
-            }
-        }
     }
 
 
