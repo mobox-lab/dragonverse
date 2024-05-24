@@ -635,7 +635,7 @@ export default class GameServiceConfig {
     /**
      * 主界面 静音按钮 图标 Guid.
      */
-    public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = "324594";
+    public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = "346465";
 
     /**
      * 地图界面 小地图左下点的世界坐标.
