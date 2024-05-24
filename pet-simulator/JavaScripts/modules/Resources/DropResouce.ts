@@ -106,6 +106,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
             drop.value += diff;
             allValue -= diff;
         }
+        Log4Ts.log(DropManagerS, `reward generate ${generates.length} drops for player ${playerId} at ${pos} with type ${type} and value ${val}`);
 
         Gtk.patchDo(
             generates.map(item => {

@@ -193,6 +193,7 @@ export default class ResourceScript extends mw.Script {
                 this.checkHpStage(player.playerId, this.damageArr[i].damage / totalDamage);
                 this.overGetReward(player);
             }
+            Log4Ts.log(Resource, `treasure destroy playerID:${playerID}, totalDamage:${totalDamage}, curHp:${this.curHp}`);
             return;
         } else {
             let player = mw.Player.getPlayer(playerID);
@@ -207,6 +208,7 @@ export default class ResourceScript extends mw.Script {
 
             this.checkHpStage(playerID);
             this.client_injured(player, this.curHp, this._rate);
+            Log4Ts.log(Resource, `treasure injured playerID:${playerID}, curHp:${this.curHp}`);
         }
     }
 
@@ -369,6 +371,8 @@ export default class ResourceScript extends mw.Script {
             let gemVal = Math.ceil((this.rewardGem * rate) / 3 - this.guaShaRewardGem);
             this.guaShaRewardGem += gemVal;
             this.playReward(playerId, GlobalEnum.ResourceAttackStage.GuaSha, 0, gemVal);
+
+            Log4Ts.log(Resource, `play guaSha playerId:${playerId}, goldVal:${goldVal}, gemVal:${gemVal}`);
         }, GlobalData.SceneResource.guaShaTime);
 
         this.interval.set(playerId, interval);
@@ -455,6 +459,7 @@ export default class ResourceScript extends mw.Script {
                     gemCount,
                     this.isBigBox);
         }
+        Log4Ts.log(Resource, `playReward playerId:${playerId}, scenePointId: ${this.scenePointId}, treasure Pos:${this.curPos}, state:${state}, goldVal:${goldVal}, gemVal:${gemVal}, goldCount:${goldCount}, gemCount:${gemCount}`);
     }
 
     /**判断几世界的金币 */
