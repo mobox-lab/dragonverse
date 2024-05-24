@@ -2288,7 +2288,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             GameServiceConfig.RANK_SCORE_BOT_KILLED;
         let mulCfg = GameConfig.MultipleKill.getAllElement();
         let addRate = Gtk.safeIndexItem(
-            this.getPlayerData(attackerId).getKillCount(),
+            this.getPlayerData(attackerId).getKillCount() - 1,
             mulCfg,
             "cut")
             ?.Factor ?? 1;
@@ -2298,7 +2298,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         }
 
         if (!Gtk.isNullOrUndefined(deadId)) {
-            let deadScore = deadRankCfg.rankIntegral[attackerRank - 1];
+            let deadScore = deadRankCfg.rankIntegralReduce[attackerRank - 1];
             if (this._fightingPlayerSet.has(deadId)) {
                 this.changeRankScore(deadId, -Math.round(deadScore));
             }
