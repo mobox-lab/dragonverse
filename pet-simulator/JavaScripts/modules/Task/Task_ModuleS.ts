@@ -147,16 +147,16 @@ export class Task_ModuleS extends ModuleS<Task_ModuleC, TaskModuleData> {
      * @param player 玩家
      */
     public trade(player: mw.Player): void {
-        let playerData = this.getPlayerData(player);
-        if (playerData == null) return;
-        let allIds = this.allTask.get(TaskType.Trade);
-        if (allIds == null) return;
-        for (let i = 0; i < allIds.length; i++) {
-            let id = allIds[i];
-            if (playerData.completeTask(id)) {
-                return;
-            }
-        }
+        // let playerData = this.getPlayerData(player);
+        // if (playerData == null) return;
+        // let allIds = this.allTask.get(TaskType.Trade);
+        // if (allIds == null) return;
+        // for (let i = 0; i < allIds.length; i++) {
+        //     let id = allIds[i];
+        //     if (playerData.completeTask(id)) {
+        //         return;
+        //     }
+        // }
     }
 
     /**增加任务点数 */
@@ -168,22 +168,24 @@ export class Task_ModuleS extends ModuleS<Task_ModuleC, TaskModuleData> {
 
     /**检查任务完成 */
     private checkTaskComplete(player: mw.Player, taskType: TaskType, taskId: number, sceneId: number = null, addCount: number = 1): void {
-        let playerData = this.getPlayerData(player);
-        if (playerData == null) return;
-        let allIds = this.allTask.get(taskType);
-        if (allIds == null) return;
-        for (let i = 0; i < allIds.length; i++) {
-            let id = allIds[i];
-            let taskInfo = GameConfig.Task.getElement(id);
-            if (sceneId && taskInfo.Area != sceneId) {
-                continue;
-            }
-            if (taskInfo.NumA == null) return;
-            if (taskInfo.NumA.indexOf(taskId) != -1) {
-                playerData.completeTask(id, addCount);
-                return;
-            }
-        }
+        //去掉任务
+        // let playerData = this.getPlayerData(player);
+        // if (playerData == null) return;
+        // let allIds = this.allTask.get(taskType);
+        // if (allIds == null) return;
+        // for (let i = 0; i < allIds.length; i++) {
+        //     let id = allIds[i];
+        //     let taskInfo = GameConfig.Task.getElement(id);
+        //     if (sceneId && taskInfo.Area != sceneId) {
+        //         continue;
+        //     }
+        //     if (taskInfo.NumA == null) return;
+        //     if (taskInfo.NumA.indexOf(taskId) != -1) {
+        //         playerData.completeTask(id, addCount);
+        //         return;
+        //     }
+        // }
+
     }
 
 }
