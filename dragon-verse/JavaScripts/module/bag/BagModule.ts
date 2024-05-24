@@ -738,7 +738,8 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall(playerId: number) {
-        return !GameServiceConfig.isRelease || this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
+        return !(GameServiceConfig.isRelease || GameServiceConfig.isBeta) ||
+            this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
     }
 
     /**
