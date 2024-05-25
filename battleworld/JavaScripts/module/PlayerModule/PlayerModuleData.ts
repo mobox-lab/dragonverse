@@ -98,7 +98,7 @@ export class BattleWorldPlayerModuleData extends Subdata {
         this.reserveAttribute[Attribute.EnumAttributeType.attributeMagic] = 0;
         this.reserveAttribute[Attribute.EnumAttributeType.attributeAtkSkill] = 0;
         this.reserveAttribute[Attribute.EnumAttributeType.rankScore] = 0;
-        this.reserveAttribute[Attribute.EnumAttributeType.loginTime] = 0;
+        this.reserveAttribute[Attribute.EnumAttributeType.lastDayRankCheckTime] = 0;
         this.reserveAttribute[Attribute.EnumAttributeType.dayRankScore] = 0;
         this.reserveAttribute[Attribute.EnumAttributeType.isShowRank] = 0;
     }
@@ -116,7 +116,7 @@ export class BattleWorldPlayerModuleData extends Subdata {
                 case 1:
                     this.currentVersion = 2;//设置当前版本
                     this.reserveAttribute[Attribute.EnumAttributeType.rankScore] = 0;
-                    this.reserveAttribute[Attribute.EnumAttributeType.loginTime] = 0;
+                    this.reserveAttribute[Attribute.EnumAttributeType.lastDayRankCheckTime] = 0;
                     this.reserveAttribute[Attribute.EnumAttributeType.dayRankScore] = 0;
                     break;
                 case 2:
