@@ -400,7 +400,7 @@ export namespace GlobalData {
         /**每个区域资源上限个数 */
         public static maxResourceCount: number = 200;
         /**每个区域资源下限个数 */
-        public static minResourceCount: number = 20;
+        public static minResourceCount: number = 100;
         /**默认区域数组 */
         public static defaultAreaArr: number[] = [1002, 2002];
         /**忽略区域数组 */
@@ -873,12 +873,11 @@ export namespace GlobalData {
             return Gtk.tryGet(this.petAttackSpeedMap, playerId, 0);
         };
 
-
         /**最高等级 */
         public static maxLevel: number = 5;
 
         public static initPlayer(playerId: number,
-            levelData: number[]) {
+                                 levelData: number[]) {
             let upgradeData = GameConfig.Upgrade.getAllElement().map(v => v.Upgradenum);
 
             this.levelRangeMap.set(playerId, (upgradeData[0][levelData[0] - 1] ?? 0) + 1);
