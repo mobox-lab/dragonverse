@@ -2263,7 +2263,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         let lastCheckTime = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.lastDayRankCheckTime);
         //跨天判断
-        if (lastCheckTime < ddl - GtkTypes.Interval.PerHour * 24 ||
+        if (lastCheckTime === undefined ||
+            lastCheckTime < ddl - GtkTypes.Interval.PerHour * 24 ||
             now > ddl && lastCheckTime < ddl) {
             this.setPlayerAttr(playerID, Attribute.EnumAttributeType.lastDayRankCheckTime, now);
             this.setPlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, 0);
