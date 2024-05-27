@@ -606,6 +606,7 @@ export function memorizePointIdToLocation(pointId: number): Readonly<mw.Vector> 
             `point id: ${pointId}`,
             `point location: ${GameConfig.DropPoint.getElement(pointId).areaPoints}`,
             `come down location: ${v}`);
+        return comeDown(pointId);
     }
     return v;
 }

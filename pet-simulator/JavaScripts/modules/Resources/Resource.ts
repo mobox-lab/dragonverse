@@ -18,7 +18,7 @@ import ModuleService = mwext.ModuleService;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk from "../../util/GToolkit";
 import AchievementModuleS from "../AchievementModule/AchievementModuleS";
-import { memorizePointIdToLocation, ResourceModuleS } from "./ResourceModule";
+import { comeDown, memorizePointIdToLocation, ResourceModuleS } from "./ResourceModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Enumerable from "linq";
@@ -437,12 +437,21 @@ export default class ResourceScript extends mw.Script {
         gemVal = Math.ceil(gemVal);
         let goldCount = Math.min(Math.ceil(rewardArr[0]), goldVal);
         let gemCount = Math.min(Math.ceil(rewardArr[1]), gemVal);
+        let curPos = this.curPos.clone();
+        if (Math.abs(curPos.x - GameConfig.DropPoint.getElement(this.pointId).areaPoints.x) > 1e-6 ||
+            Math.abs(curPos.y - GameConfig.DropPoint.getElement(this.pointId).areaPoints.y) > 1e-6) {
+            Log4Ts.error(memorizePointIdToLocation, `wrong point when get.`,
+                `point id: ${this.pointId}`,
+                `point location: ${GameConfig.DropPoint.getElement(this.pointId).areaPoints}`,
+                `come down location: ${curPos}`);
+            curPos = comeDown(this.pointId);
+        }
         if (goldCount > 0) {
             ModuleService
                 .getModule(DropManagerS)
                 .createDrop(
                     playerId,
-                    this.curPos,
+                    curPos,
                     this.judgeGold(),
                     goldVal,
                     goldCount,
@@ -453,7 +462,7 @@ export default class ResourceScript extends mw.Script {
                 .getModule(DropManagerS)
                 .createDrop(
                     playerId,
-                    this.curPos,
+                    curPos,
                     GlobalEnum.CoinType.Diamond,
                     gemVal,
                     gemCount,
