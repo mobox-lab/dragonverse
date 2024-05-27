@@ -45,7 +45,7 @@ import { MotionModuleS } from "../MotionModule/MotionModuleS";
 import { AuthModuleS } from "../auth/AuthModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Gtk from "../../util/GToolkit";
+import Gtk, { GtkTypes } from "../../util/GToolkit";
 import { AreaModuleS } from "../AreaModule/AreaModuleS";
 
 /**玩家伤害信息 */
@@ -2257,14 +2257,18 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
      */
     private resetdayRankScore(playerID: number) {
         let curDate = new Date();
+        const now = curDate.getTime();
         let timeZone = -curDate.getTimezoneOffset() / 60;
         let ddl = curDate.setHours(8 + timeZone, 0, 0, 0);
 
-        let lastDate = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.loginTime);
+        let lastCheckTime = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.lastDayRankCheckTime);
         //跨天判断
-        if (lastDate < ddl) return;
-        this.setPlayerAttr(playerID, Attribute.EnumAttributeType.loginTime, curDate.getTime());
-        this.setPlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, 0);
+        if (lastCheckTime === undefined ||
+            lastCheckTime < ddl - GtkTypes.Interval.PerHour * 24 ||
+            now > ddl && lastCheckTime < ddl) {
+            this.setPlayerAttr(playerID, Attribute.EnumAttributeType.lastDayRankCheckTime, now);
+            this.setPlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, 0);
+        }
     }
 
     /**

@@ -898,7 +898,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         if (Gtk.isNullOrEmpty(userId)) return;
 
         const player = Player.getPlayer(playerId);
-        const userName = player.nickname;
+        const userName = this.getPlayerData(player)?.holdNickName
+            ?? player.nickname;
         const userAvatar = player["avatarUrl"];
         const requestParam: UpdatePetSimulatorRankDataReq = {
             userId,
