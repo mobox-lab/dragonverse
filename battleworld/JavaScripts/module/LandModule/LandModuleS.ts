@@ -291,7 +291,7 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
      */
     @Decorator.noReply()
     public net_pickUp(onlyGuid: string, pickType: EPickUpType,
-                      value: number, pickUpInfo: IPickUpInfo) {
+        value: number, pickUpInfo: IPickUpInfo) {
 
         // 校验避免重复拾取
         let isHasPickUp = PickManagerS.instance.isHasPickUp(onlyGuid);
@@ -339,21 +339,28 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
                 if (attr.attributeID !== pillInfo.attributeID || attr.attributeValue !== pillInfo.attributeValue || attr.duration !== pillInfo.duration) return;
 
                 //计数，一个属性最多只能加5次
-                let currentAdd = this._pillDurationMap.get(this.currentPlayerId)?.filter(element => element.attributeID === pillInfo.attributeID);
-                if (currentAdd && currentAdd.length >= 5) return;
+                // let currentAdd = this._pillDurationMap.get(this.currentPlayerId)?.filter(element => element.attributeID === pillInfo.attributeID);
+                // if (currentAdd && currentAdd.length >= 5) return;
 
-                //给对应的加成类型加数据
-                this.playerModules.addPlayerAttr(this.currentPlayerId, pillInfo.attributeID, pillInfo.attributeValue);
-                let info = this._playerPillMap.get(this.currentPlayerId);
-                if (!info) {
-                    info = new Map();
-                    this._playerPillMap.set(this.currentPlayerId, info);
-                }
-                //计算一下丹药给到的加成
-                let addValue = info.get(pillInfo.attributeID);
-                if (!addValue == null) addValue = 0;
-                addValue += pillInfo.attributeValue;
-                info.set(pillInfo.attributeID, addValue);
+                //改为不叠加
+                let currentAdd = this._pillDurationMap.get(this.currentPlayerId)?.find(element => element.attributeID === pillInfo.attributeID);
+                if (!currentAdd) {
+                    //给对应的加成类型加数据
+                    Log4Ts.log(LandModuleS, `add player ${this.currentPlayerId} attr ${pillInfo.attributeID} value ${pillInfo.attributeValue}`);
+                    this.playerModules.addPlayerAttr(this.currentPlayerId, pillInfo.attributeID, pillInfo.attributeValue);
+                    let info = this._playerPillMap.get(this.currentPlayerId);
+                    if (!info) {
+                        info = new Map();
+                        this._playerPillMap.set(this.currentPlayerId, info);
+                    }
+                    //计算一下丹药给到的加成
+                    let addValue = info.get(pillInfo.attributeID);
+                    if (!addValue == null) addValue = 0;
+                    addValue += pillInfo.attributeValue;
+                    info.set(pillInfo.attributeID, addValue);
+                };
+
+
                 //加入计时
                 let durationArray = this._pillDurationMap.get(this.currentPlayerId);
                 if (!durationArray) {
@@ -444,7 +451,12 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
                             const include = deleted.includes(i);
                             if (include) {
                                 //需要删除的属性
-                                this.attributeExpired(playerID, v);
+                                //加入到需要删除的数组中
+                                if (!durationArray.find(v => v.attributeID == durationArray[i].attributeID && v !== durationArray[i])) {
+                                    //没有重复的属性，就扣属性
+                                    this.attributeExpired(playerID, v);
+                                }
+
                             }
                             return !include;
                         });
@@ -479,6 +491,7 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
                 att.set(attribute.attributeID, attSumVal - attribute.value);
             }
             //扣属性
+            Log4Ts.log(LandModuleS, `reduce player ${playerID} attr ${attribute.attributeID} value ${attribute.value}`);
             this.playerModules.reducePlayerAttr(playerID, attribute.attributeID, attribute.value);
             //让客户端修改表现
             this.getClient(playerID)?.net_pillExipred(attribute.attributeID);

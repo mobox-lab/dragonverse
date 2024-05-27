@@ -895,6 +895,7 @@ export class MainUI extends Main_HUD_Generate {
         } else {
             if (pillInfo.attributeID) {
                 const pillValue = this.pillMap.get(pillInfo.attributeID);
+                //不需要叠加
                 pillValue.num++;
                 // pillValue.text.text = pillValue.num.toFixed();
                 pillValue.duration = pillInfo.duration;
@@ -928,7 +929,7 @@ export class MainUI extends Main_HUD_Generate {
                     // second.img.visibility = SlateVisibility.Visible;
                     second.name.visibility = SlateVisibility.Visible;
                     canvasShouldShow = true;
-                    this.setBuffLevel(second.levelCanvas, second.num);
+                    // this.setBuffLevel(second.levelCanvas, second.num);
                     let oriDuration = second.duration;
                     if (second.timer === -1) {
                         second.timer = TimeUtil.setInterval(() => {
@@ -941,10 +942,11 @@ export class MainUI extends Main_HUD_Generate {
                                 // second.img.visibility = SlateVisibility.Collapsed;
                                 second.time.text = "";
                                 second.name.visibility = SlateVisibility.Collapsed;
-                                second.mask.fanShapedValue = 0;
+                                second.mask.fanShapedValue = 1;
                                 second.levelCanvas.visibility = SlateVisibility.Collapsed;
                                 TimeUtil.clearInterval(second.timer);
                                 second.timer = -1;
+
                             }
                         }, 0.1);
                     }

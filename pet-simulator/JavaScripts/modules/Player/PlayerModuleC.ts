@@ -367,10 +367,9 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         return this.data.diamond >= value;
     }
 
-    /**减少金币 */
-    public async reduceGold(value: number, coinType: GlobalEnum.CoinType): Promise<boolean> {
-        return await this.server.net_reduceGold(value, coinType);
-    }
+    public async buyWorld(cfgId: number): Promise<boolean> {
+			return await this.server.net_buyWorld(cfgId);
+		}
 
     /**减少钻石 */
     public async reduceDiamond(value: number): Promise<boolean> {

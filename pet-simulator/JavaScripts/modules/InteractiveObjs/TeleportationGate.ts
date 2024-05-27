@@ -132,36 +132,24 @@ export class TeleportationGate {
         }
         MessageBox.showTwoBtnMessage(mgs, (res) => {
             if (res)
-                this.buyWorld(this.cfg.Gold);
+                this.buyWorld();
         })
     }
-    /**判断几世界的金币 */
-    private judgeGold() {
-        let coinType = GlobalEnum.CoinType;
 
-        let goldType = coinType.FirstWorldGold;
-
-        if (this.cfgID < 2000) {
-            goldType = coinType.FirstWorldGold;
-        } else if (this.cfgID < 3000) {
-            goldType = coinType.SecondWorldGold;
-        } else if (this.cfgID < 4000) {
-            goldType = coinType.ThirdWorldGold;
-        }
-        return goldType;
-    }
-    private async buyWorld(value: number) {
+    private async buyWorld() {
         let isCan: boolean = true;
-        isCan = await ModuleService.getModule(PlayerModuleC).reduceGold(value, this.judgeGold());
+				const cfgID = this.cfgID;
+        isCan = await ModuleService.getModule(PlayerModuleC).buyWorld(cfgID);
 
         if (!isCan) {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_4.Value);
             return;
         }
 
-        ModuleService.getModule(AreaModuleC).addWolrdArea(this.cfgID);
+        ModuleService.getModule(AreaModuleC).addWorldArea(cfgID);
         this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.AreaOpenNum, 1);//区域开放数
     }
+
     //解锁世界后，解锁对应的扭蛋机
     public changeArea(areaId: number, level: number) {
         if (level == 2 && this.cfgID == areaId) {
