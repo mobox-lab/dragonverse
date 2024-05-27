@@ -942,10 +942,11 @@ export class MainUI extends Main_HUD_Generate {
                                 // second.img.visibility = SlateVisibility.Collapsed;
                                 second.time.text = "";
                                 second.name.visibility = SlateVisibility.Collapsed;
-                                second.mask.fanShapedValue = 0;
+                                second.mask.fanShapedValue = 1;
                                 second.levelCanvas.visibility = SlateVisibility.Collapsed;
                                 TimeUtil.clearInterval(second.timer);
                                 second.timer = -1;
+
                             }
                         }, 0.1);
                     }
