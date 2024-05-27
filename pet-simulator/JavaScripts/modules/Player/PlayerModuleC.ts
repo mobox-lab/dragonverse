@@ -358,9 +358,9 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
     }
 
     /**增加钻石 */
-    public addDiamond(value: number): void {
-        if (value > 0) this.server.net_addDiamond(value);
-    }
+    public async randomDiamond() {
+			return await this.server.net_randomDiamond();
+		}
 
     /**判断钻石数量是否足够 */
     public isDiamondEnough(value: number): boolean {

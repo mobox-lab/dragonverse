@@ -598,5 +598,15 @@ export function comeDown(pointId: number): mw.Vector | undefined {
 const memorizePointIdToLocationMap = new Map<number, mw.Vector>();
 
 export function memorizePointIdToLocation(pointId: number): Readonly<mw.Vector> {
-    return Gtk.tryGet(memorizePointIdToLocationMap, pointId, () => comeDown(pointId));
+    let v = Gtk.tryGet(memorizePointIdToLocationMap, pointId, () => comeDown(pointId));
+    if (!v) return undefined;
+    if (Math.abs(v.x - GameConfig.DropPoint.getElement(pointId).areaPoints.x) > 1 ||
+        Math.abs(v.y - GameConfig.DropPoint.getElement(pointId).areaPoints.y) > 1) {
+        Log4Ts.error(memorizePointIdToLocation, `wrong point when get.`,
+            `point id: ${pointId}`,
+            `point location: ${GameConfig.DropPoint.getElement(pointId).areaPoints}`,
+            `come down location: ${v}`);
+        return comeDown(pointId);
+    }
+    return v;
 }

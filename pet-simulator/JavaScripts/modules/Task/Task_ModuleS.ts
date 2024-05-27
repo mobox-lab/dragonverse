@@ -83,7 +83,7 @@ export class Task_ModuleS extends ModuleS<Task_ModuleC, TaskModuleData> {
 
     /**购买钻石 */
     private buyDiamond(award: number, player: mw.Player): void {
-        ModuleService.getModule(PlayerModuleS).net_addDiamond(award, player);
+        ModuleService.getModule(PlayerModuleS).addDiamond(player.playerId,  award);
     }
 
     /**
