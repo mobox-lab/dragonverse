@@ -20,10 +20,17 @@ export class DropManagerC extends ModuleC<DropManagerS, null> {
     public net_createDrop(params: DropGenerateParam[]) {
 
         const gun = Balancing.getInstance().tryGetGun("dropItemGeneration");
+        let logged = false;
 
-        for (const { startPos, endPos, type, value } of params) {
+        for (const {startPos, endPos, type, value} of params) {
             gun.press(() => {
                 let drop = new DropInClient();
+                if (!logged) {
+                    Log4Ts.log(DropManagerC,
+                        `create drop at ${startPos} to ${endPos} with type ${type} and value ${value}.`,
+                        `this is one of them.`);
+                    logged = true;
+                }
                 drop.poolInit(startPos.clone(), endPos.clone(), type, value);
                 this._dropItems.push(drop);
             });
@@ -70,11 +77,11 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
      * @param isBox
      */
     public createDrop(playerId: number,
-        pos: mw.Vector,
-        type: GlobalEnum.CoinType,
-        allValue: number,
-        count: number,
-        isBox: boolean = false): void {
+                      pos: mw.Vector,
+                      type: GlobalEnum.CoinType,
+                      allValue: number,
+                      count: number,
+                      isBox: boolean = false): void {
         if (count <= 0 || allValue <= 0) return;
         let val = Math.ceil(allValue / count);
         let generates: DropInServer[] = [];
@@ -107,6 +114,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
             allValue -= diff;
         }
         Log4Ts.log(DropManagerS, `reward generate ${generates.length} drops for player ${playerId} at ${pos} with type ${type} and value ${val}`);
+        let logged = false;
 
         Gtk.patchDo(
             generates.map(item => {
@@ -115,6 +123,12 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
                 const angle = new RandomGenerator().randomCircle().handle(val => val * radius).toVector2();
                 let startLoc = pos;
                 const endLoc = new mw.Vector(startLoc.x + angle.x, startLoc.y + angle.y, pos.z + GlobalData.DropAni.resourceY); //地面高度
+                if (!logged) {
+                    Log4Ts.log(DropManagerS,
+                        `create drop at ${startLoc} to ${endLoc} with type ${type} and value ${val}.`,
+                        `this is one of them.`);
+                    logged = true;
+                }
                 item.position = endLoc;
 
                 return {
@@ -231,8 +245,8 @@ class DropInServer extends DropItem {
     public position: mw.Vector;
 
     constructor(public owner: number,
-        public value: number,
-        public type: GlobalEnum.CoinType) {
+                public value: number,
+                public type: GlobalEnum.CoinType) {
         super();
     }
 
@@ -382,7 +396,7 @@ class DropInClient extends DropItem {
         let startLoc = getPos(this.model);
         let endLoc = mw.Vector.add(startLoc, mw.Vector.multiply(dir, dis));
         this._moveToTween.stop();
-        this._moveToTween = new mw.Tween(startLoc).to({ x: endLoc.x, y: endLoc.y }, time)
+        this._moveToTween = new mw.Tween(startLoc).to({x: endLoc.x, y: endLoc.y}, time)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete(() => {
@@ -406,11 +420,11 @@ class DropInClient extends DropItem {
 
         startPos.z = this.targetPos.z + GlobalData.DropAni.resourceY;
 
-        this._moveToTween = new mw.Tween(startPos).to({ z: startPos.z + height }, GlobalData.DropAni.bonceUpTime)
+        this._moveToTween = new mw.Tween(startPos).to({z: startPos.z + height}, GlobalData.DropAni.bonceUpTime)
             .onUpdate((value: mw.Vector) => {
                 setPos(this.model, value);
             }).onComplete((obj) => {
-                this._moveToTween = new mw.Tween(obj).to({ z: this.targetPos.z + GlobalData.DropAni.resourceY }, GlobalData.DropAni.bonceDownTime)
+                this._moveToTween = new mw.Tween(obj).to({z: this.targetPos.z + GlobalData.DropAni.resourceY}, GlobalData.DropAni.bonceDownTime)
                     .onUpdate((value: mw.Vector) => {
                         setPos(this.model, value);
                     }).onComplete(() => {

@@ -119,7 +119,7 @@ export namespace Attribute {
         /** 段位分 */
         rankScore = 59,
         /** 玩家登录时间戳 */
-        loginTime = 60,
+        lastDayRankCheckTime = 60,
         /** 今日玩家已获取段位分 */
         dayRankScore = 61,
         /**玩家是否显示段位 */
@@ -178,7 +178,7 @@ export namespace Attribute {
         Attribute.EnumAttributeType.attributeMagic,
         Attribute.EnumAttributeType.attributeAtkSkill,
         Attribute.EnumAttributeType.rankScore,
-        Attribute.EnumAttributeType.loginTime,
+        Attribute.EnumAttributeType.lastDayRankCheckTime,
         Attribute.EnumAttributeType.dayRankScore,
         Attribute.EnumAttributeType.isShowRank,
     ])
