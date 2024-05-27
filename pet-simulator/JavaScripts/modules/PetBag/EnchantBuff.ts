@@ -284,9 +284,8 @@ export class EnchantBuff {
         const data = GlobalData.Enchant;
         let time = MathUtil.randomInt(data.randomDiamondInterval[0], data.randomDiamondInterval[1] + 1);
 
-        this.interval = TimeUtil.setInterval(() => {
-            let count = MathUtil.randomInt(data.randomDiamondNum[0], data.randomDiamondNum[1] + 1);
-            ModuleService.getModule(PlayerModuleC).addDiamond(count);
+        this.interval = TimeUtil.setInterval(async () => {
+            const count = await ModuleService.getModule(PlayerModuleC).randomDiamond();
             RewardTipsManager.getInstance().getUI(GlobalEnum.CoinType.Diamond, count);
         }, time);
     }
