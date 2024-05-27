@@ -93,8 +93,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let cfg = GameConfig.EggMachine.getElement(cfgId);
         let price = cfg.Price[0];
         if (!price || price === 0) return null;
-        let playerId = this.currentPlayerId;
-        let res = await ModuleService.getModule(PlayerModuleS).net_reduceGold(price, this.judgeGold(cfgId));
+        const playerId = this.currentPlayerId;
+        let res = await ModuleService.getModule(PlayerModuleS).reduceGold(playerId, price, this.judgeGold(cfgId));
         if (res) {
             let petId = this.calcProbability(cfgId);
             this.net_addPetWithMissingInfo(playerId, petId, cfg.AreaID);
