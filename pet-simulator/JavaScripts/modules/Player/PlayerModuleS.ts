@@ -288,15 +288,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
     }
 
-    /**增加钻石 */
-    public net_addDiamond(value: number, player: mw.Player = null): void {
-        if (!player) {
-            this.currentData.addDiamond(value);
-            return;
-        }
-        let data = this.getPlayerData(player);
-        data.addDiamond(value);
-    }
+    public async net_randomDiamond(): Promise<number> {
+			let count = MathUtil.randomInt(GlobalData.Enchant.randomDiamondNum[0], GlobalData.Enchant.randomDiamondNum[1] + 1);
+			await this.addDiamond(this.currentPlayerId, count);
+			return count
+		}
 
     /**减少金币 */
     public net_reduceGold(value: number, coinType: GlobalEnum.CoinType): boolean {
