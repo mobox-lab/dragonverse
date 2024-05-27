@@ -1220,9 +1220,9 @@ export default class MainPanel extends MainPanel_Generate {
 
     public switchToTransferLevel() {
         this.resetCanvas.visibility = SlateVisibility.Collapsed;
-        this.transferCanvas.visibility = SlateVisibility.Collapsed;
+        // this.transferCanvas.visibility = SlateVisibility.Collapsed;
         this.mapCanvas.visibility = SlateVisibility.Collapsed;
-        this.btnCow.removeKey(Keys.T);
+        // this.btnCow.removeKey(Keys.T);
         this.btnReset.onClicked.clear();
     }
 
