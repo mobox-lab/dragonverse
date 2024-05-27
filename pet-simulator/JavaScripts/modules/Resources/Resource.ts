@@ -69,9 +69,9 @@ export const SceneResourceMap: Map<number, ResourceScript[]> = new Map<number, R
 @Component
 export default class ResourceScript extends mw.Script {
 
-    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
+    @mw.Property({replicated: true, onChanged: "onHpChanged"})
     public curHp: number = 0;
-    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
+    @mw.Property({replicated: true, onChanged: "onSceneChanged"})
     private scenePointId: string = "";
 
     public get isBigBox(): boolean {
@@ -79,7 +79,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     /**伤害记录 */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     private damageArr: DamageRecord[] = [];
 
     private _rate: number = 1;
@@ -338,13 +338,13 @@ export default class ResourceScript extends mw.Script {
     public getDamageRate(playerId: number): number {
         if (this.cfg.HP === 0) return 0;
         return this
-            .damageArr
-            .reduce((previousValue,
-                currentValue) => {
-                return previousValue +
-                    (currentValue.playerId === playerId ? currentValue.damage : 0);
-            },
-                0)
+                .damageArr
+                .reduce((previousValue,
+                         currentValue) => {
+                        return previousValue +
+                            (currentValue.playerId === playerId ? currentValue.damage : 0);
+                    },
+                    0)
             / this.cfg.HP;
     }
 
@@ -600,7 +600,7 @@ export default class ResourceScript extends mw.Script {
             let randomZ = MathUtil.randomInt(0, 360);
             this.resObj.worldTransform.rotation = new mw.Rotation(0, 0, randomZ);
         } else
-            this.resObj.worldTransform.position = this.curPos;
+            this.resObj.worldTransform.position = this.curPos.clone();
         this.clientStart();
         this.endTween?.stop();
         this.order = 0;
@@ -639,7 +639,7 @@ export default class ResourceScript extends mw.Script {
         const time = GlobalData.ResourceAni.dropTweenTime[this.order];
         let start = endInfos[this.order];
         let end = endInfos[this.order + 1];
-        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
+        this.endTween = new mw.Tween({z: start}).to({z: end}, time).onUpdate((obj) => {
             this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
         }).onComplete(() => {
             this.order++;
@@ -654,13 +654,13 @@ export default class ResourceScript extends mw.Script {
     private tweenEnd(): void {
         this.order = 0;
         this.endTween = null;
-        this.resObj.worldTransform.position = this.curPos;
+        this.resObj.worldTransform.position = this.curPos.clone();
         this.switchCollider(true);
         setTimeout(() => {
             if (this.resObj == null) return;
             let dis = mw.Vector.squaredDistance(this.curPos, this.Obj.worldTransform.position);
             if (dis > 90000) {
-                this.Obj.worldTransform.position = this.curPos;
+                this.Obj.worldTransform.position = this.curPos.clone();
             }
         }, 2000);
     }
