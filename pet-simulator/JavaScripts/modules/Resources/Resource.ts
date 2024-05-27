@@ -438,8 +438,8 @@ export default class ResourceScript extends mw.Script {
         let goldCount = Math.min(Math.ceil(rewardArr[0]), goldVal);
         let gemCount = Math.min(Math.ceil(rewardArr[1]), gemVal);
         let curPos = this.curPos.clone();
-        if (Math.abs(curPos.x - GameConfig.DropPoint.getElement(this.pointId).areaPoints.x) > 1e-6 ||
-            Math.abs(curPos.y - GameConfig.DropPoint.getElement(this.pointId).areaPoints.y) > 1e-6) {
+        if (Math.abs(curPos.x - GameConfig.DropPoint.getElement(this.pointId).areaPoints.x) > 1 ||
+            Math.abs(curPos.y - GameConfig.DropPoint.getElement(this.pointId).areaPoints.y) > 1) {
             Log4Ts.error(memorizePointIdToLocation, `wrong point when get.`,
                 `point id: ${this.pointId}`,
                 `point location: ${GameConfig.DropPoint.getElement(this.pointId).areaPoints}`,

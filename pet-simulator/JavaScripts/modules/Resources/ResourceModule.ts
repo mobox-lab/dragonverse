@@ -600,8 +600,8 @@ const memorizePointIdToLocationMap = new Map<number, mw.Vector>();
 export function memorizePointIdToLocation(pointId: number): Readonly<mw.Vector> {
     let v = Gtk.tryGet(memorizePointIdToLocationMap, pointId, () => comeDown(pointId));
     if (!v) return undefined;
-    if (Math.abs(v.x - GameConfig.DropPoint.getElement(pointId).areaPoints.x) > 1e-6 ||
-        Math.abs(v.y - GameConfig.DropPoint.getElement(pointId).areaPoints.y) > 1e-6) {
+    if (Math.abs(v.x - GameConfig.DropPoint.getElement(pointId).areaPoints.x) > 1 ||
+        Math.abs(v.y - GameConfig.DropPoint.getElement(pointId).areaPoints.y) > 1) {
         Log4Ts.error(memorizePointIdToLocation, `wrong point when get.`,
             `point id: ${pointId}`,
             `point location: ${GameConfig.DropPoint.getElement(pointId).areaPoints}`,
