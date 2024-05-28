@@ -13,6 +13,7 @@ import {
     ENotice_Events_S,
     EPlayerEvents_S,
     EPlayerFightState,
+    ESkillEvent_S,
 } from "../../const/Enum";
 import { Globaldata } from "../../const/Globaldata";
 import { Constants } from "../../tool/Constants";
@@ -43,7 +44,7 @@ import { EquipModuleS } from "../EquipModule/EquipModuleS";
 import { ERankNoticeType } from "./UI/rank/RankNotice";
 import { MotionModuleS } from "../MotionModule/MotionModuleS";
 import { AuthModuleS } from "../auth/AuthModule";
-import { EnergyModuleS } from "../Energy/EnergyModule";
+import BwEnergyModuleData, { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Gtk, { GtkTypes } from "../../util/GToolkit";
 import { AreaModuleS } from "../AreaModule/AreaModuleS";
@@ -137,6 +138,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         );
         // 获取玩家名字，发段位公告
         EventManager.instance.add(EPlayerEvents_S.PlayerEvent_GetPlayerName_S, this.listen_getPlayerName, this);
+        //体力相关
+        // Event.addLocalListener(ESkillEvent_S.PickUpSkillBox_S, this.pickUpSkillBox);
     }
 
     /**定时器 不受帧率影响  */
@@ -260,7 +263,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         this.recalculateAllAttribute(player, true, null, null);
 
-        this.resetdayRankScore(player.playerId);
+        this.resetDayRankScore(player.playerId);
 
         this.checkRankReward(player.playerId);
 
@@ -269,7 +272,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
     onPlayerLeft(player: mw.Player) {
         let playerID = player.playerId;
-        this._fightingPlayerSet.delete(playerID);
+        this.exitFight(playerID);
 
         PlayerManager.instance.removePlayer(playerID);
 
@@ -445,7 +448,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttrIT(beHurtId, Attribute.EnumAttributeType.hp, Math.abs(atkVal));
             this.dispatchSceneUnitInjure(
                 beHurtId,
-                [{from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal}],
+                [{ from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal }],
                 [beHurtId],
             );
             return;
@@ -466,6 +469,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         // 扣血
         this.reducePlayerAttr(beHurtId, Attribute.EnumAttributeType.hp, atkVal, releaseId, result, hurtSourceData);
+        // 伤害统计
+        // this.checkPlayerDamage(releaseId, atkVal);
     }
 
     /**
@@ -655,7 +660,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttr(playerID, Attribute.EnumAttributeType.hp, drainLifeHp);
             this.dispatchSceneUnitInjure(
                 playerID,
-                [{from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal}],
+                [{ from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal }],
                 [playerID],
             );
         }
@@ -1258,6 +1263,16 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                 data.changeFightStatus(true);
             }
             if (playerData.clickBtnTime) playerData.clickBtnTime = null;
+
+            //是否需要返体力判断
+            // if (ModuleService.getModule(EnergyModuleS).isNeedEnergyRefund(playerID) !== false) {
+            //     let currentHp = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.hp);
+            //     let maxHp = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp);
+            //     if (currentHp < maxHp * 0.4) {
+            //         //说明不是战斗状态
+            //         ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerID, false);
+            //     }
+            // }
         } else {
             //oTrace(`减少玩家即时属性-----${value}`);
             vo.reduceValue(type, value);
@@ -1843,7 +1858,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         }
 
         this.setPlayerDeadState(playerID, sceneID);
-        this._fightingPlayerSet.delete(playerID);
+        this.exitFight(playerID);
     }
 
     /**结算杀戮信息 */
@@ -2255,7 +2270,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     /**
      * 刷新玩家今日已获取段位分
      */
-    private resetdayRankScore(playerID: number) {
+    private resetDayRankScore(playerID: number) {
         let curDate = new Date();
         const now = curDate.getTime();
         let timeZone = -curDate.getTimezoneOffset() / 60;
@@ -2268,6 +2283,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             now > ddl && lastCheckTime < ddl) {
             this.setPlayerAttr(playerID, Attribute.EnumAttributeType.lastDayRankCheckTime, now);
             this.setPlayerAttr(playerID, Attribute.EnumAttributeType.dayRankScore, 0);
+            EventManager.instance.call(EAttributeEvents_S.attr_change_s, playerID, Attribute.EnumAttributeType.dayRankScore, 0);
         }
     }
 
@@ -2464,12 +2480,73 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             ems.consume(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING);
             this._fightingPlayerSet.add(playerId);
             Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, true);
+            //返还体力记录为true
+            // ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, true);
+            // this.startFightingTiming(playerId);
         } else {
             Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, false);
         }
     }
 
+    /**
+     * 战斗计时
+     * @param playerId 
+     */
+    private _fightingTimer: Map<number, any> = new Map<number, any>();
+    private startFightingTiming(playerId: number) {
+        let timer = setTimeout(() => {
+            ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
+            this._fightingPlayerSet.delete(playerId);
+        }, 20e3);
+        this._fightingTimer.set(playerId, timer);
+    }
+
+    /**
+     * 战斗状态下，捡取技能盒
+     */
+    private _pickUpCounting: Map<number, number> = new Map<number, number>();
+    private pickUpSkillBox = (playerId: number) => {
+        if (!this._fightingPlayerSet.has(playerId)) return;
+        if (this._pickUpCounting.has(playerId)) {
+            this._pickUpCounting.set(playerId, this._pickUpCounting.get(playerId) + 1);
+            if (this._pickUpCounting.get(playerId) >= 2) {
+                this._pickUpCounting.delete(playerId);
+                ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
+                return;
+            }
+        } else {
+            this._pickUpCounting.set(playerId, 1);
+        }
+    }
+
+    /**
+     * 伤害检测
+     */
+    private _playerDamage: Map<number, number> = new Map<number, number>();
+    private checkPlayerDamage(playerId: number, damage: number) {
+        if (!this._fightingPlayerSet.has(playerId)) return;
+        if (this._playerDamage.has(playerId)) {
+            this._playerDamage.set(playerId, this._playerDamage.get(playerId) + damage);
+            if (this._playerDamage.get(playerId) >= 500) {
+                this._playerDamage.delete(playerId);
+                ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
+                return;
+            }
+        } else {
+            this._playerDamage.set(playerId, damage);
+        }
+    }
+    /**
+     * 不是战斗状态，回城退出战斗
+     * @param playerId 
+     */
     public exitFight(playerId: number) {
+        //退出死亡，满血回城
         this._fightingPlayerSet.delete(playerId);
+
+        // this._fightingTimer.has(playerId) && clearTimeout(this._fightingTimer.get(playerId));
+        // this._fightingTimer.delete(playerId);
+        // this._pickUpCounting.delete(playerId);
+        // this._playerDamage.delete(playerId);
     }
 }
