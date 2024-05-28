@@ -107,13 +107,6 @@
 		}
 		return this.mBountyCanvas_Internal
 	}
-	private mBounty_txt_Internal: mw.TextBlock
-	public get mBounty_txt(): mw.TextBlock {
-		if(!this.mBounty_txt_Internal&&this.uiWidgetBase) {
-			this.mBounty_txt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBox/mBountyCanvas/mBounty_txt') as mw.TextBlock
-		}
-		return this.mBounty_txt_Internal
-	}
 	private mBounty_icon_Internal: mw.Image
 	public get mBounty_icon(): mw.Image {
 		if(!this.mBounty_icon_Internal&&this.uiWidgetBase) {
@@ -172,9 +165,6 @@
 		
 	
 		this.initLanguage(this.mOwnName_txt)
-		
-	
-		this.initLanguage(this.mBounty_txt)
 		
 	
 		this.initLanguage(this.mBountyNumber_txt)

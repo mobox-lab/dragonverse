@@ -91,6 +91,8 @@ export enum ESkillEvent_C {
 export enum ESkillEvent_S {
     /**拾取技能球 */
     SkillEvent_PickUpSkillBall_S = "SkillEvent_PickUpSkillBall_S",
+    /**技能盒子 */
+    PickUpSkillBox_S = "PickUpSkillBox_S",
 }
 
 export enum EAttributeEvents_C {
@@ -480,6 +482,9 @@ export enum EModule_Events_S {
 
     /**进入战场事件 */
     enterGame = "enterGame",
+
+    /**设置无敌buff */
+    setInvincibleBuff = "setInvincibleBuff",
 }
 
 export enum EBagSkillEvents {

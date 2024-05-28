@@ -4,6 +4,7 @@ import {
     EAreaId,
     EAttributeEvents_C,
     EModule_Events,
+    EModule_Events_S,
     EPlayerEvents_C,
     ESkillEvent_C,
     EbackType,
@@ -53,6 +54,7 @@ import { P_Game_Action } from "../../action/ui/P_Game_Action";
 import { SkillSelectPanel } from "../../SkillModule/UI/SkillSelectPanel";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import { AddGMCommand } from "module_gm";
+import GameServiceConfig from "../../../const/GameServiceConfig";
 
 enum MouseLockType {
     Press,
@@ -326,6 +328,12 @@ export class MainUI extends Main_HUD_Generate {
         });
 
         this.mCavasTrans.visibility = mw.SlateVisibility.Collapsed;
+
+        Event.addServerListener(EModule_Events_S.setInvincibleBuff, this.setInvincibleBuff);
+        this.canvasLevelDe.visibility = mw.SlateVisibility.Collapsed;
+        this.mText_Defence_Time_cd_Long.text = "";
+        this.mMask_Defence.fanShapedValue = 1;
+        this.textDefence.visibility = mw.SlateVisibility.Collapsed;
     }
 
     private _authModuleC: AuthModuleC;
@@ -965,7 +973,7 @@ export class MainUI extends Main_HUD_Generate {
                 }
             }
         }
-        this.mCanvasPills.visibility = canvasShouldShow ? SlateVisibility.Visible : SlateVisibility.Collapsed;
+        // this.mCanvasPills.visibility = canvasShouldShow ? SlateVisibility.Visible : SlateVisibility.Collapsed;
     }
 
     /*******************************************************变身*********************************************************/
@@ -1034,6 +1042,32 @@ export class MainUI extends Main_HUD_Generate {
             } else {
                 parentCanvas.getChildAt(i).visibility = SlateVisibility.Collapsed;
             }
+        }
+    }
+
+    private _invincibleBuffTimer: number = -1;
+    private _invincibleBuffDuration: number = GameServiceConfig.INVINCIBLE_BUFF_TIME;
+    public setInvincibleBuff = (isInvisible: boolean) => {
+        if (isInvisible) {
+            this._invincibleBuffTimer = TimeUtil.setInterval(() => {
+                this._invincibleBuffDuration -= 100;
+                this.mMask_Defence.fanShapedValue = (GameServiceConfig.INVINCIBLE_BUFF_TIME - this._invincibleBuffDuration) / GameServiceConfig.INVINCIBLE_BUFF_TIME;
+                this.mText_Defence_Time_cd_Long.text = `${(this._invincibleBuffDuration / 1e3).toFixed(1)}s`;
+                this.textDefence.visibility = mw.SlateVisibility.Visible;
+                if (this._invincibleBuffDuration <= 0) {
+                    TimeUtil.clearInterval(this._invincibleBuffTimer);
+                    this.mMask_Defence.fanShapedValue = 1;
+                    this.textDefence.visibility = mw.SlateVisibility.Collapsed;
+                    this.mText_Defence_Time_cd_Long.text = "";
+                    this._invincibleBuffDuration = GameServiceConfig.INVINCIBLE_BUFF_TIME;
+                }
+            }, 0.1);
+        } else {
+            TimeUtil.clearInterval(this._invincibleBuffTimer);
+            this.mMask_Defence.fanShapedValue = 1;
+            this.textDefence.visibility = mw.SlateVisibility.Collapsed;
+            this.mText_Defence_Time_cd_Long.text = "";
+            this._invincibleBuffDuration = GameServiceConfig.INVINCIBLE_BUFF_TIME;
         }
     }
 }

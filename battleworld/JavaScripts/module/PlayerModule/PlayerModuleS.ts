@@ -48,6 +48,7 @@ import BwEnergyModuleData, { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Gtk, { GtkTypes } from "../../util/GToolkit";
 import { AreaModuleS } from "../AreaModule/AreaModuleS";
+import { emptyAnchorKey } from "../BulletModule/bullet/BulletDefine";
 
 /**玩家伤害信息 */
 export type THurtData = {
@@ -469,8 +470,6 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
         // 扣血
         this.reducePlayerAttr(beHurtId, Attribute.EnumAttributeType.hp, atkVal, releaseId, result, hurtSourceData);
-        // 伤害统计
-        // this.checkPlayerDamage(releaseId, atkVal);
     }
 
     /**
@@ -1249,11 +1248,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                         }
                     }
                 }
+                if (!this.getPlayerData(playerID).isInvincible) {
+                    // 飘字同步给受击者
+                    this.dispatchSceneUnitInjure(playerID, [damageData], [playerID]);
+                    // 飘字同步给攻击者
+                    this.floatTextToAttacker(sceneID, playerID, [damageData], [playerID]);
+                }
 
-                // 飘字同步给受击者
-                this.dispatchSceneUnitInjure(playerID, [damageData], [playerID]);
-                // 飘字同步给攻击者
-                this.floatTextToAttacker(sceneID, playerID, [damageData], [playerID]);
 
                 // 1.玩家被攻击切换为战斗状态且受伤  2玩家掉入陷阱掉血切换为战斗状态
                 let data = this.getPlayerData(playerID);
@@ -2021,6 +2022,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
     // 通知玩家显示伤害飘字 TODO优化下
     public dispatchSceneUnitInjure(playerID: number, dmgInfo: HitDamageInfo[], hitIds: number[]) {
+        //统计伤害
+        dmgInfo.forEach(element => {
+            this.checkPlayerDamage(element.from, element.value);
+        });
+
         this.getClient(playerID).net_receive_scene_unit_injured(hitIds, dmgInfo);
     }
 
@@ -2472,22 +2478,60 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     public net_playerJoinFighting(playerId: number) {
         if (this._fightingPlayerSet.has(playerId)) {
             Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, true);
+            if (!this._invinciblePlayer.has(playerId)) {
+                this.addInvincibleBuff(playerId);
+            }
             return;
         }
-        ;
         const ems = ModuleService.getModule(EnergyModuleS);
         if (ems.isAfford(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING)) {
             ems.consume(playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING);
             this._fightingPlayerSet.add(playerId);
             Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, true);
+            if (!this._invinciblePlayer.has(playerId)) {
+                this.addInvincibleBuff(playerId);
+            }
+
             //返还体力记录为true
             // ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, true);
             // this.startFightingTiming(playerId);
         } else {
             Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, false);
         }
+
+
     }
 
+    private _invinciblePlayer: Map<number, any> = new Map<number, any>();
+    private _invincibleEffect: Map<number, number> = new Map<number, number>();
+    public addInvincibleBuff(playerId: number) {
+        if (this._invinciblePlayer.has(playerId)) return;
+
+        this.getPlayerData(playerId).isInvincible = true;
+
+        let effectId = EffectService.playOnGameObject(GameServiceConfig.INVINCIBLE_BUFF_EFFECT_GUID,
+            Player.getPlayer(playerId).character,
+            {
+                slotType: HumanoidSlotType.Root,
+                loopCount: 0,
+                position: GameServiceConfig.INVINCIBLE_BUFF_EFFECT_OFFSET,
+                scale: GameServiceConfig.INVINCIBLE_BUFF_EFFECT_SCALE,
+                rotation: GameServiceConfig.INVINCIBLE_BUFF_EFFECT_ROTATION
+            });
+        this._invincibleEffect.set(playerId, effectId);
+        Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.setInvincibleBuff, true);
+
+        let invincibleTimer = setTimeout(() => {
+            this.getPlayerData(playerId).isInvincible = false;
+            this._invinciblePlayer.delete(playerId);
+            this._invincibleEffect.get(playerId) && EffectService.stop(this._invincibleEffect.get(playerId));
+            this._invincibleEffect.delete(playerId);
+            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.setInvincibleBuff, false);
+        }, GameServiceConfig.INVINCIBLE_BUFF_TIME);
+        this._invinciblePlayer.set(playerId, invincibleTimer);
+    }
+
+    //#region 体力相关判定战斗状态
     /**
      * 战斗计时
      * @param playerId 
@@ -2527,26 +2571,42 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         if (!this._fightingPlayerSet.has(playerId)) return;
         if (this._playerDamage.has(playerId)) {
             this._playerDamage.set(playerId, this._playerDamage.get(playerId) + damage);
-            if (this._playerDamage.get(playerId) >= 500) {
+            if (this._playerDamage.get(playerId) > 100) {
+                this.removeInvincibleBuff(playerId);
                 this._playerDamage.delete(playerId);
-                ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
                 return;
             }
+            // if (this._playerDamage.get(playerId) >= 500) {
+            //     this._playerDamage.delete(playerId);
+            //     ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
+            //     return;
+            // }
         } else {
             this._playerDamage.set(playerId, damage);
         }
     }
     /**
-     * 不是战斗状态，回城退出战斗
+     * 不是战斗状态，回城、退出战斗
      * @param playerId 
      */
     public exitFight(playerId: number) {
         //退出死亡，满血回城
         this._fightingPlayerSet.delete(playerId);
-
+        //取消无敌buff
+        this.removeInvincibleBuff(playerId);
         // this._fightingTimer.has(playerId) && clearTimeout(this._fightingTimer.get(playerId));
         // this._fightingTimer.delete(playerId);
         // this._pickUpCounting.delete(playerId);
         // this._playerDamage.delete(playerId);
+    }
+    //#end region
+    public removeInvincibleBuff(playerId: number) {
+        if (this._invinciblePlayer.has(playerId)) {
+            clearTimeout(this._invinciblePlayer.get(playerId));
+            this._invinciblePlayer.delete(playerId);
+            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.setInvincibleBuff, false);
+            this._invincibleEffect.get(playerId) && EffectService.stop(this._invincibleEffect.get(playerId));
+            this._invincibleEffect.delete(playerId);
+        }
     }
 }

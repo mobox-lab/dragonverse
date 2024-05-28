@@ -9,7 +9,30 @@
 import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
+    //#region Invincible Buff
+    /**
+     * 无敌buff 时长(毫秒).
+     */
+    public static readonly INVINCIBLE_BUFF_TIME = 30e3;
+    /**
+     * 无敌buff 特效guid.
+     */
+    public static readonly INVINCIBLE_BUFF_EFFECT_GUID = "89122";
+    /**
+     * 无敌buff 特效位置偏移.
+     */
+    public static readonly INVINCIBLE_BUFF_EFFECT_OFFSET = new Vector(0, 0, 100);
+    /**
+     * 无敌buff 特效缩放.
+     */
+    public static readonly INVINCIBLE_BUFF_EFFECT_SCALE = new Vector(1, 1, 1);
+    /**
+     * 无敌buff 特效旋转.
+     */
+    public static readonly INVINCIBLE_BUFF_EFFECT_ROTATION = new Rotation(0, 0, 0);
 
+
+    //#endregion
     //#region Shop
     /**
      * 商店tab普通底图guid.
