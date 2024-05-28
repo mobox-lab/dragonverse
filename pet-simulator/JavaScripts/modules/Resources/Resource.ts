@@ -280,9 +280,9 @@ export default class ResourceScript extends mw.Script {
 
     public get curPos() {
         if (!this.pointId) return undefined;
-
-        this._curPos = memorizePointIdToLocation(this.pointId)?.clone();
-
+        if (!this._curPos) {
+            this._curPos = memorizePointIdToLocation(this.pointId)?.clone();
+        }
         return this._curPos;
     }
 
@@ -578,6 +578,7 @@ export default class ResourceScript extends mw.Script {
         this.guaShaRewardGold = 0;
         this.onGuaSha.clear();
         this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
+        this._curPos = undefined;
 
         //先存起来，等玩家进入范围后，再遍历 一点点得到出现
         this.addScenceResource(this.cfg.AreaID);
