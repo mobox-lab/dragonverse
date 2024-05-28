@@ -1265,14 +1265,14 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             if (playerData.clickBtnTime) playerData.clickBtnTime = null;
 
             //是否需要返体力判断
-            if (ModuleService.getModule(EnergyModuleS).isNeedEnergyRefund(playerID) !== false) {
-                let currentHp = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.hp);
-                let maxHp = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp);
-                if (currentHp < maxHp * 0.4) {
-                    //说明不是战斗状态
-                    ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerID, false);
-                }
-            }
+            // if (ModuleService.getModule(EnergyModuleS).isNeedEnergyRefund(playerID) !== false) {
+            //     let currentHp = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.hp);
+            //     let maxHp = this.getPlayerAttr(playerID, Attribute.EnumAttributeType.maxHp);
+            //     if (currentHp < maxHp * 0.4) {
+            //         //说明不是战斗状态
+            //         ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerID, false);
+            //     }
+            // }
         } else {
             //oTrace(`减少玩家即时属性-----${value}`);
             vo.reduceValue(type, value);
