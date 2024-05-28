@@ -765,7 +765,7 @@ export default class ResourceScript extends mw.Script {
 
     /**判断资源类型 C&S */
     public get resourceType(): number {
-        return this.cfg ? 3 : this.cfg.resType;
+			return this.cfg ? this.cfg.resType : 3;
     }
 
     /**生成是否暴击 */
