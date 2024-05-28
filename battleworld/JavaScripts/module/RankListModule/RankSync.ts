@@ -68,7 +68,12 @@ export default class RankSync extends Script {
         modelInfo.model.attachToSlot(modelInfo.uiWidget, HumanoidSlotType.Root);
         modelInfo.uiWidget.localTransform.position = new Vector(0, 0, modelInfo.model.collisionExtent.z);
         //隐藏血条
-        modelInfo.ui.mOwnHP.visibility = SlateVisibility.Collapsed;
+        modelInfo.ui.mOwn_bar_hp_back.visibility = SlateVisibility.Collapsed;
+        modelInfo.ui.mOwn_bar_hp.visibility = SlateVisibility.Collapsed;
+        modelInfo.ui.imgOBackGround.visibility = SlateVisibility.Collapsed;
+        modelInfo.ui.hpImageOwn.visibility = SlateVisibility.Collapsed;
+
+        modelInfo.ui.mRankIcon_txt.visibility = SlateVisibility.Collapsed;
         //数据
         this._modelMap.set(ranking, modelInfo);
         this._animationMap.set(ranking, ani);

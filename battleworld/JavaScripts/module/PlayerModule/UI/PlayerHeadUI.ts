@@ -141,6 +141,7 @@ export default class PlayerHeadUI extends PlayerHeadUI_Generate {
         if (rankId == this._curRank) return;
         let cfg = GameConfig.Rank.getElement(rankId);
         if (cfg.rankImgID) {
+            this.mRankIcon_txt.visibility = mw.SlateVisibility.SelfHitTestInvisible;
             this.mRankIcon_txt.imageGuid = cfg.rankImgID;
         }
         this.mRankName_txt.text = cfg.rankName;
