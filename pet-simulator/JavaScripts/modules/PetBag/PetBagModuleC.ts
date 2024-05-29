@@ -10,7 +10,7 @@ import { GlobalData } from "../../const/GlobalData";
 import { P_Pet_Dev } from "./P_Pet_Dev";
 import { P_FusePanel } from "./P_FusePanel";
 import MessageBox from "../../util/MessageBox";
-import { P_Enchants } from "./P_Enchants";
+import { EnchantPetState, P_Enchants } from "./P_Enchants";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { GlobalEnum } from "../../const/Enum";
 import { EnchantBuff } from "./EnchantBuff";
@@ -398,4 +398,12 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
             this.effect.worldTransform.rotation = (new mw.Rotation(0, 0, this.eggRotate));
         }
     }
+
+		public async getPetEnchantState(selectedEnchantIds: number[], selectPetKeys: number[]): Promise<EnchantPetState> {
+				return await this.server.net_petEnchant(selectedEnchantIds, selectPetKeys);
+		}
+
+		public async enchantConsume(selectPetKeys: number[]): Promise<boolean> {
+				return await this.server.net_enchantConsume(selectPetKeys);
+		}
 }
