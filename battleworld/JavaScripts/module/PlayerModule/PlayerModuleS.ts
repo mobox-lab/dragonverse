@@ -2539,7 +2539,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     private _fightingTimer: Map<number, any> = new Map<number, any>();
     private startFightingTiming(playerId: number) {
         let timer = setTimeout(() => {
-            ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
+            // ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
             this._fightingPlayerSet.delete(playerId);
         }, 20e3);
         this._fightingTimer.set(playerId, timer);
@@ -2555,7 +2555,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this._pickUpCounting.set(playerId, this._pickUpCounting.get(playerId) + 1);
             if (this._pickUpCounting.get(playerId) >= 2) {
                 this._pickUpCounting.delete(playerId);
-                ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
+                // ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
                 return;
             }
         } else {
