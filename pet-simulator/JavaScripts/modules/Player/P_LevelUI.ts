@@ -84,6 +84,21 @@ class P_levelItem extends TypeItem_Generate {
         for (let i = 0; i < 5; i++) {
             (this["mImage_Piece_" + i] as mw.Image).visibility = (i < level) ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
         }
+        if (this.info.PetNum !== 0) {
+            if (level < 5) {
+                this.mTxt_detail.text = `${GameConfig.Language.NextLevelAttributes.Value} + ${this.info.PetNum}`
+            } else if (level === 5) {
+                this.mTxt_detail.text = `+ 25`
+            }
+
+        } else {
+            if (level < 5) {
+                this.mTxt_detail.text = `${GameConfig.Language.NextLevelAttributes.Value} + ${Math.round(this.info.Upgradenum[level] * 100)}%`;
+            } else if (level === 5) {
+                this.mTxt_detail.text = `+${this.info.Upgradenum[level - 1] * 100}%`
+            }
+        }
+
         if (level == 5) {
             this.mText_DiaNum.text = "MAX";
             this.mBtn_Levelup.enable = false;
@@ -91,6 +106,7 @@ class P_levelItem extends TypeItem_Generate {
         }
         console.error("level", level, "this.info.Diamond", this.info.Diamond);
         this.mText_DiaNum.text = utils.formatNumber(this.info.Diamond[level]);
+
     }
 
 }

@@ -427,7 +427,7 @@ export namespace GlobalData {
         public static critRateMap: Map<number, number> = new Map();
 
         public static critRate(playerId: number) {
-            return Gtk.tryGet(this.critRateMap, playerId, () => 20);
+            return Gtk.tryGet(this.critRateMap, playerId, () => 3);
         }
 
         public static critMap: Map<number, boolean> = new Map();
@@ -877,7 +877,7 @@ export namespace GlobalData {
         public static maxLevel: number = 5;
 
         public static initPlayer(playerId: number,
-                                 levelData: number[]) {
+            levelData: number[]) {
             let upgradeData = GameConfig.Upgrade.getAllElement().map(v => v.Upgradenum);
 
             this.levelRangeMap.set(playerId, (upgradeData[0][levelData[0] - 1] ?? 0) + 1);

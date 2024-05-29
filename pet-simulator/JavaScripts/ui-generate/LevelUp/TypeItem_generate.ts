@@ -120,6 +120,13 @@ export default class TypeItem_Generate extends UIScript {
 		}
 		return this.mTxt_Itro_Internal
 	}
+	private mTxt_detail_Internal: mw.TextBlock
+	public get mTxt_detail(): mw.TextBlock {
+		if(!this.mTxt_detail_Internal&&this.uiWidgetBase) {
+			this.mTxt_detail_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mTxt_detail') as mw.TextBlock
+		}
+		return this.mTxt_detail_Internal
+	}
 
 
 
@@ -153,6 +160,9 @@ export default class TypeItem_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.mTxt_Itro)
+		
+	
+		this.initLanguage(this.mTxt_detail)
 		
 	
 		//文本多语言

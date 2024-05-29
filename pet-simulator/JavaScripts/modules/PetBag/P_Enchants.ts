@@ -1,21 +1,28 @@
-import { GameConfig } from "../../config/GameConfig";
-import { GlobalEnum } from "../../const/Enum";
-import { GlobalData } from "../../const/GlobalData";
-import EnchantsPanel_Generate from "../../ui-generate/Enchants/EnchantsPanel_generate";
-import Enchants_item_Generate from "../../ui-generate/Enchants/Enchants_item_generate";
-import { oTraceError } from "../../util/LogManager";
-import MessageBox from "../../util/MessageBox";
-import { numberArrToString, utils } from "../../util/uitls";
-import { P_PetHover } from "../PetCollect/P_Collect";
-import { PlayerModuleC } from "../Player/PlayerModuleC";
-import { BagTool } from "./BagTool";
-import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
-import { AnalyModel, AnalyticsTool, Page } from "../Analytics/AnalyticsTool";
-import { PetBagItem } from "./P_Bag";
+import { GameConfig } from '../../config/GameConfig';
+import { GlobalEnum } from '../../const/Enum';
+import { GlobalData } from '../../const/GlobalData';
+import EnchantsPanel_Generate from '../../ui-generate/Enchants/EnchantsPanel_generate';
+import Enchants_item_Generate from '../../ui-generate/Enchants/Enchants_item_generate';
+import { oTraceError } from '../../util/LogManager';
+import MessageBox from '../../util/MessageBox';
+import { numberArrToString, utils } from '../../util/uitls';
+import { P_PetHover } from '../PetCollect/P_Collect';
+import { PlayerModuleC } from '../Player/PlayerModuleC';
+import { BagTool } from './BagTool';
+import { PetBagModuleData, petItemDataNew } from './PetBagModuleData';
+import { AnalyModel, AnalyticsTool, Page } from '../Analytics/AnalyticsTool';
+import { PetBagItem } from './P_Bag';
 
-import { PetBag_Item } from "./P_BagItem";
-import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import { PetBag_Item } from './P_BagItem';
+import KeyOperationManager from '../../controller/key-operation-manager/KeyOperationManager';
+import { PetBagModuleC } from './PetBagModuleC';
 
+export enum EnchantPetState {
+    IS_SAME_ENCHANT = 'is_same_enchant',
+    IS_HAS_ENCHANT = 'is_has_enchant',
+    HAS_NO_ENCHANT = 'has_no_enchant',
+    NO_ENOUGH_DIAMOND = 'no_enough_diamond',
+}
 export class P_Enchants extends EnchantsPanel_Generate {
     /**是否第一次打开 */
     private isFirstOpen: boolean = true;
@@ -114,7 +121,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
             let pos = item.uiObject.position;
             let loc = new mw.Vector2(
                 pos.x + this.mCanvas.position.x + this.mlistCanvas.position.x,
-                pos.y + this.mCanvas.position.y + this.mlistCanvas.position.y
+                pos.y + this.mCanvas.position.y + this.mlistCanvas.position.y,
             );
             mw.UIService.getUI(P_PetHover).setPetInfoShow(item.petData, loc);
         } else {
@@ -159,12 +166,12 @@ export class P_Enchants extends EnchantsPanel_Generate {
     /**点击宠物item */
     private onClickItem(item: PetBag_Item) {
         if (this.selectPetKeys.length >= GlobalData.Enchant.maxEnchantNum && !item.getLockVis()) {
-            oTraceError("lwj 最大附魔数量");
+            oTraceError('lwj 最大附魔数量');
             return;
         }
         if (this.isEnchanting) {
             if (this.selectPetKeys.includes(item.petData.k)) {
-                oTraceError("lwj 正在附魔中，已经选择了该宠物");
+                oTraceError('lwj 正在附魔中，已经选择了该宠物');
                 this.stopEnchant();
                 this.updateSelectKey(item);
             }
@@ -205,75 +212,44 @@ export class P_Enchants extends EnchantsPanel_Generate {
     }
 
     /**点击附魔按钮 */
-    private onClickEnchant() {
+    private async onClickEnchant() {
         if (this.isEnchanting) {
             //正在附魔
             this.stopEnchant();
             AnalyticsTool.action_enchant(AnalyModel.stop2, 0);
             return;
         }
+        const selectedEnchantIds: number[] = this.getSelectEnchant();
         AnalyticsTool.action_enchant(AnalyModel.enchants_times, 0);
-        this.isCanEnchant();
-    }
+        const petBagMC = ModuleService.getModule(PetBagModuleC);
+        const enchantPetState = await petBagMC.getPetEnchantState(selectedEnchantIds, this.selectPetKeys);
 
-    /**判断附魔条件 */
-    private isCanEnchant() {
-        let isHasEnchant = false; //是否有附魔
-        let isSameEnchant = true; //是否是同一种附魔
+        const startEnchantFn = async (isOK: boolean) => {
+            if (!isOK) return;
+            const res = await petBagMC.enchantConsume(this.selectPetKeys);
+            if (!res) {
+								MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
+										super.show();
+								});
+								return;
+						}
+            // TODO: refactor
+            this.startEnchant(selectedEnchantIds, this.selectPetKeys);
+        };
 
-        let selcetEnchant = this.getSelectEnchant();
-        let playerMC = ModuleService.getModule(PlayerModuleC);
-
-        for (let index = 0; index < this.selectPetKeys.length; index++) {
-            let data = this.bagData.bagItemsByKey(this.selectPetKeys[index]);
-            if (!data || !data.p) continue;
-            isSameEnchant = isSameEnchant && this.isSameEnchant(selcetEnchant, data.p.b);
-
-            if (data.p?.b && data.p.b?.length > 0) {
-                isHasEnchant = true;
-            } else {
-                isHasEnchant = false;
+        switch (enchantPetState) {
+            case EnchantPetState.IS_SAME_ENCHANT: {
+                MessageBox.showOneBtnMessage(GameConfig.Language.Tips_Enchants_3.Value);
                 break;
             }
-        }
-        if (isHasEnchant) {
-            //有附魔
-            if (isSameEnchant) {
-                //同一种附魔
-                MessageBox.showOneBtnMessage(GameConfig.Language.Tips_Enchants_3.Value, () => {});
-                return;
+            case EnchantPetState.IS_HAS_ENCHANT: {
+                MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_2.Value, startEnchantFn);
+                break;
             }
-            MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_2.Value, async (res: boolean) => {
-                if (res) {
-                    let isSuccess = await playerMC.reduceDiamond(
-                        this.selectPetKeys.length * GlobalData.Enchant.diamondCost
-                    );
-                    if (!isSuccess) {
-                        MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
-                            super.show();
-                        });
-                        return;
-                    } else {
-                        this.startEnchant(selcetEnchant, this.selectPetKeys);
-                    }
-                }
-            });
-        } else {
-            MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_1.Value, async (res: boolean) => {
-                if (res) {
-                    let isSuccess = await playerMC.reduceDiamond(
-                        this.selectPetKeys.length * GlobalData.Enchant.diamondCost
-                    );
-                    if (!isSuccess) {
-                        MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
-                            super.show();
-                        });
-                        return;
-                    } else {
-                        this.startEnchant(selcetEnchant, this.selectPetKeys);
-                    }
-                }
-            });
+            default: {
+                MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_1.Value, startEnchantFn);
+                break;
+            }
         }
     }
 
