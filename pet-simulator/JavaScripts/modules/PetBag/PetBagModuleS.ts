@@ -13,6 +13,7 @@ import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk from "../../util/GToolkit";
+import { EnchantPetState } from "./P_Enchants";
 
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     private _playerModuleS: PlayerModuleS;
@@ -685,5 +686,50 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             }
         }
     }
+		
+    /** 第二世界 —— 宠物附魔 */
+    public async net_petEnchant(selectedEnchantIds: number[], selectPetKeys: number[]): Promise<EnchantPetState> {
+				let isHasEnchant = false; //是否有附魔
+				let isSameEnchant = true; //是否是同一种附魔
+				const bagData = this.currentData;
+				for (let index = 0; index < selectPetKeys.length; index++) {
+						let data = bagData.bagItemsByKey(selectPetKeys[index]);
+						if (!data || !data.p) continue;
+						isSameEnchant = isSameEnchant && this.isSameEnchant(selectedEnchantIds, data.p.b);
+
+						if (data.p?.b && data.p.b?.length > 0) {
+								isHasEnchant = true;
+						} else {
+								isHasEnchant = false;
+								break;
+						}
+				} 
+				if (isHasEnchant) {
+						if (isSameEnchant) return EnchantPetState.IS_SAME_ENCHANT;
+						return EnchantPetState.IS_HAS_ENCHANT;
+				}
+				return EnchantPetState.HAS_NO_ENCHANT;
+		}
+
+		public async net_enchantConsume(selectPetKeys: number[]): Promise<boolean> {
+				return this.playerModuleS.reduceDiamond(selectPetKeys.length * GlobalData.Enchant.diamondCost);
+		}
+
+		/**判断是否是同一种附魔
+		 * @param tarEnchant 目标附魔
+		 * @param petEnchant 当前宠物附魔
+		 */
+		public isSameEnchant(tarEnchant: number[], petEnchant: number[]): boolean {
+				if (!petEnchant) return false;
+				if (tarEnchant.length == 0) return false;
+
+				for (let index = 0; index < tarEnchant.length; index++) {
+						let element = tarEnchant[index];
+						if (petEnchant.indexOf(element) == -1) {
+								return false;
+						}
+				}
+				return true;
+		}
 }
 
