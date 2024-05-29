@@ -147,6 +147,7 @@ AddGMCommand(
 AddGMCommand(
     "增加金币(第二世界)",
     (player: mw.Player, value: string) => {
+    }, (player: mw.Player, value: string) => {
         let val = Number(value);
         ModuleService.getModule(PlayerModuleS).addGold(
             player.playerId,
@@ -154,21 +155,18 @@ AddGMCommand(
             GlobalEnum.CoinType.SecondWorldGold,
         );
     },
-    (player: mw.Player, value: string) => {
-    },
     "货币",
 );
 AddGMCommand(
     "增加金币(第三世界)",
     (player: mw.Player, value: string) => {
+    }, (player: mw.Player, value: string) => {
         let val = Number(value);
         ModuleService.getModule(PlayerModuleS).addGold(
             player.playerId,
             val,
             GlobalEnum.CoinType.ThirdWorldGold,
         );
-    },
-    (player: mw.Player, value: string) => {
     },
     "货币",
 );
