@@ -7,7 +7,6 @@ import { Globaldata } from "../const/Globaldata";
  */
 export class LanguageManager {
 
-
     /**初始化多语言 */
     public static init_language(languageIndex: number) {
 
@@ -24,7 +23,6 @@ export class LanguageManager {
 
         mw.UIScript.addBehavior("lan", this.set_language_ui.bind(this));
 
-
         this.language_worldUI();
     }
 
@@ -36,17 +34,19 @@ export class LanguageManager {
 
         for (let index = 0; index < Globaldata.worldUI.length; index++) {
             const uiGuid = Globaldata.worldUI[index];
-            let uiObj = await GameObject.asyncFindGameObjectById(uiGuid) as mw.UIWidget;
-            if (uiObj instanceof mw.UIWidget) {
-                let rootCanvas = uiObj.getTargetUIWidget().findChildByPath("RootCanvas") as mw.Canvas;
-                this.ui_language(rootCanvas);
-            }
+            GameObject.asyncFindGameObjectById(uiGuid).then((uiObj) => {
+                if (uiObj instanceof mw.UIWidget) {
+                    let rootCanvas = uiObj.getTargetUIWidget().findChildByPath("RootCanvas") as mw.Canvas;
+                    this.ui_language(rootCanvas);
+                }
+            });
+
         }
     }
 
     /**获取多语言文本 */
     private static getLanuageText(key: string | number) {
-        if(key == null){
+        if (key == null) {
             return null;
         }
 
@@ -61,7 +61,7 @@ export class LanguageManager {
         if (result) {
             return result;
         } else {
-            return key.toString();    
+            return key.toString();
         }
     }
 
