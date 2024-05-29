@@ -525,18 +525,16 @@ export default class ResourceScript extends mw.Script {
         }
 
         let cfg = GameConfig.Coindown.getElement(cfgID);
-
-				let allRate: number = this.rate;
-        // let allRate: number = 1;
-        // if (this.rate <= 3) {
-        //     allRate = cfg.Stagetimes[0];
-        // } else if (this.rate <= 5) {
-        //     allRate = cfg.Stagetimes[1];
-        // } else if (this.rate <= 25) {
-        //     allRate = cfg.Stagetimes[2];
-        // } else if (this.rate <= 100) {
-        //     allRate = cfg.Stagetimes[3];
-        // }
+        let allRate: number = 1;
+        if (this.rate <= 3) {
+            allRate = cfg.Stagetimes[0];
+        } else if (this.rate <= 5) {
+            allRate = cfg.Stagetimes[1];
+        } else if (this.rate <= 25) {
+            allRate = cfg.Stagetimes[2];
+        } else if (this.rate <= 100) {
+            allRate = cfg.Stagetimes[3];
+        }
 
         let goldcount: number = 0;
         let gemcount: number = 0;
