@@ -30,6 +30,10 @@ export default class GameServiceConfig {
      * 无敌buff 特效旋转.
      */
     public static readonly INVINCIBLE_BUFF_EFFECT_ROTATION = new Rotation(0, 0, 0);
+    /**
+     * 无敌buff 累计伤害值取消
+     */
+    public static readonly INVINCIBLE_BUFF_DAMAGE_CANCEL = 100;
 
 
     //#endregion

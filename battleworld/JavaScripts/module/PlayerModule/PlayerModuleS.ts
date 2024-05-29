@@ -2491,10 +2491,6 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             if (!this._invinciblePlayer.has(playerId)) {
                 this.addInvincibleBuff(playerId);
             }
-
-            //返还体力记录为true
-            // ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, true);
-            // this.startFightingTiming(playerId);
         } else {
             Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, false);
         }
@@ -2527,38 +2523,6 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this._invinciblePlayer.set(playerId, invincibleTimer);
     }
 
-    //#region 体力相关判定战斗状态
-    /**
-     * 战斗计时
-     * @param playerId 
-     */
-    private _fightingTimer: Map<number, any> = new Map<number, any>();
-    private startFightingTiming(playerId: number) {
-        let timer = setTimeout(() => {
-            // ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
-            this._fightingPlayerSet.delete(playerId);
-        }, 20e3);
-        this._fightingTimer.set(playerId, timer);
-    }
-
-    /**
-     * 战斗状态下，捡取技能盒
-     */
-    private _pickUpCounting: Map<number, number> = new Map<number, number>();
-    private pickUpSkillBox = (playerId: number) => {
-        if (!this._fightingPlayerSet.has(playerId)) return;
-        if (this._pickUpCounting.has(playerId)) {
-            this._pickUpCounting.set(playerId, this._pickUpCounting.get(playerId) + 1);
-            if (this._pickUpCounting.get(playerId) >= 2) {
-                this._pickUpCounting.delete(playerId);
-                // ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
-                return;
-            }
-        } else {
-            this._pickUpCounting.set(playerId, 1);
-        }
-    }
-
     /**
      * 伤害检测
      */
@@ -2567,16 +2531,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         if (!this._fightingPlayerSet.has(playerId)) return;
         if (this._playerDamage.has(playerId)) {
             this._playerDamage.set(playerId, this._playerDamage.get(playerId) + damage);
-            if (this._playerDamage.get(playerId) > 100) {
+            if (this._playerDamage.get(playerId) > GameServiceConfig.INVINCIBLE_BUFF_DAMAGE_CANCEL) {
                 this.removeInvincibleBuff(playerId);
                 this._playerDamage.delete(playerId);
                 return;
             }
-            // if (this._playerDamage.get(playerId) >= 500) {
-            //     this._playerDamage.delete(playerId);
-            //     ModuleService.getModule(EnergyModuleS).setNeedEnergyRefund(playerId, false);
-            //     return;
-            // }
         } else {
             this._playerDamage.set(playerId, damage);
         }
@@ -2590,12 +2549,14 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this._fightingPlayerSet.delete(playerId);
         //取消无敌buff
         this.removeInvincibleBuff(playerId);
-        // this._fightingTimer.has(playerId) && clearTimeout(this._fightingTimer.get(playerId));
-        // this._fightingTimer.delete(playerId);
-        // this._pickUpCounting.delete(playerId);
-        // this._playerDamage.delete(playerId);
+        this._playerDamage.delete(playerId);
     }
-    //#end region
+
+    /** 
+     * @description: 移除无敌buff
+     * @param playerId 玩家id
+     * @return 
+     */
     public removeInvincibleBuff(playerId: number) {
         if (this._invinciblePlayer.has(playerId)) {
             clearTimeout(this._invinciblePlayer.get(playerId));
