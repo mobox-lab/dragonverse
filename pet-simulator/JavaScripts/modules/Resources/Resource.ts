@@ -293,14 +293,22 @@ export default class ResourceScript extends mw.Script {
     /**是否暴击 */
     private isCrit: boolean = false;
     /**上一次伤害 */
-    private lastDamage: Map<number, number> = new Map;
+    private lastDamage: Map<number, number> = new Map();
     /**金币砖石奖励 */
-    private rewardGold: number = 0;
-    private rewardGem: number = 0;
+    private rewardGold: Map<number, number> = new Map();
+    private rewardGem: Map<number, number> = new Map();
 
     /**刮痧奖励金币钻石 */
-    private guaShaRewardGold: number = 0;
-    private guaShaRewardGem: number = 0;
+    private guaShaRewardGold: Map<number, number> = new Map();
+    private guaShaRewardGem: Map<number, number> = new Map();
+
+    private getGuaShaRewardGold(playerId: number) {
+        return Gtk.tryGet(this.guaShaRewardGold, playerId, 0);
+    }
+
+    private getGuaShaRewardGem(playerId: number) {
+        return Gtk.tryGet(this.guaShaRewardGem, playerId, 0);
+    }
 
     public onGuaSha: mw.Action = new mw.Action();
 
@@ -313,6 +321,14 @@ export default class ResourceScript extends mw.Script {
 
     public get Obj() {
         return this.resObj;
+    }
+
+    public getRewardGold(playerId: number) {
+        return Gtk.tryGet(this.rewardGold, playerId, 0);
+    }
+
+    public getRewardGem(playerId: number) {
+        return Gtk.tryGet(this.rewardGem, playerId, 0);
     }
 
     private async onHpChanged(): Promise<void> {
@@ -366,11 +382,11 @@ export default class ResourceScript extends mw.Script {
                 ModuleService.getModule(ResourceModuleS).net_noticeGuaSha(this.cfgId, true);
             }
 
-            let goldVal = Math.ceil((this.rewardGold * rate) / 3 - this.guaShaRewardGold);
-            this.guaShaRewardGold += goldVal;
+            let goldVal = Math.ceil((this.getRewardGold(playerId) * rate) / 3 - this.getGuaShaRewardGold(playerId));
+            this.guaShaRewardGold.set(playerId, this.getGuaShaRewardGold(playerId) + goldVal);
             this.playReward(playerId, GlobalEnum.ResourceAttackStage.GuaSha, goldVal, 0);
-            let gemVal = Math.ceil((this.rewardGem * rate) / 3 - this.guaShaRewardGem);
-            this.guaShaRewardGem += gemVal;
+            let gemVal = Math.ceil((this.getRewardGem(playerId) * rate) / 3 - this.getGuaShaRewardGem(playerId));
+            this.guaShaRewardGem.set(playerId, this.getGuaShaRewardGem(playerId) + gemVal);
             this.playReward(playerId, GlobalEnum.ResourceAttackStage.GuaSha, 0, gemVal);
 
             Log4Ts.log(Resource, `play guaSha playerId:${playerId}, goldVal:${goldVal}, gemVal:${gemVal}`);
@@ -411,13 +427,13 @@ export default class ResourceScript extends mw.Script {
             this.playReward(
                 playerId,
                 GlobalEnum.ResourceAttackStage.Destroy,
-                (this.rewardGold - this.guaShaRewardGold) * ratio,
-                (this.rewardGem - this.guaShaRewardGem) * ratio);
+                (this.getRewardGold(playerId) - this.getGuaShaRewardGold(playerId)) * ratio,
+                (this.getRewardGem(playerId) - this.getGuaShaRewardGem(playerId)) * ratio);
             this.stopGuaSha(playerId);
             ModuleService.getModule(AchievementModuleS)
                 .broadcastAchievement_destroy(playerId, this.resourceType);
-            this.guaShaRewardGem = 0;
-            this.guaShaRewardGold = 0;
+            this.guaShaRewardGem.set(playerId, 0);
+            this.guaShaRewardGold.set(playerId, 0);
         }
     }
 
@@ -575,8 +591,7 @@ export default class ResourceScript extends mw.Script {
         this._cfgId = Number(arr[0]);
         this.pointId = Number(arr[1]);
         this._rate = Number(arr[2]);
-        this.guaShaRewardGem = 0;
-        this.guaShaRewardGold = 0;
+
         this.onGuaSha.clear();
         this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
         this._curPos = undefined;
@@ -812,22 +827,22 @@ export default class ResourceScript extends mw.Script {
                 let random = utils.GetRandomNum(0, temp2);
 
                 if (this.rate == 1) {
-                    this.rewardGold = (50 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
-                        * (1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100);
+                    this.rewardGold.set(playerId, (50 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
+                        * (1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100));
                 } else {
-                    this.rewardGold = (50 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
+                    this.rewardGold.set(playerId, (50 * this.cfg.Iconreward * Math.pow(attack, pow) + (random) * temp) * this.rate * crit
                         * (1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100)
-                        * (1 + EnchantBuff.getPetBuff(playerId, key).rateGoldAdd / 100);
+                        * (1 + EnchantBuff.getPetBuff(playerId, key).rateGoldAdd / 100));
                 }
-                this.rewardGold = Number(this.rewardGold.toFixed(1));
+                this.rewardGold.set(playerId, Number(this.getRewardGold(playerId).toFixed(1)));
             } else {
                 //  let random = utils.GetRandomNum(0, this.cfg.WaveValue[index])
-                this.rewardGem = Number((this.cfg.DiamondReward * crit * this.rate).toFixed(1));
+                this.rewardGem.set(playerId, Number((this.cfg.DiamondReward * crit * this.rate).toFixed(1)));
             }
         });
         if (this.resourceType == GlobalEnum.DestructorType.Gold4) {
-            this.rewardGold *= (1 + EnchantBuff.getPetBuff(playerId, key).fourGoldAdd / 100);
-            this.rewardGem *= (1 + EnchantBuff.getPetBuff(playerId, key).fourGoldAdd / 100);
+            this.rewardGold.set(playerId, this.getRewardGold(playerId) * (1 + EnchantBuff.getPetBuff(playerId, key).fourGoldAdd / 100));
+            this.rewardGem.set(playerId, this.getRewardGem(playerId) * (1 + EnchantBuff.getPetBuff(playerId, key).fourGoldAdd / 100));
         }
 
         //oTraceError('lwj 奖励 ' + this.rewardGem + " " + this.rewardGold);
