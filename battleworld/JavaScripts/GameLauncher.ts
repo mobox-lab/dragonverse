@@ -93,10 +93,10 @@ export default class GameLauncher extends mw.Script {
     })
     languageType1: string = "-1";
 
-    @mw.Property({ displayName: "gm开关" })
+    @mw.Property({displayName: "gm开关"})
     gmSwitch: boolean = true;
 
-    @mw.Property({ displayName: "是否支持技能编辑器" })
+    @mw.Property({displayName: "是否支持技能编辑器"})
     isMotionEdit: boolean = true;
 
     @mw.Property({
@@ -108,16 +108,16 @@ export default class GameLauncher extends mw.Script {
     })
     public logLevel = 0;
 
-    @mw.Property({ displayName: "是否发布", group: "发布" })
+    @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
-    @mw.Property({ displayName: "是否 beta 发布", group: "发布" })
+    @mw.Property({displayName: "是否 beta 发布", group: "发布"})
     public isBeta: boolean = false;
 
-    @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
+    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
     public isUseTestUrl: boolean = true;
 
-    @mw.Property({ displayName: "是否开启RPC统计" })
+    @mw.Property({displayName: "是否开启RPC统计"})
     public isRecordRPC: boolean = false;
 
     async onStart() {
@@ -134,7 +134,7 @@ export default class GameLauncher extends mw.Script {
         if (SystemUtil.isClient()) {
 
             // 初始化多语言
-            LanguageManager.init_language(Number(this.languageType1));
+            LanguageManager.init_language(GameServiceConfig.isRelease ? -1 : Number(this.languageType1));
 
             ChatService.asyncEnableChatWindow(true);
 
@@ -152,17 +152,15 @@ export default class GameLauncher extends mw.Script {
         }
 
         // 设置玩家数据存储位置
-        DataStorage.setTemporaryStorage(!this.isOnline);
+        DataStorage.setTemporaryStorage(GameServiceConfig.isRelease || GameServiceConfig.isBeta || this.isOnline);
 
         Globaldata.logLevel = this.logLevel;
         LogManager.instance.setLogLevel(Globaldata.logLevel);
 
-        MotionEditConst.isUseEdit = this.isMotionEdit;
-
+        MotionEditConst.isUseEdit = !GameServiceConfig.isRelease && this.isMotionEdit;
 
         this.onRegisterModule();
         this.useUpdate = true;
-
 
     }
 
@@ -181,7 +179,9 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(SkillModuleS, SkillModuleC, null);
         ModuleService.registerModule(MotionModuleS, MotionModuleC, null);
         ModuleService.registerModule(PlayerHeadUIModuleS, PlayerHeadUIModuleC, null);
-        ModuleService.registerModule(GMModuleS, GMModuleC, GMModuleData);
+        if (!GameServiceConfig.isRelease) {
+            ModuleService.registerModule(GMModuleS, GMModuleC, GMModuleData);
+        }
         ModuleService.registerModule(BulletModuleS, BulletModuleC, null);
         ModuleService.registerModule(BuffModuleS, BuffModuleC, null);
         ModuleService.registerModule(HUDModuleS, HUDModuleC, null);
@@ -209,15 +209,12 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
     }
 
-
     //开启作弊检测
     private checkCheat() {
         // 开启作弊检测
         AntiCheatSystem.checkAccelerator();
 
-
         if (SystemUtil.isServer()) {
-
 
             return;
         }
@@ -227,7 +224,9 @@ export default class GameLauncher extends mw.Script {
         });
 
     }
+
     private isGMVisible: boolean = true;
+
     private registerGMVisibleKey() {
         InputUtil.onKeyUp(mw.Keys.F12, () => {
             this.isGMVisible = !this.isGMVisible;

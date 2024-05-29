@@ -67,38 +67,38 @@ export default class GameStart extends mw.Script {
     @mw.Property()
     private isOnline: boolean = false;
 
-    @mw.Property({ displayName: "是否发布", group: "发布" })
+    @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
-    @mw.Property({ displayName: "是否 Beta 发布", group: "发布" })
+    @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
     public isBeta: boolean = false;
 
-    @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
+    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
     public isUseTestUrl: boolean = true;
 
-    @mw.Property({ displayName: "是否开启主页GM开关按钮" })
+    @mw.Property({displayName: "是否开启主页GM开关按钮"})
     private isOpenGm = false;
-    @mw.Property({ displayName: "是否免费送滑板" })
+    @mw.Property({displayName: "是否免费送滑板"})
     private isFreeSkateboard = false;
-    @mw.Property({ displayName: "是否使用平台形象" })
+    @mw.Property({displayName: "是否使用平台形象"})
     private isUseAvatar = true;
-    @mw.Property({ displayName: "是否使海外发布" })
+    @mw.Property({displayName: "是否使海外发布"})
     private isOverSea = true;
-    @mw.Property({ displayName: "是否同去同回" })
+    @mw.Property({displayName: "是否同去同回"})
     private isSameGoBack = false;
-    @mw.Property({ displayName: "是否开启收集图鉴机器" })
+    @mw.Property({displayName: "是否开启收集图鉴机器"})
     private isOpenCollectMachine = true;
     @mw.Property({
         displayName: "语言类型",
         group: "Odin设置",
-        selectOptions: { "系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3" },
+        selectOptions: {"系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3"},
     })
     private selectedLanguageIndex: string = "-1";
 
     @mw.Property({
         displayName: "Log级别",
         group: "Odin设置",
-        selectOptions: { "None": "0", "Error": "1", "Warn": "2", "Log": "3" },
+        selectOptions: {"None": "0", "Error": "1", "Warn": "2", "Log": "3"},
     })
     private logLevel: string = "0";
 
@@ -135,20 +135,21 @@ export default class GameStart extends mw.Script {
         GlobalData.Global.isShowGM = this.isOpenGm;
         GlobalData.Global.isFreeSkateboard = this.isFreeSkateboard;
         GlobalData.Global.selectedLanguageIndex = Number(this.selectedLanguageIndex);
-        GlobalData.Global.isUseAvatar = this.isUseAvatar;
+        GlobalData.Global.isUseAvatar = GameServiceConfig.isRelease || this.isUseAvatar;
         GlobalData.Global.isOverSea = this.isOverSea;
         this.onRegisterModule();
         mwaction;
 
-        DataStorage.setTemporaryStorage(!this.isOnline);
+        DataStorage.setTemporaryStorage(GameServiceConfig.isRelease || GameServiceConfig.isBeta || !this.isOnline);
 
         //初始化表格语言
-        GameConfig.initLanguage(Number(this.selectedLanguageIndex), (key) => {
-            let ele = GameConfig.Language.getElement(key);
-            if (ele == null)
-                return "unknow_" + key;
-            return ele.Value;
-        });
+        GameConfig.initLanguage(GameServiceConfig.isRelease ? -1 : Number(this.selectedLanguageIndex),
+            (key) => {
+                let ele = GameConfig.Language.getElement(key);
+                if (ele == null)
+                    return "unknow_" + key;
+                return ele.Value;
+            });
 
         if (mw.SystemUtil.isClient()) {
             if (GlobalData.Global.selectedLanguageIndex == -1) {
@@ -179,7 +180,7 @@ export default class GameStart extends mw.Script {
         this.useUpdate = true;
 
         if (SystemUtil.isClient()) {
-            if (this.isOpenGm) {
+            if (!GameServiceConfig.isRelease && this.isOpenGm) {
                 GM.start(GMBasePanelUI);
                 this.registerGMVisibleKey();
                 return;
@@ -248,6 +249,7 @@ export default class GameStart extends mw.Script {
     }
 
     private isGMVisible: boolean = true;
+
     private registerGMVisibleKey() {
         InputUtil.onKeyUp(mw.Keys.F12, () => {
             this.isGMVisible = !this.isGMVisible;

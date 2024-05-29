@@ -189,7 +189,7 @@ export default class GameStart extends mw.Script {
     }
 
     private initI18n() {
-        if (this.language !== LanguageTypes.English) {
+        if (!GameServiceConfig.isRelease && this.language !== LanguageTypes.English) {
             i18n.use(this.language);
             Log4Ts.log(GameStart, `i18n use default language: ${this.language} because using specified non-English language.`);
             return;
