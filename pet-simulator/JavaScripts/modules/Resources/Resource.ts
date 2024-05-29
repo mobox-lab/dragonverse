@@ -156,11 +156,11 @@ export default class ResourceScript extends mw.Script {
 
         let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
         if (damage > allHp / 3) {
-            damage = allHp / 3;
+            damage = Math.ceil(allHp / 3);
         }
         let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerID);
         if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
-            damage = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerID) - allHp * 2 / 3;
+            damage = damage * GlobalData.SceneResource.critRate(playerID);
         }
         //------------------------
 
@@ -695,7 +695,7 @@ export default class ResourceScript extends mw.Script {
 
         let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
         if (damage > allHp / 3) {
-            damage = allHp / 3;
+            damage = Math.ceil(allHp / 3);
         }
         let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerId);
         if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
