@@ -33,6 +33,65 @@ import DialogifyManager from "../../depend/dialogify/DialogifyManager";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 import { ActivateByUIAndTrigger, ActivateMode } from "../../gameplay/interactiveObj/ActiveMode";
 import ADialoguePanelController from "../../depend/dialogify/dialogue-panel-controller/ADialoguePanelController";
+import { AddGMCommand } from "module_gm";
+
+enum MouseLockType {
+    Press,
+    Tap
+}
+
+let currentLockType: MouseLockType = MouseLockType.Press;
+
+AddGMCommand(
+    "Mouse Lock Type",
+    (player, value) => {
+        const v = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
+        let type: MouseLockType;
+        if (v === 0 || v === 1) {
+            type = v;
+        } else {
+            switch (currentLockType) {
+                case MouseLockType.Press:
+                    type = MouseLockType.Tap;
+                    break;
+                case MouseLockType.Tap:
+                    type = MouseLockType.Press;
+                    break;
+            }
+        }
+
+        Log4Ts.log(MainPanel,
+            `request to change mouse lock type to ${MouseLockType[type]}.`,
+            `option param:`,
+            `   0: ${MouseLockType[MouseLockType.Press]}`,
+            `   1: ${MouseLockType[MouseLockType.Tap]}`,
+        );
+        if (type === currentLockType) return;
+        else currentLockType = type;
+
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.LeftAlt);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.LeftCommand);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.RightAlt);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.RightCommand);
+        if (currentLockType === MouseLockType.Press) {
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.LeftCommand, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.RightAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.RightCommand, () => (InputUtil.isLockMouse = true));
+        } else {
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+        }
+    },
+    undefined,
+    "Mouse",
+);
 
 /**
  * 交互类型.
@@ -238,15 +297,17 @@ export default class MainPanel extends MainPanel_Generate {
             this.btnSound.enable = false;
             // 判断是否静音
             let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
-            this.btnSound.disableImageGuid = res
-                ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID
-                : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+            this.btnSound.pressedImageGuid = res
+                ? GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID
+                : GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID;
             res = !res;
             ModuleService.getModule(PlayerSettingModuleC).setMute(res);
             AudioController.getInstance().mute(res);
             this.btnSound.normalImageGuid = res
                 ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID
                 : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+            this.btnSound.normalImageSize = new Vector2(88, 96);
+            this.btnSound.pressedImageSize = new Vector2(88, 96);
             this.btnSound.enable = true;
         });
 
@@ -497,8 +558,8 @@ export default class MainPanel extends MainPanel_Generate {
             }),
             Event.addLocalListener(ADialoguePanelController.ControllerExitDialogueEventName, () => {
                 KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
-            })
-        )
+            }),
+        );
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -976,6 +1037,10 @@ export default class MainPanel extends MainPanel_Generate {
      */
     public enableReset(enable = true) {
         Gtk.trySetVisibility(this.resetCanvas, enable);
+        this.btnReset.onClicked.clear();
+        if (enable) {
+            this.btnReset.onClicked.add(respawn);
+        }
     }
 
     public showBag() {
@@ -1089,7 +1154,8 @@ export default class MainPanel extends MainPanel_Generate {
     jump() {
         if (!this.btnJump.enable) return;
         if (!(Player.localPlayer.character.getCurrentState() === CharacterStateType.Swimming)) {
-            this._character.changeState(CharacterStateType.Jumping);
+            // this._character.changeState(CharacterStateType.Jumping);
+            this.character.jump();
         } else {
             actions
                 .tween(Player.localPlayer.character.worldTransform)
@@ -1097,7 +1163,8 @@ export default class MainPanel extends MainPanel_Generate {
                     position: Player.localPlayer.character.worldTransform.position.clone().add(new Vector(0, 0, 100)),
                 })
                 .call(() => {
-                    this._character.changeState(CharacterStateType.Jumping);
+                    // this._character.changeState(CharacterStateType.Jumping);
+                    this.character.jump();
                 })
                 .start();
         }
@@ -1144,7 +1211,7 @@ export default class MainPanel extends MainPanel_Generate {
         this.transferCanvas.visibility = SlateVisibility.Visible;
         this.resetCanvas.visibility = SlateVisibility.Visible;
         this.btnCow.onClicked.clear();
-        this.btnCow.addKey(Keys.Escape);
+        this.btnCow.addKey(Keys.T);
         this.btnCow.onClicked.add(transferCallBack);
 
         this.btnReset.onClicked.clear();
@@ -1153,16 +1220,17 @@ export default class MainPanel extends MainPanel_Generate {
 
     public switchToTransferLevel() {
         this.resetCanvas.visibility = SlateVisibility.Collapsed;
-        this.transferCanvas.visibility = SlateVisibility.Collapsed;
+        // this.transferCanvas.visibility = SlateVisibility.Collapsed;
         this.mapCanvas.visibility = SlateVisibility.Collapsed;
-        this.btnCow.removeKey(Keys.Escape);
+        // this.btnCow.removeKey(Keys.T);
+        this.btnReset.onClicked.clear();
     }
 
     public backToMainScene() {
         this.resetCanvas.visibility = SlateVisibility.Visible;
         this.transferCanvas.visibility = SlateVisibility.Collapsed;
         this.mapCanvas.visibility = SlateVisibility.Visible;
-        this.btnCow.removeKey(Keys.Escape);
+        this.btnCow.removeKey(Keys.T);
         this.btnReset.onClicked.clear();
         this.btnReset.onClicked.add(respawn);
     }

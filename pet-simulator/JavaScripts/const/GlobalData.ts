@@ -400,7 +400,7 @@ export namespace GlobalData {
         /**每个区域资源上限个数 */
         public static maxResourceCount: number = 200;
         /**每个区域资源下限个数 */
-        public static minResourceCount: number = 20;
+        public static minResourceCount: number = 100;
         /**默认区域数组 */
         public static defaultAreaArr: number[] = [1002, 2002];
         /**忽略区域数组 */
@@ -427,7 +427,7 @@ export namespace GlobalData {
         public static critRateMap: Map<number, number> = new Map();
 
         public static critRate(playerId: number) {
-            return Gtk.tryGet(this.critRateMap, playerId, () => 20);
+            return Gtk.tryGet(this.critRateMap, playerId, () => 3);
         }
 
         public static critMap: Map<number, boolean> = new Map();
@@ -849,40 +849,41 @@ export namespace GlobalData {
         public static levelRangeMap: Map<number, number> = new Map();
 
         public static levelRange(playerId: number) {
-            return Gtk.tryGet(this.levelRangeMap, playerId, 0) + 1;
+            return Gtk.tryGet(this.levelRangeMap, playerId, 0);
         }
 
         /**更多钻石 */
         public static moreDiamondMap: Map<number, number> = new Map();
 
         public static moreDiamond(playerId: number) {
-            return Gtk.tryGet(this.moreDiamondMap, playerId, 0) + 1;
+            return Gtk.tryGet(this.moreDiamondMap, playerId, 0);
         };
 
         /**宠物攻击力 */
         public static petDamageMap: Map<number, number> = new Map();
 
         public static petDamage(playerId: number) {
-            return Gtk.tryGet(this.petDamageMap, playerId, 0) + 1;
+            return Gtk.tryGet(this.petDamageMap, playerId, 0);
         };
 
         /**宠物攻击速度 */
         public static petAttackSpeedMap: Map<number, number> = new Map();
 
         public static petAttackSpeed(playerId: number) {
-            return Gtk.tryGet(this.petAttackSpeedMap, playerId, 0) + 1;
+            return Gtk.tryGet(this.petAttackSpeedMap, playerId, 0);
         };
-
 
         /**最高等级 */
         public static maxLevel: number = 5;
 
         public static initPlayer(playerId: number,
             levelData: number[]) {
-            this.levelRangeMap.set(playerId, levelData[0]);
-            this.moreDiamondMap.set(playerId, levelData[1]);
-            this.petDamageMap.set(playerId, levelData[2]);
-            this.petAttackSpeedMap.set(playerId, levelData[3]);
+            let upgradeData = GameConfig.Upgrade.getAllElement().map(v => v.Upgradenum);
+
+            this.levelRangeMap.set(playerId, (upgradeData[0][levelData[0] - 1] ?? 0) + 1);
+            this.moreDiamondMap.set(playerId, (upgradeData[1][levelData[1] - 1] ?? 0) + 1);
+            this.petDamageMap.set(playerId, (upgradeData[2][levelData[2] - 1] ?? 0) + 1);
+            this.petAttackSpeedMap.set(playerId, (upgradeData[3][levelData[3] - 1] ?? 0) + 1);
         }
 
         public static clearPlayer(playerId: number) {
@@ -1159,7 +1160,7 @@ export namespace GlobalData {
         ]);
         /**排行榜item的图标guid  */
         public static itemImageGuids: Map<string, string> = new Map([
-            [RankType.Collect, "175740"],
+            [RankType.Collect, "343791"],
             [RankType.Diamond, "175740"],
         ]);
 

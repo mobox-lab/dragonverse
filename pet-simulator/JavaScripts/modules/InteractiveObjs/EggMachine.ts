@@ -164,7 +164,8 @@ class EggM {
         this.startFind();
     }
     private async startFind() {
-        await this.findObj();
+        let res = await this.findObj();
+        if (!res) return;
         if (this.islock()) {
             this.setLockState(true);
         } else {
@@ -178,11 +179,11 @@ class EggM {
         EggMachineTween.instance.onTweenAc.add((isStart: boolean) => {
             if (this.islock()) return;
             if (isStart) {
-                this.petEgg.setVisibility(mw.PropertyStatus.Off);
-                this.worldUI_1.setVisibility(mw.PropertyStatus.Off);
+                this.petEgg?.setVisibility(mw.PropertyStatus.Off);
+                this.worldUI_1?.setVisibility(mw.PropertyStatus.Off);
             }
             else {
-                this.petEgg.setVisibility(mw.PropertyStatus.On);
+                this.petEgg?.setVisibility(mw.PropertyStatus.On);
                 this.setEggState(false);
                 this.playeEff(false);
             }
@@ -212,10 +213,11 @@ class EggM {
     }
     /**价格ui显示 */
     private goldUIInit() {
-        let priceUI = this.worldUI_2.getTargetUIWidget().rootContent;
+        let priceUI = this.worldUI_2?.getTargetUIWidget().rootContent;
         this.setWorldUIVis(this.worldUI_2, true);
         //设置价格
-        let priceTxt = priceUI.findChildByPath("Canvas/mText_Price") as mw.TextBlock;
+        if (priceUI == null) return;
+        let priceTxt = priceUI?.findChildByPath("Canvas/mText_Price") as mw.TextBlock;
         let guid = this.cfg.Price[0];
         priceTxt.text = utils.formatNumber(guid)
 
@@ -247,11 +249,11 @@ class EggM {
     /**设置蛋状态 */
     private async setEggState(isLock: boolean) {
         if (isLock) {
-            this.unLockEgg.setVisibility(mw.PropertyStatus.On);
-            this.petEgg.setVisibility(mw.PropertyStatus.Off);
+            this.unLockEgg?.setVisibility(mw.PropertyStatus.On);
+            this.petEgg?.setVisibility(mw.PropertyStatus.Off);
         } else {
             this.unLockEgg?.setVisibility(mw.PropertyStatus.Off);
-            this.petEgg.setVisibility(mw.PropertyStatus.On);
+            this.petEgg?.setVisibility(mw.PropertyStatus.On);
         }
     }
     /**特效状态 */
@@ -280,7 +282,7 @@ class EggM {
 
     private async findObj() {
         this.petEgg = await GameObject.asyncFindGameObjectById(this.cfg.SceneID[1]);
-
+        if (this.petEgg == null || !this.petEgg.parent) return false;
         this.gameObject = this.petEgg.parent.getChildByName("扭蛋交互")
 
         this.trigger = this.gameObject.getChildByName("触发器") as mw.Trigger;
@@ -292,6 +294,7 @@ class EggM {
         this.unLockEgg = await GameObject.asyncFindGameObjectById(this.cfg.SceneID[0]);
         this.unlockEff = this.unLockEgg.getChildByName("禁锢Buff") as mw.Effect;
         this.lockEff = this.gameObject.getChildByName("手指") as mw.Effect;
+        return true;
     }
     private getHeatEff(obj: mw.GameObject) {
         let len = this.petEgg.getChildren();
@@ -402,7 +405,7 @@ class EggM {
     }
 
     private setWorldUIVis(ui: mw.UIWidget, isVis: boolean) {
-        ui.setVisibility(isVis ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
+        ui?.setVisibility(isVis ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
     }
 
 

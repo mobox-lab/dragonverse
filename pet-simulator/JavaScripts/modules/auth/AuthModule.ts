@@ -208,7 +208,7 @@ interface QueryStaminaLimitRespData {
 /**
  * 汇报 宠物模拟器排行榜 请求参数.
  */
-interface PetSimulatorRankDataReq {
+interface UpdatePetSimulatorRankDataReq {
     userId: string;
     userName: string;
     userAvatar: string;
@@ -552,7 +552,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (Gtk.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
+            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -597,6 +597,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * 玩家体力恢复预期时长表. s
      */
     public playerStaminaRecoveryMap: Map<number, number> = new Map();
+
+    /**
+     * 用户 PS 上报函数.
+     * @type {Map<string, () => void>}
+     */
+    public userPSRankDataReporter: Map<string, (requestParam: UpdatePetSimulatorRankDataReq) => void> = new Map();
+
+    /**
+     * 用户 BW 上报函数.
+     * @type {Map<string, () => void>}
+     */
+    public userBWRankDataReporter: Map<string, (requestParam: UpdateBattleWorldRankDataReq) => void> = new Map();
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld Event
@@ -637,15 +650,22 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
 
-        const playerData = this.getPlayerData(player);
-        if (playerData) {
-        } else {
-            Log4Ts.log(AuthModuleS, `there is no data for player ${player.playerId}.`);
-        }
+        mw.setTimeout(() => {
+            this.userPSRankDataReporter.delete(player.userId);
+            this.userBWRankDataReporter.delete(player.userId);
+        },
+            GameServiceConfig.REPORT_REQUEST_WAIT_TIME * 2);
     }
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
+        this.userPSRankDataReporter.set(this.queryUserId(player.playerId),
+            requestParam => {
+                this.innerReportPetSimulatorRankData(requestParam);
+            });
+        this.userBWRankDataReporter.set(this.queryUserId(player.playerId),
+            requestParam =>
+                this.innerReportBattleWorldRankData(requestParam));
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -654,7 +674,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         // this.queryRegisterStaminaLimit(player.playerId);
     }
 
-    private static readonly CODE_VERIFY_AES_KEY_STORAGE_KEY = "CODE_VERIFY_AES_KEY_STORAGE_KEY";
+    private static readonly CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY = "CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY";
+
+    private static readonly CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY = "CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY";
 
     private static readonly CLIENT_ID_STORAGE_KEY = "CLIENT_ID_STORAGE_KEY";
 
@@ -662,36 +684,67 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private static readonly PLACE_HOLDER = "REPLACE_IT";
 
-    private static CODE_VERIFY_AES_KEY = "";
+    private static CODE_VERIFY_TEST_AES_KEY = "";
 
-    private static CODE_VERIFY_AES_IV = "";
+    private static CODE_VERIFY_RELEASE_AES_KEY = "";
+
+    private static CODE_VERIFY_TEST_AES_IV = "";
+
+    private static CODE_VERIFY_RELEASE_AES_IV = "";
 
     public static readonly KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL = 5e3;
 
     private static getSensitiveData() {
         Gtk.doUntilTrue(
-            () => !Gtk.isNullOrEmpty(this.CODE_VERIFY_AES_KEY),
-            this.getCodeVerifyAesKey,
+            () => !Gtk.isNullOrEmpty(this.CODE_VERIFY_TEST_AES_KEY),
+            this.getTestCodeVerifyAesKey,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+        );
+        Gtk.doUntilTrue(
+            () => !Gtk.isNullOrEmpty(this.CODE_VERIFY_RELEASE_AES_KEY),
+            this.getReleaseCodeVerifyAesKey,
             AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
         );
     }
 
-    private static getCodeVerifyAesKey() {
-        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY).then((value) => {
-            Log4Ts.log(AuthModuleS, `value`, value.code);
-            if (value.code === 200) {
-                if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                    AuthModuleS.CODE_VERIFY_AES_KEY = value.data;
-                    AuthModuleS.CODE_VERIFY_AES_IV = AuthModuleS.CODE_VERIFY_AES_KEY.slice(0, 16)
-                        .split("")
-                        .reverse()
-                        .join("");
-                } else {
-                    Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey Failed`);
-                    DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
+    private static getTestCodeVerifyAesKey() {
+        DataStorage
+            .asyncGetData(AuthModuleS.CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY)
+            .then((value) => {
+                Log4Ts.log(AuthModuleS, `value`, value.code);
+                if (value.code === 200) {
+                    if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.CODE_VERIFY_TEST_AES_KEY = value.data;
+                        AuthModuleS.CODE_VERIFY_TEST_AES_IV = AuthModuleS.CODE_VERIFY_TEST_AES_KEY.slice(0, 16)
+                            .split("")
+                            .reverse()
+                            .join("");
+                    } else {
+                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey for test Failed`);
+                        DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
+                    }
                 }
-            }
-        });
+            });
+    }
+
+    private static getReleaseCodeVerifyAesKey() {
+        DataStorage
+            .asyncGetData(AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY)
+            .then((value) => {
+                Log4Ts.log(AuthModuleS, `value`, value.code);
+                if (value.code === 200) {
+                    if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                        AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY = value.data;
+                        AuthModuleS.CODE_VERIFY_RELEASE_AES_IV = AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY.slice(0, 16)
+                            .split("")
+                            .reverse()
+                            .join("");
+                    } else {
+                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey for release Failed`);
+                        DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
+                    }
+                }
+            });
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -704,12 +757,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
+            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (Gtk.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
+            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
             return false;
         }
 
@@ -718,11 +771,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private getSecret(message: string) {
-        const e = CryptoJS.AES.encrypt(message, CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_KEY), {
-            iv: CryptoJS.enc.Utf8.parse(AuthModuleS.CODE_VERIFY_AES_IV),
-            mode: CryptoJS.mode.CBC,
-            padding: CryptoJS.pad.Pkcs7,
-        });
+        const e = CryptoJS.AES.encrypt(
+            message,
+            CryptoJS.enc.Utf8.parse(GameServiceConfig.isRelease ?
+                AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY :
+                AuthModuleS.CODE_VERIFY_TEST_AES_KEY),
+            {
+                iv: CryptoJS.enc.Utf8.parse(GameServiceConfig.isRelease ?
+                    AuthModuleS.CODE_VERIFY_RELEASE_AES_IV :
+                    AuthModuleS.CODE_VERIFY_TEST_AES_IV,
+                ),
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7,
+            });
         return e.ciphertext.toString(CryptoJS.enc.Base64);
     }
 
@@ -745,8 +806,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     public async requestWebCatchDragon(playerId: number,
-                                       dragonPalId: number,
-                                       catchTimeStamp: number): Promise<[boolean, DragonBallRespData]> {
+        dragonPalId: number,
+        catchTimeStamp: number): Promise<[boolean, DragonBallRespData]> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
@@ -837,9 +898,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         if (Gtk.isNullOrEmpty(userId)) return;
 
         const player = Player.getPlayer(playerId);
-        const userName = player.nickname;
+        const userName = this.getPlayerData(player)?.holdNickName
+            ?? player.nickname;
         const userAvatar = player["avatarUrl"];
-        const requestParam: PetSimulatorRankDataReq = {
+        const requestParam: UpdatePetSimulatorRankDataReq = {
             userId,
             userName,
             userAvatar,
@@ -850,6 +912,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             round,
         };
 
+        Gtk.waitDo(requestParam,
+            this.userPSRankDataReporter.get(userId),
+            GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
+    }
+
+    private async innerReportPetSimulatorRankData(requestParam: UpdatePetSimulatorRankDataReq) {
         this.correspondHandler<QueryResp>(requestParam,
             AuthModuleS.RELEASE_P_S_RANK_REPORT_URL,
             AuthModuleS.TEST_P_S_RANK_REPORT_URL,
@@ -873,6 +941,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             recordTime: Math.floor(Date.now() / 1000),
         };
 
+        Gtk.waitDo(requestParam,
+            this.userBWRankDataReporter.get(userId),
+            GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
+
+    }
+
+    public async innerReportBattleWorldRankData(requestParam: UpdateBattleWorldRankDataReq) {
         this.correspondHandler<QueryResp>(requestParam,
             AuthModuleS.RELEASE_B_W_RANK_REPORT_URL,
             AuthModuleS.TEST_B_W_RANK_REPORT_URL,
@@ -896,10 +971,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         };
 
         const resp = await fetch(
-            `${
-                GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl
-                    ? releaseUrl
-                    : testUrl
+            `${GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl
+                ? releaseUrl
+                : testUrl
             }`,
             {
                 method: "POST",

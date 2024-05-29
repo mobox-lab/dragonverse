@@ -33,6 +33,7 @@ import { PlayerHeadUIModuleC } from "../PlayerHeadUIModule/PlayerHeadUIModuleC";
 import { EnergyModuleC, EnergyModuleS } from "../Energy/EnergyModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import WoodUnit from "../npc/WoodUnit";
+import Gtk from "../../util/GToolkit";
 
 export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
 
@@ -364,6 +365,7 @@ AddGMCommand("npc重随", (player: mw.Player, value: string) => {
     let values = value.split("|");
     let unit = ModuleService.getModule(MascotModuleS).getUnit(-1);
     let pos = ModuleService.getModule(LandModuleS).noRunRandom(1);
+    if (Gtk.isNullOrEmpty(pos)) return;
     unit.getModel().worldTransform.position = pos[0];
 }, "地形");
 
@@ -468,7 +470,7 @@ AddGMCommand("跳Pet-Simulator", () => {
             const player = Player.getPlayer(userId);
             if (player) {
                 Event.dispatchToClient(player, "onJumpGameFailed", result.message);
-                Log4Ts.log({ name: "GM" }, "onJumpGameFailed", result.message);
+                Log4Ts.log({name: "GM"}, "onJumpGameFailed", result.message);
             }
         }
     };
@@ -484,7 +486,7 @@ AddGMCommand("跳DragonVerse", () => {
             const player = Player.getPlayer(userId);
             if (player) {
                 Event.dispatchToClient(player, "onJumpGameFailed", result.message);
-                Log4Ts.log({ name: "GM" }, "onJumpGameFailed", result.message);
+                Log4Ts.log({name: "GM"}, "onJumpGameFailed", result.message);
             }
         }
     };
@@ -530,4 +532,12 @@ AddGMCommand("加木桩", async () => {
 
 AddGMCommand("显示/隐藏技能范围", (player, value) => {
     Globaldata.showSkillRange = !!value;
+});
+
+AddGMCommand("改名", (player, value) => {
+    ModuleService.getModule(PlayerHeadUIModuleC).getHeadUIWidget(Player.localPlayer.playerId).then(ui => {
+        ui.mOwnName_txt.text = value;
+    });
+}, () => {
+
 });

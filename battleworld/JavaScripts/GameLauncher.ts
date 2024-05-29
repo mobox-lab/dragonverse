@@ -71,6 +71,7 @@ import BWEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energ
 import { SettingModuleData } from "./module/SetingModule/SettingModuleData";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
 import GameServiceConfig from "./const/GameServiceConfig";
+import GMHUD_Generate from "./ui-generate/GM/GMHUD_generate";
 
 declare global {
     var UE: any;
@@ -113,7 +114,7 @@ export default class GameLauncher extends mw.Script {
     @mw.Property({ displayName: "是否 beta 发布", group: "发布" })
     public isBeta: boolean = false;
 
-    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
+    @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
     public isUseTestUrl: boolean = true;
 
     @mw.Property({ displayName: "是否开启RPC统计" })
@@ -145,6 +146,9 @@ export default class GameLauncher extends mw.Script {
             //锁住鼠标
             InputUtil.isLockMouse = true;
             InputUtil.mouseLockOptionEnabled = false;
+            if (!GameServiceConfig.isRelease) {
+                this.registerGMVisibleKey();
+            }
         }
 
         // 设置玩家数据存储位置
@@ -223,5 +227,15 @@ export default class GameLauncher extends mw.Script {
         });
 
     }
-
+    private isGMVisible: boolean = true;
+    private registerGMVisibleKey() {
+        InputUtil.onKeyUp(mw.Keys.F12, () => {
+            this.isGMVisible = !this.isGMVisible;
+            if (this.isGMVisible) {
+                UIService.show(GMHUD_Generate);
+            } else {
+                UIService.hide(GMHUD_Generate);
+            }
+        });
+    }
 }

@@ -249,7 +249,7 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
                     return;
                 }
                 // 减少抓娃娃币
-                this.playerMC.reduceGold(1, GlobalEnum.CoinType.SummerGold);
+                // this.playerMC.reduceGold(1, GlobalEnum.CoinType.SummerGold);
 
                 this.isInteract = true;
                 this.setUI(true, machineId);

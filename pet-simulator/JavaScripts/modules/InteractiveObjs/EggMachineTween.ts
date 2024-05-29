@@ -375,13 +375,13 @@ export class EggMachineTween {
 
     /**添加touch事件 */
     public addTouch(): void {
-        this.touch.onTouchEnd.clear();
+        this.touch?.onTouchEnd.clear();
         // this.touch.setPlayerController();
-        this.touch.onTouchEnd.add(this.forceSkip.bind(this));
+        this.touch?.onTouchEnd.add(this.forceSkip.bind(this));
     }
     /**移除touch事件 */
     public removeTouch(): void {
-        this.touch.onTouchEnd.clear();
+        this.touch?.onTouchEnd.clear();
     }
     /**强制跳过事件 */
     public forceSkip(a, b, c): void {

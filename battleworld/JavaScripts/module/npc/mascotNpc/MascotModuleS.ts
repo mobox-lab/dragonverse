@@ -25,7 +25,8 @@ import { UnitManager } from "../UnitManager";
 import { EUnitState } from "../UnitState";
 import { UnitStateMachine } from "../UnitStateMachine";
 import { MascotModuleC } from "./MascotModuleC";
-import { GtkTypes, Regulator } from "../../../util/GToolkit";
+import Gtk, { GtkTypes, Regulator } from "../../../util/GToolkit";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 export class MascotModuleS extends ModuleS<MascotModuleC, null> {
     /** 吉祥物npc配置 */
@@ -42,9 +43,10 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
 
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void {
+        Log4Ts.log(MascotModuleS, `start`);
         this._cfg = GameConfig.MascotNpc.getAllElement();
         for (let i = 0; i < this._cfg.length; i++) {
-            this._createRegulator.push(new Regulator(this._cfg[i].InterTime ?? GtkTypes.Interval.PerMin));
+            this._createRegulator.push(new Regulator(this._cfg[i].InterTime * 1e3 ?? GtkTypes.Interval.PerMin));
             this._npcNum.push(0);
         }
 
@@ -61,6 +63,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
 
     private async create(cfg: IMascotNpcElement, num: number) {
         let posArr = ModuleService.getModule(LandModuleS).noRunRandom(num);
+        if (Gtk.isNullOrEmpty(posArr)) return;
         while (num--) {
             let npc = await GameObjPool.asyncSpawn("Character") as mw.Character;
             await npc.asyncReady();
@@ -90,6 +93,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
     private checkCreate() {
         for (let i = 0; i < this._cfg.length; i++) {
             if (this._npcNum[i] < this._cfg[i].MaxNum &&
+                (ModuleService.getModule(LandModuleS)?.noRunRandom(1)?.length ?? 0) > 0 &&
                 this._createRegulator[i].request()) {
                 let createNum = Math.min(
                     this._cfg[i].MaxNum - this._npcNum[i],
@@ -149,7 +153,7 @@ export class MascotModuleS extends ModuleS<MascotModuleC, null> {
                     const buffId = motionEffectCfg.BuffID[index];
 
                     ModuleService.getModule(BuffModuleS).createBuff(buffId, attackId, beAttackIds[i],
-                        {castPId: attackId, buffParamType: null, value: null, pos: hurtData.triggerPos});
+                        { castPId: attackId, buffParamType: null, value: null, pos: hurtData.triggerPos });
                 }
             }
 

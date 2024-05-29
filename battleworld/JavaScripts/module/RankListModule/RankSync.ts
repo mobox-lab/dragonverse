@@ -18,7 +18,7 @@ export class RankModelInfo {
 export default class RankSync extends Script {
 
     /** 段位第一名userid */
-    @mw.Property({replicated: true, onChanged: "onScoreFirstChange"})
+    @mw.Property({ replicated: true, onChanged: "onScoreFirstChange" })
     public rankScoreFirst: string = "";
     /** model数据map */
     private _modelMap: Map<number, RankModelInfo> = new Map();
@@ -40,7 +40,9 @@ export default class RankSync extends Script {
         if (!this._modelMap.has(0)) {
             await this.initModel(0);
         }
-        this.changerModelAppearance(0, this.rankScoreFirst);
+        let userId = this.rankScoreFirst.split("_")[0];
+        // let rankScore = parseInt(this.rankScoreFirst.split("_")[1]);
+        this.changerModelAppearance(0, userId);
     }
 
     /**
@@ -56,7 +58,7 @@ export default class RankSync extends Script {
         modelInfo.model.setCollision(CollisionStatus.Off);
         modelInfo.model.complexMovementEnabled = false;
         modelInfo.model.displayName = "";
-        modelInfo.uiWidget = await mw.GameObject.asyncSpawn("UIWidget", {replicates: false}) as mw.UIWidget;
+        modelInfo.uiWidget = await mw.GameObject.asyncSpawn("UIWidget", { replicates: false }) as mw.UIWidget;
         let ani = modelInfo.model.loadAnimation(Globaldata.npc_modelAnim);
         ani.loop = 0;
 
@@ -67,7 +69,13 @@ export default class RankSync extends Script {
         modelInfo.uiWidget.widgetSpace = WidgetSpaceMode.OverheadUI;
         modelInfo.model.attachToSlot(modelInfo.uiWidget, HumanoidSlotType.Root);
         modelInfo.uiWidget.localTransform.position = new Vector(0, 0, modelInfo.model.collisionExtent.z);
+        //隐藏血条
+        modelInfo.ui.mOwn_bar_hp_back.visibility = SlateVisibility.Collapsed;
+        modelInfo.ui.mOwn_bar_hp.visibility = SlateVisibility.Collapsed;
+        modelInfo.ui.imgOBackGround.visibility = SlateVisibility.Collapsed;
+        modelInfo.ui.hpImageOwn.visibility = SlateVisibility.Collapsed;
 
+        modelInfo.ui.mRankIcon_txt.visibility = SlateVisibility.Collapsed;
         //数据
         this._modelMap.set(ranking, modelInfo);
         this._animationMap.set(ranking, ani);

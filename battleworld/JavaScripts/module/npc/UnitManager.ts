@@ -17,6 +17,7 @@ export class UnitManager {
         }
         this._unitMap.set(unitId, unit);
     }
+
     /** 删除场景单位 */
     public removeUnit(unitId: number) {
         if (this._unitMap.has(unitId) == false) {
@@ -27,6 +28,7 @@ export class UnitManager {
 
         return unit;
     }
+
     /** 获取场景单位 */
     public getUnit(unitId: number): IUnitBase {
         if (!this._unitMap.has(unitId)) return null;
@@ -35,11 +37,7 @@ export class UnitManager {
 
     /** 获取所有场景单位 */
     public getAllUnit(): IUnitBase[] {
-        let arr: IUnitBase[] = [];
-        this._unitMap.forEach((value) => {
-            arr.push(value);
-        });
-        return arr;
+        return Array.from(this._unitMap.values());
     }
 
 }

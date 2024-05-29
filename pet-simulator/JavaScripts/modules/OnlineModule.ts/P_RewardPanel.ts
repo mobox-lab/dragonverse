@@ -113,12 +113,13 @@ class RewardItem extends GiftItem_Generate {
         this.mPic_done.visibility = isVis ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
     }
 
-    /**开始计时 */
+    /**开始计时 这里传入的 curTime 是 ms */
     public startCountDown(state: RewardState, curTime?: number) {
         this.curState = state;
+				const startTime = curTime / 1000;
         switch (state) {
             case RewardState.counting:
-                this.updateTime(curTime);
+                this.updateTime(startTime);
                 break;
             case RewardState.canReward:
                 this.mText_Time.text = GameConfig.Language.Text_ItemUI_2.Value; //item 可领取

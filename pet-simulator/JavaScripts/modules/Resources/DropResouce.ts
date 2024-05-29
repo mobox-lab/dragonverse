@@ -20,10 +20,17 @@ export class DropManagerC extends ModuleC<DropManagerS, null> {
     public net_createDrop(params: DropGenerateParam[]) {
 
         const gun = Balancing.getInstance().tryGetGun("dropItemGeneration");
+        let logged = false;
 
         for (const { startPos, endPos, type, value } of params) {
             gun.press(() => {
                 let drop = new DropInClient();
+                if (!logged) {
+                    Log4Ts.log(DropManagerC,
+                        `create drop at ${startPos} to ${endPos} with type ${type} and value ${value}.`,
+                        `this is one of them.`);
+                    logged = true;
+                }
                 drop.poolInit(startPos.clone(), endPos.clone(), type, value);
                 this._dropItems.push(drop);
             });
@@ -106,6 +113,8 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
             drop.value += diff;
             allValue -= diff;
         }
+        Log4Ts.log(DropManagerS, `reward generate ${generates.length} drops for player ${playerId} at ${pos} with type ${type} and value ${val}`);
+        let logged = false;
 
         Gtk.patchDo(
             generates.map(item => {
@@ -114,6 +123,12 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
                 const angle = new RandomGenerator().randomCircle().handle(val => val * radius).toVector2();
                 let startLoc = pos;
                 const endLoc = new mw.Vector(startLoc.x + angle.x, startLoc.y + angle.y, pos.z + GlobalData.DropAni.resourceY); //地面高度
+                if (!logged) {
+                    Log4Ts.log(DropManagerS,
+                        `create drop at ${startLoc} to ${endLoc} with type ${type} and value ${val}.`,
+                        `this is one of them.`);
+                    logged = true;
+                }
                 item.position = endLoc;
 
                 return {
@@ -327,6 +342,7 @@ class DropInClient extends DropItem {
         this.model.play();
         // this.model.loop = true;
         this.init(endPos);
+        Log4Ts.log(DropInClient, `targetPos:${targetPos} endPos:${endPos} type:${type} value:${value}`);
     }
 
     /**移动tween */

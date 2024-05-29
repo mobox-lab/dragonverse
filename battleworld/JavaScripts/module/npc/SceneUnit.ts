@@ -1,4 +1,4 @@
-﻿/** 
+﻿/**
  * @Author       : fengqi.han
  * @Date         : 2023-11-30 17:44:50
  * @LastEditors  : fengqi.han
@@ -7,7 +7,6 @@
  * @Description  : 修改描述
  */
 import { PlayerManagerExtesion } from "../../Modified027Editor/ModifiedPlayer";
-import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
 import { GameConfig } from "../../config/GameConfig";
 import { IMascotNpcElement } from "../../config/MascotNpc";
 import { Globaldata } from "../../const/Globaldata";
@@ -18,23 +17,24 @@ import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { IUnitBase } from "./IUnitBase";
 import { UnitManager } from "./UnitManager";
 import { MascotModuleS } from "./mascotNpc/MascotModuleS";
+import { GtkTypes } from "../../util/GToolkit";
 
 @Component
 export default class SceneUnit extends Script implements IUnitBase {
     /** 场景单位唯一id */
-    @mw.Property({ replicated: true, onChanged: "initUnit" })
+    @mw.Property({replicated: true, onChanged: "initUnit"})
     public unitId: number = 0;
     /** 当前血量 */
-    @mw.Property({ replicated: true, onChanged: "updateHp" })
+    @mw.Property({replicated: true, onChanged: "updateHp"})
     public curHp: number = 0;
     /** 配置id */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     public cfgId: number = 0;
     /**属性信息(类型) */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     public attributeType: number[] = [];
     /**属性信息(值) */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     public attributeValue: number[] = [];
     /** 头顶信息ui */
     private _ui: PlayerHeadUI = null;
@@ -91,6 +91,11 @@ export default class SceneUnit extends Script implements IUnitBase {
                 if (tagId != undefined && tagId != null && tagId != "") {
                     this.gameObject.tag = tagId;
                 }
+            } else {
+                let tagId = this.unitId.toString();
+                if (tagId != undefined && tagId != null && tagId != "") {
+                    this.gameObject.tag = tagId;
+                }
             }
         }
 
@@ -110,14 +115,13 @@ export default class SceneUnit extends Script implements IUnitBase {
                 } else {
                     count++;
                 }
-            }, 100)
+            }, 100);
         });
     }
 
-
     /**
      * 血量同步，更新ui
-     * @returns 
+     * @returns
      */
     protected updateHp() {
         let maxHp = GameConfig.MascotNpc.getElement(this.cfgId).Hp;
@@ -160,6 +164,7 @@ export default class SceneUnit extends Script implements IUnitBase {
     public getUnitId() {
         return this.unitId;
     }
+
     /**获取npc模型 */
     public getModel() {
         if (this.gameObject == null) {
@@ -168,7 +173,7 @@ export default class SceneUnit extends Script implements IUnitBase {
         return this.gameObject as mw.Character;
     }
 
-    /** 
+    /**
      * 获取是否死亡
      */
     public isDead(): boolean {
@@ -193,15 +198,14 @@ export default class SceneUnit extends Script implements IUnitBase {
         this.gameObject.worldTransform.position = pos;
     }
 
-
-    /** 
+    /**
      * 被攻击
      * @param atkVal 伤害
      */
     public onHurt(atkVal: number) {
         if (this.isDead()) return;
         this.curHp -= atkVal;
-        let cfg = GameConfig.MascotNpc.getElement(this.cfgId)
+        let cfg = GameConfig.MascotNpc.getElement(this.cfgId);
         let maxHp = cfg.Hp;
         let dropHp = cfg.DropHp;
         if (this.curHp <= maxHp - dropHp * this._hurtIndex) {
@@ -217,6 +221,7 @@ export default class SceneUnit extends Script implements IUnitBase {
             this.npcDead(cfg);
         }
     }
+
     /**
      * npc死亡
      */
@@ -226,7 +231,7 @@ export default class SceneUnit extends Script implements IUnitBase {
         if (effId) {
             effId.forEach((id) => {
                 util.playEffectAtLocation(id, pos);
-            })
+            });
         }
 
         this.recycleNpc();
@@ -250,10 +255,14 @@ export default class SceneUnit extends Script implements IUnitBase {
             this.gameObject.setCollision(mw.PropertyStatus.Off);
         }
 
-        GameObjPool.despawn(this.gameObject);
+        const go = this.gameObject;
+        // 烂代码 不看 就这样吧
+        setTimeout(() => {
+                GameObjPool.despawn(go);
+            },
+            GtkTypes.Interval.PerSec * 3);
         this.gameObject = null;
     }
-
 
     /**
      * 设置NPC属性
@@ -261,18 +270,18 @@ export default class SceneUnit extends Script implements IUnitBase {
     public setAttribute(type: Attribute.EnumAttributeType, value: number) {
         let typeIndex = this.attributeType.indexOf(type);
         if (type == Attribute.EnumAttributeType.hp) {
-            value = Math.min(value, this.getValue(Attribute.EnumAttributeType.maxHp))
+            value = Math.min(value, this.getValue(Attribute.EnumAttributeType.maxHp));
         }
 
         if (typeIndex == -1) {
             this.attributeType.push(type);
             this.attributeValue.push(value);
-        }
-        else {
+        } else {
             this.attributeValue[typeIndex] = value;
         }
         this.syncUnitSpeed(type);
     }
+
     /**
      * 同步npc速度
      */
@@ -287,11 +296,12 @@ export default class SceneUnit extends Script implements IUnitBase {
             cha.maxWalkSpeed = speed;
         }
     }
+
     /**
      * 获取npc属性
-     * @param type 
-     * @param isAdd 
-     * @returns 
+     * @param type
+     * @param isAdd
+     * @returns
      */
     public getValue(type: Attribute.EnumAttributeType, isAdd: boolean = true) {
         let typeIndex = this.attributeType.indexOf(type);
@@ -323,19 +333,21 @@ export default class SceneUnit extends Script implements IUnitBase {
             return typeIndex == -1 ? 0 : this.attributeValue[typeIndex];
         }
     }
+
     /**
      * 添加npc属性
-     * @param type 
-     * @param value 
+     * @param type
+     * @param value
      */
     public addValue(type: Attribute.EnumAttributeType, value: number) {
         let val = this.getValue(type);
         this.setAttribute(type, val + value);
     }
+
     /**
      * 减少npc属性
-     * @param type 
-     * @param value 
+     * @param type
+     * @param value
      */
     public reduceValue(type: Attribute.EnumAttributeType, value: number) {
         if (type == Attribute.EnumAttributeType.hp) {
@@ -352,6 +364,7 @@ export class scenceIDManager {
     private static _instance: scenceIDManager = null;
 
     private static num = 0;
+
     public static get instance(): scenceIDManager {
         if (!this._instance) {
             this._instance = new scenceIDManager();
@@ -361,9 +374,7 @@ export class scenceIDManager {
 
     public getScenceID(): number {
         //设置为7为数 8位数数组属性同步有问题
-        scenceIDManager.num--;
-        let id = scenceIDManager.num;
-        return id;
+        return --scenceIDManager.num;
     }
 
 }

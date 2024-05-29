@@ -136,6 +136,12 @@ export default class GameServiceConfig {
      */
     public static readonly GUARD_PATROL_INTERVAL = GToolkit.timeConvert(3, GtkTypes.Tf.M, GtkTypes.Tf.Ms);
 
+    /**
+     * 上报等待间隔.
+     * @type {number}
+     */
+    public static readonly REPORT_REQUEST_WAIT_TIME = 1e3;
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Generate
@@ -175,6 +181,11 @@ export default class GameServiceConfig {
      * 伙伴龙 跟随终点 容纳偏移.
      */
     public static readonly PARTNER_DRAGON_FOLLOW_OFFSET = 500;
+
+    /**
+     * 伙伴龙 刷新跟随距离 倍率.
+     */
+    public static readonly PARTNER_DRAGON_FOLLOW_OFFSET_RATIO = 3;
 
     /**
      * 伙伴龙 跟随终点 容纳偏移 噪音.
@@ -624,7 +635,7 @@ export default class GameServiceConfig {
     /**
      * 主界面 静音按钮 图标 Guid.
      */
-    public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = "324594";
+    public static readonly MAIN_PANEL_MUTE_BUTTON_IMG_GUID = "347438";
 
     /**
      * 地图界面 小地图左下点的世界坐标.

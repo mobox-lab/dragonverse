@@ -23,13 +23,6 @@
 		}
 		return this.weaponName_Internal
 	}
-	private mBtnjump_1_1_Internal: mw.TextBlock
-	public get mBtnjump_1_1(): mw.TextBlock {
-		if(!this.mBtnjump_1_1_Internal&&this.uiWidgetBase) {
-			this.mBtnjump_1_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasSkill0/mBtnjump_1_1') as mw.TextBlock
-		}
-		return this.mBtnjump_1_1_Internal
-	}
 	private mCanvasSkill1_Internal: mw.Canvas
 	public get mCanvasSkill1(): mw.Canvas {
 		if(!this.mCanvasSkill1_Internal&&this.uiWidgetBase) {
@@ -176,9 +169,6 @@
 		//文本多语言
 		
 		this.initLanguage(this.weaponName)
-		
-	
-		this.initLanguage(this.mBtnjump_1_1)
 		
 	
 		this.initLanguage(this.mBtnjump)

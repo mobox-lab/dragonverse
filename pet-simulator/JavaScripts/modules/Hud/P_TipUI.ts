@@ -141,7 +141,10 @@ class Tips extends Tips_Generate {
      */
     public showTips(content: string) {
         if (!this.visible) { this.show(); }
-        this._texts.push(content);
+        //优化下，如果已经存在的提示内容不再添加
+        if (this._texts.indexOf(content) === -1) {
+            this._texts.push(content);
+        }
     }
 
     private showMsg(content: string) {

@@ -2,14 +2,37 @@
  * @Author: haoran.zhang haoran.zhang@appshahe.com
  * @Date: 2024-05-20 10:33:14
  * @LastEditors: haoran.zhang haoran.zhang@appshahe.com
- * @LastEditTime: 2024-05-20 13:42:55
+ * @LastEditTime: 2024-05-27 15:05:01
  * @FilePath: \battleworld\JavaScripts\const\GameServiceConfig.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
+    //#region Invincible Buff
+    /**
+     * 无敌buff 时长(毫秒).
+     */
+    public static readonly INVINCIBLE_BUFF_TIME = 30e3;
+    /**
+     * 无敌buff 特效guid.
+     */
+    public static readonly INVINCIBLE_BUFF_EFFECT_GUID = "89122";
+    /**
+     * 无敌buff 特效位置偏移.
+     */
+    public static readonly INVINCIBLE_BUFF_EFFECT_OFFSET = new Vector(0, 0, 100);
+    /**
+     * 无敌buff 特效缩放.
+     */
+    public static readonly INVINCIBLE_BUFF_EFFECT_SCALE = new Vector(1, 1, 1);
+    /**
+     * 无敌buff 特效旋转.
+     */
+    public static readonly INVINCIBLE_BUFF_EFFECT_ROTATION = new Rotation(0, 0, 0);
 
+
+    //#endregion
     //#region Shop
     /**
      * 商店tab普通底图guid.
@@ -30,7 +53,7 @@ export default class GameServiceConfig {
     /**
      * 岩浆伤害
      */
-    public static readonly MAGMA_TRIGGER_HURT = 10;
+    public static readonly MAGMA_TRIGGER_HURT = 30;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Stamina
@@ -96,6 +119,12 @@ export default class GameServiceConfig {
      * 巡查时间间隔.
      */
     public static readonly GUARD_PATROL_INTERVAL = GToolkit.timeConvert(3, GtkTypes.Tf.M, GtkTypes.Tf.Ms);
+
+    /**
+     * 上报等待间隔.
+     * @type {number}
+     */
+    public static readonly REPORT_REQUEST_WAIT_TIME = 1e3;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 

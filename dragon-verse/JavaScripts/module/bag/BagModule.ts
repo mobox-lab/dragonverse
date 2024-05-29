@@ -13,6 +13,7 @@ import { AuthModuleS } from "../auth/AuthModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import Gtk from "../../util/GToolkit";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -394,8 +395,7 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall() {
-        return !GameServiceConfig.isRelease ||
-            !GameServiceConfig.isBeta ||
+        return !(GameServiceConfig.isRelease || GameServiceConfig.isBeta) ||
             this.dragonBallYoact.count > 0;
     }
 
@@ -543,11 +543,36 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
                     Log4Ts.log(BagModuleS,
                         `query user dragon ball success.`,
                         `playerId: ${player.playerId}.`,
-                        `value: ${value}.`);
+                        `value: ${JSON.stringify(value)}.`);
                     this.setItem(
                         player.playerId,
                         GameServiceConfig.DRAGON_BALL_BAG_ID,
-                        value.unUsed);
+                        value?.unUsed ?? 0);
+                },
+            );
+
+        Log4Ts.log(undefined,
+            `query user dragon...`);
+        this.authModuleS.queryUserDragon(player.playerId)
+            .then(value => {
+                    Log4Ts.log(BagModuleS,
+                        `query user dragon success.`,
+                        `playerId: ${player.playerId}.`,
+                        `value: ${JSON.stringify(value)}.`);
+
+                    const data = Enumerable
+                        .from(value?.DragonPalList ?? undefined)
+                        .select(item => {
+                            return {
+                                dragonId: ForeignKeyIndexer
+                                    .getInstance()
+                                    .queryDragonByPalId(item.dragonPalId),
+                                amount: item.amount,
+                            };
+                        })
+                        .toArray();
+
+                    this.resetDragonData(player.playerId, data);
                 },
             );
     }
@@ -713,7 +738,8 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall(playerId: number) {
-        return !GameServiceConfig.isRelease || this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
+        return !(GameServiceConfig.isRelease || GameServiceConfig.isBeta) ||
+            this.hasItem(playerId, GameServiceConfig.DRAGON_BALL_BAG_ID);
     }
 
     /**

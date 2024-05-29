@@ -93,9 +93,9 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     public async net_buyEgg(cfgId: number): Promise<number | null> {
         let cfg = GameConfig.EggMachine.getElement(cfgId);
         let price = cfg.Price[0];
-        if (!price) return null;
-        let playerId = this.currentPlayerId;
-        let res = await ModuleService.getModule(PlayerModuleS).net_reduceGold(price, this.judgeGold(cfgId));
+        if (!price || price === 0) return null;
+        const playerId = this.currentPlayerId;
+        let res = await ModuleService.getModule(PlayerModuleS).reduceGold(playerId, price, this.judgeGold(cfgId));
         if (res) {
             let petId = this.calcProbability(cfgId);
             this.net_addPetWithMissingInfo(playerId, petId, cfg.AreaID);
@@ -409,21 +409,22 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             }
         }
         //找到最高的战力
-        let petKey = this.currentData.getMaxAttackPet(1);
-        if (petKey != 0) {
-            let pet = this.currentData.bagItemsByKey(petKey);
-            let petConfig = GameConfig.PetARR.getElement(pet.I);
-            if (petConfig) {
-                const currRound = this.currentData.calRound(Date.now());
-                ModuleService.getModule(AuthModuleS).reportPetSimulatorRankData(
-                    this.currentPlayerId,
-                    pet.p.n,
-                    petConfig.DevType,
-                    pet.p.a,
-                    pet.obtainTime,
-                    currRound);
-            }
-        }
+        // let petKey = this.currentData.getMaxAttackPet(1);
+        // if (petKey != 0) {
+        //     let pet = this.currentData.bagItemsByKey(petKey);
+        //     let petConfig = GameConfig.PetARR.getElement(pet.I);
+        //     if (petConfig) {
+        //         const currRound = this.currentData.calRound(Date.now());
+        //         ModuleService.getModule(AuthModuleS).reportPetSimulatorRankData(
+        //             this.currentPlayerId,
+        //             pet.p.n,
+        //             petConfig.DevType,
+        //             pet.p.a,
+        //             pet.obtainTime,
+        //             currRound);
+        //     }
+        // }
+        this.reportMaxAttackPetInfo(this.currentPlayerId, this.currentData);
 
         this.currentData.save(true);
     }
@@ -494,7 +495,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
     /** 原 P_FusePanel.net_fusePet 合成宠物 */
     public async net_fusePet(curSelectPetKeys: number[],
-                             earliestObtainTime: number): Promise<boolean> {
+        earliestObtainTime: number): Promise<boolean> {
         const playerId = this.currentPlayerId;
         const curSelectPets = curSelectPetKeys
             .map(key => this.currentData
@@ -512,7 +513,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
         const data = this.currentData;
         if (curSelectPets.length >= data.CurBagCapacity) return false;
-				
+
         /**最多相同id的宠物数量 */
         let maxSameIdCount = 0;
         /**所有宠物攻击力的合 */
@@ -537,7 +538,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
         let allPetIds: number[] = [];
         /**与最大攻击力差值 */
-            //获取ts最大整数数值
+        //获取ts最大整数数值
         let max = Number.MAX_VALUE;
         let allMaxAtkDiff = max;
         /**攻击力差值最小的宠物id */
@@ -579,14 +580,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
             endPetId);
 
-				this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
+        this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
         this.petBagModuleS
             .net_addPetWithMissingInfo(
                 playerId,
                 endPetId,
                 GlobalEnum.PetGetType.Fusion,
                 earliestObtainTime);
-				return true;
+        return true;
     }
 
     /**词条buff初始化 */
@@ -601,7 +602,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     public changeFuseDevCost(player: mw.Player, count: number, isGold: boolean) {
         if (count <= 0) {
             mw.Event.dispatchToClient(player, "P_PET_DEV_CHANGE_PANEL_UI", 0, 0);
-            return {rate: 0, cost: 0};
+            return { rate: 0, cost: 0 };
         }
         let rates = GlobalData.Dev.goldProbability;
         let costs = isGold ? GlobalData.Dev.goldCost : GlobalData.Dev.rainbowCost;
@@ -610,13 +611,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let cost = costs[count - 1];
         console.log("changeFuseDevCost cost rate isGold", cost, rate, isGold);
         mw.Event.dispatchToClient(player, "P_PET_DEV_CHANGE_PANEL_UI", cost, rate);
-        return {rate, cost};
+        return { rate, cost };
     }
 
     /** 原 P_Pet_Dev.startDev 合成宠物 */
     public async net_fuseDevPet(curSelectPetKeys: number[],
-                                curPetId: number,
-                                isGold: boolean): Promise<boolean> {
+        curPetId: number,
+        isGold: boolean): Promise<boolean> {
         const player = this.currentPlayer;
         const playerId = this.currentPlayerId;
         const curSelectPets = curSelectPetKeys
@@ -633,7 +634,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
         if (!curSelectPets?.length) return false;
         let petIds: number[] = curSelectPets.map(item => item.I);
-        const {rate, cost} = this.changeFuseDevCost(player, petIds.length, isGold);
+        const { rate, cost } = this.changeFuseDevCost(player, petIds.length, isGold);
 
         if (!this.playerModuleS.reduceDiamond(cost)) return false;
 
@@ -649,7 +650,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         const petInfo = GameConfig.PetARR.getElement(curPetId);
         let isSucc: boolean = true;
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
-				this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
+        this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
         if (random <= rate) {
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");

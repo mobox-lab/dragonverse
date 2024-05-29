@@ -46,6 +46,7 @@ export class CheckMoveBuff extends BuffBase<UnifiedRoleController> {
         if (this.target.isMove === moving) {
             return;
         }
+        this.target.isMove = moving;
 
         Event.dispatchToLocal(CheckMoveBuff.BuffMovePlayerChangeMoveState, {
             playerId: this.target.playerId,

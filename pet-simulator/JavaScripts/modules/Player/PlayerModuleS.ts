@@ -287,25 +287,39 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         return false;
 
     }
+		
+    public async net_buyWorld(cfgID: number): Promise<boolean> { 
+			let coinType = GlobalEnum.CoinType;
 
-    /**增加钻石 */
-    public net_addDiamond(value: number, player: mw.Player = null): void {
-        if (!player) {
-            this.currentData.addDiamond(value);
-            return;
-        }
-        let data = this.getPlayerData(player);
-        data.addDiamond(value);
-    }
+			let goldType = coinType.FirstWorldGold;
+
+			if (cfgID < 2000) {
+					goldType = coinType.FirstWorldGold;
+			} else if (cfgID < 3000) {
+					goldType = coinType.SecondWorldGold;
+			} else if (cfgID < 4000) {
+					goldType = coinType.ThirdWorldGold;
+			}
+			const cfg = GameConfig.AreaDivide.getElement(cfgID);
+			return this.currentData.reduceGold(cfg.Gold, goldType);;
+		}
+
+    public async net_randomDiamond(): Promise<number> {
+			let count = MathUtil.randomInt(GlobalData.Enchant.randomDiamondNum[0], GlobalData.Enchant.randomDiamondNum[1] + 1);
+			await this.addDiamond(this.currentPlayerId, count);
+			return count
+		}
 
     /**减少金币 */
-    public net_reduceGold(value: number, coinType: GlobalEnum.CoinType): boolean {
-        return this.currentData.reduceGold(value, coinType);
+    public reduceGold(playerId:number, value: number, coinType: GlobalEnum.CoinType): boolean {
+				if(!playerId) return false;
+				const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
+        return data.reduceGold(value, coinType);
     }
 
     /**减少钻石 */
     public reduceDiamond(value: number): boolean {
-        return this.currentData.reduceDiamond(value);
+        return this.currentData.reduceDiamond(value);				
     }
 
     public addGold(playerId: number, value: number, coinType: GlobalEnum.CoinType): void {

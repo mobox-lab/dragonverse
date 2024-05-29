@@ -4,6 +4,7 @@ import {
     EAreaId,
     EAttributeEvents_C,
     EModule_Events,
+    EModule_Events_S,
     EPlayerEvents_C,
     ESkillEvent_C,
     EbackType,
@@ -51,6 +52,67 @@ import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
 import SetingUI from "../../SetingModule/UI/SetingUI";
 import { P_Game_Action } from "../../action/ui/P_Game_Action";
 import { SkillSelectPanel } from "../../SkillModule/UI/SkillSelectPanel";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import { AddGMCommand } from "module_gm";
+import GameServiceConfig from "../../../const/GameServiceConfig";
+
+enum MouseLockType {
+    Press,
+    Tap
+}
+
+let currentLockType: MouseLockType = MouseLockType.Press;
+
+AddGMCommand(
+    "Mouse Lock Type",
+    (player, value) => {
+        const v = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
+        let type: MouseLockType;
+        if (v === 0 || v === 1) {
+            type = v;
+        } else {
+            switch (currentLockType) {
+                case MouseLockType.Press:
+                    type = MouseLockType.Tap;
+                    break;
+                case MouseLockType.Tap:
+                    type = MouseLockType.Press;
+                    break;
+            }
+        }
+
+        Log4Ts.log(MainUI,
+            `request to change mouse lock type to ${MouseLockType[type]}.`,
+            `option param:`,
+            `   0: ${MouseLockType[MouseLockType.Press]}`,
+            `   1: ${MouseLockType[MouseLockType.Tap]}`,
+        );
+        if (type === currentLockType) return;
+        else currentLockType = type;
+
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.LeftAlt);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.LeftCommand);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.RightAlt);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.RightCommand);
+        if (currentLockType === MouseLockType.Press) {
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.LeftCommand, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightAlt, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.RightAlt, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightCommand, () => (InputUtil.isLockMouse = false));
+            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.RightCommand, () => (InputUtil.isLockMouse = true));
+        } else {
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+        }
+    },
+    undefined,
+    "Mouse",
+);
 
 type PillUIInfo = {
     text: TextBlock,
@@ -260,12 +322,18 @@ export class MainUI extends Main_HUD_Generate {
             } else if (UIService.getUI(SkillSelectPanel).visible) {
                 UIService.getUI(SkillSelectPanel).mDiscardBtn.onClicked.broadcast();
             } else if (this.mSkillSelectBox.visibility === SlateVisibility.SelfHitTestInvisible) {
-                //最后判断技能选择按钮，优先panel
-                ModuleService.getModule(SkillModuleC).discardSkillLib();
+                // //最后判断技能选择按钮，优先panel
+                // ModuleService.getModule(SkillModuleC).discardSkillLib();
             }
         });
 
         this.mCavasTrans.visibility = mw.SlateVisibility.Collapsed;
+
+        Event.addServerListener(EModule_Events_S.setInvincibleBuff, this.setInvincibleBuff);
+        this.canvasLevelDe.visibility = mw.SlateVisibility.Collapsed;
+        this.mText_Defence_Time_cd_Long.text = "";
+        this.mMask_Defence.fanShapedValue = 1;
+        this.textDefence.visibility = mw.SlateVisibility.Collapsed;
     }
 
     private _authModuleC: AuthModuleC;
@@ -494,7 +562,7 @@ export class MainUI extends Main_HUD_Generate {
      */
     private initBack() {
         this.mMask_Back.visibility = mw.SlateVisibility.Collapsed;
-        this.backCanvas.visibility = mw.SlateVisibility.Collapsed;
+        // this.backCanvas.visibility = mw.SlateVisibility.Collapsed;
         this.backBtmCanvas.visibility = mw.SlateVisibility.Collapsed;
         this.mText_Back_Time_cd.visibility = mw.SlateVisibility.Collapsed;
     }
@@ -504,7 +572,7 @@ export class MainUI extends Main_HUD_Generate {
      * @param curAreaID
      */
     private listen_area_changeArea(curAreaID: number) {
-        curAreaID == EAreaId.Safe ? this.backCanvas.visibility = mw.SlateVisibility.Collapsed : this.backCanvas.visibility = mw.SlateVisibility.Visible;
+        // curAreaID == EAreaId.Safe ? this.backCanvas.visibility = mw.SlateVisibility.Collapsed : this.backCanvas.visibility = mw.SlateVisibility.Visible;
     }
 
     /**
@@ -835,6 +903,7 @@ export class MainUI extends Main_HUD_Generate {
         } else {
             if (pillInfo.attributeID) {
                 const pillValue = this.pillMap.get(pillInfo.attributeID);
+                //不需要叠加
                 pillValue.num++;
                 // pillValue.text.text = pillValue.num.toFixed();
                 pillValue.duration = pillInfo.duration;
@@ -868,7 +937,7 @@ export class MainUI extends Main_HUD_Generate {
                     // second.img.visibility = SlateVisibility.Visible;
                     second.name.visibility = SlateVisibility.Visible;
                     canvasShouldShow = true;
-                    this.setBuffLevel(second.levelCanvas, second.num);
+                    // this.setBuffLevel(second.levelCanvas, second.num);
                     let oriDuration = second.duration;
                     if (second.timer === -1) {
                         second.timer = TimeUtil.setInterval(() => {
@@ -881,10 +950,11 @@ export class MainUI extends Main_HUD_Generate {
                                 // second.img.visibility = SlateVisibility.Collapsed;
                                 second.time.text = "";
                                 second.name.visibility = SlateVisibility.Collapsed;
-                                second.mask.fanShapedValue = 0;
+                                second.mask.fanShapedValue = 1;
                                 second.levelCanvas.visibility = SlateVisibility.Collapsed;
                                 TimeUtil.clearInterval(second.timer);
                                 second.timer = -1;
+
                             }
                         }, 0.1);
                     }
@@ -903,7 +973,7 @@ export class MainUI extends Main_HUD_Generate {
                 }
             }
         }
-        this.mCanvasPills.visibility = canvasShouldShow ? SlateVisibility.Visible : SlateVisibility.Collapsed;
+        // this.mCanvasPills.visibility = canvasShouldShow ? SlateVisibility.Visible : SlateVisibility.Collapsed;
     }
 
     /*******************************************************变身*********************************************************/
@@ -972,6 +1042,32 @@ export class MainUI extends Main_HUD_Generate {
             } else {
                 parentCanvas.getChildAt(i).visibility = SlateVisibility.Collapsed;
             }
+        }
+    }
+
+    private _invincibleBuffTimer: number = -1;
+    private _invincibleBuffDuration: number = GameServiceConfig.INVINCIBLE_BUFF_TIME;
+    public setInvincibleBuff = (isInvisible: boolean) => {
+        if (isInvisible) {
+            this._invincibleBuffTimer = TimeUtil.setInterval(() => {
+                this._invincibleBuffDuration -= 100;
+                this.mMask_Defence.fanShapedValue = (GameServiceConfig.INVINCIBLE_BUFF_TIME - this._invincibleBuffDuration) / GameServiceConfig.INVINCIBLE_BUFF_TIME;
+                this.mText_Defence_Time_cd_Long.text = `${(this._invincibleBuffDuration / 1e3).toFixed(1)}s`;
+                this.textDefence.visibility = mw.SlateVisibility.Visible;
+                if (this._invincibleBuffDuration <= 0) {
+                    TimeUtil.clearInterval(this._invincibleBuffTimer);
+                    this.mMask_Defence.fanShapedValue = 1;
+                    this.textDefence.visibility = mw.SlateVisibility.Collapsed;
+                    this.mText_Defence_Time_cd_Long.text = "";
+                    this._invincibleBuffDuration = GameServiceConfig.INVINCIBLE_BUFF_TIME;
+                }
+            }, 0.1);
+        } else {
+            TimeUtil.clearInterval(this._invincibleBuffTimer);
+            this.mMask_Defence.fanShapedValue = 1;
+            this.textDefence.visibility = mw.SlateVisibility.Collapsed;
+            this.mText_Defence_Time_cd_Long.text = "";
+            this._invincibleBuffDuration = GameServiceConfig.INVINCIBLE_BUFF_TIME;
         }
     }
 }

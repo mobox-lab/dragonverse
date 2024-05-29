@@ -569,6 +569,55 @@
 		}
 		return this.bLevel05_Internal
 	}
+	private canvasdefence_Internal: mw.Canvas
+	public get canvasdefence(): mw.Canvas {
+		if(!this.canvasdefence_Internal&&this.uiWidgetBase) {
+			this.canvasdefence_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasdefence') as mw.Canvas
+		}
+		return this.canvasdefence_Internal
+	}
+	private mImage_Defence_Internal: mw.Image
+	public get mImage_Defence(): mw.Image {
+		if(!this.mImage_Defence_Internal&&this.uiWidgetBase) {
+			this.mImage_Defence_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasdefence/mImage_Defence') as mw.Image
+		}
+		return this.mImage_Defence_Internal
+	}
+	private mMask_Defence_Internal: mw.MaskButton
+	public get mMask_Defence(): mw.MaskButton {
+		if(!this.mMask_Defence_Internal&&this.uiWidgetBase) {
+			this.mMask_Defence_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasdefence/mMask_Defence') as mw.MaskButton
+		}
+		return this.mMask_Defence_Internal
+	}
+	private mText_Defence_Internal: mw.TextBlock
+	public get mText_Defence(): mw.TextBlock {
+		if(!this.mText_Defence_Internal&&this.uiWidgetBase) {
+			this.mText_Defence_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasdefence/mText_Defence') as mw.TextBlock
+		}
+		return this.mText_Defence_Internal
+	}
+	private textDefence_Internal: mw.TextBlock
+	public get textDefence(): mw.TextBlock {
+		if(!this.textDefence_Internal&&this.uiWidgetBase) {
+			this.textDefence_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasdefence/textDefence') as mw.TextBlock
+		}
+		return this.textDefence_Internal
+	}
+	private mText_Defence_Time_cd_Long_Internal: mw.TextBlock
+	public get mText_Defence_Time_cd_Long(): mw.TextBlock {
+		if(!this.mText_Defence_Time_cd_Long_Internal&&this.uiWidgetBase) {
+			this.mText_Defence_Time_cd_Long_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasdefence/mText_Defence_Time_cd_Long') as mw.TextBlock
+		}
+		return this.mText_Defence_Time_cd_Long_Internal
+	}
+	private canvasLevelDe_Internal: mw.Canvas
+	public get canvasLevelDe(): mw.Canvas {
+		if(!this.canvasLevelDe_Internal&&this.uiWidgetBase) {
+			this.canvasLevelDe_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvasPills/canvasdefence/canvasLevelDe') as mw.Canvas
+		}
+		return this.canvasLevelDe_Internal
+	}
 	private pointCanvas_Internal: mw.Canvas
 	public get pointCanvas(): mw.Canvas {
 		if(!this.pointCanvas_Internal&&this.uiWidgetBase) {
@@ -1069,6 +1118,15 @@
 		this.initLanguage(this.mText_Trans_Time_cd_Qi)
 		
 	
+		this.initLanguage(this.mText_Defence)
+		
+	
+		this.initLanguage(this.textDefence)
+		
+	
+		this.initLanguage(this.mText_Defence_Time_cd_Long)
+		
+	
 		this.initLanguage(this.mPoint)
 		
 	
@@ -1104,7 +1162,7 @@
 	
 		//文本多语言
 		
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSkillSelectBox/TextBlock_4_1") as any);
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSkillSelectBox/TextBlock_4_1_1") as any);
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCavasTrans/TextBlock_5") as any);

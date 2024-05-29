@@ -38,7 +38,7 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         }
 
         Event.addServerListener(EModule_Events_S.payTicketSuccessful, this.payTicketCallback.bind(this));
-        Event.addServerListener(EModule_Events_S.reduceEnergySuccessful, this.enterGame.bind(this));
+        Event.addServerListener(EModule_Events_S.enterGame, this.enterGame.bind(this));
     }
 
     private onEnter(go: mw.GameObject) {
@@ -47,11 +47,6 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         let chara = go as mw.Character;
 
         if (chara.player.playerId != Player.localPlayer.playerId) return;
-        if (ModuleService.getModule(EnergyModuleC).currEnergy() < GameServiceConfig.STAMINA_COST_ENTER_FIGHTING) {
-            Notice.showDownNotice(GameConfig.Language.StaminaNotEnough.Value);
-            return;
-        }
-
 
         ClickUIPools.instance.show(Globaldata.fireWeaponUIGuid, GameConfig.Language.Scene_name_1.Value, go, Vector.zero, async () => {
 
@@ -79,8 +74,13 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
         });
     }
 
-    private enterGame() {
-        this.interactNext(Player.localPlayer.playerId, true);
+    private enterGame(isSuccess: boolean) {
+        if (isSuccess) {
+            this.interactNext(Player.localPlayer.playerId, true);
+        } else {
+            Notice.showDownNotice(GameConfig.Language.StaminaNotEnough.Value);
+        }
+        Player.localPlayer.character.movementEnabled = true;
     }
 
     private onLeave(go: mw.GameObject) {

@@ -49,7 +49,7 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
     }
     protected async onEnterScene(sceneType: number): Promise<void> {
         if (!this.data.isSendDefault)
-            this.addWolrdArea(1002)
+            this.addWorldArea(1002)
 
         await this.initTransmit();
         this.initWorldUI();
@@ -319,7 +319,7 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
         this.server.net_addArea(numberArrToString([areaId]), true);
     }
     /**解锁世界墙 */
-    public addWolrdArea(areaId: number) {
+    public addWorldArea(areaId: number) {
         this.server.net_addArea(numberArrToString([areaId]), true);
     }
 

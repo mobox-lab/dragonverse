@@ -265,13 +265,13 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
     /**单个进度升级 */
     public async levelUp(id: number): Promise<void> {
         this.server.net_levelUp(id).then(value => {
-                if (value) {
-                    oTraceError("[升级]");
-                    this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.UpgradeNum, 1);//升级次数
-                } else {
-                    MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
-                }
-            },
+            if (value) {
+                oTraceError("[升级]");
+                this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.UpgradeNum, 1);//升级次数
+            } else {
+                MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value);
+            }
+        },
         );
 
     }
@@ -295,7 +295,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
                 GlobalData.LevelUp.petAttackSpeedMap.set(Player.localPlayer.playerId, 1 + upgrade);
                 break;
             case 4:
-                ModuleService.getModule(PetBagModuleC).addBagCapacity(info.PetNum);
+                // ModuleService.getModule(PetBagModuleC).addBagCapacity(info.PetNum);
                 break;
         }
         mw.UIService.getUI(P_LevelUI).initItem(id, level);
@@ -358,19 +358,18 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
     }
 
     /**增加钻石 */
-    public addDiamond(value: number): void {
-        if (value > 0) this.server.net_addDiamond(value);
-    }
+    public async randomDiamond() {
+			return await this.server.net_randomDiamond();
+		}
 
     /**判断钻石数量是否足够 */
     public isDiamondEnough(value: number): boolean {
         return this.data.diamond >= value;
     }
 
-    /**减少金币 */
-    public async reduceGold(value: number, coinType: GlobalEnum.CoinType): Promise<boolean> {
-        return await this.server.net_reduceGold(value, coinType);
-    }
+    public async buyWorld(cfgId: number): Promise<boolean> {
+			return await this.server.net_buyWorld(cfgId);
+		}
 
     /**减少钻石 */
     public async reduceDiamond(value: number): Promise<boolean> {

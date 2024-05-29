@@ -5,9 +5,9 @@ export class OnlineModuleData extends Subdata {
     @Decorator.persistence()
     private hasGetArr: number[] = [];
 
-    /**今天在线时间 */
-    @Decorator.persistence()
-    public todayOnlineTime: number = 0;
+    // /**累计在线时间 */
+    // @Decorator.persistence()
+    // public totalOnlineTime: number = 0;
 
     /**当前登录日期 可做上次登陆使用*/
     @Decorator.persistence()
@@ -46,11 +46,7 @@ export class OnlineModuleData extends Subdata {
     }
 
     /**设置当前天 */
-    public setCurDay(day: number, hour: number, isUpdate: boolean) {
-        if (isUpdate) {
-            this.todayOnlineTime = 0;
-            this.hasGetArr.length = 0;
-        }
+    public setCurDay(day: number, hour: number) {
         this.curLoginTime = day;
         this.curLoginHour = hour;
         this.save(true);
@@ -69,11 +65,8 @@ export class OnlineModuleData extends Subdata {
         }
     }
 
-    public addOnlineTime(time: number) {
-        this.todayOnlineTime += time;
-        this.save(true);
-    }
-
-
-
+    // public addOnlineTime(time: number) {
+    //     this.totalOnlineTime += time;
+	  //     this.save(true);
+    // }
 }

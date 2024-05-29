@@ -18,9 +18,10 @@ import ModuleService = mwext.ModuleService;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk from "../../util/GToolkit";
 import AchievementModuleS from "../AchievementModule/AchievementModuleS";
-import { memorizePointIdToLocation, ResourceModuleS } from "./ResourceModule";
+import { comeDown, memorizePointIdToLocation, ResourceModuleS } from "./ResourceModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import Enumerable from "linq";
 
 export class Resource {
 
@@ -116,6 +117,7 @@ export default class ResourceScript extends mw.Script {
 
     @RemoteFunction(mw.Server)
     private net_injured(playerID: number, key: number) {
+        Log4Ts.log(Resource, `net_injured playerID:${playerID}, key:${key}`);
         if (!ModuleService.getModule(EnergyModuleS).isAfford(playerID, GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
             Log4Ts.log(Resource, `Stamina is not enough. playerID:${playerID}`);
             return;
@@ -127,7 +129,13 @@ export default class ResourceScript extends mw.Script {
         // let petDamage = GameConfig.Upgrade.getElement(3)
         //         .Upgradenum[DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(3) ]
         //     ?? 1;
-        let petDamage = DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(3) + 1;
+        //在存档里是下标从0开始
+        let level = DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(2);
+        //在表里是下标从1开始
+        let info = GameConfig.Upgrade.getElement(3);
+        let upgrade = info.Upgradenum[level - 1];
+        if (upgrade == null) upgrade = 0;
+        let petDamage = upgrade + 1;
         // damage = this.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(this.key).damageAdd / 100);
         //this.attackDamage 得取对应的宠物
         //校验一下key在不在背包里
@@ -148,11 +156,11 @@ export default class ResourceScript extends mw.Script {
 
         let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
         if (damage > allHp / 3) {
-            damage = allHp / 3;
+            damage = Math.ceil(allHp / 3);
         }
         let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerID);
         if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
-            damage = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerID) - allHp * 2 / 3;
+            damage = damage * GlobalData.SceneResource.critRate(playerID);
         }
         //------------------------
 
@@ -170,16 +178,23 @@ export default class ResourceScript extends mw.Script {
         if (this.curHp <= 0) return;
         this.curHp -= damage;
         if (this.curHp <= 0) {
-            this.curHp = 0;
+            // this.curHp = 0;
             this.net_dead(playerID);
 
             let player: mw.Player = null;
 
+            let totalDamage = this
+                .damageArr
+                ?.reduce((previousValue, currentValue) => {
+                    return previousValue + currentValue.damage;
+                }, 0) ?? 0;
             for (let i = 0; i < this.damageArr.length; i++) {
                 player = mw.Player.getPlayer(this.damageArr[i].playerId);
-                this.checkHpStage(player.playerId);
+                if (!player) continue;
+                this.checkHpStage(player.playerId, this.damageArr[i].damage / totalDamage);
                 this.overGetReward(player);
             }
+            Log4Ts.log(Resource, `treasure destroy playerID:${playerID}, totalDamage:${totalDamage}, curHp:${this.curHp}`);
             return;
         } else {
             let player = mw.Player.getPlayer(playerID);
@@ -194,6 +209,7 @@ export default class ResourceScript extends mw.Script {
 
             this.checkHpStage(playerID);
             this.client_injured(player, this.curHp, this._rate);
+            Log4Ts.log(Resource, `treasure injured playerID:${playerID}, curHp:${this.curHp}`);
         }
     }
 
@@ -300,7 +316,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     private async onHpChanged(): Promise<void> {
-        this.objState(this.curHp);
+        // this.objState(this.curHp);
         if (this.curHp <= 0) {
             this.onGuaSha.call(false);
             this.curHp = 0;
@@ -343,7 +359,7 @@ export default class ResourceScript extends mw.Script {
 
     /**开始刮痧计时 */
     public refreshGuaSha(playerId: number) {
-        if (!this.interval.has(playerId)) return;
+        if (this.interval.has(playerId)) return;
         let interval = TimeUtil.setInterval(() => {
             let rate = this.getDamageRate(playerId);
             if (this.isBigBox) {
@@ -356,6 +372,8 @@ export default class ResourceScript extends mw.Script {
             let gemVal = Math.ceil((this.rewardGem * rate) / 3 - this.guaShaRewardGem);
             this.guaShaRewardGem += gemVal;
             this.playReward(playerId, GlobalEnum.ResourceAttackStage.GuaSha, 0, gemVal);
+
+            Log4Ts.log(Resource, `play guaSha playerId:${playerId}, goldVal:${goldVal}, gemVal:${gemVal}`);
         }, GlobalData.SceneResource.guaShaTime);
 
         this.interval.set(playerId, interval);
@@ -372,8 +390,9 @@ export default class ResourceScript extends mw.Script {
     /**
      * 通过血量判断攻击阶段.
      * @param {number} playerId
+     * @param ratio 倍率.
      */
-    private checkHpStage(playerId: number) {
+    private checkHpStage(playerId: number, ratio: number = 1) {
         if (this._cfgId == 0 || !this.cfg) return;
         this.refreshGuaSha(playerId);
 
@@ -388,15 +407,15 @@ export default class ResourceScript extends mw.Script {
 
             this.playCritEffectByLevel();
 
-            let myRate = this.getDamageRate(playerId);
             this.playCritEffectByLast();
             this.playReward(
                 playerId,
                 GlobalEnum.ResourceAttackStage.Destroy,
-                (this.rewardGold - this.guaShaRewardGold) * myRate,
-                (this.rewardGem - this.guaShaRewardGem) * myRate);
+                (this.rewardGold - this.guaShaRewardGold) * ratio,
+                (this.rewardGem - this.guaShaRewardGem) * ratio);
             this.stopGuaSha(playerId);
-            ModuleService.getModule(AchievementModuleS).broadcastAchievement_destroy(playerId, this.resourceType);
+            ModuleService.getModule(AchievementModuleS)
+                .broadcastAchievement_destroy(playerId, this.resourceType);
             this.guaShaRewardGem = 0;
             this.guaShaRewardGold = 0;
         }
@@ -419,12 +438,21 @@ export default class ResourceScript extends mw.Script {
         gemVal = Math.ceil(gemVal);
         let goldCount = Math.min(Math.ceil(rewardArr[0]), goldVal);
         let gemCount = Math.min(Math.ceil(rewardArr[1]), gemVal);
+        let curPos = this.curPos.clone();
+        if (Math.abs(curPos.x - GameConfig.DropPoint.getElement(this.pointId).areaPoints.x) > 1 ||
+            Math.abs(curPos.y - GameConfig.DropPoint.getElement(this.pointId).areaPoints.y) > 1) {
+            Log4Ts.error(memorizePointIdToLocation, `wrong point when get.`,
+                `point id: ${this.pointId}`,
+                `point location: ${GameConfig.DropPoint.getElement(this.pointId).areaPoints}`,
+                `come down location: ${curPos}`);
+            curPos = comeDown(this.pointId);
+        }
         if (goldCount > 0) {
             ModuleService
                 .getModule(DropManagerS)
                 .createDrop(
                     playerId,
-                    this.curPos,
+                    curPos,
                     this.judgeGold(),
                     goldVal,
                     goldCount,
@@ -435,12 +463,13 @@ export default class ResourceScript extends mw.Script {
                 .getModule(DropManagerS)
                 .createDrop(
                     playerId,
-                    this.curPos,
+                    curPos,
                     GlobalEnum.CoinType.Diamond,
                     gemVal,
                     gemCount,
                     this.isBigBox);
         }
+        Log4Ts.log(Resource, `playReward playerId:${playerId}, scenePointId: ${this.scenePointId}, treasure Pos:${this.curPos}, state:${state}, goldVal:${goldVal}, gemVal:${gemVal}, goldCount:${goldCount}, gemCount:${gemCount}`);
     }
 
     /**判断几世界的金币 */
@@ -496,14 +525,15 @@ export default class ResourceScript extends mw.Script {
         }
 
         let cfg = GameConfig.Coindown.getElement(cfgID);
+
         let allRate: number = 1;
-        if (this.rate <= 3) {
+        if (this.rate <= 2) { 
             allRate = cfg.Stagetimes[0];
-        } else if (this.rate <= 5) {
+        } else if (this.rate <= 3) {
             allRate = cfg.Stagetimes[1];
-        } else if (this.rate <= 25) {
+        } else if (this.rate <= 4) {
             allRate = cfg.Stagetimes[2];
-        } else if (this.rate <= 100) {
+        } else if (this.rate <= 5) {
             allRate = cfg.Stagetimes[3];
         }
 
@@ -550,6 +580,7 @@ export default class ResourceScript extends mw.Script {
         this.guaShaRewardGold = 0;
         this.onGuaSha.clear();
         this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
+        this._curPos = undefined;
 
         //先存起来，等玩家进入范围后，再遍历 一点点得到出现
         this.addScenceResource(this.cfg.AreaID);
@@ -576,12 +607,13 @@ export default class ResourceScript extends mw.Script {
         }
         this.isStart = true;
         this.resObj = await Resource.instance.getResource(this.cfgId);
+        Log4Ts.log(Resource, `createDefaultObj pos:${this.curPos},pointId:${this.pointId}`);
 
         if (!this.isBigBox) {
             let randomZ = MathUtil.randomInt(0, 360);
             this.resObj.worldTransform.rotation = new mw.Rotation(0, 0, randomZ);
         } else
-            this.resObj.worldTransform.position = this.curPos;
+            this.resObj.worldTransform.position = this.curPos.clone();
         this.clientStart();
         this.endTween?.stop();
         this.order = 0;
@@ -635,13 +667,13 @@ export default class ResourceScript extends mw.Script {
     private tweenEnd(): void {
         this.order = 0;
         this.endTween = null;
-        this.resObj.worldTransform.position = this.curPos;
+        this.resObj.worldTransform.position = this.curPos.clone();
         this.switchCollider(true);
         setTimeout(() => {
             if (this.resObj == null) return;
             let dis = mw.Vector.squaredDistance(this.curPos, this.Obj.worldTransform.position);
             if (dis > 90000) {
-                this.Obj.worldTransform.position = this.curPos;
+                this.Obj.worldTransform.position = this.curPos.clone();
             }
         }, 2000);
     }
@@ -652,6 +684,7 @@ export default class ResourceScript extends mw.Script {
      * @param key 宠物key
      */
     public injured(playerId: number, damage: number, key: number): boolean {
+        if (this.curHp <= 0) return true;
         if (isNaN(damage))
             damage = 0;
         if (this.cfgId == 0) return true;
@@ -663,18 +696,20 @@ export default class ResourceScript extends mw.Script {
 
         let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
         if (damage > allHp / 3) {
-            damage = allHp / 3;
+            damage = Math.ceil(allHp / 3);
         }
         let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerId);
         if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
             damage = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerId) - allHp * 2 / 3;
         }
-        this.net_injured(playerId, key);
+        if (playerId === Player.localPlayer.playerId) {
+            this.net_injured(playerId, key);
+        }
         SoundManager.instance.playAtkSound(
             GlobalData.Music.resourceDestroy,
             this.curPos);
-        if (this.curHp <= 0) return true;
-        if (this.curHp - damage <= 0) return true;
+
+        // if (this.curHp - damage <= 0) return true;
         return false;
     }
 
@@ -732,7 +767,7 @@ export default class ResourceScript extends mw.Script {
 
     /**判断资源类型 C&S */
     public get resourceType(): number {
-        return this.cfg ? 3 : this.cfg.resType;
+        return this.cfg ? this.cfg.resType : 3;
     }
 
     /**生成是否暴击 */

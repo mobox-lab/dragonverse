@@ -166,7 +166,12 @@ const loadGuide = () => {
                 () => {
                     let gm = mwext.ModuleService.getModule(GuideModuleC);
                     let sm = mwext.ModuleService.getModule(StatisticModuleC);
-                    return !operationGuided && gm && sm && gm.isReady && sm.isReady && sm.getPlayerEnteredCounter() <= G_OPERATION_TEACH_VALID_COUNT;
+                    return !operationGuided &&
+                        gm &&
+                        sm &&
+                        gm.isReady &&
+                        sm.isReady &&
+                        sm.getPlayerData().playerEnteredCounterS <= G_OPERATION_TEACH_VALID_COUNT;
                 })
             .iTG(
                 GuideStep.GOperationTeach,

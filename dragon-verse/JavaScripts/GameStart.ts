@@ -44,6 +44,7 @@ import EcologyModuleData, { EcologyModuleC, EcologyModuleS } from "./module/ecol
 import DvStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
 import GuideModuleData, { GuideModuleC, GuideModuleS } from "./module/guide/GuideModule";
 import GameServiceConfig from "./const/GameServiceConfig";
+import GMHUD_Generate from "./ui-generate/gm/GMHUD_generate";
 
 AddGMCommand("TP 传送",
     null,
@@ -223,7 +224,7 @@ export default class GameStart extends mw.Script {
             this.registerGodModeG();
             this.registerGodModeShift();
             this.registerGodModeF();
-
+            this.registerGMVisibleKey();
             //#region Exist for Test
             //R <<<<<<
             //
@@ -235,7 +236,7 @@ export default class GameStart extends mw.Script {
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         this.initI18n();
-        this.isShowGMPanel && GM.start(GMPanel);
+        this.isShowGMPanel && !this.isRelease && GM.start(GMPanel);
         VisualizeDebug.init(mw.Player.localPlayer);
 
         DialogifyManager.getInstance().initController(new DialoguePanelController());
@@ -257,6 +258,20 @@ export default class GameStart extends mw.Script {
     private initializeServer() {
         Log4Ts.debugLevel = this.serverLogLevel;
         DataStorage.setTemporaryStorage(!this.isOnline);
+
+        GameObject.asyncFindGameObjectById("0B48E050").then((value) => {
+                const effect = value as mw.Effect;
+                effect.loopCount = 1;
+                setInterval(
+                    () => {
+                        Log4Ts.log(GameStart, `force re awake effect at ${new Date()}`);
+                        effect.play();
+                    },
+                    effect.timeLength < 1e3 ?
+                        GtkTypes.Interval.PerMin / 2 :
+                        effect.timeLength);
+            },
+        );
     }
 
     private whenModuleReady(callback: Delegate.SimpleDelegateFunction<void>) {
@@ -355,6 +370,19 @@ export default class GameStart extends mw.Script {
                             .rotateVector(Vector
                                 .forward)
                             .multiply(this.godModeFlashDist));
+            }
+        });
+    }
+
+    private isGMVisible: boolean = true;
+
+    private registerGMVisibleKey() {
+        InputUtil.onKeyUp(mw.Keys.F12, () => {
+            this.isGMVisible = !this.isGMVisible;
+            if (this.isGMVisible) {
+                UIService.show(GMHUD_Generate);
+            } else {
+                UIService.hide(GMHUD_Generate);
             }
         });
     }

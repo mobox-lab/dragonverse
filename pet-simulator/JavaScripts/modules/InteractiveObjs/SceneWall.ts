@@ -18,7 +18,6 @@ export class SceneWall {
     private trigger: mw.Trigger = null;
     private worldUI: mw.UIWidget = null;
     private wall: mw.GameObject = null;
-
     private canInter: boolean = false;
     private gameObj: mw.GameObject;
 
@@ -30,14 +29,17 @@ export class SceneWall {
 
     private async findObj() {
         this.gameObj = await GameObject.asyncFindGameObjectById(this.cfg.Guid);
+        if (this.gameObj == null) {
+            return;
+        }
         this.wall = this.gameObj.getChildByName("墙") as mw.GameObject;
         this.worldUI = this.gameObj.getChildByName("世界UI") as mw.UIWidget;
 
-        this.setLockState(this.isUnlock());
+        this.setLockState(this.isLock());
     }
 
-    /**是解锁中 */
-    private isUnlock(): boolean {
+    /**是锁住的 */
+    private isLock(): boolean {
         return ModuleService.getModule(AreaModuleC).isArealock(this.cfgID);
     }
 
@@ -101,44 +103,31 @@ export class SceneWall {
     }
 
     private checkCanBuy() {
-
+			  if(!this.isLock()) return;
         let mgs = "";
         if (this.cfg.Gold > 0) {
             mgs = utils.Format(GameConfig.Language.Text_messagebox_3.Value, utils.formatNumber(this.cfg.Gold));
         }
         MessageBox.showTwoBtnMessage(mgs, (res) => {
             if (res)
-                this.buyWorld(this.cfg.Gold);
+                this.buyWorld();
         })
     }
-    /**判断几世界的金币 */
-    private judgeGold() {
-        let coinType = GlobalEnum.CoinType;
 
-        let goldType = coinType.FirstWorldGold;
-
-        if (this.cfgID < 2000) {
-            goldType = coinType.FirstWorldGold;
-        } else if (this.cfgID < 3000) {
-            goldType = coinType.SecondWorldGold;
-        } else if (this.cfgID < 4000) {
-            goldType = coinType.ThirdWorldGold;
-        }
-        return goldType;
-    }
-
-    private async buyWorld(value: number) {
+    private async buyWorld() {
         let isCan: boolean = true;
-        isCan = await ModuleService.getModule(PlayerModuleC).reduceGold(value, this.judgeGold());
+				const cfgID = this.cfgID;
+        isCan = await ModuleService.getModule(PlayerModuleC).buyWorld(cfgID);
 
         if (!isCan) {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_4.Value);
             return;
         }
 
-        ModuleService.getModule(AreaModuleC).addWolrdArea(this.cfgID);
+        ModuleService.getModule(AreaModuleC).addWorldArea(cfgID);
         this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.AreaOpenNum, 1);//区域开放数
     }
+
     //解锁世界后，解锁对应的扭蛋机
     public changeArea(areaId: number, level: number) {
         if (level == 2 && this.cfgID == areaId) {

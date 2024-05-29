@@ -1,11 +1,9 @@
 import { GameConfig } from "../../config/GameConfig";
-import { GlobalEnum } from "../../const/Enum";
 import { stringToNumberArr, utils } from "../../util/uitls";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
 import { TipsManager } from "../Hud/P_TipUI";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
-import { BuffModuleC } from "../buff/BuffModuleC";
+import { StatisticModuleC } from "../statistic/StatisticModule";
 import { OnlineModuleData } from "./OnlineModuleData";
 import { OnlineModuleS } from "./OnlineModuleS";
 import { P_HudPetGift } from "./P_HudPetGift";
@@ -48,6 +46,8 @@ export class OnlineModuleC extends ModuleC<OnlineModuleS, OnlineModuleData> {
 
     /**玩家进入游戏 初始化 */
     private onOnlineDayChange() {
+				const playerTotalOnlineTime = ModuleService.getModule(StatisticModuleC).getPlayerData().playerTotalOnlineTime;
+				// console.log('=====net_requestAccept=== playerTotalOnlineTime', playerTotalOnlineTime)
         let curId = 0;
         this.data.HasGetArr.forEach((item) => {
             if (curId <= item) curId = item;
@@ -58,10 +58,11 @@ export class OnlineModuleC extends ModuleC<OnlineModuleS, OnlineModuleData> {
         if (curId >= len) {
             console.log("lwj 没有需要计时的了");
         } else {
+
             for (let i = curId; i < len; i++) {
                 this.rewardPanel.itemArr[i].startCountDown(
                     RewardState.counting,
-                    this.data.todayOnlineTime);
+                    playerTotalOnlineTime);
             }
         }
 

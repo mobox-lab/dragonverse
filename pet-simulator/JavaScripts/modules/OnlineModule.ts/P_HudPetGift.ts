@@ -156,9 +156,9 @@ export class P_HudPetGift extends HUDpetGift_Generate {
                 if (this._petState.get(keys[index]) === PetState.Idle && this._lastAttackTarget.has(keys[index])) {
                     //攻击目标
                     let attackTarget = this._lastAttackTarget.get(keys[index]);
-                    if (attackTarget) Event.dispatchToLocal(GlobalEnum.EventName.PetAttack, keys[index], attackTarget);
+                    if (attackTarget) Event.dispatchToLocal(GlobalEnum.EventName.PetAttack, Player.localPlayer.playerId, keys[index], attackTarget);
                 } else if (this._petState.get(keys[index]) === PetState.Attack) {
-                    Event.dispatchToLocal(GlobalEnum.EventName.CancelPetAttack, keys[index]);
+                    Event.dispatchToLocal(GlobalEnum.EventName.CancelPetAttack, Player.localPlayer.playerId, keys[index]);
                 }
             });
 

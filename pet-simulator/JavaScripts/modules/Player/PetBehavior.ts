@@ -185,12 +185,12 @@ export default class PetBehavior {
             });
         }
 
-        this._attackListener = Event.addLocalListener(GlobalEnum.EventName.PetAttack, (key: number, target: number) => {
-            if (this.key === key) this.addTarget(target);
+        this._attackListener = Event.addLocalListener(GlobalEnum.EventName.PetAttack, (playerId: number, key: number, target: number) => {
+            if (this.key === key && this.owner.player.playerId === playerId) this.addTarget(target);
         });
 
-        this._cancelAttackListener = Event.addLocalListener(GlobalEnum.EventName.CancelPetAttack, (key: number) => {
-            if (this.key === key) this.changeToIdle();
+        this._cancelAttackListener = Event.addLocalListener(GlobalEnum.EventName.CancelPetAttack, (playerId: number, key: number) => {
+            if (this.key === key && this.owner.player.playerId === playerId) this.changeToIdle();
         });
     }
 
@@ -499,7 +499,9 @@ export default class PetBehavior {
     public addTarget(resPoint: number): void {
         if (!ModuleService.getModule(EnergyModuleC).isAfford(GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
             Log4Ts.error(PetBehavior, "体力不足！");
-            TipsManager.instance.showTip(GameConfig.Language.StaminaNotEnough.Value);
+            if (this.owner == this.currentChar) {
+                TipsManager.instance.showTip(GameConfig.Language.StaminaNotEnough.Value);
+            }
             this.changeToIdle();
             this.attackRotY = 0;
             return;
@@ -779,6 +781,7 @@ export default class PetBehavior {
         } else {
             let energyModuleC = ModuleService.getModule(EnergyModuleC);
             if (energyModuleC.consumeViewEnergy(GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
+
                 let res = this.targetRes.injured(
                     this.owner.player.playerId,
                     this.attackDamage
