@@ -227,10 +227,12 @@ export class P_Enchants extends EnchantsPanel_Generate {
         const startEnchantFn = async (isOK: boolean) => {
             if (!isOK) return;
             const res = await petBagMC.enchantConsume(this.selectPetKeys);
-            if (!res)
-                MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
-                    super.show();
-                });
+            if (!res) {
+								MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
+										super.show();
+								});
+								return;
+						}
             // TODO: refactor
             this.startEnchant(selectedEnchantIds, this.selectPetKeys);
         };
