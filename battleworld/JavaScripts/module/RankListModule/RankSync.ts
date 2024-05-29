@@ -40,7 +40,9 @@ export default class RankSync extends Script {
         if (!this._modelMap.has(0)) {
             await this.initModel(0);
         }
-        this.changerModelAppearance(0, this.rankScoreFirst);
+        let userId = this.rankScoreFirst.split("_")[0];
+        // let rankScore = parseInt(this.rankScoreFirst.split("_")[1]);
+        this.changerModelAppearance(0, userId);
     }
 
     /**

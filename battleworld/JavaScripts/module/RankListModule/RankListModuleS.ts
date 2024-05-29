@@ -8,11 +8,11 @@ import RankSync from "./RankSync";
 /**
  * 记录的排行数据
  */
-export type RankListData = { 
+export type RankListData = {
     /** 玩家id */
     playerId: number,
     /** 累积击杀人数 */
-    sumKillNumber: number, 
+    sumKillNumber: number,
     /** 单次最大存活时间 */
     maxLiveTime: number,
     /** 段位分 */
@@ -22,7 +22,7 @@ export type RankListData = {
 }
 
 export default class RankListModuleS extends ModuleS<RankListModuleC, null> {
-    
+
     /** 记录玩家是否在战斗区域 */
     private _playerInBattleArea: Set<number> = new Set();
     /** 玩家的数据，记录了当次游戏最大的存活时间和累积击杀人数 */
@@ -173,7 +173,7 @@ export default class RankListModuleS extends ModuleS<RankListModuleC, null> {
      * @returns RankListData
      */
     private initRankData(playerId: number, userId: string): RankListData {
-        return { playerId, sumKillNumber: 0, maxLiveTime: 0, rankScore: 0 , userId}
+        return { playerId, sumKillNumber: 0, maxLiveTime: 0, rankScore: 0, userId }
     }
 
     /**
@@ -188,7 +188,7 @@ export default class RankListModuleS extends ModuleS<RankListModuleC, null> {
             if (rankData.length == 0) return;
             rankData.sort((a, b) => b.rankScore - a.rankScore);
             if (!this._rankSync) return;
-            this._rankSync.rankScoreFirst = rankData[0].userId;
+            this._rankSync.rankScoreFirst = `${rankData[0].userId}_${rankData[0].rankScore}`;
         }
     }
 
