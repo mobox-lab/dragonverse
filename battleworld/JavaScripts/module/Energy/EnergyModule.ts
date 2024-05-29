@@ -6,7 +6,6 @@ import ModuleService = mwext.ModuleService;
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import { AddGMCommand } from "module_gm";
-import { Globaldata } from "../../const/Globaldata";
 
 AddGMCommand("Change Energy",
     undefined,
@@ -34,6 +33,9 @@ export default class BwEnergyModuleData extends mwext.Subdata {
 
     @Decorator.persistence()
     public lastMaxStamina: number = undefined;
+
+    @Decorator.persistence()
+    public restitution: number = 0;
 
     public isAfford(cost: number = 1): boolean {
         return this.energy >= cost;
@@ -94,9 +96,9 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BwEnergyModuleDa
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    public viewEnergy: { data: number } = createYoact({ data: 0 });
+    public viewEnergy: { data: number } = createYoact({data: 0});
 
-    public viewEnergyLimit: { data: number } = createYoact({ data: 0 });
+    public viewEnergyLimit: { data: number } = createYoact({data: 0});
 
     private _requestRegulator = new Regulator(1e3);
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -309,6 +311,12 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
                     }
                 };
 
+                if ((d.restitution ?? 0) > 0) {
+                    let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
+                    d.energy = Math.min(d.energy + d.restitution, limit);
+                    d.restitution = 0;
+                    this.syncEnergyToClient(playerId, d.energy);
+                }
                 autoRecoveryHandler();
             });
     }
@@ -371,8 +379,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
                 let d = this.getPlayerData(playerId);
                 if (d?.tryUpdateLimit(limit)
                     ?? false) this.syncEnergyToClient(playerId,
-                        d.energy,
-                        limit);
+                    d.energy,
+                    limit);
             });
     }
 
