@@ -398,9 +398,9 @@ export namespace GlobalData {
         /**初始化资源点刷新间隔 */
         public static initResourceRefresh: number = 0.1;
         /**每个区域资源上限个数 */
-        public static maxResourceCount: number = 200;
+        public static maxResourceCount: number = 2;
         /**每个区域资源下限个数 */
-        public static minResourceCount: number = 100;
+        public static minResourceCount: number = 1;
         /**默认区域数组 */
         public static defaultAreaArr: number[] = [1002, 2002];
         /**忽略区域数组 */
@@ -427,7 +427,7 @@ export namespace GlobalData {
         public static critRateMap: Map<number, number> = new Map();
 
         public static critRate(playerId: number) {
-            return Gtk.tryGet(this.critRateMap, playerId, () => 20);
+            return Gtk.tryGet(this.critRateMap, playerId, () => 3);
         }
 
         public static critMap: Map<number, boolean> = new Map();
@@ -877,7 +877,7 @@ export namespace GlobalData {
         public static maxLevel: number = 5;
 
         public static initPlayer(playerId: number,
-                                 levelData: number[]) {
+            levelData: number[]) {
             let upgradeData = GameConfig.Upgrade.getAllElement().map(v => v.Upgradenum);
 
             this.levelRangeMap.set(playerId, (upgradeData[0][levelData[0] - 1] ?? 0) + 1);
