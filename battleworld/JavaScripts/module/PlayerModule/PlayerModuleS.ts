@@ -2522,11 +2522,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.setInvincibleBuff, true);
 
         let invincibleTimer = setTimeout(() => {
-            this.getPlayerData(playerId).isInvincible = false;
-            this._invinciblePlayer.delete(playerId);
-            this._invincibleEffect.get(playerId) && EffectService.stop(this._invincibleEffect.get(playerId));
-            this._invincibleEffect.delete(playerId);
-            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.setInvincibleBuff, false);
+            this.removeInvincibleBuff(playerId);
         }, GameServiceConfig.INVINCIBLE_BUFF_TIME);
         this._invinciblePlayer.set(playerId, invincibleTimer);
     }
@@ -2604,9 +2600,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         if (this._invinciblePlayer.has(playerId)) {
             clearTimeout(this._invinciblePlayer.get(playerId));
             this._invinciblePlayer.delete(playerId);
-            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.setInvincibleBuff, false);
             this._invincibleEffect.get(playerId) && EffectService.stop(this._invincibleEffect.get(playerId));
             this._invincibleEffect.delete(playerId);
+            this.getPlayerData(playerId).isInvincible = false;
+            Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.setInvincibleBuff, false);
         }
     }
 }
