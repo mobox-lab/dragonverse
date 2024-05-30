@@ -2,6 +2,7 @@ import { PlayerManagerExtesion, } from '../../Modified027Editor/ModifiedPlayer';
 import { IAreaDivideElement } from "../../config/AreaDivide";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
+import WallInteract_Generate from '../../ui-generate/WorldUI/WallInteract_generate';
 import MessageBox from "../../util/MessageBox";
 import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
@@ -66,24 +67,31 @@ export class TeleportationGate {
         }
         let char = obj as mw.Character;
         if (char != Player.localPlayer.character) return;
-        setTimeout(() => {
-            if (this.trigger.checkInArea(obj)) {
-                if (this.canTransfer)
-                    InterBtn.instance.show(this.cylinder, this.transfer.bind(this));
-                else
-                    InterBtn.instance.show(this.cylinder, this.checkCanBuy.bind(this));
+        // setTimeout(() => {
+        if (this.trigger.checkInArea(obj)) {
 
-            }
-        }, 500);
-    }
-    private transfer() {
-        if (!this.cfg) {
-            MessageBox.showOneBtnMessage(GameConfig.Language.Portol_Tip_2.Value);
-            return;
+            // InterBtn.instance.show(this.cylinder, this.transfer.bind(this));
+            mw.UIService.getUI(WallInteract_Generate).mBtn_Interact.onClicked.add(this.transfer.bind(this));
+            mw.UIService.getUI(WallInteract_Generate).show();
         }
-        let char = Player.localPlayer.character;
-        char.worldTransform.position = this.cfg.Loc.add(new mw.Vector(0, 0, 99));
-        ModuleService.getModule(AreaModuleC).onTransmit.call(1);
+        // InterBtn.instance.show(this.cylinder, );
+
+    }
+    // }, 500);
+
+
+    private transfer() {
+        if (this.canTransfer) {
+            if (!this.cfg) {
+                MessageBox.showOneBtnMessage(GameConfig.Language.Portol_Tip_2.Value);
+                return;
+            }
+            let char = Player.localPlayer.character;
+            char.worldTransform.position = this.cfg.Loc.add(new mw.Vector(0, 0, 99));
+            ModuleService.getModule(AreaModuleC).onTransmit.call(1);
+        } else {
+            this.checkCanBuy();
+        }
     }
 
     private exitTrigger(obj: mw.GameObject) {
@@ -92,7 +100,9 @@ export class TeleportationGate {
         }
         let char = obj as mw.Character;
         if (char != Player.localPlayer.character) return;
-        InterBtn.instance.hide();
+        // InterBtn.instance.hide();
+        mw.UIService.getUI(WallInteract_Generate).mBtn_Interact.onClicked.clear();
+        mw.UIService.getUI(WallInteract_Generate).hide();
     }
 
     private setCylinderVisible(visible: boolean) {
@@ -138,7 +148,7 @@ export class TeleportationGate {
 
     private async buyWorld() {
         let isCan: boolean = true;
-				const cfgID = this.cfgID;
+        const cfgID = this.cfgID;
         isCan = await ModuleService.getModule(PlayerModuleC).buyWorld(cfgID);
 
         if (!isCan) {

@@ -161,18 +161,17 @@ export class utils {
         if (points.length < 3) {
             return false;
         }
-        let xMin = points[0];
-        let yMin = points[1];
-        let xMax = points[2];
-        let yMax = points[3];
-        let zMin = points[4];
-        let zMax = points[5];
+        let xMin = Math.min(points[0], points[2])
+        let yMin = Math.min(points[1], points[3])
+        let xMax = Math.max(points[2], points[0]);
+        let yMax = Math.max(points[3], points[1]);
+        let zMin = Math.min(points[4], points[5]);
+        let zMax = Math.max(points[4], points[5]);
 
         if (point.x > xMin && point.x < xMax && point.y > yMin && point.y < yMax && point.z > zMin && point.z < zMax) {
             return true;
         }
         return false;
-
     }
 
 
