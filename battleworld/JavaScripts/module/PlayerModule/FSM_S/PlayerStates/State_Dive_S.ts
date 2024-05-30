@@ -129,6 +129,8 @@ export class State_Dive_S extends PlayerState_S {
 
                         this.diveState = EDiveState.none;
                         this.playerProxy.changeState(EPlayerState.Idle);
+
+                        Event.dispatchToClient(player, EPlayerEvents_S.PlayerEvent_PlayerLand_S);
                     }
 
                 }

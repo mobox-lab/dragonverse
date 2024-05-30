@@ -92,6 +92,15 @@ export class MainUISkillButton {
         EventManager.instance.add(EPlayerEvents_C.PlayerEvent_ResetSkilCD_C, this.listen_resetSkilCD, this);
     }
 
+    public setEnable(isEnable: boolean) {
+        if (isEnable) {
+            this.btn_invoke.enable = true;
+        } else {
+            this.btn_invoke.enable = false;
+        }
+    }
+
+
     private listen_resetSkilCD() {
         this._curTime = this._targetTime;
 

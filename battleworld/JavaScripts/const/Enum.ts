@@ -602,6 +602,8 @@ export enum EPlayerEvents_S {
     PlayerEvent_ChangePlayerFSMState_S = "PlayerEvent_ChangePlayerFSMState_S",
     /**获取玩家名字,发段位公告 */
     PlayerEvent_GetPlayerName_S = "PlayerEvent_GetPlayerName_S",
+    /**玩家落地 */
+    PlayerEvent_PlayerLand_S = "PlayerEvent_PlayerLand_S",
 }
 
 /**场景单位模块事件 服务器端 */

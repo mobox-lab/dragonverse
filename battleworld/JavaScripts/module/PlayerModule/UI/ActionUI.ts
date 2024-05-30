@@ -1,5 +1,6 @@
 import { GameConfig } from "../../../config/GameConfig";
-import { EAttributeEvents_C, EModule_Events, EMotionEvents_C, ESkillEvent_C } from "../../../const/Enum";
+import { EAttributeEvents_C, EModule_Events, EMotionEvents_C, EPlayerEvents_S, ESkillEvent_C } from "../../../const/Enum";
+import GameServiceConfig from "../../../const/GameServiceConfig";
 import { Globaldata } from "../../../const/Globaldata";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import { EventManager } from "../../../tool/EventManager";
@@ -104,6 +105,13 @@ export default class ActionUI extends Main_action_Generate {
         }).yoyo(true).repeat(Infinity);
 
         this.canUpdate = true;
+
+        Event.addServerListener(EPlayerEvents_S.PlayerEvent_PlayerLand_S, () => {
+            if (GameServiceConfig.ENABLE_LAND_IMPULSE) {
+                this.setSkillEnable(true);
+            }
+
+        });
     }
 
     /**
@@ -260,5 +268,14 @@ export default class ActionUI extends Main_action_Generate {
             this.mSkillCd4.visibility = mw.SlateVisibility.Collapsed;
         }
 
+    }
+
+    public setSkillEnable(enable: boolean) {
+        this.weaponSkillBtns.forEach(item => {
+            item.setEnable(enable);
+        })
+        this.skillBtns.forEach(item => {
+            item.setEnable(enable);
+        })
     }
 }
