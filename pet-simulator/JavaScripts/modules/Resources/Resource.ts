@@ -69,9 +69,9 @@ export const SceneResourceMap: Map<number, ResourceScript[]> = new Map<number, R
 @Component
 export default class ResourceScript extends mw.Script {
 
-    @mw.Property({replicated: true, onChanged: "onHpChanged"})
+    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
     public curHp: number = 0;
-    @mw.Property({replicated: true, onChanged: "onSceneChanged"})
+    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
     private scenePointId: string = "";
 
     public get isBigBox(): boolean {
@@ -79,7 +79,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     /**伤害记录 */
-    @mw.Property({replicated: true})
+    @mw.Property({ replicated: true })
     private damageArr: DamageRecord[] = [];
 
     private _rate: number = 1;
@@ -113,6 +113,8 @@ export default class ResourceScript extends mw.Script {
         this.onDead.clear();
 
         this._cfgIdInServer = cfgId;
+
+        this.isCrit.clear();
     }
 
     @RemoteFunction(mw.Server)
@@ -291,7 +293,7 @@ export default class ResourceScript extends mw.Script {
     private cfg: ISceneUnitElement = null;
 
     /**是否暴击 */
-    private isCrit: boolean = false;
+    private isCrit: Map<number, boolean> = new Map();
     /**上一次伤害 */
     private lastDamage: Map<number, number> = new Map();
     /**金币砖石奖励 */
@@ -355,13 +357,13 @@ export default class ResourceScript extends mw.Script {
     public getDamageRate(playerId: number): number {
         if (this.cfg.HP === 0) return 0;
         return this
-                .damageArr
-                .reduce((previousValue,
-                         currentValue) => {
-                        return previousValue +
-                            (currentValue.playerId === playerId ? currentValue.damage : 0);
-                    },
-                    0)
+            .damageArr
+            .reduce((previousValue,
+                currentValue) => {
+                return previousValue +
+                    (currentValue.playerId === playerId ? currentValue.damage : 0);
+            },
+                0)
             / this.cfg.HP;
     }
 
@@ -423,13 +425,17 @@ export default class ResourceScript extends mw.Script {
 
             this.playCritEffectByLevel();
 
-            this.playCritEffectByLast();
+
             this.playReward(
                 playerId,
                 GlobalEnum.ResourceAttackStage.Destroy,
                 (this.getRewardGold(playerId) - this.getGuaShaRewardGold(playerId)) * ratio,
                 (this.getRewardGem(playerId) - this.getGuaShaRewardGem(playerId)) * ratio);
             this.stopGuaSha(playerId);
+
+            if (this.isCrit.get(playerId) ?? false) {
+                this.playCritEffectByLast(Player.getPlayer(playerId));
+            }
             ModuleService.getModule(AchievementModuleS)
                 .broadcastAchievement_destroy(playerId, this.resourceType);
             this.guaShaRewardGem.set(playerId, 0);
@@ -449,7 +455,10 @@ export default class ResourceScript extends mw.Script {
         state: GlobalEnum.ResourceAttackStage,
         goldVal: number,
         gemVal: number) {
-        let rewardArr = this.getDropCountByStage(state);
+        //生成是否暴击，这个宝箱只计算一次
+        this.critByCreate(playerId);
+
+        let rewardArr = this.getDropCountByStage(state, this.isCrit.get(playerId) ?? false);
         goldVal = Math.ceil(goldVal);
         gemVal = Math.ceil(gemVal);
         let goldCount = Math.min(Math.ceil(rewardArr[0]), goldVal);
@@ -508,7 +517,7 @@ export default class ResourceScript extends mw.Script {
      * 根据攻击阶段、类型返回掉落个数
      */
     private getDropCountByStage(
-        state: GlobalEnum.ResourceAttackStage): number[] {
+        state: GlobalEnum.ResourceAttackStage, isCrit: boolean): number[] {
         let cfgID: number = 0;
         switch (this.resourceType) {
             case 1:
@@ -543,7 +552,7 @@ export default class ResourceScript extends mw.Script {
         let cfg = GameConfig.Coindown.getElement(cfgID);
 
         let allRate: number = 1;
-        if (this.rate <= 2) { 
+        if (this.rate <= 2) {
             allRate = cfg.Stagetimes[0];
         } else if (this.rate <= 3) {
             allRate = cfg.Stagetimes[1];
@@ -571,7 +580,7 @@ export default class ResourceScript extends mw.Script {
                 gemcount = cfg.Stepdiamond * allRate;
                 break;
             case GlobalEnum.ResourceAttackStage.Destroy:
-                if (this.isCrit) {
+                if (isCrit) {
                     goldcount = cfg.Lastcoin * cfg.Crittimes * allRate;
                     gemcount = cfg.Lastdaimond * cfg.Crittimes * allRate;
                 } else {
@@ -667,7 +676,7 @@ export default class ResourceScript extends mw.Script {
         const time = GlobalData.ResourceAni.dropTweenTime[this.order];
         let start = endInfos[this.order];
         let end = endInfos[this.order + 1];
-        this.endTween = new mw.Tween({z: start}).to({z: end}, time).onUpdate((obj) => {
+        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
             this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
         }).onComplete(() => {
             this.order++;
@@ -753,9 +762,6 @@ export default class ResourceScript extends mw.Script {
         this.switchVisible(false);
         this.isStart = true;
         this.playEffect();
-        Player.asyncGetLocalPlayer().then(player => {
-            this.critByCreate(player.playerId);
-        });
     }
 
     /**开关子物体所有碰撞 */
@@ -787,12 +793,14 @@ export default class ResourceScript extends mw.Script {
 
     /**生成是否暴击 */
     private critByCreate(playerId: number) {
+        //只生成一次
+        if (this.isCrit.has(playerId)) return;
         let random = MathUtil.randomInt(0, 100);
         let critRate = GlobalData.SceneResource.critWeight(playerId);
         if (random <= critRate) {
-            this.isCrit = true;
+            this.isCrit.set(playerId, true);
         } else {
-            this.isCrit = false;
+            this.isCrit.set(playerId, false);
         }
     }
 
@@ -800,8 +808,7 @@ export default class ResourceScript extends mw.Script {
     private getRewardByAttack(playerId: number, attack: number, key: number): number {
         if (Gtk.tryGet(this.lastDamage, playerId, 0) >= attack) return;
         this.lastDamage.set(playerId, attack);
-        //需要根据playerId 设置是否暴击，如果创建过，就不再创建
-        let isCrit = GlobalData.SceneResource.isCrit(playerId);
+
         //指数
         let pow = 0;
 
@@ -817,7 +824,7 @@ export default class ResourceScript extends mw.Script {
 
             let crit: number = 0;
 
-            if (isCrit) {
+            if (this.isCrit.get(playerId) ?? false) {
                 crit = this.cfg.Critreward;
             } else {
                 crit = 1;
@@ -884,8 +891,8 @@ export default class ResourceScript extends mw.Script {
 
     /**最后一击暴击特效 */
     @RemoteFunction(mw.Client)
-    private playCritEffectByLast() {
-        if (!this.isCrit) return;
+    private playCritEffectByLast(player: Player) {
+
         BonusUI.instance.showBonusUI(this);
         let cfg = GameConfig.Effect.getElement(10);
         GeneralManager.rpcPlayEffectAtLocation(cfg.EffectID, this.resObj.worldTransform.position, cfg.EffectTime, cfg.EffectRotate.toRotation(), cfg.EffectLarge);

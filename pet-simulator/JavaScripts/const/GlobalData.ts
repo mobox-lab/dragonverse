@@ -432,19 +432,19 @@ export namespace GlobalData {
 
         public static critMap: Map<number, boolean> = new Map();
 
-        public static isCrit(playerId: number) {
-            return Gtk.tryGet(
-                this.critMap,
-                playerId,
-                () =>
-                    MathUtil.randomInt(0, 100) <
-                    GlobalData.SceneResource.critWeight(playerId));
-        }
+        // public static isCrit(playerId: number) {
+        //     return Gtk.tryGet(
+        //         this.critMap,
+        //         playerId,
+        //         () =>
+        //             MathUtil.randomInt(0, 100) <
+        //             GlobalData.SceneResource.critWeight(playerId));
+        // }
 
         public static clearPlayer(playerId: number) {
             this.critRateMap.delete(playerId);
             this.critWeightMap.delete(playerId);
-            this.critMap.delete(playerId);
+            // this.critMap.delete(playerId);
         }
 
         /**资源点补充生成 与上次相同的概率  总100% */
