@@ -265,7 +265,7 @@ class DropInServer extends DropItem {
                     pms.addGold(this.owner, this.value, this.type);
                     break;
                 case GlobalEnum.CoinType.Diamond:
-                    pms.addDiamond(this.owner, this.value);
+                    pms.addDiamond(this.owner, this.value * GlobalData.LevelUp.moreDiamond(this.owner));
                     break;
             }
             Log4Ts.log(DollMachineModuleS, `player ${this.owner} get ${this.value} ${this.type}`);
