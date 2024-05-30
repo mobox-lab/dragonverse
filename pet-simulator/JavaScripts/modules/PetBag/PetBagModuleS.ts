@@ -53,6 +53,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 let data = this.getPlayerData(player).bagItemsByKey(key);
                 arr.push(data);
             }
+						this.equipChange(player, isEquip);
             this.onEquipChangeAC.call(player.playerId, isEquip, arr);
         });
         this.enchantBuffInit(player);
@@ -596,6 +597,15 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let keys = data.CurFollowPets;
         for (let id = 0; id < keys.length; id++) {
             EnchantBuff.equipUnPet(player.playerId, keys[id], true);
+        }
+    }
+
+    private equipChange(player: mw.Player, isEquip: boolean) {
+				const data = this.getPlayerData(player);
+        let keys = data.CurFollowPets;
+        console.warn(`lwj equipChange  ${isEquip}`, keys);
+        for (let id = 0; id < keys.length; id++) {
+            EnchantBuff.equipUnPet(player.playerId, keys[id], isEquip);
         }
     }
 

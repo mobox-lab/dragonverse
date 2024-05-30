@@ -329,12 +329,6 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 
         let ids = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key).I);
         UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, ids);
-
-        let arr = keys.concat();
-        for (let id = 0; id < arr.length; id++) {
-            const element = arr[id];
-            EnchantBuff.equipUnPet(Player.localPlayer.playerId, element, isEquip);
-        }
     }
 
     /**获取当前宠物数量 */
