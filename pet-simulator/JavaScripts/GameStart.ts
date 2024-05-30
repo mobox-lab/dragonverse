@@ -140,7 +140,7 @@ export default class GameStart extends mw.Script {
         this.onRegisterModule();
         mwaction;
 
-        DataStorage.setTemporaryStorage(GameServiceConfig.isRelease || GameServiceConfig.isBeta || !this.isOnline);
+        DataStorage.setTemporaryStorage(!(GameServiceConfig.isRelease || GameServiceConfig.isBeta || this.isOnline));
 
         //初始化表格语言
         GameConfig.initLanguage(GameServiceConfig.isRelease ? -1 : Number(this.selectedLanguageIndex),
