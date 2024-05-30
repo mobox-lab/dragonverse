@@ -105,11 +105,14 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
         for (let i = 0; i < cfgs.length; i++) {
             const element = cfgs[i];
             if (element.Guid && GlobalData.TransferPoint.wallIds.includes(element.id)) {
-                await TimeUtil.delaySecond(0.2)
-                this.transferArr.push(new SceneWall(element.id));
+                TimeUtil.delaySecond(0.2).then(() => {
+                    this.transferArr.push(new SceneWall(element.id));
+                })
+
             } else if (element.Guid && GlobalData.TransferPoint.doorIds.includes(element.id)) {
-                await TimeUtil.delaySecond(1)
-                this.transferArr.push(new TeleportationGate(element.id));
+                TimeUtil.delaySecond(1).then(() => {
+                    this.transferArr.push(new TeleportationGate(element.id));
+                });
             }
         }
     }
@@ -280,40 +283,40 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
         } else {
         }
         if (isData)
-					this.transmitUI.updateUI(areaId, level)
+            this.transmitUI.updateUI(areaId, level)
         if (level == 2 && this.areaArr.includes(areaId)) {
             TipsManager.instance.showTip(GameConfig.Language.Text_tips_8.Value);
         }
 
     }
 
-		private async pointClick(id: number, level: number) {
-			let cfg = GameConfig.AreaDivide.getElement(id);
-			if (level == 1) {
-				return;
-			} else if (level == 2) {
-				MessageBox.showTwoBtnMessage(
-					utils.Format(
-						GameConfig.Language.Text_messagebox_1.Value,
-						utils.formatNumber(cfg.Gem)
-					),
-					async (res) => {
-						if (res) {
-							const isSuccess = await this.server.net_buyTranArea(id);
-							if (!isSuccess)
-								MessageBox.showOneBtnMessage(
-									GameConfig.Language.Text_tips_3.Value
-								);
-						} else return;
-					}
-				);
-			} else {
-				Player.localPlayer.character.worldTransform.position =
-					cfg.Loc.clone().add(new mw.Vector(0, 0, 100));
-				this.onTransmit.call(id);
-			}
-		}
-	
+    private async pointClick(id: number, level: number) {
+        let cfg = GameConfig.AreaDivide.getElement(id);
+        if (level == 1) {
+            return;
+        } else if (level == 2) {
+            MessageBox.showTwoBtnMessage(
+                utils.Format(
+                    GameConfig.Language.Text_messagebox_1.Value,
+                    utils.formatNumber(cfg.Gem)
+                ),
+                async (res) => {
+                    if (res) {
+                        const isSuccess = await this.server.net_buyTranArea(id);
+                        if (!isSuccess)
+                            MessageBox.showOneBtnMessage(
+                                GameConfig.Language.Text_tips_3.Value
+                            );
+                    } else return;
+                }
+            );
+        } else {
+            Player.localPlayer.character.worldTransform.position =
+                cfg.Loc.clone().add(new mw.Vector(0, 0, 100));
+            this.onTransmit.call(id);
+        }
+    }
+
     /**解锁传送区域 */
     public addTranArea(areaId: number) {
         this.server.net_addArea(numberArrToString([areaId]), true);

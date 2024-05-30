@@ -302,9 +302,6 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
             case EPickUpType.skill: {
                 // 拾取技能球
                 EventManager.instance.call(ESkillEvent_S.SkillEvent_PickUpSkillBall_S, this.currentPlayerId);
-                // Event.dispatchToLocal(ESkillEvent_S.PickUpSkillBox_S, this.currentPlayerId);
-                //取消无敌
-                ModuleService.getModule(PlayerModuleS).removeInvincibleBuff(this.currentPlayerId);
             }
                 break;
             case EPickUpType.hp: {

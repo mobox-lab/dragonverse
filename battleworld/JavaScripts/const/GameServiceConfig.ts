@@ -9,11 +9,15 @@
 import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
+    /**
+     * 是否开启落地爆炸冲量.
+     */
+    public static readonly ENABLE_LAND_IMPULSE = false;
     //#region Invincible Buff
     /**
      * 无敌buff 时长(毫秒).
      */
-    public static readonly INVINCIBLE_BUFF_TIME = 30e3;
+    public static readonly INVINCIBLE_BUFF_TIME = 60e3;
     /**
      * 无敌buff 特效guid.
      */
@@ -34,9 +38,8 @@ export default class GameServiceConfig {
      * 无敌buff 累计伤害值取消
      */
     public static readonly INVINCIBLE_BUFF_DAMAGE_CANCEL = 100;
-
-
     //#endregion
+
     //#region Shop
     /**
      * 商店tab普通底图guid.

@@ -8,6 +8,7 @@ import { ClickUIPools } from "./ClickUIs";
 import { InteractLogic_C, InteractLogic_S, InteractObject } from "./InteractObject";
 import { EModule_Events_S } from "../../const/Enum";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import ActionUI from "../../module/PlayerModule/UI/ActionUI";
 
 /**触发模式 */
 enum TriggerMode {
@@ -77,6 +78,10 @@ class Trigger_C extends InteractLogic_C<SP_Trigger> {
     private enterGame(isSuccess: boolean) {
         if (isSuccess) {
             this.interactNext(Player.localPlayer.playerId, true);
+
+            if (GameServiceConfig.ENABLE_LAND_IMPULSE) {
+                UIService.getUI(ActionUI, false).setSkillEnable(false);
+            }
         } else {
             Notice.showDownNotice(GameConfig.Language.StaminaNotEnough.Value);
         }
