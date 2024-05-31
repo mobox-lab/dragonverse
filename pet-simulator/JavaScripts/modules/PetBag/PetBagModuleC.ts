@@ -3,7 +3,7 @@ import { oTraceError } from "../../util/LogManager";
 import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
 import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
-import { P_Bag } from "./P_Bag";
+import { P_Bag, PetBagItem } from "./P_Bag";
 import { PetBagModuleData, petItemDataNew, petTrain } from "./PetBagModuleData";
 import { PetBagModuleS } from "./PetBagModuleS";
 import { GlobalData } from "../../const/GlobalData";
@@ -18,6 +18,7 @@ import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
 import Gtk from "../../util/GToolkit";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
+import { PetBag_Item } from "./P_BagItem";
 
 export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     private achievementModuleC: AchievementModuleC = null;
@@ -361,22 +362,28 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     private addEnchant(keys: number[], ids: string[]) {
         this.server.net_addEnchant(numberArrToString(keys), ids);
     }
-
+ 
     /**附魔成功 */
-    private enchantSuccess(key: number[], idstr: string[]) {
-        this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.PetEnchantNum, 1);//融合成功数
-
+    private enchantSuccess(keys: number[], idstr: string[]) {
+				this.achievementModuleC.onExecuteAchievementAction.call(
+          GlobalEnum.AchievementType.PetEnchantNum,
+          1
+        ); //融合成功数
+        console.log("======= enchantSuccess =======\n", keys, "id str", idstr);
+        this.bagUI.setEnchantItemPowerColor(keys); // 刷新背包UI
         for (let i = 0; i < idstr.length; i++) {
-            const element = idstr[i];
-            let ids = stringToNumberArr(element);
-            ids.forEach((id) => {
-                if (GlobalData.Enchant.specialEnchantId.includes(id)) {
-                    oTraceError("宠物附魔独特的标签成功附魔成功");
-                    this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.PetEnchantUniqueTagSuccessNum, 1);//宠物附魔独特的标签成功
-                }
-            });
+          const element = idstr[i];
+          let ids = stringToNumberArr(element);
+          ids.forEach((id) => {
+            if (GlobalData.Enchant.specialEnchantId.includes(id)) {
+              oTraceError("宠物附魔独特的标签成功附魔成功");
+              this.achievementModuleC.onExecuteAchievementAction.call(
+                GlobalEnum.AchievementType.PetEnchantUniqueTagSuccessNum,
+                1
+              ); //宠物附魔独特的标签成功
+            }
+          });
         }
-
     }
 
     async buyEgg(cfgId: number): Promise<number | null> {
