@@ -52,6 +52,10 @@ export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate
     }
 }
 
+AddGMCommand("调整鼠标灵敏度", (player, value) => {
+    KeyboardSimulation.setLookUpRateScale(Number(value));
+});
+
 AddGMCommand(
     "Hello world",
     () => {
@@ -326,7 +330,7 @@ AddGMCommand(
                 mw.Vector.one,
             ),
         }).then((value) => {
-            Log4Ts.log({name: "TTD"}, `ObbyStar Spawned: ${value}`);
+            Log4Ts.log({ name: "TTD" }, `ObbyStar Spawned: ${value}`);
         });
     },
     "TTD",
