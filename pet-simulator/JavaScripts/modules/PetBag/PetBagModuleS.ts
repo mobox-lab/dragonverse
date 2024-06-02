@@ -698,22 +698,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 		
     /** 第二世界 —— 宠物附魔 */
-    public async net_petEnchant(selectedEnchantIds: number[], selectPetKeys: number[]): Promise<EnchantPetState> {
-				let isHasEnchant = false; //是否有附魔
-				let isSameEnchant = true; //是否是同一种附魔
+    public async net_petEnchant(selectedEnchantIds: number[], selectPetKey: number | null): Promise<EnchantPetState> {
 				const bagData = this.currentData;
-				for (let index = 0; index < selectPetKeys.length; index++) {
-						let data = bagData.bagItemsByKey(selectPetKeys[index]);
-						if (!data || !data.p) continue;
-						isSameEnchant = isSameEnchant && this.isSameEnchant(selectedEnchantIds, data.p.b);
-
-						if (data.p?.b && data.p.b?.length > 0) {
-								isHasEnchant = true;
-						} else {
-								isHasEnchant = false;
-								break;
-						}
-				} 
+				if(!selectPetKey) return EnchantPetState.NO_SELECTED_PET;
+				const data = bagData.bagItemsByKey(selectPetKey);
+				if (!data || !data.p) return EnchantPetState.NO_SELECTED_PET;
+				const isHasEnchant = data.p?.b && data.p.b?.length > 0; //是否有附魔
+				const isSameEnchant = this.isSameEnchant(selectedEnchantIds, data.p.b);; // TODO: 是否是同一种附魔 改版之后应该得删掉
 				if (isHasEnchant) {
 						if (isSameEnchant) return EnchantPetState.IS_SAME_ENCHANT;
 						return EnchantPetState.IS_HAS_ENCHANT;
@@ -721,8 +712,11 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 				return EnchantPetState.HAS_NO_ENCHANT;
 		}
 
-		public async net_enchantConsume(selectPetKeys: number[]): Promise<boolean> {
-				return this.playerModuleS.reduceDiamond(selectPetKeys.length * GlobalData.Enchant.diamondCost);
+		public async net_enchantConsume(selectPetKey: number | null): Promise<boolean> {
+				// TODO: update Cost 2024/06/02
+				const hasPet = !Gtk.isNullOrUndefined(selectPetKey)
+				const cost = hasPet ? GlobalData.Enchant.diamondCost : 0;
+				return this.playerModuleS.reduceDiamond(cost);
 		}
 
 		/**判断是否是同一种附魔

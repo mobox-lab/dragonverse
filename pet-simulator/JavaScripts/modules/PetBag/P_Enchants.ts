@@ -16,11 +16,13 @@ import { PetBagItem } from './P_Bag';
 import { PetBag_Item } from './P_BagItem';
 import KeyOperationManager from '../../controller/key-operation-manager/KeyOperationManager';
 import { PetBagModuleC } from './PetBagModuleC';
+import Gtk from '../../util/GToolkit';
 
 export enum EnchantPetState {
     IS_SAME_ENCHANT = 'is_same_enchant',
     IS_HAS_ENCHANT = 'is_has_enchant',
     HAS_NO_ENCHANT = 'has_no_enchant',
+    NO_SELECTED_PET = 'no_selected_pet',
     NO_ENOUGH_DIAMOND = 'no_enough_diamond',
 }
 export class P_Enchants extends EnchantsPanel_Generate {
@@ -35,6 +37,9 @@ export class P_Enchants extends EnchantsPanel_Generate {
     /**选中的宠物key数组 */
     private selectPetKeys: number[] = [];
 
+    /**选中的宠物key*/
+    private selectPetKey: number | null = null;
+
     /**附魔事件 key,词条id数组*/
     public enchantAc: Action2<number[], string[]> = new Action2();
 
@@ -45,13 +50,13 @@ export class P_Enchants extends EnchantsPanel_Generate {
     private bagData: PetBagModuleData;
     private enchantInterval: any;
 
-    onStart() {
-        this.mButton.onClicked.add(() => {
-            if (this.isEnchanting) {
-                this.stopEnchant();
-            }
-            this.hide();
-        });
+    onStart() {	
+				this.mButton.onClicked.add(() => {
+					if (this.isEnchanting) {
+							this.stopEnchant();
+					}
+					this.hide(); 
+				});
         this.getEffect();
         this.mButton_Enchant.normalImageGuid = GlobalData.Enchant.enchantBtnGuid[0];
         this.mButton_Enchant.onClicked.add(this.onClickEnchant.bind(this));
@@ -69,7 +74,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
     }
 
     /**播放特效 */
-    private playEffect(tarEnchant: number[], petKeyArr: number[]) {
+    private playEffect() {
         // this.effect.loopCount = GlobalData.Enchant.effectPlayTimes;
         this.onUpdateAc.call(true);
         setTimeout(() => {
@@ -77,7 +82,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
         }, 500);
         setTimeout(() => {
             this.onUpdateAc.call(false);
-            this.showRes(tarEnchant, petKeyArr);
+            this.showRes();
             this.effect.stop();
         }, 500 + GlobalData.Enchant.effectDuration * 1000);
         // this.effect.onFinish.clear();
@@ -95,7 +100,8 @@ export class P_Enchants extends EnchantsPanel_Generate {
             this.initEnchantItem();
         }
 
-        this.selectPetKeys = [];
+        // this.selectPetKeys = [];
+        this.selectPetKey = null;
         petData = this.filterMythical(petData);
 
         for (let i = 0; i < petData.length; i++) {
@@ -131,14 +137,10 @@ export class P_Enchants extends EnchantsPanel_Generate {
 
     /**过滤神话宠物 */
     private filterMythical(petData: petItemDataNew[]): petItemDataNew[] {
-        let result: petItemDataNew[] = [];
-        petData.forEach((element) => {
-            let cfg = GameConfig.PetARR.getElement(element.I);
-            if (cfg.QualityType != GlobalEnum.PetQuality.Myth) {
-                result.push(element);
-            }
-        });
-        return result;
+				return petData.filter((ele) => {
+						let cfg = GameConfig.PetARR.getElement(ele.I);
+						return cfg.QualityType !== GlobalEnum.PetQuality.Myth;
+				});
     }
 
     private initEnchantItem() {
@@ -165,68 +167,54 @@ export class P_Enchants extends EnchantsPanel_Generate {
 
     /**点击宠物item */
     private onClickItem(item: PetBag_Item) {
-        if (this.selectPetKeys.length >= GlobalData.Enchant.maxEnchantNum && !item.getLockVis()) {
-            oTraceError('lwj 最大附魔数量');
-            return;
-        }
         if (this.isEnchanting) {
-            if (this.selectPetKeys.includes(item.petData.k)) {
-                oTraceError('lwj 正在附魔中，已经选择了该宠物');
-                this.stopEnchant();
-                this.updateSelectKey(item);
-            }
+            oTraceError('正在附魔中');
             return;
         }
         this.updateSelectKey(item);
     }
-
+ 
     /**更新选择key */
     private updateSelectKey(item: PetBag_Item) {
-        item.setLockVis(!item.getLockVis());
-        let isSelect = item.getLockVis();
-        let index = this.selectPetKeys.findIndex((value) => {
-            return value == item.petData.k;
-        });
-        if (index == -1 && isSelect) {
-            this.selectPetKeys.push(item.petData.k);
-        } else if (index != -1 && !isSelect) {
-            this.selectPetKeys.splice(index, 1);
-        }
-        this.isCanClickBtn();
+			const isSelected = this.selectPetKey === item.petData.k;
+			if(this.selectPetKey) {
+				this.petItems[this.selectPetKey].setLockVis(false);
+				this.selectPetKey = null;
+			}
+			this.selectPetKey = isSelected ? null: item.petData.k;
+			item.setLockVis(!isSelected);
+			this.isCanClickBtn();
     }
 
     /**判断是否可点击按钮 */
     private isCanClickBtn() {
         this.updateCost();
-        if (this.selectPetKeys.length > 0) {
-            this.mButton_Enchant.enable = true;
-            return true;
-        }
-        this.mButton_Enchant.enable = false;
-        return false;
+        const canClick = !Gtk.isNullOrUndefined(this.selectPetKey)
+        this.mButton_Enchant.enable = canClick;
+        return canClick;
     }
 
     /**更新钻石花费 */
     private updateCost() {
-        this.mTextBlock_Cost.text = utils.formatNumber(this.selectPetKeys.length * GlobalData.Enchant.diamondCost);
+				// TODO: update Cost 2024/06/02 
+				const hasPet = !Gtk.isNullOrUndefined(this.selectPetKey)
+				const cost = hasPet ? GlobalData.Enchant.diamondCost : 0;
+        this.mTextBlock_Cost.text = utils.formatNumber(cost);
     }
 
     /**点击附魔按钮 */
     private async onClickEnchant() {
-        if (this.isEnchanting) {
-            //正在附魔
-            this.stopEnchant();
-            AnalyticsTool.action_enchant(AnalyModel.stop2, 0);
+        if (this.isEnchanting) { //正在附魔 不允许点击
+						oTraceError('正在附魔中');
             return;
         }
         const selectedEnchantIds: number[] = this.getSelectEnchant();
-        AnalyticsTool.action_enchant(AnalyModel.enchants_times, 0);
         const petBagMC = ModuleService.getModule(PetBagModuleC);
-        const enchantPetState = await petBagMC.getPetEnchantState(selectedEnchantIds, this.selectPetKeys);
+        const enchantPetState = await petBagMC.getPetEnchantState(selectedEnchantIds, this.selectPetKey);
 
         const startEnchantFn = async (isOK: boolean) => {
             if (!isOK) return;
-            const res = await petBagMC.enchantConsume(this.selectPetKeys);
+            const res = await petBagMC.enchantConsume(this.selectPetKey);
             if (!res) {
 								MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
 										super.show();
@@ -234,7 +222,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
 								return;
 						}
             // TODO: refactor
-            this.startEnchant(selectedEnchantIds, this.selectPetKeys);
+            this.startEnchant(selectedEnchantIds);
         };
 
         switch (enchantPetState) {
@@ -298,11 +286,11 @@ export class P_Enchants extends EnchantsPanel_Generate {
      * @param tarEnchant 目标附魔数组
      * @param petKeyArr 宠物key数组
      */
-    private async startEnchant(tarEnchant: number[], petKeyArr: number[]) {
+    private async startEnchant(tarEnchant: number[]) {
         if (!this.isEnchanting) {
             this.setEnchantBtnClickState(false);
         }
-        this.enchantProgress(tarEnchant, petKeyArr);
+        this.enchantProgress(tarEnchant);
         this.moveUI(false);
     }
 
@@ -315,7 +303,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
     }
 
     /**当前附魔进度 */
-    private enchantProgress(tarEnchant: number[], petKeyArr: number[]) {
+    private enchantProgress(tarEnchant: number[]) {
         if (tarEnchant.length == 0) {
             let ids = GlobalData.Enchant.normalEnchantId;
             for (let i = ids[0]; i < ids[1]; i++) {
@@ -335,46 +323,31 @@ export class P_Enchants extends EnchantsPanel_Generate {
         let curIdStr: string[] = [];
 
         //宠物循环
-        for (let i = 0; i < petKeyArr.length; i++) {
-            const element = petKeyArr[i];
-            //词条个数循环
-            let curId: number[] = [];
-            for (let j = 0; j < enchantNum; j++) {
-                let curID = BagTool.randomEnchantId();
-                curId.push(curID);
-                AnalyticsTool.action_enchant(0, curID);
-                if (tarEnchant.includes(curID)) {
-                    //如果目标附魔中包含随机附魔id,删除
-                    del.push(element);
-                }
-            }
-            curIdStr.push(numberArrToString(curId));
-        }
+				const element = this.selectPetKey;
+				//词条个数循环
+				let curId: number[] = [];
+				for (let j = 0; j < enchantNum; j++) {
+						let curID = BagTool.randomEnchantId();
+						curId.push(curID);
+						if (tarEnchant.includes(curID)) {
+								//如果目标附魔中包含随机附魔id,删除
+								del.push(element);
+						}
+				}
+				curIdStr.push(numberArrToString(curId));
 
-        this.enchantAc.call(petKeyArr, curIdStr);
-        del.forEach((element) => {
-            let index = petKeyArr.indexOf(element);
-            if (index != -1) petKeyArr.splice(index, 1);
-        });
-        this.playEffect(tarEnchant, petKeyArr);
+        this.enchantAc.call([this.selectPetKey], curIdStr);
+
+        this.playEffect();
     }
 
     /**展示结果 */
-    private showRes(tarEnchant: number[], petKeyArr: number[]) {
-        this.moveUI(true);
-        if (petKeyArr.length == 0) {
-            //附魔结束
-            this.setEnchantBtnClickState(true);
-            this.selectPetKeys = this.getSelectPetCount();
-            this.isCanClickBtn();
-            AnalyticsTool.action_enchant(AnalyModel.enchants, 0);
-            return;
-        }
-        //开始倒计时
-        this.enchantInterval = setTimeout(() => {
-            this.moveUI(false);
-            this.enchantProgress(tarEnchant, petKeyArr);
-        }, GlobalData.Enchant.stopTime * 1000);
+    private showRes() {
+        this.moveUI(true); 
+				//附魔结束
+				this.setEnchantBtnClickState(true);
+				this.selectPetKeys = this.getSelectPetCount();
+				this.isCanClickBtn();
     }
 
     /**设置附魔按钮点击态 */

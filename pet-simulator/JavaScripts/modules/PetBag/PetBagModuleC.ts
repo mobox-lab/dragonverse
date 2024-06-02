@@ -400,11 +400,11 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         }
     }
 
-		public async getPetEnchantState(selectedEnchantIds: number[], selectPetKeys: number[]): Promise<EnchantPetState> {
-				return await this.server.net_petEnchant(selectedEnchantIds, selectPetKeys);
+		public async getPetEnchantState(selectedEnchantIds: number[], selectPetKey: number | null): Promise<EnchantPetState> {
+				return await this.server.net_petEnchant(selectedEnchantIds, selectPetKey);
 		}
 
-		public async enchantConsume(selectPetKeys: number[]): Promise<boolean> {
-				return await this.server.net_enchantConsume(selectPetKeys);
+		public async enchantConsume(selectPetKey: number | null): Promise<boolean> {
+				return await this.server.net_enchantConsume(selectPetKey);
 		}
 }
