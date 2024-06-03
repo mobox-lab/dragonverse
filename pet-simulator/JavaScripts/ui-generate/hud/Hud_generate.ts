@@ -225,6 +225,20 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.mBtn_Transmit_Internal
 	}
+	private mCanvas_Setting_Internal: mw.Canvas
+	public get mCanvas_Setting(): mw.Canvas {
+		if(!this.mCanvas_Setting_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Setting_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Setting') as mw.Canvas
+		}
+		return this.mCanvas_Setting_Internal
+	}
+	private mBtn_Setting_Internal: mw.Button
+	public get mBtn_Setting(): mw.Button {
+		if(!this.mBtn_Setting_Internal&&this.uiWidgetBase) {
+			this.mBtn_Setting_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Setting/mBtn_Setting') as mw.Button
+		}
+		return this.mBtn_Setting_Internal
+	}
 	private mCanvas_buff_Internal: mw.Canvas
 	public get mCanvas_buff(): mw.Canvas {
 		if(!this.mCanvas_buff_Internal&&this.uiWidgetBase) {
@@ -395,6 +409,12 @@ export default class Hud_Generate extends UIScript {
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_Transmit");
 		})
 		this.mBtn_Transmit.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.mBtn_Setting.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Setting");
+		})
+		this.mBtn_Setting.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		this.mBtn_FastTran.onClicked.add(()=>{

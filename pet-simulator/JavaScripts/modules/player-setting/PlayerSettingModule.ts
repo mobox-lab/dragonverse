@@ -1,11 +1,12 @@
 import ModuleC = mwext.ModuleC;
 import ModuleS = mwext.ModuleS;
 import Subdata = mwext.Subdata;
-import i18n, { LanguageTypes } from "../../language/i18n";
-import AudioController from "../../controller/audio/AudioController";
+
 import { ATransactItem, Transact } from "./ATransactItem";
 import { Constructor } from "../../util/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { P_HudUI } from "../Hud/P_HudUI";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 type SettingItemType =
     | "bgm-volume"
@@ -17,38 +18,37 @@ type SettingItemType =
 
 abstract class SettingItem<T> extends ATransactItem<T> {
     public abstract readonly type: SettingItemType;
-
     public abstract reset(): this;
 }
 
-class LanguageTransactItem extends SettingItem<LanguageTypes> {
-    public type: SettingItemType = "language";
-    public readonly previewEnable: boolean = false;
+// class LanguageTransactItem extends SettingItem<LanguageTypes> {
+//     public type: SettingItemType = "language";
+//     public readonly previewEnable: boolean = false;
 
-    protected set(val: LanguageTypes): void {
-        i18n.use(val);
-    }
+//     protected set(val: LanguageTypes): void {
+//         i18n.use(val);
+//     }
 
-    public get(): LanguageTypes {
-        return i18n.currentLanguage();
-    }
+//     public get(): LanguageTypes {
+//         return i18n.currentLanguage();
+//     }
 
-    public reset(): this {
-        this.set(0);
-        return this;
-    }
-}
+//     public reset(): this {
+//         this.set(0);
+//         return this;
+//     }
+// }
 
 class BgmVolumeTransactItem extends SettingItem<number> {
     public type: SettingItemType = "bgm-volume";
     public readonly previewEnable: boolean = true;
 
     protected set(val: number): void {
-        AudioController.getInstance().bgmVolumeScale = val;
+        SoundService.BGMVolumeScale = val;
     }
 
     public get(): number {
-        return AudioController.getInstance().bgmVolumeScale;
+        return SoundService.BGMVolumeScale;
     }
 
     public reset(): this {
@@ -62,11 +62,11 @@ class SoundEffectVolumeTransactItem extends SettingItem<number> {
     public readonly previewEnable: boolean = true;
 
     protected set(val: number): void {
-        AudioController.getInstance().volumeScale = val;
+        SoundService.volumeScale = val;
     }
 
     public get(): number {
-        return AudioController.getInstance().volumeScale;
+        return SoundService.volumeScale;
     }
 
     public reset(): this {
@@ -80,11 +80,11 @@ class MuteBgmVolumeTransactItem extends SettingItem<boolean> {
     public readonly previewEnable: boolean = true;
 
     protected set(val: boolean): void {
-        AudioController.getInstance().muteBgm(val);
+        SoundService.BGMVolumeScale = val ? 0 : 1;
     }
 
     public get(): boolean {
-        return !AudioController.getInstance().isPlayBgm;
+        return SoundService.BGMVolumeScale === 0;
     }
 
     public reset(): this {
@@ -98,11 +98,11 @@ class MuteSoundEffectVolumeTransactItem extends SettingItem<boolean> {
     public readonly previewEnable: boolean = true;
 
     protected set(val: boolean): void {
-        AudioController.getInstance().muteSoundEffect(val);
+        SoundService.volumeScale = val ? 0 : 1;
     }
 
     public get(): boolean {
-        return !AudioController.getInstance().isPlayEffect;
+        return SoundService.volumeScale === 0;
     }
 
     public reset(): this {
@@ -116,11 +116,18 @@ class CameraLookUpRateScaleTransactItem extends SettingItem<number> {
     public readonly previewEnable: boolean = true;
 
     protected set(val: number): void {
-        KeyboardSimulation.setLookUpRateScale(val);
+        //映射到0.15到0.4之间，效果好一点
+        let value = (val - GameServiceConfig.MOUSE_DRAG_SENSITIVITY_MIN) * (GameServiceConfig.MOUSE_DRAG_SENSITIVITY_MAX - GameServiceConfig.MOUSE_DRAG_SENSITIVITY_MIN) / (1 - GameServiceConfig.MOUSE_DRAG_SENSITIVITY_MIN) + GameServiceConfig.MOUSE_DRAG_SENSITIVITY_MIN;
+        // Log4Ts.log(CameraLookUpRateScaleTransactItem, `set cameraLookUpRateScale: ${value}`);
+        UIService.getUI(P_HudUI, false).mTouchPad.inputScale = new Vector2(value, value);
     }
 
     public get(): number {
-        return KeyboardSimulation.getLookUpRateScale();
+        let value = UIService.getUI(P_HudUI, false).mTouchPad.inputScale.x;
+        //从0.15到0.4映射到0.15到1之间
+        let res = (value - GameServiceConfig.MOUSE_DRAG_SENSITIVITY_MIN) * (1 - GameServiceConfig.MOUSE_DRAG_SENSITIVITY_MIN) / (GameServiceConfig.MOUSE_DRAG_SENSITIVITY_MAX - GameServiceConfig.MOUSE_DRAG_SENSITIVITY_MIN) + GameServiceConfig.MOUSE_DRAG_SENSITIVITY_MIN;
+        // Log4Ts.log(CameraLookUpRateScaleTransactItem, `get cameraLookUpRateScale: ${res}`);
+        return res;
     }
 
     public reset(): this {
@@ -212,7 +219,7 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
         super.onAwake();
 
         //#region Inner Member init
-        this._settingItems.set("language", LanguageTransactItem);
+        // this._settingItems.set("language", LanguageTransactItem);
         this._settingItems.set("bgm-volume", BgmVolumeTransactItem);
         this._settingItems.set("sound-effect-volume", SoundEffectVolumeTransactItem);
         this._settingItems.set("mute-bgm-volume", MuteBgmVolumeTransactItem);
@@ -230,15 +237,17 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
             .set("mute-bgm-volume", !this.data.bgmVolume)
             .set("sound-effect-volume", this.data.soundEffectVolume)
             .set("mute-sound-effect-volume", !this.data.soundEffectVolume)
-            .set("camera-lookUp-rate-scale", this.data.cameraLookUpRateScale)
             .apply(false);
 
-        // Event.dispatchToLocal(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
         // this._eventListeners.push(Event.addLocalListener(EventDefine.EVENT_NAME, CALLBACK));
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    }
+
+    public initCameraLookUpRateScale() {
+        this.set("camera-lookUp-rate-scale", this.data.cameraLookUpRateScale).apply(false);
     }
 
     protected onUpdate(dt: number): void {
@@ -264,7 +273,7 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
 
     //#region Method
     private saveData() {
-        this.server.net_save(undefined,
+        this.server.net_save(
             this.data.bgmVolume,
             this.data.soundEffectVolume,
             this.data.cameraLookUpRateScale);
@@ -438,7 +447,7 @@ export class PlayerSettingModuleS extends ModuleS<PlayerSettingModuleC, PlayerSe
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
-    public net_save(language: LanguageTypes, bgmVolume: number, soundEffectVolume: number, cameraLookUpRateScale: number) {
+    public net_save(bgmVolume: number, soundEffectVolume: number, cameraLookUpRateScale: number) {
         // this.currentData.language = language;
         this.currentData.bgmVolume = bgmVolume;
         this.currentData.soundEffectVolume = soundEffectVolume;

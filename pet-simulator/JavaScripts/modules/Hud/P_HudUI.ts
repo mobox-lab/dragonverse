@@ -21,6 +21,8 @@ import { Task_ModuleC } from "../Task/TaskModuleC";
 import Gtk from "../../util/GToolkit";
 import { P_Transmit } from "../AreaDivide/P_Transmit";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import SettingsPanel from "../../ui/settings/SettingsPanel";
+import { PlayerSettingModuleC } from "../player-setting/PlayerSettingModule";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -174,7 +176,14 @@ export class P_HudUI extends Hud_Generate {
 
         ModuleService.ready().then(() => {
             this.updateTaskPoint();
+            ModuleService.getModule(PlayerSettingModuleC).initCameraLookUpRateScale();
         });
+
+        this.mBtn_Setting.onClicked.add(() => {
+            UIService.show(SettingsPanel);
+        });
+
+
     }
 
     public updateTaskPoint() {

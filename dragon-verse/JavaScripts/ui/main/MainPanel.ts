@@ -34,6 +34,7 @@ import GlobalTips from "../../depend/global-tips/GlobalTips";
 import { ActivateByUIAndTrigger, ActivateMode } from "../../gameplay/interactiveObj/ActiveMode";
 import ADialoguePanelController from "../../depend/dialogify/dialogue-panel-controller/ADialoguePanelController";
 import { AddGMCommand } from "module_gm";
+import SettingsPanel from "../settings/SettingsPanel";
 
 enum MouseLockType {
     Press,
@@ -291,24 +292,25 @@ export default class MainPanel extends MainPanel_Generate {
             ModuleService.getModule(ObbyModuleC).setInvincible();
         });
 
-        this.updateMuteBtn();
+        // this.updateMuteBtn();
 
         this.btnSound.onClicked.add(() => {
-            this.btnSound.enable = false;
-            // 判断是否静音
-            let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
-            this.btnSound.pressedImageGuid = res
-                ? GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID
-                : GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID;
-            res = !res;
-            ModuleService.getModule(PlayerSettingModuleC).setMute(res);
-            AudioController.getInstance().mute(res);
-            this.btnSound.normalImageGuid = res
-                ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID
-                : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
-            this.btnSound.normalImageSize = new Vector2(88, 96);
-            this.btnSound.pressedImageSize = new Vector2(88, 96);
-            this.btnSound.enable = true;
+            // this.btnSound.enable = false;
+            // // 判断是否静音
+            // let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
+            // this.btnSound.pressedImageGuid = res
+            //     ? GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID
+            //     : GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID;
+            // res = !res;
+            // ModuleService.getModule(PlayerSettingModuleC).setMute(res);
+            // AudioController.getInstance().mute(res);
+            // this.btnSound.normalImageGuid = res
+            //     ? GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID
+            //     : GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+            // this.btnSound.normalImageSize = new Vector2(88, 96);
+            // this.btnSound.pressedImageSize = new Vector2(88, 96);
+            // this.btnSound.enable = true;
+            UIService.show(SettingsPanel);
         });
 
         this.btnMap.onClicked.add(() => {
@@ -531,9 +533,9 @@ export default class MainPanel extends MainPanel_Generate {
         );
         this._eventListeners.push(Event.addLocalListener(EventDefine.OnDragonQuestsComplete, this.onFinishSubTask));
 
-        this._eventListeners.push(
-            Event.addLocalListener(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED, () => this.updateMuteBtn()),
-        );
+        // this._eventListeners.push(
+        //     Event.addLocalListener(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED, () => this.updateMuteBtn()),
+        // );
         this._eventListeners.push(
             Event.addLocalListener(
                 DialogifyManager.PlayerEnterOfficialDialogueEventName,
@@ -563,15 +565,15 @@ export default class MainPanel extends MainPanel_Generate {
         //#endregion ------------------------------------------------------------------------------------------
     }
 
-    private updateMuteBtn() {
-        let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
-        if (res) {
-            this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID;
-        } else {
-            this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
-        }
-        AudioController.getInstance().mute(res);
-    }
+    // private updateMuteBtn() {
+    //     let res = !(AudioController.getInstance().isPlayBgm || AudioController.getInstance().isPlayEffect);
+    //     if (res) {
+    //         this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_MUTE_BUTTON_IMG_GUID;
+    //     } else {
+    //         this.btnSound.normalImageGuid = GameServiceConfig.MAIN_PANEL_SOUND_BUTTON_IMG_GUID;
+    //     }
+    //     AudioController.getInstance().mute(res);
+    // }
 
     protected onUpdate() {
         if (this._staminaValueUpdateRegulator.request()) {
