@@ -481,18 +481,19 @@ export class PetBagModuleData extends Subdata {
      */
     public addEnchant(keys: number[], ids: string[]) {
         for (let i = 0; i < keys.length; i++) {
-            this.addSingleEnchant(keys[i], stringToNumberArr(ids[i]));
+            this.addPetEnchant(keys[i], stringToNumberArr(ids[i]));
         }
 
         this.save(true);
         this.PetEnchantChangeAC.call(keys, ids);
     }
 
-    /**单个附魔 */
-    private addSingleEnchant(key: number, ids: number[]) {
+    /**单个宠物附魔 */
+    private addPetEnchant(key: number, ids: number[]) {
         let item = this.bagItemsByKey(key);
         item.p.b.length = 0;
-        item.p.b = ids;
+        item.p.b = ids;				
+				item.enchantCnt++; 		// 已附魔次数++
     }
 
     /**随机附魔 */

@@ -407,4 +407,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 		public async enchantConsume(selectPetKey: number | null): Promise<boolean> {
 				return await this.server.net_enchantConsume(selectPetKey);
 		}
+		public async getEnchantCost(selectPetKey: number | null): Promise<number> {
+				return await this.server.net_getEnchantCost(selectPetKey);
+		}
 }

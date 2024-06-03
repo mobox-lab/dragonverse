@@ -711,12 +711,31 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 				}
 				return EnchantPetState.HAS_NO_ENCHANT;
 		}
+		
+		
+    /**获取当前选中宠物所需钻石花费 */
+    public getEnchantCost(selectPetKey: number | null) {
+				if (!selectPetKey) return 0;
+				const curSelectPetEnchantCnt =
+				this.currentData.bagItemsByKey(selectPetKey)?.enchantCnt;
+				const costCfg = GameConfig.EnchantCost.getAllElement();
+				if (!costCfg?.length) return 0;
+				for (let i = 0; i < costCfg.length; i++) {
+						const { EnchantCnt, CostDiamond } = costCfg[i] ?? {};
+						if (EnchantCnt == curSelectPetEnchantCnt) return CostDiamond;
+				}
+				return costCfg[costCfg.length - 1].CostDiamond;
+		}
+
+    /**获取当前选中宠物所需钻石花费 */
+    public async net_getEnchantCost(selectPetKey: number | null): Promise<number> {
+			return this.getEnchantCost(selectPetKey);
+		}
 
 		public async net_enchantConsume(selectPetKey: number | null): Promise<boolean> {
-				// TODO: update Cost 2024/06/02
-				const hasPet = !Gtk.isNullOrUndefined(selectPetKey)
-				const cost = hasPet ? GlobalData.Enchant.diamondCost : 0;
-				return this.playerModuleS.reduceDiamond(cost);
+				const cost = this.getEnchantCost(selectPetKey);
+				console.log("======= net_enchantConsume cost =======\n", cost);
+				return this.playerModuleS.reduceDiamond(cost); 
 		}
 
 		/**判断是否是同一种附魔

@@ -179,14 +179,14 @@ export class P_Enchants extends EnchantsPanel_Generate {
 				const curSelectPetInfo = this.petItems.find(
 					(pet) => pet.petData.k === this.selectPetKey
 				);
-				// console.log(
-				// 	"======== updateEnchantIntroPanel curSelectPetInfo =======",
-				// 	" id:" + curSelectPetInfo?.petData?.I,
-				// 	" key:" + curSelectPetInfo?.petData?.k,
-				// 	" name:" + curSelectPetInfo?.petData?.p?.n,
-				// 	" buff:" + curSelectPetInfo?.petData?.p?.b,
-				// 	" enchantCnt:" + curSelectPetInfo?.petData?.enchantCnt
-				// );
+				console.log(
+					"======== updateEnchantIntroPanel curSelectPetInfo =======",
+					" id:" + curSelectPetInfo?.petData?.I,
+					" key:" + curSelectPetInfo?.petData?.k,
+					" name:" + curSelectPetInfo?.petData?.p?.n,
+					" buff:" + curSelectPetInfo?.petData?.p?.b,
+					" enchantCnt:" + curSelectPetInfo?.petData?.enchantCnt
+				);
 				const buffIds = curSelectPetInfo?.petData?.p?.b;
 				if (!curSelectPetInfo?.petData || !buffIds?.length) {
 					this.mCanvas_Entrylist.removeAllChildren();
@@ -266,17 +266,16 @@ export class P_Enchants extends EnchantsPanel_Generate {
 
     /**判断是否可点击按钮 */
     private isCanClickBtn() {
-        this.updateCost();
         const canClick = !Gtk.isNullOrUndefined(this.selectPetKey)
         this.mButton_Enchant.enable = canClick;
+        this.updateCost(this.selectPetKey);
         return canClick;
     }
-
+ 
     /**更新钻石花费 */
-    private updateCost() {
-				// TODO: update Cost 2024/06/02 
-				const hasPet = !Gtk.isNullOrUndefined(this.selectPetKey)
-				const cost = hasPet ? GlobalData.Enchant.diamondCost : 0;
+    private async updateCost(selectPetKey: number | null) { 
+				const petBagMC = ModuleService.getModule(PetBagModuleC);
+				const cost = await petBagMC.getEnchantCost(selectPetKey);
         this.mTextBlock_Cost.text = utils.formatNumber(cost);
     }
 
