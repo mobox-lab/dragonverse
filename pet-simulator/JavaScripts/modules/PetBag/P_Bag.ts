@@ -115,13 +115,13 @@ export class P_Bag extends PetBagPanel_Generate {
         this.tipsTween(tipsArr);
     }
 
-		/** 附魔后刷新宠物战力值颜色 */
-		public setEnchantItemPowerColor(keys: number[]) {
+		/** 附魔后刷新宠物战力值颜色等 */
+		public updateEnchantItemsUI(keys: number[]) {
 				const itemUIArr = this.itemArr.filter((p) => keys.includes(p.petData.k)) 
-				if(!itemUIArr?.length) return; 
+				if(!itemUIArr?.length) return;
 				for (let item of itemUIArr) {
 					const data = this.data.bagItemsByKey(item.petData.k)
-					item.setPowerColor(data );
+					item.init(data);
 				}
 		}
 

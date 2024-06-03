@@ -62,9 +62,10 @@ export class PetBag_Item extends Pet_item_Generate {
         }
 
         this.setItemVis(mw.SlateVisibility.SelfHitTestInvisible);
-        if (data.k == this.petData?.k && data.I == this.petData.I && data.p.n == this.petData.p.n && data.p.a == this.petData.p.a) {
-            return;
-        }
+				// 这个没考虑附魔啊
+        // if (data.k == this.petData?.k && data.I == this.petData.I && data.p.n == this.petData.p.n && data.p.a == this.petData.p.a) {
+        //     return;
+        // }
 
         this.petData = data;
         this.setPowerColor(data);
