@@ -370,7 +370,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
           1
         ); //融合成功数
         console.log("======= enchantSuccess =======\n", keys, "id str", idstr);
-        this.bagUI.setEnchantItemPowerColor(keys); // 刷新背包UI
+        this.bagUI.updateEnchantItemsUI(keys); // 刷新背包UI
         for (let i = 0; i < idstr.length; i++) {
           const element = idstr[i];
           let ids = stringToNumberArr(element);

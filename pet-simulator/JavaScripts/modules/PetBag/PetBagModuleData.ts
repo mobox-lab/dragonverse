@@ -28,13 +28,16 @@ export class petItemDataNew {
     I: number;
     /**petInfo */
     p: petInfoNew;
-    /**首次获得宠物时间，合成的宠物用合成项最早获得的时间 */
+		/**首次获得宠物时间，合成的宠物用合成项最早获得的时间 */
     obtainTime: number;
+		/**已附魔次数 */
+		enchantCnt: number;
 
     constructor(key: number, id: number) {
         this.k = key;
         this.I = id;
         this.p = new petInfoNew();
+				this.enchantCnt = 0;
     }
 
 }

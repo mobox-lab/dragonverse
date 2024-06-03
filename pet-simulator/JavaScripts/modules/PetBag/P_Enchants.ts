@@ -97,15 +97,15 @@ export class P_Enchants extends EnchantsPanel_Generate {
     }
 
     public showPanel(petData: petItemDataNew[]) {
-        AnalyticsTool.page(Page.enchants);
-        PetBagItem.instance.UIPool.resetAll();
+				PetBagItem.instance.UIPool.resetAll();
         if (this.isFirstOpen) {
             this.isFirstOpen = false;
             this.updateEnchantIntroPanel();
         }
 
-        // this.selectPetKeys = [];
-        this.selectPetKey = null;
+				// this.selectPetKeys = [];
+				this.selectPetKey = null;
+
         petData = this.filterMythical(petData);
 
         for (let i = 0; i < petData.length; i++) {
@@ -124,6 +124,31 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.isCanClickBtn();
         this.show();
     }
+ 
+		/** 附魔成功后更新面板 UI */
+    public updatePetPanelUI() { 
+ 				const petItems = this.petItems;
+        for (let i = 0; i < petItems?.length; i++) {
+					const ele = petItems[i];
+					const newPet = this.bagData.bagItemsByKey(ele.petData.k)
+					// console.log(
+					// 	"======== updatePetPanelUI i ======="+i,
+					// 	" id:" + ele?.petData?.I,
+					// 	" newPetData id:" + newPet?.I,
+					// 	" key:" + ele?.petData?.k,
+					// 	" newPetData key:" + newPet?.k,
+					// 	" name:" + ele?.petData?.p?.n,
+					// 	" buff:" + ele?.petData?.p?.b,
+					// 	" newPet buff:" + newPet?.p?.b,
+					// 	" enchantCnt:" + ele?.petData?.enchantCnt
+					// );
+					ele.init(newPet);
+				}
+				const preSelectedPetKey = this.selectPetKey;
+				const selectedItem = petItems.find((item) => item.petData.k === preSelectedPetKey);
+				this.selectPetKey = null;
+				this.updateSelectKey(selectedItem)
+		}
 
     /**悬浮UI */
     private showHoverUI(isShow: boolean, item: PetBag_Item) {
@@ -148,41 +173,50 @@ export class P_Enchants extends EnchantsPanel_Generate {
     }
 
 		/**左侧附魔详情面板 */
-		private updateEnchantIntroPanel() {
-      if (this.enchantItemsUI?.length)
-        this.mCanvas_Entrylist.removeAllChildren(); // 清除上一次的UI
-      const curSelectPetInfo = this.petItems.find(
-        (pet) => pet.petData.k === this.selectPetKey
-      );
-      const buffIds = curSelectPetInfo?.petData?.p?.b;
-      if (!curSelectPetInfo?.petData || !buffIds?.length) {
-        this.mCanvas_Entrylist.removeAllChildren();
-        return;
-      }
-      const len = buffIds.length; // 两词条则可选择一词条重铸
-      const isReEnchant = len >= 2; // 两词条则可选择一词条重铸
-      const items = [];
-      for (let i = 0; i < len; i++) {
-        const buffId = buffIds[i];
-        let item = mw.UIService.create(EnchantItem);
-        if (isReEnchant) { // 两词条则可选择一词条重铸
-          item.onClickAc.add(() => {
-            const preId = this.selectEnchantId;
-            const isSelected = preId === buffId;
-            if (isSelected) return;
-            this.enchantItemsUI
-              .find((item) => item?.cfgId === preId)
-              ?.setSelectState(false); // 把原来的select取消
-            this.selectEnchantId = buffId;
-            item.setSelectState(true);
-          });
-        }
-        item.uiObject.size = item.mCanvas.size;
-        item.setCfgId(buffId);
-        this.mCanvas_Entrylist.addChild(item.uiObject);
-        items.push(item);
-      }
-      this.enchantItemsUI = items;
+		public updateEnchantIntroPanel() {
+				if (this.enchantItemsUI?.length)
+					this.mCanvas_Entrylist.removeAllChildren(); // 清除上一次的UI
+				const curSelectPetInfo = this.petItems.find(
+					(pet) => pet.petData.k === this.selectPetKey
+				);
+				// console.log(
+				// 	"======== updateEnchantIntroPanel curSelectPetInfo =======",
+				// 	" id:" + curSelectPetInfo?.petData?.I,
+				// 	" key:" + curSelectPetInfo?.petData?.k,
+				// 	" name:" + curSelectPetInfo?.petData?.p?.n,
+				// 	" buff:" + curSelectPetInfo?.petData?.p?.b,
+				// 	" enchantCnt:" + curSelectPetInfo?.petData?.enchantCnt
+				// );
+				const buffIds = curSelectPetInfo?.petData?.p?.b;
+				if (!curSelectPetInfo?.petData || !buffIds?.length) {
+					this.mCanvas_Entrylist.removeAllChildren();
+					return;
+				}
+				const len = buffIds.length; // 两词条则可选择一词条重铸
+				const isReEnchant = len >= 2; // 两词条则可选择一词条重铸
+				const items = [];
+				for (let i = 0; i < len; i++) {
+					const buffId = buffIds[i];
+					let item = mw.UIService.create(EnchantItem);
+					if (isReEnchant) {
+						// 两词条则可选择一词条重铸
+						item.onClickAc.add(() => {
+							const preId = this.selectEnchantId;
+							const isSelected = preId === buffId;
+							if (isSelected) return;
+							this.enchantItemsUI
+								.find((item) => item?.cfgId === preId)
+								?.setSelectState(false); // 把原来的select取消
+							this.selectEnchantId = buffId;
+							item.setSelectState(true);
+						});
+					}
+					item.uiObject.size = item.mCanvas.size;
+					item.setCfgId(buffId);
+					this.mCanvas_Entrylist.addChild(item.uiObject);
+					items.push(item);
+				}
+				this.enchantItemsUI = items;
     }
 
     // private initEnchantItem() {
@@ -361,7 +395,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.moveUI(true); 
 				//附魔结束
 				this.setEnchantBtnClickState(true);
-				this.isCanClickBtn();
+				this.updatePetPanelUI();
     }
 
     /**设置附魔按钮点击态 */
