@@ -1,0 +1,181 @@
+﻿/*
+ * @Author: shifu.huang
+ * @Date: 2023-12-10 16:12:05
+ * @LastEditors: shifu.huang
+ * @LastEditTime: 2024-01-25 14:54:58
+ * @FilePath: \nevergiveup\JavaScripts\GameStart.ts
+ * @Description: 修改描述
+ */
+import { GM } from "module_gm";
+import { GuideDataHelper, GuideModuleC, GuideModuleS } from "module_guide";
+import { AirdropManager } from "./Airdrop/AirdropManager";
+import { DanmuManager } from "./Danmu/DanmuManager";
+import { GMPanel } from "./GMPanel";
+import { GameManager } from "./GameManager";
+import { GuideManager } from "./Guide/GuideManager";
+import CardModuleC from "./Modules/CardModule/CardModuleC";
+import CardModuleData from "./Modules/CardModule/CardModuleData";
+import CardModuleS from "./Modules/CardModule/CardModuleS";
+import PlayerModuleC from "./Modules/PlayerModule/PlayerModuleC";
+import PlayerModuleData from "./Modules/PlayerModule/PlayerModuleData";
+import { PlayerModuleS } from "./Modules/PlayerModule/PlayerModuleS";
+import { TimerModuleC, TimerModuleData, TimerModuleS } from "./Modules/TimeModule/time";
+import { TowerModuleC } from "./Modules/TowerModule/TowerModuleC";
+import { TowerModuleData } from "./Modules/TowerModule/TowerModuleData";
+import { TowerModuleS } from "./Modules/TowerModule/TowerModuleS";
+import { TaskModuleC } from "./Modules/taskModule/TaskModuleC";
+import { TaskModuleDataHelper } from "./Modules/taskModule/TaskModuleDataHelper";
+import { TaskModuleS } from "./Modules/taskModule/TaskModuleS";
+import { GuideDialog } from "./UI/UIDialog";
+import Utils from "./Utils";
+import { GameConfig } from "./config/GameConfig";
+import { UIMain } from "./stage/ui/UIMain";
+import { EventsTool } from "./tool/EventsTool";
+import { Reward } from "./tool/Reward";
+import { SoundUtil } from "./tool/SoundUtil";
+import { ComponentFactory } from "./enemy/components/ComponentFactory";
+export namespace Config {
+    export let skipGuide: boolean = false;
+    export let danmukuSpeed: number = 300;
+    export let hurtTextColor: LinearColor = new LinearColor(1, 0, 0, 1);
+    export let hurtTextOutlineColor: LinearColor = new LinearColor(0, 0, 0, 1);
+    export let hurtTextOutlineWidth: number = 3;
+    export let hurtTextSize: Vector2 = new Vector2(330 / 2, 150 / 2);
+    export let hurtTextDuration: number = 0.8;
+    export let goldAnimInitTime: number = 1.4;
+    export let goldAnimBackTime: number = 0.5;
+    export let goldAnimRandAmount: Vector2 = new Vector2(1, 3);
+
+
+    export let animationTime: number = 1;
+}
+@Component
+export default class GameStart extends Script {
+    @mw.Property({ displayName: "是否开启gm（勾选开启）", group: "测试" })
+    public isGM: boolean = false;
+    @mw.Property({ displayName: "持久存档（勾选为持久存档）", group: "测试" })
+    presistSaving: boolean = true;
+    /**语言设置 */
+    @mw.Property({
+        displayName: "语言设置", selectOptions: {
+            "默认": "-1",
+            "英文": "0",
+            "中文": "1",
+        }
+    })
+    selectedIndex: string = "-1";
+    @mw.Property({ displayName: "忽略引导" })
+    skipGuide: boolean = false;
+    @mw.Property({ displayName: "弹幕速度" })
+    danmukuSpeed: number = 300;
+    @mw.Property({ replicated: false, displayName: "受击跳字颜色", group: "受击跳字" })
+    hurtTextColor: LinearColor = new LinearColor(1, 0, 0, 1);
+    @mw.Property({ replicated: false, displayName: "受击跳字描边颜色", group: "受击跳字" })
+    hurtTextOutlineColor: LinearColor = new LinearColor(0, 0, 0, 1);
+    @mw.Property({ replicated: false, displayName: "受击跳字描边粗细", group: "受击跳字" })
+    hurtTextOutlineWidth: number = 3;
+    @mw.Property({ replicated: false, displayName: "受击跳字大小", group: "受击跳字" })
+    hurtTextSize: Vector2 = new Vector2(330 / 2, 150 / 2);
+    @mw.Property({ replicated: false, displayName: "受击跳字持续时间", group: "受击跳字" })
+    hurtTextDuration: number = 0.8;
+    @mw.Property({ replicated: false, displayName: "加钱跳字初始持续时间", group: "加钱跳字" })
+    goldAnimInitTime: number = 1.4;
+    @mw.Property({ replicated: false, displayName: "加钱跳字回弹持续时间", group: "加钱跳字" })
+    goldAnimBackTime: number = 0.5;
+    @mw.Property({ replicated: false, displayName: "加钱跳字随机数量(最小值/最大值)", group: "加钱跳字" })
+    goldAnimRandAmount: Vector2 = new Vector2(1, 3);
+    /** 当脚本被实例后，会在第一帧更新前调用此函数 */
+    protected async onStart(): Promise<void> {
+        DataStorage.setTemporaryStorage(SystemUtil.isPIE || !this.presistSaving);
+        for (const k in Config) {
+            if (this.hasOwnProperty(k)) {
+                Config[k] = this[k];
+            }
+        }
+
+        this.registerModules();
+        GameManager.init(this);
+        AirdropManager.init();
+        SoundUtil.init();
+        Reward.init();
+        this.useUpdate = true;
+        if (SystemUtil.isServer()) {
+            EventsTool.start();
+        }
+        else {
+            this.checkGM();
+            this.setlanguage();
+            ModuleService.ready().then(() => {
+                GuideManager.init();
+                GuideManager.triggerNextGuide(true);
+            });
+            Utils.requestAssetIcons(GameConfig.Tower.getAllElement(), "imgGuid", true);
+            DanmuManager.init();
+            ComponentFactory.init();
+        }
+
+
+    }
+
+    /**
+     * 周期函数 每帧执行
+     * 此函数执行需要将this.useUpdate赋值为true
+     * @param dt 当前帧与上一帧的延迟 / 秒
+     */
+    protected onUpdate(dt: number): void {
+        GameManager.onUpdate(dt);
+        GuideDialog.onUpdate(dt);
+        DanmuManager.update(dt);
+        TweenUtil.TWEEN.update();
+    }
+
+    /** 脚本被销毁时最后一帧执行完调用此函数 */
+    protected onDestroy(): void {
+
+    }
+
+    private registerModules() {
+        ModuleService.registerModule(TimerModuleS, TimerModuleC, TimerModuleData);
+        ModuleService.registerModule(TowerModuleS, TowerModuleC, TowerModuleData);
+        ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerModuleData);
+        ModuleService.registerModule(CardModuleS, CardModuleC, CardModuleData);
+        ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
+        ModuleService.registerModule(TaskModuleS, TaskModuleC, TaskModuleDataHelper);
+    }
+
+    private checkGM() {
+        GM.checkAuthority(isGm => {
+            if (isGm || this.isGM) {
+                GM.start(GMPanel);
+                EventsTool.start();
+                // UIService.getUI(UIMain).maxSpeed = 15;
+            }
+        });
+    }
+
+    /**
+ * 设置多语言
+ * UI多语言设置
+ */
+    private setlanguage() {
+        //初始化表格语言
+        GameConfig.initLanguage(Number(this.selectedIndex), (key) => {
+            let ele = GameConfig.Language.getElement(key);
+            if (ele == null)
+                return "unknow_" + key;
+            return ele.Value;
+        });
+        mw.UIScript.addBehavior("lan", (ui: mw.StaleButton | mw.TextBlock) => {
+            let key: string = ui.text;
+            if (key) {
+                let lan = GameConfig.Language.getElement(key);
+                if (lan) {
+                    ui.text = (lan.Value);
+                }
+            }
+        })
+        Event.dispatchToLocal(`LanguageInit`);
+        console.error("初始化多语言.....");
+    }
+}
+

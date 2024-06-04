@@ -1,0 +1,32 @@
+﻿{
+	"name": "无尽防御",
+	"packageName": "007DAFFC4CD17C215C71179B0400E791",
+	"intro": "11112",
+	"notes": "11112",
+	"editorVersion": "v0.27.0.1",
+	"parentGameIdentity": "",
+	"parentGameId": "",
+	"extra": "{\"attribute\":2,\"IsHorizontal\":true,\"useAvatar\":1}",
+	"devEnv": 4,
+	"needToMgs": 0,
+	"attribute": 2,
+	"autoSubmitAudit": false,
+	"ignore": [
+		"game.desc",
+		"Asset_Data_List"
+	],
+	"files": [
+		{
+			"type": "Game_Thumbnail",
+			"path": "Pictures/Game_Thumbnail.jpg"
+		},
+		{
+			"type": "GameSetting",
+			"path": "Config/GameSetting.ini"
+		},
+		{
+			"type": "Asset_Data_List",
+			"path": "Asset_Data_List"
+		}
+	]
+}
