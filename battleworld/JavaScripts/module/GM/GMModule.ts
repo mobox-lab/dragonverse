@@ -494,6 +494,26 @@ AddGMCommand("跳DragonVerse", () => {
     }, onFailed);
 });
 
+AddGMCommand(
+    "跳 NeverGiveUp",
+    () => {
+    },
+    (player) => {
+        const onFailed = (result: mw.TeleportResult) => {
+            // 将错误信息发给所有参与的客户端
+            for (const userId in result.userIds) {
+                const player = Player.getPlayer(userId);
+                if (player) {
+                    Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                    Log4Ts.log({name: "GM"}, "onJumpGameFailed", result.message);
+                }
+            }
+        };
+        TeleportService.asyncTeleportToScene("nevergiveup", [player.userId]).then(() => {
+        }, onFailed);
+    },
+);
+
 AddGMCommand("技能释放", (player: mw.Player, value: string) => {
 
     let values = value.split("|");

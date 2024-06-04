@@ -233,6 +233,26 @@ AddGMCommand(
     },
 );
 
+AddGMCommand(
+    "跳 NeverGiveUp",
+    () => {
+    },
+    (player) => {
+        const onFailed = (result: mw.TeleportResult) => {
+            // 将错误信息发给所有参与的客户端
+            for (const userId in result.userIds) {
+                const player = Player.getPlayer(userId);
+                if (player) {
+                    Event.dispatchToClient(player, "onJumpGameFailed", result.message);
+                    Log4Ts.log(GMPanel, "onJumpGameFailed", result.message);
+                }
+            }
+        };
+        TeleportService.asyncTeleportToScene("nevergiveup", [player.userId]).then(() => {
+        }, onFailed);
+    },
+);
+
 //#region TDD-Obby Coin & Ticket
 AddGMCommand(
     "触发每日领取 ObbyCoin",
@@ -330,7 +350,7 @@ AddGMCommand(
                 mw.Vector.one,
             ),
         }).then((value) => {
-            Log4Ts.log({ name: "TTD" }, `ObbyStar Spawned: ${value}`);
+            Log4Ts.log({name: "TTD"}, `ObbyStar Spawned: ${value}`);
         });
     },
     "TTD",
