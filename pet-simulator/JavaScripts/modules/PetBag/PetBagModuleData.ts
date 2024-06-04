@@ -89,7 +89,7 @@ export class PetBagModuleData extends Subdata {
     public BagItemChangeAC: Action3<boolean, number, number> = new Action3();
     public PetTrainChangeAC: Action = new Action();
     /**词条改变事件 key,词条id */
-    public PetEnchantChangeAC: Action2<number[], string[]> = new Action2();
+    public PetEnchantChangeAC: Action2<number, number[]> = new Action2();
     /**true:装备 false: 卸下 */
     public PetEquipChangeAC: Action2<boolean, number[]> = new Action2();
 
@@ -234,22 +234,42 @@ export class PetBagModuleData extends Subdata {
         return true;
     }
 
+		public getPetEnchantScore(enchantIds: number[]): number {
+      if (!enchantIds?.length) return 0;
+      const score = enchantIds.reduce((total, id) => {
+					return total + (GameConfig.Enchants.getElement(id)?.RankScore ?? 0);
+      }, 0);
+      return score;
+    }
     /**
      * @description: 根据赛季获取拥有的最高战力的宠物
      * @param round 赛季
      * @return 宠物id
      */
     public getMaxAttackPet(currRound: number): number {
-        let maxAttack = 0;
-        let petKey = 0;
-        for (let key in this.bagContainerNew) {
-            //筛出这个赛季获取的
-            if (this.calRound(this.bagContainerNew[key].obtainTime) === currRound && this.bagContainerNew[key].p.a > maxAttack) {
-                maxAttack = this.bagContainerNew[key].p.a;
-                petKey = this.bagContainerNew[key].k;
-            }
-        }
-        return petKey;
+      let maxAttack = 0;
+      let petKey = 0;
+      for (let key in this.bagContainerNew) {
+					//筛出这个赛季获取的
+					const curPet = this.bagContainerNew[key];
+					if (
+						this.calRound(curPet.obtainTime) === currRound &&
+						curPet.p.a >= maxAttack
+					) {
+							const prePet = petKey ? this.bagContainerNew[petKey] : null;
+							// 相同 atk 则看附魔分数
+							if (
+								curPet.p.a === maxAttack &&
+								prePet &&
+								this.getPetEnchantScore(curPet.p.b) <=
+									this.getPetEnchantScore(prePet.p.b)
+							)
+									continue;
+							maxAttack = curPet.p.a;
+							petKey = curPet.k;
+					}
+      }
+      return petKey;
     }
 
     public calRound(obtainTime: number): number {
@@ -477,22 +497,21 @@ export class PetBagModuleData extends Subdata {
 
     /**附魔
      * @param key 宠物key
-     * @param id 附魔id
+     * @param ids 附魔id数组
      */
-    public addEnchant(keys: number[], ids: string[]) {
-        for (let i = 0; i < keys.length; i++) {
-            this.addSingleEnchant(keys[i], stringToNumberArr(ids[i]));
-        }
+    public addEnchant(key: number, ids: number[]) {
+				this.addPetEnchant(key, ids);
 
         this.save(true);
-        this.PetEnchantChangeAC.call(keys, ids);
+        this.PetEnchantChangeAC.call(key, ids);
     }
 
-    /**单个附魔 */
-    private addSingleEnchant(key: number, ids: number[]) {
+    /**单个宠物附魔 */
+    private addPetEnchant(key: number, ids: number[]) {
         let item = this.bagItemsByKey(key);
         item.p.b.length = 0;
-        item.p.b = ids;
+        item.p.b = ids;				
+				item.enchantCnt++; 		// 已附魔次数++
     }
 
     /**随机附魔 */

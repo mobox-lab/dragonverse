@@ -1069,7 +1069,7 @@ export namespace GlobalData {
         /**best词条id */
         public static bestEnchantId: number = 46;
         /**单双词条权重 */
-        public static singleDoubleWeight: number[] = [70, 30];
+        public static singleDoubleWeight: number[] = [70, 30]; // 干掉了
 
         /**特效每帧旋转角度值 */
         public static effectRotate: number = 60;

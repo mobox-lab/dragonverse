@@ -319,7 +319,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
     /**减少钻石 */
     public reduceDiamond(value: number): boolean {
-        return this.currentData.reduceDiamond(value);				
+        return this.currentData.reduceDiamond(value);
     }
 
     public addGold(playerId: number, value: number, coinType: GlobalEnum.CoinType): void {
