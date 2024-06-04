@@ -652,7 +652,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return true;
     }
 
-    public reportMaxAttackPetInfo(playerID: number, data: PetBagModuleData) {
+    public reportMaxAttackPetInfo(playerID: number, data: PetBagModuleData) { 
         const currRound = data.calRound(Date.now());
         let petKey = data.getMaxAttackPet(currRound);
         if (petKey != 0) { 
@@ -741,7 +741,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
     private getEnchantIds(prePetInfo: petItemDataNew, selectEnchantId: number | null): null | number[] {
         const enchantIds = [...(prePetInfo.p.b ?? [])];
-				Log4Ts.log(PetBagModuleS, 'net_enchant preEnchantIds:', enchantIds);
+				Log4Ts.log(PetBagModuleS, 'net_enchant preEnchantIds:' + enchantIds);
 
         /**
          * 选中宠物已有两条词缀
@@ -755,7 +755,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             ); // 要覆盖
             if (tarEnchantIndex === -1) return null;
             const excludeEnchantId = enchantIds[(tarEnchantIndex + 1) % 2]; // 不跟原有的附魔重合
-						Log4Ts.log(PetBagModuleS, 'net_enchant excludeEnchantId:', excludeEnchantId);
+						Log4Ts.log(PetBagModuleS, 'net_enchant excludeEnchantId:' + excludeEnchantId);
             enchantIds[tarEnchantIndex] = this.randomEnchant(excludeEnchantId);
             return enchantIds;
         }
@@ -763,7 +763,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         // 已有一条词缀
         if (enchantIds.length) {
             const excludeEnchantId = enchantIds[0]; // 不跟原有的附魔重合
-						Log4Ts.log(PetBagModuleS, 'net_enchant excludeEnchantId:', excludeEnchantId);
+						Log4Ts.log(PetBagModuleS, 'net_enchant excludeEnchantId:' + excludeEnchantId);
             enchantIds.push(this.randomEnchant(excludeEnchantId));
             return enchantIds;
         }
@@ -790,7 +790,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 				const playerId = this.currentPlayerId;
         const data = this.currentData;
         const cost = this.getEnchantCost(selectPetKey);
-				Log4Ts.log(PetBagModuleS, `net_enchant cost:`, cost);
+				Log4Ts.log(PetBagModuleS, `net_enchant cost:` + cost);
         if (!this.playerModuleS.reduceDiamond(cost))
           return EnchantPetState.NO_ENOUGH_DIAMOND;
 
@@ -811,7 +811,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         );
         // this.passMS.onTaskUpdateAC.call(this.currentPlayerId, GlobalEnum.VipTaskType.PetEnchant, 1);
         const newIds = this.getNewEnchantIds(prePetEnchantIds, enchantIds);
-				Log4Ts.log(PetBagModuleS, 'net_enchant enchantNewIds:', newIds);
+				Log4Ts.log(PetBagModuleS, 'net_enchant enchantNewIds:' +  newIds);
 
         this.reportMaxAttackPetInfo(playerId, this.currentData); // 上报附魔分数变化 这里就是要现在的currentData
         this.enchantNotice(playerId, newIds);
