@@ -199,6 +199,10 @@ export class P_Enchants extends EnchantsPanel_Generate {
 					const buffId = buffIds[i];
 					let item = mw.UIService.create(EnchantItem);
 					if (isReEnchant) {
+						if(i === 0) { // 默认选择第一个词条
+							this.selectEnchantId = buffId;
+							item.setSelectState(true);
+						}
 						// 两词条则可选择一词条重铸
 						item.onClickAc.add(() => {
 							const preId = this.selectEnchantId;
