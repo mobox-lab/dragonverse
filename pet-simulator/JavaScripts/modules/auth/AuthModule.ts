@@ -3,7 +3,6 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
 import Gtk, { Expression } from "../../util/GToolkit";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import { Yoact } from "../../depend/yoact/Yoact";
 import { AddGMCommand } from "module_gm";
 import noReply = mwext.Decorator.noReply;
 import { GameConfig } from "../../config/GameConfig";
@@ -174,6 +173,7 @@ interface EncryptedData {
  */
 interface UserDataQueryReq {
     userId: string;
+    sceneId: string;
 }
 
 /**
@@ -208,8 +208,7 @@ interface QueryStaminaLimitRespData {
 /**
  * 汇报 宠物模拟器排行榜 请求参数.
  */
-interface UpdatePetSimulatorRankDataReq {
-    userId: string;
+interface UpdatePetSimulatorRankDataReq extends UserDataQueryReq {
     userName: string;
     userAvatar: string;
     petName: string;
@@ -225,8 +224,7 @@ interface UpdatePetSimulatorRankDataReq {
 /**
  * 汇报 无限乱斗排行榜 请求参数.
  */
-interface UpdateBattleWorldRankDataReq {
-    userId: string;
+interface UpdateBattleWorldRankDataReq extends UserDataQueryReq {
     userName: string;
     userAvatar: string;
     grade: number;
@@ -552,7 +550,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (Gtk.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
+            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -651,9 +649,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         super.onPlayerLeft(player);
 
         mw.setTimeout(() => {
-            this.userPSRankDataReporter.delete(player.userId);
-            this.userBWRankDataReporter.delete(player.userId);
-        },
+                this.userPSRankDataReporter.delete(player.userId);
+                this.userBWRankDataReporter.delete(player.userId);
+            },
             GameServiceConfig.REPORT_REQUEST_WAIT_TIME * 2);
     }
 
@@ -757,12 +755,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
+            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (Gtk.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
+            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
             return false;
         }
 
@@ -793,6 +791,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: UserDataQueryReq = {
             userId,
+            sceneId: await this.querySceneId(userId),
         };
 
         const respInJson = await
@@ -806,13 +805,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     public async requestWebCatchDragon(playerId: number,
-        dragonPalId: number,
-        catchTimeStamp: number): Promise<[boolean, DragonBallRespData]> {
+                                       dragonPalId: number,
+                                       catchTimeStamp: number): Promise<[boolean, DragonBallRespData]> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
         const requestParam: CatchDragonReq = {
             userId,
+            sceneId: await this.querySceneId(userId),
             dragonPalId,
             catchTimeStamp,
             attributionType: "game",
@@ -839,6 +839,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: UserDataQueryReq = {
             userId,
+            sceneId: await this.querySceneId(userId),
         };
 
         const respInJson = await
@@ -859,6 +860,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: UserDataQueryReq = {
             userId,
+            sceneId: await this.querySceneId(userId),
         };
 
         const respInJson = await
@@ -903,6 +905,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const userAvatar = player["avatarUrl"];
         const requestParam: UpdatePetSimulatorRankDataReq = {
             userId,
+            sceneId: await this.querySceneId(userId),
             userName,
             userAvatar,
             petName,
@@ -933,6 +936,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const userAvatar = player["avatarUrl"];
         const requestParam: UpdateBattleWorldRankDataReq = {
             userId,
+            sceneId: await this.querySceneId(userId),
             userName,
             userAvatar,
             grade,
@@ -963,6 +967,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return undefined;
         }
         return userId;
+    }
+
+    private async querySceneId(userId: string): Promise<string> {
+        return (await mw.TeleportService.asyncGetPlayerRoomInfo(userId))?.sceneId ?? "INVALID_SCENE_ID";
     }
 
     private async correspondHandler<D = object>(reqParam: object, releaseUrl: string, testUrl: string) {
