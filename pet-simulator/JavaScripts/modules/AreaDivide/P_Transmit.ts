@@ -191,7 +191,7 @@ class WorldItem {
             this.onBtnAC.call(cfg.id);
         });
         //临时屏蔽第二第三世界
-        if (this.cfg.id > 1) {
+        if (this.cfg.id > 2) {
             this.btn.onClicked.clear();
         }
         this.updateUI();
