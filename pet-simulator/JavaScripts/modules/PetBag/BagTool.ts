@@ -8,6 +8,34 @@ export enum EnchantType {
 
 }
 export class BagTool {
+
+    /**随机生成id */
+    public static randomEnchantId(): number {
+        let arr: number[] = [];
+        let weightArr: number[] = [];
+        let cfgs = GameConfig.Enchants.getAllElement();
+        cfgs.forEach(element => {
+            if (element.QualityType == 0 && !GlobalData.Enchant.filterIds.includes(element.id)) {
+                arr.push(element.id);
+                weightArr.push(element.Weight);
+            }
+        });
+        let totalWeight = 0;
+        for (let i = 0; i < weightArr.length; i++) {
+            totalWeight += weightArr[i];
+        }
+        let petVariantId = 0;
+        let random = Math.random() * totalWeight;
+        let probability = 0;
+        for (let i = 0; i < arr.length; i++) {
+            probability += weightArr[i];
+            if (random <= probability) {
+                petVariantId = arr[i];
+                break;
+            }
+        }
+        return petVariantId;
+    }
     /**随机生成词条等级 */
     // public static randomEnchantLevel(id: number): number {
     //     //特殊词条

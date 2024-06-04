@@ -89,7 +89,7 @@ export class PetBagModuleData extends Subdata {
     public BagItemChangeAC: Action3<boolean, number, number> = new Action3();
     public PetTrainChangeAC: Action = new Action();
     /**词条改变事件 key,词条id */
-    public PetEnchantChangeAC: Action2<number, number[]> = new Action2();
+    public PetEnchantChangeAC: Action2<number[], string[]> = new Action2();
     /**true:装备 false: 卸下 */
     public PetEquipChangeAC: Action2<boolean, number[]> = new Action2();
 
@@ -477,13 +477,15 @@ export class PetBagModuleData extends Subdata {
 
     /**附魔
      * @param key 宠物key
-     * @param ids 附魔id数组
+     * @param id 附魔id
      */
-    public addEnchant(key: number, ids: number[]) {
-				this.addPetEnchant(key, ids);
+    public addEnchant(keys: number[], ids: string[]) {
+        for (let i = 0; i < keys.length; i++) {
+            this.addPetEnchant(keys[i], stringToNumberArr(ids[i]));
+        }
 
         this.save(true);
-        this.PetEnchantChangeAC.call(key, ids);
+        this.PetEnchantChangeAC.call(keys, ids);
     }
 
     /**单个宠物附魔 */

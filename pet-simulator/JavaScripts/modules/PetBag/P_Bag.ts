@@ -116,11 +116,13 @@ export class P_Bag extends PetBagPanel_Generate {
     }
 
 		/** 附魔后刷新宠物战力值颜色等 */
-		public updateEnchantItemsUI(key: number) {
-				const itemUI = this.itemArr.find((item) => item.petData.k === key);
-        if (!itemUI) return;
-        const data = this.data.bagItemsByKey(itemUI.petData.k);
-        itemUI.init(data);
+		public updateEnchantItemsUI(keys: number[]) {
+				const itemUIArr = this.itemArr.filter((p) => keys.includes(p.petData.k)) 
+				if(!itemUIArr?.length) return;
+				for (let item of itemUIArr) {
+					const data = this.data.bagItemsByKey(item.petData.k)
+					item.init(data);
+				}
 		}
 
     /**装备或卸载宠物时播放的过渡动画 */

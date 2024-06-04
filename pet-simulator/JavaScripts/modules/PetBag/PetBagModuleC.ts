@@ -73,6 +73,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 
         let ids = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key).I);
         UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, ids);
+
+        this.enchantUI.enchantAc.add(this.addEnchant.bind(this));
         this.enchantUI.onUpdateAc.add((canUpdate: boolean) => {
             this.canUpdate = canUpdate;
         });
@@ -351,25 +353,36 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     }
 
     /****************附魔***********/
+
+    /**
+     * 添加词条
+     * @param key 宠物key
+     * @param id 词条id
+     */
+    private addEnchant(keys: number[], ids: string[]) {
+        this.server.net_addEnchant(numberArrToString(keys), ids);
+    }
+ 
     /**附魔成功 */
-    private enchantSuccess(key: number, ids: number[]) {
-				if (!ids?.length) return;
-				// 成就 - 附魔成功数
-        this.achievementModuleC.onExecuteAchievementAction.call(
-						GlobalEnum.AchievementType.PetEnchantNum,
-						1
-        );
-        console.log("======= enchantSuccess =======\n", key, "ids", ids);
-        this.bagUI.updateEnchantItemsUI(key); // 刷新背包UI
-        for (let i = 0; i < ids.length; i++) {
-						const id = ids[i];
-						if (GlobalData.Enchant.specialEnchantId.includes(id)) {
-								oTraceError("宠物附魔独特的标签成功附魔成功");
-								this.achievementModuleC.onExecuteAchievementAction.call(
-										GlobalEnum.AchievementType.PetEnchantUniqueTagSuccessNum,
-										1
-								); // 成就 - 宠物附魔独特的标签成功
-						}
+    private enchantSuccess(keys: number[], idstr: string[]) {
+				this.achievementModuleC.onExecuteAchievementAction.call(
+          GlobalEnum.AchievementType.PetEnchantNum,
+          1
+        ); //融合成功数
+        console.log("======= enchantSuccess =======\n", keys, "id str", idstr);
+        this.bagUI.updateEnchantItemsUI(keys); // 刷新背包UI
+        for (let i = 0; i < idstr.length; i++) {
+          const element = idstr[i];
+          let ids = stringToNumberArr(element);
+          ids.forEach((id) => {
+            if (GlobalData.Enchant.specialEnchantId.includes(id)) {
+              oTraceError("宠物附魔独特的标签成功附魔成功");
+              this.achievementModuleC.onExecuteAchievementAction.call(
+                GlobalEnum.AchievementType.PetEnchantUniqueTagSuccessNum,
+                1
+              ); //宠物附魔独特的标签成功
+            }
+          });
         }
     }
 
@@ -391,8 +404,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 				return await this.server.net_petEnchant(selectedEnchantIds, selectPetKey);
 		}
 
-		public async enchant(selectPetKey: number | null, selectEnchantIds: number | null): Promise<EnchantPetState>{
-				return await this.server.net_enchant(selectPetKey, selectEnchantIds);
+		public async enchantConsume(selectPetKey: number | null): Promise<boolean> {
+				return await this.server.net_enchantConsume(selectPetKey);
 		}
 		public async getEnchantCost(selectPetKey: number | null): Promise<number> {
 				return await this.server.net_getEnchantCost(selectPetKey);

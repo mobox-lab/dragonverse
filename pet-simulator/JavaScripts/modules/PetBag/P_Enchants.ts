@@ -23,10 +23,7 @@ export enum EnchantPetState {
     IS_HAS_ENCHANT = 'is_has_enchant',
     HAS_NO_ENCHANT = 'has_no_enchant',
     NO_SELECTED_PET = 'no_selected_pet',
-		// status
     NO_ENOUGH_DIAMOND = 'no_enough_diamond',
-		SUCCESS = 'is_ok',
-    FAILED = 'is_failed',
 }
 export class P_Enchants extends EnchantsPanel_Generate {
     /**是否第一次打开 */
@@ -46,6 +43,9 @@ export class P_Enchants extends EnchantsPanel_Generate {
     private selectEnchantId: number | null = null;
 		/**左侧附魔信息面板*/
     private enchantItemsUI: EnchantItem[] = [];
+
+    /**附魔事件 key,词条id数组*/
+    public enchantAc: Action2<number[], string[]> = new Action2();
 
     public onUpdateAc: Action1<boolean> = new Action1();
 
@@ -281,61 +281,40 @@ export class P_Enchants extends EnchantsPanel_Generate {
 
     /**点击附魔按钮 */
     private async onClickEnchant() {
-        if (this.isEnchanting) {
-          //正在附魔 不允许点击
-          oTraceError("正在附魔中");
-          return;
+        if (this.isEnchanting) { //正在附魔 不允许点击
+						oTraceError('正在附魔中');
+            return;
         }
         const selectedEnchantIds: number[] = this.getSelectEnchant();
         const petBagMC = ModuleService.getModule(PetBagModuleC);
-        const enchantPetState = await petBagMC.getPetEnchantState(
-          selectedEnchantIds,
-          this.selectPetKey
-        );
+        const enchantPetState = await petBagMC.getPetEnchantState(selectedEnchantIds, this.selectPetKey);
 
         const startEnchantFn = async (isOK: boolean) => {
-						if (!isOK) return;
-						const res = await petBagMC.enchant(
-								this.selectPetKey,
-								this.selectEnchantId
-						);
-						if (res === EnchantPetState.NO_ENOUGH_DIAMOND) {
-								MessageBox.showOneBtnMessage(
-										GameConfig.Language.Text_Fuse_UI_3.Value,
-										() => {
-												super.show();
-										}
-								);
+            if (!isOK) return;
+            const res = await petBagMC.enchantConsume(this.selectPetKey);
+            if (!res) {
+								MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
+										super.show();
+								});
 								return;
 						}
-						if (res === EnchantPetState.FAILED) {
-								console.error("附魔出错");
-								return;
-						}
-						this.startEnchant(); // 特效等
+            // TODO: refactor
+            this.startEnchant(selectedEnchantIds);
         };
 
         switch (enchantPetState) {
-          case EnchantPetState.IS_SAME_ENCHANT: {
-            MessageBox.showOneBtnMessage(
-              GameConfig.Language.Tips_Enchants_3.Value
-            );
-            break;
-          }
-          case EnchantPetState.IS_HAS_ENCHANT: {
-            MessageBox.showTwoBtnMessage(
-              GameConfig.Language.Tips_Enchants_2.Value,
-              startEnchantFn
-            );
-            break;
-          }
-          default: {
-            MessageBox.showTwoBtnMessage(
-              GameConfig.Language.Tips_Enchants_1.Value,
-              startEnchantFn
-            );
-            break;
-          }
+            case EnchantPetState.IS_SAME_ENCHANT: {
+                MessageBox.showOneBtnMessage(GameConfig.Language.Tips_Enchants_3.Value);
+                break;
+            }
+            case EnchantPetState.IS_HAS_ENCHANT: {
+                MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_2.Value, startEnchantFn);
+                break;
+            }
+            default: {
+                MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_1.Value, startEnchantFn);
+                break;
+            }
         }
     }
 
@@ -355,11 +334,11 @@ export class P_Enchants extends EnchantsPanel_Generate {
      * @param tarEnchant 目标附魔数组
      * @param petKeyArr 宠物key数组
      */
-    private async startEnchant() {
+    private async startEnchant(tarEnchant: number[]) {
         if (!this.isEnchanting) {
-						this.setEnchantBtnClickState(false);
+            this.setEnchantBtnClickState(false);
         }
-        this.enchantProgress();
+        this.enchantProgress(tarEnchant);
         this.moveUI(false);
     }
 
@@ -372,40 +351,40 @@ export class P_Enchants extends EnchantsPanel_Generate {
     }
 
     /**当前附魔进度 */
-    private enchantProgress() {
-        // if (tarEnchant.length == 0) {
-        //     let ids = GlobalData.Enchant.normalEnchantId;
-        //     for (let i = ids[0]; i < ids[1]; i++) {
-        //         if (!GlobalData.Enchant.filterIds.includes(i)) tarEnchant.push(i);
-        //     }
-        // }
-        // //词条个数
-        // let enchantNum = 1;
-        // let index = BagTool.calculateWeight(GlobalData.Enchant.singleDoubleWeight);
-        // if (index == 0) {
-        //     enchantNum = 1;
-        // } else {
-        //     enchantNum = 2;
-        // }
+    private enchantProgress(tarEnchant: number[]) {
+        if (tarEnchant.length == 0) {
+            let ids = GlobalData.Enchant.normalEnchantId;
+            for (let i = ids[0]; i < ids[1]; i++) {
+                if (!GlobalData.Enchant.filterIds.includes(i)) tarEnchant.push(i);
+            }
+        }
+        //词条个数
+        let enchantNum = 1;
+        let index = BagTool.calculateWeight(GlobalData.Enchant.singleDoubleWeight);
+        if (index == 0) {
+            enchantNum = 1;
+        } else {
+            enchantNum = 2;
+        }
 
-        // let del: number[] = [];
-        // let curIdStr: string[] = [];
+        let del: number[] = [];
+        let curIdStr: string[] = [];
 
-        // //宠物循环
-				// const element = this.selectPetKey;
-				// //词条个数循环
-				// let curId: number[] = [];
-				// for (let j = 0; j < enchantNum; j++) {
-				// 		let curID = BagTool.randomEnchantId();
-				// 		curId.push(curID);
-				// 		if (tarEnchant.includes(curID)) {
-				// 				//如果目标附魔中包含随机附魔id,删除
-				// 				del.push(element);
-				// 		}
-				// }
-				// curIdStr.push(numberArrToString(curId));
+        //宠物循环
+				const element = this.selectPetKey;
+				//词条个数循环
+				let curId: number[] = [];
+				for (let j = 0; j < enchantNum; j++) {
+						let curID = BagTool.randomEnchantId();
+						curId.push(curID);
+						if (tarEnchant.includes(curID)) {
+								//如果目标附魔中包含随机附魔id,删除
+								del.push(element);
+						}
+				}
+				curIdStr.push(numberArrToString(curId));
 
-        // this.enchantAc.call([this.selectPetKey], curIdStr);
+        this.enchantAc.call([this.selectPetKey], curIdStr);
 
         this.playEffect();
     }
