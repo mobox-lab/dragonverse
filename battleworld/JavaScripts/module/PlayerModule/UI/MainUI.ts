@@ -38,18 +38,13 @@ import { EnergyModuleC } from "../../Energy/EnergyModule";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import BuyEnergyPanel from "../../../ui/BuyEnergyPanel";
 import { Yoact } from "../../../depend/yoact/Yoact";
-import bindYoact = Yoact.bindYoact;
-import GToolkit from "../../../util/GToolkit";
 import { AuthModuleC } from "../../auth/AuthModule";
 import { MessageBox } from "../../../tool/MessageBox";
 import Tips from "../../../tool/P_Tips";
-import { GlobalAttrHelpler } from "../../attr/GlobalAttrHelpler";
-import { SettingModuleC } from "../../SetingModule/SetingMoudleC";
 import { JumpGamePanel } from "../../../ui/jump-game/JumpGamePanel";
 import Gtk from "../../../util/GToolkit";
-import { SkillModuleC } from "../../SkillModule/SkillModuleC";
 import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
-import SetingUI from "../../SetingModule/UI/SetingUI";
+import SettingUI from "../../SettingModule/UI/SettingUI";
 import { P_Game_Action } from "../../action/ui/P_Game_Action";
 import { SkillSelectPanel } from "../../SkillModule/UI/SkillSelectPanel";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
@@ -160,8 +155,8 @@ export class MainUI extends Main_HUD_Generate {
         });
         // 设置
         this.mBtn_Setting.onClicked.add(() => {
-            if (UIService.getUI(SetingUI)?.isShowing) {
-                UIService.getUI(SetingUI)?.onBack();
+            if (UIService.getUI(SettingUI)?.isShowing) {
+                UIService.getUI(SettingUI)?.onBack();
             } else {
                 EventManager.instance.call(EModule_Events.SetingModuleC_showSetingUI);
             }
@@ -254,10 +249,7 @@ export class MainUI extends Main_HUD_Generate {
         this.initReset();
 
         this.initPill();
-        ModuleService.getModule(SettingModuleC).getCameraSpeed().then(value => {
-            Globaldata.cameraRotateSpeed = value;
-            this.setCameraSpeed(value);
-        });
+
 
         this.jumpRoomBtn.onClicked.add(() => {
             if (UIService.getUI(JumpGamePanel).isShowing) {

@@ -4,33 +4,37 @@ import { EventManager } from "../../../tool/EventManager";
 import { Globaldata } from "../../../const/Globaldata";
 import { AnalyticsTool, EPageName } from "../../AnalyticsModule/AnalyticsTool";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
-import { SettingModuleC } from "../SetingMoudleC";
+import { SettingModuleC } from "../SettingModuleC";
 import { MainUI } from "../../PlayerModule/UI/MainUI";
 import { MouseLockController } from "../../../controller/MouseLockController";
+import { SettingOptions } from "../SettingModuleData";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 /**设置*/
-export default class SetingUI extends Setting_Main_Generate {
+export default class SettingUI extends Setting_Main_Generate {
 
     private curShadow: boolean = false;
-
-    private readonly battleWorldCameraSpeed = "BATTLE_WORLD_CAMERA_SPEED";
-
-    private readonly defaultCameraSpeed = 10;
 
     private tempCameraSpeed: number = 0;
 
     public isShowing: boolean = false;
 
     onStart() {
-
-
-        this.mScroll_CPU.currentValue = GraphicsSettings.getCPULevel();
-        this.mScroll_GPU.currentValue = GraphicsSettings.getGPULevel();
+        this.mBtn_CloseSound.onClicked.add(() => {
+            let res = SoundService.volumeScale === 0;
+            SoundService.volumeScale = res ? 1 : 0;
+            SoundService.BGMVolumeScale = res ? 1 : 0;
+            this.mBtn_CloseSound.text = res ? "ON" : "OFF";
+            this.mScroll_BGM.currentValue = SoundService.BGMVolumeScale;
+            this.mScroll_Voice.currentValue = SoundService.volumeScale;
+        });
+        // this.mScroll_CPU.currentValue = GraphicsSettings.getCPULevel();
+        // this.mScroll_GPU.currentValue = GraphicsSettings.getGPULevel();
         this.mScroll_BGM.currentValue = SoundService.BGMVolumeScale;
         this.mScroll_Voice.currentValue = SoundService.volumeScale;
         this.mScroll_InputScale.currentValue = this.getInputScale();
         this.mScroll_Saturation.currentValue = mw.PostProcess.saturation; //this.setingMoudleC.postProcess.globalSaturation;
-        this.mScroll_speedInputScale.currentValue = this.defaultCameraSpeed;
+
         this.curShadow = mw.Lighting.castShadowsEnabled;
 
         this.changeSaturationUI();
@@ -40,8 +44,8 @@ export default class SetingUI extends Setting_Main_Generate {
         new ReturnItem(this.mScroll_InputScale, this.mBtn_Return_InputScale);
         new ReturnItem(this.mScroll_Saturation, this.mBtn_Return_Saturation);
 
-        this.mScroll_CPU.sliderButtonReleaseDelegate.add(this.onCPUChanged.bind(this));
-        this.mScroll_GPU.sliderButtonReleaseDelegate.add(this.onGPUChanged.bind(this));
+        // this.mScroll_CPU.sliderButtonReleaseDelegate.add(this.onCPUChanged.bind(this));
+        // this.mScroll_GPU.sliderButtonReleaseDelegate.add(this.onGPUChanged.bind(this));
         this.mScroll_InputScale.sliderButtonReleaseDelegate.add(this.onInputScaleChanged.bind(this));
         this.mScroll_Saturation.sliderButtonReleaseDelegate.add(this.onSaturationChanged.bind(this));
         this.mScroll_Voice.sliderButtonReleaseDelegate.add(this.onVoiceChanged.bind(this));
@@ -57,13 +61,18 @@ export default class SetingUI extends Setting_Main_Generate {
 
 
     onShow() {
-        this.mScroll_CPU.currentValue = GraphicsSettings.getCPULevel();
-        this.mScroll_GPU.currentValue = GraphicsSettings.getGPULevel();
+        // this.mScroll_CPU.currentValue = GraphicsSettings.getCPULevel();
+        // this.mScroll_GPU.currentValue = GraphicsSettings.getGPULevel();
         this.mScroll_BGM.currentValue = SoundService.BGMVolumeScale;
         this.mScroll_Voice.currentValue = SoundService.volumeScale;
         this.mScroll_InputScale.currentValue = this.getInputScale();
         this.mScroll_Saturation.currentValue = mw.PostProcess.saturation;  //this.setingMoudleC.postProcess.globalSaturation;
-        this.mScroll_speedInputScale.currentValue = Globaldata.cameraRotateSpeed;
+        try {
+            this.mScroll_speedInputScale.currentValue = KeyboardSimulation.getLookUpRateScale();
+        } catch (e) {
+            Log4Ts.log(SettingUI, `keyboardSimulation.getLookUpRateScale error: ${e}`);
+        }
+
         this.curShadow = mw.Lighting.castShadowsEnabled;
         this.changeSaturationUI();
         this.refresh_lockBtn();
@@ -75,8 +84,9 @@ export default class SetingUI extends Setting_Main_Generate {
 
         MouseLockController.getInstance().needMouseUnlock();
 
-        this.tempCameraSpeed = Globaldata.cameraRotateSpeed;
         this.isShowing = true;
+
+        this.mBtn_CloseSound.text = (SoundService.volumeScale === 0 || SoundService.BGMVolumeScale === 0) ? "OFF" : "ON";
     }
 
     listen_cameraTargetArmLength(value: number) {
@@ -96,15 +106,15 @@ export default class SetingUI extends Setting_Main_Generate {
         }
     }
 
-    onCPUChanged(value: number) {
-        if (value == GraphicsSettings.getCPULevel()) return;
-        GraphicsSettings.setGraphicsCPULevel(value);
-    }
+    // onCPUChanged(value: number) {
+    //     if (value == GraphicsSettings.getCPULevel()) return;
+    //     GraphicsSettings.setGraphicsCPULevel(value);
+    // }
 
-    onGPUChanged(value: number) {
-        if (value == GraphicsSettings.getGPULevel()) return;
-        GraphicsSettings.setGraphicsGPULevel(value);
-    }
+    // onGPUChanged(value: number) {
+    //     if (value == GraphicsSettings.getGPULevel()) return;
+    //     GraphicsSettings.setGraphicsGPULevel(value);
+    // }
 
     onInputScaleChanged(value: number) {
         let target = value * (Globaldata.targetArmMaxLen - Globaldata.targetArmMinLen) + Globaldata.targetArmMinLen;
@@ -118,24 +128,44 @@ export default class SetingUI extends Setting_Main_Generate {
 
     onVoiceChanged(value: number) {
         SoundService.volumeScale = value;
+        if (value === 0 && this.mScroll_BGM.currentValue === 0) {
+            this.mBtn_CloseSound.text = "OFF";
+        } else {
+            this.mBtn_CloseSound.text = "ON";
+        }
     }
 
     onBGMChanged(value: number) {
         SoundService.BGMVolumeScale = value;
+        if (value === 0 && this.mScroll_Voice.currentValue === 0) {
+            this.mBtn_CloseSound.text = "OFF";
+        } else {
+            this.mBtn_CloseSound.text = "ON";
+        }
     }
 
     onSpeedInputScaleChanged(value: number) {
-        Globaldata.cameraRotateSpeed = value;
-        UIService.getUI(MainUI)?.setCameraSpeed(value);
+        try {
+            KeyboardSimulation.setLookUpRateScale(value);
+        } catch (e) {
+            Log4Ts.log(SettingUI, `keyboardSimulation.setLookUpRateScale error: ${e}`);
+        }
     }
 
     onBack() {
-        if (this.tempCameraSpeed != Globaldata.cameraRotateSpeed) {
-            ModuleService.getModule(SettingModuleC).setCameraSpeed(Globaldata.cameraRotateSpeed);
-        }
         mw.UIService.hideUI(this);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         MouseLockController.getInstance().cancelMouseUnlock();
+        //设置存档
+        ModuleService.getModule(SettingModuleC).applySettings(new SettingOptions(
+            this.mScroll_BGM.currentValue,
+            this.mScroll_Voice.currentValue,
+            this.mScroll_speedInputScale.currentValue,
+            this.mScroll_Saturation.currentValue,
+            this.curShadow,
+            this.mScroll_InputScale.currentValue,
+            Globaldata.isAutoLockEnemy
+        ));
 
         this.isShowing = false;
     }
@@ -159,9 +189,6 @@ export default class SetingUI extends Setting_Main_Generate {
     private refresh_lockBtn() {
         this.mBtn_Lock.text = Globaldata.isAutoLockEnemy ? "ON" : "OFF";
     }
-
-
-
 }
 
 class ReturnItem {

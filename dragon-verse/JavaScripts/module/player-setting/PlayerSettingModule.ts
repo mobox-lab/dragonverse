@@ -6,6 +6,7 @@ import AudioController from "../../controller/audio/AudioController";
 import { ATransactItem, Transact } from "./ATransactItem";
 import { Constructor } from "../../util/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 type SettingItemType =
     | "bgm-volume"
@@ -116,15 +117,25 @@ class CameraLookUpRateScaleTransactItem extends SettingItem<number> {
     public readonly previewEnable: boolean = true;
 
     protected set(val: number): void {
-        KeyboardSimulation.setLookUpRateScale(val);
+        try {
+            KeyboardSimulation.setLookUpRateScale(val);
+        } catch (e) {
+            Log4Ts.log(CameraLookUpRateScaleTransactItem, `setLookUpRateScale error: ${e}`);
+        }
     }
 
     public get(): number {
-        return KeyboardSimulation.getLookUpRateScale();
+        let val = GameServiceConfig.DEFAULT_CAMERA_LOOK_UP_RATE_SCALE
+        try {
+            val = KeyboardSimulation.getLookUpRateScale();
+        } catch (e) {
+            Log4Ts.log(CameraLookUpRateScaleTransactItem, `getLookUpRateScale error: ${e}`);
+        }
+        return val;
     }
 
     public reset(): this {
-        this.set(0.5);
+        this.set(GameServiceConfig.DEFAULT_CAMERA_LOOK_UP_RATE_SCALE);
         return this;
     }
 }
@@ -162,6 +173,10 @@ export default class PlayerSettingModuleData extends Subdata {
         this.bgmVolume = 1;
         this.soundEffectVolume = 1;
         this.cameraLookUpRateScale = 0.5;
+    }
+
+    protected get version(): number {
+        return 2
     }
 
     protected onDataInit(): void {

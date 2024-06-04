@@ -171,6 +171,10 @@ export default class PlayerSettingModuleData extends Subdata {
         this.cameraLookUpRateScale = 0.5;
     }
 
+    protected get version(): number {
+        return 2
+    }
+
     protected onDataInit(): void {
         while (this.version != this.currentVersion) {
             switch (this.currentVersion) {

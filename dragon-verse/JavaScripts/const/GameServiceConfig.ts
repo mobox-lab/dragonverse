@@ -1,6 +1,10 @@
 import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
+    /**
+     * 镜头灵敏度默认值.
+     */
+    public static readonly DEFAULT_CAMERA_LOOK_UP_RATE_SCALE = 0.5;
     //#region Statistic
 
     /**

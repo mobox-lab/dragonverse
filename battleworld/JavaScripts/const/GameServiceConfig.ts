@@ -10,6 +10,14 @@ import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
     /**
+     * 走路音效.
+     */
+    public static readonly WALK_SOUND = "287414";
+    /**
+     * 落地音效.
+     */
+    public static readonly LANDED_SOUND = "196559";
+    /**
      * 是否开启落地爆炸冲量.
      */
     public static readonly ENABLE_LAND_IMPULSE = false;

@@ -1,6 +1,7 @@
 import AudioController from "../../controller/audio/AudioController";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { MouseLockController } from "../../controller/MouseLockController";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { PlayerSettingModuleC } from "../../module/player-setting/PlayerSettingModule";
 import Setting_Main_Generate from "../../ui-generate/setting/Setting_Main_generate"
 
@@ -48,13 +49,9 @@ export default class SettingsPanel extends Setting_Main_Generate {
         this.mBtn_CloseSound.text = this._currentIsMute
             ? "off"
             : "on";
-        try {
-            this._currentSpeedInputScale = KeyboardSimulation.getLookUpRateScale();
-            this.mScroll_speedInputScale.currentValue = this._currentSpeedInputScale;
-        } catch (e) {
-            // console.error(e);
-        }
 
+        this._currentSpeedInputScale = ModuleService.getModule(PlayerSettingModuleC).get("camera-lookUp-rate-scale");
+        this.mScroll_speedInputScale.currentValue = this._currentSpeedInputScale;
 
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.mBtn_CloseSound.onClicked.broadcast();

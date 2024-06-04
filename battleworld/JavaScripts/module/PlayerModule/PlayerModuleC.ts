@@ -60,6 +60,7 @@ import { UnitManager } from "../npc/UnitManager";
 import { SpiderEffect } from "./UI/SpiderEffect";
 import { ERankNoticeType, RankNotice } from "./UI/rank/RankNotice";
 import { BuffModuleC } from "../buffModule/BuffModuleC";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 /**不执行Motion回调的技能状态MotionID*/
 export const noSkillCallBackSet: Set<number> = new Set<number>([
@@ -241,6 +242,21 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
         this._oldRankScore = this.getAttr(Attribute.EnumAttributeType.rankScore);
     }
 
+    /**右脚是否落地 */
+    private _rightFootOnLand: boolean = true;
+    /**执行一次标识符 */
+    private _canRightExecute: boolean = false;
+    /**左脚是否落地 */
+    private _leftFootOnLand: boolean = true;
+    /**执行一次标识符 */
+    private _canLeftExecute: boolean = false;
+    /**上次落地的脚 0左脚，1右脚*/
+    private _lastOnLandFoot: number = -1;
+
+    private _jumpExecuteOnce: boolean = false;
+    private _landedExecutedOnce: boolean = false;
+    private _swimExecuteOnce: boolean = false;
+
     onUpdate(dt: number) {
         DamageDigit.update();
         this.mStateManager.update(dt);
@@ -248,6 +264,51 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, BattleWorldPlayerModul
         this.defenseUpdate(dt);
         this.updateRecover(dt);
         PlayerManager.instance.update(dt);
+
+        if (Player.localPlayer.character.isMoving && Player.localPlayer.character.getCurrentState() == CharacterStateType.Running) {
+            let rightFootWorldPos = Player.localPlayer.character.getSlotWorldPosition(HumanoidSlotType.RightFoot);
+            let leftFootWorldPos = Player.localPlayer.character.getSlotWorldPosition(HumanoidSlotType.LeftFoot);
+            let rightResults = QueryUtil.lineTrace(rightFootWorldPos, rightFootWorldPos.clone().add(new Vector(0, 0, -100)), true, false, null, null, false, Player.localPlayer.character);
+            let leftResults = QueryUtil.lineTrace(leftFootWorldPos, leftFootWorldPos.clone().add(new Vector(0, 0, -100)), true, false, null, null, false, Player.localPlayer.character);
+            //找到排除触发器的第一个射到的go
+            rightResults = rightResults.filter(result => !(result.gameObject instanceof Trigger));
+            if (rightResults[0] && rightResults[0].distance < 10) {
+                this._rightFootOnLand = true;
+            } else {
+                this._rightFootOnLand = false;
+                //可以执行
+                this._canRightExecute = true;
+            }
+
+            leftResults = leftResults.filter(result => !(result.gameObject instanceof Trigger));
+            if (leftResults[0] && leftResults[0].distance < 10) {
+                this._leftFootOnLand = true;
+            } else {
+                this._leftFootOnLand = false;
+                //可以执行
+                this._canLeftExecute = true;
+            }
+        }
+
+        if (this._canRightExecute && this._rightFootOnLand && this._lastOnLandFoot !== 1) {
+            this._canRightExecute = false;
+            SoundService.playSound(GameServiceConfig.WALK_SOUND, 1, 0.5);
+            this._lastOnLandFoot = 1;
+        }
+        if (this._canLeftExecute && this._leftFootOnLand && this._lastOnLandFoot !== 0) {
+            this._canLeftExecute = false;
+            SoundService.playSound(GameServiceConfig.WALK_SOUND);
+            this._lastOnLandFoot = 0;
+        }
+
+        if (Player.localPlayer.character.getCurrentState() === CharacterStateType.Landed) {
+            if (!this._landedExecutedOnce) {
+                this._landedExecutedOnce = true;
+                SoundService.play3DSound(GameServiceConfig.LANDED_SOUND, Player.localPlayer.character.worldTransform.position, 1, 0.5);
+            }
+        } else {
+            this._landedExecutedOnce = false;
+        }
     }
 
     /**
