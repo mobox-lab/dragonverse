@@ -102,6 +102,7 @@ AddGMCommand(
                 0,
                 999,
                 Date.now(),
+                undefined,
                 0,
             )
             .then(() => {
@@ -214,6 +215,7 @@ interface UpdatePetSimulatorRankDataReq extends UserDataQueryReq {
     petName: string;
     petRarity: number;
     petOriginalAttack: number;
+    petEnchantScore: number;
     round: number;
     /**
      * 宠物获得时间. s
@@ -895,6 +897,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         petRarity: number,
         petOriginalAttack: number,
         recordTime: number,
+        petEnchantScore: number,
         round: number) {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrEmpty(userId)) return;
@@ -911,6 +914,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             petName,
             petRarity,
             petOriginalAttack,
+            petEnchantScore,
             recordTime: recordTime / 1000,
             round,
         };
