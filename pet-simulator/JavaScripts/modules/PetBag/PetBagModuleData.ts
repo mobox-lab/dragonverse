@@ -234,22 +234,42 @@ export class PetBagModuleData extends Subdata {
         return true;
     }
 
+		public getPetEnchantScore(enchantIds: number[]): number {
+      if (!enchantIds?.length) return 0;
+      const score = enchantIds.reduce((total, id) => {
+					return total + (GameConfig.Enchants.getElement(id)?.RankScore ?? 0);
+      }, 0);
+      return score;
+    }
     /**
      * @description: 根据赛季获取拥有的最高战力的宠物
      * @param round 赛季
      * @return 宠物id
      */
     public getMaxAttackPet(currRound: number): number {
-        let maxAttack = 0;
-        let petKey = 0;
-        for (let key in this.bagContainerNew) {
-            //筛出这个赛季获取的
-            if (this.calRound(this.bagContainerNew[key].obtainTime) === currRound && this.bagContainerNew[key].p.a > maxAttack) {
-                maxAttack = this.bagContainerNew[key].p.a;
-                petKey = this.bagContainerNew[key].k;
-            }
-        }
-        return petKey;
+      let maxAttack = 0;
+      let petKey = 0;
+      for (let key in this.bagContainerNew) {
+					//筛出这个赛季获取的
+					const curPet = this.bagContainerNew[key];
+					if (
+						this.calRound(curPet.obtainTime) === currRound &&
+						curPet.p.a >= maxAttack
+					) {
+							const prePet = petKey ? this.bagContainerNew[petKey] : null;
+							// 相同 atk 则看附魔分数
+							if (
+								curPet.p.a === maxAttack &&
+								prePet &&
+								this.getPetEnchantScore(curPet.p.b) <=
+									this.getPetEnchantScore(prePet.p.b)
+							)
+									continue;
+							maxAttack = curPet.p.a;
+							petKey = curPet.k;
+					}
+      }
+      return petKey;
     }
 
     public calRound(obtainTime: number): number {
