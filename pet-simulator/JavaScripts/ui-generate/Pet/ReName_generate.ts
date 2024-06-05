@@ -15,19 +15,19 @@ export default class ReName_Generate extends UIScript {
 		}
 		return this.mSureBtn_Internal
 	}
-	private mNameInputBox_Internal: mw.InputBox
-	public get mNameInputBox(): mw.InputBox {
-		if(!this.mNameInputBox_Internal&&this.uiWidgetBase) {
-			this.mNameInputBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mNameInputBox') as mw.InputBox
-		}
-		return this.mNameInputBox_Internal
-	}
 	private mBtn_Random_Internal: mw.Button
 	public get mBtn_Random(): mw.Button {
 		if(!this.mBtn_Random_Internal&&this.uiWidgetBase) {
 			this.mBtn_Random_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mBtn_Random') as mw.Button
 		}
 		return this.mBtn_Random_Internal
+	}
+	private mNameInputBox_Internal: mw.InputBox
+	public get mNameInputBox(): mw.InputBox {
+		if(!this.mNameInputBox_Internal&&this.uiWidgetBase) {
+			this.mNameInputBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mNameInputBox') as mw.InputBox
+		}
+		return this.mNameInputBox_Internal
 	}
 
 

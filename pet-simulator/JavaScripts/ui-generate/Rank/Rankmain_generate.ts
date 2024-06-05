@@ -15,19 +15,19 @@ export default class Rankmain_Generate extends UIScript {
 		}
 		return this.mText_Title_Internal
 	}
-	private mImage_iconchange1_Internal: mw.Image
-	public get mImage_iconchange1(): mw.Image {
-		if(!this.mImage_iconchange1_Internal&&this.uiWidgetBase) {
-			this.mImage_iconchange1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImage_iconchange1') as mw.Image
-		}
-		return this.mImage_iconchange1_Internal
-	}
 	private mImage_iconchange2_Internal: mw.Image
 	public get mImage_iconchange2(): mw.Image {
 		if(!this.mImage_iconchange2_Internal&&this.uiWidgetBase) {
 			this.mImage_iconchange2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImage_iconchange2') as mw.Image
 		}
 		return this.mImage_iconchange2_Internal
+	}
+	private mImage_iconchange1_Internal: mw.Image
+	public get mImage_iconchange1(): mw.Image {
+		if(!this.mImage_iconchange1_Internal&&this.uiWidgetBase) {
+			this.mImage_iconchange1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImage_iconchange1') as mw.Image
+		}
+		return this.mImage_iconchange1_Internal
 	}
 	private mBtn_refresh_Internal: mw.MaskButton
 	public get mBtn_refresh(): mw.MaskButton {
@@ -57,12 +57,6 @@ export default class Rankmain_Generate extends UIScript {
 
 		//按钮多语言
 		
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/StaleButton") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/StaleButton_1") as any);
-		
-	
 		//文本多语言
 		
 		this.initLanguage(this.mText_Title)

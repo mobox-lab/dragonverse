@@ -76,9 +76,6 @@ export default class GiftMain_Generate extends UIScript {
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvas_Main/TextBlock_1") as any);
 		
 	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvas_Main/TextBlock_2") as any);
-		
-	
 
 	}
 	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

@@ -71,6 +71,69 @@ export default class EnchantsPanel_Generate extends UIScript {
 		}
 		return this.mCanvas_Entry_Internal
 	}
+	private mPetInfo_Internal: mw.Canvas
+	public get mPetInfo(): mw.Canvas {
+		if(!this.mPetInfo_Internal&&this.uiWidgetBase) {
+			this.mPetInfo_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Entry/mPetInfo') as mw.Canvas
+		}
+		return this.mPetInfo_Internal
+	}
+	private mNamecanvas_Internal: mw.Canvas
+	public get mNamecanvas(): mw.Canvas {
+		if(!this.mNamecanvas_Internal&&this.uiWidgetBase) {
+			this.mNamecanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Entry/mPetInfo/mNamecanvas') as mw.Canvas
+		}
+		return this.mNamecanvas_Internal
+	}
+	private mNameBig_Internal: mw.TextBlock
+	public get mNameBig(): mw.TextBlock {
+		if(!this.mNameBig_Internal&&this.uiWidgetBase) {
+			this.mNameBig_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Entry/mPetInfo/mNamecanvas/mNameBig') as mw.TextBlock
+		}
+		return this.mNameBig_Internal
+	}
+	private mNameSmall_Internal: mw.TextBlock
+	public get mNameSmall(): mw.TextBlock {
+		if(!this.mNameSmall_Internal&&this.uiWidgetBase) {
+			this.mNameSmall_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Entry/mPetInfo/mNamecanvas/mNameSmall') as mw.TextBlock
+		}
+		return this.mNameSmall_Internal
+	}
+	private mTypecanvas_Internal: mw.Canvas
+	public get mTypecanvas(): mw.Canvas {
+		if(!this.mTypecanvas_Internal&&this.uiWidgetBase) {
+			this.mTypecanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Entry/mPetInfo/mTypecanvas') as mw.Canvas
+		}
+		return this.mTypecanvas_Internal
+	}
+	private picRarity_Internal: mw.Image
+	public get picRarity(): mw.Image {
+		if(!this.picRarity_Internal&&this.uiWidgetBase) {
+			this.picRarity_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Entry/mPetInfo/mTypecanvas/picRarity') as mw.Image
+		}
+		return this.picRarity_Internal
+	}
+	private textRarity_Internal: mw.TextBlock
+	public get textRarity(): mw.TextBlock {
+		if(!this.textRarity_Internal&&this.uiWidgetBase) {
+			this.textRarity_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Entry/mPetInfo/mTypecanvas/picRarity/textRarity') as mw.TextBlock
+		}
+		return this.textRarity_Internal
+	}
+	private picLovelovelove_Internal: mw.Image
+	public get picLovelovelove(): mw.Image {
+		if(!this.picLovelovelove_Internal&&this.uiWidgetBase) {
+			this.picLovelovelove_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Entry/mPetInfo/mTypecanvas/picLovelovelove') as mw.Image
+		}
+		return this.picLovelovelove_Internal
+	}
+	private picRainbowowow_Internal: mw.Image
+	public get picRainbowowow(): mw.Image {
+		if(!this.picRainbowowow_Internal&&this.uiWidgetBase) {
+			this.picRainbowowow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Entry/mPetInfo/mTypecanvas/picRainbowowow') as mw.Image
+		}
+		return this.picRainbowowow_Internal
+	}
 	private mScrollBox_Entry_Internal: mw.ScrollBox
 	public get mScrollBox_Entry(): mw.ScrollBox {
 		if(!this.mScrollBox_Entry_Internal&&this.uiWidgetBase) {
@@ -134,6 +197,15 @@ export default class EnchantsPanel_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.mTextBlock_Enchant)
+		
+	
+		this.initLanguage(this.mNameBig)
+		
+	
+		this.initLanguage(this.mNameSmall)
+		
+	
+		this.initLanguage(this.textRarity)
 		
 	
 		this.initLanguage(this.mTextBlock_2)
