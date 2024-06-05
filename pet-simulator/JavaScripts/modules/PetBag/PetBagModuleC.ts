@@ -19,6 +19,7 @@ import { P_GlobalTips } from "../UI/P_GlobalTips";
 import Gtk from "../../util/GToolkit";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
 import { PetBag_Item } from "./P_BagItem";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     private achievementModuleC: AchievementModuleC = null;
@@ -355,22 +356,11 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     private enchantSuccess(key: number, ids: number[]) {
 				if (!ids?.length) return;
 				// 成就 - 附魔成功数
-        this.achievementModuleC.onExecuteAchievementAction.call(
-						GlobalEnum.AchievementType.PetEnchantNum,
-						1
-        );
-        console.log("======= enchantSuccess =======\n", key, "ids", ids);
-        this.bagUI.updateEnchantItemsUI(key); // 刷新背包UI
-        for (let i = 0; i < ids.length; i++) {
-						const id = ids[i];
-						if (GlobalData.Enchant.specialEnchantIdRange.includes(id)) {
-								oTraceError("宠物附魔独特的标签成功附魔成功");
-								this.achievementModuleC.onExecuteAchievementAction.call(
-										GlobalEnum.AchievementType.PetEnchantUniqueTagSuccessNum,
-										1
-								); // 成就 - 宠物附魔独特的标签成功
-						}
-        }
+				this.achievementModuleC.onExecuteAchievementAction.call(
+					GlobalEnum.AchievementType.PetEnchantNum,
+					1
+				);
+				this.bagUI.updateEnchantItemsUI(key); // 刷新背包UI
     }
 
     async buyEgg(cfgId: number): Promise<number | null> {

@@ -780,14 +780,16 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 		}
 
     /** 附魔公告 */
-    private enchantNotice(playerId: number, enchantIds: number[]) {
+    private enchantNotice(player: mw.Player, enchantIds: number[]) {
         if (!enchantIds?.length) return;
+				const playerId = player.playerId;
         const noticeIds = enchantIds.filter(id => GlobalData.Notice.enchantBuff.includes(id));
         if (noticeIds?.length) this.getAllClient().net_enchantNotice(playerId, noticeIds);
     }
 
     public async net_enchant(selectPetKey: number | null, selectEnchantId: number | null): Promise<EnchantPetState> {
 				const playerId = this.currentPlayerId;
+				const player = this.currentPlayer;
         const data = this.currentData;
         const cost = this.getEnchantCost(selectPetKey);
 				Log4Ts.log(PetBagModuleS, `net_enchant cost:` + cost);
@@ -814,7 +816,12 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 				Log4Ts.log(PetBagModuleS, 'net_enchant enchantNewIds:' +  newIds);
 
         this.reportMaxAttackPetInfo(playerId, this.currentData); // 上报附魔分数变化 这里就是要现在的currentData
-        this.enchantNotice(playerId, newIds);
+        this.enchantNotice(player, newIds);
+				const specialIds = newIds.filter(id => {
+					const [min, max] = GlobalData.Enchant.specialEnchantIdRange
+					return id >= min && id <= max;
+				})
+				if(specialIds?.length) mw.Event.dispatchToClient(player, "ENCHANT_BROADCAST_ACHIEVEMENT_ENCHANT_SPECIAL");
         return EnchantPetState.SUCCESS;
     }
 

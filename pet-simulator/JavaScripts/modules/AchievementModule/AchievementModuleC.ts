@@ -10,6 +10,7 @@ import { TipsManager } from "../Hud/P_TipUI";
 import AchievementData, { AchievementNew } from "./AchievementData";
 import AchievementModuleS from "./AchievementModuleS";
 import CompletedPanel from "./ui/CompletedPanel";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 
 export default class AchievementModuleC extends ModuleC<AchievementModuleS, AchievementData> {
@@ -29,6 +30,9 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
 				);
 				mw.Event.addServerListener("FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE",
 					 this.broadcastAchievementChangeType
+				);
+				mw.Event.addServerListener("ENCHANT_BROADCAST_ACHIEVEMENT_ENCHANT_SPECIAL",
+					 this.broadcastAchievementEnchantSpecial
 				);
     }
 
@@ -389,6 +393,14 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
         }
         MapEx.set(this.achievementStageC, achievementType, achievement);
     }
+
+    /**
+     * 广播附魔出了 special 词条成就 43~45
+     */
+    public broadcastAchievementEnchantSpecial = () => {
+				this.onExecuteAchievementAction.call(GlobalEnum.AchievementType.PetEnchantUniqueTagSuccessNum, 1);
+				Log4Ts.log(AchievementModuleC, 'broadcastAchievementEnchantSpecial');
+		}
 
     /**
      * 广播融合类型成就（融合成功数=9&融合传奇宠物数=20）
