@@ -164,6 +164,30 @@ export default class PlayerSettingModuleData extends Subdata {
     @Decorator.persistence()
     cameraLookUpRateScale: number;
 
+    /**
+     * 饱和度
+     */
+    @Decorator.persistence()
+    saturation: number;
+
+    /**
+     * 是否开启阴影
+     */
+    @Decorator.persistence()
+    enableShadow: boolean;
+
+    /**
+     * 视野缩放距离
+     */
+    @Decorator.persistence()
+    fovScale: number;
+
+    /**
+     * 是否开启索敌
+     */
+    @Decorator.persistence()
+    enableSearch: boolean;
+
     protected initDefaultData(): void {
         // this.language = LanguageTypes.Chinese;
         this.bgmVolume = 1;
@@ -184,6 +208,11 @@ export default class PlayerSettingModuleData extends Subdata {
 
                     // 在升级的地方对新字段进行初始化
                     this.cameraLookUpRateScale = 0.5
+
+                    this.saturation = 1;
+                    this.enableShadow = true;
+                    this.fovScale = 0.3;
+                    this.enableSearch = true;
                     break;
 
                 default:

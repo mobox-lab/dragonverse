@@ -491,14 +491,14 @@ function validPacemakerFilter(obj: GameObject): Enumerable.IEnumerable<{ areaId:
  * @return {mw.Vector | undefined}
  */
 export function dimensionComeDown(startPoint: IPoint2,
-                                  platform: number,
-                                  length: number,
-                                  down: boolean = true,
-                                  filterTag: string[] = undefined,
-                                  ignoreTag: string[] = undefined,
-                                  ignores: string[] = undefined,
-                                  ignoreByType: boolean = false,
-                                  debug: boolean = false): mw.Vector | undefined {
+                           platform: number,
+                           length: number,
+                           down: boolean = true,
+                           filterTag: string[] = undefined,
+                           ignoreTag: string[] = undefined,
+                           ignores: string[] = undefined,
+                           ignoreByType: boolean = false,
+                           debug: boolean = false): mw.Vector | undefined {
     let hasCandidate = !Gtk.isNullOrEmpty(filterTag);
     let hasFilter = !Gtk.isNullOrEmpty(ignoreTag);
     return Gtk.sampleVerticalTerrain(startPoint,
