@@ -43,12 +43,12 @@ export default class Enchants_item_Generate extends UIScript {
 		}
 		return this.textScoreUp_Internal
 	}
-	private textScorenumber_Internal: mw.TextBlock
-	public get textScorenumber(): mw.TextBlock {
-		if(!this.textScorenumber_Internal&&this.uiWidgetBase) {
-			this.textScorenumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/textScorenumber') as mw.TextBlock
+	private textScoreNumber_Internal: mw.TextBlock
+	public get textScoreNumber(): mw.TextBlock {
+		if(!this.textScoreNumber_Internal&&this.uiWidgetBase) {
+			this.textScoreNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/textScoreNumber') as mw.TextBlock
 		}
-		return this.textScorenumber_Internal
+		return this.textScoreNumber_Internal
 	}
 	private picScore_Internal: mw.Image
 	public get picScore(): mw.Image {
@@ -102,7 +102,7 @@ export default class Enchants_item_Generate extends UIScript {
 		this.initLanguage(this.textScoreUp)
 		
 	
-		this.initLanguage(this.textScorenumber)
+		this.initLanguage(this.textScoreNumber)
 		
 	
 		//文本多语言

@@ -37,8 +37,6 @@ export class P_Enchants extends EnchantsPanel_Generate {
     private enchantItems: EnchantItem[] = [];
     /**宠物item */
     private petItems: PetBag_Item[] = [];
-    /**选中的宠物key数组 */
-    private selectPetKeys: number[] = [];
 
     /**选中的宠物key*/
     private selectPetKey: number | null = null;
@@ -174,8 +172,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
 
 		/**左侧附魔详情面板 */
 		public updateEnchantIntroPanel() {
-				if (this.enchantItemsUI?.length)
-					this.mCanvas_Entrylist.removeAllChildren(); // 清除上一次的UI
+				this.mCanvas_Entrylist.removeAllChildren(); // 清除上一次的UI
 				const curSelectPetInfo = this.petItems.find(
 					(pet) => pet.petData.k === this.selectPetKey
 				);
@@ -188,11 +185,8 @@ export class P_Enchants extends EnchantsPanel_Generate {
 					" enchantCnt:" + curSelectPetInfo?.petData?.enchantCnt
 				);
 				const buffIds = curSelectPetInfo?.petData?.p?.b;
-				if (!curSelectPetInfo?.petData || !buffIds?.length) {
-					this.mCanvas_Entrylist.removeAllChildren();
-					return;
-				}
-				const len = buffIds.length; // 两词条则可选择一词条重铸
+				if (!curSelectPetInfo?.petData) return;
+				const len = buffIds?.length ?? 0; // 两词条则可选择一词条重铸
 				const isReEnchant = len >= 2; // 两词条则可选择一词条重铸
 				const items = [];
 				for (let i = 0; i < len; i++) {
@@ -220,7 +214,16 @@ export class P_Enchants extends EnchantsPanel_Generate {
 					this.mCanvas_Entrylist.addChild(item.uiObject);
 					items.push(item);
 				}
-				this.enchantItemsUI = items;
+				if (len < 2) {
+          // 0 / 1
+          for (let i = 0; i < 2 - len; i++) {
+            const emptyItem = mw.UIService.create(EnchantItem);
+            emptyItem.uiObject.size = emptyItem.mCanvas.size;
+						if(i === 0) emptyItem.setSelectState(true);
+            this.mCanvas_Entrylist.addChild(emptyItem.uiObject);
+          }
+        }
+        this.enchantItemsUI = items;
     }
 
     // private initEnchantItem() {
@@ -468,19 +471,33 @@ class EnchantItem extends Enchants_item_Generate {
     public onClickAc: Action = new Action();
 
     onStart() {
-        this.mButton_Entry.normalImageGuid = this.isChoose
-            ? GlobalData.Enchant.enchantitemGuid[1]
-            : GlobalData.Enchant.enchantitemGuid[0];
+				this.setEmptyUI();
+ 				if(this.isChoose) this.picSelect.visibility = mw.SlateVisibility.Visible;
+				else this.picSelect.visibility = mw.SlateVisibility.Hidden;
         this.mButton_Entry.onClicked.add(() => {
             this.onClickAc.call();
         });
     }
+		public setEmptyUI() {
+			this.mButton_Entry.normalImageGuid = GlobalData.Enchant.enchantItemGuid[0];
+			this.textEnhanceName.text = '空';
+			this.mTextBlock_Entry.text = '点击附魔添加'; // TODO: 多语言 & buff 描述完善 参照PetHover里的
+			this.textScoreNumber.visibility = mw.SlateVisibility.Collapsed;
+			this.textScoreUp.visibility = mw.SlateVisibility.Collapsed;
+			this.picScore.visibility = mw.SlateVisibility.Collapsed;
+		}
 
     /**设置配置id */
     public setCfgId(cfgId: number) {
         this.cfgId = cfgId;
         let cfg = GameConfig.Enchants.getElement(cfgId);
-        this.mTextBlock_Entry.text = cfg.Name;
+				this.mButton_Entry.normalImageGuid = GlobalData.Enchant.enchantItemGuid[1];
+        this.textEnhanceName.text = cfg.Name;
+				this.mTextBlock_Entry.text = cfg.Describe;
+				this.textScoreNumber.text = utils.formatNumber(cfg.RankScore ?? 0);
+				this.textScoreNumber.visibility = mw.SlateVisibility.Visible; 
+				this.textScoreUp.visibility = mw.SlateVisibility.Visible;
+				this.picScore.visibility = mw.SlateVisibility.Visible;
     }
 
     /**选中态 */
@@ -490,8 +507,7 @@ class EnchantItem extends Enchants_item_Generate {
 
     public setSelectState(isChoose: boolean) {
         this.isChoose = isChoose;
-        this.mButton_Entry.normalImageGuid = this.isChoose
-            ? GlobalData.Enchant.enchantitemGuid[1]
-            : GlobalData.Enchant.enchantitemGuid[0];
+				if(this.isChoose) this.picSelect.visibility = mw.SlateVisibility.Visible;
+				else this.picSelect.visibility = mw.SlateVisibility.Hidden;
     }
 }
