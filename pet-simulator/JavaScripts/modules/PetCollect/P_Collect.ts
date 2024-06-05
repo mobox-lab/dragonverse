@@ -214,7 +214,7 @@ export class P_PetHover extends PetHover_Generate {
 
     /**获取描述 */
     public getBuffText(item: { id: number; level: number; }): string {
-        let between = GlobalData.Enchant.normalEnchantId;
+        let between = GlobalData.Enchant.normalEnchantIdRange;
         let cfg = GameConfig.Enchants.getElement(item.id);
         let str: string;
 

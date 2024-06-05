@@ -363,7 +363,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.bagUI.updateEnchantItemsUI(key); // 刷新背包UI
         for (let i = 0; i < ids.length; i++) {
 						const id = ids[i];
-						if (GlobalData.Enchant.specialEnchantId.includes(id)) {
+						if (GlobalData.Enchant.specialEnchantIdRange.includes(id)) {
 								oTraceError("宠物附魔独特的标签成功附魔成功");
 								this.achievementModuleC.onExecuteAchievementAction.call(
 										GlobalEnum.AchievementType.PetEnchantUniqueTagSuccessNum,

@@ -524,11 +524,11 @@ export class PetBagModuleData extends Subdata {
 					if(excludeIds?.length && excludeIds.includes(id)) return false;
 					switch (type) {
             case "normal": {
-              const [min, max] = GlobalData.Enchant.normalEnchantId;
+              const [min, max] = GlobalData.Enchant.normalEnchantIdRange;
               return id >= min && id <= max;
             }
             case "special": {
-              const [min, max] = GlobalData.Enchant.specialEnchantId;
+              const [min, max] = GlobalData.Enchant.specialEnchantIdRange;
               return id >= min && id <= max;
             }
             case "myth": {

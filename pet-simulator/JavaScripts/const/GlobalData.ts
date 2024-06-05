@@ -1036,9 +1036,9 @@ export namespace GlobalData {
         /**特效Guid */
         public static effectGuid: string = "3C71E1D33BD789C1";
         /**普通附魔表 id范围 */
-        public static normalEnchantId: number[] = [1, 42];
+        public static normalEnchantIdRange: number[] = [1, 42];
         /**特殊附魔 id范围 */
-        public static specialEnchantId: number[] = [43, 45];
+        public static specialEnchantIdRange: number[] = [43, 45];
         /**神话附魔 只有神话宠物才有可能初始携带 id范围 */
         public static mythEnchantIdRange: number[] = [46];
         /**过滤id */
