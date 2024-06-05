@@ -16,7 +16,7 @@ export default class SettingsPanel extends Setting_Main_Generate {
 
 
 
-        this.mScroll_speedInputScale.onSliderValueChanged.add((currentValue: number) => {
+        this.mScroll_speedInputScale.sliderButtonReleaseDelegate.add((currentValue: number) => {
             console.log("currentValue", currentValue);
 
             ModuleService.getModule(PlayerSettingModuleC).set("camera-lookUp-rate-scale", currentValue);

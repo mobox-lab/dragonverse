@@ -276,8 +276,10 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
             return;
         }
         if (level == 2) {
+
             if (isData && areaId < 3000) {
-                MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_1.Value);
+                //临时修改为解锁第二世界时不提示购买成功，没法改了，这流程只能这么写了(ˉ▽ˉ；)...
+                if (areaId !== 2001 && areaId !== 2002) MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_1.Value);
                 AnalyticsTool.action_unlock_area(areaId);
             }
         } else {

@@ -4,19 +4,19 @@ import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { AreaModuleC } from "./AreaModuleC";
 import { AreaModuleData } from "./AreaModuleData";
 
-export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData>{
+export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData> {
 
     protected onStart(): void {
 
     }
 
 
-		public addArea(id: number, isFirst: boolean) { 
-			console.log(this.currentPlayerId)
-			this.currentData.unlockAreaById(id, isFirst); 
-			this.noticeArea(this.currentPlayerId, [id]);
-	}
-		public net_addArea(ids: string, isFirst: boolean) {
+    public addArea(id: number, isFirst: boolean) {
+        console.log(this.currentPlayerId)
+        this.currentData.unlockAreaById(id, isFirst);
+        this.noticeArea(this.currentPlayerId, [id]);
+    }
+    public net_addArea(ids: string, isFirst: boolean) {
         let idArr = stringToNumberArr(ids);
         idArr.forEach((id) => {
             this.currentData.unlockAreaById(id, isFirst);
@@ -30,12 +30,12 @@ export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData>{
         }
     }
 
-		public async net_buyTranArea(id: number):Promise<boolean> {
-			let cfg = GameConfig.AreaDivide.getElement(id);
+    public async net_buyTranArea(id: number): Promise<boolean> {
+        let cfg = GameConfig.AreaDivide.getElement(id);
 
-			const isSuccess = ModuleService.getModule(PlayerModuleS).reduceDiamond(cfg.Gem)
-			if (!isSuccess) return false
-			this.addArea(id, false);
-			return true;
+        const isSuccess = ModuleService.getModule(PlayerModuleS).reduceDiamond(cfg.Gem)
+        if (!isSuccess) return false
+        this.addArea(id, false);
+        return true;
     }
 }

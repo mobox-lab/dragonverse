@@ -4,7 +4,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
  * @Author       : zewei.zhang
  * @Date         : 2024-02-26 19:13:29
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-06-05 10:52:14
+ * @LastEditTime : 2024-06-05 11:42:18
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\module\SettingModule\SettingModuleData.ts
  * @Description  : 持久化设置
 */
@@ -20,7 +20,7 @@ export class SettingOptions {
     @Property()
     public enableShadow: boolean = true;
     @Property()
-    public fovScale: number = 800;
+    public fovScale: number = 0.5;
     @Property()
     public enableSearch: boolean = true;
 

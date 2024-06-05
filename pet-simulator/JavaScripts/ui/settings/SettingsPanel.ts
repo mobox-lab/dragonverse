@@ -11,12 +11,12 @@ export default class SettingsPanel extends Setting_Main_Generate {
 
     protected onStart(): void {
 
-        this.mScroll_speedInputScale.onSliderValueChanged.add((currentValue: number) => {
+        this.mScroll_speedInputScale.sliderButtonReleaseDelegate.add((currentValue: number) => {
             console.log("currentValue", currentValue);
 
             ModuleService.getModule(PlayerSettingModuleC).set("camera-lookUp-rate-scale", currentValue);
 
-            this._currentSpeedInputScale = currentValue;
+            this._currentSpeedInputScale = ModuleService.getModule(PlayerSettingModuleC).get("camera-lookUp-rate-scale");
         });
         this.mBtn_CloseSound.onClicked.add(() => {
             // 判断是否静音
