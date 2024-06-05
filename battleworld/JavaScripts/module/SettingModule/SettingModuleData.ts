@@ -4,7 +4,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
  * @Author       : zewei.zhang
  * @Date         : 2024-02-26 19:13:29
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-06-04 14:01:32
+ * @LastEditTime : 2024-06-05 10:52:14
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\module\SettingModule\SettingModuleData.ts
  * @Description  : 持久化设置
 */
@@ -105,7 +105,7 @@ export default class PlayerSettingModuleData extends Subdata {
         this.cameraLookUpRateScale = 0.5;
         this.saturation = 1;
         this.enableShadow = true;
-        this.fovScale = 300;
+        this.fovScale = 0.3;
         this.enableSearch = true;
         this.currentVersion = 2;
     }
@@ -124,7 +124,7 @@ export default class PlayerSettingModuleData extends Subdata {
                     this.cameraLookUpRateScale = 0.5
                     this.saturation = 1;
                     this.enableShadow = true;
-                    this.fovScale = 800;
+                    this.fovScale = 0.3;
                     this.enableSearch = true;
                     break;
 

@@ -3,7 +3,8 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import { MouseLockController } from "../../controller/MouseLockController";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { PlayerSettingModuleC } from "../../module/player-setting/PlayerSettingModule";
-import Setting_Main_Generate from "../../ui-generate/setting/Setting_Main_generate"
+import Setting_Main_Generate from "../../ui-generate/setting/Setting_Main_generate";
+
 
 export default class SettingsPanel extends Setting_Main_Generate {
     private _lastIsMute: boolean = false;

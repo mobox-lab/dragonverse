@@ -41,18 +41,21 @@ export class SoundManager {
 
     /**播放3D循环音效 */
     public play3DSoundLoop(soundId: number, target: mw.Vector | mw.GameObject): number {
+        if (SoundService.volumeScale === 0) return;
         let soundInfo = GameConfig.Music.getElement(soundId);
         return SoundService.play3DSound(soundInfo.guid, target, 0, soundInfo.volume);
     }
 
     /**播放背景音乐 */
     public playBGM(soundId: number): void {
+        if (SoundService.BGMVolumeScale === 0) return;
         let soundInfo = GameConfig.Music.getElement(soundId);
         SoundService.playBGM(soundInfo.guid, soundInfo.volume);
     }
 
     /**播放音效 */
     public playSound(soundId: number): void {
+        if (SoundService.volumeScale === 0) return;
         let soundInfo = GameConfig.Music.getElement(soundId);
         SoundService.playSound(soundInfo.guid, 1, soundInfo.volume);
     }
