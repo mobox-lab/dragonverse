@@ -9,7 +9,75 @@ import CutsceneOperationGuideTask from "../../depend/guide/cutscene/CutsceneOper
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 import i18n from "../../language/i18n";
 import Tf = GtkTypes.Tf;
+import { addGMCommand } from "mw-god-mod";
 
+
+
+addGMCommand(
+    "Dont Use Guide | Guide",
+    "string",
+    () => {
+        manager.useGuide(false);
+        manager.finishCurrent();
+    },
+    undefined,
+    null,
+    "Guide"
+);
+
+addGMCommand(
+    "Use Guide | Guide",
+    "string",
+    () => {
+        manager.useGuide(true);
+        manager.finishCurrent();
+    },
+    undefined,
+    null,
+    "Guide"
+);
+
+addGMCommand(
+    "Step All | Guide",
+    "string",
+    () => {
+        Gtk.enumVals(GuideStep).forEach((step) => {
+            Gtk.enumVals(GuideStep).forEach((step) => {
+                manager["_taskDoneMap"].set(step, true);
+                manager.onComplete.invoke(step);
+            });
+        });
+        manager.finishCurrent();
+    },
+    undefined,
+    null,
+    "Guide"
+);
+
+addGMCommand(
+    "Reset All | Guide",
+    "string",
+    () => {
+        Gtk.enumVals(GuideStep).forEach((step) => {
+            manager["_taskDoneMap"].set(step, false);
+        });
+    },
+    undefined,
+    null,
+    "Guide"
+);
+
+addGMCommand(
+    "Operation Teach | Guide",
+    "string",
+    () => {
+        manager.resetComplete(GuideStep.GOperationTeach);
+        manager.requestNext(GuideStep.GOperationTeach);
+    },
+    undefined,
+    null,
+    "Guide"
+);
 //#region TTD & GM
 
 AddGMCommand("Dont Use Guide | Guide",

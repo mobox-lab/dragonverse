@@ -6,43 +6,143 @@ import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModul
 import { AddGMCommand } from "module_gm";
 import noReply = mwext.Decorator.noReply;
 import { GameConfig } from "../../config/GameConfig";
+import { addGMCommand } from "mw-god-mod";
 
+// 新版 GM
+// addGMCommand(
+//     "refresh dragon ball | Auth",
+//     "string",
+//     null,
+//     (player, value) => {
+//         Log4Ts.log(AuthModuleS, `query dragon ball...`);
+//         mwext.ModuleService.getModule(AuthModuleS)
+//             .queryUserDragonBall(player.playerId)
+//             .then((value) => {
+//                 Log4Ts.log(AuthModuleS, `query dragon ball success.`, `user dragon ball: ${JSON.stringify(value)}`);
+//             });
+//     },
+//     null,
+//     "Root"
+// );
+
+// addGMCommand(
+//     "query user dragon | Auth",
+//     "string",
+//     null,
+//     (player, value) => {
+//         Log4Ts.log(AuthModuleS, `query user dragon...`);
+//         mwext.ModuleService.getModule(AuthModuleS)
+//             .queryUserDragon(player.playerId)
+//             .then((value) => {
+//                 Log4Ts.log(AuthModuleS, `query user dragon success.`, `user dragons: ${JSON.stringify(value)}`);
+//             });
+//     },
+//     null,
+//     "Root"
+// );
+
+// addGMCommand(
+//     "request catch dragon | Auth",
+//     "string",
+//     undefined,
+//     (player, args) => {
+//         Log4Ts.log(AuthModuleS, `try catch dragon...`);
+//         let allDragonConfig = GameConfig["Dragon"]?.getAllElement() ?? [];
+//         if (allDragonConfig.length === 0) {
+//             Log4Ts.warn(AuthModuleS, `there is no valid dragon config.`);
+//             return;
+//         }
+//         mwext.ModuleService.getModule(AuthModuleS)
+//             .requestWebCatchDragon(player.playerId, Gtk.randomArrayItem(allDragonConfig)["dragonPalId"], Date.now())
+//             .then((value) => {
+//                 Log4Ts.log(AuthModuleS, `try catch dragon success.`, `user dragon ball: ${JSON.stringify(value)}`);
+//             });
+//     },
+//     null,
+//     "Root"
+// );
+
+// addGMCommand(
+//     "refresh stamina limit | Auth",
+//     "string",
+//     undefined,
+//     (player, args) => {
+//         Log4Ts.log(AuthModuleS, `query stamina limit...`);
+//         mwext.ModuleService.getModule(AuthModuleS)
+//             .queryRegisterStaminaLimit(player.playerId)
+//             .then(() => {
+//                 Log4Ts.log(
+//                     AuthModuleS,
+//                     `query stamina limit success.`,
+//                     `current stamina limit: ${mwext.ModuleService.getModule(AuthModuleS).playerStaminaLimitMap.get(
+//                         player.playerId
+//                     )}`
+//                 );
+//             });
+//     },
+//     null,
+//     "Root"
+// );
+
+// addGMCommand(
+//     "report ps | Auth",
+//     "string",
+//     undefined,
+//     (player, args) => {
+//         Log4Ts.log(AuthModuleS, `report ps rank data...`);
+//         mwext.ModuleService.getModule(AuthModuleS)
+//             .reportPetSimulatorRankData(player.playerId, "pig", 0, 999, Date.now(), undefined, 0)
+//             .then(() => {
+//                 Log4Ts.log(AuthModuleS, `report ps rank data success.`);
+//             });
+//     },
+//     null,
+//     "Root"
+// );
+
+// addGMCommand(
+//     "report bw | Auth",
+//     "string",
+//     undefined,
+//     (player, args) => {
+//         Log4Ts.log(AuthModuleS, `report ps rank data...`);
+//         mwext.ModuleService.getModule(AuthModuleS)
+//             .reportBattleWorldRankData(player.playerId, 0, 999, 0)
+//             .then(() => {
+//                 Log4Ts.log(AuthModuleS, `report bw rank data success.`);
+//             });
+//     },
+//     null,
+//     "Root"
+// );
 //#region TTD & GM
 AddGMCommand(
     "refresh dragon ball | Auth",
     undefined,
     (player, args) => {
         Log4Ts.log(AuthModuleS, `query dragon ball...`);
-        mwext.ModuleService
-            .getModule(AuthModuleS)
+        mwext.ModuleService.getModule(AuthModuleS)
             .queryUserDragonBall(player.playerId)
             .then((value) => {
-                Log4Ts.log(
-                    AuthModuleS,
-                    `query dragon ball success.`,
-                    `user dragon ball: ${JSON.stringify(value)}`,
-                );
+                Log4Ts.log(AuthModuleS, `query dragon ball success.`, `user dragon ball: ${JSON.stringify(value)}`);
             });
     },
-    "Root");
+    "Root"
+);
 
 AddGMCommand(
     "query user dragon | Auth",
     undefined,
     (player, args) => {
         Log4Ts.log(AuthModuleS, `query user dragon...`);
-        mwext.ModuleService
-            .getModule(AuthModuleS)
+        mwext.ModuleService.getModule(AuthModuleS)
             .queryUserDragon(player.playerId)
             .then((value) => {
-                Log4Ts.log(
-                    AuthModuleS,
-                    `query user dragon success.`,
-                    `user dragons: ${JSON.stringify(value)}`,
-                );
+                Log4Ts.log(AuthModuleS, `query user dragon success.`, `user dragons: ${JSON.stringify(value)}`);
             });
     },
-    "Root");
+    "Root"
+);
 
 AddGMCommand(
     "request catch dragon | Auth",
@@ -54,87 +154,62 @@ AddGMCommand(
             Log4Ts.warn(AuthModuleS, `there is no valid dragon config.`);
             return;
         }
-        mwext.ModuleService
-            .getModule(AuthModuleS)
-            .requestWebCatchDragon(
-                player.playerId,
-                Gtk.randomArrayItem(allDragonConfig)["dragonPalId"],
-                Date.now(),
-            )
+        mwext.ModuleService.getModule(AuthModuleS)
+            .requestWebCatchDragon(player.playerId, Gtk.randomArrayItem(allDragonConfig)["dragonPalId"], Date.now())
             .then((value) => {
-                Log4Ts.log(
-                    AuthModuleS,
-                    `try catch dragon success.`,
-                    `user dragon ball: ${JSON.stringify(value)}`,
-                );
+                Log4Ts.log(AuthModuleS, `try catch dragon success.`, `user dragon ball: ${JSON.stringify(value)}`);
             });
     },
-    "Root");
+    "Root"
+);
 
 AddGMCommand(
     "refresh stamina limit | Auth",
     undefined,
     (player, args) => {
         Log4Ts.log(AuthModuleS, `query stamina limit...`);
-        mwext.ModuleService
-            .getModule(AuthModuleS)
+        mwext.ModuleService.getModule(AuthModuleS)
             .queryRegisterStaminaLimit(player.playerId)
             .then(() => {
                 Log4Ts.log(
                     AuthModuleS,
                     `query stamina limit success.`,
-                    `current stamina limit: ${mwext.ModuleService.getModule(AuthModuleS).playerStaminaLimitMap.get(player.playerId)}`,
+                    `current stamina limit: ${mwext.ModuleService.getModule(AuthModuleS).playerStaminaLimitMap.get(
+                        player.playerId
+                    )}`
                 );
             });
     },
-    "Root");
+    "Root"
+);
 
 AddGMCommand(
     "report ps | Auth",
     undefined,
     (player, args) => {
         Log4Ts.log(AuthModuleS, `report ps rank data...`);
-        mwext.ModuleService
-            .getModule(AuthModuleS)
-            .reportPetSimulatorRankData(
-                player.playerId,
-                "pig",
-                0,
-                999,
-                Date.now(),
-                undefined,
-                0,
-            )
+        mwext.ModuleService.getModule(AuthModuleS)
+            .reportPetSimulatorRankData(player.playerId, "pig", 0, 999, Date.now(), undefined, 0)
             .then(() => {
-                Log4Ts.log(
-                    AuthModuleS,
-                    `report ps rank data success.`,
-                );
+                Log4Ts.log(AuthModuleS, `report ps rank data success.`);
             });
     },
-    "Root");
+    "Root"
+);
 
 AddGMCommand(
     "report bw | Auth",
     undefined,
     (player, args) => {
         Log4Ts.log(AuthModuleS, `report ps rank data...`);
-        mwext.ModuleService
-            .getModule(AuthModuleS)
-            .reportBattleWorldRankData(
-                player.playerId,
-                0,
-                999,
-                0,
-            )
+        mwext.ModuleService.getModule(AuthModuleS)
+            .reportBattleWorldRankData(player.playerId, 0, 999, 0)
             .then(() => {
-                Log4Ts.log(
-                    AuthModuleS,
-                    `report bw rank data success.`,
-                );
+                Log4Ts.log(AuthModuleS, `report bw rank data success.`);
             });
     },
-    "Root");
+    "Root"
+);
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
@@ -181,9 +256,9 @@ interface UserDataQueryReq {
  * 一般查询返回数据.
  */
 interface QueryResp<D = undefined> {
-    code: number,
-    message: "success" | string,
-    data?: D
+    code: number;
+    message: "success" | string;
+    data?: D;
 }
 
 /**
@@ -193,17 +268,17 @@ interface QueryStaminaLimitRespData {
     /**
      * 钱包地址.
      */
-    walletAddress: string,
+    walletAddress: string;
 
     /**
      * 体力上限恢复时长预期. s
      */
-    gameStaminaRecoverySec: number,
+    gameStaminaRecoverySec: number;
 
     /**
      * 体力上限.
      */
-    stamina: 200,
+    stamina: 200;
 }
 
 /**
@@ -242,17 +317,17 @@ interface DragonBallRespData {
     /**
      * 未领取.
      */
-    unclaim: number,
+    unclaim: number;
 
     /**
      * 总发放.
      */
-    total: number,
+    total: number;
 
     /**
      * 未使用.
      */
-    unUsed: number
+    unUsed: number;
 }
 
 /**
@@ -287,22 +362,22 @@ interface UserDragonRespData {
         /**
          * DragonId.
          */
-        dragonPalId: number,
+        dragonPalId: number;
 
         /**
          * 数量.
          */
-        amount: number,
+        amount: number;
 
         /**
          * 抓取时间. ms
          */
-        catchTimeStamp: number,
+        catchTimeStamp: number;
 
         /**
          * 是否休眠.
          */
-        sleep: boolean
+        sleep: boolean;
     }[];
 }
 
@@ -552,7 +627,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (Gtk.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
+            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -651,21 +726,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         super.onPlayerLeft(player);
 
         mw.setTimeout(() => {
-                this.userPSRankDataReporter.delete(player.userId);
-                this.userBWRankDataReporter.delete(player.userId);
-            },
-            GameServiceConfig.REPORT_REQUEST_WAIT_TIME * 2);
+            this.userPSRankDataReporter.delete(player.userId);
+            this.userBWRankDataReporter.delete(player.userId);
+        }, GameServiceConfig.REPORT_REQUEST_WAIT_TIME * 2);
     }
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
-        this.userPSRankDataReporter.set(this.queryUserId(player.playerId),
-            requestParam => {
-                this.innerReportPetSimulatorRankData(requestParam);
-            });
-        this.userBWRankDataReporter.set(this.queryUserId(player.playerId),
-            requestParam =>
-                this.innerReportBattleWorldRankData(requestParam));
+        this.userPSRankDataReporter.set(this.queryUserId(player.playerId), (requestParam) => {
+            this.innerReportPetSimulatorRankData(requestParam);
+        });
+        this.userBWRankDataReporter.set(this.queryUserId(player.playerId), (requestParam) =>
+            this.innerReportBattleWorldRankData(requestParam)
+        );
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -698,53 +771,55 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         Gtk.doUntilTrue(
             () => !Gtk.isNullOrEmpty(this.CODE_VERIFY_TEST_AES_KEY),
             this.getTestCodeVerifyAesKey,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL
         );
         Gtk.doUntilTrue(
             () => !Gtk.isNullOrEmpty(this.CODE_VERIFY_RELEASE_AES_KEY),
             this.getReleaseCodeVerifyAesKey,
-            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL,
+            AuthModuleS.KEY_STORAGE_GET_FAILED_REFRESH_INTERVAL
         );
     }
 
     private static getTestCodeVerifyAesKey() {
-        DataStorage
-            .asyncGetData(AuthModuleS.CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY)
-            .then((value) => {
-                Log4Ts.log(AuthModuleS, `value`, value.code);
-                if (value.code === 200) {
-                    if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.CODE_VERIFY_TEST_AES_KEY = value.data;
-                        AuthModuleS.CODE_VERIFY_TEST_AES_IV = AuthModuleS.CODE_VERIFY_TEST_AES_KEY.slice(0, 16)
-                            .split("")
-                            .reverse()
-                            .join("");
-                    } else {
-                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey for test Failed`);
-                        DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
-                    }
+        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY).then((value) => {
+            Log4Ts.log(AuthModuleS, `value`, value.code);
+            if (value.code === 200) {
+                if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    AuthModuleS.CODE_VERIFY_TEST_AES_KEY = value.data;
+                    AuthModuleS.CODE_VERIFY_TEST_AES_IV = AuthModuleS.CODE_VERIFY_TEST_AES_KEY.slice(0, 16)
+                        .split("")
+                        .reverse()
+                        .join("");
+                } else {
+                    Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey for test Failed`);
+                    DataStorage.asyncSetData(
+                        AuthModuleS.CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY,
+                        AuthModuleS.PLACE_HOLDER
+                    );
                 }
-            });
+            }
+        });
     }
 
     private static getReleaseCodeVerifyAesKey() {
-        DataStorage
-            .asyncGetData(AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY)
-            .then((value) => {
-                Log4Ts.log(AuthModuleS, `value`, value.code);
-                if (value.code === 200) {
-                    if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
-                        AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY = value.data;
-                        AuthModuleS.CODE_VERIFY_RELEASE_AES_IV = AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY.slice(0, 16)
-                            .split("")
-                            .reverse()
-                            .join("");
-                    } else {
-                        Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey for release Failed`);
-                        DataStorage.asyncSetData(AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY, AuthModuleS.PLACE_HOLDER);
-                    }
+        DataStorage.asyncGetData(AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY).then((value) => {
+            Log4Ts.log(AuthModuleS, `value`, value.code);
+            if (value.code === 200) {
+                if (!Gtk.isNullOrUndefined(value.data) && value.data !== AuthModuleS.PLACE_HOLDER) {
+                    AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY = value.data;
+                    AuthModuleS.CODE_VERIFY_RELEASE_AES_IV = AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY.slice(0, 16)
+                        .split("")
+                        .reverse()
+                        .join("");
+                } else {
+                    Log4Ts.log(AuthModuleS, `getCodeVerifyAesKey for release Failed`);
+                    DataStorage.asyncSetData(
+                        AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY,
+                        AuthModuleS.PLACE_HOLDER
+                    );
                 }
-            });
+            }
+        });
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -757,12 +832,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
+            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (Gtk.isNullOrEmpty(token)) {
-            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
+            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
             return false;
         }
 
@@ -773,17 +848,21 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private getSecret(message: string) {
         const e = CryptoJS.AES.encrypt(
             message,
-            CryptoJS.enc.Utf8.parse(GameServiceConfig.isRelease ?
-                AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY :
-                AuthModuleS.CODE_VERIFY_TEST_AES_KEY),
+            CryptoJS.enc.Utf8.parse(
+                GameServiceConfig.isRelease
+                    ? AuthModuleS.CODE_VERIFY_RELEASE_AES_KEY
+                    : AuthModuleS.CODE_VERIFY_TEST_AES_KEY
+            ),
             {
-                iv: CryptoJS.enc.Utf8.parse(GameServiceConfig.isRelease ?
-                    AuthModuleS.CODE_VERIFY_RELEASE_AES_IV :
-                    AuthModuleS.CODE_VERIFY_TEST_AES_IV,
+                iv: CryptoJS.enc.Utf8.parse(
+                    GameServiceConfig.isRelease
+                        ? AuthModuleS.CODE_VERIFY_RELEASE_AES_IV
+                        : AuthModuleS.CODE_VERIFY_TEST_AES_IV
                 ),
                 mode: CryptoJS.mode.CBC,
                 padding: CryptoJS.pad.Pkcs7,
-            });
+            }
+        );
         return e.ciphertext.toString(CryptoJS.enc.Base64);
     }
 
@@ -796,19 +875,20 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             sceneId: await this.querySceneId(userId),
         };
 
-        const respInJson = await
-            this.correspondHandler<QueryResp<DragonBallRespData>>(
-                requestParam,
-                AuthModuleS.RELEASE_QUERY_DRAGON_BALL_DATA_URL,
-                AuthModuleS.TEST_QUERY_DRAGON_BALL_DATA_URL,
-            );
+        const respInJson = await this.correspondHandler<QueryResp<DragonBallRespData>>(
+            requestParam,
+            AuthModuleS.RELEASE_QUERY_DRAGON_BALL_DATA_URL,
+            AuthModuleS.TEST_QUERY_DRAGON_BALL_DATA_URL
+        );
 
         return respInJson.data;
     }
 
-    public async requestWebCatchDragon(playerId: number,
-                                       dragonPalId: number,
-                                       catchTimeStamp: number): Promise<[boolean, DragonBallRespData]> {
+    public async requestWebCatchDragon(
+        playerId: number,
+        dragonPalId: number,
+        catchTimeStamp: number
+    ): Promise<[boolean, DragonBallRespData]> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
@@ -820,12 +900,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             attributionType: "game",
         };
 
-        const respInJson = await
-            this.correspondHandler<QueryResp<DragonBallRespData>>(
-                requestParam,
-                AuthModuleS.RELEASE_CATCH_DRAGON_URL,
-                AuthModuleS.TEST_CATCH_DRAGON_URL,
-            );
+        const respInJson = await this.correspondHandler<QueryResp<DragonBallRespData>>(
+            requestParam,
+            AuthModuleS.RELEASE_CATCH_DRAGON_URL,
+            AuthModuleS.TEST_CATCH_DRAGON_URL
+        );
 
         const success = respInJson.message === "success";
         if (!success) {
@@ -844,16 +923,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             sceneId: await this.querySceneId(userId),
         };
 
-        const respInJson = await
-            this.correspondHandler<QueryResp<UserDragonRespData>>(
-                requestParam,
-                AuthModuleS.RELEASE_QUERY_USER_DRAGON_URL,
-                AuthModuleS.TEST_QUERY_USER_DRAGON_URL,
-            );
+        const respInJson = await this.correspondHandler<QueryResp<UserDragonRespData>>(
+            requestParam,
+            AuthModuleS.RELEASE_QUERY_USER_DRAGON_URL,
+            AuthModuleS.TEST_QUERY_USER_DRAGON_URL
+        );
 
-        return respInJson.message === "success" ?
-            respInJson.data :
-            undefined;
+        return respInJson.message === "success" ? respInJson.data : undefined;
     }
 
     public async queryRegisterStaminaLimit(playerId: number) {
@@ -865,17 +941,18 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             sceneId: await this.querySceneId(userId),
         };
 
-        const respInJson = await
-            this.correspondHandler<QueryResp<QueryStaminaLimitRespData>>(
-                requestParam,
-                AuthModuleS.RELEASE_STAMINA_LIMIT_URL,
-                AuthModuleS.TEST_STAMINA_LIMIT_URL,
-            );
+        const respInJson = await this.correspondHandler<QueryResp<QueryStaminaLimitRespData>>(
+            requestParam,
+            AuthModuleS.RELEASE_STAMINA_LIMIT_URL,
+            AuthModuleS.TEST_STAMINA_LIMIT_URL
+        );
 
         if (Gtk.isNullOrUndefined(respInJson?.data?.stamina))
-            Log4Ts.log(AuthModuleS,
+            Log4Ts.log(
+                AuthModuleS,
                 `invalid value when query stamina limit for user ${userId}.`,
-                `reason: ${JSON.stringify(respInJson)}`);
+                `reason: ${JSON.stringify(respInJson)}`
+            );
         else {
             this.playerStaminaLimitMap.set(playerId, respInJson.data.stamina);
         }
@@ -884,8 +961,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         else this.playerStaminaRecoveryMap.set(playerId, respInJson.data.gameStaminaRecoverySec);
 
         let data = this.getPlayerData(playerId);
-        if (!Gtk.isNullOrEmpty(respInJson?.data?.walletAddress ?? undefined) &&
-            (data?.holdAddress ?? undefined) !== respInJson.data.walletAddress) {
+        if (
+            !Gtk.isNullOrEmpty(respInJson?.data?.walletAddress ?? undefined) &&
+            (data?.holdAddress ?? undefined) !== respInJson.data.walletAddress
+        ) {
             data.holdAddress = respInJson.data.walletAddress;
             data.save(false);
         }
@@ -898,13 +977,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         petOriginalAttack: number,
         recordTime: number,
         petEnchantScore: number,
-        round: number) {
+        round: number
+    ) {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrEmpty(userId)) return;
 
         const player = Player.getPlayer(playerId);
-        const userName = this.getPlayerData(player)?.holdNickName
-            ?? player.nickname;
+        const userName = this.getPlayerData(player)?.holdNickName ?? player.nickname;
         const userAvatar = player["avatarUrl"];
         const requestParam: UpdatePetSimulatorRankDataReq = {
             userId,
@@ -919,15 +998,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             round,
         };
 
-        Gtk.waitDo(requestParam,
-            this.userPSRankDataReporter.get(userId),
-            GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
+        Gtk.waitDo(requestParam, this.userPSRankDataReporter.get(userId), GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
     }
 
     private async innerReportPetSimulatorRankData(requestParam: UpdatePetSimulatorRankDataReq) {
-        this.correspondHandler<QueryResp>(requestParam,
+        this.correspondHandler<QueryResp>(
+            requestParam,
             AuthModuleS.RELEASE_P_S_RANK_REPORT_URL,
-            AuthModuleS.TEST_P_S_RANK_REPORT_URL,
+            AuthModuleS.TEST_P_S_RANK_REPORT_URL
         );
     }
 
@@ -949,16 +1027,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             recordTime: Math.floor(Date.now() / 1000),
         };
 
-        Gtk.waitDo(requestParam,
-            this.userBWRankDataReporter.get(userId),
-            GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
-
+        Gtk.waitDo(requestParam, this.userBWRankDataReporter.get(userId), GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
     }
 
     public async innerReportBattleWorldRankData(requestParam: UpdateBattleWorldRankDataReq) {
-        this.correspondHandler<QueryResp>(requestParam,
+        this.correspondHandler<QueryResp>(
+            requestParam,
             AuthModuleS.RELEASE_B_W_RANK_REPORT_URL,
-            AuthModuleS.TEST_B_W_RANK_REPORT_URL,
+            AuthModuleS.TEST_B_W_RANK_REPORT_URL
         );
     }
 
@@ -974,12 +1050,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private async querySceneId(userId: string): Promise<string> {
-        return (await mw.TeleportService
-            .asyncGetPlayerRoomInfo(userId)
-            .catch(e => {
-                Log4Ts.error(AuthModuleS, e);
-                return Promise.resolve(undefined as mw.RoomInfo);
-            }))?.sceneId ?? "INVALID_SCENE_ID";
+        return (
+            (
+                await mw.TeleportService.asyncGetPlayerRoomInfo(userId).catch((e) => {
+                    Log4Ts.error(AuthModuleS, e);
+                    return Promise.resolve(undefined as mw.RoomInfo);
+                })
+            )?.sceneId ?? "INVALID_SCENE_ID"
+        );
     }
 
     private async correspondHandler<D = object>(reqParam: object, releaseUrl: string, testUrl: string) {
@@ -988,17 +1066,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         };
 
         const resp = await fetch(
-            `${GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl
-                ? releaseUrl
-                : testUrl
-            }`,
+            `${GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl ? releaseUrl : testUrl}`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
                 },
                 body: JSON.stringify(encryptBody),
-            },
+            }
         );
 
         const respJson = await resp.json<D>();
@@ -1049,7 +1124,7 @@ function logState(
     showTime: boolean,
     playerId: number,
     uid: string = undefined,
-    code: string = undefined,
+    code: string = undefined
 ): void {
     let logFunc: Function;
     switch (logType) {
