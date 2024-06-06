@@ -43,12 +43,33 @@ export default class Setting_Main_Generate extends UIScript {
 		}
 		return this.mBtn_CloseSound_Internal
 	}
-	private mCanvas_Pic_Internal: mw.Canvas
-	public get mCanvas_Pic(): mw.Canvas {
-		if(!this.mCanvas_Pic_Internal&&this.uiWidgetBase) {
-			this.mCanvas_Pic_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic') as mw.Canvas
+	private imgYellowOn_Internal: mw.Image
+	public get imgYellowOn(): mw.Image {
+		if(!this.imgYellowOn_Internal&&this.uiWidgetBase) {
+			this.imgYellowOn_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/mBtn_CloseSound/imgYellowOn') as mw.Image
 		}
-		return this.mCanvas_Pic_Internal
+		return this.imgYellowOn_Internal
+	}
+	private imgCircleBack_Internal: mw.Image
+	public get imgCircleBack(): mw.Image {
+		if(!this.imgCircleBack_Internal&&this.uiWidgetBase) {
+			this.imgCircleBack_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/mBtn_CloseSound/imgCircleBack') as mw.Image
+		}
+		return this.imgCircleBack_Internal
+	}
+	private imgCircle_Internal: mw.Image
+	public get imgCircle(): mw.Image {
+		if(!this.imgCircle_Internal&&this.uiWidgetBase) {
+			this.imgCircle_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/mBtn_CloseSound/imgCircleBack/imgCircle') as mw.Image
+		}
+		return this.imgCircle_Internal
+	}
+	private text_SoundOff_Internal: mw.TextBlock
+	public get text_SoundOff(): mw.TextBlock {
+		if(!this.text_SoundOff_Internal&&this.uiWidgetBase) {
+			this.text_SoundOff_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/text_SoundOff') as mw.TextBlock
+		}
+		return this.text_SoundOff_Internal
 	}
 	private mCanvas_Control_Internal: mw.Canvas
 	public get mCanvas_Control(): mw.Canvas {
@@ -115,6 +136,9 @@ export default class Setting_Main_Generate extends UIScript {
 		
 		//文本多语言
 		
+		this.initLanguage(this.text_SoundOff)
+		
+	
 		//文本多语言
 		
 		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/TextBlock") as any);
@@ -124,9 +148,6 @@ export default class Setting_Main_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/Text_CloseSound") as any);
-		
-	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/Text_Pic") as any);
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/Text_Control") as any);

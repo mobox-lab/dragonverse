@@ -1040,7 +1040,7 @@ export namespace GlobalData {
         /**特殊附魔 id范围 */
         public static specialEnchantIdRange: number[] = [43, 45];
         /**神话附魔 只有神话宠物才有可能初始携带 id范围 */
-        public static mythEnchantIdRange: number[] = [46];
+        public static mythEnchantIdRange: number[] = [46, 46];
         /**过滤id */
         public static filterIds: number[] = [11, 12, 13, 14, 15];
         /**同时附魔最大数 */
@@ -1051,8 +1051,10 @@ export namespace GlobalData {
         public static stopTime: number = 3;
         /**附魔单次钻石花费 */
         public static diamondCost: number = 10000;
-        /**词条背景 - 空、普通、稀有Guid */
-        public static enchantItemGuid: string[] = ["355924", "355919", "356154"];
+        /**附魔 词条背景 - 空、普通、传说、神话 Guid */
+        public static enchantItemGuid: string[] = ["355924", "355919", "356154", "357133"];
+        /**附魔 左侧详情 宠物稀有度背景 普通 稀有 史诗 传说 神话 */
+        public static enchantPetRarityGuid: string[] = ["355918", "355920", "355926", "355913", "355925"];
         /**附魔按钮 正常、stop Guid */
         public static enchantBtnGuid: string[] = ["174844", "174843"];
         /**附魔特效时长 */
