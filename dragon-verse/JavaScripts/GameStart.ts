@@ -252,7 +252,7 @@ export default class GameStart extends mw.Script {
 
         InputUtil.mouseLockOptionEnabled = false;
         InputUtil.isLockMouse = true;
-        InputUtil.isCursorLocked = true;
+        // InputUtil.isCursorLocked = true;
     }
 
     private initializeServer() {

@@ -129,7 +129,7 @@ export class Transact extends Array<ATransactItem<unknown>> {
         let error = false;
         while (this.length > 0) {
             try {
-                done.push(this.pop().commit());
+                done.push(this.shift().commit());
             } catch (e) {
                 Log4Ts.error(Transact, `commit failed`);
                 for (let item of done) {
