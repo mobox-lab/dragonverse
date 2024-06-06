@@ -1055,6 +1055,8 @@ export namespace GlobalData {
         public static enchantItemGuid: string[] = ["355924", "355919", "356154", "357133"];
         /**附魔 左侧详情 宠物稀有度背景 普通 稀有 史诗 传说 神话 */
         public static enchantPetRarityGuid: string[] = ["355918", "355920", "355926", "355913", "355925"];
+        /**附魔 词条图标 对勾/锁  */
+        public static enchantSelectIconGuid: string[] = ["295627", "357130"];
         /**附魔按钮 正常、stop Guid */
         public static enchantBtnGuid: string[] = ["174844", "174843"];
         /**附魔特效时长 */

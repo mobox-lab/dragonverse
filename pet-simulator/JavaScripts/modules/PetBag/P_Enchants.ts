@@ -105,8 +105,6 @@ export class P_Enchants extends EnchantsPanel_Generate {
 				// this.selectPetKeys = [];
 				this.selectPetKey = null;
 
-        petData = this.filterMythical(petData);
-
         for (let i = 0; i < petData.length; i++) {
             const element = petData[i];
             let item = PetBagItem.instance.UIPool.get();
@@ -163,13 +161,6 @@ export class P_Enchants extends EnchantsPanel_Generate {
         }
     }
 
-    /**过滤神话宠物 */
-    private filterMythical(petData: petItemDataNew[]): petItemDataNew[] {
-				return petData.filter((ele) => {
-						let cfg = GameConfig.PetARR.getElement(ele.I);
-						return cfg.QualityType !== GlobalEnum.PetQuality.Myth;
-				});
-    }
 		private setPetInfoRarityUI(type: number) {
 			const quality = GlobalEnum.PetQuality;
       switch (type) {
@@ -218,18 +209,18 @@ export class P_Enchants extends EnchantsPanel_Generate {
 					" name:" + curSelectPetInfo?.petData?.p?.n,
 					" buff:" + curSelectPetInfo?.petData?.p?.b,
 					" enchantCnt:" + curSelectPetInfo?.petData?.enchantCnt
-				);
-				const buffIds = curSelectPetInfo?.petData?.p?.b;
-				if (!curSelectPetInfo?.petData) {
+				); 
+				if (!curSelectPetInfo?.petData?.I) { 
 					this.mPetInfo.visibility = mw.SlateVisibility.Collapsed;	
 					return;
 				} 
 				const curPetData = curSelectPetInfo.petData;
+				const buffIds = Array.from(curPetData.p.b);
 
 				this.mPetInfo.visibility = mw.SlateVisibility.Visible;
         const cfg = GameConfig.PetARR.getElement(curPetData.I);
         this.mNameBig.text = cfg.petName;
-        this.mNameSmall.text = curSelectPetInfo?.petData?.p?.n;
+        this.mNameSmall.text = curSelectPetInfo.petData.p.n;
 				Gtk.trySetVisibility(
           this.picLovelovelove,
           cfg.DevType === GlobalEnum.PetDevType.Love
@@ -242,8 +233,18 @@ export class P_Enchants extends EnchantsPanel_Generate {
             ? mw.SlateVisibility.Visible
             : mw.SlateVisibility.Collapsed
         );
-				this.setPetInfoRarityUI(cfg.QualityType);
+				this.setPetInfoRarityUI(cfg.QualityType);   
 				
+				const isMyth = cfg.QualityType === GlobalEnum.PetQuality.Myth;
+				
+				if(isMyth) {
+					const top = buffIds.pop()
+					let item = mw.UIService.create(EnchantItem);
+					item.setCfgId(top, true);
+					item.uiObject.size = item.mCanvas.size;
+					this.mCanvas_Entrylist.addChild(item.uiObject);
+				}
+
 				const len = buffIds?.length ?? 0; // 两词条则可选择一词条重铸
 				const isReEnchant = len >= 2; // 两词条则可选择一词条重铸
 				const items = [];
@@ -555,7 +556,7 @@ class EnchantItem extends Enchants_item_Generate {
 			return GlobalData.Enchant.enchantItemGuid[1];  
 		}
     /**设置配置id */
-    public setCfgId(cfgId: number) {
+    public setCfgId(cfgId: number, isLock?: boolean) {
         this.cfgId = cfgId;
         const cfg = GameConfig.Enchants.getElement(cfgId);
 				if(!cfg) return;
@@ -566,6 +567,10 @@ class EnchantItem extends Enchants_item_Generate {
 				this.textScoreNumber.visibility = mw.SlateVisibility.Visible; 
 				this.textScoreUp.visibility = mw.SlateVisibility.Visible;
 				this.picScore.visibility = mw.SlateVisibility.Visible;
+				if(isLock) {
+					this.picSelect.visibility = mw.SlateVisibility.Visible;
+					this.picSelect.imageGuid = GlobalData.Enchant.enchantSelectIconGuid[1];
+				}
     }
 
     /**选中态 */
