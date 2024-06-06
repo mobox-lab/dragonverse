@@ -130,6 +130,7 @@ class CameraLookUpRateScaleTransactItem extends SettingItem<number> {
             val = KeyboardSimulation.getLookUpRateScale();
         } catch (e) {
             Log4Ts.log(CameraLookUpRateScaleTransactItem, `getLookUpRateScale error: ${e}`);
+            val = DataCenterC.getData(PlayerSettingModuleData).cameraLookUpRateScale ?? GameServiceConfig.DEFAULT_CAMERA_LOOK_UP_RATE_SCALE;
         }
         return val;
     }

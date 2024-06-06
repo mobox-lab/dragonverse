@@ -310,7 +310,11 @@ export default class MainPanel extends MainPanel_Generate {
             // this.btnSound.normalImageSize = new Vector2(88, 96);
             // this.btnSound.pressedImageSize = new Vector2(88, 96);
             // this.btnSound.enable = true;
-            UIService.show(SettingsPanel);
+            if (!UIService.getUI(SettingsPanel).visible) {
+                UIService.show(SettingsPanel);
+            } else {
+                UIService.hide(SettingsPanel);
+            }
         });
 
         this.btnMap.onClicked.add(() => {
