@@ -710,9 +710,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     // 按照配置的 Weight 随机返回一个附魔词条id，如果有 excludeId 则排除其的权重
-    private randomEnchant(excludeId?: number): number {
+    private randomEnchant(excludeIds?: number[]): number {
         const enchantCfg = GameConfig.Enchants.getAllElement();
-        const filterEnchantCfg = enchantCfg.filter(enchantCfg => enchantCfg.QualityType == 0 && !GlobalData.Enchant.filterIds.includes(enchantCfg.id) && enchantCfg.id !== excludeId);
+        const filterEnchantCfg = enchantCfg.filter(
+          (enchantCfg) =>
+            enchantCfg.QualityType == 0 &&
+            !GlobalData.Enchant.filterIds.includes(enchantCfg.id) &&
+            (excludeIds?.length ? !excludeIds.includes(enchantCfg.id) : true)
+        );
 
         const idArr: number[] = [];
         const weightArr: number[] = [];
@@ -741,33 +746,40 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
     private getEnchantIds(prePetInfo: petItemDataNew, selectEnchantId: number | null): null | number[] {
         const enchantIds = [...(prePetInfo.p.b ?? [])];
-				Log4Ts.log(PetBagModuleS, 'net_enchant preEnchantIds:' + enchantIds);
+				const len = enchantIds?.length ?? 0;
+				const excludeIds = []
+				if (len === 3) { // 神话宠物，则第三个为固有词条，也不可以随到它
+					excludeIds.push(enchantIds[2]);
+				}
+				Log4Ts.log(PetBagModuleS, 'net_enchant 附魔前宠物词缀信息 preEnchantIds:' + enchantIds);
 
         /**
          * 选中宠物已有两条词缀
          * 则选任意词缀，附魔重铸， 新词缀与原有两词缀不同
          * 即： 不会随到已有或者相同的词缀
          */
-        if (enchantIds.length === 2) { 
+        if (len >= 2) { // 神话宠物三个词条会走这里
             if (!selectEnchantId) return null;
             const tarEnchantIndex = enchantIds.findIndex(
                 (id) => id === selectEnchantId,
             ); // 要覆盖
             if (tarEnchantIndex === -1) return null;
             const excludeEnchantId = enchantIds[(tarEnchantIndex + 1) % 2]; // 不跟原有的附魔重合
-						Log4Ts.log(PetBagModuleS, 'net_enchant excludeEnchantId:' + excludeEnchantId);
-            enchantIds[tarEnchantIndex] = this.randomEnchant(excludeEnchantId);
+						excludeIds.push(excludeEnchantId);
+						Log4Ts.log(PetBagModuleS, 'net_enchant 已有两条词缀 excludeEnchantIds:' + excludeIds); 
+            enchantIds[tarEnchantIndex] = this.randomEnchant(excludeIds);
             return enchantIds;
         }
 
         // 已有一条词缀
-        if (enchantIds.length) {
+        if (len === 1) {
             const excludeEnchantId = enchantIds[0]; // 不跟原有的附魔重合
-						Log4Ts.log(PetBagModuleS, 'net_enchant excludeEnchantId:' + excludeEnchantId);
-            enchantIds.push(this.randomEnchant(excludeEnchantId));
+						excludeIds.push(excludeEnchantId);
+						Log4Ts.log(PetBagModuleS, 'net_enchant 已有一条词缀 excludeEnchantIds:' + excludeIds);
+            enchantIds.push(this.randomEnchant(excludeIds));
             return enchantIds;
         }
-
+				Log4Ts.log(PetBagModuleS, 'net_enchant 还没有词缀');
         enchantIds.push(this.randomEnchant());
         return enchantIds;
     }
