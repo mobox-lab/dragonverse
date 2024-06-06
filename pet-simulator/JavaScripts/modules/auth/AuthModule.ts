@@ -552,7 +552,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     public static encryptToken(token: string, saltTime: number): string {
         if (Gtk.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token is empty when encrypt.`);
+            Log4Ts.log({name: "AuthModule"}, `token is empty when encrypt.`);
             return null;
         }
         //TODO_LviatYi encrypt token with time salt
@@ -651,9 +651,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         super.onPlayerLeft(player);
 
         mw.setTimeout(() => {
-            this.userPSRankDataReporter.delete(player.userId);
-            this.userBWRankDataReporter.delete(player.userId);
-        },
+                this.userPSRankDataReporter.delete(player.userId);
+                this.userBWRankDataReporter.delete(player.userId);
+            },
             GameServiceConfig.REPORT_REQUEST_WAIT_TIME * 2);
     }
 
@@ -757,12 +757,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private tokenVerify(saltToken: SaltToken): boolean {
         if (!this.timeVerify(saltToken.time)) {
-            Log4Ts.log({ name: "AuthModule" }, `token time verify failed.`);
+            Log4Ts.log({name: "AuthModule"}, `token time verify failed.`);
             return false;
         }
         const token = AuthModuleS.decryptToken(saltToken.content, saltToken.time);
         if (Gtk.isNullOrEmpty(token)) {
-            Log4Ts.log({ name: "AuthModule" }, `token invalid.`);
+            Log4Ts.log({name: "AuthModule"}, `token invalid.`);
             return false;
         }
 
@@ -807,8 +807,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     public async requestWebCatchDragon(playerId: number,
-        dragonPalId: number,
-        catchTimeStamp: number): Promise<[boolean, DragonBallRespData]> {
+                                       dragonPalId: number,
+                                       catchTimeStamp: number): Promise<[boolean, DragonBallRespData]> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
@@ -915,7 +915,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             petRarity,
             petOriginalAttack,
             petEnchantScore,
-            recordTime: recordTime / 1000,
+            recordTime: Math.floor(recordTime / 1000),
             round,
         };
 
@@ -977,7 +977,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return (await mw.TeleportService
             .asyncGetPlayerRoomInfo(userId)
             .catch(e => {
-                Log4Ts.error(AuthModuleS, e)
+                Log4Ts.error(AuthModuleS, e);
                 return Promise.resolve(undefined as mw.RoomInfo);
             }))?.sceneId ?? "INVALID_SCENE_ID";
     }
