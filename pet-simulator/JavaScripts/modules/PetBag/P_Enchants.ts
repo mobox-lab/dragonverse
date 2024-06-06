@@ -17,6 +17,7 @@ import { PetBag_Item } from './P_BagItem';
 import KeyOperationManager from '../../controller/key-operation-manager/KeyOperationManager';
 import { PetBagModuleC } from './PetBagModuleC';
 import Gtk from '../../util/GToolkit';
+import { IEnchantsElement } from '../../config/Enchants';
 
 export enum EnchantPetState {
     IS_SAME_ENCHANT = 'is_same_enchant',
@@ -169,7 +170,41 @@ export class P_Enchants extends EnchantsPanel_Generate {
 						return cfg.QualityType !== GlobalEnum.PetQuality.Myth;
 				});
     }
-
+		private setPetInfoRarityUI(type: number) {
+			const quality = GlobalEnum.PetQuality;
+      switch (type) {
+        case quality.Normal: {
+          this.textRarity.text = GameConfig.Language.PetARR_Quality_1.Value;
+          this.picRarity.imageGuid = GlobalData.Enchant.enchantPetRarityGuid[0];
+          return;
+        }
+        case quality.Rare: {
+          this.textRarity.text = GameConfig.Language.PetARR_Quality_2.Value;
+          this.picRarity.imageGuid = GlobalData.Enchant.enchantPetRarityGuid[1];
+          return;
+        }
+        case quality.Epic: {
+          this.textRarity.text = GameConfig.Language.PetARR_Quality_3.Value;
+          this.picRarity.imageGuid = GlobalData.Enchant.enchantPetRarityGuid[2];
+          return;
+        }
+        case quality.Legend: {
+          this.textRarity.text = GameConfig.Language.PetARR_Quality_4.Value;
+          this.picRarity.imageGuid = GlobalData.Enchant.enchantPetRarityGuid[3];
+          return;
+        }
+        case quality.Myth: {
+          this.textRarity.text = GameConfig.Language.PetARR_Quality_5.Value;
+          this.picRarity.imageGuid = GlobalData.Enchant.enchantPetRarityGuid[4];
+          return;
+        }
+        default: {
+          this.textRarity.text = GameConfig.Language.PetARR_Quality_1.Value; 
+          this.picRarity.imageGuid = GlobalData.Enchant.enchantPetRarityGuid[0];
+          return;
+        }
+      }
+		}
 		/**左侧附魔详情面板 */
 		public updateEnchantIntroPanel() {
 				this.mCanvas_Entrylist.removeAllChildren(); // 清除上一次的UI
@@ -185,7 +220,30 @@ export class P_Enchants extends EnchantsPanel_Generate {
 					" enchantCnt:" + curSelectPetInfo?.petData?.enchantCnt
 				);
 				const buffIds = curSelectPetInfo?.petData?.p?.b;
-				if (!curSelectPetInfo?.petData) return;
+				if (!curSelectPetInfo?.petData) {
+					this.mPetInfo.visibility = mw.SlateVisibility.Collapsed;	
+					return;
+				} 
+				const curPetData = curSelectPetInfo.petData;
+
+				this.mPetInfo.visibility = mw.SlateVisibility.Visible;
+        const cfg = GameConfig.PetARR.getElement(curPetData.I);
+        this.mNameBig.text = cfg.petName;
+        this.mNameSmall.text = curSelectPetInfo?.petData?.p?.n;
+				Gtk.trySetVisibility(
+          this.picLovelovelove,
+          cfg.DevType === GlobalEnum.PetDevType.Love
+            ? mw.SlateVisibility.Visible
+            : mw.SlateVisibility.Collapsed
+        );
+				Gtk.trySetVisibility(
+          this.picRainbowowow,
+          cfg.DevType === GlobalEnum.PetDevType.Rainbow
+            ? mw.SlateVisibility.Visible
+            : mw.SlateVisibility.Collapsed
+        );
+				this.setPetInfoRarityUI(cfg.QualityType);
+				
 				const len = buffIds?.length ?? 0; // 两词条则可选择一词条重铸
 				const isReEnchant = len >= 2; // 两词条则可选择一词条重铸
 				const items = [];
@@ -215,7 +273,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
 					items.push(item);
 				}
 				if (len < 2) {
-          // 0 / 1
+          // 不满两词条则空 item 补到两词条
           for (let i = 0; i < 2 - len; i++) {
             const emptyItem = mw.UIService.create(EnchantItem);
             emptyItem.uiObject.size = emptyItem.mCanvas.size;
@@ -480,20 +538,30 @@ class EnchantItem extends Enchants_item_Generate {
     }
 		public setEmptyUI() {
 			this.mButton_Entry.normalImageGuid = GlobalData.Enchant.enchantItemGuid[0];
-			this.textEnhanceName.text = '空';
-			this.mTextBlock_Entry.text = '点击附魔添加'; // TODO: 多语言 & buff 描述完善 参照PetHover里的
+			this.textEnhanceName.text = GameConfig.Language.Enchants_new001.Value;
+			this.mTextBlock_Entry.text = GameConfig.Language.Enchants_new002.Value;
 			this.textScoreNumber.visibility = mw.SlateVisibility.Collapsed;
 			this.textScoreUp.visibility = mw.SlateVisibility.Collapsed;
 			this.picScore.visibility = mw.SlateVisibility.Collapsed;
 		}
-
+		
+		private getBgImageGuid(cfgId: number) {
+			if(cfgId >= GlobalData.Enchant.mythEnchantIdRange[0] && cfgId <= GlobalData.Enchant.mythEnchantIdRange[1]) {
+				return GlobalData.Enchant.enchantItemGuid[3]; 
+			}
+			if(cfgId >= GlobalData.Enchant.specialEnchantIdRange[0] && cfgId <= GlobalData.Enchant.specialEnchantIdRange[1]) {
+				return GlobalData.Enchant.enchantItemGuid[2]; 
+			}
+			return GlobalData.Enchant.enchantItemGuid[1];  
+		}
     /**设置配置id */
     public setCfgId(cfgId: number) {
         this.cfgId = cfgId;
-        let cfg = GameConfig.Enchants.getElement(cfgId);
-				this.mButton_Entry.normalImageGuid = GlobalData.Enchant.enchantItemGuid[1];
+        const cfg = GameConfig.Enchants.getElement(cfgId);
+				if(!cfg) return;
+				this.mButton_Entry.normalImageGuid = this.getBgImageGuid(cfgId);
         this.textEnhanceName.text = cfg.Name;
-				this.mTextBlock_Entry.text = cfg.Describe;
+				this.mTextBlock_Entry.text = utils.Format(cfg.Describe, cfg.Degree);
 				this.textScoreNumber.text = utils.formatNumber(cfg.RankScore ?? 0);
 				this.textScoreNumber.visibility = mw.SlateVisibility.Visible; 
 				this.textScoreUp.visibility = mw.SlateVisibility.Visible;

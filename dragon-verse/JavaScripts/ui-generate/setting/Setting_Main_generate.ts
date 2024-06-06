@@ -50,12 +50,33 @@ export default class Setting_Main_Generate extends UIScript {
 		}
 		return this.mBtn_CloseSound_Internal
 	}
-	private mCanvas_Pic_Internal: mw.Canvas
-	public get mCanvas_Pic(): mw.Canvas {
-		if(!this.mCanvas_Pic_Internal&&this.uiWidgetBase) {
-			this.mCanvas_Pic_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic') as mw.Canvas
+	private imgYellowOn_Internal: mw.Image
+	public get imgYellowOn(): mw.Image {
+		if(!this.imgYellowOn_Internal&&this.uiWidgetBase) {
+			this.imgYellowOn_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/mBtn_CloseSound/imgYellowOn') as mw.Image
 		}
-		return this.mCanvas_Pic_Internal
+		return this.imgYellowOn_Internal
+	}
+	private img_CircleBack_Internal: mw.Image
+	public get img_CircleBack(): mw.Image {
+		if(!this.img_CircleBack_Internal&&this.uiWidgetBase) {
+			this.img_CircleBack_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/mBtn_CloseSound/img_CircleBack') as mw.Image
+		}
+		return this.img_CircleBack_Internal
+	}
+	private img_Circle_Internal: mw.Image
+	public get img_Circle(): mw.Image {
+		if(!this.img_Circle_Internal&&this.uiWidgetBase) {
+			this.img_Circle_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/mBtn_CloseSound/img_CircleBack/img_Circle') as mw.Image
+		}
+		return this.img_Circle_Internal
+	}
+	private text_SoundOn_Internal: mw.TextBlock
+	public get text_SoundOn(): mw.TextBlock {
+		if(!this.text_SoundOn_Internal&&this.uiWidgetBase) {
+			this.text_SoundOn_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/text_SoundOn') as mw.TextBlock
+		}
+		return this.text_SoundOn_Internal
 	}
 	private mCanvas_Control_Internal: mw.Canvas
 	public get mCanvas_Control(): mw.Canvas {
@@ -71,10 +92,17 @@ export default class Setting_Main_Generate extends UIScript {
 		}
 		return this.mCanvas_cameraspeed_Internal
 	}
+	private img_ScrollBack_Internal: mw.Image
+	public get img_ScrollBack(): mw.Image {
+		if(!this.img_ScrollBack_Internal&&this.uiWidgetBase) {
+			this.img_ScrollBack_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed/img_ScrollBack') as mw.Image
+		}
+		return this.img_ScrollBack_Internal
+	}
 	private mScroll_speedInputScale_Internal: mw.ProgressBar
 	public get mScroll_speedInputScale(): mw.ProgressBar {
 		if(!this.mScroll_speedInputScale_Internal&&this.uiWidgetBase) {
-			this.mScroll_speedInputScale_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed/mScroll_speedInputScale') as mw.ProgressBar
+			this.mScroll_speedInputScale_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed/img_ScrollBack/mScroll_speedInputScale') as mw.ProgressBar
 		}
 		return this.mScroll_speedInputScale_Internal
 	}
@@ -128,18 +156,15 @@ export default class Setting_Main_Generate extends UIScript {
         
         // 文本控件
         
-        // 未暴露的文本控件
-        
-        this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/TextBlock") as mw.TextBlock);
+        this.initLanguage(this.text_SoundOn)
         
 	
+        // 未暴露的文本控件
+        
         this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/Text_Sound") as mw.TextBlock);
         
 	
         this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/Text_CloseSound") as mw.TextBlock);
-        
-	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/Text_Pic") as mw.TextBlock);
         
 	
         this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/Text_Control") as mw.TextBlock);
@@ -158,6 +183,9 @@ export default class Setting_Main_Generate extends UIScript {
 
     protected overrideTextSetter() {
         
+        overrideTextBlockTextSetter(this.text_SoundOn);
+        
+	
     }
 
     protected unregisterTextLan(){
@@ -173,18 +201,15 @@ export default class Setting_Main_Generate extends UIScript {
         
         // 文本多语言
         
-        // 隐藏文本多语言
-        
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("mCanvas_Setting/TextBlock") as mw.TextBlock);
+        this.unregisterLanKey(this.text_SoundOn)
         
 	
+        // 隐藏文本多语言
+        
         this.unregisterLanKey(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/Text_Sound") as mw.TextBlock);
         
 	
         this.unregisterLanKey(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/Text_CloseSound") as mw.TextBlock);
-        
-	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Pic/Text_Pic") as mw.TextBlock);
         
 	
         this.unregisterLanKey(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/Text_Control") as mw.TextBlock);

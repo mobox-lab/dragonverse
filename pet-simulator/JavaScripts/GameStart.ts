@@ -46,6 +46,7 @@ import Balancing from "./depend/balancing/Balancing";
 import { GtkTypes } from "./util/GToolkit";
 import GMHUD_Generate from "./ui-generate/common/GM/GMHUD_generate";
 import PlayerSettingModuleData, { PlayerSettingModuleC, PlayerSettingModuleS } from "./modules/player-setting/PlayerSettingModule";
+import { VectorExt } from "./declaration/vectorext";
 
 // declare global {
 //     var UE: any;
@@ -140,6 +141,7 @@ export default class GameStart extends mw.Script {
         GlobalData.Global.isOverSea = this.isOverSea;
         this.onRegisterModule();
         mwaction;
+        VectorExt.initialize();
 
         DataStorage.setTemporaryStorage(!(GameServiceConfig.isRelease || GameServiceConfig.isBeta || this.isOnline));
 

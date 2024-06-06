@@ -1,10 +1,20 @@
 import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
+    //#region settings
+    /**
+     * 静音按钮开启颜色.
+     */
+    public static readonly SOUND_ON_COLOR = "#FFF742";
+    /**
+     * 静音按钮关闭颜色.
+     */
+    public static readonly SOUND_OFF_COLOR = "#BBC4D5";
     /**
      * 镜头灵敏度默认值.
      */
     public static readonly DEFAULT_CAMERA_LOOK_UP_RATE_SCALE = 0.5;
+    //#endregion
     //#region Statistic
 
     /**
