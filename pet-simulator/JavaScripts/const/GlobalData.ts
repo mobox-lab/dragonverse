@@ -667,6 +667,8 @@ export namespace GlobalData {
         public static itemSpace: number = 20;
         /**背包item 大小 */
         public static itemSize: mw.Vector2 = new mw.Vector2(95, 95);
+        /**背包itemUI 爱心化、彩虹化图标 Guid */
+        public static itemSpecialIconGuid: string[] = ["178135", "355921"];
     }
 
     /**收集图鉴 */

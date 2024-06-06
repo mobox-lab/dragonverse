@@ -43,6 +43,34 @@ export default class PetStateItemUI_Generate extends UIScript {
 		}
 		return this.attackImg_Internal
 	}
+	private imgLoveRainbow_Internal: mw.Image
+	public get imgLoveRainbow(): mw.Image {
+		if(!this.imgLoveRainbow_Internal&&this.uiWidgetBase) {
+			this.imgLoveRainbow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/imgLoveRainbow') as mw.Image
+		}
+		return this.imgLoveRainbow_Internal
+	}
+	private imgEnhance_Internal: mw.Image
+	public get imgEnhance(): mw.Image {
+		if(!this.imgEnhance_Internal&&this.uiWidgetBase) {
+			this.imgEnhance_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/imgEnhance') as mw.Image
+		}
+		return this.imgEnhance_Internal
+	}
+	private textEnhancenum_Internal: mw.TextBlock
+	public get textEnhancenum(): mw.TextBlock {
+		if(!this.textEnhancenum_Internal&&this.uiWidgetBase) {
+			this.textEnhancenum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/imgEnhance/textEnhancenum') as mw.TextBlock
+		}
+		return this.textEnhancenum_Internal
+	}
+	private textEnhancenumber_Internal: mw.TextBlock
+	public get textEnhancenumber(): mw.TextBlock {
+		if(!this.textEnhancenumber_Internal&&this.uiWidgetBase) {
+			this.textEnhancenumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/textEnhancenumber') as mw.TextBlock
+		}
+		return this.textEnhancenumber_Internal
+	}
 	private mBtn_Pet_Internal: mw.Button
 	public get mBtn_Pet(): mw.Button {
 		if(!this.mBtn_Pet_Internal&&this.uiWidgetBase) {
@@ -79,6 +107,12 @@ export default class PetStateItemUI_Generate extends UIScript {
 		
 		//文本多语言
 		
+		this.initLanguage(this.textEnhancenum)
+		
+	
+		this.initLanguage(this.textEnhancenumber)
+		
+	
 		//文本多语言
 		
 

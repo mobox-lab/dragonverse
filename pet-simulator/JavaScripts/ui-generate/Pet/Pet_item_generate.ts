@@ -106,6 +106,20 @@ export default class Pet_item_Generate extends UIScript {
 		}
 		return this.mButton_Equip_Internal
 	}
+	private imgEnhance_Internal: mw.Image
+	public get imgEnhance(): mw.Image {
+		if(!this.imgEnhance_Internal&&this.uiWidgetBase) {
+			this.imgEnhance_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgEnhance') as mw.Image
+		}
+		return this.imgEnhance_Internal
+	}
+	private textEnhancenum_Internal: mw.TextBlock
+	public get textEnhancenum(): mw.TextBlock {
+		if(!this.textEnhancenum_Internal&&this.uiWidgetBase) {
+			this.textEnhancenum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/imgEnhance/textEnhancenum') as mw.TextBlock
+		}
+		return this.textEnhancenum_Internal
+	}
 
 
 
@@ -136,6 +150,9 @@ export default class Pet_item_Generate extends UIScript {
 		//文本多语言
 		
 		this.initLanguage(this.mText_Value)
+		
+	
+		this.initLanguage(this.textEnhancenum)
 		
 	
 		//文本多语言
