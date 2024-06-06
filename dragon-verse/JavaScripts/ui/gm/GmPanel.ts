@@ -330,7 +330,7 @@ AddGMCommand(
                 mw.Vector.one,
             ),
         }).then((value) => {
-            Log4Ts.log({ name: "TTD" }, `ObbyStar Spawned: ${value}`);
+            Log4Ts.log({name: "TTD"}, `ObbyStar Spawned: ${value}`);
         });
     },
     "TTD",
