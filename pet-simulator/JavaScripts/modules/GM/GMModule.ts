@@ -183,6 +183,19 @@ addGMCommand(
 	"货币"
 );
 
+// 附魔
+addGMCommand(
+	"添加指定附魔id数组(第一个跟随宠物)",
+	"string",
+	() => {},
+	(player: mw.Player, value: string) => {
+		let enchantIds = value.trim().split(/[,\s]/).map(v => Number(v));
+		ModuleService.getModule(PetBagModuleS).gm_enchant(player, enchantIds);
+	}, 
+	undefined,
+	"附魔"
+);
+
 addGMCommand(
     "聊天气泡",
     "string",
