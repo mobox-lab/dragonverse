@@ -58,43 +58,43 @@ AddGMCommand(
     "Spawn"
 );
 
-// addGMCommand(
-//     "生成 场景龙",
-//     "string",
-//     undefined,
-//     (player, value: string) => {
-//         let id = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
-//         if (isNaN(id)) id = undefined;
+addGMCommand(
+    "生成 场景龙",
+    "string",
+    undefined,
+    (player, value: string) => {
+        let id = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
+        if (isNaN(id)) id = undefined;
 
-//         ModuleService.getModule(SceneDragonModuleS)["generate"](
-//             player.playerId,
-//             id ?? Gtk.randomArrayItem(GameConfig.Dragon.getAllElement()).id,
-//             0,
-//             player.character.worldTransform.position.add(
-//                 new RandomGenerator()
-//                     .randomCircle()
-//                     .handle((v) => v * 200)
-//                     .toVector3(500)
-//             ),
-//             new UUID(4).toString()
-//         );
-//     },
-//     null,
-//     "Spawn"
-// );
+        ModuleService.getModule(SceneDragonModuleS)["generate"](
+            player.playerId,
+            id ?? Gtk.randomArrayItem(GameConfig.Dragon.getAllElement()).id,
+            0,
+            player.character.worldTransform.position.add(
+                new RandomGenerator()
+                    .randomCircle()
+                    .handle((v) => v * 200)
+                    .toVector3(500)
+            ),
+            new UUID(4).toString()
+        );
+    },
+    null,
+    "Spawn"
+);
 
-// addGMCommand(
-//     "销毁 场景龙",
-//     "string",
-//     undefined,
-//     (player, syncKey: string) => {
-//         let id = Number(syncKey);
-//         if (isNaN(id)) id = undefined;
-//         ModuleService.getModule(SceneDragonModuleS)["destroy"](player.playerId, syncKey, false);
-//     },
-//     null,
-//     "Spawn"
-// );
+addGMCommand(
+    "销毁 场景龙",
+    "string",
+    undefined,
+    (player, syncKey: string) => {
+        let id = Number(syncKey);
+        if (isNaN(id)) id = undefined;
+        ModuleService.getModule(SceneDragonModuleS)["destroy"](player.playerId, syncKey, false);
+    },
+    null,
+    "Spawn"
+);
 
 /**
  * 场景龙 相关事件.
