@@ -853,5 +853,30 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
         return true;
     }
+
+		/** GM 测试用 给第一个装备的宠物添加 */
+    public async gm_enchant(player: mw.Player, enchantIds: number[]) {
+			const playerId = player.playerId;
+			const data = DataCenterS.getData(playerId, PetBagModuleData);
+			const selectPetKey = data.CurFollowPets[0];
+
+			const prePetEnchantIds = Array.from(
+				data.bagItemsByKey(selectPetKey).p.b
+			);
+
+			data.addEnchant(selectPetKey, enchantIds);
+
+			const newIds = this.getNewEnchantIds(prePetEnchantIds, enchantIds);
+			Log4Ts.log(PetBagModuleS, 'gm_enchant enchantNewIds:' +  newIds);
+
+			this.reportMaxAttackPetInfo(playerId, data); // 上报附魔分数变化 这里就是要现在的currentData
+			this.enchantNotice(player, newIds);
+			const specialIds = newIds.filter(id => {
+				const [min, max] = GlobalData.Enchant.specialEnchantIdRange
+				return id >= min && id <= max;
+			})
+			if(specialIds?.length) mw.Event.dispatchToClient(player, "ENCHANT_BROADCAST_ACHIEVEMENT_ENCHANT_SPECIAL");
+		}
+
 }
 
