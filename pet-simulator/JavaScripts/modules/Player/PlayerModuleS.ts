@@ -350,4 +350,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         return this.getPlayerBehavior(player).PetArr;
     }
 
+		/** GM 测试用 */
+		public clearDiamondAndGold(playerId: number) {
+				const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
+        return data.clearDiamondAndGold();
+		}
 }

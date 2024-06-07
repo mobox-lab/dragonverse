@@ -172,10 +172,16 @@ addGMCommand(
     "货币"
 );
 
-// AddGMCommand("清空货币", (player: mw.Player, value: string) => {
-//     ModuleService.getModule(PlayerModuleC).clearGoldGem();
-// }, (player: mw.Player, value: string) => {
-// }, "货币");
+addGMCommand(
+  "清空货币",
+	"void",
+	() => {},
+	(player: mw.Player) => {
+			ModuleService.getModule(PlayerModuleS).clearDiamondAndGold(player.playerId);
+  },
+	undefined,
+	"货币"
+);
 
 addGMCommand(
     "聊天气泡",
@@ -947,10 +953,10 @@ AddGMCommand(
     "货币"
 );
 
-// AddGMCommand("清空货币", (player: mw.Player, value: string) => {
-//     ModuleService.getModule(PlayerModuleC).clearGoldGem();
-// }, (player: mw.Player, value: string) => {
-// }, "货币");
+AddGMCommand("清空货币", (player: mw.Player, value: string) => {
+}, (player: mw.Player, value: string) => {
+	ModuleService.getModule(PlayerModuleS).clearDiamondAndGold(player.playerId);
+}, "货币");
 
 AddGMCommand(
     "聊天气泡",

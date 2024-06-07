@@ -165,7 +165,6 @@ export class PetSimulatorPlayerModuleData extends Subdata {
         this.changeDiamond(value, false, isSync);
         return true;
     }
-
     /**钻石改变 */
     private changeDiamond(value: number, isAdd: boolean, isSync: boolean): void {
         isAdd ? this.diamond += value : this.diamond -= value;
@@ -174,4 +173,11 @@ export class PetSimulatorPlayerModuleData extends Subdata {
         this.onDiamondChange.call();
     }
 
+		/** GM 测试用 */
+		public clearDiamondAndGold () {
+				this.reduceDiamond(this.diamond, true);
+				this.reduceGold(this.gold, GlobalEnum.CoinType.FirstWorldGold, true);
+				this.reduceGold(this.gold2, GlobalEnum.CoinType.SecondWorldGold, true);
+				this.reduceGold(this.gold3, GlobalEnum.CoinType.ThirdWorldGold, true); 
+		}
 }
