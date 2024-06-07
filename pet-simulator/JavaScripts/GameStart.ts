@@ -47,6 +47,7 @@ import { GtkTypes } from "./util/GToolkit";
 import GMHUD_Generate from "./ui-generate/common/GM/GMHUD_generate";
 import PlayerSettingModuleData, { PlayerSettingModuleC, PlayerSettingModuleS } from "./modules/player-setting/PlayerSettingModule";
 import { VectorExt } from "./declaration/vectorext";
+import GodModService from "mw-god-mod";
 
 // declare global {
 //     var UE: any;
@@ -184,13 +185,15 @@ export default class GameStart extends mw.Script {
 
         if (SystemUtil.isClient()) {
             if (!GameServiceConfig.isRelease && this.isOpenGm) {
-                GM.start(GMBasePanelUI);
+                // GM.start(GMBasePanelUI);
+                GodModService.getInstance().showGm()
                 this.registerGMVisibleKey();
                 return;
             }
             GM.checkAuthority((res) => {
                 if (res) {
-                    GM.start(GMBasePanelUI);
+                    // GM.start(GMBasePanelUI);
+                    GodModService.getInstance().showGm()
                 }
             });
             GameObjectFactory.instance;
