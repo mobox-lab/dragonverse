@@ -6,8 +6,10 @@ import ModuleService = mwext.ModuleService;
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import { AddGMCommand } from "module_gm";
+import { addGMCommand } from "mw-god-mod";
 
-AddGMCommand("Change Energy",
+AddGMCommand(
+    "Change Energy",
     undefined,
     (player, value) => {
         let v = parseInt(value);
@@ -18,7 +20,24 @@ AddGMCommand("Change Energy",
 
         ModuleService.getModule(EnergyModuleS).addEnergy(player.playerId, v);
     },
-    "Energy",
+    "Energy"
+);
+
+addGMCommand(
+    "Change Energy",
+    "string",
+    undefined,
+    (player, value) => {
+        let v = parseInt(value);
+        if (Number.isNaN(v)) {
+            v = 200;
+        }
+        Log4Ts.log(EnergyModuleS, `try add energy to player ${player.playerId}. by GM. value: ${v}`);
+
+        ModuleService.getModule(EnergyModuleS).addEnergy(player.playerId, v);
+    },
+    undefined,
+    "Energy"
 );
 
 export default class BwEnergyModuleData extends mwext.Subdata {
@@ -60,11 +79,8 @@ export default class BwEnergyModuleData extends mwext.Subdata {
      * @private
      */
     public tryUpdateLimit(currentLimit: number): boolean {
-        if (this.lastMaxStamina === undefined ||
-            this.lastMaxStamina < currentLimit) {
-            this.energy = Math.min(
-                this.energy + currentLimit - (this.lastMaxStamina ?? 0),
-                currentLimit);
+        if (this.lastMaxStamina === undefined || this.lastMaxStamina < currentLimit) {
+            this.energy = Math.min(this.energy + currentLimit - (this.lastMaxStamina ?? 0), currentLimit);
         }
         if (this.lastMaxStamina !== currentLimit) {
             this.lastMaxStamina = currentLimit;
@@ -96,9 +112,9 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BwEnergyModuleDa
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    public viewEnergy: { data: number } = createYoact({data: 0});
+    public viewEnergy: { data: number } = createYoact({ data: 0 });
 
-    public viewEnergyLimit: { data: number } = createYoact({data: 0});
+    public viewEnergyLimit: { data: number } = createYoact({ data: 0 });
 
     private _requestRegulator = new Regulator(1e3);
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -136,7 +152,7 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BwEnergyModuleDa
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
+        this._eventListeners.forEach((value) => value.disconnect());
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -242,7 +258,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
     protected onDestroy(): void {
         super.onDestroy();
         //#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
+        this._eventListeners.forEach((value) => value.disconnect());
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -272,53 +288,53 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
     private initPlayerEnergy(playerId: number) {
         const d = this.getPlayerData(playerId);
         if (Gtk.isNullOrUndefined(d)) return;
-        let refreshInterval = GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
-            GameServiceConfig.ENERGY_RECOVERY_INTERVAL_MS :
-            5 * GtkTypes.Interval.PerSec;
-        this.authModuleS
-            .requestRefreshStaminaLimit(playerId)
-            .then(() => {
-                let autoRecoveryHandler = () => {
-                    const now = Date.now();
-                    let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
-                    let changed = d.tryUpdateLimit(limit);
+        let refreshInterval =
+            GameServiceConfig.isRelease || GameServiceConfig.isBeta
+                ? GameServiceConfig.ENERGY_RECOVERY_INTERVAL_MS
+                : 5 * GtkTypes.Interval.PerSec;
+        this.authModuleS.requestRefreshStaminaLimit(playerId).then(() => {
+            let autoRecoveryHandler = () => {
+                const now = Date.now();
+                let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
+                let changed = d.tryUpdateLimit(limit);
 
-                    let recoveryDuration = this.authModuleS.playerStaminaRecoveryMap.get(playerId) ?? 0;
-                    if (recoveryDuration > 0) {
-                        const duration = now - d.lastRecoveryTime;
-                        let delay: number = 0;
-                        if (d.energy < limit) {
-                            Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.energy}`);
-                            d.energy = Math.min(
-                                limit,
-                                d.energy +
-                                limit / recoveryDuration / 1e3
-                                * refreshInterval
-                                * Math.max(Math.floor(duration / refreshInterval), 0));
+                let recoveryDuration = this.authModuleS.playerStaminaRecoveryMap.get(playerId) ?? 0;
+                if (recoveryDuration > 0) {
+                    const duration = now - d.lastRecoveryTime;
+                    let delay: number = 0;
+                    if (d.energy < limit) {
+                        Log4Ts.log(EnergyModuleS, `prepare add energy. current is ${d.energy}`);
+                        d.energy = Math.min(
+                            limit,
+                            d.energy +
+                                (limit / recoveryDuration / 1e3) *
+                                    refreshInterval *
+                                    Math.max(Math.floor(duration / refreshInterval), 0)
+                        );
 
-                            delay = duration % refreshInterval;
-                            d.lastRecoveryTime = now - delay;
-                            Log4Ts.log(EnergyModuleS, `add energy done. current is ${d.energy}`);
-                            changed = true;
-                        }
-                        if (this._intervalHolder.has(playerId)) mw.clearTimeout(this._intervalHolder.get(playerId));
-                        this._intervalHolder.set(playerId, mw.setTimeout(autoRecoveryHandler, refreshInterval - delay));
+                        delay = duration % refreshInterval;
+                        d.lastRecoveryTime = now - delay;
+                        Log4Ts.log(EnergyModuleS, `add energy done. current is ${d.energy}`);
+                        changed = true;
                     }
-
-                    if (changed) {
-                        d.save(false);
-                        this.syncEnergyToClient(playerId, d.energy, limit);
-                    }
-                };
-
-                if ((d.restitution ?? 0) > 0) {
-                    let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
-                    d.energy = Math.min(d.energy + d.restitution, limit);
-                    d.restitution = 0;
-                    this.syncEnergyToClient(playerId, d.energy);
+                    if (this._intervalHolder.has(playerId)) mw.clearTimeout(this._intervalHolder.get(playerId));
+                    this._intervalHolder.set(playerId, mw.setTimeout(autoRecoveryHandler, refreshInterval - delay));
                 }
-                autoRecoveryHandler();
-            });
+
+                if (changed) {
+                    d.save(false);
+                    this.syncEnergyToClient(playerId, d.energy, limit);
+                }
+            };
+
+            if ((d.restitution ?? 0) > 0) {
+                let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
+                d.energy = Math.min(d.energy + d.restitution, limit);
+                d.restitution = 0;
+                this.syncEnergyToClient(playerId, d.energy);
+            }
+            autoRecoveryHandler();
+        });
     }
 
     /**
@@ -341,12 +357,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
         if (d.consume(cost) > 0 && needRefresh) d.lastRecoveryTime = firstTime;
 
         d.save(false);
-        this.syncEnergyToClient(
-            playerId,
-            d.energy);
-        Log4Ts.log(EnergyModuleS,
-            `consume ${cost} energy for player ${playerId}.`,
-            `current: ${d.energy}`);
+        this.syncEnergyToClient(playerId, d.energy);
+        Log4Ts.log(EnergyModuleS, `consume ${cost} energy for player ${playerId}.`, `current: ${d.energy}`);
     }
 
     public addEnergy(playerId: number, val: number) {
@@ -354,12 +366,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
         if (!d) return;
         d.energy += val;
         d.save(false);
-        this.syncEnergyToClient(
-            playerId,
-            d.energy);
-        Log4Ts.log(EnergyModuleS,
-            `add ${val} energy to player ${playerId}.`,
-            ` current: ${d.energy}`);
+        this.syncEnergyToClient(playerId, d.energy);
+        Log4Ts.log(EnergyModuleS, `add ${val} energy to player ${playerId}.`, ` current: ${d.energy}`);
     }
 
     public syncEnergyToClient(playerId: number, energy: number, energyLimit?: number) {
@@ -372,16 +380,11 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
     @mwext.Decorator.noReply()
     public net_requestRefreshStaminaLimit() {
         let playerId = this.currentPlayerId;
-        this.authModuleS
-            .requestRefreshStaminaLimit(this.currentPlayerId)
-            .then(() => {
-                let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
-                let d = this.getPlayerData(playerId);
-                if (d?.tryUpdateLimit(limit)
-                    ?? false) this.syncEnergyToClient(playerId,
-                    d.energy,
-                    limit);
-            });
+        this.authModuleS.requestRefreshStaminaLimit(this.currentPlayerId).then(() => {
+            let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
+            let d = this.getPlayerData(playerId);
+            if (d?.tryUpdateLimit(limit) ?? false) this.syncEnergyToClient(playerId, d.energy, limit);
+        });
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
