@@ -95,7 +95,7 @@ addGMCommand(
                 Log4Ts.log(AuthModuleS, `report ps rank data success.`);
             });
     },
-    undefined
+    undefined,
     "Root"
 );
 

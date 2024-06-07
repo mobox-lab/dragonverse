@@ -34,7 +34,7 @@ import { EnergyModuleC, EnergyModuleS } from "../Energy/EnergyModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import WoodUnit from "../npc/WoodUnit";
 import Gtk from "../../util/GToolkit";
-import { addGMCommand } from "mw-god-mod";
+import GodModService, { addGMCommand } from "mw-god-mod";
 
 export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
     constructor() {
@@ -60,7 +60,8 @@ export class GMModuleC extends ModuleC<GMModuleS, GMModuleData> {
 
     private open_gm() {
         Globaldata.isOpenGm = true;
-        GM.start(GMBasePanelUI);
+        // GM.start(GMBasePanelUI);
+        GodModService.getInstance().showGm()
         EventManager.instance.add(EModule_Events.gm_HideShowUI, this.listen_hideShowUI.bind(this));
     }
 
