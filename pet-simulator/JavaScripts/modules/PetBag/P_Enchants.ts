@@ -94,31 +94,37 @@ export class P_Enchants extends EnchantsPanel_Generate {
         //     this.showRes(tarEnchant, petKeyArr);
         // });
     }
+		public initPanel() {
+			let petData = this.bagData.sortBag();
+			PetBagItem.instance.UIPool.resetAll();
+
+			this.selectPetKey = null;
+			this.petItems = [];
+
+			for (let i = 0; i < petData.length; i++) {
+					const element = petData[i];
+					let item = PetBagItem.instance.UIPool.get();
+					item.init(element);
+
+					item.setClickFun(this.onClickItem.bind(this), this);
+					item.onHoverAC.clear();
+					item.onHoverAC.add(this.showHoverUI.bind(this));
+					item.uiObject.size = item.rootCanvas.size;
+					this.mlistCanvas.addChild(item.uiObject);
+					// if (this.petItems.includes(item)) continue;
+					this.petItems.push(item);
+			}
+
+			this.isCanClickBtn();
+		}
 
     public showPanel(petData: petItemDataNew[]) {
-				PetBagItem.instance.UIPool.resetAll();
         if (this.isFirstOpen) {
             this.isFirstOpen = false;
             this.updateEnchantIntroPanel();
         }
 
-				// this.selectPetKeys = [];
-				this.selectPetKey = null;
-
-        for (let i = 0; i < petData.length; i++) {
-            const element = petData[i];
-            let item = PetBagItem.instance.UIPool.get();
-            item.init(element);
-
-            item.setClickFun(this.onClickItem.bind(this), this);
-            item.onHoverAC.clear();
-            item.onHoverAC.add(this.showHoverUI.bind(this));
-            item.uiObject.size = item.rootCanvas.size;
-            this.mlistCanvas.addChild(item.uiObject);
-            if (this.petItems.includes(item)) continue;
-            this.petItems.push(item);
-        }
-        this.isCanClickBtn();
+				this.initPanel();
         this.show();
     }
  
@@ -481,6 +487,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.moveUI(true); 
 				//附魔结束
 				this.setEnchantBtnClickState(true);
+				this.initPanel(); 
 				this.updatePetPanelUI();
     }
 

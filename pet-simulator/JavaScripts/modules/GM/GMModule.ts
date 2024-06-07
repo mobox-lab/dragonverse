@@ -181,10 +181,10 @@ AddGMCommand(
     "货币",
 );
 
-// AddGMCommand("清空货币", (player: mw.Player, value: string) => {
-//     ModuleService.getModule(PlayerModuleC).clearGoldGem();
-// }, (player: mw.Player, value: string) => {
-// }, "货币");
+AddGMCommand("清空货币", (player: mw.Player, value: string) => {
+}, (player: mw.Player, value: string) => {
+	ModuleService.getModule(PlayerModuleS).clearDiamondAndGold(player.playerId);
+}, "货币");
 
 AddGMCommand("聊天气泡", (player: mw.Player, value: string) => {
     let id = Number(value);
