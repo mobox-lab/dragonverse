@@ -21,7 +21,7 @@ addGMCommand(
 
         ModuleService.getModule(EnergyModuleS).addEnergy(player.playerId, v);
     },
-    null,
+    undefined,
     "Energy"
 );
 

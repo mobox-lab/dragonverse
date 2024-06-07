@@ -21,7 +21,7 @@ addGMCommand(
                 Log4Ts.log(AuthModuleS, `query dragon ball success.`, `user dragon ball: ${JSON.stringify(value)}`);
             });
     },
-    null,
+    undefined,
     "Root"
 );
 
@@ -37,7 +37,7 @@ addGMCommand(
                 Log4Ts.log(AuthModuleS, `query user dragon success.`, `user dragons: ${JSON.stringify(value)}`);
             });
     },
-    null,
+    undefined,
     "Root"
 );
 
@@ -58,7 +58,7 @@ addGMCommand(
                 Log4Ts.log(AuthModuleS, `try catch dragon success.`, `user dragon ball: ${JSON.stringify(value)}`);
             });
     },
-    null,
+    undefined,
     "Root"
 );
 
@@ -80,7 +80,7 @@ addGMCommand(
                 );
             });
     },
-    null,
+    undefined,
     "Root"
 );
 
@@ -96,7 +96,7 @@ addGMCommand(
                 Log4Ts.log(AuthModuleS, `report ps rank data success.`);
             });
     },
-    null,
+    undefined,
     "Root"
 );
 
@@ -112,7 +112,7 @@ addGMCommand(
                 Log4Ts.log(AuthModuleS, `report bw rank data success.`);
             });
     },
-    null,
+    undefined,
     "Root"
 );
 //#region TTD & GM

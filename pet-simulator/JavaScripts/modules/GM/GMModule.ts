@@ -37,7 +37,7 @@ addGMCommand(
         ModuleService.getModule(AchievementModuleC).onExecuteAchievementAction.call(achievementType, count);
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "成就"
 );
 
@@ -50,7 +50,7 @@ addGMCommand(
         if (!id) id = 1;
         ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(player.playerId, id);
     },
-    null,
+    undefined,
     "全服"
 );
 
@@ -59,7 +59,7 @@ addGMCommand(
     "string",
     (value: string) => {},
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "破坏物"
 );
 
@@ -74,7 +74,7 @@ addGMCommand(
         });
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "宠物"
 );
 addGMCommand(
@@ -88,7 +88,7 @@ addGMCommand(
         });
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "宠物"
 );
 addGMCommand(
@@ -100,7 +100,7 @@ addGMCommand(
         GlobalData.pet.jumpTime = id;
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "宠物"
 );
 addGMCommand(
@@ -111,7 +111,7 @@ addGMCommand(
         GlobalData.pet.jumpBezier = [Number(ids[0]), Number(ids[1]), Number(ids[2]), Number(ids[3])];
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "宠物"
 );
 addGMCommand(
@@ -123,7 +123,7 @@ addGMCommand(
         GlobalData.pet.smoothValue = id;
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "宠物"
 );
 addGMCommand(
@@ -135,7 +135,7 @@ addGMCommand(
         ModuleService.getModule(PlayerModuleS).addGold(player.playerId, val, GlobalEnum.CoinType.FirstWorldGold);
         ModuleService.getModule(PlayerModuleS).addGold(player.playerId, val, GlobalEnum.CoinType.SummerGold);
     },
-    null,
+    undefined,
     "货币"
 );
 addGMCommand(
@@ -146,7 +146,7 @@ addGMCommand(
         let val = Number(value);
         ModuleService.getModule(PlayerModuleS).addGold(player.playerId, val, GlobalEnum.CoinType.SecondWorldGold);
     },
-    null,
+    undefined,
     "货币"
 );
 addGMCommand(
@@ -157,7 +157,7 @@ addGMCommand(
         let val = Number(value);
         ModuleService.getModule(PlayerModuleS).addGold(player.playerId, val, GlobalEnum.CoinType.ThirdWorldGold);
     },
-    null,
+    undefined,
     "货币"
 );
 addGMCommand(
@@ -168,7 +168,7 @@ addGMCommand(
         let val = Number(value);
         ModuleService.getModule(PlayerModuleS).addDiamond(player.playerId, val);
     },
-    null,
+    undefined,
     "货币"
 );
 
@@ -185,7 +185,7 @@ addGMCommand(
         Bubble.showBubble(0, value);
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "聊天"
 );
 
@@ -206,7 +206,7 @@ addGMCommand(
         GlobalData.Camera.minLength = id;
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "摄像机"
 );
 addGMCommand(
@@ -217,7 +217,7 @@ addGMCommand(
         GlobalData.Camera.maxLength = id;
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "摄像机"
 );
 addGMCommand(
@@ -228,7 +228,7 @@ addGMCommand(
         GlobalData.Camera.zoomRate = id;
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "摄像机"
 );
 
@@ -239,7 +239,7 @@ addGMCommand(
         ModuleService.getModule(Task_ModuleC).showTaskShop();
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "任务"
 );
 
@@ -251,7 +251,7 @@ addGMCommand(
         let id = Number(value);
         ModuleService.getModule(Task_ModuleS).breakDestroy(player, id);
     },
-    null,
+    undefined,
     "任务"
 );
 
@@ -265,7 +265,7 @@ addGMCommand(
         let level = Number(ids[1]);
         ModuleService.getModule(Task_ModuleS).getPet(player, id, level);
     },
-    null,
+    undefined,
     "任务"
 );
 
@@ -277,7 +277,7 @@ addGMCommand(
         let id = Number(value);
         ModuleService.getModule(Task_ModuleS).strengthen(player, id);
     },
-    null,
+    undefined,
     "任务"
 );
 
@@ -289,7 +289,7 @@ addGMCommand(
         let id = Number(value);
         ModuleService.getModule(Task_ModuleS).fusion(player, id);
     },
-    null,
+    undefined,
     "任务"
 );
 
@@ -300,7 +300,7 @@ addGMCommand(
     (player: mw.Player, value: string) => {
         ModuleService.getModule(Task_ModuleS).trade(player);
     },
-    null,
+    undefined,
     "任务"
 );
 
@@ -312,7 +312,7 @@ addGMCommand(
         let id = Number(value);
         ModuleService.getModule(Task_ModuleS).addTaskPoint(player, id);
     },
-    null,
+    undefined,
     "任务"
 );
 
@@ -336,7 +336,7 @@ addGMCommand(
         oo.localTransform.rotation = new mw.Rotation(30, 0, 0);
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "蛋"
 );
 addGMCommand(
@@ -356,7 +356,7 @@ addGMCommand(
         obj.worldTransform.rotation = nPos.toRotation();
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "蛋"
 );
 
@@ -375,7 +375,7 @@ addGMCommand(
         obj.worldTransform.scale = new mw.Vector(x, y, z);
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "蛋"
 );
 addGMCommand(
@@ -388,7 +388,7 @@ addGMCommand(
         // DropManager.getInstance().createDrop(loc, GlobalEnum.RewardType.Gem, 100, count);
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "掉落"
 );
 
@@ -402,7 +402,7 @@ addGMCommand(
             ModuleService.getModule(BuffModuleS).addBuff(player.playerId, sp);
         }
     },
-    null,
+    undefined,
     "buff"
 );
 
@@ -416,7 +416,7 @@ addGMCommand(
         console.log("areaDatas:" + str);
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "导出所有点"
 );
 addGMCommand(
@@ -427,7 +427,7 @@ addGMCommand(
         let values = value.split("|");
         //  ModuleService.getModule(PassModuleS).onTaskUpdateAC.call(player.playerId, Number(values[0]), Number(values[1]));
     },
-    null,
+    undefined,
     "通行证&任务"
 );
 addGMCommand(
@@ -437,7 +437,7 @@ addGMCommand(
     (player: mw.Player, value: string) => {
         //    ModuleService.getModule(PassModuleS).checkResetTask_onEnterGame_GM(player, Number(value));
     },
-    null,
+    undefined,
     "通行证&任务"
 );
 // AddGMCommand("重置每周任务", (player: mw.Player, value: string) => {
@@ -453,7 +453,7 @@ addGMCommand(
     (player: mw.Player, value: string) => {
         //  ModuleService.getModule(PassModuleS).changeStarCount(player.playerId, Number(value));
     },
-    null,
+    undefined,
     "通行证&任务"
 );
 
@@ -535,7 +535,7 @@ addGMCommand(
             .start();
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "环境"
 );
 
@@ -597,7 +597,7 @@ addGMCommand(
             .start();
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "环境"
 );
 
@@ -715,7 +715,7 @@ addGMCommand(
             .start();
     },
     (player: mw.Player, value: string) => {},
-    null,
+    undefined,
     "环境"
 );
 
@@ -771,7 +771,7 @@ addGMCommand(
     (p, v) => {
         ModuleService.getModule(EnergyModuleS).addEnergy(p.playerId, 100);
     },
-    null,
+    undefined,
     "体力"
 );
 
@@ -782,7 +782,7 @@ addGMCommand(
     (player, value) => {
         ModuleService.getModule(AuthModuleS)["queryCurrency"](player.playerId);
     },
-    null,
+    undefined,
     "Auth"
 );
 
