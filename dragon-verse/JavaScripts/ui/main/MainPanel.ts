@@ -35,10 +35,11 @@ import { ActivateByUIAndTrigger, ActivateMode } from "../../gameplay/interactive
 import ADialoguePanelController from "../../depend/dialogify/dialogue-panel-controller/ADialoguePanelController";
 import { AddGMCommand } from "module_gm";
 import SettingsPanel from "../settings/SettingsPanel";
+import { addGMCommand } from "mw-god-mod";
 
 enum MouseLockType {
     Press,
-    Tap
+    Tap,
 }
 
 let currentLockType: MouseLockType = MouseLockType.Press;
@@ -61,11 +62,12 @@ AddGMCommand(
             }
         }
 
-        Log4Ts.log(MainPanel,
+        Log4Ts.log(
+            MainPanel,
             `request to change mouse lock type to ${MouseLockType[type]}.`,
             `option param:`,
             `   0: ${MouseLockType[MouseLockType.Press]}`,
-            `   1: ${MouseLockType[MouseLockType.Tap]}`,
+            `   1: ${MouseLockType[MouseLockType.Tap]}`
         );
         if (type === currentLockType) return;
         else currentLockType = type;
@@ -75,23 +77,173 @@ AddGMCommand(
         KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.RightAlt);
         KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.RightCommand);
         if (currentLockType === MouseLockType.Press) {
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftCommand, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.LeftCommand, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightAlt, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.RightAlt, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightCommand, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainPanel), Keys.RightCommand, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.LeftAlt,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainPanel),
+                Keys.LeftAlt,
+                () => (InputUtil.isLockMouse = true)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.LeftCommand,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainPanel),
+                Keys.LeftCommand,
+                () => (InputUtil.isLockMouse = true)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.RightAlt,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainPanel),
+                Keys.RightAlt,
+                () => (InputUtil.isLockMouse = true)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.RightCommand,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainPanel),
+                Keys.RightCommand,
+                () => (InputUtil.isLockMouse = true)
+            );
         } else {
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.LeftCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainPanel), Keys.RightCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.LeftAlt,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.LeftCommand,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.RightAlt,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.RightCommand,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
         }
     },
     undefined,
-    "Mouse",
+    "Mouse"
+);
+
+addGMCommand(
+    "Mouse Lock Type",
+    "string",
+    (value) => {
+        const v = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
+        let type: MouseLockType;
+        if (v === 0 || v === 1) {
+            type = v;
+        } else {
+            switch (currentLockType) {
+                case MouseLockType.Press:
+                    type = MouseLockType.Tap;
+                    break;
+                case MouseLockType.Tap:
+                    type = MouseLockType.Press;
+                    break;
+            }
+        }
+
+        Log4Ts.log(
+            MainPanel,
+            `request to change mouse lock type to ${MouseLockType[type]}.`,
+            `option param:`,
+            `   0: ${MouseLockType[MouseLockType.Press]}`,
+            `   1: ${MouseLockType[MouseLockType.Tap]}`
+        );
+        if (type === currentLockType) return;
+        else currentLockType = type;
+
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.LeftAlt);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.LeftCommand);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.RightAlt);
+        KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainPanel), Keys.RightCommand);
+        if (currentLockType === MouseLockType.Press) {
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.LeftAlt,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainPanel),
+                Keys.LeftAlt,
+                () => (InputUtil.isLockMouse = true)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.LeftCommand,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainPanel),
+                Keys.LeftCommand,
+                () => (InputUtil.isLockMouse = true)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.RightAlt,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainPanel),
+                Keys.RightAlt,
+                () => (InputUtil.isLockMouse = true)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.RightCommand,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainPanel),
+                Keys.RightCommand,
+                () => (InputUtil.isLockMouse = true)
+            );
+        } else {
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.LeftAlt,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.LeftCommand,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.RightAlt,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainPanel),
+                Keys.RightCommand,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
+        }
+    },
+    undefined,
+    undefined,
+    "Mouse"
 );
 
 /**
@@ -323,7 +475,6 @@ export default class MainPanel extends MainPanel_Generate {
             } else {
                 UIService.getUI(MapPanel)?.showMiniMap();
             }
-
         });
 
         this._nolan = Nolan.getInstance();
@@ -348,7 +499,7 @@ export default class MainPanel extends MainPanel_Generate {
 
             const dist = Math.max(
                 GameServiceConfig.CAMERA_ZOOM_MIN_DIST,
-                this._nolan.armLength - GameServiceConfig.CAMERA_ZOOM_PER_DIST,
+                this._nolan.armLength - GameServiceConfig.CAMERA_ZOOM_PER_DIST
             );
             this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
         });
@@ -360,7 +511,7 @@ export default class MainPanel extends MainPanel_Generate {
 
             const dist = Math.min(
                 GameServiceConfig.CAMERA_ZOOM_MAX_DIST,
-                this._nolan.armLength + GameServiceConfig.CAMERA_ZOOM_PER_DIST,
+                this._nolan.armLength + GameServiceConfig.CAMERA_ZOOM_PER_DIST
             );
             this._nolan.zoom(dist, true, GameServiceConfig.CAMERA_ZOOM_PER_DURATION);
         });
@@ -394,7 +545,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.progressBar.percent = val),
             1,
             GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION,
-            0,
+            0
         ).restart(true);
         this._progressTask.onDone.add((param) => {
             if (param) return;
@@ -406,7 +557,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvProgressBar.renderOpacity = val),
             1,
             0.5e3,
-            0,
+            0
         ).restart(true);
 
         this._pointerTask = Waterween.to(
@@ -414,7 +565,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvPointer.renderTransformAngle = val),
             GameServiceConfig.MAIN_PANEL_POINTER_END_ANGLE,
             GameServiceConfig.MAIN_PANEL_POINTER_HALF_DURATION,
-            GameServiceConfig.MAIN_PANEL_POINTER_START_ANGLE,
+            GameServiceConfig.MAIN_PANEL_POINTER_START_ANGLE
         )
             .restart(true)
             .pingPong();
@@ -431,7 +582,7 @@ export default class MainPanel extends MainPanel_Generate {
                 { dist: null, duration: 1e3 },
                 { dist: 0, duration: 0.5e3 },
             ],
-            1,
+            1
         );
 
         this._failTask = Waterween.group(
@@ -446,7 +597,7 @@ export default class MainPanel extends MainPanel_Generate {
                 { dist: null, duration: 1e3 },
                 { dist: 0, duration: 0.5e3 },
             ],
-            1,
+            1
         );
 
         this._effectCnvTask = Waterween.to(
@@ -454,7 +605,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvSprintEffect.renderOpacity = val),
             1,
             GameServiceConfig.MAIN_PANEL_CNV_SPRINT_EFFECT_DURATION,
-            0,
+            0
         ).restart(true);
         this._effectCnvTask.onDone.add((param) => {
             if (param) this._effectImgTasks.forEach((value) => value.pause());
@@ -471,8 +622,8 @@ export default class MainPanel extends MainPanel_Generate {
             Waterween.group(
                 () => this.imgSprintEffect1.renderOpacity,
                 (val) => (this.imgSprintEffect1.renderOpacity = val),
-                dist,
-            ).repeat(),
+                dist
+            ).repeat()
         );
 
         this._staminaShownTask = Waterween.to(
@@ -480,7 +631,7 @@ export default class MainPanel extends MainPanel_Generate {
             (val) => (this.cnvStamina.renderOpacity = val),
             1,
             GameServiceConfig.MAIN_PANEL_CNV_STAMINA_SHOWN_DURATION,
-            0,
+            0
         ).restart(true);
 
         this._staminaValueTask = Waterween.flow(
@@ -489,7 +640,7 @@ export default class MainPanel extends MainPanel_Generate {
             1e3,
             new CubicBezier(0.5, 0, 0.5, 1),
             undefined,
-            true,
+            true
         );
 
         this._staminaScaleTask = Waterween.flow(
@@ -498,7 +649,7 @@ export default class MainPanel extends MainPanel_Generate {
             1e3,
             new CubicBezier(0.5, 0, 0.5, 1),
             undefined,
-            true,
+            true
         );
 
         this.btnCode.visibility = SlateVisibility.Hidden;
@@ -509,7 +660,6 @@ export default class MainPanel extends MainPanel_Generate {
             } else {
                 UIService.hide(JumpGamePanel);
             }
-
         });
 
         this.init();
@@ -522,18 +672,18 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnLock, () => this.prepareCatch()));
         this._eventListeners.push(Event.addLocalListener(EventDefine.DragonOnUnlock, () => this.endCatch()));
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this)),
+            Event.addLocalListener(EventDefine.PlayerEnableEnter, this.onEnablePlayerEnter.bind(this))
         );
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this)),
+            Event.addLocalListener(EventDefine.PlayerDisableEnter, this.onDisablePlayerEnter.bind(this))
         );
         this._eventListeners.push(
-            Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string)),
+            Event.addLocalListener(EventDefine.TryCollectCollectibleItem, (arg) => this.tryCollect(arg as string))
         );
         this._eventListeners.push(
             Event.addLocalListener(EventDefine.PlayerReset, (playerId) => {
                 if (playerId === this.character.player.playerId) Log4Ts.log(MainPanel, `Player reset.`);
-            }),
+            })
         );
         this._eventListeners.push(Event.addLocalListener(EventDefine.OnDragonQuestsComplete, this.onFinishSubTask));
 
@@ -543,14 +693,14 @@ export default class MainPanel extends MainPanel_Generate {
         this._eventListeners.push(
             Event.addLocalListener(
                 DialogifyManager.PlayerEnterOfficialDialogueEventName,
-                () => (this._currentInteractType = InteractType.Npc),
-            ),
+                () => (this._currentInteractType = InteractType.Npc)
+            )
         );
         this._eventListeners.push(
             Event.addLocalListener(
                 DialogifyManager.LeaveDialogueEventName,
-                () => this._currentInteractType === InteractType.Npc && (this._currentInteractType = InteractType.Null),
-            ),
+                () => this._currentInteractType === InteractType.Npc && (this._currentInteractType = InteractType.Null)
+            )
         );
 
         this._eventListeners.push(
@@ -564,7 +714,7 @@ export default class MainPanel extends MainPanel_Generate {
             }),
             Event.addLocalListener(ADialoguePanelController.ControllerExitDialogueEventName, () => {
                 KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
-            }),
+            })
         );
         //#endregion ------------------------------------------------------------------------------------------
     }
@@ -604,16 +754,14 @@ export default class MainPanel extends MainPanel_Generate {
      * 对于UI的根节点的添加操作，进行调用
      * 注意：该事件可能会多次调用
      */
-    protected onAdded() {
-    }
+    protected onAdded() {}
 
     /**
      * 构造UI文件成功后，onAdded之后
      * 对于UI的根节点的移除操作，进行调用
      * 注意：该事件可能会多次调用
      */
-    protected onRemoved() {
-    }
+    protected onRemoved() {}
 
     /**
      * 构造UI文件成功后，UI对象再被销毁时调用
@@ -713,11 +861,9 @@ export default class MainPanel extends MainPanel_Generate {
     // protected onDragCancelled(InGemotry :Geometry,InDragDropEvent:PointerEvent) {
     //}
 
-    protected onShow() {
-    }
+    protected onShow() {}
 
-    protected onHide() {
-    }
+    protected onHide() {}
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -1028,7 +1174,7 @@ export default class MainPanel extends MainPanel_Generate {
                 break;
             case InteractType.Collect:
                 this.txtOperationFeedback.text = i18n.lan(
-                    isSuccess ? i18n.lanKeys.Collection_002 : i18n.lanKeys.Collection_003,
+                    isSuccess ? i18n.lanKeys.Collection_002 : i18n.lanKeys.Collection_003
                 );
                 break;
             default:
@@ -1050,7 +1196,7 @@ export default class MainPanel extends MainPanel_Generate {
     }
 
     public showBag() {
-        if ((ModuleService.getModule(BagModuleC)?.isReady ?? false)) {
+        if (ModuleService.getModule(BagModuleC)?.isReady ?? false) {
             if (!UIService.getUI(BagPanel, false) || !UIService.getUI(BagPanel).visible) {
                 UIService?.show(BagPanel);
             } else {
@@ -1096,12 +1242,12 @@ export default class MainPanel extends MainPanel_Generate {
                     new Vector(
                         0,
                         GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Y,
-                        GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z,
-                    ),
-                ),
+                        GameServiceConfig.MAIN_PANEL_CNV_STAMINA_WORLD_LOCATION_OFFSET_Z
+                    )
+                )
             ),
             v,
-            true,
+            true
         );
 
         if (!v.equals(Vector.zero)) {
@@ -1118,7 +1264,7 @@ export default class MainPanel extends MainPanel_Generate {
 
     private updateStaminaScale() {
         this._staminaScaleTask.to(
-            GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE / Camera.currentCamera.springArm.length,
+            GameServiceConfig.MAIN_PANEL_STAMINA_SCALE_CALCULATE_BASE / Camera.currentCamera.springArm.length
         );
     }
 
@@ -1142,7 +1288,7 @@ export default class MainPanel extends MainPanel_Generate {
                 break;
             case InteractType.Collect:
                 const collectResult = !Gtk.isNullOrEmpty(
-                    this.collectibleItemModule?.currentCollectResultSyncKey ?? null,
+                    this.collectibleItemModule?.currentCollectResultSyncKey ?? null
                 );
                 Log4Ts.log(MainPanel, `collect result: ${collectResult}`);
                 if (collectResult) {

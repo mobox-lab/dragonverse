@@ -9,6 +9,7 @@ import EcologyAnimal from "./EcologyAnimal";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { IPoint3 } from "../../depend/area/shape/base/IPoint";
 import { AddGMCommand } from "module_gm";
+import { addGMCommand } from "mw-god-mod";
 
 AddGMCommand(
     "生成 Animal",
@@ -30,6 +31,27 @@ AddGMCommand(
     "Spawn",
 );
 
+addGMCommand(
+    "生成 Animal",
+    "string",
+    undefined,
+    (player, value) => {
+        let id = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
+        if (isNaN(id)) id = undefined;
+
+        mwext.ModuleService.getModule(EcologyModuleS)["generateAnimal"](
+            id ?? Gtk.randomArrayItem(GameConfig.AnimalEcology.getAllElement()).id,
+            player.character.worldTransform.position.add(
+                new RandomGenerator()
+                    .randomCircle()
+                    .handle((v) => v * 200)
+                    .toVector3(200)
+            )
+        );
+    },
+    undefined,
+    "Spawn"
+);
 export default class EcologyModuleData extends JModuleData {
     //@Decorator.persistence()
     //public isSave: bool;
