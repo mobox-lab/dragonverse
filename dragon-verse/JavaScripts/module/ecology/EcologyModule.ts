@@ -49,7 +49,7 @@ addGMCommand(
             )
         );
     },
-    null,
+    undefined,
     "Spawn"
 );
 export default class EcologyModuleData extends JModuleData {

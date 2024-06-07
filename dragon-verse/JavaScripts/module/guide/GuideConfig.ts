@@ -21,7 +21,7 @@ addGMCommand(
         manager.finishCurrent();
     },
     undefined,
-    null,
+    undefined,
     "Guide"
 );
 
@@ -33,7 +33,7 @@ addGMCommand(
         manager.finishCurrent();
     },
     undefined,
-    null,
+    undefined,
     "Guide"
 );
 
@@ -50,7 +50,7 @@ addGMCommand(
         manager.finishCurrent();
     },
     undefined,
-    null,
+    undefined,
     "Guide"
 );
 
@@ -63,7 +63,7 @@ addGMCommand(
         });
     },
     undefined,
-    null,
+    undefined,
     "Guide"
 );
 
@@ -75,7 +75,7 @@ addGMCommand(
         manager.requestNext(GuideStep.GOperationTeach);
     },
     undefined,
-    null,
+    undefined,
     "Guide"
 );
 //#region TTD & GM

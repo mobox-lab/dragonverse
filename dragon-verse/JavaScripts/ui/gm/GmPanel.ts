@@ -55,9 +55,6 @@ addGMCommand(
     (value) => {
         KeyboardSimulation.setLookUpRateScale(Number(value));
     },
-    null,
-    null,
-    null
 );
 
 addGMCommand(
@@ -66,8 +63,8 @@ addGMCommand(
     () => {
         Log4Ts.log(GMPanel, `Hello world`);
     },
-    null,
-    null,
+    undefined,
+    undefined,
     "CHello"
 );
 
@@ -77,8 +74,8 @@ addGMCommand(
     () => {
         GlobalTips.getInstance().showGlobalTips("hello world");
     },
-    null,
-    null,
+    undefined,
+    undefined,
     "MainPanel"
 );
 
@@ -89,8 +86,8 @@ addGMCommand(
         if (GToolkit.isNullOrEmpty(value)) Event.dispatchToLocal(MainCurtainPanel.MAIN_HIDE_CURTAIN_EVENT_NAME);
         else Event.dispatchToLocal(MainCurtainPanel.MAIN_SHOW_CURTAIN_EVENT_NAME);
     },
-    null,
-    null,
+    undefined,
+    undefined,
     "MainPanel"
 );
 
@@ -101,7 +98,7 @@ addGMCommand(
     (player, value) => {
         player.character.worldTransform.position = GameServiceConfig.MAP_SCENE_AS_MAP_LEFT_DOWN_POS;
     },
-    null,
+    undefined,
     "MainPanel"
 );
 
@@ -112,21 +109,21 @@ addGMCommand(
     (player, value) => {
         player.character.worldTransform.position = GameServiceConfig.MAP_SCENE_AS_MAP_RIGHT_TOP_POS;
     },
-    null,
+    undefined,
     "MainPanel"
 );
 
 addGMCommand(
     "返回出生点",
     "string",
-    null,
+    undefined,
     (player) => {
         Log4Ts.log(GMPanel, `Back to player start.`);
         player.character.worldTransform.position = GameObject.findGameObjectById(
             GMPanel.PLAYER_START_GUID
         ).worldTransform.position;
     },
-    null,
+    undefined,
     "传送"
 );
 
@@ -136,8 +133,8 @@ addGMCommand(
     () => {
         Log4Ts.log(GMPanel, `Print current player location:`, Player.localPlayer.character.worldTransform.position);
     },
-    null,
-    null,
+    undefined,
+    undefined,
     "探针"
 );
 
@@ -147,8 +144,8 @@ addGMCommand(
     () => {
         Log4Ts.log(GMPanel, `Print current player rotation:`, Player.localPlayer.character.worldTransform.rotation);
     },
-    null,
-    null,
+    undefined,
+    undefined,
     "探针"
 );
 
@@ -160,7 +157,7 @@ addGMCommand(
         module.showUpCompanion(Number(index), true);
     },
     (player: mw.Player, index: string) => {},
-    null,
+    undefined,
     "宠物龙"
 );
 
@@ -175,7 +172,7 @@ addGMCommand(
         ModuleService.getModule(BagModuleC).addItem(id, Number(count));
     },
     undefined,
-    null,
+    undefined,
     "背包"
 );
 
@@ -187,7 +184,7 @@ addGMCommand(
         // DialogueManager.getInstance().chat(1);
     },
     undefined,
-    null,
+    undefined,
     "对话"
 );
 
@@ -198,8 +195,6 @@ addGMCommand(
         // ModuleService.getModule(QuestModuleC).updateRunningGameScore(Number(value));
     },
     () => {},
-    null,
-    null
 );
 
 addGMCommand(
@@ -209,7 +204,7 @@ addGMCommand(
     (player, value) => {
         ModuleService.getModule(QuestModuleS).testAddOrDeleteLightDarkDragon(player.playerId, Number(value));
     },
-    null,
+    undefined,
     "龙"
 );
 
@@ -220,8 +215,6 @@ addGMCommand(
         console.log(HeadUIController.getInstance().getNickNameByPlayerId(Number(value)));
     },
     () => {},
-    null,
-    null
 );
 
 addGMCommand(
@@ -270,7 +263,7 @@ addGMCommand(
     (player) => {
         ModuleService.getModule(BagModuleS).dailyDrawObbyCoin(player.playerId);
     },
-    null,
+    undefined,
     "TTD"
 );
 
@@ -286,7 +279,7 @@ addGMCommand(
         data.lastDailyObbyCoinDrawTime = 0;
         data.save(false);
     },
-    null,
+    undefined,
     "TTD"
 );
 
@@ -303,7 +296,7 @@ addGMCommand(
             module.getClient(player).net_setObbyCoin(data.obbyCoin);
         }
     },
-    null,
+    undefined,
     "TTD"
 );
 
@@ -314,7 +307,7 @@ addGMCommand(
     (player) => {
         ModuleService.getModule(BagModuleS).dailyDrawObbyTicket(player.playerId);
     },
-    null,
+    undefined,
     "TTD"
 );
 
@@ -330,7 +323,7 @@ addGMCommand(
         data.lastDailyObbyTicketDrawTime = 0;
         data.save(false);
     },
-    null,
+    undefined,
     "TTD"
 );
 
@@ -347,7 +340,7 @@ addGMCommand(
             module.getClient(player).net_setObbyTicket(data.obbyTicket);
         }
     },
-    null,
+    undefined,
     "TTD"
 );
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -375,7 +368,7 @@ addGMCommand(
             Log4Ts.log({ name: "TTD" }, `ObbyStar Spawned: ${value}`);
         });
     },
-    null,
+    undefined,
     "TTD"
 );
 addGMCommand(
@@ -385,7 +378,7 @@ addGMCommand(
     (player) => {
         Event.dispatchToLocal(EventDefine.ObbyStarReset, player);
     },
-    null,
+    undefined,
     "TTD"
 );
 addGMCommand("显示转场", "string", () => {

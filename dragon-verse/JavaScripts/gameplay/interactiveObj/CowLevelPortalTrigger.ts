@@ -327,6 +327,4 @@ addGMCommand(
 
         Event.dispatchToLocal(EventDefine.PlayerEnterCowLevel, player.playerId, scene.id);
     },
-    null,
-    null
 );

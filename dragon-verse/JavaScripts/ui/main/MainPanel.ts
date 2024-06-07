@@ -242,7 +242,7 @@ addGMCommand(
         }
     },
     undefined,
-    null,
+    undefined,
     "Mouse"
 );
 

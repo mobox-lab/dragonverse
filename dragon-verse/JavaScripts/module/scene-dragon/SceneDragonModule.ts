@@ -79,7 +79,7 @@ addGMCommand(
             new UUID(4).toString()
         );
     },
-    null,
+    undefined,
     "Spawn"
 );
 
@@ -92,7 +92,7 @@ addGMCommand(
         if (isNaN(id)) id = undefined;
         ModuleService.getModule(SceneDragonModuleS)["destroy"](player.playerId, syncKey, false);
     },
-    null,
+    undefined,
     "Spawn"
 );
 

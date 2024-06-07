@@ -52,7 +52,7 @@ import GodModService, { addGMCommand } from "mw-god-mod";
 addGMCommand(
     "TP 传送",
     "string",
-    null,
+    undefined,
     (player, positionStr: string) => {
         let index = 0;
         for (let i = 0; i < positionStr.length; i++) {
@@ -67,7 +67,7 @@ addGMCommand(
         Log4Ts.log(GMPanel, `tp player to ${x},${y}.`);
         player.character.worldTransform.position = new mw.Vector(x, y);
     },
-    null,
+    undefined,
     "探针"
 );
 
@@ -87,8 +87,8 @@ addGMCommand(
         i18n.use(v, true);
         Log4Ts.log(GMPanel, `change language to ${LanguageTypes[v]}`);
     },
-    null,
-    null,
+    undefined,
+    undefined,
     "多语言"
 );
 
@@ -98,8 +98,8 @@ addGMCommand(
     (value) => {
         GlobalTips.getInstance().showGlobalTips(value);
     },
-    null,
-    null,
+    undefined,
+    undefined,
     "提示"
 );
 
