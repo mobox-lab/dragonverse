@@ -73,7 +73,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.hudPetUI.setBagText(this.data.CurFollowPets.length, this.data.MaxFollowCount);
 
         let ids = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key).I);
-        UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, ids);
+        let curPets = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key));
+        UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, curPets);
         this.enchantUI.onUpdateAc.add((canUpdate: boolean) => {
             this.canUpdate = canUpdate;
         });
@@ -327,8 +328,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         mw.UIService.getUI(P_HudPetGift).setBagText(this.data.CurFollowPets.length, this.data.MaxFollowCount);
         this.bagUI.setCanvasItem(this.data.sortBag(), this.data.CurFollowPets);
 
-        let ids = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key).I);
-        UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, ids);
+        let curPets = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key));
+        UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, curPets);
     }
 
     /**获取当前宠物数量 */

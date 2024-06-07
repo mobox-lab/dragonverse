@@ -64,12 +64,12 @@ export default class PetStateItemUI_Generate extends UIScript {
 		}
 		return this.textEnhancenum_Internal
 	}
-	private textEnhancenumber_Internal: mw.TextBlock
-	public get textEnhancenumber(): mw.TextBlock {
-		if(!this.textEnhancenumber_Internal&&this.uiWidgetBase) {
-			this.textEnhancenumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/textEnhancenumber') as mw.TextBlock
+	private textAttack_Internal: mw.TextBlock
+	public get textAttack(): mw.TextBlock {
+		if(!this.textAttack_Internal&&this.uiWidgetBase) {
+			this.textAttack_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/textAttack') as mw.TextBlock
 		}
-		return this.textEnhancenumber_Internal
+		return this.textAttack_Internal
 	}
 	private mBtn_Pet_Internal: mw.Button
 	public get mBtn_Pet(): mw.Button {
@@ -110,7 +110,7 @@ export default class PetStateItemUI_Generate extends UIScript {
 		this.initLanguage(this.textEnhancenum)
 		
 	
-		this.initLanguage(this.textEnhancenumber)
+		this.initLanguage(this.textAttack)
 		
 	
 		//文本多语言
