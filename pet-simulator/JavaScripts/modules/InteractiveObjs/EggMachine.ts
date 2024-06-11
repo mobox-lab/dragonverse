@@ -4,6 +4,7 @@ import { IEggMachineElement } from "../../config/EggMachine";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
+import KeyOperationManager from '../../controller/key-operation-manager/KeyOperationManager';
 import Gtk from '../../util/GToolkit';
 import { oTraceError } from "../../util/LogManager";
 import MessageBox from "../../util/MessageBox";
@@ -181,13 +182,18 @@ class EggM {
             if (isStart) {
                 this.petEgg?.setVisibility(mw.PropertyStatus.Off);
                 this.worldUI_1?.setVisibility(mw.PropertyStatus.Off);
+                KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
             }
             else {
                 this.petEgg?.setVisibility(mw.PropertyStatus.On);
                 this.setEggState(false);
                 this.playeEff(false);
+                KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
+                KeyOperationManager.getInstance().onKeyUp(null, Keys.F, () => {
+                    this.checkCanBuy();
+                });
             }
-        })
+        });
         let playerModuleC = ModuleService.getModule(PlayerModuleC);
 
         let playerData = DataCenterC.getData(PetSimulatorPlayerModuleData);
