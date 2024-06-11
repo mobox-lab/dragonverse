@@ -7,10 +7,11 @@
  * @Description  : 鼠标锁定管理器
  */
 
+import GodModService from "mw-god-mod";
 import DialogifyManager from "../depend/dialogify/DialogifyManager";
 import ADialoguePanelController from "../depend/dialogify/dialogue-panel-controller/ADialoguePanelController";
 import KeyOperationManager from "./key-operation-manager/KeyOperationManager";
-
+import { TextField } from "mw-lynx-ui";
 export class MouseLockController {
     private static _instance: MouseLockController;
 
@@ -25,6 +26,16 @@ export class MouseLockController {
         Event.addLocalListener(
             DialogifyManager.LeaveDialogueEventName,
             this.cancelMouseUnlock.bind(this)
+        );
+        Event.addLocalListener(
+            TextField.TextFieldFocusEventName, () => {
+                this.needMouseUnlock();
+            }
+        );
+        Event.addLocalListener(
+            TextField.TextFieldBlurEventName, () => {
+                this.cancelMouseUnlock();
+            }
         );
     }
 

@@ -8,6 +8,7 @@
  */
 
 import KeyOperationManager from "./key-operation-manager/KeyOperationManager";
+import { TextField } from "mw-lynx-ui";
 
 export class MouseLockController {
     private static _instance: MouseLockController;
@@ -17,7 +18,16 @@ export class MouseLockController {
     private _needLeftMouseButton: mw.Button;
 
     private constructor() {
-
+        Event.addLocalListener(
+            TextField.TextFieldFocusEventName, () => {
+                this.needMouseUnlock();
+            }
+        );
+        Event.addLocalListener(
+            TextField.TextFieldBlurEventName, () => {
+                this.cancelMouseUnlock();
+            }
+        );
     }
 
     public static getInstance(): MouseLockController {
