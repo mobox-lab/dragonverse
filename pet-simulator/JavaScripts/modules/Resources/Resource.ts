@@ -156,14 +156,16 @@ export default class ResourceScript extends mw.Script {
             damage *= GlobalData.Buff.damageBuff(playerID);
         this.getRewardByAttack(playerID, damage, key);
 
+
         let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
         if (damage > allHp / 3) {
             damage = Math.ceil(allHp / 3);
         }
-        let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerID);
-        if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
-            damage = damage * GlobalData.SceneResource.critRate(playerID);
-        }
+        //去掉暴击
+        // let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerID);
+        // if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
+        //     damage = damage * GlobalData.SceneResource.critRate(playerID);
+        // }
         //------------------------
 
         let damageInfoIndex = this.damageArr.findIndex((item) => {
@@ -834,48 +836,45 @@ export default class ResourceScript extends mw.Script {
                 let temp2 = this.cfg.WaveValue[index] + Math.log(attack);
                 let random = utils.GetRandomNum(0, temp2);
                 if (this.rate == 1) {
-										const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
+                    const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
                     const rewardGold =
-                      (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
-                        random * temp) *
-                      this.rate *
-                      crit *
-                      goldBuff;
+                        (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
+                            random * temp) *
+                        this.rate *
+                        crit *
+                        goldBuff;
                     this.rewardGold.set(playerId, rewardGold);
 
                     Log4Ts.log(
-                      ResourceScript,
-                      `getRewardByAttack RewardGold:${rewardGold} goldAddBuff:${goldBuff} crit:${crit} cfg.Iconreward:${
-                        this.cfg.DiamondReward
-                      } rate:${this.rate} attack:${attack} pow:${pow} random:${random * temp}`
+                        ResourceScript,
+                        `getRewardByAttack RewardGold:${rewardGold} goldAddBuff:${goldBuff} crit:${crit} cfg.Iconreward:${this.cfg.DiamondReward
+                        } rate:${this.rate} attack:${attack} pow:${pow} random:${random * temp}`
                     );
                 } else {
-									const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
-                  const rateGoldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).rateGoldAdd / 100;
-                  const rewardGold =
-                    (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
-                      random * temp) *
-                    this.rate *
-                    crit *
-                    goldBuff *
-                    rateGoldBuff;
-                  this.rewardGold.set(playerId, rewardGold);
+                    const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
+                    const rateGoldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).rateGoldAdd / 100;
+                    const rewardGold =
+                        (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
+                            random * temp) *
+                        this.rate *
+                        crit *
+                        goldBuff *
+                        rateGoldBuff;
+                    this.rewardGold.set(playerId, rewardGold);
 
-                  Log4Ts.log(
-                    ResourceScript,
-                    `getRewardByAttack RewardGold:${rewardGold} goldAddBuff:${goldBuff} rateGoldBuff:${rateGoldBuff} crit:${crit} cfg.Iconreward:${
-                      this.cfg.DiamondReward
-                    } rate:${this.rate} attack:${attack} pow:${pow} random:${
-                      random * temp
-                    }`
-                  );
+                    Log4Ts.log(
+                        ResourceScript,
+                        `getRewardByAttack RewardGold:${rewardGold} goldAddBuff:${goldBuff} rateGoldBuff:${rateGoldBuff} crit:${crit} cfg.Iconreward:${this.cfg.DiamondReward
+                        } rate:${this.rate} attack:${attack} pow:${pow} random:${random * temp
+                        }`
+                    );
                 }
 
                 this.rewardGold.set(playerId, Number(this.getRewardGold(playerId).toFixed(1)));
             } else {
-								const diamondBuff = (1 + EnchantBuff.getPetBuff(playerId, key).diamondAdd / 100); // 乘算
-								const diamondReward = this.cfg.DiamondReward * crit * this.rate * diamondBuff;
-								Log4Ts.log(ResourceScript, `finalRewardDiamond:${diamondReward} diamondBuff:${diamondBuff} crit:${crit} cfg.DiamondReward:${this.cfg.DiamondReward} rate:${this.rate}`);
+                const diamondBuff = (1 + EnchantBuff.getPetBuff(playerId, key).diamondAdd / 100); // 乘算
+                const diamondReward = this.cfg.DiamondReward * crit * this.rate * diamondBuff;
+                Log4Ts.log(ResourceScript, `finalRewardDiamond:${diamondReward} diamondBuff:${diamondBuff} crit:${crit} cfg.DiamondReward:${this.cfg.DiamondReward} rate:${this.rate}`);
                 this.rewardGem.set(playerId, Number(diamondReward.toFixed(1)));
             }
         });
