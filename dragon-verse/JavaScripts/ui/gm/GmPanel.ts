@@ -1,4 +1,4 @@
-import { GMBasePanel } from "module_gm";
+// import { GMBasePanel } from "module_gm";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { BagModuleC, BagModuleS } from "../../module/bag/BagModule";
 import GMHUD_Generate from "../../ui-generate/gm/GMHUD_generate";
@@ -33,20 +33,20 @@ import { addGMCommand } from "mw-god-mod";
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
-    //#region Constant
-    public static readonly PLAYER_START_GUID: string = "DC5A4E2B47A0C6E31572FE9882BE6861";
+// export default class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
+//     //#region Constant
+//     public static readonly PLAYER_START_GUID: string = "DC5A4E2B47A0C6E31572FE9882BE6861";
 
-    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-    constructor() {
-        super(GMHUD_Generate, GMItem_Generate);
-    }
+//     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+//     constructor() {
+//         super(GMHUD_Generate, GMItem_Generate);
+//     }
 
-    public show(): void {
-        UIService.showUI(this["_view"], mw.UILayerSystem);
-        Log4Ts.warn(GMPanel, `GMPanel show`);
-    }
-}
+//     public show(): void {
+//         UIService.showUI(this["_view"], mw.UILayerSystem);
+//         Log4Ts.warn(GMPanel, `GMPanel show`);
+//     }
+// }
 
 // 新版本的GM
 addGMCommand("调整鼠标灵敏度", "string", (value) => {
