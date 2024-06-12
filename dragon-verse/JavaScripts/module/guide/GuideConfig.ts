@@ -1,4 +1,3 @@
-import { AddGMCommand } from "module_gm";
 import Gtk, { GtkTypes } from "../../util/GToolkit";
 import OperationGuider from "../../depend/guide/OperationGuider";
 import { OperationTypes } from "../../controller/key-operation-manager/KeyOperationManager";
@@ -10,8 +9,6 @@ import GlobalTips from "../../depend/global-tips/GlobalTips";
 import i18n from "../../language/i18n";
 import Tf = GtkTypes.Tf;
 import { addGMCommand } from "mw-god-mod";
-
-
 
 addGMCommand(
     "Dont Use Guide | Guide",
@@ -78,62 +75,6 @@ addGMCommand(
     undefined,
     "Guide"
 );
-//#region TTD & GM
-
-AddGMCommand("Dont Use Guide | Guide",
-    () => {
-        manager.useGuide(false);
-        manager.finishCurrent();
-    },
-    undefined,
-    "Guide",
-);
-
-AddGMCommand("Use Guide | Guide",
-    () => {
-        manager.useGuide(true);
-        manager.finishCurrent();
-    },
-    undefined,
-    "Guide",
-);
-
-AddGMCommand("Step All | Guide",
-    () => {
-        Gtk.enumVals(GuideStep)
-            .forEach(step => {
-                Gtk.enumVals(GuideStep)
-                    .forEach(step => {
-                        manager["_taskDoneMap"].set(step, true);
-                        manager.onComplete.invoke(step);
-                    });
-            });
-        manager.finishCurrent();
-    },
-    undefined,
-    "Guide",
-);
-
-AddGMCommand("Reset All | Guide",
-    () => {
-        Gtk.enumVals(GuideStep)
-            .forEach(step => {
-                manager["_taskDoneMap"].set(step, false);
-            });
-    },
-    undefined,
-    "Guide",
-);
-
-AddGMCommand("Operation Teach | Guide",
-    () => {
-        manager.resetComplete(GuideStep.GOperationTeach);
-        manager.requestNext(GuideStep.GOperationTeach);
-    },
-    undefined,
-    "Guide",
-);
-//#endregion
 
 //#region Config 策划配置项
 
@@ -225,35 +166,31 @@ const loadGuide = () => {
             .sMinGlItv(MIN_GUIDELINE_PREFAB_INTERVAL)
             .sDfSeTout(DEFAULT_TIMEOUT);
 
-//#region 操作引导
+        //#region 操作引导
 
         manager
-            .aTG(
-                GuideStep.GOperationTeach,
-                TaskOptionalTypes.Sequence,
-                () => {
-                    let gm = mwext.ModuleService.getModule(GuideModuleC);
-                    let sm = mwext.ModuleService.getModule(StatisticModuleC);
-                    return !operationGuided &&
-                        gm &&
-                        sm &&
-                        gm.isReady &&
-                        sm.isReady &&
-                        sm.getPlayerData().playerEnteredCounterS <= G_OPERATION_TEACH_VALID_COUNT;
-                })
+            .aTG(GuideStep.GOperationTeach, TaskOptionalTypes.Sequence, () => {
+                let gm = mwext.ModuleService.getModule(GuideModuleC);
+                let sm = mwext.ModuleService.getModule(StatisticModuleC);
+                return (
+                    !operationGuided &&
+                    gm &&
+                    sm &&
+                    gm.isReady &&
+                    sm.isReady &&
+                    sm.getPlayerData().playerEnteredCounterS <= G_OPERATION_TEACH_VALID_COUNT
+                );
+            })
             .iTG(
                 GuideStep.GOperationTeach,
-                new CutsceneOperationGuideTask(
-                    GuideStep.COperationTips,
-                    () => talkedDone === true)
+                new CutsceneOperationGuideTask(GuideStep.COperationTips, () => talkedDone === true)
                     .sA((counter) => {
-                            GlobalTips.getInstance().showGlobalTips(i18n.lan(OperationTeachTips[counter - 1]));
-                            if (counter >= OperationTeachTips.length) talkedDone = true;
-                        },
-                        G_OPERATION_TEACH_INTERVAL)
-                    .sFd((completed) => operationGuided = true),
+                        GlobalTips.getInstance().showGlobalTips(i18n.lan(OperationTeachTips[counter - 1]));
+                        if (counter >= OperationTeachTips.length) talkedDone = true;
+                    }, G_OPERATION_TEACH_INTERVAL)
+                    .sFd((completed) => (operationGuided = true))
             );
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 };
 

@@ -1,4 +1,4 @@
-﻿import { GM } from "module_gm";
+﻿// import { GM } from "module_gm";
 import { GameConfig } from "./config/GameConfig";
 import { GlobalData } from "./const/GlobalData";
 import { GMBasePanelUI } from "./modules/GM/GMModule";
@@ -190,12 +190,12 @@ export default class GameStart extends mw.Script {
                 this.registerGMVisibleKey();
                 return;
             }
-            GM.checkAuthority((res) => {
-                if (res) {
-                    // GM.start(GMBasePanelUI);
-                    GodModService.getInstance().showGm()
-                }
-            });
+            // GM.checkAuthority((res) => {
+            //     if (res) {
+            //         // GM.start(GMBasePanelUI);
+            //         GodModService.getInstance().showGm()
+            //     }
+            // });
             GameObjectFactory.instance;
         } else {
             Resource.instance;
