@@ -3,7 +3,6 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
 import Gtk, { Expression } from "../../util/GToolkit";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import { AddGMCommand } from "module_gm";
 import noReply = mwext.Decorator.noReply;
 import { GameConfig } from "../../config/GameConfig";
 import { addGMCommand } from "mw-god-mod";
@@ -114,103 +113,6 @@ addGMCommand(
     undefined,
     "Root"
 );
-
-//#region TTD & GM
-AddGMCommand(
-    "refresh dragon ball | Auth",
-    undefined,
-    (player, args) => {
-        Log4Ts.log(AuthModuleS, `query dragon ball...`);
-        mwext.ModuleService.getModule(AuthModuleS)
-            .queryUserDragonBall(player.playerId)
-            .then((value) => {
-                Log4Ts.log(AuthModuleS, `query dragon ball success.`, `user dragon ball: ${JSON.stringify(value)}`);
-            });
-    },
-    "Root"
-);
-
-AddGMCommand(
-    "query user dragon | Auth",
-    undefined,
-    (player, args) => {
-        Log4Ts.log(AuthModuleS, `query user dragon...`);
-        mwext.ModuleService.getModule(AuthModuleS)
-            .queryUserDragon(player.playerId)
-            .then((value) => {
-                Log4Ts.log(AuthModuleS, `query user dragon success.`, `user dragons: ${JSON.stringify(value)}`);
-            });
-    },
-    "Root"
-);
-
-AddGMCommand(
-    "request catch dragon | Auth",
-    undefined,
-    (player, args) => {
-        Log4Ts.log(AuthModuleS, `try catch dragon...`);
-        let allDragonConfig = GameConfig["Dragon"]?.getAllElement() ?? [];
-        if (allDragonConfig.length === 0) {
-            Log4Ts.warn(AuthModuleS, `there is no valid dragon config.`);
-            return;
-        }
-        mwext.ModuleService.getModule(AuthModuleS)
-            .requestWebCatchDragon(player.playerId, Gtk.randomArrayItem(allDragonConfig)["dragonPalId"], Date.now())
-            .then((value) => {
-                Log4Ts.log(AuthModuleS, `try catch dragon success.`, `user dragon ball: ${JSON.stringify(value)}`);
-            });
-    },
-    "Root"
-);
-
-AddGMCommand(
-    "refresh stamina limit | Auth",
-    undefined,
-    (player, args) => {
-        Log4Ts.log(AuthModuleS, `query stamina limit...`);
-        mwext.ModuleService.getModule(AuthModuleS)
-            .queryRegisterStaminaLimit(player.playerId)
-            .then(() => {
-                Log4Ts.log(
-                    AuthModuleS,
-                    `query stamina limit success.`,
-                    `current stamina limit: ${mwext.ModuleService.getModule(AuthModuleS).playerStaminaLimitMap.get(
-                        player.playerId
-                    )}`
-                );
-            });
-    },
-    "Root"
-);
-
-AddGMCommand(
-    "report ps | Auth",
-    undefined,
-    (player, args) => {
-        Log4Ts.log(AuthModuleS, `report ps rank data...`);
-        mwext.ModuleService.getModule(AuthModuleS)
-            .reportPetSimulatorRankData(player.playerId, "pig", 0, 999, Date.now(), undefined, 0)
-            .then(() => {
-                Log4Ts.log(AuthModuleS, `report ps rank data success.`);
-            });
-    },
-    "Root"
-);
-
-AddGMCommand(
-    "report bw | Auth",
-    undefined,
-    (player, args) => {
-        Log4Ts.log(AuthModuleS, `report ps rank data...`);
-        mwext.ModuleService.getModule(AuthModuleS)
-            .reportBattleWorldRankData(player.playerId, 0, 999, 0)
-            .then(() => {
-                Log4Ts.log(AuthModuleS, `report bw rank data success.`);
-            });
-    },
-    "Root"
-);
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 type DataUpgradeMethod<SD extends mwext.Subdata> = (data: SD) => void;
 
