@@ -19,7 +19,6 @@ import { QuestModuleC } from "./module/quest/QuestModuleC";
 import { QuestModuleS } from "./module/quest/QuestModuleS";
 import RoleModuleData, { RoleModuleC, RoleModuleS } from "./module/role/RoleModule";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
-import GMPanel from "./ui/gm/GmPanel";
 import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 import { MapManager } from "./gameplay/map/MapManager";
@@ -63,11 +62,11 @@ addGMCommand(
         let x = parseFloat(positionStr.substring(0, index));
         let y = parseFloat(positionStr.substring(index + 1));
 
-        Log4Ts.log(GMPanel, `tp player to ${x},${y}.`);
+        Log4Ts.log(addGMCommand, `tp player to ${x},${y}.`);
         player.character.worldTransform.position = new mw.Vector(x, y);
     },
     undefined,
-    "探针"
+    "探针",
 );
 
 addGMCommand(
@@ -76,7 +75,7 @@ addGMCommand(
     (value) => {
         const v = Number(value);
         if (Number.isNaN(v) || LanguageTypes[v] === undefined) {
-            Log4Ts.log(GMPanel, `非法输入. 需要输入正确的数字.`);
+            Log4Ts.log(addGMCommand, `非法输入. 需要输入正确的数字.`);
             for (const enumVal of GToolkit.enumVals(LanguageTypes)) {
                 Log4Ts.log(undefined, `${LanguageTypes[enumVal]}: ${enumVal}`);
             }
@@ -84,11 +83,11 @@ addGMCommand(
         }
 
         i18n.use(v, true);
-        Log4Ts.log(GMPanel, `change language to ${LanguageTypes[v]}`);
+        Log4Ts.log(addGMCommand, `change language to ${LanguageTypes[v]}`);
     },
     undefined,
     undefined,
-    "多语言"
+    "多语言",
 );
 
 addGMCommand(
@@ -99,20 +98,20 @@ addGMCommand(
     },
     undefined,
     undefined,
-    "提示"
+    "提示",
 );
 
 @Component
 export default class GameStart extends mw.Script {
     //#region Dev Config
 
-    @mw.Property({ displayName: "是否发布", group: "发布" })
+    @mw.Property({displayName: "是否发布", group: "发布"})
     public isRelease: boolean = false;
 
-    @mw.Property({ displayName: "是否 Beta 发布", group: "发布" })
+    @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
     public isBeta: boolean = false;
 
-    @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
+    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
     public isUseTestUrl: boolean = true;
 
     @mw.Property({
@@ -126,22 +125,22 @@ export default class GameStart extends mw.Script {
     // @mw.Property({ displayName: "画质等级设置", group: "发布", enumType: GraphicsLevel })
     // public graphicsLevel: GraphicsLevel = GraphicsLevel.Cinematic3;
 
-    @mw.Property({ displayName: "线上存储", group: "发布" })
+    @mw.Property({displayName: "线上存储", group: "发布"})
     public isOnline: boolean = false;
 
-    @mw.Property({ displayName: "是否 GM", group: "调试" })
+    @mw.Property({displayName: "是否 GM", group: "调试"})
     public isShowGMPanel: boolean = true;
 
-    @mw.Property({ displayName: "服务端日志等级", group: "调试", enumType: DebugLevels })
+    @mw.Property({displayName: "服务端日志等级", group: "调试", enumType: DebugLevels})
     public serverLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "客户端日志等级", group: "调试", enumType: DebugLevels })
+    @mw.Property({displayName: "客户端日志等级", group: "调试", enumType: DebugLevels})
     public clientLogLevel: DebugLevels = DebugLevels.Dev;
 
-    @mw.Property({ displayName: "上帝模式 冲刺速度倍率", group: "调试" })
+    @mw.Property({displayName: "上帝模式 冲刺速度倍率", group: "调试"})
     public godModeSprintRatio: number = 10;
 
-    @mw.Property({ displayName: "上帝模式 闪现位移距离", group: "调试" })
+    @mw.Property({displayName: "上帝模式 闪现位移距离", group: "调试"})
     public godModeFlashDist: number = 1000;
 
     private _godMode: boolean = false;
@@ -170,7 +169,8 @@ export default class GameStart extends mw.Script {
         actions.AcitonMgr.update(dt * 1000);
     }
 
-    protected onDestroy(): void {}
+    protected onDestroy(): void {
+    }
 
     /**
      * 游戏初始化.
@@ -186,6 +186,12 @@ export default class GameStart extends mw.Script {
             this.initializeClient();
         } else if (SystemUtil.isServer()) {
             this.initializeServer();
+        }
+
+        if (GameServiceConfig.isBeta) {
+            GodModService.getInstance().showGm();
+        } else {
+            GodModService.getInstance().authShowGm();
         }
         Balancing.getInstance()
             .registerUpdater((callback) => {
@@ -205,7 +211,7 @@ export default class GameStart extends mw.Script {
             i18n.use(this.language);
             Log4Ts.log(
                 GameStart,
-                `i18n use default language: ${this.language} because using specified non-English language.`
+                `i18n use default language: ${this.language} because using specified non-English language.`,
             );
             return;
         }
@@ -250,11 +256,7 @@ export default class GameStart extends mw.Script {
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         this.initI18n();
-        // this.isShowGMPanel && !this.isRelease && GM.start(GMPanel);
 
-        setTimeout(() => {
-            this.isShowGMPanel && !this.isRelease && GodModService.getInstance().showGm();
-        }, 1000);
         VisualizeDebug.init(mw.Player.localPlayer);
 
         DialogifyManager.getInstance().initController(new DialoguePanelController());
@@ -285,7 +287,7 @@ export default class GameStart extends mw.Script {
                     Log4Ts.log(GameStart, `force re awake effect at ${new Date()}`);
                     effect.play();
                 },
-                effect.timeLength < 1e3 ? GtkTypes.Interval.PerMin / 2 : effect.timeLength
+                effect.timeLength < 1e3 ? GtkTypes.Interval.PerMin / 2 : effect.timeLength,
             );
         });
     }
@@ -378,7 +380,7 @@ export default class GameStart extends mw.Script {
             if (this._godMode) {
                 let currPos = Player.localPlayer.character.worldTransform.position;
                 Player.localPlayer.character.worldTransform.position = currPos.add(
-                    Player.getControllerRotation().rotateVector(Vector.forward).multiply(this.godModeFlashDist)
+                    Player.getControllerRotation().rotateVector(Vector.forward).multiply(this.godModeFlashDist),
                 );
             }
         });
