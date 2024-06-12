@@ -188,11 +188,11 @@ export default class GameStart extends mw.Script {
             this.initializeServer();
         }
 
-        if (GameServiceConfig.isBeta) {
-            GodModService.getInstance().showGm();
-        } else {
-            GodModService.getInstance().authShowGm();
+        if (GameServiceConfig.isRelease) {
+            GodModService.getInstance().setAuthStrategy("strong");
         }
+        GodModService.getInstance().authShowGm();
+
         Balancing.getInstance()
             .registerUpdater((callback) => {
                 mw.TimeUtil.onEnterFrame.add(callback);
