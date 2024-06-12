@@ -1,4 +1,5 @@
 import GToolkit, { GtkTypes } from "../util/GToolkit";
+import Gtk from "../util/GToolkit";
 
 export default class GameServiceConfig {
     //#region settings
@@ -136,25 +137,31 @@ export default class GameServiceConfig {
     //#region Auth
 
     /**
-     * 外源服务器 通信 最短通信 间隔.
+     * 外源服务器 通信 最短通信 间隔. ms
      */
     public static readonly MIN_OTHER_REQUEST_INTERVAL = 1e3;
 
     /**
-     * 最长等待授权时间.
+     * 最长等待授权时间. ms
      */
     public static readonly MAX_AUTH_WAITING_TIME = 5e3;
 
     /**
-     * 巡查时间间隔.
+     * 巡查时间间隔. ms
      */
     public static readonly GUARD_PATROL_INTERVAL = GToolkit.timeConvert(3, GtkTypes.Tf.M, GtkTypes.Tf.Ms);
 
     /**
-     * 上报等待间隔.
+     * 上报等待间隔. ms
      * @type {number}
      */
     public static readonly REPORT_REQUEST_WAIT_TIME = 1e3;
+
+    /**
+     * Token 过期刷新间隔. ms
+     * @type {number}
+     */
+    public static readonly EXPIRED_REFRESH_INTERVAL = 10e3;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
