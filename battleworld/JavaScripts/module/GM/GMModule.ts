@@ -22,7 +22,7 @@ import { BattleWorldPlayerModuleData } from "../PlayerModule/PlayerModuleData";
 import { BulletModuleS } from "../BulletModule/BulletModuleS";
 import { WeaponModuleS } from "../WeaponModule/WeaponModuleS";
 import { LandModuleS } from "../LandModule/LandModuleS";
-import { GMBasePanel } from "module_gm";
+// import { GMBasePanel } from "module_gm";
 import GMHUD_Generate from "../../ui-generate/GM/GMHUD_generate";
 import GMItem_Generate from "../../ui-generate/GM/GMItem_generate";
 import { LandModuleC } from "../LandModule/LandModuleC";
@@ -36,15 +36,15 @@ import WoodUnit from "../npc/WoodUnit";
 import Gtk from "../../util/GToolkit";
 import GodModService, { addGMCommand } from "mw-god-mod";
 
-export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
-    constructor() {
-        super(GMHUD_Generate, GMItem_Generate);
-    }
+// export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
+//     constructor() {
+//         super(GMHUD_Generate, GMItem_Generate);
+//     }
 
-    show() {
-        mw.UIService.showUI(this["_view"], mw.UILayerSystem);
-    }
-}
+//     show() {
+//         mw.UIService.showUI(this["_view"], mw.UILayerSystem);
+//     }
+// }
 
 export class GMModuleData extends Subdata {
     @Decorator.persistence()

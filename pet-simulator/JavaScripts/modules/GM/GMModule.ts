@@ -1,6 +1,6 @@
 ﻿import { DebugConsole } from "debug_console";
 import { Bubble } from "module_bubble";
-import { GMBasePanel } from "module_gm";
+// import { GMBasePanel } from "module_gm";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
@@ -18,11 +18,11 @@ import { BuffModuleS } from "../buff/BuffModuleS";
 import { addGMCommand } from "mw-god-mod";
 
 //主面板
-export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
-    constructor() {
-        super(GMHUD_Generate, GMItem_Generate);
-    }
-}
+// export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
+//     constructor() {
+//         super(GMHUD_Generate, GMItem_Generate);
+//     }
+// }
 // NEW GM
 addGMCommand("传送第二世界", "string", () => {
     Player.localPlayer.character.worldTransform.position = new Vector(-18222.37, 100119.67, 79589.56);
