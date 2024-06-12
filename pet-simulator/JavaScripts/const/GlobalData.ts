@@ -423,14 +423,7 @@ export namespace GlobalData {
         /**刮痧时间 */
         public static guaShaTime: number = 6;
 
-        /**1/3暴击 倍率 */
         public static critRateMap: Map<number, number> = new Map();
-
-        public static critRate(playerId: number) {
-            return Gtk.tryGet(this.critRateMap, playerId, () => 3);
-        }
-
-        public static critMap: Map<number, boolean> = new Map();
 
         // public static isCrit(playerId: number) {
         //     return Gtk.tryGet(
@@ -879,7 +872,7 @@ export namespace GlobalData {
         public static maxLevel: number = 5;
 
         public static initPlayer(playerId: number,
-            levelData: number[]) {
+                                 levelData: number[]) {
             let upgradeData = GameConfig.Upgrade.getAllElement().map(v => v.Upgradenum);
 
             this.levelRangeMap.set(playerId, (upgradeData[0][levelData[0] - 1] ?? 0) + 1);
