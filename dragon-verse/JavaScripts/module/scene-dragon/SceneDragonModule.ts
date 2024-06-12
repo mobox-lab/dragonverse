@@ -21,42 +21,8 @@ import AreaManager from "../../depend/area/AreaManager";
 import { GameConfig } from "../../config/GameConfig";
 import Gtk from "../../util/GToolkit";
 import { IPoint3 } from "../../depend/area/shape/base/IPoint";
-import { AddGMCommand } from "module_gm";
 import { AuthModuleS } from "../auth/AuthModule";
 import { addGMCommand } from "mw-god-mod";
-
-AddGMCommand(
-    "生成 场景龙",
-    undefined,
-    (player, value: string) => {
-        let id = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
-        if (isNaN(id)) id = undefined;
-
-        ModuleService.getModule(SceneDragonModuleS)["generate"](
-            player.playerId,
-            id ?? Gtk.randomArrayItem(GameConfig.Dragon.getAllElement()).id,
-            0,
-            player.character.worldTransform.position.add(
-                new RandomGenerator()
-                    .randomCircle()
-                    .handle((v) => v * 200)
-                    .toVector3(500)
-            ),
-            new UUID(4).toString()
-        );
-    },
-    "Spawn"
-);
-AddGMCommand(
-    "销毁 场景龙",
-    undefined,
-    (player, syncKey: string) => {
-        let id = Number(syncKey);
-        if (isNaN(id)) id = undefined;
-        ModuleService.getModule(SceneDragonModuleS)["destroy"](player.playerId, syncKey, false);
-    },
-    "Spawn"
-);
 
 addGMCommand(
     "生成 场景龙",

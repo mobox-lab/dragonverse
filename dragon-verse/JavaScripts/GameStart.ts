@@ -1,4 +1,3 @@
-import { AddGMCommand, GM, GMService } from "module_gm";
 import * as mwaction from "mwaction";
 import { HeadUIController } from "./controller/HeadUIController";
 import { TimeManager } from "./controller/TimeManager";
@@ -99,56 +98,6 @@ addGMCommand(
         GlobalTips.getInstance().showGlobalTips(value);
     },
     undefined,
-    undefined,
-    "提示"
-);
-
-AddGMCommand(
-    "TP 传送",
-    null,
-    (player, positionStr: string) => {
-        let index = 0;
-        for (let i = 0; i < positionStr.length; i++) {
-            if (isNaN(parseInt(positionStr[i])) && positionStr[i] != ".") {
-                index = i;
-                break;
-            }
-        }
-        let x = parseFloat(positionStr.substring(0, index));
-        let y = parseFloat(positionStr.substring(index + 1));
-
-        Log4Ts.log(GMPanel, `tp player to ${x},${y}.`);
-        player.character.worldTransform.position = new mw.Vector(x, y);
-    },
-    "探针"
-);
-
-
-
-AddGMCommand(
-    "Language 切换语言",
-    (player, value) => {
-        const v = Number(value);
-        if (Number.isNaN(v) || LanguageTypes[v] === undefined) {
-            Log4Ts.log(GMPanel, `非法输入. 需要输入正确的数字.`);
-            for (const enumVal of GToolkit.enumVals(LanguageTypes)) {
-                Log4Ts.log(undefined, `${LanguageTypes[enumVal]}: ${enumVal}`);
-            }
-            return;
-        }
-
-        i18n.use(v, true);
-        Log4Ts.log(GMPanel, `change language to ${LanguageTypes[v]}`);
-    },
-    null,
-    "多语言"
-);
-
-AddGMCommand(
-    "Global Tips | 冒泡提示",
-    (player, value) => {
-        GlobalTips.getInstance().showGlobalTips(value);
-    },
     undefined,
     "提示"
 );
