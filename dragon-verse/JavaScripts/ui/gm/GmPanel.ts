@@ -1,4 +1,3 @@
-// import { GMBasePanel } from "module_gm";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { BagModuleC, BagModuleS } from "../../module/bag/BagModule";
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
@@ -12,37 +11,10 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import Gtk from "../../util/GToolkit";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 import CutScenePanel from "../jump-game/CutScenePanel";
-
 import { addGMCommand } from "mw-god-mod";
 
-/**
- * GM.
- *
- * ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟
- * ⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄
- * ⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄
- * ⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄
- * ⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
- * @author LviatYi
- * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
- * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
- */
-// export default class addGMComman extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
-//     //#region Constant
 const PLAYER_START_GUID: string = "DC5A4E2B47A0C6E31572FE9882BE6861";
 
-//     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-//     constructor() {
-//         super(GMHUD_Generate, GMItem_Generate);
-//     }
-
-//     public show(): void {
-//         UIService.showUI(this["_view"], mw.UILayerSystem);
-//         Log4Ts.warn(addGMComman, `addGMComman show`);
-//     }
-// }
-
-// 新版本的GM
 addGMCommand("调整鼠标灵敏度", "string", (value) => {
     KeyboardSimulation.setLookUpRateScale(Number(value));
 });
