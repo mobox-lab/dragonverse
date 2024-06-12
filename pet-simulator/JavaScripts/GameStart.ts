@@ -1,7 +1,6 @@
 ﻿// import { GM } from "module_gm";
 import { GameConfig } from "./config/GameConfig";
 import { GlobalData } from "./const/GlobalData";
-import { GMBasePanelUI } from "./modules/GM/GMModule";
 import { HudModuleC, HudModuleS } from "./modules/Hud/HudModule";
 import { PlayerModuleC } from "./modules/Player/PlayerModuleC";
 import { PlayerModuleS } from "./modules/Player/PlayerModuleS";

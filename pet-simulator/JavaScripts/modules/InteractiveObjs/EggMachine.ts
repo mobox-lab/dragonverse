@@ -157,6 +157,8 @@ class EggM {
     private curGold: number = 0;
     private worldUIImg: mw.Widget;
 
+    private _isOpenEgg: boolean = false;
+
     constructor(public cfgID: number, hasArr: number[]) {
         this.hasArr = hasArr;
         this.cfg = GameConfig.EggMachine.getElement(this.cfgID);
@@ -182,16 +184,17 @@ class EggM {
             if (isStart) {
                 this.petEgg?.setVisibility(mw.PropertyStatus.Off);
                 this.worldUI_1?.setVisibility(mw.PropertyStatus.Off);
-                KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
+                this._isOpenEgg = true;
+                this.exitTrigger(Player.localPlayer.character);
             }
             else {
                 this.petEgg?.setVisibility(mw.PropertyStatus.On);
                 this.setEggState(false);
                 this.playeEff(false);
-                KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
-                KeyOperationManager.getInstance().onKeyUp(null, Keys.F, () => {
-                    this.checkCanBuy();
-                });
+                this._isOpenEgg = false;
+                if (this.trigger.checkInArea(Player.localPlayer.character)) {
+                    this.enterTrigger(Player.localPlayer.character);
+                }
             }
         });
         let playerModuleC = ModuleService.getModule(PlayerModuleC);
@@ -380,6 +383,7 @@ class EggM {
     }
 
     private enterTrigger(obj: mw.GameObject) {
+        if (this._isOpenEgg) return;
         if (PlayerManagerExtesion.isCharacter(obj) == false) {
             return;
         }
