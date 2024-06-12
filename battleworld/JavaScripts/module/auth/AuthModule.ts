@@ -966,14 +966,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private async querySceneId(userId: string): Promise<string> {
-        return (
-            (
-                await mw.TeleportService.asyncGetPlayerRoomInfo(userId).catch((e) => {
-                    Log4Ts.error(AuthModuleS, e);
-                    return Promise.resolve(undefined as mw.RoomInfo);
-                })
-            )?.sceneId ?? "INVALID_SCENE_ID"
-        );
+        if (!GameServiceConfig.isBeta && !GameServiceConfig.isRelease) return "INVALID_SCENE_ID";
+        return ((
+            await mw.TeleportService.asyncGetPlayerRoomInfo(userId).catch((e) => {
+                Log4Ts.error(AuthModuleS, e);
+                return Promise.resolve(undefined as mw.RoomInfo);
+            })
+        )?.sceneId ?? "INVALID_SCENE_ID");
     }
 
     private async correspondHandler<D = object>(reqParam: object, releaseUrl: string, testUrl: string) {
