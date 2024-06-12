@@ -7,7 +7,7 @@
     "linq": "^4.0.3",
     "module_bubble": "^5.0.7",
     "module_gm": "^5.0.5",
-    "mw-god-mod": "^31.0.7",
+    "mw-god-mod": "^31.0.14",
     "mwaction": "^1.0.8",
     "pure-uuid": "^1.8.1",
     "robust-predicates": "^3.0.2",
@@ -16,5 +16,8 @@
   "devDependencies": {
     "@types/seedrandom": "^3.0.8",
     "typescript": "^5.4.3"
+  },
+  "scripts": {
+    "update gsc depend": "npm update mw-god-mod --save"
   }
 }
