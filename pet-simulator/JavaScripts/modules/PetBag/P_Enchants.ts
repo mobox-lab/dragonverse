@@ -131,27 +131,21 @@ export class P_Enchants extends EnchantsPanel_Generate {
  
 		/** 附魔成功后更新面板 UI */
     public updatePetPanelUI() { 
- 				const petItems = this.petItems;
-        for (let i = 0; i < petItems?.length; i++) {
-					const ele = petItems[i];
-					const newPet = this.bagData.bagItemsByKey(ele.petData.k)
-					// console.log(
-					// 	"======== updatePetPanelUI i ======="+i,
-					// 	" id:" + ele?.petData?.I,
-					// 	" newPetData id:" + newPet?.I,
-					// 	" key:" + ele?.petData?.k,
-					// 	" newPetData key:" + newPet?.k,
-					// 	" name:" + ele?.petData?.p?.n,
-					// 	" buff:" + ele?.petData?.p?.b,
-					// 	" newPet buff:" + newPet?.p?.b,
-					// 	" enchantCnt:" + ele?.petData?.enchantCnt
-					// );
-					ele.init(newPet);
-				}
 				const preSelectedPetKey = this.selectPetKey;
-				const selectedItem = petItems.find((item) => item.petData.k === preSelectedPetKey);
-				this.selectPetKey = null;
-				this.updateSelectKey(selectedItem)
+        this.initPanel();
+        const petItems = this.petItems;
+        for (let i = 0; i < petItems?.length; i++) {
+          const ele = petItems[i];
+          const newPet = this.bagData.bagItemsByKey(ele.petData.k);
+          ele.init(newPet);
+        }
+        const selectedItem = petItems.find(
+          (item) => item.petData.k === preSelectedPetKey
+        );
+        selectedItem.setLockVis(true);
+        this.selectPetKey = preSelectedPetKey;
+        this.isCanClickBtn();
+        this.updateEnchantIntroPanel(); 
 		}
 
     /**悬浮UI */
@@ -491,8 +485,6 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.moveUI(true); 
 				//附魔结束
 				this.setEnchantBtnClickState(true);
-				this.initPanel(); 
-				this.updatePetPanelUI();
     }
 
     /**设置附魔按钮点击态 */
