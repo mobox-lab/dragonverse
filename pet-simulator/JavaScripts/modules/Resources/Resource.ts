@@ -962,6 +962,7 @@ export function calDamage(playerId: number,
         return 0;
     }
     let damage = petData.p.a
+        * GlobalData.LevelUp.petDamage(Player.localPlayer.playerId)
         * upgrade
         * (1 + EnchantBuff.getPetBuff(playerId, key).damageAdd / 100);
 
