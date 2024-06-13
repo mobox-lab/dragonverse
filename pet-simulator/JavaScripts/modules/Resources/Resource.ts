@@ -119,7 +119,7 @@ export default class ResourceScript extends mw.Script {
 
     @RemoteFunction(mw.Server)
     private net_injured(playerID: number, key: number) {
-        Log4Ts.log(Resource, `net_injured playerID:${playerID}, key:${key}`);
+        // Log4Ts.log(Resource, `net_injured playerID:${playerID}, key:${key}`);
         if (!ModuleService.getModule(EnergyModuleS).isAfford(playerID, GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
             Log4Ts.log(Resource, `Stamina is not enough. playerID:${playerID}`);
             return;
@@ -213,7 +213,7 @@ export default class ResourceScript extends mw.Script {
 
             this.checkHpStage(playerID);
             this.client_injured(player, this.curHp, this._rate);
-            Log4Ts.log(Resource, `treasure injured playerID:${playerID}, curHp:${this.curHp}`);
+            // Log4Ts.log(Resource, `treasure injured playerID:${playerID}, curHp:${this.curHp}`);
         }
     }
 
@@ -393,7 +393,7 @@ export default class ResourceScript extends mw.Script {
             this.guaShaRewardGem.set(playerId, this.getGuaShaRewardGem(playerId) + gemVal);
             this.playReward(playerId, GlobalEnum.ResourceAttackStage.GuaSha, 0, gemVal);
 
-            Log4Ts.log(Resource, `play guaSha playerId:${playerId}, goldVal:${goldVal}, gemVal:${gemVal}`);
+            // Log4Ts.log(Resource, `play guaSha playerId:${playerId}, goldVal:${goldVal}, gemVal:${gemVal}`);
         }, GlobalData.SceneResource.guaShaTime);
 
         this.interval.set(playerId, interval);
@@ -496,7 +496,7 @@ export default class ResourceScript extends mw.Script {
                     gemCount,
                     this.isBigBox);
         }
-        Log4Ts.log(Resource, `playReward playerId:${playerId}, scenePointId: ${this.scenePointId}, treasure Pos:${this.curPos}, state:${state}, goldVal:${goldVal}, gemVal:${gemVal}, goldCount:${goldCount}, gemCount:${gemCount}`);
+        // Log4Ts.log(Resource, `playReward playerId:${playerId}, scenePointId: ${this.scenePointId}, treasure Pos:${this.curPos}, state:${state}, goldVal:${goldVal}, gemVal:${gemVal}, goldCount:${goldCount}, gemCount:${gemCount}`);
     }
 
     /**判断几世界的金币 */
