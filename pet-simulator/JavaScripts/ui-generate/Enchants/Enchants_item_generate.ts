@@ -64,6 +64,20 @@ export default class Enchants_item_Generate extends UIScript {
 		}
 		return this.picSelect_Internal
 	}
+	private can_SlotText_Internal: mw.Canvas
+	public get can_SlotText(): mw.Canvas {
+		if(!this.can_SlotText_Internal&&this.uiWidgetBase) {
+			this.can_SlotText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/can_SlotText') as mw.Canvas
+		}
+		return this.can_SlotText_Internal
+	}
+	private text_Slot_Internal: mw.TextBlock
+	public get text_Slot(): mw.TextBlock {
+		if(!this.text_Slot_Internal&&this.uiWidgetBase) {
+			this.text_Slot_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/can_SlotText/text_Slot') as mw.TextBlock
+		}
+		return this.text_Slot_Internal
+	}
 
 
 
@@ -103,6 +117,9 @@ export default class Enchants_item_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.textScoreNumber)
+		
+	
+		this.initLanguage(this.text_Slot)
 		
 	
 		//文本多语言

@@ -362,6 +362,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 					1
 				);
 				this.bagUI.updateEnchantItemsUI(key); // 刷新背包UI
+				this.enchantUI.updatePetPanelUI(); // 刷新附魔面板UI
+
     }
 
     async buyEgg(cfgId: number): Promise<number | null> {

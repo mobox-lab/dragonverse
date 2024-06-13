@@ -1046,8 +1046,8 @@ export namespace GlobalData {
         public static stopTime: number = 3;
         /**附魔单次钻石花费 */
         public static diamondCost: number = 10000;
-        /**附魔 词条背景 - 空、普通、传说、神话 Guid */
-        public static enchantItemGuid: string[] = ["355924", "355919", "356154", "357133"];
+        /**附魔 词条背景 - 普通、传说、神话、空、未解锁 Guid */
+        public static enchantItemGuid: string[] = ["355919", "356154", "357133", "355924", "359012"];
         /**附魔 左侧详情 宠物稀有度背景 普通 稀有 史诗 传说 神话 */
         public static enchantPetRarityGuid: string[] = ["355918", "355920", "355926", "355913", "355925"];
         /**附魔 词条图标 对勾/锁  */

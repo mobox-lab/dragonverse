@@ -18,6 +18,7 @@ import KeyOperationManager from '../../controller/key-operation-manager/KeyOpera
 import { PetBagModuleC } from './PetBagModuleC';
 import Gtk from '../../util/GToolkit';
 import { IEnchantsElement } from '../../config/Enchants';
+import Log4Ts from '../../depend/log4ts/Log4Ts';
 
 export enum EnchantPetState {
     IS_SAME_ENCHANT = 'is_same_enchant',
@@ -130,27 +131,21 @@ export class P_Enchants extends EnchantsPanel_Generate {
  
 		/** 附魔成功后更新面板 UI */
     public updatePetPanelUI() { 
- 				const petItems = this.petItems;
-        for (let i = 0; i < petItems?.length; i++) {
-					const ele = petItems[i];
-					const newPet = this.bagData.bagItemsByKey(ele.petData.k)
-					// console.log(
-					// 	"======== updatePetPanelUI i ======="+i,
-					// 	" id:" + ele?.petData?.I,
-					// 	" newPetData id:" + newPet?.I,
-					// 	" key:" + ele?.petData?.k,
-					// 	" newPetData key:" + newPet?.k,
-					// 	" name:" + ele?.petData?.p?.n,
-					// 	" buff:" + ele?.petData?.p?.b,
-					// 	" newPet buff:" + newPet?.p?.b,
-					// 	" enchantCnt:" + ele?.petData?.enchantCnt
-					// );
-					ele.init(newPet);
-				}
 				const preSelectedPetKey = this.selectPetKey;
-				const selectedItem = petItems.find((item) => item.petData.k === preSelectedPetKey);
-				this.selectPetKey = null;
-				this.updateSelectKey(selectedItem)
+        this.initPanel();
+        const petItems = this.petItems;
+        for (let i = 0; i < petItems?.length; i++) {
+          const ele = petItems[i];
+          const newPet = this.bagData.bagItemsByKey(ele.petData.k);
+          ele.init(newPet);
+        }
+        const selectedItem = petItems.find(
+          (item) => item.petData.k === preSelectedPetKey
+        );
+        selectedItem.setLockVis(true);
+        this.selectPetKey = preSelectedPetKey;
+        this.isCanClickBtn();
+        this.updateEnchantIntroPanel(); 
 		}
 
     /**悬浮UI */
@@ -208,47 +203,48 @@ export class P_Enchants extends EnchantsPanel_Generate {
 				const curSelectPetInfo = this.petItems.find(
 					(pet) => pet.petData.k === this.selectPetKey
 				);
-				console.log(
-					"======== updateEnchantIntroPanel curSelectPetInfo =======",
-					" id:" + curSelectPetInfo?.petData?.I,
-					" key:" + curSelectPetInfo?.petData?.k,
-					" name:" + curSelectPetInfo?.petData?.p?.n,
-					" buff:" + curSelectPetInfo?.petData?.p?.b,
-					" enchantCnt:" + curSelectPetInfo?.petData?.enchantCnt
-				); 
-				if (!curSelectPetInfo?.petData?.I) { 
-					this.mPetInfo.visibility = mw.SlateVisibility.Collapsed;	
-					return;
-				} 
+				Log4Ts.log(
+					P_Enchants,
+					"======== updateEnchantIntroPanel curSelectPetInfo =======" +
+						" id:" +
+						curSelectPetInfo?.petData?.I +
+						" key:" +
+						curSelectPetInfo?.petData?.k +
+						" name:" +
+						curSelectPetInfo?.petData?.p?.n +
+						" buff:" +
+						curSelectPetInfo?.petData?.p?.b +
+						" enchantCnt:" +
+						curSelectPetInfo?.petData?.enchantCnt
+				);
+				this.mTextBlock_Enchant.text = GameConfig.Language.Tips_Enchants_7.Value;
+				if (!curSelectPetInfo?.petData?.I) {
+						this.mPetInfo.visibility = mw.SlateVisibility.Collapsed;
+						return;
+				}
 				const curPetData = curSelectPetInfo.petData;
 				const buffIds = Array.from(curPetData.p.b);
 
 				this.mPetInfo.visibility = mw.SlateVisibility.Visible;
-        const cfg = GameConfig.PetARR.getElement(curPetData.I);
-        this.mNameBig.text = cfg.petName;
-        this.mNameSmall.text = curSelectPetInfo.petData.p.n;
-				Gtk.trySetVisibility(
-          this.picLovelovelove,
-          cfg.DevType === GlobalEnum.PetDevType.Love
-            ? mw.SlateVisibility.Visible
-            : mw.SlateVisibility.Collapsed
-        );
-				Gtk.trySetVisibility(
-          this.picRainbowowow,
-          cfg.DevType === GlobalEnum.PetDevType.Rainbow
-            ? mw.SlateVisibility.Visible
-            : mw.SlateVisibility.Collapsed
-        );
-				this.setPetInfoRarityUI(cfg.QualityType);   
-				
+				const cfg = GameConfig.PetARR.getElement(curPetData.I);
+				this.mNameBig.text = cfg.petName;
+				this.mNameSmall.text = curSelectPetInfo.petData.p.n;
+
+				this.picLovelovelove.renderOpacity =
+					cfg.DevType === GlobalEnum.PetDevType.Love ? 1 : 0.4;
+				this.picRainbowowow.renderOpacity =
+					cfg.DevType === GlobalEnum.PetDevType.Rainbow ? 1 : 0.4;
+
+				this.setPetInfoRarityUI(cfg.QualityType);
+
 				const isMyth = cfg.QualityType === GlobalEnum.PetQuality.Myth;
-				
-				if(isMyth) {
-					const top = buffIds.pop()
-					let item = mw.UIService.create(EnchantItem);
-					item.setCfgId(top, true);
-					item.uiObject.size = item.mCanvas.size;
-					this.mCanvas_Entrylist.addChild(item.uiObject);
+
+				if (isMyth) {
+						const top = buffIds.pop();
+						let item = mw.UIService.create(EnchantItem);
+						item.setCfgId(top, true);
+						item.uiObject.size = item.mCanvas.size;
+						this.mCanvas_Entrylist.addChild(item.uiObject);
 				}
 
 				const len = buffIds?.length ?? 0; // 两词条则可选择一词条重铸
@@ -258,6 +254,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
 					const buffId = buffIds[i];
 					let item = mw.UIService.create(EnchantItem);
 					if (isReEnchant) {
+						this.mTextBlock_Enchant.text = GameConfig.Language.Enchants_new006.Value;
 						if(i === 0) { // 默认选择第一个词条
 							this.selectEnchantId = buffId;
 							item.setSelectState(true);
@@ -280,15 +277,16 @@ export class P_Enchants extends EnchantsPanel_Generate {
 					items.push(item);
 				}
 				if (len < 2) {
-          // 不满两词条则空 item 补到两词条
-          for (let i = 0; i < 2 - len; i++) {
-            const emptyItem = mw.UIService.create(EnchantItem);
-            emptyItem.uiObject.size = emptyItem.mCanvas.size;
-						if(i === 0) emptyItem.setSelectState(true);
-            this.mCanvas_Entrylist.addChild(emptyItem.uiObject);
-          }
-        }
-        this.enchantItemsUI = items;
+						// 不满两词条则空 item 补到两词条
+						for (let i = 0; i < 2 - len; i++) {
+								const emptyItem = mw.UIService.create(EnchantItem);
+								emptyItem.uiObject.size = emptyItem.mCanvas.size;
+								if (i === 0) emptyItem.setSelectState(true);
+								else emptyItem.setUnlockUI();
+								this.mCanvas_Entrylist.addChild(emptyItem.uiObject);
+						}
+				}
+				this.enchantItemsUI = items;
     }
 
     // private initEnchantItem() {
@@ -487,8 +485,6 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.moveUI(true); 
 				//附魔结束
 				this.setEnchantBtnClickState(true);
-				this.initPanel(); 
-				this.updatePetPanelUI();
     }
 
     /**设置附魔按钮点击态 */
@@ -544,42 +540,65 @@ class EnchantItem extends Enchants_item_Generate {
             this.onClickAc.call();
         });
     }
+
 		public setEmptyUI() {
-			this.mButton_Entry.normalImageGuid = GlobalData.Enchant.enchantItemGuid[0];
-			this.textEnhanceName.text = GameConfig.Language.Enchants_new001.Value;
-			this.mTextBlock_Entry.text = GameConfig.Language.Enchants_new002.Value;
-			this.textScoreNumber.visibility = mw.SlateVisibility.Collapsed;
-			this.textScoreUp.visibility = mw.SlateVisibility.Collapsed;
-			this.picScore.visibility = mw.SlateVisibility.Collapsed;
+			this.mButton_Entry.normalImageGuid = GlobalData.Enchant.enchantItemGuid[3];
+			Gtk.trySetVisibility(this.can_SlotText, mw.SlateVisibility.Visible);
+			this.text_Slot.text = GameConfig.Language.Enchants_new004.Value;			
+			Gtk.trySetVisibility(this.mTextBlock_Entry, mw.SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.textEnhanceName, mw.SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.textScoreNumber, mw.SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.textScoreUp, mw.SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.picScore, mw.SlateVisibility.Collapsed);
 		}
+		public setUnlockUI() {
+			this.mButton_Entry.normalImageGuid = GlobalData.Enchant.enchantItemGuid[4]; // 未解锁
+			Gtk.trySetVisibility(this.can_SlotText, mw.SlateVisibility.Visible);
+			this.text_Slot.text = GameConfig.Language.Enchants_new005.Value;
+			Gtk.trySetVisibility(this.mTextBlock_Entry, mw.SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.textEnhanceName, mw.SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.textScoreNumber, mw.SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.textScoreUp, mw.SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.picScore, mw.SlateVisibility.Collapsed);
+		}
+	
 		
 		private getBgImageGuid(cfgId: number) {
-			if(cfgId >= GlobalData.Enchant.mythEnchantIdRange[0] && cfgId <= GlobalData.Enchant.mythEnchantIdRange[1]) {
-				return GlobalData.Enchant.enchantItemGuid[3]; 
-			}
-			if(cfgId >= GlobalData.Enchant.specialEnchantIdRange[0] && cfgId <= GlobalData.Enchant.specialEnchantIdRange[1]) {
-				return GlobalData.Enchant.enchantItemGuid[2]; 
-			}
-			return GlobalData.Enchant.enchantItemGuid[1];  
+			if (
+        cfgId >= GlobalData.Enchant.mythEnchantIdRange[0] &&
+        cfgId <= GlobalData.Enchant.mythEnchantIdRange[1]
+      ) {
+        return GlobalData.Enchant.enchantItemGuid[2];
+      }
+      if (
+        cfgId >= GlobalData.Enchant.specialEnchantIdRange[0] &&
+        cfgId <= GlobalData.Enchant.specialEnchantIdRange[1]
+      ) {
+        return GlobalData.Enchant.enchantItemGuid[1];
+      }
+      return GlobalData.Enchant.enchantItemGuid[0];
 		}
     /**设置配置id */
-    public setCfgId(cfgId: number, isLock?: boolean) {
-        this.cfgId = cfgId;
-        const cfg = GameConfig.Enchants.getElement(cfgId);
-				if(!cfg) return;
-				this.mButton_Entry.normalImageGuid = this.getBgImageGuid(cfgId);
-        this.textEnhanceName.text = cfg.Name;
-				this.mTextBlock_Entry.text = utils.Format(cfg.Describe, cfg.Degree);
-				this.textScoreNumber.text = utils.formatNumber(cfg.RankScore ?? 0);
-				this.textScoreNumber.visibility = mw.SlateVisibility.Visible; 
-				this.textScoreUp.visibility = mw.SlateVisibility.Visible;
-				this.picScore.visibility = mw.SlateVisibility.Visible;
-				if(isLock) {
-					this.picSelect.visibility = mw.SlateVisibility.Visible;
-					this.picSelect.imageGuid = GlobalData.Enchant.enchantSelectIconGuid[1];
-				}
-    }
-
+		public setCfgId(cfgId: number, isLock?: boolean) {
+			this.cfgId = cfgId;
+      const cfg = GameConfig.Enchants.getElement(cfgId);
+      if (!cfg) return;
+      this.mButton_Entry.normalImageGuid = this.getBgImageGuid(cfgId);
+      this.textEnhanceName.text = cfg.Name;
+      this.mTextBlock_Entry.text = utils.Format(cfg.Describe, cfg.Degree);
+      this.textScoreNumber.text = utils.formatNumber(cfg.RankScore ?? 0);
+      Gtk.trySetVisibility(this.can_SlotText, mw.SlateVisibility.Collapsed);
+      Gtk.trySetVisibility(this.picScore, mw.SlateVisibility.HitTestInvisible);
+      Gtk.trySetVisibility(this.textEnhanceName, mw.SlateVisibility.HitTestInvisible);
+      Gtk.trySetVisibility(this.mTextBlock_Entry, mw.SlateVisibility.HitTestInvisible);
+      Gtk.trySetVisibility(this.textScoreNumber, mw.SlateVisibility.HitTestInvisible);
+      Gtk.trySetVisibility(this.textScoreUp, mw.SlateVisibility.HitTestInvisible);
+      if (isLock) {
+        Gtk.trySetVisibility(this.picSelect, mw.SlateVisibility.Visible);
+        this.picSelect.imageGuid = GlobalData.Enchant.enchantSelectIconGuid[1];
+      }
+		}
+	
     /**选中态 */
     public get SelectState(): boolean {
         return this.isChoose;
