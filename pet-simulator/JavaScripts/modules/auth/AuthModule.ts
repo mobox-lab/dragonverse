@@ -6,8 +6,23 @@ import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModul
 import noReply = mwext.Decorator.noReply;
 import { GameConfig } from "../../config/GameConfig";
 import { addGMCommand } from "mw-god-mod";
+import { Regulator } from "gtoolkit";
+import { Yoact } from "../../depend/yoact/Yoact";
+import createYoact = Yoact.createYoact;
 
 //#region TTD & GodMod
+
+addGMCommand(
+    "refresh temp token | Auth",
+    "void",
+    () => {
+        mwext.ModuleService.getModule(AuthModuleC).queryTempToken();
+    },
+    undefined,
+    undefined,
+    "Root",
+);
+
 addGMCommand(
     "refresh dragon ball | Auth",
     "void",
@@ -73,9 +88,10 @@ addGMCommand(
                 Log4Ts.log(
                     AuthModuleS,
                     `query stamina limit success.`,
-                    `current stamina limit: ${mwext.ModuleService.getModule(AuthModuleS).playerStaminaLimitMap.get(
-                        player.playerId,
-                    )}`,
+                    `current stamina limit: ${mwext.ModuleService.getModule(AuthModuleS)
+                        .playerStaminaLimitMap.get(
+                            player.userId,
+                        )}`,
                 );
             });
     },
@@ -175,6 +191,26 @@ interface QueryResp<D = undefined> {
     code: number;
     message: "success" | string;
     data?: D;
+}
+
+/**
+ * 查询 P12 Token 请求参数.
+ */
+interface GetTokenReq {
+    /**
+     * 临时 Token.
+     */
+    tempToken: string;
+}
+
+/**
+ * P12 Token 查询返回值.
+ */
+interface GetTokenRespData {
+    /**
+     * P12 Token.
+     */
+    accessToken: string;
 }
 
 /**
@@ -351,6 +387,8 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     private _lastSubGameReportTime: number = 0;
 
+    public currency: { count: number } = createYoact({count: 0});
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -376,6 +414,8 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
         this.server.net_getToken().then((value) => {
             this._originToken = value;
         });
+
+        this.queryTempToken();
     }
 
     protected onDestroy(): void {
@@ -391,9 +431,43 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Method
+    public queryTempToken() {
+        const handler: HttpResponse = (result, content, responseCode) => {
+            if (result && responseCode === 200) {
+                const resp = JSON.parse(content) as QueryResp;
+                if (Gtk.isNullOrEmpty(resp.data)) {
+                    Log4Ts.warn(AuthModuleC, `get an invalid temp token. content: ${content}.`);
+                } else {
+                    Log4Ts.log(AuthModuleC, `get temp token. token: ${resp.data}.`);
+                    this.reportTempToken(resp.data);
+                }
+            } else {
+                Log4Ts.log(AuthModuleC, `receive an invalid response. code: ${responseCode}. content: ${content}.`);
+            }
+        };
+
+        Log4Ts.log(AuthModuleC, `trying to query temp token.`);
+        generalHttpRequest(handler, HttpRequestURL.CobblestoneService,
+            AuthModuleS.GET_MW_TEMP_TOKEN_URI,
+            "",
+            HttpRequestType.Post);
+    }
+
+    public reportTempToken(token: string) {
+        this.server.net_reportTempToken(token);
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
+    public net_refreshToken() {
+        this.queryTempToken();
+    }
+
+    public net_setCurrency(val: number) {
+        this.currency.count = val;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -405,6 +479,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @private
      */
     private static readonly TIME_TOLERATE: number = 1e3 * 10;
+
+    /**
+     * 获取 MW 临时 token Uri.
+     * @type {string}
+     * @private
+     */
+    public static readonly GET_MW_TEMP_TOKEN_URI = "sso/universal/user/v1/get/temp/token";
 
     /**
      * 测试用 P12 端 域名.
@@ -421,6 +502,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @private
      */
     private static readonly STAMINA_LIMIT_URI = "/pge-game/stamina/obtain-in-game";
+
+    /**
+     * 获取 P12 token Uri.
+     * @private
+     */
+    private static readonly GET_P12_TOKEN_URI = "/oauth/gpark";
+
+    /**
+     * 查询货币余额 Uri.
+     */
+    private static readonly GET_CURRENCY_URI = "/user/symbol/balance";
 
     /**
      * 汇报 宠物模拟器排行榜 Uri.
@@ -451,6 +543,45 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @private
      */
     private static readonly QUERY_USER_DRAGON_URI = "/pge-game/dragon-verse-pal/get-user-dragon-pal";
+
+    /**
+     * 测试用 token.
+     * @type {string}
+     * @private
+     */
+    private static readonly TEST_TOKEN = "d42d78c2a78d03a234defda7b34e0f63cc962feb0cdfa5c39409427eaaad85479896b6";
+
+    /**
+     * 测试用 getToken Url.
+     * @private
+     */
+    private static get TEST_GET_P12_TOKEN_URL() {
+        return this.TEST_P12_DOMAIN + this.GET_P12_TOKEN_URI;
+    }
+
+    /**
+     * 发布用 getToken Url.
+     * @private
+     */
+    private static get RELEASE_GET_P12_TOKEN_URL() {
+        return this.RELEASE_P12_DOMAIN + this.GET_P12_TOKEN_URI;
+    }
+
+    /**
+     * 测试用 查询货币余额 Url.
+     * @private
+     */
+    private static get TEST_GET_CURRENCY_URL() {
+        return this.TEST_P12_DOMAIN + this.GET_CURRENCY_URI;
+    }
+
+    /**
+     * 发布用 查询货币余额 Url.
+     * @private
+     */
+    private static get RELEASE_GET_CURRENCY_URL() {
+        return this.RELEASE_P12_DOMAIN + this.GET_CURRENCY_URI;
+    }
 
     /**
      * 测试用 查询 用户 抓根宝 信息 Url.
@@ -582,12 +713,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     /**
      * 玩家体力上限表.
      */
-    public playerStaminaLimitMap: Map<number, number> = new Map();
+    public playerStaminaLimitMap: Map<string, number> = new Map();
 
     /**
      * 玩家体力恢复预期时长表. s
      */
-    public playerStaminaRecoveryMap: Map<number, number> = new Map();
+    public playerStaminaRecoveryMap: Map<string, number> = new Map();
+
+    /**
+     * 用户货币表.
+     */
+    public userCurrencyMap: Map<string, number> = new Map();
 
     /**
      * 用户 PS 上报函数.
@@ -600,6 +736,18 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @type {Map<string, () => void>}
      */
     public userBWRankDataReporter: Map<string, (requestParam: UpdateBattleWorldRankDataReq) => void> = new Map();
+
+    /**
+     * @type {Map<string, string>} key: userId, value: token.
+     * @private
+     */
+    private _tokenMap: Map<string, string> = new Map();
+
+    /**
+     * @type {Map<string, Regulator>} key: userId, value: Regulator.
+     * @private
+     */
+    private _expiredRegulatorMap: Map<string, Regulator> = new Map();
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -638,15 +786,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         super.onExecute(type, ...params);
     }
 
-    protected onPlayerLeft(player: Player): void {
-        super.onPlayerLeft(player);
-
-        mw.setTimeout(() => {
-            this.userPSRankDataReporter.delete(player.userId);
-            this.userBWRankDataReporter.delete(player.userId);
-        }, GameServiceConfig.REPORT_REQUEST_WAIT_TIME * 2);
-    }
-
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
         this.userPSRankDataReporter.set(this.queryUserId(player.playerId), (requestParam) => {
@@ -659,8 +798,24 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
+        this._tokenMap.set(player.userId, null);
+        this._expiredRegulatorMap.set(
+            player.userId,
+            new Regulator(GameServiceConfig.EXPIRED_REFRESH_INTERVAL));
 
         // this.queryRegisterStaminaLimit(player.playerId);
+    }
+
+    protected onPlayerLeft(player: Player): void {
+        super.onPlayerLeft(player);
+
+        this._tokenMap.delete(player.userId);
+        this._expiredRegulatorMap.delete(player.userId);
+
+        mw.setTimeout(() => {
+            this.userPSRankDataReporter.delete(player.userId);
+            this.userBWRankDataReporter.delete(player.userId);
+        }, GameServiceConfig.REPORT_REQUEST_WAIT_TIME * 2);
     }
 
     private static readonly CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY = "CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY";
@@ -782,6 +937,81 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return e.ciphertext.toString(CryptoJS.enc.Base64);
     }
 
+    /**
+     * 获取并注册 P12 token.
+     * @private
+     * @param playerId
+     * @param tempToken
+     * @returns {Promise<[boolean, string]>} [result, reason]
+     */
+    private async getP12Token(playerId: number, tempToken: string) {
+        if (Gtk.isNullOrEmpty(tempToken)) {
+            Log4Ts.warn(AuthModuleS, `temp token of player ${playerId} is invalid.`);
+            return;
+        }
+        const userId = this.queryUserId(playerId);
+        if (Gtk.isNullOrUndefined(userId)) return;
+
+        const requestParam: GetTokenReq = {tempToken};
+
+        const respInJson = await this.correspondHandler<QueryResp<GetTokenRespData>>(
+            requestParam,
+            AuthModuleS.RELEASE_GET_P12_TOKEN_URL,
+            AuthModuleS.TEST_GET_P12_TOKEN_URL,
+            false,
+        );
+
+        const success = respInJson.message === "success";
+        if (!success) {
+            Log4Ts.warn(AuthModuleS, `report temp token failed. result: ${respInJson.message}`);
+            return;
+        }
+
+        if (Gtk.isNullOrEmpty(respInJson.data?.accessToken ?? undefined)) {
+            Log4Ts.error(AuthModuleS, `get token failed. ${JSON.stringify(respInJson.message)}`);
+            return;
+        } else if (this._tokenMap.has(userId)) {
+            this._tokenMap.set(userId, respInJson.data?.accessToken);
+            this.onRefreshToken(userId);
+            return;
+        } else {
+            logWPlayerNotExist(playerId);
+            return;
+        }
+    }
+
+    // private async queryCurrency(userId: string) {
+    //     let token = this._tokenMap.get(userId);
+    //     if (Gtk.isNullOrUndefined(token)) {
+    //         logEUserTokenInvalid(userId);
+    //         if (GameServiceConfig.isRelease || GameServiceConfig.isBeta) {
+    //             return;
+    //         } else {
+    //             Log4Ts.log(AuthModuleS, `use test token.`);
+    //             token = AuthModuleS.TEST_TOKEN;
+    //         }
+    //     }
+    //
+    //     const requestParam: QueryCurrencyReq = {
+    //         symbol: "mbox",
+    //     };
+    //
+    //     const respInJson = await this.correspondHandler<QueryResp<QueryCurrencyResq>>(
+    //         requestParam,
+    //         AuthModuleS.RELEASE_GET_CURRENCY_URL,
+    //         AuthModuleS.TEST_GET_CURRENCY_URL,
+    //     );
+    //
+    //     if (respInJson.code !== 200) {
+    //         Log4Ts.error(AuthModuleS, `query currency failed. ${JSON.stringify(respInJson)}`);
+    //         if (respInJson.code === 401) this.onTokenExpired(userId);
+    //         return;
+    //     }
+    //
+    //     let count = respInJson.data?.balance ?? 0;
+    //     this.setCurrency(userId, count);
+    // }
+
     public async queryUserDragonBall(playerId: number): Promise<DragonBallRespData> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
@@ -863,18 +1093,19 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.TEST_STAMINA_LIMIT_URL,
         );
 
-        if (Gtk.isNullOrUndefined(respInJson?.data?.stamina))
+        if (Gtk.isNullOrUndefined(respInJson?.data?.stamina)) {
             Log4Ts.log(
                 AuthModuleS,
                 `invalid value when query stamina limit for user ${userId}.`,
                 `reason: ${JSON.stringify(respInJson)}`,
             );
-        else {
-            this.playerStaminaLimitMap.set(playerId, respInJson.data.stamina);
+        } else {
+            this.playerStaminaLimitMap.set(userId, respInJson.data.stamina);
         }
+
         if (Gtk.isNullOrUndefined(respInJson?.data?.gameStaminaRecoverySec))
             Log4Ts.log(AuthModuleS, `invalid value when query recovery time limit for user ${userId}.`);
-        else this.playerStaminaRecoveryMap.set(playerId, respInJson.data.gameStaminaRecoverySec);
+        else this.playerStaminaRecoveryMap.set(userId, respInJson.data.gameStaminaRecoverySec);
 
         let data = this.getPlayerData(playerId);
         if (
@@ -959,7 +1190,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const userId = Player.getPlayer(playerId)?.userId ?? undefined;
         if (Gtk.isNullOrEmpty(userId)) {
-            logEPlayerNotExist(playerId);
+            logWPlayerNotExist(playerId);
             return undefined;
         }
         return userId;
@@ -975,10 +1206,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         )?.sceneId ?? "INVALID_SCENE_ID");
     }
 
-    private async correspondHandler<D = object>(reqParam: object, releaseUrl: string, testUrl: string) {
-        const encryptBody = {
-            encryptData: this.getSecret(JSON.stringify(reqParam)),
-        };
+    private async correspondHandler<D = object>(reqParam: object, releaseUrl: string, testUrl: string, useEncrypt: boolean = true) {
+        const body = useEncrypt ?
+            {encryptData: this.getSecret(JSON.stringify(reqParam))} :
+            reqParam;
 
         const resp = await fetch(
             `${GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl ? releaseUrl : testUrl}`,
@@ -987,7 +1218,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
                 },
-                body: JSON.stringify(encryptBody),
+                body: JSON.stringify(body),
             },
         );
 
@@ -1012,13 +1243,29 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return this.queryRegisterStaminaLimit(playerId);
     }
 
+    private setCurrency(userId: string, count: number) {
+        this.userCurrencyMap.set(userId, count);
+        this.getClient(Player.getPlayer(userId))?.net_setCurrency(count);
+    }
+
+    private onRefreshToken(userId: string) {
+        // this.queryCurrency(userId);
+    }
+
+    private onTokenExpired(userId: string) {
+        Log4Ts.warn(AuthModuleS, `token expired. refreshing... userId: ${userId}`);
+        this._tokenMap.set(userId, null);
+        if (this._expiredRegulatorMap.get(userId).request())
+            this.getClient(Player.getPlayer(userId))?.net_refreshToken();
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
-    public net_getToken(): Promise<string> {
+    public async net_getToken(): Promise<string> {
         const playerId = this.currentPlayerId;
         const uid = this.currentPlayer.userId;
-        return Promise.resolve(`token-${playerId}-${uid}`);
+        return `token-${playerId}-${uid}`;
     }
 
     @noReply()
@@ -1027,6 +1274,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.currentData.holdPlayerId = this.currentPlayerId;
         this.currentData.holdNickName = nickName;
         this.currentData.save(false);
+    }
+
+    @noReply()
+    public net_reportTempToken(token: string) {
+        const currentPlayerId = this.currentPlayerId;
+        this.getP12Token(currentPlayerId, token);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -1074,6 +1327,10 @@ function logState(
     logFunc(announcer, ...result);
 }
 
-function logEPlayerNotExist(playerId: number) {
-    Log4Ts.error(AuthModuleS, `can't find player ${playerId}.`);
+function logWPlayerNotExist(playerId: number) {
+    Log4Ts.warn(AuthModuleS, `can't find player ${playerId}.`);
+}
+
+function logEUserTokenInvalid(userId: string): void {
+    Log4Ts.error(AuthModuleS, `user token invalid. id: ${userId}`);
 }
