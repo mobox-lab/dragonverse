@@ -21,7 +21,7 @@ addGMCommand(
         ModuleService.getModule(EnergyModuleS).addEnergy(player.playerId, v);
     },
     undefined,
-    "Energy"
+    "Energy",
 );
 
 export default class PSEnergyModuleData extends mwext.Subdata {
@@ -96,9 +96,9 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, PSEnergyModuleDa
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    public viewEnergy: { data: number } = createYoact({ data: 0 });
+    public viewEnergy: { data: number } = createYoact({data: 0});
 
-    public viewEnergyLimit: { data: number } = createYoact({ data: 0 });
+    public viewEnergyLimit: { data: number } = createYoact({data: 0});
 
     private _requestRegulator = new Regulator(1e3);
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -208,7 +208,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
     //#region Member
     private _eventListeners: EventListener[] = [];
 
-    private _intervalHolder: Map<number, number> = new Map();
+    private _intervalHolder: Map<string, number> = new Map();
 
     private _authModuleS: AuthModuleS;
 
@@ -256,33 +256,33 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-        this.initPlayerEnergy(player.playerId);
+        this.initPlayerEnergy(player);
     }
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
-        clearTimeout(this._intervalHolder.get(player.playerId));
-        this._intervalHolder.delete(player.playerId);
+        clearTimeout(this._intervalHolder.get(player.userId));
+        this._intervalHolder.delete(player.userId);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
 
-    private initPlayerEnergy(playerId: number) {
-        const d = this.getPlayerData(playerId);
+    private initPlayerEnergy(player: mw.Player) {
+        const d = this.getPlayerData(player);
         if (Gtk.isNullOrUndefined(d)) return;
         let refreshInterval =
             GameServiceConfig.isRelease || GameServiceConfig.isBeta
                 ? GameServiceConfig.ENERGY_RECOVERY_INTERVAL_MS
                 : 5 * GtkTypes.Interval.PerSec;
-        this.authModuleS.requestRefreshStaminaLimit(playerId).then(() => {
+        this.authModuleS.requestRefreshStaminaLimit(player.playerId).then(() => {
             let autoRecoveryHandler = () => {
                 const now = Date.now();
-                let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
+                let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
                 let changed = d.tryUpdateLimit(limit);
 
-                let recoveryDuration = this.authModuleS.playerStaminaRecoveryMap.get(playerId) ?? 0;
+                let recoveryDuration = this.authModuleS.playerStaminaRecoveryMap.get(player.userId) ?? 0;
                 if (recoveryDuration > 0) {
                     const duration = now - d.lastRecoveryTime;
                     let delay: number = 0;
@@ -291,9 +291,9 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
                         d.energy = Math.min(
                             limit,
                             d.energy +
-                                (limit / recoveryDuration / 1e3) *
-                                    refreshInterval *
-                                    Math.max(Math.floor(duration / refreshInterval), 0)
+                            (limit / recoveryDuration / 1e3) *
+                            refreshInterval *
+                            Math.max(Math.floor(duration / refreshInterval), 0),
                         );
 
                         delay = duration % refreshInterval;
@@ -301,21 +301,21 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
                         Log4Ts.log(EnergyModuleS, `add energy done. current is ${d.energy}`);
                         changed = true;
                     }
-                    if (this._intervalHolder.has(playerId)) mw.clearTimeout(this._intervalHolder.get(playerId));
-                    this._intervalHolder.set(playerId, mw.setTimeout(autoRecoveryHandler, refreshInterval - delay));
+                    if (this._intervalHolder.has(player.userId)) mw.clearTimeout(this._intervalHolder.get(player.userId));
+                    this._intervalHolder.set(player.userId, mw.setTimeout(autoRecoveryHandler, refreshInterval - delay));
                 }
 
                 if (changed) {
                     d.save(false);
-                    this.syncEnergyToClient(playerId, d.energy, limit);
+                    this.syncEnergyToClient(player.playerId, d.energy, limit);
                 }
             };
 
             if ((d.restitution ?? 0) > 0) {
-                let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
+                let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
                 d.energy = Math.min(d.energy + d.restitution, limit);
                 d.restitution = 0;
-                this.syncEnergyToClient(playerId, d.energy);
+                this.syncEnergyToClient(player.playerId, d.energy);
             }
             autoRecoveryHandler();
         });
@@ -336,8 +336,10 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
         firstTime = firstTime ?? Date.now();
         const d = this.getPlayerData(playerId);
         if (!d) return;
+        const player = mw.Player.getPlayer(playerId);
+        if (!player) return;
 
-        let needRefresh = d.energy >= (this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0);
+        let needRefresh = d.energy >= (this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0);
         if (d.consume(cost) > 0 && needRefresh) d.lastRecoveryTime = firstTime;
 
         d.save(false);
@@ -363,11 +365,12 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
     //#region Net Method
     @mwext.Decorator.noReply()
     public net_requestRefreshStaminaLimit() {
-        let playerId = this.currentPlayerId;
+        let player = this.currentPlayer;
         this.authModuleS.requestRefreshStaminaLimit(this.currentPlayerId).then(() => {
-            let limit = this.authModuleS.playerStaminaLimitMap.get(playerId) ?? 0;
-            let d = this.getPlayerData(playerId);
-            if (d?.tryUpdateLimit(limit) ?? false) this.syncEnergyToClient(playerId, d.energy, limit);
+            let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
+            let d = this.getPlayerData(player);
+            if (d?.tryUpdateLimit(limit) ?? false)
+                this.syncEnergyToClient(player.playerId, d.energy, limit);
         });
     }
 
