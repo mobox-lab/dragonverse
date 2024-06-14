@@ -1053,7 +1053,7 @@ export namespace GlobalData {
         /**附魔 词条图标 对勾/锁  */
         public static enchantSelectIconGuid: string[] = ["295627", "357130"];
         /**附魔按钮 正常、stop Guid */
-        public static enchantBtnGuid: string[] = ["174844", "174843"];
+        public static enchantBtnGuid: string[] = ["359019", "174843"];
         /**附魔特效时长 */
         public static effectDuration: number = 1;
 
