@@ -43,7 +43,6 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.initEvent();
         this.trainChange();
         this.devInit();
-        this.enchantBuffInit();
     }
 
     private initData() {
@@ -79,14 +78,6 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
             this.canUpdate = canUpdate;
         });
 
-    }
-
-    /**词条buff初始化 */
-    private enchantBuffInit() {
-        let keys = this.data.CurFollowPets;
-        for (let id = 0; id < keys.length; id++) {
-            EnchantBuff.equipUnPet(Player.localPlayer.playerId, keys[id], true);
-        }
     }
 
     private calcBuff() {

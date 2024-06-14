@@ -7,6 +7,8 @@ import { RewardTipsManager } from "../UI/RewardTips";
 import { BagTool } from "./BagTool";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import Gtk from "../../util/GToolkit";
+import { PlayerModuleS } from "../Player/PlayerModuleS";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 type petBuff = {
     /**伤害加成 */
@@ -79,8 +81,7 @@ export class EnchantBuff {
      */
     public static equipUnPet(playerId: number, key: number, isEquip: boolean) {
         const petBuff = Gtk.tryGet(this.playerPetBuff, playerId, () => new Map<number, petBuff>());
-
-        if (!isEquip) {
+				if (!isEquip) {
             // 卸载
             if (!petBuff.has(key)) return;
 
@@ -103,9 +104,7 @@ export class EnchantBuff {
                 randomDiamond: false,
                 bestFriend: 0,
             };
-            let petData = SystemUtil.isClient() ?
-                DataCenterC.getData(PetBagModuleData).bagItemsByKey(key) :
-                DataCenterS.getData(playerId, PetBagModuleData).bagItemsByKey(key);
+            let petData = DataCenterS.getData(playerId, PetBagModuleData).bagItemsByKey(key);
             if (!petData || !petData.p.b || petData.p.b.length == 0) return;
 
             let curBuff = stringToBuff(BagTool.getStr(petData));
@@ -163,7 +162,7 @@ export class EnchantBuff {
             }
             if (item.id == specialEnchantId.id_45) {
                 if (!buff.randomDiamond) buff.randomDiamond = true;
-                this.randomDiamond(true);
+                this.randomDiamond(true, playerId);
             }
             if (item.id == specialEnchantId.id_46) {
                 let atk = 0;
@@ -262,32 +261,45 @@ export class EnchantBuff {
         }
         if (buff.randomDiamond) {
             buff.randomDiamond = false;
-            this.randomDiamond(false);
+            this.randomDiamond(false, playerId);
         }
         if (buff.bestFriend) buff.bestFriend = 0;
     }
 
     /**随机加钻石 */
-    private static randomDiamond(isOpen: boolean) {
-
-        if (!isOpen) {
-            if (this.interval) {
-                TimeUtil.clearInterval(this.interval);
-                this.interval = null;
-            }
-            return;
-        }
+    private static randomDiamond(isOpen: boolean, playerId: number) {
+			Log4Ts.log(EnchantBuff, "randomDiamond isOpen:" + isOpen);
+      if (!isOpen) {
         if (this.interval) {
-            TimeUtil.clearInterval(this.interval);
-            this.interval = null;
+          TimeUtil.clearInterval(this.interval);
+          this.interval = null;
+          Log4Ts.log(EnchantBuff, "randomDiamond interval clear");
         }
-        const data = GlobalData.Enchant;
-        let time = MathUtil.randomInt(data.randomDiamondInterval[0], data.randomDiamondInterval[1] + 1);
+        return;
+      }
+      if (this.interval) {
+        TimeUtil.clearInterval(this.interval);
+        this.interval = null;
+      }
+      const data = GlobalData.Enchant;
+      let time = MathUtil.randomInt(
+        data.randomDiamondInterval[0],
+        data.randomDiamondInterval[1] + 1
+      );
 
-        this.interval = TimeUtil.setInterval(async () => {
-            const count = await ModuleService.getModule(PlayerModuleC).randomDiamond();
-            RewardTipsManager.getInstance().getUI(GlobalEnum.CoinType.Diamond, count);
-        }, time);
+      this.interval = TimeUtil.setInterval(async () => {
+        const count = await ModuleService.getModule(
+          PlayerModuleS
+        ).randomDiamond(playerId);
+        Log4Ts.log(EnchantBuff, "randomDiamond count:" + count);
+        const player = Player.getPlayer(playerId);
+        mw.Event.dispatchToClient(
+          player,
+          RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI,
+          GlobalEnum.CoinType.Diamond,
+          count
+        );
+      }, time);
     }
 
     /**伤害加成 */

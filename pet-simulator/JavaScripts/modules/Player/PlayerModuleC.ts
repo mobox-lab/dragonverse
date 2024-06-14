@@ -440,11 +440,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         }
     }
 
-    /**增加钻石 */
-    public async randomDiamond() {
-        return await this.server.net_randomDiamond();
-    }
-
     /**判断钻石数量是否足够 */
     public isDiamondEnough(value: number): boolean {
         return this.data.diamond >= value;

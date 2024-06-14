@@ -304,9 +304,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 			return this.currentData.reduceGold(cfg.Gold, goldType);;
 		}
 
-    public async net_randomDiamond(): Promise<number> {
+    public async randomDiamond(playerId: number): Promise<number> {
 			let count = MathUtil.randomInt(GlobalData.Enchant.randomDiamondNum[0], GlobalData.Enchant.randomDiamondNum[1] + 1);
-			await this.addDiamond(this.currentPlayerId, count);
+			const data = this.getPlayerData(playerId);
+			await data.addDiamond(count);
 			return count
 		}
 
