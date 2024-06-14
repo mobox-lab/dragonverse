@@ -115,6 +115,7 @@ export default class ResourceScript extends mw.Script {
         this._cfgIdInServer = cfgId;
 
         this.isCrit.clear();
+        this.lastDamage.clear();
     }
 
     @RemoteFunction(mw.Server)
