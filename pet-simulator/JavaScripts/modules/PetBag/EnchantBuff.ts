@@ -75,44 +75,54 @@ export class EnchantBuff {
     private static playerPetBuff: Map<number, Map<number, petBuff>> = new Map();
     private static interval: any;
 
-    /**装备 卸载宠物
-     * @param key 宠物key
+    /**装备 卸载宠物时计算 buff
+     * @param keys 当前跟随的宠物keys
      * @param isEquip 是否装备
      */
-    public static equipUnPet(playerId: number, key: number, isEquip: boolean) {
-        const petBuff = Gtk.tryGet(this.playerPetBuff, playerId, () => new Map<number, petBuff>());
-				if (!isEquip) {
-            // 卸载
-            if (!petBuff.has(key)) return;
-
-            let buff = petBuff.get(key);
-            this.delBuff(playerId, key, buff);
-            petBuff.delete(key);
-
-        } else {
-            // 装备
-            let buff: petBuff = {
-                damageAdd: 0,
-                goldAdd: 0,
-                diamondAdd: 0,
-                critAdd: 0,
-                moveSpeedAdd: 0,
-                boxDamageAdd: 0,
-                fourGoldAdd: 0,
-                rateGoldAdd: 0,
-                autoCollect: false,
-                randomDiamond: false,
-                bestFriend: 0,
-            };
-            let petData = DataCenterS.getData(playerId, PetBagModuleData).bagItemsByKey(key);
-            if (!petData || !petData.p.b || petData.p.b.length == 0) return;
-
-            let curBuff = stringToBuff(BagTool.getStr(petData));
-            curBuff.forEach(element => {
-                this.addBuff(playerId, key, buff, { id: element.id, level: element.level });
+    public static equipUnPet(playerId: number, keys: number[], isEquip: boolean) {
+        const petBuff = Gtk.tryGet(
+          this.playerPetBuff,
+          playerId,
+          () => new Map<number, petBuff>()
+        );
+        Log4Ts.log(
+          EnchantBuff,
+          "petBuff:" + JSON.stringify(Array.from(petBuff))
+        );
+				this.clearPlayerBuff(playerId);
+				// 计算当前buff
+				for (const key of keys) {
+          let buff: petBuff = {
+            damageAdd: 0,
+            goldAdd: 0,
+            diamondAdd: 0,
+            critAdd: 0,
+            moveSpeedAdd: 0,
+            boxDamageAdd: 0,
+            fourGoldAdd: 0,
+            rateGoldAdd: 0,
+            autoCollect: false,
+            randomDiamond: false,
+            bestFriend: 0,
+          };
+          let petData = DataCenterS.getData(
+            playerId,
+            PetBagModuleData
+          ).bagItemsByKey(key);
+          if (!petData || !petData.p.b || petData.p.b.length == 0) continue;
+          let curBuff = stringToBuff(BagTool.getStr(petData));
+          curBuff.forEach((element) => {
+            this.addBuff(playerId, key, buff, {
+              id: element.id,
+              level: element.level,
             });
-            petBuff.set(key, buff);
+          });
+          petBuff.set(key, buff);
         }
+        Log4Ts.log(
+          EnchantBuff,
+          "after compute petBuff:" + JSON.stringify(Array.from(petBuff))
+        );
     }
 
     /**获取宠物词条buff */
@@ -135,7 +145,10 @@ export class EnchantBuff {
             }));
     }
 
-    public static clearPlayer(playerId: number) {
+    public static clearPlayerBuff(playerId: number) {
+				Log4Ts.log(EnchantBuff, "clearPlayerBuff! ");
+				this.randomDiamond(false, playerId); 
+				GlobalData.SceneResource.critWeightMap.set(playerId, GlobalData.SceneResource.critWeightUndef);
         this.playerPetBuff.delete(playerId);
     }
 
@@ -241,7 +254,7 @@ export class EnchantBuff {
         return atk / atks.length * 1.5;
     }
 
-    /**移除词条buff */
+    /**移除词条buff 准备干掉*/
     private static delBuff(playerId: number, key: number, buff: petBuff) {
         if (buff.damageAdd) buff.damageAdd = 0;
         if (buff.goldAdd) buff.goldAdd = 0;

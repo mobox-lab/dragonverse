@@ -186,7 +186,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
             GlobalData.SceneResource.clearPlayer(player.playerId);
             GlobalData.Buff.clearPlayer(player.playerId);
-            EnchantBuff.clearPlayer(player.playerId);
+            EnchantBuff.clearPlayerBuff(player.playerId);
             Enchant.clearPlayer(player.playerId);
             GlobalData.LevelUp.clearPlayer(player.playerId);
         } catch (error) {
