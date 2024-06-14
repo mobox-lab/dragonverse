@@ -268,7 +268,7 @@ class DropInServer extends DropItem {
                     pms.addDiamond(this.owner, this.value * GlobalData.LevelUp.moreDiamond(this.owner));
                     break;
             }
-            Log4Ts.log(DollMachineModuleS, `player ${this.owner} get ${this.value} ${this.type}`);
+            // Log4Ts.log(DropInServer, `player ${this.owner} get ${this.value} ${this.type}`);
             return true;
         }
         return false;
