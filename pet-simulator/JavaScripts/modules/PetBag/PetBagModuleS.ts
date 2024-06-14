@@ -670,21 +670,18 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
     }
 
-    /** 第二世界 —— 宠物附魔 */
-    public async net_petEnchant(selectedEnchantIds: number[], selectPetKey: number | null): Promise<EnchantPetState> {
-        const bagData = this.currentData;
-        if (!selectPetKey) return EnchantPetState.NO_SELECTED_PET;
-        const data = bagData.bagItemsByKey(selectPetKey);
-        if (!data || !data.p) return EnchantPetState.NO_SELECTED_PET;
-        const isHasEnchant = data.p?.b && data.p.b?.length > 0; //是否有附魔
-        const isSameEnchant = this.isSameEnchant(selectedEnchantIds, data.p.b);
-        ; // TODO: 是否是同一种附魔 改版之后应该得删掉
-        if (isHasEnchant) {
-            if (isSameEnchant) return EnchantPetState.IS_SAME_ENCHANT;
-            return EnchantPetState.IS_HAS_ENCHANT;
-        }
-        return EnchantPetState.HAS_NO_ENCHANT;
-    }
+    /** 第二世界 —— 宠物附魔 */ 
+    public async net_petEnchant(selectPetKey: number | null): Promise<EnchantPetState> {
+				const bagData = this.currentData;
+				if (!selectPetKey) return EnchantPetState.NO_SELECTED_PET;
+				const data = bagData.bagItemsByKey(selectPetKey);
+				if (!data || !data.p) return EnchantPetState.NO_SELECTED_PET;
+				const isHasEnchant = Boolean(data.p?.b?.length); //是否有附魔
+				const isAllEnchant = data.p?.b?.length && data.p.b?.length >= 2; //是否全部附魔
+				if (isAllEnchant) return EnchantPetState.IS_ALL_ENCHANT;
+				if (isHasEnchant) return EnchantPetState.IS_HAS_ENCHANT;
+				return EnchantPetState.HAS_NO_ENCHANT;
+		}
 
     /**获取当前选中宠物所需钻石花费 */
     public getEnchantCost(selectPetKey: number | null) {

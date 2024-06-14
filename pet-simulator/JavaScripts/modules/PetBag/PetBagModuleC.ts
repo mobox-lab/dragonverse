@@ -346,15 +346,11 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     /****************附魔***********/
     /**附魔成功 */
     private enchantSuccess(key: number, ids: number[]) {
-				if (!ids?.length) return;
-				// 成就 - 附魔成功数
-				this.achievementModuleC.onExecuteAchievementAction.call(
-					GlobalEnum.AchievementType.PetEnchantNum,
-					1
-				);
-				this.bagUI.updateEnchantItemsUI(key); // 刷新背包UI
-				this.enchantUI.updatePetPanelUI(); // 刷新附魔面板UI
-
+        if (!ids?.length) return;
+        // 成就 - 附魔成功数
+        this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.PetEnchantNum, 1);
+        this.bagUI.updateEnchantItemsUI(key); // 刷新背包UI
+        this.enchantUI.updatePetPanelUI(); // 刷新附魔面板UI
     }
 
     async buyEgg(cfgId: number): Promise<number | null> {
@@ -371,8 +367,9 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         }
     }
 
-		public async getPetEnchantState(selectedEnchantIds: number[], selectPetKey: number | null): Promise<EnchantPetState> {
-				return await this.server.net_petEnchant(selectedEnchantIds, selectPetKey);
+
+    public async getPetEnchantState(selectPetKey: number | null): Promise<EnchantPetState> {
+				return await this.server.net_petEnchant(selectPetKey);
 		}
 
 		public async enchant(selectPetKey: number | null, selectEnchantIds: number | null): Promise<EnchantPetState>{

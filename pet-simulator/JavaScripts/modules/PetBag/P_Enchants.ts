@@ -20,15 +20,16 @@ import Gtk from '../../util/GToolkit';
 import { IEnchantsElement } from '../../config/Enchants';
 import Log4Ts from '../../depend/log4ts/Log4Ts';
 
+
 export enum EnchantPetState {
-    IS_SAME_ENCHANT = 'is_same_enchant',
-    IS_HAS_ENCHANT = 'is_has_enchant',
-    HAS_NO_ENCHANT = 'has_no_enchant',
-    NO_SELECTED_PET = 'no_selected_pet',
-		// status
-    NO_ENOUGH_DIAMOND = 'no_enough_diamond',
-		SUCCESS = 'is_ok',
-    FAILED = 'is_failed',
+	IS_ALL_ENCHANT = "is_all_enchant", // 已经全部附魔 会重置其中一条
+	IS_HAS_ENCHANT = "is_has_enchant",
+	HAS_NO_ENCHANT = "has_no_enchant",
+	NO_SELECTED_PET = "no_selected_pet",
+	// status
+	NO_ENOUGH_DIAMOND = "no_enough_diamond",
+	SUCCESS = "is_ok",
+	FAILED = "is_failed",
 }
 export class P_Enchants extends EnchantsPanel_Generate {
     /**是否第一次打开 */
@@ -352,63 +353,42 @@ export class P_Enchants extends EnchantsPanel_Generate {
     /**点击附魔按钮 */
     private async onClickEnchant() {
         if (this.isEnchanting) {
-          //正在附魔 不允许点击
-          oTraceError("正在附魔中");
-          return;
+            //正在附魔 不允许点击
+            oTraceError("正在附魔中");
+            return;
         }
-        const selectedEnchantIds: number[] = this.getSelectEnchant();
         const petBagMC = ModuleService.getModule(PetBagModuleC);
-        const enchantPetState = await petBagMC.getPetEnchantState(
-          selectedEnchantIds,
-          this.selectPetKey
-        );
+        const enchantPetState = await petBagMC.getPetEnchantState(this.selectPetKey);
 
         const startEnchantFn = async (isOK: boolean) => {
-						if (!isOK) return;
-						const res = await petBagMC.enchant(
-								this.selectPetKey,
-								this.selectEnchantId
-						);
-						if (res === EnchantPetState.NO_ENOUGH_DIAMOND) {
-								MessageBox.showOneBtnMessage(
-										GameConfig.Language.Text_Fuse_UI_3.Value,
-										() => {
-												super.show();
-										}
-								);
-								return;
-						}
-						if (res === EnchantPetState.FAILED) {
-								console.error("附魔出错");
-								return;
-						}
-						this.startEnchant(); // 特效等
+            if (!isOK) return;
+            const res = await petBagMC.enchant(this.selectPetKey, this.selectEnchantId);
+            if (res === EnchantPetState.NO_ENOUGH_DIAMOND) {
+                MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
+                    super.show();
+                });
+                return;
+            }
+            if (res === EnchantPetState.FAILED) {
+                console.error("附魔出错");
+                return;
+            }
+            this.startEnchant(); // 特效等
         };
-
         switch (enchantPetState) {
-          case EnchantPetState.IS_SAME_ENCHANT: {
-            MessageBox.showOneBtnMessage(
-              GameConfig.Language.Tips_Enchants_3.Value
-            );
-            break;
-          }
-          case EnchantPetState.IS_HAS_ENCHANT: {
-            MessageBox.showTwoBtnMessage(
-              GameConfig.Language.Tips_Enchants_2.Value,
-              startEnchantFn
-            );
-            break;
-          }
-          default: {
-            MessageBox.showTwoBtnMessage(
-              GameConfig.Language.Tips_Enchants_1.Value,
-              startEnchantFn
-            );
-            break;
-          }
+            case EnchantPetState.IS_ALL_ENCHANT: {
+                MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_2.Value, startEnchantFn);
+                break;
+            }
+            case EnchantPetState.HAS_NO_ENCHANT:
+            case EnchantPetState.IS_HAS_ENCHANT: {
+                MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_1.Value, startEnchantFn);
+                break;
+            }
+            default:
+                break;
         }
     }
-
     /**获取当前选择的附魔 */
     private getSelectEnchant(): number[] {
         let result: number[] = [];
