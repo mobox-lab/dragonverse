@@ -113,6 +113,8 @@ export default class ResourceScript extends mw.Script {
         this.onDead.clear();
 
         this._cfgIdInServer = cfgId;
+
+        this.lastDamage.clear();
     }
 
     @RemoteFunction(mw.Server)
@@ -262,8 +264,6 @@ export default class ResourceScript extends mw.Script {
     private _cfgId: number = 0;
     private cfg: ISceneUnitElement = null;
 
-    /**是否暴击 */
-    private isCrit: Map<number, boolean> = new Map();
     /**上一次伤害 */
     private lastDamage: Map<number, number> = new Map();
     /**金币砖石奖励 */
