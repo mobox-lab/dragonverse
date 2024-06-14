@@ -813,7 +813,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         );
         if (!enchantIds?.length) return EnchantPetState.FAILED;
 
-        data.addEnchant(selectPetKey, enchantIds);
+        data.addEnchant(selectPetKey, enchantIds, playerId);
 
         this.taskMS.strengthen(
           this.currentPlayer,
@@ -860,7 +860,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 				data.bagItemsByKey(selectPetKey).p.b
 			);
 
-			data.addEnchant(selectPetKey, enchantIds);
+			data.addEnchant(selectPetKey, enchantIds, playerId);
 
 			const newIds = this.getNewEnchantIds(prePetEnchantIds, enchantIds);
 			Log4Ts.log(PetBagModuleS, 'gm_enchant enchantNewIds:' +  newIds);

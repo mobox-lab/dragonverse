@@ -127,22 +127,27 @@ export class EnchantBuff {
 
     /**获取宠物词条buff */
     public static getPetBuff(playerId: number, key: number): petBuff {
-        const petBuff = Gtk.tryGet(this.playerPetBuff, playerId, () => new Map());
-        return Gtk.tryGet(petBuff,
-            key,
-            () => ({
-                damageAdd: 0,
-                goldAdd: 0,
-                diamondAdd: 0,
-                critAdd: 0,
-                moveSpeedAdd: 0,
-                boxDamageAdd: 0,
-                fourGoldAdd: 0,
-                rateGoldAdd: 0,
-                autoCollect: false,
-                randomDiamond: false,
-                bestFriend: 0,
-            }));
+			const petBuff = Gtk.tryGet(this.playerPetBuff, playerId, () => new Map());
+      Log4Ts.log(
+        EnchantBuff,
+        "getPetBuff key:" +
+          key +
+          " petBuff:" +
+          JSON.stringify(Array.from(petBuff)) 
+      );
+      return Gtk.tryGet(petBuff, key, () => ({
+        damageAdd: 0,
+        goldAdd: 0,
+        diamondAdd: 0,
+        critAdd: 0,
+        moveSpeedAdd: 0,
+        boxDamageAdd: 0,
+        fourGoldAdd: 0,
+        rateGoldAdd: 0,
+        autoCollect: false,
+        randomDiamond: false,
+        bestFriend: 0,
+      }));
     }
 
     public static clearPlayerBuff(playerId: number) {

@@ -767,13 +767,17 @@ export default class ResourceScript extends mw.Script {
         }
 
         let temp = utils.GetRandomNum(0, 10) % 2 == 0 ? 1 : -1;
-
+				const petBuff = EnchantBuff.getPetBuff(playerId, key);
+        Log4Ts.error(
+          ResourceScript,
+          "getRewardByAttack petKey:" + key + " petBuff:" + petBuff
+        );
         this.cfg.Type.forEach((item, index) => {
             if (item != 2) {
                 let temp2 = this.cfg.WaveValue[index] + Math.log(attack);
                 let random = utils.GetRandomNum(0, temp2);
                 if (this.rate == 1) {
-                    const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
+                    const goldBuff = 1 + petBuff.goldAdd / 100;
                     const rewardGold =
                         (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
                             random * temp) *
@@ -792,8 +796,8 @@ export default class ResourceScript extends mw.Script {
                         `random:${random * temp}`,
                     );
                 } else {
-                    const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
-                    const rateGoldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).rateGoldAdd / 100;
+                    const goldBuff = 1 + petBuff.goldAdd / 100;
+                    const rateGoldBuff = 1 + petBuff.rateGoldAdd / 100;
                     const rewardGold =
                         (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
                             random * temp) *
@@ -818,7 +822,7 @@ export default class ResourceScript extends mw.Script {
 
                 this.rewardGold.set(playerId, Number(this.getRewardGold(playerId).toFixed(1)));
             } else {
-                const diamondBuff = (1 + EnchantBuff.getPetBuff(playerId, key).diamondAdd / 100); // 乘算
+                const diamondBuff = (1 + petBuff.diamondAdd / 100); // 乘算
                 const diamondReward = this.cfg.DiamondReward * this.rate * diamondBuff;
                 Log4Ts.log(ResourceScript,
                     `finalRewardDiamond:${diamondReward}`,
@@ -829,8 +833,8 @@ export default class ResourceScript extends mw.Script {
             }
         });
         if (this.resourceType == GlobalEnum.DestructorType.Gold4) {
-            this.rewardGold.set(playerId, this.getRewardGold(playerId) * (1 + EnchantBuff.getPetBuff(playerId, key).fourGoldAdd / 100));
-            this.rewardGem.set(playerId, this.getRewardGem(playerId) * (1 + EnchantBuff.getPetBuff(playerId, key).fourGoldAdd / 100));
+            this.rewardGold.set(playerId, this.getRewardGold(playerId) * (1 + petBuff.fourGoldAdd / 100));
+            this.rewardGem.set(playerId, this.getRewardGem(playerId) * (1 + petBuff.fourGoldAdd / 100));
         }
     }
 
@@ -946,32 +950,43 @@ export default class ResourceScript extends mw.Script {
 export function calDamage(playerId: number,
     key: number,
     isBigBox: boolean): number {
-    //在存档里是下标从 0 开始
-    let level = DataCenterS
-        .getData(playerId, PetSimulatorPlayerModuleData)
-        .getLevelData(2);
-    //在表里是下标从 1 开始
-    let info = GameConfig.Upgrade.getElement(3);
-    let upgrade = info.Upgradenum[level - 1];
-    if (upgrade == null) upgrade = 0;
-    upgrade += 1;
+      //在存档里是下标从 0 开始
+      let level = DataCenterS.getData(
+        playerId,
+        PetSimulatorPlayerModuleData
+      ).getLevelData(2);
+      //在表里是下标从 1 开始
+      let info = GameConfig.Upgrade.getElement(3);
+      let upgrade = info.Upgradenum[level - 1];
+      if (upgrade == null) upgrade = 0;
+      upgrade += 1;
 
-    let petData = ModuleService.getModule(PetBagModuleS).getPet(playerId, key);
-    if (!petData) {
-        Log4Ts.error(ResourceScript, `pet not exist. playerId:${playerId}, key:${key}`);
+      let petData = ModuleService.getModule(PetBagModuleS).getPet(
+        playerId,
+        key
+      );
+      if (!petData) {
+        Log4Ts.error(
+          ResourceScript,
+          `pet not exist. playerId:${playerId}, key:${key}`
+        );
         return 0;
+      }
+      const petBuff = EnchantBuff.getPetBuff(playerId, key);
+      let damage =
+        petData.p.a *
+        GlobalData.LevelUp.petDamage(Player.localPlayer.playerId) *
+        upgrade *
+        (1 + petBuff.damageAdd / 100);
+
+      if (isNaN(damage)) return 0;
+
+      damage *=
+        GlobalData.Buff.damageBuff(playerId) *
+        (1 + (isBigBox ? petBuff.boxDamageAdd / 100 : 0));
+
+      Log4Ts.error(
+        ResourceScript,
+        "calDamage finalPetDamage:" + damage + " petKey:" + key + " petBuff:" + petBuff
+      );
     }
-    let damage = petData.p.a
-        * GlobalData.LevelUp.petDamage(playerId)
-        * upgrade
-        * (1 + EnchantBuff.getPetBuff(playerId, key).damageAdd / 100);
-
-    if (isNaN(damage)) return 0;
-
-    damage *= GlobalData.Buff.damageBuff(playerId)
-        * (1 + (isBigBox ?
-            EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100 :
-            0));
-
-    return damage;
-}

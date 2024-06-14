@@ -4,6 +4,7 @@ import { GlobalData } from "../../const/GlobalData";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { oTraceError } from "../../util/LogManager";
 import { stringToNumberArr, utils } from "../../util/uitls";
+import { EnchantBuff } from "./EnchantBuff";
 
 export enum BagItemKey {
     itemStart = 100
@@ -496,13 +497,14 @@ export class PetBagModuleData extends Subdata {
         return true;
     }
 
-    /**附魔
+    /**附魔 仅S端
      * @param key 宠物key
      * @param ids 附魔id数组
      */
-    public addEnchant(key: number, ids: number[]) {
+    public addEnchant(key: number, ids: number[], playerId: number) {
 				this.addPetEnchant(key, ids);
-
+        let keys = this.CurFollowPets; 
+				EnchantBuff.equipUnPet(playerId, keys, true);
         this.save(true);
         this.PetEnchantChangeAC.call(key, ids);
     }
