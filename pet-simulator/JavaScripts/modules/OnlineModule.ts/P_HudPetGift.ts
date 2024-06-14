@@ -140,13 +140,15 @@ export class P_HudPetGift extends HUDpetGift_Generate {
             const petCfg = GameConfig.PetARR.getElement(pet.I);
             if (petCfg) {
                 petStateItem.petImg.imageGuid = petCfg.uiGuid;
+                petStateItem.textAttack.text = utils.formatNumber(pet.p.a);
 
-								petStateItem.textAttack.text = utils.formatNumber(pet.p.a);						
-		
-								if(pet.enchantCnt) petStateItem.textEnhancenum.text = '+' + utils.formatNumber(pet.enchantCnt);
-								else petStateItem.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
-		
-								const devType = petCfg.DevType;
+                if (pet.enchantCnt) {
+                    petStateItem.textEnhancenum.text = "+" + utils.formatNumber(pet.enchantCnt);
+                    petStateItem.imgEnhance.visibility = mw.SlateVisibility.Visible;
+                } else petStateItem.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
+
+                const devType = petCfg.DevType;
+								
 								if(devType === GlobalEnum.PetDevType.Love || devType === GlobalEnum.PetDevType.Rainbow) {
 									petStateItem.imgLoveRainbow.visibility = mw.SlateVisibility.Visible;
 									petStateItem.imgLoveRainbow.imageGuid = devType === GlobalEnum.PetDevType.Love ? GlobalData.Bag.itemSpecialIconGuid[0]: GlobalData.Bag.itemSpecialIconGuid[1];

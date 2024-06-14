@@ -73,17 +73,17 @@ export class PetBag_Item extends Pet_item_Generate {
 
         this.petInfo = GameConfig.PetARR.getElement(data.I);
         this.mText_Value.text = utils.formatNumber(data.p.a);
-        if (this.petInfo)
-            this.mPic_Peticon.imageGuid = this.petInfo.uiGuid;
+        if (this.petInfo) this.mPic_Peticon.imageGuid = this.petInfo.uiGuid;
         else {
             console.error("petInfo is null!!!!!!!!!");
-
         }
-
         this.setQuality(data.I);
         this.setSpecial(data.I);
-				if(data.enchantCnt) this.textEnhancenum.text = '+' + utils.formatNumber(data.enchantCnt);
-				else this.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
+        if (data?.enchantCnt) {
+            this.imgEnhance.visibility = mw.SlateVisibility.Visible;
+            this.textEnhancenum.text = "+" + utils.formatNumber(data.enchantCnt);
+        } else this.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
+				
         if (this.mPic_Equip_3.visible) {
             this.mPic_Equip_3.visibility = mw.SlateVisibility.Collapsed;
             this.mPic_Equip_2.visibility = mw.SlateVisibility.Collapsed;
