@@ -122,11 +122,11 @@ export class P_Enchants extends EnchantsPanel_Generate {
 
     public showPanel(petData: petItemDataNew[]) {
         if (this.isFirstOpen) {
-            this.isFirstOpen = false;
-            this.updateEnchantIntroPanel();
+					this.isFirstOpen = false;
         }
-
+				
 				this.initPanel();
+				this.updateEnchantIntroPanel();
         this.show();
     }
  
