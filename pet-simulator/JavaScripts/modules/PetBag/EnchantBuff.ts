@@ -9,30 +9,37 @@ import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import Gtk from "../../util/GToolkit";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { CoinType } from "../AchievementModule/AchievementModuleC";
 
 type petBuff = {
     /**伤害加成 */
-    damageAdd?: number;
+    damageAdd: number;
     /**金币加成 */
-    goldAdd?: number;
+    goldAdd: number;
     /**钻石加成 */
-    diamondAdd?: number;
+    diamondAdd: number;
     /**暴击加成 */
-    critAdd?: number;
+    critAdd: number;
     /**移动速度加成 */
-    moveSpeedAdd?: number;
+    moveSpeedAdd: number;
     /**宝箱伤害加成 */
-    boxDamageAdd?: number;
+    boxDamageAdd: number;
     /**四级金币宝箱加成 */
-    fourGoldAdd?: number;
+    fourGoldAdd: number;
     /**倍率资源加成金币 */
-    rateGoldAdd?: number;
+    rateGoldAdd: number;
     /**自动收集-14 */
-    autoCollect?: boolean;
+    autoCollect: boolean;
     /**随机钻石-15 */
-    randomDiamond?: boolean;
+    randomDiamond: boolean;
     /**最好朋友词条-16 */
-    bestFriend?: number;
+    bestFriend: number;
+    /**第一世界金币加成 */
+    firstWorldGoldAdd: number;
+    /**第二世界金币加成 */
+    secondWorldGoldAdd: number;
+    /**第三世界金币加成 */
+    thirdWorldGoldAdd: number;
 };
 
 enum enchantType {
@@ -54,6 +61,12 @@ enum enchantType {
     fourGoldAdd = 7,
     /**倍率资源加成金币 */
     rateGoldAdd = 8,
+    /**第一世界金币加成 */
+    firstWorldGoldAdd = 9,
+    /**第二世界金币加成 */
+    secondWorldGoldAdd = 10,
+    /**第三世界金币加成 */
+    thirdWorldGoldAdd = 11,
 }
 
 enum specialEnchantId {
@@ -95,6 +108,9 @@ export class EnchantBuff {
                 autoCollect: false,
                 randomDiamond: false,
                 bestFriend: 0,
+                firstWorldGoldAdd: 0,
+                secondWorldGoldAdd: 0,
+                thirdWorldGoldAdd: 0,
             };
             let petData = DataCenterS.getData(playerId, PetBagModuleData).bagItemsByKey(key);
             if (!petData || !petData.p.b || petData.p.b.length == 0) continue;
@@ -126,7 +142,30 @@ export class EnchantBuff {
             autoCollect: false,
             randomDiamond: false,
             bestFriend: 0,
+            firstWorldGoldAdd: 0,
+            secondWorldGoldAdd: 0,
+            thirdWorldGoldAdd: 0,
         }));
+    }
+
+    /**获取宠物金币加成词条buff */
+    public static getWorldGoldBuff(playerId: number, key: number, coinType: GlobalEnum.CoinType) {
+        const buff = this.getPetBuff(playerId, key);
+        let worldGoldAdd = 0;
+        switch (coinType) {
+            case GlobalEnum.CoinType.FirstWorldGold:
+                worldGoldAdd = buff.firstWorldGoldAdd;
+                break;
+            case GlobalEnum.CoinType.SecondWorldGold:
+                worldGoldAdd = buff.secondWorldGoldAdd;
+                break;
+            case GlobalEnum.CoinType.ThirdWorldGold:
+                worldGoldAdd = buff.thirdWorldGoldAdd;
+                break;
+            default:
+                break;
+        }
+        return 1 + worldGoldAdd / 100;
     }
 
     public static clearPlayerBuff(playerId: number) {
@@ -136,7 +175,7 @@ export class EnchantBuff {
         this.playerPetBuff.delete(playerId);
     }
 
-    /** 添加词条buff*/
+    /** 添加词条buff 有副作用函数 */
     private static addBuff(
         playerId: number,
         key: number,
@@ -146,9 +185,10 @@ export class EnchantBuff {
             level: number;
         }
     ): petBuff {
+        const cfgId = item.id;
         let speciaId = GlobalData.Enchant.specialEnchantIdRange;
-        if (item.id >= speciaId[0] && item.id <= speciaId[1]) {
-            if (item.id == specialEnchantId.id_43) {
+        if (cfgId >= speciaId[0] && cfgId <= speciaId[1]) {
+            if (cfgId == specialEnchantId.id_43) {
                 if (!buff.damageAdd) buff.damageAdd = 0;
                 buff.damageAdd += 100;
                 if (!buff.diamondAdd) buff.diamondAdd = 0;
@@ -156,15 +196,15 @@ export class EnchantBuff {
                 if (!buff.moveSpeedAdd) buff.moveSpeedAdd = 0;
                 buff.moveSpeedAdd += 50;
             }
-            if (item.id == specialEnchantId.id_44) {
+            if (cfgId == specialEnchantId.id_44) {
                 if (!buff.autoCollect) buff.autoCollect = true;
                 GlobalData.Enchant.petAutoBuffKeys(playerId).push(key);
             }
-            if (item.id == specialEnchantId.id_45) {
+            if (cfgId == specialEnchantId.id_45) {
                 if (!buff.randomDiamond) buff.randomDiamond = true;
                 this.randomDiamond(true, playerId);
             }
-            if (item.id == specialEnchantId.id_46) {
+            if (cfgId == specialEnchantId.id_46) {
                 let atk = 0;
                 let pets = DataCenterC.getData(PetBagModuleData).sortBag();
                 let len = pets.length > 4 ? 4 : pets.length;
@@ -179,31 +219,41 @@ export class EnchantBuff {
             return buff;
         }
 
-        let cfg = GameConfig.Enchants.getElement(item.id);
+        const cfg = GameConfig.Enchants.getElement(cfgId);
+        const degree = this.getBuffDegree(cfgId);
         switch (cfg.EnchantType) {
             case enchantType.damageAdd:
-                buff.damageAdd = this.addDamageAdd(buff.damageAdd, item);
+                buff.damageAdd += degree;
                 break;
             case enchantType.goldAdd:
-                buff.goldAdd = this.addGoldAdd(buff.goldAdd, item);
+                buff.goldAdd += degree;
                 break;
             case enchantType.diamondAdd:
-                buff.diamondAdd = this.addDiamondAdd(buff.diamondAdd, item);
+                buff.diamondAdd += degree;
                 break;
             case enchantType.critAdd:
                 buff.critAdd = this.addCritAdd(playerId, buff.critAdd, item);
                 break;
             case enchantType.moveSpeedAdd:
-                buff.moveSpeedAdd = this.addMoveSpeedAdd(buff.moveSpeedAdd, item);
+                buff.moveSpeedAdd += degree;
                 break;
             case enchantType.boxDamageAdd:
-                buff.boxDamageAdd = this.addBoxDamageAdd(buff.boxDamageAdd, item);
+                buff.boxDamageAdd += degree;
                 break;
             case enchantType.fourGoldAdd:
-                buff.fourGoldAdd = this.addFourGoldAdd(buff.fourGoldAdd, item);
+                buff.fourGoldAdd += degree;
                 break;
             case enchantType.rateGoldAdd:
-                buff.rateGoldAdd = this.addRateGoldAdd(buff.rateGoldAdd, item);
+                buff.rateGoldAdd += degree;
+                break;
+            case enchantType.firstWorldGoldAdd:
+                buff.firstWorldGoldAdd += degree;
+                break;
+            case enchantType.secondWorldGoldAdd:
+                buff.secondWorldGoldAdd += degree;
+                break;
+            case enchantType.thirdWorldGoldAdd:
+                buff.thirdWorldGoldAdd += degree;
                 break;
             default:
                 break;
@@ -241,31 +291,6 @@ export class EnchantBuff {
         return (atk / atks.length) * 1.5;
     }
 
-    /**移除词条buff 准备干掉*/
-    private static delBuff(playerId: number, key: number, buff: petBuff) {
-        if (buff.damageAdd) buff.damageAdd = 0;
-        if (buff.goldAdd) buff.goldAdd = 0;
-        if (buff.diamondAdd) buff.diamondAdd = 0;
-        if (buff.critAdd) {
-            GlobalData.SceneResource.critWeightMap.set(playerId, GlobalData.SceneResource.critWeightUndef);
-            buff.critAdd = 0;
-        }
-        if (buff.moveSpeedAdd) buff.moveSpeedAdd = 0;
-        if (buff.boxDamageAdd) buff.boxDamageAdd = 0;
-        if (buff.fourGoldAdd) buff.fourGoldAdd = 0;
-        if (buff.rateGoldAdd) buff.rateGoldAdd = 0;
-        if (buff.autoCollect) {
-            buff.autoCollect = false;
-            let index = GlobalData.Enchant.petAutoBuffKeys(playerId).indexOf(key);
-            if (index != -1) GlobalData.Enchant.petAutoBuffKeys(playerId).splice(index, 1);
-        }
-        if (buff.randomDiamond) {
-            buff.randomDiamond = false;
-            this.randomDiamond(false, playerId);
-        }
-        if (buff.bestFriend) buff.bestFriend = 0;
-    }
-
     /**随机加钻石 */
     private static randomDiamond(isOpen: boolean, playerId: number) {
         Log4Ts.log(EnchantBuff, "randomDiamond isOpen:" + isOpen);
@@ -297,28 +322,10 @@ export class EnchantBuff {
         }, time);
     }
 
-    /**伤害加成 */
-    private static addDamageAdd(damageAdd: number, item: { id: number; level: number }): number {
-        if (!damageAdd) damageAdd = 0;
-        let cfg = GameConfig.Enchants.getElement(item.id);
-        damageAdd += cfg.Degree;
-        return damageAdd;
-    }
-
-    /**金币加成 */
-    private static addGoldAdd(goldAdd: number, item: { id: number; level: number }): number {
-        if (!goldAdd) goldAdd = 0;
-        let cfg = GameConfig.Enchants.getElement(item.id);
-        goldAdd += cfg.Degree;
-        return goldAdd;
-    }
-
-    /**钻石加成 */
-    private static addDiamondAdd(diamondAdd: number, item: { id: number; level: number }): number {
-        if (!diamondAdd) diamondAdd = 0;
-        let cfg = GameConfig.Enchants.getElement(item.id);
-        diamondAdd += cfg.Degree;
-        return diamondAdd;
+    /** 获取加成数值 */
+    private static getBuffDegree(id: number): number {
+        let cfg = GameConfig.Enchants.getElement(id);
+        return cfg?.Degree ?? 0;
     }
 
     /**暴击加成 */
@@ -331,37 +338,5 @@ export class EnchantBuff {
             GlobalData.SceneResource.critWeight(playerId) * (1 + critAdd / 100)
         );
         return critAdd;
-    }
-
-    /**移动速度加成 */
-    private static addMoveSpeedAdd(moveSpeedAdd: number, item: { id: number; level: number }): number {
-        if (!moveSpeedAdd) moveSpeedAdd = 0;
-        let cfg = GameConfig.Enchants.getElement(item.id);
-        moveSpeedAdd += cfg.Degree;
-        return moveSpeedAdd;
-    }
-
-    /**宝箱伤害加成 */
-    private static addBoxDamageAdd(boxDamageAdd: number, item: { id: number; level: number }): number {
-        if (!boxDamageAdd) boxDamageAdd = 0;
-        let cfg = GameConfig.Enchants.getElement(item.id);
-        boxDamageAdd += cfg.Degree;
-        return boxDamageAdd;
-    }
-
-    /**四级金币宝箱加成 */
-    private static addFourGoldAdd(fourGoldAdd: number, item: { id: number; level: number }): number {
-        if (!fourGoldAdd) fourGoldAdd = 0;
-        let cfg = GameConfig.Enchants.getElement(item.id);
-        fourGoldAdd += cfg.Degree;
-        return fourGoldAdd;
-    }
-
-    /**倍率资源加成金币 */
-    private static addRateGoldAdd(rateGoldAdd: number, item: { id: number; level: number }): number {
-        if (!rateGoldAdd) rateGoldAdd = 0;
-        let cfg = GameConfig.Enchants.getElement(item.id);
-        rateGoldAdd += cfg.Degree;
-        return rateGoldAdd;
     }
 }
