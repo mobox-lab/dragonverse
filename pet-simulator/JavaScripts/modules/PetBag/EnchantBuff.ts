@@ -80,6 +80,7 @@ export class EnchantBuff {
      * @param isEquip 是否装备
      */
     public static equipUnPet(playerId: number, keys: number[], isEquip: boolean) {
+			this.clearPlayerBuff(playerId);
         const petBuff = Gtk.tryGet(
           this.playerPetBuff,
           playerId,
@@ -89,7 +90,6 @@ export class EnchantBuff {
           EnchantBuff,
           "petBuff:" + JSON.stringify(Array.from(petBuff))
         );
-				this.clearPlayerBuff(playerId);
 				// 计算当前buff
 				for (const key of keys) {
           let buff: petBuff = {
