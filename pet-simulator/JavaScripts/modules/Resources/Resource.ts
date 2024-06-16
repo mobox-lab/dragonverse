@@ -772,17 +772,21 @@ export default class ResourceScript extends mw.Script {
                 let random = utils.GetRandomNum(0, temp2);
                 if (this.rate == 1) {
                     const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
+										const worldGoldBuff = EnchantBuff.getWorldGoldBuff(playerId, key, this.judgeGold());
                     const rewardGold =
                         (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
                             random * temp) *
                         this.rate *
-                        goldBuff;
+                        goldBuff *
+                        worldGoldBuff;
                     this.rewardGold.set(playerId, rewardGold);
 
                     Log4Ts.log(
                         ResourceScript, `getRewardByAttack`,
                         `RewardGold:${rewardGold}`,
-                        `goldAddBuff:${goldBuff}`,
+                        `goldBuff:${goldBuff}`,
+                        `worldGoldBuff:${worldGoldBuff}`,
+                        `judgeGold:${this.judgeGold()}`,
                         `cfg.Iconreward:${this.cfg.Iconreward}`,
                         `rate:${this.rate}`,
                         `attack:${attack}`,
@@ -792,19 +796,23 @@ export default class ResourceScript extends mw.Script {
                 } else {
                     const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
                     const rateGoldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).rateGoldAdd / 100;
+										const worldGoldBuff = EnchantBuff.getWorldGoldBuff(playerId, key, this.judgeGold());
                     const rewardGold =
                         (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
                             random * temp) *
                         this.rate *
                         goldBuff *
-                        rateGoldBuff;
+                        rateGoldBuff *
+												worldGoldBuff;
                     this.rewardGold.set(playerId, rewardGold);
 
                     Log4Ts.log(
                         ResourceScript,
                         `getRewardByAttack`,
                         `RewardGold:${rewardGold}`,
-                        `goldAddBuff:${goldBuff}`,
+                        `goldBuff:${goldBuff}`,
+                        `worldGoldBuff:${worldGoldBuff}`,
+                        `judgeGold:${this.judgeGold()}`,
                         `rateGoldBuff:${rateGoldBuff}`,
                         `cfg.Iconreward:${this.cfg.Iconreward}`,
                         `rate:${this.rate}`,
