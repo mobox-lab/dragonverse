@@ -69,9 +69,9 @@ export const SceneResourceMap: Map<number, ResourceScript[]> = new Map<number, R
 @Component
 export default class ResourceScript extends mw.Script {
 
-    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
+    @mw.Property({replicated: true, onChanged: "onHpChanged"})
     public curHp: number = 0;
-    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
+    @mw.Property({replicated: true, onChanged: "onSceneChanged"})
     private scenePointId: string = "";
 
     public get isBigBox(): boolean {
@@ -79,7 +79,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     /**伤害记录 */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     private damageArr: DamageRecord[] = [];
 
     private _rate: number = 1;
@@ -327,13 +327,13 @@ export default class ResourceScript extends mw.Script {
     public getDamageRate(playerId: number): number {
         if (this.cfg.HP === 0) return 0;
         return this
-            .damageArr
-            .reduce((previousValue,
-                currentValue) => {
-                return previousValue +
-                    (currentValue.playerId === playerId ? currentValue.damage : 0);
-            },
-                0)
+                .damageArr
+                .reduce((previousValue,
+                         currentValue) => {
+                        return previousValue +
+                            (currentValue.playerId === playerId ? currentValue.damage : 0);
+                    },
+                    0)
             / this.cfg.HP;
     }
 
@@ -434,10 +434,8 @@ export default class ResourceScript extends mw.Script {
         gemVal = Math.ceil(gemVal);
         let criticalRatio = state === GlobalEnum.ResourceAttackStage.Destroy && isCritical ?
             this.cfg.Critreward : 1;
-        let goldCount = Math.min(Math.ceil(rewardArr[0]), goldVal)
-            * criticalRatio;
-        let gemCount = Math.min(Math.ceil(rewardArr[1]), gemVal)
-            * criticalRatio;
+        let goldCount = Math.min(Math.ceil(rewardArr[0]), goldVal);
+        let gemCount = Math.min(Math.ceil(rewardArr[1]), gemVal);
         let curPos = this.curPos.clone();
         if (Math.abs(curPos.x - GameConfig.DropPoint.getElement(this.pointId).areaPoints.x) > 1 ||
             Math.abs(curPos.y - GameConfig.DropPoint.getElement(this.pointId).areaPoints.y) > 1) {
@@ -454,7 +452,7 @@ export default class ResourceScript extends mw.Script {
                     playerId,
                     curPos,
                     this.judgeGold(),
-                    goldVal,
+                    goldVal * criticalRatio,
                     goldCount,
                     this.isBigBox);
         }
@@ -465,7 +463,7 @@ export default class ResourceScript extends mw.Script {
                     playerId,
                     curPos,
                     GlobalEnum.CoinType.Diamond,
-                    gemVal,
+                    gemVal * criticalRatio,
                     gemCount,
                     this.isBigBox);
         }
@@ -655,7 +653,7 @@ export default class ResourceScript extends mw.Script {
         const time = GlobalData.ResourceAni.dropTweenTime[this.order];
         let start = endInfos[this.order];
         let end = endInfos[this.order + 1];
-        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
+        this.endTween = new mw.Tween({z: start}).to({z: end}, time).onUpdate((obj) => {
             this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
         }).onComplete(() => {
             this.order++;
@@ -944,8 +942,8 @@ export default class ResourceScript extends mw.Script {
 }
 
 export function calDamage(playerId: number,
-    key: number,
-    isBigBox: boolean): number {
+                          key: number,
+                          isBigBox: boolean): number {
     //在存档里是下标从 0 开始
     let level = DataCenterS
         .getData(playerId, PetSimulatorPlayerModuleData)
