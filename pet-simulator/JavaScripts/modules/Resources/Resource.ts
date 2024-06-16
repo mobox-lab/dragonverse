@@ -968,10 +968,29 @@ export function calDamage(playerId: number,
 
     if (isNaN(damage)) return 0;
 
-    damage *= GlobalData.Buff.damageBuff(playerId)
-        * (1 + (isBigBox ?
-            EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100 :
-            0));
+    damage *=
+        GlobalData.Buff.damageBuff(playerId) *
+        (1 + (isBigBox ? EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100 : 0)) *
+        EnchantBuff.getTeamDamageAddBuff(playerId, key);
 
+		Log4Ts.log(
+				ResourceScript,
+				"damage:" +
+						damage +
+				" atk:" +
+						petData.p.a +
+				" upgrade:" +
+						upgrade + 
+				" damageAddBuff:" +
+						(1 + EnchantBuff.getPetBuff(playerId, key).damageAdd / 100) +
+				" GlobalData.Buff.damageBuff:" +
+						GlobalData.Buff.damageBuff(playerId) +
+				" isBigBox:" +
+						isBigBox +
+				" boxDamageAdd:" +
+						(1 + EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100) +
+				" teamDamageAddBuff:" +
+						EnchantBuff.getTeamDamageAddBuff(playerId, key)
+		);
     return damage;
 }

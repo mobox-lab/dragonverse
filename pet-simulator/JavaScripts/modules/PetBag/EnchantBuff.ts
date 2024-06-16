@@ -2,14 +2,12 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import { stringToBuff } from "../../util/uitls";
-import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { RewardTipsManager } from "../UI/RewardTips";
 import { BagTool } from "./BagTool";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import Gtk from "../../util/GToolkit";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { CoinType } from "../AchievementModule/AchievementModuleC";
 
 type petBuff = {
     /**伤害加成 */
@@ -40,6 +38,8 @@ type petBuff = {
     secondWorldGoldAdd: number;
     /**第三世界金币加成 */
     thirdWorldGoldAdd: number;
+    /**团队合作伤害加成金币加成 */
+    teamDamageAdd: number;
 };
 
 enum enchantType {
@@ -67,6 +67,8 @@ enum enchantType {
     secondWorldGoldAdd = 10,
     /**第三世界金币加成 */
     thirdWorldGoldAdd = 11,
+    /**团队合作伤害加成金币加成 */
+    teamDamageAdd = 12,
 }
 
 enum specialEnchantId {
@@ -86,6 +88,26 @@ export class EnchantBuff {
     private static playerPetBuff: Map<number, Map<number, petBuff>> = new Map();
     private static interval: any;
 
+    public static getEmptyBuff(): petBuff {
+        return {
+            damageAdd: 0,
+            goldAdd: 0,
+            diamondAdd: 0,
+            critAdd: 0,
+            moveSpeedAdd: 0,
+            boxDamageAdd: 0,
+            fourGoldAdd: 0,
+            rateGoldAdd: 0,
+            autoCollect: false,
+            randomDiamond: false,
+            bestFriend: 0,
+            firstWorldGoldAdd: 0,
+            secondWorldGoldAdd: 0,
+            thirdWorldGoldAdd: 0,
+            teamDamageAdd: 0,
+        };
+    }
+
     /**装备 卸载宠物时计算 buff
      * @param keys 当前跟随的宠物keys
      * @param isEquip 是否装备
@@ -96,22 +118,7 @@ export class EnchantBuff {
         Log4Ts.log(EnchantBuff, "petBuff:" + JSON.stringify(Array.from(petBuff)));
         // 计算当前buff
         for (const key of keys) {
-            let buff: petBuff = {
-                damageAdd: 0,
-                goldAdd: 0,
-                diamondAdd: 0,
-                critAdd: 0,
-                moveSpeedAdd: 0,
-                boxDamageAdd: 0,
-                fourGoldAdd: 0,
-                rateGoldAdd: 0,
-                autoCollect: false,
-                randomDiamond: false,
-                bestFriend: 0,
-                firstWorldGoldAdd: 0,
-                secondWorldGoldAdd: 0,
-                thirdWorldGoldAdd: 0,
-            };
+            let buff: petBuff = this.getEmptyBuff();
             let petData = DataCenterS.getData(playerId, PetBagModuleData).bagItemsByKey(key);
             if (!petData || !petData.p.b || petData.p.b.length == 0) continue;
             let curBuff = stringToBuff(BagTool.getStr(petData));
@@ -130,22 +137,7 @@ export class EnchantBuff {
     public static getPetBuff(playerId: number, key: number): petBuff {
         const petBuff = Gtk.tryGet(this.playerPetBuff, playerId, () => new Map());
         Log4Ts.log(EnchantBuff, "getPetBuff key:" + key + " petBuff:" + JSON.stringify(Array.from(petBuff)));
-        return Gtk.tryGet(petBuff, key, () => ({
-            damageAdd: 0,
-            goldAdd: 0,
-            diamondAdd: 0,
-            critAdd: 0,
-            moveSpeedAdd: 0,
-            boxDamageAdd: 0,
-            fourGoldAdd: 0,
-            rateGoldAdd: 0,
-            autoCollect: false,
-            randomDiamond: false,
-            bestFriend: 0,
-            firstWorldGoldAdd: 0,
-            secondWorldGoldAdd: 0,
-            thirdWorldGoldAdd: 0,
-        }));
+        return Gtk.tryGet(petBuff, key, () => this.getEmptyBuff());
     }
 
     /**获取宠物金币加成词条buff */
@@ -166,6 +158,29 @@ export class EnchantBuff {
                 break;
         }
         return 1 + worldGoldAdd / 100;
+    }
+
+    /**获取宠物金币加成词条buff */
+    public static getTeamDamageAddBuff(playerId: number, curKey: number) {
+        const petBuff = Gtk.tryGet(this.playerPetBuff, playerId, () => new Map());
+        const keys = petBuff.keys();
+        let totalTeamDamageAdd = 0;
+        for (const key of keys) {
+            if (key + "" === curKey.toString()) continue; // 跳过自己
+            const buff: petBuff = Gtk.tryGet(petBuff, key, () => this.getEmptyBuff());
+            if (!buff.teamDamageAdd) continue;
+            totalTeamDamageAdd += buff.teamDamageAdd;
+        }
+        Log4Ts.log(
+            EnchantBuff,
+            "totalTeamDamageBuff:" +
+								(1 + totalTeamDamageAdd / 100) +
+						" curKey:" +
+								curKey +
+						" petBuff:" +
+								JSON.stringify(Array.from(petBuff))
+        );
+        return 1 + totalTeamDamageAdd / 100;
     }
 
     public static clearPlayerBuff(playerId: number) {
@@ -254,6 +269,9 @@ export class EnchantBuff {
                 break;
             case enchantType.thirdWorldGoldAdd:
                 buff.thirdWorldGoldAdd += degree;
+                break;
+            case enchantType.teamDamageAdd:
+                buff.teamDamageAdd += degree;
                 break;
             default:
                 break;
