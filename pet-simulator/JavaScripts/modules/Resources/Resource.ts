@@ -546,14 +546,8 @@ export default class ResourceScript extends mw.Script {
         let gemCount: number = 0;
         switch (state) {
             case GlobalEnum.ResourceAttackStage.GuaSha:
-                if (cfgID == 7 || cfgID == 8)
-                    gemCount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]);
-                else if (cfgID < 7)
-                    goldCount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]);
-                else if (cfgID == 9) {
-                    goldCount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]);
-                    gemCount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]);
-                }
+                goldCount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]);
+                gemCount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]);
                 break;
             case GlobalEnum.ResourceAttackStage.OneThird:
                 goldCount = cfg.Stepcoin;
@@ -772,7 +766,7 @@ export default class ResourceScript extends mw.Script {
                 let random = utils.GetRandomNum(0, temp2);
                 if (this.rate == 1) {
                     const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
-										const worldGoldBuff = EnchantBuff.getWorldGoldBuff(playerId, key, this.judgeGold());
+                    const worldGoldBuff = EnchantBuff.getWorldGoldBuff(playerId, key, this.judgeGold());
                     const rewardGold =
                         (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
                             random * temp) *
@@ -796,14 +790,14 @@ export default class ResourceScript extends mw.Script {
                 } else {
                     const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
                     const rateGoldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).rateGoldAdd / 100;
-										const worldGoldBuff = EnchantBuff.getWorldGoldBuff(playerId, key, this.judgeGold());
+                    const worldGoldBuff = EnchantBuff.getWorldGoldBuff(playerId, key, this.judgeGold());
                     const rewardGold =
                         (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
                             random * temp) *
                         this.rate *
                         goldBuff *
                         rateGoldBuff *
-												worldGoldBuff;
+                        worldGoldBuff;
                     this.rewardGold.set(playerId, rewardGold);
 
                     Log4Ts.log(
