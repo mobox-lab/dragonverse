@@ -1,11 +1,8 @@
 ﻿import { GameConfig } from "../../config/GameConfig";
-import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import Dev_Generate from "../../ui-generate/Pet/Dev_generate";
 import MessageBox from "../../util/MessageBox";
 import { utils } from "../../util/uitls";
-import AchievementModuleC from "../AchievementModule/AchievementModuleC";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { PetBagItem } from "./P_Bag";
 import { PetBagModuleC } from "./PetBagModuleC";
@@ -13,10 +10,9 @@ import { petItemDataNew } from "./PetBagModuleData";
 
 import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-import { PetBagModuleS } from "./PetBagModuleS";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class P_Pet_Dev extends Dev_Generate {
-    private achievementModuleC: AchievementModuleC = null;
     /**当前容器中的所有item */
     private petItems: PetBag_Item[] = [];
     /**当前概率 */
@@ -25,8 +21,6 @@ export class P_Pet_Dev extends Dev_Generate {
     private curCost: number = 0;
     /**当前宠物id */
     private curPetId: number = 0;
-    /**当前合并数量 */
-    private curCount: number = 0;
     /**当前是否处于黄金化 */
     private isGold: boolean = true;
     /**当前选中的所有宠物 */
@@ -39,7 +33,6 @@ export class P_Pet_Dev extends Dev_Generate {
         this.mStaleButton_Ok.onClicked.add(() => {
             this.onClickDev();
         });
-        this.achievementModuleC = ModuleService.getModule(AchievementModuleC);
         mw.Event.addServerListener("P_PET_DEV_SHOW_FUSE_MESSAGE",
             this.showFuseMessage,
         );
@@ -88,6 +81,16 @@ export class P_Pet_Dev extends Dev_Generate {
         }
         const curSelectKeys = this.curSelectPets.map(item => item.k);
 
+				Log4Ts.log(
+            P_Pet_Dev,
+            "startDev curSelectPets:" +
+                JSON.stringify(this.curSelectPets) +
+                " curCost:" +
+                this.curCost +
+                " curPetId:" +
+                this.curPetId
+        );
+
         if (!ModuleService
             .getModule(PetBagModuleC)
             .checkFuseAble(curSelectKeys)) {
@@ -132,9 +135,9 @@ export class P_Pet_Dev extends Dev_Generate {
             petItem.init(item);
             this.petItems.push(petItem);
         });
-				this.curCount = 0;
+				this.curSelectPets = [];
 				this.curPetId = 0;
-        this.changeCost(this.curCount);
+        this.changeCost(this.curSelectPets.length);
         super.show(...param);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
@@ -143,18 +146,34 @@ export class P_Pet_Dev extends Dev_Generate {
 
     /**改变目前容器展示 */
     public changeContainer(bagItem: PetBag_Item) {
-        this.curPetId = bagItem.petData.I;
         bagItem.setLockVis(!bagItem.getLockVis());
 
         let isEquip = bagItem.getLockVis();
-        isEquip ? this.curCount++ : this.curCount--;
-        if (this.curCount <= 0) {
+
+				Log4Ts.log(
+						P_Pet_Dev,
+						"changeContainer init isEquip:" +
+								isEquip +
+								" curPetId:" +
+								this.curPetId +
+								" curSelectPets:" +
+								JSON.stringify(this.curSelectPets) +
+								" bagItem.petData:" +
+								JSON.stringify(bagItem.petData)
+				);
+				
+				if (isEquip) {
+						this.curSelectPets.push(bagItem.petData);
+						this.curPetId = bagItem.petData.I;
+				} else this.curSelectPets = this.curSelectPets.filter((item) => item.k != bagItem.petData.k);
+
+				if (!this.curSelectPets?.length) { // 当前没有选中宠物
             this.curPetId = 0;
-            this.curCount = 0;
+						this.curSelectPets = [];
             this.petItems.forEach(item => {
                 item.setVisible(mw.SlateVisibility.SelfHitTestInvisible);
             });
-        } else if (this.curCount == 1 && isEquip) {
+        } else if (this.curSelectPets.length === 1 && isEquip) { // 选中该宠物 只显示该宠物的 items
             let maxCount = GlobalData.Dev.maxLevel;
             let count = 1;
             for (let i = 0; i < this.petItems.length; i++) {
@@ -172,9 +191,20 @@ export class P_Pet_Dev extends Dev_Generate {
                 }
             }
         }
-        this.curCount > 0 ? this.curSelectPets.push(bagItem.petData) : this.curSelectPets.length = 0;
-        this.curPetId = bagItem.petData.I;
-				this.changeCost(this.curCount);
+
+				Log4Ts.log(
+						P_Pet_Dev,
+						"changeContainer end isEquip:" +
+								isEquip +
+								" curPetId:" +
+								this.curPetId +
+								" curSelectPets:" +
+								JSON.stringify(this.curSelectPets) +
+								" bagItem.petData:" +
+								JSON.stringify(bagItem.petData)
+				);
+
+				this.changeCost(this.curSelectPets.length);
     }
 
 		/**改变花费 */

@@ -221,6 +221,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     public deletePet(playerId: number, keys: number[]) {
+				Log4Ts.log(PetBagModuleS, "deletePet keys:" + keys);
         let data = this.getPlayerData(playerId);
 
         let delAbleKeys = data.getFilteredDelAbleKeys(keys);
@@ -605,7 +606,9 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 .bagItemsByKey(key))
             .filter(item => item !== undefined);
 
-        if (curSelectPetKeys.length !== curSelectPets.length) {
+				Log4Ts.log(PetBagModuleS, "net_fuseDevPet curSelectPets:" + JSON.stringify(curSelectPets));
+
+				if (curSelectPetKeys.length !== curSelectPets.length) {
             Log4Ts.warn(PetBagModuleS, `some pet not found.`,
                 `player selected: ${curSelectPetKeys}.`,
                 `found: ${curSelectPets}.`);
