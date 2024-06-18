@@ -209,7 +209,7 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
                 if (iTargetArea.any()) {
                     targetArea = iTargetArea.maxBy((item) => item.space).areaId;
                 } else {
-                    Log4Ts.warn(EcologyModuleS, `there is no valid area in config. animal id: ${id}`);
+                    // Log4Ts.warn(EcologyModuleS, `there is no valid area in config. animal id: ${id}`);
                     return;
                 }
 
@@ -219,10 +219,10 @@ export class EcologyModuleS extends JModuleS<EcologyModuleC, EcologyModuleData> 
                 for (let i = 0; i < config.generationCount; ++i) {
                     let pos = this.aM.getRandom3DPoint(targetArea, expectArray);
                     if (Gtk.isNullOrUndefined(pos)) {
-                        Log4Ts.log(
-                            EcologyModuleS,
-                            `there is no valid point in area for animal generate. animal id: ${id}. expectArray: ${expectArray}`
-                        );
+                        // Log4Ts.log(
+                        //     EcologyModuleS,
+                        //     `there is no valid point in area for animal generate. animal id: ${id}. expectArray: ${expectArray}`
+                        // );
                         return;
                     }
                     this.generateAnimal(id, new mw.Vector(pos.x, pos.y, pos.z));
