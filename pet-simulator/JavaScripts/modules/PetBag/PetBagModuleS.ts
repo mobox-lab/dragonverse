@@ -53,7 +53,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 let data = this.getPlayerData(player).bagItemsByKey(key);
                 arr.push(data);
             }
-						this.equipChange(player, isEquip);
+            this.equipChange(player, isEquip);
             this.onEquipChangeAC.call(player.playerId, isEquip, arr);
         });
         this.enchantBuffInit(player);
@@ -315,24 +315,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 name);
     }
 
-    /**宠物附魔 */
-    net_addEnchant(key: number, enchantIds: number[]) {
-
-        this.currentData.addEnchant(key, enchantIds);
-
-        this.taskMS.strengthen(this.currentPlayer, GlobalEnum.StrengthenType.Enchant);
-        // this.passMS.onTaskUpdateAC.call(this.currentPlayerId, GlobalEnum.VipTaskType.PetEnchant, 1);
-
-        this.enchantNotice(this.currentPlayerId, enchantIds);
-    }
-
-    /**公告 */
-    private enchantNotice(playerId: number, enchantIds: number[]) {
-				if(!enchantIds?.length) return;
-				const noticeIds = enchantIds.filter(id => GlobalData.Notice.enchantBuff.includes(id))
-        if(noticeIds?.length) this.getAllClient().net_enchantNotice(playerId, noticeIds);
-    }
-
     /** 计算best friend词条战力 */
     net_bestFriendBuff() {
         const playerId = this.currentPlayerId;
@@ -488,7 +470,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
     /** 原 P_FusePanel.net_fusePet 合成宠物 */
     public async net_fusePet(curSelectPetKeys: number[],
-        earliestObtainTime: number): Promise<boolean> {
+                             earliestObtainTime: number): Promise<boolean> {
         const playerId = this.currentPlayerId;
         const curSelectPets = curSelectPetKeys
             .map(key => this.currentData
@@ -531,7 +513,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
         let allPetIds: number[] = [];
         /**与最大攻击力差值 */
-        //获取ts最大整数数值
+            //获取ts最大整数数值
         let max = Number.MAX_VALUE;
         let allMaxAtkDiff = max;
         /**攻击力差值最小的宠物id */
@@ -593,7 +575,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     private equipChange(player: mw.Player, isEquip: boolean) {
-				const data = this.getPlayerData(player);
+        const data = this.getPlayerData(player);
         let keys = data.CurFollowPets;
         console.warn(`lwj equipChange  ${isEquip}`, keys);
         for (let id = 0; id < keys.length; id++) {
@@ -604,7 +586,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     public changeFuseDevCost(player: mw.Player, count: number, isGold: boolean) {
         if (count <= 0) {
             mw.Event.dispatchToClient(player, "P_PET_DEV_CHANGE_PANEL_UI", 0, 0);
-            return { rate: 0, cost: 0 };
+            return {rate: 0, cost: 0};
         }
         let rates = GlobalData.Dev.goldProbability;
         let costs = isGold ? GlobalData.Dev.goldCost : GlobalData.Dev.rainbowCost;
@@ -613,13 +595,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let cost = costs[count - 1];
         console.log("changeFuseDevCost cost rate isGold", cost, rate, isGold);
         mw.Event.dispatchToClient(player, "P_PET_DEV_CHANGE_PANEL_UI", cost, rate);
-        return { rate, cost };
+        return {rate, cost};
     }
 
     /** 原 P_Pet_Dev.startDev 合成宠物 */
     public async net_fuseDevPet(curSelectPetKeys: number[],
-        curPetId: number,
-        isGold: boolean): Promise<boolean> {
+                                curPetId: number,
+                                isGold: boolean): Promise<boolean> {
         const player = this.currentPlayer;
         const playerId = this.currentPlayerId;
         const curSelectPets = curSelectPetKeys
@@ -636,7 +618,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
         if (!curSelectPets?.length) return false;
         let petIds: number[] = curSelectPets.map(item => item.I);
-        const { rate, cost } = this.changeFuseDevCost(player, petIds.length, isGold);
+        const {rate, cost} = this.changeFuseDevCost(player, petIds.length, isGold);
 
         if (!this.playerModuleS.reduceDiamond(cost)) return false;
 
@@ -670,12 +652,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return true;
     }
 
-    public reportMaxAttackPetInfo(playerID: number, data: PetBagModuleData) {
+    public reportMaxAttackPetInfo(playerID: number, data: PetBagModuleData) { 
         const currRound = data.calRound(Date.now());
         let petKey = data.getMaxAttackPet(currRound);
-        if (petKey != 0) {
+        if (petKey != 0) { 
             let pet = data.bagItemsByKey(petKey);
-            let petConfig = GameConfig.PetARR.getElement(pet.I);
+						const petEnchantScore = data.getPetEnchantScore(pet.p.b)
+						let petConfig = GameConfig.PetARR.getElement(pet.I);
+						Log4Ts.log(PetBagModuleS, `reportMaxAttackPetInfo petName:${pet.p.n} petAtk:${pet.p.a} petKey:${pet.k} petEnchants:${pet.p.b.toString()} petEnchantScore:${petEnchantScore}`);
             if (petConfig) {
                 ModuleService.getModule(AuthModuleS)
                     .reportPetSimulatorRankData(
@@ -684,148 +668,215 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                         petConfig.QualityType,
                         pet.p.a,
                         pet.obtainTime,
+                        petEnchantScore,
                         currRound);
             }
         }
     }
-		
+
     /** 第二世界 —— 宠物附魔 */
     public async net_petEnchant(selectedEnchantIds: number[], selectPetKey: number | null): Promise<EnchantPetState> {
-				const bagData = this.currentData;
-				if(!selectPetKey) return EnchantPetState.NO_SELECTED_PET;
-				const data = bagData.bagItemsByKey(selectPetKey);
-				if (!data || !data.p) return EnchantPetState.NO_SELECTED_PET;
-				const isHasEnchant = data.p?.b && data.p.b?.length > 0; //是否有附魔
-				const isSameEnchant = this.isSameEnchant(selectedEnchantIds, data.p.b);; // TODO: 是否是同一种附魔 改版之后应该得删掉
-				if (isHasEnchant) {
-						if (isSameEnchant) return EnchantPetState.IS_SAME_ENCHANT;
-						return EnchantPetState.IS_HAS_ENCHANT;
-				}
-				return EnchantPetState.HAS_NO_ENCHANT;
-		}
-		
-		
+        const bagData = this.currentData;
+        if (!selectPetKey) return EnchantPetState.NO_SELECTED_PET;
+        const data = bagData.bagItemsByKey(selectPetKey);
+        if (!data || !data.p) return EnchantPetState.NO_SELECTED_PET;
+        const isHasEnchant = data.p?.b && data.p.b?.length > 0; //是否有附魔
+        const isSameEnchant = this.isSameEnchant(selectedEnchantIds, data.p.b);
+        ; // TODO: 是否是同一种附魔 改版之后应该得删掉
+        if (isHasEnchant) {
+            if (isSameEnchant) return EnchantPetState.IS_SAME_ENCHANT;
+            return EnchantPetState.IS_HAS_ENCHANT;
+        }
+        return EnchantPetState.HAS_NO_ENCHANT;
+    }
+
     /**获取当前选中宠物所需钻石花费 */
     public getEnchantCost(selectPetKey: number | null) {
-				if (!selectPetKey) return 0;
-				const curSelectPetEnchantCnt =
-				this.currentData.bagItemsByKey(selectPetKey)?.enchantCnt;
-				const costCfg = GameConfig.EnchantCost.getAllElement();
-				if (!costCfg?.length) return 0;
-				for (let i = 0; i < costCfg.length; i++) {
-						const { EnchantCnt, CostDiamond } = costCfg[i] ?? {};
-						if (EnchantCnt == curSelectPetEnchantCnt) return CostDiamond;
-				}
-				return costCfg[costCfg.length - 1].CostDiamond;
-		}
+        if (!selectPetKey) return 0;
+        const curSelectPetEnchantCnt =
+            this.currentData.bagItemsByKey(selectPetKey)?.enchantCnt;
+        const costCfg = GameConfig.EnchantCost.getAllElement();
+        if (!costCfg?.length) return 0;
+        for (let i = 0; i < costCfg.length; i++) {
+            const {EnchantCnt, CostDiamond} = costCfg[i] ?? {};
+            if (EnchantCnt == curSelectPetEnchantCnt) return CostDiamond;
+        }
+        return costCfg[costCfg.length - 1].CostDiamond;
+    }
 
     /**获取当前选中宠物所需钻石花费 */
     public async net_getEnchantCost(selectPetKey: number | null): Promise<number> {
-			return this.getEnchantCost(selectPetKey);
+        return this.getEnchantCost(selectPetKey);
+    }
+
+    // 按照配置的 Weight 随机返回一个附魔词条id，如果有 excludeId 则排除其的权重
+    private randomEnchant(excludeIds?: number[]): number {
+        const enchantCfg = GameConfig.Enchants.getAllElement();
+        const filterEnchantCfg = enchantCfg.filter(
+          (enchantCfg) =>
+            enchantCfg.QualityType == 0 &&
+            !GlobalData.Enchant.filterIds.includes(enchantCfg.id) &&
+            (excludeIds?.length ? !excludeIds.includes(enchantCfg.id) : true)
+        );
+
+        const idArr: number[] = [];
+        const weightArr: number[] = [];
+        for (const cfg of filterEnchantCfg) {
+            weightArr.push(cfg.Weight);
+            idArr.push(cfg.id);
+        }
+
+        let totalWeight = 0;
+        for (let i = 0; i < weightArr.length; i++) {
+            totalWeight += weightArr[i];
+        }
+
+        const random = Math.random() * totalWeight;
+				Log4Ts.log(PetBagModuleS, `net_enchant randomEnchant - random:${random}, totalWeight:${totalWeight}`);
+        let probability = 0;
+        for (let i = 0; i < idArr.length; i++) {
+            probability += weightArr[i];
+            if (random <= probability) {
+                return idArr[i];
+            }
+        }
+
+        return idArr[idArr.length - 1];
+    }
+
+    private getEnchantIds(prePetInfo: petItemDataNew, selectEnchantId: number | null): null | number[] {
+        const enchantIds = [...(prePetInfo.p.b ?? [])];
+				const len = enchantIds?.length ?? 0;
+				const excludeIds = []
+				if (len === 3) { // 神话宠物，则第三个为固有词条，也不可以随到它
+					excludeIds.push(enchantIds[2]);
+				}
+				Log4Ts.log(PetBagModuleS, 'net_enchant 附魔前宠物词缀信息 preEnchantIds:' + enchantIds);
+
+        /**
+         * 选中宠物已有两条词缀
+         * 则选任意词缀，附魔重铸， 新词缀与原有两词缀不同
+         * 即： 不会随到已有或者相同的词缀
+         */
+        if (len >= 2) { // 神话宠物三个词条会走这里
+            if (!selectEnchantId) return null;
+            const tarEnchantIndex = enchantIds.findIndex(
+                (id) => id === selectEnchantId,
+            ); // 要覆盖
+            if (tarEnchantIndex === -1) return null;
+            const excludeEnchantId = enchantIds[(tarEnchantIndex + 1) % 2]; // 不跟原有的附魔重合
+						excludeIds.push(excludeEnchantId);
+						Log4Ts.log(PetBagModuleS, 'net_enchant 已有两条词缀 excludeEnchantIds:' + excludeIds); 
+            enchantIds[tarEnchantIndex] = this.randomEnchant(excludeIds);
+            return enchantIds;
+        }
+
+        // 已有一条词缀
+        if (len === 1) {
+            const excludeEnchantId = enchantIds[0]; // 不跟原有的附魔重合
+						excludeIds.push(excludeEnchantId);
+						Log4Ts.log(PetBagModuleS, 'net_enchant 已有一条词缀 excludeEnchantIds:' + excludeIds);
+            enchantIds.push(this.randomEnchant(excludeIds));
+            return enchantIds;
+        }
+				Log4Ts.log(PetBagModuleS, 'net_enchant 还没有词缀');
+        enchantIds.push(this.randomEnchant());
+        return enchantIds;
+    }
+
+    /** 获取变动过的附魔词条 */		
+		private getNewEnchantIds(preEnchantIds: number[], enchantIds: number[]) {
+			if(!preEnchantIds?.length) return enchantIds;
+			const newIds = enchantIds.filter(id => !preEnchantIds.includes(id));
+			return newIds;
 		}
 
-		// 按照配置的 Weight 随机返回一个附魔词条id，如果有 excludeId 则排除其的权重
-		private randomEnchant(excludeId?: number): number {
-			const enchantCfg = GameConfig.Enchants.getAllElement();
-			const filterEnchantCfg = enchantCfg.filter(enchantCfg => enchantCfg.QualityType == 0 && !GlobalData.Enchant.filterIds.includes(enchantCfg.id) && enchantCfg.id !== excludeId);
+    /** 附魔公告 */
+    private enchantNotice(player: mw.Player, enchantIds: number[]) {
+        if (!enchantIds?.length) return;
+				const playerId = player.playerId;
+        const noticeIds = enchantIds.filter(id => GlobalData.Notice.enchantBuff.includes(id));
+        if (noticeIds?.length) this.getAllClient().net_enchantNotice(playerId, noticeIds);
+    }
 
-			const idArr: number[] = [];
-			const weightArr: number[] = [];
-			for(const cfg of filterEnchantCfg) {
-					weightArr.push(cfg.Weight);
-					idArr.push(cfg.id);
-			}
-			
-			let totalWeight = 0;
-			for (let i = 0; i < weightArr.length; i++) {
-					totalWeight += weightArr[i];
-				}
-				
-			const random = Math.random() * totalWeight;
-			console.log("======= random, totalWeight =======\n", random, totalWeight);
-			let probability = 0;
-			for (let i = 0; i < idArr.length; i++) {
-					probability += weightArr[i];
-					if (random <= probability) {
-							return idArr[i];
-					}
-			}
+    public async net_enchant(selectPetKey: number | null, selectEnchantId: number | null): Promise<EnchantPetState> {
+				const playerId = this.currentPlayerId;
+				const player = this.currentPlayer;
+        const data = this.currentData;
+        const cost = this.getEnchantCost(selectPetKey);
+				Log4Ts.log(PetBagModuleS, `net_enchant cost:` + cost);
+        if (!this.playerModuleS.reduceDiamond(cost))
+          return EnchantPetState.NO_ENOUGH_DIAMOND;
 
-			return idArr[idArr.length - 1];
-		}
-		private getEnchantIds(prePetInfo: petItemDataNew, selectEnchantId: number | null): number[] | null {
-				const enchantIds = [...(prePetInfo.p.b ?? [])];
-				console.log("======= pre enchantIds =======\n", enchantIds);
+        const prePetEnchantIds = Array.from(
+          data.bagItemsByKey(selectPetKey).p.b
+        );
+        const enchantIds = this.getEnchantIds(
+          data.bagItemsByKey(selectPetKey),
+          selectEnchantId
+        );
+        if (!enchantIds?.length) return EnchantPetState.FAILED;
 
-				/**
-				 * 选中宠物已有两条词缀
-				 * 则选任意词缀，附魔重铸， 新词缀与原有两词缀不同
-				 * 即： 不会随到已有或者相同的词缀
-				 */
-				if (enchantIds.length === 2) {
-						//
-						if (!selectEnchantId) return null;
-						const tarEnchantIndex = enchantIds.findIndex(
-							(id) => id === selectEnchantId
-						); // 要覆盖
-						if (tarEnchantIndex === -1) return null;
-						const excludeEnchantId = enchantIds[(tarEnchantIndex + 1) % 2]; // 不跟原有的附魔重合
-						console.log("======= excludeEnchantId =======\n", excludeEnchantId);
-						enchantIds[tarEnchantIndex] = this.randomEnchant(excludeEnchantId);
-						return enchantIds;
-				}
+        data.addEnchant(selectPetKey, enchantIds);
 
-				// 已有一条词缀
-				if (enchantIds.length) {
-						const excludeEnchantId = enchantIds[0]; // 不跟原有的附魔重合
-      			console.log("======= excludeEnchantId =======\n", excludeEnchantId);
-						enchantIds.push(this.randomEnchant(excludeEnchantId));
-						return enchantIds;
-				}
-
-				enchantIds.push(this.randomEnchant());
-				return enchantIds;
- 		}
-
-		public async net_enchant(selectPetKey: number | null, selectEnchantId: number | null): Promise<EnchantPetState>{
-				const cost = this.getEnchantCost(selectPetKey);
-				console.log("======= net_enchantConsume cost =======\n", cost);
-				if(!this.playerModuleS.reduceDiamond(cost)) return EnchantPetState.NO_ENOUGH_DIAMOND;
-				
-        // if (tarEnchant.length == 0) {
-						// let ids = GlobalData.Enchant.normalEnchantId;
-				// 		for (let i = ids[0]; i < ids[1]; i++) {
-				// 				if (!GlobalData.Enchant.filterIds.includes(i)) tarEnchant.push(i);		// 过滤掉第三世界金币加成的附魔
-				// 		}
-				// }
-				const enchantIds = this.getEnchantIds(this.currentData.bagItemsByKey(selectPetKey), selectEnchantId)
-				console.log("======= enchantIds =======\n", enchantIds);
-				if(!enchantIds) return EnchantPetState.FAILED;
-				
-        this.currentData.addEnchant(selectPetKey, enchantIds);
-
-        this.taskMS.strengthen(this.currentPlayer, GlobalEnum.StrengthenType.Enchant);
+        this.taskMS.strengthen(
+          this.currentPlayer,
+          GlobalEnum.StrengthenType.Enchant
+        );
         // this.passMS.onTaskUpdateAC.call(this.currentPlayerId, GlobalEnum.VipTaskType.PetEnchant, 1);
+        const newIds = this.getNewEnchantIds(prePetEnchantIds, enchantIds);
+				Log4Ts.log(PetBagModuleS, 'net_enchant enchantNewIds:' +  newIds);
 
-        this.enchantNotice(this.currentPlayerId, enchantIds);
-				return EnchantPetState.SUCCESS; 
+        this.reportMaxAttackPetInfo(playerId, this.currentData); // 上报附魔分数变化 这里就是要现在的currentData
+        this.enchantNotice(player, newIds);
+				const specialIds = newIds.filter(id => {
+					const [min, max] = GlobalData.Enchant.specialEnchantIdRange
+					return id >= min && id <= max;
+				})
+				if(specialIds?.length) mw.Event.dispatchToClient(player, "ENCHANT_BROADCAST_ACHIEVEMENT_ENCHANT_SPECIAL");
+        return EnchantPetState.SUCCESS;
+    }
+
+    /**判断是否是同一种附魔
+     * @param tarEnchant 目标附魔
+     * @param petEnchant 当前宠物附魔
+     */
+    public isSameEnchant(tarEnchant: number[], petEnchant: number[]): boolean {
+        if (!petEnchant) return false;
+        if (tarEnchant.length == 0) return false;
+
+        for (let index = 0; index < tarEnchant.length; index++) {
+            let element = tarEnchant[index];
+            if (petEnchant.indexOf(element) == -1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+		/** GM 测试用 给第一个装备的宠物添加 */
+    public async gm_enchant(player: mw.Player, enchantIds: number[]) {
+			const playerId = player.playerId;
+			const data = DataCenterS.getData(playerId, PetBagModuleData);
+			const selectPetKey = data.CurFollowPets[0];
+
+			const prePetEnchantIds = Array.from(
+				data.bagItemsByKey(selectPetKey).p.b
+			);
+
+			data.addEnchant(selectPetKey, enchantIds);
+
+			const newIds = this.getNewEnchantIds(prePetEnchantIds, enchantIds);
+			Log4Ts.log(PetBagModuleS, 'gm_enchant enchantNewIds:' +  newIds);
+
+			this.reportMaxAttackPetInfo(playerId, data); // 上报附魔分数变化 这里就是要现在的currentData
+			this.enchantNotice(player, newIds);
+			const specialIds = newIds.filter(id => {
+				const [min, max] = GlobalData.Enchant.specialEnchantIdRange
+				return id >= min && id <= max;
+			})
+			if(specialIds?.length) mw.Event.dispatchToClient(player, "ENCHANT_BROADCAST_ACHIEVEMENT_ENCHANT_SPECIAL");
 		}
 
-		/**判断是否是同一种附魔
-		 * @param tarEnchant 目标附魔
-		 * @param petEnchant 当前宠物附魔
-		 */
-		public isSameEnchant(tarEnchant: number[], petEnchant: number[]): boolean {
-				if (!petEnchant) return false;
-				if (tarEnchant.length == 0) return false;
-
-				for (let index = 0; index < tarEnchant.length; index++) {
-						let element = tarEnchant[index];
-						if (petEnchant.indexOf(element) == -1) {
-								return false;
-						}
-				}
-				return true;
-		}
 }
 

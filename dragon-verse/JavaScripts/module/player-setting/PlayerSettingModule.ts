@@ -6,13 +6,15 @@ import AudioController from "../../controller/audio/AudioController";
 import { ATransactItem, Transact } from "./ATransactItem";
 import { Constructor } from "../../util/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 type SettingItemType =
     | "bgm-volume"
     | "sound-effect-volume"
     | "language"
     | "mute-sound-effect-volume"
-    | "mute-bgm-volume";
+    | "mute-bgm-volume" |
+    "camera-lookUp-rate-scale";
 
 abstract class SettingItem<T> extends ATransactItem<T> {
     public abstract readonly type: SettingItemType;
@@ -110,6 +112,35 @@ class MuteSoundEffectVolumeTransactItem extends SettingItem<boolean> {
     }
 }
 
+class CameraLookUpRateScaleTransactItem extends SettingItem<number> {
+    public type: SettingItemType = "camera-lookUp-rate-scale";
+    public readonly previewEnable: boolean = true;
+
+    protected set(val: number): void {
+        try {
+            KeyboardSimulation.setLookUpRateScale(val);
+        } catch (e) {
+            Log4Ts.log(CameraLookUpRateScaleTransactItem, `setLookUpRateScale error: ${e}`);
+        }
+    }
+
+    public get(): number {
+        let val = GameServiceConfig.DEFAULT_CAMERA_LOOK_UP_RATE_SCALE
+        try {
+            val = KeyboardSimulation.getLookUpRateScale();
+        } catch (e) {
+            Log4Ts.log(CameraLookUpRateScaleTransactItem, `getLookUpRateScale error: ${e}`);
+            val = DataCenterC.getData(PlayerSettingModuleData).cameraLookUpRateScale ?? GameServiceConfig.DEFAULT_CAMERA_LOOK_UP_RATE_SCALE;
+        }
+        return val;
+    }
+
+    public reset(): this {
+        this.set(GameServiceConfig.DEFAULT_CAMERA_LOOK_UP_RATE_SCALE);
+        return this;
+    }
+}
+
 export default class PlayerSettingModuleData extends Subdata {
     //@Decorator.persistence()
     //public isSave: bool;
@@ -131,13 +162,71 @@ export default class PlayerSettingModuleData extends Subdata {
     @Decorator.persistence()
     soundEffectVolume: number;
 
+    /**
+     * 镜头灵敏度.
+     * @desc value in [0.15,1].
+     */
+    @Decorator.persistence()
+    cameraLookUpRateScale: number;
+
+    /**
+     * 饱和度
+     */
+    @Decorator.persistence()
+    saturation: number;
+
+    /**
+     * 是否开启阴影
+     */
+    @Decorator.persistence()
+    enableShadow: boolean;
+
+    /**
+     * 视野缩放距离
+     */
+    @Decorator.persistence()
+    fovScale: number;
+
+    /**
+     * 是否开启索敌
+     */
+    @Decorator.persistence()
+    enableSearch: boolean;
+
+
     protected initDefaultData(): void {
         // this.language = LanguageTypes.Chinese;
         this.bgmVolume = 1;
         this.soundEffectVolume = 1;
+        this.cameraLookUpRateScale = 0.5;
+    }
+
+    protected get version(): number {
+        return 2
     }
 
     protected onDataInit(): void {
+        while (this.version != this.currentVersion) {
+            switch (this.currentVersion) {
+                case 1:
+                    // 假如数据版本还是1，那么就需要进行升级
+                    this.currentVersion = 2
+
+                    // 在升级的地方对新字段进行初始化
+                    this.cameraLookUpRateScale = 0.5
+
+                    this.saturation = 1;
+                    this.enableShadow = true;
+                    this.fovScale = 0.3;
+                    this.enableSearch = true;
+
+                    break;
+
+                default:
+                    Log4Ts.error(PlayerSettingModuleData, `unsupported data version.`);
+                    break;
+            }
+        }
     }
 }
 
@@ -175,6 +264,7 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
         this._settingItems.set("sound-effect-volume", SoundEffectVolumeTransactItem);
         this._settingItems.set("mute-bgm-volume", MuteBgmVolumeTransactItem);
         this._settingItems.set("mute-sound-effect-volume", MuteSoundEffectVolumeTransactItem);
+        this._settingItems.set("camera-lookUp-rate-scale", CameraLookUpRateScaleTransactItem);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -187,9 +277,10 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
             .set("mute-bgm-volume", !this.data.bgmVolume)
             .set("sound-effect-volume", this.data.soundEffectVolume)
             .set("mute-sound-effect-volume", !this.data.soundEffectVolume)
+            .set("camera-lookUp-rate-scale", this.data.cameraLookUpRateScale)
             .apply(false);
 
-        Event.dispatchToLocal(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED);
+        // Event.dispatchToLocal(PlayerSettingModuleC.EVENT_NAME_PLAYER_SETTING_CHANGED);
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
@@ -222,7 +313,8 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
     private saveData() {
         this.server.net_save(undefined,
             this.data.bgmVolume,
-            this.data.soundEffectVolume);
+            this.data.soundEffectVolume,
+            this.data.cameraLookUpRateScale);
     }
 
     /**
@@ -274,6 +366,9 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
                     case "language":
                         // this.data.language = item.setVal as LanguageTypes;
                         break;
+                    case "camera-lookUp-rate-scale":
+                        this.data.cameraLookUpRateScale = item.setVal as number;
+                        break;
                     default:
                         Log4Ts.error(PlayerSettingModuleC, `unsupported setting item when save.`);
                 }
@@ -323,9 +418,10 @@ export class PlayerSettingModuleC extends ModuleC<PlayerSettingModuleS, PlayerSe
         return this._transact.length > 0;
     }
 
-    public setMute(val: boolean) {
-        this.set("mute-bgm-volume", val);
-        this.set("mute-sound-effect-volume", val);
+    public applySettings(isMute: boolean, cameraLookUpRateScale: number) {
+        this.set("mute-bgm-volume", isMute);
+        this.set("mute-sound-effect-volume", isMute);
+        this.set("camera-lookUp-rate-scale", cameraLookUpRateScale);
         this.apply();
     }
 
@@ -389,11 +485,11 @@ export class PlayerSettingModuleS extends ModuleS<PlayerSettingModuleC, PlayerSe
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
-    public net_save(language: LanguageTypes, bgmVolume: number, soundEffectVolume: number) {
+    public net_save(language: LanguageTypes, bgmVolume: number, soundEffectVolume: number, cameraLookUpRateScale: number) {
         // this.currentData.language = language;
         this.currentData.bgmVolume = bgmVolume;
         this.currentData.soundEffectVolume = soundEffectVolume;
-
+        this.currentData.cameraLookUpRateScale = cameraLookUpRateScale;
         this.currentData.save(false);
     }
 

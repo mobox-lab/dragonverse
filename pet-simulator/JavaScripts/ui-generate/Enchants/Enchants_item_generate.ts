@@ -22,12 +22,47 @@ export default class Enchants_item_Generate extends UIScript {
 		}
 		return this.mButton_Entry_Internal
 	}
+	private textEnhanceName_Internal: mw.TextBlock
+	public get textEnhanceName(): mw.TextBlock {
+		if(!this.textEnhanceName_Internal&&this.uiWidgetBase) {
+			this.textEnhanceName_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/textEnhanceName') as mw.TextBlock
+		}
+		return this.textEnhanceName_Internal
+	}
 	private mTextBlock_Entry_Internal: mw.TextBlock
 	public get mTextBlock_Entry(): mw.TextBlock {
 		if(!this.mTextBlock_Entry_Internal&&this.uiWidgetBase) {
 			this.mTextBlock_Entry_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mTextBlock_Entry') as mw.TextBlock
 		}
 		return this.mTextBlock_Entry_Internal
+	}
+	private textScoreUp_Internal: mw.TextBlock
+	public get textScoreUp(): mw.TextBlock {
+		if(!this.textScoreUp_Internal&&this.uiWidgetBase) {
+			this.textScoreUp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/textScoreUp') as mw.TextBlock
+		}
+		return this.textScoreUp_Internal
+	}
+	private textScoreNumber_Internal: mw.TextBlock
+	public get textScoreNumber(): mw.TextBlock {
+		if(!this.textScoreNumber_Internal&&this.uiWidgetBase) {
+			this.textScoreNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/textScoreNumber') as mw.TextBlock
+		}
+		return this.textScoreNumber_Internal
+	}
+	private picScore_Internal: mw.Image
+	public get picScore(): mw.Image {
+		if(!this.picScore_Internal&&this.uiWidgetBase) {
+			this.picScore_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/picScore') as mw.Image
+		}
+		return this.picScore_Internal
+	}
+	private picSelect_Internal: mw.Image
+	public get picSelect(): mw.Image {
+		if(!this.picSelect_Internal&&this.uiWidgetBase) {
+			this.picSelect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/picSelect') as mw.Image
+		}
+		return this.picSelect_Internal
 	}
 
 
@@ -58,7 +93,16 @@ export default class Enchants_item_Generate extends UIScript {
 		
 		//文本多语言
 		
+		this.initLanguage(this.textEnhanceName)
+		
+	
 		this.initLanguage(this.mTextBlock_Entry)
+		
+	
+		this.initLanguage(this.textScoreUp)
+		
+	
+		this.initLanguage(this.textScoreNumber)
 		
 	
 		//文本多语言

@@ -9,6 +9,7 @@ import PetStateItemUI_Generate from "../../ui-generate/hud/PetStateItemUI_genera
 import { utils } from "../../util/uitls";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
+import { petItemDataNew } from "../PetBag/PetBagModuleData";
 import { PetState } from "../Player/PetBehavior";
 import { P_RewardPanel } from "./P_RewardPanel";
 
@@ -128,17 +129,35 @@ export class P_HudPetGift extends HUDpetGift_Generate {
     private _lastAttackTarget: Map<number, number> = new Map();
     private _battlePetUIs: Map<number, PetStateItemUI_Generate> = new Map();
     private _petState: Map<number, PetState> = new Map();
-    setBattlePets(keys: number[], petArrIds: number[]) {
+    setBattlePets(keys: number[], petArr: petItemDataNew[]) {
         this.petStateCanvas.removeAllChildren();
         this._battlePetUIs.clear();
         this._petState.clear();
         this._lastAttackTarget.clear();
-        petArrIds.forEach((petId, index) => {
+        petArr.forEach((pet, index) => {
             //petId是宠物表的id，keys存了对应宠物的唯一id
             let petStateItem = UIService.create(PetStateItemUI_Generate);
-            let pet = GameConfig.PetARR.getElement(petId);
-            if (pet) {
-                petStateItem.petImg.imageGuid = pet.uiGuid;
+            const petCfg = GameConfig.PetARR.getElement(pet.I);
+            if (petCfg) {
+                petStateItem.petImg.imageGuid = petCfg.uiGuid;
+
+								petStateItem.textAttack.text = utils.formatNumber(pet.p.a);						
+		
+								if(pet.enchantCnt) petStateItem.textEnhancenum.text = '+' + utils.formatNumber(pet.enchantCnt);
+								else petStateItem.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
+		
+								const devType = petCfg.DevType;
+								if(devType === GlobalEnum.PetDevType.Love || devType === GlobalEnum.PetDevType.Rainbow) {
+									petStateItem.imgLoveRainbow.visibility = mw.SlateVisibility.Visible;
+									petStateItem.imgLoveRainbow.imageGuid = devType === GlobalEnum.PetDevType.Love ? GlobalData.Bag.itemSpecialIconGuid[0]: GlobalData.Bag.itemSpecialIconGuid[1];
+								} else petStateItem.imgLoveRainbow.visibility = mw.SlateVisibility.Collapsed;
+
+								const buffIds = pet?.p?.b ?? [];
+								const maxBuffId = buffIds?.length ? Math.max(...buffIds) : null;
+								if(maxBuffId) { // 设置颜色
+										const color = GameConfig.Enchants.getElement(maxBuffId).Color
+										petStateItem.textAttack.contentColor = mw.LinearColor.colorHexToLinearColor(color)
+								} else petStateItem.textAttack.setFontColorByHex("#FFFFFFFF");
             }
             petStateItem.attackImg.visibility = mw.SlateVisibility.Collapsed;
             petStateItem.bgImg.imageColor = GlobalData.pet.restingPetStateImgColor;
@@ -149,7 +168,6 @@ export class P_HudPetGift extends HUDpetGift_Generate {
             petStateItem.mBtn_Pet.onUnhovered.add(() => {
                 petStateItem.itemCanvas.renderScale = GlobalData.pet.petStateImgNormalScale;
             });
-
             petStateItem.mBtn_Pet.onClicked.add(() => {
                 //只检查上次攻击的目标存不存在，内部会检查是否存在资源
                 //是否正在攻击

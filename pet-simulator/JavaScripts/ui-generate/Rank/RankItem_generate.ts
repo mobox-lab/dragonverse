@@ -8,7 +8,14 @@
 
 @UIBind('UI/Rank/RankItem.ui')
 export default class RankItem_Generate extends UIScript {
-		private mText_RankNum_Internal: mw.TextBlock
+		private mImage_1_Internal: mw.Image
+	public get mImage_1(): mw.Image {
+		if(!this.mImage_1_Internal&&this.uiWidgetBase) {
+			this.mImage_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImage_1') as mw.Image
+		}
+		return this.mImage_1_Internal
+	}
+	private mText_RankNum_Internal: mw.TextBlock
 	public get mText_RankNum(): mw.TextBlock {
 		if(!this.mText_RankNum_Internal&&this.uiWidgetBase) {
 			this.mText_RankNum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_RankNum') as mw.TextBlock
@@ -22,19 +29,19 @@ export default class RankItem_Generate extends UIScript {
 		}
 		return this.mText_Username_Internal
 	}
-	private mImage_Internal: mw.Image
-	public get mImage(): mw.Image {
-		if(!this.mImage_Internal&&this.uiWidgetBase) {
-			this.mImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImage') as mw.Image
-		}
-		return this.mImage_Internal
-	}
 	private mText_Count_Internal: mw.TextBlock
 	public get mText_Count(): mw.TextBlock {
 		if(!this.mText_Count_Internal&&this.uiWidgetBase) {
 			this.mText_Count_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mText_Count') as mw.TextBlock
 		}
 		return this.mText_Count_Internal
+	}
+	private mImage_Internal: mw.Image
+	public get mImage(): mw.Image {
+		if(!this.mImage_Internal&&this.uiWidgetBase) {
+			this.mImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mImage') as mw.Image
+		}
+		return this.mImage_Internal
 	}
 
 

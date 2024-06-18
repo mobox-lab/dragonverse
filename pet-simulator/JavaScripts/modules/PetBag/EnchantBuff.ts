@@ -146,7 +146,7 @@ export class EnchantBuff {
         level: number;
     }): petBuff {
 
-        let speciaId = GlobalData.Enchant.specialEnchantId;
+        let speciaId = GlobalData.Enchant.specialEnchantIdRange;
         if (item.id >= speciaId[0] && item.id <= speciaId[1]) {
 
             if (item.id == specialEnchantId.id_43) {

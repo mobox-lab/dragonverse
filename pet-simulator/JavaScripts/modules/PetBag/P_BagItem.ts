@@ -82,6 +82,8 @@ export class PetBag_Item extends Pet_item_Generate {
 
         this.setQuality(data.I);
         this.setSpecial(data.I);
+				if(data.enchantCnt) this.textEnhancenum.text = '+' + utils.formatNumber(data.enchantCnt);
+				else this.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
         if (this.mPic_Equip_3.visible) {
             this.mPic_Equip_3.visibility = mw.SlateVisibility.Collapsed;
             this.mPic_Equip_2.visibility = mw.SlateVisibility.Collapsed;
@@ -468,33 +470,27 @@ export class PetBag_Item extends Pet_item_Generate {
         }
     }
     /**特殊化 爱心彩虹 */
-    private setSpecial(id: number): number {
+    private setSpecial(id: number) {
         const dev = GlobalEnum.PetDevType;
         let cfg = GameConfig.PetARR.getElement(id);
         if (!cfg) return;
         if (cfg.DevType == dev.Normal) {
             //普通
-            this.mPic_Heart.visibility = mw.SlateVisibility.Collapsed;
+            // this.mPic_Heart.visibility = mw.SlateVisibility.Collapsed;
             this.mPic_Rainbow.visibility = mw.SlateVisibility.Collapsed;
-            return 0;
         }
 
         if (cfg.DevType == dev.Love) {
             //爱心化
-            this.mPic_Heart.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-            this.mPic_Rainbow.visibility = mw.SlateVisibility.Collapsed;
-            return 1
-        }
-
+            this.mPic_Rainbow.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+						this.mPic_Rainbow.imageGuid = GlobalData.Bag.itemSpecialIconGuid[0]; 
+        } 
 
         if (cfg.DevType == dev.Rainbow) {
             //彩虹化
-            this.mPic_Heart.visibility = mw.SlateVisibility.Collapsed;
             this.mPic_Rainbow.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-            return 2
+						this.mPic_Rainbow.imageGuid = GlobalData.Bag.itemSpecialIconGuid[1];
         }
-        return null;
-
     }
     /**设置删除图片可见性 */
     public setDelImgVis(isVis: boolean) {

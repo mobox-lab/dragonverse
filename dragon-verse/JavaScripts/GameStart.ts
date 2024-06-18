@@ -1,4 +1,3 @@
-import { AddGMCommand, GM } from "module_gm";
 import * as mwaction from "mwaction";
 import { HeadUIController } from "./controller/HeadUIController";
 import { TimeManager } from "./controller/TimeManager";
@@ -20,7 +19,6 @@ import { QuestModuleC } from "./module/quest/QuestModuleC";
 import { QuestModuleS } from "./module/quest/QuestModuleS";
 import RoleModuleData, { RoleModuleC, RoleModuleS } from "./module/role/RoleModule";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
-import GMPanel from "./ui/gm/GmPanel";
 import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 import { MapManager } from "./gameplay/map/MapManager";
@@ -45,9 +43,14 @@ import DvStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./mod
 import GuideModuleData, { GuideModuleC, GuideModuleS } from "./module/guide/GuideModule";
 import GameServiceConfig from "./const/GameServiceConfig";
 import GMHUD_Generate from "./ui-generate/gm/GMHUD_generate";
+import GodModService, { addGMCommand } from "mw-god-mod";
 
-AddGMCommand("TP 传送",
-    null,
+// 新版本的GM
+
+addGMCommand(
+    "TP 传送",
+    "string",
+    undefined,
     (player, positionStr: string) => {
         let index = 0;
         for (let i = 0; i < positionStr.length; i++) {
@@ -59,16 +62,20 @@ AddGMCommand("TP 传送",
         let x = parseFloat(positionStr.substring(0, index));
         let y = parseFloat(positionStr.substring(index + 1));
 
-        Log4Ts.log(GMPanel, `tp player to ${x},${y}.`);
+        Log4Ts.log(addGMCommand, `tp player to ${x},${y}.`);
         player.character.worldTransform.position = new mw.Vector(x, y);
     },
-    "探针");
+    undefined,
+    "探针",
+);
 
-AddGMCommand("Language 切换语言",
-    (player, value) => {
+addGMCommand(
+    "Language 切换语言",
+    "string",
+    (value) => {
         const v = Number(value);
         if (Number.isNaN(v) || LanguageTypes[v] === undefined) {
-            Log4Ts.log(GMPanel, `非法输入. 需要输入正确的数字.`);
+            Log4Ts.log(addGMCommand, `非法输入. 需要输入正确的数字.`);
             for (const enumVal of GToolkit.enumVals(LanguageTypes)) {
                 Log4Ts.log(undefined, `${LanguageTypes[enumVal]}: ${enumVal}`);
             }
@@ -76,18 +83,23 @@ AddGMCommand("Language 切换语言",
         }
 
         i18n.use(v, true);
-        Log4Ts.log(GMPanel, `change language to ${LanguageTypes[v]}`);
+        Log4Ts.log(addGMCommand, `change language to ${LanguageTypes[v]}`);
     },
-    null,
+    undefined,
+    undefined,
     "多语言",
 );
 
-AddGMCommand("Global Tips | 冒泡提示",
-    (player, value) => {
+addGMCommand(
+    "Global Tips | 冒泡提示",
+    "string",
+    (value) => {
         GlobalTips.getInstance().showGlobalTips(value);
     },
     undefined,
-    "提示");
+    undefined,
+    "提示",
+);
 
 @Component
 export default class GameStart extends mw.Script {
@@ -175,6 +187,12 @@ export default class GameStart extends mw.Script {
         } else if (SystemUtil.isServer()) {
             this.initializeServer();
         }
+
+        if (GameServiceConfig.isRelease) {
+            GodModService.getInstance().setAuthStrategy("strong");
+        }
+        GodModService.getInstance().authShowGm();
+
         Balancing.getInstance()
             .registerUpdater((callback) => {
                 mw.TimeUtil.onEnterFrame.add(callback);
@@ -191,7 +209,10 @@ export default class GameStart extends mw.Script {
     private initI18n() {
         if (!GameServiceConfig.isRelease && this.language !== LanguageTypes.English) {
             i18n.use(this.language);
-            Log4Ts.log(GameStart, `i18n use default language: ${this.language} because using specified non-English language.`);
+            Log4Ts.log(
+                GameStart,
+                `i18n use default language: ${this.language} because using specified non-English language.`,
+            );
             return;
         }
         const localStr = LocaleUtil.getDefaultLocale();
@@ -231,12 +252,11 @@ export default class GameStart extends mw.Script {
             //  ------
             //T >>>>>>
             //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
         }
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         this.initI18n();
-        this.isShowGMPanel && !this.isRelease && GM.start(GMPanel);
+
         VisualizeDebug.init(mw.Player.localPlayer);
 
         DialogifyManager.getInstance().initController(new DialoguePanelController());
@@ -252,7 +272,7 @@ export default class GameStart extends mw.Script {
 
         InputUtil.mouseLockOptionEnabled = false;
         InputUtil.isLockMouse = true;
-
+        // InputUtil.isCursorLocked = true;
     }
 
     private initializeServer() {
@@ -260,18 +280,16 @@ export default class GameStart extends mw.Script {
         DataStorage.setTemporaryStorage(!this.isOnline);
 
         GameObject.asyncFindGameObjectById("0B48E050").then((value) => {
-                const effect = value as mw.Effect;
-                effect.loopCount = 1;
-                setInterval(
-                    () => {
-                        Log4Ts.log(GameStart, `force re awake effect at ${new Date()}`);
-                        effect.play();
-                    },
-                    effect.timeLength < 1e3 ?
-                        GtkTypes.Interval.PerMin / 2 :
-                        effect.timeLength);
-            },
-        );
+            const effect = value as mw.Effect;
+            effect.loopCount = 1;
+            setInterval(
+                () => {
+                    Log4Ts.log(GameStart, `force re awake effect at ${new Date()}`);
+                    effect.play();
+                },
+                effect.timeLength < 1e3 ? GtkTypes.Interval.PerMin / 2 : effect.timeLength,
+            );
+        });
     }
 
     private whenModuleReady(callback: Delegate.SimpleDelegateFunction<void>) {
@@ -328,9 +346,7 @@ export default class GameStart extends mw.Script {
     private registerGodModeG() {
         InputUtil.onKeyDown(mw.Keys.G, () => {
             this._godMode = !this._godMode;
-            Log4Ts.log(GameStart,
-                `Key G pressed`,
-                `God Mode: ${this._godMode ? "On" : "Off"}`);
+            Log4Ts.log(GameStart, `Key G pressed`, `God Mode: ${this._godMode ? "On" : "Off"}`);
             if (this._godMode) {
                 Player.localPlayer.character.changeState(CharacterStateType.Flying);
             } else {
@@ -363,13 +379,9 @@ export default class GameStart extends mw.Script {
             Log4Ts.log(GameStart, `Key T pressed. is god mode: ${this._godMode}`);
             if (this._godMode) {
                 let currPos = Player.localPlayer.character.worldTransform.position;
-                Player.localPlayer.character.worldTransform.position =
-                    currPos
-                        .add(Player
-                            .getControllerRotation()
-                            .rotateVector(Vector
-                                .forward)
-                            .multiply(this.godModeFlashDist));
+                Player.localPlayer.character.worldTransform.position = currPos.add(
+                    Player.getControllerRotation().rotateVector(Vector.forward).multiply(this.godModeFlashDist),
+                );
             }
         });
     }

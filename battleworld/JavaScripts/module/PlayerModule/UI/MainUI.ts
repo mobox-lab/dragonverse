@@ -38,34 +38,30 @@ import { EnergyModuleC } from "../../Energy/EnergyModule";
 import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import BuyEnergyPanel from "../../../ui/BuyEnergyPanel";
 import { Yoact } from "../../../depend/yoact/Yoact";
-import bindYoact = Yoact.bindYoact;
-import GToolkit from "../../../util/GToolkit";
 import { AuthModuleC } from "../../auth/AuthModule";
 import { MessageBox } from "../../../tool/MessageBox";
 import Tips from "../../../tool/P_Tips";
-import { GlobalAttrHelpler } from "../../attr/GlobalAttrHelpler";
-import { SettingModuleC } from "../../SetingModule/SetingMoudleC";
 import { JumpGamePanel } from "../../../ui/jump-game/JumpGamePanel";
 import Gtk from "../../../util/GToolkit";
-import { SkillModuleC } from "../../SkillModule/SkillModuleC";
 import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
-import SetingUI from "../../SetingModule/UI/SetingUI";
+import SettingUI from "../../SettingModule/UI/SettingUI";
 import { P_Game_Action } from "../../action/ui/P_Game_Action";
 import { SkillSelectPanel } from "../../SkillModule/UI/SkillSelectPanel";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
-import { AddGMCommand } from "module_gm";
 import GameServiceConfig from "../../../const/GameServiceConfig";
+import { addGMCommand } from "mw-god-mod";
 
 enum MouseLockType {
     Press,
-    Tap
+    Tap,
 }
 
 let currentLockType: MouseLockType = MouseLockType.Press;
 
-AddGMCommand(
+addGMCommand(
     "Mouse Lock Type",
-    (player, value) => {
+    "string",
+    (value) => {
         const v = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
         let type: MouseLockType;
         if (v === 0 || v === 1) {
@@ -81,11 +77,12 @@ AddGMCommand(
             }
         }
 
-        Log4Ts.log(MainUI,
+        Log4Ts.log(
+            MainUI,
             `request to change mouse lock type to ${MouseLockType[type]}.`,
             `option param:`,
             `   0: ${MouseLockType[MouseLockType.Press]}`,
-            `   1: ${MouseLockType[MouseLockType.Tap]}`,
+            `   1: ${MouseLockType[MouseLockType.Tap]}`
         );
         if (type === currentLockType) return;
         else currentLockType = type;
@@ -95,39 +92,86 @@ AddGMCommand(
         KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.RightAlt);
         KeyOperationManager.getInstance().unregisterKey(UIService.getUI(MainUI), Keys.RightCommand);
         if (currentLockType === MouseLockType.Press) {
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftAlt, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.LeftAlt, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftCommand, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.LeftCommand, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightAlt, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.RightAlt, () => (InputUtil.isLockMouse = true));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightCommand, () => (InputUtil.isLockMouse = false));
-            KeyOperationManager.getInstance().onKeyUp(UIService.getUI(MainUI), Keys.RightCommand, () => (InputUtil.isLockMouse = true));
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainUI),
+                Keys.LeftAlt,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainUI),
+                Keys.LeftAlt,
+                () => (InputUtil.isLockMouse = true)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainUI),
+                Keys.LeftCommand,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainUI),
+                Keys.LeftCommand,
+                () => (InputUtil.isLockMouse = true)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainUI),
+                Keys.RightAlt,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainUI),
+                Keys.RightAlt,
+                () => (InputUtil.isLockMouse = true)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainUI),
+                Keys.RightCommand,
+                () => (InputUtil.isLockMouse = false)
+            );
+            KeyOperationManager.getInstance().onKeyUp(
+                UIService.getUI(MainUI),
+                Keys.RightCommand,
+                () => (InputUtil.isLockMouse = true)
+            );
         } else {
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.LeftCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightAlt, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
-            KeyOperationManager.getInstance().onKeyDown(UIService.getUI(MainUI), Keys.RightCommand, () => (InputUtil.isLockMouse = !InputUtil.isLockMouse));
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainUI),
+                Keys.LeftAlt,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainUI),
+                Keys.LeftCommand,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainUI),
+                Keys.RightAlt,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
+            KeyOperationManager.getInstance().onKeyDown(
+                UIService.getUI(MainUI),
+                Keys.RightCommand,
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+            );
         }
     },
     undefined,
-    "Mouse",
+    undefined,
+    "Mouse"
 );
-
 type PillUIInfo = {
-    text: TextBlock,
-    img: Image,
-    num: number,
-    name: TextBlock,
-    duration: number,
-    time: TextBlock,
-    mask: MaskButton,
-    timer: number,
-    levelCanvas: Canvas
+    text: TextBlock;
+    img: Image;
+    num: number;
+    name: TextBlock;
+    duration: number;
+    time: TextBlock;
+    mask: MaskButton;
+    timer: number;
+    levelCanvas: Canvas;
 };
 
 export class MainUI extends Main_HUD_Generate {
-
     private playerMD: PlayerModuleC;
 
     private atrributeMD: AttributeModuleC = null;
@@ -139,7 +183,6 @@ export class MainUI extends Main_HUD_Generate {
     private gmKey: any = null;
 
     onStart() {
-
         this.atrributeMD = ModuleService.getModule(AttributeModuleC);
         this.motionMD = ModuleService.getModule(MotionModuleC);
         this.playerMD = ModuleService.getModule(PlayerModuleC);
@@ -160,12 +203,11 @@ export class MainUI extends Main_HUD_Generate {
         });
         // 设置
         this.mBtn_Setting.onClicked.add(() => {
-            if (UIService.getUI(SetingUI)?.isShowing) {
-                UIService.getUI(SetingUI)?.onBack();
+            if (UIService.getUI(SettingUI)?.isShowing) {
+                UIService.getUI(SettingUI)?.onBack();
             } else {
                 EventManager.instance.call(EModule_Events.SetingModuleC_showSetingUI);
             }
-
         });
         // 重置
         this.mBtn_Reborn.onClicked.add(() => {
@@ -207,7 +249,11 @@ export class MainUI extends Main_HUD_Generate {
 
         EventManager.instance.add(EModule_Events.area_changeArea, this.listen_area_changeArea, this);
         EventManager.instance.add(EPlayerEvents_C.player_back_brake, this.listen_player_back_brake, this);
-        EventManager.instance.add(EAttributeEvents_C.Attribute_SkillPoints_Change_C, this.listen_askillPoints_change, this);
+        EventManager.instance.add(
+            EAttributeEvents_C.Attribute_SkillPoints_Change_C,
+            this.listen_askillPoints_change,
+            this
+        );
         EventManager.instance.add(EPlayerEvents_C.Player_RefreshSkillPoints, this.listen_askillPoints_change, this);
         /**玩家金币数量发生变化 */
         EventManager.instance.add(EAttributeEvents_C.Attribute_Money_Change_C, this.listen_goldChanged, this);
@@ -229,13 +275,17 @@ export class MainUI extends Main_HUD_Generate {
         // EventManager.instance.add(EAttributeEvents_C.Attribute_AngerValue_C, this.listen_angerChange, this);
 
         Yoact.bindYoact(() =>
-            Gtk.trySetText(this.mBattle,
-                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
-                    .toString()));
+            Gtk.trySetText(
+                this.mBattle,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data).toString()
+            )
+        );
         Yoact.bindYoact(() =>
-            Gtk.trySetText(this.mBattle_1,
-                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data)
-                    .toString()));
+            Gtk.trySetText(
+                this.mBattle_1,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString()
+            )
+        );
 
         this.mBtn_Battle_Add.onClicked.add(() => {
             // this.mBtn_Battle_Add.enable = false;
@@ -254,10 +304,6 @@ export class MainUI extends Main_HUD_Generate {
         this.initReset();
 
         this.initPill();
-        ModuleService.getModule(SettingModuleC).getCameraSpeed().then(value => {
-            Globaldata.cameraRotateSpeed = value;
-            this.setCameraSpeed(value);
-        });
 
         this.jumpRoomBtn.onClicked.add(() => {
             if (UIService.getUI(JumpGamePanel).isShowing) {
@@ -265,7 +311,6 @@ export class MainUI extends Main_HUD_Generate {
             } else {
                 UIService.show(JumpGamePanel);
             }
-
         });
 
         this.canUpdate = true;
@@ -289,21 +334,30 @@ export class MainUI extends Main_HUD_Generate {
         });
 
         this.mBtn_MCoin_Add.onClicked.add(() => {
-            MessageBox.showOneBtnMessage(GameConfig.Language.Tips_Text_1.Value, GameConfig.Language.Deposit_1.Value, () => {
-                StringUtil.clipboardCopy(Globaldata.copyUrl);
-                Tips.show(GameConfig.Language.Copy_Success_Text_1.Value);
-            }, GameConfig.Language.Deposit_2.Value);
+            MessageBox.showOneBtnMessage(
+                GameConfig.Language.Tips_Text_1.Value,
+                GameConfig.Language.Deposit_1.Value,
+                () => {
+                    StringUtil.clipboardCopy(Globaldata.copyUrl);
+                    Tips.show(GameConfig.Language.Copy_Success_Text_1.Value);
+                },
+                GameConfig.Language.Deposit_2.Value
+            );
         });
 
-        EventManager.instance.add(EAttributeEvents_C.Attribute_RankScore_Change_C, (playerId: number, rankScore: number) => {
-            Player.asyncGetLocalPlayer().then(player => {
-                if (playerId == player.playerId) {
-                    this.textDanNum.text = rankScore.toString();
-                    let level = PlayerManager.instance.getRankLevel(rankScore);
-                    this.imgDanIcon.imageGuid = GameConfig.Rank.getElement(level).rankImgID;
-                }
-            });
-        }, this);
+        EventManager.instance.add(
+            EAttributeEvents_C.Attribute_RankScore_Change_C,
+            (playerId: number, rankScore: number) => {
+                Player.asyncGetLocalPlayer().then((player) => {
+                    if (playerId == player.playerId) {
+                        this.textDanNum.text = rankScore.toString();
+                        let level = PlayerManager.instance.getRankLevel(rankScore);
+                        this.imgDanIcon.imageGuid = GameConfig.Rank.getElement(level).rankImgID;
+                    }
+                });
+            },
+            this
+        );
 
         this.textKillNum.text = "0";
 
@@ -378,7 +432,6 @@ export class MainUI extends Main_HUD_Generate {
      * 版本号
      */
     private initVersion() {
-
         this.mAttackNum.text = "";
 
         // let text = RouteService.getGameVersion();
@@ -416,7 +469,6 @@ export class MainUI extends Main_HUD_Generate {
      * 技能点数量刷新
      */
     private listen_askillPoints_change(skillPointCount: number, oldValue: number) {
-
         let pointCount = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.weaponSkillPoints);
 
         let skillPanel = UIService.getUI(SkillPanel, false);
@@ -455,7 +507,6 @@ export class MainUI extends Main_HUD_Generate {
      * 血量变化
      */
     public player_hpChange() {
-
         let max = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.maxHp);
         let hp = this.atrributeMD.getAttributeValue(Attribute.EnumAttributeType.hp);
 
@@ -489,7 +540,6 @@ export class MainUI extends Main_HUD_Generate {
 
             this.listen_player_back_brake();
         }
-
     }
 
     /**
@@ -579,7 +629,6 @@ export class MainUI extends Main_HUD_Generate {
      * 打断回城
      */
     private listen_player_back_brake(backType: EbackType = EbackType.break) {
-
         if (this.isBacking == false) {
             return;
         }
@@ -635,27 +684,30 @@ export class MainUI extends Main_HUD_Generate {
         if (this.back_ui_cd) {
             this.back_ui_cd.clear();
         }
-        this.back_ui_cd = new util.IntervalElement(Globaldata.player_backTime, 0.1, () => {
+        this.back_ui_cd = new util.IntervalElement(
+            Globaldata.player_backTime,
+            0.1,
+            () => {
+                // 关闭回城动作
+                EventManager.instance.call(EModule_Events.player_move, null);
 
-            // 关闭回城动作
-            EventManager.instance.call(EModule_Events.player_move, null);
+                this.backBtmCanvas.visibility = mw.SlateVisibility.Collapsed;
+                this.mBar_Back.currentValue = 0;
+                EventManager.instance.call(EAreaEvent_C.Area_BackSafe_C);
+                this.isBacking = false;
 
-            this.backBtmCanvas.visibility = mw.SlateVisibility.Collapsed;
-            this.mBar_Back.currentValue = 0;
-            EventManager.instance.call(EAreaEvent_C.Area_BackSafe_C);
-            this.isBacking = false;
-
-            // 埋点
-            EventManager.instance.call(EAnalyticsEvents.firstDo, EFirstDo.backed);
-            // 埋点
-            AnalyticsTool.send_ts_action_do(EMovementType.backSafe);
-            //回城显示ui
-            this.setCoinAndEnergyVisible(true);
-        }, (time: number) => {
-            this.mText_Back_Time.text = `${time.toFixed(1)}s`;
-            this.mBar_Back.currentValue = time / Globaldata.player_backTime;
-
-        });
+                // 埋点
+                EventManager.instance.call(EAnalyticsEvents.firstDo, EFirstDo.backed);
+                // 埋点
+                AnalyticsTool.send_ts_action_do(EMovementType.backSafe);
+                //回城显示ui
+                this.setCoinAndEnergyVisible(true);
+            },
+            (time: number) => {
+                this.mText_Back_Time.text = `${time.toFixed(1)}s`;
+                this.mBar_Back.currentValue = time / Globaldata.player_backTime;
+            }
+        );
         this.back_ui_cd.start();
 
         //特效
@@ -674,15 +726,20 @@ export class MainUI extends Main_HUD_Generate {
         if (this.reBackTween) {
             this.reBackTween.stop();
         }
-        let time = backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
-        this.reBackTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, time * 1000).onUpdate((data) => {
-            this.mMask_Back.fanShapedValue = data.alpha;
-        }).onComplete(() => {
-            this.mMask_Back.fanShapedValue = 1;
-            this.mMask_Back.visibility = mw.SlateVisibility.Collapsed;
-        }).onStart(() => {
-            this.mMask_Back.visibility = mw.SlateVisibility.Visible;
-        })
+        let time =
+            backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
+        this.reBackTween = new mw.Tween({ alpha: 0 })
+            .to({ alpha: 1 }, time * 1000)
+            .onUpdate((data) => {
+                this.mMask_Back.fanShapedValue = data.alpha;
+            })
+            .onComplete(() => {
+                this.mMask_Back.fanShapedValue = 1;
+                this.mMask_Back.visibility = mw.SlateVisibility.Collapsed;
+            })
+            .onStart(() => {
+                this.mMask_Back.visibility = mw.SlateVisibility.Visible;
+            })
             .start();
     }
 
@@ -691,16 +748,22 @@ export class MainUI extends Main_HUD_Generate {
      */
     private startBackBtnTimer(backType: EbackType) {
         this.mText_Back_Time_cd.visibility = mw.SlateVisibility.Visible;
-        let time = backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
+        let time =
+            backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
         this.mText_Back_Time_cd.text = `${time.toFixed(0)}s`;
         if (this.back_btn_cd) {
             this.back_btn_cd.clear();
         }
-        this.back_btn_cd = new util.IntervalElement(time, 1, () => {
-            this.mText_Back_Time_cd.visibility = mw.SlateVisibility.Collapsed;
-        }, (time: number) => {
-            this.mText_Back_Time_cd.text = `${time.toFixed(0)}s`;
-        });
+        this.back_btn_cd = new util.IntervalElement(
+            time,
+            1,
+            () => {
+                this.mText_Back_Time_cd.visibility = mw.SlateVisibility.Collapsed;
+            },
+            (time: number) => {
+                this.mText_Back_Time_cd.text = `${time.toFixed(0)}s`;
+            }
+        );
         this.back_btn_cd.start();
     }
 
@@ -723,15 +786,18 @@ export class MainUI extends Main_HUD_Generate {
      */
     private initReset() {
         this.mMask_Reborn.visibility = mw.SlateVisibility.Collapsed;
-        this.rebornTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, Globaldata.player_rebornTime * 1000).onUpdate((data) => {
-            this.mMask_Reborn.fanShapedValue = data.alpha;
-        }).onComplete(() => {
-            this.mMask_Reborn.fanShapedValue = 1;
-            this.mMask_Reborn.visibility = mw.SlateVisibility.Collapsed;
-        }).onStart(() => {
-            this.mMask_Reborn.visibility = mw.SlateVisibility.Visible;
-        });
-
+        this.rebornTween = new mw.Tween({ alpha: 0 })
+            .to({ alpha: 1 }, Globaldata.player_rebornTime * 1000)
+            .onUpdate((data) => {
+                this.mMask_Reborn.fanShapedValue = data.alpha;
+            })
+            .onComplete(() => {
+                this.mMask_Reborn.fanShapedValue = 1;
+                this.mMask_Reborn.visibility = mw.SlateVisibility.Collapsed;
+            })
+            .onStart(() => {
+                this.mMask_Reborn.visibility = mw.SlateVisibility.Visible;
+            });
     }
 
     /**
@@ -739,13 +805,13 @@ export class MainUI extends Main_HUD_Generate {
      */
     public reset() {
         if (ChangeMoldeBuffC.isChangeMolde) {
-            let noteTxt = util.getLanguageByKey("Vehicle_tip_8");//"当前状态受限"
+            let noteTxt = util.getLanguageByKey("Vehicle_tip_8"); //"当前状态受限"
             Notice.showDownNotice(noteTxt);
             return;
         }
 
         if (this.motionMD.isHasPlayMotion()) {
-            let noteTxt = util.getLanguageByKey("Vehicle_tip_8");//"当前状态受限"
+            let noteTxt = util.getLanguageByKey("Vehicle_tip_8"); //"当前状态受限"
             Notice.showDownNotice(noteTxt);
             return;
         }
@@ -759,7 +825,12 @@ export class MainUI extends Main_HUD_Generate {
 
         let player = Player.localPlayer;
         //fix:TypeError: Cannot read property'z' of undifined
-        if (player == null || player.character == null || player.character.worldTransform == null || player.character.worldTransform.rotation == null) {
+        if (
+            player == null ||
+            player.character == null ||
+            player.character.worldTransform == null ||
+            player.character.worldTransform.rotation == null
+        ) {
             return;
         }
         player.character.gravityScale = Globaldata.dfgravityScale;
@@ -788,7 +859,6 @@ export class MainUI extends Main_HUD_Generate {
      * @param disable true 禁用 false 启用
      */
     public setJoystickDisable(disable: boolean) {
-
         if (disable) {
             this.mVirtualJoystickPanel.resetJoyStick();
             this.mVirtualJoystickPanel.visibility = mw.SlateVisibility.Collapsed;
@@ -796,7 +866,6 @@ export class MainUI extends Main_HUD_Generate {
             this.mVirtualJoystickPanel.resetJoyStick();
             this.mVirtualJoystickPanel.visibility = mw.SlateVisibility.Visible;
         }
-
     }
 
     /**
@@ -954,11 +1023,9 @@ export class MainUI extends Main_HUD_Generate {
                                 second.levelCanvas.visibility = SlateVisibility.Collapsed;
                                 TimeUtil.clearInterval(second.timer);
                                 second.timer = -1;
-
                             }
                         }, 0.1);
                     }
-
                 } else {
                     // second.text.visibility = SlateVisibility.Collapsed;
                     // second.img.visibility = SlateVisibility.Collapsed;
@@ -1051,7 +1118,9 @@ export class MainUI extends Main_HUD_Generate {
         if (isInvisible) {
             this._invincibleBuffTimer = TimeUtil.setInterval(() => {
                 this._invincibleBuffDuration -= 100;
-                this.mMask_Defence.fanShapedValue = (GameServiceConfig.INVINCIBLE_BUFF_TIME - this._invincibleBuffDuration) / GameServiceConfig.INVINCIBLE_BUFF_TIME;
+                this.mMask_Defence.fanShapedValue =
+                    (GameServiceConfig.INVINCIBLE_BUFF_TIME - this._invincibleBuffDuration) /
+                    GameServiceConfig.INVINCIBLE_BUFF_TIME;
                 this.mText_Defence_Time_cd_Long.text = `${(this._invincibleBuffDuration / 1e3).toFixed(1)}s`;
                 this.textDefence.visibility = mw.SlateVisibility.Visible;
                 if (this._invincibleBuffDuration <= 0) {
@@ -1069,5 +1138,5 @@ export class MainUI extends Main_HUD_Generate {
             this.mText_Defence_Time_cd_Long.text = "";
             this._invincibleBuffDuration = GameServiceConfig.INVINCIBLE_BUFF_TIME;
         }
-    }
+    };
 }

@@ -30,6 +30,20 @@
 		}
 		return this.mCanvas_Sound_Internal
 	}
+	private mCanvas_CloseSound_Internal: mw.Canvas
+	public get mCanvas_CloseSound(): mw.Canvas {
+		if(!this.mCanvas_CloseSound_Internal&&this.uiWidgetBase) {
+			this.mCanvas_CloseSound_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound') as mw.Canvas
+		}
+		return this.mCanvas_CloseSound_Internal
+	}
+	private mBtn_CloseSound_Internal: mw.StaleButton
+	public get mBtn_CloseSound(): mw.StaleButton {
+		if(!this.mBtn_CloseSound_Internal&&this.uiWidgetBase) {
+			this.mBtn_CloseSound_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/mBtn_CloseSound') as mw.StaleButton
+		}
+		return this.mBtn_CloseSound_Internal
+	}
 	private mCanvas_BGM_Internal: mw.Canvas
 	public get mCanvas_BGM(): mw.Canvas {
 		if(!this.mCanvas_BGM_Internal&&this.uiWidgetBase) {
@@ -217,6 +231,13 @@
 	protected initButtons() {
 		//按钮添加点击
 		
+		this.mBtn_CloseSound.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_CloseSound");
+		})
+		this.initLanguage(this.mBtn_CloseSound);
+		//this.mBtn_CloseSound.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 		this.mBtn_Shadow.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_Shadow");
 		})
@@ -275,6 +296,9 @@
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/Text_Sound") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_CloseSound/Text_CloseSound") as any);
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Sound/mCanvas_BGM/Text_Low") as any);

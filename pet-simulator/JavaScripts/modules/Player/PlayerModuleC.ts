@@ -23,6 +23,7 @@ import { PetSimulatorPlayerModuleData } from "./PlayerModuleData";
 import { PlayerModuleS } from "./PlayerModuleS";
 import { IGradientElement } from "../../config/Gradient";
 import Player = mw.Player;
+import { SoundManager } from "../../util/SoundManager";
 
 /**玩家模块 */
 export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModuleData> {
@@ -326,8 +327,90 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         this.server.net_setPlaza(isPlaza);
     }
 
-    protected onUpdate(dt: number): void {
+    /**右脚是否落地 */
+    private _rightFootOnLand: boolean = true;
+    /**执行一次标识符 */
+    private _canRightExecute: boolean = false;
+    /**左脚是否落地 */
+    private _leftFootOnLand: boolean = true;
+    /**执行一次标识符 */
+    private _canLeftExecute: boolean = false;
+    /**上次落地的脚 0左脚，1右脚*/
+    private _lastOnLandFoot: number = -1;
 
+    private _jumpExecuteOnce: boolean = false;
+    private _landedExecutedOnce: boolean = false;
+    private _swimExecuteOnce: boolean = false;
+
+    protected onUpdate(dt: number): void {
+        //判断脚步是否落地
+        if (Player.localPlayer.character.isMoving && Player.localPlayer.character.getCurrentState() == CharacterStateType.Running) {
+            let rightFootWorldPos = Player.localPlayer.character.getSlotWorldPosition(HumanoidSlotType.RightFoot);
+            let leftFootWorldPos = Player.localPlayer.character.getSlotWorldPosition(HumanoidSlotType.LeftFoot);
+            let rightResults = QueryUtil.lineTrace(rightFootWorldPos, rightFootWorldPos.clone().add(new Vector(0, 0, -100)), true, false, null, null, false, Player.localPlayer.character);
+            let leftResults = QueryUtil.lineTrace(leftFootWorldPos, leftFootWorldPos.clone().add(new Vector(0, 0, -100)), true, false, null, null, false, Player.localPlayer.character);
+            //找到排除触发器的第一个射到的go
+            rightResults = rightResults.filter(result => !(result.gameObject instanceof Trigger));
+            if (rightResults[0] && rightResults[0].distance < 10) {
+                this._rightFootOnLand = true;
+            } else {
+                this._rightFootOnLand = false;
+                //可以执行
+                this._canRightExecute = true;
+            }
+
+            leftResults = leftResults.filter(result => !(result.gameObject instanceof Trigger));
+            if (leftResults[0] && leftResults[0].distance < 10) {
+                this._leftFootOnLand = true;
+            } else {
+                this._leftFootOnLand = false;
+                //可以执行
+                this._canLeftExecute = true;
+            }
+        }
+
+        if (this._canRightExecute && this._rightFootOnLand && this._lastOnLandFoot !== 1) {
+            this._canRightExecute = false;
+            SoundManager.instance.playSound(28);
+            this._lastOnLandFoot = 1;
+        }
+        if (this._canLeftExecute && this._leftFootOnLand && this._lastOnLandFoot !== 0) {
+            this._canLeftExecute = false;
+            SoundManager.instance.playSound(28);
+            this._lastOnLandFoot = 0;
+        }
+
+        if (Player.localPlayer.character.getCurrentState() === CharacterStateType.Jumping) {
+            if (!this._jumpExecuteOnce) {
+                this._jumpExecuteOnce = true;
+                SoundManager.instance.play3DSound(30, Player.localPlayer.character);
+            }
+        } else {
+            this._jumpExecuteOnce = false;
+        }
+
+        if (Player.localPlayer.character.getCurrentState() === CharacterStateType.Landed) {
+            if (!this._landedExecutedOnce) {
+                this._landedExecutedOnce = true;
+                SoundManager.instance.play3DSound(31, Player.localPlayer.character);
+            }
+        } else {
+            this._landedExecutedOnce = false;
+        }
+
+        if (Player.localPlayer.character.getCurrentState() === CharacterStateType.Swimming) {
+            if (!this._swimExecuteOnce) {
+                this._swimExecuteOnce = true;
+                //落水
+                SoundManager.instance.play3DSound(32, Player.localPlayer.character);
+                SoundManager.instance.play3DSound(33, Player.localPlayer.character);
+            }
+        } else {
+            if (this._swimExecuteOnce) {
+                SoundService.stop3DSound(33);
+            }
+            this._swimExecuteOnce = false;
+        }
     }
 
     public async buyDollCoin(configId: number): Promise<boolean> {
@@ -359,8 +442,8 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
 
     /**增加钻石 */
     public async randomDiamond() {
-			return await this.server.net_randomDiamond();
-		}
+        return await this.server.net_randomDiamond();
+    }
 
     /**判断钻石数量是否足够 */
     public isDiamondEnough(value: number): boolean {
@@ -368,8 +451,8 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
     }
 
     public async buyWorld(cfgId: number): Promise<boolean> {
-			return await this.server.net_buyWorld(cfgId);
-		}
+        return await this.server.net_buyWorld(cfgId);
+    }
 
     /**减少钻石 */
     public async reduceDiamond(value: number): Promise<boolean> {

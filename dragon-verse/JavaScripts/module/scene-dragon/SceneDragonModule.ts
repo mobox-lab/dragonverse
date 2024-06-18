@@ -21,11 +21,12 @@ import AreaManager from "../../depend/area/AreaManager";
 import { GameConfig } from "../../config/GameConfig";
 import Gtk from "../../util/GToolkit";
 import { IPoint3 } from "../../depend/area/shape/base/IPoint";
-import { AddGMCommand } from "module_gm";
 import { AuthModuleS } from "../auth/AuthModule";
+import { addGMCommand } from "mw-god-mod";
 
-AddGMCommand(
+addGMCommand(
     "生成 场景龙",
+    "string",
     undefined,
     (player, value: string) => {
         let id = Gtk.isNullOrEmpty(value) ? undefined : Number(value);
@@ -35,28 +36,31 @@ AddGMCommand(
             player.playerId,
             id ?? Gtk.randomArrayItem(GameConfig.Dragon.getAllElement()).id,
             0,
-            player
-                .character
-                .worldTransform
-                .position
-                .add(new RandomGenerator().randomCircle().handle(v => v * 200).toVector3(500)),
-            new UUID(4).toString(),
+            player.character.worldTransform.position.add(
+                new RandomGenerator()
+                    .randomCircle()
+                    .handle((v) => v * 200)
+                    .toVector3(500)
+            ),
+            new UUID(4).toString()
         );
     },
-    "Spawn");
-AddGMCommand(
+    undefined,
+    "Spawn"
+);
+
+addGMCommand(
     "销毁 场景龙",
+    "string",
     undefined,
     (player, syncKey: string) => {
         let id = Number(syncKey);
         if (isNaN(id)) id = undefined;
-        ModuleService.getModule(SceneDragonModuleS)["destroy"](
-            player.playerId,
-            syncKey,
-            false,
-        );
+        ModuleService.getModule(SceneDragonModuleS)["destroy"](player.playerId, syncKey, false);
     },
-    "Spawn");
+    undefined,
+    "Spawn"
+);
 
 /**
  * 场景龙 相关事件.
@@ -132,7 +136,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                 let transform = new Transform(
                     new Vector(wingTransform[0][0], wingTransform[0][1], wingTransform[0][2]),
                     new Rotation(wingTransform[1][0], wingTransform[1][1], wingTransform[1][2]),
-                    new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2]),
+                    new Vector(wingTransform[2][0], wingTransform[2][1], wingTransform[2][2])
                 );
                 obj.attachToSlot(wing, HumanoidSlotType.BackOrnamental);
                 TimeUtil.delayExecute(() => {
@@ -150,13 +154,13 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     private static async playBirthEffect(
         position: Vector,
-        onBirth: Expression<Promise<SceneDragonExistInfo>>,
+        onBirth: Expression<Promise<SceneDragonExistInfo>>
     ): Promise<SceneDragonExistInfo> {
         const effect = await EffectService.getEffectById(
             EffectService.playAtPosition(GameServiceConfig.SCENE_DRAGON_BIRTH_LIGHT_EFFECT_ID, position, {
                 scale: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_START_SCALE,
                 loopCount: 0,
-            }),
+            })
         );
 
         if (!effect) {
@@ -176,7 +180,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                             if (!param) resolve(onBirth());
                         },
                     },
-                    {duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_2},
+                    { duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_2 },
                     {
                         dist: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_STAGE_3_SCALE,
                         duration: GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_DURATION_3,
@@ -190,7 +194,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                     },
                 ],
                 GameServiceConfig.SCENE_DRAGON_BIRTH_EFFECT_START_SCALE,
-                Easing.linear,
+                Easing.linear
             ).autoDestroy();
             task.continue();
         });
@@ -305,7 +309,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             if (this._lockingSyncKey) {
                 Log4Ts.log(
                     SceneDragonModuleC,
-                    `already lock on another SceneDragon. origin syncKey: ${this._lockingSyncKey}`,
+                    `already lock on another SceneDragon. origin syncKey: ${this._lockingSyncKey}`
                 );
                 if (this.syncItemMap.has(this._lockingSyncKey)) {
                     this.syncItemMap.get(this._lockingSyncKey).behavior.state.isFear = false;
@@ -373,7 +377,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             this._currentBall = new ThrowDragonBall(
                 this.character,
                 item.object.worldTransform.position.clone(),
-                GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION,
+                GameServiceConfig.SCENE_DRAGON_CATCH_PROGRESS_DURATION
             );
         } catch (e) {
             Log4Ts.error(SceneDragonModuleC, `prefab of dragon ball not set.`);
@@ -381,11 +385,9 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
         this._currentBall?.do();
         //#endregion
 
-        this.server
-            .net_tryCatch(syncKey, now)
-            .then((value) => {
-                if (value) this._currentCatchResultSyncKey = syncKey;
-            });
+        this.server.net_tryCatch(syncKey, now).then((value) => {
+            if (value) this._currentCatchResultSyncKey = syncKey;
+        });
     }
 
     /**
@@ -442,7 +444,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     private destroy(syncKey: string, natural: boolean = true) {
         Log4Ts.log(
             SceneDragonModuleC,
-            `try destroy item. ${this.syncItemMap.get(syncKey).behavior.data.info() ?? "?null"}`,
+            `try destroy item. ${this.syncItemMap.get(syncKey).behavior.data.info() ?? "?null"}`
         );
         const item = this.syncItemMap.get(syncKey);
         if (!item) {
@@ -459,13 +461,13 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
 
     private lockWithView(candidate: string) {
         this._lockingSyncKey = candidate;
-        Event.dispatchToLocal(EventDefine.DragonOnLock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        Event.dispatchToLocal(EventDefine.DragonOnLock, { syncKey: this._lockingSyncKey } as DragonSyncKeyEventArgs);
     }
 
     private unlockWithView() {
         this._lockingSyncKey = null;
         this.clearTimeOutForAutoCatch();
-        Event.dispatchToLocal(EventDefine.DragonOnUnlock, {syncKey: this._lockingSyncKey} as DragonSyncKeyEventArgs);
+        Event.dispatchToLocal(EventDefine.DragonOnUnlock, { syncKey: this._lockingSyncKey } as DragonSyncKeyEventArgs);
     }
 
     private getSceneDragonBySyncKey(syncKey: string): SceneDragon | null {
@@ -496,12 +498,12 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
                         existInfo: item[1],
                         distSqr: GToolkit.squaredEuclideanDistance(
                             [itemPosition.x, itemPosition.y, itemPosition.z],
-                            [charPosition.x, charPosition.y, charPosition.z],
+                            [charPosition.x, charPosition.y, charPosition.z]
                         ),
                     };
                 })
                 .where((item) => item.distSqr < sceneDragonCatchableDistanceSqr)
-                .defaultIfEmpty({syncKey: null, existInfo: null, distSqr: 0})
+                .defaultIfEmpty({ syncKey: null, existInfo: null, distSqr: 0 })
                 .minBy((item) => item.distSqr).syncKey ?? null;
 
         if (this._candidate !== candidate) {
@@ -516,7 +518,7 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
     private setTimeOutForAutoCatch() {
         this._lockTimerId = setTimeout(
             () => this.acceptResult(),
-            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION,
+            GameServiceConfig.SCENE_DRAGON_MAX_PREPARE_CATCH_DURATION
         );
     }
 
@@ -534,12 +536,12 @@ export class SceneDragonModuleC extends ModuleC<SceneDragonModuleS, SceneDragonM
             () => this.character.worldTransform.rotation.toQuaternion(),
             (val) => (this.character.worldTransform.rotation = val.toRotation()),
             Quaternion.fromRotation(
-                Rotation.fromVector(GToolkit.newWithZ(position.subtract(this.character.worldTransform.position), 0)),
+                Rotation.fromVector(GToolkit.newWithZ(position.subtract(this.character.worldTransform.position), 0))
             ),
             0.5e3,
             undefined,
             Easing.easeInOutSine,
-            Quaternion.slerp,
+            Quaternion.slerp
         ).autoDestroy();
     }
 
@@ -731,8 +733,8 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         let candidatePoints = Gtk.randomShuffleArray(
             Enumerable.from(habitat.areaIds)
-                .selectMany(areaId => this.aM.getAreaPointSet(areaId))
-                .toArray(),
+                .selectMany((areaId) => this.aM.getAreaPointSet(areaId))
+                .toArray()
         );
 
         let i = 0;
@@ -777,7 +779,13 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
      * @param location 生成位置.
      * @param syncKey 同步键.
      */
-    private generate(playerId: number, itemId: number, habitat: number, location: IPoint3, syncKey: string): SceneDragon {
+    private generate(
+        playerId: number,
+        itemId: number,
+        habitat: number,
+        location: IPoint3,
+        syncKey: string
+    ): SceneDragon {
         Log4Ts.log(SceneDragonModuleS, `try generate item, itemId: ${itemId}.`);
 
         let config = GameConfig.Dragon.getElement(itemId);
@@ -824,7 +832,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
         if (!removed) {
             Log4Ts.log(
                 SceneDragonModuleS,
-                `destroy Collectible Item; ${item.id} whose generate time is ${item.generateTime},but it not exist in server`,
+                `destroy Collectible Item; ${item.id} whose generate time is ${item.generateTime},but it not exist in server`
             );
         }
 
@@ -851,7 +859,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
             `try catch item.`,
             `playerId: ${currPlayerId}`,
             `syncKey: ${syncKey}`,
-            `${item.info()}`,
+            `${item.info()}`
         );
         if (!(this.bagModuleS?.hasDragonBall(currPlayerId) ?? false)) {
             Log4Ts.warn(SceneDragonModuleS, `dragon ball is not enough.`);
@@ -870,14 +878,14 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         Log4Ts.log(SceneDragonModuleS, `request catch scene dragon in p12...`);
 
-        const [result, currentCount] = (await this.authModuleS
-            .requestWebCatchDragon(currPlayerId,
-                item.getConfig().dragonPalId,
-                catchTime));
+        const [result, currentCount] = await this.authModuleS.requestWebCatchDragon(
+            currPlayerId,
+            item.getConfig().dragonPalId,
+            catchTime
+        );
 
-        if (result && !Gtk.isNullOrUndefined(currentCount?.unUsed)) this.bagModuleS?.setItem(currPlayerId,
-            GameServiceConfig.DRAGON_BALL_BAG_ID,
-            currentCount?.unUsed ?? 0);
+        if (result && !Gtk.isNullOrUndefined(currentCount?.unUsed))
+            this.bagModuleS?.setItem(currPlayerId, GameServiceConfig.DRAGON_BALL_BAG_ID, currentCount?.unUsed ?? 0);
 
         if (result) {
             Log4Ts.log(SceneDragonModuleS, `catch success. item locked.`);
@@ -903,7 +911,7 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
                 SceneDragonModuleS,
                 `item locker illegal.`,
                 `current locker: ${this._syncLocker.get(syncKey)}.`,
-                `request locker: ${syncKey}`,
+                `request locker: ${syncKey}`
             );
             return;
         }

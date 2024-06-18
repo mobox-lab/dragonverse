@@ -1,16 +1,19 @@
 {
   "dependencies": {
+    "@types/crypto-js": "^4.2.1",
+    "@types/uuid": "^9.0.7",
+    "crypto-js": "^4.2.0",
     "debug_console": "^0.1.2",
+    "linq": "^4.0.2",
     "module_bubble": "^5.1.1",
-    "module_gm": "^5.0.3",
     "module_leaderboard": "^4.0.10",
+    "mw-god-mod": "^31.1.23",
     "mwaction": "^1.0.8",
     "odin": "^5.0.5",
-    "@types/crypto-js": "^4.2.1",
-    "crypto-js": "^4.2.0",
-    "linq": "^4.0.2",
-    "@types/uuid": "^9.0.7",
     "pure-uuid": "^1.8.1",
     "robust-predicates": "^3.0.2"
+  },
+  "scripts": {
+    "update gsc depend": "npm update mw-god-mod --save"
   }
 }

@@ -1,7 +1,6 @@
-﻿import { GM } from "module_gm";
+﻿// import { GM } from "module_gm";
 import { GameConfig } from "./config/GameConfig";
 import { GlobalData } from "./const/GlobalData";
-import { GMBasePanelUI } from "./modules/GM/GMModule";
 import { HudModuleC, HudModuleS } from "./modules/Hud/HudModule";
 import { PlayerModuleC } from "./modules/Player/PlayerModuleC";
 import { PlayerModuleS } from "./modules/Player/PlayerModuleS";
@@ -45,6 +44,9 @@ import { DropManagerC, DropManagerS } from "./modules/Resources/DropResouce";
 import Balancing from "./depend/balancing/Balancing";
 import { GtkTypes } from "./util/GToolkit";
 import GMHUD_Generate from "./ui-generate/common/GM/GMHUD_generate";
+import PlayerSettingModuleData, { PlayerSettingModuleC, PlayerSettingModuleS } from "./modules/player-setting/PlayerSettingModule";
+import { VectorExt } from "./declaration/vectorext";
+import GodModService from "mw-god-mod";
 
 // declare global {
 //     var UE: any;
@@ -67,38 +69,38 @@ export default class GameStart extends mw.Script {
     @mw.Property()
     private isOnline: boolean = false;
 
-    @mw.Property({displayName: "是否发布", group: "发布"})
+    @mw.Property({ displayName: "是否发布", group: "发布" })
     public isRelease: boolean = false;
 
-    @mw.Property({displayName: "是否 Beta 发布", group: "发布"})
+    @mw.Property({ displayName: "是否 Beta 发布", group: "发布" })
     public isBeta: boolean = false;
 
-    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
+    @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
     public isUseTestUrl: boolean = true;
 
-    @mw.Property({displayName: "是否开启主页GM开关按钮"})
+    @mw.Property({ displayName: "是否开启主页GM开关按钮" })
     private isOpenGm = false;
-    @mw.Property({displayName: "是否免费送滑板"})
+    @mw.Property({ displayName: "是否免费送滑板" })
     private isFreeSkateboard = false;
-    @mw.Property({displayName: "是否使用平台形象"})
+    @mw.Property({ displayName: "是否使用平台形象" })
     private isUseAvatar = true;
-    @mw.Property({displayName: "是否使海外发布"})
+    @mw.Property({ displayName: "是否使海外发布" })
     private isOverSea = true;
-    @mw.Property({displayName: "是否同去同回"})
+    @mw.Property({ displayName: "是否同去同回" })
     private isSameGoBack = false;
-    @mw.Property({displayName: "是否开启收集图鉴机器"})
+    @mw.Property({ displayName: "是否开启收集图鉴机器" })
     private isOpenCollectMachine = true;
     @mw.Property({
         displayName: "语言类型",
         group: "Odin设置",
-        selectOptions: {"系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3"},
+        selectOptions: { "系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3" },
     })
     private selectedLanguageIndex: string = "-1";
 
     @mw.Property({
         displayName: "Log级别",
         group: "Odin设置",
-        selectOptions: {"None": "0", "Error": "1", "Warn": "2", "Log": "3"},
+        selectOptions: { "None": "0", "Error": "1", "Warn": "2", "Log": "3" },
     })
     private logLevel: string = "0";
 
@@ -139,6 +141,7 @@ export default class GameStart extends mw.Script {
         GlobalData.Global.isOverSea = this.isOverSea;
         this.onRegisterModule();
         mwaction;
+        VectorExt.initialize();
 
         DataStorage.setTemporaryStorage(!(GameServiceConfig.isRelease || GameServiceConfig.isBeta || this.isOnline));
 
@@ -181,15 +184,17 @@ export default class GameStart extends mw.Script {
 
         if (SystemUtil.isClient()) {
             if (!GameServiceConfig.isRelease && this.isOpenGm) {
-                GM.start(GMBasePanelUI);
+                // GM.start(GMBasePanelUI);
+                GodModService.getInstance().showGm()
                 this.registerGMVisibleKey();
                 return;
             }
-            GM.checkAuthority((res) => {
-                if (res) {
-                    GM.start(GMBasePanelUI);
-                }
-            });
+            // GM.checkAuthority((res) => {
+            //     if (res) {
+            //         // GM.start(GMBasePanelUI);
+            //         GodModService.getInstance().showGm()
+            //     }
+            // });
             GameObjectFactory.instance;
         } else {
             Resource.instance;
@@ -238,6 +243,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(DropManagerS, DropManagerC, null);
         ModuleService.registerModule(StatisticModuleS, StatisticModuleC, PsStatisticModuleData);
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
+        ModuleService.registerModule(PlayerSettingModuleS, PlayerSettingModuleC, PlayerSettingModuleData);
     }
 
     /**

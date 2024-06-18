@@ -10,6 +10,14 @@ import GToolkit, { GtkTypes } from "../util/GToolkit";
 
 export default class GameServiceConfig {
     /**
+     * 走路音效.
+     */
+    public static readonly WALK_SOUND = "287414";
+    /**
+     * 落地音效.
+     */
+    public static readonly LANDED_SOUND = "196559";
+    /**
      * 是否开启落地爆炸冲量.
      */
     public static readonly ENABLE_LAND_IMPULSE = false;
@@ -132,6 +140,12 @@ export default class GameServiceConfig {
      * @type {number}
      */
     public static readonly REPORT_REQUEST_WAIT_TIME = 1e3;
+
+    /**
+     * Token 过期刷新间隔. ms
+     * @type {number}
+     */
+    public static readonly EXPIRED_REFRESH_INTERVAL = 10e3;
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 

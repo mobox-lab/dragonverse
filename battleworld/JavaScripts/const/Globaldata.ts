@@ -14,9 +14,9 @@ export class Globaldata {
      */
     public static talkUIGuid: string = "324347";
     /**
-     * 相机移动速度([0,1])
+     * 相机移动速度([0.15,1])
      */
-    public static cameraRotateSpeed = 0.5;
+    // public static cameraRotateSpeed = 0.5;
     /**
      * 跳游戏进度时长
      */

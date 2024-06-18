@@ -36,8 +36,8 @@ import { PlayerHeadUIModuleC } from "./module/PlayerHeadUIModule/PlayerHeadUIMod
 import { LanguageManager } from "./tool/LanguageManager";
 import { GlobalAttrModuleS } from "./module/attr/GlobalAttrModuleS";
 import { GlobalAttrModuleC } from "./module/attr/GlobalAttrModuleC";
-import { SettingModuleC } from "./module/SetingModule/SetingMoudleC";
-import { SettingModuleS } from "./module/SetingModule/SetingMoudleS";
+import { SettingModuleC } from "./module/SettingModule/SettingModuleC";
+import { SettingModuleS } from "./module/SettingModule/SettingModuleS";
 import { PlayerManagerExtesion } from "./Modified027Editor/ModifiedPlayer";
 import { WeaponModuleS } from "./module/WeaponModule/WeaponModuleS";
 import { WeaponModuleC } from "./module/WeaponModule/WeaponModuleC";
@@ -68,10 +68,11 @@ import { AntiCheatSystem } from "./tool/AntiCheatSystem";
 import * as mwaction from "mwaction";
 import BattleWorldAuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
 import BWEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
-import { SettingModuleData } from "./module/SetingModule/SettingModuleData";
+// import { SettingModuleData } from "./module/SetingModule/SettingModuleData";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
 import GameServiceConfig from "./const/GameServiceConfig";
 import GMHUD_Generate from "./ui-generate/GM/GMHUD_generate";
+import PlayerSettingModuleData from "./module/SettingModule/SettingModuleData";
 
 declare global {
     var UE: any;
@@ -93,10 +94,10 @@ export default class GameLauncher extends mw.Script {
     })
     languageType1: string = "-1";
 
-    @mw.Property({displayName: "gm开关"})
+    @mw.Property({ displayName: "gm开关" })
     gmSwitch: boolean = true;
 
-    @mw.Property({displayName: "是否支持技能编辑器"})
+    @mw.Property({ displayName: "是否支持技能编辑器" })
     isMotionEdit: boolean = true;
 
     @mw.Property({
@@ -108,16 +109,16 @@ export default class GameLauncher extends mw.Script {
     })
     public logLevel = 0;
 
-    @mw.Property({displayName: "是否发布", group: "发布"})
+    @mw.Property({ displayName: "是否发布", group: "发布" })
     public isRelease: boolean = false;
 
-    @mw.Property({displayName: "是否 beta 发布", group: "发布"})
+    @mw.Property({ displayName: "是否 beta 发布", group: "发布" })
     public isBeta: boolean = false;
 
-    @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
+    @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
     public isUseTestUrl: boolean = true;
 
-    @mw.Property({displayName: "是否开启RPC统计"})
+    @mw.Property({ displayName: "是否开启RPC统计" })
     public isRecordRPC: boolean = false;
 
     async onStart() {
@@ -194,7 +195,7 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(AnalyticsModuleS, AnalyticsModuleC, AnalyticsModuleData);
         ModuleService.registerModule(ActionModuleS, ActionModuleC, null);
         ModuleService.registerModule(GlobalAttrModuleS, GlobalAttrModuleC, null);
-        ModuleService.registerModule(SettingModuleS, SettingModuleC, SettingModuleData);
+        ModuleService.registerModule(SettingModuleS, SettingModuleC, PlayerSettingModuleData);
         ModuleService.registerModule(TalkModuleS, TalkModuleC, null);
         ModuleService.registerModule(LandModuleS, LandModuleC, null);
         ModuleService.registerModule(PetModuleS, PetModuleC, null);

@@ -478,7 +478,7 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             // if (item.AreaID == areaId) {
             // if (item.Weight != 0) {
             // weight += item.Weight;
-            weightArr.push({id: item.ID, weight: item.Weight});
+            weightArr.push({ id: item.ID, weight: item.Weight });
             // }
             // }
         });
@@ -516,10 +516,12 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
 
     /**创建宝箱 */
     private async createBigBox(cfgId: number, pointId?: number) {
-        let res = await this.getScript();
-        pointId = pointId ?? this.getAreaResValidPoints(GameConfig.SceneUnit.getElement(cfgId)?.AreaID ?? 0)?.[0] ?? undefined;
-        if (Gtk.isNullOrUndefined(pointId)) return;
 
+        let res = await this.getScript();
+        // pointId = pointId ?? this.getAreaResValidPoints(GameConfig.SceneUnit.getElement(cfgId)?.AreaID ?? 0)?.[0] ?? undefined;
+        pointId = pointId ?? GameConfig.DropPoint.getAllElement().find(item => item.isBigBox === 1 && item.areaID === GameConfig.SceneUnit.getElement(cfgId)?.AreaID).id;
+        if (Gtk.isNullOrUndefined(pointId)) return;
+        Log4Ts.log(ResourceModuleS, `create big box, cfg id: ${cfgId} point id: ${pointId}`);
         res.initServer(pointId, cfgId);
         res.onDead.add((str: string, playerId: number) => {
             let arr = str.split("_");
