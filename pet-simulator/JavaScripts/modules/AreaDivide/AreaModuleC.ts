@@ -348,7 +348,7 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
     }
 
     public async net_areaNotice(playerId: number) {
-        let str = await PlayerNameManager.instance.getPlayerName(playerId);
+        let str = await PlayerNameManager.instance.getPlayerNameAsync(playerId);
         str = str + " " + GameConfig.Language.World_Tips_13.Value;
         mw.UIService.getUI(P_GlobalTips).showTips(str);
     }

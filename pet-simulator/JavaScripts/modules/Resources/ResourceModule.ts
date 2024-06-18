@@ -214,7 +214,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     }
 
     public async net_guaShaNotice(playerId: number, cfg: number) {
-        let name = await PlayerNameManager.instance.getPlayerName(playerId);
+        let name = await PlayerNameManager.instance.getPlayerNameAsync(playerId);
         const element = GlobalData.Notice.bigBoxTips;
         let str = "";
         switch (cfg) {

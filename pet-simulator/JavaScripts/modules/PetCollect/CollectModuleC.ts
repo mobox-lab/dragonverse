@@ -10,7 +10,7 @@ import { CollectModuleData } from "./CollectModuleData";
 import { CollectModuleS } from "./CollectModuleS";
 import { P_Collect, P_PetHover } from "./P_Collect";
 
-export class CollectModuleC extends ModuleC<CollectModuleS, CollectModuleData>{
+export class CollectModuleC extends ModuleC<CollectModuleS, CollectModuleData> {
 
     private petPanel: P_Collect;
     private petHover: P_PetHover;
@@ -99,7 +99,7 @@ export class CollectModuleC extends ModuleC<CollectModuleS, CollectModuleData>{
         })
     }
     public async net_petNotice(playerId: number, index: number) {
-        let name = await PlayerNameManager.instance.getPlayerName(playerId);
+        let name = await PlayerNameManager.instance.getPlayerNameAsync(playerId);
         let petName = GlobalData.Notice.collectPetCount[index];
         let str = utils.Format(GameConfig.Language.World_Tips_12.Value, petName);
         str = name + " " + str;

@@ -287,34 +287,34 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         return false;
 
     }
-		
-    public async net_buyWorld(cfgID: number): Promise<boolean> { 
-			let coinType = GlobalEnum.CoinType;
 
-			let goldType = coinType.FirstWorldGold;
+    public async net_buyWorld(cfgID: number): Promise<boolean> {
+        let coinType = GlobalEnum.CoinType;
 
-			if (cfgID < 2000) {
-					goldType = coinType.FirstWorldGold;
-			} else if (cfgID < 3000) {
-					goldType = coinType.SecondWorldGold;
-			} else if (cfgID < 4000) {
-					goldType = coinType.ThirdWorldGold;
-			}
-			const cfg = GameConfig.AreaDivide.getElement(cfgID);
-			return this.currentData.reduceGold(cfg.Gold, goldType);;
-		}
+        let goldType = coinType.FirstWorldGold;
+
+        if (cfgID < 2000) {
+            goldType = coinType.FirstWorldGold;
+        } else if (cfgID < 3000) {
+            goldType = coinType.SecondWorldGold;
+        } else if (cfgID < 4000) {
+            goldType = coinType.ThirdWorldGold;
+        }
+        const cfg = GameConfig.AreaDivide.getElement(cfgID);
+        return this.currentData.reduceGold(cfg.Gold, goldType);;
+    }
 
     public async randomDiamond(playerId: number): Promise<number> {
-			let count = MathUtil.randomInt(GlobalData.Enchant.randomDiamondNum[0], GlobalData.Enchant.randomDiamondNum[1] + 1);
-			const data = this.getPlayerData(playerId);
-			await data.addDiamond(count);
-			return count
-		}
+        let count = MathUtil.randomInt(GlobalData.Enchant.randomDiamondNum[0], GlobalData.Enchant.randomDiamondNum[1] + 1);
+        const data = this.getPlayerData(playerId);
+        await data.addDiamond(count);
+        return count
+    }
 
     /**减少金币 */
-    public reduceGold(playerId:number, value: number, coinType: GlobalEnum.CoinType): boolean {
-				if(!playerId) return false;
-				const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
+    public reduceGold(playerId: number, value: number, coinType: GlobalEnum.CoinType): boolean {
+        if (!playerId) return false;
+        const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
         return data.reduceGold(value, coinType);
     }
 
@@ -341,8 +341,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     }
 
     /**通过id获取玩家name */
-    public net_getPlayerNameById(id: number) {
-        this.getClient(id).net_getPlayerName();
+    public async net_getPlayerNameById(id: number): Promise<string> {
+        return await this.getClient(id).net_getPlayerName();
     }
 
     /**装卸滑板 */
@@ -351,9 +351,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         return this.getPlayerBehavior(player).PetArr;
     }
 
-		/** GM 测试用 */
-		public clearDiamondAndGold(playerId: number) {
-				const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
+    /** GM 测试用 */
+    public clearDiamondAndGold(playerId: number) {
+        const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
         return data.clearDiamondAndGold();
-		}
+    }
 }
