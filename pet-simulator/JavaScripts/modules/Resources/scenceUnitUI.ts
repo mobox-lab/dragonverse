@@ -99,7 +99,7 @@ export class resourceUI {
 
         let cfg = GameConfig.SceneUnit.getElement(cfgId)
         if (rate != 1) {
-            this.rateText.text = rate + "x Coins!*"
+            this.rateText.text = StringUtil.format(GameConfig.Language.Plaza_Text_12.Value, `${rate}x`);
         } else {
             this.rateText.text = "";
         }
