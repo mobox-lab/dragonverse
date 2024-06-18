@@ -166,7 +166,6 @@ export class EnchantBuff {
         const keys = petBuff.keys();
         let totalTeamDamageAdd = 0;
         for (const key of keys) {
-            if (key + "" === curKey.toString()) continue; // 跳过自己
             const buff: petBuff = Gtk.tryGet(petBuff, key, () => this.getEmptyBuff());
             if (!buff.teamDamageAdd) continue;
             totalTeamDamageAdd += buff.teamDamageAdd;
@@ -353,7 +352,7 @@ export class EnchantBuff {
         critAdd += cfg.Degree;
         GlobalData.SceneResource.critWeightMap.set(
             playerId,
-            GlobalData.SceneResource.critWeight(playerId) * (1 + critAdd / 100)
+            GlobalData.SceneResource.critWeight(playerId) + critAdd
         );
         return critAdd;
     }
