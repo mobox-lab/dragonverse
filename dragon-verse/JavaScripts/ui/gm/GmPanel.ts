@@ -11,7 +11,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import Gtk from "../../util/GToolkit";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 import CutScenePanel from "../jump-game/CutScenePanel";
-import { addGMCommand } from "mw-god-mod";
+import GodModService, { addGMCommand } from "mw-god-mod";
 
 const PLAYER_START_GUID: string = "DC5A4E2B47A0C6E31572FE9882BE6861";
 
@@ -225,8 +225,9 @@ addGMCommand(
     },
 );
 
-AddGMCommand(
+addGMCommand(
     "跳 NeverGiveUp",
+    "void",
     () => {
     },
     (player) => {
@@ -236,7 +237,7 @@ AddGMCommand(
                 const player = Player.getPlayer(userId);
                 if (player) {
                     Event.dispatchToClient(player, "onJumpGameFailed", result.message);
-                    Log4Ts.log(GMPanel, "onJumpGameFailed", result.message);
+                    Log4Ts.log(GodModService, "onJumpGameFailed", result.message);
                 }
             }
         };
