@@ -225,7 +225,7 @@ interface QueryCurrencyResp {
     /**
      * 余额.
      */
-    balance: number,
+    balance: string,
 
     chainId: number
 }
@@ -414,7 +414,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     private _lastSubGameReportTime: number = 0;
 
-    public currency: { count: number } = createYoact({count: 0});
+    public currency: { count: string } = createYoact({count: undefined});
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -495,7 +495,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
         this.queryTempToken();
     }
 
-    public net_setCurrency(val: number) {
+    public net_setCurrency(val: string) {
         this.currency.count = val;
     }
 
@@ -754,7 +754,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     /**
      * 用户货币表.
      */
-    public userCurrencyMap: Map<string, number> = new Map();
+    public userCurrencyMap: Map<string, string> = new Map();
 
     /**
      * 用户 PS 上报函数.
@@ -1028,7 +1028,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return;
         }
 
-        let count = respInJson.data?.balance ?? 0;
+        let count = respInJson.data?.balance;
         this.setCurrency(userId, count);
     }
 
@@ -1286,7 +1286,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return this.queryRegisterStaminaLimit(playerId);
     }
 
-    private setCurrency(userId: string, count: number) {
+    private setCurrency(userId: string, count: string) {
         this.userCurrencyMap.set(userId, count);
         this.getClient(Player.getPlayer(userId))?.net_setCurrency(count);
     }
