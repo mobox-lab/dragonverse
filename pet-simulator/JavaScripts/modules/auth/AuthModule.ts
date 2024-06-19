@@ -24,6 +24,17 @@ addGMCommand(
 );
 
 addGMCommand(
+    "refresh currency | Auth",
+    "void",
+    () => {
+        mwext.ModuleService.getModule(AuthModuleC).refreshCurrency();
+    },
+    undefined,
+    undefined,
+    "Root",
+);
+
+addGMCommand(
     "refresh dragon ball | Auth",
     "void",
     undefined,
@@ -201,6 +212,22 @@ interface GetTokenReq {
      * 临时 Token.
      */
     tempToken: string;
+}
+
+interface QueryCurrencyResp {
+    /**
+     * 钱包地址.
+     */
+    walletAddress: string,
+
+    symbol: "mdbl",
+
+    /**
+     * 余额.
+     */
+    balance: number,
+
+    chainId: number
 }
 
 /**
@@ -457,6 +484,10 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
         this.server.net_reportTempToken(token);
     }
 
+    public refreshCurrency() {
+        this.server.net_refreshCurrency();
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Net Method
@@ -512,7 +543,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     /**
      * 查询货币余额 Uri.
      */
-    private static readonly GET_CURRENCY_URI = "/user/symbol/balance";
+    private static readonly GET_CURRENCY_URI = "/user-fund/balance";
 
     /**
      * 汇报 宠物模拟器排行榜 Uri.
@@ -958,6 +989,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             requestParam,
             AuthModuleS.RELEASE_GET_P12_TOKEN_URL,
             AuthModuleS.TEST_GET_P12_TOKEN_URL,
+            true,
             false,
         );
 
@@ -980,37 +1012,25 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         }
     }
 
-    // private async queryCurrency(userId: string) {
-    //     let token = this._tokenMap.get(userId);
-    //     if (Gtk.isNullOrUndefined(token)) {
-    //         logEUserTokenInvalid(userId);
-    //         if (GameServiceConfig.isRelease || GameServiceConfig.isBeta) {
-    //             return;
-    //         } else {
-    //             Log4Ts.log(AuthModuleS, `use test token.`);
-    //             token = AuthModuleS.TEST_TOKEN;
-    //         }
-    //     }
-    //
-    //     const requestParam: QueryCurrencyReq = {
-    //         symbol: "mbox",
-    //     };
-    //
-    //     const respInJson = await this.correspondHandler<QueryResp<QueryCurrencyResq>>(
-    //         requestParam,
-    //         AuthModuleS.RELEASE_GET_CURRENCY_URL,
-    //         AuthModuleS.TEST_GET_CURRENCY_URL,
-    //     );
-    //
-    //     if (respInJson.code !== 200) {
-    //         Log4Ts.error(AuthModuleS, `query currency failed. ${JSON.stringify(respInJson)}`);
-    //         if (respInJson.code === 401) this.onTokenExpired(userId);
-    //         return;
-    //     }
-    //
-    //     let count = respInJson.data?.balance ?? 0;
-    //     this.setCurrency(userId, count);
-    // }
+    private async queryCurrency(userId: string): Promise<void> {
+        const respInJson = await this.correspondHandler<QueryResp<QueryCurrencyResp>>(
+            undefined,
+            AuthModuleS.RELEASE_GET_CURRENCY_URL,
+            AuthModuleS.TEST_GET_CURRENCY_URL,
+            true,
+            false,
+            userId,
+        );
+
+        if (respInJson.code !== 200) {
+            Log4Ts.error(AuthModuleS, `query currency failed. ${JSON.stringify(respInJson)}`);
+            if (respInJson.code === 401) this.onTokenExpired(userId);
+            return;
+        }
+
+        let count = respInJson.data?.balance ?? 0;
+        this.setCurrency(userId, count);
+    }
 
     public async queryUserDragonBall(playerId: number): Promise<DragonBallRespData> {
         const userId = this.queryUserId(playerId);
@@ -1206,24 +1226,47 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         )?.sceneId ?? "INVALID_SCENE_ID");
     }
 
-    private async correspondHandler<D = object>(reqParam: object, releaseUrl: string, testUrl: string, useEncrypt: boolean = true) {
+    private async correspondHandler<D = object>(reqParam: object,
+                                                releaseUrl: string,
+                                                testUrl: string,
+                                                silence: boolean = false,
+                                                useEncrypt: boolean = true,
+                                                authUserId?: string) {
         const body = useEncrypt ?
-            {encryptData: this.getSecret(JSON.stringify(reqParam))} :
-            reqParam;
+            {encryptData: this.getSecret(JSON.stringify(reqParam ?? {}))} :
+            (reqParam ?? {});
+
+        let headers = {
+            "Content-Type": "application/json;charset=UTF-8",
+        };
+
+        if (!Gtk.isNullOrUndefined(authUserId)) {
+            let token = this._tokenMap.get(authUserId);
+            if (Gtk.isNullOrUndefined(token)) {
+                if (GameServiceConfig.isRelease || GameServiceConfig.isBeta) {
+                    logEUserTokenInvalid(authUserId);
+                    return;
+                } else {
+                    Log4Ts.log(AuthModuleS, `token invalid when test env. use test token.`);
+                    token = AuthModuleS.TEST_TOKEN;
+                }
+            }
+            headers["Authorization"] = `Bearer ${token}`;
+        }
 
         const resp = await fetch(
             `${GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl ? releaseUrl : testUrl}`,
             {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json;charset=UTF-8",
-                },
+                headers,
                 body: JSON.stringify(body),
             },
         );
 
         const respJson = await resp.json<D>();
-        Log4Ts.log(AuthModuleS, `get resp. ${JSON.stringify(respJson)}`);
+        if (!silence) {
+            Log4Ts.log(AuthModuleS, `get resp. ${JSON.stringify(respJson)}`);
+        }
         return respJson;
     }
 
@@ -1280,6 +1323,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     public net_reportTempToken(token: string) {
         const currentPlayerId = this.currentPlayerId;
         this.getP12Token(currentPlayerId, token);
+    }
+
+    @noReply()
+    public net_refreshCurrency() {
+        this.queryCurrency(this.currentPlayer.userId);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
