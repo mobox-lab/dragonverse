@@ -328,8 +328,8 @@ export default class MainPanel extends MainPanel_Generate {
             }
         });
 
-        this.btnBag.onClicked.add(() => this.showBag());
-        // this.btnBag.onClicked.add(() => this.showDragonHandbook());
+        // this.btnBag.onClicked.add(() => this.showBag());
+        this.btnBag.onClicked.add(() => this.showDragonHandbook());
         // this.btnBook.onClicked.add(() => this.showHandbook());
         this.btnCode.onClicked.add(() => this.showCode());
         this.btnReset.onClicked.add(respawn);

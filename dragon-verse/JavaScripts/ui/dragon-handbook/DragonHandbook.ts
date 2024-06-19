@@ -15,6 +15,7 @@ import { MouseLockController } from "../../controller/MouseLockController";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import NewBag_Generate from "../../ui-generate/bag/NewBag_generate";
 import YoactArray from "../../depend/yoact/YoactArray";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export default class DragonHandbook extends NewBag_Generate {
     //#region Constant
@@ -75,14 +76,34 @@ export default class DragonHandbook extends NewBag_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Init
+    private getCidScrollBox(cid: number) {
+        switch (cid) {
+            case 1:
+                return this.scr_FireDragon; // 火
+            case 2:
+                return this.scr_WaterDragon; // 水
+            case 3:
+                return this.scr_WoodDragon; // 木
+            case 4:
+                return this.scr_SoilDragon; // 土
+            case 5:
+                return this.scr_LightDragon; // 光
+            case 6:
+                return this.scr_DarkDragon; // 暗
+            default:
+                return undefined;
+        }
+    }
+
     private initHandbook() {
-        const categoryIds = GameConfig.Elemental.getAllElement().slice(1).map((cfg) => cfg.id);
+        const categoryIds = GameConfig.Elemental.getAllElement().map((cfg) => cfg.id);
         this._scrollViews = categoryIds.map((cid) => {
+            Log4Ts.log(DragonHandbook, " initHandbook cid:" + cid + " this._bagModule.dragonHandbookYoactArr[cid]" + JSON.stringify(this._bagModule.dragonHandbookYoactArr[cid - 1].getAll()));
             return new ScrollView<DragonHandbookUnique, DragonHandbookItem>(
-                this._bagModule.dragonHandbookYoactArr[cid],
+                this._bagModule.dragonHandbookYoactArr[cid - 1],
                 DragonHandbookItem,
-                this.mScrollBox,
-                this.mContent,
+                this.getCidScrollBox(cid),
+                undefined,
                 true,
             ).listenOnItemSelect((key: number) => {
                 if (key === null) {

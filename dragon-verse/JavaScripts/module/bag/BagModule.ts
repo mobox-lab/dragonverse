@@ -103,33 +103,31 @@ export class DragonHandbookUnique implements IUnique {
     public static arrayFromByteArray(data: BagModuleData, categoryId: number): DragonHandbookUnique[] {
         const result: DragonHandbookUnique[] = [];
 
-        Log4Ts.log(DragonHandbookUnique, " data.handbook:" + JSON.stringify(data.handbook));
-
-        for (let i = 1; i < data.handbook.count; ++i) {
+        const bagIds = GameConfig.BagItem.getAllElement().filter(cfg => cfg.category_id === categoryId).map(cfg => cfg.id);
+        for (let bagId of bagIds) {
             //#region 视图 筛选有分类id的
-            const cfg = GameConfig.BagItem.getElement(i);
-            if (!cfg.category_id || categoryId !== cfg.category_id) continue;
             //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-            const cnt = data.handbook.getValue(i);
-            result.push(new DragonHandbookUnique(i, cnt, categoryId));
+            const cnt = data.getItemCount(bagId);
+            result.push(new DragonHandbookUnique(bagId, cnt, categoryId));
         }
+        Log4Ts.log(DragonHandbookUnique, " data.itemsMap:" + JSON.stringify(data.itemsMap) + " result:" + JSON.stringify(result));
         return result;
     }
 
-    constructor(id: number, cnt:number, categoryId: number) {
-		this.categoryId = categoryId;
-		this.cnt = cnt;
-		this.id = id;
-	}
+    constructor(id: number, cnt: number, categoryId: number) {
+        this.categoryId = categoryId;
+        this.cnt = cnt;
+        this.id = id;
+    }
 
     //#region IUnique
     public move(updated: this): boolean {
         let changed: boolean = false;
-        Log4Ts.log(DragonHandbookUnique, "move Update:", JSON.stringify(updated))
+        Log4Ts.log(DragonHandbookUnique, "move Update:", JSON.stringify(updated));
         return changed;
     }
- 
+
     public primaryKey(): number {
         return this.id;
     }
@@ -358,7 +356,7 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
         this.bagItemYoact.setAll(BagItemUnique.arrayFromObject(this.data));
         this.handbookYoact
             .setAll(HandbookItemUnique.arrayFromByteArray(this.data));
-        const categoryIds = GameConfig.Elemental.getAllElement().slice(1).map((cfg) => cfg.id);
+        const categoryIds = GameConfig.Elemental.getAllElement().map((cfg) => cfg.id);
         this.dragonHandbookYoactArr = categoryIds.map((cid) => {
             return new YoactArray<DragonHandbookUnique>().setAll(DragonHandbookUnique.arrayFromByteArray(this.data, cid));
         });
