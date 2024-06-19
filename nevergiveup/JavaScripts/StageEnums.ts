@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-14 11:47:00
  * @LastEditors  : xiaohao.li
@@ -27,7 +27,6 @@ export type WaveConfig = {
     airDrop?: AirDropConifg;
 }
 
-
 export type StageConfig = {
     waves: WaveConfig[];
 }
@@ -42,5 +41,51 @@ export enum EStageState {
 export const DifficlutyEnemyHpMultipliers = [
     1,
     1.5,
-    2
-]
+    2,
+];
+
+// type GrowthEnemy = {
+//     type: number;
+//
+//     gate?: number;
+//
+//     growthConfig: WaveCalculator<GrowthEnemyConfig>;
+// }
+//
+// interface GrowthEnemyConfig {
+//     count: number;
+//
+//     maxHitPointRatio: number;
+//
+//     spawnInterval: number;
+//
+//     // ...
+// }
+//
+// interface WaveEventEnemy {
+//     enemies: GrowthEnemy[];
+// }
+//
+// abstract class WaveEvent {
+//     abstract predicate(wave: number, ...params: any[]): boolean;
+//
+//     abstract waveCalculators: WaveCalculator<WaveEventEnemy>[];
+// }
+//
+// export type GrowthFunction<R = number> = (wave: number) => R;
+//
+// export type WaveCalculator<P extends object> = {
+//     [K in keyof P]: GrowthFunction<P[K]>;
+// };
+//
+// export function settleWaveCalculator<P extends object>
+// (calculator: WaveCalculator<P>, wave: number): Partial<P> {
+//     let result: Partial<P> = {};
+//     for (const key in calculator) {
+//         if (typeof calculator[key] === "function") {
+//             result[key] = calculator[key](wave);
+//         }
+//     }
+//
+//     return result;
+// }
