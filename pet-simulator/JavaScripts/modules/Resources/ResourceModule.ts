@@ -300,11 +300,12 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
     /**当前区域随机生成一个 */
     private async areaRandomRefresh(areaId: number) {
         let cfgId = this.getAreaResValidPoints(areaId).shift();
+        Log4Ts.log(ResourceModuleS, `random refresh, area id: ${areaId}, cfg id: ${cfgId}`);
         if (memorizePointIdToLocation(cfgId) === undefined) {
             Log4Ts.warn(ResourceModuleS, `point by id ${cfgId} is not found. whose area id is ${areaId}`);
             return;
         }
-        await TimeUtil.delaySecond(GlobalData.SceneResource.initResourceRefresh);
+        // await TimeUtil.delaySecond(GlobalData.SceneResource.initResourceRefresh);
 
         this.addTranArea(areaId, cfgId);
     }
@@ -429,6 +430,7 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
                 oTraceError("lwj 低于下限");
                 this.areaRandomRefresh(areaId);
             }
+
             this.onAttackDestroy.call(false, playerId);
             ModuleService.getModule(Task_ModuleS).breakDestroy(Player.getPlayer(playerId), historyScenceId, areaId);
 
