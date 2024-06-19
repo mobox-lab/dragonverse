@@ -216,7 +216,7 @@ export default class ResourceScript extends mw.Script {
     }
 
     private async net_dead(playerId: number) {
-        await TimeUtil.delaySecond(3);
+        // await TimeUtil.delaySecond(3);
         if (this.isBigBox) {
             this.onDead.call(this.scenePointId, playerId);
         } else
