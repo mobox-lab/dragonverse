@@ -134,26 +134,12 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.can_Mobox_Token_Internal
 	}
-	private text_Token1_Internal: mw.TextBlock
-	public get text_Token1(): mw.TextBlock {
-		if(!this.text_Token1_Internal&&this.uiWidgetBase) {
-			this.text_Token1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token/text_Token1') as mw.TextBlock
+	private mText_token_Internal: mw.TextBlock
+	public get mText_token(): mw.TextBlock {
+		if(!this.mText_token_Internal&&this.uiWidgetBase) {
+			this.mText_token_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token/mText_token') as mw.TextBlock
 		}
-		return this.text_Token1_Internal
-	}
-	private text_MaxNumber_Internal: mw.TextBlock
-	public get text_MaxNumber(): mw.TextBlock {
-		if(!this.text_MaxNumber_Internal&&this.uiWidgetBase) {
-			this.text_MaxNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token/text_MaxNumber') as mw.TextBlock
-		}
-		return this.text_MaxNumber_Internal
-	}
-	private text_CurrentNumber_Internal: mw.TextBlock
-	public get text_CurrentNumber(): mw.TextBlock {
-		if(!this.text_CurrentNumber_Internal&&this.uiWidgetBase) {
-			this.text_CurrentNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token/text_CurrentNumber') as mw.TextBlock
-		}
-		return this.text_CurrentNumber_Internal
+		return this.mText_token_Internal
 	}
 	private pic_Token_Internal: mw.Image
 	public get pic_Token(): mw.Image {
@@ -516,13 +502,7 @@ export default class Hud_Generate extends UIScript {
 		this.initLanguage(this.mText_Mcoin)
 		
 	
-		this.initLanguage(this.text_Token1)
-		
-	
-		this.initLanguage(this.text_MaxNumber)
-		
-	
-		this.initLanguage(this.text_CurrentNumber)
+		this.initLanguage(this.mText_token)
 		
 	
 		this.initLanguage(this.mText_Interval)
