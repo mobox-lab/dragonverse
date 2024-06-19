@@ -14,6 +14,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Gtk from "../../util/GToolkit";
+import DragonHandbookItem from "../../ui/dragon-handbook/DragonHandbookItem";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -87,6 +88,48 @@ export class HandbookItemUnique implements IUnique {
         return changed;
     }
 
+    public primaryKey(): number {
+        return this.id;
+    }
+
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+export class DragonHandbookUnique implements IUnique {
+	public categoryId: number;
+    public id: number;
+    public cnt: number;
+
+    public static arrayFromByteArray(data: BagModuleData, categoryId: number): DragonHandbookUnique[] {
+        const result: DragonHandbookUnique[] = [];
+
+        Log4Ts.log(DragonHandbookUnique, " data.handbook:" + JSON.stringify(data.handbook));
+
+        for (let i = 1; i < data.handbook.count; ++i) {
+            //#region 视图 筛选有分类id的
+            const cfg = GameConfig.BagItem.getElement(i);
+            if (!cfg.category_id || categoryId !== cfg.category_id) continue;
+            //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+
+            const cnt = data.handbook.getValue(i);
+            result.push(new DragonHandbookUnique(i, cnt, categoryId));
+        }
+        return result;
+    }
+
+    constructor(id: number, cnt:number, categoryId: number) {
+		this.categoryId = categoryId;
+		this.cnt = cnt;
+		this.id = id;
+	}
+
+    //#region IUnique
+    public move(updated: this): boolean {
+        let changed: boolean = false;
+        Log4Ts.log(DragonHandbookUnique, "move Update:", JSON.stringify(updated))
+        return changed;
+    }
+ 
     public primaryKey(): number {
         return this.id;
     }
@@ -295,6 +338,7 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
     //#region Member
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
     public handbookYoact: YoactArray<HandbookItemUnique> = new YoactArray<HandbookItemUnique>();
+    public dragonHandbookYoactArr: YoactArray<DragonHandbookUnique>[] = [];
 
     public dragonBallYoact: { count: number } = createYoact({count: 0});
     public obbyCoinYoact: { count: number } = Yoact.createYoact({count: 0});
@@ -314,7 +358,10 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
         this.bagItemYoact.setAll(BagItemUnique.arrayFromObject(this.data));
         this.handbookYoact
             .setAll(HandbookItemUnique.arrayFromByteArray(this.data));
-        this.dragonBallYoact.count = this.getItemCount(GameServiceConfig.DRAGON_BALL_BAG_ID);
+        const categoryIds = GameConfig.Elemental.getAllElement().slice(1).map((cfg) => cfg.id);
+        this.dragonHandbookYoactArr = categoryIds.map((cid) => {
+            return new YoactArray<DragonHandbookUnique>().setAll(DragonHandbookUnique.arrayFromByteArray(this.data, cid));
+        });
         this.obbyCoinYoact.count = this.data.obbyCoin;
         this.obbyTicketYoact.count = this.data.obbyTicket;
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
