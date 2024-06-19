@@ -105,9 +105,6 @@ export class DragonHandbookUnique implements IUnique {
 
         const bagIds = GameConfig.BagItem.getAllElement().filter(cfg => cfg.category_id === categoryId).map(cfg => cfg.id);
         for (let bagId of bagIds) {
-            //#region 视图 筛选有分类id的
-            //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
             const cnt = data.getItemCount(bagId);
             result.push(new DragonHandbookUnique(bagId, cnt, categoryId));
         }
@@ -123,9 +120,11 @@ export class DragonHandbookUnique implements IUnique {
 
     //#region IUnique
     public move(updated: this): boolean {
-        let changed: boolean = false;
-        Log4Ts.log(DragonHandbookUnique, "move Update:", JSON.stringify(updated));
-        return changed;
+        Log4Ts.log(DragonHandbookUnique, "move Update:", JSON.stringify(updated)); 
+		this.id = updated.id;
+		this.categoryId = updated.categoryId;
+		this.cnt = updated.cnt;
+        return true;
     }
 
     public primaryKey(): number {

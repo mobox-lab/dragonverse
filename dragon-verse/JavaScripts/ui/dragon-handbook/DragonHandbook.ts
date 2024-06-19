@@ -1,6 +1,6 @@
 ﻿import BagMain_Generate from "../../ui-generate/bag/BagMain_generate";
 import ScrollView from "../../depend/scroll-view/ScrollView";
-import { BagModuleC, DragonHandbookUnique } from "../../module/bag/BagModule";
+import BagModuleData, { BagModuleC, DragonHandbookUnique } from "../../module/bag/BagModule";
 import DragonHandbookItem from "./DragonHandbookItem";
 import GToolkit from "../../util/GToolkit";
 import { GameConfig } from "../../config/GameConfig";
@@ -13,9 +13,9 @@ import stopEffect = Yoact.stopEffect;
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 import { MouseLockController } from "../../controller/MouseLockController";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-import NewBag_Generate from "../../ui-generate/bag/NewBag_generate";
 import YoactArray from "../../depend/yoact/YoactArray";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import NewBag_Generate from "../../ui-generate/dragon-handbook/NewBag_generate";
 
 export default class DragonHandbook extends NewBag_Generate {
     //#region Constant
@@ -61,6 +61,7 @@ export default class DragonHandbook extends NewBag_Generate {
 
     protected onShow() {
         // this._scrollView.resetSelect();
+		this.updateDragonBallNumUI();
         this._scrollViews.forEach(_scrollView => _scrollView.resetSelect());
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.mBtnClose.onClicked.broadcast();
@@ -94,13 +95,16 @@ export default class DragonHandbook extends NewBag_Generate {
                 return undefined;
         }
     }
-
+	public updateDragonBallNumUI() {
+		this.text_BallNum.text = DataCenterC.getData(BagModuleData).getItemCount(1).toString();
+	}
     private initHandbook() {
         const categoryIds = GameConfig.Elemental.getAllElement().map((cfg) => cfg.id);
         this._scrollViews = categoryIds.map((cid) => {
-            Log4Ts.log(DragonHandbook, " initHandbook cid:" + cid + " this._bagModule.dragonHandbookYoactArr[cid]" + JSON.stringify(this._bagModule.dragonHandbookYoactArr[cid - 1].getAll()));
+            const dragonHandbookYoact = this._bagModule.dragonHandbookYoactArr[cid - 1];
+            Log4Ts.log(DragonHandbook, " initHandbook cid:" + cid + " this._bagModule.dragonHandbookYoactArr[cid]" + JSON.stringify(dragonHandbookYoact.getAll()));
             return new ScrollView<DragonHandbookUnique, DragonHandbookItem>(
-                this._bagModule.dragonHandbookYoactArr[cid - 1],
+                dragonHandbookYoact,
                 DragonHandbookItem,
                 this.getCidScrollBox(cid),
                 undefined,
@@ -125,46 +129,47 @@ export default class DragonHandbook extends NewBag_Generate {
 
                 if (ForeignKeyIndexer.getInstance().isBagItemType(data.id, BagTypes.Dragon)) {
                     GToolkit.trySetVisibility(this.mBtnOpt, true);
-                    // if (this._dragonModule.getCurrentShowupBagId() === data.id) {
-                    //     this.showRestBtn(data.id, true);
-                    // } else {
-                    //     this.showFollowBtn(data.id, true);
-                    // }
+                    if (this._dragonModule.getCurrentShowupBagId() === data.id) {
+                        this.showRestBtn(data.id, true);
+                    } else {
+                        this.showFollowBtn(data.id, true);
+                    }
                 } else {
                     GToolkit.trySetVisibility(this.mBtnOpt, false);
                 }
             });
         });
+		this.updateDragonBallNumUI();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region UI Behavior
-    // /**
-    //  *
-    //  * @param id
-    //  * @param force 是否 执行强制刷新 否则将根据当前按钮图片 guid 判断是否需要刷新.
-    //  * @private
-    //  */
-    // private showRestBtn(id: number, force: boolean = false) {
-    //     if (!force && this.mBtnOpt.normalImageGuid === DragonHandbook.REST_BTN_IMG_GUID) return;
-    //     GToolkit.setButtonGuid(this.mBtnOpt, DragonHandbook.REST_BTN_IMG_GUID);
-    //     this.mBtnOpt.text = i18n.lan(i18n.lanKeys.Bag_005);
-    //     this.mBtnOpt.onClicked.clear();
-    //     this.mBtnOpt.onClicked.add(
-    //         () => {
-    //             this._dragonModule.showUpCompanion(id, false).then((value) => {
-    //                     if (this._scrollView.currentSelectId === value) {
-    //                         this.showRestBtn(this._scrollView.currentSelectId);
-    //                     } else {
-    //                         this.showFollowBtn(this._scrollView.currentSelectId);
-    //                     }
-    //                 },
-    //             );
-    //             this.showFollowBtn(id);
-    //         },
-    //     );
-    // }
+    /**
+     *
+     * @param id
+     * @param force 是否 执行强制刷新 否则将根据当前按钮图片 guid 判断是否需要刷新.
+     * @private
+     */
+    private showRestBtn(id: number, force: boolean = false) {
+        // if (!force && this.mBtnOpt.normalImageGuid === DragonHandbook.REST_BTN_IMG_GUID) return;
+        // GToolkit.setButtonGuid(this.mBtnOpt, DragonHandbook.REST_BTN_IMG_GUID);
+        // this.mBtnOpt.text = i18n.lan(i18n.lanKeys.Bag_005);
+        // this.mBtnOpt.onClicked.clear();
+        // this.mBtnOpt.onClicked.add(
+        //     () => {
+        //         this._dragonModule.showUpCompanion(id, false).then((value) => {
+        //                 if (this._scrollView.currentSelectId === value) {
+        //                     this.showRestBtn(this._scrollView.currentSelectId);
+        //                 } else {
+        //                     this.showFollowBtn(this._scrollView.currentSelectId);
+        //                 }
+        //             },
+        //         );
+        //         this.showFollowBtn(id);
+        //     },
+        // );
+    }
 
     // /**
     //  *
@@ -172,24 +177,24 @@ export default class DragonHandbook extends NewBag_Generate {
     //  * @param force 是否 执行强制刷新 否则将根据当前按钮图片 guid 判断是否需要刷新.
     //  * @private
     //  */
-    // private showFollowBtn(id: number, force: boolean = false) {
-    //     if (!force && this.mBtnOpt.normalImageGuid === DragonHandbook.FOLLOW_BTN_IMG_GUID) return;
-    //     this.mBtnOpt.text = i18n.lan(i18n.lanKeys.Bag_004);
-    //     GToolkit.setButtonGuid(this.mBtnOpt, DragonHandbook.FOLLOW_BTN_IMG_GUID);
-    //     this.mBtnOpt.onClicked.clear();
-    //     this.mBtnOpt.onClicked.add(
-    //         () => {
-    //             this._dragonModule.showUpCompanion(id, true).then((value) => {
-    //                 if (this._scrollView.currentSelectId === value) {
-    //                     this.showRestBtn(this._scrollView.currentSelectId);
-    //                 } else {
-    //                     this.showFollowBtn(this._scrollView.currentSelectId);
-    //                 }
-    //             });
-    //             this.showRestBtn(id);
-    //         },
-    //     );
-    // }
+    private showFollowBtn(id: number, force: boolean = false) {
+        // if (!force && this.mBtnOpt.normalImageGuid === DragonHandbook.FOLLOW_BTN_IMG_GUID) return;
+        // this.mBtnOpt.text = i18n.lan(i18n.lanKeys.Bag_004);
+        // GToolkit.setButtonGuid(this.mBtnOpt, DragonHandbook.FOLLOW_BTN_IMG_GUID);
+        // this.mBtnOpt.onClicked.clear();
+        // this.mBtnOpt.onClicked.add(
+        //     () => {
+        //         this._dragonModule.showUpCompanion(id, true).then((value) => {
+        //             if (this._scrollView.currentSelectId === value) {
+        //                 this.showRestBtn(this._scrollView.currentSelectId);
+        //             } else {
+        //                 this.showFollowBtn(this._scrollView.currentSelectId);
+        //             }
+        //         });
+        //         this.showRestBtn(id);
+        //     },
+        // );
+    }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 

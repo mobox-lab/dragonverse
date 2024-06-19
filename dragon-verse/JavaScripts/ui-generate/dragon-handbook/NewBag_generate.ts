@@ -7,13 +7,13 @@
  * @zewei.zhang
  * @LviatYi
  * @version 31.4.0
- * UI: UI/bag/NewBag.ui
+ * UI: UI/dragon-handbook/NewBag.ui
  */
 
 import UIScript = mw.UIScript;
 
 
-@UIBind('UI/bag/NewBag.ui')
+@UIBind('UI/dragon-handbook/NewBag.ui')
 export default class NewBag_Generate extends UIScript {
 	private imgMaskBg_Internal: mw.Image
 	public get imgMaskBg(): mw.Image {
