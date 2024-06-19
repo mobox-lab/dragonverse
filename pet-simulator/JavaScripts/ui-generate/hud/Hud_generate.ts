@@ -127,40 +127,54 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.mPic_Mcoin_Internal
 	}
-	private mCanvas_starcoin_Internal: mw.Canvas
-	public get mCanvas_starcoin(): mw.Canvas {
-		if(!this.mCanvas_starcoin_Internal&&this.uiWidgetBase) {
-			this.mCanvas_starcoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin') as mw.Canvas
+	private can_Mobox_Token_Internal: mw.Canvas
+	public get can_Mobox_Token(): mw.Canvas {
+		if(!this.can_Mobox_Token_Internal&&this.uiWidgetBase) {
+			this.can_Mobox_Token_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token') as mw.Canvas
 		}
-		return this.mCanvas_starcoin_Internal
+		return this.can_Mobox_Token_Internal
 	}
-	private taskShopBtn_Internal: mw.Button
-	public get taskShopBtn(): mw.Button {
-		if(!this.taskShopBtn_Internal&&this.uiWidgetBase) {
-			this.taskShopBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin/taskShopBtn') as mw.Button
+	private text_Token1_Internal: mw.TextBlock
+	public get text_Token1(): mw.TextBlock {
+		if(!this.text_Token1_Internal&&this.uiWidgetBase) {
+			this.text_Token1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token/text_Token1') as mw.TextBlock
 		}
-		return this.taskShopBtn_Internal
+		return this.text_Token1_Internal
 	}
-	private imgStarbg_Internal: mw.Image
-	public get imgStarbg(): mw.Image {
-		if(!this.imgStarbg_Internal&&this.uiWidgetBase) {
-			this.imgStarbg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin/imgStarbg') as mw.Image
+	private text_MaxNumber_Internal: mw.TextBlock
+	public get text_MaxNumber(): mw.TextBlock {
+		if(!this.text_MaxNumber_Internal&&this.uiWidgetBase) {
+			this.text_MaxNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token/text_MaxNumber') as mw.TextBlock
 		}
-		return this.imgStarbg_Internal
+		return this.text_MaxNumber_Internal
 	}
-	private imgStarIcon_Internal: mw.Image
-	public get imgStarIcon(): mw.Image {
-		if(!this.imgStarIcon_Internal&&this.uiWidgetBase) {
-			this.imgStarIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin/imgStarIcon') as mw.Image
+	private text_CurrentNumber_Internal: mw.TextBlock
+	public get text_CurrentNumber(): mw.TextBlock {
+		if(!this.text_CurrentNumber_Internal&&this.uiWidgetBase) {
+			this.text_CurrentNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token/text_CurrentNumber') as mw.TextBlock
 		}
-		return this.imgStarIcon_Internal
+		return this.text_CurrentNumber_Internal
 	}
-	private textCoinNum_Internal: mw.TextBlock
-	public get textCoinNum(): mw.TextBlock {
-		if(!this.textCoinNum_Internal&&this.uiWidgetBase) {
-			this.textCoinNum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin/textCoinNum') as mw.TextBlock
+	private pic_Token_Internal: mw.Image
+	public get pic_Token(): mw.Image {
+		if(!this.pic_Token_Internal&&this.uiWidgetBase) {
+			this.pic_Token_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token/pic_Token') as mw.Image
 		}
-		return this.textCoinNum_Internal
+		return this.pic_Token_Internal
+	}
+	private btn_Tips_Internal: mw.Button
+	public get btn_Tips(): mw.Button {
+		if(!this.btn_Tips_Internal&&this.uiWidgetBase) {
+			this.btn_Tips_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token/btn_Tips') as mw.Button
+		}
+		return this.btn_Tips_Internal
+	}
+	private btn_FreshToken_Internal: mw.Button
+	public get btn_FreshToken(): mw.Button {
+		if(!this.btn_FreshToken_Internal&&this.uiWidgetBase) {
+			this.btn_FreshToken_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/can_Mobox_Token/btn_FreshToken') as mw.Button
+		}
+		return this.btn_FreshToken_Internal
 	}
 	private mCanvas_stamina_Internal: mw.Canvas
 	public get mCanvas_stamina(): mw.Canvas {
@@ -210,6 +224,41 @@ export default class Hud_Generate extends UIScript {
 			this.btn_Fresh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_stamina/btn_Fresh') as mw.Button
 		}
 		return this.btn_Fresh_Internal
+	}
+	private mCanvas_starcoin_Internal: mw.Canvas
+	public get mCanvas_starcoin(): mw.Canvas {
+		if(!this.mCanvas_starcoin_Internal&&this.uiWidgetBase) {
+			this.mCanvas_starcoin_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin') as mw.Canvas
+		}
+		return this.mCanvas_starcoin_Internal
+	}
+	private taskShopBtn_Internal: mw.Button
+	public get taskShopBtn(): mw.Button {
+		if(!this.taskShopBtn_Internal&&this.uiWidgetBase) {
+			this.taskShopBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin/taskShopBtn') as mw.Button
+		}
+		return this.taskShopBtn_Internal
+	}
+	private imgStarbg_Internal: mw.Image
+	public get imgStarbg(): mw.Image {
+		if(!this.imgStarbg_Internal&&this.uiWidgetBase) {
+			this.imgStarbg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin/imgStarbg') as mw.Image
+		}
+		return this.imgStarbg_Internal
+	}
+	private imgStarIcon_Internal: mw.Image
+	public get imgStarIcon(): mw.Image {
+		if(!this.imgStarIcon_Internal&&this.uiWidgetBase) {
+			this.imgStarIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin/imgStarIcon') as mw.Image
+		}
+		return this.imgStarIcon_Internal
+	}
+	private textCoinNum_Internal: mw.TextBlock
+	public get textCoinNum(): mw.TextBlock {
+		if(!this.textCoinNum_Internal&&this.uiWidgetBase) {
+			this.textCoinNum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_starcoin/textCoinNum') as mw.TextBlock
+		}
+		return this.textCoinNum_Internal
 	}
 	private mCanvas_Transmit_Internal: mw.Canvas
 	public get mCanvas_Transmit(): mw.Canvas {
@@ -387,10 +436,16 @@ export default class Hud_Generate extends UIScript {
 		this.mRefresh_Btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
-		this.taskShopBtn.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "taskShopBtn");
+		this.btn_Tips.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btn_Tips");
 		})
-		this.taskShopBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		this.btn_Tips.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.btn_FreshToken.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btn_FreshToken");
+		})
+		this.btn_FreshToken.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		this.tips_btn.onClicked.add(()=>{
@@ -403,6 +458,12 @@ export default class Hud_Generate extends UIScript {
 			Event.dispatchToLocal("PlayButtonClick", "btn_Fresh");
 		})
 		this.btn_Fresh.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.taskShopBtn.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "taskShopBtn");
+		})
+		this.taskShopBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		this.mBtn_Transmit.onClicked.add(()=>{
@@ -455,7 +516,13 @@ export default class Hud_Generate extends UIScript {
 		this.initLanguage(this.mText_Mcoin)
 		
 	
-		this.initLanguage(this.textCoinNum)
+		this.initLanguage(this.text_Token1)
+		
+	
+		this.initLanguage(this.text_MaxNumber)
+		
+	
+		this.initLanguage(this.text_CurrentNumber)
 		
 	
 		this.initLanguage(this.mText_Interval)
@@ -465,6 +532,9 @@ export default class Hud_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.mText_stamina)
+		
+	
+		this.initLanguage(this.textCoinNum)
 		
 	
 		this.initLanguage(this.roomIdText)
