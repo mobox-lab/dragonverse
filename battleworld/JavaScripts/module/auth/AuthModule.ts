@@ -587,7 +587,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @type {string}
      * @private
      */
-    private static readonly TEST_TOKEN = "d42d78c2a78d03a234defda7b34e0f63cc962feb0cdfa5c39409427eaaad85479896b6";
+    private static readonly TEST_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHg4NTBGZTI3ZjYzZGUxMmI2MDFDMDIwM2I2MmQ3OTk1NDYyRDFEMUJjIiwibm9uY2UiOiJkZmhCbnFrQU9HcFZtcENmdSIsImlhdCI6MTcxODg2NzE0MCwiZXhwIjoxNzE5NDcxOTQwfQ.NfAVaUz3PAP8fyAjvxuruTZn-IJJyEc-73Kce6lcQKc";
 
     /**
      * 测试用 getToken Url.
