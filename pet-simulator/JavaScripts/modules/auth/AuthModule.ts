@@ -1299,7 +1299,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private onRefreshToken(userId: string) {
-        // this.queryCurrency(userId);
+        this.queryCurrency(userId);
     }
 
     private onTokenExpired(userId: string) {
