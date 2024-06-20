@@ -35,6 +35,7 @@ import { ActivateByUIAndTrigger, ActivateMode } from "../../gameplay/interactive
 import ADialoguePanelController from "../../depend/dialogify/dialogue-panel-controller/ADialoguePanelController";
 import SettingsPanel from "../settings/SettingsPanel";
 import { addGMCommand } from "mw-god-mod";
+import DragonHandbook from "../dragon-handbook/DragonHandbook";
 
 enum MouseLockType {
     Press,
@@ -327,7 +328,8 @@ export default class MainPanel extends MainPanel_Generate {
             }
         });
 
-        this.btnBag.onClicked.add(() => this.showBag());
+        // this.btnBag.onClicked.add(() => this.showBag());
+        this.btnBag.onClicked.add(() => this.showDragonHandbook());
         // this.btnBook.onClicked.add(() => this.showHandbook());
         this.btnCode.onClicked.add(() => this.showCode());
         this.btnReset.onClicked.add(respawn);
@@ -1109,6 +1111,16 @@ export default class MainPanel extends MainPanel_Generate {
             UIService?.show(HandbookPanel);
         }
     }
+
+    public showDragonHandbook() {
+			if (ModuleService.getModule(BagModuleC)?.isReady ?? false) {
+					if (!UIService.getUI(DragonHandbook, false) || !UIService.getUI(DragonHandbook).visible) {
+							UIService?.show(DragonHandbook);
+					} else {
+							UIService.hide(DragonHandbook);
+					}
+			}
+	}
 
     public showCode() {
         UIService?.show(CodeVerifyPanel);
