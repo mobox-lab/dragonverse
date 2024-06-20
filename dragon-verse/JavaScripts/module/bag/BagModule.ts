@@ -15,6 +15,7 @@ import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Gtk from "../../util/GToolkit";
 import DragonHandbookItem from "../../ui/dragon-handbook/DragonHandbookItem";
+import { CompanionHelper } from "../companion/CompanionHelper";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -400,42 +401,6 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
     }
 
     /**
-     * 添加或删除指定数量的 BagItem.
-     * @param bagId BagItem id.
-     * @param count 数量.
-     * @param autoRemove 自动移除. 当使得物品数量为 0 时, 是否自动移除.
-     */
-    public addItem(bagId: number, count: number, autoRemove: boolean = true) {
-        const currCount = this.getItemCount(bagId);
-        const setCount = currCount + count;
-        Log4Ts.log(BagModuleC,
-            `add item`,
-            () => `playerId: ${this.localPlayerId}`,
-            () => `id: ${bagId}`,
-            () => `current count: ${this.getItemCount(bagId)}`,
-            () => `target count: ${setCount}`,
-            () => `autoRemove: ${autoRemove}.`,
-        );
-        this.selfSetItem(bagId, autoRemove && !setCount ? null : setCount);
-        this.server.net_addItem(bagId, count, autoRemove);
-    }
-
-    /**
-     * 移除物品.
-     * @param bagId
-     */
-    public removeItem(bagId: number) {
-        Log4Ts.log(BagModuleC,
-            `remove item`,
-            () => `playerId: ${this.localPlayerId}`,
-            () => `id: ${bagId}`,
-            () => `current count: ${this.getItemCount(bagId)}.`,
-        );
-        this.selfSetItem(bagId);
-        this.server.net_removeItem(bagId);
-    }
-
-    /**
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall() {
@@ -453,6 +418,15 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
      */
     private selfSetItem(bagId: number, count: number = null) {
         const item = this.bagItemYoact.getItem(bagId);
+
+        if (CompanionHelper.isDragon(bagId)) {
+            this.dragonHandbookYoactArr.forEach((dragonsYoact) => {
+                const dragonYoact = dragonsYoact.getItem(bagId);
+                if (dragonYoact) {
+                    dragonYoact.cnt = count;
+                }
+            });
+        }
         if (item) {
             if (count === null) {
                 this.bagItemYoact.removeItem(bagId);

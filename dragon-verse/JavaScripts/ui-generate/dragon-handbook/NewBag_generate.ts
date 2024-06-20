@@ -218,13 +218,6 @@ export default class NewBag_Generate extends UIScript {
 		}
 		return this.mBtnOpt_Internal
 	}
-	private mBtnReset_Internal: mw.StaleButton
-	public get mBtnReset(): mw.StaleButton {
-		if(!this.mBtnReset_Internal&&this.uiWidgetBase) {
-			this.mBtnReset_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/mBtnReset') as mw.StaleButton
-		}
-		return this.mBtnReset_Internal
-	}
 	private can_BallNum_Internal: mw.Canvas
 	public get can_BallNum(): mw.Canvas {
 		if(!this.can_BallNum_Internal&&this.uiWidgetBase) {
@@ -313,10 +306,6 @@ export default class NewBag_Generate extends UIScript {
         this.mBtnOpt.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        this.initLanguage(this.mBtnReset);
-        this.mBtnReset.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
-        
-	
         this.initLanguage(this.mBtnClose);
         this.mBtnClose.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
@@ -378,9 +367,6 @@ export default class NewBag_Generate extends UIScript {
         
 	
         this.unregisterLanKey(this.mBtnOpt);
-        
-	
-        this.unregisterLanKey(this.mBtnReset);
         
 	
         this.unregisterLanKey(this.mBtnClose);

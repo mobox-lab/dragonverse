@@ -1,5 +1,5 @@
 ﻿import IScrollViewItem from "../../depend/scroll-view/IScrollViewItem";
-import { DragonHandbookUnique } from "../../module/bag/BagModule";
+import { BagModuleC, DragonHandbookUnique } from "../../module/bag/BagModule";
 import { Yoact } from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
 import GToolkit from "../../util/GToolkit";
@@ -10,7 +10,7 @@ export default class DragonHandbookItem extends DragonHandbookItem_Generate impl
 //#region IScrollViewItem
     bindData(data: DragonHandbookUnique): void {
         bindYoact(() => {
-            this.rootCanvas.renderOpacity = data.cnt ? 1 : 0.2;
+            this.imgHandbook_Icon.renderOpacity = data.cnt ? 1 : 0.2;
             this.textNumber_Count.text = data.cnt ? "x" + data.cnt.toString() : "";
         });
         this.imgHandbook_Icon.imageGuid = GameConfig.BagItem.getElement(data.id).icon;

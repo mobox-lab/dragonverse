@@ -16,6 +16,8 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import YoactArray from "../../depend/yoact/YoactArray";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import NewBag_Generate from "../../ui-generate/dragon-handbook/NewBag_generate";
+import { DragonElemental } from "../../const/DragonElemental";
+import Gtk from "../../util/GToolkit";
 
 export default class DragonHandbook extends NewBag_Generate {
     //#region Constant
@@ -26,9 +28,9 @@ export default class DragonHandbook extends NewBag_Generate {
     //#region Member
     private _bagModule: BagModuleC;
     private _dragonModule: CompanionModule_C;
-    private _scrollView: ScrollView<DragonHandbookUnique, DragonHandbookItem>;
     private _scrollViews: ScrollView<DragonHandbookUnique, DragonHandbookItem>[];
 
+	private curSelectedDragon: DragonHandbookUnique | null;
     private _selectEffects: Yoact.Effect[] = [];
     public dragonHandbookYoact: YoactArray<DragonHandbookUnique> = new YoactArray<DragonHandbookUnique>();
 
@@ -61,7 +63,6 @@ export default class DragonHandbook extends NewBag_Generate {
 
     protected onShow() {
         // this._scrollView.resetSelect();
-		this.updateDragonBallNumUI();
         this._scrollViews.forEach(_scrollView => _scrollView.resetSelect());
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.mBtnClose.onClicked.broadcast();
@@ -77,30 +78,33 @@ export default class DragonHandbook extends NewBag_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Init
-    private getCidScrollBox(cid: number) {
+    private getCidScrollBox(cid: DragonElemental) {
         switch (cid) {
-            case 1:
+            case DragonElemental.Fire:
                 return this.scr_FireDragon; // 火
-            case 2:
+            case DragonElemental.Water:
                 return this.scr_WaterDragon; // 水
-            case 3:
+            case DragonElemental.Wood:
                 return this.scr_WoodDragon; // 木
-            case 4:
+            case DragonElemental.Earth:
                 return this.scr_SoilDragon; // 土
-            case 5:
+            case DragonElemental.Light:
                 return this.scr_LightDragon; // 光
-            case 6:
+            case DragonElemental.Dark:
                 return this.scr_DarkDragon; // 暗
             default:
                 return undefined;
         }
     }
-	public updateDragonBallNumUI() {
-		this.text_BallNum.text = DataCenterC.getData(BagModuleData).getItemCount(1).toString();
-	}
+
     private initHandbook() {
+		bindYoact(() => {
+			const ballCnt = this._bagModule.dragonBallYoact.count
+			this.text_BallNum.text = ballCnt ? ballCnt.toString() : '0';
+		})
+		this.curSelectedDragon = null;
         const categoryIds = GameConfig.Elemental.getAllElement().map((cfg) => cfg.id);
-        this._scrollViews = categoryIds.map((cid) => {
+        this._scrollViews = categoryIds.map((cid, idx) => {
             const dragonHandbookYoact = this._bagModule.dragonHandbookYoactArr[cid - 1];
             Log4Ts.log(DragonHandbook, " initHandbook cid:" + cid + " this._bagModule.dragonHandbookYoactArr[cid]" + JSON.stringify(dragonHandbookYoact.getAll()));
             return new ScrollView<DragonHandbookUnique, DragonHandbookItem>(
@@ -114,8 +118,12 @@ export default class DragonHandbook extends NewBag_Generate {
                     GToolkit.trySetVisibility(this.infoCanvas, false);
                     return;
                 }
+				const dragonHandbookYoact = this._bagModule.dragonHandbookYoactArr[cid - 1];
+				const curSelectedDragon = dragonHandbookYoact.getItem(key); 
+				this.curSelectedDragon = curSelectedDragon;
+				
+				this.resetAllScrollViewSelectExclude(idx);
                 GToolkit.trySetVisibility(this.infoCanvas, true);
-                const data = this._bagModule.bagItemYoact.getItem(key);
                 for (const effect of this._selectEffects) {
                     stopEffect(effect);
                 }
@@ -123,25 +131,29 @@ export default class DragonHandbook extends NewBag_Generate {
                 this.mName.text = i18n.lan(GameConfig.BagItem.getElement(key).name);
                 this.mDesc.text = i18n.lan(GameConfig.BagItem.getElement(key).desc);
                 this.mIcon.imageGuid = GameConfig.BagItem.getElement(key).icon;
+				this.mNum.text = i18n.lan(i18n.lanKeys.Bag_006) + ` ${curSelectedDragon.cnt}`;
                 this._selectEffects.push(bindYoact(() => {
-                    this.mNum.text = i18n.lan(i18n.lanKeys.Bag_006) + ` ${data.count}`;
+					const curDragon = dragonHandbookYoact.getItem(key);
+                    this.mNum.text = i18n.lan(i18n.lanKeys.Bag_006) + ` ${curDragon.cnt ? curDragon.cnt : 0}`;
+					Gtk.trySetVisibility(this.mBtnOpt, curDragon.cnt > 0 ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
                 }));
 
-                if (ForeignKeyIndexer.getInstance().isBagItemType(data.id, BagTypes.Dragon)) {
+                if (ForeignKeyIndexer.getInstance().isBagItemType(curSelectedDragon.id, BagTypes.Dragon)) {
                     GToolkit.trySetVisibility(this.mBtnOpt, true);
-                    if (this._dragonModule.getCurrentShowupBagId() === data.id) {
-                        this.showRestBtn(data.id, true);
+                    if (this._dragonModule.getCurrentShowupBagId() === curSelectedDragon.id) {
+                        this.showRestBtn(curSelectedDragon.id, true);
                     } else {
-                        this.showFollowBtn(data.id, true);
+                        this.showFollowBtn(curSelectedDragon.id, true);
                     }
                 } else {
                     GToolkit.trySetVisibility(this.mBtnOpt, false);
                 }
             });
         });
-		this.updateDragonBallNumUI();
     }
-
+	public resetAllScrollViewSelectExclude(excludeIndex: number) {
+		this._scrollViews.forEach((sv, i) => i !== excludeIndex && sv.resetSelect());
+	}
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region UI Behavior
@@ -152,23 +164,23 @@ export default class DragonHandbook extends NewBag_Generate {
      * @private
      */
     private showRestBtn(id: number, force: boolean = false) {
-        // if (!force && this.mBtnOpt.normalImageGuid === DragonHandbook.REST_BTN_IMG_GUID) return;
-        // GToolkit.setButtonGuid(this.mBtnOpt, DragonHandbook.REST_BTN_IMG_GUID);
-        // this.mBtnOpt.text = i18n.lan(i18n.lanKeys.Bag_005);
-        // this.mBtnOpt.onClicked.clear();
-        // this.mBtnOpt.onClicked.add(
-        //     () => {
-        //         this._dragonModule.showUpCompanion(id, false).then((value) => {
-        //                 if (this._scrollView.currentSelectId === value) {
-        //                     this.showRestBtn(this._scrollView.currentSelectId);
-        //                 } else {
-        //                     this.showFollowBtn(this._scrollView.currentSelectId);
-        //                 }
-        //             },
-        //         );
-        //         this.showFollowBtn(id);
-        //     },
-        // );
+        if (!force && this.mBtnOpt.normalImageGuid === DragonHandbook.REST_BTN_IMG_GUID) return;
+        GToolkit.setButtonGuid(this.mBtnOpt, DragonHandbook.REST_BTN_IMG_GUID);
+        this.mBtnOpt.text = i18n.lan(i18n.lanKeys.Bag_005);
+        this.mBtnOpt.onClicked.clear();
+        this.mBtnOpt.onClicked.add(
+            () => {
+                this._dragonModule.showUpCompanion(id, false).then((value) => {
+                        if (this.curSelectedDragon.id === value) {
+                            this.showRestBtn(this.curSelectedDragon.id);
+                        } else {
+                            this.showFollowBtn(this.curSelectedDragon.id);
+                        }
+                    },
+                );
+                this.showFollowBtn(id);
+            },
+        );
     }
 
     // /**
@@ -178,22 +190,22 @@ export default class DragonHandbook extends NewBag_Generate {
     //  * @private
     //  */
     private showFollowBtn(id: number, force: boolean = false) {
-        // if (!force && this.mBtnOpt.normalImageGuid === DragonHandbook.FOLLOW_BTN_IMG_GUID) return;
-        // this.mBtnOpt.text = i18n.lan(i18n.lanKeys.Bag_004);
-        // GToolkit.setButtonGuid(this.mBtnOpt, DragonHandbook.FOLLOW_BTN_IMG_GUID);
-        // this.mBtnOpt.onClicked.clear();
-        // this.mBtnOpt.onClicked.add(
-        //     () => {
-        //         this._dragonModule.showUpCompanion(id, true).then((value) => {
-        //             if (this._scrollView.currentSelectId === value) {
-        //                 this.showRestBtn(this._scrollView.currentSelectId);
-        //             } else {
-        //                 this.showFollowBtn(this._scrollView.currentSelectId);
-        //             }
-        //         });
-        //         this.showRestBtn(id);
-        //     },
-        // );
+        if (!force && this.mBtnOpt.normalImageGuid === DragonHandbook.FOLLOW_BTN_IMG_GUID) return;
+        this.mBtnOpt.text = i18n.lan(i18n.lanKeys.Bag_004);
+        GToolkit.setButtonGuid(this.mBtnOpt, DragonHandbook.FOLLOW_BTN_IMG_GUID);
+        this.mBtnOpt.onClicked.clear();
+        this.mBtnOpt.onClicked.add(
+            () => {
+                this._dragonModule.showUpCompanion(id, true).then((value) => {
+                    if (this.curSelectedDragon.id === value) {
+                        this.showRestBtn(this.curSelectedDragon.id);
+                    } else {
+                        this.showFollowBtn(this.curSelectedDragon.id);
+                    }
+                });
+                this.showRestBtn(id);
+            },
+        );
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
