@@ -14,6 +14,7 @@ import UIService = mw.UIService;
 import UIScript = mw.UIScript;
 import SimpleDelegateFunction = Delegate.SimpleDelegateFunction;
 import Canvas = mw.Canvas;
+import Gtk from "../../util/GToolkit";
 
 // export class Margin {
 //     public top: number;
@@ -134,7 +135,7 @@ export default class ScrollView<
                             `如不需要智能覆写 请关闭 useSmartLayoutStrategy 选项.`);
                         padding.bottom = 0;
                     }
-                    container.size.y = scrollBox.size.y;
+					Gtk.setUiSizeY(container, scrollBox.size.y);
                     container.autoLayoutRule = new mw.UILayout(
                         currentLayoutRule.layoutSpace,
                         padding,
@@ -156,7 +157,7 @@ export default class ScrollView<
                             `如不需要智能覆写 请关闭 useSmartLayoutStrategy 选项.`);
                         padding.right = 0;
                     }
-                    container.size.x = scrollBox.size.x;
+					Gtk.setUiSizeY(container, scrollBox.size.y);
                     container.autoLayoutRule = new mw.UILayout(
                         currentLayoutRule.layoutSpace,
                         padding,
