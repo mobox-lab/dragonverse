@@ -173,11 +173,11 @@ export class EnchantBuff {
         Log4Ts.log(
             EnchantBuff,
             "totalTeamDamageBuff:" +
-								(1 + totalTeamDamageAdd / 100) +
-						" curKey:" +
-								curKey +
-						" petBuff:" +
-								JSON.stringify(Array.from(petBuff))
+            (1 + totalTeamDamageAdd / 100) +
+            " curKey:" +
+            curKey +
+            " petBuff:" +
+            JSON.stringify(Array.from(petBuff)),
         );
         return 1 + totalTeamDamageAdd / 100;
     }
@@ -197,7 +197,7 @@ export class EnchantBuff {
         item: {
             id: number;
             level: number;
-        }
+        },
     ): petBuff {
         const cfgId = item.id;
         let speciaId = GlobalData.Enchant.specialEnchantIdRange;
@@ -334,7 +334,7 @@ export class EnchantBuff {
                 player,
                 RewardTipsManager.EVENT_NAME_REWARD_TIPS_GET_UI,
                 GlobalEnum.CoinType.Diamond,
-                count
+                count,
             );
         }, time);
     }
@@ -352,7 +352,7 @@ export class EnchantBuff {
         critAdd += cfg.Degree;
         GlobalData.SceneResource.critWeightMap.set(
             playerId,
-            GlobalData.SceneResource.critWeight(playerId) + critAdd
+            GlobalData.SceneResource.critWeight(playerId) + critAdd,
         );
         return critAdd;
     }
