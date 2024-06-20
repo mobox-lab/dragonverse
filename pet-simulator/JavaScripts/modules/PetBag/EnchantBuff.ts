@@ -210,10 +210,10 @@ export class EnchantBuff {
                 if (!buff.moveSpeedAdd) buff.moveSpeedAdd = 0;
                 buff.moveSpeedAdd += 50;
             }
-            if (cfgId == specialEnchantId.id_44) {
-                if (!buff.autoCollect) buff.autoCollect = true;
-                GlobalData.Enchant.petAutoBuffKeys(playerId).push(key);
-            }
+            // if (cfgId == specialEnchantId.id_44) {
+            //     if (!buff.autoCollect) buff.autoCollect = true;
+            //     GlobalData.Enchant.petAutoBuffKeys(playerId).push(key);
+            // }
             if (cfgId == specialEnchantId.id_45) {
                 if (!buff.randomDiamond) buff.randomDiamond = true;
                 this.randomDiamond(true, playerId);

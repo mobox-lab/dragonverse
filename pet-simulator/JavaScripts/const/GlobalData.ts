@@ -1037,7 +1037,7 @@ export namespace GlobalData {
         /**神话附魔 只有神话宠物才有可能初始携带 id范围 */
         public static mythEnchantIdRange: number[] = [46, 46];
         /**过滤id */
-        public static filterIds: number[] = [11, 12, 13, 14, 15];
+        public static filterIds: number[] = [11, 12, 13, 14, 15, 44];
         /**同时附魔最大数 */
         public static maxEnchantNum: number = 3;
         /**特效播放次数 */
