@@ -50,6 +50,7 @@ import { SkillSelectPanel } from "../../SkillModule/UI/SkillSelectPanel";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../../const/GameServiceConfig";
 import { addGMCommand } from "mw-god-mod";
+import { formatEther } from "@p12/viem";
 
 enum MouseLockType {
     Press,
@@ -243,6 +244,10 @@ export class MainUI extends Main_HUD_Generate {
                 UIService.show(RankPanel);
             }
         });
+
+        // MDBL Token
+        Yoact.bindYoact(() => Gtk.trySetText(this.mMCoin, formatEther(BigInt(this.authModuleC?.currency.count ?? 0))))
+        this.mBtn_MCoin_Refresh.onClicked.add(() => this.authModuleC.refreshCurrency());
 
         this.playerMD.onAttributeChanged.add(this.onPlayerAttrChanged, this);
         this.playerMD.onAttributeInit.add(this.onAttributeInit, this);
@@ -1087,7 +1092,6 @@ export class MainUI extends Main_HUD_Generate {
 
     public setCoinAndEnergyVisible(visible: boolean) {
         // this.mCanvasMCoin.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
-        this.mCanvasMCoin.visibility = SlateVisibility.Hidden;
         // this.mCanvasBattle.visibility = visible ? SlateVisibility.Visible : SlateVisibility.Hidden;
     }
 
