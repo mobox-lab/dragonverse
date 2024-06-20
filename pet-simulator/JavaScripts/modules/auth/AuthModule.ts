@@ -214,6 +214,9 @@ interface GetTokenReq {
     tempToken: string;
 }
 
+/**
+ * 查询 P12 mdbl 币数量 请求参数.
+ */
 interface QueryCurrencyResp {
     /**
      * 钱包地址.
@@ -414,7 +417,11 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     private _lastSubGameReportTime: number = 0;
 
-    public currency: { count: string } = createYoact({count: undefined});
+    /**
+     * mdbl 币.
+     * @type {{count: string | undefined}}
+     */
+    public currency: { count: string | undefined } = createYoact({count: undefined});
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
@@ -580,7 +587,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @type {string}
      * @private
      */
-    private static readonly TEST_TOKEN = "d42d78c2a78d03a234defda7b34e0f63cc962feb0cdfa5c39409427eaaad85479896b6";
+    private static readonly TEST_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHg4NTBGZTI3ZjYzZGUxMmI2MDFDMDIwM2I2MmQ3OTk1NDYyRDFEMUJjIiwibm9uY2UiOiJkZmhCbnFrQU9HcFZtcENmdSIsImlhdCI6MTcxODg2NzE0MCwiZXhwIjoxNzE5NDcxOTQwfQ.NfAVaUz3PAP8fyAjvxuruTZn-IJJyEc-73Kce6lcQKc";
 
     /**
      * 测试用 getToken Url.
@@ -1292,7 +1299,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private onRefreshToken(userId: string) {
-        // this.queryCurrency(userId);
+        this.queryCurrency(userId);
     }
 
     private onTokenExpired(userId: string) {

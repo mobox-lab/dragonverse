@@ -69,17 +69,17 @@ export const SceneResourceMap: Map<number, ResourceScript[]> = new Map<number, R
 @Component
 export default class ResourceScript extends mw.Script {
 
-    @mw.Property({replicated: true, onChanged: "onHpChanged"})
+    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
     public curHp: number = 0;
-    @mw.Property({replicated: true, onChanged: "onSceneChanged"})
-    private scenePointId: string = "";
+    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
+    public scenePointId: string = "";
 
     public get isBigBox(): boolean {
         return (this.cfg?.resType > 8) ?? false;
     }
 
     /**伤害记录 */
-    @mw.Property({replicated: true})
+    @mw.Property({ replicated: true })
     private damageArr: DamageRecord[] = [];
 
     private _rate: number = 1;
@@ -106,7 +106,19 @@ export default class ResourceScript extends mw.Script {
 
         this.pointId = pointId;
         this._cfgId = cfgId;
-        this.scenePointId = cfgId + "_" + pointId + "_" + this._rate;
+
+        if (this.scenePointId === "") {
+            //初始情况
+            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + '0';
+        } else if (this.scenePointId.slice(0, -1) !== cfgId + "_" + pointId + "_" + this._rate) {
+            //不为空时判断是否和上一次的一样，不一样就初始加个0
+            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + '0';
+        } else {
+            //一样就取反
+            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + (this.scenePointId.charAt(this.scenePointId.length - 1) === '0' ? '1' : '0');
+        }
+
+        Log4Ts.log(Resource, `initServer scenePointId:${this.scenePointId}, ${this.guid}`);
         let unitInfo = GameConfig.SceneUnit.getElement(cfgId);
         this.curHp = unitInfo.HP;
         this.cfg = unitInfo;
@@ -209,7 +221,8 @@ export default class ResourceScript extends mw.Script {
             this.onDead.call(this.scenePointId, playerId);
         } else
             this.onDead.call(playerId);
-        this.scenePointId = "";
+        //设为空不会属性同步
+        // this.scenePointId = "";
         this._rate = 1;
 
     }
@@ -327,13 +340,13 @@ export default class ResourceScript extends mw.Script {
     public getDamageRate(playerId: number): number {
         if (this.cfg.HP === 0) return 0;
         return this
-                .damageArr
-                .reduce((previousValue,
-                         currentValue) => {
-                        return previousValue +
-                            (currentValue.playerId === playerId ? currentValue.damage : 0);
-                    },
-                    0)
+            .damageArr
+            .reduce((previousValue,
+                currentValue) => {
+                return previousValue +
+                    (currentValue.playerId === playerId ? currentValue.damage : 0);
+            },
+                0)
             / this.cfg.HP;
     }
 
@@ -566,12 +579,13 @@ export default class ResourceScript extends mw.Script {
     }
 
     private onSceneChanged() {
+        Log4Ts.log(Resource, `onSceneChanged scenePointId:${this.scenePointId},${this.guid}`);
         if (this.scenePointId == "") return;
 
         let arr = this.scenePointId.split("_");
         this._cfgId = Number(arr[0]);
         this.pointId = Number(arr[1]);
-        this._rate = Number(arr[2]);
+        this._rate = Number(arr[2].slice(0, -1));
 
         this.onGuaSha.clear();
         this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
@@ -602,7 +616,7 @@ export default class ResourceScript extends mw.Script {
         }
         this.isStart = true;
         this.resObj = await Resource.instance.getResource(this.cfgId);
-        Log4Ts.log(Resource, `createDefaultObj pos:${this.curPos},pointId:${this.pointId}`);
+        Log4Ts.log(Resource, `createDefaultObj cfgId:${this.cfgId}, ${this.pointId},${this.rate}`);
 
         if (!this.isBigBox) {
             let randomZ = MathUtil.randomInt(0, 360);
@@ -647,7 +661,7 @@ export default class ResourceScript extends mw.Script {
         const time = GlobalData.ResourceAni.dropTweenTime[this.order];
         let start = endInfos[this.order];
         let end = endInfos[this.order + 1];
-        this.endTween = new mw.Tween({z: start}).to({z: end}, time).onUpdate((obj) => {
+        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
             this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
         }).onComplete(() => {
             this.order++;
@@ -914,7 +928,7 @@ export default class ResourceScript extends mw.Script {
             this.switchCollider(false);
             this.isStart = false;
             if (isAwait) {
-                await TimeUtil.delaySecond(3);
+                // await TimeUtil.delaySecond(3);
                 Resource.instance.returnResource(this.resObj);
             } else
                 Resource.instance.returnResource(this.resObj);
@@ -931,6 +945,11 @@ export default class ResourceScript extends mw.Script {
 
     protected onStart(): void {
         //if (SystemUtil.isClient()) this.clientStart();
+        if (SystemUtil.isClient()) {
+            Log4Ts.log(Resource, `onStartClient scenePointId:${this.scenePointId},${this.guid}`);
+        } else {
+            Log4Ts.log(Resource, `onStartServer scenePointId:${this.scenePointId},${this.guid}`);
+        }
     }
 
     protected onDestroy(): void {
@@ -944,8 +963,8 @@ export default class ResourceScript extends mw.Script {
 }
 
 export function calDamage(playerId: number,
-                          key: number,
-                          isBigBox: boolean): number {
+    key: number,
+    isBigBox: boolean): number {
     //在存档里是下标从 0 开始
     let level = DataCenterS
         .getData(playerId, PetSimulatorPlayerModuleData)
@@ -973,24 +992,24 @@ export function calDamage(playerId: number,
         (1 + (isBigBox ? EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100 : 0)) *
         EnchantBuff.getTeamDamageAddBuff(playerId, key);
 
-		Log4Ts.log(
-				ResourceScript,
-				"damage:" +
-						damage +
-				" atk:" +
-						petData.p.a +
-				" upgrade:" +
-						upgrade + 
-				" damageAddBuff:" +
-						(1 + EnchantBuff.getPetBuff(playerId, key).damageAdd / 100) +
-				" GlobalData.Buff.damageBuff:" +
-						GlobalData.Buff.damageBuff(playerId) +
-				" isBigBox:" +
-						isBigBox +
-				" boxDamageAdd:" +
-						(1 + EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100) +
-				" teamDamageAddBuff:" +
-						EnchantBuff.getTeamDamageAddBuff(playerId, key)
-		);
+    Log4Ts.log(
+        ResourceScript,
+        "damage:" +
+        damage +
+        " atk:" +
+        petData.p.a +
+        " upgrade:" +
+        upgrade +
+        " damageAddBuff:" +
+        (1 + EnchantBuff.getPetBuff(playerId, key).damageAdd / 100) +
+        " GlobalData.Buff.damageBuff:" +
+        GlobalData.Buff.damageBuff(playerId) +
+        " isBigBox:" +
+        isBigBox +
+        " boxDamageAdd:" +
+        (1 + EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100) +
+        " teamDamageAddBuff:" +
+        EnchantBuff.getTeamDamageAddBuff(playerId, key)
+    );
     return damage;
 }

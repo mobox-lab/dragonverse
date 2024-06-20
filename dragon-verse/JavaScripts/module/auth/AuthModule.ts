@@ -214,6 +214,9 @@ interface GetTokenReq {
     tempToken: string;
 }
 
+/**
+ * 查询 P12 mdbl 币数量 请求参数.
+ */
 interface QueryCurrencyResp {
     /**
      * 钱包地址.
@@ -414,7 +417,11 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     private _lastSubGameReportTime: number = 0;
 
-    public currency: { count: string } = createYoact({count: undefined});
+    /**
+     * mdbl 币.
+     * @type {{count: string | undefined}}
+     */
+    public currency: { count: string | undefined } = createYoact({count: undefined});
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
