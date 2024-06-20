@@ -305,7 +305,7 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             Log4Ts.warn(ResourceModuleS, `point by id ${cfgId} is not found. whose area id is ${areaId}`);
             return;
         }
-        // await TimeUtil.delaySecond(GlobalData.SceneResource.initResourceRefresh);
+        await TimeUtil.delaySecond(GlobalData.SceneResource.initResourceRefresh);
 
         this.addTranArea(areaId, cfgId);
     }
