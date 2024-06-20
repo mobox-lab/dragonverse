@@ -631,7 +631,8 @@ export namespace GuideManager {
     }
 
     export function finishMainGuide(player: Player) {
-        let completed = SystemUtil.isServer() ? hasCompleteServer(player, 5) : hasCompleteClient(5);
-        return completed || Config.skipGuide;
+        // let completed = SystemUtil.isServer() ? hasCompleteServer(player, 5) : hasCompleteClient(5);
+        // return completed || Config.skipGuide;
+        return true;
     }
 }

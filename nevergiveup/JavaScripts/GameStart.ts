@@ -35,7 +35,7 @@ import { Reward } from "./tool/Reward";
 import { SoundUtil } from "./tool/SoundUtil";
 import { ComponentFactory } from "./enemy/components/ComponentFactory";
 export namespace Config {
-    export let skipGuide: boolean = false;
+    export let skipGuide: boolean = true;
     export let danmukuSpeed: number = 300;
     export let hurtTextColor: LinearColor = new LinearColor(1, 0, 0, 1);
     export let hurtTextOutlineColor: LinearColor = new LinearColor(0, 0, 0, 1);
@@ -105,10 +105,10 @@ export default class GameStart extends Script {
         else {
             this.checkGM();
             this.setlanguage();
-            ModuleService.ready().then(() => {
-                GuideManager.init();
-                GuideManager.triggerNextGuide(true);
-            });
+            // ModuleService.ready().then(() => {
+            //     GuideManager.init();
+            //     GuideManager.triggerNextGuide(true);
+            // });
             Utils.requestAssetIcons(GameConfig.Tower.getAllElement(), "imgGuid", true);
             DanmuManager.init();
             ComponentFactory.init();
