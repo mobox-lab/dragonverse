@@ -246,8 +246,8 @@ export class MainUI extends Main_HUD_Generate {
         });
 
         // MDBL Token
-        Yoact.bindYoact(() => Gtk.trySetText(this.mMCoin, formatEther(BigInt(this.authModuleC?.currency.count ?? 0))))
-        this.mBtn_MCoin_Refresh.onClicked.add(() => this.authModuleC.refreshCurrency());
+        Yoact.bindYoact(() => Gtk.trySetText(this.mMCoin, formatEther(BigInt(this.authModuleC?.currency.count ?? 0))));
+        this.mBtn_MCoin_Refresh.onClicked.add(() => this.authModuleC?.refreshCurrency());
 
         this.playerMD.onAttributeChanged.add(this.onPlayerAttrChanged, this);
         this.playerMD.onAttributeInit.add(this.onAttributeInit, this);

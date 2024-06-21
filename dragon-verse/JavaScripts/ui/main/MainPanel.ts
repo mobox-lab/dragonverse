@@ -20,8 +20,6 @@ import MainCurtainPanel from "./MainCurtainPanel";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { ObbyModuleC } from "../../module/obby/ObbyModule";
 import { JumpGamePanel } from "../jump-game/JumpGamePanel";
-import AudioController from "../../controller/audio/AudioController";
-import { PlayerSettingModuleC } from "../../module/player-setting/PlayerSettingModule";
 import Nolan from "../../depend/nolan/Nolan";
 import { MapPanel } from "../map/MapPanel";
 import Gtk, { Regulator } from "../../util/GToolkit";
@@ -36,6 +34,8 @@ import ADialoguePanelController from "../../depend/dialogify/dialogue-panel-cont
 import SettingsPanel from "../settings/SettingsPanel";
 import { addGMCommand } from "mw-god-mod";
 import DragonHandbook from "../dragon-handbook/DragonHandbook";
+import { AuthModuleC } from "../../module/auth/AuthModule";
+import { formatEther } from "@p12/viem";
 
 enum MouseLockType {
     Press,
@@ -298,6 +298,13 @@ export default class MainPanel extends MainPanel_Generate {
     private _tpDoorCandidate: ActivateMode = undefined;
 
     private _customCandidate: CustomInteractOption;
+
+    private _authModuleC: AuthModuleC;
+
+    private get authModuleC(): AuthModuleC | null {
+        if (!this._authModuleC) this._authModuleC = ModuleService.getModule(AuthModuleC);
+        return this._authModuleC;
+    }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region MetaWorld UI Event
@@ -552,6 +559,12 @@ export default class MainPanel extends MainPanel_Generate {
             undefined,
             true
         );
+
+        Gtk.doWhenTrue(() => !!this.authModuleC, () => {
+            // MDBL Token
+            bindYoact(() => Gtk.trySetText(this.mText_token, formatEther(BigInt(this.authModuleC.currency.count ?? 0))));
+            this.btn_Fresh_Token.onClicked.add(() => this.authModuleC.refreshCurrency());
+        });
 
         this.btnCode.visibility = SlateVisibility.Hidden;
 

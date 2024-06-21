@@ -22,6 +22,27 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.btnJump_Internal
 	}
+	private cnv_Token_Internal: mw.Canvas
+	public get cnv_Token(): mw.Canvas {
+		if(!this.cnv_Token_Internal&&this.uiWidgetBase) {
+			this.cnv_Token_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/CnvFunctionHidden/cnv_Token') as mw.Canvas
+		}
+		return this.cnv_Token_Internal
+	}
+	private btn_Fresh_Token_Internal: mw.Button
+	public get btn_Fresh_Token(): mw.Button {
+		if(!this.btn_Fresh_Token_Internal&&this.uiWidgetBase) {
+			this.btn_Fresh_Token_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/CnvFunctionHidden/cnv_Token/btn_Fresh_Token') as mw.Button
+		}
+		return this.btn_Fresh_Token_Internal
+	}
+	private mText_token_Internal: mw.TextBlock
+	public get mText_token(): mw.TextBlock {
+		if(!this.mText_token_Internal&&this.uiWidgetBase) {
+			this.mText_token_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/CnvFunctionHidden/cnv_Token/mText_token') as mw.TextBlock
+		}
+		return this.mText_token_Internal
+	}
 	private collectibleInteractorContainer_Internal: mw.Canvas
 	public get collectibleInteractorContainer(): mw.Canvas {
 		if(!this.collectibleInteractorContainer_Internal&&this.uiWidgetBase) {
@@ -512,6 +533,9 @@ export default class MainPanel_Generate extends UIScript {
         this.btnJump.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
+        this.btn_Fresh_Token.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
         this.btnSetting.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
@@ -525,6 +549,9 @@ export default class MainPanel_Generate extends UIScript {
         
         // 文本控件
         
+        this.initLanguage(this.mText_token)
+        
+	
         this.initLanguage(this.playtimecount)
         
 	
@@ -582,6 +609,9 @@ export default class MainPanel_Generate extends UIScript {
 
     protected overrideTextSetter() {
         
+        overrideTextBlockTextSetter(this.mText_token);
+        
+	
         overrideTextBlockTextSetter(this.playtimecount);
         
 	
@@ -663,6 +693,9 @@ export default class MainPanel_Generate extends UIScript {
         
         // 文本多语言
         
+        this.unregisterLanKey(this.mText_token)
+        
+	
         this.unregisterLanKey(this.playtimecount)
         
 	
