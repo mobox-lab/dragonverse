@@ -85,7 +85,9 @@ export namespace GlobalData {
 
     /**宠物 */
     export class pet {
-        /**宠物行动栏，休息时颜色 */
+        /**宠物行动栏 宠物稀有度背景 普通 稀有 史诗 传说 神话 */
+        public static petStatePetRarityGuid: string[] = ["357131", "357135", "357129", "357134", "357132"];
+		/**宠物行动栏，休息时颜色 */
         public static restingPetStateImgColor: LinearColor = LinearColor.colorHexToLinearColor("#B5B5B5");
         /**宠物行动栏，出战时颜色 */
         public static attackingPetStateImgColor: LinearColor = LinearColor.colorHexToLinearColor("#FED43F");
