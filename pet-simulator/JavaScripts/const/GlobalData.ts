@@ -638,11 +638,11 @@ export namespace GlobalData {
         /**背景板颜色 正常、蓝色*/
         public static bgColors: string[] = ["#FFFFFFFF", "#3FB0FEFF"];
         /**传说、神话正常底板 Guid */
-        public static legendBgGuid: string[] = ["183469", "183468"];
+        public static legendBgGuid: string[] = ["367714", "367713"];
         /**传说、神话选中底板 Guid */
-        public static legendBgSelectGuid: string[] = ["183467", "183467"];
+        public static legendBgSelectGuid: string[] = ["367714", "367713"];
         /**传说、神话 渲染缩放 */
-        public static legendBgScale: mw.Vector2 = new mw.Vector2(1.2, 1.2);
+        public static legendBgScale: mw.Vector2 = new mw.Vector2(1, 1);
         /**巨大化渲染缩放 */
         public static hugeScale: mw.Vector2 = new mw.Vector2(1.7, 1.7);
 
@@ -1053,7 +1053,7 @@ export namespace GlobalData {
         /**附魔 左侧详情 宠物稀有度背景 普通 稀有 史诗 传说 神话 */
         public static enchantPetRarityGuid: string[] = ["355918", "355920", "355926", "355913", "355925"];
         /**附魔 词条图标 对勾/锁  */
-        public static enchantSelectIconGuid: string[] = ["295627", "357130"];
+        public static enchantSelectIconGuid: string[] = ["295627", "367715"];
         /**附魔按钮 正常、stop Guid */
         public static enchantBtnGuid: string[] = ["359019", "174843"];
         /**附魔特效时长 */
