@@ -57,27 +57,6 @@ export default class Pet_item_Generate extends UIScript {
 		}
 		return this.mPic_Heart_Internal
 	}
-	private mPic_star3_Internal: mw.Image
-	public get mPic_star3(): mw.Image {
-		if(!this.mPic_star3_Internal&&this.uiWidgetBase) {
-			this.mPic_star3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_star3') as mw.Image
-		}
-		return this.mPic_star3_Internal
-	}
-	private mPic_star2_Internal: mw.Image
-	public get mPic_star2(): mw.Image {
-		if(!this.mPic_star2_Internal&&this.uiWidgetBase) {
-			this.mPic_star2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_star2') as mw.Image
-		}
-		return this.mPic_star2_Internal
-	}
-	private mPic_star1_Internal: mw.Image
-	public get mPic_star1(): mw.Image {
-		if(!this.mPic_star1_Internal&&this.uiWidgetBase) {
-			this.mPic_star1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_star1') as mw.Image
-		}
-		return this.mPic_star1_Internal
-	}
 	private mPic_delete_Internal: mw.Image
 	public get mPic_delete(): mw.Image {
 		if(!this.mPic_delete_Internal&&this.uiWidgetBase) {

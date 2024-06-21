@@ -365,23 +365,18 @@ export class PetBag_Item extends Pet_item_Generate {
         const quality = GlobalEnum.PetQuality;
         let cfg = GameConfig.PetARR.getElement(id);
         if (cfg.QualityType == quality.Normal) {
-            this.setStarNum(0);
             this.setBgNormal(0);
 
         } else if (cfg.QualityType == quality.Rare) {
-            this.setStarNum(0);
             this.setBgNormal(1);
 
         } else if (cfg.QualityType == quality.Epic) {
-            this.setStarNum(1);
             this.setBgNormal(2);
         }
         else if (cfg.QualityType == quality.Legend) {//传说
-            this.setStarNum(2);
             this.setBgSpecial(0);
 
         } else if (cfg.QualityType == quality.Myth) { //神话
-            this.setStarNum(3);
             this.setBgSpecial(1);
         }
         //巨大化
@@ -390,7 +385,7 @@ export class PetBag_Item extends Pet_item_Generate {
             this.mPic_Equip.renderScale = GlobalData.Bag.hugeScale;
             this.mPic_Equip_3.renderScale = GlobalData.Bag.hugeScale;
         }
-    }
+    } 
     /**设置背景正常状态 */
     public setBgNormal(typeIndex: number) {
         if (this.mPic_Equip.imageGuid != this.undefineBgGuid) {
@@ -442,33 +437,6 @@ export class PetBag_Item extends Pet_item_Generate {
         }
     }
 
-    /**设置星星数 */
-    public setStarNum(num: number) {
-        switch (num) {
-            case 0:
-                this.mPic_star1.visibility = mw.SlateVisibility.Collapsed;
-                this.mPic_star2.visibility = mw.SlateVisibility.Collapsed;
-                this.mPic_star3.visibility = mw.SlateVisibility.Collapsed;
-                break;
-            case 1:
-                this.mPic_star1.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mPic_star2.visibility = mw.SlateVisibility.Collapsed;
-                this.mPic_star3.visibility = mw.SlateVisibility.Collapsed;
-                break;
-            case 2:
-                this.mPic_star1.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mPic_star2.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mPic_star3.visibility = mw.SlateVisibility.Collapsed;
-                break;
-            case 3:
-                this.mPic_star1.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mPic_star2.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mPic_star3.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                break;
-            default:
-                break;
-        }
-    }
     /**特殊化 爱心彩虹 */
     private setSpecial(id: number) {
         const dev = GlobalEnum.PetDevType;
