@@ -79,20 +79,20 @@ export default class DragonHandbook extends NewBag_Generate {
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Init
-    private getCidScrollBox(cid: DragonElemental) {
+    private getCidEle(cid: DragonElemental) {
         switch (cid) {
             case DragonElemental.Fire:
-                return this.scr_FireDragon; // 火
+                return {scrollBox: this.scr_FireDragon, container: this.can_Fire}; // 火
             case DragonElemental.Water:
-                return this.scr_WaterDragon; // 水
+                return {scrollBox: this.scr_WaterDragon, container: this.can_Water}; // 水
             case DragonElemental.Wood:
-                return this.scr_WoodDragon; // 木
+                return {scrollBox: this.scr_WoodDragon, container: this.can_Wood}; // 木
             case DragonElemental.Earth:
-                return this.scr_SoilDragon; // 土
+                return {scrollBox: this.scr_SoilDragon, container: this.can_Soil}; // 土
             case DragonElemental.Light:
-                return this.scr_LightDragon; // 光
+                return {scrollBox: this.scr_LightDragon, container: this.can_Light}; // 光
             case DragonElemental.Dark:
-                return this.scr_DarkDragon; // 暗
+                return {scrollBox: this.scr_DarkDragon, container: this.can_Dark}; // 暗
             default:
                 return undefined;
         }
@@ -100,19 +100,20 @@ export default class DragonHandbook extends NewBag_Generate {
 
     private initHandbook() {
         bindYoact(() => {
-            const ballCnt = this._bagModule.dragonBallYoact.count
-            this.text_BallNum.text = ballCnt ? ballCnt.toString() : '0';
-        })
+            const ballCnt = this._bagModule.dragonBallYoact.count;
+            this.text_BallNum.text = ballCnt ? ballCnt.toString() : "0";
+        });
         this.curSelectedDragon = null;
         const categoryIds = GameConfig.Elemental.getAllElement().map((cfg) => cfg.id);
         this._scrollViews = categoryIds.map((cid, idx) => {
             const dragonHandbookYoact = this._bagModule.dragonHandbookYoactArr[cid - 1];
             Log4Ts.log(DragonHandbook, " initHandbook cid:" + cid + " this._bagModule.dragonHandbookYoactArr[cid]" + JSON.stringify(dragonHandbookYoact.getAll()));
+            const {scrollBox, container} = this.getCidEle(cid);
             return new ScrollView<DragonHandbookUnique, DragonHandbookItem>(
                 dragonHandbookYoact,
                 DragonHandbookItem,
-                this.getCidScrollBox(cid),
-                cid === DragonElemental.Dark ? this.can_Dark : undefined,
+                scrollBox,
+                container,
                 true,
             ).listenOnItemSelect((key: number) => {
                 if (key === null) {
@@ -152,9 +153,11 @@ export default class DragonHandbook extends NewBag_Generate {
             });
         });
     }
+
     public resetAllScrollViewSelectExclude(excludeIndex: number) {
         this._scrollViews.forEach((sv, i) => i !== excludeIndex && sv.resetSelect());
     }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region UI Behavior
@@ -172,12 +175,12 @@ export default class DragonHandbook extends NewBag_Generate {
         this.mBtnOpt.onClicked.add(
             () => {
                 this._dragonModule.showUpCompanion(id, false).then((value) => {
-                    if (this.curSelectedDragon.id === value) {
-                        this.showRestBtn(this.curSelectedDragon.id);
-                    } else {
-                        this.showFollowBtn(this.curSelectedDragon.id);
-                    }
-                },
+                        if (this.curSelectedDragon.id === value) {
+                            this.showRestBtn(this.curSelectedDragon.id);
+                        } else {
+                            this.showFollowBtn(this.curSelectedDragon.id);
+                        }
+                    },
                 );
                 this.showFollowBtn(id);
             },
