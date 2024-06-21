@@ -18,6 +18,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import NewBag_Generate from "../../ui-generate/dragon-handbook/NewBag_generate";
 import { DragonElemental } from "../../const/DragonElemental";
 import Gtk from "../../util/GToolkit";
+import { ElementalConfig } from "../../config/Elemental";
 
 export default class DragonHandbook extends NewBag_Generate {
     //#region Constant
@@ -30,7 +31,7 @@ export default class DragonHandbook extends NewBag_Generate {
     private _dragonModule: CompanionModule_C;
     private _scrollViews: ScrollView<DragonHandbookUnique, DragonHandbookItem>[];
 
-	private curSelectedDragon: DragonHandbookUnique | null;
+    private curSelectedDragon: DragonHandbookUnique | null;
     private _selectEffects: Yoact.Effect[] = [];
     public dragonHandbookYoact: YoactArray<DragonHandbookUnique> = new YoactArray<DragonHandbookUnique>();
 
@@ -98,11 +99,11 @@ export default class DragonHandbook extends NewBag_Generate {
     }
 
     private initHandbook() {
-		bindYoact(() => {
-			const ballCnt = this._bagModule.dragonBallYoact.count
-			this.text_BallNum.text = ballCnt ? ballCnt.toString() : '0';
-		})
-		this.curSelectedDragon = null;
+        bindYoact(() => {
+            const ballCnt = this._bagModule.dragonBallYoact.count
+            this.text_BallNum.text = ballCnt ? ballCnt.toString() : '0';
+        })
+        this.curSelectedDragon = null;
         const categoryIds = GameConfig.Elemental.getAllElement().map((cfg) => cfg.id);
         this._scrollViews = categoryIds.map((cid, idx) => {
             const dragonHandbookYoact = this._bagModule.dragonHandbookYoactArr[cid - 1];
@@ -111,18 +112,18 @@ export default class DragonHandbook extends NewBag_Generate {
                 dragonHandbookYoact,
                 DragonHandbookItem,
                 this.getCidScrollBox(cid),
-                undefined,
+                cid === DragonElemental.Dark ? this.can_Dark : undefined,
                 true,
             ).listenOnItemSelect((key: number) => {
                 if (key === null) {
                     GToolkit.trySetVisibility(this.infoCanvas, false);
                     return;
                 }
-				const dragonHandbookYoact = this._bagModule.dragonHandbookYoactArr[cid - 1];
-				const curSelectedDragon = dragonHandbookYoact.getItem(key); 
-				this.curSelectedDragon = curSelectedDragon;
-				
-				this.resetAllScrollViewSelectExclude(idx);
+                const dragonHandbookYoact = this._bagModule.dragonHandbookYoactArr[cid - 1];
+                const curSelectedDragon = dragonHandbookYoact.getItem(key);
+                this.curSelectedDragon = curSelectedDragon;
+
+                this.resetAllScrollViewSelectExclude(idx);
                 GToolkit.trySetVisibility(this.infoCanvas, true);
                 for (const effect of this._selectEffects) {
                     stopEffect(effect);
@@ -131,11 +132,11 @@ export default class DragonHandbook extends NewBag_Generate {
                 this.mName.text = i18n.lan(GameConfig.BagItem.getElement(key).name);
                 this.mDesc.text = i18n.lan(GameConfig.BagItem.getElement(key).desc);
                 this.mIcon.imageGuid = GameConfig.BagItem.getElement(key).icon;
-				this.mNum.text = i18n.lan(i18n.lanKeys.Bag_006) + ` ${curSelectedDragon.cnt}`;
+                this.mNum.text = i18n.lan(i18n.lanKeys.Bag_006) + ` ${curSelectedDragon.cnt}`;
                 this._selectEffects.push(bindYoact(() => {
-					const curDragon = dragonHandbookYoact.getItem(key);
+                    const curDragon = dragonHandbookYoact.getItem(key);
                     this.mNum.text = i18n.lan(i18n.lanKeys.Bag_006) + ` ${curDragon.cnt ? curDragon.cnt : 0}`;
-					Gtk.trySetVisibility(this.mBtnOpt, curDragon.cnt > 0 ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
+                    Gtk.trySetVisibility(this.mBtnOpt, curDragon.cnt > 0 ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
                 }));
 
                 if (ForeignKeyIndexer.getInstance().isBagItemType(curSelectedDragon.id, BagTypes.Dragon)) {
@@ -151,9 +152,9 @@ export default class DragonHandbook extends NewBag_Generate {
             });
         });
     }
-	public resetAllScrollViewSelectExclude(excludeIndex: number) {
-		this._scrollViews.forEach((sv, i) => i !== excludeIndex && sv.resetSelect());
-	}
+    public resetAllScrollViewSelectExclude(excludeIndex: number) {
+        this._scrollViews.forEach((sv, i) => i !== excludeIndex && sv.resetSelect());
+    }
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region UI Behavior
@@ -171,12 +172,12 @@ export default class DragonHandbook extends NewBag_Generate {
         this.mBtnOpt.onClicked.add(
             () => {
                 this._dragonModule.showUpCompanion(id, false).then((value) => {
-                        if (this.curSelectedDragon.id === value) {
-                            this.showRestBtn(this.curSelectedDragon.id);
-                        } else {
-                            this.showFollowBtn(this.curSelectedDragon.id);
-                        }
-                    },
+                    if (this.curSelectedDragon.id === value) {
+                        this.showRestBtn(this.curSelectedDragon.id);
+                    } else {
+                        this.showFollowBtn(this.curSelectedDragon.id);
+                    }
+                },
                 );
                 this.showFollowBtn(id);
             },

@@ -85,6 +85,13 @@ export default class NewBag_Generate extends UIScript {
 		}
 		return this.scr_DarkDragon_Internal
 	}
+	private can_Dark_Internal: mw.Canvas
+	public get can_Dark(): mw.Canvas {
+		if(!this.can_Dark_Internal&&this.uiWidgetBase) {
+			this.can_Dark_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/mScrollBox/mContent/scr_DarkDragon/can_Dark') as mw.Canvas
+		}
+		return this.can_Dark_Internal
+	}
 	private scr_WaterDragon_Internal: mw.ScrollBox
 	public get scr_WaterDragon(): mw.ScrollBox {
 		if(!this.scr_WaterDragon_Internal&&this.uiWidgetBase) {
