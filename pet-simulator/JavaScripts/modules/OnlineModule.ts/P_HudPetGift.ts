@@ -1,5 +1,3 @@
-
-
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
@@ -12,7 +10,6 @@ import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { petItemDataNew } from "../PetBag/PetBagModuleData";
 import { PetState } from "../Player/PetBehavior";
 import { P_RewardPanel } from "./P_RewardPanel";
-
 
 export class P_HudPetGift extends HUDpetGift_Generate {
 
@@ -37,7 +34,7 @@ export class P_HudPetGift extends HUDpetGift_Generate {
         });
         this.mBtn_Pet.onClicked.add(() => {
             this.onOpenBagAC.call(this.redPointArr);
-        })
+        });
 
         this.mCanvas_Point.visibility = mw.SlateVisibility.Collapsed;
         this.onRedPointAC.add(this.addRedPoint, this);
@@ -46,6 +43,7 @@ export class P_HudPetGift extends HUDpetGift_Generate {
             ModuleService.getModule(PetBagModuleC).showBag();
         });
     }
+
     /**添加红点提示 */
     public addRedPoint(key: number) {
         this.redPointArr.push(key);
@@ -54,15 +52,17 @@ export class P_HudPetGift extends HUDpetGift_Generate {
         }
         this.mText_Point.text = this.redPointArr.length.toString();
     }
+
     /**移除红点提示 */
     public removeRedPoint(keys: number[]) {
         keys.forEach(key => {
             if (this.redPointArr.indexOf(key) != -1) {
                 this.redPointArr.splice(this.redPointArr.indexOf(key), 1);
             }
-        })
+        });
         this.mText_Point.text = this.redPointArr.length.toString();
     }
+
     /**清空红点 */
     public clearRedPoint() {
         this.redPointArr.length = 0;
@@ -81,15 +81,14 @@ export class P_HudPetGift extends HUDpetGift_Generate {
         this.mMaskPrograss_Gift.fanShapedValue = 1;
     }
 
-
     /**领完了 */
     public geted() {
         this.mText_Gift.text = GameConfig.Language.Text_ItemUI_8.Value;
         this.mMaskPrograss_Gift.fanShapedValue = 1;
     }
 
-
     private timeInter: any;
+
     /**当前事件 、总时间 */
     public updateTime(time: number, totalTime: number) {
 
@@ -100,7 +99,7 @@ export class P_HudPetGift extends HUDpetGift_Generate {
 
         this.timeInter = TimeUtil.setInterval(() => {
             if (time >= 0) {
-                strTime = utils.parseTime(time)
+                strTime = utils.parseTime(time);
                 time--;
                 this.mText_Gift.text = (strTime);
                 startTime++;
@@ -125,10 +124,10 @@ export class P_HudPetGift extends HUDpetGift_Generate {
         }
     }
 
-
     private _lastAttackTarget: Map<number, number> = new Map();
     private _battlePetUIs: Map<number, PetStateItemUI_Generate> = new Map();
     private _petState: Map<number, PetState> = new Map();
+
     setBattlePets(keys: number[], petArr: petItemDataNew[]) {
         this.petStateCanvas.removeAllChildren();
         this._battlePetUIs.clear();
@@ -148,18 +147,18 @@ export class P_HudPetGift extends HUDpetGift_Generate {
                 } else petStateItem.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
 
                 const devType = petCfg.DevType;
-								
-								if(devType === GlobalEnum.PetDevType.Love || devType === GlobalEnum.PetDevType.Rainbow) {
-									petStateItem.imgLoveRainbow.visibility = mw.SlateVisibility.Visible;
-									petStateItem.imgLoveRainbow.imageGuid = devType === GlobalEnum.PetDevType.Love ? GlobalData.Bag.itemSpecialIconGuid[0]: GlobalData.Bag.itemSpecialIconGuid[1];
-								} else petStateItem.imgLoveRainbow.visibility = mw.SlateVisibility.Collapsed;
 
-								const buffIds = pet?.p?.b ?? [];
-								const maxBuffId = buffIds?.length ? Math.max(...buffIds) : null;
-								if(maxBuffId) { // 设置颜色
-										const color = GameConfig.Enchants.getElement(maxBuffId).Color
-										petStateItem.textAttack.contentColor = mw.LinearColor.colorHexToLinearColor(color)
-								} else petStateItem.textAttack.setFontColorByHex("#FFFFFFFF");
+                if (devType === GlobalEnum.PetDevType.Love || devType === GlobalEnum.PetDevType.Rainbow) {
+                    petStateItem.imgLoveRainbow.visibility = mw.SlateVisibility.Visible;
+                    petStateItem.imgLoveRainbow.imageGuid = devType === GlobalEnum.PetDevType.Love ? GlobalData.Bag.itemSpecialIconGuid[0] : GlobalData.Bag.itemSpecialIconGuid[1];
+                } else petStateItem.imgLoveRainbow.visibility = mw.SlateVisibility.Collapsed;
+
+                const buffIds = pet?.p?.b ?? [];
+                const maxBuffId = buffIds?.length ? Math.max(...buffIds) : null;
+                if (maxBuffId) { // 设置颜色
+                    const color = GameConfig.Enchants.getElement(maxBuffId).Color;
+                    petStateItem.textAttack.contentColor = mw.LinearColor.colorHexToLinearColor(color);
+                } else petStateItem.textAttack.setFontColorByHex("#FFFFFFFF");
             }
             petStateItem.attackImg.visibility = mw.SlateVisibility.Collapsed;
             petStateItem.bgImg.imageColor = GlobalData.pet.restingPetStateImgColor;
@@ -189,6 +188,7 @@ export class P_HudPetGift extends HUDpetGift_Generate {
     }
 
     private _clearTimeout: any;
+
     changePetState(key: number, state: PetState, attackTarget?: number) {
         if (!this._battlePetUIs.has(key)) return;
         let ui = this._battlePetUIs.get(key);
