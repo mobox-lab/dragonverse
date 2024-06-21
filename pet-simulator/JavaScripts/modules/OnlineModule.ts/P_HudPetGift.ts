@@ -128,6 +128,21 @@ export class P_HudPetGift extends HUDpetGift_Generate {
     private _battlePetUIs: Map<number, PetStateItemUI_Generate> = new Map();
     private _petState: Map<number, PetState> = new Map();
 
+    getPetBgGuid(quality: GlobalEnum.PetQuality) {
+        switch (quality) {
+            case GlobalEnum.PetQuality.Normal:
+                return GlobalData.pet.petStatePetRarityGuid[0];
+            case GlobalEnum.PetQuality.Rare:
+                return GlobalData.pet.petStatePetRarityGuid[1];
+            case GlobalEnum.PetQuality.Epic:
+                return GlobalData.pet.petStatePetRarityGuid[2];
+            case GlobalEnum.PetQuality.Legend:
+                return GlobalData.pet.petStatePetRarityGuid[3];
+            case GlobalEnum.PetQuality.Myth:
+                return GlobalData.pet.petStatePetRarityGuid[4];
+        }
+    }
+
     setBattlePets(keys: number[], petArr: petItemDataNew[]) {
         this.petStateCanvas.removeAllChildren();
         this._battlePetUIs.clear();
@@ -147,7 +162,6 @@ export class P_HudPetGift extends HUDpetGift_Generate {
                 } else petStateItem.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
 
                 const devType = petCfg.DevType;
-
                 if (devType === GlobalEnum.PetDevType.Love || devType === GlobalEnum.PetDevType.Rainbow) {
                     petStateItem.imgLoveRainbow.visibility = mw.SlateVisibility.Visible;
                     petStateItem.imgLoveRainbow.imageGuid = devType === GlobalEnum.PetDevType.Love ? GlobalData.Bag.itemSpecialIconGuid[0] : GlobalData.Bag.itemSpecialIconGuid[1];
@@ -156,13 +170,12 @@ export class P_HudPetGift extends HUDpetGift_Generate {
                 const buffIds = pet?.p?.b ?? [];
                 const maxBuffId = buffIds?.length ? Math.max(...buffIds) : null;
                 if (maxBuffId) { // 设置颜色
-                    const color = GameConfig.Enchants.getElement(maxBuffId).Color;
+                    const color = GameConfig.Enchants.getElement(maxBuffId).Color; 
                     petStateItem.textAttack.contentColor = mw.LinearColor.colorHexToLinearColor(color);
                 } else petStateItem.textAttack.setFontColorByHex("#FFFFFFFF");
             }
             petStateItem.attackImg.visibility = mw.SlateVisibility.Collapsed;
-            petStateItem.bgImg.imageColor = GlobalData.pet.restingPetStateImgColor;
-            petStateItem.bgLineImg.imageColor = GlobalData.pet.restingPetStateImgBorderColor;
+            petStateItem.img_Background.imageGuid = this.getPetBgGuid(petCfg.QualityType as GlobalEnum.PetQuality);
             petStateItem.mBtn_Pet.onHovered.add(() => {
                 petStateItem.itemCanvas.renderScale = GlobalData.pet.petStateImgHoverScale;
             });
@@ -195,8 +208,6 @@ export class P_HudPetGift extends HUDpetGift_Generate {
         switch (state) {
             case PetState.Attack:
                 ui.attackImg.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                ui.bgImg.imageColor = GlobalData.pet.attackingPetStateImgColor;
-                ui.bgLineImg.imageColor = GlobalData.pet.attackingPetStateImgBorderColor;
                 this._lastAttackTarget.set(key, attackTarget);
                 //开始计时
                 if (this._clearTimeout) {
@@ -210,8 +221,6 @@ export class P_HudPetGift extends HUDpetGift_Generate {
                 break;
             case PetState.Idle:
                 ui.attackImg.visibility = mw.SlateVisibility.Collapsed;
-                ui.bgImg.imageColor = GlobalData.pet.restingPetStateImgColor;
-                ui.bgLineImg.imageColor = GlobalData.pet.restingPetStateImgBorderColor;
                 break;
         }
         this._petState.set(key, state);
