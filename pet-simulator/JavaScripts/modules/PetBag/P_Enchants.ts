@@ -275,40 +275,20 @@ export class P_Enchants extends EnchantsPanel_Generate {
             this.mCanvas_Entrylist.addChild(item.uiObject);
             items.push(item);
         }
-        if (len < 2) {
+        const emptyItemLen = len === 3 ? 0 : 2 - len; // 神话宠物可能有三个词条 
+        if (emptyItemLen) {
             // 不满两词条则空 item 补到两词条
-            for (let i = 0; i < 2 - len; i++) {
+            for (let i = 0; i < emptyItemLen; i++) {
                 const emptyItem = mw.UIService.create(EnchantItem);
                 emptyItem.uiObject.size = emptyItem.mCanvas.size;
                 if (i === 0) emptyItem.setSelectState(true);
                 else emptyItem.setUnlockUI();
+                if (emptyItemLen === 1 && len === 1) emptyItem.setEmptyUI(1); // len === 1 的情况 
                 this.mCanvas_Entrylist.addChild(emptyItem.uiObject);
             }
         }
         this.enchantItemsUI = items;
     }
-
-    // private initEnchantItem() {
-    //     let cfgs = GameConfig.Enchants.getAllElement();
-    //     cfgs.sort((a, b) => {
-    //         return a.Order - b.Order;
-    //     });
-    //     for (let index = 0; index < cfgs.length; index++) {
-    //         let cfg = cfgs[index];
-    //         if (cfg.QualityType == 1 || GlobalData.Enchant.filterIds.includes(cfg.id)) {
-    //             continue;
-    //         }
-    //         let item = mw.UIService.create(EnchantItem);
-    //         item.onClickAc.add(() => {
-    //             this.isCanClickBtn();
-    //             AnalyticsTool.action_enchant(AnalyModel.choose, 0);
-    //         });
-    //         item.uiObject.size = item.mCanvas.size;
-    //         this.mCanvas_Entrylist.addChild(item.uiObject);
-    //         this.enchantItems.push(item);
-    //         item.setCfgId(cfg.id);
-    //     }
-    // }
 
     /**点击宠物item */
     private onClickItem(item: PetBag_Item) {
@@ -386,18 +366,6 @@ export class P_Enchants extends EnchantsPanel_Generate {
             default:
                 break;
         }
-    }
-
-    /**获取当前选择的附魔 */
-    private getSelectEnchant(): number[] {
-        let result: number[] = [];
-        for (let index = 0; index < this.enchantItems.length; index++) {
-            let element = this.enchantItems[index];
-            if (element.SelectState) {
-                result.push(element.cfgId);
-            }
-        }
-        return result;
     }
 
     /**开始附魔
@@ -520,10 +488,11 @@ class EnchantItem extends Enchants_item_Generate {
         });
     }
 
-    public setEmptyUI() {
+    // idx 0 槽位1， idx 1 槽位2
+    public setEmptyUI(idx?: number) {
         this.mButton_Entry.normalImageGuid = GlobalData.Enchant.enchantItemGuid[3];
         Gtk.trySetVisibility(this.can_SlotText, mw.SlateVisibility.Visible);
-        this.text_Slot.text = GameConfig.Language.Enchants_new004.Value;
+        this.text_Slot.text = idx ? GameConfig.Language.Enchants_new008.Value : GameConfig.Language.Enchants_new004.Value;
         Gtk.trySetVisibility(this.mTextBlock_Entry, mw.SlateVisibility.Collapsed);
         Gtk.trySetVisibility(this.textEnhanceName, mw.SlateVisibility.Collapsed);
         Gtk.trySetVisibility(this.textScoreNumber, mw.SlateVisibility.Collapsed);
