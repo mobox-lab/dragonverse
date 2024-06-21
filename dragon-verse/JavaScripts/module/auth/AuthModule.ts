@@ -24,6 +24,17 @@ addGMCommand(
 );
 
 addGMCommand(
+    "use temp token | Auth",
+    "string",
+    undefined,
+    (player, params) => {
+        mwext.ModuleService.getModule(AuthModuleS)["getP12Token"](player.userId, params);
+    },
+    undefined,
+    "Root",
+);
+
+addGMCommand(
     "refresh currency | Auth",
     "void",
     () => {
@@ -417,6 +428,8 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     private _lastSubGameReportTime: number = 0;
 
+    private _requestRegulator: Regulator = new Regulator(GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
+
     /**
      * mdbl 币.
      * @type {{count: string | undefined}}
@@ -466,6 +479,8 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
 //#region Method
     public queryTempToken() {
+        if (!this._requestRegulator.request()) return;
+
         const handler: HttpResponse = (result, content, responseCode) => {
             if (result && responseCode === 200) {
                 const resp = JSON.parse(content) as QueryResp;
@@ -492,6 +507,8 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
     }
 
     public refreshCurrency() {
+        if (!this._requestRegulator.request()) return;
+
         this.server.net_refreshCurrency();
     }
 
@@ -545,7 +562,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * 获取 P12 token Uri.
      * @private
      */
-    private static readonly GET_P12_TOKEN_URI = "/oauth/gpark";
+    private static readonly GET_P12_TOKEN_URI = "/pge-game/sso/oauth/gpark";
 
     /**
      * 查询货币余额 Uri.
@@ -587,7 +604,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @type {string}
      * @private
      */
-    private static readonly TEST_TOKEN = "d42d78c2a78d03a234defda7b34e0f63cc962feb0cdfa5c39409427eaaad85479896b6";
+    private static readonly TEST_TOKEN = "KFSRJa8wkLfQ/iQ8USfrps0yCqeSarrT0YLu6WxEmFt09EjO0O85Y0bRWPJNRI7gqcQQoaYgxPUcHoI/4HxeTA==";
 
     /**
      * 测试用 getToken Url.
@@ -978,17 +995,15 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     /**
      * 获取并注册 P12 token.
      * @private
-     * @param playerId
+     * @param userId
      * @param tempToken
      * @returns {Promise<[boolean, string]>} [result, reason]
      */
-    private async getP12Token(playerId: number, tempToken: string) {
+    private async getP12Token(userId: string, tempToken: string) {
         if (Gtk.isNullOrEmpty(tempToken)) {
-            Log4Ts.warn(AuthModuleS, `temp token of player ${playerId} is invalid.`);
+            Log4Ts.warn(AuthModuleS, `temp token of player userId: ${userId} is invalid.`);
             return;
         }
-        const userId = this.queryUserId(playerId);
-        if (Gtk.isNullOrUndefined(userId)) return;
 
         const requestParam: GetTokenReq = {tempToken};
 
@@ -1014,7 +1029,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             this.onRefreshToken(userId);
             return;
         } else {
-            logWPlayerNotExist(playerId);
+            logWPlayerNotExist(userId, false);
             return;
         }
     }
@@ -1328,12 +1343,16 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     @noReply()
     public net_reportTempToken(token: string) {
-        const currentPlayerId = this.currentPlayerId;
-        this.getP12Token(currentPlayerId, token);
+        const currentPlayer = this.currentPlayer;
+        if (!this.checkRequestRegulator(currentPlayer.playerId)) return;
+
+        this.getP12Token(currentPlayer.userId, token);
     }
 
     @noReply()
     public net_refreshCurrency() {
+        if (!this.checkRequestRegulator(this.currentPlayerId)) return;
+
         this.queryCurrency(this.currentPlayer.userId);
     }
 
@@ -1382,8 +1401,8 @@ function logState(
     logFunc(announcer, ...result);
 }
 
-function logWPlayerNotExist(playerId: number) {
-    Log4Ts.warn(AuthModuleS, `can't find player ${playerId}.`);
+function logWPlayerNotExist(id: number | string, isPlayerId: boolean = true) {
+    Log4Ts.warn(AuthModuleS, `can't find player ${isPlayerId ? "id" : "userId"}: ${id}.`);
 }
 
 function logEUserTokenInvalid(userId: string): void {
