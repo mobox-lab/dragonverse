@@ -74,8 +74,14 @@ export default class ResourceScript extends mw.Script {
     @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
     public scenePointId: string = "";
 
+	// 是否为 巨大宝箱
     public get isBigBox(): boolean {
         return (this.cfg?.resType > 8) ?? false;
+    }
+
+	// 是否为 普通宝箱 或者 巨大宝箱
+    public get isBox(): boolean {
+        return (this.cfg?.resType >= 7) ?? false; 
     }
 
     /**伤害记录 */
@@ -142,7 +148,7 @@ export default class ResourceScript extends mw.Script {
 
         let damage = calDamage(playerId,
             key,
-            this.isBigBox);
+            this.isBox);
         this.getRewardByAttack(playerId, damage, key);
 
         let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
@@ -964,7 +970,7 @@ export default class ResourceScript extends mw.Script {
 
 export function calDamage(playerId: number,
     key: number,
-    isBigBox: boolean): number {
+    isBox: boolean): number {
     //在存档里是下标从 0 开始
     let level = DataCenterS
         .getData(playerId, PetSimulatorPlayerModuleData)
@@ -989,7 +995,7 @@ export function calDamage(playerId: number,
 
     damage *=
         GlobalData.Buff.damageBuff(playerId) *
-        (1 + (isBigBox ? EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100 : 0)) *
+        (1 + (isBox ? EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100 : 0)) *
         EnchantBuff.getTeamDamageAddBuff(playerId, key);
 
     Log4Ts.log(
@@ -1004,8 +1010,8 @@ export function calDamage(playerId: number,
         (1 + EnchantBuff.getPetBuff(playerId, key).damageAdd / 100) +
         " GlobalData.Buff.damageBuff:" +
         GlobalData.Buff.damageBuff(playerId) +
-        " isBigBox:" +
-        isBigBox +
+        " isBox:" +
+        isBox +
         " boxDamageAdd:" +
         (1 + EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100) +
         " teamDamageAddBuff:" +
