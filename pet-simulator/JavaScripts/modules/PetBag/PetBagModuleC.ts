@@ -351,8 +351,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.PetEnchantNum, 1);
         this.bagUI.updateEnchantItemsUI(key); // 刷新背包UI
         this.enchantUI.updatePetPanelUI(); // 刷新附魔面板UI
-				let curPets = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key));
-				UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, curPets);
+        let curPets = this.data.CurFollowPets.map((key) => this.data.bagItemsByKey(key));
+        UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, curPets);
     }
 
     async buyEgg(cfgId: number): Promise<number | null> {
@@ -369,15 +369,15 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         }
     }
 
-
     public async getPetEnchantState(selectPetKey: number | null): Promise<EnchantPetState> {
-				return await this.server.net_petEnchant(selectPetKey);
-		}
+        return await this.server.net_petEnchant(selectPetKey);
+    }
 
-		public async enchant(selectPetKey: number | null, selectEnchantIds: number | null): Promise<EnchantPetState>{
-				return await this.server.net_enchant(selectPetKey, selectEnchantIds);
-		}
-		public async getEnchantCost(selectPetKey: number | null): Promise<number> {
-				return await this.server.net_getEnchantCost(selectPetKey);
-		}
+    public async enchant(selectPetKey: number | null, selectEnchantIds: number | null): Promise<EnchantPetState> {
+        return await this.server.net_enchant(selectPetKey, selectEnchantIds);
+    }
+
+    public async getEnchantCost(selectPetKey: number | null): Promise<number> {
+        return await this.server.net_getEnchantCost(selectPetKey);
+    }
 }

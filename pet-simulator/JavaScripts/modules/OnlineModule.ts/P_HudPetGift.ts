@@ -154,10 +154,11 @@ export class P_HudPetGift extends HUDpetGift_Generate {
             const petCfg = GameConfig.PetARR.getElement(pet.I);
             if (petCfg) {
                 petStateItem.petImg.imageGuid = petCfg.uiGuid;
-                petStateItem.textAttack.text = utils.formatNumber(pet.p.a);
+                petStateItem.textAttack.text = utils.formatNumber(pet.p.a)
 
-                if (pet.enchantCnt) {
-                    petStateItem.textEnhancenum.text = "+" + utils.formatNumber(pet.enchantCnt);
+                const enchantNum = pet.p.b?.length ?? 0; // 拥有的附魔词条数目
+                if (enchantNum) {
+                    petStateItem.textEnhancenum.text = "+" + utils.formatNumber(enchantNum);
                     petStateItem.imgEnhance.visibility = mw.SlateVisibility.Visible;
                 } else petStateItem.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
 
@@ -167,12 +168,13 @@ export class P_HudPetGift extends HUDpetGift_Generate {
                     petStateItem.imgLoveRainbow.imageGuid = devType === GlobalEnum.PetDevType.Love ? GlobalData.Bag.itemSpecialIconGuid[0] : GlobalData.Bag.itemSpecialIconGuid[1];
                 } else petStateItem.imgLoveRainbow.visibility = mw.SlateVisibility.Collapsed;
 
-                const buffIds = pet?.p?.b ?? [];
-                const maxBuffId = buffIds?.length ? Math.max(...buffIds) : null;
-                if (maxBuffId) { // 设置颜色
-                    const color = GameConfig.Enchants.getElement(maxBuffId).Color; 
-                    petStateItem.textAttack.contentColor = mw.LinearColor.colorHexToLinearColor(color);
-                } else petStateItem.textAttack.setFontColorByHex("#FFFFFFFF");
+                // 2024.06.21 攻击力不需要变颜色了， 始终按照设计稿的白色即可。
+                // const buffIds = pet?.p?.b ?? [];
+                // const maxBuffId = buffIds?.length ? Math.max(...buffIds) : null;
+                // if (maxBuffId) { // 设置颜色
+                //     const color = GameConfig.Enchants.getElement(maxBuffId).Color;
+                //     petStateItem.textAttack.contentColor = mw.LinearColor.colorHexToLinearColor(color);
+                // } else petStateItem.textAttack.setFontColorByHex("#FFFFFFFF");
             }
             petStateItem.attackImg.visibility = mw.SlateVisibility.Collapsed;
             petStateItem.img_Background.imageGuid = this.getPetBgGuid(petCfg.QualityType as GlobalEnum.PetQuality);

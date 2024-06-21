@@ -508,7 +508,6 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     public refreshCurrency() {
         if (!this._requestRegulator.request()) return;
-
         this.server.net_refreshCurrency();
     }
 

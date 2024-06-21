@@ -136,11 +136,11 @@ export class P_PetHud extends PetHud_Generate {
             mw.UIService.getUI(P_HudPetGift).hide();
         })
         mw.UIService.getUI(P_Enchants).showAction.add(() => {
-            mw.UIService.getUI(P_HudUI).hide();
+            mw.UIService.getUI(P_HudUI).setRightBottomVis(false);
             mw.UIService.getUI(P_HudPetGift).hide();
         })
         mw.UIService.getUI(P_Enchants).hideAction.add(() => {
-            mw.UIService.getUI(P_HudUI).show();
+            mw.UIService.getUI(P_HudUI).setRightBottomVis(true);
             mw.UIService.getUI(P_HudPetGift).show();
         })
 

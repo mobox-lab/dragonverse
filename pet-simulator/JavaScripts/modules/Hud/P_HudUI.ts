@@ -285,6 +285,16 @@ export class P_HudUI extends Hud_Generate {
         this.mVirtualJoystickPanel.resetJoyStick();
     }
 
+    /** 右下角显隐 */
+    public setRightBottomVis(isShow: boolean): void {
+        const vis = isShow ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
+        this.mCanvas_jumpRoom.visibility = vis;
+        this.mCanvas_Setting.visibility = vis;
+        this.mCanvas_Transmit.visibility = vis;
+        this.can_Mobox_Token.visibility = vis;
+        this.mCanvas_stamina.visibility = vis;
+    }
+
     /**金币数量改变 */
     public changeGold(value: number): void {
         if (this.mGold == value) return;

@@ -79,11 +79,12 @@ export class PetBag_Item extends Pet_item_Generate {
         }
         this.setQuality(data.I);
         this.setSpecial(data.I);
-        if (data?.enchantCnt) {
+        const enchantNum = data.p.b?.length ?? 0; // 拥有的附魔词条数目
+        if (enchantNum) {
             this.imgEnhance.visibility = mw.SlateVisibility.Visible;
-            this.textEnhancenum.text = "+" + utils.formatNumber(data.enchantCnt);
+            this.textEnhancenum.text = "+" + utils.formatNumber(enchantNum);
         } else this.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
-				
+
         if (this.mPic_Equip_3.visible) {
             this.mPic_Equip_3.visibility = mw.SlateVisibility.Collapsed;
             this.mPic_Equip_2.visibility = mw.SlateVisibility.Collapsed;
@@ -91,24 +92,27 @@ export class PetBag_Item extends Pet_item_Generate {
     }
     /**设置战力ui颜色 */
     public setPowerColor(petItem: petItemDataNew) {
+        // 2024.06.21 攻击力不需要变颜色了， 始终按照设计稿的白色即可。
         this.mText_Value.text = utils.formatNumber(petItem.p.a);
-        if (petItem.p.b.length == 0) {
-            this.mText_Value.setFontColorByHex("#FFFFFFFF");
-            return;
-        }
+        this.mText_Value.setFontColorByHex("#FFFFFFFF");
 
-        let buff = stringToBuff(BagTool.getStr(petItem))
-        if (buff.length == 0) {
-            this.mText_Value.setFontColorByHex("#FFFFFFFF");
-            return;
-        }
-        let max: number = 0;
-        buff.forEach((element) => {
-            if (element.id > max)
-                max = element.id;
-        })
-        let color = GameConfig.Enchants.getElement(max).Color
-        this.mText_Value.contentColor = mw.LinearColor.colorHexToLinearColor(color)
+        // if (petItem.p.b.length == 0) {
+        //     this.mText_Value.setFontColorByHex("#FFFFFFFF");
+        //     return;
+        // }
+        //
+        // let buff = stringToBuff(BagTool.getStr(petItem))
+        // if (buff.length == 0) {
+        //     this.mText_Value.setFontColorByHex("#FFFFFFFF");
+        //     return;
+        // }
+        // let max: number = 0;
+        // buff.forEach((element) => {
+        //     if (element.id > max)
+        //         max = element.id;
+        // })
+        // let color = GameConfig.Enchants.getElement(max).Color
+        // this.mText_Value.contentColor = mw.LinearColor.colorHexToLinearColor(color)
     }
 
     /**悬浮 */
