@@ -11,6 +11,8 @@ import { petItemDataNew } from "./PetBagModuleData";
 import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { P_BagHoverNum3 } from "./P_BagHoverNum3";
+import { P_BagHoverNum2 } from "./P_BagHoverNum2";
 
 export class P_Pet_Dev extends Dev_Generate {
     /**当前容器中的所有item */
@@ -108,6 +110,17 @@ export class P_Pet_Dev extends Dev_Generate {
                 this.isGold);
     }
 
+    /**悬浮UI */
+    private showNewPetHoverUI(isShow: boolean, item: PetBag_Item) {
+        const buffNum = item.petData.p.b.length ?? 0;
+        if (isShow) {
+            let pos = item.uiObject.position;
+            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x + 125 + GlobalData.Bag.itemHoverOffsetX, pos.y + this.mCanvas.position.y - this.mScrollBox.scrollOffset - 40 + GlobalData.Bag.itemHoverOffsetY);
+            buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).setPetInfoShow(item.petData, loc) : mw.UIService.getUI(P_BagHoverNum2).setPetInfoShow(item.petData, loc);
+        } else {
+            buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).hide() : mw.UIService.getUI(P_BagHoverNum2).hide();
+        }
+    }
     public show(petItems: petItemDataNew[], isGold: boolean, ...param: any[]): void {
         PetBagItem.instance.UIPool.resetAll();
 
@@ -130,6 +143,7 @@ export class P_Pet_Dev extends Dev_Generate {
             let petItem = PetBagItem.instance.UIPool.get();
             petItem.setClickFun(this.changeContainer.bind(this), this);
             petItem.onHoverAC.clear();
+			petItem.onHoverAC.add(this.showNewPetHoverUI.bind(this));
             this.mCanvas_List.addChild(petItem.uiObject);
 
             petItem.init(item);
@@ -235,6 +249,7 @@ export class P_Pet_Dev extends Dev_Generate {
 
     public hide(): void {
         super.hide();
+		this.petItems.forEach(item => item.setEnableHover(false));
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 }

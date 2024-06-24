@@ -473,6 +473,9 @@ export class P_Bag extends PetBagPanel_Generate {
     }
 
     protected onShow(...params: any[]): void {
+        this.itemArr.forEach((item) => {
+			item.setEnableHover(true);
+		})
         this.showAC.call();
         this.isReName = false;
         if (this.delArr.length > 0) {
@@ -481,9 +484,6 @@ export class P_Bag extends PetBagPanel_Generate {
         utils.showUITween(this);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
-        });
-        this.itemArr.forEach((item) => {
-            item.setVisible(true);
         });
     }
 
@@ -499,7 +499,7 @@ export class P_Bag extends PetBagPanel_Generate {
             item.stopTipsTween();
         });
         this.itemArr.forEach((item) => {
-            item.setVisible(false);
+			item.setEnableHover(false);
             if (item.isEquip) {
                 try {
                     item.setLockVis(false);
@@ -511,10 +511,6 @@ export class P_Bag extends PetBagPanel_Generate {
         this.itemTweenArr.length = 0;
 
         mw.UIService.getUI(P_PetHover).hide();
-
-        mw.UIService.getUI(P_BagHoverNum2).hide();
-        mw.UIService.getUI(P_BagHoverNum3).hide();
-
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 

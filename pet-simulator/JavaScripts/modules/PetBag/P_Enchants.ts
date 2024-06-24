@@ -15,6 +15,8 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk from "../../util/GToolkit";
 import { PetBag_Item } from "./P_BagItem";
 import { PetBagModuleC } from "./PetBagModuleC";
+import { P_BagHoverNum3 } from "./P_BagHoverNum3";
+import { P_BagHoverNum2 } from "./P_BagHoverNum2";
 
 export enum EnchantPetState {
     IS_ALL_ENCHANT = "is_all_enchant", // 已经全部附魔 会重置其中一条
@@ -107,8 +109,9 @@ export class P_Enchants extends EnchantsPanel_Generate {
 
             item.setClickFun(this.onClickItem.bind(this), this);
             item.onHoverAC.clear();
-            item.onHoverAC.add(this.showHoverUI.bind(this));
-            item.uiObject.size = item.rootCanvas.size;
+            item.onHoverAC.add(this.showNewPetHoverUI.bind(this));
+			item.setVisible(true);
+            item.uiObject.size = item.rootCanvas.size;	
             this.mlistCanvas.addChild(item.uiObject);
             // if (this.petItems.includes(item)) continue;
             this.petItems.push(item);
@@ -157,6 +160,18 @@ export class P_Enchants extends EnchantsPanel_Generate {
             mw.UIService.getUI(P_PetHover).setPetInfoShow(item.petData, loc);
         } else {
             mw.UIService.getUI(P_PetHover).hide();
+        }
+    }
+
+    /**悬浮UI */
+    private showNewPetHoverUI(isShow: boolean, item: PetBag_Item) {
+        const buffNum = item.petData.p.b.length ?? 0;
+        if (isShow) {
+            let pos = item.uiObject.position;
+            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x + GlobalData.Bag.itemHoverOffsetX, pos.y + this.mCanvas.position.y - this.mScrollBox.scrollOffset + GlobalData.Bag.itemHoverOffsetY); 
+            buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).setPetInfoShow(item.petData, loc) : mw.UIService.getUI(P_BagHoverNum2).setPetInfoShow(item.petData, loc);
+        } else {
+            buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).hide() : mw.UIService.getUI(P_BagHoverNum2).hide();
         }
     }
 
@@ -458,11 +473,17 @@ export class P_Enchants extends EnchantsPanel_Generate {
     }
 
     onHide() {
+		this.petItems.forEach((item) => {
+			item.setEnableHover(false); 
+		}) 
         PetBagItem.instance.UIPool.resetAll();
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
     protected onShow(...params: any[]): void {
+		this.petItems.forEach((item) => {
+			item.setEnableHover(true); 
+		}) 
         this.isCanClickBtn();
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             if (this.isEnchanting) {

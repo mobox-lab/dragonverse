@@ -24,7 +24,7 @@ export class PetBag_Item extends Pet_item_Generate {
     private movetTween: mw.Tween<{}>;
     private fadeInTween: mw.Tween<{ alpha: number; }>;
     private fadeOutTween: mw.Tween<{ alpha: number; }>;
-
+	private enableHover: boolean = true;
     /**true-开启悬浮ui，false-关闭 */
     public onHoverAC: Action2<boolean, PetBag_Item> = new Action2();
     private undefineBgGuid: string;
@@ -34,29 +34,16 @@ export class PetBag_Item extends Pet_item_Generate {
     onStart() {
         this.changeAllChild(false);
         this.getUIDate();
-        // this.mButton_Equip.onPressed.add(() => {
-        //     this.isRelease = false;
-        //     this.clearPressedInterval();
-        //     this.pressedInterval = setTimeout(() => {
-        //         if (!this.isRelease) { //按压成功
-        //             this.isHover = true;
-        //             this.onHoverAC.call(true, this);
-        //         }
-        //     }, GlobalData.Bag.pressTime);
-        // });
-        this.mButton_Equip.onReleased.add(() => {
-            this.clearPressedInterval();
-        });
         this.undefineBgGuid = this.mPic_Equip.imageGuid;
         this.undefineSelectGuid = this.mPic_Equip_3.imageGuid;
         this.mButton_Equip.onClicked.add(this.onBtnClick.bind(this));
 		
 		KeyOperationManager.getInstance().onWidgetEntered(this.uiWidgetBase, () => {
-			if(!this.visible ) return;
+			if(!this.enableHover) return;
 			this.onHoverAC.call(true, this); 
 		});
 		KeyOperationManager.getInstance().onWidgetLeave(this.uiWidgetBase, () => {
-			if(!this.visible) return;
+			if(!this.enableHover) return;
 			this.onHoverAC.call(false, this);
 		});
     }
@@ -124,27 +111,12 @@ export class PetBag_Item extends Pet_item_Generate {
         // let color = GameConfig.Enchants.getElement(max).Color
         // this.mText_Value.contentColor = mw.LinearColor.colorHexToLinearColor(color)
     }
-
-    /**悬浮 */
-    private pressedInterval: any = null;
-    private isRelease: boolean = true;
-    private isHover: boolean = false;
-    public clearPressedInterval() {
-        if (this.pressedInterval) {
-            this.isRelease = true;
-            this.onHoverAC.call(false, this);
-            clearTimeout(this.pressedInterval);
-            this.pressedInterval = null;
-        }
-    }
+	public setEnableHover(enable: boolean) {
+		this.enableHover = enable;
+	}
     private onBtnClick() {
-        if (this.isHover) {
-            this.isHover = false;
-            return;
-        }
         this.clickFun?.call(this.caller, this);
     }
-
 
     protected changeAllChild(isShow: boolean) {
         let visibility = isShow ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
