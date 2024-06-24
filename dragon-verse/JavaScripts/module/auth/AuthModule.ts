@@ -105,7 +105,7 @@ addGMCommand(
     (player) => {
         Log4Ts.log(AuthModuleS, `query stamina limit...`);
         mwext.ModuleService.getModule(AuthModuleS)
-            .queryRegisterStaminaLimit(player.playerId)
+            .queryRegisterStaminaLimit(player.userId)
             .then(() => {
                 Log4Ts.log(
                     AuthModuleS,
@@ -196,6 +196,8 @@ class SaltToken {
 interface EncryptedData {
     encryptData: string;
 }
+
+type ReqRegulatorType = "temp-token" | "stamina" | "currency";
 
 //#region Param Interface
 /**
@@ -425,8 +427,6 @@ export default class AuthModuleData extends JModuleData {
 export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 //#region Member
     private _originToken: string = null;
-
-    private _lastSubGameReportTime: number = 0;
 
     private _requestRegulator: Regulator = new Regulator(GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
 
@@ -762,7 +762,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region Member
-    private _playerRequestRegulatorMap: Map<number, number> = new Map();
+    private _userRequestRegulatorMap: Map<string, Map<ReqRegulatorType, number>> = new Map();
 
     /**
      * 玩家体力上限表.
@@ -865,6 +865,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         this._tokenMap.delete(player.userId);
         this._expiredRegulatorMap.delete(player.userId);
+        this._userRequestRegulatorMap.delete(player.userId);
 
         mw.setTimeout(() => {
             this.userPSRankDataReporter.delete(player.userId);
@@ -875,10 +876,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY = "CODE_VERIFY_TEST_AES_KEY_STORAGE_KEY";
 
     private static readonly CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY = "CODE_VERIFY_RELEASE_AES_KEY_STORAGE_KEY";
-
-    private static readonly CLIENT_ID_STORAGE_KEY = "CLIENT_ID_STORAGE_KEY";
-
-    private static readonly SECRET_STORAGE_KEY = "SECRET_STORAGE_KEY";
 
     private static readonly PLACE_HOLDER = "REPLACE_IT";
 
@@ -1119,10 +1116,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return respInJson.message === "success" ? respInJson.data : undefined;
     }
 
-    public async queryRegisterStaminaLimit(playerId: number) {
-        const userId = this.queryUserId(playerId);
-        if (Gtk.isNullOrUndefined(userId)) return;
-
+    public async queryRegisterStaminaLimit(userId: string) {
         const requestParam: UserDataQueryReq = {
             userId,
             sceneId: await this.querySceneId(userId),
@@ -1148,7 +1142,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             Log4Ts.log(AuthModuleS, `invalid value when query recovery time limit for user ${userId}.`);
         else this.playerStaminaRecoveryMap.set(userId, respInJson.data.gameStaminaRecoverySec);
 
-        let data = this.getPlayerData(playerId);
+        let data = this.getPlayerData(userId);
         if (
             !Gtk.isNullOrEmpty(respInJson?.data?.walletAddress ?? undefined) &&
             (data?.holdAddress ?? undefined) !== respInJson.data.walletAddress
@@ -1291,20 +1285,21 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return respJson;
     }
 
-    public checkRequestRegulator(playerId: number): boolean {
-        let last = this._playerRequestRegulatorMap.get(playerId) ?? 0;
+    public checkRequestRegulator(userId: string, reqType: ReqRegulatorType): boolean {
+        const reqRegulatorMap = Gtk.tryGet(this._userRequestRegulatorMap,
+            userId,
+            () => new Map<ReqRegulatorType, number>());
+        let last = reqRegulatorMap.get(reqType) ?? 0;
         let now = Date.now();
-        if (now - last < GameServiceConfig.MIN_OTHER_REQUEST_INTERVAL) {
-            return false;
-        }
+        if (now - last < GameServiceConfig.MIN_OTHER_REQUEST_INTERVAL) return false;
 
-        this._playerRequestRegulatorMap.set(playerId, now);
+        reqRegulatorMap.set(reqType, now);
         return true;
     }
 
-    public requestRefreshStaminaLimit(playerId: number) {
-        if (!this.checkRequestRegulator(playerId)) return;
-        return this.queryRegisterStaminaLimit(playerId);
+    public requestRefreshStaminaLimit(userId: string) {
+        if (!this.checkRequestRegulator(userId, "stamina")) return;
+        return this.queryRegisterStaminaLimit(userId);
     }
 
     private setCurrency(userId: string, count: string) {
@@ -1343,16 +1338,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     @noReply()
     public net_reportTempToken(token: string) {
         const currentPlayer = this.currentPlayer;
-        if (!this.checkRequestRegulator(currentPlayer.playerId)) return;
+        if (!this.checkRequestRegulator(currentPlayer.userId, "temp-token")) return;
 
         this.getP12Token(currentPlayer.userId, token);
     }
 
     @noReply()
     public net_refreshCurrency() {
-        if (!this.checkRequestRegulator(this.currentPlayerId)) return;
+        const userId = this.currentPlayer.userId;
+        if (!this.checkRequestRegulator(userId, "currency")) return;
 
-        this.queryCurrency(this.currentPlayer.userId);
+        this.queryCurrency(userId);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
