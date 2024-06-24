@@ -7,6 +7,7 @@ import { Singleton, stringToBuff, utils } from "../../util/uitls";
 import { BagTool } from "./BagTool";
 import { GlobalEnum } from "../../const/Enum";
 import { cubicBezier } from "../../util/MoveUtil";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 
 export class PetBag_Item extends Pet_item_Generate {
@@ -33,22 +34,31 @@ export class PetBag_Item extends Pet_item_Generate {
     onStart() {
         this.changeAllChild(false);
         this.getUIDate();
-        this.mButton_Equip.onPressed.add(() => {
-            this.isRelease = false;
-            this.clearPressedInterval();
-            this.pressedInterval = setTimeout(() => {
-                if (!this.isRelease) { //按压成功
-                    this.isHover = true;
-                    this.onHoverAC.call(true, this);
-                }
-            }, GlobalData.Bag.pressTime);
-        });
+        // this.mButton_Equip.onPressed.add(() => {
+        //     this.isRelease = false;
+        //     this.clearPressedInterval();
+        //     this.pressedInterval = setTimeout(() => {
+        //         if (!this.isRelease) { //按压成功
+        //             this.isHover = true;
+        //             this.onHoverAC.call(true, this);
+        //         }
+        //     }, GlobalData.Bag.pressTime);
+        // });
         this.mButton_Equip.onReleased.add(() => {
             this.clearPressedInterval();
         });
         this.undefineBgGuid = this.mPic_Equip.imageGuid;
         this.undefineSelectGuid = this.mPic_Equip_3.imageGuid;
         this.mButton_Equip.onClicked.add(this.onBtnClick.bind(this));
+		
+		KeyOperationManager.getInstance().onWidgetEntered(this.uiWidgetBase, () => {
+			if(!this.visible ) return;
+			this.onHoverAC.call(true, this); 
+		});
+		KeyOperationManager.getInstance().onWidgetLeave(this.uiWidgetBase, () => {
+			if(!this.visible) return;
+			this.onHoverAC.call(false, this);
+		});
     }
     private getUIDate() {
         this.undefineBgGuid = this.mPic_Equip.imageGuid;

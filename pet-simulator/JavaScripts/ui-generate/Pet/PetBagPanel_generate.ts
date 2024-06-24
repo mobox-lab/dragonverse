@@ -15,10 +15,17 @@ export default class PetBagPanel_Generate extends UIScript {
 		}
 		return this.mCanvas_Internal
 	}
+	private mScrollBox_Internal: mw.ScrollBox
+	public get mScrollBox(): mw.ScrollBox {
+		if(!this.mScrollBox_Internal&&this.uiWidgetBase) {
+			this.mScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox') as mw.ScrollBox
+		}
+		return this.mScrollBox_Internal
+	}
 	private mListCanvas_Internal: mw.Canvas
 	public get mListCanvas(): mw.Canvas {
 		if(!this.mListCanvas_Internal&&this.uiWidgetBase) {
-			this.mListCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/ScrollBox/mListCanvas') as mw.Canvas
+			this.mListCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mScrollBox/mListCanvas') as mw.Canvas
 		}
 		return this.mListCanvas_Internal
 	}

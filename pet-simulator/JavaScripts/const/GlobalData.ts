@@ -664,6 +664,8 @@ export namespace GlobalData {
         public static itemSize: mw.Vector2 = new mw.Vector2(95, 95);
         /**背包itemUI 爱心化、彩虹化图标 Guid */
         public static itemSpecialIconGuid: string[] = ["355922", "355921"];
+
+		public static itemHoverOffsetX = 10;
     }
 
     /**收集图鉴 */

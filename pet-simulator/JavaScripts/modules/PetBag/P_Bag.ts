@@ -13,6 +13,8 @@ import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { PetBagModuleC } from "./PetBagModuleC";
+import { P_BagHoverNum2 } from "./P_BagHoverNum2";
+import { P_BagHoverNum3 } from "./P_BagHoverNum3";
 
 export class P_Bag extends PetBagPanel_Generate {
 
@@ -115,13 +117,13 @@ export class P_Bag extends PetBagPanel_Generate {
         this.tipsTween(tipsArr);
     }
 
-		/** 附魔后刷新宠物战力值颜色等 */
-		public updateEnchantItemsUI(key: number) {
-				const itemUI = this.itemArr.find((item) => item.petData.k === key);
+    /** 附魔后刷新宠物战力值颜色等 */
+    public updateEnchantItemsUI(key: number) {
+        const itemUI = this.itemArr.find((item) => item.petData.k === key);
         if (!itemUI) return;
         const data = this.data.bagItemsByKey(itemUI.petData.k);
         itemUI.init(data);
-		}
+    }
 
     /**装备或卸载宠物时播放的过渡动画 */
     private playUIAnimation(newData: petItemDataNew[], oldList: PetBag_Item[], equipKeys: number[]) {
@@ -247,7 +249,7 @@ export class P_Bag extends PetBagPanel_Generate {
 
         itemUI.setClickFun(this.onClickItem.bind(this), this);
         itemUI.onHoverAC.clear();
-        itemUI.onHoverAC.add(this.showHoverUI.bind(this));
+        itemUI.onHoverAC.add(this.showNewPetHoverUI.bind(this));
         this.itemArr.push(itemUI);
         return itemUI;
     }
@@ -480,7 +482,9 @@ export class P_Bag extends PetBagPanel_Generate {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
         });
-
+        this.itemArr.forEach((item) => {
+            item.setVisible(true);
+        });
     }
 
     protected onHide(): void {
@@ -495,6 +499,7 @@ export class P_Bag extends PetBagPanel_Generate {
             item.stopTipsTween();
         });
         this.itemArr.forEach((item) => {
+            item.setVisible(false);
             if (item.isEquip) {
                 try {
                     item.setLockVis(false);
@@ -507,6 +512,9 @@ export class P_Bag extends PetBagPanel_Generate {
 
         mw.UIService.getUI(P_PetHover).hide();
 
+        mw.UIService.getUI(P_BagHoverNum2).hide();
+        mw.UIService.getUI(P_BagHoverNum3).hide();
+
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
@@ -518,6 +526,18 @@ export class P_Bag extends PetBagPanel_Generate {
             mw.UIService.getUI(P_PetHover).setPetInfoShow(item.petData, loc);
         } else {
             mw.UIService.getUI(P_PetHover).hide();
+        }
+    }
+
+    /**悬浮UI */
+    private showNewPetHoverUI(isShow: boolean, item: PetBag_Item) {
+        const buffNum = item.petData.p.b.length ?? 0;
+        if (isShow) {
+            let pos = item.uiObject.position;
+            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x + 125 + GlobalData.Bag.itemHoverOffsetX, pos.y + this.mCanvas.position.y + 30 - this.mScrollBox.scrollOffset);
+            buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).setPetInfoShow(item.petData, loc) : mw.UIService.getUI(P_BagHoverNum2).setPetInfoShow(item.petData, loc);
+        } else {
+            buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).hide() : mw.UIService.getUI(P_BagHoverNum2).hide();
         }
     }
 
