@@ -133,10 +133,10 @@ export default class DragonHandbook extends NewBag_Generate {
                 this.mName.text = i18n.lan(GameConfig.BagItem.getElement(key).name);
                 this.mDesc.text = i18n.lan(GameConfig.BagItem.getElement(key).desc);
                 this.mIcon.imageGuid = GameConfig.BagItem.getElement(key).icon;
-                this.mNum.text = i18n.lan(i18n.lanKeys.Bag_006) + ` ${curSelectedDragon.cnt}`;
+                this.mNum.text = `x${curSelectedDragon.cnt}`;
                 this._selectEffects.push(bindYoact(() => {
                     const curDragon = dragonHandbookYoact.getItem(key);
-                    this.mNum.text = i18n.lan(i18n.lanKeys.Bag_006) + ` ${curDragon.cnt ? curDragon.cnt : 0}`;
+                    this.mNum.text = `x${curDragon.cnt ? curDragon.cnt : 0}`;
                     Gtk.trySetVisibility(this.mBtnOpt, curDragon.cnt > 0 ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
                 }));
 
