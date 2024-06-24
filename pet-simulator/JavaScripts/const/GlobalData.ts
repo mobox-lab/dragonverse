@@ -666,6 +666,7 @@ export namespace GlobalData {
         public static itemSpecialIconGuid: string[] = ["355922", "355921"];
 
 		public static itemHoverOffsetX = 10;
+		public static itemHoverOffsetY = 60;
     }
 
     /**收集图鉴 */

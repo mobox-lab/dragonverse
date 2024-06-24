@@ -534,7 +534,7 @@ export class P_Bag extends PetBagPanel_Generate {
         const buffNum = item.petData.p.b.length ?? 0;
         if (isShow) {
             let pos = item.uiObject.position;
-            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x + 125 + GlobalData.Bag.itemHoverOffsetX, pos.y + this.mCanvas.position.y + 30 - this.mScrollBox.scrollOffset);
+            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x + 125 + GlobalData.Bag.itemHoverOffsetX, pos.y + this.mCanvas.position.y - this.mScrollBox.scrollOffset + GlobalData.Bag.itemHoverOffsetY); 
             buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).setPetInfoShow(item.petData, loc) : mw.UIService.getUI(P_BagHoverNum2).setPetInfoShow(item.petData, loc);
         } else {
             buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).hide() : mw.UIService.getUI(P_BagHoverNum2).hide();
