@@ -11,38 +11,34 @@ export type WaveEnemy = {
     count: number;
     spawnInterval: number;
     gate?: number;
-}
+};
 
 export type AirDropConifg = {
     type: number;
     count: number;
     spawnInterval: number;
-}
+};
 
 export type WaveConfig = {
     enemies: WaveEnemy[];
     waveGold: number;
-    waveTime: number,
+    waveTime: number;
     hpMultiplier: number;
     airDrop?: AirDropConifg;
-}
+};
 
 export type StageConfig = {
     waves: WaveConfig[];
-}
+};
 
 export enum EStageState {
     Game,
     End,
     Wait,
-    Settle
+    Settle,
 }
 
-export const DifficlutyEnemyHpMultipliers = [
-    1,
-    1.5,
-    2,
-];
+export const DifficlutyEnemyHpMultipliers = [1, 1.5, 2];
 
 // type GrowthEnemy = {
 //     type: number;
@@ -89,3 +85,19 @@ export const DifficlutyEnemyHpMultipliers = [
 //
 //     return result;
 // }
+
+export type NewStageConfig = {
+    waves: WaveConfig[] | ((wave: number) => WaveConfig);
+    waveLength?: number;
+};
+
+export type WaveUtilConfig = {
+    plusAmount?: number;
+    bloodRound?: number;
+    typeRound?: number;
+    bossRound?: number;
+    bossBloodRound?: number;
+    waveGold?: number;
+    waveTime?: number;
+    hpMultiplier?: number;
+};

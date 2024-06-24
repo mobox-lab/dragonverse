@@ -3,7 +3,7 @@ import { GuideManager } from "../../Guide/GuideManager";
 import GuideStageTrigger from "../../GuideStageTrigger";
 import PlayerModuleData from "../../Modules/PlayerModule/PlayerModuleData";
 import { PlayerUtil } from "../../Modules/PlayerModule/PlayerUtil";
-import { STAGE_CONFIG } from "../../StageConfig";
+import { NEW_STAGE_CONFIG, STAGE_CONFIG } from "../../StageConfig";
 import { TweenCommon } from "../../TweenCommon";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import Utils from "../../Utils";
@@ -17,22 +17,16 @@ import { StageUtil } from "../Stage";
 import StageTrigger from "../StageTrigger";
 
 export class UIStageSelectItem extends StageSelectQueueItem_Generate {
-    init() {
-
-    }
+    init() {}
 }
 export class UIStageDifficulty extends StageDifficulty_Generate {
     unlocked: boolean = true;
     difficluty: string[] = [
         GameConfig.Language.getElement("Text_Easy").Value,
         GameConfig.Language.getElement("Text_Normal").Value,
-        GameConfig.Language.getElement("Text_Difficult").Value
+        GameConfig.Language.getElement("Text_Difficult").Value,
     ];
-    difficultyColor: string[] = [
-        "#01B652",
-        "#B68B00",
-        "#BC322C"
-    ];
+    difficultyColor: string[] = ["#01B652", "#B68B00", "#BC322C"];
     index: number;
     stageId: number;
 
@@ -53,9 +47,9 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
         }
         if (this.unlocked) {
             this.mRecommandedLevel.setFontColorByHex("#867160");
-            this.mRecommandedLevel.text = GameConfig.Language.getElement("Text_RecommendLevel").Value + `${config.recommandedLevel}`;
-        }
-        else {
+            this.mRecommandedLevel.text =
+                GameConfig.Language.getElement("Text_RecommendLevel").Value + `${config.recommandedLevel}`;
+        } else {
             this.mRecommandedLevel.setFontColorByHex("#A1A1A1");
             this.mRecommandedLevel.text = GameConfig.Language.getElement("Text_UnlockAfterLastDifficulty").Value;
         }
@@ -67,8 +61,7 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
         if (index == this.index) {
             this.mSelected.visibility = SlateVisibility.Visible;
             this.mDifficulty_1.text = `${this.difficluty[this.index]}`;
-        }
-        else {
+        } else {
             this.mSelected.visibility = SlateVisibility.Collapsed;
             this.mDifficulty_1.text = `${this.difficluty[this.index]}`;
         }
@@ -94,13 +87,11 @@ export class UIStageSelect extends StageSelect_Generate {
             if (GuideManager.finishMainGuide(null)) {
                 if (Utils.isLocalPlayer(this._ownerId)) {
                     this._script.startGame(Player.localPlayer.playerId);
-                }
-                else {
+                } else {
                     TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
                 }
-            }
-            else {
-                console.log("开始游戏", this._ownerId);;
+            } else {
+                console.log("开始游戏", this._ownerId);
                 if (Utils.isLocalPlayer(this._ownerId)) {
                     GameManager.startGameClient(0, 0);
                 }
@@ -113,20 +104,17 @@ export class UIStageSelect extends StageSelect_Generate {
             let item: UIStageDifficulty;
             if (this._difficulty.length > i) {
                 item = this._difficulty[i];
-            }
-            else {
+            } else {
                 item = UIService.create(UIStageDifficulty);
                 item.mDifficulty.onClicked.add(() => {
                     console.log(this._ownerId, "ownerId");
                     if (Utils.isLocalPlayer(this._ownerId)) {
                         if (item.unlocked) {
                             this._script.setDifficulty(Player.localPlayer.playerId, i);
-                        }
-                        else {
+                        } else {
                             TipsManager.showTips(GameConfig.Language.getElement("Text_AfterLastDifficulty").Value);
                         }
-                    }
-                    else {
+                    } else {
                         TipsManager.showTips(GameConfig.Language.getElement("Text_DifficultyHouseOwner").Value);
                     }
                 });
@@ -145,17 +133,17 @@ export class UIStageSelect extends StageSelect_Generate {
         let typeString = this.getEnemyTypeString(stageId, difficluty);
         if (typeString.length == 0) {
             this.mMonsters.text = "";
-        }
-        else {
+        } else {
             this.mMonsters.text = GameConfig.Language.getElement("Text_SpecialEnemy").Value + `${typeString.join(" ")}`;
         }
     }
 
     getEnemyTypeString(stageId: number, difficluty: number) {
+        // todo 这里要改
         let index = StageUtil.getIndexFromIdAndDifficulty(stageId, difficluty);
         let stageConfig = STAGE_CONFIG[index];
         let waves = stageConfig.waves;
-        let typeString: string[] = []
+        let typeString: string[] = [];
         for (let i = 0; i < waves.length; i++) {
             let wave = waves[i];
             for (let j = 0; j < wave.enemies.length; j++) {
@@ -178,11 +166,10 @@ export class UIStageSelect extends StageSelect_Generate {
     updateCountDown(time: number) {
         let timeStr = time > 9 ? time : "0" + time;
         this.mCountDown.text = GameConfig.Language.getElement("Text_CountDown").Value + `${timeStr}`;
-
     }
 
     updatePlayerQueue(ids: number[]) {
-        let players = ids.map(id => Player.getPlayer(id));
+        let players = ids.map((id) => Player.getPlayer(id));
         for (let i = 0; i < 4; i++) {
             let player = players[i];
             if (player) {
@@ -192,8 +179,7 @@ export class UIStageSelect extends StageSelect_Generate {
                     this._queueItem[i].mLevel.text = `Lv.${script.level}`;
                 }
                 this._queueItem[i].setVisible(SlateVisibility.Visible);
-            }
-            else {
+            } else {
                 this._queueItem[i].setVisible(SlateVisibility.Hidden);
             }
         }

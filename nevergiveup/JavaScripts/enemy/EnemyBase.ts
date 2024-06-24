@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-11 11:11:51
  * @LastEditors  : xiaohao.li
@@ -12,7 +12,7 @@ import { GameManager } from "../GameManager";
 import { MapManager } from "../MapScript";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 import TowerBase from "../Modules/TowerModule/Tower/TowerBase";
-import { STAGE_CONFIG } from "../StageConfig";
+import { NEW_STAGE_CONFIG, STAGE_CONFIG } from "../StageConfig";
 import GainUI from "../UI/Tower/GainUI";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
@@ -25,7 +25,6 @@ import { BossComponent } from "./components/BossComponent";
 import { ComponentFactory } from "./components/ComponentFactory";
 import { FlyingComponent } from "./components/FlyingComponent";
 import { IEnemyComponent } from "./components/IEnemyComponent";
-
 
 export class Enemy implements BuffBag {
     time: number = 0;
@@ -60,8 +59,11 @@ export class Enemy implements BuffBag {
         let config = GameConfig.Monster.getElement(configId);
         let stageConfig = GameManager.getStageConfig();
         let stage = GameManager.getStageClient();
-        let waveConfig = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)].waves[wave];
-        let waveMultiplier = waveConfig.hpMultiplier || 1;
+        // let waveConfig = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)].waves[wave]; //老版本
+        let waveConfig = NEW_STAGE_CONFIG[
+            StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)
+        ].waves(wave + 1);
+        let waveMultiplier = waveConfig?.hpMultiplier || 1;
         let difficlutyMutliplier = stageConfig.difficultyhp;
         let multiplayerMultiplier = GameManager.getMultiplayerMultiplier();
         this.hp = config.hp * difficlutyMutliplier * multiplayerMultiplier * waveMultiplier;
@@ -124,7 +126,6 @@ export class Enemy implements BuffBag {
         this.time = distance / this._speed;
     }
 
-
     applyBuff(buff: number) {
         if (this.buffManager.addBuff(buff)) {
             this.updateAttributes();
@@ -152,9 +153,9 @@ export class Enemy implements BuffBag {
 
         for (const buff of this.buffManager.buffs) {
             const buffCfg = buff.cfg;
-            let value = buffCfg[attribute] ? buffCfg[attribute] : 0
+            let value = buffCfg[attribute] ? buffCfg[attribute] : 0;
             if (buffCfg[`${attribute}Percent`]) {
-                value += baseValue * buffCfg[`${attribute}Percent`] / 10000;
+                value += (baseValue * buffCfg[`${attribute}Percent`]) / 10000;
             }
             modifiedValue += value;
         }
@@ -167,23 +168,24 @@ export class Enemy implements BuffBag {
         this._components.push(component);
     }
 
-
     hasComponent<T extends IEnemyComponent>(componentClass: new (...args: any[]) => T): boolean {
-        return this._components.some(c => c instanceof componentClass);
+        return this._components.some((c) => c instanceof componentClass);
     }
 
     hasComponentType(type: EEnemyComponentType) {
-        return this._components.some(c => c.type == type);
+        return this._components.some((c) => c.type == type);
     }
 
-    getPositionAndIndex(points: number[][], distances: number[], totalDistance: number, speed: number, totalTime: number): [number[], number] {
+    getPositionAndIndex(
+        points: number[][],
+        distances: number[],
+        totalDistance: number,
+        speed: number,
+        totalTime: number
+    ): [number[], number] {
         const lerp = (a: number[], b: number[], t: number): number[] => {
-            return [
-                a[0] + (b[0] - a[0]) * t,
-                a[1] + (b[1] - a[1]) * t,
-                a[2] + (b[2] - a[2]) * t
-            ];
-        }
+            return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+        };
 
         let distanceTraveled = speed * totalTime;
         if (distanceTraveled >= totalDistance) {
@@ -203,9 +205,8 @@ export class Enemy implements BuffBag {
     }
 
     private getRotation(a: number[], b: number[]): number {
-        return Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+        return (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI;
     }
-
 
     private setV1Desc(go: Character, desc: string) {
         let promise = new Promise(async (resolve, reject) => {
@@ -215,10 +216,9 @@ export class Enemy implements BuffBag {
                 let cb = () => {
                     character.onDescriptionComplete.remove(cb);
                     resolve(null);
-                }
+                };
                 character.onDescriptionComplete.add(cb);
-            }
-            else {
+            } else {
                 resolve(null);
             }
         });
@@ -244,12 +244,11 @@ export class Enemy implements BuffBag {
     }
 
     private async initTail(character: Character, guid: string, slot: HumanoidSlotType) {
-        let go = await GameObjPool.asyncSpawn(guid) as Effect;
+        let go = (await GameObjPool.asyncSpawn(guid)) as Effect;
         character.attachToSlot(go, slot);
         go.localTransform.position = new Vector(0, 0, 0);
         go.localTransform.scale = new Vector(0.5);
     }
-
 
     async init(desc: string, config: IMonsterElement) {
         if (MapManager.script) {
@@ -257,14 +256,15 @@ export class Enemy implements BuffBag {
             if (!position) position = [0, 0, 0];
             this.position.set(position[0], position[1], position[2]);
         }
-        let go = await GameObjPool.asyncSpawn("Character") as Character;
+        let go = (await GameObjPool.asyncSpawn("Character")) as Character;
         if (!go) {
             GameObjPool.despawn(go);
             return;
         }
-        go.asyncReady().then(() => {//防御性代码，编辑器改了，预计上车最晚030，处理报错https://pandora.233leyuan.com/crashAnalysis/exceptionDetails?app_name=com.meta.box&start_time=1704816000&end_time=1704949200&request_id=1745310285780140033&requestIdDetail=1745310374485475329&kindIndex=0
+        go.asyncReady().then(() => {
+            //防御性代码，编辑器改了，预计上车最晚030，处理报错https://pandora.233leyuan.com/crashAnalysis/exceptionDetails?app_name=com.meta.box&start_time=1704816000&end_time=1704949200&request_id=1745310285780140033&requestIdDetail=1745310374485475329&kindIndex=0
             go?.overheadUI?.onDestroyDelegate?.clear();
-        })
+        });
         go.complexMovementEnabled = false;
         go.worldTransform.position = new Vector(0, 0, 300000);
         go.collisionWithOtherCharacterEnabled = false;
@@ -277,7 +277,7 @@ export class Enemy implements BuffBag {
 
         let promises = [];
         let components = config.types || [];
-        components.forEach(component => {
+        components.forEach((component) => {
             let c = ComponentFactory.createComponent(component);
             promises.push(this.addComponent(c));
         });
@@ -311,16 +311,27 @@ export class Enemy implements BuffBag {
             if (t < 0) t = 0;
             if (t > 1) t = 1;
             return a + (b - a) * t;
-        }
-        let positions = this.hasComponent(FlyingComponent) ? MapManager.getFlyPositions(this.gate) : MapManager.getRoadPositions(this.gate);
-        let distances = this.hasComponent(FlyingComponent) ? MapManager.getFlyDistances(this.gate) : MapManager.getDistances(this.gate);
-        let totalDistance = this.hasComponent(FlyingComponent) ? MapManager.getTotalFlyDistance(this.gate) : MapManager.getTotalDistance(this.gate);
+        };
+        let positions = this.hasComponent(FlyingComponent)
+            ? MapManager.getFlyPositions(this.gate)
+            : MapManager.getRoadPositions(this.gate);
+        let distances = this.hasComponent(FlyingComponent)
+            ? MapManager.getFlyDistances(this.gate)
+            : MapManager.getDistances(this.gate);
+        let totalDistance = this.hasComponent(FlyingComponent)
+            ? MapManager.getTotalFlyDistance(this.gate)
+            : MapManager.getTotalDistance(this.gate);
         let [position, index] = this.getPositionAndIndex(positions, distances, totalDistance, this._speed, this.time);
-        
+
         if (index === positions.length - 1) {
             EnemyActions.onEscaped.call(this);
             if (position) {
-                CycleUtil.playEffectOnPosition("113899", new Vector(position[0], position[1], position[2]), Vector.one, LinearColor.colorHexToLinearColor("#FF6D63FF"));
+                CycleUtil.playEffectOnPosition(
+                    "113899",
+                    new Vector(position[0], position[1], position[2]),
+                    Vector.one,
+                    LinearColor.colorHexToLinearColor("#FF6D63FF")
+                );
             }
             this.destroy(false);
             return;
@@ -328,7 +339,9 @@ export class Enemy implements BuffBag {
         if (!position) return;
         this.position.set(position[0], position[1], position[2]);
         if (this.go) {
-            this.go.worldTransform.position = this.position.add(Utils.TEMP_VECTOR.set(0, 0, this.go.collisionExtent.z / 2 * this.go.worldTransform.scale.z));
+            this.go.worldTransform.position = this.position.add(
+                Utils.TEMP_VECTOR.set(0, 0, (this.go.collisionExtent.z / 2) * this.go.worldTransform.scale.z)
+            );
             let rotateSpeed = 360;
 
             // get the rotation of the current segment
@@ -354,8 +367,7 @@ export class Enemy implements BuffBag {
                 let rotated = rotateSpeed * timeInSegment;
                 let rotation = lerp(fromRotation, toRotation, rotated / angleDiff);
                 this.go.worldTransform.rotation = Utils.TEMP_ROTATION.set(0, 0, rotation);
-            }
-            else {
+            } else {
                 let rotation = this.getRotation(positions[index], positions[index + 1]);
                 this.go.worldTransform.rotation = Utils.TEMP_ROTATION.set(0, 0, rotation);
             }
@@ -364,7 +376,7 @@ export class Enemy implements BuffBag {
 
     onDestroy(showAnim: boolean) {
         if (this._components) {
-            this._components.forEach(component => component.destroy());
+            this._components.forEach((component) => component.destroy());
         }
         if (this.headUI) {
             GameObjPool.despawn(this.headUI);
@@ -386,8 +398,7 @@ export class Enemy implements BuffBag {
                     GameObjPool.despawn(this.go);
                     this.go = null;
                 }, cfg.deadAnimDur * 1000);
-            }
-            else {
+            } else {
                 GameObjPool.despawn(this.go);
                 this.go = null;
             }
@@ -397,7 +408,7 @@ export class Enemy implements BuffBag {
     onUpdate(dt: number) {
         this.time += dt;
         this.updatePosionAndRotation();
-        this._components.forEach(component => component.update(dt));
+        this._components.forEach((component) => component.update(dt));
         this.updateBuffs(dt);
     }
 
@@ -414,13 +425,13 @@ export class Enemy implements BuffBag {
         EnemyActions.onDie.call(this);
     }
 
-    onHurt(tower: TowerBase, cb = () => { }) {
+    onHurt(tower: TowerBase, cb = () => {}) {
         if (this.destroyed) return 0;
         let damage = { amount: tower.attackDamage };
-        this._components.forEach(component => component.onHurt(damage, tower.attackTags));
+        this._components.forEach((component) => component.onHurt(damage, tower.attackTags));
         let finalDamage = Math.min(damage.amount * this.hurtAmount, this.hp);
         GameManager.showDamage && this.damageShow(damage.amount * this.hurtAmount);
-        this.hp -= (finalDamage);
+        this.hp -= finalDamage;
         this.onHealthChanged();
         this.isHurt = true;
         cb && cb();
@@ -429,8 +440,7 @@ export class Enemy implements BuffBag {
         }
         if (this.hp <= 0) {
             this.kill();
-        }
-        else {
+        } else {
             if (this.go) {
                 let cfg = GameConfig.Monster.getElement(this.configId);
                 if (cfg.hurtAnim) {
@@ -448,10 +458,14 @@ export class Enemy implements BuffBag {
         return finalDamage;
     }
 
-
     private damageShow(damage: number) {
         let pos = Vector2.zero;
-        ScreenUtil.projectWorldPositionToWidgetPosition(Player.localPlayer, this.go?.worldTransform?.position, pos, true);
+        ScreenUtil.projectWorldPositionToWidgetPosition(
+            Player.localPlayer,
+            this.go?.worldTransform?.position,
+            pos,
+            true
+        );
         if (pos.x > 0 && pos.y > 0) {
             CycleUtil.playUIOnPosition(GainUI, pos, UILayerBottom, "-" + damage);
         }
@@ -460,13 +474,11 @@ export class Enemy implements BuffBag {
     private onHealthChanged() {
         if (this.hasComponent(BossComponent)) {
             EnemyActions.onBossHpChanged.call(this);
-        }
-        else {
+        } else {
             if (!this.headUI) return;
             if (this.hp == this.hpMax) {
                 this.headUI.setVisibility(PropertyStatus.Off);
-            }
-            else {
+            } else {
                 if (!this.headUI.getVisibility()) {
                     this.headUI.setVisibility(PropertyStatus.On);
                 }
@@ -477,5 +489,3 @@ export class Enemy implements BuffBag {
         }
     }
 }
-
-

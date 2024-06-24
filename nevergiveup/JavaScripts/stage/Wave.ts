@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-04 17:46:38
  * @LastEditors  : xiaohao.li
@@ -11,15 +11,17 @@ import { AirdropManager } from "../Airdrop/AirdropManager";
 import { GameManager } from "../GameManager";
 import { MapManager } from "../MapScript";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
-import { AirDropConifg, WaveConfig } from "../StageEnums";
+import { NEW_STAGE_CONFIG } from "../StageConfig";
+import { AirDropConifg, WaveConfig, WaveUtilConfig } from "../StageEnums";
 import { GuideDialog } from "../UI/UIDialog";
 import { GameConfig } from "../config/GameConfig";
+import { IMonsterElement } from "../config/Monster";
 import { Enemy } from "../enemy/EnemyBase";
 import { EEnemyComponentType } from "../tool/Enum";
 import { Point, QuadTree, Rectangle } from "../tool/QuadTree";
+import { StageUtil } from "./Stage";
+import { WaveUtilConstant } from "./constant";
 import { UIMain } from "./ui/UIMain";
-
-
 
 export class Wave {
     enemyTypes: number[][] = [];
@@ -37,13 +39,12 @@ export class Wave {
                 this.spawnIntervals[i].push(wave.enemies[i].spawnInterval);
                 if (wave.enemies[i].gate) {
                     this.gates[i].push(wave.enemies[i].gate);
-                }
-                else {
+                } else {
                     this.gates[i].push(0);
                 }
             }
         }
-        this.spawnTimers = this.spawnIntervals.slice().map(interval => 10000);
+        this.spawnTimers = this.spawnIntervals.slice().map((interval) => 10000);
     }
 
     spawnEnemy(index: number) {
@@ -187,8 +188,7 @@ export namespace WaveManager {
         if (bounds) {
             let [x, y, w, h] = bounds;
             quadTree = new QuadTree(new Rectangle(x, y, w, h), 4);
-        }
-        else {
+        } else {
             quadTree = null;
         }
     }
@@ -207,7 +207,7 @@ export namespace WaveManager {
 
     function filterEnemies(enemies: Enemy[], types: EEnemyComponentType[]) {
         const targetTypes = [EEnemyComponentType.Flying, EEnemyComponentType.Stealth];
-        return enemies?.filter(enemy => {
+        return enemies?.filter((enemy) => {
             for (let i = 0; i < targetTypes.length; i++) {
                 if (enemy.hasComponentType(targetTypes[i]) && !types.includes(targetTypes[i])) {
                     return false;
@@ -216,7 +216,6 @@ export namespace WaveManager {
             return true;
         });
     }
-
 
     export function getEnemiesInRadius(position: number[], radius: number, types: EEnemyComponentType[] = []) {
         let inRange = queryEnemies(position[0], position[1], radius, radius);
@@ -232,7 +231,6 @@ export namespace WaveManager {
         airdrops.push(airdrop);
     }
 
-
     export function update(dt) {
         const currentWave = waves[currentWaveIndex];
         const currentAirDrop = airdrops[currentAirDropIndex];
@@ -244,8 +242,6 @@ export namespace WaveManager {
         for (let i = 0; i < airdrops.length; i++) {
             airdrops[i].onUpdate(dt);
         }
-
-
 
         if (currentWaveIndex < waves.length) {
             if (!currentWave.hasEnemiesToSpawn()) {
@@ -272,8 +268,7 @@ export namespace WaveManager {
         if (bounds) {
             let [x, y, w, h] = bounds;
             quadTree = new QuadTree(new Rectangle(x, y, w, h), 4);
-        }
-        else {
+        } else {
             quadTree = null;
         }
 
@@ -289,6 +284,166 @@ export namespace WaveManager {
         if (!quadTree) return [];
         let queryRes = quadTree.query(new Rectangle(x, y, w, h));
         if (!queryRes) return [];
-        return queryRes.map(point => point.obj as Enemy);
+        return queryRes.map((point) => point.obj as Enemy);
+    }
+}
+
+export class WaveUtil {
+    plusAmount = WaveUtilConstant.PLUS_AMOUNT; // 每个回合增加的小怪个数
+    bloodRound = WaveUtilConstant.BLOOD_ROUND; // 每bloodRound个回合增加怪物20%血量
+    typeRound = WaveUtilConstant.TYPE_ROUND; // 每typeRound个回合增加一个种类的怪物
+    bossRound = WaveUtilConstant.BOSS_ROUND; // 每bossRound个回合增加一个全新boss
+    bossBloodRound = WaveUtilConstant.BOSS_BLOOD_ROUND; //在boss刷新后，每bossBloodRound给boss增加 10%血量
+    waveGold = WaveUtilConstant.WAVE_GOLD; // 第一轮的金币奖励
+    waveTime = WaveUtilConstant.WAVE_TIME; // 每一轮的时间限制
+    hpMultiplier = WaveUtilConstant.HP_MULTIPLIER; // 怪物的基础血量
+
+    // 初始化怪物,也就是第一轮的怪物
+    baseEnemy = {
+        enemies: [{ type: 1001, count: 1, spawnInterval: 1 }],
+        waveGold: this.waveGold,
+        waveTime: this.waveTime,
+        hpMultiplier: this.hpMultiplier,
+    };
+
+    constructor(config?: WaveUtilConfig) {
+        if (config) {
+            this.plusAmount = config?.plusAmount || WaveUtilConstant.PLUS_AMOUNT;
+            this.bloodRound = config?.bloodRound || WaveUtilConstant.BLOOD_ROUND;
+            this.typeRound = config?.typeRound || WaveUtilConstant.TYPE_ROUND;
+            this.bossRound = config?.bossRound || WaveUtilConstant.BOSS_ROUND;
+            this.bossBloodRound = config?.bossBloodRound || WaveUtilConstant.BOSS_BLOOD_ROUND;
+            this.waveGold = config?.waveGold || WaveUtilConstant.WAVE_GOLD;
+            this.waveTime = config?.waveTime || WaveUtilConstant.WAVE_TIME;
+            this.hpMultiplier = config?.hpMultiplier || WaveUtilConstant.HP_MULTIPLIER;
+        }
+    }
+
+    getEnemies() {
+        let enemyConfig = GameConfig.Monster.getAllElement();
+        const bosses = enemyConfig.filter((enemy) => enemy.types && enemy.types.includes(EEnemyComponentType.Boss));
+        const enemies = enemyConfig.filter((enemy) => !enemy.types || !enemy.types.includes(EEnemyComponentType.Boss));
+        return [bosses, enemies, enemyConfig];
+    }
+
+    calculateWaveContent(wave: number) {
+        // 先加种类，再加个数，再加血量
+
+        // 加种类
+        // 加boss
+        if (wave % this.bossRound === 0) {
+            this.addBoss(wave);
+            // todo 加boss血量，目前还不支持
+        } else {
+            if (wave >= this.typeRound) {
+                this.addType(wave);
+            }
+            // 加数量
+            this.addAmount(wave);
+
+            // todo 加血量，目前还不支持
+        }
+
+        return this.baseEnemy;
+    }
+
+    // 给怪物加数量
+    addAmount(wave: number) {
+        const amount = (wave - 1) * this.plusAmount;
+        const newEnemies = this.baseEnemy.enemies.map((enemy) => {
+            return {
+                ...enemy,
+                count: enemy.count + amount,
+            };
+        });
+        this.baseEnemy.enemies = newEnemies;
+    }
+
+    // 给怪物加血量
+    addBlood(wave: number) {}
+
+    // 给怪物加种类
+    addType(wave: number) {
+        const [bosses, enemies] = this.getEnemies();
+        // 筛选出不在怪物表里的怪物
+        const existIds = this.baseEnemy.enemies.map((enemy) => enemy.type);
+        const restEnemies = enemies.filter((enemy) => !existIds.includes(enemy.id));
+
+        const multiple = Math.floor(wave / this.typeRound); // multiple指的是需要加几种新怪物
+        if (multiple <= restEnemies.length) {
+            // 如果要加的种类小于等于剩余的种类，那么就加入
+            const slicedEnemies = restEnemies.slice(0, multiple);
+            const formatSlicedEnemies = slicedEnemies.map((enemy) => {
+                return {
+                    type: enemy.id,
+                    count: 0,
+                    spawnInterval: 1, // 1秒一只
+                };
+            });
+            this.baseEnemy.enemies = this.baseEnemy.enemies.concat(formatSlicedEnemies);
+        } else {
+            const formatAllEnemies = restEnemies.map((enemy) => {
+                return {
+                    type: enemy.id,
+                    count: 0,
+                    spawnInterval: 1, // 1秒一只
+                };
+            });
+            this.baseEnemy.enemies = this.baseEnemy.enemies.concat(formatAllEnemies);
+        }
+    }
+
+    // 增加Boss种类
+    addBoss(wave: number) {
+        const [bosses, enemies] = this.getEnemies();
+        // boss关卡
+        this.baseEnemy.enemies = [];
+        const multiple = Math.floor(wave / this.bossRound); // multiple指的是需要加几种新Boss
+        if (multiple <= bosses.length) {
+            // 如果要加的种类小于等于剩余的种类，那么就加入
+            const slicedBosses = bosses.slice(0, multiple);
+            const formatSlicedBosses = slicedBosses.map((enemy) => {
+                return {
+                    type: enemy.id,
+                    count: 1,
+                    spawnInterval: 0.5, // 0.5秒一只
+                };
+            });
+            this.baseEnemy.enemies = this.baseEnemy.enemies.concat(formatSlicedBosses);
+        } else {
+            const formatAllBosses = bosses.map((enemy) => {
+                return {
+                    type: enemy.id,
+                    count: 1,
+                    spawnInterval: 0.5, // 0.5秒一只
+                };
+            });
+            this.baseEnemy.enemies = this.baseEnemy.enemies.concat(formatAllBosses);
+        }
+    }
+
+    // 增加Boss血量
+    addBossBlood() {}
+
+    static fitOldConfig(stageIndex, difficulty, wave?: number): [WaveConfig | null, number] {
+        const index = StageUtil.getIndexFromIdAndDifficulty(stageIndex, difficulty);
+        const waves = NEW_STAGE_CONFIG[index].waves;
+        if (Array.isArray(waves)) {
+            const currentWaves = waves as WaveConfig[];
+            const waveMax = currentWaves.length;
+            if (!wave) {
+                return [null, waveMax];
+            }
+            const waveContent = currentWaves[wave - 1];
+            return [waveContent, waveMax];
+        } else {
+            const currentWaves: (wave: number) => WaveConfig = waves;
+            const waveMax = NEW_STAGE_CONFIG[index].waveLength;
+            if (!wave) {
+                return [null, waveMax];
+            }
+            const waveContent = currentWaves(wave);
+            return [waveContent, waveMax];
+        }
     }
 }

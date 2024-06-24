@@ -1,4 +1,4 @@
-﻿/** 
+﻿/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-04 11:33:20
  * @LastEditors  : xiaohao.li
@@ -18,7 +18,7 @@ import { PlayerUtil } from "../Modules/PlayerModule/PlayerUtil";
 import { TowerManager } from "../Modules/TowerModule/TowerManager";
 import { TowerModuleC } from "../Modules/TowerModule/TowerModuleC";
 import { RankItem } from "../Rank/RankManager";
-import { STAGE_CONFIG, baseHp } from "../StageConfig";
+import { NEW_STAGE_CONFIG, STAGE_CONFIG, baseHp } from "../StageConfig";
 import { EStageState, WaveConfig } from "../StageEnums";
 import { StageListener } from "../StageListener";
 import { TweenCommon } from "../TweenCommon";
@@ -34,22 +34,20 @@ import { BaseState } from "../fsm/BaseState";
 import { Fsm } from "../fsm/Fsm";
 import { EEnemyComponentType } from "../tool/Enum";
 import { MGSTool } from "../tool/MGSTool";
-import { Wave, WaveAirdrop, WaveManager } from './Wave';
+import { Wave, WaveAirdrop, WaveManager, WaveUtil } from "./Wave";
 import { UIMain } from "./ui/UIMain";
 import { SettleData, UISettle } from "./ui/UISettle";
 
-
-
 type DeathData = {
-    id: number,
-    wave: number,
-}
+    id: number;
+    wave: number;
+};
 
 type EscapeData = {
-    id: number,
-    wave: number,
-    escapeDamage: number,
-}
+    id: number;
+    wave: number;
+    escapeDamage: number;
+};
 
 export class StageS {
     private _fsm: StageFSM;
@@ -76,7 +74,7 @@ export class StageS {
         waves: 0,
         wavesMax: 0,
         reward: [],
-    }
+    };
     // 对局时间
     time: number = 0;
     difficulty: number = 0;
@@ -85,7 +83,6 @@ export class StageS {
     private _tempDeadIds: number[] = [];
     private _tempEscapeIds: number[] = [];
 
-
     constructor(public players: Player[], stageId: number, difficulty: number) {
         this._fsm = new StageFSM(this);
         StageS.counter++;
@@ -93,8 +90,15 @@ export class StageS {
         this.stageId = stageId;
         this.difficulty = difficulty;
         this._fsm.start();
-        this.boardcast(player => {
-            Event.dispatchToClient(player, "onStageCreated", this.players.map(player => player.playerId), this.id, this.stageId, difficulty);
+        this.boardcast((player) => {
+            Event.dispatchToClient(
+                player,
+                "onStageCreated",
+                this.players.map((player) => player.playerId),
+                this.id,
+                this.stageId,
+                difficulty
+            );
             PlayerUtil.getPlayerScript(player.playerId).id = this.id;
 
             let script = PlayerUtil.getPlayerScript(player.playerId);
@@ -102,8 +106,8 @@ export class StageS {
                 userId: player.userId,
                 name: script.playerName,
                 gold: 0,
-                damage: 0
-            }
+                damage: 0,
+            };
             this.rankItems.push(rankItem);
         });
         this._hp = baseHp;
@@ -122,81 +126,101 @@ export class StageS {
             if (stageId == this.id) {
                 if (state == EStageState.End) {
                     GameManager.endStage(this);
-                    this.boardcast(player => {
+                    this.boardcast((player) => {
                         GameManager.addPlayer(player);
                     });
-                }
-                else if (state == EStageState.Settle) {
-                    this.boardcast(player => {
+                } else if (state == EStageState.Settle) {
+                    this.boardcast((player) => {
                         this.updateSettleData(player);
-                        Event.dispatchToClient(player, "onStageStateChanged", state, this.settleData.hasWin, this.settleData.isPerfect, this.settleData.isFirst, this.settleData.time, this.settleData.waves, this.settleData.wavesMax, this.settleData.reward.map(reward => reward.guid), this.settleData.reward.map(reward => reward.amount), this.settleData.reward.map((reward => reward.type)), this._hp);
+                        Event.dispatchToClient(
+                            player,
+                            "onStageStateChanged",
+                            state,
+                            this.settleData.hasWin,
+                            this.settleData.isPerfect,
+                            this.settleData.isFirst,
+                            this.settleData.time,
+                            this.settleData.waves,
+                            this.settleData.wavesMax,
+                            this.settleData.reward.map((reward) => reward.guid),
+                            this.settleData.reward.map((reward) => reward.amount),
+                            this.settleData.reward.map((reward) => reward.type),
+                            this._hp
+                        );
                     });
                 }
 
                 if (state != EStageState.Settle) {
-                    this.boardcast(player => {
+                    this.boardcast((player) => {
                         Event.dispatchToClient(player, "onStageStateChanged", state, ...param);
                     });
                 }
             }
         });
-        StageListener.addClientListener(this.id, "onDie", (player: Player, enemyIds: number[], waveIds: number[], stageId: number) => {
-            if (stageId == this.id) {
-                for (let i = 0; i < enemyIds.length; i++) {
-                    let enemyId = enemyIds[i];
-                    let waveId = waveIds[i];
-                    if (this._deadIds.indexOf(enemyId) == -1) {
-                        this._deadIds.push(enemyId);
-                        if (this._tempDeadIds.indexOf(enemyId) == -1) {
-                            this._tempDeadIds.push(enemyId);
+        StageListener.addClientListener(
+            this.id,
+            "onDie",
+            (player: Player, enemyIds: number[], waveIds: number[], stageId: number) => {
+                if (stageId == this.id) {
+                    for (let i = 0; i < enemyIds.length; i++) {
+                        let enemyId = enemyIds[i];
+                        let waveId = waveIds[i];
+                        if (this._deadIds.indexOf(enemyId) == -1) {
+                            this._deadIds.push(enemyId);
+                            if (this._tempDeadIds.indexOf(enemyId) == -1) {
+                                this._tempDeadIds.push(enemyId);
+                            }
+                            this.onCountChanged();
                         }
-                        this.onCountChanged();
-                    }
 
-                    if (this.currentWave - 1 == waveId) {
-                        if (this.currentWaveDeadIds.indexOf(enemyId) == -1) {
-                            this.currentWaveDeadIds.push(enemyId);
-                            this.onCurrentWaveCountChanged();
-                        }
-                    }
-                }
-
-            }
-        });
-
-        StageListener.addClientListener(this.id, "onEscaped", (player: Player, enemyIds: number[], waveIds: number[], damages: number[], stageId: number) => {
-            if (stageId == this.id) {
-                for (let i = 0; i < enemyIds.length; i++) {
-                    let enemyId = enemyIds[i];
-                    let waveId = waveIds[i];
-                    let damage = damages[i];
-                    if (this._deadIds.indexOf(enemyId) == -1) {
-                        this._deadIds.push(enemyId);
-                        if (this._tempEscapeIds.indexOf(enemyId) == -1) {
-                            this._tempEscapeIds.push(enemyId);
-                        }
-                        this.onCountChanged();
-                        this._hp -= damage;
-                        if (this._hp <= 0) {
-                            // 本营死亡
-                            this.settleData.hasWin = false;
-                            this._fsm.changeState(SettleState, false);
-                            return;
-                        }
-                    }
-
-                    if (this.currentWave - 1 == waveId) {
-                        if (this.currentWaveDeadIds.indexOf(enemyId) == -1) {
-                            this.currentWaveDeadIds.push(enemyId);
-                            this.onCurrentWaveCountChanged();
+                        if (this.currentWave - 1 == waveId) {
+                            if (this.currentWaveDeadIds.indexOf(enemyId) == -1) {
+                                this.currentWaveDeadIds.push(enemyId);
+                                this.onCurrentWaveCountChanged();
+                            }
                         }
                     }
                 }
-                this.boardcast((player) => {
-                    Event.dispatchToClient(player, "setStageHp", this._hp, this._maxHp);
-                });
             }
-        });
+        );
+
+        StageListener.addClientListener(
+            this.id,
+            "onEscaped",
+            (player: Player, enemyIds: number[], waveIds: number[], damages: number[], stageId: number) => {
+                if (stageId == this.id) {
+                    for (let i = 0; i < enemyIds.length; i++) {
+                        let enemyId = enemyIds[i];
+                        let waveId = waveIds[i];
+                        let damage = damages[i];
+                        if (this._deadIds.indexOf(enemyId) == -1) {
+                            this._deadIds.push(enemyId);
+                            if (this._tempEscapeIds.indexOf(enemyId) == -1) {
+                                this._tempEscapeIds.push(enemyId);
+                            }
+                            this.onCountChanged();
+                            this._hp -= damage;
+                            if (this._hp <= 0) {
+                                // 本营死亡
+                                this.settleData.hasWin = false;
+                                this._fsm.changeState(SettleState, false);
+                                return;
+                            }
+                        }
+
+                        if (this.currentWave - 1 == waveId) {
+                            if (this.currentWaveDeadIds.indexOf(enemyId) == -1) {
+                                this.currentWaveDeadIds.push(enemyId);
+                                this.onCurrentWaveCountChanged();
+                            }
+                        }
+                    }
+                    this.boardcast((player) => {
+                        Event.dispatchToClient(player, "setStageHp", this._hp, this._maxHp);
+                    });
+                }
+            }
+        );
 
         StageListener.addClientListener(this.id, "gmEndGame", (player: Player, id: number) => {
             if (id == this.id) {
@@ -209,8 +233,13 @@ export class StageS {
                 if (isSkip && this.currentSkippingPlayers.indexOf(player) == -1) {
                     this.currentSkippingPlayers.push(player);
 
-                    this.boardcast(player => {
-                        Event.dispatchToClient(player, "updateSkipWave", this.currentSkippingPlayers.length, this.players.length);
+                    this.boardcast((player) => {
+                        Event.dispatchToClient(
+                            player,
+                            "updateSkipWave",
+                            this.currentSkippingPlayers.length,
+                            this.players.length
+                        );
                     });
 
                     if (this.currentSkippingPlayers.length >= Math.ceil(this.players.length / 2)) {
@@ -221,8 +250,13 @@ export class StageS {
                 if (!isSkip && this.currentSkippingPlayers.indexOf(player) != -1) {
                     this.currentSkippingPlayers.splice(this.currentSkippingPlayers.indexOf(player), 1);
 
-                    this.boardcast(player => {
-                        Event.dispatchToClient(player, "updateSkipWave", this.currentSkippingPlayers.length, this.players.length);
+                    this.boardcast((player) => {
+                        Event.dispatchToClient(
+                            player,
+                            "updateSkipWave",
+                            this.currentSkippingPlayers.length,
+                            this.players.length
+                        );
                     });
                 }
             }
@@ -231,7 +265,7 @@ export class StageS {
         Event.addClientListener("speedUp", (player: Player, id: number, speedMultipler: number) => {
             if (this.id == id) {
                 this.speedMultipler = speedMultipler;
-                this.boardcast(player => {
+                this.boardcast((player) => {
                     Event.dispatchToClient(player, "speedUp", speedMultipler);
                 });
             }
@@ -247,8 +281,13 @@ export class StageS {
             if (this.currentSkippingPlayers.indexOf(player) != -1) {
                 this.currentSkippingPlayers.splice(this.currentSkippingPlayers.indexOf(player), 1);
 
-                this.boardcast(player => {
-                    Event.dispatchToClient(player, "updateSkipWave", this.currentSkippingPlayers.length, this.players.length);
+                this.boardcast((player) => {
+                    Event.dispatchToClient(
+                        player,
+                        "updateSkipWave",
+                        this.currentSkippingPlayers.length,
+                        this.players.length
+                    );
                 });
             }
         });
@@ -262,23 +301,31 @@ export class StageS {
             }
         });
 
-        StageListener.addClientListener(this.id, "boardcastMessage", (boardcastPlayer: Player, message: string, type: number) => {
-            if (this.players.indexOf(boardcastPlayer) != -1) {
-                this.boardcast(player => {
-                    Event.dispatchToClient(player, "boardcastMessage", boardcastPlayer.playerId, message, type);
-                });
+        StageListener.addClientListener(
+            this.id,
+            "boardcastMessage",
+            (boardcastPlayer: Player, message: string, type: number) => {
+                if (this.players.indexOf(boardcastPlayer) != -1) {
+                    this.boardcast((player) => {
+                        Event.dispatchToClient(player, "boardcastMessage", boardcastPlayer.playerId, message, type);
+                    });
+                }
             }
-        });
+        );
 
-        StageListener.addClientListener(this.id, "updateRankData", (player: Player, id: number, gold: number, damage: number) => {
-            if (this.id == id) {
-                let rankItem = this.rankItems.find(rankItem => rankItem.userId == player.userId);
-                rankItem.name = PlayerUtil.getPlayerScript(player.playerId).playerName;
-                rankItem.gold = gold;
-                rankItem.damage = damage;
-                this._shouldSync = true;
+        StageListener.addClientListener(
+            this.id,
+            "updateRankData",
+            (player: Player, id: number, gold: number, damage: number) => {
+                if (this.id == id) {
+                    let rankItem = this.rankItems.find((rankItem) => rankItem.userId == player.userId);
+                    rankItem.name = PlayerUtil.getPlayerScript(player.playerId).playerName;
+                    rankItem.gold = gold;
+                    rankItem.damage = damage;
+                    this._shouldSync = true;
+                }
             }
-        });
+        );
     }
 
     onPlayerLaveGame(player: Player) {
@@ -295,8 +342,15 @@ export class StageS {
         this.rankItems.sort((a, b) => {
             return b.damage - a.damage;
         });
-        this.boardcast(player => {
-            Event.dispatchToClient(player, "updateRankItems", this.rankItems.map(rankItem => rankItem.userId), this.rankItems.map(rankItem => rankItem.name), this.rankItems.map(rankItem => rankItem.gold), this.rankItems.map(rankItem => rankItem.damage));
+        this.boardcast((player) => {
+            Event.dispatchToClient(
+                player,
+                "updateRankItems",
+                this.rankItems.map((rankItem) => rankItem.userId),
+                this.rankItems.map((rankItem) => rankItem.name),
+                this.rankItems.map((rankItem) => rankItem.gold),
+                this.rankItems.map((rankItem) => rankItem.damage)
+            );
         });
     }
 
@@ -305,8 +359,12 @@ export class StageS {
             this._fsm.changeState(EndState);
             return;
         }
-        this.boardcast(player => {
-            Event.dispatchToClient(player, "onPlayerCountChanged", this.players.map(player => player.playerId));
+        this.boardcast((player) => {
+            Event.dispatchToClient(
+                player,
+                "onPlayerCountChanged",
+                this.players.map((player) => player.playerId)
+            );
         });
     }
 
@@ -347,10 +405,10 @@ export class StageS {
 
     onCountChanged() {
         if (this._deadIds.length == this.cumulativeCount) {
-            if (this.currentWave >= STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageId, this.difficulty)].waves.length) {
+            const [, length] = WaveUtil.fitOldConfig(this.stageId, this.difficulty);
+            if (this.currentWave >= length) {
                 this._fsm.changeState(SettleState, true);
-            }
-            else {
+            } else {
                 this._fsm.changeState(WaitState, 5, this.currentWave);
             }
         }
@@ -360,7 +418,7 @@ export class StageS {
         if (this.skipped) return;
         if (this.currentWaveDeadIds.length >= this.currentWaveCount * GameConfig.Global.getElement(1).skipWaveCount) {
             this.skipped = true;
-            this.boardcast(player => {
+            this.boardcast((player) => {
                 Event.dispatchToClient(player, "canSkipWave", 0, this.players.length);
             });
         }
@@ -373,7 +431,8 @@ export class StageS {
     updateSettleData(player: Player) {
         this.settleData.time = this.time;
         this.settleData.waves = this.settleData.hasWin ? this.currentWave : this.currentWave - 1;
-        this.settleData.wavesMax = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageId, this.difficulty)].waves.length;
+        const [, length] = WaveUtil.fitOldConfig(this.stageId, this.difficulty);
+        this.settleData.wavesMax = length;
         let stageIndex = StageUtil.getIndexFromIdAndDifficulty(this.stageId, this.difficulty);
         let stageConfig = GameConfig.Stage.getAllElement()[stageIndex];
         let stageId = stageConfig.id;
@@ -388,24 +447,20 @@ export class StageS {
                 this.settleData.isFirst = isFirst;
                 if (isFirst) {
                     rewards = stageConfig.firstRewardPerfect;
-                }
-                else {
+                } else {
                     rewards = stageConfig.followRewardPerfect;
                 }
-            }
-            else {
+            } else {
                 // 普通胜利
                 let isFirst = ModuleService.getModule(PlayerModuleS).setWin(player, stageId);
                 this.settleData.isFirst = isFirst;
                 if (isFirst) {
                     rewards = stageConfig.firstRewardNormal;
-                }
-                else {
+                } else {
                     rewards = stageConfig.followRewardNormal;
                 }
             }
-        }
-        else {
+        } else {
             // 失败
             rewards = stageConfig.failReward;
         }
@@ -419,20 +474,17 @@ export class StageS {
                 // 金币
                 this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
                 ModuleService.getModule(PlayerModuleS).changeGold(player, amount);
-            }
-            else if (item.itemType == 2) {
+            } else if (item.itemType == 2) {
                 // 卡牌
                 let card = GameConfig.Tower.getElement(item.itemTypeid);
                 this.settleData.reward.push({ guid: card.imgGuid, amount: amount, type: item.itemType });
                 // TODO: 实际添加卡牌
                 ModuleService.getModule(CardModuleS).giveCard(player, card.id);
-            }
-            else if (item.itemType == 3) {
+            } else if (item.itemType == 3) {
                 // 科技点
                 this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
                 ModuleService.getModule(PlayerModuleS).changeTechPoint(player, amount);
-            }
-            else if (item.itemType == 4) {
+            } else if (item.itemType == 4) {
                 // 经验
                 this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
                 ModuleService.getModule(PlayerModuleS).changeExp(player, amount);
@@ -441,7 +493,7 @@ export class StageS {
     }
 
     addGold(amount: number) {
-        this.boardcast(player => {
+        this.boardcast((player) => {
             Event.dispatchToClient(player, "addGold", amount);
         });
     }
@@ -476,7 +528,8 @@ export class StageC {
     }
 
     public get stageId(): number {
-        return GameConfig.Stage.getAllElement()[StageUtil.getIndexFromIdAndDifficulty(this.stageIndex, this.difficulty)].id;
+        return GameConfig.Stage.getAllElement()[StageUtil.getIndexFromIdAndDifficulty(this.stageIndex, this.difficulty)]
+            .id;
     }
 
     public set gold(value: number) {
@@ -489,16 +542,14 @@ export class StageC {
             this._gold = value;
             this._dataChanged = true;
             StageActions.onGoldChanged.call(this._gold);
-        }
-        else {
+        } else {
             if (worldLocation) {
                 TweenCommon.addGoldAnim(value - this._gold, worldLocation, new Vector2(0, -200), () => {
                     StageActions.onGoldChanged.call(this._gold);
                 });
                 this._gold = value;
                 this._dataChanged = true;
-            }
-            else {
+            } else {
                 this._gold = value;
                 this._dataChanged = true;
                 StageActions.onGoldChanged.call(this._gold);
@@ -512,7 +563,7 @@ export class StageC {
 
     public set damage(value: number) {
         this._damage = value;
-        this._dataChanged = true
+        this._dataChanged = true;
     }
 
     constructor(playerIds: number[], id: number, stageId: number, difficulty: number) {
@@ -524,12 +575,14 @@ export class StageC {
         let stages = StageUtil.getStageDataWithId(stageId);
         let stageConfig = stages[this.difficulty];
         this.gold = 0;
-        ModuleService.getModule(PlayerModuleC).getUnlockTechNodeMap(playerIds).then((res: { [key: number]: number[] }) => {
-            this.unlockedTechNodes = ModuleService.getModule(PlayerModuleC).getUnlockTechNodes(res);
-            this.techNodeMap = res;
-        });
+        ModuleService.getModule(PlayerModuleC)
+            .getUnlockTechNodeMap(playerIds)
+            .then((res: { [key: number]: number[] }) => {
+                this.unlockedTechNodes = ModuleService.getModule(PlayerModuleC).getUnlockTechNodes(res);
+                this.techNodeMap = res;
+            });
         Enemy.count = 0;
-        UIService.show(CutsceneUI, (() => {
+        UIService.show(CutsceneUI, () => {
             Player.asyncGetLocalPlayer().then((player: Player) => {
                 GameManager.backToLobby();
             });
@@ -539,7 +592,7 @@ export class StageC {
                 MapManager.stageID = this.stageIndex;
                 MapManager.difficulty = this.difficulty;
             });
-        }));
+        });
         this.registerListeners();
     }
 
@@ -598,23 +651,28 @@ export class StageC {
         StageListener.addServerListener(this.id, "onStageStateChanged", (state: EStageState, ...param: any[]) => {
             this.state = state;
 
-
             let ui = UIService.getUI(UIMain);
             if (this.state == EStageState.Game) {
                 this.duration = param[0];
                 let wave = param[1];
                 this.currentWave = wave;
-                let waves: WaveConfig[] = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageIndex, this.difficulty)].waves;
-                let waveMax = waves.length;
+                const [waveContent, waveMax] = WaveUtil.fitOldConfig(this.stageIndex, this.difficulty, wave);
+                // let waves: WaveConfig[] =
+                //     STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageIndex, this.difficulty)].waves;
+                // let waveMax = waves.length;
+
                 ui.setTimer(this.duration);
                 ui.setWave(wave, waveMax);
 
-                WaveManager.addWave(new Wave(waves[wave - 1]));
-                if (waves[wave - 1].airDrop) {
-                    WaveManager.addAirdrop(new WaveAirdrop(waves[wave - 1].airDrop));
+                WaveManager.addWave(new Wave(waveContent));
+                if (waveContent.airDrop) {
+                    WaveManager.addAirdrop(new WaveAirdrop(waveContent.airDrop));
                 }
-            }
-            else if (this.state == EStageState.Wait) {
+                // WaveManager.addWave(new Wave(waves[wave - 1]));
+                // if (waves[wave - 1].airDrop) {
+                //     WaveManager.addAirdrop(new WaveAirdrop(waves[wave - 1].airDrop));
+                // }
+            } else if (this.state == EStageState.Wait) {
                 this.duration = param[0];
                 let mainUI = UIService.getUI(UIMain);
                 if (!mainUI.visible) {
@@ -622,8 +680,16 @@ export class StageC {
                 }
                 UIService.hide(LobbyUI);
                 ui.setTimer(this.duration);
-                let config = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageIndex, this.difficulty)];
-                let currentWave = config.waves[this.currentWave];
+
+                // let config = NEW_STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageId, this.difficulty)];
+                // let currentWave = config.waves(this.currentWave + 1);
+                // console.log(this.currentWave, "this.currentWave");
+                const [currentWave, waveMax] = WaveUtil.fitOldConfig(
+                    this.stageIndex,
+                    this.difficulty,
+                    this.currentWave + 1
+                );
+
                 if (currentWave) {
                     MGSTool.goldChange(3, currentWave.waveGold, 4);
                     let hasBoss = false;
@@ -635,24 +701,31 @@ export class StageC {
                         }
                     }
                     if (hasBoss) {
-                        let isLast = this.currentWave == config.waves.length - 1;
+                        let isLast = this.currentWave == waveMax - 1;
                         TipsManager.showWaveTips(GameConfig.Language.getElement("Text_MonsterComing").Value, 48, () => {
                             if (isLast) {
-                                TipsManager.showWaveTips(GameConfig.Language.getElement("Text_LastWave").Value, 64, () => {
-                                    UIService.hide(LastWaveTipsUI);
-                                });
-                            }
-                            else {
-                                TipsManager.showWaveTips(GameConfig.Language.getElement("Text_BossComing").Value, 64, () => {
-                                    UIService.hide(LastWaveTipsUI);
-                                });
+                                TipsManager.showWaveTips(
+                                    GameConfig.Language.getElement("Text_LastWave").Value,
+                                    64,
+                                    () => {
+                                        UIService.hide(LastWaveTipsUI);
+                                    }
+                                );
+                            } else {
+                                TipsManager.showWaveTips(
+                                    GameConfig.Language.getElement("Text_BossComing").Value,
+                                    64,
+                                    () => {
+                                        UIService.hide(LastWaveTipsUI);
+                                    }
+                                );
                             }
                         });
                     }
                 }
-            }
-            else if (this.state == EStageState.Settle) {
-                let [hasWin, isPerfect, isFirst, time, waves, wavesMax, rewardGuids, rewardAmounts, rewardTypes, hp] = param;
+            } else if (this.state == EStageState.Settle) {
+                let [hasWin, isPerfect, isFirst, time, waves, wavesMax, rewardGuids, rewardAmounts, rewardTypes, hp] =
+                    param;
                 if (hasWin) {
                     StageActions.onStageWin.call(this.stageIndex);
                 }
@@ -668,28 +741,43 @@ export class StageC {
                     wavesMax: wavesMax,
                     reward: rewardGuids.map((guid, index) => {
                         return { guid: guid, amount: rewardAmounts[index], type: rewardTypes[index] };
-                    })
-                }
+                    }),
+                };
                 TimeUtil.delayExecute(() => {
-                    let rewardGold = settleData.reward.find(v => v.type == 1);
+                    let rewardGold = settleData.reward.find((v) => v.type == 1);
                     if (rewardGold) {
                         rewardGold.amount += AirdropManager.gameGold;
                     } else {
-                        settleData.reward.push({ guid: GameConfig.Item.getElement(1).itemImgGuid, amount: AirdropManager.gameGold, type: 1 });
+                        settleData.reward.push({
+                            guid: GameConfig.Item.getElement(1).itemImgGuid,
+                            amount: AirdropManager.gameGold,
+                            type: 1,
+                        });
                     }
 
-                    MGSTool.gameOver(waves, this.stageId, hasWin, isFirst, isPerfect, hp, this.gold, this._spent, hasWin ? null : this._lastMonster,
-                        ModuleService.getModule(TowerModuleC).tryTowerMgs?.map(card => card.toFixed(0)).join(""));
+                    MGSTool.gameOver(
+                        waves,
+                        this.stageId,
+                        hasWin,
+                        isFirst,
+                        isPerfect,
+                        hp,
+                        this.gold,
+                        this._spent,
+                        hasWin ? null : this._lastMonster,
+                        ModuleService.getModule(TowerModuleC)
+                            .tryTowerMgs?.map((card) => card.toFixed(0))
+                            .join("")
+                    );
 
                     UIService.show(UISettle, settleData);
-                }, 1)
+                }, 1);
                 let rewardArr = rewardAmounts.map((amount, index) => {
-                    let cfg = GameConfig.Item.getAllElement().find(item => item.itemType == rewardTypes[index]);
+                    let cfg = GameConfig.Item.getAllElement().find((item) => item.itemType == rewardTypes[index]);
                     return [cfg.id, amount];
                 });
                 MGSTool.rewardMGS(rewardArr, 1);
-            }
-            else {
+            } else {
                 UIService.hide(UIMain);
                 UIService.show(LobbyUI);
                 if (state == EStageState.End) {
@@ -716,28 +804,37 @@ export class StageC {
             StageActions.onPlayerCountChanged.call(this.playerIds.length);
         });
 
-        StageListener.addServerListener(this.id, "updateRankItems", (userIds: string[], names: string[], golds: number[], damages: number[]) => {
-            this.updateRankItems(userIds, names, golds, damages);
-        });
+        StageListener.addServerListener(
+            this.id,
+            "updateRankItems",
+            (userIds: string[], names: string[], golds: number[], damages: number[]) => {
+                this.updateRankItems(userIds, names, golds, damages);
+            }
+        );
     }
 
-    updateRankItems(userIds: string[], names: string[], golds: number[], damages: number[], updateLocal: boolean = false) {
+    updateRankItems(
+        userIds: string[],
+        names: string[],
+        golds: number[],
+        damages: number[],
+        updateLocal: boolean = false
+    ) {
         // filter this._rankItems not in userIds
         this._rankItems = this._rankItems.filter((rankItem) => {
             return userIds.indexOf(rankItem.userId) != -1;
         });
         for (let i = 0; i < userIds.length; i++) {
-            let item = this._rankItems.find(rankItem => rankItem.userId == userIds[i]);
+            let item = this._rankItems.find((rankItem) => rankItem.userId == userIds[i]);
             if (!item) {
                 item = {
                     userId: userIds[i],
                     name: names[i],
                     gold: golds[i],
                     damage: damages[i],
-                }
+                };
                 this._rankItems.push(item);
-            }
-            else {
+            } else {
                 if (!updateLocal) {
                     if (userIds[i] == Player.localPlayer.userId) continue;
                 }
@@ -769,13 +866,19 @@ export class StageC {
             TowerManager.onUpdate(updateRate);
             dtUpdate -= updateRate;
         }
-        let selfRankItem = this._rankItems.find(rankItem => rankItem.userId == Player.localPlayer.userId);
+        let selfRankItem = this._rankItems.find((rankItem) => rankItem.userId == Player.localPlayer.userId);
         if (selfRankItem) {
             selfRankItem.gold = this.gold;
             selfRankItem.damage = this.damage;
             selfRankItem.name = GameManager.playerName;
 
-            this.updateRankItems(this._rankItems.map(item => item.userId), this._rankItems.map(item => item.name), this._rankItems.map(item => item.gold), this._rankItems.map(item => item.damage), true);
+            this.updateRankItems(
+                this._rankItems.map((item) => item.userId),
+                this._rankItems.map((item) => item.name),
+                this._rankItems.map((item) => item.gold),
+                this._rankItems.map((item) => item.damage),
+                true
+            );
         }
         this.periodicSync(dt);
     }
@@ -785,26 +888,36 @@ export class StageC {
         this._rankTimer += dt;
         if (this._timer > 1) {
             if (this._currentDeathData.length > 0) {
-                Event.dispatchToServer("onDie", this._currentDeathData.map(data => data.id), this._currentDeathData.map(data => data.wave), this.id);
+                Event.dispatchToServer(
+                    "onDie",
+                    this._currentDeathData.map((data) => data.id),
+                    this._currentDeathData.map((data) => data.wave),
+                    this.id
+                );
                 this._currentDeathData = [];
                 this._timer = 0;
             }
 
             if (this._currentEscapeData.length > 0) {
-                Event.dispatchToServer("onEscaped", this._currentEscapeData.map(data => data.id), this._currentEscapeData.map(data => data.wave), this._currentEscapeData.map(data => data.escapeDamage), this.id);
+                Event.dispatchToServer(
+                    "onEscaped",
+                    this._currentEscapeData.map((data) => data.id),
+                    this._currentEscapeData.map((data) => data.wave),
+                    this._currentEscapeData.map((data) => data.escapeDamage),
+                    this.id
+                );
                 this._currentEscapeData = [];
                 this._timer = 0;
             }
         }
 
         if (this._rankTimer > 5 && this._dataChanged) {
-            console.log("update rank")
+            console.log("update rank");
             Event.dispatchToServer("updateRankData", this.id, this.gold, this.damage);
             this._rankTimer = 0;
             this._dataChanged = false;
         }
     }
-
 
     destroy() {
         StageListener.removeAllListeners(this.id);
@@ -815,7 +928,6 @@ export class StageC {
     }
 }
 
-
 class StageFSM extends Fsm<StageS> {
     constructor(public owner: StageS) {
         super(owner);
@@ -824,8 +936,7 @@ class StageFSM extends Fsm<StageS> {
     public start() {
         if (this.owner.stageId == 99) {
             this.changeState(WaitState, 5, 0);
-        }
-        else {
+        } else {
             this.changeState(WaitState, 10, 0);
         }
     }
@@ -844,18 +955,17 @@ class GameState extends StageBaseState {
     onUpdate(dt: number): void {
         this._time -= dt * this.fsm.owner.speedMultipler;
         if (this._time <= 0) {
-            if (this._wave < STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.fsm.owner.stageId, this.fsm.owner.difficulty)].waves.length) {
+            const [, length] = WaveUtil.fitOldConfig(this.fsm.owner.stageId, this.fsm.owner.difficulty);
+            if (this._wave < length) {
                 this.fsm.changeState(WaitState, 5, this._wave);
-            }
-            else {
+            } else {
                 this.fsm.changeState(SettleState, true);
             }
         }
     }
     onEnter(...params: any[]): void {
         this._wave = params[0];
-        let config = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.fsm.owner.stageId, this.fsm.owner.difficulty)];
-        let currentWave = config.waves[this._wave - 1];
+        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageId, this.fsm.owner.difficulty, this._wave);
         this._time = currentWave.waveTime;
         this.fsm.owner.currentWaveCount = 0;
         this.fsm.owner.currentWaveDeadIds = [];
@@ -875,10 +985,10 @@ class WaitState extends StageBaseState {
     onUpdate(dt: number): void {
         this._time -= dt * this.fsm.owner.speedMultipler;
         if (this._time <= 0) {
-            if (this._wave < STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.fsm.owner.stageId, this.fsm.owner.difficulty)].waves.length) {
+            const [, length] = WaveUtil.fitOldConfig(this.fsm.owner.stageId, this.fsm.owner.difficulty);
+            if (this._wave < length) {
                 this.fsm.changeState(GameState, this._wave + 1);
-            }
-            else {
+            } else {
                 this.fsm.changeState(SettleState, true);
             }
         }
@@ -890,12 +1000,10 @@ class WaitState extends StageBaseState {
     onEnter(...params: any[]): void {
         this._time = params[0];
         this._wave = params[1];
-        let config = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.fsm.owner.stageId, this.fsm.owner.difficulty)];
-        let currentWave = config.waves[this._wave];
+        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageId, this.fsm.owner.difficulty, this._wave + 1);
         this.fsm.owner.addGold(currentWave.waveGold);
-        StageActions.onStageStateChanged.call(this.state, this.fsm.owner.id, this._time, this._wave)
+        StageActions.onStageStateChanged.call(this.state, this.fsm.owner.id, this._time, this._wave);
     }
-
 }
 
 export class SettleState extends StageBaseState {
@@ -917,15 +1025,12 @@ export class SettleState extends StageBaseState {
     }
 }
 
-
 class EndState extends StageBaseState {
     protected get state(): EStageState {
         return EStageState.End;
     }
 
-    onUpdate(dt: number): void {
-
-    }
+    onUpdate(dt: number): void {}
     onEnter(...params: any[]): void {
         StageActions.onStageStateChanged.call(this.state, this.fsm.owner.id);
     }
@@ -933,13 +1038,13 @@ class EndState extends StageBaseState {
 
 export namespace StageUtil {
     export function getStageDataWithId(id: number) {
-        let stages = GameConfig.Stage.getAllElement().filter(stage => stage.index == id);
+        let stages = GameConfig.Stage.getAllElement().filter((stage) => stage.index == id);
         return stages;
     }
 
     export function getIndexFromIdAndDifficulty(id: number, difficluty: number) {
         let stages = GameConfig.Stage.getAllElement();
-        let indexBegin = stages.findIndex(stage => stage.index == id);
+        let indexBegin = stages.findIndex((stage) => stage.index == id);
         return indexBegin + difficluty;
     }
 }
