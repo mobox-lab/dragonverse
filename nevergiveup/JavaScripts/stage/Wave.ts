@@ -20,7 +20,7 @@ import { Enemy } from "../enemy/EnemyBase";
 import { EEnemyComponentType } from "../tool/Enum";
 import { Point, QuadTree, Rectangle } from "../tool/QuadTree";
 import { StageUtil } from "./Stage";
-import { WaveUtilConstant } from "./constant";
+import { WaveUtilConstant } from "./Constant";
 import { UIMain } from "./ui/UIMain";
 
 export class Wave {
@@ -290,13 +290,15 @@ export namespace WaveManager {
 
 export class WaveUtil {
     plusAmount = WaveUtilConstant.PLUS_AMOUNT; // 每个回合增加的小怪个数
-    bloodRound = WaveUtilConstant.BLOOD_ROUND; // 每bloodRound个回合增加怪物20%血量
+    bloodRound = WaveUtilConstant.BLOOD_ROUND; // 每bloodRound个回合增加怪物 hpPercent 血量
     typeRound = WaveUtilConstant.TYPE_ROUND; // 每typeRound个回合增加一个种类的怪物
     bossRound = WaveUtilConstant.BOSS_ROUND; // 每bossRound个回合增加一个全新boss
     bossBloodRound = WaveUtilConstant.BOSS_BLOOD_ROUND; //在boss刷新后，每bossBloodRound给boss增加 10%血量
     waveGold = WaveUtilConstant.WAVE_GOLD; // 第一轮的金币奖励
     waveTime = WaveUtilConstant.WAVE_TIME; // 每一轮的时间限制
     hpMultiplier = WaveUtilConstant.HP_MULTIPLIER; // 怪物的基础血量
+    hpPercent = WaveUtilConstant.HP_PERCENT; // 小怪每次加的血量
+    hpBossPercent = WaveUtilConstant.HP_BOSS_PERCENT; // Boss每次加的血量
 
     // 初始化怪物,也就是第一轮的怪物
     baseEnemy = {
@@ -316,6 +318,8 @@ export class WaveUtil {
             this.waveGold = config?.waveGold || WaveUtilConstant.WAVE_GOLD;
             this.waveTime = config?.waveTime || WaveUtilConstant.WAVE_TIME;
             this.hpMultiplier = config?.hpMultiplier || WaveUtilConstant.HP_MULTIPLIER;
+            this.hpPercent = config?.hpPercent || WaveUtilConstant.HP_PERCENT;
+            this.hpBossPercent = config?.hpBossPercent || WaveUtilConstant.HP_BOSS_PERCENT;
         }
     }
 
@@ -329,19 +333,26 @@ export class WaveUtil {
     calculateWaveContent(wave: number) {
         // 先加种类，再加个数，再加血量
 
-        // 加种类
-        // 加boss
         if (wave % this.bossRound === 0) {
+            // 加boss
             this.addBoss(wave);
-            // todo 加boss血量，目前还不支持
+
+            // 加boss血量
+            if (wave >= this.bossBloodRound) {
+                this.addBossBlood(wave);
+            }
         } else {
+            // 加种类
             if (wave >= this.typeRound) {
                 this.addType(wave);
             }
             // 加数量
             this.addAmount(wave);
 
-            // todo 加血量，目前还不支持
+            // 加血量
+            if (wave >= this.bloodRound) {
+                this.addBlood(wave);
+            }
         }
 
         return this.baseEnemy;
@@ -360,7 +371,10 @@ export class WaveUtil {
     }
 
     // 给怪物加血量
-    addBlood(wave: number) {}
+    addBlood(wave: number) {
+        const multiple = Math.floor(wave / this.bloodRound); // multiple指的是需要加几次20%
+        this.baseEnemy.hpMultiplier = this.baseEnemy.hpMultiplier * Math.pow(this.hpPercent, multiple);
+    }
 
     // 给怪物加种类
     addType(wave: number) {
@@ -423,7 +437,10 @@ export class WaveUtil {
     }
 
     // 增加Boss血量
-    addBossBlood() {}
+    addBossBlood(wave: number) {
+        const multiple = Math.floor(wave / this.bossBloodRound); // multiple指的是需要加几次10%
+        this.baseEnemy.hpMultiplier = this.baseEnemy.hpMultiplier * Math.pow(this.hpBossPercent, multiple);
+    }
 
     static fitOldConfig(stageIndex, difficulty, wave?: number): [WaveConfig | null, number] {
         const index = StageUtil.getIndexFromIdAndDifficulty(stageIndex, difficulty);

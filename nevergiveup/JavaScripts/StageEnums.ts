@@ -100,4 +100,6 @@ export type WaveUtilConfig = {
     waveGold?: number;
     waveTime?: number;
     hpMultiplier?: number;
+    hpPercent?: number;
+    hpBossPercent?: number;
 };

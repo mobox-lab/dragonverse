@@ -18,6 +18,7 @@ import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
 import { IMonsterElement } from "../config/Monster";
 import { StageUtil } from "../stage/Stage";
+import { WaveUtil } from "../stage/Wave";
 import { Buff, BuffBag, BuffManager } from "../tool/BuffTool";
 import { BuffApplyType, EEnemyComponentType } from "../tool/Enum";
 import { FlyText } from "../tool/FlyText";
@@ -60,9 +61,10 @@ export class Enemy implements BuffBag {
         let stageConfig = GameManager.getStageConfig();
         let stage = GameManager.getStageClient();
         // let waveConfig = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)].waves[wave]; //老版本
-        let waveConfig = NEW_STAGE_CONFIG[
-            StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)
-        ].waves(wave + 1);
+        const [waveConfig] = WaveUtil.fitOldConfig(stage.stageIndex, stage.difficulty, wave + 1);
+        // let waveConfig = NEW_STAGE_CONFIG[
+        //     StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)
+        // ].waves(wave + 1);
         let waveMultiplier = waveConfig?.hpMultiplier || 1;
         let difficlutyMutliplier = stageConfig.difficultyhp;
         let multiplayerMultiplier = GameManager.getMultiplayerMultiplier();
