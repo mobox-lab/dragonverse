@@ -1034,7 +1034,13 @@ export namespace GlobalData {
         /**附魔触发器guid */
         public static triggerGuid: string = "3D93BC133BD789C1";
         /**特效Guid */
-        public static effectGuid: string = "3C71E1D33BD789C1";
+        public static effectGuid: string = "142961";
+        /**特效挂载对象Guid */
+        public static effectTargetGuid: string = "1F9255B4";
+        /**特效相对位置 */
+        public static effectPos: number[] = [0, 0, 89];
+        /**特效相对位置 */
+        public static effectScale: number[] = [0.6, 0.6, 0.6];
         /**普通附魔表 id范围 */
         public static normalEnchantIdRange: number[] = [1, 42];
         /**特殊附魔 id范围 */
@@ -1045,8 +1051,6 @@ export namespace GlobalData {
         public static filterIds: number[] = [11, 12, 13, 14, 15, 44];
         /**同时附魔最大数 */
         public static maxEnchantNum: number = 3;
-        /**特效播放次数 */
-        public static effectPlayTimes: number = 3;
         /**附魔stop界面停留时间/s */
         public static stopTime: number = 3;
         /**附魔单次钻石花费 */
@@ -1059,8 +1063,6 @@ export namespace GlobalData {
         public static enchantSelectIconGuid: string[] = ["295627", "367715"];
         /**附魔按钮 正常、stop Guid */
         public static enchantBtnGuid: string[] = ["359019", "174843"];
-        /**附魔特效时长 */
-        public static effectDuration: number = 1;
 
         /**随机生成钻石间隔  /s*/
         public static randomDiamondInterval: number[] = [5, 10];

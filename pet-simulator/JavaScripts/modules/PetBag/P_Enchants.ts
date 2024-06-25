@@ -33,7 +33,9 @@ export class P_Enchants extends EnchantsPanel_Generate {
     /**是否第一次打开 */
     private isFirstOpen: boolean = true;
     /**特效 */
-    // private effect: mw.Effect;
+    private effect: mw.Effect;
+    /**特效唯一标识 */
+    private effectId: number;
     /**词条item */
     private enchantItems: EnchantItem[] = [];
     /**宠物item */
@@ -51,7 +53,6 @@ export class P_Enchants extends EnchantsPanel_Generate {
     /**是否正在附魔 */
     private isEnchanting: boolean = false;
     private bagData: PetBagModuleData;
-    private enchantInterval: any;
 
     onStart() {
         this.mButton.onClicked.add(() => {
@@ -60,39 +61,26 @@ export class P_Enchants extends EnchantsPanel_Generate {
             }
             this.hide();
         });
-        // this.getEffect();
         this.mButton_Enchant.normalImageGuid = GlobalData.Enchant.enchantBtnGuid[0];
         this.mButton_Enchant.onClicked.add(this.onClickEnchant.bind(this));
         this.bagData = DataCenterC.getData(PetBagModuleData);
     }
-
-    /**获取特效 */
-    // private getEffect() {
-    //   GameObject.asyncFindGameObjectById(GlobalData.Enchant.effectGuid).then((eff) => {
-    //     this.effect = eff as mw.Effect;
-    //     // this.effect.loop = false;
-    //     this.effect.duration = GlobalData.Enchant.effectDuration;
-    //     this.effect.stop();
-    //   });
-    // }
-
+	
     /**播放特效 */
     private playEffect() {
-        // this.effect.loopCount = GlobalData.Enchant.effectPlayTimes;
-        this.onUpdateAc.call(true);
-        // setTimeout(() => {
-        //   this.effect.play();
-        // }, 500);
-        setTimeout(() => {
-            this.onUpdateAc.call(false);
-            this.showRes();
-            // this.effect.stop();
-        }, 500 + GlobalData.Enchant.effectDuration * 1000);
-        // this.effect.onFinish.clear();
-        // this.effect.onFinish.add(() => {
-        //     this.onUpdateAc.call(false);
-        //     this.showRes(tarEnchant, petKeyArr);
-        // });
+		this.onUpdateAc.call(true);
+		this.effectId = EffectService.playOnGameObject(GlobalData.Enchant.effectGuid, GameObject.findGameObjectById(GlobalData.Enchant.effectTargetGuid) , {
+			position: new Vector(...GlobalData.Enchant.effectPos),
+			scale: new Vector(...GlobalData.Enchant.effectScale)
+		})
+		EffectService.getEffectById(this.effectId).then((eff) => {
+			this.effect = eff;
+			this.effect.onFinish.clear();
+			this.effect.onFinish.add(() => {
+				this.onUpdateAc.call(false);
+				this.onEnchantFinish();
+			});
+		})
     }
 
     public initPanel() {
@@ -376,59 +364,20 @@ export class P_Enchants extends EnchantsPanel_Generate {
         if (!this.isEnchanting) {
             this.setEnchantBtnClickState(false);
         }
-        this.enchantProgress();
-        this.moveUI(false);
+		this.isEnchanting = true;
+		this.moveUI(false);
+        this.playEffect();
     }
 
     /**停止附魔 */
     private stopEnchant() {
-        this.onUpdateAc.call(false);
-        // this.effect.onFinish?.clear();
-        clearTimeout(this.enchantInterval);
-        this.setEnchantBtnClickState(true);
-    }
-
-    /**当前附魔进度 */
-    private enchantProgress() {
-        // if (tarEnchant.length == 0) {
-        //     let ids = GlobalData.Enchant.normalEnchantId;
-        //     for (let i = ids[0]; i < ids[1]; i++) {
-        //         if (!GlobalData.Enchant.filterIds.includes(i)) tarEnchant.push(i);
-        //     }
-        // }
-        // //词条个数
-        // let enchantNum = 1;
-        // let index = BagTool.calculateWeight(GlobalData.Enchant.singleDoubleWeight);
-        // if (index == 0) {
-        //     enchantNum = 1;
-        // } else {
-        //     enchantNum = 2;
-        // }
-
-        // let del: number[] = [];
-        // let curIdStr: string[] = [];
-
-        // //宠物循环
-        // const element = this.selectPetKey;
-        // //词条个数循环
-        // let curId: number[] = [];
-        // for (let j = 0; j < enchantNum; j++) {
-        // 		let curID = BagTool.randomEnchantId();
-        // 		curId.push(curID);
-        // 		if (tarEnchant.includes(curID)) {
-        // 				//如果目标附魔中包含随机附魔id,删除
-        // 				del.push(element);
-        // 		}
-        // }
-        // curIdStr.push(numberArrToString(curId));
-
-        // this.enchantAc.call([this.selectPetKey], curIdStr);
-
-        this.playEffect();
-    }
+		this.onEnchantFinish();
+	}
 
     /**展示结果 */
-    private showRes() {
+    private onEnchantFinish() {
+		this.onUpdateAc.call(false);
+		this.effect.onFinish?.clear(); 
         this.moveUI(true);
         //附魔结束
         this.setEnchantBtnClickState(true);
