@@ -73,7 +73,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     @Decorator.noReply()
-    public net_addPetWithMissingInfo(playerId: number, id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+    public net_addPetWithMissingInfo(playerId: number, id: number, type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: { logObj: Object, logName: string }) {
         let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
 
         let atk: number = 0;
@@ -83,7 +83,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             atk = atkArr[0];
         let nameId = utils.GetRandomNum(1, 200);
         let name = utils.GetUIText(nameId);
-        this.addPet(playerId, id, atk, name, type, addTime);
+		if(logInfo?.logName) {
+			Object.assign(logInfo.logObj, {
+				petAtk: atk,
+				petName: name,
+			})
+		}
+        this.addPet(playerId, id, atk, name, type, addTime, logInfo);
     }
 
     /**
@@ -96,10 +102,18 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let price = cfg.Price[0];
         if (!price || price === 0) return null;
         const playerId = this.currentPlayerId;
+        const uid = this.currentPlayer.userId;
         let res = await ModuleService.getModule(PlayerModuleS).reduceGold(playerId, price, this.judgeGold(cfgId));
         if (res) {
             let petId = this.calcProbability(cfgId);
-            this.net_addPetWithMissingInfo(playerId, petId, cfg.AreaID);
+			const logObj = {
+				uid,
+				coin: price,
+				coinType: this.judgeGold(cfgId),
+				eggId: cfg.id,
+				petId,
+			}
+            this.net_addPetWithMissingInfo(playerId, petId, cfg.AreaID, undefined, { logName: "P_开蛋", logObj });
             return petId;
         }
         return null;
@@ -164,9 +178,9 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return goldType;
     }
 
-    public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number) {
+    public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: { logObj: Object, logName: string }) {
         let data = this.getPlayerData(playerID);
-        data.addBagItem(id, atk, name, addTime);
+        data.addBagItem(id, atk, name, addTime, logInfo);
         this.taskMS.getPet(Player.getPlayer(playerID), id, type);
         ModuleService.getModule(CollectModuleS).addPet(playerID, id, type);
         this.onGetPetAC.call(type, playerID);

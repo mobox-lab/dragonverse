@@ -207,7 +207,7 @@ export class PetBagModuleData extends Subdata {
      * @param atk 宠物战力
      * @param name 宠物名字
      */
-    public addBagItem(id: number, atk: number, name: string, addTime?: number): boolean {
+    public addBagItem(id: number, atk: number, name: string, addTime?: number, logInfo?: { logObj: Object, logName: string }): boolean {
 
         // let index = this.getFirstEmptyIndex();
         // if (index == -1) {
@@ -230,7 +230,12 @@ export class PetBagModuleData extends Subdata {
         }
         let type = GameConfig.PetARR.getElement(id).QualityType;
         this.bornRandomEnchant(this.bagContainerNew[index], type);
-
+		if(logInfo?.logName) {
+			Object.assign(logInfo.logObj, {
+				petBuffs: this.bagContainerNew[index].p.b
+			});  
+			utils.logP12Info(logInfo.logName, logInfo.logObj)
+		}
         this.save(true);
         this.BagItemChangeAC.call(true, id, index);
         return true;
