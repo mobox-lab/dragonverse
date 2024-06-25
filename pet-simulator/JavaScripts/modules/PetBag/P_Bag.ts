@@ -474,6 +474,8 @@ export class P_Bag extends PetBagPanel_Generate {
 
     protected onShow(...params: any[]): void {
         this.itemArr.forEach((item) => {
+			item.onHoverAC.clear(); 
+			item.onHoverAC.add(this.showNewPetHoverUI.bind(this));
 			item.setEnableHover(true);
 		})
         this.showAC.call();

@@ -78,6 +78,13 @@ export default class Hover_number2_Generate extends UIScript {
 		}
 		return this.picRainbowowow_Internal
 	}
+	private mTextBlock_2_Internal: mw.TextBlock
+	public get mTextBlock_2(): mw.TextBlock {
+		if(!this.mTextBlock_2_Internal&&this.uiWidgetBase) {
+			this.mTextBlock_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Hover2/mTextBlock_2') as mw.TextBlock
+		}
+		return this.mTextBlock_2_Internal
+	}
 	private mScrollBox_Entry_Internal: mw.ScrollBox
 	public get mScrollBox_Entry(): mw.ScrollBox {
 		if(!this.mScrollBox_Entry_Internal&&this.uiWidgetBase) {
@@ -122,6 +129,9 @@ export default class Hover_number2_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.textRarity)
+		
+	
+		this.initLanguage(this.mTextBlock_2)
 		
 	
 		//文本多语言

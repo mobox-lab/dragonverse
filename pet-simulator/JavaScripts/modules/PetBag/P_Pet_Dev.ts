@@ -142,8 +142,6 @@ export class P_Pet_Dev extends Dev_Generate {
 
             let petItem = PetBagItem.instance.UIPool.get();
             petItem.setClickFun(this.changeContainer.bind(this), this);
-            petItem.onHoverAC.clear();
-			petItem.onHoverAC.add(this.showNewPetHoverUI.bind(this));
             this.mCanvas_List.addChild(petItem.uiObject);
 
             petItem.init(item);
@@ -249,7 +247,6 @@ export class P_Pet_Dev extends Dev_Generate {
 
     public hide(): void {
         super.hide();
-		this.petItems.forEach(item => item.setEnableHover(false));
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 }

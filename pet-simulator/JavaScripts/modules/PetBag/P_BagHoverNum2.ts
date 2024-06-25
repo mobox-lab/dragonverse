@@ -2,6 +2,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import Hover_number2_Generate from "../../ui-generate/Hover_Bag/Hover_number2_generate";
+import Gtk from "../../util/GToolkit";
 import { P_HoverEnchantItem } from "./P_HoverEnchantItem";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
@@ -29,7 +30,8 @@ export class P_BagHoverNum2 extends Hover_number2_Generate {
         const isMyth = cfg.QualityType === GlobalEnum.PetQuality.Myth;
 
         const buffIds = Array.from(curPetData.p.b);
-
+		if(!buffIds?.length) Gtk.trySetVisibility(this.mTextBlock_2, mw.SlateVisibility.Visible)
+		else Gtk.trySetVisibility(this.mTextBlock_2, mw.SlateVisibility.Collapsed)
         if (isMyth) {
             const top = buffIds.pop();
             let item = mw.UIService.create(P_HoverEnchantItem);

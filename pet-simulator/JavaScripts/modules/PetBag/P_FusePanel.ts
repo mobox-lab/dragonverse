@@ -32,18 +32,6 @@ export class P_FusePanel extends Fusepanel_Generate {
         });
     }
 
-    /**悬浮UI */
-    private showNewPetHoverUI(isShow: boolean, item: PetBag_Item) {
-        const buffNum = item.petData.p.b.length ?? 0;
-        if (isShow) {
-            let pos = item.uiObject.position;
-            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x + 100 + GlobalData.Bag.itemHoverOffsetX, pos.y + this.mCanvas.position.y - 40 - this.mScrollBox.scrollOffset + GlobalData.Bag.itemHoverOffsetY);
-            buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).setPetInfoShow(item.petData, loc) : mw.UIService.getUI(P_BagHoverNum2).setPetInfoShow(item.petData, loc);
-        } else {
-            buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).hide() : mw.UIService.getUI(P_BagHoverNum2).hide();
-        }
-    }
-
     public show(petItems: petItemDataNew[], ...param: any[]): void {
         PetBagItem.instance.UIPool.resetAll();
         this.petItems.length = 0;
@@ -56,9 +44,6 @@ export class P_FusePanel extends Fusepanel_Generate {
             this.mListCanvas.addChild(petItem.uiObject);
 
             petItem.init(item);
-            petItem.onHoverAC.clear();
-            petItem.setEnableHover(true);
-            petItem.onHoverAC.add(this.showNewPetHoverUI.bind(this));
             if (petItem.getLockVis()) {
                 petItem.setLockVis(false);
             }
@@ -74,7 +59,6 @@ export class P_FusePanel extends Fusepanel_Generate {
 
     public hide(): void {
         super.hide();
-        this.petItems.forEach(item => item.setEnableHover(false));
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
