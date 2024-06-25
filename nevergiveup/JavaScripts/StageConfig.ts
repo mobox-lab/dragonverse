@@ -1225,48 +1225,6 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
     //         },
     //     ],
     // },
-    // // 世界1-简单
-    // {
-    //     waves: (wave: number) => {
-    //         //
-    //         switch (wave) {
-    //             case 1:
-    //                 return {
-    //                     enemies: [{ type: 1001, count: 1, spawnInterval: 0.5 }],
-    //                     waveGold: 100,
-    //                     waveTime: 90,
-    //                     hpMultiplier: 1,
-    //                 };
-    //             case 2:
-    //                 return {
-    //                     enemies: [{ type: 1001, count: 5, spawnInterval: 2 }],
-    //                     waveGold: 20,
-    //                     waveTime: 90,
-    //                     hpMultiplier: 2,
-    //                 };
-    //             case 3:
-    //                 return {
-    //                     enemies: [{ type: 1001, count: 7, spawnInterval: 2 }],
-    //                     waveGold: 30,
-    //                     waveTime: 90,
-    //                     hpMultiplier: 2,
-    //                     airDrop: {
-    //                         type: 1001,
-    //                         count: 1,
-    //                         spawnInterval: 10,
-    //                     },
-    //                 };
-    //             case 4:
-    //                 return {
-    //                     enemies: [{ type: 1003, count: 1, spawnInterval: 3 }],
-    //                     waveGold: 50,
-    //                     waveTime: 90,
-    //                     hpMultiplier: 3,
-    //                 };
-    //         }
-    //     },
-    //     waveLength: 4,
-    // },
     {
         waves: (wave: number) => {
             const waveUtil = new WaveUtil();
@@ -1276,6 +1234,27 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
         },
         waveLength: 99999,
     },
+    // {
+    //     waves: (wave: number) => {
+    //         // 全部可配置的数值 如果不传，就是默认值，如果传，就会覆盖
+    //         const waveUtil = new WaveUtil({
+    //             plusAmount: 1,
+    //             bloodRound: 2,
+    //             typeRound: 2,
+    //             bossRound: 2,
+    //             bossBloodRound: 2,
+    //             waveGold: 2,
+    //             waveTime: 2,
+    //             hpMultiplier: 2,
+    //             hpPercent: 2,
+    //             hpBossPercent: 2,
+    //         });
+    //         const waveEnemy = waveUtil.calculateWaveContent(wave);
+
+    //         return waveEnemy;
+    //     },
+    //     waveLength: 99999,
+    // },
     // 世界1-普通
     {
         waves: [

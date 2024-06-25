@@ -92,14 +92,44 @@ export type NewStageConfig = {
 };
 
 export type WaveUtilConfig = {
+    /**
+     * 每个回合增加的小怪个数
+     */
     plusAmount?: number;
+    /**
+     * 每bloodRound个回合增加怪物 hpPercent 血量
+     */
     bloodRound?: number;
+    /**
+     * 每typeRound个回合增加一个种类的怪物
+     */
     typeRound?: number;
+    /**
+     * 每bossRound个回合增加一个全新boss
+     */
     bossRound?: number;
+    /**
+     * boss刷新后，每bossBloodRound给boss增加 10%血量
+     */
     bossBloodRound?: number;
+    /**
+     * 第一轮的金币奖励
+     */
     waveGold?: number;
+    /**
+     * 每一轮的时间限制
+     */
     waveTime?: number;
+    /**
+     * 怪物的基础血量
+     */
     hpMultiplier?: number;
+    /**
+     * 小怪每次加的血量
+     */
     hpPercent?: number;
+    /**
+     * Boss每次加的血量
+     */
     hpBossPercent?: number;
 };
