@@ -792,6 +792,17 @@ addGMCommand(
     "体力"
 );
 
+addGMCommand(
+    "刷新货币",
+    "string",
+    undefined,
+    (player, value) => {
+        ModuleService.getModule(AuthModuleS)["queryCurrency"](player.userId);
+    },
+    undefined,
+    "Auth"
+);
+
 type AreaData = {
     id: number;
     areaPoints: mw.Vector[];
