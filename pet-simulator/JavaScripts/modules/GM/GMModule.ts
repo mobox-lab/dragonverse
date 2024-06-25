@@ -797,7 +797,7 @@ addGMCommand(
     "string",
     undefined,
     (player, value) => {
-        ModuleService.getModule(AuthModuleS)["queryCurrency"](player.playerId);
+        ModuleService.getModule(AuthModuleS)["queryCurrency"](player.userId);
     },
     undefined,
     "Auth"
