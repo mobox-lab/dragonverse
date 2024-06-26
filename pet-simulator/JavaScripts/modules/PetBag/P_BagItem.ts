@@ -142,14 +142,15 @@ export class PetBag_Item extends Pet_item_Generate {
     }
     /**是否正装备 */
     public getLockVis() {
-        return this.mPic_Equip_3.visible;
+        return this.mPic_Equip_2.visible;
     }
 
     /**设置UI装备状态 */
     public setLockVis(isEquip: boolean) {
 
         // if (isEquip == this.isEquip) return;
-        // 装备状态发生改变
+        // 装备状态发生改变 
+
         this.isEquip = isEquip;
         if (this.equipTween && this.equipTween.isPlaying()) {
             this.equipTween.stop();
@@ -343,7 +344,6 @@ export class PetBag_Item extends Pet_item_Generate {
     public setItemScale(size: mw.Vector2) {
 
         this.uiObject.size = size;
-        this.mPic_Equip
     }
 
     /**品质-设置星星数 */

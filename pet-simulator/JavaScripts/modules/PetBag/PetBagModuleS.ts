@@ -487,6 +487,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     public async net_fusePet(curSelectPetKeys: number[],
                              earliestObtainTime: number): Promise<boolean> {
         const playerId = this.currentPlayerId;
+        const userId = this.currentPlayer.userId;
         const curSelectPets = curSelectPetKeys
             .map(key => this.currentData
                 .bagItemsByKey(key))
@@ -570,13 +571,22 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
             endPetId);
 
+        const logInfo = {
+            logName: "P_Merge", logObj: { 
+                uid: userId,
+                diamond: GlobalData.Fuse.cost,
+                inputPets: curSelectPets,
+                petId: endPetId,
+            },
+        };
         this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
         this.petBagModuleS
             .net_addPetWithMissingInfo(
                 playerId,
                 endPetId,
                 GlobalEnum.PetGetType.Fusion,
-                earliestObtainTime);
+                earliestObtainTime, 
+				logInfo);
         return true;
     }
 

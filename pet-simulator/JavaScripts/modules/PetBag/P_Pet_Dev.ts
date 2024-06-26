@@ -83,14 +83,14 @@ export class P_Pet_Dev extends Dev_Generate {
         }
         const curSelectKeys = this.curSelectPets.map(item => item.k);
 
-				Log4Ts.log(
+        Log4Ts.log(
             P_Pet_Dev,
             "startDev curSelectPets:" +
-                JSON.stringify(this.curSelectPets) +
-                " curCost:" +
-                this.curCost +
-                " curPetId:" +
-                this.curPetId
+            JSON.stringify(this.curSelectPets) +
+            " curCost:" +
+            this.curCost +
+            " curPetId:" +
+            this.curPetId,
         );
 
         if (!ModuleService
@@ -121,10 +121,10 @@ export class P_Pet_Dev extends Dev_Generate {
             buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).hide() : mw.UIService.getUI(P_BagHoverNum2).hide();
         }
     }
+
     public show(petItems: petItemDataNew[], isGold: boolean, ...param: any[]): void {
         PetBagItem.instance.UIPool.resetAll();
 
-        this.curSelectPets.length = 0;
         this.isGold = isGold;
         this.mTextBlock_Intro.text = isGold ? GameConfig.Language.Dev_TextBlock_Intro_1.Value : GameConfig.Language.Dev_TextBlock_Intro_2.Value;
         this.mTextBlock_Explain.text = isGold ? GameConfig.Language.Dev_TextBlock_Explain_1.Value : GameConfig.Language.Dev_TextBlock_Explain_2.Value;
@@ -147,8 +147,8 @@ export class P_Pet_Dev extends Dev_Generate {
             petItem.init(item);
             this.petItems.push(petItem);
         });
-				this.curSelectPets = [];
-				this.curPetId = 0;
+        this.curSelectPets = [];
+        this.curPetId = 0;
         this.changeCost(this.curSelectPets.length);
         super.show(...param);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
@@ -162,26 +162,26 @@ export class P_Pet_Dev extends Dev_Generate {
 
         let isEquip = bagItem.getLockVis();
 
-				Log4Ts.log(
-						P_Pet_Dev,
-						"changeContainer init isEquip:" +
-								isEquip +
-								" curPetId:" +
-								this.curPetId +
-								" curSelectPets:" +
-								JSON.stringify(this.curSelectPets) +
-								" bagItem.petData:" +
-								JSON.stringify(bagItem.petData)
-				);
-				
-				if (isEquip) {
-						this.curSelectPets.push(bagItem.petData);
-						this.curPetId = bagItem.petData.I;
-				} else this.curSelectPets = this.curSelectPets.filter((item) => item.k != bagItem.petData.k);
+        Log4Ts.log(
+            P_Pet_Dev,
+            "changeContainer init isEquip:" +
+            isEquip +
+            " curPetId:" +
+            this.curPetId +
+            " curSelectPets:" +
+            JSON.stringify(this.curSelectPets) +
+            " bagItem.petData:" +
+            JSON.stringify(bagItem.petData),
+        );
 
-				if (!this.curSelectPets?.length) { // 当前没有选中宠物
+        if (isEquip) {
+            this.curSelectPets.push(bagItem.petData);
+            this.curPetId = bagItem.petData.I;
+        } else this.curSelectPets = this.curSelectPets.filter((item) => item.k != bagItem.petData.k);
+
+        if (!this.curSelectPets?.length) { // 当前没有选中宠物
             this.curPetId = 0;
-						this.curSelectPets = [];
+            this.curSelectPets = [];
             this.petItems.forEach(item => {
                 item.setVisible(mw.SlateVisibility.SelfHitTestInvisible);
             });
@@ -204,33 +204,33 @@ export class P_Pet_Dev extends Dev_Generate {
             }
         }
 
-				Log4Ts.log(
-						P_Pet_Dev,
-						"changeContainer end isEquip:" +
-								isEquip +
-								" curPetId:" +
-								this.curPetId +
-								" curSelectPets:" +
-								JSON.stringify(this.curSelectPets) +
-								" bagItem.petData:" +
-								JSON.stringify(bagItem.petData)
-				);
+        Log4Ts.log(
+            P_Pet_Dev,
+            "changeContainer end isEquip:" +
+            isEquip +
+            " curPetId:" +
+            this.curPetId +
+            " curSelectPets:" +
+            JSON.stringify(this.curSelectPets) +
+            " bagItem.petData:" +
+            JSON.stringify(bagItem.petData),
+        );
 
-				this.changeCost(this.curSelectPets.length);
+        this.changeCost(this.curSelectPets.length);
     }
 
-		/**改变花费 */
-		public changePanelUI = (cost: number, rate: number) => {
-				this.curCost = cost;
-				this.curRate = rate;
-				this.mTextBlock_Diamond.text = cost + "";
-				this.mTextBlock_Rate.text = rate + "%";
-		}
+    /**改变花费 */
+    public changePanelUI = (cost: number, rate: number) => {
+        this.curCost = cost;
+        this.curRate = rate;
+        this.mTextBlock_Diamond.text = cost + "";
+        this.mTextBlock_Rate.text = rate + "%";
+    };
 
     /** 更改显示的花费 */
     public changeCost(count: number) {
         if (count <= 0) {
-						this.changePanelUI(0, 0);
+            this.changePanelUI(0, 0);
             return;
         }
         let rates = GlobalData.Dev.goldProbability;
@@ -238,7 +238,7 @@ export class P_Pet_Dev extends Dev_Generate {
         if (count > rates.length) count = rates.length;
         let rate = rates[count - 1];
         let cost = costs[count - 1];
-				this.changePanelUI(cost, rate);
+        this.changePanelUI(cost, rate);
     }
 
     protected onShow(...params: any[]): void {
