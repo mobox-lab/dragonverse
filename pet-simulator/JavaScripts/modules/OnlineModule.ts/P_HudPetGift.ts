@@ -158,7 +158,7 @@ export class P_HudPetGift extends HUDpetGift_Generate {
 
                 const enchantNum = pet.p.b?.length ?? 0; // 拥有的附魔词条数目
                 if (enchantNum) {
-                    petStateItem.textEnhancenum.text = "+" + utils.formatNumber(enchantNum);
+                    petStateItem.textEnhancenum.text = utils.formatNumber(enchantNum);
                     petStateItem.imgEnhance.visibility = mw.SlateVisibility.Visible;
                 } else petStateItem.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
 

@@ -79,7 +79,7 @@ export class PetBag_Item extends Pet_item_Generate {
         const enchantNum = data.p.b?.length ?? 0; // 拥有的附魔词条数目
         if (enchantNum) {
             this.imgEnhance.visibility = mw.SlateVisibility.Visible;
-            this.textEnhancenum.text = "+" + utils.formatNumber(enchantNum);
+            this.textEnhancenum.text = utils.formatNumber(enchantNum);
         } else this.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
 
         if (this.mPic_Equip_3.visible) {
