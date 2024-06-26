@@ -69,23 +69,23 @@ export const SceneResourceMap: Map<number, ResourceScript[]> = new Map<number, R
 @Component
 export default class ResourceScript extends mw.Script {
 
-    @mw.Property({ replicated: true, onChanged: "onHpChanged" })
+    @mw.Property({replicated: true, onChanged: "onHpChanged"})
     public curHp: number = 0;
-    @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
+    @mw.Property({replicated: true, onChanged: "onSceneChanged"})
     public scenePointId: string = "";
 
-	// 是否为 巨大宝箱
+    // 是否为 巨大宝箱
     public get isBigBox(): boolean {
         return (this.cfg?.resType > 8) ?? false;
     }
 
-	// 是否为 普通宝箱 或者 巨大宝箱
+    // 是否为 普通宝箱 或者 巨大宝箱
     public get isBox(): boolean {
-        return (this.cfg?.resType >= 7) ?? false; 
+        return (this.cfg?.resType >= 7) ?? false;
     }
 
     /**伤害记录 */
-    @mw.Property({ replicated: true })
+    @mw.Property({replicated: true})
     private damageArr: DamageRecord[] = [];
 
     private _rate: number = 1;
@@ -115,13 +115,13 @@ export default class ResourceScript extends mw.Script {
 
         if (this.scenePointId === "") {
             //初始情况
-            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + '0';
+            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + "0";
         } else if (this.scenePointId.slice(0, -1) !== cfgId + "_" + pointId + "_" + this._rate) {
             //不为空时判断是否和上一次的一样，不一样就初始加个0
-            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + '0';
+            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + "0";
         } else {
             //一样就取反
-            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + (this.scenePointId.charAt(this.scenePointId.length - 1) === '0' ? '1' : '0');
+            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + (this.scenePointId.charAt(this.scenePointId.length - 1) === "0" ? "1" : "0");
         }
 
         Log4Ts.log(Resource, `initServer scenePointId:${this.scenePointId}, ${this.guid}`);
@@ -346,13 +346,13 @@ export default class ResourceScript extends mw.Script {
     public getDamageRate(playerId: number): number {
         if (this.cfg.HP === 0) return 0;
         return this
-            .damageArr
-            .reduce((previousValue,
-                currentValue) => {
-                return previousValue +
-                    (currentValue.playerId === playerId ? currentValue.damage : 0);
-            },
-                0)
+                .damageArr
+                .reduce((previousValue,
+                         currentValue) => {
+                        return previousValue +
+                            (currentValue.playerId === playerId ? currentValue.damage : 0);
+                    },
+                    0)
             / this.cfg.HP;
     }
 
@@ -667,7 +667,7 @@ export default class ResourceScript extends mw.Script {
         const time = GlobalData.ResourceAni.dropTweenTime[this.order];
         let start = endInfos[this.order];
         let end = endInfos[this.order + 1];
-        this.endTween = new mw.Tween({ z: start }).to({ z: end }, time).onUpdate((obj) => {
+        this.endTween = new mw.Tween({z: start}).to({z: end}, time).onUpdate((obj) => {
             this.resObj.worldTransform.position = new mw.Vector(this.curPos.x, this.curPos.y, this.curPos.z + obj.z);
         }).onComplete(() => {
             this.order++;
@@ -969,17 +969,9 @@ export default class ResourceScript extends mw.Script {
 }
 
 export function calDamage(playerId: number,
-    key: number,
-    isBox: boolean): number {
-    //在存档里是下标从 0 开始
-    let level = DataCenterS
-        .getData(playerId, PetSimulatorPlayerModuleData)
-        .getLevelData(2);
-    //在表里是下标从 1 开始
-    let info = GameConfig.Upgrade.getElement(3);
-    let upgrade = info.Upgradenum[level - 1];
-    if (upgrade == null) upgrade = 0;
-    upgrade += 1;
+                          key: number,
+                          isBox: boolean): number {
+    let upgrade = GlobalData.LevelUp.petDamage(playerId);
 
     let petData = ModuleService.getModule(PetBagModuleS).getPet(playerId, key);
     if (!petData) {
@@ -987,7 +979,6 @@ export function calDamage(playerId: number,
         return 0;
     }
     let damage = petData.p.a
-        * GlobalData.LevelUp.petDamage(playerId)
         * upgrade
         * (1 + EnchantBuff.getPetBuff(playerId, key).damageAdd / 100);
 
@@ -1015,7 +1006,7 @@ export function calDamage(playerId: number,
         " boxDamageAdd:" +
         (1 + EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100) +
         " teamDamageAddBuff:" +
-        EnchantBuff.getTeamDamageAddBuff(playerId, key)
+        EnchantBuff.getTeamDamageAddBuff(playerId, key),
     );
     return damage;
 }
