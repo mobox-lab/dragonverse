@@ -579,13 +579,9 @@ interface PetSimulatorStatistic {
  */
 interface PetSimulatorStatisticPetObj {
     /**
-     * 这个字段唯一，规则不定.
+     * 背包 Key.
      */
-    petkey: string;
-    /**
-     * 宠物 Id.
-     */
-    petId: number;
+    petkey: number;
     /**
      * Config Id.
      */
