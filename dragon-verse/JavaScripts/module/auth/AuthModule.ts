@@ -478,16 +478,17 @@ interface PetSimulatorStatistic {
     address: string;
     nickname: string;
     device_id: string;
+
     /**
-     * 上线时间.
+     * 上线时间. s
      */
     login: number;
     /**
-     * 下线时间.
+     * 下线时间. s
      */
     logout: number;
     /**
-     * 本次在线时长.
+     * 本次在线时长. s
      */
     online: number;
     /**
@@ -620,15 +621,15 @@ interface BattleWorldStatistic {
     device_id: string;
 
     /**
-     * 上线时间.
+     * 上线时间. s
      */
     login: number;
     /**
-     * 下线时间.
+     * 下线时间. s
      */
     logout: number;
     /**
-     * 本次在线时长.
+     * 本次在线时长. s
      */
     online: number;
     /**
