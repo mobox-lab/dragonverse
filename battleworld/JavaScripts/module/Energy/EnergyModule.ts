@@ -360,6 +360,16 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
         this.getClient(playerId)?.net_syncEnergy(energy, energyLimit);
     }
 
+    /**
+     * 获取玩家体力
+     * @param {number} playerId  -- 玩家 id
+     * @returns {[number, number]} -- [当前体力, 最大体力]
+     */
+    public getPlayerEnergy(playerId: number): [number, number] {
+        const data = this.getPlayerData(playerId);
+        return [data.energy, data.lastMaxStamina];
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
