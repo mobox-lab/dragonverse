@@ -4,7 +4,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
  * @Author       : zewei.zhang
  * @Date         : 2024-02-26 19:13:29
  * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-06-05 11:42:18
+ * @LastEditTime : 2024-06-11 19:03:40
  * @FilePath     : \DragonVerse\battleworld\JavaScripts\module\SettingModule\SettingModuleData.ts
  * @Description  : 持久化设置
 */
@@ -127,11 +127,26 @@ export default class PlayerSettingModuleData extends Subdata {
                     this.fovScale = 0.3;
                     this.enableSearch = true;
                     break;
-
                 default:
                     Log4Ts.error(PlayerSettingModuleData, `unsupported data version.`);
                     break;
             }
+        }
+        //version可能在其他主游戏已经升级了
+        if (!this.cameraLookUpRateScale) {
+            this.cameraLookUpRateScale = 0.5
+        }
+        if (!this.saturation) {
+            this.saturation = 1
+        }
+        if (!this.enableShadow) {
+            this.enableShadow = true
+        }
+        if (!this.fovScale) {
+            this.fovScale = 0.3
+        }
+        if (!this.enableSearch) {
+            this.enableSearch = true
         }
     }
 }

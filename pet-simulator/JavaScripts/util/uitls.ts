@@ -2,6 +2,7 @@ import { GeneralManager, } from "../Modified027Editor/ModifiedStaticAPI";
 import { GameConfig } from "../config/GameConfig";
 import { GlobalData } from "../const/GlobalData";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
+import Log4Ts from "../depend/log4ts/Log4Ts";
 
 export class utils {
 
@@ -40,6 +41,11 @@ export class utils {
                 }
             });
     }
+
+	// 日志优化 上报
+	public static logP12Info(name: string, info: any) {
+		Log4Ts.log({ name }, JSON.stringify(info) + " #P12")
+	}
 
     /**
      * 随机获取指定范围内的整数

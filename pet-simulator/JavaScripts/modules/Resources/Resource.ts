@@ -72,10 +72,16 @@ export default class ResourceScript extends mw.Script {
     @mw.Property({ replicated: true, onChanged: "onHpChanged" })
     public curHp: number = 0;
     @mw.Property({ replicated: true, onChanged: "onSceneChanged" })
-    private scenePointId: string = "";
+    public scenePointId: string = "";
 
+	// 是否为 巨大宝箱
     public get isBigBox(): boolean {
         return (this.cfg?.resType > 8) ?? false;
+    }
+
+	// 是否为 普通宝箱 或者 巨大宝箱
+    public get isBox(): boolean {
+        return (this.cfg?.resType >= 7) ?? false; 
     }
 
     /**伤害记录 */
@@ -106,7 +112,19 @@ export default class ResourceScript extends mw.Script {
 
         this.pointId = pointId;
         this._cfgId = cfgId;
-        this.scenePointId = cfgId + "_" + pointId + "_" + this._rate;
+
+        if (this.scenePointId === "") {
+            //初始情况
+            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + '0';
+        } else if (this.scenePointId.slice(0, -1) !== cfgId + "_" + pointId + "_" + this._rate) {
+            //不为空时判断是否和上一次的一样，不一样就初始加个0
+            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + '0';
+        } else {
+            //一样就取反
+            this.scenePointId = cfgId + "_" + pointId + "_" + this._rate + (this.scenePointId.charAt(this.scenePointId.length - 1) === '0' ? '1' : '0');
+        }
+
+        Log4Ts.log(Resource, `initServer scenePointId:${this.scenePointId}, ${this.guid}`);
         let unitInfo = GameConfig.SceneUnit.getElement(cfgId);
         this.curHp = unitInfo.HP;
         this.cfg = unitInfo;
@@ -114,69 +132,38 @@ export default class ResourceScript extends mw.Script {
 
         this._cfgIdInServer = cfgId;
 
-        this.isCrit.clear();
         this.lastDamage.clear();
     }
 
     @RemoteFunction(mw.Server)
-    private net_injured(playerID: number, key: number) {
-        // Log4Ts.log(Resource, `net_injured playerID:${playerID}, key:${key}`);
-        if (!ModuleService.getModule(EnergyModuleS).isAfford(playerID, GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
-            Log4Ts.log(Resource, `Stamina is not enough. playerID:${playerID}`);
-            return;
-        }
-        ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_PET_ATTACK);
-        //不用这个damage了，自己算
-        //GlobalData.LevelUp.petDamage 去存档里取
-        //力量对应升级表的id：3
-        // let petDamage = GameConfig.Upgrade.getElement(3)
-        //         .Upgradenum[DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(3) ]
-        //     ?? 1;
-        //在存档里是下标从0开始
-        let level = DataCenterS.getData(playerID, PetSimulatorPlayerModuleData).getLevelData(2);
-        //在表里是下标从1开始
-        let info = GameConfig.Upgrade.getElement(3);
-        let upgrade = info.Upgradenum[level - 1];
-        if (upgrade == null) upgrade = 0;
-        let petDamage = upgrade + 1;
-        // damage = this.attackDamage * GlobalData.LevelUp.petDamage * (1 + EnchantBuff.getPetBuff(this.key).damageAdd / 100);
-        //this.attackDamage 得取对应的宠物
-        //校验一下key在不在背包里
-        let res = ModuleService.getModule(PetBagModuleS).getPet(playerID, key);
-        if (!res) {
-            Log4Ts.error(ResourceScript, `pet not exist. playerID:${playerID}, key:${key}`);
-            return;
-        }
-        let damage = res.p.a * petDamage * (1 + EnchantBuff.getPetBuff(playerID, key).damageAdd / 100);
-        if (isNaN(damage))
-            damage = 0;
+    private net_injured(playerId: number, key: number) {
         if (this._cfgIdInServer == 0) return;
-        if (this.isBigBox) {
-            damage *= GlobalData.Buff.damageBuff(playerID) * (1 + EnchantBuff.getPetBuff(playerID, key).boxDamageAdd / 100);
-        } else
-            damage *= GlobalData.Buff.damageBuff(playerID);
-        this.getRewardByAttack(playerID, damage, key);
 
+        Log4Ts.log(Resource, `net_injured playerID:${playerId}, key:${key}`);
+        if (!ModuleService.getModule(EnergyModuleS).isAfford(playerId, GameServiceConfig.STAMINA_COST_PET_ATTACK)) {
+            Log4Ts.log(Resource, `Stamina is not enough. playerID:${playerId}`);
+            return;
+        }
+        ModuleService.getModule(EnergyModuleS).consume(playerId, GameServiceConfig.STAMINA_COST_PET_ATTACK);
+
+        let damage = calDamage(playerId,
+            key,
+            this.isBox);
+        this.getRewardByAttack(playerId, damage, key);
 
         let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
         if (damage > allHp / 3) {
             damage = Math.ceil(allHp / 3);
         }
-        //去掉暴击
-        // let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerID);
-        // if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
-        //     damage = damage * GlobalData.SceneResource.critRate(playerID);
-        // }
-        //------------------------
 
         let damageInfoIndex = this.damageArr.findIndex((item) => {
-            return item.playerId == playerID;
+            return item.playerId == playerId;
         });
         if (damageInfoIndex == -1) {
-            this.damageArr.push(new DamageRecord(playerID, damage));
+            this.damageArr.push(new DamageRecord(playerId, damage));
         } else {
             this.damageArr[damageInfoIndex] = new DamageRecord(
-                playerID,
+                playerId,
                 this.damageArr[damageInfoIndex].damage + damage,
             );
         }
@@ -184,7 +171,7 @@ export default class ResourceScript extends mw.Script {
         this.curHp -= damage;
         if (this.curHp <= 0) {
             // this.curHp = 0;
-            this.net_dead(playerID);
+            this.net_dead(playerId);
 
             let player: mw.Player = null;
 
@@ -199,22 +186,22 @@ export default class ResourceScript extends mw.Script {
                 this.checkHpStage(player.playerId, this.damageArr[i].damage / totalDamage);
                 this.overGetReward(player);
             }
-            Log4Ts.log(Resource, `treasure destroy playerID:${playerID}, totalDamage:${totalDamage}, curHp:${this.curHp}`);
+            Log4Ts.log(Resource, `treasure destroy playerID:${playerId}, totalDamage:${totalDamage}, curHp:${this.curHp}`);
             return;
         } else {
-            let player = mw.Player.getPlayer(playerID);
+            let player = mw.Player.getPlayer(playerId);
 
-            if (this.noDamageCheckTimer.has(playerID)) {
-                clearTimeout(this.noDamageCheckTimer.get(playerID));
-                this.noDamageCheckTimer.delete(playerID);
+            if (this.noDamageCheckTimer.has(playerId)) {
+                clearTimeout(this.noDamageCheckTimer.get(playerId));
+                this.noDamageCheckTimer.delete(playerId);
             }
-            this.noDamageCheckTimer.set(playerID, setTimeout(() => {
-                this.stopGuaSha(playerID);
+            this.noDamageCheckTimer.set(playerId, setTimeout(() => {
+                this.stopGuaSha(playerId);
             }, 2000));
 
-            this.checkHpStage(playerID);
+            this.checkHpStage(playerId);
             this.client_injured(player, this.curHp, this._rate);
-            // Log4Ts.log(Resource, `treasure injured playerID:${playerID}, curHp:${this.curHp}`);
+            // Log4Ts.log(Resource, `treasure injured playerID:${playerId}, curHp:${this.curHp}`);
         }
     }
 
@@ -240,7 +227,8 @@ export default class ResourceScript extends mw.Script {
             this.onDead.call(this.scenePointId, playerId);
         } else
             this.onDead.call(playerId);
-        this.scenePointId = "";
+        //设为空不会属性同步
+        // this.scenePointId = "";
         this._rate = 1;
 
     }
@@ -295,8 +283,6 @@ export default class ResourceScript extends mw.Script {
     private _cfgId: number = 0;
     private cfg: ISceneUnitElement = null;
 
-    /**是否暴击 */
-    private isCrit: Map<number, boolean> = new Map();
     /**上一次伤害 */
     private lastDamage: Map<number, number> = new Map();
     /**金币砖石奖励 */
@@ -428,17 +414,19 @@ export default class ResourceScript extends mw.Script {
 
             this.playCritEffectByLevel();
 
+            let criticalRate = GlobalData.SceneResource.critWeight(playerId);
+            const isCritical = MathUtil.randomInt(0, 100) <= criticalRate;
+            if (isCritical) {
+                this.playCritEffectByLast(Player.getPlayer(playerId));
+            }
 
             this.playReward(
                 playerId,
                 GlobalEnum.ResourceAttackStage.Destroy,
                 (this.getRewardGold(playerId) - this.getGuaShaRewardGold(playerId)) * ratio,
-                (this.getRewardGem(playerId) - this.getGuaShaRewardGem(playerId)) * ratio);
-            this.stopGuaSha(playerId);
+                (this.getRewardGem(playerId) - this.getGuaShaRewardGem(playerId)) * ratio,
+                isCritical);
 
-            if (this.isCrit.get(playerId) ?? false) {
-                this.playCritEffectByLast(Player.getPlayer(playerId));
-            }
             ModuleService.getModule(AchievementModuleS)
                 .broadcastAchievement_destroy(playerId, this.resourceType);
             this.guaShaRewardGem.set(playerId, 0);
@@ -452,18 +440,19 @@ export default class ResourceScript extends mw.Script {
      * @param state 攻击阶段
      * @param goldVal 金币价值
      * @param gemVal 钻石价值
+     * @param isCritical 是否暴击.
      */
     private playReward(
         playerId: number,
         state: GlobalEnum.ResourceAttackStage,
         goldVal: number,
-        gemVal: number) {
-        //生成是否暴击，这个宝箱只计算一次
-        this.critByCreate(playerId);
-
-        let rewardArr = this.getDropCountByStage(state, this.isCrit.get(playerId) ?? false);
+        gemVal: number,
+        isCritical: boolean = false) {
+        let rewardArr = this.getDropCountByStage(state);
         goldVal = Math.ceil(goldVal);
         gemVal = Math.ceil(gemVal);
+        let criticalRatio = state === GlobalEnum.ResourceAttackStage.Destroy && isCritical ?
+            this.cfg.Critreward : 1;
         let goldCount = Math.min(Math.ceil(rewardArr[0]), goldVal);
         let gemCount = Math.min(Math.ceil(rewardArr[1]), gemVal);
         let curPos = this.curPos.clone();
@@ -482,7 +471,7 @@ export default class ResourceScript extends mw.Script {
                     playerId,
                     curPos,
                     this.judgeGold(),
-                    goldVal,
+                    goldVal * criticalRatio,
                     goldCount,
                     this.isBigBox);
         }
@@ -493,11 +482,19 @@ export default class ResourceScript extends mw.Script {
                     playerId,
                     curPos,
                     GlobalEnum.CoinType.Diamond,
-                    gemVal,
+                    gemVal * criticalRatio,
                     gemCount,
                     this.isBigBox);
         }
-        // Log4Ts.log(Resource, `playReward playerId:${playerId}, scenePointId: ${this.scenePointId}, treasure Pos:${this.curPos}, state:${state}, goldVal:${goldVal}, gemVal:${gemVal}, goldCount:${goldCount}, gemCount:${gemCount}`);
+        // Log4Ts.log(Resource,
+        //     `playReward playerId:${playerId}`,
+        //     `scenePointId: ${this.scenePointId}`,
+        //     `treasure Pos:${this.curPos}`,
+        //     `state:${state}`,
+        //     `goldVal:${goldVal}`,
+        //     `gemVal:${gemVal}`,
+        //     `goldCount:${goldCount}`,
+        //     `gemCount:${gemCount}`);
     }
 
     /**判断几世界的金币 */
@@ -519,8 +516,7 @@ export default class ResourceScript extends mw.Script {
     /**
      * 根据攻击阶段、类型返回掉落个数
      */
-    private getDropCountByStage(
-        state: GlobalEnum.ResourceAttackStage, isCrit: boolean): number[] {
+    private getDropCountByStage(state: GlobalEnum.ResourceAttackStage): [number, number] {
         let cfgID: number = 0;
         switch (this.resourceType) {
             case 1:
@@ -565,45 +561,37 @@ export default class ResourceScript extends mw.Script {
             allRate = cfg.Stagetimes[3];
         }
 
-        let goldcount: number = 0;
-        let gemcount: number = 0;
+        let goldCount: number = 0;
+        let gemCount: number = 0;
         switch (state) {
             case GlobalEnum.ResourceAttackStage.GuaSha:
-                if (cfgID == 7 || cfgID == 8)
-                    gemcount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]) * allRate;
-                else if (cfgID < 7)
-                    goldcount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]) * allRate;
-                else if (cfgID == 9) {
-                    goldcount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]) * allRate;
-                    gemcount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]) * allRate;
-                }
+                goldCount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]);
+                gemCount = utils.GetRandomNum(cfg.Lowattacknum[0], cfg.Lowattacknum[1]);
                 break;
             case GlobalEnum.ResourceAttackStage.OneThird:
-                goldcount = cfg.Stepcoin * allRate;
-                gemcount = cfg.Stepdiamond * allRate;
+                goldCount = cfg.Stepcoin;
+                gemCount = cfg.Stepdiamond;
                 break;
             case GlobalEnum.ResourceAttackStage.Destroy:
-                if (isCrit) {
-                    goldcount = cfg.Lastcoin * cfg.Crittimes * allRate;
-                    gemcount = cfg.Lastdaimond * cfg.Crittimes * allRate;
-                } else {
-                    goldcount = cfg.Lastcoin * allRate;
-                    gemcount = cfg.Lastdaimond * allRate;
-                }
+                goldCount = cfg.Lastcoin;
+                gemCount = cfg.Lastdaimond;
                 break;
             default:
                 break;
         }
-        return [goldcount, gemcount];
+        goldCount *= allRate;
+        gemCount *= allRate;
+        return [goldCount, gemCount];
     }
 
     private onSceneChanged() {
+        Log4Ts.log(Resource, `onSceneChanged scenePointId:${this.scenePointId},${this.guid}`);
         if (this.scenePointId == "") return;
 
         let arr = this.scenePointId.split("_");
         this._cfgId = Number(arr[0]);
         this.pointId = Number(arr[1]);
-        this._rate = Number(arr[2]);
+        this._rate = Number(arr[2].slice(0, -1));
 
         this.onGuaSha.clear();
         this.cfg = GameConfig.SceneUnit.getElement(this._cfgId);
@@ -634,7 +622,7 @@ export default class ResourceScript extends mw.Script {
         }
         this.isStart = true;
         this.resObj = await Resource.instance.getResource(this.cfgId);
-        Log4Ts.log(Resource, `createDefaultObj pos:${this.curPos},pointId:${this.pointId}`);
+        Log4Ts.log(Resource, `createDefaultObj cfgId:${this.cfgId}, ${this.pointId},${this.rate}`);
 
         if (!this.isBigBox) {
             let randomZ = MathUtil.randomInt(0, 360);
@@ -707,28 +695,11 @@ export default class ResourceScript extends mw.Script {
 
     /**攻击
      * @param playerId 玩家id
-     * @param damage 伤害
      * @param key 宠物key
      */
-    public injured(playerId: number, damage: number, key: number): boolean {
+    public injured(playerId: number, key: number): boolean {
         if (this.curHp <= 0) return true;
-        if (isNaN(damage))
-            damage = 0;
-        if (this.cfgId == 0) return true;
-        if (this.isBigBox) {
-            damage *= GlobalData.Buff.damageBuff(playerId) * (1 + EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100);
-        } else
-            damage *= GlobalData.Buff.damageBuff(playerId);
-        this.getRewardByAttack(playerId, damage, key);
 
-        let allHp = GameConfig.SceneUnit.getElement(this.cfgId).HP;
-        if (damage > allHp / 3) {
-            damage = Math.ceil(allHp / 3);
-        }
-        let rateHp = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerId);
-        if (this.curHp <= rateHp && rateHp < allHp && this.curHp > allHp * 2 / 3) {
-            damage = allHp * 2 / 3 + damage * GlobalData.SceneResource.critRate(playerId) - allHp * 2 / 3;
-        }
         if (playerId === Player.localPlayer.playerId) {
             this.net_injured(playerId, key);
         }
@@ -736,7 +707,6 @@ export default class ResourceScript extends mw.Script {
             GlobalData.Music.resourceDestroy,
             this.curPos);
 
-        // if (this.curHp - damage <= 0) return true;
         return false;
     }
 
@@ -794,19 +764,6 @@ export default class ResourceScript extends mw.Script {
         return this.cfg ? this.cfg.resType : 3;
     }
 
-    /**生成是否暴击 */
-    private critByCreate(playerId: number) {
-        //只生成一次
-        if (this.isCrit.has(playerId)) return;
-        let random = MathUtil.randomInt(0, 100);
-        let critRate = GlobalData.SceneResource.critWeight(playerId);
-        if (random <= critRate) {
-            this.isCrit.set(playerId, true);
-        } else {
-            this.isCrit.set(playerId, false);
-        }
-    }
-
     /**根据攻击力计算总价值 */
     private getRewardByAttack(playerId: number, attack: number, key: number): number {
         if (Gtk.tryGet(this.lastDamage, playerId, 0) >= attack) return;
@@ -824,58 +781,70 @@ export default class ResourceScript extends mw.Script {
         let temp = utils.GetRandomNum(0, 10) % 2 == 0 ? 1 : -1;
 
         this.cfg.Type.forEach((item, index) => {
-
-            let crit: number = 0;
-
-            if (this.isCrit.get(playerId) ?? false) {
-                crit = this.cfg.Critreward;
-            } else {
-                crit = 1;
-            }
-
             if (item != 2) {
                 let temp2 = this.cfg.WaveValue[index] + Math.log(attack);
                 let random = utils.GetRandomNum(0, temp2);
                 if (this.rate == 1) {
                     const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
+                    const worldGoldBuff = EnchantBuff.getWorldGoldBuff(playerId, key, this.judgeGold());
                     const rewardGold =
                         (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
                             random * temp) *
                         this.rate *
-                        crit *
-                        goldBuff;
+                        goldBuff *
+                        worldGoldBuff;
                     this.rewardGold.set(playerId, rewardGold);
 
                     Log4Ts.log(
-                        ResourceScript,
-                        `getRewardByAttack RewardGold:${rewardGold} goldAddBuff:${goldBuff} crit:${crit} cfg.Iconreward:${this.cfg.DiamondReward
-                        } rate:${this.rate} attack:${attack} pow:${pow} random:${random * temp}`
+                        ResourceScript, `getRewardByAttack`,
+                        `RewardGold:${rewardGold}`,
+                        `goldBuff:${goldBuff}`,
+                        `worldGoldBuff:${worldGoldBuff}`,
+                        `judgeGold:${this.judgeGold()}`,
+                        `cfg.Iconreward:${this.cfg.Iconreward}`,
+                        `rate:${this.rate}`,
+                        `attack:${attack}`,
+                        `pow:${pow}`,
+                        `random:${random * temp}`,
                     );
                 } else {
                     const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
                     const rateGoldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).rateGoldAdd / 100;
+                    const worldGoldBuff = EnchantBuff.getWorldGoldBuff(playerId, key, this.judgeGold());
                     const rewardGold =
                         (50 * this.cfg.Iconreward * Math.pow(attack, pow) +
                             random * temp) *
                         this.rate *
-                        crit *
                         goldBuff *
-                        rateGoldBuff;
+                        rateGoldBuff *
+                        worldGoldBuff;
                     this.rewardGold.set(playerId, rewardGold);
 
                     Log4Ts.log(
                         ResourceScript,
-                        `getRewardByAttack RewardGold:${rewardGold} goldAddBuff:${goldBuff} rateGoldBuff:${rateGoldBuff} crit:${crit} cfg.Iconreward:${this.cfg.DiamondReward
-                        } rate:${this.rate} attack:${attack} pow:${pow} random:${random * temp
-                        }`
+                        `getRewardByAttack`,
+                        `RewardGold:${rewardGold}`,
+                        `goldBuff:${goldBuff}`,
+                        `worldGoldBuff:${worldGoldBuff}`,
+                        `judgeGold:${this.judgeGold()}`,
+                        `rateGoldBuff:${rateGoldBuff}`,
+                        `cfg.Iconreward:${this.cfg.Iconreward}`,
+                        `rate:${this.rate}`,
+                        `attack:${attack}`,
+                        `pow:${pow}`,
+                        `random:${random * temp}`,
                     );
                 }
 
                 this.rewardGold.set(playerId, Number(this.getRewardGold(playerId).toFixed(1)));
             } else {
                 const diamondBuff = (1 + EnchantBuff.getPetBuff(playerId, key).diamondAdd / 100); // 乘算
-                const diamondReward = this.cfg.DiamondReward * crit * this.rate * diamondBuff;
-                Log4Ts.log(ResourceScript, `finalRewardDiamond:${diamondReward} diamondBuff:${diamondBuff} crit:${crit} cfg.DiamondReward:${this.cfg.DiamondReward} rate:${this.rate}`);
+                const diamondReward = this.cfg.DiamondReward * this.rate * diamondBuff;
+                Log4Ts.log(ResourceScript,
+                    `finalRewardDiamond:${diamondReward}`,
+                    `diamondBuff:${diamondBuff}`,
+                    `cfg.DiamondReward:${this.cfg.DiamondReward}`,
+                    `rate:${this.rate}`);
                 this.rewardGem.set(playerId, Number(diamondReward.toFixed(1)));
             }
         });
@@ -883,9 +852,6 @@ export default class ResourceScript extends mw.Script {
             this.rewardGold.set(playerId, this.getRewardGold(playerId) * (1 + EnchantBuff.getPetBuff(playerId, key).fourGoldAdd / 100));
             this.rewardGem.set(playerId, this.getRewardGem(playerId) * (1 + EnchantBuff.getPetBuff(playerId, key).fourGoldAdd / 100));
         }
-
-        //oTraceError('lwj 奖励 ' + this.rewardGem + " " + this.rewardGold);
-
     }
 
     /**播放资源倍率特效 */
@@ -968,7 +934,7 @@ export default class ResourceScript extends mw.Script {
             this.switchCollider(false);
             this.isStart = false;
             if (isAwait) {
-                await TimeUtil.delaySecond(3);
+                // await TimeUtil.delaySecond(3);
                 Resource.instance.returnResource(this.resObj);
             } else
                 Resource.instance.returnResource(this.resObj);
@@ -985,6 +951,11 @@ export default class ResourceScript extends mw.Script {
 
     protected onStart(): void {
         //if (SystemUtil.isClient()) this.clientStart();
+        if (SystemUtil.isClient()) {
+            Log4Ts.log(Resource, `onStartClient scenePointId:${this.scenePointId},${this.guid}`);
+        } else {
+            Log4Ts.log(Resource, `onStartServer scenePointId:${this.scenePointId},${this.guid}`);
+        }
     }
 
     protected onDestroy(): void {
@@ -995,4 +966,56 @@ export default class ResourceScript extends mw.Script {
 
     }
 
+}
+
+export function calDamage(playerId: number,
+    key: number,
+    isBox: boolean): number {
+    //在存档里是下标从 0 开始
+    let level = DataCenterS
+        .getData(playerId, PetSimulatorPlayerModuleData)
+        .getLevelData(2);
+    //在表里是下标从 1 开始
+    let info = GameConfig.Upgrade.getElement(3);
+    let upgrade = info.Upgradenum[level - 1];
+    if (upgrade == null) upgrade = 0;
+    upgrade += 1;
+
+    let petData = ModuleService.getModule(PetBagModuleS).getPet(playerId, key);
+    if (!petData) {
+        Log4Ts.error(ResourceScript, `pet not exist. playerId:${playerId}, key:${key}`);
+        return 0;
+    }
+    let damage = petData.p.a
+        * GlobalData.LevelUp.petDamage(playerId)
+        * upgrade
+        * (1 + EnchantBuff.getPetBuff(playerId, key).damageAdd / 100);
+
+    if (isNaN(damage)) return 0;
+
+    damage *=
+        GlobalData.Buff.damageBuff(playerId) *
+        (1 + (isBox ? EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100 : 0)) *
+        EnchantBuff.getTeamDamageAddBuff(playerId, key);
+
+    Log4Ts.log(
+        ResourceScript,
+        "damage:" +
+        damage +
+        " atk:" +
+        petData.p.a +
+        " upgrade:" +
+        upgrade +
+        " damageAddBuff:" +
+        (1 + EnchantBuff.getPetBuff(playerId, key).damageAdd / 100) +
+        " GlobalData.Buff.damageBuff:" +
+        GlobalData.Buff.damageBuff(playerId) +
+        " isBox:" +
+        isBox +
+        " boxDamageAdd:" +
+        (1 + EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100) +
+        " teamDamageAddBuff:" +
+        EnchantBuff.getTeamDamageAddBuff(playerId, key)
+    );
+    return damage;
 }

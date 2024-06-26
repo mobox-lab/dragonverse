@@ -286,7 +286,6 @@ export default class PetBehavior {
 
     public update(dt: number, transform: Transform): void {
 
-
         this.ownerTransform = transform.clone();
         if (!this.owner || !this.pet) return;
         //头顶名字显影逻辑
@@ -690,7 +689,7 @@ export default class PetBehavior {
             const bezier = GlobalData.pet.attackBezier;
             let time = GlobalData.pet.attackTime;
             if (this.owner == this.currentChar) time = GlobalData.pet.attackTime / GlobalData.LevelUp.petAttackSpeed(Player.localPlayer.playerId) / this.addAttackSpeed;
-            this.attackTween = new mw.Tween<{ y: number }>({ y: 0 }).to({
+            this.attackTween = new mw.Tween<{ y: number }>({y: 0}).to({
                 y: [-30, 0],
             }, time).onUpdate((obj) => {
                 this.attackRotY = obj.y;
@@ -784,9 +783,6 @@ export default class PetBehavior {
 
                 let res = this.targetRes.injured(
                     this.owner.player.playerId,
-                    this.attackDamage
-                    * GlobalData.LevelUp.petDamage(Player.localPlayer.playerId)
-                    * (1 + EnchantBuff.getPetBuff(Player.localPlayer.playerId, this.key).damageAdd / 100),
                     this.key);
                 if (res) {
                     this._targetRes = null;

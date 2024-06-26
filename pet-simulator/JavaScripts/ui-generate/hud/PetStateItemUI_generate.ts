@@ -29,6 +29,13 @@ export default class PetStateItemUI_Generate extends UIScript {
 		}
 		return this.bgImg_Internal
 	}
+	private img_Background_Internal: mw.Image
+	public get img_Background(): mw.Image {
+		if(!this.img_Background_Internal&&this.uiWidgetBase) {
+			this.img_Background_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/itemCanvas/img_Background') as mw.Image
+		}
+		return this.img_Background_Internal
+	}
 	private petImg_Internal: mw.Image
 	public get petImg(): mw.Image {
 		if(!this.petImg_Internal&&this.uiWidgetBase) {

@@ -878,11 +878,11 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         Log4Ts.log(SceneDragonModuleS, `request catch scene dragon in p12...`);
 
-        const [result, currentCount] = await this.authModuleS.requestWebCatchDragon(
+        const [result, currentCount] = (GameServiceConfig.isRelease || GameServiceConfig.isBeta) ? await this.authModuleS.requestWebCatchDragon(
             currPlayerId,
             item.getConfig().dragonPalId,
-            catchTime
-        );
+            catchTime,
+        ) : [true, {unclaim: 0, total: 5, unUsed: 4}];
 
         if (result && !Gtk.isNullOrUndefined(currentCount?.unUsed))
             this.bagModuleS?.setItem(currPlayerId, GameServiceConfig.DRAGON_BALL_BAG_ID, currentCount?.unUsed ?? 0);

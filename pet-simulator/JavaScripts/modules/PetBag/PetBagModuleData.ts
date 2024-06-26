@@ -4,6 +4,7 @@ import { GlobalData } from "../../const/GlobalData";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { oTraceError } from "../../util/LogManager";
 import { stringToNumberArr, utils } from "../../util/uitls";
+import { EnchantBuff } from "./EnchantBuff";
 
 export enum BagItemKey {
     itemStart = 100
@@ -29,16 +30,16 @@ export class petItemDataNew {
     I: number;
     /**petInfo */
     p: petInfoNew;
-		/**首次获得宠物时间，合成的宠物用合成项最早获得的时间 */
+    /**首次获得宠物时间，合成的宠物用合成项最早获得的时间 */
     obtainTime: number;
-		/**已附魔次数 */
-		enchantCnt: number;
+    /**已附魔次数 */
+    enchantCnt: number;
 
     constructor(key: number, id: number) {
         this.k = key;
         this.I = id;
         this.p = new petInfoNew();
-				this.enchantCnt = 0;
+        this.enchantCnt = 0;
     }
 
 }
@@ -206,7 +207,7 @@ export class PetBagModuleData extends Subdata {
      * @param atk 宠物战力
      * @param name 宠物名字
      */
-    public addBagItem(id: number, atk: number, name: string, addTime?: number): boolean {
+    public addBagItem(id: number, atk: number, name: string, addTime?: number, logInfo?: { logObj: Object, logName: string }): boolean {
 
         // let index = this.getFirstEmptyIndex();
         // if (index == -1) {
@@ -229,48 +230,54 @@ export class PetBagModuleData extends Subdata {
         }
         let type = GameConfig.PetARR.getElement(id).QualityType;
         this.bornRandomEnchant(this.bagContainerNew[index], type);
-
+		if(logInfo?.logName) {
+			Object.assign(logInfo.logObj, {
+				petBuffs: this.bagContainerNew[index].p.b
+			});  
+			utils.logP12Info(logInfo.logName, logInfo.logObj)
+		}
         this.save(true);
         this.BagItemChangeAC.call(true, id, index);
         return true;
     }
 
-		public getPetEnchantScore(enchantIds: number[]): number {
-      if (!enchantIds?.length) return 0;
-      const score = enchantIds.reduce((total, id) => {
-					return total + (GameConfig.Enchants.getElement(id)?.RankScore ?? 0);
-      }, 0);
-      return score;
+    public getPetEnchantScore(enchantIds: number[]): number {
+        if (!enchantIds?.length) return 0;
+        const score = enchantIds.reduce((total, id) => {
+            return total + (GameConfig.Enchants.getElement(id)?.RankScore ?? 0);
+        }, 0);
+        return score;
     }
+
     /**
      * @description: 根据赛季获取拥有的最高战力的宠物
      * @param round 赛季
      * @return 宠物id
      */
     public getMaxAttackPet(currRound: number): number {
-      let maxAttack = 0;
-      let petKey = 0;
-      for (let key in this.bagContainerNew) {
-					//筛出这个赛季获取的
-					const curPet = this.bagContainerNew[key];
-					if (
-						this.calRound(curPet.obtainTime) === currRound &&
-						curPet.p.a >= maxAttack
-					) {
-							const prePet = petKey ? this.bagContainerNew[petKey] : null;
-							// 相同 atk 则看附魔分数
-							if (
-								curPet.p.a === maxAttack &&
-								prePet &&
-								this.getPetEnchantScore(curPet.p.b) <=
-									this.getPetEnchantScore(prePet.p.b)
-							)
-									continue;
-							maxAttack = curPet.p.a;
-							petKey = curPet.k;
-					}
-      }
-      return petKey;
+        let maxAttack = 0;
+        let petKey = 0;
+        for (let key in this.bagContainerNew) {
+            //筛出这个赛季获取的
+            const curPet = this.bagContainerNew[key];
+            if (
+                this.calRound(curPet.obtainTime) === currRound &&
+                curPet.p.a >= maxAttack
+            ) {
+                const prePet = petKey ? this.bagContainerNew[petKey] : null;
+                // 相同 atk 则看附魔分数
+                if (
+                    curPet.p.a === maxAttack &&
+                    prePet &&
+                    this.getPetEnchantScore(curPet.p.b) <=
+                    this.getPetEnchantScore(prePet.p.b)
+                )
+                    continue;
+                maxAttack = curPet.p.a;
+                petKey = curPet.k;
+            }
+        }
+        return petKey;
     }
 
     public calRound(obtainTime: number): number {
@@ -496,13 +503,14 @@ export class PetBagModuleData extends Subdata {
         return true;
     }
 
-    /**附魔
+    /**附魔 仅S端
      * @param key 宠物key
      * @param ids 附魔id数组
      */
-    public addEnchant(key: number, ids: number[]) {
-				this.addPetEnchant(key, ids);
-
+    public addEnchant(key: number, ids: number[], playerId: number) {
+        this.addPetEnchant(key, ids);
+        let keys = this.CurFollowPets;
+        EnchantBuff.equipUnPet(playerId, keys, true);
         this.save(true);
         this.PetEnchantChangeAC.call(key, ids);
     }
@@ -511,60 +519,61 @@ export class PetBagModuleData extends Subdata {
     private addPetEnchant(key: number, ids: number[]) {
         let item = this.bagItemsByKey(key);
         item.p.b.length = 0;
-        item.p.b = ids;				
-				item.enchantCnt++; 		// 已附魔次数++
+        item.p.b = ids;
+        item.enchantCnt++; 		// 已附魔次数++
     }
- 
+
     // 按照配置的 Weight 随机返回一个附魔词条id，
-    private randomEnchant(type: 'default' | 'normal' | 'special' | 'myth' = 'default', excludeIds?: number[]): number {
-				const enchantCfg = GameConfig.Enchants.getAllElement();
-				const filterEnchantCfg = enchantCfg.filter((enchantCfg) => {
-					const id = enchantCfg.id;
-					if(GlobalData.Enchant.filterIds.includes(id)) return false;
-					if(excludeIds?.length && excludeIds.includes(id)) return false;
-					switch (type) {
-            case "normal": {
-              const [min, max] = GlobalData.Enchant.normalEnchantIdRange;
-              return id >= min && id <= max;
+    private randomEnchant(type: "default" | "normal" | "special" | "myth" = "default", excludeIds?: number[]): number {
+        const enchantCfg = GameConfig.Enchants.getAllElement();
+        const filterEnchantCfg = enchantCfg.filter((enchantCfg) => {
+            const id = enchantCfg.id;
+            if (GlobalData.Enchant.filterIds.includes(id)) return false;
+            if (excludeIds?.length && excludeIds.includes(id)) return false;
+            switch (type) {
+                case "normal": {
+                    const [min, max] = GlobalData.Enchant.normalEnchantIdRange;
+                    return id >= min && id <= max;
+                }
+                case "special": {
+                    const [min, max] = GlobalData.Enchant.specialEnchantIdRange;
+                    return id >= min && id <= max;
+                }
+                case "myth": {
+                    const [min, max] = GlobalData.Enchant.mythEnchantIdRange;
+                    return id >= min && id <= max;
+                }
+                default: {
+                    return enchantCfg?.QualityType == 0; // normal & special
+                }
             }
-            case "special": {
-              const [min, max] = GlobalData.Enchant.specialEnchantIdRange;
-              return id >= min && id <= max;
-            }
-            case "myth": {
-              const [min, max] = GlobalData.Enchant.mythEnchantIdRange;
-              return id >= min && id <= max;
-            }
-						default: {
-							return enchantCfg?.QualityType == 0; // normal & special	
-						}
-          }
         });
 
-				const idArr: number[] = [];
-				const weightArr: number[] = [];
-				for (const cfg of filterEnchantCfg) {
-						weightArr.push(cfg.Weight);
-						idArr.push(cfg.id);
-				}
+        const idArr: number[] = [];
+        const weightArr: number[] = [];
+        for (const cfg of filterEnchantCfg) {
+            weightArr.push(cfg.Weight);
+            idArr.push(cfg.id);
+        }
 
-				let totalWeight = 0;
-				for (let i = 0; i < weightArr.length; i++) {
-						totalWeight += weightArr[i];
-				}
+        let totalWeight = 0;
+        for (let i = 0; i < weightArr.length; i++) {
+            totalWeight += weightArr[i];
+        }
 
-				const random = Math.random() * totalWeight;
-				Log4Ts.log(PetBagModuleData, `PetBagModuleData randomEnchant - type:${type}, excludeIds:${excludeIds}, random:${random}, totalWeight:${totalWeight}`);
-				let probability = 0;
-				for (let i = 0; i < idArr.length; i++) {
-						probability += weightArr[i];
-						if (random <= probability) {
-								return idArr[i];
-						}
-				}
+        const random = Math.random() * totalWeight;
+        Log4Ts.log(PetBagModuleData, `PetBagModuleData randomEnchant - type:${type}, excludeIds:${excludeIds}, random:${random}, totalWeight:${totalWeight}`);
+        let probability = 0;
+        for (let i = 0; i < idArr.length; i++) {
+            probability += weightArr[i];
+            if (random <= probability) {
+                return idArr[i];
+            }
+        }
 
-				return idArr[idArr.length - 1];
-		}
+        return idArr[idArr.length - 1];
+    }
+
     /** addPed 时的随机附魔 */
     public bornRandomEnchant(petItem: petItemDataNew, type: GlobalEnum.PetQuality) {
         const quality = GlobalEnum.PetQuality;
@@ -572,17 +581,17 @@ export class PetBagModuleData extends Subdata {
         const enchantData = GlobalData.Enchant;
 
         let buff: number[] = [];
-				const firstBuffId = this.randomEnchant('normal');
+        const firstBuffId = this.randomEnchant("normal");
         buff.push(firstBuffId);
-				const secondBuffId = this.randomEnchant('normal', [firstBuffId]);
-				buff.push(secondBuffId);
+        const secondBuffId = this.randomEnchant("normal", [firstBuffId]);
+        buff.push(secondBuffId);
 
-        if (type == quality.Myth) { 
-						let thirdBuffId = 0; // 该词条为神话特有的第三条词条 不可重铸
+        if (type == quality.Myth) {
+            let thirdBuffId = 0; // 该词条为神话特有的第三条词条 不可重铸
             if (enchantData.bestPets.includes(petItem.I))
-								thirdBuffId = enchantData.bestEnchantId; // 46词条
+                thirdBuffId = enchantData.bestEnchantId; // 46词条
             else
-								thirdBuffId = this.randomEnchant('special'); // 或者 可附魔出的特殊词条
+                thirdBuffId = this.randomEnchant("special"); // 或者 可附魔出的特殊词条
             buff.push(thirdBuffId);
         }
         petItem.p.b = buff;

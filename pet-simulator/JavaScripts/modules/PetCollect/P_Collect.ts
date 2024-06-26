@@ -1,21 +1,19 @@
-import {GameConfig} from "../../config/GameConfig";
-import {IPetARRElement} from "../../config/PetARR";
-import {GlobalEnum} from "../../const/Enum";
-import {GlobalData} from "../../const/GlobalData";
+import { GameConfig } from "../../config/GameConfig";
+import { IPetARRElement } from "../../config/PetARR";
+import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import PetCollectItem_Generate from "../../ui-generate/Pet/PetCollectItem_generate";
 import PetCollectPanel_Generate from "../../ui-generate/Pet/PetCollectPanel_generate";
 import PetHover_Generate from "../../ui-generate/Pet/PetHover_generate";
-import {stringToBuff, utils} from "../../util/uitls";
-import {BagTool} from "../PetBag/BagTool";
-import {PetBagModuleData, petItemDataNew} from "../PetBag/PetBagModuleData";
-import {CollectModuleC} from "./CollectModuleC";
-import {IItemRender, List} from "./ScrollerView";
-
+import { stringToBuff, utils } from "../../util/uitls";
+import { BagTool } from "../PetBag/BagTool";
+import { PetBagModuleData, petItemDataNew } from "../PetBag/PetBagModuleData";
+import { CollectModuleC } from "./CollectModuleC";
+import { IItemRender, List } from "./ScrollerView";
 
 /**宠物item UI */
 class petItem extends PetCollectItem_Generate implements IItemRender {
-
 
     index: number;
 
@@ -49,7 +47,6 @@ class petItem extends PetCollectItem_Generate implements IItemRender {
             return 1;
         }
 
-
         if (cfg.DevType == dev.Rainbow) {
             //彩虹化
             this.mPic_Heart.visibility = mw.SlateVisibility.Collapsed;
@@ -61,7 +58,6 @@ class petItem extends PetCollectItem_Generate implements IItemRender {
     }
 
 }
-
 
 export class P_Collect extends PetCollectPanel_Generate {
     private collectMC: CollectModuleC = null;
@@ -120,7 +116,6 @@ export class P_Collect extends PetCollectPanel_Generate {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
-
     protected onHide() {
 
     }
@@ -134,7 +129,6 @@ export class P_Collect extends PetCollectPanel_Generate {
     }
 
 }
-
 
 /**宠物悬停框 */
 export class P_PetHover extends PetHover_Generate {
@@ -158,7 +152,6 @@ export class P_PetHover extends PetHover_Generate {
 
         this.collectMC = ModuleService.getModule(CollectModuleC);
     }
-
 
     public setPetInfoShow(item: petItemDataNew, loc: mw.Vector2) {
         item = DataCenterC.getData(PetBagModuleData).bagItemsByKey(item.k);
@@ -338,7 +331,6 @@ export class P_PetHover extends PetHover_Generate {
         this.setUIHeight(this.size.y - offY + 10);
         this.show();
     }
-
 
     /**是否有正在调整大小的ui */
     public isHasAutoUI: boolean = false;

@@ -765,13 +765,6 @@
 		}
 		return this.mMCoin_Internal
 	}
-	private mBtn_MCoin_Add_Internal: mw.Button
-	public get mBtn_MCoin_Add(): mw.Button {
-		if(!this.mBtn_MCoin_Add_Internal&&this.uiWidgetBase) {
-			this.mBtn_MCoin_Add_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasMCoin/mBtn_MCoin_Add') as mw.Button
-		}
-		return this.mBtn_MCoin_Add_Internal
-	}
 	private mBtn_MCoin_Refresh_Internal: mw.Button
 	public get mBtn_MCoin_Refresh(): mw.Button {
 		if(!this.mBtn_MCoin_Refresh_Internal&&this.uiWidgetBase) {
@@ -820,6 +813,13 @@
 			this.mBtn_Battle_Add_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasBattle/mBtn_Battle_Add') as mw.Button
 		}
 		return this.mBtn_Battle_Add_Internal
+	}
+	private mBtn_MCoin_Add_Internal: mw.Button
+	public get mBtn_MCoin_Add(): mw.Button {
+		if(!this.mBtn_MCoin_Add_Internal&&this.uiWidgetBase) {
+			this.mBtn_MCoin_Add_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasPayMoney/mCanvasBattle/mBtn_MCoin_Add') as mw.Button
+		}
+		return this.mBtn_MCoin_Add_Internal
 	}
 	private canvasIconBtn_Internal: mw.Canvas
 	public get canvasIconBtn(): mw.Canvas {
@@ -996,12 +996,6 @@
 		
 		
 	
-		this.mBtn_MCoin_Add.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "mBtn_MCoin_Add");
-		})
-		
-		
-	
 		this.mBtn_MCoin_Refresh.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_MCoin_Refresh");
 		})
@@ -1016,6 +1010,12 @@
 	
 		this.mBtn_Battle_Add.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_Battle_Add");
+		})
+		
+		
+	
+		this.mBtn_MCoin_Add.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_MCoin_Add");
 		})
 		
 		

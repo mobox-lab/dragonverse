@@ -13,7 +13,6 @@ import {
     ENotice_Events_S,
     EPlayerEvents_S,
     EPlayerFightState,
-    ESkillEvent_S,
 } from "../../const/Enum";
 import { Globaldata } from "../../const/Globaldata";
 import { Constants } from "../../tool/Constants";
@@ -28,9 +27,8 @@ import { RecoveryLifeBuffS } from "../buffModule/Buff/CustomBuff/RecoveryLifeBuf
 import { BuffModuleS } from "../buffModule/BuffModuleS";
 import { PlayerManager } from "./PlayerManager";
 import { PlayerModuleC } from "./PlayerModuleC";
-import { EnumDamageType, HitDamageInfo, BattleWorldPlayerModuleData } from "./PlayerModuleData";
+import { BattleWorldPlayerModuleData, EnumDamageType, HitDamageInfo } from "./PlayerModuleData";
 import { Attribute } from "./sub_attribute/AttributeValueObject";
-import EnumAttributeType = Attribute.EnumAttributeType;
 import { AttributeModuleS } from "../AttributeModule/AttributeModuleS";
 import { SkillModuleS } from "../SkillModule/SkillModuleS";
 import { WeaponModuleS } from "../WeaponModule/WeaponModuleS";
@@ -44,11 +42,11 @@ import { EquipModuleS } from "../EquipModule/EquipModuleS";
 import { ERankNoticeType } from "./UI/rank/RankNotice";
 import { MotionModuleS } from "../MotionModule/MotionModuleS";
 import { AuthModuleS } from "../auth/AuthModule";
-import BwEnergyModuleData, { EnergyModuleS } from "../Energy/EnergyModule";
+import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Gtk, { GtkTypes } from "../../util/GToolkit";
-import { AreaModuleS } from "../AreaModule/AreaModuleS";
-import { emptyAnchorKey } from "../BulletModule/bullet/BulletDefine";
+import { Utils } from "../../util/uitls";
+import EnumAttributeType = Attribute.EnumAttributeType;
 
 /**玩家伤害信息 */
 export type THurtData = {
@@ -1862,6 +1860,16 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this.exitFight(playerID);
     }
 
+    /**
+     * 打印击杀日志
+     * @param {number} winner -- 击杀者数据
+     * @param {number} loser -- 死亡者数据
+     */
+    public logKill(winner: number[], loser: number[]) {
+        // [[胜利者Id,击杀前rank,击杀后rank,今日获得]，[失败者Id, 被杀前rank,被杀厚rank,今日获得]]
+        Utils.logP12Info("P_Kill", [winner, loser]);
+    }
+
     /**结算杀戮信息 */
     private settle_massacre(killerId: number, beKillerId: number) {
         // 增加杀戮值
@@ -2304,6 +2312,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         let attackerRankCfg = GameConfig.Rank.getElement(attackerRank);
         let deadRank = deadId ? this.getRankLevel(deadId) : undefined;
         let deadRankCfg = deadId ? GameConfig.Rank.getElement(deadRank) : undefined;
+        const attackerLogList = [attackerId];
+        const deadIdLogList = [deadId];
 
         if (!attackerRankCfg ||
             deadRank !== undefined && !deadRankCfg ||
@@ -2320,15 +2330,22 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             ?.Factor ?? 1;
         // 击杀加分， 被击杀减分
         if (this._fightingPlayerSet.has(attackerId)) {
+            attackerLogList.push(this.getPlayerData(attackerId).getAttrValue(EnumAttributeType.rankScore));
             this.changeRankScore(attackerId, Math.round(attackerScore * addRate));
+            attackerLogList.push(this.getPlayerData(attackerId).getAttrValue(EnumAttributeType.rankScore));
+            attackerLogList.push(this.getPlayerData(attackerId).getAttrValue(EnumAttributeType.dayRankScore));
         }
 
         if (!Gtk.isNullOrUndefined(deadId)) {
             let deadScore = deadRankCfg.rankIntegralReduce[attackerRank - 1];
             if (this._fightingPlayerSet.has(deadId)) {
+                deadIdLogList.push(this.getPlayerData(deadId).getAttrValue(EnumAttributeType.rankScore));
                 this.changeRankScore(deadId, -Math.round(deadScore));
+                deadIdLogList.push(this.getPlayerData(deadId).getAttrValue(EnumAttributeType.rankScore));
+                deadIdLogList.push(this.getPlayerData(deadId).getAttrValue(EnumAttributeType.dayRankScore));
             }
         }
+        this.logKill(attackerLogList, deadIdLogList);
     }
 
     /**
@@ -2474,6 +2491,19 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         return this.playerTickets.get(playerId) ?? true;
     }
 
+    /**
+     * 打印 进入战场 log
+     * @param {number} playerId
+     */
+    public logJoinBattle(playerId: number) {
+        const playerData = this.getPlayerData(playerId);
+        const energies = ModuleService.getModule(EnergyModuleS).getPlayerEnergy(playerId);
+        const rank = playerData.getAttrValue(EnumAttributeType.rankScore);
+        const dayRank = playerData.getAttrValue(EnumAttributeType.dayRankScore);
+        // [playerId,花费体力,剩余体力,体力上线,当前rank分,今日已获得rank分]
+        Utils.logP12Info("P_JoinBattle", [playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING, energies[0], energies[1], rank, dayRank]);
+    }
+
     @Decorator.noReply()
     public net_playerJoinFighting(playerId: number) {
         if (this._fightingPlayerSet.has(playerId)) {
@@ -2491,11 +2521,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             if (!this._invinciblePlayer.has(playerId)) {
                 this.addInvincibleBuff(playerId);
             }
+            this.logJoinBattle(playerId);
         } else {
             Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, false);
         }
-
-
     }
 
     private _invinciblePlayer: Map<number, any> = new Map<number, any>();

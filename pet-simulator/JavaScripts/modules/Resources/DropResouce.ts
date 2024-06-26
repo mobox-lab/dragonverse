@@ -74,14 +74,14 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
      * @param type 掉落类型
      * @param allValue
      * @param count 掉落数量
-     * @param isBox
+     * @param isBigBox 是否是巨大宝箱
      */
     public createDrop(playerId: number,
         pos: mw.Vector,
         type: GlobalEnum.CoinType,
         allValue: number,
         count: number,
-        isBox: boolean = false): void {
+        isBigBox: boolean = false): void {
         if (count <= 0 || allValue <= 0) return;
         let val = Math.ceil(allValue / count);
         let generates: DropInServer[] = [];
@@ -118,7 +118,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
 
         Gtk.patchDo(
             generates.map(item => {
-                let radiusSample = isBox ? GlobalData.DropAni.randomRadiusBig : GlobalData.DropAni.randomRadius;
+                let radiusSample = isBigBox ? GlobalData.DropAni.randomRadiusBig : GlobalData.DropAni.randomRadius;
                 let radius = Gtk.random(radiusSample[0], radiusSample[1]);
                 const angle = new RandomGenerator().randomCircle().handle(val => val * radius).toVector2();
                 let startLoc = pos;
