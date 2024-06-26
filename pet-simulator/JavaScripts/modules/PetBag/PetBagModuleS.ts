@@ -625,6 +625,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                                 isGold: boolean): Promise<boolean> {
         const player = this.currentPlayer;
         const playerId = this.currentPlayerId;
+        const userId = this.currentPlayer.userId;
         const curSelectPets = curSelectPetKeys
             .map(key => this.currentData
                 .bagItemsByKey(key))
@@ -658,15 +659,27 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let isSucc: boolean = true;
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
         this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
+        const logInfo = {
+            logName: isGold ? "P_Heart" : "P_Rainbow", logObj: {
+                uid: userId,
+                diamond: cost,
+                chance: rate + "%",
+                inputPets: curSelectPets,
+                petId: endPetId,
+            },
+        };
         if (random <= rate) {
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
+            Object.assign(logInfo.logObj, {isSucc: true});
             ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(
                 this.currentPlayerId,
                 endPetId,
                 isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow,
-                earliestObtainTime);
+                earliestObtainTime,
+                logInfo);
         } else {
+            utils.logP12Info(logInfo.logName, {...logInfo.logObj, isSucc: false});
             isSucc = false;
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseFailed");
@@ -822,12 +835,16 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     public async net_enchant(selectPetKey: number | null, selectEnchantId: number | null): Promise<EnchantPetState> {
         const playerId = this.currentPlayerId;
         const player = this.currentPlayer;
+        const userId = player.userId;
         const data = this.currentData;
         const cost = this.getEnchantCost(selectPetKey);
         Log4Ts.log(PetBagModuleS, `net_enchant cost:` + cost);
         if (!this.playerModuleS.reduceDiamond(cost))
             return EnchantPetState.NO_ENOUGH_DIAMOND;
 
+        const curSelectPetEnchantCnt =
+            data.bagItemsByKey(selectPetKey)?.enchantCnt;
+        const curSelectPet = data.bagItemsByKey(selectPetKey);
         const prePetEnchantIds = Array.from(
             data.bagItemsByKey(selectPetKey).p.b,
         );
@@ -852,6 +869,16 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         const specialIds = newIds.filter(id => {
             const [min, max] = GlobalData.Enchant.specialEnchantIdRange;
             return id >= min && id <= max;
+        });
+        utils.logP12Info("P_Enchants", {
+            userId,
+            diamond: cost,
+            curSelectPet,
+            curSelectPetEnchantCnt,
+            selectEnchantId,
+            prePetEnchantIds,
+            newEnchantIds: newIds,
+            finalEnchantIds: enchantIds,
         });
         if (specialIds?.length) mw.Event.dispatchToClient(player, "ENCHANT_BROADCAST_ACHIEVEMENT_ENCHANT_SPECIAL");
         return EnchantPetState.SUCCESS;

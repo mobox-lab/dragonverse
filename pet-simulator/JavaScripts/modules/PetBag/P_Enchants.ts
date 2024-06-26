@@ -265,6 +265,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
         }
         const emptyItemLen = len === 3 ? 0 : 2 - len; // 神话宠物可能有三个词条 
         if (emptyItemLen) {
+			if(emptyItemLen === 2) this.selectEnchantId = null; // 
             // 不满两词条则空 item 补到两词条
             for (let i = 0; i < emptyItemLen; i++) {
                 const emptyItem = mw.UIService.create(EnchantItem);
