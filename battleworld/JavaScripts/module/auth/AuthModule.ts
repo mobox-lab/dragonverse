@@ -719,14 +719,14 @@ type AutoFillProps = {
 /**
  * 待填充的 宠物模拟器 统计信息.
  */
-type PetSimulatorStatisticNeedFill = {
+export type PetSimulatorStatisticNeedFill = {
     [K in keyof Omit<PetSimulatorStatistic, keyof AutoFillProps>]: NonNullable<PetSimulatorStatistic[K]>;
 };
 
 /**
  * 待填充的 无限乱斗 统计信息.
  */
-type BattleWorldStatisticNeedFill = {
+export type BattleWorldStatisticNeedFill = {
     [K in keyof Omit<BattleWorldStatistic, keyof AutoFillProps>]: NonNullable<BattleWorldStatistic[K]>;
 };
 
@@ -865,7 +865,6 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     public refreshCurrency() {
         if (!this._requestRegulator.request()) return;
-
         this.server.net_refreshCurrency();
     }
 

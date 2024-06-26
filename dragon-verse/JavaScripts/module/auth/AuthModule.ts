@@ -204,27 +204,27 @@ addGMCommand(
         mwext.ModuleService.getModule(AuthModuleS)
             .reportBattleWorldStatistic(player.userId,
                 {
-                    gold: 0,
-                    goldAdd: 0,
-                    goldRed: 0,
-                    killCnt: undefined,
-                    killNum: 0,
-                    killed: 0,
-                    level: 0,
+                    stamina: 0,
                     login: 0,
                     logout: 0,
-                    lvAdd: 0,
-                    lvRed: 0,
                     online: 0,
-                    pvpCnt: 0,
                     staMax: 0,
-                    staPotAdd: 0,
-                    staPotCnt: 0,
                     staRed: 0,
-                    stamina: 0,
-                    tail: "",
+                    staPotCnt: 0,
+                    staPotAdd: 0,
+                    gold: 0,
+                    goldRed: 0,
+                    goldAdd: 0,
                     weapon: "",
                     wing: "",
+                    tail: "",
+                    level: 0,
+                    lvRed: 0,
+                    lvAdd: 0,
+                    killCnt: 0,
+                    killNum: 0,
+                    killed: 0,
+                    pvpCnt: 0,
                 },
             )
             .then(() => {
@@ -719,14 +719,14 @@ type AutoFillProps = {
 /**
  * 待填充的 宠物模拟器 统计信息.
  */
-type PetSimulatorStatisticNeedFill = {
+export type PetSimulatorStatisticNeedFill = {
     [K in keyof Omit<PetSimulatorStatistic, keyof AutoFillProps>]: NonNullable<PetSimulatorStatistic[K]>;
 };
 
 /**
  * 待填充的 无限乱斗 统计信息.
  */
-type BattleWorldStatisticNeedFill = {
+export type BattleWorldStatisticNeedFill = {
     [K in keyof Omit<BattleWorldStatistic, keyof AutoFillProps>]: NonNullable<BattleWorldStatistic[K]>;
 };
 
