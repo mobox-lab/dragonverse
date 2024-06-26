@@ -293,7 +293,7 @@ interface UserDataQueryReq {
 /**
  * 一般用户统计相关请求参数.
  * @desc 如果某统计条目实际数据为内容是 ConfigId 的数组.
- * @desc 而上报时的类型为 string. 则应该转为 `"id-名称",("id-名称")...`.
+ * @desc 而上报时的类型为 string. 则应该转为 `id-名称,(id-名称)...`.
  */
 interface UserStatisticReq<S extends object>
     extends UserDataQueryReq {

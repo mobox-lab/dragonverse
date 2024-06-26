@@ -204,27 +204,27 @@ addGMCommand(
         mwext.ModuleService.getModule(AuthModuleS)
             .reportBattleWorldStatistic(player.userId,
                 {
-                    gold: 0,
-                    goldAdd: 0,
-                    goldRed: 0,
-                    killCnt: undefined,
-                    killNum: 0,
-                    killed: 0,
-                    level: 0,
+                    stamina: 0,
                     login: 0,
                     logout: 0,
-                    lvAdd: 0,
-                    lvRed: 0,
                     online: 0,
-                    pvpCnt: 0,
                     staMax: 0,
-                    staPotAdd: 0,
-                    staPotCnt: 0,
                     staRed: 0,
-                    stamina: 0,
-                    tail: "",
+                    staPotCnt: 0,
+                    staPotAdd: 0,
+                    gold: 0,
+                    goldRed: 0,
+                    goldAdd: 0,
                     weapon: "",
                     wing: "",
+                    tail: "",
+                    level: 0,
+                    lvRed: 0,
+                    lvAdd: 0,
+                    killCnt: 0,
+                    killNum: 0,
+                    killed: 0,
+                    pvpCnt: 0,
                 },
             )
             .then(() => {
@@ -293,7 +293,7 @@ interface UserDataQueryReq {
 /**
  * 一般用户统计相关请求参数.
  * @desc 如果某统计条目实际数据为内容是 ConfigId 的数组.
- * @desc 而上报时的类型为 string. 则应该转为 `"id-名称",("id-名称")...`.
+ * @desc 而上报时的类型为 string. 则应该转为 `id-名称,(id-名称)...`.
  */
 interface UserStatisticReq<S extends object>
     extends UserDataQueryReq {
