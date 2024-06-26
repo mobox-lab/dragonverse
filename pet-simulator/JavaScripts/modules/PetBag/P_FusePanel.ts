@@ -34,23 +34,18 @@ export class P_FusePanel extends Fusepanel_Generate {
 
     public show(petItems: petItemDataNew[], ...param: any[]): void {
         PetBagItem.instance.UIPool.resetAll();
-        this.petItems.length = 0;
+        this.petItems = [];
         petItems.forEach(item => {
-            // let petInfo = GameConfig.PetARR.getElement(item.I);
-            // if (!petInfo.IfFuse) return;
             let petItem = PetBagItem.instance.UIPool.get();
             petItem.setClickFun(this.changeContainer.bind(this), this);
 
             this.mListCanvas.addChild(petItem.uiObject);
 
             petItem.init(item);
-            if (petItem.getLockVis()) {
-                petItem.setLockVis(false);
-            }
             this.petItems.push(petItem);
         });
-        this.curSelectPets.length = 0;
-        this.changeCost();
+        this.curSelectPets = [];
+        this.changeUIText();
         super.show(...param);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();
@@ -70,18 +65,16 @@ export class P_FusePanel extends Fusepanel_Generate {
     /**改变目前容器展示 */
     public changeContainer(petItem: PetBag_Item) {
         petItem.setLockVis(!petItem.getLockVis());
-        if (petItem.getLockVis()) {
-            if (this.isCanClick)
-                this.curSelectPets.push(petItem.petData);
-            else
-                petItem.setLockVis(false);
+		
+        let isEquip = petItem.getLockVis();
+
+        if (isEquip) {
+            if (this.isCanClick) this.curSelectPets.push(petItem.petData);
+			else petItem.setLockVis(false);
         } else {
-            let index = this.curSelectPets.indexOf(petItem.petData);
-            if (index >= 0) {
-                this.curSelectPets.splice(index, 1);
-            }
+			this.curSelectPets = this.curSelectPets.filter((item) => item.k != petItem.petData.k);
         }
-        this.changeCost();
+        this.changeUIText();
     }
 
     /**点击按钮进行合成 */
@@ -116,7 +109,7 @@ export class P_FusePanel extends Fusepanel_Generate {
                         .fusePet(curSelectKeys, this._earliestObtainTime)) {
                         this.curSelectPets.length = 0;
                     }
-                    this.changeCost();
+                    this.changeUIText();
                     setTimeout(() => this.onShowAC.call(), 500);
                 } else super.show();
             });
@@ -124,14 +117,8 @@ export class P_FusePanel extends Fusepanel_Generate {
 
     private _earliestObtainTime: number = 0;
 
-    /**删除选中宠物 */
-    private delSelectPet(): number[] {
-        return this.curSelectPets.map(item => item.k);
-        // return await ModuleService.getModule(PetBagModuleC).checkFuseAble(keys);
-    }
-
     /**改变花费 */
-    private changeCost() {
+    private changeUIText() {
         let count = this.curSelectPets.length;
         this.mText_Money.text = utils.formatNumber(GlobalData.Fuse.cost);
         if (count < GlobalData.Fuse.minFuseCount) {
