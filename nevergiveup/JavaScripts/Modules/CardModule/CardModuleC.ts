@@ -10,7 +10,7 @@ import { TweenCommon } from "../../TweenCommon";
 import LobbyUI from "../../UI/LobbyUI";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import TowerShopUI from "../../UI/Tower/TowerShopUI";
-import TowerUI from "../../UI/Tower/TowerUI";
+import TowerUI, { TowerConfigConstants } from "../../UI/Tower/TowerUI";
 import { GameConfig } from "../../config/GameConfig";
 import { MGSTool } from "../../tool/MGSTool";
 import PlayerModuleC from "../PlayerModule/PlayerModuleC";
@@ -24,8 +24,6 @@ export enum CardState {
 }
 
 export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
-
-
     private _canBuyCard: boolean = true;
 
     public get unlockCards(): number[] {
@@ -38,7 +36,7 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
 
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void {
-        console.log('hsfCardModuleC====================== ', "启动")
+        console.log("hsfCardModuleC====================== ", "启动");
         UIService.getUI(TowerUI).setTowerUI(this.data.equipCards);
     }
 
@@ -47,9 +45,7 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
      * 此函数执行需要将this.useUpdate赋值为true
      * @param dt 当前帧与上一帧的延迟 / 秒
      */
-    protected onUpdate(dt: number): void {
-
-    }
+    protected onUpdate(dt: number): void {}
 
     public btnExecute(cardID: number, state: CardState) {
         switch (state) {
@@ -62,7 +58,8 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
             case CardState.Lock:
                 this.buyCard(cardID);
                 break;
-            default: break;
+            default:
+                break;
         }
     }
 
@@ -75,7 +72,7 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
         let flag = false;
         if (isEquip) {
             MGSTool.clickBtn("4");
-            if (this.data.equipCards.length >= 6) {
+            if (this.data.equipCards.length >= TowerConfigConstants.maxEquip) {
                 TipsManager.showTips(GameConfig.Language.getElement("Text_CardsFull").Value);
                 return;
             }
@@ -101,16 +98,15 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
         UIService.getUI(TowerShopUI).refreshItemsState();
     }
 
-
     /**
      * 买卡牌
      * @param cardID 卡牌ID
-     * @returns 
+     * @returns
      */
     private async buyCard(cardID: number) {
         MGSTool.clickBtn("6");
         if (!this._canBuyCard) {
-            TipsManager.showTips(GameConfig.Language.getElement("Text_TooFase").Value)
+            TipsManager.showTips(GameConfig.Language.getElement("Text_TooFase").Value);
             return;
         }
         const cfg = GameConfig.Tower.getElement(cardID);
@@ -131,9 +127,12 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
                 this._canBuyCard = true;
             }
         } else {
-            !checkFlag &&
-                TweenCommon.goldFailedShow(UIService.getUI(LobbyUI).goldTxt);
-            TipsManager.showTips(!checkFlag ? GameConfig.Language.getElement("Text_LessGold").Value : GameConfig.Language.getElement("Text_CardIsUnlock").Value)
+            !checkFlag && TweenCommon.goldFailedShow(UIService.getUI(LobbyUI).goldTxt);
+            TipsManager.showTips(
+                !checkFlag
+                    ? GameConfig.Language.getElement("Text_LessGold").Value
+                    : GameConfig.Language.getElement("Text_CardIsUnlock").Value
+            );
         }
     }
 
@@ -158,7 +157,5 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
     }
 
     /** 脚本被销毁时最后一帧执行完调用此函数 */
-    protected onDestroy(): void {
-
-    }
+    protected onDestroy(): void {}
 }
