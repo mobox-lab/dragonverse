@@ -1038,9 +1038,9 @@ export namespace GlobalData {
         /**特效挂载对象Guid */
         public static effectTargetGuid: string = "1F9255B4";
         /**特效相对位置 */
-        public static effectPos: number[] = [0, 0, 89];
+        public static effectPos: number[] = [0, 0, 95];
         /**特效相对位置 */
-        public static effectScale: number[] = [0.6, 0.6, 0.6];
+        public static effectScale: number[] = [0.8, 0.8, 0.8];
         /**普通附魔表 id范围 */
         public static normalEnchantIdRange: number[] = [1, 42];
         /**特殊附魔 id范围 */
