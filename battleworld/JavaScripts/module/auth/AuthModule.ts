@@ -207,7 +207,7 @@ addGMCommand(
                     gold: 0,
                     goldAdd: 0,
                     goldRed: 0,
-                    killCnt: 0,
+                    killCnt: undefined,
                     killNum: 0,
                     killed: 0,
                     level: 0,
@@ -477,7 +477,7 @@ interface PetSimulatorStatistic {
     user_id: string;
     address: string;
     nickname: string;
-    device_id?: string;
+    device_id: string;
     /**
      * 上线时间.
      */
@@ -712,18 +712,22 @@ type AutoFillProps = {
     user_id: string;
     address: string;
     nickname: string;
-    device_id?: string;
+    device_id: string;
 }
 
 /**
  * 待填充的 宠物模拟器 统计信息.
  */
-type PetSimulatorStatisticNeedFill = Omit<PetSimulatorStatistic, keyof AutoFillProps>;
+type PetSimulatorStatisticNeedFill = {
+    [K in keyof Omit<PetSimulatorStatistic, keyof AutoFillProps>]: NonNullable<PetSimulatorStatistic[K]>;
+};
 
 /**
  * 待填充的 无限乱斗 统计信息.
  */
-type BattleWorldStatisticNeedFill = Omit<BattleWorldStatistic, keyof AutoFillProps>;
+type BattleWorldStatisticNeedFill = {
+    [K in keyof Omit<BattleWorldStatistic, keyof AutoFillProps>]: NonNullable<BattleWorldStatistic[K]>;
+};
 
 //#endregion
 
@@ -1603,7 +1607,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
             address: d.holdAddress,
             sceneName: "pet",
-            data: undefined,
+            data: {
+                ...statistic,
+                user_id: userId,
+                address: d.holdAddress,
+                nickname: d.holdNickName,
+                device_id: "",
+            },
         };
 
         const respInJson = await this.correspondHandler<QueryResp>(
@@ -1622,13 +1632,21 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
             address: d.holdAddress,
             sceneName: "fight",
-            data: undefined,
+            data: {
+                ...statistic,
+                user_id: userId,
+                address: d.holdAddress,
+                nickname: d.holdNickName,
+                device_id: "",
+            },
         };
 
         const respInJson = await this.correspondHandler<QueryResp>(
             requestParam,
             AuthModuleS.RELEASE_STATISTIC_REPORT_URL,
             AuthModuleS.TEST_STATISTIC_REPORT_URL,
+            false,
+            false,
         );
 
         return respInJson.message === "success";
