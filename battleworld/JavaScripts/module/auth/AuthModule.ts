@@ -154,6 +154,88 @@ addGMCommand(
 );
 
 addGMCommand(
+    "report ps statistic | Auth",
+    "void",
+    undefined,
+    (player) => {
+        Log4Ts.log(AuthModuleS, `report ps rank data...`);
+        mwext.ModuleService.getModule(AuthModuleS)
+            .reportPetSimulatorStatistic(player.userId,
+                {
+                    diamond: 0,
+                    diamondAdd: 0,
+                    diamondRed: 0,
+                    gold_1: 0,
+                    gold_1_add: 0,
+                    gold_1_red: 0,
+                    gold_2: 0,
+                    gold_2_add: 0,
+                    gold_2_red: 0,
+                    gold_3: 0,
+                    gold_3_add: 0,
+                    gold_3_red: 0,
+                    login: 0,
+                    logout: 0,
+                    online: 0,
+                    pet: [],
+                    petAdd: 0,
+                    petCnt: 0,
+                    petMax: 0,
+                    staMax: 0,
+                    staPotAdd: 0,
+                    staPotCnt: 0,
+                    staRed: 0,
+                    stamina: 0,
+                })
+            .then(() => {
+                Log4Ts.log(AuthModuleS, `report ps rank data success.`);
+            });
+    },
+    undefined,
+    "Root",
+);
+
+addGMCommand(
+    "report bw statistic | Auth",
+    "void",
+    undefined,
+    (player) => {
+        Log4Ts.log(AuthModuleS, `report bw rank data...`);
+        mwext.ModuleService.getModule(AuthModuleS)
+            .reportBattleWorldStatistic(player.userId,
+                {
+                    gold: 0,
+                    goldAdd: 0,
+                    goldRed: 0,
+                    killCnt: undefined,
+                    killNum: 0,
+                    killed: 0,
+                    level: 0,
+                    login: 0,
+                    logout: 0,
+                    lvAdd: 0,
+                    lvRed: 0,
+                    online: 0,
+                    pvpCnt: 0,
+                    staMax: 0,
+                    staPotAdd: 0,
+                    staPotCnt: 0,
+                    staRed: 0,
+                    stamina: 0,
+                    tail: "",
+                    weapon: "",
+                    wing: "",
+                },
+            )
+            .then(() => {
+                Log4Ts.log(AuthModuleS, `report ps rank data success.`);
+            });
+    },
+    undefined,
+    "Root",
+);
+
+addGMCommand(
     "refresh sensitive data | Auth",
     "void",
     undefined,
@@ -201,11 +283,23 @@ type ReqRegulatorType = "temp-token" | "stamina" | "currency";
 
 //#region Param Interface
 /**
- * 一般用户数据查询请求参数.
+ * 一般用户相关请求参数.
  */
 interface UserDataQueryReq {
     userId: string;
     sceneId: string;
+}
+
+/**
+ * 一般用户统计相关请求参数.
+ * @desc 如果某统计条目实际数据为内容是 ConfigId 的数组.
+ * @desc 而上报时的类型为 string. 则应该转为 `"id-名称",("id-名称")...`.
+ */
+interface UserStatisticReq<S extends object>
+    extends UserDataQueryReq {
+    address: string;
+    sceneName: "pet" | "fight";
+    data: S;
 }
 
 /**
@@ -376,6 +470,265 @@ interface UserDragonRespData {
     }[];
 }
 
+/**
+ * 宠物模拟器 统计信息.
+ */
+interface PetSimulatorStatistic {
+    user_id: string;
+    address: string;
+    nickname: string;
+    device_id: string;
+    /**
+     * 上线时间.
+     */
+    login: number;
+    /**
+     * 下线时间.
+     */
+    logout: number;
+    /**
+     * 本次在线时长.
+     */
+    online: number;
+    /**
+     * 当前体力.
+     */
+    stamina: number;
+    /**
+     * 体力上限.
+     */
+    staMax: number;
+    /**
+     * 本次体力消耗.
+     */
+    staRed: number;
+    /**
+     * 体力药水使用次数.
+     */
+    staPotCnt: number;
+    /**
+     * 体力药水增加体力.
+     */
+    staPotAdd: number;
+    /**
+     * 当前钻石.
+     */
+    diamond: number;
+    /**
+     * 本次钻石消耗.
+     */
+    diamondRed: number;
+    /**
+     * 本次钻石获取.
+     */
+    diamondAdd: number;
+    /**
+     * 本次世界 1 当前值.
+     */
+    gold_1: number;
+    /**
+     * 本次世界 1 消耗值.
+     */
+    gold_1_red: number;
+    /**
+     * 本次世界 1 增加值.
+     */
+    gold_1_add: number;
+    /**
+     * 本次世界 2 当前值.
+     */
+    gold_2: number;
+    /**
+     * 本次世界 2 消耗值.
+     */
+    gold_2_red: number;
+    /**
+     * 本次世界 2 增加值.
+     */
+    gold_2_add: number;
+    /**
+     * 本次世界 3 当前值.
+     */
+    gold_3: number;
+    /**
+     * 本次世界 3 消耗值.
+     */
+    gold_3_red: number;
+    /**
+     * 本次世界 3 增加值.
+     */
+    gold_3_add: number;
+    /**
+     * 本次增加宠物数量.
+     */
+    petAdd: number;
+    /**
+     * 当前宠物数量.
+     */
+    petCnt: number;
+    /**
+     * 最强战力.
+     */
+    petMax: number;
+    pet: PetSimulatorStatisticPetObj[];
+}
+
+/**
+ * 宠物模拟器 统计信息 宠物对象.
+ */
+interface PetSimulatorStatisticPetObj {
+    /**
+     * 这个字段唯一，规则不定.
+     */
+    petkey: string;
+    /**
+     * 宠物 Id.
+     */
+    petId: number;
+    /**
+     * Config Id.
+     */
+    proId: number;
+    name: string;
+    attack: number;
+    /**
+     * 当前状态，销毁、存在.
+     */
+    status: string;
+    /**
+     * 创建时间.
+     */
+    create: number;
+    /**
+     * 更新时间.
+     * 任何触发以上属性更新的操作都应更新这个时间.
+     */
+    update: number;
+    /**
+     * 附魔信息.
+     */
+    enchanted: string;
+}
+
+/**
+ * 无限乱斗 统计信息.
+ */
+interface BattleWorldStatistic {
+    user_id: string;
+    address: string;
+    nickname: string;
+    device_id: string;
+
+    /**
+     * 上线时间.
+     */
+    login: number;
+    /**
+     * 下线时间.
+     */
+    logout: number;
+    /**
+     * 本次在线时长.
+     */
+    online: number;
+    /**
+     * 当前体力.
+     */
+    stamina: number;
+    /**
+     * 体力上限.
+     */
+    staMax: number;
+    /**
+     * 本次体力消耗.
+     */
+    staRed: number;
+    /**
+     * 体力药水使用次数.
+     */
+    staPotCnt: number;
+    /**
+     * 体力药水增加体力.
+     */
+    staPotAdd: number;
+    /**
+     * 当前金币值.
+     */
+    gold: number;
+    /**
+     * 本次消耗值.
+     */
+    goldRed: number;
+    /**
+     * 本次增加值.
+     */
+    goldAdd: number;
+    /**
+     * 已解锁的武器，array 也行.
+     */
+    weapon: string;
+    /**
+     * 已解锁的翅膀，array 也行.
+     */
+    wing: string;
+    /**
+     * 已解锁的拖尾，array 也行.
+     */
+    tail: string;
+    /**
+     * 当前段位分.
+     */
+    level: number;
+    /**
+     * 本次段位分减少.
+     */
+    lvRed: number;
+    /**
+     * 本次段位分增加.
+     */
+    lvAdd: number;
+    /**
+     * 本次击杀数量， 含小丑.
+     */
+    killCnt: number;
+    /**
+     * 本次击杀数量，不包含小丑.
+     */
+    killNum: number;
+    /**
+     * 本次被击杀.
+     */
+    killed: number;
+    /**
+     * 本次参战次数.
+     */
+    pvpCnt: number;
+}
+
+/**
+ * 自动填充属性.
+ */
+type AutoFillProps = {
+    user_id: string;
+    address: string;
+    nickname: string;
+    device_id: string;
+}
+
+/**
+ * 待填充的 宠物模拟器 统计信息.
+ */
+type PetSimulatorStatisticNeedFill = {
+    [K in keyof Omit<PetSimulatorStatistic, keyof AutoFillProps>]: NonNullable<PetSimulatorStatistic[K]>;
+};
+
+/**
+ * 待填充的 无限乱斗 统计信息.
+ */
+type BattleWorldStatisticNeedFill = {
+    [K in keyof Omit<BattleWorldStatistic, keyof AutoFillProps>]: NonNullable<BattleWorldStatistic[K]>;
+};
+
 //#endregion
 
 export default class AuthModuleData extends JModuleData {
@@ -403,6 +756,9 @@ export default class AuthModuleData extends JModuleData {
 
     @Decorator.persistence()
     public holdAddress: string;
+
+    @Decorator.persistence()
+    public lastVisitSceneId: string;
 }
 
 /**
@@ -582,6 +938,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly B_W_RANK_REPORT_URI = "/pge-game/rank/fight/update";
 
     /**
+     * 汇报 统计信息 Uri.
+     * @private
+     */
+    private static readonly STATISTIC_REPORT_URI = "/pge-game/rank/fight/update";
+
+    /**
      * 查询 用户 抓根宝 信息 Uri.
      * @private
      */
@@ -720,6 +1082,20 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     private static get RELEASE_B_W_RANK_REPORT_URL() {
         return this.RELEASE_P12_DOMAIN + this.B_W_RANK_REPORT_URI;
+    }
+
+    /**
+     * 测试用 汇报 游戏统计信息 Url.
+     */
+    private static get TEST_STATISTIC_REPORT_URL() {
+        return this.TEST_P12_DOMAIN + this.STATISTIC_REPORT_URI;
+    }
+
+    /**
+     * 发布用 汇报 游戏统计信息 Url.
+     */
+    private static get RELEASE_STATISTIC_REPORT_URL() {
+        return this.RELEASE_P12_DOMAIN + this.STATISTIC_REPORT_URI;
     }
 
     /**
@@ -1079,7 +1455,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: CatchDragonReq = {
             userId,
-            sceneId: await this.querySceneId(userId),
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
             dragonPalId,
             catchTimeStamp,
             attributionType: "game",
@@ -1192,7 +1568,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         );
     }
 
-    public async reportBattleWorldRankData(playerId: number, grade: number, gradeOriginalPower: number, round: number) {
+    public async reportBattleWorldRankData(playerId: number,
+                                           grade: number,
+                                           gradeOriginalPower: number,
+                                           round: number) {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrEmpty(userId)) return;
 
@@ -1219,6 +1598,58 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.RELEASE_B_W_RANK_REPORT_URL,
             AuthModuleS.TEST_B_W_RANK_REPORT_URL,
         );
+    }
+
+    public async reportPetSimulatorStatistic(userId: string, statistic: PetSimulatorStatisticNeedFill) {
+        const d = mwext.DataCenterS.getData(userId, AuthModuleData);
+        const requestParam: UserStatisticReq<PetSimulatorStatistic> = {
+            userId,
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
+            address: d.holdAddress,
+            sceneName: "pet",
+            data: {
+                ...statistic,
+                user_id: userId,
+                address: d.holdAddress,
+                nickname: d.holdNickName,
+                device_id: "",
+            },
+        };
+
+        const respInJson = await this.correspondHandler<QueryResp>(
+            requestParam,
+            AuthModuleS.RELEASE_STATISTIC_REPORT_URL,
+            AuthModuleS.TEST_STATISTIC_REPORT_URL,
+        );
+
+        return respInJson.message === "success";
+    }
+
+    public async reportBattleWorldStatistic(userId: string, statistic: BattleWorldStatisticNeedFill) {
+        const d = mwext.DataCenterS.getData(userId, AuthModuleData);
+        const requestParam: UserStatisticReq<BattleWorldStatistic> = {
+            userId,
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
+            address: d.holdAddress,
+            sceneName: "fight",
+            data: {
+                ...statistic,
+                user_id: userId,
+                address: d.holdAddress,
+                nickname: d.holdNickName,
+                device_id: "",
+            },
+        };
+
+        const respInJson = await this.correspondHandler<QueryResp>(
+            requestParam,
+            AuthModuleS.RELEASE_STATISTIC_REPORT_URL,
+            AuthModuleS.TEST_STATISTIC_REPORT_URL,
+            false,
+            false,
+        );
+
+        return respInJson.message === "success";
     }
 
     private queryUserId(playerId: number): string | undefined {
@@ -1329,11 +1760,15 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     @noReply()
-    public net_initPlayerData(nickName: string) {
-        this.currentData.holdUserId = this.currentPlayer.userId;
-        this.currentData.holdPlayerId = this.currentPlayerId;
-        this.currentData.holdNickName = nickName;
-        this.currentData.save(false);
+    public async net_initPlayerData(nickName: string) {
+        let data = this.currentData;
+        let userId = this.currentPlayer.userId;
+        let playerId = this.currentPlayerId;
+        data.holdUserId = userId;
+        data.holdPlayerId = playerId;
+        data.holdNickName = nickName;
+        data.lastVisitSceneId = await this.querySceneId(this.currentPlayer.userId);
+        data.save(false);
     }
 
     @noReply()

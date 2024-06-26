@@ -17,15 +17,3 @@ to = ['.\pet-simulator\JavaScripts\modules\auth\AuthModule.ts', '.\battleworld\J
 [[items]]
 from = '.\dragon-verse\JavaScripts\depend\area'
 to = ['.\pet-simulator\JavaScripts\depend\area']
-
-[[items]]
-from = '.\gamedesc-backup\dv\game.desc'
-to = ['.\dragon-verse\game.desc']
-
-[[items]]
-from = '.\gamedesc-backup\ps\game.desc'
-to = ['.\pet-simulator\game.desc']
-
-[[items]]
-from = '.\gamedesc-backup\bw\game.desc'
-to = ['.\battleworld\game.desc']
