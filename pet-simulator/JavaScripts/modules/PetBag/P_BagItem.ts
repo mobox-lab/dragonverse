@@ -156,14 +156,14 @@ export class PetBag_Item extends Pet_item_Generate {
         }
         if (isEquip) {
             // 装备
-            this.mPic_Equip_3.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+            // this.mPic_Equip_3.visibility = mw.SlateVisibility.SelfHitTestInvisible;
             // this.equipTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, 300)
             //     .onUpdate((obj) => {
             //         this.mPic_Equip_3.renderOpacity = obj.alpha;
             //     })
             //     .start();
             this.mPic_Equip_2.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-            this.mPic_Equip.visibility = mw.SlateVisibility.Collapsed;
+            // this.mPic_Equip.visibility = mw.SlateVisibility.Collapsed;
             this.setSelectVis(this.petData.I, isEquip);
         } else {
             // 卸载

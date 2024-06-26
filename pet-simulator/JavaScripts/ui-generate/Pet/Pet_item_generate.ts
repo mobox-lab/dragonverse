@@ -15,6 +15,13 @@ export default class Pet_item_Generate extends UIScript {
 		}
 		return this.mCanvas_Internal
 	}
+	private mPic_Equip_4_Internal: mw.Image
+	public get mPic_Equip_4(): mw.Image {
+		if(!this.mPic_Equip_4_Internal&&this.uiWidgetBase) {
+			this.mPic_Equip_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mPic_Equip_4') as mw.Image
+		}
+		return this.mPic_Equip_4_Internal
+	}
 	private mPic_Equip_Internal: mw.Image
 	public get mPic_Equip(): mw.Image {
 		if(!this.mPic_Equip_Internal&&this.uiWidgetBase) {

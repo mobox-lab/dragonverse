@@ -667,6 +667,8 @@ export namespace GlobalData {
 
 		public static itemHoverOffsetX = 10;
 		public static itemHoverOffsetY = 60;
+		/** 悬浮时描边颜色 根据稀有度 */
+		public static itemHoverLineColor = ["#55585A", "#1F3196", "#652187", "#7B672C", "#881A01"];
     }
 
     /**收集图鉴 */
