@@ -113,7 +113,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 				eggId: cfg.id,
 				petId,
 			}
-            this.net_addPetWithMissingInfo(playerId, petId, cfg.AreaID, undefined, { logName: "P_开蛋", logObj });
+            this.net_addPetWithMissingInfo(playerId, petId, cfg.AreaID, undefined, { logName: "P_Hatch", logObj });
             return petId;
         }
         return null;
