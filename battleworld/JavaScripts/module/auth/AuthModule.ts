@@ -9,6 +9,7 @@ import { addGMCommand } from "mw-god-mod";
 import { Regulator } from "gtoolkit";
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
+import UUID from "pure-uuid";
 
 //#region TTD & GodMod
 
@@ -1082,7 +1083,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @type {string}
      * @private
      */
-    private static readonly TEST_TOKEN = "KFSRJa8wkLfQ/iQ8USfrps0yCqeSarrT0YLu6WxEmFt09EjO0O85Y0bRWPJNRI7gqcQQoaYgxPUcHoI/4HxeTA==";
+    private static readonly TEST_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHg4NTBGZTI3ZjYzZGUxMmI2MDFDMDIwM2I2MmQ3OTk1NDYyRDFEMUJjIiwibm9uY2UiOiJ2eUpaZW42NEttTlFSSmN4QyIsImlhdCI6MTcxOTQ4MjMyMiwiZXhwIjoxNzIwMDg3MTIyfQ.fRzT2iE71D7V0uPKjsfzAsOB-8Nr8lEd0pcDAMghbdw";
 
     /**
      * 测试用 getToken Url.
@@ -1568,10 +1569,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: ConsumeCurrencyReq = {
             sceneId: await this.querySceneId(userId),
-            orderId: "",
-            consumeId: 0,
+            orderId: new UUID(4).toString(),
+            consumeId: 1,
             buyCnt: count,
-            timestamp: Date.now() / 1e3,
+            timestamp: Math.ceil(Date.now() / 1e3),
             price,
         };
 
