@@ -232,7 +232,8 @@ export class PetBagModuleData extends Subdata {
         this.bornRandomEnchant(this.bagContainerNew[index], type);
 		if(logInfo?.logName) {
 			Object.assign(logInfo.logObj, {
-				petBuffs: this.bagContainerNew[index].p.b
+				petBuffs: this.bagContainerNew[index].p.b,
+				petKey: index,
 			});  
 			utils.logP12Info(logInfo.logName, logInfo.logObj)
 		}

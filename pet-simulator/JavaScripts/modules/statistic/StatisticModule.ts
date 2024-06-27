@@ -2,6 +2,9 @@ import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModul
 import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
+import { PetBagModuleData } from "../PetBag/PetBagModuleData";
+import { AuthModuleS, PetSimulatorStatisticNeedFill } from "../auth/AuthModule";
 
 export default class PsStatisticModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -273,6 +276,39 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 d.playerLoginRecord.pop();
             }
             Gtk.updateModuleData(PsStatisticModuleData.name, player.userId, d);
+			const playerData = DataCenterS.getData(player.playerId, PetSimulatorPlayerModuleData);
+            const petBagData = DataCenterS.getData(player.playerId, PetBagModuleData);
+			const login = d.playerLoginRecord[0][0] || 0;
+			const logout = d.playerLoginRecord[0][1] || 0;
+			const online = logout - login;
+			const curPets = petBagData.sortBag();
+			const statisticData: PetSimulatorStatisticNeedFill = {
+				diamond: playerData.diamond,
+				diamondAdd: 0,
+				diamondRed: 0,
+				gold_1: playerData.gold,
+				gold_1_add: 0,
+				gold_1_red: 0,
+				gold_2: playerData.gold2,
+				gold_2_add: 0,
+				gold_2_red: 0,
+				gold_3: playerData.gold3,
+				gold_3_add: 0,
+				gold_3_red: 0,
+				login,
+				logout,
+				online,
+				pet: [],
+				petAdd: 0,
+				petCnt: curPets?.length ?? 0,
+				petMax: 0,
+				staMax: 0,
+				staPotAdd: 0,
+				staPotCnt: 0,
+				staRed: 0,
+				stamina: 0,
+			}
+			ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData)
         });
 
     }
