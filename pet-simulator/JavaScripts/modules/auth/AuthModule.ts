@@ -1580,7 +1580,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.RELEASE_CONSUME_CURRENCY_URL,
             AuthModuleS.TEST_CONSUME_CURRENCY_URL,
             true,
-            false,
+            true,
             userId,
         );
 
