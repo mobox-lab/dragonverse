@@ -59,15 +59,15 @@ addGMCommand(
 );
 
 addGMCommand(
-    "refresh dragon ball | Auth",
+    "refresh p12 bag | Auth",
     "void",
     undefined,
     (player) => {
-        Log4Ts.log(AuthModuleS, `query dragon ball...`);
+        Log4Ts.log(AuthModuleS, `query user bag...`);
         mwext.ModuleService.getModule(AuthModuleS)
             .queryUserP12Bag(player.userId)
             .then((value) => {
-                Log4Ts.log(AuthModuleS, `query dragon ball success.`, `user dragon ball: ${JSON.stringify(value)}`);
+                Log4Ts.log(AuthModuleS, `query dragon ball success.`, `user bag: ${JSON.stringify(value)}`);
             });
     },
     undefined,
