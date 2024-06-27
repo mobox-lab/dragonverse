@@ -1,4 +1,4 @@
-﻿import { DebugConsole } from "debug_console";
+import { DebugConsole } from "debug_console";
 import { Bubble } from "module_bubble";
 // import { GMBasePanel } from "module_gm";
 import { GlobalEnum } from "../../const/Enum";
@@ -433,7 +433,7 @@ addGMCommand(
     "string",
     async (value: string) => {
         let arr: AreaData[] = [];
-        await getPoints(arr, "3A86A988");
+        await getPoints(arr, "3B548E5D");
         let str = JSON.stringify(arr);
         console.log("areaDatas:" + str);
     },
