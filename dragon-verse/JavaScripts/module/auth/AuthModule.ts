@@ -46,6 +46,19 @@ addGMCommand(
 );
 
 addGMCommand(
+    "consume currency | Auth",
+    "number",
+    undefined,
+    (player, params) => {
+        mwext.ModuleService.getModule(AuthModuleS).consumeCurrency(
+            player.userId,
+            params === 0 ? 1 : params);
+    },
+    undefined,
+    "Root",
+);
+
+addGMCommand(
     "refresh dragon ball | Auth",
     "void",
     undefined,
@@ -322,9 +335,9 @@ interface GetTokenReq {
 }
 
 /**
- * 查询 P12 mdbl 币数量 请求参数.
+ * 查询 P12 mdbl 币数量 返回值.
  */
-interface QueryCurrencyResp {
+interface QueryCurrencyRespData {
     /**
      * 钱包地址.
      */
@@ -337,7 +350,42 @@ interface QueryCurrencyResp {
      */
     balance: string,
 
-    chainId: number
+    chainId?: number
+}
+
+/**
+ * 消费 P12 mdbl 币 请求参数.
+ */
+interface ConsumeCurrencyReq {
+    sceneId: string;
+
+    /**
+     * 全局唯一订单 id.
+     */
+    orderId: string;
+
+    /**
+     * 暂时先传 1 或 2.
+     */
+    consumeId: number;
+
+    /**
+     * 购买次数.
+     */
+    buyCnt: number;
+
+    /**
+     * 时间戳. s
+     */
+    timestamp: number;
+
+    action?: number;
+
+    /**
+     * 总价值.
+     * @desc 未定.
+     */
+    price?: number;
 }
 
 /**
@@ -731,16 +779,26 @@ export type BattleWorldStatisticNeedFill = {
 export default class AuthModuleData extends JModuleData {
     /**
      * 已经发布的正式数据版本号.
-     * 以版本发布时间 升序排列.
-     * RV.
+     * @desc 以版本发布时间 升序排列.
+     * @desc 定义为符号 RV.
+     * @desc bitwise readonly.
      */
-    public static readonly RELEASE_VERSIONS: number[] = [2024510151409];
+    protected get releasedVersions(): number[] {
+        return [
+            2024510151409,
+        ];
+    }
 
     /**
      * 版本升级办法.
      * UVM[n] : 从 RV[n] 升级到 RV[n+1] 的方法.
      */
-    public static readonly UPDATE_VERSION_METHOD: DataUpgradeMethod<AuthModuleData>[] = [];
+    protected get updateVersionMethod(): DataUpgradeMethod<this>[] {
+        return [
+            // (data) => {
+            // },
+        ];
+    }
 
     @Decorator.persistence()
     public holdUserId: string;
@@ -922,6 +980,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly GET_CURRENCY_URI = "/user-fund/balance";
 
     /**
+     * 消费货币 Uri.
+     */
+    private static readonly CONSUME_CURRENCY_URI = "/pge-game/consume";
+
+    /**
      * 汇报 宠物模拟器排行榜 Uri.
      * @private
      */
@@ -994,6 +1057,22 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     private static get RELEASE_GET_CURRENCY_URL() {
         return this.RELEASE_P12_DOMAIN + this.GET_CURRENCY_URI;
+    }
+
+    /**
+     * 测试用 消费货币 Url.
+     * @private
+     */
+    private static get TEST_CONSUME_CURRENCY_URL() {
+        return this.TEST_P12_DOMAIN + this.CONSUME_CURRENCY_URI;
+    }
+
+    /**
+     * 发布用 消费货币 Url.
+     * @private
+     */
+    private static get RELEASE_CONSUME_CURRENCY_URL() {
+        return this.RELEASE_P12_DOMAIN + this.CONSUME_CURRENCY_URI;
     }
 
     /**
@@ -1404,7 +1483,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private async queryCurrency(userId: string): Promise<void> {
-        const respInJson = await this.correspondHandler<QueryResp<QueryCurrencyResp>>(
+        const respInJson = await this.correspondHandler<QueryResp<QueryCurrencyRespData>>(
             undefined,
             AuthModuleS.RELEASE_GET_CURRENCY_URL,
             AuthModuleS.TEST_GET_CURRENCY_URL,
@@ -1419,8 +1498,43 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return;
         }
 
-        let count = respInJson.data?.balance;
-        this.setCurrency(userId, count);
+        let currentCurrency = respInJson.data?.balance;
+        this.setCurrency(userId, currentCurrency);
+    }
+
+    public async consumeCurrency(userId: string, count: number, price?: number): Promise<boolean> {
+        const d = mwext.DataCenterS.getData(userId, AuthModuleData);
+        if (!d) {
+            Log4Ts.error(AuthModuleS, `player data of user ${userId} is not exist.`);
+            return false;
+        }
+
+        const requestParam: ConsumeCurrencyReq = {
+            sceneId: await this.querySceneId(userId),
+            orderId: "",
+            consumeId: 0,
+            buyCnt: count,
+            timestamp: Date.now() / 1e3,
+            price,
+        };
+
+        const respInJson = await this.correspondHandler<QueryResp<QueryCurrencyRespData>>(
+            requestParam,
+            AuthModuleS.RELEASE_CONSUME_CURRENCY_URL,
+            AuthModuleS.TEST_CONSUME_CURRENCY_URL,
+            true,
+            false,
+            userId,
+        );
+
+        if (respInJson.code !== 200) {
+            Log4Ts.error(AuthModuleS, `consume currency failed. ${JSON.stringify(respInJson)}`);
+            if (respInJson.code === 401) this.onTokenExpired(userId);
+            return;
+        }
+
+        let currentCurrency = respInJson.data?.balance;
+        this.setCurrency(userId, currentCurrency);
     }
 
     public async queryUserDragonBall(playerId: number): Promise<DragonBallRespData> {
@@ -1598,6 +1712,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     public async reportPetSimulatorStatistic(userId: string, statistic: PetSimulatorStatisticNeedFill) {
         const d = mwext.DataCenterS.getData(userId, AuthModuleData);
+        if (!d) {
+            Log4Ts.error(AuthModuleS, `player data of user ${userId} is not exist.`);
+            return false;
+        }
+
         const requestParam: UserStatisticReq<PetSimulatorStatistic> = {
             userId,
             sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
@@ -1623,6 +1742,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     public async reportBattleWorldStatistic(userId: string, statistic: BattleWorldStatisticNeedFill) {
         const d = mwext.DataCenterS.getData(userId, AuthModuleData);
+        if (!d) {
+            Log4Ts.error(AuthModuleS, `player data of user ${userId} is not exist.`);
+            return false;
+        }
+
         const requestParam: UserStatisticReq<BattleWorldStatistic> = {
             userId,
             sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
@@ -1674,7 +1798,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                                                 testUrl: string,
                                                 silence: boolean = false,
                                                 useEncrypt: boolean = true,
-                                                authUserId?: string) {
+                                                authUserId?: string): Promise<D> {
         const body = useEncrypt ?
             {encryptData: this.getSecret(JSON.stringify(reqParam ?? {}))} :
             (reqParam ?? {});
