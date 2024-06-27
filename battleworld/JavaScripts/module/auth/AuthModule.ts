@@ -65,7 +65,7 @@ addGMCommand(
     (player) => {
         Log4Ts.log(AuthModuleS, `query dragon ball...`);
         mwext.ModuleService.getModule(AuthModuleS)
-            .queryUserDragonBall(player.playerId)
+            .queryUserP12Bag(player.userId)
             .then((value) => {
                 Log4Ts.log(AuthModuleS, `query dragon ball success.`, `user dragon ball: ${JSON.stringify(value)}`);
             });
@@ -448,23 +448,36 @@ interface UpdateBattleWorldRankDataReq extends UserDataQueryReq {
 }
 
 /**
- * 抓根宝 返回值.
+ * 查询 用户 P12 背包 返回值.
  */
-interface DragonBallRespData {
+interface UserP12BagRespData {
+    data: UserP12BagItem[];
+}
+
+/**
+ * 用户 P12 背包物品 数据.
+ * @desc resId 含义 注册于: {@link P12ItemIdMap}
+ */
+interface UserP12BagItem {
     /**
-     * 未领取.
+     * P12 Item Id.
      */
-    unclaim: number;
+    resId: number
+
+    /**
+     * 可使用.
+     */
+    unuse: number,
 
     /**
      * 总发放.
      */
-    total: number;
+    total: number,
 
     /**
-     * 未使用.
+     * 未领取.
      */
-    unUsed: number;
+    unclaim: number
 }
 
 /**
@@ -486,6 +499,26 @@ interface CatchDragonReq extends UserDataQueryReq {
      * @desc 游戏或场景
      */
     attributionType: "pge" | "game" | string;
+}
+
+/**
+ * 抓取龙 返回值.
+ */
+interface CatchDragonRespData {
+    /**
+     * 未领取.
+     */
+    unclaim: number,
+
+    /**
+     * 总发放.
+     */
+    total: number,
+
+    /**
+     * 可使用.
+     */
+    unUsed: number
 }
 
 /**
@@ -774,6 +807,30 @@ export type BattleWorldStatisticNeedFill = {
     [K in keyof Omit<BattleWorldStatistic, keyof AutoFillProps>]: NonNullable<BattleWorldStatistic[K]>;
 };
 
+/**
+ * P12 物品 ID 映射表.
+ */
+export const P12ItemIdMap = {
+    /**
+     * 精灵球
+     */
+    CaptureBall: 10001,
+
+    /**
+     * 龙蛋
+     */
+    DragonEgg: 10002,
+
+    /**
+     * 体力药水
+     */
+    StaminaPotion: 10003,
+};
+
+/**
+ * P12 物品键名.
+ */
+export type P12ItemKeys = keyof typeof P12ItemIdMap;
 //#endregion
 
 export default class AuthModuleData extends JModuleData {
@@ -1003,10 +1060,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly STATISTIC_REPORT_URI = "/pge-game/rank/fight/update";
 
     /**
-     * 查询 用户 抓根宝 信息 Uri.
+     * 查询 用户 P12 背包 Uri.
      * @private
      */
-    private static readonly QUERY_DRAGON_BALL_DATA_URI = "/pge-game/dragon-verse-capture-ball/get-dragon-capture-ball";
+    private static readonly QUERY_USER_P12_BAG_URI = "/pge-game/dragon-verse-assets/game-user-asset";
 
     /**
      * 请求 抓龙 Uri.
@@ -1076,17 +1133,17 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     /**
-     * 测试用 查询 用户 抓根宝 信息 Url.
+     * 测试用 查询 用户 P12 背包 Url.
      */
-    private static get TEST_QUERY_DRAGON_BALL_DATA_URL() {
-        return this.TEST_P12_DOMAIN + this.QUERY_DRAGON_BALL_DATA_URI;
+    private static get TEST_QUERY_USER_P12_BAG_URL() {
+        return this.TEST_P12_DOMAIN + this.QUERY_USER_P12_BAG_URI;
     }
 
     /**
      * 发布用 查询 用户 抓根宝 信息 Url.
      */
-    private static get RELEASE_QUERY_DRAGON_BALL_DATA_URL() {
-        return this.RELEASE_P12_DOMAIN + this.QUERY_DRAGON_BALL_DATA_URI;
+    private static get RELEASE_QUERY_USER_P12_BAG_URL() {
+        return this.RELEASE_P12_DOMAIN + this.QUERY_USER_P12_BAG_URI;
     }
 
     /**
@@ -1530,36 +1587,35 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         if (respInJson.code !== 200) {
             Log4Ts.error(AuthModuleS, `consume currency failed. ${JSON.stringify(respInJson)}`);
             if (respInJson.code === 401) this.onTokenExpired(userId);
-            return;
+            return false;
         }
 
         let currentCurrency = respInJson.data?.balance;
         this.setCurrency(userId, currentCurrency);
+
+        return respInJson.message === "success";
     }
 
-    public async queryUserDragonBall(playerId: number): Promise<DragonBallRespData> {
-        const userId = this.queryUserId(playerId);
-        if (Gtk.isNullOrUndefined(userId)) return;
-
+    public async queryUserP12Bag(userId: string): Promise<UserP12BagRespData | undefined> {
         const requestParam: UserDataQueryReq = {
             userId,
             sceneId: await this.querySceneId(userId),
         };
 
-        const respInJson = await this.correspondHandler<QueryResp<DragonBallRespData>>(
+        const respInJson = await this.correspondHandler<QueryResp<UserP12BagRespData>>(
             requestParam,
-            AuthModuleS.RELEASE_QUERY_DRAGON_BALL_DATA_URL,
-            AuthModuleS.TEST_QUERY_DRAGON_BALL_DATA_URL,
+            AuthModuleS.RELEASE_QUERY_USER_P12_BAG_URL,
+            AuthModuleS.TEST_QUERY_USER_P12_BAG_URL,
         );
 
-        return respInJson.data;
+        return respInJson?.data ?? undefined;
     }
 
     public async requestWebCatchDragon(
         playerId: number,
         dragonPalId: number,
         catchTimeStamp: number,
-    ): Promise<[boolean, DragonBallRespData]> {
+    ): Promise<[boolean, CatchDragonRespData]> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
@@ -1571,7 +1627,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             attributionType: "game",
         };
 
-        const respInJson = await this.correspondHandler<QueryResp<DragonBallRespData>>(
+        const respInJson = await this.correspondHandler<QueryResp<CatchDragonRespData>>(
             requestParam,
             AuthModuleS.RELEASE_CATCH_DRAGON_URL,
             AuthModuleS.TEST_CATCH_DRAGON_URL,

@@ -9,7 +9,7 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import YoactArray from "../../depend/yoact/YoactArray";
 import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import { EventDefine } from "../../const/EventDefine";
-import { AuthModuleS } from "../auth/AuthModule";
+import { AuthModuleS, P12ItemIdMap } from "../auth/AuthModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
@@ -97,7 +97,7 @@ export class HandbookItemUnique implements IUnique {
 }
 
 export class DragonHandbookUnique implements IUnique {
-	public categoryId: number;
+    public categoryId: number;
     public id: number;
     public cnt: number;
 
@@ -121,10 +121,10 @@ export class DragonHandbookUnique implements IUnique {
 
     //#region IUnique
     public move(updated: this): boolean {
-        Log4Ts.log(DragonHandbookUnique, "move Update:", JSON.stringify(updated)); 
-		this.id = updated.id;
-		this.categoryId = updated.categoryId;
-		this.cnt = updated.cnt;
+        Log4Ts.log(DragonHandbookUnique, "move Update:", JSON.stringify(updated));
+        this.id = updated.id;
+        this.categoryId = updated.categoryId;
+        this.cnt = updated.cnt;
         return true;
     }
 
@@ -556,21 +556,28 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
             `player entered. playerId: ${player.playerId}.`,
             `query user dragon ball...`);
         this.authModuleS
-            ?.queryUserDragonBall(player.playerId)
+            ?.queryUserP12Bag(player.userId)
             .then(value => {
-                    Log4Ts.log(BagModuleS,
-                        `query user dragon ball success.`,
-                        `playerId: ${player.playerId}.`,
-                        `value: ${JSON.stringify(value)}.`);
-                    this.setItem(
-                        player.playerId,
-                        GameServiceConfig.DRAGON_BALL_BAG_ID,
-                        value?.unUsed ?? 0);
+                    const count = value?.data
+                        ?.find(item => item.resId === P12ItemIdMap.CaptureBall)
+                        ?.unuse;
+                    if (count !== undefined) {
+                        Log4Ts.log(BagModuleS,
+                            `query user dragon ball success.`,
+                            `userId: ${player.userId}.`,
+                            `count: ${count}.`);
+                        this.setItem(
+                            player.playerId,
+                            GameServiceConfig.DRAGON_BALL_BAG_ID,
+                            count);
+                    } else {
+                        Log4Ts.warn(BagModuleS,
+                            `query user dragon ball failed. userId: ${player.userId}.`);
+                    }
                 },
             );
 
-        Log4Ts.log(undefined,
-            `query user dragon...`);
+        Log4Ts.log(undefined, `query user dragon...`);
         this.authModuleS.queryUserDragon(player.playerId)
             .then(value => {
                     Log4Ts.log(BagModuleS,
