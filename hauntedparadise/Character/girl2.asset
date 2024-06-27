@@ -1,5 +1,0 @@
-{
-	"CustomType": "shape|uppercloth|gloves|hair|shoe|slots|lowercloth",
-	"CustomData": "{\"realData\":\"[{\\\"apiName\\\":\\\"changeCharacter\\\",\\\"value\\\":\\\"AnimeFemale\\\",\\\"saveFileType\\\":\\\"Character\\\"},{\\\"apiName\\\":\\\"setHeadMesh\\\",\\\"value\\\":\\\"76618\\\",\\\"saveFileType\\\":\\\"Character\\\"},{\\\"apiName\\\":\\\"setUpperClothMesh\\\",\\\"value\\\":\\\"63953\\\",\\\"saveFileType\\\":\\\"UpperCloth\\\"},{\\\"apiName\\\":\\\"setLowerClothMesh\\\",\\\"value\\\":\\\"64333\\\",\\\"saveFileType\\\":\\\"LowerCloth\\\"},{\\\"apiName\\\":\\\"setGlovesMesh\\\",\\\"value\\\":\\\"75663\\\",\\\"saveFileType\\\":\\\"Gloves\\\"},{\\\"apiName\\\":\\\"setShoeMesh\\\",\\\"value\\\":\\\"64206\\\",\\\"saveFileType\\\":\\\"Shoe\\\"},{\\\"apiName\\\":\\\"setFrontHairMesh\\\",\\\"value\\\":\\\"64254\\\",\\\"saveFileType\\\":\\\"Hair\\\"},{\\\"apiName\\\":\\\"setBehindHairMesh\\\",\\\"value\\\":\\\"64259\\\",\\\"saveFileType\\\":\\\"Hair\\\"}]\",\"characterType\":\"AnimeFemale\",\"basicStance\":\"30274\",\"version\":\"2.1\"}",
-	"CustomSlot": ""
-}
