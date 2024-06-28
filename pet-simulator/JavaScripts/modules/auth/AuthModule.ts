@@ -507,14 +507,9 @@ interface CatchDragonReq extends UserDataQueryReq {
  */
 interface CatchDragonRespData {
     /**
-     * 未领取.
+     * 是否 抓取成功.
      */
-    unclaim: number,
-
-    /**
-     * 总发放.
-     */
-    total: number,
+    isCaptureSuccessful: boolean,
 
     /**
      * 可使用.
@@ -1622,10 +1617,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: CatchDragonReq = {
             userId,
-            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
             dragonPalId,
             catchTimeStamp,
             attributionType: "game",
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
         };
 
         const respInJson = await this.correspondHandler<QueryResp<CatchDragonRespData>>(

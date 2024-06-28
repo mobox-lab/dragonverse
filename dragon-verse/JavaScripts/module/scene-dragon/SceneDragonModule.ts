@@ -872,27 +872,30 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
 
         const randomSuccess: boolean = GToolkit.randomWeight([SceneDragon.successRateAlgo(item.id)()], 1) === 0;
         if (!randomSuccess) {
-            Log4Ts.log(SceneDragonModuleC, `catch fail. failed the success rate check.`);
+            Log4Ts.log(SceneDragonModuleC, `catch fail. failed the mw server success rate check.`);
             return Promise.resolve(false);
         }
 
         Log4Ts.log(SceneDragonModuleS, `request catch scene dragon in p12...`);
 
-        const [result, currentCount] =
+        const [result, resp] =
             (GameServiceConfig.isRelease || GameServiceConfig.isBeta) ? await this.authModuleS.requestWebCatchDragon(
                 currPlayerId,
                 item.getConfig().dragonPalId,
                 catchTime,
-            ) : [true, {unclaim: 0, total: 5, unUsed: 4}];
+            ) : [true, {isCaptureSuccessful: true, unUsed: 4}];
 
         if (result) {
-            if (!Gtk.isNullOrUndefined(currentCount?.unUsed)) this.bagModuleS
+            if (!resp.isCaptureSuccessful) {
+                Log4Ts.log(SceneDragonModuleC, `catch fail. failed the p12 server success rate check.`);
+                return Promise.resolve(false);
+            }
+
+            if (!Gtk.isNullOrUndefined(resp?.unUsed)) this.bagModuleS
                 ?.setItem(currPlayerId,
                     GameServiceConfig.DRAGON_BALL_BAG_ID,
-                    currentCount?.unUsed ?? 0);
-        }
+                    resp?.unUsed ?? 0);
 
-        if (result) {
             Log4Ts.log(SceneDragonModuleS, `catch success. item locked.`);
             this._syncLocker.set(syncKey, currPlayerId);
             return Promise.resolve(true);
