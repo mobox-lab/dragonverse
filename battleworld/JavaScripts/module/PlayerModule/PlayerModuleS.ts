@@ -47,6 +47,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import Gtk, { GtkTypes } from "../../util/GToolkit";
 import { Utils } from "../../util/uitls";
 import EnumAttributeType = Attribute.EnumAttributeType;
+import { StatisticModuleS } from "../statistic/StatisticModule";
 
 /**玩家伤害信息 */
 export type THurtData = {
@@ -73,6 +74,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     private _fightingPlayerSet: Set<number> = new Set();
 
     private playerAttributeMap: Map<number, Attribute.AttributeValueObject> = new Map();
+
     private deadPlayer: Set<number> = new Set();
 
     onPlayerExpChanged: Action = new Action();
@@ -88,8 +90,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     private _shopS: ShopModuleS = null;
     private mMotion: MotionModuleS = null;
 
+    /** 数据统计模块 */
+    private _statistic: StatisticModuleS = null;
+
     /** 玩家加入战场门票 */
-    private playerTickets: Map<number, boolean> = new Map();
+    private _playerTickets: Map<number, boolean> = new Map();
 
     onStart() {
         this.mAttribute = ModuleService.getModule(AttributeModuleS);
@@ -99,6 +104,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this.buffModuleS = ModuleService.getModule(BuffModuleS);
         this._shopS = ModuleService.getModule(ShopModuleS);
         this.mMotion = ModuleService.getModule(MotionModuleS);
+        this._statistic = ModuleService.getModule(StatisticModuleS);
 
         TimeUtil.setInterval(this.onLogicUpdate.bind(this), Constants.LogicFrameInterval);
 
@@ -219,6 +225,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         switch (attrType) {
             case Attribute.EnumAttributeType.money: {
                 endValue = MathUtil.clamp(endValue, 0, Globaldata.playerMaxMoney);
+                const deltaValue = endValue - curValue;
+                if (deltaValue > 0) {
+                    this._statistic.setAttributeChange(pId, "goldAdd", deltaValue);
+                }
+                if (deltaValue < 0) {
+                    this._statistic.setAttributeChange(pId, "goldRed", -deltaValue);
+                }
                 // 同步给属性同步模块
                 EventManager.instance.call(EAttributeEvents_S.attr_change_s, pId, attrType, endValue);
             }
@@ -284,7 +297,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this.left_playerProxy(playerID);
 
         // 清除玩家门票
-        this.playerTickets.delete(playerID);
+        this._playerTickets.delete(playerID);
     }
 
     /**初始化玩家代理类 */
@@ -1016,6 +1029,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             // 同步给属性同步模块
             EventManager.instance.call(EAttributeEvents_S.attr_change_s, playerID, type, data.getAttrValue(type));
         }
+        if (type === Attribute.EnumAttributeType.money) {
+            this._statistic.setAttributeChange(playerID, "goldRed", value);
+        }
     }
 
     /**
@@ -1051,9 +1067,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             if (money + value >= Globaldata.playerMaxMoney) {
                 data.setAttrValue(type, Globaldata.playerMaxMoney, true);
 
+                this._statistic.setAttributeChange(playerID, "goldAdd", Globaldata.playerMaxMoney - money);
                 EventManager.instance.call(ENotice_Events_S.NoticeEvent_TipMsg_S, playerID, 156);
             } else {
                 curAttrValue += value;
+                this._statistic.setAttributeChange(playerID, "goldAdd", value);
                 data.setAttrValue(type, curAttrValue, true);
 
                 // if (value != 0) {
@@ -1865,7 +1883,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
      * @param {number} winner -- 击杀者数据
      * @param {number} loser -- 死亡者数据
      */
-    public logKill(winner: number[], loser: number[]) {
+    public logKill(winner: (string | number)[], loser: (string | number)[]) {
         // [[胜利者Id,击杀前rank,击杀后rank,今日获得]，[失败者Id, 被杀前rank,被杀厚rank,今日获得]]
         Utils.logP12Info("P_Kill", [winner, loser]);
     }
@@ -2312,8 +2330,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         let attackerRankCfg = GameConfig.Rank.getElement(attackerRank);
         let deadRank = deadId ? this.getRankLevel(deadId) : undefined;
         let deadRankCfg = deadId ? GameConfig.Rank.getElement(deadRank) : undefined;
-        const attackerLogList = [attackerId];
-        const deadIdLogList = [deadId];
+        const attackerLogList: (string | number)[] = [Player.getPlayer(attackerId)?.userId];
+        const deadIdLogList: (string | number)[] = [Player.getPlayer(deadId)?.userId];
 
         if (!attackerRankCfg ||
             deadRank !== undefined && !deadRankCfg ||
@@ -2345,6 +2363,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                 deadIdLogList.push(this.getPlayerData(deadId).getAttrValue(EnumAttributeType.dayRankScore));
             }
         }
+        if (deadId) {
+            this._statistic.setAttributeChange(deadId, "killed", 1);
+            this._statistic.setAttributeChange(attackerId, "killNum", 1);
+        }
+        this._statistic.setAttributeChange(attackerId, "killCnt", 1);
         this.logKill(attackerLogList, deadIdLogList);
     }
 
@@ -2412,11 +2435,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             // 如果 变化值 是负值，减少属性值
             this.reducePlayerAttr(playerId, Attribute.EnumAttributeType.dayRankScore, Math.abs(deltaScore));
             calCurrentScore = Math.round(Math.max(0, currentScore + deltaScore));
+            this._statistic.setAttributeChange(playerId, "lvRed", -deltaScore);
         } else {
             // 如果 变化值 是正值，增加属性值
             const calDeltaScore = Math.round(Math.min(deltaScore, Globaldata.maxRankScore - data.getAttrValue(Attribute.EnumAttributeType.dayRankScore)));
             this.addPlayerAttr(playerId, Attribute.EnumAttributeType.dayRankScore, calDeltaScore);
             calCurrentScore = Math.round(currentScore + calDeltaScore);
+            this._statistic.setAttributeChange(playerId, "lvAdd", calDeltaScore);
         }
         // 设置新的属性值
         data.setAttrValue(Attribute.EnumAttributeType.rankScore, calCurrentScore);
@@ -2452,7 +2477,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
      * @private
      */
     private initPlayerTicket(playerId: number) {
-        this.playerTickets.set(playerId, true);
+        this._playerTickets.set(playerId, true);
     }
 
     /**
@@ -2478,7 +2503,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
     @Decorator.noReply()
     public net_payRankTicket() {
         const playerId = this.currentPlayerId;
-        this.playerTickets.set(playerId, false);
+        this._playerTickets.set(playerId, false);
         this.payRankTicket(playerId);
     }
 
@@ -2488,7 +2513,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
      */
     public async net_getRankTicket(): Promise<boolean> {
         const playerId = this.currentPlayerId;
-        return this.playerTickets.get(playerId) ?? true;
+        return this._playerTickets.get(playerId) ?? true;
     }
 
     /**
@@ -2496,12 +2521,14 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
      * @param {number} playerId
      */
     public logJoinBattle(playerId: number) {
+        const player = Player.getPlayer(playerId);
+        if (!player) return;
         const playerData = this.getPlayerData(playerId);
         const energies = ModuleService.getModule(EnergyModuleS).getPlayerEnergy(playerId);
         const rank = playerData.getAttrValue(EnumAttributeType.rankScore);
         const dayRank = playerData.getAttrValue(EnumAttributeType.dayRankScore);
         // [playerId,花费体力,剩余体力,体力上线,当前rank分,今日已获得rank分]
-        Utils.logP12Info("P_JoinBattle", [playerId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING, energies[0], energies[1], rank, dayRank]);
+        Utils.logP12Info("P_JoinBattle", [player.userId, GameServiceConfig.STAMINA_COST_ENTER_FIGHTING, energies[0], energies[1], rank, dayRank]);
     }
 
     @Decorator.noReply()
@@ -2522,6 +2549,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                 this.addInvincibleBuff(playerId);
             }
             this.logJoinBattle(playerId);
+            this._statistic.setAttributeChange(playerId, "pvpCnt", 1);
         } else {
             Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.enterGame, false);
         }
