@@ -297,11 +297,18 @@ type ReqRegulatorType = "temp-token" | "stamina" | "currency";
 
 //#region Param Interface
 /**
+ * 一般用户场景相关请求参数.
+ */
+interface UserSceneReq {
+    sceneId: string;
+    sceneName: string;
+}
+
+/**
  * 一般用户相关请求参数.
  */
-interface UserDataQueryReq {
+interface UserDataReq extends UserSceneReq {
     userId: string;
-    sceneId: string;
 }
 
 /**
@@ -310,7 +317,7 @@ interface UserDataQueryReq {
  * @desc 而上报时的类型为 string. 则应该转为 `id-名称,(id-名称)...`.
  */
 interface UserStatisticReq<S extends object>
-    extends UserDataQueryReq {
+    extends UserDataReq {
     address: string;
     sceneName: "pet" | "fight";
     data: S;
@@ -357,9 +364,7 @@ interface QueryCurrencyRespData {
 /**
  * 消费 P12 mdbl 币 请求参数.
  */
-interface ConsumeCurrencyReq {
-    sceneId: string;
-
+interface ConsumeCurrencyReq extends UserSceneReq {
     /**
      * 全局唯一订单 id.
      */
@@ -422,7 +427,7 @@ interface QueryStaminaLimitRespData {
 /**
  * 汇报 宠物模拟器排行榜 请求参数.
  */
-interface UpdatePetSimulatorRankDataReq extends UserDataQueryReq {
+interface UpdatePetSimulatorRankDataReq extends UserDataReq {
     userName: string;
     userAvatar: string;
     petName: string;
@@ -439,7 +444,7 @@ interface UpdatePetSimulatorRankDataReq extends UserDataQueryReq {
 /**
  * 汇报 无限乱斗排行榜 请求参数.
  */
-interface UpdateBattleWorldRankDataReq extends UserDataQueryReq {
+interface UpdateBattleWorldRankDataReq extends UserDataReq {
     userName: string;
     userAvatar: string;
     grade: number;
@@ -484,7 +489,7 @@ interface UserP12BagItem {
 /**
  * 抓取龙 请求参数.
  */
-interface CatchDragonReq extends UserDataQueryReq {
+interface CatchDragonReq extends UserDataReq {
     /**
      * DragonId.
      */
@@ -866,7 +871,7 @@ export default class AuthModuleData extends JModuleData {
     public holdAddress: string;
 
     @Decorator.persistence()
-    public lastVisitSceneId: string;
+    public lastVisitSceneInfo: [string, string];
 }
 
 /**
@@ -997,6 +1002,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @private
      */
     private static readonly TIME_TOLERATE: number = 1e3 * 10;
+
+    private static readonly INVALID_SCENE_ID = "INVALID_SCENE_ID";
+
+    private static readonly INVALID_SCENE_NAME = "INVALID_SCENE_NAME";
 
     /**
      * 获取 MW 临时 token Uri.
@@ -1562,8 +1571,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return false;
         }
 
+        const [sceneId, sceneName] = await this.querySceneInfo(userId);
         const requestParam: ConsumeCurrencyReq = {
-            sceneId: await this.querySceneId(userId),
+            sceneId,
+            sceneName,
             orderId: new UUID(4).toString(),
             consumeId: 1,
             buyCnt: count,
@@ -1593,9 +1604,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     public async queryUserP12Bag(userId: string): Promise<UserP12BagRespData | undefined> {
-        const requestParam: UserDataQueryReq = {
+        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+        const requestParam: UserDataReq = {
             userId,
-            sceneId: await this.querySceneId(userId),
+            sceneId,
+            sceneName,
         };
 
         const respInJson = await this.correspondHandler<QueryResp<UserP12BagRespData>>(
@@ -1615,12 +1628,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
+        const [sceneId, sceneName] = await this.querySceneInfo(userId);
         const requestParam: CatchDragonReq = {
             userId,
             dragonPalId,
             catchTimeStamp,
             attributionType: "game",
-            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
+            sceneId,
+            sceneName,
         };
 
         const respInJson = await this.correspondHandler<QueryResp<CatchDragonRespData>>(
@@ -1641,9 +1656,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
-        const requestParam: UserDataQueryReq = {
+        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+        const requestParam: UserDataReq = {
             userId,
-            sceneId: await this.querySceneId(userId),
+            sceneId,
+            sceneName,
         };
 
         const respInJson = await this.correspondHandler<QueryResp<UserDragonRespData>>(
@@ -1656,9 +1673,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     public async queryRegisterStaminaLimit(userId: string) {
-        const requestParam: UserDataQueryReq = {
+        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+        const requestParam: UserDataReq = {
             userId,
-            sceneId: await this.querySceneId(userId),
+            sceneId,
+            sceneName,
         };
 
         const respInJson = await this.correspondHandler<QueryResp<QueryStaminaLimitRespData>>(
@@ -1706,9 +1725,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const player = Player.getPlayer(playerId);
         const userName = this.getPlayerData(player)?.holdNickName ?? player.nickname;
         const userAvatar = player["avatarUrl"];
+        const [sceneId, sceneName] = await this.querySceneInfo(userId);
         const requestParam: UpdatePetSimulatorRankDataReq = {
             userId,
-            sceneId: await this.querySceneId(userId),
+            sceneId,
+            sceneName,
             userName,
             userAvatar,
             petName,
@@ -1740,9 +1761,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const player = Player.getPlayer(playerId);
         const userName = player.nickname;
         const userAvatar = player["avatarUrl"];
+        const [sceneId, sceneName] = await this.querySceneInfo(userId);
         const requestParam: UpdateBattleWorldRankDataReq = {
             userId,
-            sceneId: await this.querySceneId(userId),
+            sceneId,
+            sceneName,
             userName,
             userAvatar,
             grade,
@@ -1771,7 +1794,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: UserStatisticReq<PetSimulatorStatistic> = {
             userId,
-            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneInfo[0],
             address: d.holdAddress,
             sceneName: "pet",
             data: {
@@ -1801,7 +1824,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: UserStatisticReq<BattleWorldStatistic> = {
             userId,
-            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneInfo[0],
             address: d.holdAddress,
             sceneName: "fight",
             data: {
@@ -1835,14 +1858,16 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return userId;
     }
 
-    private async querySceneId(userId: string): Promise<string> {
-        if (!GameServiceConfig.isBeta && !GameServiceConfig.isRelease) return "INVALID_SCENE_ID";
-        return ((
-            await mw.TeleportService.asyncGetPlayerRoomInfo(userId).catch((e) => {
-                Log4Ts.error(AuthModuleS, e);
-                return Promise.resolve(undefined as mw.RoomInfo);
-            })
-        )?.sceneId ?? "INVALID_SCENE_ID");
+    private async querySceneInfo(userId: string): Promise<[string, string]> {
+        if (!GameServiceConfig.isBeta && !GameServiceConfig.isRelease) {
+            return [AuthModuleS.INVALID_SCENE_ID, AuthModuleS.INVALID_SCENE_NAME];
+        }
+        const roomInfo = await mw.TeleportService.asyncGetPlayerRoomInfo(userId).catch((e) => {
+            Log4Ts.error(AuthModuleS, e);
+            return Promise.resolve(undefined as mw.RoomInfo);
+        });
+        if (roomInfo) return [roomInfo.sceneId, roomInfo.sceneName];
+        else return [AuthModuleS.INVALID_SCENE_ID, AuthModuleS.INVALID_SCENE_NAME];
     }
 
     private async correspondHandler<D = object>(reqParam: object,
@@ -1939,7 +1964,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         data.holdUserId = userId;
         data.holdPlayerId = playerId;
         data.holdNickName = nickName;
-        data.lastVisitSceneId = await this.querySceneId(this.currentPlayer.userId);
+        data.lastVisitSceneInfo = await this.querySceneInfo(this.currentPlayer.userId);
         data.save(false);
     }
 
