@@ -1567,7 +1567,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             orderId: new UUID(4).toString(),
             consumeId: 1,
             buyCnt: count,
-            timestamp: Math.ceil(Date.now() / 1e3),
+            timestamp: Math.floor(Date.now() / 1e3),
             price,
         };
 

@@ -452,7 +452,7 @@ interface UpdateBattleWorldRankDataReq extends UserDataQueryReq {
  * 查询 用户 P12 背包 返回值.
  */
 interface UserP12BagRespData {
-    data: UserP12BagItem[];
+    list: UserP12BagItem[];
 }
 
 /**
@@ -1567,7 +1567,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             orderId: new UUID(4).toString(),
             consumeId: 1,
             buyCnt: count,
-            timestamp: Math.ceil(Date.now() / 1e3),
+            timestamp: Math.floor(Date.now() / 1e3),
             price,
         };
 
