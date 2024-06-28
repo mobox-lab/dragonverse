@@ -210,6 +210,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
 
     private _intervalHolder: Map<string, number> = new Map();
 
+    private _playerConsumeMap: Map<string, number> = new Map();
+
     private _authModuleS: AuthModuleS;
 
     private get authModuleS(): AuthModuleS | null {
@@ -319,6 +321,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
             }
             autoRecoveryHandler();
         });
+        this._playerConsumeMap.set(player.userId, 0);
     }
 
     /**
@@ -341,6 +344,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
 
         let needRefresh = d.energy >= (this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0);
         if (d.consume(cost) > 0 && needRefresh) d.lastRecoveryTime = firstTime;
+        const totalCost = this._playerConsumeMap.get(player.userId) ?? 0;
+        this._playerConsumeMap.set(player.userId, totalCost + cost);
 
         d.save(false);
         this.syncEnergyToClient(playerId, d.energy);
@@ -358,6 +363,19 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
 
     public syncEnergyToClient(playerId: number, energy: number, energyLimit?: number) {
         this.getClient(playerId)?.net_syncEnergy(energy, energyLimit);
+    }
+
+    /**
+     * 获取玩家体力
+     * @param {number} playerId  -- 玩家 id
+     * @returns {[number, number, number]} -- [当前体力, 最大体力, 本次消耗的体力]
+     */
+    public getPlayerEnergy(playerId: number): [number, number, number] {
+        const data = this.getPlayerData(playerId);
+        const player = Player.getPlayer(playerId);
+        const maxStamina = this.authModuleS.playerStaminaLimitMap.get(player?.userId) ?? 0;
+        const cost = this._playerConsumeMap.get(player?.userId) ?? 0;
+        return [data.energy, maxStamina, cost];
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

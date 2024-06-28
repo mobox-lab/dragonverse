@@ -17,6 +17,12 @@ type PlayerStatistic = {
     goldRed: number;
     goldAdd: number;
 
+    lvRed: number;
+    lvAdd: number;
+
+    killCnt: number;
+    killNum: number;
+    killed: number;
     pvpCnt: number;
 }
 
@@ -41,6 +47,11 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, BwStatisticModu
             staPotCnt: 0,
             goldRed: 0,
             goldAdd: 0,
+            lvRed: 0,
+            lvAdd: 0,
+            killCnt: 0,
+            killNum: 0,
+            killed: 0,
             pvpCnt: 0,
         });
         Log4Ts.log(StatisticModuleS, `init bw player ${player.userId} data...`);
@@ -53,48 +64,39 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, BwStatisticModu
         const playerS = ModuleService.getModule(PlayerModuleS);
         const statistic = this._playerStatistics.get(player.userId);
 
-        const {login, goldRed, goldAdd, staPotCnt, staPotAdd, pvpCnt} = statistic;
+        const {
+            login,
+            goldRed,
+            goldAdd,
+            staPotCnt,
+            staPotAdd,
+            lvRed,
+            lvAdd,
+            killCnt,
+            killed,
+            killNum,
+            pvpCnt,
+        } = statistic;
         const logout = Math.floor(Date.now() / 1000);
         const online = logout - login;
         const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
         const gold = playerS.getPlayerAttr(player.playerId, Attribute.EnumAttributeType.money);
+        const level = playerS.getPlayerAttr(player.playerId, Attribute.EnumAttributeType.rankScore);
         const {weapon, wing, tail} = this.getPlayerEquipment(player);
+
         Log4Ts.log(StatisticModuleS, `report bw player ${player.userId} data...`);
-        console.log("report: ", JSON.stringify({
-            gold,
-            goldAdd,
-            goldRed,
-            killCnt: 0,
-            killNum: 0,
-            killed: 0,
-            level: 0,
-            login,
-            logout,
-            lvAdd: 0,
-            lvRed: 0,
-            online,
-            pvpCnt,
-            staMax,
-            staPotAdd,
-            staPotCnt,
-            staRed,
-            stamina,
-            tail,
-            weapon,
-            wing,
-        }));
         authS.reportBattleWorldStatistic(player.userId, {
             gold,
             goldAdd,
             goldRed,
-            killCnt: 0,
-            killNum: 0,
-            killed: 0,
-            level: 0,
+            killCnt,
+            killNum,
+            killed,
+            level,
             login,
             logout,
-            lvAdd: 0,
-            lvRed: 0,
+            lvAdd,
+            lvRed,
             online,
             pvpCnt,
             staMax,
@@ -111,14 +113,35 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, BwStatisticModu
         });
     }
 
+    /**
+     * 获取已有装备
+     * @param {mw.Player} player
+     * @returns 武器，拖尾，翅膀
+     * @private
+     */
     private getPlayerEquipment(player: mw.Player) {
         const shopS = DataCenterS.getData(player.playerId, ShopModuleData);
         const weaponD = DataCenterS.getData(player.playerId, WeaponModuleData);
         const equips = {weapon: "", wing: "", tail: ""};
 
-        console.log('shopS: ', shopS.ownItemArr.toString());
         if (weaponD) {
             equips.weapon = weaponD.getOwnWeaponIds().map(item => `${item}-${GameConfig.Weapon.getElement(item).name1}`).toString();
+        }
+
+        if (shopS) {
+            const wings = [];
+            const tails = [];
+            shopS.ownItemArr.forEach(item => {
+                const itemInfo = GameConfig.Shop.getElement(item);
+                if (itemInfo.Type === 1) {
+                    wings.push(`${item}-${itemInfo.Name}`);
+                }
+                if (itemInfo.Type === 2) {
+                    tails.push(`${item}-${itemInfo.Name}`);
+                }
+            });
+            equips.wing = wings.toString();
+            equips.tail = tails.toString();
         }
 
         return equips;

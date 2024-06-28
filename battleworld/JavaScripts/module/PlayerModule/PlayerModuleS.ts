@@ -2363,6 +2363,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                 deadIdLogList.push(this.getPlayerData(deadId).getAttrValue(EnumAttributeType.dayRankScore));
             }
         }
+        if (deadId) {
+            this._statistic.setAttributeChange(deadId, "killed", 1);
+            this._statistic.setAttributeChange(attackerId, "killNum", 1);
+        }
+        this._statistic.setAttributeChange(attackerId, "killCnt", 1);
         this.logKill(attackerLogList, deadIdLogList);
     }
 
@@ -2430,11 +2435,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             // 如果 变化值 是负值，减少属性值
             this.reducePlayerAttr(playerId, Attribute.EnumAttributeType.dayRankScore, Math.abs(deltaScore));
             calCurrentScore = Math.round(Math.max(0, currentScore + deltaScore));
+            this._statistic.setAttributeChange(playerId, "lvRed", -deltaScore);
         } else {
             // 如果 变化值 是正值，增加属性值
             const calDeltaScore = Math.round(Math.min(deltaScore, Globaldata.maxRankScore - data.getAttrValue(Attribute.EnumAttributeType.dayRankScore)));
             this.addPlayerAttr(playerId, Attribute.EnumAttributeType.dayRankScore, calDeltaScore);
             calCurrentScore = Math.round(currentScore + calDeltaScore);
+            this._statistic.setAttributeChange(playerId, "lvAdd", calDeltaScore);
         }
         // 设置新的属性值
         data.setAttrValue(Attribute.EnumAttributeType.rankScore, calCurrentScore);
