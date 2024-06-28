@@ -452,7 +452,7 @@ interface UpdateBattleWorldRankDataReq extends UserDataQueryReq {
  * 查询 用户 P12 背包 返回值.
  */
 interface UserP12BagRespData {
-    data: UserP12BagItem[];
+    list: UserP12BagItem[];
 }
 
 /**

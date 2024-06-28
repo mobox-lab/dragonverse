@@ -13,8 +13,6 @@ import { AuthModuleS, P12ItemIdMap } from "../auth/AuthModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import Gtk from "../../util/GToolkit";
-import DragonHandbookItem from "../../ui/dragon-handbook/DragonHandbookItem";
 import { CompanionHelper } from "../companion/CompanionHelper";
 
 export class BagItemUnique implements IUnique {
@@ -558,7 +556,7 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
         this.authModuleS
             ?.queryUserP12Bag(player.userId)
             .then(value => {
-                    const count = value?.data
+                    const count = value?.list
                         ?.find(item => item.resId === P12ItemIdMap.CaptureBall)
                         ?.unuse;
                     if (count !== undefined) {
