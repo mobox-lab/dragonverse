@@ -15,6 +15,13 @@ export default class Online_shopItem_Generate extends UIScript {
 		}
 		return this.can_ShopItem_Internal
 	}
+	private btn_Item_Internal: mw.Button
+	public get btn_Item(): mw.Button {
+		if(!this.btn_Item_Internal&&this.uiWidgetBase) {
+			this.btn_Item_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_ShopItem/btn_Item') as mw.Button
+		}
+		return this.btn_Item_Internal
+	}
 	private img_Background_Internal: mw.Image
 	public get img_Background(): mw.Image {
 		if(!this.img_Background_Internal&&this.uiWidgetBase) {
@@ -110,6 +117,12 @@ export default class Online_shopItem_Generate extends UIScript {
 		
 		//按钮添加点击
 		
+		this.btn_Item.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btn_Item");
+		})
+		this.btn_Item.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 		this.btn_Up.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "btn_Up");
 		})

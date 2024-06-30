@@ -468,7 +468,7 @@ interface UserP12BagItem {
     /**
      * P12 Item Id.
      */
-    resId: number
+    resId: string,
 
     /**
      * 可使用.
@@ -815,17 +815,17 @@ export const P12ItemIdMap = {
     /**
      * 精灵球
      */
-    CaptureBall: 10001,
+    CaptureBall: "10001",
 
     /**
      * 龙蛋
      */
-    DragonEgg: 10002,
+    DragonEgg: "10002",
 
     /**
      * 体力药水
      */
-    StaminaPotion: 10003,
+    StaminaPotion: "10003",
 };
 
 /**
@@ -1087,7 +1087,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @type {string}
      * @private
      */
-    private static readonly TEST_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHg4NTBGZTI3ZjYzZGUxMmI2MDFDMDIwM2I2MmQ3OTk1NDYyRDFEMUJjIiwibm9uY2UiOiIzeVp0Snl3aVFMNzhZN09LNiIsInBsYXRmb3JtIjowLCJpYXQiOjE3MTk3MTY4MjksImV4cCI6MTcyMDMyMTYyOX0.HpNuVNZojei7zMw0wlnl-8V6Smysr6JghwxHIDZWqaw";
+    private static readonly TEST_TOKEN = "TEST_TOKEN";
 
     /**
      * 测试用 getToken Url.
@@ -1624,7 +1624,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             respInJson.data)
             return respInJson.data;
         else return undefined;
-
     }
 
     public async requestWebCatchDragon(
