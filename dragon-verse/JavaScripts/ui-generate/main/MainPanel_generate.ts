@@ -386,6 +386,27 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.textCow_Internal
 	}
+	private shopCanvas_Internal: mw.Canvas
+	public get shopCanvas(): mw.Canvas {
+		if(!this.shopCanvas_Internal&&this.uiWidgetBase) {
+			this.shopCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/shopCanvas') as mw.Canvas
+		}
+		return this.shopCanvas_Internal
+	}
+	private btnShop_Internal: mw.StaleButton
+	public get btnShop(): mw.StaleButton {
+		if(!this.btnShop_Internal&&this.uiWidgetBase) {
+			this.btnShop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/shopCanvas/btnShop') as mw.StaleButton
+		}
+		return this.btnShop_Internal
+	}
+	private textShop_Internal: mw.TextBlock
+	public get textShop(): mw.TextBlock {
+		if(!this.textShop_Internal&&this.uiWidgetBase) {
+			this.textShop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/shopCanvas/textShop') as mw.TextBlock
+		}
+		return this.textShop_Internal
+	}
 	private cnvInteract_Internal: mw.Canvas
 	public get cnvInteract(): mw.Canvas {
 		if(!this.cnvInteract_Internal&&this.uiWidgetBase) {
@@ -528,6 +549,10 @@ export default class MainPanel_Generate extends UIScript {
         this.btnCow.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
+        this.initLanguage(this.btnShop);
+        this.btnShop.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
         // 按钮
         
         this.btnJump.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
@@ -583,6 +608,9 @@ export default class MainPanel_Generate extends UIScript {
         
 	
         this.initLanguage(this.textCow)
+        
+	
+        this.initLanguage(this.textShop)
         
 	
         this.initLanguage(this.txtInteractContent)
@@ -645,6 +673,9 @@ export default class MainPanel_Generate extends UIScript {
         overrideTextBlockTextSetter(this.textCow);
         
 	
+        overrideTextBlockTextSetter(this.textShop);
+        
+	
         overrideTextBlockTextSetter(this.txtInteractContent);
         
 	
@@ -689,6 +720,9 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.btnCow);
         
 	
+        this.unregisterLanKey(this.btnShop);
+        
+	
         // 隐藏文本按钮多语言
         
         // 文本多语言
@@ -727,6 +761,9 @@ export default class MainPanel_Generate extends UIScript {
         
 	
         this.unregisterLanKey(this.textCow)
+        
+	
+        this.unregisterLanKey(this.textShop)
         
 	
         this.unregisterLanKey(this.txtInteractContent)

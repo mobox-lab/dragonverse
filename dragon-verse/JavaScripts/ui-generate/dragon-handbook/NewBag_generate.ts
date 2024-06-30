@@ -211,6 +211,34 @@ export default class NewBag_Generate extends UIScript {
 		}
 		return this.img_Light_Internal
 	}
+	private can_BallNum_Internal: mw.Canvas
+	public get can_BallNum(): mw.Canvas {
+		if(!this.can_BallNum_Internal&&this.uiWidgetBase) {
+			this.can_BallNum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/can_BallNum') as mw.Canvas
+		}
+		return this.can_BallNum_Internal
+	}
+	private img_BallNum_Internal: mw.Image
+	public get img_BallNum(): mw.Image {
+		if(!this.img_BallNum_Internal&&this.uiWidgetBase) {
+			this.img_BallNum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/can_BallNum/img_BallNum') as mw.Image
+		}
+		return this.img_BallNum_Internal
+	}
+	private img_DragonBall_Internal: mw.Image
+	public get img_DragonBall(): mw.Image {
+		if(!this.img_DragonBall_Internal&&this.uiWidgetBase) {
+			this.img_DragonBall_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/can_BallNum/img_DragonBall') as mw.Image
+		}
+		return this.img_DragonBall_Internal
+	}
+	private text_BallNum_Internal: mw.TextBlock
+	public get text_BallNum(): mw.TextBlock {
+		if(!this.text_BallNum_Internal&&this.uiWidgetBase) {
+			this.text_BallNum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/can_BallNum/text_BallNum') as mw.TextBlock
+		}
+		return this.text_BallNum_Internal
+	}
 	private infoCanvas_Internal: mw.Canvas
 	public get infoCanvas(): mw.Canvas {
 		if(!this.infoCanvas_Internal&&this.uiWidgetBase) {
@@ -259,34 +287,6 @@ export default class NewBag_Generate extends UIScript {
 			this.mBtnOpt_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/mBtnOpt') as mw.StaleButton
 		}
 		return this.mBtnOpt_Internal
-	}
-	private can_BallNum_Internal: mw.Canvas
-	public get can_BallNum(): mw.Canvas {
-		if(!this.can_BallNum_Internal&&this.uiWidgetBase) {
-			this.can_BallNum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/can_BallNum') as mw.Canvas
-		}
-		return this.can_BallNum_Internal
-	}
-	private img_BallNum_Internal: mw.Image
-	public get img_BallNum(): mw.Image {
-		if(!this.img_BallNum_Internal&&this.uiWidgetBase) {
-			this.img_BallNum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/can_BallNum/img_BallNum') as mw.Image
-		}
-		return this.img_BallNum_Internal
-	}
-	private img_DragonBall_Internal: mw.Image
-	public get img_DragonBall(): mw.Image {
-		if(!this.img_DragonBall_Internal&&this.uiWidgetBase) {
-			this.img_DragonBall_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/can_BallNum/img_DragonBall') as mw.Image
-		}
-		return this.img_DragonBall_Internal
-	}
-	private text_BallNum_Internal: mw.TextBlock
-	public get text_BallNum(): mw.TextBlock {
-		if(!this.text_BallNum_Internal&&this.uiWidgetBase) {
-			this.text_BallNum_Internal = this.uiWidgetBase.findChildByPath('MWCanvas_2147482460/infoCanvas/can_BallNum/text_BallNum') as mw.TextBlock
-		}
-		return this.text_BallNum_Internal
 	}
 	private mBtnClose_Internal: mw.StaleButton
 	public get mBtnClose(): mw.StaleButton {
@@ -358,6 +358,9 @@ export default class NewBag_Generate extends UIScript {
         
         // 文本控件
         
+        this.initLanguage(this.text_BallNum)
+        
+	
         this.initLanguage(this.mName)
         
 	
@@ -367,15 +370,15 @@ export default class NewBag_Generate extends UIScript {
         this.initLanguage(this.mDesc)
         
 	
-        this.initLanguage(this.text_BallNum)
-        
-	
         // 未暴露的文本控件
         
     }
 
     protected overrideTextSetter() {
         
+        overrideTextBlockTextSetter(this.text_BallNum);
+        
+	
         overrideTextBlockTextSetter(this.mName);
         
 	
@@ -383,9 +386,6 @@ export default class NewBag_Generate extends UIScript {
         
 	
         overrideTextBlockTextSetter(this.mDesc);
-        
-	
-        overrideTextBlockTextSetter(this.text_BallNum);
         
 	
     }
@@ -418,6 +418,9 @@ export default class NewBag_Generate extends UIScript {
         
         // 文本多语言
         
+        this.unregisterLanKey(this.text_BallNum)
+        
+	
         this.unregisterLanKey(this.mName)
         
 	
@@ -425,9 +428,6 @@ export default class NewBag_Generate extends UIScript {
         
 	
         this.unregisterLanKey(this.mDesc)
-        
-	
-        this.unregisterLanKey(this.text_BallNum)
         
 	
         // 隐藏文本多语言

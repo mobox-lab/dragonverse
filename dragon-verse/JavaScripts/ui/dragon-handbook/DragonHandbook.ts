@@ -139,16 +139,10 @@ export default class DragonHandbook extends NewBag_Generate {
                     this.mNum.text = `x${curDragon.cnt ? curDragon.cnt : 0}`;
                     Gtk.trySetVisibility(this.mBtnOpt, curDragon.cnt > 0 ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
                 }));
-
-                if (ForeignKeyIndexer.getInstance().isBagItemType(curSelectedDragon.id, BagTypes.Dragon)) {
-                    GToolkit.trySetVisibility(this.mBtnOpt, true);
-                    if (this._dragonModule.getCurrentShowupBagId() === curSelectedDragon.id) {
-                        this.showRestBtn(curSelectedDragon.id, true);
-                    } else {
-                        this.showFollowBtn(curSelectedDragon.id, true);
-                    }
+                if (this._dragonModule.getCurrentShowupBagId() === curSelectedDragon.id) {
+                    this.showRestBtn(curSelectedDragon.id, true);
                 } else {
-                    GToolkit.trySetVisibility(this.mBtnOpt, false);
+                    this.showFollowBtn(curSelectedDragon.id, true);
                 }
             });
         });

@@ -22,6 +22,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import SettingsPanel from "../../ui/settings/SettingsPanel";
 import { PlayerSettingModuleC } from "../player-setting/PlayerSettingModule";
 import { formatEther } from "@p12/viem";
+import P12ShopPanel from "../../ui/shop/P12ShopPanel";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -183,6 +184,10 @@ export class P_HudUI extends Hud_Generate {
             UIService.show(SettingsPanel);
         });
 
+        // P12 商城
+        this.mBtn_Onlinehsop.onClicked.add(() => {
+            UIService.show(P12ShopPanel);
+        });
 
     }
 
