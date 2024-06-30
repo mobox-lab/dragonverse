@@ -131,6 +131,12 @@ export default class Online_shop_Generate extends UIScript {
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_OnlineShop/TextBlock") as any);
 		
 	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_OnlineShop/can_MoboxChange/TextBlock_1") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_OnlineShop/can_MoboxChange/TextBlock_1_1") as any);
+		
+	
 
 	}
 	private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
