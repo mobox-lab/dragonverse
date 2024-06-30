@@ -344,6 +344,20 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.mBtn_skid_Internal
 	}
+	private mCanvas_Onlineshop_Internal: mw.Canvas
+	public get mCanvas_Onlineshop(): mw.Canvas {
+		if(!this.mCanvas_Onlineshop_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Onlineshop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Onlineshop') as mw.Canvas
+		}
+		return this.mCanvas_Onlineshop_Internal
+	}
+	private mBtn_Onlinehsop_Internal: mw.Button
+	public get mBtn_Onlinehsop(): mw.Button {
+		if(!this.mBtn_Onlinehsop_Internal&&this.uiWidgetBase) {
+			this.mBtn_Onlinehsop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_Onlineshop/mBtn_Onlinehsop') as mw.Button
+		}
+		return this.mBtn_Onlinehsop_Internal
+	}
 	private mCanvas_jumpRoom_Internal: mw.Canvas
 	public get mCanvas_jumpRoom(): mw.Canvas {
 		if(!this.mCanvas_jumpRoom_Internal&&this.uiWidgetBase) {
@@ -480,6 +494,12 @@ export default class Hud_Generate extends UIScript {
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_skid");
 		})
 		this.mBtn_skid.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.mBtn_Onlinehsop.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_Onlinehsop");
+		})
+		this.mBtn_Onlinehsop.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		this.jumpRoomBtn.onClicked.add(()=>{
