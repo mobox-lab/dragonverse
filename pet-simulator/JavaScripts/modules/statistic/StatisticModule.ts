@@ -1,9 +1,10 @@
-import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
+import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
+import { EnergyModuleS } from "../Energy/EnergyModule";
 import { PetBagModuleData } from "../PetBag/PetBagModuleData";
+import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { AuthModuleS, PetSimulatorStatisticNeedFill } from "../auth/AuthModule";
 
 export default class PsStatisticModuleData extends JModuleData {
@@ -78,7 +79,7 @@ export default class PsStatisticModuleData extends JModuleData {
         }
         return todayCounter;
     }
-
+ 
     public recordEnter(now: number) {
         ++this.playerEnteredCounterS;
         const records = this.playerLoginRecord;
@@ -243,7 +244,8 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-
+        // const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData)
+        // petStatisticData.resetConsumeData()
         const now = Date.now();
         const d = this.getPlayerData(player);
         d.recordEnter(now);
@@ -252,7 +254,23 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
+        console.log("======== onPlayerLeft  ========");  
         let now = Date.now();
+        const playerData = DataCenterS.getData(player, PetSimulatorPlayerModuleData)
+        const petBagData = DataCenterS.getData(player, PetBagModuleData)
+        const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData)
+        const energyS = ModuleService.getModule(EnergyModuleS);
+        const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
+        const playerConsumeData = {
+            diamondAdd: 0,
+            diamondRed: 0,
+            gold_1_add: 0,
+            gold_1_red: 0,
+            gold_2_add: 0,
+            gold_2_red: 0,
+            gold_3_add: 0,
+            gold_3_red: 0,
+        }
         Gtk.queryModuleData<{
             playerLoginRecord: [number, number][];
             playerElapsedTimeS: number;
@@ -263,38 +281,43 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 d.playerLoginRecord.pop();
             }
             Gtk.updateModuleData(PsStatisticModuleData.name, player.userId, d);
-            const playerData = DataCenterS.getData(player.playerId, PetSimulatorPlayerModuleData);
-            const petBagData = DataCenterS.getData(player.playerId, PetBagModuleData);
+            console.log(' playerData:', JSON.stringify(playerData)) 
+           
             const login = d.playerLoginRecord[0][0] || 0;
             const logout = d.playerLoginRecord[0][1] || 0;
             const online = logout - login;
-            const curPets = petBagData.sortBag();
+            const curPets =  [];
+            const petBagSortedItems =  []; 
             const statisticData: PetSimulatorStatisticNeedFill = {
-                diamond: playerData.diamond,
-                diamondAdd: 0,
-                diamondRed: 0,
-                gold_1: playerData.gold,
-                gold_1_add: 0,
-                gold_1_red: 0,
-                gold_2: playerData.gold2,
-                gold_2_add: 0,
-                gold_2_red: 0,
-                gold_3: playerData.gold3,
-                gold_3_add: 0,
-                gold_3_red: 0,
+                diamond: playerData?.diamond ?? 0,
+                diamondAdd: playerConsumeData?.diamondAdd ?? 0,
+                diamondRed: playerConsumeData?.diamondRed ?? 0,
+                gold_1: playerData?.gold ?? 0,
+                gold_1_add: playerConsumeData?.gold_1_add ?? 0,
+                gold_1_red: playerConsumeData?.gold_1_red ?? 0,
+                gold_2: playerData.gold2 ?? 0,
+                gold_2_add: playerConsumeData?.gold_2_add ?? 0,
+                gold_2_red: playerConsumeData?.gold_2_red ?? 0,
+                gold_3: playerData.gold3 ?? 0,
+                gold_3_add: playerConsumeData?.gold_3_add ?? 0,
+                gold_3_red: playerConsumeData?.gold_3_red ?? 0,
                 login,
                 logout,
                 online,
-                pet: [],
+                pet: curPets,
                 petAdd: 0,
-                petCnt: curPets?.length ?? 0,
+                petCnt: petBagSortedItems?.length ?? 0,
                 petMax: 0,
-                staMax: 0,
+                staMax,
                 staPotAdd: 0,
                 staPotCnt: 0,
-                staRed: 0,
-                stamina: 0,
+                staRed,
+                stamina,
             };
+            Log4Ts.log(
+                StatisticModuleS, 
+                " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData)
+            );
             ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData);
         });
     }
