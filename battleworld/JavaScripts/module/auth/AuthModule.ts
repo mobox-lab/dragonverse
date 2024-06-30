@@ -1087,7 +1087,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @type {string}
      * @private
      */
-    private static readonly TEST_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHg4NTBGZTI3ZjYzZGUxMmI2MDFDMDIwM2I2MmQ3OTk1NDYyRDFEMUJjIiwibm9uY2UiOiJ2eUpaZW42NEttTlFSSmN4QyIsImlhdCI6MTcxOTQ4MjMyMiwiZXhwIjoxNzIwMDg3MTIyfQ.fRzT2iE71D7V0uPKjsfzAsOB-8Nr8lEd0pcDAMghbdw";
+    private static readonly TEST_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHg4NTBGZTI3ZjYzZGUxMmI2MDFDMDIwM2I2MmQ3OTk1NDYyRDFEMUJjIiwibm9uY2UiOiIzeVp0Snl3aVFMNzhZN09LNiIsInBsYXRmb3JtIjowLCJpYXQiOjE3MTk3MTY4MjksImV4cCI6MTcyMDMyMTYyOX0.HpNuVNZojei7zMw0wlnl-8V6Smysr6JghwxHIDZWqaw";
 
     /**
      * 测试用 getToken Url.
@@ -1615,9 +1615,16 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             requestParam,
             AuthModuleS.RELEASE_QUERY_USER_P12_BAG_URL,
             AuthModuleS.TEST_QUERY_USER_P12_BAG_URL,
+            false,
+            true,
         );
 
-        return respInJson?.data ?? undefined;
+        if (respInJson &&
+            respInJson.message === "success" &&
+            respInJson.data)
+            return respInJson.data;
+        else return undefined;
+
     }
 
     public async requestWebCatchDragon(
