@@ -396,6 +396,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             let item = this.currentData.bagItemsByKey(element);
             if (item) {
                 item.p.a = atk;
+				this.currentData.updatePetStatistic(item);
             }
         }
         //找到最高的战力

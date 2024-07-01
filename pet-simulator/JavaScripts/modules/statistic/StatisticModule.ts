@@ -396,14 +396,14 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             d.playerElapsedTimeS += (d.playerLoginRecord[0][1] ?? now) - d.playerLoginRecord[0][0];
             if (d.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
                 d.playerLoginRecord.pop();
-            }
+            } 
             Gtk.updateModuleData(PsStatisticModuleData.name, player.userId, d);
             console.log(' playerData:', JSON.stringify(playerData)) 
            
-            const login = d.playerLoginRecord[0][0] || 0;
-            const logout = d.playerLoginRecord[0][1] || 0;
+            const login = Math.floor((d.playerLoginRecord[0][0] || 0) / 1000); // s
+            const logout = Math.floor((d.playerLoginRecord[0][1] || 0) / 1000);
             const online = logout - login;
-            const curPets =  [];
+            const curPets = petBagData.PetStatisticArr ?? [];
             const petBagSortedItems =  []; 
             const statisticData: PetSimulatorStatisticNeedFill = {
                 diamond: playerData?.diamond ?? 0,
