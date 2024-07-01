@@ -885,20 +885,19 @@ export class SceneDragonModuleS extends ModuleS<SceneDragonModuleC, SceneDragonM
                 catchTime,
             ) : [true, {isCaptureSuccessful: true, unUsed: 4}];
 
-        if (result) {
-            if (!resp.isCaptureSuccessful) {
-                Log4Ts.log(SceneDragonModuleC, `catch fail. failed the p12 server success rate check.`);
-                return Promise.resolve(false);
-            }
-
+        if (result !== undefined) {
             if (!Gtk.isNullOrUndefined(resp?.unUsed)) this.bagModuleS
                 ?.setItem(currPlayerId,
                     GameServiceConfig.DRAGON_BALL_BAG_ID,
                     resp?.unUsed ?? 0);
 
-            Log4Ts.log(SceneDragonModuleS, `catch success. item locked.`);
-            this._syncLocker.set(syncKey, currPlayerId);
-            return Promise.resolve(true);
+            if (!resp.isCaptureSuccessful) {
+                Log4Ts.log(SceneDragonModuleC, `catch fail. failed the p12 server success rate check.`);
+            } else {
+                Log4Ts.log(SceneDragonModuleS, `catch success. item locked.`);
+                this._syncLocker.set(syncKey, currPlayerId);
+            }
+            return Promise.resolve(resp.isCaptureSuccessful);
         } else {
             Log4Ts.log(SceneDragonModuleC, `catch fail. failed the web request.`);
             return Promise.resolve(false);
