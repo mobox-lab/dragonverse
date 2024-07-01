@@ -300,7 +300,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
 
                         delay = duration % refreshInterval;
                         d.lastRecoveryTime = now - delay;
-                        Log4Ts.log(EnergyModuleS, `add energy done. current is ${d.energy}`);
+                        Log4Ts.log(EnergyModuleS, `${player.playerId} add energy done. current is ${d.energy}`);
                         changed = true;
                     }
                     if (this._intervalHolder.has(player.userId)) mw.clearTimeout(this._intervalHolder.get(player.userId));

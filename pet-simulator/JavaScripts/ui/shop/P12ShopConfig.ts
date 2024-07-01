@@ -7,17 +7,17 @@ export type P12ShopItem = {
 }
 export const P12ShopConfig: P12ShopItem[] = [
     {
-        id: 1,
+        id: 1, // 仙豆
         name: "Online_shop001",
         value: "1000",
-        icon: "",
+        icon: "373504",
         description: "Online_shop002",
     },
     {
-        id: 2,
+        id: 2, // 精灵球
         name: "Online_shop003",
         value: "1000",
-        icon: "",
+        icon: "373564",
         description: "Online_shop004",
     },
 ];
