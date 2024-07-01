@@ -4,6 +4,7 @@ import { GlobalData } from "../../const/GlobalData";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { oTraceError } from "../../util/LogManager";
 import { stringToNumberArr, utils } from "../../util/uitls";
+import PsStatisticModuleData from "../statistic/StatisticModule";
 import { EnchantBuff } from "./EnchantBuff";
 
 export enum BagItemKey {
@@ -84,6 +85,39 @@ export class petInfoNew {
     }
 }
 
+/**
+ * 宠物模拟器 统计信息 宠物对象.
+ */
+interface PetSimulatorStatisticPetObj {
+    /**
+     * 背包 Key.
+     */
+    petkey: number;
+    /**
+     * Config Id.
+     */
+    proId: number;
+    name: string;
+    attack: number;
+    /**
+     * 当前状态，销毁、存在.
+     */
+    status: string;
+    /**
+     * 创建时间.
+     */
+    create: number;
+    /**
+     * 更新时间.
+     * 任何触发以上属性更新的操作都应更新这个时间.
+     */
+    update: number;
+    /**
+     * 附魔信息.
+     */
+    enchanted: string;
+}
+
 //物品容器
 //100-200 为宠物槽位
 export class PetBagModuleData extends Subdata {
@@ -106,6 +140,9 @@ export class PetBagModuleData extends Subdata {
 
     @Decorator.persistence()
     private bagContainerNew: { [key: number]: petItemDataNew } = {};
+
+    @Decorator.persistence()
+    private petStatisticMap: { [key: number]: PetSimulatorStatisticPetObj } = {};
 
     /**训练宠物集合 */
     @Decorator.persistence()
@@ -156,6 +193,21 @@ export class PetBagModuleData extends Subdata {
         return this.curEquipPet;
     }
 
+    /**宠物统计数据 */
+    public get PetStatisticArr(): PetSimulatorStatisticPetObj[] {
+        let arr: PetSimulatorStatisticPetObj[] = [];
+        const curPets = this.sortBag();
+		curPets.forEach((petInfo) => {
+			this.updatePetStatistic(petInfo, undefined, false);
+		})
+		for (let key in this.petStatisticMap) {
+			const obj = this.petStatisticMap[key];
+            if(obj) arr.push(obj);
+        }
+		Log4Ts.log(PetBagModuleData, " 宠物统计数据: ", JSON.stringify(arr));
+        return arr;
+    }
+
     get version(): number {
         return 5;
     }
@@ -178,8 +230,46 @@ export class PetBagModuleData extends Subdata {
             }
 
         }
+		if(this.petStatisticMap == null) this.petStatisticMap = {};
         this.save(false);
     }
+
+	/**更新宠物统计数据 - 新增宠物 */
+	public updatePetStatistic(petInfo: petItemDataNew, status?: "destroyed" | "exist", isUpdate = true) {
+		const key = petInfo?.k;
+		if(!key) {
+			Log4Ts.warn(PetBagModuleData, " 更新宠物统计数据 - key错误:", key);
+			return;
+		}
+		const now = Math.floor(Date.now() / 1000);
+		const buffs = Array.from(petInfo.p.b);
+		const enchanted: string[] = buffs?.length ? buffs.map((b) => {
+			const cfg = GameConfig.Enchants.getElement(b);
+			const name = cfg.Name;
+			return `${b}-${name}`
+		}): [];  // id-name arr
+		
+		const petStatistic: PetSimulatorStatisticPetObj = {
+			petkey: key,
+			proId: petInfo?.I ?? 0,
+			name: petInfo?.p?.n ?? "",
+			attack: petInfo?.p?.a ?? 0,
+			status: status ?? "exist",
+			create: now ?? 0,
+			update: now ?? 0,
+			enchanted: enchanted?.join(",") ?? "",
+		}
+		if(!this.petStatisticMap[key]) {
+			this.petStatisticMap[key] = petStatistic;
+		} else {
+			petStatistic.create = this.petStatisticMap[key].create;
+			if(!status) petStatistic.status = this.petStatisticMap[key].status;
+			if(!isUpdate) petStatistic.update = this.petStatisticMap[key].update;
+			this.petStatisticMap[key] = petStatistic;
+		}
+		Log4Ts.log(PetBagModuleData, " 更新宠物统计数据 petInfo:", JSON.stringify(petInfo) + " petStatistic:", JSON.stringify(petStatistic));
+		return petStatistic;
+	}
 
     public getFilteredDelAbleKeys(keys: number[], sortByAttack: boolean = false): number[] | undefined {
         if (keys.length == this.CurBagCapacity) return undefined;
@@ -198,16 +288,12 @@ export class PetBagModuleData extends Subdata {
         return this.bagContainerNew[key];
     }
 
-    setItem(key: number, item: petItemDataNew) {
-        this.bagContainerNew[key] = item;
-    }
-
     /**添加宠物背包元素
      * @param id 宠物表id
      * @param atk 宠物战力
      * @param name 宠物名字
      */
-    public addBagItem(id: number, atk: number, name: string, addTime?: number, logInfo?: { logObj: Object, logName: string }): boolean {
+    public addBagItem(id: number, atk: number, name: string, addTime: number | undefined, logInfo: { logObj: Object, logName: string } | undefined, playerID: number): boolean {
 
         // let index = this.getFirstEmptyIndex();
         // if (index == -1) {
@@ -237,6 +323,9 @@ export class PetBagModuleData extends Subdata {
 			});  
 			utils.logP12Info(logInfo.logName, logInfo.logObj)
 		}
+		this.updatePetStatistic(this.bagContainerNew[index]);
+		const statisticData = DataCenterS.getData(playerID, PsStatisticModuleData)
+		statisticData.recordAddPet();
         this.save(true);
         this.BagItemChangeAC.call(true, id, index);
         return true;
@@ -294,12 +383,15 @@ export class PetBagModuleData extends Subdata {
         this.newPetKey++;
         let index = this.newPetKey;
         this.bagContainerNew[index] = petData;
+		this.updatePetStatistic(this.bagContainerNew[index]);
+
         return true;
     }
 
     /**删除元素 */
     public removeBagItem(keys: number[]) {
-        keys.forEach((key) => {
+        keys.forEach(async (key) => {
+			await this.updatePetStatistic(this.bagContainerNew[key], "destroyed");
             delete this.bagContainerNew[key];
         });
     }
@@ -323,29 +415,8 @@ export class PetBagModuleData extends Subdata {
         }
         let type = GameConfig.PetARR.getElement(id).QualityType;
         this.bornRandomEnchant(this.bagContainerNew[index], type);
-
+		this.updatePetStatistic(this.bagContainerNew[index]);
         return true;
-    }
-
-    /**根据表id 获取item数量 */
-    private getBagItemNumById(id: number): number {
-        let num = 0;
-        for (let key in this.bagContainerNew) {
-            if (this.bagContainerNew[key].I == id) {
-                num++;
-            }
-        }
-        return num;
-    }
-
-    /**根据id 获取item所在的key */
-    private getBagItemKeyById(id: number): number {
-        for (let key in this.bagContainerNew) {
-            if (this.bagContainerNew[key].I == id) {
-                return Number(key);
-            }
-        }
-        return -1;
     }
 
     /**返回第一个空的索引，否则返回-1 */
@@ -500,6 +571,8 @@ export class PetBagModuleData extends Subdata {
             return false;
         }
         petData.p.n = name;
+		
+		this.updatePetStatistic(this.bagContainerNew[key]);
         this.save(true);
         return true;
     }
@@ -522,6 +595,8 @@ export class PetBagModuleData extends Subdata {
         item.p.b.length = 0;
         item.p.b = ids;
         item.enchantCnt++; 		// 已附魔次数++
+		this.updatePetStatistic(item);
+		this.save(true);
     }
 
     // 按照配置的 Weight 随机返回一个附魔词条id，
