@@ -50,6 +50,20 @@ export default class Online_Confirm_Generate extends UIScript {
 		}
 		return this.can_Item_Describe_Internal
 	}
+	private can_UnConfirm_Use_Internal: mw.Canvas
+	public get can_UnConfirm_Use(): mw.Canvas {
+		if(!this.can_UnConfirm_Use_Internal&&this.uiWidgetBase) {
+			this.can_UnConfirm_Use_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_UnConfirm_Use') as mw.Canvas
+		}
+		return this.can_UnConfirm_Use_Internal
+	}
+	private btn_UnConfirm_Use_Internal: mw.Button
+	public get btn_UnConfirm_Use(): mw.Button {
+		if(!this.btn_UnConfirm_Use_Internal&&this.uiWidgetBase) {
+			this.btn_UnConfirm_Use_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_UnConfirm_Use/btn_UnConfirm_Use') as mw.Button
+		}
+		return this.btn_UnConfirm_Use_Internal
+	}
 	private can_Confirm_Use_Internal: mw.Canvas
 	public get can_Confirm_Use(): mw.Canvas {
 		if(!this.can_Confirm_Use_Internal&&this.uiWidgetBase) {
@@ -64,19 +78,12 @@ export default class Online_Confirm_Generate extends UIScript {
 		}
 		return this.btn_Confirm_Use_Internal
 	}
-	private can_UnConfirm_Use_Internal: mw.Canvas
-	public get can_UnConfirm_Use(): mw.Canvas {
-		if(!this.can_UnConfirm_Use_Internal&&this.uiWidgetBase) {
-			this.can_UnConfirm_Use_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_UnConfirm_Use') as mw.Canvas
+	private text_Use_Internal: mw.TextBlock
+	public get text_Use(): mw.TextBlock {
+		if(!this.text_Use_Internal&&this.uiWidgetBase) {
+			this.text_Use_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Confirm_Use/btn_Confirm_Use/text_Use') as mw.TextBlock
 		}
-		return this.can_UnConfirm_Use_Internal
-	}
-	private btn_UnConfirm_Use_Internal: mw.Button
-	public get btn_UnConfirm_Use(): mw.Button {
-		if(!this.btn_UnConfirm_Use_Internal&&this.uiWidgetBase) {
-			this.btn_UnConfirm_Use_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_UnConfirm_Use/btn_UnConfirm_Use') as mw.Button
-		}
-		return this.btn_UnConfirm_Use_Internal
+		return this.text_Use_Internal
 	}
 	private mBtn_Close_Internal: mw.Button
 	public get mBtn_Close(): mw.Button {
@@ -103,16 +110,16 @@ export default class Online_Confirm_Generate extends UIScript {
 		
 		//按钮添加点击
 		
-		this.btn_Confirm_Use.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "btn_Confirm_Use");
-		})
-		this.btn_Confirm_Use.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
 		this.btn_UnConfirm_Use.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "btn_UnConfirm_Use");
 		})
 		this.btn_UnConfirm_Use.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.btn_Confirm_Use.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btn_Confirm_Use");
+		})
+		this.btn_Confirm_Use.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 		this.mBtn_Close.onClicked.add(()=>{
@@ -129,12 +136,21 @@ export default class Online_Confirm_Generate extends UIScript {
 		this.initLanguage(this.text_Number)
 		
 	
+		this.initLanguage(this.text_Use)
+		
+	
 		//文本多语言
 		
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/can_Shop_Item/can_Item_Icon/MWTextBlock_2147414466") as any);
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/can_Shop_Item/can_Item_Describe/TextBlock_1") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/can_UnConfirm_Use/btn_UnConfirm_Use/TextBlock_2") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/TextBlock") as any);
 		
 	
 

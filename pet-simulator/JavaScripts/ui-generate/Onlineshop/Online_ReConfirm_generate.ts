@@ -64,6 +64,27 @@ export default class Online_ReConfirm_Generate extends UIScript {
 		}
 		return this.text_UnConfirm_Use_Internal
 	}
+	private can_Confirming_Internal: mw.Canvas
+	public get can_Confirming(): mw.Canvas {
+		if(!this.can_Confirming_Internal&&this.uiWidgetBase) {
+			this.can_Confirming_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Confirming') as mw.Canvas
+		}
+		return this.can_Confirming_Internal
+	}
+	private btn_Confirming_Internal: mw.Button
+	public get btn_Confirming(): mw.Button {
+		if(!this.btn_Confirming_Internal&&this.uiWidgetBase) {
+			this.btn_Confirming_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Confirming/btn_Confirming') as mw.Button
+		}
+		return this.btn_Confirming_Internal
+	}
+	private text_Confirming_Internal: mw.TextBlock
+	public get text_Confirming(): mw.TextBlock {
+		if(!this.text_Confirming_Internal&&this.uiWidgetBase) {
+			this.text_Confirming_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Confirming/btn_Confirming/text_Confirming') as mw.TextBlock
+		}
+		return this.text_Confirming_Internal
+	}
 
 
 
@@ -94,6 +115,12 @@ export default class Online_ReConfirm_Generate extends UIScript {
 		this.btn_UnConfirm_Use.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
+		this.btn_Confirming.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btn_Confirming");
+		})
+		this.btn_Confirming.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
 
 		//按钮多语言
 		
@@ -105,9 +132,15 @@ export default class Online_ReConfirm_Generate extends UIScript {
 		this.initLanguage(this.text_UnConfirm_Use)
 		
 	
+		this.initLanguage(this.text_Confirming)
+		
+	
 		//文本多语言
 		
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/can_Item_Describe/TextBlock_1") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/TextBlock") as any);
 		
 	
 

@@ -22,20 +22,6 @@ export default class Online_shop_Generate extends UIScript {
 		}
 		return this.img_Background_Internal
 	}
-	private can_Close_Internal: mw.Canvas
-	public get can_Close(): mw.Canvas {
-		if(!this.can_Close_Internal&&this.uiWidgetBase) {
-			this.can_Close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_Close') as mw.Canvas
-		}
-		return this.can_Close_Internal
-	}
-	private btn_Close_Internal: mw.Button
-	public get btn_Close(): mw.Button {
-		if(!this.btn_Close_Internal&&this.uiWidgetBase) {
-			this.btn_Close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_Close/btn_Close') as mw.Button
-		}
-		return this.btn_Close_Internal
-	}
 	private can_Buy_Internal: mw.Canvas
 	public get can_Buy(): mw.Canvas {
 		if(!this.can_Buy_Internal&&this.uiWidgetBase) {
@@ -49,6 +35,27 @@ export default class Online_shop_Generate extends UIScript {
 			this.btn_Buy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_Buy/btn_Buy') as mw.Button
 		}
 		return this.btn_Buy_Internal
+	}
+	private text_Buy_Internal: mw.TextBlock
+	public get text_Buy(): mw.TextBlock {
+		if(!this.text_Buy_Internal&&this.uiWidgetBase) {
+			this.text_Buy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_Buy/btn_Buy/text_Buy') as mw.TextBlock
+		}
+		return this.text_Buy_Internal
+	}
+	private can_Close_Internal: mw.Canvas
+	public get can_Close(): mw.Canvas {
+		if(!this.can_Close_Internal&&this.uiWidgetBase) {
+			this.can_Close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_Close') as mw.Canvas
+		}
+		return this.can_Close_Internal
+	}
+	private btn_Close_Internal: mw.Button
+	public get btn_Close(): mw.Button {
+		if(!this.btn_Close_Internal&&this.uiWidgetBase) {
+			this.btn_Close_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_Close/btn_Close') as mw.Button
+		}
+		return this.btn_Close_Internal
 	}
 	private scr_ShopItem_Internal: mw.ScrollBox
 	public get scr_ShopItem(): mw.ScrollBox {
@@ -103,16 +110,16 @@ export default class Online_shop_Generate extends UIScript {
 		
 		//按钮添加点击
 		
-		this.btn_Close.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "btn_Close");
-		})
-		this.btn_Close.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
 		this.btn_Buy.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "btn_Buy");
 		})
 		this.btn_Buy.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.btn_Close.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btn_Close");
+		})
+		this.btn_Close.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 
@@ -120,6 +127,9 @@ export default class Online_shop_Generate extends UIScript {
 		
 		//文本多语言
 		
+		this.initLanguage(this.text_Buy)
+		
+	
 		this.initLanguage(this.text_All)
 		
 	
