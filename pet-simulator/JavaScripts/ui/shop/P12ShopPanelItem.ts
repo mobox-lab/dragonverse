@@ -45,6 +45,7 @@ export class P12ShopPanelItem extends Online_shopItem_Generate {
         this.text_Name.text = GameConfig.Language[data.name].Value;
         this.text_Describe.text = GameConfig.Language[data.description].Value;
         this.text_MoboxNumber.text = data.value;
+        this.img_Icon.imageGuid = data.icon;
     }
 
     // 重置状态

@@ -92,6 +92,34 @@ export default class Online_shop_Generate extends UIScript {
 		}
 		return this.text_Left_Internal
 	}
+	private can_BuyTips_Internal: mw.Canvas
+	public get can_BuyTips(): mw.Canvas {
+		if(!this.can_BuyTips_Internal&&this.uiWidgetBase) {
+			this.can_BuyTips_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_BuyTips') as mw.Canvas
+		}
+		return this.can_BuyTips_Internal
+	}
+	private img_Tip_Background_Internal: mw.Image
+	public get img_Tip_Background(): mw.Image {
+		if(!this.img_Tip_Background_Internal&&this.uiWidgetBase) {
+			this.img_Tip_Background_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_BuyTips/img_Tip_Background') as mw.Image
+		}
+		return this.img_Tip_Background_Internal
+	}
+	private img_Icon1_Internal: mw.Image
+	public get img_Icon1(): mw.Image {
+		if(!this.img_Icon1_Internal&&this.uiWidgetBase) {
+			this.img_Icon1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_BuyTips/img_Icon1') as mw.Image
+		}
+		return this.img_Icon1_Internal
+	}
+	private text_SuccessText_Internal: mw.TextBlock
+	public get text_SuccessText(): mw.TextBlock {
+		if(!this.text_SuccessText_Internal&&this.uiWidgetBase) {
+			this.text_SuccessText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop/can_BuyTips/text_SuccessText') as mw.TextBlock
+		}
+		return this.text_SuccessText_Internal
+	}
 
 
 
@@ -134,6 +162,9 @@ export default class Online_shop_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.text_Left)
+		
+	
+		this.initLanguage(this.text_SuccessText)
 		
 	
 		//文本多语言
