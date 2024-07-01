@@ -673,7 +673,7 @@ interface PetSimulatorStatisticPetObj {
     /**
      * 当前状态，销毁、存在.
      */
-    status: string;
+    status: "destroyed" | "exist";
     /**
      * 创建时间.
      */
@@ -1630,9 +1630,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         playerId: number,
         dragonPalId: number,
         catchTimeStamp: number,
-    ): Promise<[boolean, CatchDragonRespData]> {
+    ): Promise<[boolean | undefined, CatchDragonRespData | undefined]> {
         const userId = this.queryUserId(playerId);
-        if (Gtk.isNullOrUndefined(userId)) return;
+        if (Gtk.isNullOrUndefined(userId)) return [undefined, undefined];
 
         const [sceneId, sceneName] = await this.querySceneInfo(userId);
         const requestParam: CatchDragonReq = {
@@ -1644,16 +1644,18 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             sceneName,
         };
 
-        const respInJson = await this.correspondHandler<QueryResp<CatchDragonRespData>>(
-            requestParam,
-            AuthModuleS.RELEASE_CATCH_DRAGON_URL,
-            AuthModuleS.TEST_CATCH_DRAGON_URL,
-        );
+        const respInJson =
+            await this.correspondHandler<QueryResp<CatchDragonRespData>>(
+                requestParam,
+                AuthModuleS.RELEASE_CATCH_DRAGON_URL,
+                AuthModuleS.TEST_CATCH_DRAGON_URL,
+            );
+
+        if (!respInJson) return [undefined, undefined];
 
         const success = respInJson.message === "success";
-        if (!success) {
-            Log4Ts.warn(AuthModuleS, `report catch failed. result: ${respInJson.message}`);
-        }
+        if (!success) Log4Ts.warn(AuthModuleS,
+            `report catch failed. result: ${respInJson.message}`);
 
         return [success, respInJson.data];
     }
