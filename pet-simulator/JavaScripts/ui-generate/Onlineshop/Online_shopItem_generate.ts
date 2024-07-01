@@ -29,6 +29,13 @@ export default class Online_shopItem_Generate extends UIScript {
 		}
 		return this.img_Background_Internal
 	}
+	private img_Background2_Internal: mw.Image
+	public get img_Background2(): mw.Image {
+		if(!this.img_Background2_Internal&&this.uiWidgetBase) {
+			this.img_Background2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_ShopItem/img_Background2') as mw.Image
+		}
+		return this.img_Background2_Internal
+	}
 	private can_Up_Down_Internal: mw.Canvas
 	public get can_Up_Down(): mw.Canvas {
 		if(!this.can_Up_Down_Internal&&this.uiWidgetBase) {
@@ -99,6 +106,13 @@ export default class Online_shopItem_Generate extends UIScript {
 		}
 		return this.img_MoboxImg_Internal
 	}
+	private text_Name_Internal: mw.TextBlock
+	public get text_Name(): mw.TextBlock {
+		if(!this.text_Name_Internal&&this.uiWidgetBase) {
+			this.text_Name_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_ShopItem/text_Name') as mw.TextBlock
+		}
+		return this.text_Name_Internal
+	}
 
 
 
@@ -144,6 +158,9 @@ export default class Online_shopItem_Generate extends UIScript {
 		
 	
 		this.initLanguage(this.text_MoboxNumber)
+		
+	
+		this.initLanguage(this.text_Name)
 		
 	
 		//文本多语言
