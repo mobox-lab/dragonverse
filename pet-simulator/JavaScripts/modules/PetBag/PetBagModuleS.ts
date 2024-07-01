@@ -73,7 +73,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     @Decorator.noReply()
-    public net_addPetWithMissingInfo(playerId: number, id: number, type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: { logObj: Object, logName: string }) {
+    public net_addPetWithMissingInfo(playerId: number, id: number, type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: {
+        logObj: Object,
+        logName: string
+    }) {
         let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
 
         let atk: number = 0;
@@ -83,12 +86,12 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             atk = atkArr[0];
         let nameId = utils.GetRandomNum(1, 200);
         let name = utils.GetUIText(nameId);
-		if(logInfo?.logName) {
-			Object.assign(logInfo.logObj, {
-				petAtk: atk,
-				petName: name,
-			})
-		}
+        if (logInfo?.logName) {
+            Object.assign(logInfo.logObj, {
+                petAtk: atk,
+                petName: name,
+            });
+        }
         this.addPet(playerId, id, atk, name, type, addTime, logInfo);
     }
 
@@ -106,14 +109,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let res = await ModuleService.getModule(PlayerModuleS).reduceGold(playerId, price, this.judgeGold(cfgId));
         if (res) {
             let petId = this.calcProbability(cfgId);
-			const logObj = {
-				uid,
-				coin: price,
-				coinType: this.judgeGold(cfgId),
-				eggId: cfg.id,
-				petId,
-			}
-            this.net_addPetWithMissingInfo(playerId, petId, cfg.AreaID, undefined, { logName: "P_Hatch", logObj });
+            const logObj = {
+                uid,
+                coin: price,
+                coinType: this.judgeGold(cfgId),
+                eggId: cfg.id,
+                petId,
+            };
+            this.net_addPetWithMissingInfo(playerId, petId, cfg.AreaID, undefined, {logName: "P_Hatch", logObj});
             return petId;
         }
         return null;
@@ -178,7 +181,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return goldType;
     }
 
-    public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: { logObj: Object, logName: string }) {
+    public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: {
+        logObj: Object,
+        logName: string
+    }) {
         let data = this.getPlayerData(playerID);
         data.addBagItem(id, atk, name, addTime, logInfo, playerID);
         this.taskMS.getPet(Player.getPlayer(playerID), id, type);
@@ -396,7 +402,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             let item = this.currentData.bagItemsByKey(element);
             if (item) {
                 item.p.a = atk;
-				this.currentData.updatePetStatistic(item);
+                this.currentData.updatePetStatistic(item);
             }
         }
         //找到最高的战力
@@ -573,7 +579,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             endPetId);
 
         const logInfo = {
-            logName: "P_Merge", logObj: { 
+            logName: "P_Merge", logObj: {
                 uid: userId,
                 diamond: GlobalData.Fuse.cost,
                 inputPets: curSelectPets,
@@ -586,8 +592,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 playerId,
                 endPetId,
                 GlobalEnum.PetGetType.Fusion,
-                earliestObtainTime, 
-				logInfo);
+                earliestObtainTime,
+                logInfo);
         return true;
     }
 

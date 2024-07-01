@@ -142,8 +142,8 @@ export class PetSimulatorPlayerModuleData extends Subdata {
             default:
                 break;
         }
-		const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData)
-		statisticData.recordConsume(coinType, value);
+        const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData);
+        statisticData.recordConsume(coinType, value);
         this.save(isSync);
         this.onGoldChange.call(coinType);
     }
@@ -173,8 +173,8 @@ export class PetSimulatorPlayerModuleData extends Subdata {
     private changeDiamond(value: number, isAdd: boolean, isSync: boolean, playerId: number): void {
         isAdd ? this.diamond += value : this.diamond -= value;
         this.diamond = this.isMaxCoin(this.diamond);
-		const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData)
-		statisticData.recordConsume(GlobalEnum.CoinType.Diamond, isAdd ? value : -value);
+        const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData);
+        statisticData.recordConsume(GlobalEnum.CoinType.Diamond, isAdd ? value : -value);
         this.save(isSync);
         this.onDiamondChange.call();
     }

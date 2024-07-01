@@ -7,22 +7,23 @@ import { EnergyModuleS } from "../Energy/EnergyModule";
 import { PetBagModuleData } from "../PetBag/PetBagModuleData";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { AuthModuleS, PetSimulatorStatisticNeedFill } from "../auth/AuthModule";
-type PlayerConsumeData = { 
-	diamondAdd: number;
-	diamondRed: number;
-	gold_1_add: number;
-	gold_1_red: number;
-	gold_2_add: number;
-	gold_2_red: number;
-	gold_3_add: number;
-	gold_3_red: number;
+
+type PlayerConsumeData = {
+    diamondAdd: number;
+    diamondRed: number;
+    gold_1_add: number;
+    gold_1_red: number;
+    gold_2_add: number;
+    gold_2_red: number;
+    gold_3_add: number;
+    gold_3_red: number;
 }
 export default class PsStatisticModuleData extends JModuleData {
     //@Decorator.persistence()
     //public isSave: bool;
 
     /**
-     * 玩家进入游戏计数.
+     * 玩家进入游戏计数. 
      * @type {number}
      */
     @Decorator.persistence()
@@ -56,63 +57,63 @@ export default class PsStatisticModuleData extends JModuleData {
      * @type {number}
      */
     @Decorator.persistence()
-	playerDiamondAdd: number = 0;
+    playerDiamondAdd: number = 0;
 
     /**
      * 钻石减少
      * @type {number}
      */
     @Decorator.persistence()
-	playerDiamondRed: number = 0;
+    playerDiamondRed: number = 0;
 
-	/**
-	 * 金币1增加
-	 * @type {number}
-	 */
-	@Decorator.persistence()
-	playerGoldAdd: number = 0;
+    /**
+     * 金币1增加
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGoldAdd: number = 0;
 
-	/**
-	 * 金币1减少
-	 * @type {number}
-	 */
-	@Decorator.persistence()
-	playerGoldRed: number = 0;
+    /**
+     * 金币1减少
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGoldRed: number = 0;
 
-	/**
-	 * 金币2增加
-	 * @type {number}
-	 */
-	@Decorator.persistence()
-	playerGold2Add: number = 0;
+    /**
+     * 金币2增加
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGold2Add: number = 0;
 
-	/**
-	 * 金币2减少
-	 * @type {number}
-	 */
-	@Decorator.persistence()
-	playerGold2Red: number = 0;
+    /**
+     * 金币2减少
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGold2Red: number = 0;
 
-	/**
-	 * 金币3增加
-	 * @type {number}
-	 */
-	@Decorator.persistence()
-	playerGold3Add: number = 0;
+    /**
+     * 金币3增加
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGold3Add: number = 0;
 
-	/**
-	 * 金币3减少
-	 * @type {number}
-	 */
-	@Decorator.persistence()
-	playerGold3Red: number = 0;
+    /**
+     * 金币3减少
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGold3Red: number = 0;
 
-	/**
-	 * 当前增加宠物数量
-	 * @type {number}
-	 */
-	@Decorator.persistence()
-	playerPetAdd: number = 0;
+    /**
+     * 当前增加宠物数量
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerPetAdd: number = 0;
 
     /**
      * 本次游玩时长. ms
@@ -152,23 +153,23 @@ export default class PsStatisticModuleData extends JModuleData {
         }
         return todayCounter;
     }
-	
-	/**
-	 * 获取玩家消费数据
-	 * @return {PlayerConsumeData}
-	 */
-	public get playerConsumeData(): PlayerConsumeData {
-		return {
-			diamondAdd: this.playerDiamondAdd,
-			diamondRed: this.playerDiamondRed,
-			gold_1_add: this.playerGoldAdd,
-			gold_1_red: this.playerGoldRed,
-			gold_2_add: this.playerGold2Add,
-			gold_2_red: this.playerGold2Red,
-			gold_3_add: this.playerGold3Add,
-			gold_3_red: this.playerGold3Red,
-		};
-	}
+
+    /**
+     * 获取玩家消费数据
+     * @return {PlayerConsumeData}
+     */
+    public get playerConsumeData(): PlayerConsumeData {
+        return {
+            diamondAdd: this.playerDiamondAdd,
+            diamondRed: this.playerDiamondRed,
+            gold_1_add: this.playerGoldAdd,
+            gold_1_red: this.playerGoldRed,
+            gold_2_add: this.playerGold2Add,
+            gold_2_red: this.playerGold2Red,
+            gold_3_add: this.playerGold3Add,
+            gold_3_red: this.playerGold3Red,
+        };
+    }
 
     public recordEnter(now: number) {
         ++this.playerEnteredCounterS;
@@ -190,42 +191,44 @@ export default class PsStatisticModuleData extends JModuleData {
         }
     }
 
-	public recordConsume(coinType: GlobalEnum.CoinType, value: number) {
-		Log4Ts.log(PsStatisticModuleData, `record consume. type: ${coinType}. value: ${value}. `);
-		const isAdd = value > 0;
-		const val = Math.abs(value);
-		switch(coinType) {
-			case GlobalEnum.CoinType.Diamond:
-				isAdd ? this.playerDiamondAdd += val : this.playerDiamondRed += val;
-				break;
-			case GlobalEnum.CoinType.FirstWorldGold:
-				isAdd ? this.playerGoldAdd += val : this.playerGoldRed += val;
-				break;
-			case GlobalEnum.CoinType.SecondWorldGold:
-				isAdd ? this.playerGold2Add += val : this.playerGold2Red += val;
-				break;
-			case GlobalEnum.CoinType.ThirdWorldGold:
-				isAdd ? this.playerGold3Add += val : this.playerGold3Red += val;
-				break;
-			default: break;
-		}
-	}
-	public recordAddPet() {
-		++this.playerPetAdd;
-	}
+    public recordConsume(coinType: GlobalEnum.CoinType, value: number) {
+        Log4Ts.log(PsStatisticModuleData, `record consume. type: ${coinType}. value: ${value}. `);
+        const isAdd = value > 0;
+        const val = Math.abs(value);
+        switch (coinType) {
+            case GlobalEnum.CoinType.Diamond:
+                isAdd ? this.playerDiamondAdd += val : this.playerDiamondRed += val;
+                break;
+            case GlobalEnum.CoinType.FirstWorldGold:
+                isAdd ? this.playerGoldAdd += val : this.playerGoldRed += val;
+                break;
+            case GlobalEnum.CoinType.SecondWorldGold:
+                isAdd ? this.playerGold2Add += val : this.playerGold2Red += val;
+                break;
+            case GlobalEnum.CoinType.ThirdWorldGold:
+                isAdd ? this.playerGold3Add += val : this.playerGold3Red += val;
+                break;
+            default:
+                break;
+        }
+    }
 
-	public resetConsumeRecord() {
-		this.playerDiamondAdd = 0;
-		this.playerDiamondRed = 0;
-		this.playerGoldAdd = 0;
-		this.playerGoldRed = 0;
-		this.playerGold2Add = 0;
-		this.playerGold2Red = 0;
-		this.playerGold3Add = 0;
-		this.playerGold3Red = 0
-		
-		this.playerPetAdd = 0;
-	}
+    public recordAddPet() {
+        ++this.playerPetAdd;
+    }
+
+    public resetConsumeRecord() {
+        this.playerDiamondAdd = 0;
+        this.playerDiamondRed = 0;
+        this.playerGoldAdd = 0;
+        this.playerGoldRed = 0;
+        this.playerGold2Add = 0;
+        this.playerGold2Red = 0;
+        this.playerGold3Add = 0;
+        this.playerGold3Red = 0;
+
+        this.playerPetAdd = 0;
+    }
 
     // /**
     //  * 疑似作弊原因.
@@ -323,7 +326,7 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, PsStatisticModu
     }
 
     private reportPlayerDataInterval() {
-        this.server.net_reportPlayerDataInterval({ elapsedTime: this._elapsedTime });
+        this.server.net_reportPlayerDataInterval({elapsedTime: this._elapsedTime});
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -375,7 +378,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         // petStatisticData.resetConsumeData()
         const now = Date.now();
         const d = this.getPlayerData(player);
-		d.resetConsumeRecord();
+        d.resetConsumeRecord();
         d.recordEnter(now);
         d.save(false);
     }
@@ -384,9 +387,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         super.onPlayerLeft(player);
         // console.log("======== onPlayerLeft ========");
         let now = Date.now();
-        const playerData = DataCenterS.getData(player, PetSimulatorPlayerModuleData)
-        const petBagData = DataCenterS.getData(player, PetBagModuleData)
-        const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData)
+        const playerData = DataCenterS.getData(player, PetSimulatorPlayerModuleData);
+        const petBagData = DataCenterS.getData(player, PetBagModuleData);
+        const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData);
         const energyS = ModuleService.getModule(EnergyModuleS);
         const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
         const playerConsumeData = petStatisticData.playerConsumeData ?? {
@@ -398,7 +401,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             gold_2_red: 0,
             gold_3_add: 0,
             gold_3_red: 0,
-        }
+        };
         Gtk.queryModuleData<{
             playerLoginRecord: [number, number][];
             playerElapsedTimeS: number;
@@ -407,16 +410,16 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             d.playerElapsedTimeS += (d.playerLoginRecord[0][1] ?? now) - d.playerLoginRecord[0][0];
             if (d.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
                 d.playerLoginRecord.pop();
-            } 
+            }
             Gtk.updateModuleData(PsStatisticModuleData.name, player.userId, d);
-            console.log(' playerData:', JSON.stringify(playerData)) 
-           
+            console.log(" playerData:", JSON.stringify(playerData));
+
             const login = Math.floor((d.playerLoginRecord[0][0] || 0) / 1000); // s
             const logout = Math.floor((d.playerLoginRecord[0][1] || 0) / 1000);
             const online = logout - login;
             const allPets = petBagData.PetStatisticArr ?? [];
-            const petBagSortedItems = petBagData.sortBag(); 
-			const petMax = petBagSortedItems?.length ? Math.max(...petBagSortedItems.map((pet) => pet.p.a)) : 0;
+            const petBagSortedItems = petBagData.sortBag();
+            const petMax = petBagSortedItems?.length ? Math.max(...petBagSortedItems.map((pet) => pet.p.a)) : 0;
             const statisticData: PetSimulatorStatisticNeedFill = {
                 diamond: playerData?.diamond ?? 0,
                 diamondAdd: playerConsumeData?.diamondAdd ?? 0,
@@ -444,8 +447,8 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 stamina,
             };
             Log4Ts.log(
-                StatisticModuleS, 
-                " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData)
+                StatisticModuleS,
+                " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData),
             );
             ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData);
         });
