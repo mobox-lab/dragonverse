@@ -102,7 +102,7 @@ interface PetSimulatorStatisticPetObj {
     /**
      * 当前状态，销毁、存在.
      */
-    status: string;
+    status: "destroyed" | "exist";
     /**
      * 创建时间.
      */
