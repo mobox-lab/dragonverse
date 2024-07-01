@@ -1,3 +1,4 @@
+import { GlobalEnum } from "../../const/Enum";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
@@ -6,7 +7,16 @@ import { EnergyModuleS } from "../Energy/EnergyModule";
 import { PetBagModuleData } from "../PetBag/PetBagModuleData";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { AuthModuleS, PetSimulatorStatisticNeedFill } from "../auth/AuthModule";
-
+type PlayerConsumeData = { 
+	diamondAdd: number;
+	diamondRed: number;
+	gold_1_add: number;
+	gold_1_red: number;
+	gold_2_add: number;
+	gold_2_red: number;
+	gold_3_add: number;
+	gold_3_red: number;
+}
 export default class PsStatisticModuleData extends JModuleData {
     //@Decorator.persistence()
     //public isSave: bool;
@@ -40,6 +50,62 @@ export default class PsStatisticModuleData extends JModuleData {
     public get playerLastEnteredTime(): number {
         return this.playerLoginRecord[0][0];
     }
+
+    /**
+     * 钻石增加
+     * @type {number}
+     */
+    @Decorator.persistence()
+	playerDiamondAdd: number = 0;
+
+    /**
+     * 钻石减少
+     * @type {number}
+     */
+    @Decorator.persistence()
+	playerDiamondRed: number = 0;
+
+	/**
+	 * 金币1增加
+	 * @type {number}
+	 */
+	@Decorator.persistence()
+	playerGoldAdd: number = 0;
+
+	/**
+	 * 金币1减少
+	 * @type {number}
+	 */
+	@Decorator.persistence()
+	playerGoldRed: number = 0;
+
+	/**
+	 * 金币2增加
+	 * @type {number}
+	 */
+	@Decorator.persistence()
+	playerGold2Add: number = 0;
+
+	/**
+	 * 金币2减少
+	 * @type {number}
+	 */
+	@Decorator.persistence()
+	playerGold2Red: number = 0;
+
+	/**
+	 * 金币3增加
+	 * @type {number}
+	 */
+	@Decorator.persistence()
+	playerGold3Add: number = 0;
+
+	/**
+	 * 金币3减少
+	 * @type {number}
+	 */
+	@Decorator.persistence()
+	playerGold3Red: number = 0;
 
     /**
      * 本次游玩时长. ms
@@ -79,7 +145,24 @@ export default class PsStatisticModuleData extends JModuleData {
         }
         return todayCounter;
     }
- 
+	
+	/**
+	 * 获取玩家消费数据
+	 * @return {PlayerConsumeData}
+	 */
+	public get playerConsumeData(): PlayerConsumeData {
+		return {
+			diamondAdd: this.playerDiamondAdd,
+			diamondRed: this.playerDiamondRed,
+			gold_1_add: this.playerGoldAdd,
+			gold_1_red: this.playerGoldRed,
+			gold_2_add: this.playerGold2Add,
+			gold_2_red: this.playerGold2Red,
+			gold_3_add: this.playerGold3Add,
+			gold_3_red: this.playerGold3Red,
+		};
+	}
+
     public recordEnter(now: number) {
         ++this.playerEnteredCounterS;
         const records = this.playerLoginRecord;
@@ -99,6 +182,39 @@ export default class PsStatisticModuleData extends JModuleData {
             this.playerLoginRecord.pop();
         }
     }
+
+	public recordConsume(coinType: GlobalEnum.CoinType, value: number) {
+		Log4Ts.log(PsStatisticModuleData, `record consume. type: ${coinType}. value: ${value}. `);
+		const isAdd = value > 0;
+		const val = Math.abs(value);
+		switch(coinType) {
+			case GlobalEnum.CoinType.Diamond:
+				isAdd ? this.playerDiamondAdd += val : this.playerDiamondRed += val;
+				break;
+			case GlobalEnum.CoinType.FirstWorldGold:
+				isAdd ? this.playerGoldAdd += val : this.playerGoldRed += val;
+				break;
+			case GlobalEnum.CoinType.SecondWorldGold:
+				isAdd ? this.playerGold2Add += val : this.playerGold2Red += val;
+				break;
+			case GlobalEnum.CoinType.ThirdWorldGold:
+				isAdd ? this.playerGold3Add += val : this.playerGold3Red += val;
+				break;
+			default: break;
+		}
+	}
+
+	public resetConsumeRecord() {
+		this.playerDiamondAdd = 0;
+		this.playerDiamondRed = 0;
+		this.playerGoldAdd = 0;
+		this.playerGoldRed = 0;
+		this.playerGold2Add = 0;
+		this.playerGold2Red = 0;
+		this.playerGold3Add = 0;
+		this.playerGold3Red = 0
+
+	}
 
     // /**
     //  * 疑似作弊原因.
@@ -248,20 +364,21 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         // petStatisticData.resetConsumeData()
         const now = Date.now();
         const d = this.getPlayerData(player);
+		d.resetConsumeRecord();
         d.recordEnter(now);
         d.save(false);
     }
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
-        console.log("======== onPlayerLeft  ========");  
+        // console.log("======== onPlayerLeft ========");
         let now = Date.now();
         const playerData = DataCenterS.getData(player, PetSimulatorPlayerModuleData)
         const petBagData = DataCenterS.getData(player, PetBagModuleData)
         const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData)
         const energyS = ModuleService.getModule(EnergyModuleS);
         const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
-        const playerConsumeData = {
+        const playerConsumeData = petStatisticData.playerConsumeData ?? {
             diamondAdd: 0,
             diamondRed: 0,
             gold_1_add: 0,

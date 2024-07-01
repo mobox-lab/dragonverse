@@ -133,7 +133,6 @@ addGMCommand(
     (player: mw.Player, value: string) => {
         let val = Number(value);
         ModuleService.getModule(PlayerModuleS).addGold(player.playerId, val, GlobalEnum.CoinType.FirstWorldGold);
-        ModuleService.getModule(PlayerModuleS).addGold(player.playerId, val, GlobalEnum.CoinType.SummerGold);
     },
     undefined,
     "货币"

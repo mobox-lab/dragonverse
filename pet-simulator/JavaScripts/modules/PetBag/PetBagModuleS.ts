@@ -500,7 +500,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 `found: ${curSelectPets}.`);
             return false;
         }
-        if (!this.playerModuleS.reduceDiamond(GlobalData.Fuse.cost)) return false;
+        if (!this.playerModuleS.reduceDiamond(GlobalData.Fuse.cost, playerId)) return false;
 
         const data = this.currentData;
         if (curSelectPets.length >= data.CurBagCapacity) return false;
@@ -644,7 +644,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let petIds: number[] = curSelectPets.map(item => item.I);
         const {rate, cost} = this.changeFuseDevCost(player, petIds.length, isGold);
 
-        if (!this.playerModuleS.reduceDiamond(cost)) return false;
+        if (!this.playerModuleS.reduceDiamond(cost, playerId)) return false;
 
         //计算最早的获取时间
         let earliestObtainTime = curSelectPets[0].obtainTime;
@@ -839,7 +839,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         const data = this.currentData;
         const cost = this.getEnchantCost(selectPetKey);
         Log4Ts.log(PetBagModuleS, `net_enchant cost:` + cost);
-        if (!this.playerModuleS.reduceDiamond(cost))
+        if (!this.playerModuleS.reduceDiamond(cost, playerId))
             return EnchantPetState.NO_ENOUGH_DIAMOND;
 
         const curSelectPetEnchantCnt =

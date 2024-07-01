@@ -32,8 +32,8 @@ export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData> {
 
     public async net_buyTranArea(id: number): Promise<boolean> {
         let cfg = GameConfig.AreaDivide.getElement(id);
-
-        const isSuccess = ModuleService.getModule(PlayerModuleS).reduceDiamond(cfg.Gem)
+		const playerId = this.currentPlayerId;
+        const isSuccess = ModuleService.getModule(PlayerModuleS).reduceDiamond(cfg.Gem, playerId)
         if (!isSuccess) return false
         this.addArea(id, false);
         return true;
