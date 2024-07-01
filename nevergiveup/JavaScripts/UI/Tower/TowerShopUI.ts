@@ -87,7 +87,8 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		for (let i = 0; i < this.shopItemUIs.length; i++) {
 			this.shopItemUIs[i].setChoose(cfgID == this.shopItemUIs[i].cfgID);
 		}
-		Utils.setImageByAsset(this.infoImg, cfg);
+		// Utils.setImageByAsset(this.infoImg, cfg);
+		this.infoImg.imageGuid = cfg.imgGuid;
 		this.infoTxt.text = cfg.name;
 		this._cfgID = cfgID;
 		this._cfg = cfg;
