@@ -4,6 +4,7 @@ import { GlobalData } from "../../const/GlobalData";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { oTraceError } from "../../util/LogManager";
 import { stringToNumberArr, utils } from "../../util/uitls";
+import PsStatisticModuleData from "../statistic/StatisticModule";
 import { EnchantBuff } from "./EnchantBuff";
 
 export enum BagItemKey {
@@ -292,7 +293,7 @@ export class PetBagModuleData extends Subdata {
      * @param atk 宠物战力
      * @param name 宠物名字
      */
-    public addBagItem(id: number, atk: number, name: string, addTime?: number, logInfo?: { logObj: Object, logName: string }): boolean {
+    public addBagItem(id: number, atk: number, name: string, addTime: number | undefined, logInfo: { logObj: Object, logName: string } | undefined, playerID: number): boolean {
 
         // let index = this.getFirstEmptyIndex();
         // if (index == -1) {
@@ -323,6 +324,8 @@ export class PetBagModuleData extends Subdata {
 			utils.logP12Info(logInfo.logName, logInfo.logObj)
 		}
 		this.updatePetStatistic(this.bagContainerNew[index]);
+		const statisticData = DataCenterS.getData(playerID, PsStatisticModuleData)
+		statisticData.recordAddPet();
         this.save(true);
         this.BagItemChangeAC.call(true, id, index);
         return true;

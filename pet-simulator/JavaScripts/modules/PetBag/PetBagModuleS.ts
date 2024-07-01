@@ -180,7 +180,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
     public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: { logObj: Object, logName: string }) {
         let data = this.getPlayerData(playerID);
-        data.addBagItem(id, atk, name, addTime, logInfo);
+        data.addBagItem(id, atk, name, addTime, logInfo, playerID);
         this.taskMS.getPet(Player.getPlayer(playerID), id, type);
         ModuleService.getModule(CollectModuleS).addPet(playerID, id, type);
         this.onGetPetAC.call(type, playerID);

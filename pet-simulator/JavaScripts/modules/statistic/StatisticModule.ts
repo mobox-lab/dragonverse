@@ -107,6 +107,13 @@ export default class PsStatisticModuleData extends JModuleData {
 	@Decorator.persistence()
 	playerGold3Red: number = 0;
 
+	/**
+	 * 当前增加宠物数量
+	 * @type {number}
+	 */
+	@Decorator.persistence()
+	playerPetAdd: number = 0;
+
     /**
      * 本次游玩时长. ms
      * @return {number}
@@ -203,6 +210,9 @@ export default class PsStatisticModuleData extends JModuleData {
 			default: break;
 		}
 	}
+	public recordAddPet() {
+		++this.playerPetAdd;
+	}
 
 	public resetConsumeRecord() {
 		this.playerDiamondAdd = 0;
@@ -213,7 +223,8 @@ export default class PsStatisticModuleData extends JModuleData {
 		this.playerGold2Red = 0;
 		this.playerGold3Add = 0;
 		this.playerGold3Red = 0
-
+		
+		this.playerPetAdd = 0;
 	}
 
     // /**
@@ -403,8 +414,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             const login = Math.floor((d.playerLoginRecord[0][0] || 0) / 1000); // s
             const logout = Math.floor((d.playerLoginRecord[0][1] || 0) / 1000);
             const online = logout - login;
-            const curPets = petBagData.PetStatisticArr ?? [];
-            const petBagSortedItems =  []; 
+            const allPets = petBagData.PetStatisticArr ?? [];
+            const petBagSortedItems = petBagData.sortBag(); 
+			const petMax = petBagSortedItems?.length ? Math.max(...petBagSortedItems.map((pet) => pet.p.a)) : 0;
             const statisticData: PetSimulatorStatisticNeedFill = {
                 diamond: playerData?.diamond ?? 0,
                 diamondAdd: playerConsumeData?.diamondAdd ?? 0,
@@ -421,10 +433,10 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 login,
                 logout,
                 online,
-                pet: curPets,
-                petAdd: 0,
+                pet: allPets,
+                petAdd: petStatisticData?.playerPetAdd ?? 0,
                 petCnt: petBagSortedItems?.length ?? 0,
-                petMax: 0,
+                petMax,
                 staMax,
                 staPotAdd: 0,
                 staPotCnt: 0,
