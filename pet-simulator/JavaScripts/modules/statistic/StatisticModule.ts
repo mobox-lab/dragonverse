@@ -1,17 +1,29 @@
-import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { GlobalEnum } from "../../const/Enum";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
+import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
+import { EnergyModuleS } from "../Energy/EnergyModule";
 import { PetBagModuleData } from "../PetBag/PetBagModuleData";
+import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { AuthModuleS, PetSimulatorStatisticNeedFill } from "../auth/AuthModule";
 
+type PlayerConsumeData = {
+    diamondAdd: number;
+    diamondRed: number;
+    gold_1_add: number;
+    gold_1_red: number;
+    gold_2_add: number;
+    gold_2_red: number;
+    gold_3_add: number;
+    gold_3_red: number;
+}
 export default class PsStatisticModuleData extends JModuleData {
     //@Decorator.persistence()
     //public isSave: bool;
 
     /**
-     * 玩家进入游戏计数.
+     * 玩家进入游戏计数. 
      * @type {number}
      */
     @Decorator.persistence()
@@ -41,12 +53,74 @@ export default class PsStatisticModuleData extends JModuleData {
     }
 
     /**
+     * 钻石增加
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerDiamondAdd: number = 0;
+
+    /**
+     * 钻石减少
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerDiamondRed: number = 0;
+
+    /**
+     * 金币1增加
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGoldAdd: number = 0;
+
+    /**
+     * 金币1减少
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGoldRed: number = 0;
+
+    /**
+     * 金币2增加
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGold2Add: number = 0;
+
+    /**
+     * 金币2减少
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGold2Red: number = 0;
+
+    /**
+     * 金币3增加
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGold3Add: number = 0;
+
+    /**
+     * 金币3减少
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerGold3Red: number = 0;
+
+    /**
+     * 当前增加宠物数量
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerPetAdd: number = 0;
+
+    /**
      * 本次游玩时长. ms
      * @return {number}
      */
     public get playerLastedPlayTime(): number {
-        return (this.playerLoginRecord[0][1] ?? Date.now()) -
-            this.playerLoginRecord[0][0];
+        return (this.playerLoginRecord[0][1] ?? Date.now()) - this.playerLoginRecord[0][0];
     }
 
     /**
@@ -54,10 +128,7 @@ export default class PsStatisticModuleData extends JModuleData {
      * @return {number}
      */
     public get playerTotalOnlineTime(): number {
-        return this.playerElapsedTimeS +
-            (this.playerLoginRecord[0][1] === undefined ?
-                this.playerLastedPlayTime :
-                0);
+        return this.playerElapsedTimeS + (this.playerLoginRecord[0][1] === undefined ? this.playerLastedPlayTime : 0);
     }
 
     /**
@@ -69,18 +140,11 @@ export default class PsStatisticModuleData extends JModuleData {
         let todayCounter = 0;
         for (let i = 0; i < this.playerLoginRecord.length; ++i) {
             const [enter, leave] = this.playerLoginRecord[i];
-            if (i === 0 &&
-                Gtk.isNullOrUndefined(leave))
-                continue;
+            if (i === 0 && Gtk.isNullOrUndefined(leave)) continue;
 
-            if (!Gtk.isSameTime(leave,
-                now,
-                GtkTypes.Tf.D))
-                break;
+            if (!Gtk.isSameTime(leave, now, GtkTypes.Tf.D)) break;
 
-            if (Gtk.isSameTime(enter,
-                now,
-                GtkTypes.Tf.D)) {
+            if (Gtk.isSameTime(enter, now, GtkTypes.Tf.D)) {
                 todayCounter = todayCounter + (leave ?? now) - enter;
             } else {
                 todayCounter = todayCounter + (leave ?? now) - new Date().setHours(0, 0, 0, 0);
@@ -88,6 +152,23 @@ export default class PsStatisticModuleData extends JModuleData {
             }
         }
         return todayCounter;
+    }
+
+    /**
+     * 获取玩家消费数据
+     * @return {PlayerConsumeData}
+     */
+    public get playerConsumeData(): PlayerConsumeData {
+        return {
+            diamondAdd: this.playerDiamondAdd,
+            diamondRed: this.playerDiamondRed,
+            gold_1_add: this.playerGoldAdd,
+            gold_1_red: this.playerGoldRed,
+            gold_2_add: this.playerGold2Add,
+            gold_2_red: this.playerGold2Red,
+            gold_3_add: this.playerGold3Add,
+            gold_3_red: this.playerGold3Red,
+        };
     }
 
     public recordEnter(now: number) {
@@ -108,6 +189,45 @@ export default class PsStatisticModuleData extends JModuleData {
         if (this.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
             this.playerLoginRecord.pop();
         }
+    }
+
+    public recordConsume(coinType: GlobalEnum.CoinType, value: number) {
+        Log4Ts.log(PsStatisticModuleData, `record consume. type: ${coinType}. value: ${value}. `);
+        const isAdd = value > 0;
+        const val = Math.abs(value);
+        switch (coinType) {
+            case GlobalEnum.CoinType.Diamond:
+                isAdd ? this.playerDiamondAdd += val : this.playerDiamondRed += val;
+                break;
+            case GlobalEnum.CoinType.FirstWorldGold:
+                isAdd ? this.playerGoldAdd += val : this.playerGoldRed += val;
+                break;
+            case GlobalEnum.CoinType.SecondWorldGold:
+                isAdd ? this.playerGold2Add += val : this.playerGold2Red += val;
+                break;
+            case GlobalEnum.CoinType.ThirdWorldGold:
+                isAdd ? this.playerGold3Add += val : this.playerGold3Red += val;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public recordAddPet() {
+        ++this.playerPetAdd;
+    }
+
+    public resetConsumeRecord() {
+        this.playerDiamondAdd = 0;
+        this.playerDiamondRed = 0;
+        this.playerGoldAdd = 0;
+        this.playerGoldRed = 0;
+        this.playerGold2Add = 0;
+        this.playerGold2Red = 0;
+        this.playerGold3Add = 0;
+        this.playerGold3Red = 0;
+
+        this.playerPetAdd = 0;
     }
 
     // /**
@@ -146,29 +266,28 @@ interface PlayerIntervalData {
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
 export class StatisticModuleC extends JModuleC<StatisticModuleS, PsStatisticModuleData> {
-//#region Member
+    //#region Member
     private _eventListeners: EventListener[] = [];
 
     private _elapsedTime: number = 0;
 
     private _autoReportRegulator = new Regulator(GtkTypes.Interval.PerMin * 5);
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region MetaWorld Event
+    //#region MetaWorld Event
     protected onAwake(): void {
         super.onAwake();
 
-//#region Inner Member init
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#region Inner Member init
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
     protected onJStart(): void {
-//#region Member init
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
-
-//#region Event Subscribe
+        //#region Member init
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#region Event Subscribe
         // this._eventListeners.push(Event.addLocalListener(EventDefine.EVENT_NAME, CALLBACK));
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+        //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
     protected onUpdate(dt: number): void {
@@ -189,18 +308,18 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, PsStatisticModu
 
     protected onDestroy(): void {
         super.onDestroy();
-//#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
-//#endregion ------------------------------------------------------------------------------------------
+        //#region Event Unsubscribe
+        this._eventListeners.forEach((value) => value.disconnect());
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onExecute(type: number, ...params: any[]): void {
         super.onExecute(type, ...params);
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Method
+    //#region Method
 
     public getPlayerData(): PsStatisticModuleData {
         return super.data;
@@ -210,29 +329,28 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, PsStatisticModu
         this.server.net_reportPlayerDataInterval({elapsedTime: this._elapsedTime});
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Net Method
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#region Net Method
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
 export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModuleData> {
-//#region Member
+    //#region Member
     private _eventListeners: EventListener[] = [];
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region MetaWorld Event
+    //#region MetaWorld Event
     protected onAwake(): void {
         super.onAwake();
     }
 
     protected onJStart(): void {
-//#region Member init
-//#endregion ------------------------------------------------------------------------------------------
-
-//#region Event Subscribe
+        //#region Member init
+        //#endregion ------------------------------------------------------------------------------------------
+        //#region Event Subscribe
         // this._eventListeners.push(Event.addLocalListener(EventDefine.EVENT_NAME, CALLBACK));
-//#endregion ------------------------------------------------------------------------------------------
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onUpdate(dt: number): void {
@@ -241,9 +359,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
 
     protected onDestroy(): void {
         super.onDestroy();
-//#region Event Unsubscribe
-        this._eventListeners.forEach(value => value.disconnect());
-//#endregion ------------------------------------------------------------------------------------------
+        //#region Event Unsubscribe
+        this._eventListeners.forEach((value) => value.disconnect());
+        //#endregion ------------------------------------------------------------------------------------------
     }
 
     protected onExecute(type: number, ...params: any[]): void {
@@ -256,19 +374,37 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
 
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-
+        // const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData)
+        // petStatisticData.resetConsumeData()
         const now = Date.now();
         const d = this.getPlayerData(player);
+        d.resetConsumeRecord();
         d.recordEnter(now);
         d.save(false);
     }
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
+        // console.log("======== onPlayerLeft ========");
         let now = Date.now();
+        const playerData = DataCenterS.getData(player, PetSimulatorPlayerModuleData);
+        const petBagData = DataCenterS.getData(player, PetBagModuleData);
+        const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData);
+        const energyS = ModuleService.getModule(EnergyModuleS);
+        const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
+        const playerConsumeData = petStatisticData.playerConsumeData ?? {
+            diamondAdd: 0,
+            diamondRed: 0,
+            gold_1_add: 0,
+            gold_1_red: 0,
+            gold_2_add: 0,
+            gold_2_red: 0,
+            gold_3_add: 0,
+            gold_3_red: 0,
+        };
         Gtk.queryModuleData<{
-            playerLoginRecord: [number, number][],
-            playerElapsedTimeS: number
+            playerLoginRecord: [number, number][];
+            playerElapsedTimeS: number;
         }>(PsStatisticModuleData.name, player.userId).then((d) => {
             d.playerLoginRecord[0][1] = now;
             d.playerElapsedTimeS += (d.playerLoginRecord[0][1] ?? now) - d.playerLoginRecord[0][0];
@@ -276,53 +412,58 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 d.playerLoginRecord.pop();
             }
             Gtk.updateModuleData(PsStatisticModuleData.name, player.userId, d);
-			const playerData = DataCenterS.getData(player.playerId, PetSimulatorPlayerModuleData);
-            const petBagData = DataCenterS.getData(player.playerId, PetBagModuleData);
-			const login = d.playerLoginRecord[0][0] || 0;
-			const logout = d.playerLoginRecord[0][1] || 0;
-			const online = logout - login;
-			const curPets = petBagData.sortBag();
-			const statisticData: PetSimulatorStatisticNeedFill = {
-				diamond: playerData.diamond,
-				diamondAdd: 0,
-				diamondRed: 0,
-				gold_1: playerData.gold,
-				gold_1_add: 0,
-				gold_1_red: 0,
-				gold_2: playerData.gold2,
-				gold_2_add: 0,
-				gold_2_red: 0,
-				gold_3: playerData.gold3,
-				gold_3_add: 0,
-				gold_3_red: 0,
-				login,
-				logout,
-				online,
-				pet: [],
-				petAdd: 0,
-				petCnt: curPets?.length ?? 0,
-				petMax: 0,
-				staMax: 0,
-				staPotAdd: 0,
-				staPotCnt: 0,
-				staRed: 0,
-				stamina: 0,
-			}
-			ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData)
-        });
+            console.log(" playerData:", JSON.stringify(playerData));
 
+            const login = Math.floor((d.playerLoginRecord[0][0] || 0) / 1000); // s
+            const logout = Math.floor((d.playerLoginRecord[0][1] || 0) / 1000);
+            const online = logout - login;
+            const allPets = petBagData.PetStatisticArr ?? [];
+            const petBagSortedItems = petBagData.sortBag();
+            const petMax = petBagSortedItems?.length ? Math.max(...petBagSortedItems.map((pet) => pet.p.a)) : 0;
+            const statisticData: PetSimulatorStatisticNeedFill = {
+                diamond: playerData?.diamond ?? 0,
+                diamondAdd: playerConsumeData?.diamondAdd ?? 0,
+                diamondRed: playerConsumeData?.diamondRed ?? 0,
+                gold_1: playerData?.gold ?? 0,
+                gold_1_add: playerConsumeData?.gold_1_add ?? 0,
+                gold_1_red: playerConsumeData?.gold_1_red ?? 0,
+                gold_2: playerData.gold2 ?? 0,
+                gold_2_add: playerConsumeData?.gold_2_add ?? 0,
+                gold_2_red: playerConsumeData?.gold_2_red ?? 0,
+                gold_3: playerData.gold3 ?? 0,
+                gold_3_add: playerConsumeData?.gold_3_add ?? 0,
+                gold_3_red: playerConsumeData?.gold_3_red ?? 0,
+                login,
+                logout,
+                online,
+                pet: allPets,
+                petAdd: petStatisticData?.playerPetAdd ?? 0,
+                petCnt: petBagSortedItems?.length ?? 0,
+                petMax,
+                staMax,
+                staPotAdd: 0,
+                staPotCnt: 0,
+                staRed,
+                stamina,
+            };
+            Log4Ts.log(
+                StatisticModuleS,
+                " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData),
+            );
+            ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData);
+        });
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Method
+    //#region Method
     public getPlayerData(player: mw.Player | string | number): PsStatisticModuleData {
         return super.getPlayerData(player);
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
-//#region Net Method
+    //#region Net Method
     public net_reportPlayerDataInterval(data: PlayerIntervalData) {
         let playerId = this.currentPlayerId;
 
@@ -333,14 +474,16 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         }
         let enteredTime = d.playerLastEnteredTime;
         if (Math.abs(Date.now() - enteredTime - data.elapsedTime) > GtkTypes.Interval.PerHour) {
-            let playerMaybeCheatingReason = [`player maybe cheating.`,
+            let playerMaybeCheatingReason = [
+                `player maybe cheating.`,
                 `playerId: ${playerId}`,
                 `client elapsedTime: ${data.elapsedTime}`,
-                `server elapsedTime: ${Date.now() - enteredTime}`];
+                `server elapsedTime: ${Date.now() - enteredTime}`,
+            ];
             // this.getPlayerData(playerId).maybeCheatingReason.push(playerMaybeCheatingReason.join());
             Log4Ts.warn(StatisticModuleS, ...playerMaybeCheatingReason);
         }
     }
 
-//#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }

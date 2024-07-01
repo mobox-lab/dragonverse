@@ -3,6 +3,7 @@ import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
+import PsStatisticModuleData from "../statistic/StatisticModule";
 
 export class PetSimulatorPlayerModuleData extends Subdata {
 
@@ -88,12 +89,12 @@ export class PetSimulatorPlayerModuleData extends Subdata {
     }
 
     /**增加金币 */
-    public addGold(value: number, coinType: GlobalEnum.CoinType, isSync: boolean = true): void {
-        this.changeGold(value, coinType, isSync);
+    public addGold(value: number, coinType: GlobalEnum.CoinType, isSync: boolean = true, playerId: number): void {
+        this.changeGold(value, coinType, isSync, playerId);
     }
 
     /**减少金币 */
-    public reduceGold(value: number, coinType: GlobalEnum.CoinType, isSync: boolean = true): boolean {
+    public reduceGold(value: number, coinType: GlobalEnum.CoinType, isSync: boolean = true, playerId: number): boolean {
         let ret: boolean = true;
         switch (coinType) {
             case GlobalEnum.CoinType.FirstWorldGold:
@@ -115,12 +116,12 @@ export class PetSimulatorPlayerModuleData extends Subdata {
             oTraceError("金币不足");
             return ret;
         }
-        this.changeGold(-value, coinType, isSync);
+        this.changeGold(-value, coinType, isSync, playerId);
         return ret;
     }
 
     /**金币改变 */
-    private changeGold(value: number, coinType: GlobalEnum.CoinType, isSync: boolean): void {
+    private changeGold(value: number, coinType: GlobalEnum.CoinType, isSync: boolean, playerId: number): void {
         switch (coinType) {
             case GlobalEnum.CoinType.FirstWorldGold:
                 this.gold += value;
@@ -141,13 +142,15 @@ export class PetSimulatorPlayerModuleData extends Subdata {
             default:
                 break;
         }
+        const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData);
+        statisticData.recordConsume(coinType, value);
         this.save(isSync);
         this.onGoldChange.call(coinType);
     }
 
     /**增加钻石 */
-    public addDiamond(value: number, isSync: boolean = true): void {
-        this.changeDiamond(value, true, isSync);
+    public addDiamond(value: number, isSync: boolean = true, playerId: number): void {
+        this.changeDiamond(value, true, isSync, playerId);
     }
 
     /**判断金币钻石是否达上限 */
@@ -157,27 +160,30 @@ export class PetSimulatorPlayerModuleData extends Subdata {
     }
 
     /**减少钻石 */
-    public reduceDiamond(value: number, isSync: boolean = true): boolean {
+    public reduceDiamond(value: number, isSync: boolean = true, playerId: number): boolean {
         if (this.diamond < value) {
             oTraceError("钻石不足");
             return false;
         }
-        this.changeDiamond(value, false, isSync);
+        this.changeDiamond(value, false, isSync, playerId);
         return true;
     }
+
     /**钻石改变 */
-    private changeDiamond(value: number, isAdd: boolean, isSync: boolean): void {
+    private changeDiamond(value: number, isAdd: boolean, isSync: boolean, playerId: number): void {
         isAdd ? this.diamond += value : this.diamond -= value;
         this.diamond = this.isMaxCoin(this.diamond);
+        const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData);
+        statisticData.recordConsume(GlobalEnum.CoinType.Diamond, isAdd ? value : -value);
         this.save(isSync);
         this.onDiamondChange.call();
     }
 
-		/** GM 测试用 */
-		public clearDiamondAndGold () {
-				this.reduceDiamond(this.diamond, true);
-				this.reduceGold(this.gold, GlobalEnum.CoinType.FirstWorldGold, true);
-				this.reduceGold(this.gold2, GlobalEnum.CoinType.SecondWorldGold, true);
-				this.reduceGold(this.gold3, GlobalEnum.CoinType.ThirdWorldGold, true); 
-		}
+    /** GM 测试用 */
+    public clearDiamondAndGold(playerId: number) {
+        this.reduceDiamond(this.diamond, true, playerId);
+        this.reduceGold(this.gold, GlobalEnum.CoinType.FirstWorldGold, true, playerId);
+        this.reduceGold(this.gold2, GlobalEnum.CoinType.SecondWorldGold, true, playerId);
+        this.reduceGold(this.gold3, GlobalEnum.CoinType.ThirdWorldGold, true, playerId);
+    }
 }
