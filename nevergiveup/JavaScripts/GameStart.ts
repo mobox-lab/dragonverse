@@ -103,6 +103,8 @@ export default class GameStart extends Script {
             EventsTool.start();
         }
         else {
+            InputUtil.isCursorVisible=true;
+            InputUtil.isLockMouse = false;
             this.checkGM();
             this.setlanguage();
             // ModuleService.ready().then(() => {
