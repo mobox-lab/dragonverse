@@ -511,7 +511,7 @@ interface UserP12BagItem {
     /**
      * P12 Item Id.
      */
-    resId: string,
+    resId: P12ItemId,
 
     /**
      * 可使用.
@@ -869,12 +869,13 @@ export const P12ItemIdMap = {
      * 体力药水
      */
     StaminaPotion: "10003",
-};
+} as const;
 
 /**
  * P12 物品键名.
  */
 export type P12ItemKeys = keyof typeof P12ItemIdMap;
+export type P12ItemId = typeof P12ItemIdMap[P12ItemKeys];
 //#endregion
 
 export default class AuthModuleData extends JModuleData {

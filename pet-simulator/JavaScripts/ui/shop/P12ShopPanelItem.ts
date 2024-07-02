@@ -1,4 +1,5 @@
 import Gtk from "../../util/GToolkit";
+import { formatEther } from "@p12/viem";
 import { P12ShopItem } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";
 import { GameConfig } from "../../config/GameConfig";
@@ -43,7 +44,7 @@ export class P12ShopPanelItem extends Online_shopItem_Generate {
         this.data = data;
         this.text_Name.text = GameConfig.Language[data.name].Value;
         this.text_Describe.text = GameConfig.Language[data.description].Value;
-        this.text_MoboxNumber.text = data.value;
+        this.text_MoboxNumber.text = formatEther(data.value);
         this.img_Icon.imageGuid = data.icon;
     }
 

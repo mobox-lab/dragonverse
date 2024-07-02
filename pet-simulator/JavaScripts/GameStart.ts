@@ -47,7 +47,7 @@ import GMHUD_Generate from "./ui-generate/common/GM/GMHUD_generate";
 import PlayerSettingModuleData, { PlayerSettingModuleC, PlayerSettingModuleS } from "./modules/player-setting/PlayerSettingModule";
 import { VectorExt } from "./declaration/vectorext";
 import GodModService from "mw-god-mod";
-import { P12ShopModuleC, P12ShopModuleS, PsP12ShopModuleData } from "./modules/shop/P12ShopModule";
+import { P12BagModuleC, P12BagModuleS, PsP12BagModuleData } from "./modules/P12Bag/P12BagModule";
 
 // declare global {
 //     var UE: any;
@@ -245,7 +245,7 @@ export default class GameStart extends mw.Script {
         ModuleService.registerModule(StatisticModuleS, StatisticModuleC, PsStatisticModuleData);
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
         ModuleService.registerModule(PlayerSettingModuleS, PlayerSettingModuleC, PlayerSettingModuleData);
-        ModuleService.registerModule(P12ShopModuleS, P12ShopModuleC, PsP12ShopModuleData);
+        ModuleService.registerModule(P12BagModuleS, P12BagModuleC, PsP12BagModuleData);
     }
 
     /**

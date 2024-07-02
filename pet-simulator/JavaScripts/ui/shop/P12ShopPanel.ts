@@ -1,12 +1,12 @@
 import Gtk from "../../util/GToolkit";
+import { formatEther } from "@p12/viem";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { P12ShopConfig } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";
-import { formatEther, parseEther } from "@p12/viem";
 import { P12ShopPanelItem } from "./P12ShopPanelItem";
-import { AuthModuleC } from "../../modules/auth/AuthModule";
+import { P12BagModuleC } from "../../modules/P12Bag/P12BagModule";
+import { AuthModuleC, ConsumeId } from "../../modules/auth/AuthModule";
 import Online_shop_Generate from "../../ui-generate/Onlineshop/Online_shop_generate";
-import { P12ShopModuleC } from "../../modules/shop/P12ShopModule";
 
 enum ShopToast {
     Success,
@@ -16,10 +16,10 @@ enum ShopToast {
 export default class P12ShopPanel extends Online_shop_Generate {
 
     private _authC: AuthModuleC;
-    private _shopC: P12ShopModuleC;
+    private _bagC: P12BagModuleC;
     private _checkItem: P12ShopPanelItem;
     private _count = 0;
-    private _total = Yoact.createYoact<{ data: number }>({data: 0});
+    private _total = Yoact.createYoact<{ data: bigint }>({data: 0n});
     private _onShopping = false;
 
     private get authC(): AuthModuleC | null {
@@ -27,9 +27,9 @@ export default class P12ShopPanel extends Online_shop_Generate {
         return this._authC;
     }
 
-    private get shopC(): P12ShopModuleC | null {
-        if (!this._shopC) this._shopC = ModuleService.getModule(P12ShopModuleC);
-        return this._shopC;
+    private get bagC(): P12BagModuleC | null {
+        if (!this._bagC) this._bagC = ModuleService.getModule(P12BagModuleC);
+        return this._bagC;
     }
 
     protected onStart(): void {
@@ -46,11 +46,11 @@ export default class P12ShopPanel extends Online_shop_Generate {
 
         Yoact.bindYoact(() => {
             const tokenBalance = this.authC.currency.count ?? "0";
-            const available = BigInt(tokenBalance) - parseEther(this._total.data.toString());
-            this.text_All.text = this._total.data.toString();
+            const available = BigInt(tokenBalance) - this._total.data;
+            this.text_All.text = formatEther(this._total.data);
             this.text_Left.text = formatEther(available > 0n ? available : 0n);
             // 同步按钮点击状态
-            this.btn_Buy.enable = this._total.data > 0 && available >= 0n;
+            this.btn_Buy.enable = this._total.data > 0n && available >= 0n;
         });
     }
 
@@ -120,13 +120,13 @@ export default class P12ShopPanel extends Online_shop_Generate {
      */
     private onItemChecked(item: P12ShopPanelItem, count: number) {
         if (!item.data) return;
-        if (item.data.id !== this._checkItem?.data.id) {
+        if (item.data.resId !== this._checkItem?.data.resId) {
             this._checkItem?.resetStatus();
             this._checkItem = item;
             Gtk.trySetVisibility(this._checkItem.img_Background2, true);
         }
         this._count = count;
-        this._total.data = this._count * parseInt(this._checkItem.data.value);
+        this._total.data = BigInt(this._count) * this._checkItem.data.value;
     }
 
     /**
@@ -137,7 +137,7 @@ export default class P12ShopPanel extends Online_shop_Generate {
         this._checkItem.resetStatus();
         this._checkItem = undefined;
         this._count = 0;
-        this._total.data = 0;
+        this._total.data = 0n;
         this._onShopping = false;
     }
 
@@ -150,10 +150,13 @@ export default class P12ShopPanel extends Online_shop_Generate {
         const count = this._count;
         const item = this._checkItem.data;
 
-        this.shopC.consumeCurrency().then((res) => {
-            // TODO: 完成购买接口
-            Log4Ts.log(P12ShopPanel, `购买 ${item.name}, 数量: ${count}`);
-            // buy success
+        Log4Ts.log(P12ShopPanel, `purchase ${ConsumeId[item.consumeId]} ${count}`);
+        this.bagC.consumeCurrency(item.consumeId, count).then((res) => {
+            if (!res) {
+                this.toast(ShopToast.Failure, "Buy failed");
+                return;
+            }
+            this.bagC.changeItemCount(item.resId, count);
             this.toast(ShopToast.Success, "Buy succeeded");
             this.resetShopping();
         });
