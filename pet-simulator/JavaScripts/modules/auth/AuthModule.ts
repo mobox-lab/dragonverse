@@ -53,6 +53,7 @@ addGMCommand(
     (player, params) => {
         mwext.ModuleService.getModule(AuthModuleS).consumeCurrency(
             player.userId,
+            ConsumeId.CaptureBall,
             params === 0 ? 1 : params);
     },
     undefined,
@@ -362,6 +363,15 @@ interface QueryCurrencyRespData {
 }
 
 /**
+ * 商品 Id.
+ */
+export enum ConsumeId {
+    CaptureBall = 1,
+    DragonEgg = 2,
+    StaminaPotion = 3,
+}
+
+/**
  * 消费 P12 mdbl 币 请求参数.
  */
 interface ConsumeCurrencyReq extends UserSceneReq {
@@ -371,9 +381,9 @@ interface ConsumeCurrencyReq extends UserSceneReq {
     orderId: string;
 
     /**
-     * 暂时先传 1 或 2.
+     * 商品 Id.
      */
-    consumeId: number;
+    consumeId: ConsumeId;
 
     /**
      * 购买次数.
@@ -392,6 +402,39 @@ interface ConsumeCurrencyReq extends UserSceneReq {
      * @desc 未定.
      */
     price?: number;
+}
+
+/**
+ * 消耗 体力药水 请求参数.
+ */
+interface ConsumePotionReq extends UserDataReq {
+    /**
+     * 使用数量.
+     */
+    useAmount: number;
+}
+
+/**
+ * 消耗 体力药水 返回值.
+ */
+interface ConsumePotionRespData {
+    walletAddress: string,
+    /**
+     * 体力上限恢复时长预期. s
+     */
+    gameStaminaRecoverySec: number,
+    /**
+     * 当前体力上限.
+     */
+    stamina: number,
+    /**
+     * 剩余数量.
+     */
+    balance: number,
+    /**
+     * 回复量.
+     */
+    recoveryStaminaAmount: number,
 }
 
 /**
@@ -1047,6 +1090,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly CONSUME_CURRENCY_URI = "/pge-game/consume";
 
     /**
+     * 消耗体力药水 Uri.
+     */
+    private static readonly POTION_USE_URI = "/pge-game/stamina/potion-use";
+
+    /**
      * 汇报 宠物模拟器排行榜 Uri.
      * @private
      */
@@ -1087,7 +1135,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * @type {string}
      * @private
      */
-    private static readonly TEST_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHg4NTBGZTI3ZjYzZGUxMmI2MDFDMDIwM2I2MmQ3OTk1NDYyRDFEMUJjIiwibm9uY2UiOiJ2eUpaZW42NEttTlFSSmN4QyIsImlhdCI6MTcxOTQ4MjMyMiwiZXhwIjoxNzIwMDg3MTIyfQ.fRzT2iE71D7V0uPKjsfzAsOB-8Nr8lEd0pcDAMghbdw";
+    private static readonly TEST_TOKEN = "TEST_TOKEN";
 
     /**
      * 测试用 getToken Url.
@@ -1135,6 +1183,22 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     private static get RELEASE_CONSUME_CURRENCY_URL() {
         return this.RELEASE_P12_DOMAIN + this.CONSUME_CURRENCY_URI;
+    }
+
+    /**
+     * 测试用 消耗体力药水 Url.
+     * @private
+     */
+    private static get TEST_POTION_USE_URL() {
+        return this.TEST_P12_DOMAIN + this.POTION_USE_URI;
+    }
+
+    /**
+     * 发布用 消耗体力药水 Url.
+     * @private
+     */
+    private static get RELEASE_POTION_USE_URL() {
+        return this.RELEASE_P12_DOMAIN + this.POTION_USE_URI;
     }
 
     /**
@@ -1564,7 +1628,10 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.setCurrency(userId, currentCurrency);
     }
 
-    public async consumeCurrency(userId: string, count: number, price?: number): Promise<boolean> {
+    public async consumeCurrency(userId: string,
+                                 consumeId: ConsumeId,
+                                 count: number,
+                                 price?: number): Promise<boolean> {
         const d = mwext.DataCenterS.getData(userId, AuthModuleData);
         if (!d) {
             Log4Ts.error(AuthModuleS, `player data of user ${userId} is not exist.`);
@@ -1576,20 +1643,21 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             sceneId,
             sceneName,
             orderId: new UUID(4).toString(),
-            consumeId: 1,
+            consumeId,
             buyCnt: count,
             timestamp: Math.floor(Date.now() / 1e3),
             price,
         };
 
-        const respInJson = await this.correspondHandler<QueryResp<QueryCurrencyRespData>>(
-            requestParam,
-            AuthModuleS.RELEASE_CONSUME_CURRENCY_URL,
-            AuthModuleS.TEST_CONSUME_CURRENCY_URL,
-            true,
-            true,
-            userId,
-        );
+        const respInJson =
+            await this.correspondHandler<QueryResp<QueryCurrencyRespData>>(
+                requestParam,
+                AuthModuleS.RELEASE_CONSUME_CURRENCY_URL,
+                AuthModuleS.TEST_CONSUME_CURRENCY_URL,
+                true,
+                true,
+                userId,
+            );
 
         if (respInJson.code !== 200) {
             Log4Ts.error(AuthModuleS, `consume currency failed. ${JSON.stringify(respInJson)}`);
@@ -1601,6 +1669,39 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.setCurrency(userId, currentCurrency);
 
         return respInJson.message === "success";
+    }
+
+    public async consumePotion(userId: string, count: number): Promise<ConsumePotionRespData | undefined> {
+        const d = mwext.DataCenterS.getData(userId, AuthModuleData);
+        if (!d) {
+            Log4Ts.error(AuthModuleS, `player data of user ${userId} is not exist.`);
+            return undefined;
+        }
+
+        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+        const requestParam: ConsumePotionReq = {
+            userId,
+            sceneId,
+            sceneName,
+            useAmount: count,
+        };
+
+        const respInJson = await this.correspondHandler<QueryResp<ConsumePotionRespData>>(
+            requestParam,
+            AuthModuleS.RELEASE_POTION_USE_URL,
+            AuthModuleS.TEST_POTION_USE_URL,
+        );
+
+        if (respInJson.code !== 200) {
+            Log4Ts.error(AuthModuleS, `consume potion failed. ${JSON.stringify(respInJson)}`);
+            if (respInJson.code === 401) this.onTokenExpired(userId);
+            return undefined;
+        }
+
+        this.playerStaminaRecoveryMap.set(userId, respInJson.data.gameStaminaRecoverySec ?? 0);
+        this.playerStaminaLimitMap.set(userId, respInJson.data.stamina ?? 0);
+
+        return respInJson.data;
     }
 
     public async queryUserP12Bag(userId: string): Promise<UserP12BagRespData | undefined> {
@@ -1906,8 +2007,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
+        const url = GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl ? releaseUrl : testUrl;
+        Log4Ts.log(AuthModuleS,
+            `req for ${url}.`,
+            silence ? "" :
+                `data: ${JSON.stringify(body)}`);
         const resp = await fetch(
-            `${GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl ? releaseUrl : testUrl}`,
+            url,
             {
                 method: "POST",
                 headers,
