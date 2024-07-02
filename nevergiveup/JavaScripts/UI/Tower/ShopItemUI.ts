@@ -1,8 +1,8 @@
 ﻿/*
  * @Author: shifu.huang
  * @Date: 2024-01-03 14:03:02
- * @LastEditors: shifu.huang
- * @LastEditTime: 2024-01-12 14:59:57
+ * @LastEditors: haoran.zhang haoran.zhang@appshahe.com
+ * @LastEditTime: 2024-07-02 09:41:08
  * @FilePath: \nevergiveup\JavaScripts\UI\Tower\ShopItemUI.ts
  * @Description: 修改描述
  */
@@ -81,7 +81,8 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 	 */
 	private initObj() {
 		this._cfg = GameConfig.Tower.getElement(this._cfgID);
-		Utils.setImageByAsset(this.towerImg, this._cfg);
+		//Utils.setImageByAsset(this.towerImg, this._cfg);
+		this.towerImg.imageGuid = this._cfg.imgGuid;
 		this.nameTxt.text = this._cfg.name;
 		this.txt_sell.text = this._cfg.shopPrice.toFixed(0);
 		this.refreshState();

@@ -57,7 +57,8 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 			this.towerImg.imageGuid = this._oriImg;
 			this.valueText.text = "0";
 		} else {
-			Utils.setImageByAsset(this.towerImg, this._cfg);
+			//Utils.setImageByAsset(this.towerImg, this._cfg);
+			this.towerImg.imageGuid = this._cfg.imgGuid;
 			this.valueText.text = this._cfg.spend[0].toString();
 		}
 
