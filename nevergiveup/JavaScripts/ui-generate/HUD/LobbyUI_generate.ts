@@ -25,23 +25,23 @@ export default class LobbyUI_Generate extends UIScript {
 	private mExpbar_Internal: mw.ProgressBar
 	public get mExpbar(): mw.ProgressBar {
 		if(!this.mExpbar_Internal&&this.uiWidgetBase) {
-			this.mExpbar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/expCanvas/Canvas/mExpbar') as mw.ProgressBar
+			this.mExpbar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/Canvas/mExpbar') as mw.ProgressBar
 		}
 		return this.mExpbar_Internal
-	}
-	private img_BG_1_Internal: mw.Image
-	public get img_BG_1(): mw.Image {
-		if(!this.img_BG_1_Internal&&this.uiWidgetBase) {
-			this.img_BG_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/expCanvas/Canvas/img_BG_1') as mw.Image
-		}
-		return this.img_BG_1_Internal
 	}
 	private mExp_Internal: mw.TextBlock
 	public get mExp(): mw.TextBlock {
 		if(!this.mExp_Internal&&this.uiWidgetBase) {
-			this.mExp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/expCanvas/Canvas/mExp') as mw.TextBlock
+			this.mExp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/Canvas/mExp') as mw.TextBlock
 		}
 		return this.mExp_Internal
+	}
+	private mLevel_1_Internal: mw.TextBlock
+	public get mLevel_1(): mw.TextBlock {
+		if(!this.mLevel_1_Internal&&this.uiWidgetBase) {
+			this.mLevel_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/Canvas/mLevel_1') as mw.TextBlock
+		}
+		return this.mLevel_1_Internal
 	}
 	private moneyCanvas_Internal: mw.Canvas
 	public get moneyCanvas(): mw.Canvas {
@@ -277,6 +277,9 @@ export default class LobbyUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.mExp)
+	   
+	
+	   this.initLanguage(this.mLevel_1)
 	   
 	
 	   this.initLanguage(this.goldTxt)
