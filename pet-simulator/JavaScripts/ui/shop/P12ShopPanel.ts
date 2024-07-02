@@ -6,17 +6,30 @@ import { formatEther, parseEther } from "@p12/viem";
 import { P12ShopPanelItem } from "./P12ShopPanelItem";
 import { AuthModuleC } from "../../modules/auth/AuthModule";
 import Online_shop_Generate from "../../ui-generate/Onlineshop/Online_shop_generate";
+import { P12ShopModuleC } from "../../modules/shop/P12ShopModule";
+
+enum ShopToast {
+    Success,
+    Failure
+}
 
 export default class P12ShopPanel extends Online_shop_Generate {
 
     private _authC: AuthModuleC;
+    private _shopC: P12ShopModuleC;
     private _checkItem: P12ShopPanelItem;
     private _count = 0;
     private _total = Yoact.createYoact<{ data: number }>({data: 0});
+    private _onShopping = false;
 
     private get authC(): AuthModuleC | null {
         if (!this._authC) this._authC = ModuleService.getModule(AuthModuleC);
         return this._authC;
+    }
+
+    private get shopC(): P12ShopModuleC | null {
+        if (!this._shopC) this._shopC = ModuleService.getModule(P12ShopModuleC);
+        return this._shopC;
     }
 
     protected onStart(): void {
@@ -43,6 +56,16 @@ export default class P12ShopPanel extends Online_shop_Generate {
 
     protected onShow(...params: any[]): void {
         super.onShow(...params);
+    }
+
+    private toast(type: ShopToast, message: string) {
+        Gtk.trySetVisibility(this.can_BuyTips, true);
+        this.text_SuccessText.text = message;
+        this.img_Icon1.imageGuid = type === ShopToast.Success ? "373796" : "373795";
+
+        setTimeout(() => {
+            Gtk.trySetVisibility(this.can_BuyTips, false);
+        }, 3000);
     }
 
     /**
@@ -100,26 +123,39 @@ export default class P12ShopPanel extends Online_shop_Generate {
         if (item.data.id !== this._checkItem?.data.id) {
             this._checkItem?.resetStatus();
             this._checkItem = item;
-            this._checkItem.img_Background2.visibility = SlateVisibility.Visible;
+            Gtk.trySetVisibility(this._checkItem.img_Background2, true);
         }
         this._count = count;
         this._total.data = this._count * parseInt(this._checkItem.data.value);
     }
 
     /**
-     * 处理购买
+     * 重置购买选择
+     * @private
      */
-    private handleBuy() {
-        if (!this._checkItem || !this._count) return;
-        const item = this._checkItem.data;
-        const count = this._count;
-        // TODO: 完成购买接口
-        Log4Ts.log(P12ShopPanel, `购买 ${item.name}, 数量: ${count}`);
-        // buy success
+    private resetShopping() {
         this._checkItem.resetStatus();
         this._checkItem = undefined;
         this._count = 0;
         this._total.data = 0;
+        this._onShopping = false;
     }
 
+    /**
+     * 处理购买
+     */
+    private handleBuy() {
+        if (!this._checkItem || !this._count || this._onShopping) return;
+        this._onShopping = true;
+        const count = this._count;
+        const item = this._checkItem.data;
+
+        this.shopC.consumeCurrency().then((res) => {
+            // TODO: 完成购买接口
+            Log4Ts.log(P12ShopPanel, `购买 ${item.name}, 数量: ${count}`);
+            // buy success
+            this.toast(ShopToast.Success, "Buy succeeded");
+            this.resetShopping();
+        });
+    }
 }
