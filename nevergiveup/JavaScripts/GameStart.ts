@@ -6,11 +6,11 @@
  * @FilePath: \nevergiveup\JavaScripts\GameStart.ts
  * @Description: 修改描述
  */
-import { GM } from "module_gm";
+// import { GM } from "module_gm";
 import { GuideDataHelper, GuideModuleC, GuideModuleS } from "module_guide";
 import { AirdropManager } from "./Airdrop/AirdropManager";
 import { DanmuManager } from "./Danmu/DanmuManager";
-import { GMPanel } from "./GMPanel";
+// import { GMPanel } from "./GMPanel";
 import { GameManager } from "./GameManager";
 import { GuideManager } from "./Guide/GuideManager";
 import CardModuleC from "./Modules/CardModule/CardModuleC";
@@ -34,6 +34,7 @@ import { EventsTool } from "./tool/EventsTool";
 import { Reward } from "./tool/Reward";
 import { SoundUtil } from "./tool/SoundUtil";
 import { ComponentFactory } from "./enemy/components/ComponentFactory";
+import GodModService from "mw-god-mod";
 export namespace Config {
     export let skipGuide: boolean = true;
     export let danmukuSpeed: number = 300;
@@ -46,7 +47,6 @@ export namespace Config {
     export let goldAnimBackTime: number = 0.5;
     export let goldAnimRandAmount: Vector2 = new Vector2(1, 3);
 
-
     export let animationTime: number = 1;
 }
 @Component
@@ -57,11 +57,12 @@ export default class GameStart extends Script {
     presistSaving: boolean = true;
     /**语言设置 */
     @mw.Property({
-        displayName: "语言设置", selectOptions: {
-            "默认": "-1",
-            "英文": "0",
-            "中文": "1",
-        }
+        displayName: "语言设置",
+        selectOptions: {
+            默认: "-1",
+            英文: "0",
+            中文: "1",
+        },
     })
     selectedIndex: string = "-1";
     @mw.Property({ displayName: "忽略引导" })
@@ -101,11 +102,17 @@ export default class GameStart extends Script {
         this.useUpdate = true;
         if (SystemUtil.isServer()) {
             EventsTool.start();
-        }
-        else {
-            InputUtil.isCursorVisible=true;
+        } else {
+            InputUtil.isCursorVisible = true;
             InputUtil.isLockMouse = false;
-            this.checkGM();
+            // this.checkGM();
+            if (SystemUtil.isClient()) {
+                if (this.isGM) {
+                    GodModService.getInstance().showGm();
+                    return;
+                }
+            }
+
             this.setlanguage();
             // ModuleService.ready().then(() => {
             //     GuideManager.init();
@@ -115,8 +122,6 @@ export default class GameStart extends Script {
             DanmuManager.init();
             ComponentFactory.init();
         }
-
-
     }
 
     /**
@@ -132,9 +137,7 @@ export default class GameStart extends Script {
     }
 
     /** 脚本被销毁时最后一帧执行完调用此函数 */
-    protected onDestroy(): void {
-
-    }
+    protected onDestroy(): void {}
 
     private registerModules() {
         ModuleService.registerModule(TimerModuleS, TimerModuleC, TimerModuleData);
@@ -145,26 +148,25 @@ export default class GameStart extends Script {
         ModuleService.registerModule(TaskModuleS, TaskModuleC, TaskModuleDataHelper);
     }
 
-    private checkGM() {
-        GM.checkAuthority(isGm => {
-            if (isGm || this.isGM) {
-                GM.start(GMPanel);
-                EventsTool.start();
-                // UIService.getUI(UIMain).maxSpeed = 15;
-            }
-        });
-    }
+    // private checkGM() {
+    //     GM.checkAuthority((isGm) => {
+    //         if (isGm || this.isGM) {
+    //             GM.start(GMPanel);
+    //             EventsTool.start();
+    //             // UIService.getUI(UIMain).maxSpeed = 15;
+    //         }
+    //     });
+    // }
 
     /**
- * 设置多语言
- * UI多语言设置
- */
+     * 设置多语言
+     * UI多语言设置
+     */
     private setlanguage() {
         //初始化表格语言
         GameConfig.initLanguage(Number(this.selectedIndex), (key) => {
             let ele = GameConfig.Language.getElement(key);
-            if (ele == null)
-                return "unknow_" + key;
+            if (ele == null) return "unknow_" + key;
             return ele.Value;
         });
         mw.UIScript.addBehavior("lan", (ui: mw.StaleButton | mw.TextBlock) => {
@@ -172,14 +174,11 @@ export default class GameStart extends Script {
             if (key) {
                 let lan = GameConfig.Language.getElement(key);
                 if (lan) {
-                    ui.text = (lan.Value);
+                    ui.text = lan.Value;
                 }
             }
-        })
+        });
         Event.dispatchToLocal(`LanguageInit`);
         console.error("初始化多语言.....");
     }
 }
-
-
-

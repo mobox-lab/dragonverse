@@ -14,7 +14,6 @@
  * @FilePath: \nevergiveup\JavaScripts\TweenCommon.ts
  * @Description: 修改描述
  */
-import { AddGMCommand } from "module_gm";
 import { Config } from "./GameStart";
 import { UIPool } from "./UIPool";
 import { ZwtTween } from "./ZwtTween";

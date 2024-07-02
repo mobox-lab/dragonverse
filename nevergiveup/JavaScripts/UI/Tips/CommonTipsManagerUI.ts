@@ -1,4 +1,3 @@
-import { AddGMCommand } from "module_gm";
 import CommonTipsUI_Generate from "../../ui-generate/Tips/CommonTipsUI_generate";
 import CommonTipsItemUI from "./CommonTipsItemUI";
 import { LastWaveTipsUI } from "./LastWaveTipsUI";

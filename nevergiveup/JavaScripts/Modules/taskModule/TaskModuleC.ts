@@ -5,7 +5,6 @@
  * @Description: Avatar Creator Development
  */
 
-import { AddGMCommand } from "module_gm";
 import { GameConfig } from "../../config/GameConfig";
 import { Task } from "./Task";
 import { TaskModuleDataHelper } from "./TaskModuleDataHelper";
@@ -16,8 +15,9 @@ import { EmTaskEvent, ItemType } from "../../tool/Enum";
 import { TimerModuleUtils } from "../TimeModule/time";
 import { MGSTool } from "../../tool/MGSTool";
 import { Reward } from "../../tool/Reward";
-import Utils from '../../Utils';
+import Utils from "../../Utils";
 import { GameManager } from "../../GameManager";
+import { addGMCommand } from "mw-god-mod";
 
 /**任务类型 */
 export enum EmTaskWay {
@@ -51,7 +51,6 @@ export enum EmTaskType {
     Main = 1,
     Daily = 2,
 }
-
 
 /**
  * 任务模块客户端，处理玩家的任务相关逻辑
@@ -88,31 +87,33 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
 
     //清空data中已经完成的日常任务
     private clearFinishDailyTask(isSave: boolean) {
-        console.log('hsf111====================== C端日常任务刷新', (isSave))
+        console.log("hsf111====================== C端日常任务刷新", isSave);
         // setTimeout(() => {//可能出现的情况，服务器还没就绪的时候请求，有概率报错https://pandora.233leyuan.com/crashAnalysis/exceptionDetails?app_name=com.meta.box&start_time=1704816000&end_time=1704956700&request_id=1745342006802169857&requestIdDetail=1745342130244730881&kindIndex=0
         //     Utils.log2FeiShu("C端日常任务刷新" + Player?.localPlayer?.userId + "hsf" + GameManager?.playerName);
         // }, 3000)
         TimeUtil.delayExecute(() => {
             //清空已经完成的任务
-            this.data.finishTasks = this.data.finishTasks.filter(taskId => GameConfig.Task.getElement(taskId).taskType != EmTaskType.Daily);
+            this.data.finishTasks = this.data.finishTasks.filter(
+                (taskId) => GameConfig.Task.getElement(taskId).taskType != EmTaskType.Daily
+            );
             isSave && this.server.net_clearFinishDailyTaskByPlayer();
             //初始化主线任务
             const allCfg = GameConfig.Task.getAllElement();
-            allCfg.forEach(element => {
+            allCfg.forEach((element) => {
                 if (element.taskType != EmTaskType.Daily) return;
                 const id = element.id;
                 this._tasks.has(id) && this._tasks.delete(id);
                 let task = new Task(id);
                 this._tasks.set(id, task);
-            })
-            this.checkRedPoint()
-        }, 1)
+            });
+            this.checkRedPoint();
+        }, 1);
     }
 
     /**
      * 判断一个任务是否已经完成
-     * @param taskId 
-     * @returns 
+     * @param taskId
+     * @returns
      */
     public judgeFinish(taskId: number) {
         return this.data.finishTasks.includes(taskId);
@@ -126,11 +127,11 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
         const allCfg = GameConfig.Task.getAllElement();
         // const finishTaskList = this.data.mainTasks;
         // const finishTask: Map<number, number> = new Map(finishTaskList.map((value, index) => [value, index]));
-        allCfg.forEach(element => {
+        allCfg.forEach((element) => {
             const id = element.id;
             let task = new Task(id);
             this._tasks.set(id, task);
-        })
+        });
     }
 
     /**
@@ -144,7 +145,9 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
                 break;
             }
         }
-        mw.UIService.getUI(LobbyUI).mImage_hotpoint.visibility = showFlag ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
+        mw.UIService.getUI(LobbyUI).mImage_hotpoint.visibility = showFlag
+            ? mw.SlateVisibility.Visible
+            : mw.SlateVisibility.Collapsed;
     }
 
     /**
@@ -158,7 +161,7 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
             if (value.type == type) {
                 arr.push(value);
             }
-        })
+        });
         return arr;
     }
 
@@ -175,13 +178,12 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
                     }
                 }
             }
-        })
+        });
         mw.UIService.getUI(LobbyUI).taskSetData(arr);
         if (UIService.getUI(UI_TaskMain).visible) {
             UIService.getUI(UI_TaskMain).refresh(true);
         }
     }
-
 
     /**
      * 玩家完成某个任务存档
@@ -202,13 +204,14 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
      * 任务完成后的奖励和提示
      * @param task 任务
      * @returns 是否完成
-    */
+     */
     async taskFinishAction(task: Task): Promise<boolean> {
         if (task.taskState != EmTaskState.Reward) return false;
         const taskId = task.taskID;
         if (this.data.finishTasks.includes(taskId)) return true;
-        if (await this.finishTask(taskId)) {//服务器验证
-            console.log('hsf====================== 领取奖励', JSON.stringify(taskId));
+        if (await this.finishTask(taskId)) {
+            //服务器验证
+            console.log("hsf====================== 领取奖励", JSON.stringify(taskId));
             MGSTool.finishTask(task.type.toFixed(0), taskId);
             MGSTool.rewardMGS(task.cfg.rewards, 8);
             Event.dispatchToLocal(EmTaskEvent.TaskFinish, taskId);
@@ -222,7 +225,13 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
 /**
  * GM 完成任务(输入ID
  */
-AddGMCommand("完成任务(输入ID", (player: mw.Player, value: string) => {
-    ModuleService.getModule(TaskModuleC).finishTask(Number(value));
-}, (player: mw.Player, value: string) => {
-}, "玩家");
+addGMCommand(
+    "完成任务(输入ID",
+    "string",
+    (value: string) => {
+        ModuleService.getModule(TaskModuleC).finishTask(Number(value));
+    },
+    (player: mw.Player, value: string) => {},
+    undefined,
+    "玩家"
+);

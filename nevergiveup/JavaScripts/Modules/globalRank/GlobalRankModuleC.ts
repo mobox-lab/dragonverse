@@ -8,7 +8,6 @@
  */
 
 
-// import { AddGMCommand } from "module_gm";
 import { RankInfoBase } from "./GlobalRankCustomData";
 import { GlobalRankDataHelper } from "./GlobalRankDataHelper";
 import { GlobalRankModuleS } from "./GlobalRankModuleS";

@@ -1,4 +1,4 @@
-import { AddGMCommand } from "module_gm";
+import { addGMCommand } from "mw-god-mod";
 
 /**
  * 定时调用的参数数据结构
@@ -12,7 +12,13 @@ class PeriodItem {
      * @param fn 回调
      * @param thisArg 参数
      */
-    constructor(public periodCount: number, public periodMinute: number, public actionDate: Action1<Date>, public fn: (a: Date) => void, public thisArg: any) { }
+    constructor(
+        public periodCount: number,
+        public periodMinute: number,
+        public actionDate: Action1<Date>,
+        public fn: (a: Date) => void,
+        public thisArg: any
+    ) {}
 }
 
 /**
@@ -37,7 +43,6 @@ interface ITimerModule {
  * 提供的对外的函数，不建议直接操作TimerModuleC或者TimerModuleS
  */
 export namespace TimerModuleUtils {
-
     /**
      * 获取玩家最后一次登录时间
      * @param playerId 玩家id，服务端需要填写，客户端保持默认
@@ -153,8 +158,20 @@ export namespace TimerModuleUtils {
      * @param periodCount 周期次数，1表示无限按照周期循环；其他正整数表示周期执行次数
      * @param periodMinute 周期，单位为分
      */
-    export function addTimer(year: number, month: number, day: number, hour: number, minute: number, fn: (a: Date) => void, thisArg: any = null, periodCount: number = 1, periodMinute: number = 0): void {
-        const timerModule = SystemUtil.isServer() ? ModuleService.getModule(TimerModuleS) : ModuleService.getModule(TimerModuleC);
+    export function addTimer(
+        year: number,
+        month: number,
+        day: number,
+        hour: number,
+        minute: number,
+        fn: (a: Date) => void,
+        thisArg: any = null,
+        periodCount: number = 1,
+        periodMinute: number = 0
+    ): void {
+        const timerModule = SystemUtil.isServer()
+            ? ModuleService.getModule(TimerModuleS)
+            : ModuleService.getModule(TimerModuleC);
         const key = `${year}-${month}-${day} ${hour}:${minute}`;
         let acts = timerModule.onTimerMap.get(key);
         if (!acts) {
@@ -173,7 +190,9 @@ export namespace TimerModuleUtils {
      */
     export function checkTimer(timerModule: ITimerModule, date: Date): void {
         //处理定时器相关内容
-        const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`
+        const key = `${date.getFullYear()}-${
+            date.getMonth() + 1
+        }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
         let acts = timerModule.onTimerMap.get(key);
         timerModule.onTimerMap.delete(key);
         if (!acts) return;
@@ -190,8 +209,17 @@ export namespace TimerModuleUtils {
             }
             if (nextCallDate) {
                 //添加下一个周期的执行时间
-                addTimer(nextCallDate.getFullYear(), nextCallDate.getMonth() + 1, nextCallDate.getDate(), nextCallDate.getHours(), nextCallDate.getMinutes(), 
-                    act.fn, act.thisArg, act.periodCount, act.periodMinute);
+                addTimer(
+                    nextCallDate.getFullYear(),
+                    nextCallDate.getMonth() + 1,
+                    nextCallDate.getDate(),
+                    nextCallDate.getHours(),
+                    nextCallDate.getMinutes(),
+                    act.fn,
+                    act.thisArg,
+                    act.periodCount,
+                    act.periodMinute
+                );
             }
         }
 
@@ -208,18 +236,20 @@ export namespace TimerModuleUtils {
     }
 
     /**
-    * 判断给定的两个date对象表示的是否是同一分钟内
-    * @param date1 date1
-    * @param date2 date2
-    * @returns 是否相同
-    */
+     * 判断给定的两个date对象表示的是否是同一分钟内
+     * @param date1 date1
+     * @param date2 date2
+     * @returns 是否相同
+     */
     export function dateEquals(date1: Date, date2: Date): boolean {
-       if (!date1 || !date2) return false;
-       return date1.getFullYear() == date2.getFullYear() &&
-           date1.getMonth() == date2.getMonth() &&
-           date1.getDate() == date2.getDate() &&
-           date1.getHours() == date2.getHours() &&
-           date1.getMinutes() == date2.getMinutes();
+        if (!date1 || !date2) return false;
+        return (
+            date1.getFullYear() == date2.getFullYear() &&
+            date1.getMonth() == date2.getMonth() &&
+            date1.getDate() == date2.getDate() &&
+            date1.getHours() == date2.getHours() &&
+            date1.getMinutes() == date2.getMinutes()
+        );
     }
 
     /**
@@ -235,7 +265,6 @@ export namespace TimerModuleUtils {
     }
 
     //=====================================================工具函数==========================================================
-
 
     /**
      * 获取从startTime开始，经过interval时间后的时间
@@ -271,7 +300,15 @@ export namespace TimerModuleUtils {
             return nextHourToday;
         }
         //返回次日
-        const nexHourTomorrow = new Date(date.getFullYear(), date.getMonth(), dayOfWeek + 1, nextHour, nextMinute, 0, 0);
+        const nexHourTomorrow = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            dayOfWeek + 1,
+            nextHour,
+            nextMinute,
+            0,
+            0
+        );
         return nexHourTomorrow;
     }
 
@@ -379,8 +416,7 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
      * 天改变进行调用
      * @param nowDate 当前时间
      */
-    private onDayChanged(nowDate: Date): void {
-    }
+    private onDayChanged(nowDate: Date): void {}
 
     /**
      * 服务器调用刷新
@@ -493,7 +529,7 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
      */
     private onDayChanged(nowDate: Date): void {
         //对在线的玩家主动更新一下数据，避免已经跨天后因为lastTimeStamp没有更新而导致当前上线再次触发新一天登录的逻辑，不在线的玩家在新一天登录时会主动调用net_setLastTimestampIfFirst来进行数据处理
-        Player.getAllPlayers().forEach(player => {
+        Player.getAllPlayers().forEach((player) => {
             const data = this.getPlayerData(player);
             if (data) {
                 data.lastTimeStamp = nowDate.getTime();
@@ -540,14 +576,18 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
  * 数据，目前只记录了玩家最后一次上线的时间，用于判断是否是新的一天上号
  */
 export class TimerModuleData extends Subdata {
-    
     /** 上一次登录时间 */
     @Decorator.persistence()
     public lastTimeStamp: number = 0;
 }
 
-AddGMCommand("新的一天", (player, value) => {
-    ModuleService.getModule(TimerModuleC).onDayRefresh.call(new Date());
-}, () => {
-    ModuleService.getModule(TimerModuleS).onDayRefresh.call(new Date());
-});
+addGMCommand(
+    "新的一天",
+    "string",
+    (value) => {
+        ModuleService.getModule(TimerModuleC).onDayRefresh.call(new Date());
+    },
+    () => {
+        ModuleService.getModule(TimerModuleS).onDayRefresh.call(new Date());
+    }
+);
