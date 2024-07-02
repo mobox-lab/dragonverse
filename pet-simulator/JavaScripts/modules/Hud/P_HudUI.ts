@@ -23,6 +23,7 @@ import SettingsPanel from "../../ui/settings/SettingsPanel";
 import { PlayerSettingModuleC } from "../player-setting/PlayerSettingModule";
 import { formatEther } from "@p12/viem";
 import P12ShopPanel from "../../ui/shop/P12ShopPanel";
+import SenzuBeanConfirmPanel from "../../ui/bag/SenzuBeanConfirmPanel";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -189,6 +190,10 @@ export class P_HudUI extends Hud_Generate {
             UIService.show(P12ShopPanel);
         });
 
+        // 消费道具
+        this.btn_Plus.onClicked.add(() => {
+            UIService.show(SenzuBeanConfirmPanel);
+        });
     }
 
     public updateTaskPoint() {

@@ -1,4 +1,4 @@
-import SlateVisibility = mw.SlateVisibility;
+import Gtk from "../../util/GToolkit";
 import { P12ShopItem } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";
 import { GameConfig } from "../../config/GameConfig";
@@ -26,7 +26,6 @@ export class P12ShopPanelItem extends Online_shopItem_Generate {
 
     // 初始化配置
     private initElement() {
-        this.img_Background2.visibility = SlateVisibility.Hidden;
         this.img_Background.renderOpacity = 0.5;
         this.btn_Item.onHovered.add(() => {
             this.img_Background.renderOpacity = 1;
@@ -51,6 +50,6 @@ export class P12ShopPanelItem extends Online_shopItem_Generate {
     // 重置状态
     public resetStatus() {
         this._count.data = 0;
-        this.img_Background2.visibility = SlateVisibility.Hidden;
+        Gtk.trySetVisibility(this.img_Background2, false);
     }
 }
