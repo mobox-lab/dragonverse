@@ -2,7 +2,7 @@ import P12ShopPanel from "../shop/P12ShopPanel";
 import SenzuBeanReConfirmPanel from "./SenzuBeanReConfirmPanel";
 import Online_Confirm_Generate from "../../ui-generate/Onlineshop/Online_Confirm_generate";
 import { P12BagModuleC } from "../../modules/P12Bag/P12BagModule";
-import { P12ItemIdMap } from "../../modules/auth/AuthModule";
+import { P12ItemResId } from "../../modules/auth/AuthModule";
 
 export default class SenzuBeanConfirmPanel extends Online_Confirm_Generate {
     private _bagC: P12BagModuleC;
@@ -30,7 +30,7 @@ export default class SenzuBeanConfirmPanel extends Online_Confirm_Generate {
 
     protected onShow(...params: any[]) {
         super.onShow(...params);
-        const spCount = this.bagC.getItem(P12ItemIdMap.StaminaPotion);
+        const spCount = this.bagC.getItem(P12ItemResId.StaminaPotion);
         this.btn_Confirm_Use.enable = !!spCount;
         this.text_Number.text = spCount.toString();
     }
