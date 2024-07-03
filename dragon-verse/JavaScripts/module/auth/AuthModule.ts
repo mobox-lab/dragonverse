@@ -505,13 +505,13 @@ interface UserP12BagRespData {
 
 /**
  * 用户 P12 背包物品 数据.
- * @desc resId 含义 注册于: {@link P12ItemIdMap}
+ * @desc resId 含义 注册于: {@link P12ItemId}
  */
 interface UserP12BagItem {
     /**
      * P12 Item Id.
      */
-    resId: P12ItemId,
+    resId: P12ItemResId,
 
     /**
      * 可使用.
@@ -852,30 +852,24 @@ export type BattleWorldStatisticNeedFill = {
 };
 
 /**
- * P12 物品 ID 映射表.
+ * P12 物品 ID 映射枚举表.
  */
-export const P12ItemIdMap = {
+export enum P12ItemResId {
     /**
      * 精灵球
      */
-    CaptureBall: "10001",
+    CaptureBall = "10001",
 
     /**
      * 龙蛋
      */
-    DragonEgg: "10002",
+    DragonEgg = "10002",
 
     /**
      * 体力药水
      */
-    StaminaPotion: "10003",
-} as const;
-
-/**
- * P12 物品键名.
- */
-export type P12ItemKeys = keyof typeof P12ItemIdMap;
-export type P12ItemId = typeof P12ItemIdMap[P12ItemKeys];
+    StaminaPotion = "10003",
+}
 //#endregion
 
 export default class AuthModuleData extends JModuleData {

@@ -9,7 +9,7 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import YoactArray from "../../depend/yoact/YoactArray";
 import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import { EventDefine } from "../../const/EventDefine";
-import { AuthModuleS, P12ItemIdMap } from "../auth/AuthModule";
+import { AuthModuleS, P12ItemResId } from "../auth/AuthModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
@@ -557,7 +557,7 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
             ?.queryUserP12Bag(player.userId)
             .then(value => {
                     const count = value?.list
-                        ?.find(item => item.resId === P12ItemIdMap.CaptureBall)
+                        ?.find(item => item.resId === P12ItemResId.CaptureBall)
                         ?.unuse;
                     if (count !== undefined) {
                         Log4Ts.log(BagModuleS,
