@@ -1,11 +1,11 @@
-import { ConsumeId, P12ItemIdMap, P12ItemId } from "../../modules/auth/AuthModule";
+import { ConsumeId, P12ItemResId } from "../../modules/auth/AuthModule";
 
 export enum TokenNameEnum {
     MDBL = "MDBL"
 }
 
 export type P12ShopItem = {
-    resId: P12ItemId; // 物品 id
+    resId: P12ItemResId; // 物品 id
     consumeId: ConsumeId; // 后端购买 id
     name: string; // 多语言 名称
     value: bigint; // 商品价值
@@ -15,7 +15,7 @@ export type P12ShopItem = {
 }
 export const P12ShopConfig: P12ShopItem[] = [
     {
-        resId: P12ItemIdMap.StaminaPotion, // 体力药水(仙豆)
+        resId: P12ItemResId.StaminaPotion, // 体力药水(仙豆)
         consumeId: ConsumeId.StaminaPotion,
         name: "Online_shop001",
         value: 1000000000000000000000n,
@@ -24,7 +24,7 @@ export const P12ShopConfig: P12ShopItem[] = [
         tokenName: TokenNameEnum.MDBL,
     },
     {
-        resId: P12ItemIdMap.CaptureBall, // 精灵球
+        resId: P12ItemResId.CaptureBall, // 精灵球
         consumeId: ConsumeId.StaminaPotion,
         name: "Online_shop003",
         value: 1000000000000000000000n,
