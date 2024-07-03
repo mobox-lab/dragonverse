@@ -173,7 +173,7 @@ addGMCommand(
     "void",
     undefined,
     (player) => {
-        Log4Ts.log(AuthModuleS, `report ps rank data...`);
+        Log4Ts.log(AuthModuleS, `report ps statistic data...`);
         mwext.ModuleService.getModule(AuthModuleS)
             .reportPetSimulatorStatistic(player.userId,
                 {
@@ -203,7 +203,7 @@ addGMCommand(
                     stamina: 0,
                 })
             .then(() => {
-                Log4Ts.log(AuthModuleS, `report ps rank data success.`);
+                Log4Ts.log(AuthModuleS, `report ps statistic data success.`);
             });
     },
     undefined,
@@ -215,7 +215,7 @@ addGMCommand(
     "void",
     undefined,
     (player) => {
-        Log4Ts.log(AuthModuleS, `report bw rank data...`);
+        Log4Ts.log(AuthModuleS, `report bw statistic data...`);
         mwext.ModuleService.getModule(AuthModuleS)
             .reportBattleWorldStatistic(player.userId,
                 {
@@ -243,7 +243,7 @@ addGMCommand(
                 },
             )
             .then(() => {
-                Log4Ts.log(AuthModuleS, `report ps rank data success.`);
+                Log4Ts.log(AuthModuleS, `report ps statistic data success.`);
             });
     },
     undefined,
@@ -870,6 +870,7 @@ export enum P12ItemResId {
      */
     StaminaPotion = "10003",
 }
+
 //#endregion
 
 export default class AuthModuleData extends JModuleData {
@@ -1105,7 +1106,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      * 汇报 统计信息 Uri.
      * @private
      */
-    private static readonly STATISTIC_REPORT_URI = "/pge-game/rank/fight/update";
+    private static readonly STATISTIC_REPORT_URI = "/pge-client-log/add";
 
     /**
      * 查询 用户 P12 背包 Uri.
@@ -1584,7 +1585,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             false,
         );
 
-        const success = respInJson.message === "success";
+        const success = respInJson?.message === "success";
         if (!success) {
             Log4Ts.warn(AuthModuleS, `report temp token failed. result: ${respInJson.message}`);
             return;
@@ -1613,9 +1614,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             userId,
         );
 
-        if (respInJson.code !== 200) {
+        if (respInJson?.code !== 200) {
             Log4Ts.error(AuthModuleS, `query currency failed. ${JSON.stringify(respInJson)}`);
-            if (respInJson.code === 401) this.onTokenExpired(userId);
+            if (respInJson?.code === 401) this.onTokenExpired(userId);
             return;
         }
 
@@ -1654,9 +1655,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 userId,
             );
 
-        if (respInJson.code !== 200) {
+        if (respInJson?.code !== 200) {
             Log4Ts.error(AuthModuleS, `consume currency failed. ${JSON.stringify(respInJson)}`);
-            if (respInJson.code === 401) this.onTokenExpired(userId);
+            if (respInJson?.code === 401) this.onTokenExpired(userId);
             return false;
         }
 
@@ -1687,9 +1688,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.TEST_POTION_USE_URL,
         );
 
-        if (respInJson.code !== 200) {
+        if (respInJson?.code !== 200) {
             Log4Ts.error(AuthModuleS, `consume potion failed. ${JSON.stringify(respInJson)}`);
-            if (respInJson.code === 401) this.onTokenExpired(userId);
+            if (respInJson?.code === 401) this.onTokenExpired(userId);
             return undefined;
         }
 
@@ -1715,9 +1716,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             true,
         );
 
-        if (respInJson &&
-            respInJson.message === "success" &&
-            respInJson.data)
+        if (respInJson?.message === "success" &&
+            respInJson?.data)
             return respInJson.data;
         else return undefined;
     }
@@ -1773,7 +1773,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.TEST_QUERY_USER_DRAGON_URL,
         );
 
-        return respInJson.message === "success" ? respInJson.data : undefined;
+        return respInJson?.message === "success" ? respInJson.data : undefined;
     }
 
     public async queryRegisterStaminaLimit(userId: string) {
@@ -1916,7 +1916,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.TEST_STATISTIC_REPORT_URL,
         );
 
-        return respInJson.message === "success";
+        return respInJson?.message === "success";
     }
 
     public async reportBattleWorldStatistic(userId: string, statistic: BattleWorldStatisticNeedFill) {
@@ -1948,7 +1948,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             false,
         );
 
-        return respInJson.message === "success";
+        return respInJson?.message === "success";
     }
 
     private queryUserId(playerId: number): string | undefined {
@@ -2016,11 +2016,16 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             },
         );
 
-        const respJson = await resp.json<D>();
-        if (!silence) {
-            Log4Ts.log(AuthModuleS, `get resp. ${JSON.stringify(respJson)}`);
+        try {
+            const respJson = await resp.json<D>();
+            if (!silence) {
+                Log4Ts.log(AuthModuleS, `get resp. ${JSON.stringify(respJson)}`);
+            }
+            return respJson;
+        } catch (e) {
+            Log4Ts.error(AuthModuleS, `error occurs in resp.json()`);
+            return undefined;
         }
-        return respJson;
     }
 
     public checkRequestRegulator(userId: string, reqType: ReqRegulatorType): boolean {
