@@ -16,9 +16,9 @@ addGMCommand(
         if (Number.isNaN(v)) {
             v = 200;
         }
-        Log4Ts.log(EnergyModuleS, `try add energy to player ${player.playerId}. by GM. value: ${v}`);
+        Log4Ts.log(EnergyModuleS, `try add energy to player ${player.userId}. by GM. value: ${v}`);
 
-        ModuleService.getModule(EnergyModuleS).addEnergy(player.playerId, v);
+        ModuleService.getModule(EnergyModuleS).addEnergy(player.userId, v);
     },
     undefined,
     "Energy",
@@ -309,7 +309,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
 
                 if (changed) {
                     d.save(false);
-                    this.syncEnergyToClient(player.playerId, d.energy, limit);
+                    this.syncEnergyToClient(player.userId, d.energy, limit);
                 }
             };
 
@@ -317,7 +317,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
                 let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
                 d.energy = Math.min(d.energy + d.restitution, limit);
                 d.restitution = 0;
-                this.syncEnergyToClient(player.playerId, d.energy);
+                this.syncEnergyToClient(player.userId, d.energy);
             }
             autoRecoveryHandler();
         });
@@ -348,22 +348,25 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
         this._playerConsumeMap.set(player.userId, totalCost + cost);
 
         d.save(false);
-        this.syncEnergyToClient(playerId, d.energy);
+        this.syncEnergyToClient(player.userId, d.energy);
         Log4Ts.log(EnergyModuleS, `consume ${cost} energy for player ${playerId}.`, `current: ${d.energy}`);
     }
 
-    public addEnergy(playerId: number, val: number) {
-        const d = this.getPlayerData(playerId);
-        if (!d) return;
+    public addEnergy(userId: string, val: number, limitRefresh?: number) {
+        const player = Player.getPlayer(userId);
+        const d = this.getPlayerData(userId);
+        if (!d || !player) return;
+        if (limitRefresh !== undefined) d.tryUpdateLimit(limitRefresh);
         d.energy += val;
         d.save(false);
-        this.syncEnergyToClient(playerId, d.energy);
-        Log4Ts.log(EnergyModuleS, `add ${val} energy to player ${playerId}.`, ` current: ${d.energy}`);
+        this.syncEnergyToClient(player.userId, d.energy);
+        Log4Ts.log(EnergyModuleS, `add ${val} energy to player ${userId}.`, ` current: ${d.energy}`);
     }
 
-    public syncEnergyToClient(playerId: number, energy: number, energyLimit?: number) {
-        this.getClient(playerId)?.net_syncEnergy(energy, energyLimit);
+    public syncEnergyToClient(userId: string, energy: number, energyLimit?: number) {
+        this.getClient(userId as any)?.net_syncEnergy(energy, energyLimit);
     }
+
 
     /**
      * 获取玩家体力
@@ -384,11 +387,11 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
     @mwext.Decorator.noReply()
     public net_requestRefreshStaminaLimit() {
         let player = this.currentPlayer;
-        this.authModuleS.requestRefreshStaminaLimit(this.currentPlayer.userId).then(() => {
+        this.authModuleS.requestRefreshStaminaLimit(player.userId).then(() => {
             let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
             let d = this.getPlayerData(player);
             if (d?.tryUpdateLimit(limit) ?? false)
-                this.syncEnergyToClient(player.playerId, d.energy, limit);
+                this.syncEnergyToClient(player.userId, d.energy, limit);
         });
     }
 

@@ -785,7 +785,7 @@ addGMCommand(
     "string",
     undefined,
     (p, v) => {
-        ModuleService.getModule(EnergyModuleS).addEnergy(p.playerId, 100);
+        ModuleService.getModule(EnergyModuleS).addEnergy(p.userId, 100);
     },
     undefined,
     "体力"

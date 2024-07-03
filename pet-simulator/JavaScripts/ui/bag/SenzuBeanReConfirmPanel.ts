@@ -1,8 +1,16 @@
 import Gtk from "../../util/GToolkit";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import Online_ReConfirm_Generate from "../../ui-generate/Onlineshop/Online_ReConfirm_generate";
+import { P12BagModuleC } from "../../modules/P12Bag/P12BagModule";
+import { P12ItemResId } from "../../modules/auth/AuthModule";
 
 export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
+    private _bagC: P12BagModuleC;
+    private get bagC(): P12BagModuleC | null {
+        if (!this._bagC) this._bagC = ModuleService.getModule(P12BagModuleC);
+        return this._bagC;
+    }
+
     protected onStart(): void {
         this.btn_UnConfirm_Use.onClicked.add(() => {
             UIService.hide(SenzuBeanReConfirmPanel);
@@ -22,15 +30,19 @@ export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
         });
     }
 
+    /**
+     * 使用体力药水，默认只能用1个
+     * @private
+     */
     private useSenzuBean() {
         Gtk.trySetVisibility(this.btn_Confirm_Use, false);
         Gtk.trySetVisibility(this.btn_UnConfirm_Use, false);
         Gtk.trySetVisibility(this.btn_Confirming, true);
 
-        setTimeout(() => {
-            // TODO：调用使用体力道具，并刷新体力
+        this.bagC.consumePotion(1).then(() => {
             UIService.hide(SenzuBeanReConfirmPanel);
-        }, 2000);
+            this.bagC.changeItemCount(P12ItemResId.StaminaPotion, -1);
+        });
     }
 
     private onHide() {

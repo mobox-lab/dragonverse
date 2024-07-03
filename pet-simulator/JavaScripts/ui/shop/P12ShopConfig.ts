@@ -13,6 +13,7 @@ export type P12ShopItem = {
     description: string; // 多语言 描述
     tokenName: TokenNameEnum; // 使用的 cryptocurrency
 }
+
 export const P12ShopConfig: P12ShopItem[] = [
     {
         resId: P12ItemResId.StaminaPotion, // 体力药水(仙豆)

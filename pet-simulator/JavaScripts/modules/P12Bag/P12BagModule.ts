@@ -1,6 +1,7 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import { EnergyModuleS } from "../Energy/EnergyModule";
 import { AuthModuleS, ConsumeId, P12ItemResId } from "../auth/AuthModule";
+import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 
 export class PsP12BagModuleData extends JModuleData {
 }
@@ -42,6 +43,10 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, PsP12BagModuleData> {
         this._itemsMap.set(itemId, count + deltaValue);
     }
 
+    public async consumePotion(count: number) {
+        this.server.net_consumePotion(count);
+    }
+
     public net_setData(map: Map<P12ItemResId, number>) {
         this._itemsMap = map;
     }
@@ -49,14 +54,22 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, PsP12BagModuleData> {
 
 export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
     private _authS: AuthModuleS;
+    private _energyS: EnergyModuleS;
 
     private get authS(): AuthModuleS | null {
         if (!this._authS) this._authS = ModuleService.getModule(AuthModuleS);
         return this._authS;
     }
 
+    private get energyS(): EnergyModuleS | null {
+        if (!this._energyS) this._energyS = ModuleService.getModule(EnergyModuleS);
+        return this._energyS;
+    }
+
+
     protected onPlayerEnterGame(player: mw.Player) {
         super.onPlayerEnterGame(player);
+
         this.authS.queryUserP12Bag(player.userId).then(res => {
             const map: Map<P12ItemResId, number> = new Map([
                 [P12ItemResId.DragonEgg, 0],
@@ -74,4 +87,28 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
         Log4Ts.log(P12BagModuleS, `player ${player.userId} purchase ${count} ${ConsumeId[consumeId]} props`);
         return this.authS.consumeCurrency(player.userId, consumeId, count);
     }
+
+    /**
+     * 使用体力药水
+     * @param {string} userId -- 用户Id
+     * @param {number} count 使用数量
+     */
+    private async consumePotion(userId: string, count: number) {
+        try {
+            const res = await this.authS.consumePotion(userId, count);
+            // TODO: 上报游戏资产用
+            Log4Ts.log(P12BagModuleS, `player ${userId} used ${count} recovery stamina ${res.recoveryStaminaAmount}`);
+            this.energyS.addEnergy(userId, res.recoveryStaminaAmount, res.stamina);
+        } catch (error) {
+            Log4Ts.error(P12BagModuleS, error);
+        }
+    }
+
+    public net_consumePotion(count: number) {
+        const player = this.currentPlayer;
+        if (!player) return;
+        Log4Ts.log(P12BagModuleS, `player ${player.userId} use senzu bean ${count}`);
+        this.consumePotion(player.userId, count).then();
+    }
+
 }
