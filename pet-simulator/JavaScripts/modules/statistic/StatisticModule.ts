@@ -116,6 +116,20 @@ export default class PsStatisticModuleData extends JModuleData {
     playerPetAdd: number = 0;
 
     /**
+     * 体力药水增加体力
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerStaPotAdd: number = 0;
+
+    /**
+     * 体力药水使用次数
+     * @type {number}
+     */
+    @Decorator.persistence()
+    playerStaPotCnt: number = 0;
+
+    /**
      * 本次游玩时长. ms
      * @return {number}
      */
@@ -217,6 +231,11 @@ export default class PsStatisticModuleData extends JModuleData {
         ++this.playerPetAdd;
     }
 
+    public recordStaPotConsume(val: number) {
+        ++this.playerStaPotCnt;
+        this.playerStaPotAdd += val;        
+    }
+
     public resetConsumeRecord() {
         this.playerDiamondAdd = 0;
         this.playerDiamondRed = 0;
@@ -228,6 +247,8 @@ export default class PsStatisticModuleData extends JModuleData {
         this.playerGold3Red = 0;
 
         this.playerPetAdd = 0;
+        this.playerStaPotAdd = 0;
+        this.playerStaPotCnt = 0;
     }
 
     // /**
