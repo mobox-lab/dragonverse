@@ -66,3 +66,4 @@ tsconfig.json
 **/JavaScripts/doc/*.drawio
 Log4TsSelfConfig.ts
 **/.distributor/distributor_cache_db
+**/compile_all_projects_for_lamb.bat
