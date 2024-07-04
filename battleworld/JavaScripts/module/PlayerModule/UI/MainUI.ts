@@ -51,6 +51,7 @@ import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../../const/GameServiceConfig";
 import { addGMCommand } from "mw-god-mod";
 import { formatEther } from "@p12/viem";
+import P12ShopPanel from "../../../ui/shop/P12ShopPanel";
 
 enum MouseLockType {
     Press,
@@ -244,6 +245,17 @@ export class MainUI extends Main_HUD_Generate {
                 UIService.show(RankPanel);
             }
         });
+
+        KeyOperationManager.getInstance().bindButton(this, Keys.H, this.mBtn_OnlineShop);
+        // 打开商店UI
+        this.mBtn_OnlineShop.onClicked.add(() => {
+            if (UIService.getUI(P12ShopPanel)?.isShowing) {
+                UIService.hide(P12ShopPanel);
+            } else {
+                UIService.show(P12ShopPanel);
+            }
+        });
+
 
         // MDBL Token
         Yoact.bindYoact(() => Gtk.trySetText(this.mMCoin, formatEther(BigInt(this.authModuleC?.currency.count ?? 0))));
