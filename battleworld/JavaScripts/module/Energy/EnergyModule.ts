@@ -364,7 +364,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
     }
 
     public syncEnergyToClient(userId: string, energy: number, energyLimit?: number) {
-        this.getClient(userId as any)?.net_syncEnergy(energy, energyLimit);
+        const player = Player.getPlayer(userId);
+        this.getClient(player.playerId)?.net_syncEnergy(energy, energyLimit);
     }
 
     /**
