@@ -364,7 +364,7 @@ interface QueryCurrencyRespData {
      */
     balance: string,
 
-    chainId?: number
+    chainId?: number,
 }
 
 /**
@@ -469,7 +469,7 @@ interface QueryStaminaLimitRespData {
     /**
      * 体力上限.
      */
-    stamina: 200;
+    stamina: number;
 }
 
 /**
@@ -958,7 +958,6 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     protected onJStart(): void {
         //#region Member init
-        this.server.net_initPlayerData(AccountService.getNickName());
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
@@ -971,6 +970,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     protected onEnterScene(sceneType: number): void {
         super.onEnterScene(sceneType);
+        this.server.net_initPlayerData(AccountService.getNickName());
         this.server.net_getToken().then((value) => {
             this._originToken = value;
         });
@@ -1698,8 +1698,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return undefined;
         }
 
-        this.playerStaminaRecoveryMap.set(userId, respInJson.data.gameStaminaRecoverySec ?? 0);
-        this.playerStaminaLimitMap.set(userId, respInJson.data.stamina ?? 0);
+        respInJson.data.balance = Number(respInJson.data?.balance ?? 0);
+        respInJson.data.gameStaminaRecoverySec = Number(respInJson.data?.gameStaminaRecoverySec ?? 0);
+        respInJson.data.recoveryStaminaAmount = Number(respInJson.data?.recoveryStaminaAmount ?? 0);
+        respInJson.data.stamina = Number(respInJson.data?.stamina ?? 0);
+
+        this.playerStaminaRecoveryMap.set(userId, respInJson.data.gameStaminaRecoverySec);
+        this.playerStaminaLimitMap.set(userId, respInJson.data.stamina);
 
         return respInJson.data;
     }
@@ -1717,13 +1722,18 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.RELEASE_QUERY_USER_P12_BAG_URL,
             AuthModuleS.TEST_QUERY_USER_P12_BAG_URL,
             false,
-            true,
-        );
+            true);
 
         if (respInJson?.message === "success" &&
-            respInJson?.data)
+            respInJson?.data) {
+            for (const item of respInJson.data.list) {
+                item.unuse = Number(item.unuse ?? 0);
+                item.total = Number(item.total ?? 0);
+                item.unclaim = Number(item.unclaim ?? 0);
+            }
+
             return respInJson.data;
-        else return undefined;
+        } else return undefined;
     }
 
     public async requestWebCatchDragon(
@@ -1752,6 +1762,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             );
 
         if (!respInJson) return [undefined, undefined];
+        respInJson.data.unUsed = Number(respInJson.data.unUsed);
 
         const success = respInJson.message === "success";
         if (!success) Log4Ts.warn(AuthModuleS,
@@ -1777,6 +1788,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             AuthModuleS.TEST_QUERY_USER_DRAGON_URL,
         );
 
+        if (respInJson?.message === "success") {
+            for (const item of respInJson.data.DragonPalList) {
+                item.dragonPalId = Number(item.dragonPalId);
+                item.amount = Number(item.amount);
+                item.catchTimeStamp = Number(item.catchTimeStamp);
+            }
+        }
         return respInJson?.message === "success" ? respInJson.data : undefined;
     }
 
@@ -1802,12 +1820,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 `reason: ${JSON.stringify(respInJson)}`,
             );
         } else {
-            this.playerStaminaLimitMap.set(userId, respInJson.data.stamina);
+            this.playerStaminaLimitMap.set(userId, Number(respInJson.data.stamina));
         }
 
         if (Gtk.isNullOrUndefined(respInJson?.data?.gameStaminaRecoverySec))
             Log4Ts.log(AuthModuleS, `invalid value when query recovery time limit for user ${userId}.`);
-        else this.playerStaminaRecoveryMap.set(userId, respInJson.data.gameStaminaRecoverySec);
+        else this.playerStaminaRecoveryMap.set(userId, Number(respInJson.data.gameStaminaRecoverySec));
 
         let data = this.getPlayerData(userId);
         if (
@@ -1903,7 +1921,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: UserStatisticReq<PetSimulatorStatistic> = {
             userId,
-            sceneId: this.getPlayerData(userId)?.lastVisitSceneId[0],
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
             address: d.holdAddress,
             sceneName: "pet",
             data: {
@@ -1933,7 +1951,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: UserStatisticReq<BattleWorldStatistic> = {
             userId,
-            sceneId: this.getPlayerData(userId)?.lastVisitSceneId[0],
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
             address: d.holdAddress,
             sceneName: "fight",
             data: {
