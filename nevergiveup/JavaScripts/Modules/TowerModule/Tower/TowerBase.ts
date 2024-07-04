@@ -98,6 +98,8 @@ export default abstract class TowerBase implements BuffBag {
         this.buffManager = new BuffManager();
         // 初始化科技树的buff
         let unlockedTechNodes = GameManager.getStageClient().getUnlockedTechNodes(info.playerID);
+        console.log(unlockedTechNodes,'unlockedTechNodes');
+        
         let buffIds: number[] = unlockedTechNodes.reduce((pre, cur) => {
             let cfg = GameConfig.TechTree.getElement(cur);
             if (!cfg) return pre;

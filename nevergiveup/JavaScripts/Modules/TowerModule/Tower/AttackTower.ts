@@ -6,20 +6,23 @@
  * @FilePath: \nevergiveup\JavaScripts\Modules\TowerModule\Tower\AttackTower.ts
  * @Description: 修改描述
  */
-import { CycleUtil } from '../../../CycleUtil';
-import { GameManager } from '../../../GameManager';
-import { Config } from '../../../GameStart';
-import Utils from '../../../Utils';
-import { GameConfig } from '../../../config/GameConfig';
-import { Enemy } from '../../../enemy/EnemyBase';
-import { WaveManager } from '../../../stage/Wave';
-import { SoundUtil } from '../../../tool/SoundUtil';
-import { RANGEUNIT, TowerInfo } from '../TowerEnum';
-import TowerBase from './TowerBase';
+import { CycleUtil } from "../../../CycleUtil";
+import { GameManager } from "../../../GameManager";
+import { Config } from "../../../GameStart";
+import Utils from "../../../Utils";
+import { GameConfig } from "../../../config/GameConfig";
+import { Enemy } from "../../../enemy/EnemyBase";
+import { WaveManager } from "../../../stage/Wave";
+import { SoundUtil } from "../../../tool/SoundUtil";
+import { RANGEUNIT, TowerInfo } from "../TowerEnum";
+import TowerBase from "./TowerBase";
 
 export default class AttackTower extends TowerBase {
     public get outputStr(): string {
-        return StringUtil.format(GameConfig.Language.getElement("Text_AttackTowerStr").Value, Utils.numTofix(this._accumulateDamage, 2));
+        return StringUtil.format(
+            GameConfig.Language.getElement("Text_AttackTowerStr").Value,
+            Utils.numTofix(this._accumulateDamage, 2)
+        );
     }
     protected _attackAnim: Animation;
     protected _idleAnim: Animation;
@@ -46,12 +49,11 @@ export default class AttackTower extends TowerBase {
                         this._towerCha.attachToSlot(this._weaponRoot, HumanoidSlotType.RightHand);
                         this._weaponRoot.localTransform.position = Vector.zero;
                         this._weaponRoot.localTransform.rotation = Rotation.zero;
-                    })
-                })
+                    });
+                });
             }
         });
     }
-
 
     /**
      * 周期函数 每帧执行
@@ -60,7 +62,8 @@ export default class AttackTower extends TowerBase {
     public onUpdate(dt: number): void {
         if (!this._useUpdate) return;
         super.onUpdate(dt);
-        if (this._attackAnim?.isPlaying) {//判空是为了让模型还没加载出来也能攻击
+        if (this._attackAnim?.isPlaying) {
+            //判空是为了让模型还没加载出来也能攻击
             this._animationTime -= dt;
             if (this._animationTime <= 0) {
                 this._animationTime = 0;
@@ -81,11 +84,11 @@ export default class AttackTower extends TowerBase {
         }
         if (this._idleAnim) {
             this._idleAnim.stop();
-            this._idleAnim = null
+            this._idleAnim = null;
         }
         if (this._attackAnim) {
             this._attackAnim.stop();
-            this._attackAnim = null
+            this._attackAnim = null;
         }
         super.onDestroy();
     }
@@ -102,11 +105,19 @@ export default class AttackTower extends TowerBase {
         const enemys = this.getRandEnemy(this.property.attackCount);
         if (!enemys || enemys.length <= 0) return;
         //没创建好就不旋转，让没创建好也能攻击
-        if (this.tower?.worldTransform && enemys[0]?.position?.x != null && enemys[0]?.position?.y != null && this.oriTransform) {
+        if (
+            this.tower?.worldTransform &&
+            enemys[0]?.position?.x != null &&
+            enemys[0]?.position?.y != null &&
+            this.oriTransform
+        ) {
             this.tower.worldTransform.rotation = Utils.TEMP_VECTOR.set(
                 enemys[0].position.x - this.tower.worldTransform.position.x,
                 enemys[0].position.y - this.tower.worldTransform.position.y,
-                0,).toRotation().add(this.oriTransform.rotation);
+                0
+            )
+                .toRotation()
+                .add(this.oriTransform.rotation);
         }
         this.attackShow();
         this.makeDamage(enemys);
@@ -119,7 +130,7 @@ export default class AttackTower extends TowerBase {
         }
         if (GameManager.useEffect) {
             setTimeout(() => {
-                let effect = this._weaponRoot?.getChildren()[0]?.getChildren()[0] as Effect
+                let effect = this._weaponRoot?.getChildren()[0]?.getChildren()[0] as Effect;
                 if (effect) {
                     (effect as Effect).stop();
                     LinearColor.colorHexToLinearColor(this.cfg.effectColor[this.level], Utils.TEMP_COLOR);
@@ -129,7 +140,7 @@ export default class AttackTower extends TowerBase {
                 if (this.root?.getChildren().length > 0) {
                     for (let i of this.root?.getChildren()) {
                         if (i instanceof Sound) {
-                            if (this._isFisrtShow || i["hsfVolume"] == null) i["hsfVolume"] = i.volume
+                            if (this._isFisrtShow || i["hsfVolume"] == null) i["hsfVolume"] = i.volume;
                             i.volume = SoundUtil.attackVoiceFactor * i["hsfVolume"];
                             i.worldTransform.position = this.oriPos;
                             i.stop();
@@ -146,7 +157,11 @@ export default class AttackTower extends TowerBase {
         // 造成伤害
         if (this.property.attackRange) {
             for (let enemy of enemys) {
-                let around = WaveManager.getEnemiesInRadius([enemy.position.x, enemy.position.y], this.property.attackRange * RANGEUNIT, this.attackTags);
+                let around = WaveManager.getEnemiesInRadius(
+                    [enemy.position.x, enemy.position.y],
+                    this.property.attackRange * RANGEUNIT,
+                    this.attackTags
+                );
                 if (!around || around.length === 0) return null;
                 for (let i of around) {
                     let damage = 0;
@@ -160,7 +175,14 @@ export default class AttackTower extends TowerBase {
                         damage = i.onHurt(this);
                     }
                     this.onDamage(damage);
-                    CycleUtil.playEffectOnPosition(this.cfg.attackEffect, enemy.position, Utils.TEMP_VECTOR.set(2, 2, 2));
+                    CycleUtil.playEffectOnPosition(
+                        this.cfg.attackEffect,
+                        enemy.position,
+                        Utils.TEMP_VECTOR.set(2, 2, 2)
+                    );
+                    if (this.cfg.hitEffect) {
+                        enemy.scale(this.cfg.hitEffect);
+                    }
                 }
             }
         } else {
@@ -177,6 +199,9 @@ export default class AttackTower extends TowerBase {
                 }
                 this.onDamage(damage);
                 CycleUtil.playEffectOnPosition(this.cfg.attackEffect, enemy.position, Utils.TEMP_VECTOR.set(2, 2, 2));
+                if (this.cfg.hitEffect) {
+                    enemy.scale(this.cfg.hitEffect);
+                }
             }
         }
     }
@@ -188,14 +213,17 @@ export default class AttackTower extends TowerBase {
         }
     }
 
-
     /**
      * 获取随机敌人
      * @returns 敌人
      */
     protected getRandEnemy(count: number = 1): Enemy[] {
         let attackRange = this.property.findRange;
-        const enemies = WaveManager.getEnemiesInRadius([this.oriPos.x, this.oriPos.y], RANGEUNIT / 2 + attackRange * RANGEUNIT, this.attackTags);
+        const enemies = WaveManager.getEnemiesInRadius(
+            [this.oriPos.x, this.oriPos.y],
+            RANGEUNIT / 2 + attackRange * RANGEUNIT,
+            this.attackTags
+        );
         if (!enemies && enemies.length === 0) return [];
         let targets: Enemy[] = [];
         for (let enemy of enemies) {

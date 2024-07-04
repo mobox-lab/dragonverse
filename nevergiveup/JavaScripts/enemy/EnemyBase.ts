@@ -376,6 +376,10 @@ export class Enemy implements BuffBag {
         }
     }
 
+    scale(effect: number) {
+        this.go.worldTransform.scale = new Vector(effect);
+    }
+
     onDestroy(showAnim: boolean) {
         if (this._components) {
             this._components.forEach((component) => component.destroy());
