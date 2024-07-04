@@ -926,6 +926,20 @@
 		}
 		return this.mBtn_Rank_Internal
 	}
+	private canvasShop_Internal: mw.Canvas
+	public get canvasShop(): mw.Canvas {
+		if(!this.canvasShop_Internal&&this.uiWidgetBase) {
+			this.canvasShop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasShop') as mw.Canvas
+		}
+		return this.canvasShop_Internal
+	}
+	private mBtn_OnlineShop_Internal: mw.Button
+	public get mBtn_OnlineShop(): mw.Button {
+		if(!this.mBtn_OnlineShop_Internal&&this.uiWidgetBase) {
+			this.mBtn_OnlineShop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasIconBtn/canvasShop/mBtn_OnlineShop') as mw.Button
+		}
+		return this.mBtn_OnlineShop_Internal
+	}
 	private canvasSetting_Internal: mw.Canvas
 	public get canvasSetting(): mw.Canvas {
 		if(!this.canvasSetting_Internal&&this.uiWidgetBase) {
@@ -1040,6 +1054,12 @@
 	
 		this.mBtn_Rank.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "mBtn_Rank");
+		})
+		
+		
+	
+		this.mBtn_OnlineShop.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "mBtn_OnlineShop");
 		})
 		
 		
@@ -1178,6 +1198,9 @@
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/canvasIconBtn/rankCanvas/TextBlock_1") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/canvasIconBtn/canvasShop/TextBlock4") as any);
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/canvasIconBtn/canvasSetting/TextBlock_4") as any);

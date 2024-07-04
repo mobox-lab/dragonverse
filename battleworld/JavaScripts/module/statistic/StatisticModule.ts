@@ -149,12 +149,12 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, BwStatisticModu
 
     /**
      * 设置每次的属性变化值
-     * @param {number} playerId 用户id
+     * @param {number | string} id 用户 playerId /userId
      * @param {keyof Omit<PlayerStatistic, "login">} type 类型
      * @param {number} deltaValue 变化值
      */
-    public setAttributeChange(playerId: number, type: keyof Omit<PlayerStatistic, "login">, deltaValue: number) {
-        const player = Player.getPlayer(playerId);
+    public setAttributeChange(id: number | string, type: keyof Omit<PlayerStatistic, "login">, deltaValue: number) {
+        const player = Player.getPlayer(id);
         if (!player) return;
         const data = this._playerStatistics.get(player.userId);
         if (!data) return;
