@@ -2,6 +2,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import { AuthModuleS, ConsumeId, P12ItemResId } from "../auth/AuthModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
+import PsStatisticModuleData from "../statistic/StatisticModule";
 
 export class PsP12BagModuleData extends JModuleData {
 }
@@ -93,10 +94,12 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
      * @param {string} userId -- 用户Id
      * @param {number} count 使用数量
      */
-    private async consumePotion(userId: string, count: number) {
+    private async consumePotion(userId: string, count: number, playerId: number) {
         try {
             const res = await this.authS.consumePotion(userId, count);
             // TODO: 上报游戏资产用
+            const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData);
+            statisticData.recordStaPotConsume(res.recoveryStaminaAmount);
             Log4Ts.log(P12BagModuleS, `player ${userId} used ${count} recovery stamina ${res.recoveryStaminaAmount}`);
             this.energyS.addEnergy(userId, res.recoveryStaminaAmount, res.stamina);
         } catch (error) {
@@ -108,7 +111,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
         const player = this.currentPlayer;
         if (!player) return;
         Log4Ts.log(P12BagModuleS, `player ${player.userId} use senzu bean ${count}`);
-        this.consumePotion(player.userId, count).then();
+        this.consumePotion(player.userId, count, player.playerId).then();
     }
 
 }
