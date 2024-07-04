@@ -1944,8 +1944,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             requestParam,
             AuthModuleS.RELEASE_STATISTIC_REPORT_URL,
             AuthModuleS.TEST_STATISTIC_REPORT_URL,
-            false,
-            false,
         );
 
         return respInJson?.message === "success";
