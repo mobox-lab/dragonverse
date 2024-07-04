@@ -278,7 +278,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
             GameServiceConfig.isRelease || GameServiceConfig.isBeta
                 ? GameServiceConfig.ENERGY_RECOVERY_INTERVAL_MS
                 : 5 * GtkTypes.Interval.PerSec;
-        this.authModuleS.requestRefreshStaminaLimit(player.userId).then(() => {
+        this.authModuleS.requestRefreshStaminaLimit(player.userId,"pet").then(() => {
             let autoRecoveryHandler = () => {
                 const now = Date.now();
                 let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
@@ -367,7 +367,6 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
         this.getClient(userId as any)?.net_syncEnergy(energy, energyLimit);
     }
 
-
     /**
      * 获取玩家体力
      * @param {number} playerId  -- 玩家 id
@@ -387,7 +386,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
     @mwext.Decorator.noReply()
     public net_requestRefreshStaminaLimit() {
         let player = this.currentPlayer;
-        this.authModuleS.requestRefreshStaminaLimit(player.userId).then(() => {
+        this.authModuleS.requestRefreshStaminaLimit(player.userId, "pet").then(() => {
             let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
             let d = this.getPlayerData(player);
             if (d?.tryUpdateLimit(limit) ?? false)

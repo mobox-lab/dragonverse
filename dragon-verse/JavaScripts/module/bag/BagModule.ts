@@ -554,7 +554,7 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
             `player entered. playerId: ${player.playerId}.`,
             `query user dragon ball...`);
         this.authModuleS
-            ?.queryUserP12Bag(player.userId)
+            ?.queryUserP12Bag(player.userId, "dragon")
             .then(value => {
                     const count = value?.list
                         ?.find(item => item.resId === P12ItemResId.CaptureBall)

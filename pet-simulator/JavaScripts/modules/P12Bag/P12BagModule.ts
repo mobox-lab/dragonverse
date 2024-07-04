@@ -67,11 +67,10 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
         return this._energyS;
     }
 
-
     protected onPlayerEnterGame(player: mw.Player) {
         super.onPlayerEnterGame(player);
 
-        this.authS.queryUserP12Bag(player.userId).then(res => {
+        this.authS.queryUserP12Bag(player.userId, "pet").then(res => {
             const map: Map<P12ItemResId, number> = new Map([
                 [P12ItemResId.DragonEgg, 0],
                 [P12ItemResId.CaptureBall, 0],
@@ -86,7 +85,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
         const player = this.currentPlayer;
         if (!player) return;
         Log4Ts.log(P12BagModuleS, `player ${player.userId} purchase ${count} ${ConsumeId[consumeId]} props`);
-        return this.authS.consumeCurrency(player.userId, consumeId, count);
+        return this.authS.consumeCurrency(player.userId, "pet", consumeId, count);
     }
 
     /**
@@ -96,7 +95,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
      */
     private async consumePotion(userId: string, count: number, playerId: number) {
         try {
-            const res = await this.authS.consumePotion(userId, count);
+            const res = await this.authS.consumePotion(userId, "pet", count);
             // TODO: 上报游戏资产用
             const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData);
             statisticData.recordStaPotConsume(res.recoveryStaminaAmount);

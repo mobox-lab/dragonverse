@@ -53,6 +53,7 @@ addGMCommand(
     (player, params) => {
         mwext.ModuleService.getModule(AuthModuleS).consumeCurrency(
             player.userId,
+            "pet",
             ConsumeId.CaptureBall,
             params === 0 ? 1 : params);
     },
@@ -67,7 +68,7 @@ addGMCommand(
     (player) => {
         Log4Ts.log(AuthModuleS, `query user bag...`);
         mwext.ModuleService.getModule(AuthModuleS)
-            .queryUserP12Bag(player.userId)
+            .queryUserP12Bag(player.userId, "pet")
             .then((value) => {
                 Log4Ts.log(AuthModuleS, `query dragon ball success.`, `user bag: ${JSON.stringify(value)}`);
             });
@@ -104,7 +105,9 @@ addGMCommand(
             return;
         }
         mwext.ModuleService.getModule(AuthModuleS)
-            .requestWebCatchDragon(player.playerId, Gtk.randomArrayItem(allDragonConfig)["dragonPalId"], Date.now())
+            .requestWebCatchDragon(player.playerId,
+                Gtk.randomArrayItem(allDragonConfig)["dragonPalId"],
+                Date.now())
             .then((value) => {
                 Log4Ts.log(AuthModuleS, `try catch dragon success.`, `user dragon ball: ${JSON.stringify(value)}`);
             });
@@ -120,7 +123,7 @@ addGMCommand(
     (player) => {
         Log4Ts.log(AuthModuleS, `query stamina limit...`);
         mwext.ModuleService.getModule(AuthModuleS)
-            .queryRegisterStaminaLimit(player.userId)
+            .queryRegisterStaminaLimit(player.userId, "pet")
             .then(() => {
                 Log4Ts.log(
                     AuthModuleS,
@@ -296,13 +299,15 @@ interface EncryptedData {
 
 type ReqRegulatorType = "temp-token" | "stamina" | "currency";
 
+type SceneName = "pet" | "fight" | "tower" | "dragon";
+
 //#region Param Interface
 /**
  * 一般用户场景相关请求参数.
  */
 interface UserSceneReq {
     sceneId: string;
-    sceneName: string;
+    sceneName: SceneName;
 }
 
 /**
@@ -320,7 +325,7 @@ interface UserDataReq extends UserSceneReq {
 interface UserStatisticReq<S extends object>
     extends UserDataReq {
     address: string;
-    sceneName: "pet" | "fight";
+    sceneName: SceneName;
     data: S;
 }
 
@@ -910,7 +915,7 @@ export default class AuthModuleData extends JModuleData {
     public holdAddress: string;
 
     @Decorator.persistence()
-    public lastVisitSceneInfo: [string, string];
+    public lastVisitSceneId: string;
 }
 
 /**
@@ -1043,8 +1048,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly TIME_TOLERATE: number = 1e3 * 10;
 
     private static readonly INVALID_SCENE_ID = "INVALID_SCENE_ID";
-
-    private static readonly INVALID_SCENE_NAME = "INVALID_SCENE_NAME";
 
     /**
      * 获取 MW 临时 token Uri.
@@ -1625,6 +1628,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     public async consumeCurrency(userId: string,
+                                 sceneName: SceneName,
                                  consumeId: ConsumeId,
                                  count: number,
                                  price?: number): Promise<boolean> {
@@ -1634,7 +1638,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return false;
         }
 
-        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+        const sceneId = await this.querySceneId(userId);
         const requestParam: ConsumeCurrencyReq = {
             sceneId,
             sceneName,
@@ -1667,14 +1671,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return respInJson.message === "success";
     }
 
-    public async consumePotion(userId: string, count: number): Promise<ConsumePotionRespData | undefined> {
+    public async consumePotion(userId: string, sceneName: SceneName, count: number): Promise<ConsumePotionRespData | undefined> {
         const d = mwext.DataCenterS.getData(userId, AuthModuleData);
         if (!d) {
             Log4Ts.error(AuthModuleS, `player data of user ${userId} is not exist.`);
             return undefined;
         }
 
-        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+        const sceneId = await this.querySceneId(userId);
         const requestParam: ConsumePotionReq = {
             userId,
             sceneId,
@@ -1700,8 +1704,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return respInJson.data;
     }
 
-    public async queryUserP12Bag(userId: string): Promise<UserP12BagRespData | undefined> {
-        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+    public async queryUserP12Bag(userId: string, sceneName: SceneName): Promise<UserP12BagRespData | undefined> {
+        const sceneId = await this.querySceneId(userId);
         const requestParam: UserDataReq = {
             userId,
             sceneId,
@@ -1730,14 +1734,14 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return [undefined, undefined];
 
-        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+        const sceneId = await this.querySceneId(userId);
         const requestParam: CatchDragonReq = {
             userId,
             dragonPalId,
             catchTimeStamp,
             attributionType: "game",
             sceneId,
-            sceneName,
+            sceneName: "dragon",
         };
 
         const respInJson =
@@ -1760,11 +1764,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const userId = this.queryUserId(playerId);
         if (Gtk.isNullOrUndefined(userId)) return;
 
-        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+        const sceneId = await this.querySceneId(userId);
         const requestParam: UserDataReq = {
             userId,
             sceneId,
-            sceneName,
+            sceneName: "dragon",
         };
 
         const respInJson = await this.correspondHandler<QueryResp<UserDragonRespData>>(
@@ -1776,8 +1780,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return respInJson?.message === "success" ? respInJson.data : undefined;
     }
 
-    public async queryRegisterStaminaLimit(userId: string) {
-        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+    public async queryRegisterStaminaLimit(userId: string,
+                                           sceneName: SceneName) {
+        const sceneId = await this.querySceneId(userId);
         const requestParam: UserDataReq = {
             userId,
             sceneId,
@@ -1829,11 +1834,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const player = Player.getPlayer(playerId);
         const userName = this.getPlayerData(player)?.holdNickName ?? player.nickname;
         const userAvatar = player["avatarUrl"];
-        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+        const sceneId = await this.querySceneId(userId);
         const requestParam: UpdatePetSimulatorRankDataReq = {
             userId,
             sceneId,
-            sceneName,
+            sceneName: "pet",
             userName,
             userAvatar,
             petName,
@@ -1865,11 +1870,11 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const player = Player.getPlayer(playerId);
         const userName = player.nickname;
         const userAvatar = player["avatarUrl"];
-        const [sceneId, sceneName] = await this.querySceneInfo(userId);
+        const sceneId = await this.querySceneId(userId);
         const requestParam: UpdateBattleWorldRankDataReq = {
             userId,
             sceneId,
-            sceneName,
+            sceneName: "fight",
             userName,
             userAvatar,
             grade,
@@ -1898,7 +1903,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: UserStatisticReq<PetSimulatorStatistic> = {
             userId,
-            sceneId: this.getPlayerData(userId)?.lastVisitSceneInfo[0],
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId[0],
             address: d.holdAddress,
             sceneName: "pet",
             data: {
@@ -1928,7 +1933,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         const requestParam: UserStatisticReq<BattleWorldStatistic> = {
             userId,
-            sceneId: this.getPlayerData(userId)?.lastVisitSceneInfo[0],
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId[0],
             address: d.holdAddress,
             sceneName: "fight",
             data: {
@@ -1960,16 +1965,18 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return userId;
     }
 
-    private async querySceneInfo(userId: string): Promise<[string, string]> {
+    private async querySceneId(userId: string): Promise<string> {
         if (!GameServiceConfig.isBeta && !GameServiceConfig.isRelease) {
-            return [AuthModuleS.INVALID_SCENE_ID, AuthModuleS.INVALID_SCENE_NAME];
+            return AuthModuleS.INVALID_SCENE_ID;
         }
         const roomInfo = await mw.TeleportService.asyncGetPlayerRoomInfo(userId).catch((e) => {
             Log4Ts.error(AuthModuleS, e);
             return Promise.resolve(undefined as mw.RoomInfo);
         });
-        if (roomInfo) return [roomInfo.sceneId, roomInfo.sceneName];
-        else return [AuthModuleS.INVALID_SCENE_ID, AuthModuleS.INVALID_SCENE_NAME];
+        if (roomInfo) {
+            Log4Ts.log(AuthModuleS, `query scene info. ${JSON.stringify(roomInfo)}`);
+            return roomInfo.sceneId;
+        } else return AuthModuleS.INVALID_SCENE_ID;
     }
 
     private async correspondHandler<D = object>(reqParam: object,
@@ -2038,9 +2045,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return true;
     }
 
-    public requestRefreshStaminaLimit(userId: string) {
+    public requestRefreshStaminaLimit(userId: string, sceneName: SceneName) {
         if (!this.checkRequestRegulator(userId, "stamina")) return;
-        return this.queryRegisterStaminaLimit(userId);
+        return this.queryRegisterStaminaLimit(userId, sceneName);
     }
 
     private setCurrency(userId: string, count: string) {
@@ -2076,7 +2083,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         data.holdUserId = userId;
         data.holdPlayerId = playerId;
         data.holdNickName = nickName;
-        data.lastVisitSceneInfo = await this.querySceneInfo(this.currentPlayer.userId);
+        data.lastVisitSceneId = await this.querySceneId(this.currentPlayer.userId);
         data.save(false);
     }
 
