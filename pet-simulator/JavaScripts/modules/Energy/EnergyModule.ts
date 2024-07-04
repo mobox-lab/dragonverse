@@ -278,7 +278,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
             GameServiceConfig.isRelease || GameServiceConfig.isBeta
                 ? GameServiceConfig.ENERGY_RECOVERY_INTERVAL_MS
                 : 5 * GtkTypes.Interval.PerSec;
-        this.authModuleS.requestRefreshStaminaLimit(player.userId,"pet").then(() => {
+        this.authModuleS.requestRefreshStaminaLimit(player.userId, GameServiceConfig.SCENE_NAME).then(() => {
             let autoRecoveryHandler = () => {
                 const now = Date.now();
                 let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
