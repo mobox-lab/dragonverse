@@ -406,7 +406,6 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
-        // console.log("======== onPlayerLeft ========");
         let now = Date.now();
         const playerData = DataCenterS.getData(player, PetSimulatorPlayerModuleData);
         const petBagData = DataCenterS.getData(player, PetBagModuleData);
@@ -423,56 +422,45 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             gold_3_add: 0,
             gold_3_red: 0,
         };
-        Gtk.queryModuleData<{
-            playerLoginRecord: [number, number][];
-            playerElapsedTimeS: number;
-        }>(PsStatisticModuleData.name, player.userId).then((d) => {
-            d.playerLoginRecord[0][1] = now;
-            d.playerElapsedTimeS += (d.playerLoginRecord[0][1] ?? now) - d.playerLoginRecord[0][0];
-            if (d.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
-                d.playerLoginRecord.pop();
-            }
-            Gtk.updateModuleData(PsStatisticModuleData.name, player.userId, d);
-            console.log(" playerData:", JSON.stringify(playerData));
-
-            const login = Math.floor((d.playerLoginRecord[0][0] || 0) / 1000); // s
-            const logout = Math.floor((d.playerLoginRecord[0][1] || 0) / 1000);
-            const online = logout - login;
-            const allPets = petBagData.PetStatisticArr ?? [];
-            const petBagSortedItems = petBagData.sortBag();
-            const petMax = petBagSortedItems?.length ? Math.max(...petBagSortedItems.map((pet) => pet.p.a)) : 0;
-            const statisticData: PetSimulatorStatisticNeedFill = {
-                diamond: playerData?.diamond ?? 0,
-                diamondAdd: playerConsumeData?.diamondAdd ?? 0,
-                diamondRed: playerConsumeData?.diamondRed ?? 0,
-                gold_1: playerData?.gold ?? 0,
-                gold_1_add: playerConsumeData?.gold_1_add ?? 0,
-                gold_1_red: playerConsumeData?.gold_1_red ?? 0,
-                gold_2: playerData.gold2 ?? 0,
-                gold_2_add: playerConsumeData?.gold_2_add ?? 0,
-                gold_2_red: playerConsumeData?.gold_2_red ?? 0,
-                gold_3: playerData.gold3 ?? 0,
-                gold_3_add: playerConsumeData?.gold_3_add ?? 0,
-                gold_3_red: playerConsumeData?.gold_3_red ?? 0,
-                login,
-                logout,
-                online,
-                pet: allPets,
-                petAdd: petStatisticData?.playerPetAdd ?? 0,
-                petCnt: petBagSortedItems?.length ?? 0,
-                petMax,
-                staMax,
-                staPotAdd: 0,
-                staPotCnt: 0,
-                staRed,
-                stamina,
-            };
-            Log4Ts.log(
-                StatisticModuleS,
-                " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData),
-            );
-            ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData);
-        });
+        const login = Math.floor((petStatisticData.playerLoginRecord[0][0] || 0) / 1000);
+        const logout = Math.floor((now || 0) / 1000);
+        const online = logout - login;
+        const allPets = petBagData.PetStatisticArr ?? [];
+        const petBagSortedItems = petBagData.sortBag();
+        const petMax = petBagSortedItems?.length ? Math.max(...petBagSortedItems.map((pet) => pet.p.a)) : 0;
+        const statisticData: PetSimulatorStatisticNeedFill = {
+            diamond: playerData?.diamond ?? 0,
+            diamondAdd: playerConsumeData?.diamondAdd ?? 0,
+            diamondRed: playerConsumeData?.diamondRed ?? 0,
+            gold_1: playerData?.gold ?? 0,
+            gold_1_add: playerConsumeData?.gold_1_add ?? 0,
+            gold_1_red: playerConsumeData?.gold_1_red ?? 0,
+            gold_2: playerData.gold2 ?? 0,
+            gold_2_add: playerConsumeData?.gold_2_add ?? 0,
+            gold_2_red: playerConsumeData?.gold_2_red ?? 0,
+            gold_3: playerData.gold3 ?? 0,
+            gold_3_add: playerConsumeData?.gold_3_add ?? 0,
+            gold_3_red: playerConsumeData?.gold_3_red ?? 0,
+            login,
+            logout,
+            online,
+            pet: allPets,
+            petAdd: petStatisticData?.playerPetAdd ?? 0,
+            petCnt: petBagSortedItems?.length ?? 0,
+            petMax,
+            staMax,
+            staPotAdd: 0,
+            staPotCnt: 0,
+            staRed,
+            stamina,
+        };
+        Log4Ts.log( 
+            StatisticModuleS,
+            " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData),
+        );
+        ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData);
+        
+        petStatisticData.recordLeave(now);
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
