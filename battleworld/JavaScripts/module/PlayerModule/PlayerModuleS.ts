@@ -280,6 +280,16 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this.checkRankReward(player.playerId);
 
         this.initPlayerTicket(player.playerId);
+
+        const currentScore = this.getPlayerData(player)
+            .getAttrValue(Attribute.EnumAttributeType.rankScore);
+        // 计算并更新玩家等级
+        const rank = PlayerManager.instance.getRankLevel(currentScore);
+        ModuleService.getModule(AuthModuleS).reportBattleWorldRankData(
+            player.playerId,
+            rank,
+            currentScore,
+            0);
     }
 
     onPlayerLeft(player: mw.Player) {
@@ -460,7 +470,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttrIT(beHurtId, Attribute.EnumAttributeType.hp, Math.abs(atkVal));
             this.dispatchSceneUnitInjure(
                 beHurtId,
-                [{ from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal }],
+                [{from: releaseId, target: beHurtId, value: atkVal, type: EnumDamageType.normal}],
                 [beHurtId],
             );
             return;
@@ -670,7 +680,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this.addPlayerAttr(playerID, Attribute.EnumAttributeType.hp, drainLifeHp);
             this.dispatchSceneUnitInjure(
                 playerID,
-                [{ from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal }],
+                [{from: playerID, target: playerID, value: -drainLifeHp, type: EnumDamageType.normal}],
                 [playerID],
             );
         }
@@ -1270,7 +1280,6 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                     // 飘字同步给攻击者
                     this.floatTextToAttacker(sceneID, playerID, [damageData], [playerID]);
                 }
-
 
                 // 1.玩家被攻击切换为战斗状态且受伤  2玩家掉入陷阱掉血切换为战斗状态
                 let data = this.getPlayerData(playerID);
@@ -2557,6 +2566,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
 
     private _invinciblePlayer: Map<number, any> = new Map<number, any>();
     private _invincibleEffect: Map<number, number> = new Map<number, number>();
+
     public addInvincibleBuff(playerId: number) {
         if (this._invinciblePlayer.has(playerId)) return;
 
@@ -2569,7 +2579,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
                 loopCount: 0,
                 position: GameServiceConfig.INVINCIBLE_BUFF_EFFECT_OFFSET,
                 scale: GameServiceConfig.INVINCIBLE_BUFF_EFFECT_SCALE,
-                rotation: GameServiceConfig.INVINCIBLE_BUFF_EFFECT_ROTATION
+                rotation: GameServiceConfig.INVINCIBLE_BUFF_EFFECT_ROTATION,
             });
         this._invincibleEffect.set(playerId, effectId);
         Event.dispatchToClient(Player.getPlayer(playerId), EModule_Events_S.setInvincibleBuff, true);
@@ -2584,6 +2594,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
      * 伤害检测
      */
     private _playerDamage: Map<number, number> = new Map<number, number>();
+
     private checkPlayerDamage(playerId: number, damage: number) {
         if (!this._fightingPlayerSet.has(playerId)) return;
         if (this._playerDamage.has(playerId)) {
@@ -2597,9 +2608,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
             this._playerDamage.set(playerId, damage);
         }
     }
+
     /**
      * 不是战斗状态，回城、退出战斗
-     * @param playerId 
+     * @param playerId
      */
     public exitFight(playerId: number) {
         //退出死亡，满血回城
@@ -2609,10 +2621,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, BattleWorldPlayerModul
         this._playerDamage.delete(playerId);
     }
 
-    /** 
+    /**
      * @description: 移除无敌buff
      * @param playerId 玩家id
-     * @return 
+     * @return
      */
     public removeInvincibleBuff(playerId: number) {
         if (this._invinciblePlayer.has(playerId)) {

@@ -45,8 +45,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     protected onPlayerEnterGame(player: mw.Player): void {
-
-        this.getPlayerData(player).PetEquipChangeAC.add((isEquip: boolean, keys: number[]) => {
+        const d = this.getPlayerData(player);
+        d.PetEquipChangeAC.add((isEquip: boolean, keys: number[]) => {
             let arr: petItemDataNew[] = [];
             for (let i = 0; i < keys.length; i++) {
                 const key = keys[i];
@@ -57,6 +57,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             this.onEquipChangeAC.call(player.playerId, isEquip, arr);
         });
         this.enchantBuffInit(player);
+        this.reportMaxAttackPetInfo(player.playerId, d);
     }
 
     /**获取玩家已经装备宠物数组 */
