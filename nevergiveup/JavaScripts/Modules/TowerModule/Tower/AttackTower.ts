@@ -175,14 +175,12 @@ export default class AttackTower extends TowerBase {
                         damage = i.onHurt(this);
                     }
                     this.onDamage(damage);
+                    const vScale = this.cfg.hitEffect * 2;
                     CycleUtil.playEffectOnPosition(
                         this.cfg.attackEffect,
                         enemy.position,
-                        Utils.TEMP_VECTOR.set(2, 2, 2)
+                        Utils.TEMP_VECTOR.set(vScale, vScale, vScale)
                     );
-                    if (this.cfg.hitEffect) {
-                        enemy.scale(this.cfg.hitEffect);
-                    }
                 }
             }
         } else {
@@ -198,10 +196,12 @@ export default class AttackTower extends TowerBase {
                     damage = enemy.onHurt(this);
                 }
                 this.onDamage(damage);
-                CycleUtil.playEffectOnPosition(this.cfg.attackEffect, enemy.position, Utils.TEMP_VECTOR.set(2, 2, 2));
-                if (this.cfg.hitEffect) {
-                    enemy.scale(this.cfg.hitEffect);
-                }
+                const vScale = this.cfg.hitEffect * 2;
+                CycleUtil.playEffectOnPosition(
+                    this.cfg.attackEffect,
+                    enemy.position,
+                    Utils.TEMP_VECTOR.set(vScale, vScale, vScale)
+                );
             }
         }
     }
