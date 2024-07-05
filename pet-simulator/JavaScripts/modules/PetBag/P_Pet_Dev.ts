@@ -6,7 +6,7 @@ import { utils } from "../../util/uitls";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { PetBagItem } from "./P_Bag";
 import { PetBagModuleC } from "./PetBagModuleC";
-import { petItemDataNew } from "./PetBagModuleData";
+import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
 import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
@@ -109,30 +109,17 @@ export class P_Pet_Dev extends Dev_Generate {
                 this.curPetId,
                 this.isGold);
     }
-
-    /**悬浮UI */
-    private showNewPetHoverUI(isShow: boolean, item: PetBag_Item) {
-        const buffNum = item.petData.p.b.length ?? 0;
-        if (isShow) {
-            let pos = item.uiObject.position;
-            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x + 125 + GlobalData.Bag.itemHoverOffsetX, pos.y + this.mCanvas.position.y - this.mScrollBox.scrollOffset - 40 + GlobalData.Bag.itemHoverOffsetY);
-            buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).setPetInfoShow(item.petData, loc) : mw.UIService.getUI(P_BagHoverNum2).setPetInfoShow(item.petData, loc);
-        } else {
-            buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).hide() : mw.UIService.getUI(P_BagHoverNum2).hide();
-        }
-    }
-
-    public show(petItems: petItemDataNew[], isGold: boolean, ...param: any[]): void {
+    public init(isGold: boolean) {
         PetBagItem.instance.UIPool.resetAll();
-
         this.isGold = isGold;
         this.mTextBlock_Intro.text = isGold ? GameConfig.Language.Dev_TextBlock_Intro_1.Value : GameConfig.Language.Dev_TextBlock_Intro_2.Value;
         this.mTextBlock_Explain.text = isGold ? GameConfig.Language.Dev_TextBlock_Explain_1.Value : GameConfig.Language.Dev_TextBlock_Explain_2.Value;
 
-        this.petItems.length = 0;
-        petItems.forEach(item => {
+        const petData = DataCenterC.getData(PetBagModuleData);
+        this.petItems = [];
+        petData.sortBag().forEach(pet => {
             let isSuccess: boolean = false;
-            let info = GameConfig.PetARR.getElement(item.I);
+            let info = GameConfig.PetARR.getElement(pet.I);
             if (isGold) {
                 isSuccess = info.DevType == 0;
             } else {
@@ -144,12 +131,16 @@ export class P_Pet_Dev extends Dev_Generate {
             petItem.setClickFun(this.changeContainer.bind(this), this);
             this.mCanvas_List.addChild(petItem.uiObject);
 
-            petItem.init(item);
+            petItem.init(pet);
             this.petItems.push(petItem);
         });
+
         this.curSelectPets = [];
         this.curPetId = 0;
-        this.changeCost(this.curSelectPets.length);
+        this.changeCost(0);
+    }
+    public show(petItems: petItemDataNew[], isGold: boolean, ...param: any[]): void {
+        this.init(isGold);
         super.show(...param);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             this.hide();

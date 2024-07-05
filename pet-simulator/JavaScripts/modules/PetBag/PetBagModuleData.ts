@@ -390,10 +390,12 @@ export class PetBagModuleData extends Subdata {
 
     /**删除元素 */
     public removeBagItem(keys: number[]) {
-        keys.forEach(async (key) => {
-			await this.updatePetStatistic(this.bagContainerNew[key], "destroyed");
+        keys.forEach( (key) => {
+            const petItem = {...this.bagContainerNew[key]};
+			this.updatePetStatistic(petItem, "destroyed");
             delete this.bagContainerNew[key];
         });
+        this.save(true);
     }
 
     /**添加宠物 交易用 */
