@@ -54,20 +54,20 @@ export class PlayerNameManager {
             console.error("获取不到玩家 " + playerID);
             return "233";
         }
-        let cName = player.character.displayName;
+        // let cName = player.character.displayName;
         // 如果可以获取到玩家的名称直接返回玩家名称
         // map里有
         if (this._playerNameMap.has(playerID)) {
             console.log("map中成功获取到玩家名");
             return this._playerNameMap.get(playerID);
         }
-        // map里没有
-        if (cName) {
-            this._playerNameMap.set(playerID, cName);
-            return cName;
-        } else {
-            console.error("获取不到character名 " + playerID);
-        }
+        // // map里没有
+        // if (cName) {
+        //     this._playerNameMap.set(playerID, cName);
+        //     return cName;
+        // } else {
+        //     console.error("获取不到character名 " + playerID);
+        // }
 
         // 获取不到玩家名重新获取
         if (SystemUtil.isClient()) {

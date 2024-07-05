@@ -1,4 +1,3 @@
-import { GameConfig } from "./config/GameConfig";
 import { GMModuleS, GMModuleC, GMModuleData } from "./module/GM/GMModule";
 import { HUDModuleS, HUDModuleC } from "./module/HudModule/HUDModule";
 import { SceneActionModuleC, SceneActionModuleS } from "./module/HudModule/SceneActionBaseModule";
@@ -59,20 +58,18 @@ import RankListModuleS from "./module/RankListModule/RankListModuleS";
 import RankListModuleC from "./module/RankListModule/RankListModuleC";
 import DressUpModuleS from "./module/DressUpModule/DressUpModuleS";
 import DressUpModuleC from "./module/DressUpModule/DressUpModuleC";
-// import { GuideModuleC2 } from "./module/GuideModule/GuideModuleC2";
-// import { GuideModuleS2 } from "./module/GuideModule/GuideModuleS2";
-import { GuideDataHelper, GuideModuleC, GuideModuleS } from "module_guide";
 import { InteractiveModuleS } from "./module/InteractiveModule/InteractiveModuleS";
 import { InteractiveModuleC } from "./module/InteractiveModule/InteractiveModuleC";
 import { AntiCheatSystem } from "./tool/AntiCheatSystem";
 import * as mwaction from "mwaction";
 import BattleWorldAuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
 import BWEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./module/Energy/EnergyModule";
-// import { SettingModuleData } from "./module/SetingModule/SettingModuleData";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./module/jump-room/JumpRoomModule";
 import GameServiceConfig from "./const/GameServiceConfig";
 import GMHUD_Generate from "./ui-generate/GM/GMHUD_generate";
 import PlayerSettingModuleData from "./module/SettingModule/SettingModuleData";
+import BwStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
+import { BwP12BagModuleData, P12BagModuleC, P12BagModuleS } from "./module/P12Bag/P12BagModule";
 
 declare global {
     var UE: any;
@@ -208,6 +205,8 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(InteractiveModuleS, InteractiveModuleC, null);
         ModuleService.registerModule(EnergyModuleS, EnergyModuleC, BWEnergyModuleData);
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
+        ModuleService.registerModule(StatisticModuleS, StatisticModuleC, BwStatisticModuleData);
+        ModuleService.registerModule(P12BagModuleS, P12BagModuleC, BwP12BagModuleData);
     }
 
     //开启作弊检测

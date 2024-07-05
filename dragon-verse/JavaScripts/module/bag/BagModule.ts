@@ -9,11 +9,11 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import YoactArray from "../../depend/yoact/YoactArray";
 import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import { EventDefine } from "../../const/EventDefine";
-import { AuthModuleS } from "../auth/AuthModule";
+import { AuthModuleS, P12ItemResId } from "../auth/AuthModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import Gtk from "../../util/GToolkit";
+import { CompanionHelper } from "../companion/CompanionHelper";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -85,6 +85,45 @@ export class HandbookItemUnique implements IUnique {
             this.collected = updated.collected;
         }
         return changed;
+    }
+
+    public primaryKey(): number {
+        return this.id;
+    }
+
+    //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
+}
+
+export class DragonHandbookUnique implements IUnique {
+    public categoryId: number;
+    public id: number;
+    public cnt: number;
+
+    public static arrayFromByteArray(data: BagModuleData, categoryId: number): DragonHandbookUnique[] {
+        const result: DragonHandbookUnique[] = [];
+
+        const bagIds = GameConfig.BagItem.getAllElement().filter(cfg => cfg.category_id === categoryId).map(cfg => cfg.id);
+        for (let bagId of bagIds) {
+            const cnt = data.getItemCount(bagId);
+            result.push(new DragonHandbookUnique(bagId, cnt, categoryId));
+        }
+        Log4Ts.log(DragonHandbookUnique, " data.itemsMap:" + JSON.stringify(data.itemsMap) + " result:" + JSON.stringify(result));
+        return result;
+    }
+
+    constructor(id: number, cnt: number, categoryId: number) {
+        this.categoryId = categoryId;
+        this.cnt = cnt;
+        this.id = id;
+    }
+
+    //#region IUnique
+    public move(updated: this): boolean {
+        Log4Ts.log(DragonHandbookUnique, "move Update:", JSON.stringify(updated));
+        this.id = updated.id;
+        this.categoryId = updated.categoryId;
+        this.cnt = updated.cnt;
+        return true;
     }
 
     public primaryKey(): number {
@@ -295,6 +334,7 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
     //#region Member
     public bagItemYoact: YoactArray<BagItemUnique> = new YoactArray<BagItemUnique>();
     public handbookYoact: YoactArray<HandbookItemUnique> = new YoactArray<HandbookItemUnique>();
+    public dragonHandbookYoactArr: YoactArray<DragonHandbookUnique>[] = [];
 
     public dragonBallYoact: { count: number } = createYoact({count: 0});
     public obbyCoinYoact: { count: number } = Yoact.createYoact({count: 0});
@@ -314,7 +354,10 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
         this.bagItemYoact.setAll(BagItemUnique.arrayFromObject(this.data));
         this.handbookYoact
             .setAll(HandbookItemUnique.arrayFromByteArray(this.data));
-        this.dragonBallYoact.count = this.getItemCount(GameServiceConfig.DRAGON_BALL_BAG_ID);
+        const categoryIds = GameConfig.Elemental.getAllElement().map((cfg) => cfg.id);
+        this.dragonHandbookYoactArr = categoryIds.map((cid) => {
+            return new YoactArray<DragonHandbookUnique>().setAll(DragonHandbookUnique.arrayFromByteArray(this.data, cid));
+        });
         this.obbyCoinYoact.count = this.data.obbyCoin;
         this.obbyTicketYoact.count = this.data.obbyTicket;
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -356,42 +399,6 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
     }
 
     /**
-     * 添加或删除指定数量的 BagItem.
-     * @param bagId BagItem id.
-     * @param count 数量.
-     * @param autoRemove 自动移除. 当使得物品数量为 0 时, 是否自动移除.
-     */
-    public addItem(bagId: number, count: number, autoRemove: boolean = true) {
-        const currCount = this.getItemCount(bagId);
-        const setCount = currCount + count;
-        Log4Ts.log(BagModuleC,
-            `add item`,
-            () => `playerId: ${this.localPlayerId}`,
-            () => `id: ${bagId}`,
-            () => `current count: ${this.getItemCount(bagId)}`,
-            () => `target count: ${setCount}`,
-            () => `autoRemove: ${autoRemove}.`,
-        );
-        this.selfSetItem(bagId, autoRemove && !setCount ? null : setCount);
-        this.server.net_addItem(bagId, count, autoRemove);
-    }
-
-    /**
-     * 移除物品.
-     * @param bagId
-     */
-    public removeItem(bagId: number) {
-        Log4Ts.log(BagModuleC,
-            `remove item`,
-            () => `playerId: ${this.localPlayerId}`,
-            () => `id: ${bagId}`,
-            () => `current count: ${this.getItemCount(bagId)}.`,
-        );
-        this.selfSetItem(bagId);
-        this.server.net_removeItem(bagId);
-    }
-
-    /**
      * 是否 玩家背包中具有 DragonBall.
      */
     public hasDragonBall() {
@@ -409,6 +416,15 @@ export class BagModuleC extends JModuleC<BagModuleS, BagModuleData> {
      */
     private selfSetItem(bagId: number, count: number = null) {
         const item = this.bagItemYoact.getItem(bagId);
+
+        if (CompanionHelper.isDragon(bagId)) {
+            this.dragonHandbookYoactArr.forEach((dragonsYoact) => {
+                const dragonYoact = dragonsYoact.getItem(bagId);
+                if (dragonYoact) {
+                    dragonYoact.cnt = count;
+                }
+            });
+        }
         if (item) {
             if (count === null) {
                 this.bagItemYoact.removeItem(bagId);
@@ -538,21 +554,28 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
             `player entered. playerId: ${player.playerId}.`,
             `query user dragon ball...`);
         this.authModuleS
-            ?.queryUserDragonBall(player.playerId)
+            ?.queryUserP12Bag(player.userId, "dragon")
             .then(value => {
-                    Log4Ts.log(BagModuleS,
-                        `query user dragon ball success.`,
-                        `playerId: ${player.playerId}.`,
-                        `value: ${JSON.stringify(value)}.`);
-                    this.setItem(
-                        player.playerId,
-                        GameServiceConfig.DRAGON_BALL_BAG_ID,
-                        value?.unUsed ?? 0);
+                    const count = value?.list
+                        ?.find(item => item.resId === P12ItemResId.CaptureBall)
+                        ?.unuse;
+                    if (count !== undefined) {
+                        Log4Ts.log(BagModuleS,
+                            `query user dragon ball success.`,
+                            `userId: ${player.userId}.`,
+                            `count: ${count}.`);
+                        this.setItem(
+                            player.playerId,
+                            GameServiceConfig.DRAGON_BALL_BAG_ID,
+                            count);
+                    } else {
+                        Log4Ts.warn(BagModuleS,
+                            `query user dragon ball failed. userId: ${player.userId}.`);
+                    }
                 },
             );
 
-        Log4Ts.log(undefined,
-            `query user dragon...`);
+        Log4Ts.log(undefined, `query user dragon...`);
         this.authModuleS.queryUserDragon(player.playerId)
             .then(value => {
                     Log4Ts.log(BagModuleS,

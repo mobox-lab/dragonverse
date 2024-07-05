@@ -20,6 +20,7 @@
     "module_gm": "^5.0.5",
     "module_guide": "^5.0.8",
     "mw-god-mod": "^31.1.24",
-    "mw-log4ts": "^1.4.0"
+    "mw-log4ts": "^1.4.0",
+    "pure-uuid": "^1.8.1"
   }
 }

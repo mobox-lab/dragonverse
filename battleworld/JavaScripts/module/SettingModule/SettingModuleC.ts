@@ -12,7 +12,7 @@ export class SettingModuleC extends ModuleC<SettingModuleS, PlayerSettingModuleD
 
     private setingUI: SettingUI = null;
 
-    protected async onStart() {
+    protected onStart() {
 
         this.setingUI = mw.UIService.create(SettingUI);
         EventManager.instance.add(EModule_Events.SetingModuleC_showSetingUI, this.showSetingUI.bind(this));

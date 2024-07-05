@@ -70,6 +70,11 @@ export default class GameServiceConfig {
 
     //#region Auth
     /**
+     * 场景名称.
+     */
+    public static readonly SCENE_NAME = "pet";
+
+    /**
      * 外源服务器 通信 最短通信 间隔.
      */
     public static readonly MIN_OTHER_REQUEST_INTERVAL = 1e3;
@@ -112,7 +117,7 @@ export default class GameServiceConfig {
     /**
      * 掉落点 采样忽略 Tag.
      */
-    public static readonly DROP_POINT_SAMPLE_IGNORE_TAGS: string[] = ['pass'];
+    public static readonly DROP_POINT_SAMPLE_IGNORE_TAGS: string[] = ["pass"];
 
     /**
      * 掉落点 采样忽略 Guid.

@@ -1,4 +1,4 @@
-﻿import { DebugConsole } from "debug_console";
+import { DebugConsole } from "debug_console";
 import { Bubble } from "module_bubble";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
@@ -131,7 +131,6 @@ addGMCommand(
     (player: mw.Player, value: string) => {
         let val = Number(value);
         ModuleService.getModule(PlayerModuleS).addGold(player.playerId, val, GlobalEnum.CoinType.FirstWorldGold);
-        ModuleService.getModule(PlayerModuleS).addGold(player.playerId, val, GlobalEnum.CoinType.SummerGold);
     },
     undefined,
     "货币",
@@ -452,7 +451,7 @@ addGMCommand(
     "string",
     async (value: string) => {
         let arr: AreaData[] = [];
-        await getPoints(arr, "3A86A988");
+        await getPoints(arr, "3B548E5D");
         let str = JSON.stringify(arr);
         console.log("areaDatas:" + str);
     },
@@ -843,7 +842,7 @@ addGMCommand(
     "string",
     undefined,
     (p, v) => {
-        ModuleService.getModule(EnergyModuleS).addEnergy(p.playerId, 100);
+        ModuleService.getModule(EnergyModuleS).addEnergy(p.userId, 100);
     },
     undefined,
     "体力",
@@ -854,7 +853,7 @@ addGMCommand(
     "string",
     undefined,
     (player, value) => {
-        ModuleService.getModule(AuthModuleS)["queryCurrency"](player.playerId);
+        ModuleService.getModule(AuthModuleS)["queryCurrency"](player.userId);
     },
     undefined,
     "Auth",

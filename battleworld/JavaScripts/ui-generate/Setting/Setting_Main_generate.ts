@@ -184,20 +184,6 @@
 		}
 		return this.mScroll_InputScale_Internal
 	}
-	private mCanvas_Lock_Internal: mw.Canvas
-	public get mCanvas_Lock(): mw.Canvas {
-		if(!this.mCanvas_Lock_Internal&&this.uiWidgetBase) {
-			this.mCanvas_Lock_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_Lock') as mw.Canvas
-		}
-		return this.mCanvas_Lock_Internal
-	}
-	private mBtn_Lock_Internal: mw.StaleButton
-	public get mBtn_Lock(): mw.StaleButton {
-		if(!this.mBtn_Lock_Internal&&this.uiWidgetBase) {
-			this.mBtn_Lock_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_Lock/mBtn_Lock') as mw.StaleButton
-		}
-		return this.mBtn_Lock_Internal
-	}
 	private mCanvas_cameraspeed_Internal: mw.Canvas
 	public get mCanvas_cameraspeed(): mw.Canvas {
 		if(!this.mCanvas_cameraspeed_Internal&&this.uiWidgetBase) {
@@ -211,6 +197,20 @@
 			this.mScroll_speedInputScale_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed/mScroll_speedInputScale') as mw.ProgressBar
 		}
 		return this.mScroll_speedInputScale_Internal
+	}
+	private mCanvas_Lock_Internal: mw.Canvas
+	public get mCanvas_Lock(): mw.Canvas {
+		if(!this.mCanvas_Lock_Internal&&this.uiWidgetBase) {
+			this.mCanvas_Lock_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_Lock') as mw.Canvas
+		}
+		return this.mCanvas_Lock_Internal
+	}
+	private mBtn_Lock_Internal: mw.StaleButton
+	public get mBtn_Lock(): mw.StaleButton {
+		if(!this.mBtn_Lock_Internal&&this.uiWidgetBase) {
+			this.mBtn_Lock_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_Lock/mBtn_Lock') as mw.StaleButton
+		}
+		return this.mBtn_Lock_Internal
 	}
 	private mBtn_Back_Internal: mw.StaleButton
 	public get mBtn_Back(): mw.StaleButton {
@@ -364,9 +364,6 @@
 		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_InputScale/Text_InputScale") as any);
 		
 	
-		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_Lock/Text_Shadow") as any);
-		
-	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed/Text_Speed") as any);
 		
 	
@@ -374,6 +371,9 @@
 		
 	
 		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_cameraspeed/Text_High") as any);
+		
+	
+		this.initLanguage(this.uiWidgetBase.findChildByPath("mCanvas_Setting/ScrollBox/canvas_Setting/mCanvas_Control/mCanvas_Lock/Text_Shadow") as any);
 		
 	
 

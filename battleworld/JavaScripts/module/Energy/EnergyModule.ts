@@ -16,9 +16,9 @@ addGMCommand(
         if (Number.isNaN(v)) {
             v = 200;
         }
-        Log4Ts.log(EnergyModuleS, `try add energy to player ${player.playerId}. by GM. value: ${v}`);
+        Log4Ts.log(EnergyModuleS, `try add energy to player ${player.userId}. by GM. value: ${v}`);
 
-        ModuleService.getModule(EnergyModuleS).addEnergy(player.playerId, v);
+        ModuleService.getModule(EnergyModuleS).addEnergy(player.userId, v);
     },
     undefined,
     "Energy",
@@ -210,6 +210,8 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
 
     private _intervalHolder: Map<string, number> = new Map();
 
+    private _playerConsumeMap: Map<string, number> = new Map();
+
     private _authModuleS: AuthModuleS;
 
     private get authModuleS(): AuthModuleS | null {
@@ -276,7 +278,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
             GameServiceConfig.isRelease || GameServiceConfig.isBeta
                 ? GameServiceConfig.ENERGY_RECOVERY_INTERVAL_MS
                 : 5 * GtkTypes.Interval.PerSec;
-        this.authModuleS.requestRefreshStaminaLimit(player.playerId).then(() => {
+        this.authModuleS.requestRefreshStaminaLimit(player.userId, "fight").then(() => {
             let autoRecoveryHandler = () => {
                 const now = Date.now();
                 let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
@@ -298,7 +300,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
 
                         delay = duration % refreshInterval;
                         d.lastRecoveryTime = now - delay;
-                        Log4Ts.log(EnergyModuleS, `add energy done. current is ${d.energy}`);
+                        Log4Ts.log(EnergyModuleS, `${player.playerId} add energy done. current is ${d.energy}`);
                         changed = true;
                     }
                     if (this._intervalHolder.has(player.userId)) mw.clearTimeout(this._intervalHolder.get(player.userId));
@@ -307,7 +309,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
 
                 if (changed) {
                     d.save(false);
-                    this.syncEnergyToClient(player.playerId, d.energy, limit);
+                    this.syncEnergyToClient(player.userId, d.energy, limit);
                 }
             };
 
@@ -315,10 +317,11 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
                 let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
                 d.energy = Math.min(d.energy + d.restitution, limit);
                 d.restitution = 0;
-                this.syncEnergyToClient(player.playerId, d.energy);
+                this.syncEnergyToClient(player.userId, d.energy);
             }
             autoRecoveryHandler();
         });
+        this._playerConsumeMap.set(player.userId, 0);
     }
 
     /**
@@ -341,23 +344,41 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
 
         let needRefresh = d.energy >= (this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0);
         if (d.consume(cost) > 0 && needRefresh) d.lastRecoveryTime = firstTime;
+        const totalCost = this._playerConsumeMap.get(player.userId) ?? 0;
+        this._playerConsumeMap.set(player.userId, totalCost + cost);
 
         d.save(false);
-        this.syncEnergyToClient(playerId, d.energy);
+        this.syncEnergyToClient(player.userId, d.energy);
         Log4Ts.log(EnergyModuleS, `consume ${cost} energy for player ${playerId}.`, `current: ${d.energy}`);
     }
 
-    public addEnergy(playerId: number, val: number) {
-        const d = this.getPlayerData(playerId);
-        if (!d) return;
+    public addEnergy(userId: string, val: number, limitRefresh?: number) {
+        const player = Player.getPlayer(userId);
+        const d = this.getPlayerData(userId);
+        if (!d || !player) return;
+        if (limitRefresh !== undefined) d.tryUpdateLimit(limitRefresh);
         d.energy += val;
         d.save(false);
-        this.syncEnergyToClient(playerId, d.energy);
-        Log4Ts.log(EnergyModuleS, `add ${val} energy to player ${playerId}.`, ` current: ${d.energy}`);
+        this.syncEnergyToClient(player.userId, d.energy);
+        Log4Ts.log(EnergyModuleS, `add ${val} energy to player ${userId}.`, ` current: ${d.energy}`);
     }
 
-    public syncEnergyToClient(playerId: number, energy: number, energyLimit?: number) {
-        this.getClient(playerId)?.net_syncEnergy(energy, energyLimit);
+    public syncEnergyToClient(userId: string, energy: number, energyLimit?: number) {
+        const player = Player.getPlayer(userId);
+        this.getClient(player.playerId)?.net_syncEnergy(energy, energyLimit);
+    }
+
+    /**
+     * 获取玩家体力
+     * @param {number} playerId  -- 玩家 id
+     * @returns {[number, number, number]} -- [当前体力, 最大体力, 本次消耗的体力]
+     */
+    public getPlayerEnergy(playerId: number): [number, number, number] {
+        const data = this.getPlayerData(playerId);
+        const player = Player.getPlayer(playerId);
+        const maxStamina = this.authModuleS.playerStaminaLimitMap.get(player?.userId) ?? 0;
+        const cost = this._playerConsumeMap.get(player?.userId) ?? 0;
+        return [data.energy, maxStamina, cost];
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -366,11 +387,11 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
     @mwext.Decorator.noReply()
     public net_requestRefreshStaminaLimit() {
         let player = this.currentPlayer;
-        this.authModuleS.requestRefreshStaminaLimit(this.currentPlayerId).then(() => {
+        this.authModuleS.requestRefreshStaminaLimit(player.userId, GameServiceConfig.SCENE_NAME).then(() => {
             let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
             let d = this.getPlayerData(player);
             if (d?.tryUpdateLimit(limit) ?? false)
-                this.syncEnergyToClient(player.playerId, d.energy, limit);
+                this.syncEnergyToClient(player.userId, d.energy, limit);
         });
     }
 

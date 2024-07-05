@@ -15,6 +15,20 @@ export default class WallInteract_Generate extends UIScript {
 		}
 		return this.mBtn_Interact_Internal
 	}
+	private clickImg_Internal: mw.Image
+	public get clickImg(): mw.Image {
+		if(!this.clickImg_Internal&&this.uiWidgetBase) {
+			this.clickImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/clickImg') as mw.Image
+		}
+		return this.clickImg_Internal
+	}
+	private textBlock_Internal: mw.TextBlock
+	public get textBlock(): mw.TextBlock {
+		if(!this.textBlock_Internal&&this.uiWidgetBase) {
+			this.textBlock_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/clickImg/textBlock') as mw.TextBlock
+		}
+		return this.textBlock_Internal
+	}
 
 
 
@@ -44,6 +58,9 @@ export default class WallInteract_Generate extends UIScript {
 		
 		//文本多语言
 		
+		this.initLanguage(this.textBlock)
+		
+	
 		//文本多语言
 		
 

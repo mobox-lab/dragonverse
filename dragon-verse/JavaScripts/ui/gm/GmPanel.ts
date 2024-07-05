@@ -127,14 +127,14 @@ addGMCommand(
 addGMCommand(
     "增加物品",
     "string",
-    (value) => {
+    undefined,
+    (player, value) => {
         let splice = value.split(",");
         let id = Number(splice[0]);
         let count = splice[1] ? Number(splice[1]) : 1;
         Log4Ts.log(addGMCommand, `增加物品 ${value} ${count}个`);
-        ModuleService.getModule(BagModuleC).addItem(id, Number(count));
+        ModuleService.getModule(BagModuleS).addItem(player.playerId, id, Number(count));
     },
-    undefined,
     undefined,
     "背包",
 );

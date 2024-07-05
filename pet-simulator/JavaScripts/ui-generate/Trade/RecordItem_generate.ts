@@ -8,7 +8,14 @@
 
 @UIBind('UI/Trade/RecordItem.ui')
 export default class RecordItem_Generate extends UIScript {
-		private mText_Count_Internal: mw.TextBlock
+		private mBtn_RecordDetail_Internal: mw.Button
+	public get mBtn_RecordDetail(): mw.Button {
+		if(!this.mBtn_RecordDetail_Internal&&this.uiWidgetBase) {
+			this.mBtn_RecordDetail_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_RecordDetail') as mw.Button
+		}
+		return this.mBtn_RecordDetail_Internal
+	}
+	private mText_Count_Internal: mw.TextBlock
 	public get mText_Count(): mw.TextBlock {
 		if(!this.mText_Count_Internal&&this.uiWidgetBase) {
 			this.mText_Count_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_RecordDetail/mText_Count') as mw.TextBlock
@@ -21,13 +28,6 @@ export default class RecordItem_Generate extends UIScript {
 			this.mText_Time_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_RecordDetail/mText_Time') as mw.TextBlock
 		}
 		return this.mText_Time_Internal
-	}
-	private mBtn_RecordDetail_Internal: mw.Button
-	public get mBtn_RecordDetail(): mw.Button {
-		if(!this.mBtn_RecordDetail_Internal&&this.uiWidgetBase) {
-			this.mBtn_RecordDetail_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtn_RecordDetail') as mw.Button
-		}
-		return this.mBtn_RecordDetail_Internal
 	}
 	private mBtn_Good_Internal: mw.Button
 	public get mBtn_Good(): mw.Button {

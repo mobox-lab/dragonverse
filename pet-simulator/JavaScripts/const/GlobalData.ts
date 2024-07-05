@@ -85,7 +85,9 @@ export namespace GlobalData {
 
     /**宠物 */
     export class pet {
-        /**宠物行动栏，休息时颜色 */
+        /**宠物行动栏 宠物稀有度背景 普通 稀有 史诗 传说 神话 */
+        public static petStatePetRarityGuid: string[] = ["357131", "357135", "357129", "357134", "357132"];
+		/**宠物行动栏，休息时颜色 */
         public static restingPetStateImgColor: LinearColor = LinearColor.colorHexToLinearColor("#B5B5B5");
         /**宠物行动栏，出战时颜色 */
         public static attackingPetStateImgColor: LinearColor = LinearColor.colorHexToLinearColor("#FED43F");
@@ -398,7 +400,7 @@ export namespace GlobalData {
         /**初始化资源点刷新间隔 */
         public static initResourceRefresh: number = 0.1;
         /**每个区域资源上限个数 */
-        public static maxResourceCount: number = 200;
+        public static maxResourceCount: number = 400;
         /**每个区域资源下限个数 */
         public static minResourceCount: number = 100;
         /**默认区域数组 */
@@ -423,14 +425,7 @@ export namespace GlobalData {
         /**刮痧时间 */
         public static guaShaTime: number = 6;
 
-        /**1/3暴击 倍率 */
         public static critRateMap: Map<number, number> = new Map();
-
-        public static critRate(playerId: number) {
-            return Gtk.tryGet(this.critRateMap, playerId, () => 3);
-        }
-
-        public static critMap: Map<number, boolean> = new Map();
 
         // public static isCrit(playerId: number) {
         //     return Gtk.tryGet(
@@ -643,11 +638,11 @@ export namespace GlobalData {
         /**背景板颜色 正常、蓝色*/
         public static bgColors: string[] = ["#FFFFFFFF", "#3FB0FEFF"];
         /**传说、神话正常底板 Guid */
-        public static legendBgGuid: string[] = ["183469", "183468"];
+        public static legendBgGuid: string[] = ["367714", "367713"];
         /**传说、神话选中底板 Guid */
-        public static legendBgSelectGuid: string[] = ["183467", "183467"];
+        public static legendBgSelectGuid: string[] = ["367714", "367713"];
         /**传说、神话 渲染缩放 */
-        public static legendBgScale: mw.Vector2 = new mw.Vector2(1.2, 1.2);
+        public static legendBgScale: mw.Vector2 = new mw.Vector2(1, 1);
         /**巨大化渲染缩放 */
         public static hugeScale: mw.Vector2 = new mw.Vector2(1.7, 1.7);
 
@@ -668,7 +663,12 @@ export namespace GlobalData {
         /**背包item 大小 */
         public static itemSize: mw.Vector2 = new mw.Vector2(95, 95);
         /**背包itemUI 爱心化、彩虹化图标 Guid */
-        public static itemSpecialIconGuid: string[] = ["178135", "355921"];
+        public static itemSpecialIconGuid: string[] = ["355922", "355921"];
+
+		public static itemHoverOffsetX = 10;
+		public static itemHoverOffsetY = 60;
+		/** 悬浮时描边颜色 根据稀有度 */
+		public static itemHoverLineColor = ["#55585A", "#1F3196", "#652187", "#7B672C", "#881A01"];
     }
 
     /**收集图鉴 */
@@ -879,7 +879,7 @@ export namespace GlobalData {
         public static maxLevel: number = 5;
 
         public static initPlayer(playerId: number,
-            levelData: number[]) {
+                                 levelData: number[]) {
             let upgradeData = GameConfig.Upgrade.getAllElement().map(v => v.Upgradenum);
 
             this.levelRangeMap.set(playerId, (upgradeData[0][levelData[0] - 1] ?? 0) + 1);
@@ -1036,7 +1036,13 @@ export namespace GlobalData {
         /**附魔触发器guid */
         public static triggerGuid: string = "3D93BC133BD789C1";
         /**特效Guid */
-        public static effectGuid: string = "3C71E1D33BD789C1";
+        public static effectGuid: string = "142961";
+        /**特效挂载对象Guid */
+        public static effectTargetGuid: string = "1F9255B4";
+        /**特效相对位置 */
+        public static effectPos: number[] = [0, 0, 95];
+        /**特效相对位置 */
+        public static effectScale: number[] = [0.8, 0.8, 0.8];
         /**普通附魔表 id范围 */
         public static normalEnchantIdRange: number[] = [1, 42];
         /**特殊附魔 id范围 */
@@ -1044,25 +1050,21 @@ export namespace GlobalData {
         /**神话附魔 只有神话宠物才有可能初始携带 id范围 */
         public static mythEnchantIdRange: number[] = [46, 46];
         /**过滤id */
-        public static filterIds: number[] = [11, 12, 13, 14, 15];
+        public static filterIds: number[] = [11, 12, 13, 14, 15, 44];
         /**同时附魔最大数 */
         public static maxEnchantNum: number = 3;
-        /**特效播放次数 */
-        public static effectPlayTimes: number = 3;
         /**附魔stop界面停留时间/s */
         public static stopTime: number = 3;
         /**附魔单次钻石花费 */
         public static diamondCost: number = 10000;
-        /**附魔 词条背景 - 空、普通、传说、神话 Guid */
-        public static enchantItemGuid: string[] = ["355924", "355919", "356154", "357133"];
+        /**附魔 词条背景 - 普通、传说、神话、空、未解锁 Guid */
+        public static enchantItemGuid: string[] = ["355919", "356154", "357133", "355924", "359012"];
         /**附魔 左侧详情 宠物稀有度背景 普通 稀有 史诗 传说 神话 */
         public static enchantPetRarityGuid: string[] = ["355918", "355920", "355926", "355913", "355925"];
         /**附魔 词条图标 对勾/锁  */
-        public static enchantSelectIconGuid: string[] = ["295627", "357130"];
+        public static enchantSelectIconGuid: string[] = ["295627", "367715"];
         /**附魔按钮 正常、stop Guid */
-        public static enchantBtnGuid: string[] = ["174844", "174843"];
-        /**附魔特效时长 */
-        public static effectDuration: number = 1;
+        public static enchantBtnGuid: string[] = ["359019", "174843"];
 
         /**随机生成钻石间隔  /s*/
         public static randomDiamondInterval: number[] = [5, 10];

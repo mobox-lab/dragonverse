@@ -10,7 +10,6 @@ import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
-import Enchant = GlobalData.Enchant;
 
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModuleData> {
 
@@ -131,8 +130,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         const cfg = GameConfig.Upgrade.getElement(id + 1);
         if (!cfg) return false;
 
+		const playerId = this.currentPlayerId;
         let cost = cfg.Diamond[this.currentData.getLevelData(id)] ?? 0;
-        if (!this.currentData.reduceDiamond(cost)) return false;
+        if (!this.currentData.reduceDiamond(cost, true, playerId)) return false;
 
         ModuleService.getModule(Task_ModuleS).strengthen(this.currentPlayer, GlobalEnum.StrengthenType.LevelUp);
         this.currentData.levelUp(id);
@@ -186,8 +186,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
             GlobalData.SceneResource.clearPlayer(player.playerId);
             GlobalData.Buff.clearPlayer(player.playerId);
-            EnchantBuff.clearPlayer(player.playerId);
-            Enchant.clearPlayer(player.playerId);
+            EnchantBuff.clearPlayerBuff(player.playerId);
+            GlobalData.Enchant.clearPlayer(player.playerId);
             GlobalData.LevelUp.clearPlayer(player.playerId);
         } catch (error) {
             oTraceError(error);
@@ -261,10 +261,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
 
     public absorbAll(gold1: number, gold2: number, gold3: number, diamond: number) {
         let data = this.currentData;
-        if (gold1 > 0) data.addGold(gold1, GlobalEnum.CoinType.FirstWorldGold);
-        if (gold2 > 0) data.addGold(gold2, GlobalEnum.CoinType.SecondWorldGold);
-        if (gold3 > 0) data.addGold(gold3, GlobalEnum.CoinType.ThirdWorldGold);
-        if (diamond > 0) data.addDiamond(diamond);
+        const playerId = this.currentPlayerId;
+        if (gold1 > 0) data.addGold(gold1, GlobalEnum.CoinType.FirstWorldGold, true, playerId);
+        if (gold2 > 0) data.addGold(gold2, GlobalEnum.CoinType.SecondWorldGold, true, playerId);
+        if (gold3 > 0) data.addGold(gold3, GlobalEnum.CoinType.ThirdWorldGold, true, playerId);
+        if (diamond > 0) data.addDiamond(diamond, true, playerId);
     }
 
     // /**增加金币 */
@@ -287,49 +288,52 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         return false;
 
     }
-		
-    public async net_buyWorld(cfgID: number): Promise<boolean> { 
-			let coinType = GlobalEnum.CoinType;
 
-			let goldType = coinType.FirstWorldGold;
+    public async net_buyWorld(cfgID: number): Promise<boolean> {
+        let coinType = GlobalEnum.CoinType;
 
-			if (cfgID < 2000) {
-					goldType = coinType.FirstWorldGold;
-			} else if (cfgID < 3000) {
-					goldType = coinType.SecondWorldGold;
-			} else if (cfgID < 4000) {
-					goldType = coinType.ThirdWorldGold;
-			}
-			const cfg = GameConfig.AreaDivide.getElement(cfgID);
-			return this.currentData.reduceGold(cfg.Gold, goldType);;
-		}
+        let goldType = coinType.FirstWorldGold;
 
-    public async net_randomDiamond(): Promise<number> {
-			let count = MathUtil.randomInt(GlobalData.Enchant.randomDiamondNum[0], GlobalData.Enchant.randomDiamondNum[1] + 1);
-			await this.addDiamond(this.currentPlayerId, count);
-			return count
-		}
+        if (cfgID < 2000) {
+            goldType = coinType.FirstWorldGold;
+        } else if (cfgID < 3000) {
+            goldType = coinType.SecondWorldGold;
+        } else if (cfgID < 4000) {
+            goldType = coinType.ThirdWorldGold;
+        }
+        const cfg = GameConfig.AreaDivide.getElement(cfgID);
+		const playerId = this.currentPlayerId;
+        return this.currentData.reduceGold(cfg.Gold, goldType, true, playerId);
+        ;
+    }
+
+    public async randomDiamond(playerId: number): Promise<number> {
+        let count = MathUtil.randomInt(GlobalData.Enchant.randomDiamondNum[0], GlobalData.Enchant.randomDiamondNum[1] + 1);
+        const data = this.getPlayerData(playerId);
+        await data.addDiamond(count, true, playerId);
+        return count;
+    }
 
     /**减少金币 */
-    public reduceGold(playerId:number, value: number, coinType: GlobalEnum.CoinType): boolean {
-				if(!playerId) return false;
-				const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
-        return data.reduceGold(value, coinType);
+    public reduceGold(playerId: number, value: number, coinType: GlobalEnum.CoinType): boolean {
+        if (!playerId) return false;
+        const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
+        return data.reduceGold(value, coinType, true, playerId);
     }
 
     /**减少钻石 */
-    public reduceDiamond(value: number): boolean {
-        return this.currentData.reduceDiamond(value);
+    public reduceDiamond(value: number, playerId: number): boolean {
+        return this.currentData.reduceDiamond(value, true, playerId);
     }
 
     public addGold(playerId: number, value: number, coinType: GlobalEnum.CoinType): void {
         let data = this.getPlayerData(playerId);
-        data.addGold(value, coinType);
+        data.addGold(value, coinType, true, playerId);
     }
 
     public addDiamond(playerId: number, value: number): void {
         let data = this.getPlayerData(playerId);
-        data.addDiamond(value);
+        data.addDiamond(value, true, playerId);
     }
 
     /**装卸滑板 */
@@ -340,8 +344,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     }
 
     /**通过id获取玩家name */
-    public net_getPlayerNameById(id: number) {
-        this.getClient(id).net_getPlayerName();
+    public async net_getPlayerNameById(id: number): Promise<string> {
+        return await this.getClient(id).net_getPlayerName();
     }
 
     /**装卸滑板 */
@@ -350,9 +354,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         return this.getPlayerBehavior(player).PetArr;
     }
 
-		/** GM 测试用 */
-		public clearDiamondAndGold(playerId: number) {
-				const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
-        return data.clearDiamondAndGold();
-		}
+    /** GM 测试用 */
+    public clearDiamondAndGold(playerId: number) {
+        const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
+        return data.clearDiamondAndGold(playerId);
+    }
 }

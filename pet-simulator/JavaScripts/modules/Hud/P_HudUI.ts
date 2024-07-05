@@ -7,7 +7,6 @@ import { P_SummerCoin } from "../DollMachine/P_DollMachine";
 import { EnergyModuleC } from "../Energy/EnergyModule";
 
 import { Yoact } from "../../depend/yoact/Yoact";
-import bindYoact = Yoact.bindYoact;
 import ModuleService = mwext.ModuleService;
 import { AuthModuleC } from "../auth/AuthModule";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
@@ -15,7 +14,6 @@ import MessageBox from "../../util/MessageBox";
 import { GameConfig } from "../../config/GameConfig";
 import { TipsManager } from "./P_TipUI";
 import BuffEnergyTips_Generate from "../../ui-generate/common/BuffEnergyTips_generate";
-import GToolkit from "../../util/GToolkit";
 import { JumpGamePanel } from "../../ui/JumpGamePanel";
 import { Task_ModuleC } from "../Task/TaskModuleC";
 import Gtk from "../../util/GToolkit";
@@ -23,6 +21,9 @@ import { P_Transmit } from "../AreaDivide/P_Transmit";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import SettingsPanel from "../../ui/settings/SettingsPanel";
 import { PlayerSettingModuleC } from "../player-setting/PlayerSettingModule";
+import { formatEther } from "@p12/viem";
+import P12ShopPanel from "../../ui/shop/P12ShopPanel";
+import SenzuBeanConfirmPanel from "../../ui/bag/SenzuBeanConfirmPanel";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -121,11 +122,12 @@ export class P_HudUI extends Hud_Generate {
 
         this.setGMBtn();
         this.startFastTranBtnTween();
-        // bindYoact(() => {
-        //     GToolkit.trySetText(this.mText_Mcoin, GlobalData.Global.isRelease || GlobalData.Global.isBeta ?
-        //         utils.formatNumber(this.authModuleC?.currency.count) :
-        //         ((this.authModuleC?.currency.count ?? 0).toFixed(2).toString()));
-        // });
+
+        // MDBL Token
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mText_token, formatEther(BigInt(this.authModuleC?.currency.count ?? 0))));
+        this.btn_FreshToken.onClicked.add(() => this.authModuleC.refreshCurrency());
+
         this.jumpRoomBtn.onClicked.add(() => {
             if (!UIService.getUI(JumpGamePanel, false) || !UIService.getUI(JumpGamePanel).visible) {
                 UIService.show(JumpGamePanel);
@@ -183,7 +185,15 @@ export class P_HudUI extends Hud_Generate {
             UIService.show(SettingsPanel);
         });
 
+        // P12 商城
+        this.mBtn_Onlinehsop.onClicked.add(() => {
+            UIService.show(P12ShopPanel);
+        });
 
+        // 消费道具
+        this.btn_Plus.onClicked.add(() => {
+            UIService.show(SenzuBeanConfirmPanel);
+        });
     }
 
     public updateTaskPoint() {
@@ -283,6 +293,16 @@ export class P_HudUI extends Hud_Generate {
     public setVis(isShow: boolean): void {
         isShow ? this.show() : this.hide();
         this.mVirtualJoystickPanel.resetJoyStick();
+    }
+
+    /** 右下角显隐 */
+    public setRightBottomVis(isShow: boolean): void {
+        const vis = isShow ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
+        this.mCanvas_jumpRoom.visibility = vis;
+        this.mCanvas_Setting.visibility = vis;
+        this.mCanvas_Transmit.visibility = vis;
+        this.can_Mobox_Token.visibility = vis;
+        this.mCanvas_stamina.visibility = vis;
     }
 
     /**金币数量改变 */

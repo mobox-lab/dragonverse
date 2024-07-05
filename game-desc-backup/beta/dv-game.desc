@@ -1,0 +1,35 @@
+﻿{
+	"name": "Dragonverse Beta",
+	"packageName": "08D096774F1ACECE71873BA504C91FCD",
+	"foldername": "dragon-verse",
+	"mainScene": 1,
+	"scenePublic": 1,
+	"intro": "适配.31版",
+	"notes": "适配.31版",
+	"editorVersion": "v0.30.0.0",
+	"parentGameIdentity": "",
+	"parentGameId": "",
+	"extra": "{\"attribute\":2,\"IsHorizontal\":true,\"useAvatar\":1}",
+	"devEnv": 4,
+	"needToMgs": 0,
+	"attribute": 2,
+	"autoSubmitAudit": false,
+	"ignore": [
+		"game.desc",
+		"Asset_Data_List"
+	],
+	"files": [
+		{
+			"type": "Game_Thumbnail",
+			"path": "Pictures/Game_Thumbnail.jpg"
+		},
+		{
+			"type": "GameSetting",
+			"path": "Config/GameSetting.ini"
+		},
+		{
+			"type": "Asset_Data_List",
+			"path": "Asset_Data_List"
+		}
+	]
+}

@@ -43,19 +43,19 @@ export default class AchievementItem_Generate extends UIScript {
 		}
 		return this.mProgressBar_Internal
 	}
-	private mText_lording_Internal: mw.TextBlock
-	public get mText_lording(): mw.TextBlock {
-		if(!this.mText_lording_Internal&&this.uiWidgetBase) {
-			this.mText_lording_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_lording') as mw.TextBlock
-		}
-		return this.mText_lording_Internal
-	}
 	private mText_AMname_Internal: mw.TextBlock
 	public get mText_AMname(): mw.TextBlock {
 		if(!this.mText_AMname_Internal&&this.uiWidgetBase) {
 			this.mText_AMname_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_AMname') as mw.TextBlock
 		}
 		return this.mText_AMname_Internal
+	}
+	private mText_lording_Internal: mw.TextBlock
+	public get mText_lording(): mw.TextBlock {
+		if(!this.mText_lording_Internal&&this.uiWidgetBase) {
+			this.mText_lording_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mText_lording') as mw.TextBlock
+		}
+		return this.mText_lording_Internal
 	}
 	private mText_Grade_Internal: mw.TextBlock
 	public get mText_Grade(): mw.TextBlock {
@@ -114,10 +114,10 @@ export default class AchievementItem_Generate extends UIScript {
 		this.initLanguage(this.mText_Award)
 		
 	
-		this.initLanguage(this.mText_lording)
+		this.initLanguage(this.mText_AMname)
 		
 	
-		this.initLanguage(this.mText_AMname)
+		this.initLanguage(this.mText_lording)
 		
 	
 		this.initLanguage(this.mText_Grade)

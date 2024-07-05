@@ -223,7 +223,7 @@ export default class GameServiceConfig {
     /**
      * 场景龙 捕捉进度条时长.
      */
-    public static readonly SCENE_DRAGON_CATCH_PROGRESS_DURATION = 2e3;
+    public static readonly SCENE_DRAGON_CATCH_PROGRESS_DURATION = 5e3;
 
     /**
      * 场景龙 最远存活距离.

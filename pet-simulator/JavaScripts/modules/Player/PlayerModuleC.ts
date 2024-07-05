@@ -440,11 +440,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         }
     }
 
-    /**增加钻石 */
-    public async randomDiamond() {
-        return await this.server.net_randomDiamond();
-    }
-
     /**判断钻石数量是否足够 */
     public isDiamondEnough(value: number): boolean {
         return this.data.diamond >= value;
@@ -469,7 +464,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
     // }
 
     public async net_levelNotice(playerId: number, count: number) {
-        let str = await PlayerNameManager.instance.getPlayerName(playerId);
+        let str = await PlayerNameManager.instance.getPlayerNameAsync(playerId);
         if (count == GlobalData.Notice.levelUpTipsCount[0]) {
             str = str + " " + GameConfig.Language.World_Tips_10.Value;
         } else {
@@ -616,12 +611,12 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
     }
 
     /**客户端通过id获取另一个客户端玩家的name */
-    public async getPlayerNameById(id: number) {
+    public async getPlayerNameById(id: number): Promise<string> {
         return await this.server.net_getPlayerNameById(id);
     }
 
     /**服务端获取客户端玩家name */
-    public net_getPlayerName() {
-        return AccountService.getNickName();
+    public net_getPlayerName(): Promise<string> {
+        return Promise.resolve(AccountService.getNickName());
     }
 }

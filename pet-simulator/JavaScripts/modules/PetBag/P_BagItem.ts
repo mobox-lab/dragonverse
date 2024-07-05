@@ -7,6 +7,7 @@ import { Singleton, stringToBuff, utils } from "../../util/uitls";
 import { BagTool } from "./BagTool";
 import { GlobalEnum } from "../../const/Enum";
 import { cubicBezier } from "../../util/MoveUtil";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 
 export class PetBag_Item extends Pet_item_Generate {
@@ -23,7 +24,7 @@ export class PetBag_Item extends Pet_item_Generate {
     private movetTween: mw.Tween<{}>;
     private fadeInTween: mw.Tween<{ alpha: number; }>;
     private fadeOutTween: mw.Tween<{ alpha: number; }>;
-
+	private enableHover: boolean = true;
     /**true-开启悬浮ui，false-关闭 */
     public onHoverAC: Action2<boolean, PetBag_Item> = new Action2();
     private undefineBgGuid: string;
@@ -33,22 +34,18 @@ export class PetBag_Item extends Pet_item_Generate {
     onStart() {
         this.changeAllChild(false);
         this.getUIDate();
-        this.mButton_Equip.onPressed.add(() => {
-            this.isRelease = false;
-            this.clearPressedInterval();
-            this.pressedInterval = setTimeout(() => {
-                if (!this.isRelease) { //按压成功
-                    this.isHover = true;
-                    this.onHoverAC.call(true, this);
-                }
-            }, GlobalData.Bag.pressTime);
-        });
-        this.mButton_Equip.onReleased.add(() => {
-            this.clearPressedInterval();
-        });
         this.undefineBgGuid = this.mPic_Equip.imageGuid;
         this.undefineSelectGuid = this.mPic_Equip_3.imageGuid;
         this.mButton_Equip.onClicked.add(this.onBtnClick.bind(this));
+		
+		KeyOperationManager.getInstance().onWidgetEntered(this.uiWidgetBase, () => {
+			if(!this.enableHover) return;
+			this.onHoverAC.call(true, this); 
+		});
+		KeyOperationManager.getInstance().onWidgetLeave(this.uiWidgetBase, () => {
+			if(!this.enableHover) return;
+			this.onHoverAC.call(false, this);
+		});
     }
     private getUIDate() {
         this.undefineBgGuid = this.mPic_Equip.imageGuid;
@@ -73,17 +70,18 @@ export class PetBag_Item extends Pet_item_Generate {
 
         this.petInfo = GameConfig.PetARR.getElement(data.I);
         this.mText_Value.text = utils.formatNumber(data.p.a);
-        if (this.petInfo)
-            this.mPic_Peticon.imageGuid = this.petInfo.uiGuid;
+        if (this.petInfo) this.mPic_Peticon.imageGuid = this.petInfo.uiGuid;
         else {
             console.error("petInfo is null!!!!!!!!!");
-
         }
-
         this.setQuality(data.I);
         this.setSpecial(data.I);
-				if(data.enchantCnt) this.textEnhancenum.text = '+' + utils.formatNumber(data.enchantCnt);
-				else this.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
+        const enchantNum = data.p.b?.length ?? 0; // 拥有的附魔词条数目
+        if (enchantNum) {
+            this.imgEnhance.visibility = mw.SlateVisibility.Visible;
+            this.textEnhancenum.text = utils.formatNumber(enchantNum);
+        } else this.imgEnhance.visibility = mw.SlateVisibility.Collapsed;
+
         if (this.mPic_Equip_3.visible) {
             this.mPic_Equip_3.visibility = mw.SlateVisibility.Collapsed;
             this.mPic_Equip_2.visibility = mw.SlateVisibility.Collapsed;
@@ -91,46 +89,34 @@ export class PetBag_Item extends Pet_item_Generate {
     }
     /**设置战力ui颜色 */
     public setPowerColor(petItem: petItemDataNew) {
+        // 2024.06.21 攻击力不需要变颜色了， 始终按照设计稿的白色即可。
         this.mText_Value.text = utils.formatNumber(petItem.p.a);
-        if (petItem.p.b.length == 0) {
-            this.mText_Value.setFontColorByHex("#FFFFFFFF");
-            return;
-        }
+        this.mText_Value.setFontColorByHex("#FFFFFFFF");
 
-        let buff = stringToBuff(BagTool.getStr(petItem))
-        if (buff.length == 0) {
-            this.mText_Value.setFontColorByHex("#FFFFFFFF");
-            return;
-        }
-        let max: number = 0;
-        buff.forEach((element) => {
-            if (element.id > max)
-                max = element.id;
-        })
-        let color = GameConfig.Enchants.getElement(max).Color
-        this.mText_Value.contentColor = mw.LinearColor.colorHexToLinearColor(color)
+        // if (petItem.p.b.length == 0) {
+        //     this.mText_Value.setFontColorByHex("#FFFFFFFF");
+        //     return;
+        // }
+        //
+        // let buff = stringToBuff(BagTool.getStr(petItem))
+        // if (buff.length == 0) {
+        //     this.mText_Value.setFontColorByHex("#FFFFFFFF");
+        //     return;
+        // }
+        // let max: number = 0;
+        // buff.forEach((element) => {
+        //     if (element.id > max)
+        //         max = element.id;
+        // })
+        // let color = GameConfig.Enchants.getElement(max).Color
+        // this.mText_Value.contentColor = mw.LinearColor.colorHexToLinearColor(color)
     }
-
-    /**悬浮 */
-    private pressedInterval: any = null;
-    private isRelease: boolean = true;
-    private isHover: boolean = false;
-    public clearPressedInterval() {
-        if (this.pressedInterval) {
-            this.isRelease = true;
-            this.onHoverAC.call(false, this);
-            clearTimeout(this.pressedInterval);
-            this.pressedInterval = null;
-        }
-    }
+	public setEnableHover(enable: boolean) {
+		this.enableHover = enable;
+	}
     private onBtnClick() {
-        if (this.isHover) {
-            this.isHover = false;
-            return;
-        }
         this.clickFun?.call(this.caller, this);
     }
-
 
     protected changeAllChild(isShow: boolean) {
         let visibility = isShow ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
@@ -156,28 +142,29 @@ export class PetBag_Item extends Pet_item_Generate {
     }
     /**是否正装备 */
     public getLockVis() {
-        return this.mPic_Equip_3.visible;
+        return this.mPic_Equip_2.visible;
     }
 
     /**设置UI装备状态 */
     public setLockVis(isEquip: boolean) {
 
         // if (isEquip == this.isEquip) return;
-        // 装备状态发生改变
+        // 装备状态发生改变 
+
         this.isEquip = isEquip;
         if (this.equipTween && this.equipTween.isPlaying()) {
             this.equipTween.stop();
         }
         if (isEquip) {
             // 装备
-            this.mPic_Equip_3.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+            // this.mPic_Equip_3.visibility = mw.SlateVisibility.SelfHitTestInvisible;
             // this.equipTween = new mw.Tween({ alpha: 0 }).to({ alpha: 1 }, 300)
             //     .onUpdate((obj) => {
             //         this.mPic_Equip_3.renderOpacity = obj.alpha;
             //     })
             //     .start();
             this.mPic_Equip_2.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-            this.mPic_Equip.visibility = mw.SlateVisibility.Collapsed;
+            // this.mPic_Equip.visibility = mw.SlateVisibility.Collapsed;
             this.setSelectVis(this.petData.I, isEquip);
         } else {
             // 卸载
@@ -357,7 +344,6 @@ export class PetBag_Item extends Pet_item_Generate {
     public setItemScale(size: mw.Vector2) {
 
         this.uiObject.size = size;
-        this.mPic_Equip
     }
 
     /**品质-设置星星数 */
@@ -365,23 +351,18 @@ export class PetBag_Item extends Pet_item_Generate {
         const quality = GlobalEnum.PetQuality;
         let cfg = GameConfig.PetARR.getElement(id);
         if (cfg.QualityType == quality.Normal) {
-            this.setStarNum(0);
             this.setBgNormal(0);
 
         } else if (cfg.QualityType == quality.Rare) {
-            this.setStarNum(0);
             this.setBgNormal(1);
 
         } else if (cfg.QualityType == quality.Epic) {
-            this.setStarNum(1);
             this.setBgNormal(2);
         }
         else if (cfg.QualityType == quality.Legend) {//传说
-            this.setStarNum(2);
             this.setBgSpecial(0);
 
         } else if (cfg.QualityType == quality.Myth) { //神话
-            this.setStarNum(3);
             this.setBgSpecial(1);
         }
         //巨大化
@@ -390,7 +371,7 @@ export class PetBag_Item extends Pet_item_Generate {
             this.mPic_Equip.renderScale = GlobalData.Bag.hugeScale;
             this.mPic_Equip_3.renderScale = GlobalData.Bag.hugeScale;
         }
-    }
+    } 
     /**设置背景正常状态 */
     public setBgNormal(typeIndex: number) {
         if (this.mPic_Equip.imageGuid != this.undefineBgGuid) {
@@ -442,33 +423,6 @@ export class PetBag_Item extends Pet_item_Generate {
         }
     }
 
-    /**设置星星数 */
-    public setStarNum(num: number) {
-        switch (num) {
-            case 0:
-                this.mPic_star1.visibility = mw.SlateVisibility.Collapsed;
-                this.mPic_star2.visibility = mw.SlateVisibility.Collapsed;
-                this.mPic_star3.visibility = mw.SlateVisibility.Collapsed;
-                break;
-            case 1:
-                this.mPic_star1.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mPic_star2.visibility = mw.SlateVisibility.Collapsed;
-                this.mPic_star3.visibility = mw.SlateVisibility.Collapsed;
-                break;
-            case 2:
-                this.mPic_star1.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mPic_star2.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mPic_star3.visibility = mw.SlateVisibility.Collapsed;
-                break;
-            case 3:
-                this.mPic_star1.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mPic_star2.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                this.mPic_star3.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-                break;
-            default:
-                break;
-        }
-    }
     /**特殊化 爱心彩虹 */
     private setSpecial(id: number) {
         const dev = GlobalEnum.PetDevType;

@@ -15,6 +15,13 @@ export default class Pet_item_Generate extends UIScript {
 		}
 		return this.mCanvas_Internal
 	}
+	private mPic_Equip_4_Internal: mw.Image
+	public get mPic_Equip_4(): mw.Image {
+		if(!this.mPic_Equip_4_Internal&&this.uiWidgetBase) {
+			this.mPic_Equip_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mPic_Equip_4') as mw.Image
+		}
+		return this.mPic_Equip_4_Internal
+	}
 	private mPic_Equip_Internal: mw.Image
 	public get mPic_Equip(): mw.Image {
 		if(!this.mPic_Equip_Internal&&this.uiWidgetBase) {
@@ -56,27 +63,6 @@ export default class Pet_item_Generate extends UIScript {
 			this.mPic_Heart_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_Heart') as mw.Image
 		}
 		return this.mPic_Heart_Internal
-	}
-	private mPic_star3_Internal: mw.Image
-	public get mPic_star3(): mw.Image {
-		if(!this.mPic_star3_Internal&&this.uiWidgetBase) {
-			this.mPic_star3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_star3') as mw.Image
-		}
-		return this.mPic_star3_Internal
-	}
-	private mPic_star2_Internal: mw.Image
-	public get mPic_star2(): mw.Image {
-		if(!this.mPic_star2_Internal&&this.uiWidgetBase) {
-			this.mPic_star2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_star2') as mw.Image
-		}
-		return this.mPic_star2_Internal
-	}
-	private mPic_star1_Internal: mw.Image
-	public get mPic_star1(): mw.Image {
-		if(!this.mPic_star1_Internal&&this.uiWidgetBase) {
-			this.mPic_star1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mPic_star1') as mw.Image
-		}
-		return this.mPic_star1_Internal
 	}
 	private mPic_delete_Internal: mw.Image
 	public get mPic_delete(): mw.Image {
