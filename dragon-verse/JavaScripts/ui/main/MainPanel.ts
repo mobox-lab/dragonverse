@@ -36,6 +36,7 @@ import { addGMCommand } from "mw-god-mod";
 import DragonHandbook from "../dragon-handbook/DragonHandbook";
 import { AuthModuleC } from "../../module/auth/AuthModule";
 import { formatEther } from "@p12/viem";
+import P12ShopPanel from "../shop/P12ShopPanel";
 
 enum MouseLockType {
     Press,
@@ -575,6 +576,15 @@ export default class MainPanel extends MainPanel_Generate {
                 UIService.hide(JumpGamePanel);
             }
         });
+
+        KeyOperationManager.getInstance().bindButton(this, Keys.H, this.btnShop);
+        this.btnShop.onClicked.add(() => {
+            if (UIService.getUI(P12ShopPanel)?.isShowing) {
+                UIService.hide(P12ShopPanel);
+            } else {
+                UIService.show(P12ShopPanel);
+            }
+        })
 
         this.init();
         //#endregion ------------------------------------------------------------------------------------------

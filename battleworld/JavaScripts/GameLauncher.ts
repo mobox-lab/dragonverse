@@ -69,7 +69,7 @@ import GameServiceConfig from "./const/GameServiceConfig";
 import GMHUD_Generate from "./ui-generate/GM/GMHUD_generate";
 import PlayerSettingModuleData from "./module/SettingModule/SettingModuleData";
 import BwStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
-import { BwP12BagModuleData, P12BagModuleC, P12BagModuleS } from "./module/P12Bag/P12BagModule";
+import { BwP12BagModuleData, P12BagModuleC, P12BagModuleS } from "./module/bag/P12BagModule";
 
 declare global {
     var UE: any;

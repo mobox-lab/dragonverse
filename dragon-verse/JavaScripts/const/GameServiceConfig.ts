@@ -137,6 +137,11 @@ export default class GameServiceConfig {
     //#region Auth
 
     /**
+     * 场景名称.
+     */
+    public static readonly SCENE_NAME = "dragon";
+
+    /**
      * 外源服务器 通信 最短通信 间隔. ms
      */
     public static readonly MIN_OTHER_REQUEST_INTERVAL = 1e3;

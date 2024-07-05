@@ -1,7 +1,7 @@
 import P12ShopPanel from "../shop/P12ShopPanel";
 import SenzuBeanReConfirmPanel from "./SenzuBeanReConfirmPanel";
 import Online_Confirm_Generate from "../../ui-generate/Onlineshop/Online_Confirm_generate";
-import { P12BagModuleC } from "../../modules/P12Bag/P12BagModule";
+import { P12BagModuleC } from "../../modules/bag/P12BagModule";
 import { P12ItemResId } from "../../modules/auth/AuthModule";
 
 export default class SenzuBeanConfirmPanel extends Online_Confirm_Generate {

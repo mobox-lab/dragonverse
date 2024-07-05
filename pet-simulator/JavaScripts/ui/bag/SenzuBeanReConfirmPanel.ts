@@ -1,7 +1,7 @@
 import Gtk from "../../util/GToolkit";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import Online_ReConfirm_Generate from "../../ui-generate/Onlineshop/Online_ReConfirm_generate";
-import { P12BagModuleC } from "../../modules/P12Bag/P12BagModule";
+import { P12BagModuleC } from "../../modules/bag/P12BagModule";
 import { P12ItemResId } from "../../modules/auth/AuthModule";
 
 export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {

@@ -247,8 +247,8 @@ export class MainUI extends Main_HUD_Generate {
             }
         });
 
-        KeyOperationManager.getInstance().bindButton(this, Keys.H, this.mBtn_OnlineShop);
         // 打开商店UI
+        KeyOperationManager.getInstance().bindButton(this, Keys.H, this.mBtn_OnlineShop);
         this.mBtn_OnlineShop.onClicked.add(() => {
             if (UIService.getUI(P12ShopPanel)?.isShowing) {
                 UIService.hide(P12ShopPanel);

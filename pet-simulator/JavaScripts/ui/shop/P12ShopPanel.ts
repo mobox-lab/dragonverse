@@ -4,7 +4,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { P12ShopConfig } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";
 import { P12ShopPanelItem } from "./P12ShopPanelItem";
-import { P12BagModuleC } from "../../modules/P12Bag/P12BagModule";
+import { P12BagModuleC } from "../../modules/bag/P12BagModule";
 import { AuthModuleC, ConsumeId } from "../../modules/auth/AuthModule";
 import Online_shop_Generate from "../../ui-generate/Onlineshop/Online_shop_generate";
 

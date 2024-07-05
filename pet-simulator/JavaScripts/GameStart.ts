@@ -47,7 +47,7 @@ import GMHUD_Generate from "./ui-generate/common/GM/GMHUD_generate";
 import PlayerSettingModuleData, { PlayerSettingModuleC, PlayerSettingModuleS } from "./modules/player-setting/PlayerSettingModule";
 import { VectorExt } from "./declaration/vectorext";
 import GodModService from "mw-god-mod";
-import { P12BagModuleC, P12BagModuleS, PsP12BagModuleData } from "./modules/P12Bag/P12BagModule";
+import { P12BagModuleC, P12BagModuleS, PsP12BagModuleData } from "./modules/bag/P12BagModule";
 
 // declare global {
 //     var UE: any;
