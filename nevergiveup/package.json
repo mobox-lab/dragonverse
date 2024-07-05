@@ -13,6 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "crypto-js": "^4.2.0",
     "gtoolkit": "^31.15.18",
     "module_bubble": "^5.1.0",
     "module_gm": "^5.0.5",

@@ -35,6 +35,7 @@ import { Reward } from "./tool/Reward";
 import { SoundUtil } from "./tool/SoundUtil";
 import { ComponentFactory } from "./enemy/components/ComponentFactory";
 import GodModService from "mw-god-mod";
+import AuthModuleData, { AuthModuleC, AuthModuleS } from "./Modules/auth/AuthModule";
 export namespace Config {
     export let skipGuide: boolean = true;
     export let danmukuSpeed: number = 300;
@@ -140,6 +141,7 @@ export default class GameStart extends Script {
     protected onDestroy(): void {}
 
     private registerModules() {
+        ModuleService.registerModule(AuthModuleS, AuthModuleC, AuthModuleData);
         ModuleService.registerModule(TimerModuleS, TimerModuleC, TimerModuleData);
         ModuleService.registerModule(TowerModuleS, TowerModuleC, TowerModuleData);
         ModuleService.registerModule(PlayerModuleS, PlayerModuleC, PlayerModuleData);
