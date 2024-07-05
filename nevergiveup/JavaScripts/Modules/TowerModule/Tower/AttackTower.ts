@@ -156,6 +156,7 @@ export default class AttackTower extends TowerBase {
     public makeDamage(enemys: Enemy[]) {
         // 造成伤害
         if (this.property.attackRange) {
+            // AOE
             for (let enemy of enemys) {
                 let around = WaveManager.getEnemiesInRadius(
                     [enemy.position.x, enemy.position.y],
@@ -184,8 +185,10 @@ export default class AttackTower extends TowerBase {
                 }
             }
         } else {
+            // 单体
             for (let enemy of enemys) {
                 let damage = 0;
+                console.log(JSON.stringify(this.cfg.attackBuff), "this.cfg.attackBuff");
                 if (this.cfg.attackBuff?.length > 0) {
                     damage = enemy.onHurt(this, () => {
                         for (let buff of this.cfg.attackBuff) {
@@ -204,6 +207,15 @@ export default class AttackTower extends TowerBase {
                 );
             }
         }
+    }
+
+    calculateDamage() {
+        let damage = 0;
+        // 1. P1：加成伤害 = 基础伤害 * （1 + 伤害加成）
+        // 2. P2： 元素加成伤害 = 加成伤害 * （1 + 元素克制伤害加成）
+        // 元素抵抗伤害 = 加成伤害 * （1 - 元素抵抗伤害加成）
+        // 3. P3：实际单次攻击造成伤害 = 元素加成/抵抗伤害 * （ 1 - 护甲或魔抗 /（200 + 护甲或魔抗））
+        // const P1Damage =
     }
 
     onDamage(amount: number) {

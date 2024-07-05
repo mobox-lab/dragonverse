@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","conflictID","buffName","note","duration","conflictTypes","guid","applyType","attackDamage","attackDamagePercent","findRange","findRangePercent","attackRange","attackTime","attackTimePercent","attackCount","speed","speedPercent","hurtAmount","hurtAmountPercent"],["","","Language","","","","","","","","","","","","","","","","",""],[1001,1001,null,null,0.2,1,"B0A6C67D4A3AE05B102976883590F4ED",1,-2,0,0.5,0,0,0,0,0,0,0,0,0],[1002,1002,null,null,2,2,"B0A6C67D4A3AE05B102976883590F4ED",1,0,0,2,0,0,0,0,0,0,0,0,0],[1003,1003,null,null,3,1,null,1,0,0,0,0,3,0,0,0,0,0,0,0],[1004,1004,null,null,4,1,"FF3268BA438E7D17853D88A2A6C8FB89",2,0,0,0,0,0,0,0,0,0,-0.5,0,0],[1005,1005,null,null,5,1,null,1,1,0,0,0,0,0,0,0,0,0,0,0],[1006,1006,null,"永久固定值加攻击力",-1,2,null,1,0.5,0,0,0,0,0,0,0,0,0,0,0],[1007,1007,null,"永久百分比加攻击力",-1,2,null,1,2,200,0,0,0,0,0,0,0,0,0,0],[1008,1008,null,"减少固定值攻击间隔",-1,2,null,1,0,0,0,0,0,-0.01,0,0,0,0,0,0],[1009,1009,null,"永久百分比降低攻击间隔",-1,2,null,1,0,0,0,0,0,0,-20,0,0,0,0,0],[1010,1010,null,"怪物受到伤害百分比提升",-1,2,null,2,0,0,0,0,0,0,0,0,0,0,0,25],[1011,1011,null,"怪物减速",-1,2,null,2,0,0,0,0,0,0,0,0,-1,0,0,0],[1012,1012,null,"怪物永久百分比减速",-1,2,null,2,0,0,0,0,0,0,0,0,0,-60,0,0],[1013,1013,null,"永久固定加攻击范围",-1,1,null,1,0,0,0.02,0,0,0,0,0,0,0,0,0],[1014,1014,null,"增加攻击范围百分比",-1,2,null,1,0,0,0,100,0,0,0,0,0,0,0,0],[2001,2001,null,"永久百分比加攻击力1",0.3,1,"75E610CC445049E89172F4B7F387FAFB",1,10,0,0,0,0,0,0,0,0,0,0,0],[2002,2001,null,"永久百分比加攻击力2",0.3,1,"5813EE7E45E077985D984295FD40D837",1,15,0,0,0,0,0,0,0,0,0,0,0],[2003,2001,null,"永久百分比加攻击力3",0.3,1,"39CC680245A50F9AE8DBA09F16A0D43C",1,25,0,0,0,0,0,0,0,0,0,0,0],[3001,3001,"buffAirdrop_name1","空投Buff1",20,1,"39CC680245A50F9AE8DBA09F16A0D43C",1,0,2000,0,0,0,0,0,0,0,0,0,0],[3002,3002,"buffAirdrop_name2","空投Buff2",20,1,"39CC680245A50F9AE8DBA09F16A0D43C",1,0,0,0,2000,0,0,0,0,0,0,0,0],[3003,3003,"buffAirdrop_name3","空投Buff3",20,1,"39CC680245A50F9AE8DBA09F16A0D43C",1,0,0,0,0,0,0,-2000,0,0,0,0,0]];
+const EXCELDATA:Array<Array<any>> = [["id","conflictID","buffName","note","duration","conflictTypes","guid","applyType","attackDamage","attackDamagePercent","findRange","findRangePercent","attackRange","attackTime","attackTimePercent","attackCount","speed","speedPercent","hurtAmount","hurtAmountPercent","armorPen","armorReduction","magicPen","magicReduction"],["","","Language","","","","","","","","","","","","","","","","","","","","",""],[1001,1001,null,null,0.2,1,"B0A6C67D4A3AE05B102976883590F4ED",1,-2,0,0.5,0,0,0,0,0,0,0,0,0,0,0,0,0],[1002,1002,null,null,2,2,"B0A6C67D4A3AE05B102976883590F4ED",1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0],[1003,1003,null,null,3,1,null,1,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0],[1004,1004,null,null,4,1,"FF3268BA438E7D17853D88A2A6C8FB89",2,0,0,0,0,0,0,0,0,0,-0.5,0,0,0,0,0,0],[1005,1005,null,null,5,1,null,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1006,1006,null,"永久固定值加攻击力",-1,2,null,1,0.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1007,1007,null,"永久百分比加攻击力",-1,2,null,1,2,200,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[1008,1008,null,"减少固定值攻击间隔",-1,2,null,1,0,0,0,0,0,-0.01,0,0,0,0,0,0,0,0,0,0],[1009,1009,null,"永久百分比降低攻击间隔",-1,2,null,1,0,0,0,0,0,0,-20,0,0,0,0,0,0,0,0,0],[1010,1010,null,"怪物受到伤害百分比提升",-1,2,null,2,0,0,0,0,0,0,0,0,0,0,0,25,0,0,0,0],[1011,1011,null,"怪物减速",-1,2,null,2,0,0,0,0,0,0,0,0,-1,0,0,0,0,0,0,0],[1012,1012,null,"怪物永久百分比减速",-1,2,null,2,0,0,0,0,0,0,0,0,0,-60,0,0,0,0,0,0],[1013,1013,null,"永久固定加攻击范围",-1,1,null,1,0,0,0.02,0,0,0,0,0,0,0,0,0,0,0,0,0],[1014,1014,null,"增加攻击范围百分比",-1,2,null,1,0,0,0,100,0,0,0,0,0,0,0,0,0,0,0,0],[2001,2001,null,"永久百分比加攻击力1",0.3,1,"75E610CC445049E89172F4B7F387FAFB",1,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2002,2001,null,"永久百分比加攻击力2",0.3,1,"5813EE7E45E077985D984295FD40D837",1,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2003,2001,null,"永久百分比加攻击力3",0.3,1,"39CC680245A50F9AE8DBA09F16A0D43C",1,25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[3001,3001,"buffAirdrop_name1","空投Buff1",20,1,"39CC680245A50F9AE8DBA09F16A0D43C",1,0,2000,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[3002,3002,"buffAirdrop_name2","空投Buff2",20,1,"39CC680245A50F9AE8DBA09F16A0D43C",1,0,0,0,2000,0,0,0,0,0,0,0,0,0,0,0,0],[3003,3003,"buffAirdrop_name3","空投Buff3",20,1,"39CC680245A50F9AE8DBA09F16A0D43C",1,0,0,0,0,0,0,-2000,0,0,0,0,0,0,0,0,0],[4001,4001,null,"增伤",-1,1,null,1,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,0],[4002,4002,null,"法穿",-1,1,null,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,35,0],[4003,4003,null,"削魔抗",3,1,null,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,50],[4004,4004,null,"削护甲",3,1,null,2,0,0,0,0,0,0,0,0,0,0,0,0,0,100,0,0],[4005,4005,null,"怪物减速",3,1,null,2,0,0,0,0,0,0,0,0,-70,0,0,0,0,0,0,0],[4006,4006,null,"怪物禁锢",1,1,null,2,0,0,0,0,0,0,0,0,-999,0,0,0,0,0,0,0]];
 export interface IBuffElement extends IElementBase{
  	/**buff的id*/
 	id:number
@@ -42,7 +42,7 @@ export interface IBuffElement extends IElementBase{
 	attackTimePercent:number
 	/**攻击目标数*/
 	attackCount:number
-	/**移动速度*/
+	/**移动速度（-999为禁锢）*/
 	speed:number
 	/**移速降低buff*/
 	speedPercent:number
@@ -50,6 +50,14 @@ export interface IBuffElement extends IElementBase{
 	hurtAmount:number
 	/**受伤提升buff*/
 	hurtAmountPercent:number
+	/**自身穿甲*/
+	armorPen:number
+	/**削甲*/
+	armorReduction:number
+	/**法穿*/
+	magicPen:number
+	/**削魔抗*/
+	magicReduction:number
  } 
 export class BuffConfig extends ConfigBase<IBuffElement>{
 	constructor(){

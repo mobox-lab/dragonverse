@@ -34,13 +34,14 @@ export class Buff {
         // for (let buffName of Object.keys(BuffType)) {
         //     this[buffName] = cfg[buffName];
         // }
-        this.cfg.guid && GameObjPool.asyncSpawn(this.cfg.guid).then(async (go: GameObject) => {
-            // go.parent = null;
-            // go.worldTransform.position = Utils.TEMP_VECTOR.set(0, 0, -810975);
-            go.localTransform = Utils.Transform_Default;
-            go.localTransform.position = Utils.TEMP_VECTOR.set(0, 0, -810975);
-            this.go = go;
-        })
+        this.cfg.guid &&
+            GameObjPool.asyncSpawn(this.cfg.guid).then(async (go: GameObject) => {
+                // go.parent = null;
+                // go.worldTransform.position = Utils.TEMP_VECTOR.set(0, 0, -810975);
+                go.localTransform = Utils.Transform_Default;
+                go.localTransform.position = Utils.TEMP_VECTOR.set(0, 0, -810975);
+                this.go = go;
+            });
     }
 
     public updateBuff(id: number) {
@@ -49,7 +50,6 @@ export class Buff {
         this.cfg = cfg;
         this.duration = cfg.duration;
     }
-
 
     onDestroy() {
         if (this.go) {
@@ -71,15 +71,15 @@ export class BuffManager {
 
     addBuff(buffID: number): boolean {
         let cfg = GameConfig.Buff.getElement(buffID);
-        let oriBuff = this.buffs.find(b => b.cfg.conflictID == cfg.conflictID);
+        if (!cfg) {
+            console.log("hsf====================== 没有buff", buffID);
+            return false;
+        }
+        let oriBuff = this.buffs.find((b) => b.cfg.conflictID == cfg.conflictID);
         let newBuff;
         if (oriBuff && oriBuff.duration > 0) {
-            if (!cfg) {
-                console.log('hsf====================== 没有buff', (buffID))
-                return;
-            }
             switch (cfg.conflictTypes) {
-                case 1://覆盖
+                case 1: //覆盖
                     if (buffID > oriBuff.id) {
                         this.removeBuff(oriBuff);
                         // oriBuff.updateBuff(buffID);
@@ -91,14 +91,18 @@ export class BuffManager {
                         //低级的buff不叠加
                     }
                     break;
-                case 2://独立存在
+                case 2: //独立存在
                     newBuff = new Buff(buffID);
                     this.buffs.push(newBuff);
                     break;
             }
         } else {
-            newBuff = new Buff(buffID);
-            this.buffs.push(newBuff);
+            if (oriBuff) {
+                return false;
+            } else {
+                newBuff = new Buff(buffID);
+                this.buffs.push(newBuff);
+            }
         }
         return newBuff != null;
     }
@@ -117,7 +121,6 @@ export class BuffManager {
         }
         this.buffs = [];
     }
-
 }
 
 export interface BuffBag {

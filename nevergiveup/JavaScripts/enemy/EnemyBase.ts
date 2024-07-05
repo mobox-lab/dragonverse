@@ -27,6 +27,11 @@ import { ComponentFactory } from "./components/ComponentFactory";
 import { FlyingComponent } from "./components/FlyingComponent";
 import { IEnemyComponent } from "./components/IEnemyComponent";
 
+export enum DamageType {
+    ARMOR,
+    MAGIC,
+}
+
 export class Enemy implements BuffBag {
     time: number = 0;
     go: Character;
@@ -51,6 +56,11 @@ export class Enemy implements BuffBag {
     buffManager: BuffManager;
     gate: number;
 
+    // 护甲
+    armor: number = 200;
+    // 魔抗
+    magicResist: number = 200;
+
     constructor(wave: number, configId: number, gate: number) {
         this.id = Enemy.count;
         Enemy.count++;
@@ -69,6 +79,8 @@ export class Enemy implements BuffBag {
         let difficlutyMutliplier = stageConfig.difficultyhp;
         let multiplayerMultiplier = GameManager.getMultiplayerMultiplier();
         this.hp = config.hp * difficlutyMutliplier * multiplayerMultiplier * waveMultiplier;
+        this.armor = config.armor || 200;
+        this.magicResist = config.magicResist || 200;
         this.hpMax = this.hp;
         this.speed = config.speed;
         this.hurtAmount = 0;
@@ -144,8 +156,59 @@ export class Enemy implements BuffBag {
         //     // console.log(`${property}: ${this.property[property]}`);
         //     this.property[p] = this.calculateAttribute(p);
         // }
-        this.speed = this.calculateAttribute("speed");
-        this.hurtAmount = this.calculateAttribute("hurtAmount");
+        // this.speed = this.calculateAttribute("speed");
+        // this.hurtAmount = this.calculateAttribute("hurtAmount");
+        const config = GameConfig.Monster.getElement(this.configId);
+        // 削魔抗，削弱护甲，减速，禁锢，在这里处理 恢复也需要处理(测试失效)
+
+        // 削弱魔抗
+        const magicReductions = this.buffManager.buffs.filter((buff) => buff.cfg.magicReduction !== 0);
+        if (magicReductions.length > 0) {
+            // const sumMagicReduction = magicReductions.reduce((sum, item) => {
+            //     return sum + item.cfg.magicReduction;
+            // }, 0);
+            const maxMagicReductionItem = magicReductions.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.magicReduction > (maxItem ? maxItem.cfg.magicReduction : -Infinity)
+                    ? currentItem
+                    : maxItem;
+            }, null);
+            this.magicResist = 200 - maxMagicReductionItem.cfg.magicReduction;
+        } else {
+            this.magicResist = config.magicResist;
+        }
+        // 削护甲
+        const armorReductions = this.buffManager.buffs.filter((buff) => buff.cfg.armorReduction !== 0);
+        if (armorReductions.length > 0) {
+            // const sumArmorReductions = armorReductions.reduce((sum, item) => {
+            //     return sum + item.cfg.armorReduction;
+            // }, 0);
+            const maxArmorReductionItem = armorReductions.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.armorReduction > (maxItem ? maxItem.cfg.armorReduction : -Infinity)
+                    ? currentItem
+                    : maxItem;
+            }, null);
+            this.armor = 200 - maxArmorReductionItem.cfg.armorReduction;
+        } else {
+            this.armor = config.armor;
+        }
+
+        // 减速和禁锢
+        const slowAndRoot = this.buffManager.buffs.filter((buff) => buff.cfg.speed !== 0);
+        if (slowAndRoot.length > 0) {
+            const root = slowAndRoot.filter((buff) => buff.cfg.speed === -999);
+            if (root.length > 0) {
+                this.speed = 1;
+            } else {
+                const minSpeedItem = slowAndRoot.reduce((minItem, currentItem) => {
+                    return currentItem.cfg.speed < (minItem ? minItem.cfg.speed : Infinity) ? currentItem : minItem;
+                }, null);
+                this.speed = this.speed + minSpeedItem.cfg.speed;
+            }
+        } else {
+            this.speed = config.speed;
+        }
+
+        // 
     }
 
     calculateAttribute(attribute: string) {
@@ -433,14 +496,51 @@ export class Enemy implements BuffBag {
 
     onHurt(tower: TowerBase, cb = () => {}) {
         if (this.destroyed) return 0;
-        let damage = { amount: tower.attackDamage };
-        this._components.forEach((component) => component.onHurt(damage, tower.attackTags));
-        let finalDamage = Math.min(damage.amount * this.hurtAmount, this.hp);
-        GameManager.showDamage && this.damageShow(damage.amount * this.hurtAmount);
+        // 先让buff生成
+        cb && cb();
+        console.log(JSON.stringify(this.buffManager.buffs), "this.buffManager.buffs");
+        const buffs = this.buffManager.buffs;
+        // 增伤buff
+        let sumHurtAmount = 0;
+        let sumHurtAmountPercent = 0;
+
+        buffs.forEach((item) => {
+            sumHurtAmount += item.cfg.hurtAmount;
+            sumHurtAmountPercent += item.cfg.hurtAmountPercent;
+        });
+
+        // 基础伤害
+        const damage = tower.attackDamage;
+        console.log(damage, "damage");
+
+        // P1 伤害
+        const P1Damage = damage * (1 + sumHurtAmountPercent / 100);
+        console.log(P1Damage, "P1Damage");
+        // P2 伤害
+        const P2Percent = this.elementalRestraint();
+        const P2Damage = P1Damage * P2Percent;
+        console.log(P2Damage, "P2Damage");
+        // P3 伤害
+        // 判断伤害的类型，根据tower的类型来判断
+        // todo 这里要改读取
+        const damageType = DamageType.ARMOR;
+        let P3Damage = 0;
+        if (damageType === DamageType.ARMOR) {
+            // 物理伤害
+            P3Damage = P2Damage * (1 - this.armor / (200 + this.armor));
+        } else if (damageType === DamageType.MAGIC) {
+            P3Damage = P2Damage * (1 - this.magicResist / (200 + this.magicResist));
+        } else {
+            P3Damage = 0;
+        }
+        console.log(P3Damage, "P3Damage");
+        const finalDamage = Math.min(P3Damage, this.hp);
+        console.log(finalDamage, "finalDamage");
+        this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
+        GameManager.showDamage && this.damageShow(P3Damage);
         this.hp -= finalDamage;
         this.onHealthChanged();
         this.isHurt = true;
-        cb && cb();
         if (this.position) {
             FlyText.instance.showFlyText(finalDamage.toFixed(0), this.position);
         }
@@ -462,6 +562,41 @@ export class Enemy implements BuffBag {
             }
         }
         return finalDamage;
+        // if (this.destroyed) return 0;
+        // let damage = { amount: tower.attackDamage };
+        // this._components.forEach((component) => component.onHurt(damage, tower.attackTags));
+        // let finalDamage = Math.min(damage.amount * this.hurtAmount, this.hp);
+        // GameManager.showDamage && this.damageShow(damage.amount * this.hurtAmount);
+        // this.hp -= finalDamage;
+        // this.onHealthChanged();
+        // this.isHurt = true;
+        // cb && cb();
+        // if (this.position) {
+        //     FlyText.instance.showFlyText(finalDamage.toFixed(0), this.position);
+        // }
+        // if (this.hp <= 0) {
+        //     this.kill();
+        // } else {
+        //     if (this.go) {
+        //         let cfg = GameConfig.Monster.getElement(this.configId);
+        //         if (cfg.hurtAnim) {
+        //             let anim = this.go.loadAnimation(cfg.hurtAnim);
+        //             anim.loop = 1;
+        //             anim.play();
+        //             setTimeout(() => {
+        //                 if (this.anim) {
+        //                     this.anim.play();
+        //                 }
+        //             }, cfg.hurtAnimDur * 1000);
+        //         }
+        //     }
+        // }
+        // return finalDamage;
+    }
+
+    elementalRestraint(): number {
+        // todo 获取tower的属性，获取怪物的属性，进行克制关系对比
+        return 1;
     }
 
     private damageShow(damage: number) {
