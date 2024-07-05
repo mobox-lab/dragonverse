@@ -123,7 +123,7 @@ export default class GameServiceConfig {
     /**
      * 场景名称.
      */
-    public static readonly SCENE_NAME = "td";
+    public static readonly SCENE_NAME = "tower";
 
     /**
      * 外源服务器 通信 最短通信 间隔.
