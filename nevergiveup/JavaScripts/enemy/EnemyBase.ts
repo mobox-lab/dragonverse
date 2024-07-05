@@ -172,7 +172,7 @@ export class Enemy implements BuffBag {
                     ? currentItem
                     : maxItem;
             }, null);
-            this.magicResist = 200 - maxMagicReductionItem.cfg.magicReduction;
+            this.magicResist = config.magicResist - maxMagicReductionItem.cfg.magicReduction;
         } else {
             this.magicResist = config.magicResist;
         }
@@ -187,7 +187,7 @@ export class Enemy implements BuffBag {
                     ? currentItem
                     : maxItem;
             }, null);
-            this.armor = 200 - maxArmorReductionItem.cfg.armorReduction;
+            this.armor = config.armor - maxArmorReductionItem.cfg.armorReduction;
         } else {
             this.armor = config.armor;
         }
@@ -208,7 +208,7 @@ export class Enemy implements BuffBag {
             this.speed = config.speed;
         }
 
-        // 
+        //
     }
 
     calculateAttribute(attribute: string) {
@@ -499,22 +499,55 @@ export class Enemy implements BuffBag {
         // 先让buff生成
         cb && cb();
         console.log(JSON.stringify(this.buffManager.buffs), "this.buffManager.buffs");
+        console.log(JSON.stringify(this.hasComponent(FlyingComponent)), "this.hasComponent(FlyingComponent)");
         const buffs = this.buffManager.buffs;
         // 增伤buff
-        let sumHurtAmount = 0;
-        let sumHurtAmountPercent = 0;
+        // let sumHurtAmount = 0;
+        // let sumHurtAmountPercent = 0;
 
-        buffs.forEach((item) => {
-            sumHurtAmount += item.cfg.hurtAmount;
-            sumHurtAmountPercent += item.cfg.hurtAmountPercent;
-        });
+        // buffs.forEach((item) => {
+        //     sumHurtAmount += item.cfg.hurtAmount;
+        //     sumHurtAmountPercent += item.cfg.hurtAmountPercent;
+        // });
+        // 飞行增伤
+        let flyingDamageBoost = 0;
+        if (this.hasComponent(FlyingComponent)) {
+            const flyingDamageBoosts = buffs.filter((buff) => buff.cfg.flyingDamageBoost !== 0);
+            if (flyingDamageBoosts.length > 0) {
+                const maxArmorPenItem = flyingDamageBoosts.reduce((maxItem, currentItem) => {
+                    return currentItem.cfg.flyingDamageBoost > (maxItem ? maxItem.cfg.flyingDamageBoost : -Infinity)
+                        ? currentItem
+                        : maxItem;
+                }, null);
+                flyingDamageBoost = maxArmorPenItem.cfg.flyingDamageBoost;
+            }
+        }
+
+        // 破甲和法穿
+        const armorPens = buffs.filter((buff) => buff.cfg.armorPen !== 0);
+        let armorPen: number = 0;
+        if (armorPens.length > 0) {
+            const maxArmorPenItem = armorPens.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.armorPen > (maxItem ? maxItem.cfg.armorPen : -Infinity) ? currentItem : maxItem;
+            }, null);
+            armorPen = maxArmorPenItem.cfg.armorPen;
+        }
+
+        const magicPens = buffs.filter((buff) => buff.cfg.magicPen !== 0);
+        let magicPen: number = 0;
+        if (magicPens.length > 0) {
+            const maxMagicPenItem = magicPens.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.magicPen > (maxItem ? maxItem.cfg.magicPen : -Infinity) ? currentItem : maxItem;
+            }, null);
+            magicPen = maxMagicPenItem.cfg.magicPen;
+        }
 
         // 基础伤害
         const damage = tower.attackDamage;
         console.log(damage, "damage");
 
         // P1 伤害
-        const P1Damage = damage * (1 + sumHurtAmountPercent / 100);
+        const P1Damage = damage + flyingDamageBoost;
         console.log(P1Damage, "P1Damage");
         // P2 伤害
         const P2Percent = this.elementalRestraint();
@@ -525,18 +558,19 @@ export class Enemy implements BuffBag {
         // todo 这里要改读取
         const damageType = DamageType.ARMOR;
         let P3Damage = 0;
+        // todo 破甲，法穿
         if (damageType === DamageType.ARMOR) {
             // 物理伤害
-            P3Damage = P2Damage * (1 - this.armor / (200 + this.armor));
+            P3Damage = P2Damage * (1 - (this.armor - armorPen) / (200 + this.armor - armorPen));
         } else if (damageType === DamageType.MAGIC) {
-            P3Damage = P2Damage * (1 - this.magicResist / (200 + this.magicResist));
+            P3Damage = P2Damage * (1 - (this.magicResist - magicPen) / (200 + this.magicResist - magicPen));
         } else {
             P3Damage = 0;
         }
         console.log(P3Damage, "P3Damage");
         const finalDamage = Math.min(P3Damage, this.hp);
         console.log(finalDamage, "finalDamage");
-        this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
+        // this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
         GameManager.showDamage && this.damageShow(P3Damage);
         this.hp -= finalDamage;
         this.onHealthChanged();

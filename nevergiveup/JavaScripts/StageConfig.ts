@@ -1194,12 +1194,12 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 waveTime: 90,
                 hpMultiplier: 1,
             },
-            // {
-            //     enemies: [{ type: 1001, count: 5, spawnInterval: 2 }],
-            //     waveGold: 20,
-            //     waveTime: 90,
-            //     hpMultiplier: 2,
-            // },
+            {
+                enemies: [{ type: 1004, count: 5, spawnInterval: 2 }],
+                waveGold: 20,
+                waveTime: 90,
+                hpMultiplier: 2,
+            },
             // {
             //     enemies: [{ type: 1001, count: 7, spawnInterval: 2 }],
             //     waveGold: 30,

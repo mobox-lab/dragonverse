@@ -189,6 +189,7 @@ export default class AttackTower extends TowerBase {
             for (let enemy of enemys) {
                 let damage = 0;
                 console.log(JSON.stringify(this.cfg.attackBuff), "this.cfg.attackBuff");
+                console.log(JSON.stringify(enemy.name), "enemy.name");
                 if (this.cfg.attackBuff?.length > 0) {
                     damage = enemy.onHurt(this, () => {
                         for (let buff of this.cfg.attackBuff) {
