@@ -52,6 +52,7 @@ import GameServiceConfig from "../../../const/GameServiceConfig";
 import { addGMCommand } from "mw-god-mod";
 import { formatEther } from "@p12/viem";
 import P12ShopPanel from "../../../ui/shop/P12ShopPanel";
+import SenzuBeanConfirmPanel from "../../../ui/bag/SenzuBeanConfirmPanel";
 
 enum MouseLockType {
     Press,
@@ -254,6 +255,10 @@ export class MainUI extends Main_HUD_Generate {
             } else {
                 UIService.show(P12ShopPanel);
             }
+        });
+
+        this.mBtn_Battle_Plus.onClicked.add(() => {
+            UIService.show(SenzuBeanConfirmPanel);
         });
 
 

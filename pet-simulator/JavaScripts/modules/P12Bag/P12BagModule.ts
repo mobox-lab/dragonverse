@@ -45,8 +45,8 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, PsP12BagModuleData> {
         this._itemsMap.set(itemId, count + deltaValue);
     }
 
-    public async consumePotion(count: number) {
-        this.server.net_consumePotion(count);
+    public consumePotion(count: number) {
+        return this.server.net_consumePotion(count);
     }
 
     public net_setData(map: Map<P12ItemResId, number>) {
@@ -108,7 +108,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
         const player = this.currentPlayer;
         if (!player) return;
         Log4Ts.log(P12BagModuleS, `player ${player.userId} use senzu bean ${count}`);
-        this.consumePotion(player.userId, count).then();
+        return this.consumePotion(player.userId, count);
     }
 
     /**
