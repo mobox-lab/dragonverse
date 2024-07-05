@@ -30,7 +30,7 @@ export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
 
     protected onHide() {
         // 重置
-        Gtk.trySetVisibility(this.btn_Confirming, false);
+        Gtk.trySetVisibility(this.can_Confirming, false);
         Gtk.trySetVisibility(this.btn_Confirm_Use, true);
         Gtk.trySetVisibility(this.btn_UnConfirm_Use, true);
         // 清除快捷键
@@ -43,9 +43,9 @@ export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
      * @private
      */
     private useSenzuBean() {
+        Gtk.trySetVisibility(this.can_Confirming, true);
         Gtk.trySetVisibility(this.btn_Confirm_Use, false);
         Gtk.trySetVisibility(this.btn_UnConfirm_Use, false);
-        Gtk.trySetVisibility(this.btn_Confirming, true);
 
         this.bagC.consumePotion(1)?.then(() => {
             UIService.hide(SenzuBeanReConfirmPanel);
