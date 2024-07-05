@@ -1,10 +1,10 @@
 [[items]]
 from = "./dragon-verse/JavaScripts/util/GToolkit.ts"
-to = ["./pet-simulator/JavaScripts/util/GToolkit.ts", "./battleworld/JavaScripts/util/GToolkit.ts"]
+to = ["./pet-simulator/JavaScripts/util/GToolkit.ts", "./battleworld/JavaScripts/util/GToolkit.ts", "./nevergiveup/JavaScripts/util/GToolkit.ts"]
 
 [[items]]
 from = "./dragon-verse/JavaScripts/util/README.md"
-to = ["./pet-simulator/JavaScripts/util/README.md", "./battleworld/JavaScripts/util/README.md"]
+to = ["./pet-simulator/JavaScripts/util/README.md", "./battleworld/JavaScripts/util/README.md", "./nevergiveup/JavaScripts/util/README.md"]
 
 [[items]]
 from = "./dragon-verse/JavaScripts/controller/key-operation-manager"
@@ -12,7 +12,7 @@ to = ["./pet-simulator/JavaScripts/controller/key-operation-manager", "./battlew
 
 [[items]]
 from = '.\dragon-verse\JavaScripts\module\auth\AuthModule.ts'
-to = ['.\pet-simulator\JavaScripts\modules\auth\AuthModule.ts', '.\battleworld\JavaScripts\module\auth\AuthModule.ts']
+to = ['.\pet-simulator\JavaScripts\modules\auth\AuthModule.ts', '.\battleworld\JavaScripts\module\auth\AuthModule.ts', '.\nevergiveup\JavaScripts\Modules\auth\AuthModule.ts']
 
 [[items]]
 from = '.\dragon-verse\JavaScripts\depend\area'
