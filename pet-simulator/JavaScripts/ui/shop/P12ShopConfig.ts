@@ -26,7 +26,7 @@ export const P12ShopConfig: P12ShopItem[] = [
     },
     {
         resId: P12ItemResId.CaptureBall, // 精灵球
-        consumeId: ConsumeId.StaminaPotion,
+        consumeId: ConsumeId.CaptureBall,
         name: "Online_shop003",
         value: 1000000000000000000000n,
         icon: "373564",
