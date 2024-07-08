@@ -50,7 +50,7 @@ export default class P12ShopPanel extends Online_shop_Generate {
             this.text_All.text = formatEther(this._total.data);
             this.text_Left.text = formatEther(available > 0n ? available : 0n);
             // 同步按钮点击状态
-            this.btn_Buy.enable = this._total.data > 0n && available >= 0n;
+            this.btn_Buy.enable = this.authC.access && this._total.data > 0n && available >= 0n;
         });
     }
 
