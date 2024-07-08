@@ -6,6 +6,7 @@ import {ItemConfig} from "./Item";
 import {LanguageConfig} from "./Language";
 import {LevelConfig} from "./Level";
 import {MonsterConfig} from "./Monster";
+import {SceneEnvironmentConfig} from "./SceneEnvironment";
 import {StageConfig} from "./Stage";
 import {SubLevelConfig} from "./SubLevel";
 import {TagConfig} from "./Tag";
@@ -38,6 +39,7 @@ export class GameConfig{
 	public static get Language():LanguageConfig{ return this.getConfig(LanguageConfig) };
 	public static get Level():LevelConfig{ return this.getConfig(LevelConfig) };
 	public static get Monster():MonsterConfig{ return this.getConfig(MonsterConfig) };
+	public static get SceneEnvironment():SceneEnvironmentConfig{ return this.getConfig(SceneEnvironmentConfig) };
 	public static get Stage():StageConfig{ return this.getConfig(StageConfig) };
 	public static get SubLevel():SubLevelConfig{ return this.getConfig(SubLevelConfig) };
 	public static get Tag():TagConfig{ return this.getConfig(TagConfig) };

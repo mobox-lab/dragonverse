@@ -29,9 +29,11 @@ import { LastWaveTipsUI } from "../UI/Tips/LastWaveTipsUI";
 import { GuideDialog } from "../UI/UIDialog";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
+import Log4Ts from "../depend/log4ts/Log4Ts";
 import { Enemy } from "../enemy/EnemyBase";
 import { BaseState } from "../fsm/BaseState";
 import { Fsm } from "../fsm/Fsm";
+import EnvironmentManager from "../gameplay/interactiveObj/EnvironmentManager";
 import { EEnemyComponentType } from "../tool/Enum";
 import { MGSTool } from "../tool/MGSTool";
 import { Wave, WaveAirdrop, WaveManager, WaveUtil } from "./Wave";
@@ -626,6 +628,11 @@ export class StageC {
         });
 
         StageActions.onMapLoaded.add(() => {
+            const stageCfg = GameConfig.Stage.getElement(this.stageId);
+            if(stageCfg?.sceneEnvId) {
+                EnvironmentManager.getInstance().setEnvironment(stageCfg.sceneEnvId);
+                Log4Ts.log(StageC, "stage onMapLoaded stage:" + this.stageId + " difficulty:" + this.difficulty + " sceneEnvId:" + stageCfg.sceneEnvId);
+            } 
             Player.asyncGetLocalPlayer().then((player: Player) => {
                 player.character.worldTransform.position = MapManager.birthPosition.clone().add(new Vector(0, 0, 100));
                 player.character.worldTransform.rotation = MapManager.birthRotation.clone();
