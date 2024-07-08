@@ -1,8 +1,8 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import GameServiceConfig from "../../const/GameServiceConfig";
 import { AuthModuleS, ConsumeId, P12ItemResId } from "../auth/AuthModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import { StatisticModuleS } from "../statistic/StatisticModule";
-import GameServiceConfig from "../../const/GameServiceConfig";
+import { BagModuleS } from "./BagModule";
 
 export class BwP12BagModuleData extends JModuleData {
 }
@@ -42,10 +42,16 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, BwP12BagModuleData> {
 
 export class P12BagModuleS extends JModuleS<P12BagModuleC, BwP12BagModuleData> {
     private _authS: AuthModuleS;
+    private _bagS: BagModuleS;
 
     private get authS(): AuthModuleS | null {
         if (!this._authS) this._authS = ModuleService.getModule(AuthModuleS);
         return this._authS;
+    }
+
+    private get bagS(): BagModuleS | null {
+        if (!this._bagS) this._bagS = ModuleService.getModule(BagModuleS);
+        return this._bagS;
     }
 
     protected onPlayerEnterGame(player: mw.Player) {
@@ -68,7 +74,9 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, BwP12BagModuleData> {
         try {
             Log4Ts.log(P12BagModuleS, `player ${player.userId} purchase ${count} ${ConsumeId[consumeId]} props`);
             const res = await this.authS.consumeCurrency(player.userId, GameServiceConfig.SCENE_NAME, consumeId, count);
-            // TODO: 处理精灵球
+            if (res) {
+                this.bagS.addItem(player.playerId, GameServiceConfig.DRAGON_BALL_BAG_ID, count);
+            }
             return res;
         } catch (error) {
             Log4Ts.error(P12BagModuleS, error);

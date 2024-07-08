@@ -40,7 +40,6 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, BwStatisticModu
         super.onPlayerEnterGame(player);
 
         const login = Math.floor(Date.now() / 1000);
-        // TODO: 等商店需求
         this._playerStatistics.set(player.userId, {
             login,
             staPotAdd: 0,
