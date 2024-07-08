@@ -61,6 +61,12 @@ export class Enemy implements BuffBag {
     // 魔抗
     magicResist: number = 200;
 
+    // 复原力参数
+    healingTime: number = 0;
+
+    // 狂暴化
+    isBerserk: boolean = false;
+
     constructor(wave: number, configId: number, gate: number) {
         this.id = Enemy.count;
         Enemy.count++;
@@ -91,6 +97,13 @@ export class Enemy implements BuffBag {
         // 初始化科技树的buff
         let unlockedTechNodes = GameManager.getStageClient().unlockedTechNodes;
         let buffIds = [];
+
+        if (Array.isArray(config.buff)) {
+            buffIds = buffIds.concat(config.buff);
+        }
+
+        console.log(config.buff, "config.buff");
+
         for (let id in unlockedTechNodes) {
             let count = unlockedTechNodes[id];
             let cfg = GameConfig.TechTree.getElement(parseInt(id));
@@ -99,10 +112,10 @@ export class Enemy implements BuffBag {
                 buffIds = buffIds.concat(cfg.Effect);
             }
         }
-
         for (let i = 0; i < buffIds.length; i++) {
             const buffId = buffIds[i];
             let buff = GameConfig.Buff.getElement(buffId);
+            console.log(JSON.stringify(buff), "buff info");
             if (buff.applyType == BuffApplyType.Enemy) {
                 this.applyBuff(buffId);
             }
@@ -141,7 +154,8 @@ export class Enemy implements BuffBag {
     }
 
     applyBuff(buff: number) {
-        if (this.buffManager.addBuff(buff)) {
+        const addBuffRes = this.buffManager.addBuff(buff);
+        if (addBuffRes) {
             this.updateAttributes();
         }
     }
@@ -475,6 +489,8 @@ export class Enemy implements BuffBag {
     }
 
     onUpdate(dt: number) {
+        this.healingMonster();
+
         this.time += dt;
         this.updatePosionAndRotation();
         this._components.forEach((component) => component.update(dt));
@@ -488,6 +504,7 @@ export class Enemy implements BuffBag {
 
     kill(showAnim: boolean = true) {
         if (this.destroyed) return;
+        this.motherDead();
         // AirdropManager.createAirdrop(1001, this.position);
         this.destroy(showAnim);
         ModuleService.getModule(PlayerModuleC).onEnemyKilled();
@@ -578,11 +595,15 @@ export class Enemy implements BuffBag {
         if (this.position) {
             FlyText.instance.showFlyText(finalDamage.toFixed(0), this.position);
         }
+        // 处理怪物本身的
+        this.monsterBuffActive();
         if (this.hp <= 0) {
             this.kill();
         } else {
             if (this.go) {
                 let cfg = GameConfig.Monster.getElement(this.configId);
+                console.log(JSON.stringify(cfg), "config monster");
+
                 if (cfg.hurtAnim) {
                     let anim = this.go.loadAnimation(cfg.hurtAnim);
                     anim.loop = 1;
@@ -631,6 +652,58 @@ export class Enemy implements BuffBag {
     elementalRestraint(): number {
         // todo 获取tower的属性，获取怪物的属性，进行克制关系对比
         return 1;
+    }
+
+    monsterBuffActive() {
+        const buffs = this.buffManager.buffs;
+        // 狂暴化
+        const berserks = buffs.filter((buff) => buff.cfg.berserk !== 0);
+        if (berserks.length > 0) {
+            const maxBerserksItem = berserks.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.berserk > (maxItem ? maxItem.cfg.berserk : -Infinity) ? currentItem : maxItem;
+            }, null);
+            const speedUp = maxBerserksItem.cfg.berserk;
+            let config = GameConfig.Monster.getElement(this.configId);
+            const percentHp = this.hp / config.hp;
+            if (percentHp < 0.5 && !this.isBerserk) {
+                this.isBerserk = true;
+                this.speed = this.speed * speedUp;
+            }
+        }
+    }
+
+    motherDead() {
+        const buffs = this.buffManager.buffs;
+        // 母体
+        const mothers = buffs.filter((buff) => buff.cfg.mother !== 0);
+        if (mothers.length > 0) {
+            const maxMotherItem = mothers.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.mother > (maxItem ? maxItem.cfg.mother : -Infinity) ? currentItem : maxItem;
+            }, null);
+            // todo 母体分裂
+        }
+    }
+
+    healingMonster() {
+        const buffs = this.buffManager.buffs;
+        // 复原力
+        const healings = buffs.filter((buff) => buff.cfg.healing !== 0);
+        let healing: number = 0;
+        if (healings.length > 0) {
+            const maxHealingItem = healings.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.healing > (maxItem ? maxItem.cfg.healing : -Infinity) ? currentItem : maxItem;
+            }, null);
+            healing = maxHealingItem.cfg.healing;
+
+            const date = new Date();
+            const timestampInSeconds = Math.floor(date.getTime() / 1000);
+            if (timestampInSeconds - this.healingTime > 0) {
+                this.hp = this.hp + healing;
+                this.healingTime = timestampInSeconds;
+            } else {
+                this.healingTime = timestampInSeconds;
+            }
+        }
     }
 
     private damageShow(damage: number) {
