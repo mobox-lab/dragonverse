@@ -43,6 +43,13 @@ export default class TowerItemUI_Generate extends UIScript {
 		}
 		return this.towerImg_Internal
 	}
+	private img_Icon_Internal: mw.Image
+	public get img_Icon(): mw.Image {
+		if(!this.img_Icon_Internal&&this.uiWidgetBase) {
+			this.img_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mContainer/img_Icon') as mw.Image
+		}
+		return this.img_Icon_Internal
+	}
 	private mPriceCanvas_Internal: mw.Canvas
 	public get mPriceCanvas(): mw.Canvas {
 		if(!this.mPriceCanvas_Internal&&this.uiWidgetBase) {
