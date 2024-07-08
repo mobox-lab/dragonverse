@@ -36,6 +36,17 @@ addGMCommand(
 );
 
 addGMCommand(
+    "query access | Auth",
+    "void",
+    undefined,
+    (player) => {
+        mwext.ModuleService.getModule(AuthModuleS)["queryAccess"](player.userId);
+    },
+    undefined,
+    "Root",
+);
+
+addGMCommand(
     "refresh currency | Auth",
     "void",
     () => {
@@ -1077,16 +1088,22 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly RELEASE_P12_DOMAIN = "http://modragon-api.mobox.app";
 
     /**
-     * 查询 体力上限 Uri.
+     * 获取 P12 token Uri.
      * @private
      */
-    private static readonly STAMINA_LIMIT_URI = "/pge-game/stamina/obtain-in-game";
+    private static readonly GET_P12_TOKEN_URI = "/pge-game/sso/oauth/gpark";
 
     /**
      * 获取 P12 token Uri.
      * @private
      */
-    private static readonly GET_P12_TOKEN_URI = "/pge-game/sso/oauth/gpark";
+    private static readonly GET_P12_ACCESS_URI = "/pge-game/stamina/whitelist-game";
+
+    /**
+     * 查询 体力上限 Uri.
+     * @private
+     */
+    private static readonly STAMINA_LIMIT_URI = "/pge-game/stamina/obtain-in-game";
 
     /**
      * 查询货币余额 Uri.
@@ -1160,6 +1177,22 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     private static get RELEASE_GET_P12_TOKEN_URL() {
         return this.RELEASE_P12_DOMAIN + this.GET_P12_TOKEN_URI;
+    }
+
+    /**
+     * 测试用 白名单验证 Url.
+     * @private
+     */
+    private static get TEST_GET_P12_ACCESS_URL() {
+        return this.TEST_P12_DOMAIN + this.GET_P12_ACCESS_URI;
+    }
+
+    /**
+     * 发布用 白名单验证 Url.
+     * @private
+     */
+    private static get RELEASE_GET_P12_ACCESS_URL() {
+        return this.RELEASE_P12_DOMAIN + this.GET_P12_ACCESS_URI;
     }
 
     /**
@@ -1638,25 +1671,23 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private async queryAccess(userId: string): Promise<boolean> {
-        // const respInJson = await this.correspondHandler<QueryResp<QueryCurrencyRespData>>(
-        //     undefined,
-        //     AuthModuleS.RELEASE_GET_CURRENCY_URL,
-        //     AuthModuleS.TEST_GET_CURRENCY_URL,
-        //     true,
-        //     false,
-        //     userId,
-        // );
-        //
-        // if (respInJson?.code !== 200) {
-        //     Log4Ts.error(AuthModuleS, `query currency failed. ${JSON.stringify(respInJson)}`);
-        //     if (respInJson?.code === 401) this.onTokenExpired(userId);
-        //     return;
-        // }
-        //
-        // let currentCurrency = respInJson.data?.balance;
+        const requestParam = {userId};
+        const respInJson = await this.correspondHandler<QueryResp<boolean>>(
+            requestParam,
+            AuthModuleS.RELEASE_GET_P12_ACCESS_URL,
+            AuthModuleS.TEST_GET_P12_ACCESS_URL,
+            false,
+            true,
+            userId,
+        );
 
-        //TODO_LviatYi 查询 P12 白名单.
-        return true;
+        if (respInJson?.code !== 200) {
+            Log4Ts.error(AuthModuleS, `query access failed. ${JSON.stringify(respInJson)}`);
+            if (respInJson?.code === 401) this.onTokenExpired(userId);
+            return;
+        }
+
+        return respInJson.data ?? false;
     }
 
     public async consumeCurrency(userId: string,
