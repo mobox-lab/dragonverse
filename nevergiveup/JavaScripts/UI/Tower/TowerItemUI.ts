@@ -62,7 +62,7 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 		} else {
 			//Utils.setImageByAsset(this.towerImg, this._cfg);
 			Gtk.trySetVisibility(this.towerImg, SlateVisibility.Collapsed);
-			Gtk.trySetVisibility(this.img_Icon, SlateVisibility.Visible);
+			Gtk.trySetVisibility(this.img_Icon, SlateVisibility.HitTestInvisible);
 			this.img_Icon.imageGuid = this._cfg.imgGuid;
 			this.valueText.text = this._cfg.spend[0].toString();
 		}
