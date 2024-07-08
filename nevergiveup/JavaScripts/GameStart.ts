@@ -111,7 +111,6 @@ export default class GameStart extends Script {
             if (SystemUtil.isClient()) {
                 if (this.isGM) {
                     GodModService.getInstance().showGm();
-                    return;
                 }
             }
 
