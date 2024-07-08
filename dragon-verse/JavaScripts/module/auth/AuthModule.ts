@@ -949,6 +949,12 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
      */
     public currency: { count: string | undefined } = createYoact({count: undefined});
 
+    /**
+     * 是否 处于白名单.
+     * @type {boolean|undefined}
+     */
+    public access: boolean | undefined = undefined;
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -1033,6 +1039,10 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     public net_setCurrency(val: string) {
         this.currency.count = val;
+    }
+
+    public net_refreshAccess(access: boolean) {
+        this.access = access;
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -1627,6 +1637,28 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.setCurrency(userId, currentCurrency);
     }
 
+    private async queryAccess(userId: string): Promise<boolean> {
+        // const respInJson = await this.correspondHandler<QueryResp<QueryCurrencyRespData>>(
+        //     undefined,
+        //     AuthModuleS.RELEASE_GET_CURRENCY_URL,
+        //     AuthModuleS.TEST_GET_CURRENCY_URL,
+        //     true,
+        //     false,
+        //     userId,
+        // );
+        //
+        // if (respInJson?.code !== 200) {
+        //     Log4Ts.error(AuthModuleS, `query currency failed. ${JSON.stringify(respInJson)}`);
+        //     if (respInJson?.code === 401) this.onTokenExpired(userId);
+        //     return;
+        // }
+        //
+        // let currentCurrency = respInJson.data?.balance;
+
+        //TODO_LviatYi 查询 P12 白名单.
+        return true;
+    }
+
     public async consumeCurrency(userId: string,
                                  sceneName: SceneName,
                                  consumeId: ConsumeId,
@@ -2075,6 +2107,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private onRefreshToken(userId: string) {
         this.queryCurrency(userId);
+        this.queryAccess(userId).then((value) =>
+            this.getClient(Player.getPlayer(userId))?.net_refreshAccess(value));
     }
 
     private onTokenExpired(userId: string) {
