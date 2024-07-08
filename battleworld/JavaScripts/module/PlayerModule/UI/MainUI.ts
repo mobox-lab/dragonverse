@@ -53,6 +53,7 @@ import { addGMCommand } from "mw-god-mod";
 import { formatEther } from "@p12/viem";
 import P12ShopPanel from "../../../ui/shop/P12ShopPanel";
 import SenzuBeanConfirmPanel from "../../../ui/bag/SenzuBeanConfirmPanel";
+import { P12BagModuleC } from "../../bag/P12BagModule";
 
 enum MouseLockType {
     Press,
@@ -231,7 +232,10 @@ export class MainUI extends Main_HUD_Generate {
             this.listen_player_back_brake(EbackType.selfCancle);
         });
         // 刷新体力
-        this.mBtn_Battle_Refresh.onClicked.add(() => ModuleService.getModule(EnergyModuleC)?.refreshStaminaLimit());
+        this.mBtn_Battle_Refresh.onClicked.add(() =>  {
+            ModuleService.getModule(EnergyModuleC)?.refreshStaminaLimit();
+            ModuleService.getModule(P12BagModuleC)?.refreshBagItem();
+        });
 
         /**打开技能选择界面 */
         this.mSkillSelectBtn.onClicked.add(() => {

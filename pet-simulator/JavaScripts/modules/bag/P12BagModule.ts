@@ -4,11 +4,14 @@ import { AuthModuleS, ConsumeId, P12ItemResId } from "../auth/AuthModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import PsStatisticModuleData from "../statistic/StatisticModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import { Regulator } from "../../util/GToolkit";
 
 export class PsP12BagModuleData extends JModuleData {
 }
 
 export class P12BagModuleC extends JModuleC<P12BagModuleS, PsP12BagModuleData> {
+    private _requestRegulator = new Regulator(1e3);
+
     // 缓存背包道具
     private _itemsMap: Map<P12ItemResId, number> = new Map([
         [P12ItemResId.DragonEgg, 0],
@@ -52,6 +55,15 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, PsP12BagModuleData> {
     public net_setData(map: Map<P12ItemResId, number>) {
         this._itemsMap = map;
     }
+
+    /**
+     * 刷新背包物品
+     */
+    public refreshBagItem() {
+        if (this._requestRegulator.request()) {
+            this.server.net_refreshBagItem();
+        }
+    }
 }
 
 export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
@@ -71,6 +83,15 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
     protected onPlayerEnterGame(player: mw.Player) {
         super.onPlayerEnterGame(player);
 
+        this.queryP12BagItem(player);
+    }
+
+    /**
+     * 查询背包物品
+     * @param {mw.Player} player
+     * @private
+     */
+    private queryP12BagItem(player: mw.Player) {
         this.authS.queryUserP12Bag(player.userId, GameServiceConfig.SCENE_NAME).then(res => {
             const map: Map<P12ItemResId, number> = new Map([
                 [P12ItemResId.DragonEgg, 0],
@@ -124,4 +145,9 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
         Log4Ts.log(P12BagModuleS, `player ${userId} used ${count} recovery stamina ${recovery}`);
     }
 
+    @Decorator.noReply()
+    public net_refreshBagItem() {
+        const player = this.currentPlayer;
+        this.queryP12BagItem(player);
+    }
 }
