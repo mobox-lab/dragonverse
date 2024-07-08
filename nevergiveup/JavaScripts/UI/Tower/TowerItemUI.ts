@@ -5,6 +5,7 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
+import Gtk from "gtoolkit";
 import { GameManager } from "../../GameManager";
 import { TowerEvent } from "../../Modules/TowerModule/TowerEnum";
 import { TowerModuleC } from "../../Modules/TowerModule/TowerModuleC";
@@ -54,11 +55,15 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 	*/
 	private initObj() {
 		if (!this._cfg) {
+			Gtk.trySetVisibility(this.towerImg, SlateVisibility.Visible);
+			Gtk.trySetVisibility(this.img_Icon, SlateVisibility.Collapsed);
 			this.towerImg.imageGuid = this._oriImg;
 			this.valueText.text = "0";
 		} else {
 			//Utils.setImageByAsset(this.towerImg, this._cfg);
-			this.towerImg.imageGuid = this._cfg.imgGuid;
+			Gtk.trySetVisibility(this.towerImg, SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.img_Icon, SlateVisibility.Visible);
+			this.img_Icon.imageGuid = this._cfg.imgGuid;
 			this.valueText.text = this._cfg.spend[0].toString();
 		}
 
