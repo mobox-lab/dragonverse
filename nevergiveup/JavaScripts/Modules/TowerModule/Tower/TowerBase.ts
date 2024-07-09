@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-05 17:18:45
  * @LastEditors  : xiaohao.li
@@ -30,7 +30,7 @@ export type TowerProperty = {
     attackRange: number;
     findRange: number;
     attackDamage: number;
-}
+};
 
 export default abstract class TowerBase implements BuffBag {
     public info: TowerInfo;
@@ -59,20 +59,25 @@ export default abstract class TowerBase implements BuffBag {
         return this.info.level;
     }
 
+    // 暖机
+    createTime: number = 0;
+    isWarmUp: boolean = false;
+
     public set level(v: number) {
         if (this.level == v) return;
         this.info.level = v;
         this.updateAttributes();
         GameObjPool.asyncSpawn(this.cfg.guid[this.level]).then((go) => {
             if (!go) return;
-            if (!this.root) {//在升级组件初始化出来前，这个塔被删了
-                GameObjPool.despawn(go)
+            if (!this.root) {
+                //在升级组件初始化出来前，这个塔被删了
+                GameObjPool.despawn(go);
             } else {
                 if (this._levelShow[0]) {
                     GameObjPool.despawn(this._levelShow[0]);
                     // this._levelShow[0].destroy();
                 }
-                this._levelShow[0] = (go);
+                this._levelShow[0] = go;
                 // this._levelShow.push(go);
                 go.worldTransform.position = this.oriPos;
             }
@@ -83,8 +88,10 @@ export default abstract class TowerBase implements BuffBag {
         return this.property.attackDamage;
     }
 
-
-    constructor(info: TowerInfo, cb: () => void = () => { }) {
+    constructor(info: TowerInfo, cb: () => void = () => {}) {
+        const date = new Date();
+        const timestampInSeconds = Math.floor(date.getTime() / 1000);
+        this.createTime = timestampInSeconds;
         this.info = info;
         this.cfg = GameConfig.Tower.getElement(info.configID);
         this.oriPos = MapManager.getPositionFromId(this.info.placeID);
@@ -93,18 +100,21 @@ export default abstract class TowerBase implements BuffBag {
             attackCount: 0,
             attackRange: 0,
             findRange: 0,
-            attackDamage: 0
-        }
+            attackDamage: 0,
+        };
         this.buffManager = new BuffManager();
         // 初始化科技树的buff
         let unlockedTechNodes = GameManager.getStageClient().getUnlockedTechNodes(info.playerID);
-        console.log(unlockedTechNodes,'unlockedTechNodes');
-        
+        console.log(unlockedTechNodes, "unlockedTechNodes");
+
         let buffIds: number[] = unlockedTechNodes.reduce((pre, cur) => {
             let cfg = GameConfig.TechTree.getElement(cur);
             if (!cfg) return pre;
             return pre.concat(cfg.Effect);
         }, []);
+        if (Array.isArray(this.cfg.attackBuff)) {
+            buffIds = buffIds.concat(this.cfg.attackBuff);
+        }
         for (let i = 0; i < buffIds.length; i++) {
             const buffId = buffIds[i];
             let buff = GameConfig.Buff.getElement(buffId);
@@ -112,16 +122,18 @@ export default abstract class TowerBase implements BuffBag {
                 this.applyBuff(buffId);
             }
         }
+        console.log(JSON.stringify(this.buffManager.buffs), "Tower Buff");
+
         this._attackTags = this.cfg.attackTags ? this.cfg.attackTags : [];
         Event.dispatchToLocal(TowerEvent.Create, this.info.placeID);
         this._useUpdate = true;
         this.initObj().then(async () => {
-            cb && await cb();
+            cb && (await cb());
         });
         TimeUtil.delayExecute(() => {
             //类初始化完才加上这个
             this.updateAttributes();
-        }, 1)
+        }, 1);
     }
     updateBuffs(dt: number) {
         let buffs = this.buffManager.buffs;
@@ -157,12 +169,12 @@ export default abstract class TowerBase implements BuffBag {
             // console.log(`${property}: ${this.property[property]}`);
             this.property[p] = this.calculateAttribute(p);
         }
-        // console.log('hsfproperty====================== ', JSON.stringify(this.property));
+        console.log("hsfproperty====================== ", JSON.stringify(this.property));
         Event.dispatchToLocal(TowerEvent.UpdateInfo, this);
     }
 
     calculateAttribute(attribute: string) {
-        let baseValue = this.cfg[attribute][this.level]
+        let baseValue = this.cfg[attribute][this.level];
         let modifiedValue = baseValue;
         //只有攻击塔有累加伤害
         if (!this.canBuffProperty?.includes(attribute)) {
@@ -170,9 +182,9 @@ export default abstract class TowerBase implements BuffBag {
         } else {
             for (const buff of this.buffManager.buffs) {
                 const buffCfg = buff.cfg;
-                let value = buffCfg[attribute] ? buffCfg[attribute] : 0
+                let value = buffCfg[attribute] ? buffCfg[attribute] : 0;
                 if (buffCfg[`${attribute}Percent`]) {
-                    value += baseValue * buffCfg[`${attribute}Percent`] / 10000;
+                    value += (baseValue * buffCfg[`${attribute}Percent`]) / 10000;
                 }
                 modifiedValue += value;
             }
@@ -182,14 +194,13 @@ export default abstract class TowerBase implements BuffBag {
 
     public abstract get outputStr(): string;
 
-
     /**
      * 初始化物体
      */
     protected async initObj() {
         this.root = await GameObjPool.asyncSpawn(this.cfg.guid[0]);
         if (!this.root) return; //解决线上报错问题
-        this.tower = (this.root.getChildren()[0]);
+        this.tower = this.root.getChildren()[0];
         if (!this.tower) return;
         this.initTower();
         this.oriTransform = this.tower.worldTransform.clone();
@@ -199,41 +210,49 @@ export default abstract class TowerBase implements BuffBag {
      * 塔主体初始化
      */
     private initTower() {
-        if (this.tower instanceof Character) {//人形塔的初始化
+        if (this.tower instanceof Character) {
+            //人形塔的初始化
             this.tower.displayName = "";
             let setPos = () => {
                 if (!this.tower) return;
                 let tempTower = this.tower as Character;
-                if (!tempTower || !this.oriPos) return;//可能setpos执行时候已经销毁了，所以oripos要判空，下同
+                if (!tempTower || !this.oriPos) return; //可能setpos执行时候已经销毁了，所以oripos要判空，下同
                 tempTower.complexMovementEnabled = false;
                 tempTower.collisionWithOtherCharacterEnabled = false;
-                tempTower.worldTransform.position = this.oriPos?.clone().add(Utils.TEMP_VECTOR.set(0, 0, tempTower.collisionExtent.z / 2));
+                tempTower.worldTransform.position = this.oriPos
+                    ?.clone()
+                    .add(Utils.TEMP_VECTOR.set(0, 0, tempTower.collisionExtent.z / 2));
                 tempTower.setCollision(CollisionStatus.QueryOnly);
-            }
-            (this.tower as Character).asyncReady().then(() => {//防御性代码，编辑器改了，预计上车最晚030，处理报错https://pandora.233leyuan.com/crashAnalysis/exceptionDetails?app_name=com.meta.box&start_time=1704816000&end_time=1704949200&request_id=1745310285780140033&requestIdDetail=1745310374485475329&kindIndex=0
+            };
+            (this.tower as Character).asyncReady().then(() => {
+                //防御性代码，编辑器改了，预计上车最晚030，处理报错https://pandora.233leyuan.com/crashAnalysis/exceptionDetails?app_name=com.meta.box&start_time=1704816000&end_time=1704949200&request_id=1745310285780140033&requestIdDetail=1745310374485475329&kindIndex=0
                 (this.tower as Character)?.overheadUI?.onDestroyDelegate?.clear();
-            })
+            });
 
             let cb = () => {
                 setPos();
                 // 解决报错(this.tower as Character)是null
                 (this.tower as Character)?.onDescriptionComplete.remove(cb);
-            }
+            };
             setPos();
             this.tower.onDescriptionComplete.add(cb);
             this.tower.setPostProcessOutline(true, new LinearColor(0, 0, 0), 2);
-        } else {//非人形塔的初始化
+        } else {
+            //非人形塔的初始化
             this.tower.worldTransform.position = this.oriPos;
             (this.tower as Model).setPostProcessOutline(true, new LinearColor(0, 0, 0), 2);
             (this.tower as Model).setCollision(CollisionStatus.QueryOnly);
         }
         this.tower.tag = "tower" + this.info.placeID;
-        GameObjPool.asyncSpawn(Utils.isLocalPlayer(this.info.playerID) ?
-            "C9F5FFD94363A60D67BC4397C21AEC3D" : "056EFC0F43BA0708EFCC0091F5BB59DC").then((effect) => {
-                if (!effect) return;
-                this._bottomEff = effect;
-                this._bottomEff.worldTransform.position = this.oriPos;
-            });
+        GameObjPool.asyncSpawn(
+            Utils.isLocalPlayer(this.info.playerID)
+                ? "C9F5FFD94363A60D67BC4397C21AEC3D"
+                : "056EFC0F43BA0708EFCC0091F5BB59DC"
+        ).then((effect) => {
+            if (!effect) return;
+            this._bottomEff = effect;
+            this._bottomEff.worldTransform.position = this.oriPos;
+        });
     }
 
     /**
@@ -242,6 +261,28 @@ export default abstract class TowerBase implements BuffBag {
      */
     public onUpdate(dt: number): void {
         this.updateBuffs(dt);
+        this.warmUp();
+    }
+
+    // 暖机
+    warmUp() {
+        const buffs = this.buffManager.buffs;
+        const warmUps = buffs.filter((buff) => buff.cfg.warmUp !== 0);
+        if (warmUps.length > 0) {
+            // todo 当前获取的规则就是第一个
+            const warmUp = warmUps[0];
+            const date = new Date();
+            const timestampInSeconds = Math.floor(date.getTime() / 1000);
+            if (timestampInSeconds - this.createTime > warmUp.cfg.warmUp && !this.isWarmUp) {
+                this.isWarmUp = true;
+                this.property = {
+                    ...this.property,
+                    attackTime: this.property.attackTime - warmUp.cfg.warmUpAttackTime,
+                    findRange: this.property.findRange + warmUp.cfg.warmUpFindRange,
+                    attackDamage: this.property.attackDamage + warmUp.cfg.warmUpAttackDamage,
+                };
+            }
+        }
     }
     /**
      * 销毁函数
@@ -253,7 +294,7 @@ export default abstract class TowerBase implements BuffBag {
         }
         this._useUpdate = false;
         if (this.tower) {
-            if ((this.tower instanceof Character)) {
+            if (this.tower instanceof Character) {
                 (this.tower as Character)?.setCollision(CollisionStatus.Off);
             } else {
                 (this.tower as Model)?.setCollision(CollisionStatus.Off);
@@ -275,5 +316,4 @@ export default abstract class TowerBase implements BuffBag {
         this.oriPos = null;
         Event.dispatchToLocal(TowerEvent.Destroy, this.info.placeID);
     }
-
 }
