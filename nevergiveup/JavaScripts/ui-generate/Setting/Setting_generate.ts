@@ -15,13 +15,6 @@ export default class Setting_Generate extends UIScript {
 		}
 		return this.closeBtn_Internal
 	}
-	private img_fakeEsc_Internal: mw.Image
-	public get img_fakeEsc(): mw.Image {
-		if(!this.img_fakeEsc_Internal&&this.uiWidgetBase) {
-			this.img_fakeEsc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/img_fakeEsc') as mw.Image
-		}
-		return this.img_fakeEsc_Internal
-	}
 	private settingCanvas_Internal: mw.Canvas
 	public get settingCanvas(): mw.Canvas {
 		if(!this.settingCanvas_Internal&&this.uiWidgetBase) {
@@ -35,6 +28,27 @@ export default class Setting_Generate extends UIScript {
 			this.bg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/bg') as mw.Image
 		}
 		return this.bg_Internal
+	}
+	private imgBackground_1_Internal: mw.Image
+	public get imgBackground_1(): mw.Image {
+		if(!this.imgBackground_1_Internal&&this.uiWidgetBase) {
+			this.imgBackground_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/imgBackground_1') as mw.Image
+		}
+		return this.imgBackground_1_Internal
+	}
+	private imgBackground_1_1_Internal: mw.Image
+	public get imgBackground_1_1(): mw.Image {
+		if(!this.imgBackground_1_1_Internal&&this.uiWidgetBase) {
+			this.imgBackground_1_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/imgBackground_1_1') as mw.Image
+		}
+		return this.imgBackground_1_1_Internal
+	}
+	private imgTitle_Internal: mw.Image
+	public get imgTitle(): mw.Image {
+		if(!this.imgTitle_Internal&&this.uiWidgetBase) {
+			this.imgTitle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/imgTitle') as mw.Image
+		}
+		return this.imgTitle_Internal
 	}
 	private txt_title_Internal: mw.TextBlock
 	public get txt_title(): mw.TextBlock {
@@ -56,6 +70,20 @@ export default class Setting_Generate extends UIScript {
 			this.txtVoiceAttack_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/txtVoiceAttack') as mw.TextBlock
 		}
 		return this.txtVoiceAttack_Internal
+	}
+	private txtVoiceAttack_1_Internal: mw.TextBlock
+	public get txtVoiceAttack_1(): mw.TextBlock {
+		if(!this.txtVoiceAttack_1_Internal&&this.uiWidgetBase) {
+			this.txtVoiceAttack_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/txtVoiceAttack_1') as mw.TextBlock
+		}
+		return this.txtVoiceAttack_1_Internal
+	}
+	private img_fakeEsc_Internal: mw.Image
+	public get img_fakeEsc(): mw.Image {
+		if(!this.img_fakeEsc_Internal&&this.uiWidgetBase) {
+			this.img_fakeEsc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/img_fakeEsc') as mw.Image
+		}
+		return this.img_fakeEsc_Internal
 	}
 	private chooseCanvasAttack_Internal: mw.Canvas
 	public get chooseCanvasAttack(): mw.Canvas {
@@ -112,6 +140,13 @@ export default class Setting_Generate extends UIScript {
 			this.bgmSelectFalse_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasVoice/bgmSelectFalse') as mw.StaleButton
 		}
 		return this.bgmSelectFalse_Internal
+	}
+	private txtVoiceBgm_1_Internal: mw.TextBlock
+	public get txtVoiceBgm_1(): mw.TextBlock {
+		if(!this.txtVoiceBgm_1_Internal&&this.uiWidgetBase) {
+			this.txtVoiceBgm_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/txtVoiceBgm_1') as mw.TextBlock
+		}
+		return this.txtVoiceBgm_1_Internal
 	}
 
 
@@ -173,6 +208,12 @@ export default class Setting_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txtVoiceAttack)
+	   
+	
+	   this.initLanguage(this.txtVoiceAttack_1)
+	   
+	
+	   this.initLanguage(this.txtVoiceBgm_1)
 	   
 	
 	   //文本多语言

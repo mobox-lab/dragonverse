@@ -5,6 +5,7 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
+import Gtk from "gtoolkit";
 import { PlayerActions } from "../Actions";
 import { GameManager } from "../GameManager";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
@@ -15,11 +16,14 @@ import Lobby_TaskItem from "../Modules/taskModule/ui/Lobby_TaskItem";
 import UI_TaskMain from "../Modules/taskModule/ui/UI_TaskMain";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
+import { Yoact } from "../depend/yoact/Yoact";
 import { MGSTool } from "../tool/MGSTool";
 import { UIMultiScroller } from "../tool/UIMultiScroller";
 import LobbyUI_Generate from "../ui-generate/HUD/LobbyUI_generate";
 import SettingUI from "./SettingUI";
 import TowerUI from "./Tower/TowerUI";
+import { EnergyModuleC } from "../Modules/Energy/EnergyModule";
+import GameServiceConfig from "../const/GameServiceConfig";
 
 export default class LobbyUI extends LobbyUI_Generate {
 	/**任务滑动列表 */
@@ -59,6 +63,19 @@ export default class LobbyUI extends LobbyUI_Generate {
 			this.mButton_Taskexpand.visibility = SlateVisibility.Collapsed;
 			this.mButton_Taskreturn2.visibility = SlateVisibility.Visible;
 		})
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mStamina_2,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
+                    .toString()));
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mStamina,
+                (GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
+                        Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data) :
+                        ModuleService.getModule(EnergyModuleC).viewEnergy.data.toFixed(2)
+                ).toString()));
+        this.freshBtn.onClicked.add(() => {
+            ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
+        });
 	}
 
 	updateCurrency() {

@@ -8,7 +8,49 @@
 
 @UIBind('UI/HUD/LobbyUI.ui')
 export default class LobbyUI_Generate extends UIScript {
-		private expCanvas_Internal: mw.Canvas
+		private staminaCanvas_Internal: mw.Canvas
+	public get staminaCanvas(): mw.Canvas {
+		if(!this.staminaCanvas_Internal&&this.uiWidgetBase) {
+			this.staminaCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/staminaCanvas') as mw.Canvas
+		}
+		return this.staminaCanvas_Internal
+	}
+	private mStamina_Internal: mw.TextBlock
+	public get mStamina(): mw.TextBlock {
+		if(!this.mStamina_Internal&&this.uiWidgetBase) {
+			this.mStamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/staminaCanvas/mStamina') as mw.TextBlock
+		}
+		return this.mStamina_Internal
+	}
+	private mSlash_Internal: mw.TextBlock
+	public get mSlash(): mw.TextBlock {
+		if(!this.mSlash_Internal&&this.uiWidgetBase) {
+			this.mSlash_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/staminaCanvas/mSlash') as mw.TextBlock
+		}
+		return this.mSlash_Internal
+	}
+	private mStamina_2_Internal: mw.TextBlock
+	public get mStamina_2(): mw.TextBlock {
+		if(!this.mStamina_2_Internal&&this.uiWidgetBase) {
+			this.mStamina_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/staminaCanvas/mStamina_2') as mw.TextBlock
+		}
+		return this.mStamina_2_Internal
+	}
+	private freshBtn_Internal: mw.Button
+	public get freshBtn(): mw.Button {
+		if(!this.freshBtn_Internal&&this.uiWidgetBase) {
+			this.freshBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/staminaCanvas/freshBtn') as mw.Button
+		}
+		return this.freshBtn_Internal
+	}
+	private imgStamina_Internal: mw.Image
+	public get imgStamina(): mw.Image {
+		if(!this.imgStamina_Internal&&this.uiWidgetBase) {
+			this.imgStamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/staminaCanvas/imgStamina') as mw.Image
+		}
+		return this.imgStamina_Internal
+	}
+	private expCanvas_Internal: mw.Canvas
 	public get expCanvas(): mw.Canvas {
 		if(!this.expCanvas_Internal&&this.uiWidgetBase) {
 			this.expCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/expCanvas') as mw.Canvas
@@ -232,6 +274,12 @@ export default class LobbyUI_Generate extends UIScript {
 	   
 	   //按钮添加点击
 	   
+	   this.freshBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "freshBtn");
+	   })
+	   this.freshBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.techTreeBtn.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "techTreeBtn");
 	   })
@@ -273,6 +321,15 @@ export default class LobbyUI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
+	   this.initLanguage(this.mStamina)
+	   
+	
+	   this.initLanguage(this.mSlash)
+	   
+	
+	   this.initLanguage(this.mStamina_2)
+	   
+	
 	   this.initLanguage(this.mLevel)
 	   
 	

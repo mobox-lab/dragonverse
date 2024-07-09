@@ -15,13 +15,6 @@ export default class TaskMain_Generate extends UIScript {
 		}
 		return this.btn_Close_Internal
 	}
-	private img_fakeEsc_Internal: mw.Image
-	public get img_fakeEsc(): mw.Image {
-		if(!this.img_fakeEsc_Internal&&this.uiWidgetBase) {
-			this.img_fakeEsc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/img_fakeEsc') as mw.Image
-		}
-		return this.img_fakeEsc_Internal
-	}
 	private bg_Internal: mw.Image
 	public get bg(): mw.Image {
 		if(!this.bg_Internal&&this.uiWidgetBase) {
@@ -56,6 +49,13 @@ export default class TaskMain_Generate extends UIScript {
 			this.taskName_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/taskName') as mw.TextBlock
 		}
 		return this.taskName_Internal
+	}
+	private img_fakeEsc_Internal: mw.Image
+	public get img_fakeEsc(): mw.Image {
+		if(!this.img_fakeEsc_Internal&&this.uiWidgetBase) {
+			this.img_fakeEsc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/img_fakeEsc') as mw.Image
+		}
+		return this.img_fakeEsc_Internal
 	}
 	private changeBtnCanvas_Internal: mw.Canvas
 	public get changeBtnCanvas(): mw.Canvas {
