@@ -62,6 +62,11 @@ export default class UI_TaskMain extends TaskMain_Generate {
                 UIService.hideUI(this);
             })
         })
+        this.btn_Esc.onClicked.add(() => {
+            TweenCommon.popUpHide(this.rootCanvas, () => {
+                UIService.hideUI(this);
+            })
+        })
         this.mainTaskBtn.onClicked.add(() => {
             this.btnState = EmTaskType.Main;
         });
