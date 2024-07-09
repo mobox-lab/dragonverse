@@ -44,6 +44,7 @@ import GuideModuleData, { GuideModuleC, GuideModuleS } from "./module/guide/Guid
 import GameServiceConfig from "./const/GameServiceConfig";
 import GMHUD_Generate from "./ui-generate/gm/GMHUD_generate";
 import GodModService, { addGMCommand } from "mw-god-mod";
+import { DvP12BagModuleData, P12BagModuleC, P12BagModuleS } from "./module/bag/P12BagModule";
 
 // 新版本的GM
 
@@ -322,6 +323,8 @@ export default class GameStart extends mw.Script {
         moduleService.registerModule(InteractiveObjModuleS, InteractiveObjModuleC, null);
         moduleService.registerModule(EcologyModuleS, EcologyModuleC, EcologyModuleData);
         moduleService.registerModule(GuideModuleS, GuideModuleC, GuideModuleData);
+        moduleService.registerModule(P12BagModuleS, P12BagModuleC, DvP12BagModuleData);
+
         if (SystemUtil.isClient()) {
             moduleService.getModule(RoleModuleC).delegateOnReady(() => {
                 this._moduleReady = true;

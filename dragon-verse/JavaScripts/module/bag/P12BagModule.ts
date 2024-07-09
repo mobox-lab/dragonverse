@@ -4,10 +4,10 @@ import { AuthModuleS, ConsumeId, P12ItemResId } from "../auth/AuthModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import { BagModuleS } from "./BagModule";
 
-export class BwP12BagModuleData extends JModuleData {
+export class DvP12BagModuleData extends JModuleData {
 }
 
-export class P12BagModuleC extends JModuleC<P12BagModuleS, BwP12BagModuleData> {
+export class P12BagModuleC extends JModuleC<P12BagModuleS, DvP12BagModuleData> {
     // 缓存背包道具
     private _itemsMap: Map<P12ItemResId, number> = new Map([
         [P12ItemResId.DragonEgg, 0],
@@ -40,7 +40,7 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, BwP12BagModuleData> {
     }
 }
 
-export class P12BagModuleS extends JModuleS<P12BagModuleC, BwP12BagModuleData> {
+export class P12BagModuleS extends JModuleS<P12BagModuleC, DvP12BagModuleData> {
     private _authS: AuthModuleS;
     private _bagS: BagModuleS;
 
