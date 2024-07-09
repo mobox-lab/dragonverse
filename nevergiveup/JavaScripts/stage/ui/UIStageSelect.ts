@@ -33,8 +33,8 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
     init(stageId: number, index: number) {
         this.stageId = stageId;
         this.index = index;
-        this.mDifficulty_1.text = `${this.difficluty[index]}`;
-        this.mDifficulty_1.setFontColorByHex(this.difficultyColor[index]);
+        this.mdifficultly.text = `${this.difficluty[index]}`;
+        // this.mdifficultly.setFontColorByHex(this.difficultyColor[index]);
         let stages = StageUtil.getStageDataWithId(this.stageId);
         let config = stages[index];
         this.unlocked = true;
@@ -49,9 +49,11 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
             this.mRecommandedLevel.setFontColorByHex("#867160");
             this.mRecommandedLevel.text =
                 GameConfig.Language.getElement("Text_RecommendLevel").Value + `${config.recommandedLevel}`;
+            this.mdifficultly.renderOpacity = 1;
         } else {
             this.mRecommandedLevel.setFontColorByHex("#A1A1A1");
             this.mRecommandedLevel.text = GameConfig.Language.getElement("Text_UnlockAfterLastDifficulty").Value;
+            this.mdifficultly.renderOpacity = 0.7;
         }
 
         this.setSelectIndex(0);
@@ -60,10 +62,10 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
     setSelectIndex(index: number) {
         if (index == this.index) {
             this.mSelected.visibility = SlateVisibility.Visible;
-            this.mDifficulty_1.text = `${this.difficluty[this.index]}`;
+            this.mdifficultly.text = `${this.difficluty[this.index]}`;
         } else {
             this.mSelected.visibility = SlateVisibility.Collapsed;
-            this.mDifficulty_1.text = `${this.difficluty[this.index]}`;
+            this.mdifficultly.text = `${this.difficluty[this.index]}`;
         }
     }
 }
@@ -84,17 +86,10 @@ export class UIStageSelect extends StageSelect_Generate {
 
         this.mGo.onClicked.add(() => {
             MGSTool.clickBtn("3");
-            if (GuideManager.finishMainGuide(null)) {
-                if (Utils.isLocalPlayer(this._ownerId)) {
-                    this._script.startGame(Player.localPlayer.playerId);
-                } else {
-                    TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
-                }
+            if (Utils.isLocalPlayer(this._ownerId)) {
+                this._script.startGame(Player.localPlayer.playerId);
             } else {
-                console.log("开始游戏", this._ownerId);
-                if (Utils.isLocalPlayer(this._ownerId)) {
-                    GameManager.startGameClient(0, 0);
-                }
+                TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
             }
         });
     }

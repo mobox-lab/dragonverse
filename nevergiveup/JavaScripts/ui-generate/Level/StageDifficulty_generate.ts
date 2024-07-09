@@ -29,6 +29,13 @@ export default class StageDifficulty_Generate extends UIScript {
 		}
 		return this.mDifficulty_Internal
 	}
+	private mdifficultly_Internal: mw.TextBlock
+	public get mdifficultly(): mw.TextBlock {
+		if(!this.mdifficultly_Internal&&this.uiWidgetBase) {
+			this.mdifficultly_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mdifficultly') as mw.TextBlock
+		}
+		return this.mdifficultly_Internal
+	}
 	private mRecommandedLevel_Internal: mw.TextBlock
 	public get mRecommandedLevel(): mw.TextBlock {
 		if(!this.mRecommandedLevel_Internal&&this.uiWidgetBase) {
@@ -69,6 +76,9 @@ export default class StageDifficulty_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
+	   this.initLanguage(this.mdifficultly)
+	   
+	
 	   this.initLanguage(this.mRecommandedLevel)
 	   
 	

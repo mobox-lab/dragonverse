@@ -52,7 +52,7 @@ export namespace GuideManager {
     let guideDialogs = null
     let effect: Effect;
     let towerInfoUI: TowerInfoUI;
-    let toBeTriggeredGuides: number[] = [1, 4, 5];
+    let toBeTriggeredGuides: number[] = [];
     let guideTaskPos: Vector;
     let cbStageChanged = (state: EStageState, waitTime: number, wave: number) => {
         if (state == EStageState.Wait) {
@@ -135,11 +135,11 @@ export namespace GuideManager {
     export function init() {
         ModuleService.getModule(GuideModuleC).reSetToTargetPosDistance(150);
         initGuideText()
-        initGuide1();
-        initGuide2();
-        initGuide3();
-        initGuide4();
-        initGuide5();
+        // initGuide1();
+        // initGuide2();
+        // initGuide3();
+        // initGuide4();
+        // initGuide5();
         initPosGuide();
         ModuleService.getModule(GuideModuleC).guideComplateAction.add((id: number) => {
             if (DataCenterC.getData(GuideDataHelper).complateGuideList.indexOf(id) == -1) {
@@ -149,29 +149,29 @@ export namespace GuideManager {
             if (toBeTriggeredGuides.indexOf(id) > -1) {
                 toBeTriggeredGuides.splice(toBeTriggeredGuides.indexOf(id), 1);
             }
-            triggerNextGuide(true);
+            triggerNextGuide();
         });
 
-        PlayerActions.onPlayerLevelChangedClient.add((level: number) => {
-            if (level >= 2) {
-                if (!hasCompleteClient(2) && toBeTriggeredGuides.indexOf(2) == -1) {
-                    toBeTriggeredGuides.push(2);
-                }
-            }
-            if (level >= 3) {
-                if (!hasCompleteClient(3) && toBeTriggeredGuides.indexOf(3) == -1) {
-                    toBeTriggeredGuides.push(3);
-                }
-            }
-            triggerNextGuide(true);
-        });
+        // PlayerActions.onPlayerLevelChangedClient.add((level: number) => {
+        //     if (level >= 2) {
+        //         if (!hasCompleteClient(2) && toBeTriggeredGuides.indexOf(2) == -1) {
+        //             toBeTriggeredGuides.push(2);
+        //         }
+        //     }
+        //     if (level >= 3) {
+        //         if (!hasCompleteClient(3) && toBeTriggeredGuides.indexOf(3) == -1) {
+        //             toBeTriggeredGuides.push(3);
+        //         }
+        //     }
+        //     triggerNextGuide(true);
+        // });
     }
 
     export async function guideToTask(taskID: number) {
         let cfg = GameConfig.Task.getElement(taskID);
         if (!cfg) return;
         UIService.hide(UI_TaskMain);
-        await resetTaskGuide();
+        await resetTaskGuide();        
         switch (cfg.taskSolveType) {
             case EmTaskWay.UnlockTower:
                 UIService.show(TowerShopUI);
@@ -191,16 +191,13 @@ export namespace GuideManager {
 
     }
 
-    export function triggerNextGuide(forced: boolean = false) {
-        if (Config.skipGuide) return;
-
+    export function triggerNextGuide() {
         while (toBeTriggeredGuides.length > 0 && hasCompleteClient(toBeTriggeredGuides[0])) {
             toBeTriggeredGuides.shift();
         }
         if (toBeTriggeredGuides.length > 0) {
             ModuleService.getModule(GuideModuleC).triggerGuide(toBeTriggeredGuides[0]);
         }
-
     }
 
 
@@ -628,11 +625,5 @@ export namespace GuideManager {
 
     export async function resetTaskGuide() {
         await ModuleService.getModule(GuideModuleC).resetGuideById(810975);
-    }
-
-    export function finishMainGuide(player: Player) {
-        // let completed = SystemUtil.isServer() ? hasCompleteServer(player, 5) : hasCompleteClient(5);
-        // return completed || Config.skipGuide;
-        return true;
     }
 }

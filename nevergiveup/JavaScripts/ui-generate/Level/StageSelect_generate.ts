@@ -22,6 +22,13 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.bg_Internal
 	}
+	private bg_1_Internal: mw.Image
+	public get bg_1(): mw.Image {
+		if(!this.bg_1_Internal&&this.uiWidgetBase) {
+			this.bg_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/bg_1') as mw.Image
+		}
+		return this.bg_1_Internal
+	}
 	private txt_title_Internal: mw.TextBlock
 	public get txt_title(): mw.TextBlock {
 		if(!this.txt_title_Internal&&this.uiWidgetBase) {
@@ -106,6 +113,13 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.mStageName_Internal
 	}
+	private mClose_Internal: mw.StaleButton
+	public get mClose(): mw.StaleButton {
+		if(!this.mClose_Internal&&this.uiWidgetBase) {
+			this.mClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/mClose') as mw.StaleButton
+		}
+		return this.mClose_Internal
+	}
 
 
 
@@ -123,6 +137,13 @@ export default class StageSelect_Generate extends UIScript {
 	   })
 	   this.initLanguage(this.mGo);
 	   this.mGo.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.mClose.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "mClose");
+	   })
+	   this.initLanguage(this.mClose);
+	   this.mClose.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 	   //按钮添加点击

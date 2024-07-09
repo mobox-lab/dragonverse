@@ -52,9 +52,7 @@ export default class StageTrigger extends Script {
             trigger.onEnter.add((gameObject: GameObject) => {
                 if (gameObject instanceof mw.Character) {
                     if (gameObject.player) {
-                        if (GuideManager.finishMainGuide(gameObject.player)) {
-                            this.addPlayerId(gameObject.player.playerId);
-                        }
+                        this.addPlayerId(gameObject.player.playerId);
                     }
                 }
             });
@@ -62,9 +60,7 @@ export default class StageTrigger extends Script {
             trigger.onLeave.add((gameObject: GameObject) => {
                 if (gameObject instanceof mw.Character) {
                     if (gameObject.player) {
-                        if (GuideManager.finishMainGuide(gameObject.player)) {
-                            this.removePlayerId(gameObject.player.playerId);
-                        }
+                        this.removePlayerId(gameObject.player.playerId);
                     }
                 }
             });
@@ -97,9 +93,7 @@ export default class StageTrigger extends Script {
             trigger.onEnter.add((gameObject: GameObject) => {
                 if (gameObject instanceof mw.Character) {
                     if (Utils.isLocalPlayer(gameObject?.player?.playerId)) {
-                        if (GuideManager.finishMainGuide(null)) {
-                            this.onTrigger();
-                        }
+                        this.onTrigger();
                     }
                 }
             });
@@ -108,12 +102,10 @@ export default class StageTrigger extends Script {
             trigger.onLeave.add((gameObject: GameObject) => {
                 if (gameObject instanceof mw.Character) {
                     if (Utils.isLocalPlayer(gameObject?.player?.playerId)) {
-                        if (GuideManager.finishMainGuide(null)) {
-                            this._triggered = false;
-                            TweenCommon.popUpHide(UIService.getUI(UIStageSelect).rootCanvas, () => {
-                                UIService.hide(UIStageSelect);
-                            });
-                        }
+                        this._triggered = false;
+                        TweenCommon.popUpHide(UIService.getUI(UIStageSelect).rootCanvas, () => {
+                            UIService.hide(UIStageSelect);
+                        });
                     }
                 }
             });
