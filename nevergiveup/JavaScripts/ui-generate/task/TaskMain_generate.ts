@@ -50,12 +50,12 @@ export default class TaskMain_Generate extends UIScript {
 		}
 		return this.taskName_Internal
 	}
-	private img_fakeEsc_Internal: mw.Image
-	public get img_fakeEsc(): mw.Image {
-		if(!this.img_fakeEsc_Internal&&this.uiWidgetBase) {
-			this.img_fakeEsc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/img_fakeEsc') as mw.Image
+	private btn_Esc_Internal: mw.Button
+	public get btn_Esc(): mw.Button {
+		if(!this.btn_Esc_Internal&&this.uiWidgetBase) {
+			this.btn_Esc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/btn_Esc') as mw.Button
 		}
-		return this.img_fakeEsc_Internal
+		return this.btn_Esc_Internal
 	}
 	private changeBtnCanvas_Internal: mw.Canvas
 	public get changeBtnCanvas(): mw.Canvas {
@@ -138,6 +138,12 @@ export default class TaskMain_Generate extends UIScript {
 		   Event.dispatchToLocal("PlayButtonClick", "btn_Close");
 	   })
 	   this.btn_Close.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.btn_Esc.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "btn_Esc");
+	   })
+	   this.btn_Esc.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 
