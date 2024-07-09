@@ -56,7 +56,7 @@ export default class UI_TaskMain extends TaskMain_Generate {
             this.scroll_Task,
             this.content,
             UI_TaskItem,
-            1, 0, 0, 700, 196, 5, 0, 20);
+            1, 0, 0, 700, 130, 5, 0, 10);
         this.btn_Close.onClicked.add(() => {
             TweenCommon.popUpHide(this.rootCanvas, () => {
                 UIService.hideUI(this);
@@ -70,6 +70,7 @@ export default class UI_TaskMain extends TaskMain_Generate {
                 this.btnState = EmTaskType.Daily;
             }
         });
+        
     }
 
     /**
