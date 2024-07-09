@@ -27,6 +27,11 @@ import { ComponentFactory } from "./components/ComponentFactory";
 import { FlyingComponent } from "./components/FlyingComponent";
 import { IEnemyComponent } from "./components/IEnemyComponent";
 
+export enum DamageType {
+    ARMOR,
+    MAGIC,
+}
+
 export class Enemy implements BuffBag {
     time: number = 0;
     go: Character;
@@ -51,6 +56,17 @@ export class Enemy implements BuffBag {
     buffManager: BuffManager;
     gate: number;
 
+    // 护甲
+    armor: number = 200;
+    // 魔抗
+    magicResist: number = 200;
+
+    // 复原力参数
+    healingTime: number = 0;
+
+    // 狂暴化
+    isBerserk: boolean = false;
+
     constructor(wave: number, configId: number, gate: number) {
         this.id = Enemy.count;
         Enemy.count++;
@@ -69,6 +85,8 @@ export class Enemy implements BuffBag {
         let difficlutyMutliplier = stageConfig.difficultyhp;
         let multiplayerMultiplier = GameManager.getMultiplayerMultiplier();
         this.hp = config.hp * difficlutyMutliplier * multiplayerMultiplier * waveMultiplier;
+        this.armor = config.armor || 200;
+        this.magicResist = config.magicResist || 200;
         this.hpMax = this.hp;
         this.speed = config.speed;
         this.hurtAmount = 0;
@@ -79,6 +97,13 @@ export class Enemy implements BuffBag {
         // 初始化科技树的buff
         let unlockedTechNodes = GameManager.getStageClient().unlockedTechNodes;
         let buffIds = [];
+
+        if (Array.isArray(config.buff)) {
+            buffIds = buffIds.concat(config.buff);
+        }
+
+        console.log(config.buff, "config.buff");
+
         for (let id in unlockedTechNodes) {
             let count = unlockedTechNodes[id];
             let cfg = GameConfig.TechTree.getElement(parseInt(id));
@@ -87,10 +112,10 @@ export class Enemy implements BuffBag {
                 buffIds = buffIds.concat(cfg.Effect);
             }
         }
-
         for (let i = 0; i < buffIds.length; i++) {
             const buffId = buffIds[i];
             let buff = GameConfig.Buff.getElement(buffId);
+            console.log(JSON.stringify(buff), "buff info");
             if (buff.applyType == BuffApplyType.Enemy) {
                 this.applyBuff(buffId);
             }
@@ -129,7 +154,8 @@ export class Enemy implements BuffBag {
     }
 
     applyBuff(buff: number) {
-        if (this.buffManager.addBuff(buff)) {
+        const addBuffRes = this.buffManager.addBuff(buff);
+        if (addBuffRes) {
             this.updateAttributes();
         }
     }
@@ -144,8 +170,59 @@ export class Enemy implements BuffBag {
         //     // console.log(`${property}: ${this.property[property]}`);
         //     this.property[p] = this.calculateAttribute(p);
         // }
-        this.speed = this.calculateAttribute("speed");
-        this.hurtAmount = this.calculateAttribute("hurtAmount");
+        // this.speed = this.calculateAttribute("speed");
+        // this.hurtAmount = this.calculateAttribute("hurtAmount");
+        const config = GameConfig.Monster.getElement(this.configId);
+        // 削魔抗，削弱护甲，减速，禁锢，在这里处理 恢复也需要处理(测试失效)
+
+        // 削弱魔抗
+        const magicReductions = this.buffManager.buffs.filter((buff) => buff.cfg.magicReduction !== 0);
+        if (magicReductions.length > 0) {
+            // const sumMagicReduction = magicReductions.reduce((sum, item) => {
+            //     return sum + item.cfg.magicReduction;
+            // }, 0);
+            const maxMagicReductionItem = magicReductions.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.magicReduction > (maxItem ? maxItem.cfg.magicReduction : -Infinity)
+                    ? currentItem
+                    : maxItem;
+            }, null);
+            this.magicResist = config.magicResist - maxMagicReductionItem.cfg.magicReduction;
+        } else {
+            this.magicResist = config.magicResist;
+        }
+        // 削护甲
+        const armorReductions = this.buffManager.buffs.filter((buff) => buff.cfg.armorReduction !== 0);
+        if (armorReductions.length > 0) {
+            // const sumArmorReductions = armorReductions.reduce((sum, item) => {
+            //     return sum + item.cfg.armorReduction;
+            // }, 0);
+            const maxArmorReductionItem = armorReductions.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.armorReduction > (maxItem ? maxItem.cfg.armorReduction : -Infinity)
+                    ? currentItem
+                    : maxItem;
+            }, null);
+            this.armor = config.armor - maxArmorReductionItem.cfg.armorReduction;
+        } else {
+            this.armor = config.armor;
+        }
+
+        // 减速和禁锢
+        const slowAndRoot = this.buffManager.buffs.filter((buff) => buff.cfg.speed !== 0);
+        if (slowAndRoot.length > 0) {
+            const root = slowAndRoot.filter((buff) => buff.cfg.speed === -999);
+            if (root.length > 0) {
+                this.speed = 1;
+            } else {
+                const minSpeedItem = slowAndRoot.reduce((minItem, currentItem) => {
+                    return currentItem.cfg.speed < (minItem ? minItem.cfg.speed : Infinity) ? currentItem : minItem;
+                }, null);
+                this.speed = this.speed + minSpeedItem.cfg.speed;
+            }
+        } else {
+            this.speed = config.speed;
+        }
+
+        //
     }
 
     calculateAttribute(attribute: string) {
@@ -412,6 +489,8 @@ export class Enemy implements BuffBag {
     }
 
     onUpdate(dt: number) {
+        this.healingMonster();
+
         this.time += dt;
         this.updatePosionAndRotation();
         this._components.forEach((component) => component.update(dt));
@@ -425,6 +504,7 @@ export class Enemy implements BuffBag {
 
     kill(showAnim: boolean = true) {
         if (this.destroyed) return;
+        this.motherDead();
         // AirdropManager.createAirdrop(1001, this.position);
         this.destroy(showAnim);
         ModuleService.getModule(PlayerModuleC).onEnemyKilled();
@@ -433,22 +513,97 @@ export class Enemy implements BuffBag {
 
     onHurt(tower: TowerBase, cb = () => {}) {
         if (this.destroyed) return 0;
-        let damage = { amount: tower.attackDamage };
-        this._components.forEach((component) => component.onHurt(damage, tower.attackTags));
-        let finalDamage = Math.min(damage.amount * this.hurtAmount, this.hp);
-        GameManager.showDamage && this.damageShow(damage.amount * this.hurtAmount);
+        // 先让buff生成
+        cb && cb();
+        console.log(JSON.stringify(this.buffManager.buffs), "this.buffManager.buffs");
+        console.log(JSON.stringify(this.hasComponent(FlyingComponent)), "this.hasComponent(FlyingComponent)");
+        const buffs = this.buffManager.buffs;
+        // 增伤buff
+        // let sumHurtAmount = 0;
+        // let sumHurtAmountPercent = 0;
+
+        // buffs.forEach((item) => {
+        //     sumHurtAmount += item.cfg.hurtAmount;
+        //     sumHurtAmountPercent += item.cfg.hurtAmountPercent;
+        // });
+        // 飞行增伤
+        let flyingDamageBoost = 0;
+        if (this.hasComponent(FlyingComponent)) {
+            const flyingDamageBoosts = buffs.filter((buff) => buff.cfg.flyingDamageBoost !== 0);
+            if (flyingDamageBoosts.length > 0) {
+                const maxArmorPenItem = flyingDamageBoosts.reduce((maxItem, currentItem) => {
+                    return currentItem.cfg.flyingDamageBoost > (maxItem ? maxItem.cfg.flyingDamageBoost : -Infinity)
+                        ? currentItem
+                        : maxItem;
+                }, null);
+                flyingDamageBoost = maxArmorPenItem.cfg.flyingDamageBoost;
+            }
+        }
+
+        // 破甲和法穿
+        const armorPens = buffs.filter((buff) => buff.cfg.armorPen !== 0);
+        let armorPen: number = 0;
+        if (armorPens.length > 0) {
+            const maxArmorPenItem = armorPens.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.armorPen > (maxItem ? maxItem.cfg.armorPen : -Infinity) ? currentItem : maxItem;
+            }, null);
+            armorPen = maxArmorPenItem.cfg.armorPen;
+        }
+
+        const magicPens = buffs.filter((buff) => buff.cfg.magicPen !== 0);
+        let magicPen: number = 0;
+        if (magicPens.length > 0) {
+            const maxMagicPenItem = magicPens.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.magicPen > (maxItem ? maxItem.cfg.magicPen : -Infinity) ? currentItem : maxItem;
+            }, null);
+            magicPen = maxMagicPenItem.cfg.magicPen;
+        }
+
+        // 基础伤害
+        const damage = tower.attackDamage;
+        console.log(damage, "damage");
+
+        // P1 伤害
+        const P1Damage = damage + flyingDamageBoost;
+        console.log(P1Damage, "P1Damage");
+        // P2 伤害
+        const P2Percent = this.elementalRestraint();
+        const P2Damage = P1Damage * P2Percent;
+        console.log(P2Damage, "P2Damage");
+        // P3 伤害
+        // 判断伤害的类型，根据tower的类型来判断
+        // todo 这里要改读取
+        const damageType = DamageType.ARMOR;
+        let P3Damage = 0;
+        // todo 破甲，法穿
+        if (damageType === DamageType.ARMOR) {
+            // 物理伤害
+            P3Damage = P2Damage * (1 - (this.armor - armorPen) / (200 + this.armor - armorPen));
+        } else if (damageType === DamageType.MAGIC) {
+            P3Damage = P2Damage * (1 - (this.magicResist - magicPen) / (200 + this.magicResist - magicPen));
+        } else {
+            P3Damage = 0;
+        }
+        console.log(P3Damage, "P3Damage");
+        const finalDamage = Math.min(P3Damage, this.hp);
+        console.log(finalDamage, "finalDamage");
+        // this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
+        GameManager.showDamage && this.damageShow(P3Damage);
         this.hp -= finalDamage;
         this.onHealthChanged();
         this.isHurt = true;
-        cb && cb();
         if (this.position) {
             FlyText.instance.showFlyText(finalDamage.toFixed(0), this.position);
         }
+        // 处理怪物本身的
+        this.monsterBuffActive();
         if (this.hp <= 0) {
             this.kill();
         } else {
             if (this.go) {
                 let cfg = GameConfig.Monster.getElement(this.configId);
+                console.log(JSON.stringify(cfg), "config monster");
+
                 if (cfg.hurtAnim) {
                     let anim = this.go.loadAnimation(cfg.hurtAnim);
                     anim.loop = 1;
@@ -462,6 +617,93 @@ export class Enemy implements BuffBag {
             }
         }
         return finalDamage;
+        // if (this.destroyed) return 0;
+        // let damage = { amount: tower.attackDamage };
+        // this._components.forEach((component) => component.onHurt(damage, tower.attackTags));
+        // let finalDamage = Math.min(damage.amount * this.hurtAmount, this.hp);
+        // GameManager.showDamage && this.damageShow(damage.amount * this.hurtAmount);
+        // this.hp -= finalDamage;
+        // this.onHealthChanged();
+        // this.isHurt = true;
+        // cb && cb();
+        // if (this.position) {
+        //     FlyText.instance.showFlyText(finalDamage.toFixed(0), this.position);
+        // }
+        // if (this.hp <= 0) {
+        //     this.kill();
+        // } else {
+        //     if (this.go) {
+        //         let cfg = GameConfig.Monster.getElement(this.configId);
+        //         if (cfg.hurtAnim) {
+        //             let anim = this.go.loadAnimation(cfg.hurtAnim);
+        //             anim.loop = 1;
+        //             anim.play();
+        //             setTimeout(() => {
+        //                 if (this.anim) {
+        //                     this.anim.play();
+        //                 }
+        //             }, cfg.hurtAnimDur * 1000);
+        //         }
+        //     }
+        // }
+        // return finalDamage;
+    }
+
+    elementalRestraint(): number {
+        // todo 获取tower的属性，获取怪物的属性，进行克制关系对比
+        return 1;
+    }
+
+    monsterBuffActive() {
+        const buffs = this.buffManager.buffs;
+        // 狂暴化
+        const berserks = buffs.filter((buff) => buff.cfg.berserk !== 0);
+        if (berserks.length > 0) {
+            const maxBerserksItem = berserks.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.berserk > (maxItem ? maxItem.cfg.berserk : -Infinity) ? currentItem : maxItem;
+            }, null);
+            const speedUp = maxBerserksItem.cfg.berserk;
+            let config = GameConfig.Monster.getElement(this.configId);
+            const percentHp = this.hp / config.hp;
+            if (percentHp < 0.5 && !this.isBerserk) {
+                this.isBerserk = true;
+                this.speed = this.speed * speedUp;
+            }
+        }
+    }
+
+    motherDead() {
+        const buffs = this.buffManager.buffs;
+        // 母体
+        const mothers = buffs.filter((buff) => buff.cfg.mother !== 0);
+        if (mothers.length > 0) {
+            const maxMotherItem = mothers.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.mother > (maxItem ? maxItem.cfg.mother : -Infinity) ? currentItem : maxItem;
+            }, null);
+            // todo 母体分裂
+        }
+    }
+
+    healingMonster() {
+        const buffs = this.buffManager.buffs;
+        // 复原力
+        const healings = buffs.filter((buff) => buff.cfg.healing !== 0);
+        let healing: number = 0;
+        if (healings.length > 0) {
+            const maxHealingItem = healings.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.healing > (maxItem ? maxItem.cfg.healing : -Infinity) ? currentItem : maxItem;
+            }, null);
+            healing = maxHealingItem.cfg.healing;
+
+            const date = new Date();
+            const timestampInSeconds = Math.floor(date.getTime() / 1000);
+            if (timestampInSeconds - this.healingTime > 0) {
+                this.hp = this.hp + healing;
+                this.healingTime = timestampInSeconds;
+            } else {
+                this.healingTime = timestampInSeconds;
+            }
+        }
     }
 
     private damageShow(damage: number) {

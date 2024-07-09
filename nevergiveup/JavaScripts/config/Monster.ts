@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","types","name","nameCN","guid","walkAnim","hp","speed","underattack","attackproportion","goldAmount","escapeDamage","buffSlot","buffSlotRelativePos","hurtAnim","hurtAnimDur","deadAnim","deadAnimDur"],["","","Language","","","","","","","","","","","","","","",""],[1001,null,"Monster_name_1","丧尸","268048","268567",550,105,"107535",1,5,25,23,new mw.Vector(0,0,150),"97861",0.3,"285139",1.5],[1002,[1],"Monster_name_2","快速丧尸","174947","122498",40,200,"107535",1,5,25,23,new mw.Vector(0,0,150),"97861",0.3,"285139",1.5],[1003,[5],"Monster_name_3","僵尸","146185","122549",500,75,"107535",1,100,500,23,new mw.Vector(0,0,150),null,0.3,"20291",1],[1004,[2],"Monster_name_4","飞行","151835","164988",30,150,"107535",1,5,25,23,new mw.Vector(0,0,150),"145952",0.3,"285395",1],[1005,[3],"Monster_name_5","护士","174911","97860",40,150,"107535",1,5,25,23,new mw.Vector(0,0,150),"97861",0.3,"285139",1.5],[1006,[5],"Monster_name_6","铁钩怪人","145900","122498",500,75,"107535",1,100,500,23,new mw.Vector(0,0,150),"97861",0.3,"285139",1.5],[1007,null,"Monster_name_1","龙娘测试","268048","268567",50,50,"107535",1,5,20,23,new mw.Vector(0,0,150),"97861",0.3,"281693",1.5]];
+const EXCELDATA:Array<Array<any>> = [["id","types","name","nameCN","guid","walkAnim","hp","speed","underattack","attackproportion","goldAmount","escapeDamage","buffSlot","buffSlotRelativePos","hurtAnim","hurtAnimDur","deadAnim","deadAnimDur","armor","magicResist","buff"],["","","Language","","","","","","","","","","","","","","","","","",""],[1001,null,"Monster_name_1","丧尸","268048","268567",550,105,"107535",1,5,25,23,new mw.Vector(0,0,150),"97861",0.3,"285139",1.5,200,200,[5001]],[1002,[1],"Monster_name_2","快速丧尸","174947","122498",40,200,"107535",1,5,25,23,new mw.Vector(0,0,150),"97861",0.3,"285139",1.5,200,200,null],[1003,[5],"Monster_name_3","僵尸","146185","122549",500,75,"107535",1,100,500,23,new mw.Vector(0,0,150),null,0.3,"20291",1,200,200,null],[1004,[2],"Monster_name_4","飞行","151835","164988",30,150,"107535",1,5,25,23,new mw.Vector(0,0,150),"145952",0.3,"285395",1,200,200,null],[1005,[3],"Monster_name_5","护士","174911","97860",40,150,"107535",1,5,25,23,new mw.Vector(0,0,150),"97861",0.3,"285139",1.5,200,200,null],[1006,[5],"Monster_name_6","铁钩怪人","145900","122498",500,75,"107535",1,100,500,23,new mw.Vector(0,0,150),"97861",0.3,"285139",1.5,200,200,null],[1007,null,"Monster_name_1","龙娘测试","268048","268567",50,50,"107535",1,5,20,23,new mw.Vector(0,0,150),"97861",0.3,"281693",1.5,200,200,null]];
 export interface IMonsterElement extends IElementBase{
  	/**怪物id*/
 	id:number
@@ -37,6 +37,12 @@ export interface IMonsterElement extends IElementBase{
 	deadAnim:string
 	/**死亡动画持续时间*/
 	deadAnimDur:number
+	/**初始护甲*/
+	armor:number
+	/**初始魔抗*/
+	magicResist:number
+	/**怪物的Buff*/
+	buff:Array<number>
  } 
 export class MonsterConfig extends ConfigBase<IMonsterElement>{
 	constructor(){
