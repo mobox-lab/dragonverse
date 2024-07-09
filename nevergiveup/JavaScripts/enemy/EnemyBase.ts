@@ -588,12 +588,33 @@ export class Enemy implements BuffBag {
         const finalDamage = Math.min(P3Damage, this.hp);
         console.log(finalDamage, "finalDamage");
         // this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
-        GameManager.showDamage && this.damageShow(P3Damage);
-        this.hp -= finalDamage;
-        this.onHealthChanged();
-        this.isHurt = true;
-        if (this.position) {
-            FlyText.instance.showFlyText(finalDamage.toFixed(0), this.position);
+        // 多段伤害
+        const multiHits = buffs.filter((buff) => buff.cfg.multiHit !== 0);
+
+        if (multiHits.length > 0) {
+            const maxMultiHitItem = multiHits.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.multiHit > (maxItem ? maxItem.cfg.multiHit : -Infinity) ? currentItem : maxItem;
+            }, null);
+            for (let i = 0; i < maxMultiHitItem.cfg.multiHit; i++) {
+                GameManager.showDamage && this.damageShow(P3Damage);
+                this.hp -= finalDamage;
+                this.onHealthChanged();
+                this.isHurt = true;
+                if (this.position) {
+                    FlyText.instance.showFlyText(finalDamage.toFixed(0), this.position);
+                }
+                if (this.hp < 0) {
+                    break;
+                }
+            }
+        } else {
+            GameManager.showDamage && this.damageShow(P3Damage);
+            this.hp -= finalDamage;
+            this.onHealthChanged();
+            this.isHurt = true;
+            if (this.position) {
+                FlyText.instance.showFlyText(finalDamage.toFixed(0), this.position);
+            }
         }
         // 处理怪物本身的
         this.monsterBuffActive();
