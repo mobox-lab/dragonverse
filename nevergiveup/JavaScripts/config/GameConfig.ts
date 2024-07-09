@@ -5,6 +5,7 @@ import {GlobalConfig} from "./Global";
 import {ItemConfig} from "./Item";
 import {LanguageConfig} from "./Language";
 import {LevelConfig} from "./Level";
+import {LevelEffectConfig} from "./LevelEffect";
 import {MonsterConfig} from "./Monster";
 import {SceneEnvironmentConfig} from "./SceneEnvironment";
 import {StageConfig} from "./Stage";
@@ -38,6 +39,7 @@ export class GameConfig{
 	public static get Item():ItemConfig{ return this.getConfig(ItemConfig) };
 	public static get Language():LanguageConfig{ return this.getConfig(LanguageConfig) };
 	public static get Level():LevelConfig{ return this.getConfig(LevelConfig) };
+	public static get LevelEffect():LevelEffectConfig{ return this.getConfig(LevelEffectConfig) };
 	public static get Monster():MonsterConfig{ return this.getConfig(MonsterConfig) };
 	public static get SceneEnvironment():SceneEnvironmentConfig{ return this.getConfig(SceneEnvironmentConfig) };
 	public static get Stage():StageConfig{ return this.getConfig(StageConfig) };
