@@ -84,17 +84,10 @@ export class UIStageSelect extends StageSelect_Generate {
 
         this.mGo.onClicked.add(() => {
             MGSTool.clickBtn("3");
-            if (GuideManager.finishMainGuide(null)) {
-                if (Utils.isLocalPlayer(this._ownerId)) {
-                    this._script.startGame(Player.localPlayer.playerId);
-                } else {
-                    TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
-                }
+            if (Utils.isLocalPlayer(this._ownerId)) {
+                this._script.startGame(Player.localPlayer.playerId);
             } else {
-                console.log("开始游戏", this._ownerId);
-                if (Utils.isLocalPlayer(this._ownerId)) {
-                    GameManager.startGameClient(0, 0);
-                }
+                TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
             }
         });
     }

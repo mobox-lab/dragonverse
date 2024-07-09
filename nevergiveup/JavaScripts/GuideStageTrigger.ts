@@ -15,18 +15,14 @@ export default class GuideStageTrigger extends Script {
     protected onStart(): void {
         if (SystemUtil.isClient()) {
             GuideActions.onGuideStageTriggered.add(() => {
-                if (!GuideManager.finishMainGuide(null)) {
-                    this.onTriggerGuide();
-                }
+                this.onTriggerGuide();
             });
 
             GuideActions.onGuideStageSelect.add(() => {
-                if (!GuideManager.finishMainGuide(null)) {
-                    this._triggered = false;
-                    TweenCommon.popUpHide(UIService.getUI(UIStageSelect).rootCanvas, () => {
-                        UIService.hide(UIStageSelect);
-                    });
-                }
+                this._triggered = false;
+                TweenCommon.popUpHide(UIService.getUI(UIStageSelect).rootCanvas, () => {
+                    UIService.hide(UIStageSelect);
+                });
             });
         }
     }

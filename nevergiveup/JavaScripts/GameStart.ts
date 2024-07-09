@@ -38,7 +38,7 @@ import GodModService from "mw-god-mod";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./Modules/auth/AuthModule";
 import TDEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./Modules/Energy/EnergyModule";
 export namespace Config {
-    export let skipGuide: boolean = true;
+    export let skipGuide: boolean = false;
     export let danmukuSpeed: number = 300;
     export let hurtTextColor: LinearColor = new LinearColor(1, 0, 0, 1);
     export let hurtTextOutlineColor: LinearColor = new LinearColor(0, 0, 0, 1);
@@ -115,10 +115,10 @@ export default class GameStart extends Script {
             }
 
             this.setlanguage();
-            // ModuleService.ready().then(() => {
-            //     GuideManager.init();
-            //     GuideManager.triggerNextGuide(true);
-            // });
+            ModuleService.ready().then(() => {
+                GuideManager.init();
+                // GuideManager.triggerNextGuide(true);
+            });
             Utils.requestAssetIcons(GameConfig.Tower.getAllElement(), "imgGuid", true);
             DanmuManager.init();
             ComponentFactory.init();
