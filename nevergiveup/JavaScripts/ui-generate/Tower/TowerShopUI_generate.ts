@@ -22,19 +22,26 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.closeBtn_Internal
 	}
-	private img_fakeEsc_Internal: mw.Image
-	public get img_fakeEsc(): mw.Image {
-		if(!this.img_fakeEsc_Internal&&this.uiWidgetBase) {
-			this.img_fakeEsc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/img_fakeEsc') as mw.Image
-		}
-		return this.img_fakeEsc_Internal
-	}
 	private bg_Internal: mw.Image
 	public get bg(): mw.Image {
 		if(!this.bg_Internal&&this.uiWidgetBase) {
 			this.bg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/bg') as mw.Image
 		}
 		return this.bg_Internal
+	}
+	private bg_info_Internal: mw.Image
+	public get bg_info(): mw.Image {
+		if(!this.bg_info_Internal&&this.uiWidgetBase) {
+			this.bg_info_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/bg_info') as mw.Image
+		}
+		return this.bg_info_Internal
+	}
+	private bg_title_Internal: mw.Image
+	public get bg_title(): mw.Image {
+		if(!this.bg_title_Internal&&this.uiWidgetBase) {
+			this.bg_title_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/bg_title') as mw.Image
+		}
+		return this.bg_title_Internal
 	}
 	private txt_title_Internal: mw.TextBlock
 	public get txt_title(): mw.TextBlock {
@@ -134,6 +141,34 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.img_lilbg3_Internal
 	}
+	private canvas_level_Internal: mw.Canvas
+	public get canvas_level(): mw.Canvas {
+		if(!this.canvas_level_Internal&&this.uiWidgetBase) {
+			this.canvas_level_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_level') as mw.Canvas
+		}
+		return this.canvas_level_Internal
+	}
+	private infoLv1_Internal: mw.StaleButton
+	public get infoLv1(): mw.StaleButton {
+		if(!this.infoLv1_Internal&&this.uiWidgetBase) {
+			this.infoLv1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_level/infoLv1') as mw.StaleButton
+		}
+		return this.infoLv1_Internal
+	}
+	private infoLv2_Internal: mw.StaleButton
+	public get infoLv2(): mw.StaleButton {
+		if(!this.infoLv2_Internal&&this.uiWidgetBase) {
+			this.infoLv2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_level/infoLv2') as mw.StaleButton
+		}
+		return this.infoLv2_Internal
+	}
+	private infoLv3_Internal: mw.StaleButton
+	public get infoLv3(): mw.StaleButton {
+		if(!this.infoLv3_Internal&&this.uiWidgetBase) {
+			this.infoLv3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_level/infoLv3') as mw.StaleButton
+		}
+		return this.infoLv3_Internal
+	}
 	private infoScrollCanvas_Internal: mw.Canvas
 	public get infoScrollCanvas(): mw.Canvas {
 		if(!this.infoScrollCanvas_Internal&&this.uiWidgetBase) {
@@ -147,6 +182,20 @@ export default class TowerShopUI_Generate extends UIScript {
 			this.infoItemCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoScrollCanvas/ScrollBox/infoItemCanvas') as mw.Canvas
 		}
 		return this.infoItemCanvas_Internal
+	}
+	private canvas_Desc_Internal: mw.Canvas
+	public get canvas_Desc(): mw.Canvas {
+		if(!this.canvas_Desc_Internal&&this.uiWidgetBase) {
+			this.canvas_Desc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_Desc') as mw.Canvas
+		}
+		return this.canvas_Desc_Internal
+	}
+	private imgDesc_Internal: mw.Image
+	public get imgDesc(): mw.Image {
+		if(!this.imgDesc_Internal&&this.uiWidgetBase) {
+			this.imgDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_Desc/imgDesc') as mw.Image
+		}
+		return this.imgDesc_Internal
 	}
 	private infoBtn_Internal: mw.StaleButton
 	public get infoBtn(): mw.StaleButton {
@@ -167,6 +216,27 @@ export default class TowerShopUI_Generate extends UIScript {
    protected initButtons() {
 	   //按钮添加点击
 	   
+	   this.infoLv1.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "infoLv1");
+	   })
+	   this.initLanguage(this.infoLv1);
+	   this.infoLv1.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.infoLv2.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "infoLv2");
+	   })
+	   this.initLanguage(this.infoLv2);
+	   this.infoLv2.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.infoLv3.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "infoLv3");
+	   })
+	   this.initLanguage(this.infoLv3);
+	   this.infoLv3.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.infoBtn.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "infoBtn");
 	   })
@@ -201,6 +271,12 @@ export default class TowerShopUI_Generate extends UIScript {
 	
 	   //文本多语言
 	   
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/canvas_Desc/TextTitle") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/canvas_Desc/TextDesc") as any);
+	   
+	
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

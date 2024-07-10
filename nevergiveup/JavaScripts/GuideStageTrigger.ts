@@ -87,6 +87,10 @@ export default class GuideStageTrigger extends Script {
 
     }
 
+    clickLeaveBtn(playerID: number) {
+        
+    }
+
     startGame(playerID: number) {
 
     }

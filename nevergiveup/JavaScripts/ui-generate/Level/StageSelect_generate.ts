@@ -92,6 +92,13 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.mGo_Internal
 	}
+	private mClose_Internal: mw.StaleButton
+	public get mClose(): mw.StaleButton {
+		if(!this.mClose_Internal&&this.uiWidgetBase) {
+			this.mClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/mClose') as mw.StaleButton
+		}
+		return this.mClose_Internal
+	}
 	private img_backg_Internal: mw.Image
 	public get img_backg(): mw.Image {
 		if(!this.img_backg_Internal&&this.uiWidgetBase) {
@@ -113,12 +120,12 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.mStageName_Internal
 	}
-	private mClose_Internal: mw.StaleButton
-	public get mClose(): mw.StaleButton {
-		if(!this.mClose_Internal&&this.uiWidgetBase) {
-			this.mClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/mClose') as mw.StaleButton
+	private mOff_Internal: mw.StaleButton
+	public get mOff(): mw.StaleButton {
+		if(!this.mOff_Internal&&this.uiWidgetBase) {
+			this.mOff_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/mOff') as mw.StaleButton
 		}
-		return this.mClose_Internal
+		return this.mOff_Internal
 	}
 
 
@@ -144,6 +151,13 @@ export default class StageSelect_Generate extends UIScript {
 	   })
 	   this.initLanguage(this.mClose);
 	   this.mClose.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.mOff.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "mOff");
+	   })
+	   this.initLanguage(this.mOff);
+	   this.mOff.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 	   //按钮添加点击

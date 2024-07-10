@@ -85,11 +85,22 @@ export class UIStageSelect extends StageSelect_Generate {
         }
 
         this.mGo.onClicked.add(() => {
-            MGSTool.clickBtn("3");
             if (Utils.isLocalPlayer(this._ownerId)) {
                 this._script.startGame(Player.localPlayer.playerId);
             } else {
                 TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
+            }
+        });
+        
+        this.mClose.onClicked.add(() => {
+            if (Utils.isLocalPlayer(this._ownerId)) {
+                this._script.clickLeaveBtn(Player.localPlayer.playerId);
+            }
+        });
+
+        this.mOff.onClicked.add(() => {
+            if (Utils.isLocalPlayer(this._ownerId)) {
+                this._script.clickLeaveBtn(Player.localPlayer.playerId);
             }
         });
     }
