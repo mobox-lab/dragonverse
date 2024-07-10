@@ -198,12 +198,12 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         return arr;
     }
 
-    /**添加宠物
-     * @param id 宠物id
-     */
-    public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
-        await this.server.net_addPetWithMissingInfo(Player.localPlayer.playerId, id, type, addTime);
-    }
+    // /**添加宠物
+    //  * @param id 宠物id
+    //  */
+    // public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+    //     await this.server.net_addPetWithMissingInfo(Player.localPlayer.playerId, id, type, addTime);
+    // }
 
     /**宠物公告 */
     public async net_petNotice(playerId: number, petId: number, type: GlobalEnum.PetNoticeTips) {
@@ -281,7 +281,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 
         this.hudPetUI.removeRedPoint(keys);
         // 设置数据
-        this.server.net_deletePet(keys);
+        this.server.net_deletePet(keys, "删除");
     }
 
     /**是否可融合强化 */

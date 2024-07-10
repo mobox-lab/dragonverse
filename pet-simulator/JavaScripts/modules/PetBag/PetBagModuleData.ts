@@ -103,6 +103,18 @@ interface PetSimulatorStatisticPetObj {
      * 当前状态，销毁、存在.
      */
     status: "destroyed" | "exist";
+    
+    /**
+     * 创建来源.
+     * "删除" 为主动删除.
+     * 其余为合成时被动删除.
+     */
+    creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化";
+    /**
+     * 销毁来源.
+     */
+    desSource: "删除" | "合成" | "爱心化" | "彩虹化" | "";
+
     /**
      * 创建时间.
      */
@@ -235,7 +247,18 @@ export class PetBagModuleData extends Subdata {
     }
 
 	/**更新宠物统计数据 - 新增宠物 */
-	public updatePetStatistic(petInfo: petItemDataNew, status?: "destroyed" | "exist", isUpdate = true) {
+	public updatePetStatistic(petInfo: petItemDataNew, status?: "destroyed" | "exist", isUpdate = true, source?: {
+        /**
+         * 创建来源.
+         * "删除" 为主动删除.
+         * 其余为合成时被动删除.
+         */
+        creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化";
+        /**
+         * 销毁来源.
+         */
+        desSource?: "删除" | "合成" | "爱心化" | "彩虹化" | "";
+    }) {
 		const key = petInfo?.k;
 		if(!key) {
 			Log4Ts.warn(PetBagModuleData, " 更新宠物统计数据 - key错误:", key);
@@ -248,13 +271,15 @@ export class PetBagModuleData extends Subdata {
 			const name = cfg.Name;
 			return `${b}-${name}`
 		}): [];  // id-name arr
-		
+		const { creSource = "孵化", desSource = "" } = source
 		const petStatistic: PetSimulatorStatisticPetObj = {
 			petkey: key,
 			proId: petInfo?.I ?? 0,
 			name: petInfo?.p?.n ?? "",
 			attack: petInfo?.p?.a ?? 0,
 			status: status ?? "exist",
+            creSource,
+            desSource,
 			create: now ?? 0,
 			update: now ?? 0,
 			enchanted: enchanted?.join(",") ?? "",
@@ -264,7 +289,11 @@ export class PetBagModuleData extends Subdata {
 		} else {
 			petStatistic.create = this.petStatisticMap[key].create;
 			if(!status) petStatistic.status = this.petStatisticMap[key].status;
-			if(!isUpdate) petStatistic.update = this.petStatisticMap[key].update;
+			if(isUpdate) {
+                petStatistic.update = this.petStatisticMap[key].update;
+            }
+            if(source?.desSource) petStatistic.desSource = source.desSource;
+            if(source?.creSource) petStatistic.creSource = source.creSource;
 			this.petStatisticMap[key] = petStatistic;
 		}
 		Log4Ts.log(PetBagModuleData, " 更新宠物统计数据 petInfo:", JSON.stringify(petInfo) + " petStatistic:", JSON.stringify(petStatistic));
@@ -293,7 +322,7 @@ export class PetBagModuleData extends Subdata {
      * @param atk 宠物战力
      * @param name 宠物名字
      */
-    public addBagItem(id: number, atk: number, name: string, addTime: number | undefined, logInfo: { logObj: Object, logName: string } | undefined, playerID: number): boolean {
+    public addBagItem(id: number, atk: number, name: string, addTime: number | undefined, logInfo: { logObj: Object, logName: string } | undefined, playerID: number, creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化"): boolean {
 
         // let index = this.getFirstEmptyIndex();
         // if (index == -1) {
@@ -323,7 +352,7 @@ export class PetBagModuleData extends Subdata {
 			});  
 			utils.logP12Info(logInfo.logName, logInfo.logObj)
 		}
-		this.updatePetStatistic(this.bagContainerNew[index]);
+		this.updatePetStatistic(this.bagContainerNew[index], "exist", true, { creSource });
 		const statisticData = DataCenterS.getData(playerID, PsStatisticModuleData)
 		statisticData.recordAddPet();
         this.save(true);
@@ -389,10 +418,10 @@ export class PetBagModuleData extends Subdata {
     }
 
     /**删除元素 */
-    public removeBagItem(keys: number[]) {
+    public removeBagItem(keys: number[], desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
         keys.forEach( (key) => {
             const petItem = {...this.bagContainerNew[key]};
-			this.updatePetStatistic(petItem, "destroyed");
+			this.updatePetStatistic(petItem, "destroyed", true, { desSource });
             delete this.bagContainerNew[key];
         });
         this.save(true);
