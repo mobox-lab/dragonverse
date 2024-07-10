@@ -37,7 +37,7 @@ export default class AttackTower extends TowerBase {
 
     constructor(info: TowerInfo) {
         super(info, async () => {
-            this._attackAnims = this.cfg.attackAnimNew ?? [this.cfg.attackAnim];
+            this._attackAnims = [...this.cfg.attackAnim];
             await Promise.any(this._attackAnims.map(item => AssetUtil.asyncDownloadAsset(item)));
             await AssetUtil.asyncDownloadAsset(this.cfg.idleAnim);
             await this.root?.asyncReady();
