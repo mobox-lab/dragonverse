@@ -743,7 +743,7 @@ interface PetSimulatorStatisticPetObj {
     /**
      * 销毁来源.
      */
-    desSource: "删除" | "合成" | "爱心化" | "彩虹化";
+    desSource: "删除" | "合成" | "爱心化" | "彩虹化" | "";
 
     /**
      * 创建时间.
