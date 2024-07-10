@@ -739,7 +739,7 @@ interface PetSimulatorStatisticPetObj {
      * "删除" 为主动删除.
      * 其余为合成时被动删除.
      */
-    creSource: "孵化" | "合成" | "爱心化" | "彩虹化";
+    creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化";
     /**
      * 销毁来源.
      */
