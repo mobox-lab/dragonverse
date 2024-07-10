@@ -26,9 +26,11 @@ import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
 import ShopItemUI_Generate from "../../ui-generate/Tower/ShopItemUI_generate";
+import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
 import TowerShopUI from "./TowerShopUI";
 
 export default class ShopItemUI extends ShopItemUI_Generate {
+	private _tagItemUIs: TowerTagItem_Generate[] = [];
 
 	private _state: CardState;
 	public get state(): CardState {
@@ -59,6 +61,13 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.chooseBtn.onClicked.add(() => {
 			UIService.getUI(TowerShopUI).showTowerInfo(this._cfgID, this.state);
 		});
+		
+		for (let i = 0; i < 4; i++) {
+			let item = UIService.create(TowerTagItem_Generate);
+			item.visible = false;
+			this.tagCanvas.addChild(item.uiObject);
+			this._tagItemUIs.push(item);
+		}
 	}
 
 	/**
@@ -86,6 +95,14 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.nameTxt.text = this._cfg.name;
 		this.txt_sell.text = this._cfg.shopPrice.toFixed(0);
 		this.refreshState();
+		const cfg = this._cfg;
+		let length = cfg.attackTags?.length ? cfg.attackTags.length : 0;
+		for (let i = 0; i < this._tagItemUIs.length; i++) {
+			this._tagItemUIs[i].visible = (i < length);
+			if (i < length) {
+				this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement("Text_AttackTag" + cfg.attackTags[i]).Value
+			}
+		}
 	}
 
 	/**
