@@ -733,6 +733,18 @@ interface PetSimulatorStatisticPetObj {
      * 当前状态，销毁、存在.
      */
     status: "destroyed" | "exist";
+
+    /**
+     * 创建来源.
+     * "删除" 为主动删除.
+     * 其余为合成时被动删除.
+     */
+    creSource: "孵化" | "合成" | "爱心化" | "彩虹化";
+    /**
+     * 销毁来源.
+     */
+    desSource: "删除" | "合成" | "爱心化" | "彩虹化";
+
     /**
      * 创建时间.
      */
