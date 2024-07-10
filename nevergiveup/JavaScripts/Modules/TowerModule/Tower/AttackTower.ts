@@ -52,8 +52,8 @@ export default class AttackTower extends TowerBase {
                     this._idleAnim.loop = 999999;
                     (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((go) => {
                         this._weaponRoot = go;
-                        this._towerCha.attachToSlot(this._weaponRoot, HumanoidSlotType.RightHand);
-                        this._weaponRoot.localTransform.position = Vector.zero;
+                        this._towerCha.attachToSlot(this._weaponRoot, this.cfg.weaponSlot ?? HumanoidSlotType.RightHand);
+                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation ? new Vector(...this.cfg.weaponLocation) : Vector.zero;
                         this._weaponRoot.localTransform.rotation = Rotation.zero;
                     });
                 });
