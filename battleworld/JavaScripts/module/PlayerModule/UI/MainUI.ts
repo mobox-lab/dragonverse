@@ -50,10 +50,10 @@ import { SkillSelectPanel } from "../../SkillModule/UI/SkillSelectPanel";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../../const/GameServiceConfig";
 import { addGMCommand } from "mw-god-mod";
-import { formatEther } from "@p12/viem";
 import P12ShopPanel from "../../../ui/shop/P12ShopPanel";
 import SenzuBeanConfirmPanel from "../../../ui/bag/SenzuBeanConfirmPanel";
 import { P12BagModuleC } from "../../bag/P12BagModule";
+import { Utils } from "../../../util/uitls";
 
 enum MouseLockType {
     Press,
@@ -86,7 +86,7 @@ addGMCommand(
             `request to change mouse lock type to ${MouseLockType[type]}.`,
             `option param:`,
             `   0: ${MouseLockType[MouseLockType.Press]}`,
-            `   1: ${MouseLockType[MouseLockType.Tap]}`
+            `   1: ${MouseLockType[MouseLockType.Tap]}`,
         );
         if (type === currentLockType) return;
         else currentLockType = type;
@@ -99,69 +99,69 @@ addGMCommand(
             KeyOperationManager.getInstance().onKeyDown(
                 UIService.getUI(MainUI),
                 Keys.LeftAlt,
-                () => (InputUtil.isLockMouse = false)
+                () => (InputUtil.isLockMouse = false),
             );
             KeyOperationManager.getInstance().onKeyUp(
                 UIService.getUI(MainUI),
                 Keys.LeftAlt,
-                () => (InputUtil.isLockMouse = true)
+                () => (InputUtil.isLockMouse = true),
             );
             KeyOperationManager.getInstance().onKeyDown(
                 UIService.getUI(MainUI),
                 Keys.LeftCommand,
-                () => (InputUtil.isLockMouse = false)
+                () => (InputUtil.isLockMouse = false),
             );
             KeyOperationManager.getInstance().onKeyUp(
                 UIService.getUI(MainUI),
                 Keys.LeftCommand,
-                () => (InputUtil.isLockMouse = true)
+                () => (InputUtil.isLockMouse = true),
             );
             KeyOperationManager.getInstance().onKeyDown(
                 UIService.getUI(MainUI),
                 Keys.RightAlt,
-                () => (InputUtil.isLockMouse = false)
+                () => (InputUtil.isLockMouse = false),
             );
             KeyOperationManager.getInstance().onKeyUp(
                 UIService.getUI(MainUI),
                 Keys.RightAlt,
-                () => (InputUtil.isLockMouse = true)
+                () => (InputUtil.isLockMouse = true),
             );
             KeyOperationManager.getInstance().onKeyDown(
                 UIService.getUI(MainUI),
                 Keys.RightCommand,
-                () => (InputUtil.isLockMouse = false)
+                () => (InputUtil.isLockMouse = false),
             );
             KeyOperationManager.getInstance().onKeyUp(
                 UIService.getUI(MainUI),
                 Keys.RightCommand,
-                () => (InputUtil.isLockMouse = true)
+                () => (InputUtil.isLockMouse = true),
             );
         } else {
             KeyOperationManager.getInstance().onKeyDown(
                 UIService.getUI(MainUI),
                 Keys.LeftAlt,
-                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse),
             );
             KeyOperationManager.getInstance().onKeyDown(
                 UIService.getUI(MainUI),
                 Keys.LeftCommand,
-                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse),
             );
             KeyOperationManager.getInstance().onKeyDown(
                 UIService.getUI(MainUI),
                 Keys.RightAlt,
-                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse),
             );
             KeyOperationManager.getInstance().onKeyDown(
                 UIService.getUI(MainUI),
                 Keys.RightCommand,
-                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse)
+                () => (InputUtil.isLockMouse = !InputUtil.isLockMouse),
             );
         }
     },
     undefined,
     undefined,
-    "Mouse"
+    "Mouse",
 );
 type PillUIInfo = {
     text: TextBlock;
@@ -232,7 +232,7 @@ export class MainUI extends Main_HUD_Generate {
             this.listen_player_back_brake(EbackType.selfCancle);
         });
         // 刷新体力
-        this.mBtn_Battle_Refresh.onClicked.add(() =>  {
+        this.mBtn_Battle_Refresh.onClicked.add(() => {
             ModuleService.getModule(EnergyModuleC)?.refreshStaminaLimit();
             ModuleService.getModule(P12BagModuleC)?.refreshBagItem();
         });
@@ -265,9 +265,8 @@ export class MainUI extends Main_HUD_Generate {
             UIService.show(SenzuBeanConfirmPanel);
         });
 
-
         // MDBL Token
-        Yoact.bindYoact(() => Gtk.trySetText(this.mMCoin, formatEther(BigInt(this.authModuleC?.currency.count ?? 0))));
+        Yoact.bindYoact(() => Gtk.trySetText(this.mMCoin, Utils.formatEtherInteger(BigInt(this.authModuleC?.currency.count ?? 0))));
         this.mBtn_MCoin_Refresh.onClicked.add(() => this.authModuleC?.refreshCurrency());
 
         this.playerMD.onAttributeChanged.add(this.onPlayerAttrChanged, this);
@@ -278,7 +277,7 @@ export class MainUI extends Main_HUD_Generate {
         EventManager.instance.add(
             EAttributeEvents_C.Attribute_SkillPoints_Change_C,
             this.listen_askillPoints_change,
-            this
+            this,
         );
         EventManager.instance.add(EPlayerEvents_C.Player_RefreshSkillPoints, this.listen_askillPoints_change, this);
         /**玩家金币数量发生变化 */
@@ -303,14 +302,14 @@ export class MainUI extends Main_HUD_Generate {
         Yoact.bindYoact(() =>
             Gtk.trySetText(
                 this.mBattle,
-                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data).toString()
-            )
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data).toString(),
+            ),
         );
         Yoact.bindYoact(() =>
             Gtk.trySetText(
                 this.mBattle_1,
-                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString()
-            )
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString(),
+            ),
         );
 
         this.mBtn_Battle_Add.onClicked.add(() => {
@@ -367,7 +366,7 @@ export class MainUI extends Main_HUD_Generate {
                     StringUtil.clipboardCopy(Globaldata.copyUrl);
                     Tips.show(GameConfig.Language.Copy_Success_Text_1.Value);
                 },
-                GameConfig.Language.Deposit_2.Value
+                GameConfig.Language.Deposit_2.Value,
             );
         });
 
@@ -382,7 +381,7 @@ export class MainUI extends Main_HUD_Generate {
                     }
                 });
             },
-            this
+            this,
         );
 
         this.textKillNum.text = "0";
@@ -732,7 +731,7 @@ export class MainUI extends Main_HUD_Generate {
             (time: number) => {
                 this.mText_Back_Time.text = `${time.toFixed(1)}s`;
                 this.mBar_Back.currentValue = time / Globaldata.player_backTime;
-            }
+            },
         );
         this.back_ui_cd.start();
 
@@ -754,8 +753,8 @@ export class MainUI extends Main_HUD_Generate {
         }
         let time =
             backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
-        this.reBackTween = new mw.Tween({ alpha: 0 })
-            .to({ alpha: 1 }, time * 1000)
+        this.reBackTween = new mw.Tween({alpha: 0})
+            .to({alpha: 1}, time * 1000)
             .onUpdate((data) => {
                 this.mMask_Back.fanShapedValue = data.alpha;
             })
@@ -788,7 +787,7 @@ export class MainUI extends Main_HUD_Generate {
             },
             (time: number) => {
                 this.mText_Back_Time_cd.text = `${time.toFixed(0)}s`;
-            }
+            },
         );
         this.back_btn_cd.start();
     }
@@ -812,8 +811,8 @@ export class MainUI extends Main_HUD_Generate {
      */
     private initReset() {
         this.mMask_Reborn.visibility = mw.SlateVisibility.Collapsed;
-        this.rebornTween = new mw.Tween({ alpha: 0 })
-            .to({ alpha: 1 }, Globaldata.player_rebornTime * 1000)
+        this.rebornTween = new mw.Tween({alpha: 0})
+            .to({alpha: 1}, Globaldata.player_rebornTime * 1000)
             .onUpdate((data) => {
                 this.mMask_Reborn.fanShapedValue = data.alpha;
             })
