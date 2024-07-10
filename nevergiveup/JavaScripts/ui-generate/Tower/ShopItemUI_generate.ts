@@ -50,6 +50,27 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.txt_sell_Internal
 	}
+	private canvas_tag_Internal: mw.Canvas
+	public get canvas_tag(): mw.Canvas {
+		if(!this.canvas_tag_Internal&&this.uiWidgetBase) {
+			this.canvas_tag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag') as mw.Canvas
+		}
+		return this.canvas_tag_Internal
+	}
+	private tagScrollBox_Internal: mw.ScrollBox
+	public get tagScrollBox(): mw.ScrollBox {
+		if(!this.tagScrollBox_Internal&&this.uiWidgetBase) {
+			this.tagScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag/tagScrollBox') as mw.ScrollBox
+		}
+		return this.tagScrollBox_Internal
+	}
+	private tagCanvas_Internal: mw.Canvas
+	public get tagCanvas(): mw.Canvas {
+		if(!this.tagCanvas_Internal&&this.uiWidgetBase) {
+			this.tagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag/tagScrollBox/tagCanvas') as mw.Canvas
+		}
+		return this.tagCanvas_Internal
+	}
 	private chooseImg_Internal: mw.Image
 	public get chooseImg(): mw.Image {
 		if(!this.chooseImg_Internal&&this.uiWidgetBase) {

@@ -23,6 +23,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	private _cfgID: number;
 	private _state: CardState;
 	private _cfg: ITowerElement;
+	private _selectLevel: number = 0; // 0 1 2
 	private _shopItemUIs: ShopItemUI[] = [];
 	public get shopItemUIs() {
 		if (!this._shopItemUIs || this._shopItemUIs.length == 0) {
@@ -54,6 +55,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		//设置能否每帧触发onUpdate
 		this.canUpdate = false;
 		this.layer = UILayerTop;
+		this._selectLevel = 0;
 		this.closeBtn.onClicked.add(() => {
 			TweenCommon.popUpHide(this.rootCanvas, () => {
 				UIService.hideUI(this);
@@ -63,6 +65,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			ModuleService.getModule(CardModuleC).btnExecute(this._cfgID, this._state);
 			this.sortItems();
 		});
+
 		for (let i = 0; i < 4; i++) {
 			let item = UIService.create(TextItemUI);
 			item.visible = false;
@@ -75,6 +78,35 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.tagCanvas.addChild(item.uiObject);
 			this._tagItemUIs.push(item);
 		}
+		this.infoLv1.onClicked.add(() => {
+			this.updateInfo(0);
+		})
+		this.infoLv2.onClicked.add(() => {
+			this.updateInfo(1);
+		})
+		this.infoLv3.onClicked.add(() => {
+			this.updateInfo(2);
+		})
+	}
+	public updateInfo(level: number = 0) {
+		this._selectLevel = level;
+		const cfg = this._cfg;
+		for (let i = 0; i < this._textItemUIs.length; i++) {
+			if (i < cfg.infoTexts.length) {
+				this._textItemUIs[i].initText(GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value + this._cfg[this._cfg.infoTexts[i]][this._selectLevel]);
+			} else {
+				this._textItemUIs[i].visible = false;
+			}
+		}
+		const selectedGuid = "376828";
+		const normalGuid = "376853";
+		this.infoLv1.normalImageGuid = this.infoLv2.normalImageGuid = this.infoLv3.normalImageGuid = normalGuid;
+		if (level == 0)
+			this.infoLv1.normalImageGuid = selectedGuid;
+		else if(level == 1)
+			this.infoLv2.normalImageGuid = selectedGuid;
+		else if(level == 2)
+			this.infoLv3.normalImageGuid = selectedGuid;
 	}
 
 	/**
@@ -87,11 +119,12 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		for (let i = 0; i < this.shopItemUIs.length; i++) {
 			this.shopItemUIs[i].setChoose(cfgID == this.shopItemUIs[i].cfgID);
 		}
-		// Utils.setImageByAsset(this.infoImg, cfg);
+		// Utils.setImageByAsset(this.infoImg, cfg);`
 		this.infoImg.imageGuid = cfg.imgGuid;
 		this.infoTxt.text = cfg.name;
 		this._cfgID = cfgID;
 		this._cfg = cfg;
+
 		for (let i = 0; i < this._textItemUIs.length; i++) {
 			if (i < cfg.infoTexts.length) {
 				this._textItemUIs[i].visible = true;
