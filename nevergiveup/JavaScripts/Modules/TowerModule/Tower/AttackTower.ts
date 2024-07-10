@@ -17,12 +17,13 @@ import { RANGEUNIT, TowerInfo } from "../TowerEnum";
 import TowerBase from "./TowerBase";
 import AssetUtil = mw.AssetUtil;
 import Gtk from "../../../util/GToolkit";
+import { FlyingComponent } from "../../../enemy/components/FlyingComponent";
 
 export default class AttackTower extends TowerBase {
     public get outputStr(): string {
         return StringUtil.format(
             GameConfig.Language.getElement("Text_AttackTowerStr").Value,
-            Utils.numTofix(this._accumulateDamage, 2),
+            Utils.numTofix(this._accumulateDamage, 2)
         );
     }
 
@@ -38,7 +39,7 @@ export default class AttackTower extends TowerBase {
     constructor(info: TowerInfo) {
         super(info, async () => {
             this._attackAnims = [...this.cfg.attackAnim];
-            await Promise.any(this._attackAnims.map(item => AssetUtil.asyncDownloadAsset(item)));
+            await Promise.any(this._attackAnims.map((item) => AssetUtil.asyncDownloadAsset(item)));
             await AssetUtil.asyncDownloadAsset(this.cfg.idleAnim);
             await this.root?.asyncReady();
             if (this.tower && this.tower instanceof Character) {
@@ -119,7 +120,7 @@ export default class AttackTower extends TowerBase {
             this.tower.worldTransform.rotation = Utils.TEMP_VECTOR.set(
                 enemys[0].position.x - this.tower.worldTransform.position.x,
                 enemys[0].position.y - this.tower.worldTransform.position.y,
-                0,
+                0
             )
                 .toRotation()
                 .add(this.oriTransform.rotation);
@@ -168,7 +169,7 @@ export default class AttackTower extends TowerBase {
                 let around = WaveManager.getEnemiesInRadius(
                     [enemy.position.x, enemy.position.y],
                     this.property.attackRange * RANGEUNIT,
-                    this.attackTags,
+                    this.attackTags
                 );
                 if (!around || around.length === 0) return null;
                 for (let i of around) {
@@ -187,7 +188,7 @@ export default class AttackTower extends TowerBase {
                     CycleUtil.playEffectOnPosition(
                         this.cfg.attackEffect,
                         enemy.position,
-                        Utils.TEMP_VECTOR.set(vScale, vScale, vScale),
+                        Utils.TEMP_VECTOR.set(vScale, vScale, vScale)
                     );
                 }
             }
@@ -211,7 +212,7 @@ export default class AttackTower extends TowerBase {
                 CycleUtil.playEffectOnPosition(
                     this.cfg.attackEffect,
                     enemy.position,
-                    Utils.TEMP_VECTOR.set(vScale, vScale, vScale),
+                    Utils.TEMP_VECTOR.set(vScale, vScale, vScale)
                 );
             }
         }
@@ -242,19 +243,35 @@ export default class AttackTower extends TowerBase {
         const enemies = WaveManager.getEnemiesInRadius(
             [this.oriPos.x, this.oriPos.y],
             RANGEUNIT / 2 + attackRange * RANGEUNIT,
-            this.attackTags,
+            this.attackTags
         );
         if (!enemies && enemies.length === 0) return [];
         let targets: Enemy[] = [];
-        for (let enemy of enemies) {
-            // 0116 获取敌人就已经在攻击范围内的，不需要二次校验
-            // if (this.checkInAttackRange(this.oriPos, enemy.position, this.property.findRange)) {
-            if (targets.length < count) {
-                targets.push(enemy);
+        const buffs = this.buffManager.buffs;
+        // 优先级处理
+        const flyFirst = buffs.filter((buff) => buff.cfg.flyFirst !== 0);
+        const flyingEnemies = enemies.filter((enemy) => enemy.hasComponent(FlyingComponent));
+        const othersEnemies = enemies.filter((enemy) => !enemy.hasComponent(FlyingComponent));
+        if (flyFirst.length > 0 && flyingEnemies.length > 0) {
+            for (let enemy of flyingEnemies) {
+                // 0116 获取敌人就已经在攻击范围内的，不需要二次校验
+                // if (this.checkInAttackRange(this.oriPos, enemy.position, this.property.findRange)) {
+                if (targets.length < count) {
+                    targets.push(enemy);
+                }
+                if (targets.length >= count) break;
+                // }
             }
-            if (targets.length >= count) break;
-            // }
         }
+        if (targets.length < count) {
+            for (let enemy of othersEnemies) {
+                if (targets.length < count) {
+                    targets.push(enemy);
+                }
+                if (targets.length >= count) break;
+            }
+        }
+
         return targets;
     }
 
