@@ -47,6 +47,10 @@ export class PetBag_Item extends Pet_item_Generate {
 			this.onHoverAC.call(false, this);
 		});
     }
+    /**需要手动关闭 hover 的浮窗时使用 */
+    public onHoverShow = (isShow: boolean = false) => {
+        this.onHoverAC.call(isShow, this);
+    }
     private getUIDate() {
         this.undefineBgGuid = this.mPic_Equip.imageGuid;
     }

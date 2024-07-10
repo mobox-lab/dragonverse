@@ -21,9 +21,9 @@ import { P_Transmit } from "../AreaDivide/P_Transmit";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import SettingsPanel from "../../ui/settings/SettingsPanel";
 import { PlayerSettingModuleC } from "../player-setting/PlayerSettingModule";
-import { formatEther } from "@p12/viem";
 import P12ShopPanel from "../../ui/shop/P12ShopPanel";
 import SenzuBeanConfirmPanel from "../../ui/bag/SenzuBeanConfirmPanel";
+import { P12BagModuleC } from "../bag/P12BagModule";
 
 export class P_HudUI extends Hud_Generate {
 
@@ -117,7 +117,8 @@ export class P_HudUI extends Hud_Generate {
                 ).toString()));
 
         this.btn_Fresh.onClicked.add(() => {
-            ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
+            ModuleService.getModule(EnergyModuleC)?.refreshStaminaLimit();
+            ModuleService.getModule(P12BagModuleC)?.refreshBagItem();
         });
 
         this.setGMBtn();
@@ -125,7 +126,7 @@ export class P_HudUI extends Hud_Generate {
 
         // MDBL Token
         Yoact.bindYoact(() =>
-            Gtk.trySetText(this.mText_token, formatEther(BigInt(this.authModuleC?.currency.count ?? 0))));
+            Gtk.trySetText(this.mText_token, utils.formatEtherInteger(BigInt(this.authModuleC?.currency.count ?? 0))));
         this.btn_FreshToken.onClicked.add(() => this.authModuleC.refreshCurrency());
 
         this.jumpRoomBtn.onClicked.add(() => {

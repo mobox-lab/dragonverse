@@ -3,7 +3,7 @@ import { P12ShopItem } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";
 import { GameConfig } from "../../config/GameConfig";
 import Online_shopItem_Generate from "../../ui-generate/Onlineshop/Online_shopItem_generate";
-import { utils } from "../../util/uitls";
+import { formatEtherInteger } from "../../util/CommonUtil";
 
 export class P12ShopPanelItem extends Online_shopItem_Generate {
     private _count = Yoact.createYoact<{ data: number }>({data: 0});
@@ -50,7 +50,7 @@ export class P12ShopPanelItem extends Online_shopItem_Generate {
         this.data = data;
         this.text_Name.text = GameConfig.Language[data.name].Value;
         this.text_Describe.text = GameConfig.Language[data.description].Value;
-        this.text_MoboxNumber.text = utils.formatEtherInteger(data.value);
+        this.text_MoboxNumber.text = formatEtherInteger(data.value);
         this.img_Icon.imageGuid = data.icon;
     }
 

@@ -1,8 +1,9 @@
 import P12ShopPanel from "../shop/P12ShopPanel";
-import SenzuBeanReConfirmPanel from "./SenzuBeanReConfirmPanel";
-import Online_Confirm_Generate from "../../ui-generate/Onlineshop/Online_Confirm_generate";
-import { P12BagModuleC } from "../../module/P12Bag/P12BagModule";
 import { P12ItemResId } from "../../module/auth/AuthModule";
+import SenzuBeanReConfirmPanel from "./SenzuBeanReConfirmPanel";
+import { P12BagModuleC } from "../../module/bag/P12BagModule";
+import { MouseLockController } from "../../controller/MouseLockController";
+import Online_Confirm_Generate from "../../ui-generate/Onlineshop/Online_Confirm_generate";
 
 export default class SenzuBeanConfirmPanel extends Online_Confirm_Generate {
     private _bagC: P12BagModuleC;
@@ -32,5 +33,11 @@ export default class SenzuBeanConfirmPanel extends Online_Confirm_Generate {
         const spCount = this.bagC.getItem(P12ItemResId.StaminaPotion);
         this.btn_Confirm_Use.enable = !!spCount;
         this.text_Number.text = spCount.toString();
+        MouseLockController.getInstance().needMouseUnlock();
     }
+
+    protected onHide(): void {
+        MouseLockController.getInstance().cancelMouseUnlock();
+    }
+
 }

@@ -449,8 +449,8 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             petCnt: petBagSortedItems?.length ?? 0,
             petMax,
             staMax,
-            staPotAdd: 0,
-            staPotCnt: 0,
+            staPotAdd: petStatisticData.playerStaPotAdd ?? 0,
+            staPotCnt: petStatisticData.playerStaPotCnt ?? 0,
             staRed,
             stamina,
         };

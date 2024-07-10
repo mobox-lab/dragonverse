@@ -63,7 +63,9 @@ export default class BwEnergyModuleData extends mwext.Subdata {
      * @private
      */
     public tryUpdateLimit(currentLimit: number): boolean {
-        if (this.lastMaxStamina === undefined || this.lastMaxStamina < currentLimit) {
+        if ((this.lastMaxStamina === undefined ||
+                this.lastMaxStamina < currentLimit) &&
+            this.energy < currentLimit) {
             this.energy = Math.min(this.energy + currentLimit - (this.lastMaxStamina ?? 0), currentLimit);
         }
         if (this.lastMaxStamina !== currentLimit) {
@@ -184,6 +186,14 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, BwEnergyModuleDa
         }
     }
 
+    /**
+     * 获取玩家体力 C
+     * @returns {[number, number]} -- [当前体力, 最大体力]
+     */
+    public getPlayerEnergy(): [number, number] {
+        return [this.viewEnergy.data, this.viewEnergyLimit.data];
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
@@ -278,7 +288,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
             GameServiceConfig.isRelease || GameServiceConfig.isBeta
                 ? GameServiceConfig.ENERGY_RECOVERY_INTERVAL_MS
                 : 5 * GtkTypes.Interval.PerSec;
-        this.authModuleS.requestRefreshStaminaLimit(player.userId, "fight").then(() => {
+        this.authModuleS.requestRefreshStaminaLimit(player.userId, GameServiceConfig.SCENE_NAME).then(() => {
             let autoRecoveryHandler = () => {
                 const now = Date.now();
                 let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
@@ -369,7 +379,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
     }
 
     /**
-     * 获取玩家体力
+     * 获取玩家体力 S
      * @param {number} playerId  -- 玩家 id
      * @returns {[number, number, number]} -- [当前体力, 最大体力, 本次消耗的体力]
      */

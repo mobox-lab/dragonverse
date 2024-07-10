@@ -264,7 +264,6 @@ export class MotionModuleC extends ModuleC<MotionModuleS, null>{
      * @param hurtData 伤害信息
      * @returns 
      */
-    // TODO: CL - 服务端验证 hurtData
     private listen_motionAttack(pIds: number[], hurtData: THurtData) {
         if (pIds == null || pIds.length == 0) {
             LogManager.instance.logError(ELogName.VAE, "MotionModuleC:listen_motionAttack pIds is null");

@@ -355,6 +355,7 @@ export class P_Bag extends PetBagPanel_Generate {
         }
 
         if (this.isReName) {//改名字
+            item.onHoverShow(false);
             this.onReName(item);
             return;
         }

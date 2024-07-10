@@ -2,13 +2,16 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import { AuthModuleS, ConsumeId, P12ItemResId } from "../auth/AuthModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import PsStatisticModuleData from "../statistic/StatisticModule";
+import { StatisticModuleS } from "../statistic/StatisticModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import { Regulator } from "../../util/GToolkit";
 
-export class PsP12BagModuleData extends JModuleData {
+export class BwP12BagModuleData extends JModuleData {
 }
 
-export class P12BagModuleC extends JModuleC<P12BagModuleS, PsP12BagModuleData> {
+export class P12BagModuleC extends JModuleC<P12BagModuleS, BwP12BagModuleData> {
+    private _requestRegulator = new Regulator(1e3);
+
     // 缓存背包道具
     private _itemsMap: Map<P12ItemResId, number> = new Map([
         [P12ItemResId.DragonEgg, 0],
@@ -45,18 +48,28 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, PsP12BagModuleData> {
         this._itemsMap.set(itemId, count + deltaValue);
     }
 
-    public async consumePotion(count: number) {
-        this.server.net_consumePotion(count);
+    public consumePotion(count: number) {
+        return this.server.net_consumePotion(count);
     }
 
     public net_setData(map: Map<P12ItemResId, number>) {
         this._itemsMap = map;
     }
+
+    /**
+     * 刷新背包物品
+     */
+    public refreshBagItem() {
+        if (this._requestRegulator.request()) {
+            this.server.net_refreshBagItem();
+        }
+    }
 }
 
-export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
+export class P12BagModuleS extends JModuleS<P12BagModuleC, BwP12BagModuleData> {
     private _authS: AuthModuleS;
     private _energyS: EnergyModuleS;
+    private _statisticS: StatisticModuleS;
 
     private get authS(): AuthModuleS | null {
         if (!this._authS) this._authS = ModuleService.getModule(AuthModuleS);
@@ -68,9 +81,23 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
         return this._energyS;
     }
 
+    private get statisticS(): StatisticModuleS | null {
+        if (!this._statisticS) this._statisticS = ModuleService.getModule(StatisticModuleS);
+        return this._statisticS;
+    }
+
     protected onPlayerEnterGame(player: mw.Player) {
         super.onPlayerEnterGame(player);
 
+        this.queryP12BagItem(player);
+    }
+
+    /**
+     * 查询背包物品
+     * @param {mw.Player} player
+     * @private
+     */
+    private queryP12BagItem(player: mw.Player) {
         this.authS.queryUserP12Bag(player.userId, GameServiceConfig.SCENE_NAME).then(res => {
             const map: Map<P12ItemResId, number> = new Map([
                 [P12ItemResId.DragonEgg, 0],
@@ -108,7 +135,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
         const player = this.currentPlayer;
         if (!player) return;
         Log4Ts.log(P12BagModuleS, `player ${player.userId} use senzu bean ${count}`);
-        this.consumePotion(player.userId, count).then();
+        return this.consumePotion(player.userId, count);
     }
 
     /**
@@ -119,9 +146,14 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
      * @private
      */
     private reportStatistic(userId: string, count: number, recovery: number) {
-        const statisticData = DataCenterS.getData(userId, PsStatisticModuleData);
-        statisticData.recordStaPotConsume(recovery);
+        this.statisticS.setAttributeChange(userId, "staPotCnt", count);
+        this.statisticS.setAttributeChange(userId, "staPotAdd", recovery);
         Log4Ts.log(P12BagModuleS, `player ${userId} used ${count} recovery stamina ${recovery}`);
     }
 
+    @Decorator.noReply()
+    public net_refreshBagItem() {
+        const player = this.currentPlayer;
+        this.queryP12BagItem(player);
+    }
 }

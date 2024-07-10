@@ -36,6 +36,17 @@ addGMCommand(
 );
 
 addGMCommand(
+    "query access | Auth",
+    "void",
+    undefined,
+    (player) => {
+        mwext.ModuleService.getModule(AuthModuleS)["queryAccess"](player.userId);
+    },
+    undefined,
+    "Root",
+);
+
+addGMCommand(
     "refresh currency | Auth",
     "void",
     () => {
@@ -949,6 +960,12 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
      */
     public currency: { count: string | undefined } = createYoact({count: undefined});
 
+    /**
+     * 是否 处于白名单.
+     * @type {boolean|undefined}
+     */
+    public access: boolean | undefined = undefined;
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
 //#region MetaWorld Event
@@ -1035,6 +1052,10 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
         this.currency.count = val;
     }
 
+    public net_refreshAccess(access: boolean) {
+        this.access = access;
+    }
+
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
@@ -1067,16 +1088,22 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly RELEASE_P12_DOMAIN = "http://modragon-api.mobox.app";
 
     /**
-     * 查询 体力上限 Uri.
+     * 获取 P12 token Uri.
      * @private
      */
-    private static readonly STAMINA_LIMIT_URI = "/pge-game/stamina/obtain-in-game";
+    private static readonly GET_P12_TOKEN_URI = "/pge-game/sso/oauth/gpark";
 
     /**
      * 获取 P12 token Uri.
      * @private
      */
-    private static readonly GET_P12_TOKEN_URI = "/pge-game/sso/oauth/gpark";
+    private static readonly GET_P12_ACCESS_URI = "/pge-game/stamina/whitelist-game";
+
+    /**
+     * 查询 体力上限 Uri.
+     * @private
+     */
+    private static readonly STAMINA_LIMIT_URI = "/pge-game/stamina/obtain-in-game";
 
     /**
      * 查询货币余额 Uri.
@@ -1150,6 +1177,22 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     private static get RELEASE_GET_P12_TOKEN_URL() {
         return this.RELEASE_P12_DOMAIN + this.GET_P12_TOKEN_URI;
+    }
+
+    /**
+     * 测试用 白名单验证 Url.
+     * @private
+     */
+    private static get TEST_GET_P12_ACCESS_URL() {
+        return this.TEST_P12_DOMAIN + this.GET_P12_ACCESS_URI;
+    }
+
+    /**
+     * 发布用 白名单验证 Url.
+     * @private
+     */
+    private static get RELEASE_GET_P12_ACCESS_URL() {
+        return this.RELEASE_P12_DOMAIN + this.GET_P12_ACCESS_URI;
     }
 
     /**
@@ -1627,6 +1670,26 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.setCurrency(userId, currentCurrency);
     }
 
+    private async queryAccess(userId: string): Promise<boolean> {
+        const requestParam = {userId};
+        const respInJson = await this.correspondHandler<QueryResp<boolean>>(
+            requestParam,
+            AuthModuleS.RELEASE_GET_P12_ACCESS_URL,
+            AuthModuleS.TEST_GET_P12_ACCESS_URL,
+            false,
+            true,
+            userId,
+        );
+
+        if (respInJson?.code !== 200) {
+            Log4Ts.error(AuthModuleS, `query access failed. ${JSON.stringify(respInJson)}`);
+            if (respInJson?.code === 401) this.onTokenExpired(userId);
+            return;
+        }
+
+        return respInJson.data ?? false;
+    }
+
     public async consumeCurrency(userId: string,
                                  sceneName: SceneName,
                                  consumeId: ConsumeId,
@@ -2075,6 +2138,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     private onRefreshToken(userId: string) {
         this.queryCurrency(userId);
+        this.queryAccess(userId).then((value) =>
+            this.getClient(Player.getPlayer(userId))?.net_refreshAccess(value));
     }
 
     private onTokenExpired(userId: string) {
