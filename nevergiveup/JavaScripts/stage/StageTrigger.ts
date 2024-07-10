@@ -70,8 +70,8 @@ export default class StageTrigger extends Script {
             });
         }
         else {
+            mw.Event.addServerListener("TD_STAGE_SELECT_CLOSE_UI", this.closeUI);
             StageTriggerInst.posMap[this.stageId] = this.gameObject.worldTransform.position.clone();
-
             GameObject.asyncFindGameObjectById(this.worldUIGUID).then((widget: UIWidget) => {
                 this.worldUI = widget;
                 this.worldUI.drawSize = new Vector2(800, 174);
@@ -97,7 +97,6 @@ export default class StageTrigger extends Script {
                     }
                 }
             });
-
             // When player leaves the trigger, hide the stage select UI.
             trigger.onLeave.add((gameObject: GameObject) => {
                 if (gameObject instanceof mw.Character) {
@@ -110,6 +109,13 @@ export default class StageTrigger extends Script {
                 }
             });
         }
+    }
+
+    public closeUI = () => {
+        this._triggered = false;
+        TweenCommon.popUpHide(UIService.getUI(UIStageSelect).rootCanvas, () => {
+            UIService.hide(UIStageSelect);
+        });
     }
 
     onTrigger() {
@@ -208,6 +214,13 @@ export default class StageTrigger extends Script {
                 this.waitTime = this.countDown;
             }
         }
+    }
+
+    @mw.RemoteFunction(mw.Server)
+    clickLeaveBtn(playerID: number) {
+        this.removePlayerId(playerID);
+        const player = Player.getPlayer(playerID);
+        mw.Event.dispatchToClient(player, "TD_STAGE_SELECT_CLOSE_UI");
     }
 
     @mw.RemoteFunction(mw.Server)

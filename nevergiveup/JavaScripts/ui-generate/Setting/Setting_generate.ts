@@ -50,6 +50,20 @@ export default class Setting_Generate extends UIScript {
 		}
 		return this.imgTitle_Internal
 	}
+	private imgVoice_Internal: mw.Image
+	public get imgVoice(): mw.Image {
+		if(!this.imgVoice_Internal&&this.uiWidgetBase) {
+			this.imgVoice_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/imgVoice') as mw.Image
+		}
+		return this.imgVoice_Internal
+	}
+	private imgCamera_Internal: mw.Image
+	public get imgCamera(): mw.Image {
+		if(!this.imgCamera_Internal&&this.uiWidgetBase) {
+			this.imgCamera_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/imgCamera') as mw.Image
+		}
+		return this.imgCamera_Internal
+	}
 	private txt_title_Internal: mw.TextBlock
 	public get txt_title(): mw.TextBlock {
 		if(!this.txt_title_Internal&&this.uiWidgetBase) {
