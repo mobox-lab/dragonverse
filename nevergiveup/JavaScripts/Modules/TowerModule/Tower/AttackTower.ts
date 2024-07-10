@@ -8,7 +8,6 @@
  */
 import { CycleUtil } from "../../../CycleUtil";
 import { GameManager } from "../../../GameManager";
-import { Config } from "../../../GameStart";
 import Utils from "../../../Utils";
 import { GameConfig } from "../../../config/GameConfig";
 import { Enemy } from "../../../enemy/EnemyBase";
@@ -16,14 +15,18 @@ import { WaveManager } from "../../../stage/Wave";
 import { SoundUtil } from "../../../tool/SoundUtil";
 import { RANGEUNIT, TowerInfo } from "../TowerEnum";
 import TowerBase from "./TowerBase";
+import AssetUtil = mw.AssetUtil;
+import Gtk from "../../../util/GToolkit";
 
 export default class AttackTower extends TowerBase {
     public get outputStr(): string {
         return StringUtil.format(
             GameConfig.Language.getElement("Text_AttackTowerStr").Value,
-            Utils.numTofix(this._accumulateDamage, 2)
+            Utils.numTofix(this._accumulateDamage, 2),
         );
     }
+
+    private _attackAnims: string[];
     protected _attackAnim: Animation;
     protected _idleAnim: Animation;
     protected _weaponRoot: GameObject;
@@ -31,15 +34,17 @@ export default class AttackTower extends TowerBase {
     protected _accumulateDamage: number = 0;
     private _animationTime: number = 0;
     protected canBuffProperty: string[] = ["attackDamage", "attackRange", "findRange", "attackTime", "attackCount"];
+
     constructor(info: TowerInfo) {
         super(info, async () => {
-            await AssetUtil.asyncDownloadAsset(this.cfg.attackAnim);
+            this._attackAnims = this.cfg.attackAnimNew ?? [this.cfg.attackAnim];
+            await Promise.any(this._attackAnims.map(item => AssetUtil.asyncDownloadAsset(item)));
             await AssetUtil.asyncDownloadAsset(this.cfg.idleAnim);
             await this.root?.asyncReady();
             if (this.tower && this.tower instanceof Character) {
                 this._towerCha = this.tower as Character;
                 this._towerCha.asyncReady().then(async () => {
-                    this._attackAnim = this._towerCha.loadAnimation(this.cfg.attackAnim);
+                    this._attackAnim = this._towerCha.loadAnimation(this._attackAnims[0]);
                     this._attackAnim.speed = this.cfg.attackAnimSpeed[0];
                     this._attackAnim.loop = this.cfg.attackAnimSpeed[1];
                     this._idleAnim = this._towerCha.loadAnimation(this.cfg.idleAnim);
@@ -114,7 +119,7 @@ export default class AttackTower extends TowerBase {
             this.tower.worldTransform.rotation = Utils.TEMP_VECTOR.set(
                 enemys[0].position.x - this.tower.worldTransform.position.x,
                 enemys[0].position.y - this.tower.worldTransform.position.y,
-                0
+                0,
             )
                 .toRotation()
                 .add(this.oriTransform.rotation);
@@ -125,6 +130,8 @@ export default class AttackTower extends TowerBase {
 
     protected attackShow() {
         if (this._attackAnim) {
+            // 随机攻击动画
+            this._attackAnim = this._towerCha.loadAnimation(Gtk.randomArrayItem(this._attackAnims));
             this._attackAnim.play();
             this._animationTime = this.cfg.AtkAnimDur;
         }
@@ -161,7 +168,7 @@ export default class AttackTower extends TowerBase {
                 let around = WaveManager.getEnemiesInRadius(
                     [enemy.position.x, enemy.position.y],
                     this.property.attackRange * RANGEUNIT,
-                    this.attackTags
+                    this.attackTags,
                 );
                 if (!around || around.length === 0) return null;
                 for (let i of around) {
@@ -180,7 +187,7 @@ export default class AttackTower extends TowerBase {
                     CycleUtil.playEffectOnPosition(
                         this.cfg.attackEffect,
                         enemy.position,
-                        Utils.TEMP_VECTOR.set(vScale, vScale, vScale)
+                        Utils.TEMP_VECTOR.set(vScale, vScale, vScale),
                     );
                 }
             }
@@ -204,7 +211,7 @@ export default class AttackTower extends TowerBase {
                 CycleUtil.playEffectOnPosition(
                     this.cfg.attackEffect,
                     enemy.position,
-                    Utils.TEMP_VECTOR.set(vScale, vScale, vScale)
+                    Utils.TEMP_VECTOR.set(vScale, vScale, vScale),
                 );
             }
         }
@@ -235,7 +242,7 @@ export default class AttackTower extends TowerBase {
         const enemies = WaveManager.getEnemiesInRadius(
             [this.oriPos.x, this.oriPos.y],
             RANGEUNIT / 2 + attackRange * RANGEUNIT,
-            this.attackTags
+            this.attackTags,
         );
         if (!enemies && enemies.length === 0) return [];
         let targets: Enemy[] = [];
