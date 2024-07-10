@@ -63,7 +63,9 @@ export default class BwEnergyModuleData extends mwext.Subdata {
      * @private
      */
     public tryUpdateLimit(currentLimit: number): boolean {
-        if (this.lastMaxStamina === undefined || this.lastMaxStamina < currentLimit) {
+        if ((this.lastMaxStamina === undefined ||
+                this.lastMaxStamina < currentLimit) &&
+            this.energy < currentLimit) {
             this.energy = Math.min(this.energy + currentLimit - (this.lastMaxStamina ?? 0), currentLimit);
         }
         if (this.lastMaxStamina !== currentLimit) {
