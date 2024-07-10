@@ -166,6 +166,7 @@ export default class P12ShopPanel extends Online_shop_Generate {
         this.bagC.consumeCurrency(item.consumeId, count).then((res) => {
             if (!res) {
                 this.toast(ShopToast.Failure, "Buy failed");
+                this.resetShopping();
                 return;
             }
             this.bagC.changeItemCount(item.resId, count);

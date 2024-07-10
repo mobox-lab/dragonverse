@@ -184,6 +184,14 @@ export class EnergyModuleC extends mwext.ModuleC<EnergyModuleS, PSEnergyModuleDa
         }
     }
 
+    /**
+     * 获取玩家体力 C
+     * @returns {[number, number]} -- [当前体力, 最大体力]
+     */
+    public getPlayerEnergy(): [number, number] {
+        return [this.viewEnergy.data, this.viewEnergyLimit.data];
+    }
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Net Method
@@ -369,7 +377,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
     }
 
     /**
-     * 获取玩家体力
+     * 获取玩家体力 S
      * @param {number} playerId  -- 玩家 id
      * @returns {[number, number, number]} -- [当前体力, 最大体力, 本次消耗的体力]
      */
@@ -387,7 +395,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
     @mwext.Decorator.noReply()
     public net_requestRefreshStaminaLimit() {
         let player = this.currentPlayer;
-        this.authModuleS.requestRefreshStaminaLimit(player.userId, "pet").then(() => {
+        this.authModuleS.requestRefreshStaminaLimit(player.userId, GameServiceConfig.SCENE_NAME).then(() => {
             let limit = this.authModuleS.playerStaminaLimitMap.get(player.userId) ?? 0;
             let d = this.getPlayerData(player);
             if (d?.tryUpdateLimit(limit) ?? false)

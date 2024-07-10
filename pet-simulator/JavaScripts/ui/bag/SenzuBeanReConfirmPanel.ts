@@ -3,12 +3,20 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import Online_ReConfirm_Generate from "../../ui-generate/Onlineshop/Online_ReConfirm_generate";
 import { P12BagModuleC } from "../../modules/bag/P12BagModule";
 import { P12ItemResId } from "../../modules/auth/AuthModule";
+import { EnergyModuleC } from "../../modules/Energy/EnergyModule";
+import { GameConfig } from "../../config/GameConfig";
 
 export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
     private _bagC: P12BagModuleC;
+    private _energyC: EnergyModuleC;
+
     private get bagC(): P12BagModuleC | null {
         if (!this._bagC) this._bagC = ModuleService.getModule(P12BagModuleC);
         return this._bagC;
+    }
+    private get energyC(): EnergyModuleC | null {
+        if (!this._energyC) this._energyC = ModuleService.getModule(EnergyModuleC);
+        return this._energyC;
     }
 
     protected onStart(): void {
@@ -23,6 +31,8 @@ export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
     }
 
     protected onShow(): void {
+        const [, energyLimit] = this.energyC.getPlayerEnergy();
+        this.text_Recovery.text = StringUtil.format(GameConfig.Language.Online_shop011.Value, Math.round(energyLimit * 0.6));
         // 注册快捷键
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => UIService.hideUI(this));
         KeyOperationManager.getInstance().onKeyUp(this, Keys.E, () => this.useSenzuBean());

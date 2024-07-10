@@ -29,6 +29,13 @@ export default class Online_ReConfirm_Generate extends UIScript {
 		}
 		return this.can_Item_Describe_Internal
 	}
+	private text_Recovery_Internal: mw.TextBlock
+	public get text_Recovery(): mw.TextBlock {
+		if(!this.text_Recovery_Internal&&this.uiWidgetBase) {
+			this.text_Recovery_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Item_Describe/text_Recovery') as mw.TextBlock
+		}
+		return this.text_Recovery_Internal
+	}
 	private can_Confirm_Use_Internal: mw.Canvas
 	public get can_Confirm_Use(): mw.Canvas {
 		if(!this.can_Confirm_Use_Internal&&this.uiWidgetBase) {
@@ -146,6 +153,9 @@ export default class Online_ReConfirm_Generate extends UIScript {
         
         // 文本控件
         
+        this.initLanguage(this.text_Recovery)
+        
+	
         this.initLanguage(this.text_Confirm_Use)
         
 	
@@ -157,9 +167,6 @@ export default class Online_ReConfirm_Generate extends UIScript {
 	
         // 未暴露的文本控件
         
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/can_Item_Describe/TextBlock_1") as mw.TextBlock);
-        
-	
         this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/TextBlock") as mw.TextBlock);
         
 	
@@ -167,6 +174,9 @@ export default class Online_ReConfirm_Generate extends UIScript {
 
     protected overrideTextSetter() {
         
+        overrideTextBlockTextSetter(this.text_Recovery);
+        
+	
         overrideTextBlockTextSetter(this.text_Confirm_Use);
         
 	
@@ -185,6 +195,9 @@ export default class Online_ReConfirm_Generate extends UIScript {
         
         // 文本多语言
         
+        this.unregisterLanKey(this.text_Recovery)
+        
+	
         this.unregisterLanKey(this.text_Confirm_Use)
         
 	
@@ -196,9 +209,6 @@ export default class Online_ReConfirm_Generate extends UIScript {
 	
         // 隐藏文本多语言
         
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/can_Item_Describe/TextBlock_1") as mw.TextBlock);
-        
-	
         this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/TextBlock") as mw.TextBlock);
         
 	
