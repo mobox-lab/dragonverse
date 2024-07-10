@@ -1,9 +1,9 @@
 import Gtk from "../../util/GToolkit";
-import { formatEther } from "@p12/viem";
 import { P12ShopItem } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";
 import { GameConfig } from "../../config/GameConfig";
 import Online_shopItem_Generate from "../../ui-generate/Onlineshop/Online_shopItem_generate";
+import { Utils } from "../../util/uitls";
 
 export class P12ShopPanelItem extends Online_shopItem_Generate {
     private _count = Yoact.createYoact<{ data: number }>({data: 0});
@@ -21,6 +21,12 @@ export class P12ShopPanelItem extends Online_shopItem_Generate {
         this.btn_Down.onClicked.add(() => {
             if (this._count.data <= 0) return;
             this._count.data--;
+            this.onChange.call(this, this._count.data);
+        });
+        this.inp_Number.onTextChanged.add((text) => {
+            const input = parseInt(text) || 0;
+            if (this._count.data === input) return;
+            this._count.data = input;
             this.onChange.call(this, this._count.data);
         });
     }
@@ -44,7 +50,7 @@ export class P12ShopPanelItem extends Online_shopItem_Generate {
         this.data = data;
         this.text_Name.text = GameConfig.Language[data.name].Value;
         this.text_Describe.text = GameConfig.Language[data.description].Value;
-        this.text_MoboxNumber.text = formatEther(data.value);
+        this.text_MoboxNumber.text = Utils.formatEtherInteger(data.value);
         this.img_Icon.imageGuid = data.icon;
     }
 

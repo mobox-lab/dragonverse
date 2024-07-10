@@ -1,5 +1,4 @@
 import Gtk from "../../util/GToolkit";
-import { formatEther } from "@p12/viem";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { P12ShopConfig } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";
@@ -7,6 +6,7 @@ import { P12ShopPanelItem } from "./P12ShopPanelItem";
 import { P12BagModuleC } from "../../modules/bag/P12BagModule";
 import { AuthModuleC, ConsumeId } from "../../modules/auth/AuthModule";
 import Online_shop_Generate from "../../ui-generate/Onlineshop/Online_shop_generate";
+import { utils } from "../../util/uitls";
 
 enum ShopToast {
     Success,
@@ -47,8 +47,8 @@ export default class P12ShopPanel extends Online_shop_Generate {
         Yoact.bindYoact(() => {
             const tokenBalance = this.authC.currency.count ?? "0";
             const available = BigInt(tokenBalance) - this._total.data;
-            this.text_All.text = formatEther(this._total.data);
-            this.text_Left.text = formatEther(available > 0n ? available : 0n);
+            this.text_All.text = utils.formatEtherInteger(this._total.data);
+            this.text_Left.text = utils.formatEtherInteger(available > 0n ? available : 0n);
             // 同步按钮点击状态
             this.btn_Buy.enable = this.authC.access && this._total.data > 0n && available >= 0n;
         });

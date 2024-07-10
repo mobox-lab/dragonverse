@@ -35,8 +35,8 @@ import SettingsPanel from "../settings/SettingsPanel";
 import { addGMCommand } from "mw-god-mod";
 import DragonHandbook from "../dragon-handbook/DragonHandbook";
 import { AuthModuleC } from "../../module/auth/AuthModule";
-import { formatEther } from "@p12/viem";
 import P12ShopPanel from "../shop/P12ShopPanel";
+import { formatEtherInteger } from "../../util/CommonUtil";
 
 enum MouseLockType {
     Press,
@@ -563,7 +563,7 @@ export default class MainPanel extends MainPanel_Generate {
 
         Gtk.doWhenTrue(() => !!this.authModuleC, () => {
             // MDBL Token
-            bindYoact(() => Gtk.trySetText(this.mText_token, formatEther(BigInt(this.authModuleC.currency.count ?? 0))));
+            bindYoact(() => Gtk.trySetText(this.mText_token, formatEtherInteger(BigInt(this.authModuleC.currency.count ?? 0))));
             this.btn_Fresh_Token.onClicked.add(() => this.authModuleC.refreshCurrency());
         });
 
