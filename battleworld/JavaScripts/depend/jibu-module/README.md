@@ -4,7 +4,7 @@
 
 JiBu-Module (JModule) 是一个用于完善 Odin Module 的模块架构。
 
-v31.0.0
+v31.1.0
 by LviatYi  
 thanks zewei.zhang
 
@@ -95,6 +95,8 @@ DataStorage
 ...
 useSecret(secret);
 ```
+
+也可以使用 Web 管理页面来设置它。
 
 [JetbrainsMonoNerdFont]: https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip@fallbackFont
 [SarasaMonoSC]: https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
