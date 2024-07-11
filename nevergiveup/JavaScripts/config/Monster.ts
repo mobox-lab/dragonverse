@@ -9,7 +9,7 @@ export interface IMonsterElement extends IElementBase{
 	name:string
 	/**名字备注*/
 	nameCN:string
-	/**元素类型（1——6对应光暗水火土木）*/
+	/**元素类型（1——6对应光暗水火木土）*/
 	elementTy:number
 	/**换装guid*/
 	guid:string
