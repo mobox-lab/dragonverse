@@ -454,13 +454,13 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             staRed,
             stamina,
         };
+        petStatisticData.recordLeave(now);
         Log4Ts.log( 
             StatisticModuleS,
             " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData),
         );
         ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData);
-        
-        petStatisticData.recordLeave(now);
+        petBagData.cleanPetStatistic();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

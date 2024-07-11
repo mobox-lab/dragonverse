@@ -245,7 +245,16 @@ export class PetBagModuleData extends Subdata {
 		if(this.petStatisticMap == null) this.petStatisticMap = {};
         this.save(false);
     }
-
+    /**清理宠物统计数据 去除已经销毁的 */
+	public cleanPetStatistic() {
+        for (let key in this.petStatisticMap) {
+            const obj = this.petStatisticMap[key];
+            if(obj.status === "destroyed")
+                delete this.petStatisticMap[key];
+        }
+        Log4Ts.log(PetBagModuleData, " 清理宠物统计数据", JSON.stringify(this.petStatisticMap));
+        this.save(true);
+    }
 	/**更新宠物统计数据 - 新增宠物 */
 	public updatePetStatistic(petInfo: petItemDataNew, status?: "destroyed" | "exist", isUpdate = true, source?: {
         /**
@@ -271,7 +280,7 @@ export class PetBagModuleData extends Subdata {
 			const name = cfg.Name;
 			return `${b}-${name}`
 		}): [];  // id-name arr
-		const { creSource = "孵化", desSource = "" } = source
+		const { creSource = "孵化", desSource = "" } = source ?? {}; 
 		const petStatistic: PetSimulatorStatisticPetObj = {
 			petkey: key,
 			proId: petInfo?.I ?? 0,
@@ -286,16 +295,15 @@ export class PetBagModuleData extends Subdata {
 		}
 		if(!this.petStatisticMap[key]) {
 			this.petStatisticMap[key] = petStatistic;
-		} else {
-			petStatistic.create = this.petStatisticMap[key].create;
-			if(!status) petStatistic.status = this.petStatisticMap[key].status;
-			if(isUpdate) {
-                petStatistic.update = this.petStatisticMap[key].update;
-            }
-            if(source?.desSource) petStatistic.desSource = source.desSource;
-            if(source?.creSource) petStatistic.creSource = source.creSource;
+		} else { // 宠物已存在 更新信息。
+            const prePetData = this.petStatisticMap[key];
+			petStatistic.create = prePetData.create;
+			if(!status) petStatistic.status = prePetData.status;
+			if(!isUpdate) petStatistic.update = prePetData.update; // 不是update则不更新更新时间
+            if(!source?.desSource) petStatistic.desSource = prePetData.desSource;
+            if(!source?.creSource) petStatistic.creSource = prePetData.creSource;
 			this.petStatisticMap[key] = petStatistic;
-		}
+		} 
 		Log4Ts.log(PetBagModuleData, " 更新宠物统计数据 petInfo:", JSON.stringify(petInfo) + " petStatistic:", JSON.stringify(petStatistic));
 		return petStatistic;
 	}
