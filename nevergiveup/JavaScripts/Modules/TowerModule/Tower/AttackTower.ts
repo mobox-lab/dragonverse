@@ -130,13 +130,16 @@ export default class AttackTower extends TowerBase {
     }
 
     protected attackShow() {
+        const randomIndex = Gtk.random(0, this._attackAnims.length, true);
         if (this._attackAnim) {
             // 随机攻击动画
-            this._attackAnim = this._towerCha.loadAnimation(Gtk.randomArrayItem(this._attackAnims));
+            this._attackAnim = this._towerCha.loadAnimation(this._attackAnims[randomIndex]);
             this._attackAnim.play();
             this._animationTime = this.cfg.AtkAnimDur;
         }
         if (GameManager.useEffect) {
+            const effectDelay = this.cfg.effectDelayTime?.[randomIndex] ?? 0;
+            const characterDelay = this.cfg.characterDelayTime?.[randomIndex] ?? 0;
             setTimeout(() => {
                 let effect = this._weaponRoot?.getChildren()[0]?.getChildren()[0] as Effect;
                 if (effect) {
@@ -157,7 +160,12 @@ export default class AttackTower extends TowerBase {
                     }
                 }
                 this._isFisrtShow = false;
-            }, this.cfg.effectDelayTime);
+            }, effectDelay);
+
+            // setTimeout(() => {
+            //     let effect = this.tower.getChildren()[0];
+            //     console.log('effect111: ', JSON.stringify(effect));
+            // }, characterDelay);
         }
     }
 
