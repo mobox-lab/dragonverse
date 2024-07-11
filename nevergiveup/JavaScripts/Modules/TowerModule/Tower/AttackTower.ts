@@ -140,13 +140,14 @@ export default class AttackTower extends TowerBase {
         if (GameManager.useEffect) {
             const effectDelay = this.cfg.effectDelayTime?.[randomIndex] ?? 0;
             const characterDelay = this.cfg.characterDelayTime?.[randomIndex] ?? 0;
+            // 武器攻击特效
             setTimeout(() => {
-                let effect = this._weaponRoot?.getChildren()[0]?.getChildren()[0] as Effect;
+                const effect = this._weaponRoot?.getChildren()[0]?.getChildren()[0] as Effect;
                 if (effect) {
-                    (effect as Effect).stop();
+                    effect.stop();
                     LinearColor.colorHexToLinearColor(this.cfg.effectColor[this.level], Utils.TEMP_COLOR);
                     effect.setColor("Color", Utils.TEMP_COLOR);
-                    (effect as Effect).play();
+                    effect.play();
                 }
                 if (this.root?.getChildren().length > 0) {
                     for (let i of this.root?.getChildren()) {
@@ -162,10 +163,14 @@ export default class AttackTower extends TowerBase {
                 this._isFisrtShow = false;
             }, effectDelay);
 
-            // setTimeout(() => {
-            //     let effect = this.tower.getChildren()[0];
-            //     console.log('effect111: ', JSON.stringify(effect));
-            // }, characterDelay);
+            // Tower 特效
+            setTimeout(() => {
+                const effect = this.tower.getChildByName('effect01') as Effect;
+                if (effect) {
+                    effect.stop();
+                    effect.play();
+                }
+            }, characterDelay);
         }
     }
 
