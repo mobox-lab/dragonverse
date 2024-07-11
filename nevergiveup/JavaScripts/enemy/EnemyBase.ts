@@ -28,9 +28,11 @@ import { FlyingComponent } from "./components/FlyingComponent";
 import { IEnemyComponent } from "./components/IEnemyComponent";
 
 export enum DamageType {
-    ARMOR,
-    MAGIC,
+    ARMOR = 1,
+    MAGIC = 2,
 }
+
+export type ElementType = 1 | 2 | 3 | 4 | 5 | 6;
 
 export class Enemy implements BuffBag {
     time: number = 0;
@@ -567,15 +569,13 @@ export class Enemy implements BuffBag {
         const P1Damage = damage + flyingDamageBoost;
         console.log(P1Damage, "P1Damage");
         // P2 伤害
-        const P2Percent = this.elementalRestraint();
+        const P2Percent = this.elementalRestraint(tower);
         const P2Damage = P1Damage * P2Percent;
         console.log(P2Damage, "P2Damage");
         // P3 伤害
         // 判断伤害的类型，根据tower的类型来判断
-        // todo 这里要改读取
-        const damageType = DamageType.ARMOR;
+        const damageType = tower.cfg.adap;
         let P3Damage = 0;
-        // todo 破甲，法穿
         if (damageType === DamageType.ARMOR) {
             // 物理伤害
             P3Damage = P2Damage * (1 - (this.armor - armorPen) / (200 + this.armor - armorPen));
@@ -670,9 +670,37 @@ export class Enemy implements BuffBag {
         // return finalDamage;
     }
 
-    elementalRestraint(): number {
+    elementalRestraint(tower: TowerBase): number {
         // todo 获取tower的属性，获取怪物的属性，进行克制关系对比
-        return 1;
+        let monsterConfig = GameConfig.Monster.getElement(this.configId);
+        const monsterElement = monsterConfig.elementTy;
+        const towerElement = tower.cfg.elementTy;
+        let result = 1;
+        if (!monsterElement || !towerElement) {
+            return result;
+        }
+        // 光克暗 暗克木 木克土 土克水 水克火 火克光
+        // （从1—6分别为光、暗、水、火、木、土）
+        const buffPercent = 0.2;
+        const debuffPercent = 0.2;
+
+        const advantageMap: { [key in ElementType]: ElementType } = {
+            1: 2, // 光克暗
+            2: 5, // 暗克木
+            3: 4, // 水克火
+            4: 1, // 火克光
+            5: 6, // 木克土
+            6: 3, // 土克水
+        };
+
+        if (advantageMap[towerElement] === monsterElement) {
+            // 塔克制怪物
+            result = result * (1 + buffPercent);
+        } else if (advantageMap[monsterElement] === towerElement) {
+            // 怪物克制塔
+            result = result * (1 - debuffPercent);
+        }
+        return result;
     }
 
     monsterBuffActive() {
