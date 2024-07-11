@@ -1,3 +1,4 @@
+import { GtkTypes } from "gtoolkit";
 import { addGMCommand } from "mw-god-mod";
 
 /**
@@ -33,10 +34,10 @@ interface ITimerModule {
     readonly onHourRefresh: Action1<Date>;
     /** 分刷新调用 */
     readonly onMinuteRefresh: Action1<Date>;
+    /** 上一次的时间 */
+    lastTime: number;
     /** 记录了上一个小时 */
     lastHour: number;
-    /** 记录了上一天 */
-    lastDay: number;
 }
 
 /**
@@ -223,6 +224,7 @@ export namespace TimerModuleUtils {
             }
         }
 
+        timerModule.lastTime = date.getTime();
         //借用分钟改变的回调判断小时刷新
         if (timerModule.lastHour == null) {
             timerModule.lastHour = date.getHours();
@@ -262,6 +264,22 @@ export namespace TimerModuleUtils {
         const d1 = new Date(time1);
         const d2 = new Date(time2);
         return d1.getFullYear() == d2.getFullYear() && d1.getMonth() == d2.getMonth() && d1.getDate() == d2.getDate();
+    }
+
+    /**
+     * 判断 newTime 是否为新的一天
+     * @param oldTime 旧的时间
+     * @param newTime 新的时间
+     * @returns 是否是新的一天
+     */
+    export function judgeIsNewDay(oldTime: number, newTime: number): boolean {
+        const newDate = new Date(newTime);
+        const timeZone = -newDate.getTimezoneOffset() / 60;
+        const ddl = newDate.setHours(8 + timeZone, 0, 0, 0);
+        if (!oldTime ||
+            oldTime < ddl - GtkTypes.Interval.PerHour * 24 ||
+            (newTime > ddl && oldTime < ddl)) return true;
+        else return false;
     }
 
     //=====================================================工具函数==========================================================
@@ -355,10 +373,10 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
     /** 定时器回调map */
     public readonly onTimerMap: Map<string, Array<PeriodItem>> = new Map();
 
+    /** 上一次的时间 */
+    public lastTime: number;
     /** 记录了上一个小时 */
     public lastHour: number;
-    /** 记录了上一天 */
-    public lastDay: number;
 
     /**
      * 初始化，添加时间刷新的监听
@@ -402,12 +420,11 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
      */
     private onHourChanged(nowDate: Date): void {
         //利用小时改变的回调判断天刷新
-        if (this.lastDay == null) {
-            this.lastDay = nowDate.getHours();
+        if (this.lastTime == null) {
+            this.lastTime = nowDate.getTime();
             return;
         }
-        if (nowDate.getDay() != this.lastDay) {
-            this.lastDay = nowDate.getDay();
+        if (TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime())) {
             this.onDayRefresh.call(nowDate);
         }
     }
@@ -457,10 +474,11 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
 
     /** 上一个日期 */
     private _lastTempDate: Date = null;
+    
+    /** 上一次的时间 */
+    public lastTime: number = null;
     /** 上一个小时 */
     public lastHour: number = null;
-    /** 上一天 */
-    public lastDay: number = null;
 
     /**
      * 添加Action
@@ -513,12 +531,11 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
      */
     private onHourChanged(nowDate: Date): void {
         //利用小时改变的回调判断天刷新
-        if (this.lastDay == null) {
-            this.lastDay = nowDate.getDate();
+        if (this.lastTime == null) {
+            this.lastTime = nowDate.getTime();
             return;
         }
-        if (nowDate.getDate() != this.lastDay) {
-            this.lastDay = nowDate.getDate();
+        if (TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime())) {
             this.onDayRefresh.call(nowDate);
         }
     }
@@ -548,7 +565,7 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
         const oldTime = this.currentData.lastTimeStamp;
         this.currentData.lastTimeStamp = nowTime;
         this.currentData.save(true);
-        if (!TimerModuleUtils.judgeSameDay(oldTime, nowTime)) {
+        if (!TimerModuleUtils.judgeIsNewDay(oldTime, nowTime)) {
             //当天第一次登录
             this.onPlayerEnterSceneIsNewDay.call(this.currentPlayerId);
             // console.error(`rkc----玩家${this.currentPlayerId}新的一天登录`);
