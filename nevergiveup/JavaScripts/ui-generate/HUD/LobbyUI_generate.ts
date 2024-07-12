@@ -190,6 +190,90 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.txtButtonSetting_Internal
 	}
+	private jumpCanvas_Internal: mw.Canvas
+	public get jumpCanvas(): mw.Canvas {
+		if(!this.jumpCanvas_Internal&&this.uiWidgetBase) {
+			this.jumpCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/jumpCanvas') as mw.Canvas
+		}
+		return this.jumpCanvas_Internal
+	}
+	private jumpBtn_Internal: mw.Button
+	public get jumpBtn(): mw.Button {
+		if(!this.jumpBtn_Internal&&this.uiWidgetBase) {
+			this.jumpBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/jumpCanvas/jumpBtn') as mw.Button
+		}
+		return this.jumpBtn_Internal
+	}
+	private txtButtonJump_Internal: mw.TextBlock
+	public get txtButtonJump(): mw.TextBlock {
+		if(!this.txtButtonJump_Internal&&this.uiWidgetBase) {
+			this.txtButtonJump_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/jumpCanvas/txtButtonJump') as mw.TextBlock
+		}
+		return this.txtButtonJump_Internal
+	}
+	private returnCanvas_Internal: mw.Canvas
+	public get returnCanvas(): mw.Canvas {
+		if(!this.returnCanvas_Internal&&this.uiWidgetBase) {
+			this.returnCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/returnCanvas') as mw.Canvas
+		}
+		return this.returnCanvas_Internal
+	}
+	private returnBtn_Internal: mw.Button
+	public get returnBtn(): mw.Button {
+		if(!this.returnBtn_Internal&&this.uiWidgetBase) {
+			this.returnBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/returnCanvas/returnBtn') as mw.Button
+		}
+		return this.returnBtn_Internal
+	}
+	private txtButtonReturn_Internal: mw.TextBlock
+	public get txtButtonReturn(): mw.TextBlock {
+		if(!this.txtButtonReturn_Internal&&this.uiWidgetBase) {
+			this.txtButtonReturn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/returnCanvas/txtButtonReturn') as mw.TextBlock
+		}
+		return this.txtButtonReturn_Internal
+	}
+	private taskCanvas_Internal: mw.Canvas
+	public get taskCanvas(): mw.Canvas {
+		if(!this.taskCanvas_Internal&&this.uiWidgetBase) {
+			this.taskCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/taskCanvas') as mw.Canvas
+		}
+		return this.taskCanvas_Internal
+	}
+	private taskBtn_Internal: mw.Button
+	public get taskBtn(): mw.Button {
+		if(!this.taskBtn_Internal&&this.uiWidgetBase) {
+			this.taskBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/taskCanvas/taskBtn') as mw.Button
+		}
+		return this.taskBtn_Internal
+	}
+	private txtButtontask_Internal: mw.TextBlock
+	public get txtButtontask(): mw.TextBlock {
+		if(!this.txtButtontask_Internal&&this.uiWidgetBase) {
+			this.txtButtontask_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/taskCanvas/txtButtontask') as mw.TextBlock
+		}
+		return this.txtButtontask_Internal
+	}
+	private shopCanvas_Internal: mw.Canvas
+	public get shopCanvas(): mw.Canvas {
+		if(!this.shopCanvas_Internal&&this.uiWidgetBase) {
+			this.shopCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/shopCanvas') as mw.Canvas
+		}
+		return this.shopCanvas_Internal
+	}
+	private shopBtn_Internal: mw.Button
+	public get shopBtn(): mw.Button {
+		if(!this.shopBtn_Internal&&this.uiWidgetBase) {
+			this.shopBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/shopCanvas/shopBtn') as mw.Button
+		}
+		return this.shopBtn_Internal
+	}
+	private txtButtonshop_Internal: mw.TextBlock
+	public get txtButtonshop(): mw.TextBlock {
+		if(!this.txtButtonshop_Internal&&this.uiWidgetBase) {
+			this.txtButtonshop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/shopCanvas/txtButtonshop') as mw.TextBlock
+		}
+		return this.txtButtonshop_Internal
+	}
 	private mCanvas_TaskAll_Internal: mw.Canvas
 	public get mCanvas_TaskAll(): mw.Canvas {
 		if(!this.mCanvas_TaskAll_Internal&&this.uiWidgetBase) {
@@ -298,6 +382,30 @@ export default class LobbyUI_Generate extends UIScript {
 	   this.settingBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.jumpBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "jumpBtn");
+	   })
+	   this.jumpBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.returnBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "returnBtn");
+	   })
+	   this.returnBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.taskBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "taskBtn");
+	   })
+	   this.taskBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.shopBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "shopBtn");
+	   })
+	   this.shopBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.mButton_TaskSmall.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "mButton_TaskSmall");
 	   })
@@ -352,6 +460,18 @@ export default class LobbyUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txtButtonSetting)
+	   
+	
+	   this.initLanguage(this.txtButtonJump)
+	   
+	
+	   this.initLanguage(this.txtButtonReturn)
+	   
+	
+	   this.initLanguage(this.txtButtontask)
+	   
+	
+	   this.initLanguage(this.txtButtonshop)
 	   
 	
 	   this.initLanguage(this.mTextBlock_Task)

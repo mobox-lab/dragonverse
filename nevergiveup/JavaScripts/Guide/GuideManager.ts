@@ -255,363 +255,363 @@ export namespace GuideManager {
         guideState = GuideState.None;
     }
 
-    export function initGuide1() {
-        let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(1);
-
-        guide.addRunFunc(() => {
-            GameManager.startGuideClient();
-        });
-
-        guide.addCondition(() => {
-            let stage = GameManager.getStageClient();
-            if (stage) {
-                return stage.hasLoaded;
-            }
-            return false;
-        });
-
-        guide.addRunFunc(async () => {
-            MGSTool.doFirstEvent(FirstEvent.CoreStart);
-            let stage = GameManager.getStageClient();
-            stage.setSpeed(0);
-            guideState = GuideState.CreateTowerDialog;
-            setDialog(0);
-            StageActions.onStageStateChanged.add(cbStageChanged);
-        });
-
-        guide.addCondition(() => {
-            return !GuideDialog.isShow;
-        });
-
-        guide.addRunFunc(() => {
-            MGSTool.guide(1);
-        });
-
-        let towerUI = UIService.getUI(TowerUI);
-        guide.addBindUI(towerUI.towerItemUIs[0].createBtn);
-
-        guide.addRunFunc(async () => {
-            guideState = GuideState.CreateTower;
-            setEffectPos(10);
-            GuideUI.showAtPos(getPos(10), getPos(11));
-        });
-
-        guide.addBindUI(GuideUI.getBtn());
-        guide.addRunFunc(() => {
-            guideState = GuideState.CreateTowerComplete;
-            GuideUI.hide();
-            hideEffect();
-            ModuleService.getModule(TowerModuleC).createTowerByPlaceId(1001, 10);
-            setDialog(1);
-            MGSTool.guide(2);
-            MGSTool.doFirstEvent(FirstEvent.CoreStep1);
-        });
-
-        guide.addCondition(() => {
-            return !GuideDialog.isShow;
-        });
-
-        guide.addBindUI(towerUI.towerItemUIs[0].createBtn);
-
-        guide.addRunFunc(() => {
-            guideState = GuideState.CreateTower2;
-            setEffectPos(11);
-            GuideUI.showAtPos(getPos(11), getPos(12));
-        });
-
-        guide.addBindUI(GuideUI.getBtn());
-        guide.addCondition(() => {
-            let stage = GameManager.getStageClient();
-            return stage != null;
-        });
-
-        guide.addRunFunc(() => {
-            guideState = GuideState.CreateTower2Complete;
-            hideEffect();
-            GuideUI.hide();
-            ModuleService.getModule(TowerModuleC).createTowerByPlaceId(1001, 11);
-            let stage = GameManager.getStageClient();
-            stage.setSpeed(1);
-            MGSTool.guide(3);
-            MGSTool.doFirstEvent(FirstEvent.CoreStep2);
-        });
-
-        guide.addCondition(() => {
-            let stage = GameManager.getStageClient();
-            if (!stage) return false;
-            return stage.currentWave == 2;
-        });
-
-        guide.addRunFunc(() => {
-            let stage = GameManager.getStageClient();
-            stage.setSpeed(0);
-            guideState = GuideState.UpgradeTowerDialog;
-            setDialog(2);
-        });
-
-
-        guide.addCondition(() => {
-            return !GuideDialog.isShow;
-        });
-
-        guide.addRunFunc(() => {
-            guideState = GuideState.UpgradeTower;
-            setEffectPos(11);
-            GuideUI.showAtPos(getPos(11), getPos(12));
-            let stage = GameManager.getStageClient();
-            stage.setSpeed(0);
-        });
-
-        guide.addBindUI(GuideUI.getBtn());
-        guide.addRunFunc(() => {
-            guideState = GuideState.UpgradeTowerComplete;
-            hideEffect();
-            GuideUI.hide();
-            ModuleService.getModule(TowerModuleC).upgradeTowerByPlaceId(11);
-            guideState = GuideState.UpgradeTowerSelected;
-
-            let stage = GameManager.getStageClient();
-            towerInfoUI = ModuleService.getModule(TowerModuleC).towerInfoUI;
-            guide.addBindUI(towerInfoUI.levelBtn);
-            guide.addRunFunc(() => {
-                MGSTool.guide(5);
-                MGSTool.doFirstEvent(FirstEvent.CoreStep4);
-                MGSTool.doFirstEvent(FirstEvent.CoreEnd);
-            });
-
-            guide.addRunFunc(() => {
-                let cb = (stage: EStageState) => {
-                    if (stage == EStageState.End) {
-                        guideState = GuideState.Complete;
-                        GuideDialog.hide();
-                        StageActions.onStageStateChanged.remove(cb);
-                    }
-                };
-                StageActions.onStageStateChanged.add(cb);
-                setDialog(3);
-            });
-
-            guide.addCondition(() => {
-                return !GuideDialog.isShow;
-            });
-
-            guide.addRunFunc(() => {
-                stage.setSpeed(1);
-            })
-
-            guide.addCondition(() => {
-                return guideState == GuideState.Complete;
-            });
-        });
-    }
-
-    export function initGuide2() {
-        let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(2);
-        let lobbyUI = UIService.getUI(LobbyUI);
-        guide.addCondition(() => {
-            return lobbyUI.visible;
-        });
-        guide.addRunFunc(() => {
-            setDialog(7);
-        });
-
-        guide.addCondition(() => {
-            return !GuideDialog.isShow;
-        });
-
-        guide.addCondition(() => {
-            return lobbyUI.visible;
-        });
-
-        guide.addBindUI(lobbyUI.mButton_TaskSmall);
-
-        guide.addRunFunc(() => {
-            MGSTool.guide(15);
-        });
-    }
-
-    export function initGuide3() {
-        let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(3);
-        let lobbyUI = UIService.getUI(LobbyUI);
-        let taskUI = UIService.getUI(UI_TaskMain);
-        let techTreeUI = UIService.getUI(UITechTree);
-
-        guide.addCondition(() => {
-            return lobbyUI.visible;
-        });
-        guide.addCondition(() => {
-            return !taskUI.visible;
-        });
-
-        guide.addRunFunc(() => {
-            setDialog(8);
-        });
-        guide.addCondition(() => {
-            return !GuideDialog.isShow;
-        });
-
-        guide.addCondition(() => {
-            return lobbyUI.visible;
-        });
-        guide.addBindUI(lobbyUI.techTreeBtn);
-        guide.addRunFunc(() => {
-            MGSTool.guide(16);
-            ModuleService.getModule(PlayerModuleC).techTree.show();
-        });
-
-        guide.addCondition(() => {
-            return techTreeUI.visible;
-        });
-
-        guide.addBindUI(ModuleService.getModule(PlayerModuleC).techTree.getNode(1001).drawNode.uiObject);
-
-        guide.addRunFunc(() => {
-            techTreeUI.selected = 1001;
-            techTreeUI.updateSelected();
-
-            let techTree = ModuleService.getModule(PlayerModuleC).techTree;
-            if (techTree.getNode(1001).isUnlocked) {
-                guide.addRunFunc(() => {
-                    MGSTool.guide(17);
-                });
-            }
-            else {
-                guide.addBindUI(techTreeUI.infoBtn);
-                guide.addRunFunc(() => {
-                    MGSTool.guide(17);
-                });
-            }
-        });
-    }
-
-    export function initGuide4() {
-        let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(4);
-        guide.addCondition(() => {
-            let lobbyUI = UIService.getUI(LobbyUI);
-            return lobbyUI.visible;
-        });
-
-        guide.addRunFunc(() => {
-            setDialog(4);
-        });
-
-        guide.addCondition(() => {
-            return !GuideDialog.isShow;
-        });
-
-        guide.addRunFunc(() => {
-            let lobbyUI = UIService.getUI(LobbyUI);
-            guide.addBindUI(lobbyUI.cardBtn);
-            guide.addRunFunc(() => {
-                UIService.show(TowerShopUI);
-            });
-
-            guide.addCondition(() => {
-                let ui = UIService.getUI(TowerShopUI);
-                return ui.visible;
-            });
-
-
-            guide.addRunFunc(() => {
-                let ui = UIService.getUI(TowerShopUI);
-                let index = ui.shopItemUIs.findIndex((item => {
-                    return item.cfgID == 2001;
-                }));
-                console.log(index);
-
-                // console.log(ui.showItemUIs[index].uiObject.position, "pos");
-                if (index > -1) {
-                    let rowIndex = Math.floor(index / 3);
-                    ui.mScrollBox.scrollOffset = 240 * rowIndex;
-                    guide.addBindUI(ui.shopItemUIs[index].chooseBtn);
-                    guide.addBindUI(ui.infoBtn);
-                }
-                guide.addRunFunc(() => {
-                    MGSTool.guide(9);
-                });
-
-                guide.addRunFunc(() => {
-                    UIService.hide(TowerShopUI);
-                });
-
-                guide.addRunFunc(() => {
-                    setDialog(5);
-                });
-
-                guide.addCondition(() => {
-                    return !GuideDialog.isShow;
-                });
-            })
-
-        });
-    }
-
-    export function initGuide5() {
-        let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(5);
-
-        guide.addCondition(() => {
-            let lobbyUI = UIService.getUI(LobbyUI);
-            return lobbyUI.visible;
-        });
-
-        guide.addRunFunc(() => {
-            let pos = StageTriggerInst.posMap[0].clone();
-            pos.z -= 200;
-            Utils.faceCameraToTarget(pos);
-        });
-
-        guide.addBindWorldPos(StageTriggerInst.posMap[0]);
-
-        guide.addRunFunc(() => {
-            GuideActions.onGuideStageTriggered.call();
-            let ui = UIService.getUI(UIStageSelect);
-            guide.addCondition(() => {
-                return ui.visible;
-            });
-            guide.addBindUI(ui.mGo);
-
-            guide.addRunFunc(() => {
-                GuideActions.onGuideStageSelect.call();
-            });
-
-            guide.addCondition(() => {
-                return GameManager.getStageClient() != null;
-            });
-
-            guide.addRunFunc(() => {
-                MGSTool.guide(10);
-                setDialog(6);
-                let stage = GameManager.getStageClient();
-                stage && stage.setSpeed(0);
-            });
-
-            guide.addCondition(() => {
-                return !GuideDialog.isShow;
-            });
-
-
-            guide.addRunFunc(() => {
-                MGSTool.guide(11);
-            })
-
-            let mainUI = UIService.getUI(UIMain);
-            guide.addCondition(() => {
-                return mainUI.visible;
-            });
-
-            guide.addBindUI(mainUI.mSpeedControl);
-
-            guide.addRunFunc(() => {
-                MGSTool.guide(12);
-                mainUI.mSpeedUp.onClicked.broadcast();
-            });
-
-            guide.addRunFunc(() => {
-                let stage = GameManager.getStageClient();
-                stage && stage.setSpeed(1.5);
-            });
-        });
-    }
+    // export function initGuide1() {
+    //     let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(1);
+
+    //     guide.addRunFunc(() => {
+    //         GameManager.startGuideClient();
+    //     });
+
+    //     guide.addCondition(() => {
+    //         let stage = GameManager.getStageClient();
+    //         if (stage) {
+    //             return stage.hasLoaded;
+    //         }
+    //         return false;
+    //     });
+
+    //     guide.addRunFunc(async () => {
+    //         MGSTool.doFirstEvent(FirstEvent.CoreStart);
+    //         let stage = GameManager.getStageClient();
+    //         stage.setSpeed(0);
+    //         guideState = GuideState.CreateTowerDialog;
+    //         setDialog(0);
+    //         StageActions.onStageStateChanged.add(cbStageChanged);
+    //     });
+
+    //     guide.addCondition(() => {
+    //         return !GuideDialog.isShow;
+    //     });
+
+    //     guide.addRunFunc(() => {
+    //         MGSTool.guide(1);
+    //     });
+
+    //     let towerUI = UIService.getUI(TowerUI);
+    //     guide.addBindUI(towerUI.towerItemUIs[0].createBtn);
+
+    //     guide.addRunFunc(async () => {
+    //         guideState = GuideState.CreateTower;
+    //         setEffectPos(10);
+    //         GuideUI.showAtPos(getPos(10), getPos(11));
+    //     });
+
+    //     guide.addBindUI(GuideUI.getBtn());
+    //     guide.addRunFunc(() => {
+    //         guideState = GuideState.CreateTowerComplete;
+    //         GuideUI.hide();
+    //         hideEffect();
+    //         ModuleService.getModule(TowerModuleC).createTowerByPlaceId(1001, 10);
+    //         setDialog(1);
+    //         MGSTool.guide(2);
+    //         MGSTool.doFirstEvent(FirstEvent.CoreStep1);
+    //     });
+
+    //     guide.addCondition(() => {
+    //         return !GuideDialog.isShow;
+    //     });
+
+    //     guide.addBindUI(towerUI.towerItemUIs[0].createBtn);
+
+    //     guide.addRunFunc(() => {
+    //         guideState = GuideState.CreateTower2;
+    //         setEffectPos(11);
+    //         GuideUI.showAtPos(getPos(11), getPos(12));
+    //     });
+
+    //     guide.addBindUI(GuideUI.getBtn());
+    //     guide.addCondition(() => {
+    //         let stage = GameManager.getStageClient();
+    //         return stage != null;
+    //     });
+
+    //     guide.addRunFunc(() => {
+    //         guideState = GuideState.CreateTower2Complete;
+    //         hideEffect();
+    //         GuideUI.hide();
+    //         ModuleService.getModule(TowerModuleC).createTowerByPlaceId(1001, 11);
+    //         let stage = GameManager.getStageClient();
+    //         stage.setSpeed(1);
+    //         MGSTool.guide(3);
+    //         MGSTool.doFirstEvent(FirstEvent.CoreStep2);
+    //     });
+
+    //     guide.addCondition(() => {
+    //         let stage = GameManager.getStageClient();
+    //         if (!stage) return false;
+    //         return stage.currentWave == 2;
+    //     });
+
+    //     guide.addRunFunc(() => {
+    //         let stage = GameManager.getStageClient();
+    //         stage.setSpeed(0);
+    //         guideState = GuideState.UpgradeTowerDialog;
+    //         setDialog(2);
+    //     });
+
+
+    //     guide.addCondition(() => {
+    //         return !GuideDialog.isShow;
+    //     });
+
+    //     guide.addRunFunc(() => {
+    //         guideState = GuideState.UpgradeTower;
+    //         setEffectPos(11);
+    //         GuideUI.showAtPos(getPos(11), getPos(12));
+    //         let stage = GameManager.getStageClient();
+    //         stage.setSpeed(0);
+    //     });
+
+    //     guide.addBindUI(GuideUI.getBtn());
+    //     guide.addRunFunc(() => {
+    //         guideState = GuideState.UpgradeTowerComplete;
+    //         hideEffect();
+    //         GuideUI.hide();
+    //         ModuleService.getModule(TowerModuleC).upgradeTowerByPlaceId(11);
+    //         guideState = GuideState.UpgradeTowerSelected;
+
+    //         let stage = GameManager.getStageClient();
+    //         towerInfoUI = ModuleService.getModule(TowerModuleC).towerInfoUI;
+    //         guide.addBindUI(towerInfoUI.levelBtn);
+    //         guide.addRunFunc(() => {
+    //             MGSTool.guide(5);
+    //             MGSTool.doFirstEvent(FirstEvent.CoreStep4);
+    //             MGSTool.doFirstEvent(FirstEvent.CoreEnd);
+    //         });
+
+    //         guide.addRunFunc(() => {
+    //             let cb = (stage: EStageState) => {
+    //                 if (stage == EStageState.End) {
+    //                     guideState = GuideState.Complete;
+    //                     GuideDialog.hide();
+    //                     StageActions.onStageStateChanged.remove(cb);
+    //                 }
+    //             };
+    //             StageActions.onStageStateChanged.add(cb);
+    //             setDialog(3);
+    //         });
+
+    //         guide.addCondition(() => {
+    //             return !GuideDialog.isShow;
+    //         });
+
+    //         guide.addRunFunc(() => {
+    //             stage.setSpeed(1);
+    //         })
+
+    //         guide.addCondition(() => {
+    //             return guideState == GuideState.Complete;
+    //         });
+    //     });
+    // }
+
+    // export function initGuide2() {
+    //     let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(2);
+    //     let lobbyUI = UIService.getUI(LobbyUI);
+    //     guide.addCondition(() => {
+    //         return lobbyUI.visible;
+    //     });
+    //     guide.addRunFunc(() => {
+    //         setDialog(7);
+    //     });
+
+    //     guide.addCondition(() => {
+    //         return !GuideDialog.isShow;
+    //     });
+
+    //     guide.addCondition(() => {
+    //         return lobbyUI.visible;
+    //     });
+
+    //     guide.addBindUI(lobbyUI.mButton_TaskSmall);
+
+    //     guide.addRunFunc(() => {
+    //         MGSTool.guide(15);
+    //     });
+    // }
+
+    // export function initGuide3() {
+    //     let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(3);
+    //     let lobbyUI = UIService.getUI(LobbyUI);
+    //     let taskUI = UIService.getUI(UI_TaskMain);
+    //     let techTreeUI = UIService.getUI(UITechTree);
+
+    //     guide.addCondition(() => {
+    //         return lobbyUI.visible;
+    //     });
+    //     guide.addCondition(() => {
+    //         return !taskUI.visible;
+    //     });
+
+    //     guide.addRunFunc(() => {
+    //         setDialog(8);
+    //     });
+    //     guide.addCondition(() => {
+    //         return !GuideDialog.isShow;
+    //     });
+
+    //     guide.addCondition(() => {
+    //         return lobbyUI.visible;
+    //     });
+    //     guide.addBindUI(lobbyUI.techTreeBtn);
+    //     guide.addRunFunc(() => {
+    //         MGSTool.guide(16);
+    //         ModuleService.getModule(PlayerModuleC).techTree.show();
+    //     });
+
+    //     guide.addCondition(() => {
+    //         return techTreeUI.visible;
+    //     });
+
+    //     guide.addBindUI(ModuleService.getModule(PlayerModuleC).techTree.getNode(1001).drawNode.uiObject);
+
+    //     guide.addRunFunc(() => {
+    //         techTreeUI.selected = 1001;
+    //         techTreeUI.updateSelected();
+
+    //         let techTree = ModuleService.getModule(PlayerModuleC).techTree;
+    //         if (techTree.getNode(1001).isUnlocked) {
+    //             guide.addRunFunc(() => {
+    //                 MGSTool.guide(17);
+    //             });
+    //         }
+    //         else {
+    //             guide.addBindUI(techTreeUI.infoBtn);
+    //             guide.addRunFunc(() => {
+    //                 MGSTool.guide(17);
+    //             });
+    //         }
+    //     });
+    // }
+
+    // export function initGuide4() {
+    //     let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(4);
+    //     guide.addCondition(() => {
+    //         let lobbyUI = UIService.getUI(LobbyUI);
+    //         return lobbyUI.visible;
+    //     });
+
+    //     guide.addRunFunc(() => {
+    //         setDialog(4);
+    //     });
+
+    //     guide.addCondition(() => {
+    //         return !GuideDialog.isShow;
+    //     });
+
+    //     guide.addRunFunc(() => {
+    //         let lobbyUI = UIService.getUI(LobbyUI);
+    //         guide.addBindUI(lobbyUI.cardBtn);
+    //         guide.addRunFunc(() => {
+    //             UIService.show(TowerShopUI);
+    //         });
+
+    //         guide.addCondition(() => {
+    //             let ui = UIService.getUI(TowerShopUI);
+    //             return ui.visible;
+    //         });
+
+
+    //         guide.addRunFunc(() => {
+    //             let ui = UIService.getUI(TowerShopUI);
+    //             let index = ui.shopItemUIs.findIndex((item => {
+    //                 return item.cfgID == 2001;
+    //             }));
+    //             console.log(index);
+
+    //             // console.log(ui.showItemUIs[index].uiObject.position, "pos");
+    //             if (index > -1) {
+    //                 let rowIndex = Math.floor(index / 3);
+    //                 ui.mScrollBox.scrollOffset = 240 * rowIndex;
+    //                 guide.addBindUI(ui.shopItemUIs[index].chooseBtn);
+    //                 guide.addBindUI(ui.infoBtn);
+    //             }
+    //             guide.addRunFunc(() => {
+    //                 MGSTool.guide(9);
+    //             });
+
+    //             guide.addRunFunc(() => {
+    //                 UIService.hide(TowerShopUI);
+    //             });
+
+    //             guide.addRunFunc(() => {
+    //                 setDialog(5);
+    //             });
+
+    //             guide.addCondition(() => {
+    //                 return !GuideDialog.isShow;
+    //             });
+    //         })
+
+    //     });
+    // }
+
+    // export function initGuide5() {
+    //     let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(5);
+
+    //     guide.addCondition(() => {
+    //         let lobbyUI = UIService.getUI(LobbyUI);
+    //         return lobbyUI.visible;
+    //     });
+
+    //     guide.addRunFunc(() => {
+    //         let pos = StageTriggerInst.posMap[0].clone();
+    //         pos.z -= 200;
+    //         Utils.faceCameraToTarget(pos);
+    //     });
+
+    //     guide.addBindWorldPos(StageTriggerInst.posMap[0]);
+
+    //     guide.addRunFunc(() => {
+    //         GuideActions.onGuideStageTriggered.call();
+    //         let ui = UIService.getUI(UIStageSelect);
+    //         guide.addCondition(() => {
+    //             return ui.visible;
+    //         });
+    //         guide.addBindUI(ui.mGo);
+
+    //         guide.addRunFunc(() => {
+    //             GuideActions.onGuideStageSelect.call();
+    //         });
+
+    //         guide.addCondition(() => {
+    //             return GameManager.getStageClient() != null;
+    //         });
+
+    //         guide.addRunFunc(() => {
+    //             MGSTool.guide(10);
+    //             setDialog(6);
+    //             let stage = GameManager.getStageClient();
+    //             stage && stage.setSpeed(0);
+    //         });
+
+    //         guide.addCondition(() => {
+    //             return !GuideDialog.isShow;
+    //         });
+
+
+    //         guide.addRunFunc(() => {
+    //             MGSTool.guide(11);
+    //         })
+
+    //         let mainUI = UIService.getUI(UIMain);
+    //         guide.addCondition(() => {
+    //             return mainUI.visible;
+    //         });
+
+    //         guide.addBindUI(mainUI.mSpeedControl);
+
+    //         guide.addRunFunc(() => {
+    //             MGSTool.guide(12);
+    //             mainUI.mSpeedUp.onClicked.broadcast();
+    //         });
+
+    //         guide.addRunFunc(() => {
+    //             let stage = GameManager.getStageClient();
+    //             stage && stage.setSpeed(1.5);
+    //         });
+    //     });
+    // }
 
     async function initPosGuide() {
         let guide = ModuleService.getModule(GuideModuleC).addGuideStageHandle(810975);

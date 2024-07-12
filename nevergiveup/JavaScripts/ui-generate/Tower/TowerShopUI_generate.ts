@@ -85,6 +85,69 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.towerItemCanvas_Internal
 	}
+	private siftCanvas_Internal: mw.Canvas
+	public get siftCanvas(): mw.Canvas {
+		if(!this.siftCanvas_Internal&&this.uiWidgetBase) {
+			this.siftCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/siftCanvas') as mw.Canvas
+		}
+		return this.siftCanvas_Internal
+	}
+	private siftText_Internal: mw.TextBlock
+	public get siftText(): mw.TextBlock {
+		if(!this.siftText_Internal&&this.uiWidgetBase) {
+			this.siftText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/siftCanvas/siftText') as mw.TextBlock
+		}
+		return this.siftText_Internal
+	}
+	private mDropdown_1_Internal: mw.Dropdown
+	public get mDropdown_1(): mw.Dropdown {
+		if(!this.mDropdown_1_Internal&&this.uiWidgetBase) {
+			this.mDropdown_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/siftCanvas/mDropdown_1') as mw.Dropdown
+		}
+		return this.mDropdown_1_Internal
+	}
+	private siftText_2_Internal: mw.TextBlock
+	public get siftText_2(): mw.TextBlock {
+		if(!this.siftText_2_Internal&&this.uiWidgetBase) {
+			this.siftText_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/siftCanvas/siftText_2') as mw.TextBlock
+		}
+		return this.siftText_2_Internal
+	}
+	private mDropdown_2_Internal: mw.Dropdown
+	public get mDropdown_2(): mw.Dropdown {
+		if(!this.mDropdown_2_Internal&&this.uiWidgetBase) {
+			this.mDropdown_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/siftCanvas/mDropdown_2') as mw.Dropdown
+		}
+		return this.mDropdown_2_Internal
+	}
+	private siftText_3_Internal: mw.TextBlock
+	public get siftText_3(): mw.TextBlock {
+		if(!this.siftText_3_Internal&&this.uiWidgetBase) {
+			this.siftText_3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/siftCanvas/siftText_3') as mw.TextBlock
+		}
+		return this.siftText_3_Internal
+	}
+	private mDropdown_3_Internal: mw.Dropdown
+	public get mDropdown_3(): mw.Dropdown {
+		if(!this.mDropdown_3_Internal&&this.uiWidgetBase) {
+			this.mDropdown_3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/siftCanvas/mDropdown_3') as mw.Dropdown
+		}
+		return this.mDropdown_3_Internal
+	}
+	private siftText_4_Internal: mw.TextBlock
+	public get siftText_4(): mw.TextBlock {
+		if(!this.siftText_4_Internal&&this.uiWidgetBase) {
+			this.siftText_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/siftCanvas/siftText_4') as mw.TextBlock
+		}
+		return this.siftText_4_Internal
+	}
+	private mDropdown_4_Internal: mw.Dropdown
+	public get mDropdown_4(): mw.Dropdown {
+		if(!this.mDropdown_4_Internal&&this.uiWidgetBase) {
+			this.mDropdown_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/siftCanvas/mDropdown_4') as mw.Dropdown
+		}
+		return this.mDropdown_4_Internal
+	}
 	private infoCanvas_Internal: mw.Canvas
 	public get infoCanvas(): mw.Canvas {
 		if(!this.infoCanvas_Internal&&this.uiWidgetBase) {
@@ -264,6 +327,18 @@ export default class TowerShopUI_Generate extends UIScript {
 	   //文本多语言
 	   
 	   this.initLanguage(this.txt_title)
+	   
+	
+	   this.initLanguage(this.siftText)
+	   
+	
+	   this.initLanguage(this.siftText_2)
+	   
+	
+	   this.initLanguage(this.siftText_3)
+	   
+	
+	   this.initLanguage(this.siftText_4)
 	   
 	
 	   this.initLanguage(this.infoTxt)

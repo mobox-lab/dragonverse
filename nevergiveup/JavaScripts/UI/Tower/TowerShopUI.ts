@@ -7,9 +7,11 @@
 
 import CardModuleC, { CardState } from "../../Modules/CardModule/CardModuleC";
 import { TweenCommon } from "../../TweenCommon";
+import { UIPool } from "../../UIPool";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
+import { TowerElementType } from "../../const/enum";
 import { MGSTool } from "../../tool/MGSTool";
 import TowerShopUI_Generate from "../../ui-generate/Tower/TowerShopUI_generate";
 import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
@@ -24,28 +26,34 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	private _state: CardState;
 	private _cfg: ITowerElement;
 	private _selectLevel: number = 0; // 0 1 2
-	private _shopItemUIs: ShopItemUI[] = [];
-	public get shopItemUIs() {
-		if (!this._shopItemUIs || this._shopItemUIs.length == 0) {
-			this._shopItemUIs = [];
-			let cfg = GameConfig.Tower.getAllElement();
-			for (let i = 0; i < cfg.length; i++) {
-				let item = UIService.create(ShopItemUI);
-				this._shopItemUIs.push(item);
-				item.init(cfg[i].id);
-			}
-			let maxCount = Math.floor(this.towerItemCanvas.size.x / (this._shopItemUIs[0].rootCanvas.size.x + 10));
-			this.towerItemCanvas.size = Utils.TEMP_VECTOR2.set
-				(this.towerItemCanvas.size.x,
-					(this._shopItemUIs[0].rootCanvas.size.y + 20) * Math.ceil(this._shopItemUIs.length / maxCount));
-			for (let i = 0; i < this._shopItemUIs.length; i++) {
-				let item = this._shopItemUIs[i];
-				let size = item.uiObject.size;
-				this.towerItemCanvas.addChild(item.uiObject);
-				item.uiObject.size = size;
-			}
+	public shopItemUIs: ShopItemUI[] = [];
+	public opts: {
+		ele?: TowerElementType; // 不存在则为All
+	} = {};
+	public setShopItemUIs(options?: {
+		ele?: TowerElementType; // 不存在则为All
+	}) {
+		this.opts = options ?? {};
+		this.shopItemUIs = [];
+		let cfg = GameConfig.Tower.getAllElement();
+		for (let i = 0; i < cfg.length; i++) {
+			const item = UIService.create(ShopItemUI);
+			const towerCfg = cfg[i];
+			if(options?.ele && options.ele != towerCfg.elementTy) continue;
+			this.shopItemUIs.push(item);
+			item.init(towerCfg.id);
 		}
-		return this._shopItemUIs;
+		this.towerItemCanvas.removeAllChildren();
+		let maxCount = Math.floor(this.towerItemCanvas.size.x / (this.shopItemUIs[0].rootCanvas.size.x + 10));
+		this.towerItemCanvas.size = Utils.TEMP_VECTOR2.set
+			(this.towerItemCanvas.size.x,
+				(this.shopItemUIs[0].rootCanvas.size.y + 20) * Math.ceil(this.shopItemUIs.length / maxCount));
+		for (let i = 0; i < this.shopItemUIs.length; i++) {
+			let item = this.shopItemUIs[i];
+			let size = item.uiObject.size;
+			this.towerItemCanvas.addChild(item.uiObject);
+			item.uiObject.size = size;
+		}
 	}
 
 	/** 
@@ -86,6 +94,13 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		})
 		this.infoLv3.onClicked.add(() => {
 			this.updateInfo(2);
+		})
+		this.setShopItemUIs();
+
+		this.mDropdown_1.onSelectionChangedEvent.add((item: string, select: mw.SelectInfo) => {
+			const ele = TowerElementType[item];
+			if(item === "All") this.setShopItemUIs({ ...this.opts, ele: undefined })
+			else this.setShopItemUIs( { ...this.opts, ele } );
 		})
 	}
 	public updateInfo(level: number = 0) {

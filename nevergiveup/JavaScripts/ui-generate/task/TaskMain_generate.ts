@@ -57,6 +57,20 @@ export default class TaskMain_Generate extends UIScript {
 		}
 		return this.btn_Esc_Internal
 	}
+	private taskCountdown_Internal: mw.TextBlock
+	public get taskCountdown(): mw.TextBlock {
+		if(!this.taskCountdown_Internal&&this.uiWidgetBase) {
+			this.taskCountdown_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/taskCountdown') as mw.TextBlock
+		}
+		return this.taskCountdown_Internal
+	}
+	private taskCountdownTime_Internal: mw.TextBlock
+	public get taskCountdownTime(): mw.TextBlock {
+		if(!this.taskCountdownTime_Internal&&this.uiWidgetBase) {
+			this.taskCountdownTime_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/taskCountdownTime') as mw.TextBlock
+		}
+		return this.taskCountdownTime_Internal
+	}
 	private changeBtnCanvas_Internal: mw.Canvas
 	public get changeBtnCanvas(): mw.Canvas {
 		if(!this.changeBtnCanvas_Internal&&this.uiWidgetBase) {
@@ -155,6 +169,12 @@ export default class TaskMain_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.taskName)
+	   
+	
+	   this.initLanguage(this.taskCountdown)
+	   
+	
+	   this.initLanguage(this.taskCountdownTime)
 	   
 	
 	   //文本多语言
