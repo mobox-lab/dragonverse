@@ -1,11 +1,12 @@
 import Gtk from "../../util/GToolkit";
+import { Yoact } from "../../depend/yoact/Yoact";
+import { GameConfig } from "../../config/GameConfig";
+import { P12ItemResId } from "../../module/auth/AuthModule";
+import { P12BagModuleC } from "../../module/bag/P12BagModule";
+import { EnergyModuleC } from "../../module/Energy/EnergyModule";
+import { MouseLockController } from "../../controller/MouseLockController";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import Online_ReConfirm_Generate from "../../ui-generate/Onlineshop/Online_ReConfirm_generate";
-import { P12BagModuleC } from "../../module/bag/P12BagModule";
-import { P12ItemResId } from "../../module/auth/AuthModule";
-import { MouseLockController } from "../../controller/MouseLockController";
-import { GameConfig } from "../../config/GameConfig";
-import { EnergyModuleC } from "../../module/Energy/EnergyModule";
 
 export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
     private _bagC: P12BagModuleC;
@@ -25,11 +26,15 @@ export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
         this.btn_UnConfirm_Use.onClicked.add(() => UIService.hide(SenzuBeanReConfirmPanel));
 
         this.btn_Confirm_Use.onClicked.add(() => this.useSenzuBean());
+
+        Yoact.bindYoact(() => {
+            const recovery = Math.round(this.energyC.viewEnergyLimit.data * 0.6);
+            Gtk.trySetText(this.text_Recovery, StringUtil.format(GameConfig.Language.Online_shop011.Value, recovery));
+        });
     }
 
     protected onShow(): void {
-        const [, energyLimit] = this.energyC.getPlayerEnergy();
-        this.text_Recovery.text = StringUtil.format(GameConfig.Language.Online_shop011.Value, Math.round(energyLimit * 0.6));
+        this.energyC.refreshStaminaLimit();
         // 注册快捷键
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => UIService.hideUI(this));
         KeyOperationManager.getInstance().onKeyUp(this, Keys.E, () => this.useSenzuBean());
