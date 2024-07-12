@@ -6,3 +6,7 @@ export enum TowerElementType {
     Wood,
     Earth
 }
+export enum TowerTargetType {
+    Single = 1, 
+    Mutiple,
+}

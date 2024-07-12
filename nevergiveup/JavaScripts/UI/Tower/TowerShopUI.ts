@@ -11,7 +11,8 @@ import { UIPool } from "../../UIPool";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
-import { TowerElementType } from "../../const/enum";
+import { GlobalData } from "../../const/GlobalData";
+import { TowerElementType, TowerTargetType } from "../../const/enum";
 import { MGSTool } from "../../tool/MGSTool";
 import TowerShopUI_Generate from "../../ui-generate/Tower/TowerShopUI_generate";
 import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
@@ -29,9 +30,11 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	public shopItemUIs: ShopItemUI[] = [];
 	public opts: {
 		ele?: TowerElementType; // 不存在则为All
+		target?: TowerTargetType; // 不存在则为All
 	} = {};
 	public setShopItemUIs(options?: {
 		ele?: TowerElementType; // 不存在则为All
+		target?: TowerTargetType; // 不存在则为All
 	}) {
 		this.opts = options ?? {};
 		this.shopItemUIs = [];
@@ -40,19 +43,17 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			const item = UIService.create(ShopItemUI);
 			const towerCfg = cfg[i];
 			if(options?.ele && options.ele != towerCfg.elementTy) continue;
+			if(options?.target) {
+				if(options.target === TowerTargetType.Single && towerCfg.attackCount[0] > 1) continue; // 为1则为单体
+				if(options.target === TowerTargetType.Mutiple && towerCfg.attackCount[0] <= 1) continue; // 1以上则为aoe
+			}
 			this.shopItemUIs.push(item);
 			item.init(towerCfg.id);
 		}
 		this.towerItemCanvas.removeAllChildren();
-		let maxCount = Math.floor(this.towerItemCanvas.size.x / (this.shopItemUIs[0].rootCanvas.size.x + 10));
-		this.towerItemCanvas.size = Utils.TEMP_VECTOR2.set
-			(this.towerItemCanvas.size.x,
-				(this.shopItemUIs[0].rootCanvas.size.y + 20) * Math.ceil(this.shopItemUIs.length / maxCount));
 		for (let i = 0; i < this.shopItemUIs.length; i++) {
-			let item = this.shopItemUIs[i];
-			let size = item.uiObject.size;
+			const item = this.shopItemUIs[i];
 			this.towerItemCanvas.addChild(item.uiObject);
-			item.uiObject.size = size;
 		}
 	}
 
@@ -96,11 +97,52 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.updateInfo(2);
 		})
 		this.setShopItemUIs();
+		this.initDropdowns();		
+	}
 
-		this.mDropdown_1.onSelectionChangedEvent.add((item: string, select: mw.SelectInfo) => {
-			const ele = TowerElementType[item];
-			if(item === "All") this.setShopItemUIs({ ...this.opts, ele: undefined })
+	public getSelectedTowerElementType(selectedOpt: string): TowerElementType {
+		const languages = GlobalData.Shop.shopElementsOpts.map(item => GameConfig.Language[item]?.Value)
+		const idx = languages.findIndex(item => item === selectedOpt);
+		if(idx === -1) return null;
+		return idx;
+	}
+	public getSelectedTowerTargetType(selectedOpt: string): TowerTargetType {
+		const languages = GlobalData.Shop.shopTargetOpts.map(item => GameConfig.Language[item]?.Value)
+		const idx = languages.findIndex(item => item === selectedOpt);
+		if(idx === -1) return null;
+		return idx; // 1~2
+	}
+
+
+	public initDropdowns() {
+		this.mDropdown_1.clearOptions();
+		GlobalData.Shop.shopElementsOpts.map((item) => {
+			this.mDropdown_1.addOption(GameConfig.Language[item]?.Value);
+		})
+		this.mDropdown_1.onSelectionChangedEvent.add((selectedItem: string) => {
+			const ele = this.getSelectedTowerElementType(selectedItem) || undefined;
+			if(selectedItem === GameConfig.Language.Sift_1.Value) this.setShopItemUIs({ ...this.opts, ele: undefined })
 			else this.setShopItemUIs( { ...this.opts, ele } );
+		})
+		this.mDropdown_1.selectedOptionIndex = 0;
+
+		this.mDropdown_2.clearOptions();		
+		GlobalData.Shop.shopTargetOpts.map((item) => {
+			this.mDropdown_2.addOption(GameConfig.Language[item]?.Value);
+		})
+		this.mDropdown_2.onSelectionChangedEvent.add((selectedItem: string) => {
+			const target = this.getSelectedTowerTargetType(selectedItem) || undefined;
+			if(selectedItem === GameConfig.Language.Sift_1.Value) this.setShopItemUIs({ ...this.opts, target: undefined })
+			else this.setShopItemUIs( { ...this.opts, target } );
+		})
+		this.mDropdown_2.selectedOptionIndex = 0;
+
+
+		this.mDropdown_4.onSelectionChangedEvent.add((item: string, select: mw.SelectInfo) => {
+			console.log("#debug onSelectionChangedEvent", item, select);
+			// const ele = TowerElementType[item];
+			// if(item === "All") this.setShopItemUIs({ ...this.opts, ele: undefined })
+			// else this.setShopItemUIs( { ...this.opts, ele } );
 		})
 	}
 	public updateInfo(level: number = 0) {
