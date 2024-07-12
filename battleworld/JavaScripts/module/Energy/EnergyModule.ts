@@ -369,7 +369,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, BwEnergyModuleDa
         if (limitRefresh !== undefined) d.tryUpdateLimit(limitRefresh);
         d.energy += val;
         d.save(false);
-        this.syncEnergyToClient(player.userId, d.energy);
+        this.syncEnergyToClient(player.userId, d.energy, limitRefresh);
         Log4Ts.log(EnergyModuleS, `add ${val} energy to player ${userId}.`, ` current: ${d.energy}`);
     }
 
