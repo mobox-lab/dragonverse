@@ -6,10 +6,10 @@
  * @FilePath: \nevergiveup\JavaScripts\Modules\TowerModule\Tower\ThrowTower.ts
  * @Description: 修改描述
  */
-import { GameManager } from "../../../GameManager";
 import Utils from "../../../Utils";
 import AttackTower from "./AttackTower";
 import { Flyer } from "./Flyer";
+import Gtk from "../../../util/GToolkit";
 
 export default class ThrowTower extends AttackTower {
     protected async attack() {
@@ -31,9 +31,11 @@ export default class ThrowTower extends AttackTower {
         await TimeUtil.delaySecond(0.2);
         let flag = await go.isReady();
         flag && go.fireToPos(enemys[0].position);
+        this._attackRandomIndex = Gtk.random(0, this._attackAnims.length, true);
+        const effectDelay = this.cfg.effectDelayTime?.[this._attackRandomIndex] ?? 300;
         this.attackShow();
         setTimeout(() => {
             this.makeDamage(enemys);
-        }, 300);
+        }, effectDelay);
     }
 }

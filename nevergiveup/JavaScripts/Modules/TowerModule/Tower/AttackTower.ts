@@ -27,12 +27,13 @@ export default class AttackTower extends TowerBase {
         );
     }
 
-    private _attackAnims: string[];
+    protected _attackAnims: string[];
     protected _attackAnim: Animation;
     protected _idleAnim: Animation;
     protected _weaponRoot: GameObject;
     protected _towerCha: Character;
     protected _accumulateDamage: number = 0;
+    protected _attackRandomIndex: number = 0;
     private _animationTime: number = 0;
     protected canBuffProperty: string[] = ["attackDamage", "attackRange", "findRange", "attackTime", "attackCount"];
 
@@ -125,21 +126,25 @@ export default class AttackTower extends TowerBase {
                 .toRotation()
                 .add(this.oriTransform.rotation);
         }
+        this._attackRandomIndex = Gtk.random(0, this._attackAnims.length, true);
+        const effectDelay = this.cfg.effectDelayTime?.[this._attackRandomIndex] ?? 0;
+        // 设置攻击延迟
         this.attackShow();
-        this.makeDamage(enemys);
+        setTimeout(() => {
+            this.makeDamage(enemys);
+        }, effectDelay);
     }
 
     protected attackShow() {
-        const randomIndex = Gtk.random(0, this._attackAnims.length, true);
         if (this._attackAnim) {
             // 随机攻击动画
-            this._attackAnim = this._towerCha.loadAnimation(this._attackAnims[randomIndex]);
+            this._attackAnim = this._towerCha.loadAnimation(this._attackAnims[this._attackRandomIndex]);
             this._attackAnim.play();
             this._animationTime = this.cfg.AtkAnimDur;
         }
         if (GameManager.useEffect) {
-            const effectDelay = this.cfg.effectDelayTime?.[randomIndex] ?? 0;
-            const characterDelay = this.cfg.characterDelayTime?.[randomIndex] ?? 0;
+            const effectDelay = this.cfg.effectDelayTime?.[this._attackRandomIndex] ?? 0;
+            const characterDelay = this.cfg.characterDelayTime?.[this._attackRandomIndex] ?? 0;
             // 武器攻击特效
             setTimeout(() => {
                 const effect = this._weaponRoot?.getChildren()[0]?.getChildren()[0] as Effect;

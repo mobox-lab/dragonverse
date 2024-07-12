@@ -27,10 +27,21 @@ import TowerBase from './TowerBase';
 
 export default class BuffTower extends TowerBase {
     protected canBuffProperty: string[] = ["findRange"];
+    protected _towerCha: Character;
 
     constructor(info: TowerInfo) {
         super(info, async () => {
-
+            await this.root?.asyncReady();
+            if (this.tower && this.tower instanceof Character) {
+                this._towerCha = this.tower as Character;
+                this.tower.asyncReady().then(async () => {
+                    (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((weaponRoot) => {
+                        this._towerCha.attachToSlot(weaponRoot, this.cfg.weaponSlot ?? HumanoidSlotType.RightHand);
+                        weaponRoot.localTransform.position = this.cfg.weaponLocation ? new Vector(...this.cfg.weaponLocation) : Vector.zero;
+                        weaponRoot.localTransform.rotation = Rotation.zero;
+                    });
+                });
+            }
         });
     }
 
