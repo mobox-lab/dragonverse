@@ -111,38 +111,13 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this.initDropdowns();		
 	}
 
-	public getSelectedTowerElementType(selectedOpt: string): TowerElementType {
-		const languages = GlobalData.Shop.shopElementsOpts.map(item => GameConfig.Language[item]?.Value)
-		const idx = languages.findIndex(item => item === selectedOpt);
-		if(idx === -1) return null;
-		return idx;
-	}
-	public getSelectedTowerTargetType(selectedOpt: string): TowerTargetType {
-		const languages = GlobalData.Shop.shopTargetOpts.map(item => GameConfig.Language[item]?.Value)
-		const idx = languages.findIndex(item => item === selectedOpt);
-		if(idx === -1) return null;
-		return idx;
-	}
-	public getSelectedTowerDamageType(selectedOpt: string): TowerDamageType {
-		const languages = GlobalData.Shop.shopDamageOpts.map(item => GameConfig.Language[item]?.Value)
-		const idx = languages.findIndex(item => item === selectedOpt);
-		if(idx === -1) return null;
-		return idx;
-	}
-	public getSelectedTowerStrategyType(selectedOpt: string): TowerStrategyType {
-		const languages = GlobalData.Shop.shopStrategyOpts.map(item => GameConfig.Language[item]?.Value)
-		const idx = languages.findIndex(item => item === selectedOpt);
-		if(idx === -1) return null;
-		return idx;
-	}
-
 	public initDropdowns() {
 		this.mDropdown_1.clearOptions();
 		GlobalData.Shop.shopElementsOpts.map((item) => {
 			this.mDropdown_1.addOption(GameConfig.Language[item]?.Value);
 		})
 		this.mDropdown_1.onSelectionChangedEvent.add((selectedItem: string) => {
-			const ele = this.getSelectedTowerElementType(selectedItem) || undefined;
+			const ele = GlobalData.Shop.getSelectedTowerElementType(selectedItem) || undefined;
 			if(selectedItem === GameConfig.Language.Sift_1.Value) this.setShopItemUIs({ ...this.opts, ele: undefined })
 			else this.setShopItemUIs( { ...this.opts, ele } );
 		})
@@ -153,7 +128,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.mDropdown_2.addOption(GameConfig.Language[item]?.Value);
 		})
 		this.mDropdown_2.onSelectionChangedEvent.add((selectedItem: string) => {
-			const target = this.getSelectedTowerTargetType(selectedItem) || undefined;
+			const target = GlobalData.Shop.getSelectedTowerTargetType(selectedItem) || undefined;
 			if(selectedItem === GameConfig.Language.Sift_1.Value) this.setShopItemUIs({ ...this.opts, target: undefined })
 			else this.setShopItemUIs( { ...this.opts, target } );
 		})
@@ -165,7 +140,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.mDropdown_3.addOption(GameConfig.Language[item]?.Value);
 		})
 		this.mDropdown_3.onSelectionChangedEvent.add((selectedItem: string) => {
-			const damage = this.getSelectedTowerDamageType(selectedItem) || undefined;
+			const damage = GlobalData.Shop.getSelectedTowerDamageType(selectedItem) || undefined;
 			if(selectedItem === GameConfig.Language.Sift_1.Value) this.setShopItemUIs({ ...this.opts, damage: undefined })
 			else this.setShopItemUIs( { ...this.opts, damage } );
 		})
@@ -177,7 +152,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.mDropdown_4.addOption(GameConfig.Language[item]?.Value);
 		})
 		this.mDropdown_4.onSelectionChangedEvent.add((selectedItem: string) => {
-			const strategy = this.getSelectedTowerStrategyType(selectedItem) || undefined;
+			const strategy = GlobalData.Shop.getSelectedTowerStrategyType(selectedItem) || undefined;
 			if(selectedItem === GameConfig.Language.Sift_1.Value) this.setShopItemUIs({ ...this.opts, strategy: undefined })
 			else this.setShopItemUIs( { ...this.opts, strategy } );
 		})
