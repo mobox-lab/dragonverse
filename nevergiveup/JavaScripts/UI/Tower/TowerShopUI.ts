@@ -55,8 +55,8 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				if(options.damage === TowerDamageType.Physical && towerCfg.adap !== 1) continue;
 				if(options.damage === TowerDamageType.Magical && towerCfg.adap !== 2) continue;
 			}
-			if(options?.strategy) {
-				// TODO: strategy
+			if(options?.strategy && options.strategy !== towerCfg.towerStrategy) {
+				continue;
 			}
 			this.shopItemUIs.push(item);
 			item.init(towerCfg.id);
