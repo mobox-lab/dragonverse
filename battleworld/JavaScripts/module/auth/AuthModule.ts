@@ -2098,6 +2098,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 }
             }
             headers["Authorization"] = `Bearer ${token}`;
+
+            if (GameServiceConfig.isRelease) silence = true;
         }
 
         const url = GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl ? releaseUrl : testUrl;
