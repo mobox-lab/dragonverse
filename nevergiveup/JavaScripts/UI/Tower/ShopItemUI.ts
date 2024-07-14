@@ -108,10 +108,9 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 	/**
 	 * 刷新UI的state
 	 */
-	public async refreshState() {
-		await ModuleService.ready();
+	public refreshState() { 
 		this.state = ModuleService.getModule(CardModuleC).getCardState(this._cfgID);
-		if (this.chooseImg.visible) {//代表现在这个item现在被选中
+		if (this.chooseImg?.visible) {//代表现在这个item现在被选中
 			this.chooseBtn.onClicked.broadcast();
 		}
 	}

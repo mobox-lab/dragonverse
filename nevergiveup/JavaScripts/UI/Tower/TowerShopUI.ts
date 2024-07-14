@@ -7,8 +7,6 @@
 
 import CardModuleC, { CardState } from "../../Modules/CardModule/CardModuleC";
 import { TweenCommon } from "../../TweenCommon";
-import { UIPool } from "../../UIPool";
-import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
 import { GlobalData } from "../../const/GlobalData";
@@ -55,8 +53,12 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				if(options.damage === TowerDamageType.Physical && towerCfg.adap !== 1) continue;
 				if(options.damage === TowerDamageType.Magical && towerCfg.adap !== 2) continue;
 			}
-			if(options?.strategy && options.strategy !== towerCfg.towerStrategy) {
-				continue;
+			if(options?.strategy && options.strategy !== TowerStrategyType.AntiHidden) {
+				const sInfo = GlobalData.Shop.getStrategyInfo(towerCfg.id);
+				if(options.strategy !== (sInfo?.strategyKey as TowerStrategyType)) continue;
+			}
+			if(options?.strategy && options.strategy === TowerStrategyType.AntiHidden) {
+				if(!towerCfg.attackTags?.includes(1)) continue;
 			}
 			this.shopItemUIs.push(item);
 			item.init(towerCfg.id);

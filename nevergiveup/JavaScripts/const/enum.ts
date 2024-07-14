@@ -16,7 +16,7 @@ export enum TowerDamageType {
 }
 export enum TowerStrategyType {
     WarmUp = 1, // 暖机
-    AntiHidden, // 破隐
+    AntiHidden, // 破隐 这个不在buff中
     ArmorBreak, // 破甲
     StunEffect, // 眩晕
     ArmorShred, // 削甲

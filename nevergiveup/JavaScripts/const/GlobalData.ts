@@ -1,4 +1,5 @@
 import { GameConfig } from "../config/GameConfig";
+import { TowerElementType, TowerStrategyType } from "./enum";
 
 export namespace GlobalData {
     /**商店 */
@@ -26,5 +27,93 @@ export namespace GlobalData {
         public static getSelectedTowerTargetType = this.getSelectedType(this.shopTargetOpts);
         public static getSelectedTowerDamageType = this.getSelectedType(this.shopDamageOpts);
         public static getSelectedTowerStrategyType = this.getSelectedType(this.shopStrategyOpts);
+        
+        /** 获取对策对应的 buff数组 */
+        public static getTowerStrategyBuffs = () => {
+            const buffs = GameConfig.Buff.getAllElement();
+            const strategyBuffs:{[key: number]: number[]} = {};
+            function setStrategyBuffs(key: TowerStrategyType, value: number) {
+                if(strategyBuffs?.[key]) {
+                    strategyBuffs[key].push(value);
+                } else {
+                    strategyBuffs[key] = [value];
+                }
+            }
+            for(const buff of buffs) {
+                if(buff.warmUp !== 0) {
+                    setStrategyBuffs(TowerStrategyType.WarmUp, buff.id);
+                    continue;
+                }
+                if(buff.armorPen !== 0) {
+                    setStrategyBuffs(TowerStrategyType.ArmorBreak, buff.id);
+                    continue;
+                }
+                if(buff.speed === -999) {
+                    setStrategyBuffs(TowerStrategyType.StunEffect, buff.id);
+                    continue;
+                }
+                if(buff.armorReduction !== 0) {
+                    setStrategyBuffs(TowerStrategyType.ArmorShred, buff.id);
+                    continue;
+                }
+                if(buff.speed !== 0 && buff.speed !== -999) {
+                    setStrategyBuffs(TowerStrategyType.SlowEffect, buff.id);
+                    continue;
+                }
+                if(buff.magicPen !== 0) {
+                    setStrategyBuffs(TowerStrategyType.MagicPenetration, buff.id);
+                    continue;
+                }
+                if(buff.flyingDamageBoost !== 0) {
+                    setStrategyBuffs(TowerStrategyType.AntiAir, buff.id);
+                    continue;
+                }
+                if(buff.multiHit !== 0) {
+                    setStrategyBuffs(TowerStrategyType.MultiHit, buff.id);
+                    continue;
+                }
+                if(buff.flyFirst !== 0) {
+                    setStrategyBuffs(TowerStrategyType.PriorityAir, buff.id);
+                    continue;
+                }
+            }
+            console.log('#debug strategyBuffs:', JSON.stringify(strategyBuffs))
+            return strategyBuffs;
+            // switch (towerStrategyId) {
+            //     case TowerStrategyType.WarmUp: return buffs.filter((cfg) => cfg.warmUp !== 0);
+            //     case TowerStrategyType.ArmorBreak: return buffs.filter((cfg) => cfg.armorPen !== 0);
+            //     case TowerStrategyType.StunEffect: return buffs.filter((cfg) => cfg.speed === -999);
+            //     case TowerStrategyType.ArmorShred: return buffs.filter((cfg) => cfg.armorReduction !== 0);
+            //     case TowerStrategyType.SlowEffect: return buffs.filter((cfg) => cfg.speed !== 0 && cfg.speed !== -999);
+            //     case TowerStrategyType.MagicPenetration: return buffs.filter((cfg) => cfg.magicPen !== 0);
+            //     case TowerStrategyType.AntiAir: return buffs.filter((cfg) => cfg.flyingDamageBoost !== 0);
+            //     case TowerStrategyType.MultiHit: return buffs.filter((cfg) => cfg.multiHit !== 0);
+            //     case TowerStrategyType.PriorityAir: return buffs.filter((cfg) => cfg.flyFirst !== 0);
+            // }
+        }
+        // key 为 TowerStrategyType 的枚举, value 为 buffId 的数组
+        public static towerStrategyBuffs:{[key: number]: number[]} = this.getTowerStrategyBuffs();
+        // 获取塔的buff对策
+        public static getStrategyInfo =  (towerId: number)=> {
+            const cfg = GameConfig.Tower.getElement(towerId);
+            if(!cfg?.attackBuff?.length) return null
+            const buffIds = cfg.attackBuff;
+            const strategyBuffs = this.towerStrategyBuffs;
+            for(let i = 0; i < buffIds.length; i++) {
+                const buffId = buffIds[i];
+                const buffCfg = GameConfig.Buff.getElement(buffId);
+                if(!buffCfg) continue;
+                for(const key in strategyBuffs) {
+                    if(strategyBuffs[key]?.includes(buffCfg.id)) {
+                        return {
+                            strategyStr: TowerStrategyType[key],
+                            strategyKey: Number(key),
+                            buffId,
+                        }   
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
