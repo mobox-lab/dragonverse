@@ -260,6 +260,20 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.imgDesc_Internal
 	}
+	private textTitle_Internal: mw.TextBlock
+	public get textTitle(): mw.TextBlock {
+		if(!this.textTitle_Internal&&this.uiWidgetBase) {
+			this.textTitle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_Desc/textTitle') as mw.TextBlock
+		}
+		return this.textTitle_Internal
+	}
+	private textDesc_Internal: mw.TextBlock
+	public get textDesc(): mw.TextBlock {
+		if(!this.textDesc_Internal&&this.uiWidgetBase) {
+			this.textDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_Desc/textDesc') as mw.TextBlock
+		}
+		return this.textDesc_Internal
+	}
 	private infoBtn_Internal: mw.StaleButton
 	public get infoBtn(): mw.StaleButton {
 		if(!this.infoBtn_Internal&&this.uiWidgetBase) {
@@ -344,14 +358,14 @@ export default class TowerShopUI_Generate extends UIScript {
 	   this.initLanguage(this.infoTxt)
 	   
 	
+	   this.initLanguage(this.textTitle)
+	   
+	
+	   this.initLanguage(this.textDesc)
+	   
+	
 	   //文本多语言
 	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/canvas_Desc/TextTitle") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/canvas_Desc/TextDesc") as any);
-	   
-	
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

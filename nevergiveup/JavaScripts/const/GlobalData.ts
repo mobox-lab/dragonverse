@@ -15,6 +15,8 @@ export namespace GlobalData {
 
         /**筛选 - 对策 all, ... */
         public static shopStrategyOpts: string[] = ["Sift_1", "Strategy_1", "Strategy_2", "Strategy_3", "Strategy_4", "Strategy_5", "Strategy_6", "Strategy_7", "Strategy_8", "Strategy_9","Strategy_10"];
+        
+        public static shopStrategyDescLangs: string[] = ["Sift_1", "StrategyDesc_1", "StrategyDesc_2", "StrategyDesc_3", "StrategyDesc_4", "StrategyDesc_5", "StrategyDesc_6", "StrategyDesc_7", "StrategyDesc_8", "StrategyDesc_9","StrategyDesc_10"];
 
         // 柯里化函数，用于根据多语言之后的文本，获取选中的Index
         public static getSelectedType = (opts: string[]) => (selectedOpt: string): number | null => {

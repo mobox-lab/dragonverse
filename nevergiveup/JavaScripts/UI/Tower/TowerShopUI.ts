@@ -5,6 +5,7 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
+import Gtk from "gtoolkit";
 import CardModuleC, { CardState } from "../../Modules/CardModule/CardModuleC";
 import { TweenCommon } from "../../TweenCommon";
 import { GameConfig } from "../../config/GameConfig";
@@ -227,6 +228,13 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				break;
 			default: break;
 		}
+		const sInfo = GlobalData.Shop.getStrategyInfo(cfg.id);
+		if(sInfo?.strategyKey) {
+			Gtk.trySetVisibility(this.canvas_Desc, SlateVisibility.HitTestInvisible);
+			this.textTitle.text = GameConfig.Language.getElement(GlobalData.Shop.shopStrategyOpts[sInfo.strategyKey])?.Value;
+			this.textDesc.text = GameConfig.Language.getElement(GlobalData.Shop.shopStrategyDescLangs[sInfo.strategyKey])?.Value; // TODO: 填入数值
+		} else Gtk.trySetVisibility(this.canvas_Desc, SlateVisibility.Collapsed);
+
 		const tags = this.getTags();
 		let len = tags?.length ?? 0;
 		for (let i = 0; i < this._tagItemUIs.length; i++) {
