@@ -1,6 +1,4 @@
 import { GameConfig } from "../config/GameConfig";
-import { LanguageConfig } from "../config/Language";
-import { TowerElementType, TowerTargetType } from "./enum";
 
 export namespace GlobalData {
     /**商店 */
