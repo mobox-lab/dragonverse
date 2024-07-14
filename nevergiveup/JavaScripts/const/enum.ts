@@ -7,8 +7,10 @@ export enum TowerElementType {
     Earth
 }
 export enum TowerTargetType {
-    Single = 1, 
-    Multiple,
+    Single = 1, // 单体 
+    Multiple,   // 群体
+    Energy,     // 产出
+    Buff        // 增益
 }
 export enum TowerDamageType {
     Physical = 1,

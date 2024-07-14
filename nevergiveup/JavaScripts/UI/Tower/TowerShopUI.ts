@@ -49,10 +49,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				if(options.target === TowerTargetType.Single && towerCfg.attackCount[0] > 1) continue; // 为1则为单体
 				if(options.target === TowerTargetType.Multiple && towerCfg.attackCount[0] <= 1) continue; // 1以上则为aoe
 			}
-			if(options?.damage) {
-				if(options.damage === TowerDamageType.Physical && towerCfg.adap !== 1) continue;
-				if(options.damage === TowerDamageType.Magical && towerCfg.adap !== 2) continue;
-			}
+			if(options?.damage && options.damage !== towerCfg.adap) continue;
 			if(options?.strategy && options.strategy !== TowerStrategyType.AntiHidden) {
 				const sInfo = GlobalData.Shop.getStrategyInfo(towerCfg.id);
 				if(options.strategy !== (sInfo?.strategyKey as TowerStrategyType)) continue;
@@ -182,6 +179,16 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.infoLv3.normalImageGuid = selectedGuid;
 	}
 
+	public getTags() {
+		const cfg = this._cfg;
+		const tags = [];
+		if(cfg?.attackCount?.length)
+			tags.push(GlobalData.Shop.shopTargetOpts[cfg.attackCount[0] > 1 ? 2 : 1]);
+		if(cfg?.adap)
+			tags.push(GlobalData.Shop.shopDamageOpts[cfg.adap]);
+		return tags
+	}
+
 	/**
 	 * 展示塔的信息
 	 * @param cfgID cfgid
@@ -220,11 +227,12 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				break;
 			default: break;
 		}
-		let length = cfg.attackTags?.length ? cfg.attackTags.length : 0;
+		const tags = this.getTags();
+		let len = tags?.length ?? 0;
 		for (let i = 0; i < this._tagItemUIs.length; i++) {
-			this._tagItemUIs[i].visible = (i < length);
-			if (i < length) {
-				this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement("Text_AttackTag" + cfg.attackTags[i]).Value
+			this._tagItemUIs[i].visible = (i < len);
+			if (i < len) {
+				this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
 			}
 		}
 	}

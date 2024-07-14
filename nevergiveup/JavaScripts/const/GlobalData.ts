@@ -11,7 +11,7 @@ export namespace GlobalData {
         public static shopTargetOpts: string[] = ["Sift_1", "Target_1", "Target_2"];
 
         /**筛选 - 类型 all, 物理/法术 */
-        public static shopDamageOpts: string[] = ["Sift_1", "DamageType_1", "DamageType_2"];
+        public static shopDamageOpts: string[] = ["Sift_1", "DamageType_1", "DamageType_2", "DamageType_3", "DamageType_4"];
 
         /**筛选 - 对策 all, ... */
         public static shopStrategyOpts: string[] = ["Sift_1", "Strategy_1", "Strategy_2", "Strategy_3", "Strategy_4", "Strategy_5", "Strategy_6", "Strategy_7", "Strategy_8", "Strategy_9","Strategy_10"];
@@ -77,7 +77,6 @@ export namespace GlobalData {
                     continue;
                 }
             }
-            console.log('#debug strategyBuffs:', JSON.stringify(strategyBuffs))
             return strategyBuffs;
             // switch (towerStrategyId) {
             //     case TowerStrategyType.WarmUp: return buffs.filter((cfg) => cfg.warmUp !== 0);

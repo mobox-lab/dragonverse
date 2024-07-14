@@ -22,9 +22,9 @@
  */
 
 import CardModuleC, { CardState } from "../../Modules/CardModule/CardModuleC";
-import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
+import { GlobalData } from "../../const/GlobalData";
 import ShopItemUI_Generate from "../../ui-generate/Tower/ShopItemUI_generate";
 import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
 import TowerShopUI from "./TowerShopUI";
@@ -84,7 +84,15 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 			this.initObj();
 		}
 	}
-
+	public getTags() {
+		const cfg = this._cfg;
+		const tags = [];
+		if(cfg?.attackCount?.length)
+			tags.push(GlobalData.Shop.shopTargetOpts[cfg.attackCount[0] > 1 ? 2 : 1]);
+		if(cfg?.adap)
+			tags.push(GlobalData.Shop.shopDamageOpts[cfg.adap]);
+		return tags
+	}
 	/**
 	 * 初始化组件
 	 */
@@ -95,12 +103,12 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.nameTxt.text = this._cfg.name;
 		this.txt_sell.text = this._cfg.shopPrice.toFixed(0);
 		this.refreshState();
-		const cfg = this._cfg;
-		let length = cfg.attackTags?.length ? cfg.attackTags.length : 0;
+		const tags = this.getTags();
+		const len = tags?.length ?? 0;
 		for (let i = 0; i < this._tagItemUIs.length; i++) {
-			this._tagItemUIs[i].visible = (i < length);
-			if (i < length) {
-				this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement("Text_AttackTag" + cfg.attackTags[i]).Value
+			this._tagItemUIs[i].visible = (i < len);
+			if (i < len) {
+				this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
 			}
 		}
 	}
