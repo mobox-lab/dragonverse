@@ -12,6 +12,7 @@ import { GameManager } from "../GameManager";
 import { MapManager } from "../MapScript";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 import TowerBase from "../Modules/TowerModule/Tower/TowerBase";
+import { RunesConfig } from "../Runes";
 import { NEW_STAGE_CONFIG, STAGE_CONFIG } from "../StageConfig";
 import GainUI from "../UI/Tower/GainUI";
 import Utils from "../Utils";
@@ -31,8 +32,15 @@ export enum DamageType {
     ARMOR = 1,
     MAGIC = 2,
 }
-
-export type ElementType = 1 | 2 | 3 | 4 | 5 | 6;
+// （从1—6分别为光、暗、水、火、木、土）
+export enum ElementEnum {
+    LIGHT = 1,
+    DARK = 2,
+    WATER = 3,
+    FIRE = 4,
+    WOOD = 5,
+    EARTH = 6,
+}
 
 export class Enemy implements BuffBag {
     time: number = 0;
@@ -562,31 +570,67 @@ export class Enemy implements BuffBag {
         }
 
         // 基础伤害
-        const damage = tower.attackDamage;
+        let damage = tower.attackDamage;
         console.log(damage, "damage");
-
+        // 判断伤害的类型，根据tower的类型来判断
+        const damageType = tower.cfg.adap;
+        if (damageType === DamageType.ARMOR) {
+            // todo 天赋树的物理攻击加成
+            // todo 龙娘祝福
+            const adBonusIndex = 0;
+            const adBonus = Utils.isNotNullOrUndefined(adBonusIndex) ? RunesConfig.adBonus[adBonusIndex] : 0;
+            const adBonus2Index = 0;
+            const adBonus2 = Utils.isNotNullOrUndefined(adBonus2Index) ? RunesConfig.adBonus2[adBonus2Index] : 0;
+            damage = damage + adBonus + adBonus2;
+        } else if (damageType === DamageType.MAGIC) {
+            // todo 天赋树的魔法攻击加成
+            // todo 龙娘祝福
+            const apBonusIndex = 0;
+            const apBonus = Utils.isNotNullOrUndefined(apBonusIndex) ? RunesConfig.apBonus[apBonusIndex] : 0;
+            const apBonus2Index = 0;
+            const apBonus2 = Utils.isNotNullOrUndefined(apBonus2Index) ? RunesConfig.apBonus2[apBonus2Index] : 0;
+            damage = damage + apBonus + apBonus2;
+        }
+        // todo 天赋树的对空加成
+        const flyingBonusIndex = 0;
+        const flyingBonus = Utils.isNotNullOrUndefined(flyingBonusIndex)
+            ? RunesConfig.flyingBonus[flyingBonusIndex]
+            : 0;
         // P1 伤害
-        const P1Damage = damage + flyingDamageBoost;
+        const P1Damage = damage * (1 + flyingBonus) + flyingDamageBoost;
         console.log(P1Damage, "P1Damage");
         // P2 伤害
         const P2Percent = this.elementalRestraint(tower);
         const P2Damage = P1Damage * P2Percent;
         console.log(P2Damage, "P2Damage");
         // P3 伤害
-        // 判断伤害的类型，根据tower的类型来判断
-        const damageType = tower.cfg.adap;
+
+        // todo 天赋树的物理斩杀和魔法压制
+        const adExecuteIndex = 0;
+        const adExecute = Utils.isNotNullOrUndefined(adExecuteIndex) ? RunesConfig.adExecute[adExecuteIndex] : 0;
+        const apExecuteIndex = 0;
+        const apExecute = Utils.isNotNullOrUndefined(apExecuteIndex) ? RunesConfig.apExecute[apExecuteIndex] : 0;
         let P3Damage = 0;
         if (damageType === DamageType.ARMOR) {
             // 物理伤害
             P3Damage = P2Damage * (1 - (this.armor - armorPen) / (200 + this.armor - armorPen));
+            if (this.hp < this.hpMax * 0.2) {
+                // 物理对于血量低于20%造成x%额外伤害
+                P3Damage = P3Damage * (1 + adExecute);
+            }
         } else if (damageType === DamageType.MAGIC) {
             P3Damage = P2Damage * (1 - (this.magicResist - magicPen) / (200 + this.magicResist - magicPen));
+            if (this.hp > this.hpMax * 0.8) {
+                // 魔法对于血量高于80%造成x%额外伤害
+                P3Damage = P3Damage * (1 + apExecute);
+            }
         } else {
             P3Damage = 0;
         }
         console.log(P3Damage, "P3Damage");
         const finalDamage = Math.min(P3Damage, this.hp);
         console.log(finalDamage, "finalDamage");
+
         // this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
         // 多段伤害
         const multiHits = buffs.filter((buff) => buff.cfg.multiHit !== 0);
@@ -684,13 +728,13 @@ export class Enemy implements BuffBag {
         const buffPercent = 0.2;
         const debuffPercent = 0.2;
 
-        const advantageMap: { [key in ElementType]: ElementType } = {
-            1: 2, // 光克暗
-            2: 5, // 暗克木
-            3: 4, // 水克火
-            4: 1, // 火克光
-            5: 6, // 木克土
-            6: 3, // 土克水
+        const advantageMap: { [key in ElementEnum]: ElementEnum } = {
+            [ElementEnum.LIGHT]: ElementEnum.DARK, // 光克暗
+            [ElementEnum.DARK]: ElementEnum.WOOD, // 暗克木
+            [ElementEnum.WATER]: ElementEnum.FIRE, // 水克火
+            [ElementEnum.FIRE]: ElementEnum.LIGHT, // 火克光
+            [ElementEnum.WOOD]: ElementEnum.EARTH, // 木克土
+            [ElementEnum.EARTH]: ElementEnum.WATER, // 土克水
         };
 
         if (advantageMap[towerElement] === monsterElement) {
@@ -700,6 +744,40 @@ export class Enemy implements BuffBag {
             // 怪物克制塔
             result = result * (1 - debuffPercent);
         }
+        // 天赋树的元素增伤
+        // 光系塔伤害增加x%
+        const lightBonusIndex = 0;
+        const lightBonus = Utils.isNotNullOrUndefined(lightBonusIndex) ? RunesConfig.lightBonus[lightBonusIndex] : 0;
+        // 暗系塔伤害增加x%
+        const darkBonusIndex = 0;
+        const darkBonus = Utils.isNotNullOrUndefined(darkBonusIndex) ? RunesConfig.darkBonus[darkBonusIndex] : 0;
+        // 水系塔伤害增加x%
+        const waterBonusIndex = 0;
+        const waterBonus = Utils.isNotNullOrUndefined(waterBonusIndex) ? RunesConfig.waterBonus[waterBonusIndex] : 0;
+        // 火系塔伤害增加x%
+        const fireBonusIndex = 0;
+        const fireBonus = Utils.isNotNullOrUndefined(fireBonusIndex) ? RunesConfig.fireBonus[fireBonusIndex] : 0;
+        // 土系塔伤害增加x%
+        const earthBonusIndex = 0;
+        const earthBonus = Utils.isNotNullOrUndefined(earthBonusIndex) ? RunesConfig.earthBonus[earthBonusIndex] : 0;
+        // 木系塔伤害增加x%
+        const woodBonusIndex = 0;
+        const woodBonus = Utils.isNotNullOrUndefined(woodBonusIndex) ? RunesConfig.woodBonus[woodBonusIndex] : 0;
+
+        if (towerElement === ElementEnum.LIGHT) {
+            result = result * (1 + lightBonus);
+        } else if (towerElement === ElementEnum.DARK) {
+            result = result * (1 + darkBonus);
+        } else if (towerElement === ElementEnum.WATER) {
+            result = result * (1 + waterBonus);
+        } else if (towerElement === ElementEnum.FIRE) {
+            result = result * (1 + fireBonus);
+        } else if (towerElement === ElementEnum.EARTH) {
+            result = result * (1 + earthBonus);
+        } else if (towerElement === ElementEnum.WOOD) {
+            result = result * (1 + woodBonus);
+        }
+
         return result;
     }
 
