@@ -18,6 +18,7 @@ import { PlayerUtil } from "../Modules/PlayerModule/PlayerUtil";
 import { TowerManager } from "../Modules/TowerModule/TowerManager";
 import { TowerModuleC } from "../Modules/TowerModule/TowerModuleC";
 import { RankItem } from "../Rank/RankManager";
+import { RunesConfig } from "../Runes";
 import { NEW_STAGE_CONFIG, STAGE_CONFIG, baseHp } from "../StageConfig";
 import { EStageState, WaveConfig } from "../StageEnums";
 import { StageListener } from "../StageListener";
@@ -112,7 +113,13 @@ export class StageS {
             };
             this.rankItems.push(rankItem);
         });
-        this._hp = baseHp;
+        // todo 天赋树和龙娘血量加成
+        const userHPIndex = 0;
+        const userHP = Utils.isNotNullOrUndefined(userHPIndex) ? RunesConfig.userHP[userHPIndex] : 0;
+        const userHP2Index = 0;
+        const userHP2 = Utils.isNotNullOrUndefined(userHP2Index) ? RunesConfig.userHP2[userHP2Index] : 0;
+        this._hp = baseHp * (1 + userHP) * (1 + userHP2);
+        // this._hp = baseHp;
         this._maxHp = this._hp;
         this.cumulativeCount = 0;
         this.currentWaveCount = 0;
@@ -577,6 +584,12 @@ export class StageC {
         let stages = StageUtil.getStageDataWithId(stageId);
         let stageConfig = stages[this.difficulty];
         this.gold = 0;
+        // todo 天赋树和龙娘血量加成
+        const userHPIndex = 0;
+        const userHP = Utils.isNotNullOrUndefined(userHPIndex) ? RunesConfig.userHP[userHPIndex] : 0;
+        const userHP2Index = 0;
+        const userHP2 = Utils.isNotNullOrUndefined(userHP2Index) ? RunesConfig.userHP2[userHP2Index] : 0;
+        this.hp = baseHp * (1 + userHP) * (1 + userHP2);
         ModuleService.getModule(PlayerModuleC)
             .getUnlockTechNodeMap(playerIds)
             .then((res: { [key: number]: number[] }) => {
@@ -629,10 +642,18 @@ export class StageC {
 
         StageActions.onMapLoaded.add(() => {
             const stageCfg = GameConfig.Stage.getElement(this.stageId);
-            if(stageCfg?.sceneEnvId) {
+            if (stageCfg?.sceneEnvId) {
                 EnvironmentManager.getInstance().setEnvironment(stageCfg.sceneEnvId);
-                Log4Ts.log(StageC, "stage onMapLoaded stage:" + this.stageId + " difficulty:" + this.difficulty + " sceneEnvId:" + stageCfg.sceneEnvId);
-            } 
+                Log4Ts.log(
+                    StageC,
+                    "stage onMapLoaded stage:" +
+                        this.stageId +
+                        " difficulty:" +
+                        this.difficulty +
+                        " sceneEnvId:" +
+                        stageCfg.sceneEnvId
+                );
+            }
             Player.asyncGetLocalPlayer().then((player: Player) => {
                 player.character.worldTransform.position = MapManager.birthPosition.clone().add(new Vector(0, 0, 100));
                 player.character.worldTransform.rotation = MapManager.birthRotation.clone();
@@ -653,7 +674,7 @@ export class StageC {
         });
 
         let ui = UIService.getUI(UIMain);
-        ui.setHp(baseHp, baseHp);
+        ui.setHp(this.hp, this.hp);
 
         StageListener.addServerListener(this.id, "onStageStateChanged", (state: EStageState, ...param: any[]) => {
             this.state = state;

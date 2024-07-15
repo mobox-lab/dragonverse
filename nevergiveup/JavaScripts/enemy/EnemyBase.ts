@@ -77,6 +77,13 @@ export class Enemy implements BuffBag {
     // 狂暴化
     isBerserk: boolean = false;
 
+    // 怪物初始化的时间
+    createTime: number = 0;
+
+    speedActive: boolean = false;
+    armorActive: boolean = false;
+    magicResistActive: boolean = false;
+
     constructor(wave: number, configId: number, gate: number) {
         this.id = Enemy.count;
         Enemy.count++;
@@ -104,6 +111,24 @@ export class Enemy implements BuffBag {
         this.goldAmount = config.goldAmount;
         this.name = config.name;
         this.buffManager = new BuffManager();
+        // todo 天赋树的 减速+减魔抗+减护甲
+        const now = Math.floor(new Date().getTime() / 1000);
+        this.createTime = now;
+        // 减速持续5s
+        const speedBonusIndex = 0;
+        const speedBonus = Utils.isNotNullOrUndefined(speedBonusIndex) ? RunesConfig.speedBonus[speedBonusIndex] : 0;
+        const speedBonus2Index = 0;
+        const speedBonus2 = Utils.isNotNullOrUndefined(speedBonus2Index)
+            ? RunesConfig.speedBonus2[speedBonus2Index]
+            : 0;
+        this._speed = this._speed + speedBonus + speedBonus2;
+        // 减护甲和减魔抗持续10s
+        const armorBonusIndex = 0;
+        const armorBonus = Utils.isNotNullOrUndefined(armorBonusIndex) ? RunesConfig.armorBonus[armorBonusIndex] : 0;
+        const MRBonusIndex = 0;
+        const MRBonus = Utils.isNotNullOrUndefined(MRBonusIndex) ? RunesConfig.MRBonus[MRBonusIndex] : 0;
+        this.armor = this.armor + armorBonus;
+        this.magicResist = this.magicResist + MRBonus;
         // 初始化科技树的buff
         let unlockedTechNodes = GameManager.getStageClient().unlockedTechNodes;
         let buffIds = [];
@@ -500,7 +525,7 @@ export class Enemy implements BuffBag {
 
     onUpdate(dt: number) {
         this.healingMonster();
-
+        this.dealRunes();
         this.time += dt;
         this.updatePosionAndRotation();
         this._components.forEach((component) => component.update(dt));
@@ -627,6 +652,12 @@ export class Enemy implements BuffBag {
         } else {
             P3Damage = 0;
         }
+        // todo 天赋树的全体怪物受到伤害增加x%
+        const damageBonusIndex = 0;
+        const damageBonus = Utils.isNotNullOrUndefined(damageBonusIndex)
+            ? RunesConfig.damageBonus[damageBonusIndex]
+            : 0;
+        P3Damage = P3Damage * (1 + damageBonus);
         console.log(P3Damage, "P3Damage");
         const finalDamage = Math.min(P3Damage, this.hp);
         console.log(finalDamage, "finalDamage");
@@ -740,11 +771,19 @@ export class Enemy implements BuffBag {
         if (advantageMap[towerElement] === monsterElement) {
             // 塔克制怪物
             result = result * (1 + buffPercent);
+            // todo 天赋树的元素克制时额外造成x%伤害
+            const counterIndex = 0;
+            const counter = Utils.isNotNullOrUndefined(counterIndex) ? RunesConfig.counter[counterIndex] : 0;
+            result = result * (1 + counter);
         } else if (advantageMap[monsterElement] === towerElement) {
             // 怪物克制塔
             result = result * (1 - debuffPercent);
+            // todo 元素被克制时减少x%伤害削弱
+            const counteredIndex = 0;
+            const countered = Utils.isNotNullOrUndefined(counteredIndex) ? RunesConfig.countered[counteredIndex] : 0;
+            result = result * (1 - countered);
         }
-        // 天赋树的元素增伤
+        // todo 天赋树的元素增伤
         // 光系塔伤害增加x%
         const lightBonusIndex = 0;
         const lightBonus = Utils.isNotNullOrUndefined(lightBonusIndex) ? RunesConfig.lightBonus[lightBonusIndex] : 0;
@@ -830,6 +869,34 @@ export class Enemy implements BuffBag {
             } else {
                 this.healingTime = timestampInSeconds;
             }
+        }
+    }
+
+    dealRunes() {
+        const now = Math.floor(new Date().getTime() / 1000);
+        if (now - this.createTime > 5 && !this.speedActive) {
+            this.speedActive = true;
+            // 恢复速度
+            const speedBonusIndex = 0;
+            const speedBonus = Utils.isNotNullOrUndefined(speedBonusIndex)
+                ? RunesConfig.speedBonus[speedBonusIndex]
+                : 0;
+            this._speed = this._speed - speedBonus;
+        }
+        if (now - this.createTime > 10 && !this.armorActive) {
+            // 恢复护甲
+            this.armorActive = true;
+            const armorBonusIndex = 0;
+            const armorBonus = Utils.isNotNullOrUndefined(armorBonusIndex)
+                ? RunesConfig.armorBonus[armorBonusIndex]
+                : 0;
+            this.armor = this.armor - armorBonus;
+        }
+        if (now - this.createTime > 10 && !this.magicResistActive) {
+            // 恢复魔抗
+            this.magicResistActive = true;
+            const MRBonusIndex = 0;
+            const MRBonus = Utils.isNotNullOrUndefined(MRBonusIndex) ? RunesConfig.MRBonus[MRBonusIndex] : 0;
         }
     }
 
