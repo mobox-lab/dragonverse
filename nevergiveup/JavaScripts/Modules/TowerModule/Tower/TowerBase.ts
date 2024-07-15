@@ -16,6 +16,7 @@
  */
 import { GameManager } from "../../../GameManager";
 import { MapManager } from "../../../MapScript";
+import { RunesConfig } from "../../../Runes";
 import Utils from "../../../Utils";
 import { GameConfig } from "../../../config/GameConfig";
 import { ITowerElement } from "../../../config/Tower";
@@ -47,6 +48,8 @@ export default abstract class TowerBase implements BuffBag {
     protected _isFisrtShow: boolean = true;
     public buffManager: BuffManager;
     public property: TowerProperty;
+    // 临时存的，用来兼容之前的代码
+    public property2: TowerProperty;
     public oriTransform: Transform;
     private _attackTags: EEnemyComponentType[];
     protected canBuffProperty: string[] = [];
@@ -134,6 +137,36 @@ export default abstract class TowerBase implements BuffBag {
             attackDamage: 0,
         };
         this.buffManager = new BuffManager();
+        // todo 初始化天赋树的攻速增强 距离增强
+        // todo 龙娘祝福的增加
+        const attackSpeedIndex = 0;
+        const attackSpeed = Utils.isNotNullOrUndefined(attackSpeedIndex)
+            ? RunesConfig.attackSpeed[attackSpeedIndex]
+            : 0;
+
+        const attackRangeIndex = 0;
+        const attackRange = Utils.isNotNullOrUndefined(attackRangeIndex)
+            ? RunesConfig.attackRange[attackRangeIndex]
+            : 0;
+
+        const attackSpeed2Index = 0;
+        const attackSpeed2 = Utils.isNotNullOrUndefined(attackSpeed2Index)
+            ? RunesConfig.attackSpeed2[attackSpeed2Index]
+            : 0;
+
+        const attackRange2Index = 0;
+        const attackRange2 = Utils.isNotNullOrUndefined(attackRange2Index)
+            ? RunesConfig.attackRange2[attackRange2Index]
+            : 0;
+
+        this.property2 = {
+            attackTime: this.property.attackTime - attackSpeed - attackSpeed2,
+            findRange: this.property.findRange + attackRange + attackRange2,
+            attackCount: 0,
+            attackRange: 0,
+            attackDamage: 0,
+        };
+
         // 初始化科技树的buff
         let unlockedTechNodes = GameManager.getStageClient().getUnlockedTechNodes(info.playerID);
         console.log(unlockedTechNodes, "unlockedTechNodes");
@@ -198,7 +231,7 @@ export default abstract class TowerBase implements BuffBag {
     updateAttributes() {
         for (const p in this.property) {
             // console.log(`${property}: ${this.property[property]}`);
-            this.property[p] = this.calculateAttribute(p);
+            this.property[p] = this.property2[p] + this.calculateAttribute(p);
         }
         console.log("hsfproperty====================== ", JSON.stringify(this.property));
         Event.dispatchToLocal(TowerEvent.UpdateInfo, this);

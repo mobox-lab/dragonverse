@@ -12,7 +12,6 @@ import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
 import { IElementBase } from "./config/ConfigBase";
 import { GameConfig } from "./config/GameConfig";
 
-
 /**
  * 多语言/时间转换工具类
  */
@@ -27,20 +26,24 @@ export default class Utils {
     /**Rotation */
     public static TEMP_ROTATION = new Rotation(0, 0, 0);
     /**数字为数组 */
-    private static FORMAT_NUMBER_BITS = [1000000000000000000000000, 1000000000000000000000, 1000000000000000000, 1000000000000000, 1000000000000, 1000000000, 1000000, 1000];
+    private static FORMAT_NUMBER_BITS = [
+        1000000000000000000000000, 1000000000000000000000, 1000000000000000000, 1000000000000000, 1000000000000,
+        1000000000, 1000000, 1000,
+    ];
     /**数字字符串数组 */
     private static FORMAT_NUMBER_STRING = ["AD", "AC", "AB", "AA", "T", "B", "M", "K"];
     /**飞书链接 */
-    private static readonly WEB_HOOK_URL = "https://open.feishu.cn/open-apis/bot/v2/hook/bda5b13e-18b2-4fa7-a9a9-e33b42ed10f4";
+    private static readonly WEB_HOOK_URL =
+        "https://open.feishu.cn/open-apis/bot/v2/hook/bda5b13e-18b2-4fa7-a9a9-e33b42ed10f4";
 
     private static iconData: { [key: string]: mw.AssetIconData } = {};
 
     /*2DUI-多语言=================================================================================================================*/
     /**
      *2DUI-多语言
-     * @param node 
-     * @param textConId 
-     * @param param 
+     * @param node
+     * @param textConId
+     * @param param
      */
     // public static setUIText(node: mw.TextBlock | mw.StaleButton, textConId: number | string, ...param: any[]): void {
     //     let str = "";
@@ -69,7 +72,7 @@ export default class Utils {
      * 字符串拼接
      * @param str 字符串
      * @param param 参数
-     * @returns 
+     * @returns
      */
     public static Format(str: string, ...param: any[]) {
         if (str) {
@@ -84,7 +87,12 @@ export default class Utils {
         return str;
     }
 
-    public static modifyProjectWorldLocationToWidgetPosition(player: mw.Player, worldLocation: mw.Vector, outScreenPosition: mw.Vector2, isPlayerViewportRelative: boolean): boolean {
+    public static modifyProjectWorldLocationToWidgetPosition(
+        player: mw.Player,
+        worldLocation: mw.Vector,
+        outScreenPosition: mw.Vector2,
+        isPlayerViewportRelative: boolean
+    ): boolean {
         let result = InputUtil.projectWorldPositionToWidgetPosition(worldLocation, isPlayerViewportRelative);
         outScreenPosition.x = result.screenPosition.x;
         outScreenPosition.y = result.screenPosition.y;
@@ -92,17 +100,23 @@ export default class Utils {
     }
 
     /**
-     * 
+     *
      * @param value 数值
      * @param minValue 最小数值
      * @param maxValue 最大数值
      * @param newMin 新的最小数值
      * @param newMax 新的最大数据
-     * @returns 
+     * @returns
      */
-    public static mapValue(value: number, minValue: number = 0, maxValue: number = 1, newMin: number = 0.3, newMax: number = 1): number {
+    public static mapValue(
+        value: number,
+        minValue: number = 0,
+        maxValue: number = 1,
+        newMin: number = 0.3,
+        newMax: number = 1
+    ): number {
         value = Math.max(minValue, Math.min(maxValue, value));
-        return (value - minValue) * (newMax - newMin) / (maxValue - minValue) + newMin;
+        return ((value - minValue) * (newMax - newMin)) / (maxValue - minValue) + newMin;
     }
 
     /**
@@ -127,7 +141,7 @@ export default class Utils {
      * @returns 转换后的数值
      */
     public static toPercent(num) {
-        return (num * 100).toFixed() + '%';
+        return (num * 100).toFixed() + "%";
     }
 
     /**
@@ -139,9 +153,9 @@ export default class Utils {
     public static FormatTime(time: number, deleteHour: boolean = true): string {
         let h = Math.floor(time / 3600);
         let hh = h < 10 ? StringUtil.format("0{0}", h) : h.toString();
-        let m = Math.floor((time - (h * 3600)) / 60);
+        let m = Math.floor((time - h * 3600) / 60);
         let mm = m < 10 ? StringUtil.format("0{0}", m) : m.toString();
-        let s = Math.floor((time - (h * 3600) - (m * 60)));
+        let s = Math.floor(time - h * 3600 - m * 60);
         let ss = s < 10 ? StringUtil.format("0{0}", s) : s.toString();
         let str = "";
         if (deleteHour) {
@@ -199,7 +213,7 @@ export default class Utils {
 
     /**
      * 格式化数字显示，如：1,000=1.00K，1,000,000=1.00M，1,000,000,000=1.00B，1,000,000,000,000=1.00T
-     * @param value 
+     * @param value
      * @param fixCount 需要格式的位数
      * @returns 格式化后的数字
      */
@@ -215,7 +229,7 @@ export default class Utils {
 
     /**
      * 格式化数字显示，如：1,000=1.00K，1,000,000=1.00M，1,000,000,000=1.00B，1,000,000,000,000=1.00T
-     * @param value 
+     * @param value
      * @param fixCount 需要格式的位数
      * @returns 格式化后的数字
      */
@@ -223,14 +237,14 @@ export default class Utils {
         if (PlayerUtil.getPlayerScript(Player.localPlayer.playerId)?.level >= value) {
             return true;
         } else {
-            TipsManager.showTips(StringUtil.format(GameConfig.Language.getElement("Text_LessLevel").Value, value))
+            TipsManager.showTips(StringUtil.format(GameConfig.Language.getElement("Text_LessLevel").Value, value));
             return false;
         }
     }
 
     /**
      * 截取最大显示数量
-     * @param value 
+     * @param value
      * @param fixCount 需要格式的位数
      * @returns 格式化后的数字
      */
@@ -243,7 +257,7 @@ export default class Utils {
             length += char.charCodeAt(0) > 255 ? 2 : 1;
             if (length > n) {
                 truncated = truncated.substring(0, i);
-                truncated += '...';
+                truncated += "...";
                 break;
             }
         }
@@ -255,7 +269,7 @@ export default class Utils {
         const illegalCharacterRegex = /\u00a0/g;
 
         // 使用空字符串替换 U+00a0 非法字符
-        const filteredStr = str.replace(illegalCharacterRegex, '');
+        const filteredStr = str.replace(illegalCharacterRegex, "");
 
         return filteredStr;
     }
@@ -263,11 +277,11 @@ export default class Utils {
     /**
      * 格式化数字时间，如：1000=1,000，1000000=1,000,000，
      * @param value 数字
-     * @returns 
+     * @returns
      */
     public static formatToLocale(value: number): string {
         if (value != 0 && !value) return "";
-        return value.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,');
+        return value.toString().replace(/(\d)(?=(?:\d{3})+$)/g, "$1,");
     }
 
     // /**
@@ -323,10 +337,10 @@ export default class Utils {
      * 格式化数字，不足补前缀0
      * @param num 数字
      * @param length 格式化长度
-     * @returns 
+     * @returns
      */
     public static preZeroFormatNumber(num: number, length: number): string {
-        return (Array(length).join('0') + num).slice(-length);
+        return (Array(length).join("0") + num).slice(-length);
     }
 
     /**
@@ -362,7 +376,7 @@ export default class Utils {
      */
     public static isLocalPlayer(p: Player | number | Character): boolean {
         if (!Player?.localPlayer?.playerId) return false;
-        if (typeof p === 'number') {
+        if (typeof p === "number") {
             return p === Player.localPlayer.playerId;
         } else if (p instanceof Player) {
             return p?.playerId === Player.localPlayer.playerId;
@@ -395,20 +409,19 @@ export default class Utils {
         boundMax = Vector.add(center, extend);
     }
 
-
     public static async requestAssetIcons(elements: IElementBase[], modelIDName: string, isFinal: boolean = false) {
         let guids: string[] = [];
-        elements.forEach(element => {
+        elements.forEach((element) => {
             guids.push(element[modelIDName].toString());
         });
         mw.assetIDChangeIconUrlRequest(guids).then(() => {
-            elements.forEach(cfg => {
+            elements.forEach((cfg) => {
                 let data = mw.getAssetIconDataByAssetID(cfg[modelIDName]);
                 if (data) {
                     Utils.iconData[cfg[modelIDName].toString()] = data;
-                    cfg['iconData'] = data;
+                    cfg["iconData"] = data;
                 }
-            })
+            });
             if (isFinal) {
                 for (let i = 0; i < this.imageCB.length; i++) {
                     let e = this.imageCB[i];
@@ -423,8 +436,7 @@ export default class Utils {
     public static setImageByAsset(icon: mw.Image, e: any, isFirst: boolean = true) {
         if (e.iconData) {
             icon.setImageByAssetIconData(e.iconData);
-        }
-        else {
+        } else {
             icon.imageGuid = "213367";
             isFirst && Utils.imageCB.push([icon, e]);
         }
@@ -433,8 +445,7 @@ export default class Utils {
     public static setImageByAssetGuid(icon: mw.Image, guid: string) {
         if (Utils.iconData[guid]) {
             icon.setImageByAssetIconData(Utils.iconData[guid]);
-        }
-        else {
+        } else {
             Utils.downloadIconAsset(guid).then(() => {
                 let data = mw.getAssetIconDataByAssetID(guid);
                 if (data) {
@@ -465,7 +476,6 @@ export default class Utils {
 
     public static numTofix(num: number, fixed: number) {
         return parseFloat(num.toFixed(fixed));
-
     }
 
     public static getRandomProbability(array: number[]) {
@@ -485,6 +495,10 @@ export default class Utils {
     public static getRandomIntInclusive(min: number, max: number) {
         min = Math.ceil(min);
         max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min; //含最大值，含最小值 
+        return Math.floor(Math.random() * (max - min + 1)) + min; //含最大值，含最小值
+    }
+
+    public static isNotNullOrUndefined<T>(value: T | null | undefined): value is T {
+        return value !== null && value !== undefined;
     }
 }
