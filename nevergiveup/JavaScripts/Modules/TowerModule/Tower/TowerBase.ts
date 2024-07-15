@@ -23,6 +23,7 @@ import { Buff, BuffBag, BuffManager } from "../../../tool/BuffTool";
 import { BuffApplyType, EEnemyComponentType } from "../../../tool/Enum";
 import { MGSTool } from "../../../tool/MGSTool";
 import { TowerEvent, TowerInfo } from "../TowerEnum";
+import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 export type TowerProperty = {
     attackTime: number;
@@ -63,25 +64,55 @@ export default abstract class TowerBase implements BuffBag {
     createTime: number = 0;
     isWarmUp: boolean = false;
 
+    private async setLevelEffect(ids: number[]) {
+        try {
+            // 卸载旧特效
+            this._levelShow.forEach((go) => go && GameObjPool.despawn(go));
+            this._levelShow = [];
+            const elements = ids.map(id => GameConfig.LevelEffect.getElement(id));
+            const elementGos = await Promise.all(elements.map(element => GameObjPool.asyncSpawn(element.effectGuid)));
+            // 在升级组件初始化出来前，这个塔被删了
+            if (!this.root) {
+                elementGos.forEach(effect => GameObjPool.despawn(effect));
+                return;
+            }
+            elements.forEach((element, index) => {
+                const go = elementGos[index];
+                const tower = this.tower as Character;
+                tower.attachToSlot(go, element.slot);
+                go.localTransform.position = element.location ? new Vector(...element.location) : Vector.zero;
+                if (go instanceof Effect) {
+                    if (element.circulate) {
+                        go.loopCount = 0;
+                    }
+                    go.play();
+                }
+                this._levelShow[index] = go;
+            });
+        } catch (error) {
+            Log4Ts.error(TowerBase, error);
+        }
+
+    }
+
     public set level(v: number) {
         if (this.level == v) return;
         this.info.level = v;
         this.updateAttributes();
-        GameObjPool.asyncSpawn(this.cfg.guid[this.level]).then((go) => {
-            if (!go) return;
-            if (!this.root) {
-                //在升级组件初始化出来前，这个塔被删了
-                GameObjPool.despawn(go);
-            } else {
-                if (this._levelShow[0]) {
-                    GameObjPool.despawn(this._levelShow[0]);
-                    // this._levelShow[0].destroy();
-                }
-                this._levelShow[0] = go;
-                // this._levelShow.push(go);
-                go.worldTransform.position = this.oriPos;
-            }
-        });
+        // 一级, 暂时没有
+        if (v === 0) {
+            this.setLevelEffect([]).then();
+        }
+        // 二级
+        if (v === 1) {
+            const ids = this.cfg.guid2 ?? [];
+            this.setLevelEffect(ids).then();
+        }
+        // 三级
+        if (v === 2) {
+            const ids = this.cfg.guid3 ?? [];
+            this.setLevelEffect(ids).then();
+        }
     }
 
     public get attackDamage(): number {
@@ -305,10 +336,7 @@ export default abstract class TowerBase implements BuffBag {
         this.root && GameObjPool.despawn(this.root);
         this._bottomEff && GameObjPool.despawn(this._bottomEff);
         this.buffManager?.destroy();
-        for (let i = 0; i < this._levelShow.length; i++) {
-            this._levelShow[i] && GameObjPool.despawn(this._levelShow[i]);
-            this._levelShow[i] = null;
-        }
+        this._levelShow.forEach((go) => go && GameObjPool.despawn(go));
         this._levelShow = [];
         this.root = null;
         this.tower = null;
