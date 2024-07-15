@@ -1,5 +1,5 @@
 import { AnyPoint, IPoint2, IPoint3 } from "../base/IPoint";
-import Rectangle from "../r-tree/Rectangle";
+import Rectangle from "../Rectangle";
 
 export function point2ToRect(point: IPoint2): Rectangle {
     return new Rectangle([point.x, point.y], [point.x, point.y]);
