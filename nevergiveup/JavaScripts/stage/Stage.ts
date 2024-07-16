@@ -115,10 +115,12 @@ export class StageS {
         });
         // todo 天赋树和龙娘血量加成
         const userHPIndex = 0;
-        const userHP = Utils.isNotNullOrUndefined(userHPIndex) ? RunesConfig.userHP[userHPIndex] : 0;
+        const userHP = Utils.getRunesConfigByKey("userHP", userHPIndex);
         const userHP2Index = 0;
-        const userHP2 = Utils.isNotNullOrUndefined(userHP2Index) ? RunesConfig.userHP2[userHP2Index] : 0;
-        this._hp = baseHp * (1 + userHP) * (1 + userHP2);
+        const userHP2 = Utils.getRunesConfigByKey("userHP2", userHP2Index);
+        const userHPDIndex = 0;
+        const userHPD = Utils.getRunesConfigByKey("userHPD", userHPDIndex);
+        this._hp = baseHp * (1 + userHP + userHP2) * (1 + userHPD);
         // this._hp = baseHp;
         this._maxHp = this._hp;
         this.cumulativeCount = 0;
@@ -586,10 +588,12 @@ export class StageC {
         this.gold = 0;
         // todo 天赋树和龙娘血量加成
         const userHPIndex = 0;
-        const userHP = Utils.isNotNullOrUndefined(userHPIndex) ? RunesConfig.userHP[userHPIndex] : 0;
+        const userHP = Utils.getRunesConfigByKey("userHP", userHPIndex);
         const userHP2Index = 0;
-        const userHP2 = Utils.isNotNullOrUndefined(userHP2Index) ? RunesConfig.userHP2[userHP2Index] : 0;
-        this.hp = baseHp * (1 + userHP) * (1 + userHP2);
+        const userHP2 = Utils.getRunesConfigByKey("userHP2", userHP2Index);
+        const userHPDIndex = 0;
+        const userHPD = Utils.getRunesConfigByKey("userHPD", userHPDIndex);
+        this.hp = baseHp * (1 + userHP + userHP2) * (1 + userHPD);
         ModuleService.getModule(PlayerModuleC)
             .getUnlockTechNodeMap(playerIds)
             .then((res: { [key: number]: number[] }) => {

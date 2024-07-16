@@ -8,6 +8,7 @@
  */
 
 import { PlayerUtil } from "./Modules/PlayerModule/PlayerUtil";
+import { RunesConfig } from "./Runes";
 import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
 import { IElementBase } from "./config/ConfigBase";
 import { GameConfig } from "./config/GameConfig";
@@ -500,5 +501,10 @@ export default class Utils {
 
     public static isNotNullOrUndefined<T>(value: T | null | undefined): value is T {
         return value !== null && value !== undefined;
+    }
+
+    public static getRunesConfigByKey(key: string, index: number | undefined | null): number {
+        const res: number = Utils.isNotNullOrUndefined(index) ? RunesConfig[key][index] : 0;
+        return res;
     }
 }

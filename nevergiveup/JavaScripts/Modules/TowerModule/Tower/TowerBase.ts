@@ -72,11 +72,11 @@ export default abstract class TowerBase implements BuffBag {
             // 卸载旧特效
             this._levelShow.forEach((go) => go && GameObjPool.despawn(go));
             this._levelShow = [];
-            const elements = ids.map(id => GameConfig.LevelEffect.getElement(id));
-            const elementGos = await Promise.all(elements.map(element => GameObjPool.asyncSpawn(element.effectGuid)));
+            const elements = ids.map((id) => GameConfig.LevelEffect.getElement(id));
+            const elementGos = await Promise.all(elements.map((element) => GameObjPool.asyncSpawn(element.effectGuid)));
             // 在升级组件初始化出来前，这个塔被删了
             if (!this.root) {
-                elementGos.forEach(effect => GameObjPool.despawn(effect));
+                elementGos.forEach((effect) => GameObjPool.despawn(effect));
                 return;
             }
             elements.forEach((element, index) => {
@@ -95,7 +95,6 @@ export default abstract class TowerBase implements BuffBag {
         } catch (error) {
             Log4Ts.error(TowerBase, error);
         }
-
     }
 
     public set level(v: number) {
@@ -140,28 +139,26 @@ export default abstract class TowerBase implements BuffBag {
         // todo 初始化天赋树的攻速增强 距离增强
         // todo 龙娘祝福的增加
         const attackSpeedIndex = 0;
-        const attackSpeed = Utils.isNotNullOrUndefined(attackSpeedIndex)
-            ? RunesConfig.attackSpeed[attackSpeedIndex]
-            : 0;
+        const attackSpeed = Utils.getRunesConfigByKey("attackSpeed", attackSpeedIndex);
 
         const attackRangeIndex = 0;
-        const attackRange = Utils.isNotNullOrUndefined(attackRangeIndex)
-            ? RunesConfig.attackRange[attackRangeIndex]
-            : 0;
+        const attackRange = Utils.getRunesConfigByKey("attackRange", attackRangeIndex);
 
         const attackSpeed2Index = 0;
-        const attackSpeed2 = Utils.isNotNullOrUndefined(attackSpeed2Index)
-            ? RunesConfig.attackSpeed2[attackSpeed2Index]
-            : 0;
+        const attackSpeed2 = Utils.getRunesConfigByKey("attackSpeed2", attackSpeed2Index);
 
         const attackRange2Index = 0;
-        const attackRange2 = Utils.isNotNullOrUndefined(attackRange2Index)
-            ? RunesConfig.attackRange2[attackRange2Index]
-            : 0;
+        const attackRange2 = Utils.getRunesConfigByKey("attackRange2", attackRange2Index);
+
+        const attackSpeedDIndex = 0;
+        const attackSpeedD = Utils.getRunesConfigByKey("attackSpeedD", attackSpeedDIndex);
+
+        const attackRangeDIndex = 0;
+        const attackRangeD = Utils.getRunesConfigByKey("attackRangeD", attackRangeDIndex);
 
         this.property2 = {
-            attackTime: this.property.attackTime - attackSpeed - attackSpeed2,
-            findRange: this.property.findRange + attackRange + attackRange2,
+            attackTime: this.property.attackTime - attackSpeed - attackSpeed2 - attackSpeedD,
+            findRange: this.property.findRange + attackRange + attackRange2 + attackRangeD,
             attackCount: 0,
             attackRange: 0,
             attackDamage: 0,
