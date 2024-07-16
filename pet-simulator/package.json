@@ -5,6 +5,7 @@
     "@types/uuid": "^9.0.7",
     "crypto-js": "^4.2.0",
     "debug_console": "^0.1.2",
+    "gtoolkit": "^31.16.16",
     "linq": "^4.0.2",
     "module_bubble": "^5.1.1",
     "module_leaderboard": "^4.0.10",
@@ -15,6 +16,6 @@
     "robust-predicates": "^3.0.2"
   },
   "scripts": {
-    "update gsc depend": "npm update mw-god-mod --save"
+    "update gsc depend": "npm update mw-god-mod gtoolkit --save"
   }
 }

@@ -510,5 +510,6 @@ export class PetBag_Item extends Pet_item_Generate {
     destroy(): void {
         KeyOperationManager.getInstance().unregisterMouse(this.uiObject, OperationTypes.OnMouseEnter);
         KeyOperationManager.getInstance().unregisterMouse(this.uiObject, OperationTypes.OnMouseLeave);
+        super.destroy();
     }
 }

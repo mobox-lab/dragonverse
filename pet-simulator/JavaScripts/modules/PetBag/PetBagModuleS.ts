@@ -14,6 +14,7 @@ import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk from "../../util/GToolkit";
 import { EnchantPetState } from "./P_Enchants";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     private _playerModuleS: PlayerModuleS;
@@ -117,7 +118,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 eggId: cfg.id,
                 petId,
             };
-            this.net_addPetWithMissingInfo(playerId, petId, "孵化", cfg.AreaID, undefined, {logName: "P_Hatch", logObj});
+            this.net_addPetWithMissingInfo(playerId, petId, "孵化", cfg.AreaID, undefined, {
+                logName: "P_Hatch",
+                logObj,
+            });
             return petId;
         }
         return null;
@@ -663,7 +667,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             }
         });
 
-        let random = MathUtil.randomInt(0, 100);
+        let random = (GameServiceConfig.isRelease || GameServiceConfig.isBeta) ? MathUtil.randomInt(0, 100) : 0;
         const petInfo = GameConfig.PetARR.getElement(curPetId);
         let isSucc: boolean = true;
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
