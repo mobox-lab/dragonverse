@@ -116,19 +116,23 @@ export class Enemy implements BuffBag {
         this.createTime = now;
         // 减速持续5s
         const speedBonusIndex = 0;
-        const speedBonus = Utils.isNotNullOrUndefined(speedBonusIndex) ? RunesConfig.speedBonus[speedBonusIndex] : 0;
+        const speedBonus = Utils.getRunesConfigByKey("speedBonus", speedBonusIndex);
         const speedBonus2Index = 0;
-        const speedBonus2 = Utils.isNotNullOrUndefined(speedBonus2Index)
-            ? RunesConfig.speedBonus2[speedBonus2Index]
-            : 0;
-        this._speed = this._speed + speedBonus + speedBonus2;
+        const speedBonus2 = Utils.getRunesConfigByKey("speedBonus2", speedBonus2Index);
+        const speedBonusDIndex = 0;
+        const speedBonusD = Utils.getRunesConfigByKey("speedBonusD", speedBonusDIndex);
+        this._speed = this._speed + speedBonus + speedBonus2 + speedBonusD;
         // 减护甲和减魔抗持续10s
         const armorBonusIndex = 0;
-        const armorBonus = Utils.isNotNullOrUndefined(armorBonusIndex) ? RunesConfig.armorBonus[armorBonusIndex] : 0;
+        const armorBonus = Utils.getRunesConfigByKey("armorBonus", armorBonusIndex);
         const MRBonusIndex = 0;
-        const MRBonus = Utils.isNotNullOrUndefined(MRBonusIndex) ? RunesConfig.MRBonus[MRBonusIndex] : 0;
-        this.armor = this.armor + armorBonus;
-        this.magicResist = this.magicResist + MRBonus;
+        const MRBonus = Utils.getRunesConfigByKey("MRBonus", MRBonusIndex);
+        const armorBonus2Index = 0;
+        const armorBonus2 = Utils.getRunesConfigByKey("armorBonus2", armorBonus2Index);
+        const MRBonus2Index = 0;
+        const MRBonus2 = Utils.getRunesConfigByKey("MRBonus2", MRBonus2Index);
+        this.armor = this.armor + armorBonus + armorBonus2;
+        this.magicResist = this.magicResist + MRBonus + MRBonus2;
         // 初始化科技树的buff
         let unlockedTechNodes = GameManager.getStageClient().unlockedTechNodes;
         let buffIds = [];
@@ -603,65 +607,66 @@ export class Enemy implements BuffBag {
             // todo 天赋树的物理攻击加成
             // todo 龙娘祝福
             const adBonusIndex = 0;
-            const adBonus = Utils.isNotNullOrUndefined(adBonusIndex) ? RunesConfig.adBonus[adBonusIndex] : 0;
+            const adBonus = Utils.getRunesConfigByKey("adBonus", adBonusIndex);
             const adBonus2Index = 0;
-            const adBonus2 = Utils.isNotNullOrUndefined(adBonus2Index) ? RunesConfig.adBonus2[adBonus2Index] : 0;
-            damage = damage + adBonus + adBonus2;
+            const adBonus2 = Utils.getRunesConfigByKey("adBonus2", adBonus2Index);
+            const adBonusDIndex = 0;
+            const adBonusD = Utils.getRunesConfigByKey("adBonusD", adBonusDIndex);
+            damage = damage + adBonus + adBonus2 + adBonusD;
         } else if (damageType === DamageType.MAGIC) {
             // todo 天赋树的魔法攻击加成
             // todo 龙娘祝福
             const apBonusIndex = 0;
-            const apBonus = Utils.isNotNullOrUndefined(apBonusIndex) ? RunesConfig.apBonus[apBonusIndex] : 0;
+            const apBonus = Utils.getRunesConfigByKey("apBonus", apBonusIndex);
             const apBonus2Index = 0;
-            const apBonus2 = Utils.isNotNullOrUndefined(apBonus2Index) ? RunesConfig.apBonus2[apBonus2Index] : 0;
-            damage = damage + apBonus + apBonus2;
+            const apBonus2 = Utils.getRunesConfigByKey("apBonus2", apBonus2Index);
+            const apBonusDIndex = 0;
+            const apBonusD = Utils.getRunesConfigByKey("apBonusD", apBonusDIndex);
+            damage = damage + apBonus + apBonus2 + apBonusD;
         }
         // todo 天赋树的对空加成
         const flyingBonusIndex = 0;
-        const flyingBonus = Utils.isNotNullOrUndefined(flyingBonusIndex)
-            ? RunesConfig.flyingBonus[flyingBonusIndex]
-            : 0;
+        const flyingBonus = Utils.getRunesConfigByKey("flyingBonus", flyingBonusIndex);
+        const flyingBonus2Index = 0;
+        const flyingBonus2 = Utils.getRunesConfigByKey("flyingBonus2", flyingBonus2Index);
         // P1 伤害
-        const P1Damage = damage * (1 + flyingBonus) + flyingDamageBoost;
-        console.log(P1Damage, "P1Damage");
+        const P1Damage = damage * (1 + flyingBonus + flyingBonus2) + flyingDamageBoost;
         // P2 伤害
         const P2Percent = this.elementalRestraint(tower);
         const P2Damage = P1Damage * P2Percent;
-        console.log(P2Damage, "P2Damage");
         // P3 伤害
-
         // todo 天赋树的物理斩杀和魔法压制
         const adExecuteIndex = 0;
-        const adExecute = Utils.isNotNullOrUndefined(adExecuteIndex) ? RunesConfig.adExecute[adExecuteIndex] : 0;
+        const adExecute = Utils.getRunesConfigByKey("adExecute", adExecuteIndex);
         const apExecuteIndex = 0;
-        const apExecute = Utils.isNotNullOrUndefined(apExecuteIndex) ? RunesConfig.apExecute[apExecuteIndex] : 0;
+        const apExecute = Utils.getRunesConfigByKey("apExecute", apExecuteIndex);
+
+        const adExecute2Index = 0;
+        const adExecute2 = Utils.getRunesConfigByKey("adExecute2", adExecute2Index);
+        const apExecute2Index = 0;
+        const apExecute2 = Utils.getRunesConfigByKey("apExecute2", apExecute2Index);
         let P3Damage = 0;
         if (damageType === DamageType.ARMOR) {
             // 物理伤害
             P3Damage = P2Damage * (1 - (this.armor - armorPen) / (200 + this.armor - armorPen));
             if (this.hp < this.hpMax * 0.2) {
                 // 物理对于血量低于20%造成x%额外伤害
-                P3Damage = P3Damage * (1 + adExecute);
+                P3Damage = P3Damage * (1 + adExecute + adExecute2);
             }
         } else if (damageType === DamageType.MAGIC) {
             P3Damage = P2Damage * (1 - (this.magicResist - magicPen) / (200 + this.magicResist - magicPen));
             if (this.hp > this.hpMax * 0.8) {
                 // 魔法对于血量高于80%造成x%额外伤害
-                P3Damage = P3Damage * (1 + apExecute);
+                P3Damage = P3Damage * (1 + apExecute + apExecute2);
             }
         } else {
             P3Damage = 0;
         }
         // todo 天赋树的全体怪物受到伤害增加x%
         const damageBonusIndex = 0;
-        const damageBonus = Utils.isNotNullOrUndefined(damageBonusIndex)
-            ? RunesConfig.damageBonus[damageBonusIndex]
-            : 0;
+        const damageBonus = Utils.getRunesConfigByKey("damageBonus", damageBonusIndex);
         P3Damage = P3Damage * (1 + damageBonus);
-        console.log(P3Damage, "P3Damage");
         const finalDamage = Math.min(P3Damage, this.hp);
-        console.log(finalDamage, "finalDamage");
-
         // this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
         // 多段伤害
         const multiHits = buffs.filter((buff) => buff.cfg.multiHit !== 0);
@@ -773,48 +778,67 @@ export class Enemy implements BuffBag {
             result = result * (1 + buffPercent);
             // todo 天赋树的元素克制时额外造成x%伤害
             const counterIndex = 0;
-            const counter = Utils.isNotNullOrUndefined(counterIndex) ? RunesConfig.counter[counterIndex] : 0;
+            const counter = Utils.getRunesConfigByKey("counter", counterIndex);
             result = result * (1 + counter);
         } else if (advantageMap[monsterElement] === towerElement) {
             // 怪物克制塔
             result = result * (1 - debuffPercent);
             // todo 元素被克制时减少x%伤害削弱
             const counteredIndex = 0;
-            const countered = Utils.isNotNullOrUndefined(counteredIndex) ? RunesConfig.countered[counteredIndex] : 0;
+            const countered = Utils.getRunesConfigByKey("countered", counteredIndex);
             result = result * (1 - countered);
         }
         // todo 天赋树的元素增伤
         // 光系塔伤害增加x%
         const lightBonusIndex = 0;
-        const lightBonus = Utils.isNotNullOrUndefined(lightBonusIndex) ? RunesConfig.lightBonus[lightBonusIndex] : 0;
+        const lightBonus = Utils.getRunesConfigByKey("lightBonus", lightBonusIndex);
         // 暗系塔伤害增加x%
         const darkBonusIndex = 0;
-        const darkBonus = Utils.isNotNullOrUndefined(darkBonusIndex) ? RunesConfig.darkBonus[darkBonusIndex] : 0;
+        const darkBonus = Utils.getRunesConfigByKey("darkBonus", darkBonusIndex);
         // 水系塔伤害增加x%
         const waterBonusIndex = 0;
-        const waterBonus = Utils.isNotNullOrUndefined(waterBonusIndex) ? RunesConfig.waterBonus[waterBonusIndex] : 0;
+        const waterBonus = Utils.getRunesConfigByKey("waterBonus", waterBonusIndex);
         // 火系塔伤害增加x%
         const fireBonusIndex = 0;
-        const fireBonus = Utils.isNotNullOrUndefined(fireBonusIndex) ? RunesConfig.fireBonus[fireBonusIndex] : 0;
+        const fireBonus = Utils.getRunesConfigByKey("fireBonus", fireBonusIndex);
         // 土系塔伤害增加x%
         const earthBonusIndex = 0;
-        const earthBonus = Utils.isNotNullOrUndefined(earthBonusIndex) ? RunesConfig.earthBonus[earthBonusIndex] : 0;
+        const earthBonus = Utils.getRunesConfigByKey("earthBonus", earthBonusIndex);
         // 木系塔伤害增加x%
         const woodBonusIndex = 0;
-        const woodBonus = Utils.isNotNullOrUndefined(woodBonusIndex) ? RunesConfig.woodBonus[woodBonusIndex] : 0;
+        const woodBonus = Utils.getRunesConfigByKey("woodBonus", woodBonusIndex);
+
+        // 光系塔伤害增加x%
+        const lightBonus2Index = 0;
+        const lightBonus2 = Utils.getRunesConfigByKey("lightBonus2", lightBonus2Index);
+        // 暗系塔伤害增加x%
+        const darkBonus2Index = 0;
+        const darkBonus2 = Utils.getRunesConfigByKey("darkBonus2", darkBonus2Index);
+        // 水系塔伤害增加x%
+        const waterBonus2Index = 0;
+        const waterBonus2 = Utils.getRunesConfigByKey("waterBonus2", waterBonus2Index);
+        // 火系塔伤害增加x%
+        const fireBonus2Index = 0;
+        const fireBonus2 = Utils.getRunesConfigByKey("fireBonus2", fireBonus2Index);
+        // 土系塔伤害增加x%
+        const earthBonus2Index = 0;
+        const earthBonus2 = Utils.getRunesConfigByKey("earthBonus2", earthBonus2Index);
+        // 木系塔伤害增加x%
+        const woodBonus2Index = 0;
+        const woodBonus2 = Utils.getRunesConfigByKey("woodBonus2", woodBonus2Index);
 
         if (towerElement === ElementEnum.LIGHT) {
-            result = result * (1 + lightBonus);
+            result = result * (1 + lightBonus + lightBonus2);
         } else if (towerElement === ElementEnum.DARK) {
-            result = result * (1 + darkBonus);
+            result = result * (1 + darkBonus + darkBonus2);
         } else if (towerElement === ElementEnum.WATER) {
-            result = result * (1 + waterBonus);
+            result = result * (1 + waterBonus + waterBonus2);
         } else if (towerElement === ElementEnum.FIRE) {
-            result = result * (1 + fireBonus);
+            result = result * (1 + fireBonus + fireBonus2);
         } else if (towerElement === ElementEnum.EARTH) {
-            result = result * (1 + earthBonus);
+            result = result * (1 + earthBonus + earthBonus2);
         } else if (towerElement === ElementEnum.WOOD) {
-            result = result * (1 + woodBonus);
+            result = result * (1 + woodBonus + woodBonus2);
         }
 
         return result;
@@ -878,25 +902,28 @@ export class Enemy implements BuffBag {
             this.speedActive = true;
             // 恢复速度
             const speedBonusIndex = 0;
-            const speedBonus = Utils.isNotNullOrUndefined(speedBonusIndex)
-                ? RunesConfig.speedBonus[speedBonusIndex]
-                : 0;
-            this._speed = this._speed - speedBonus;
+            const speedBonus = Utils.getRunesConfigByKey("speedBonus", speedBonusIndex);
+            const speedBonus2Index = 0;
+            const speedBonus2 = Utils.getRunesConfigByKey("speedBonus2", speedBonus2Index);
+            this._speed = this._speed - speedBonus - speedBonus2;
         }
         if (now - this.createTime > 10 && !this.armorActive) {
             // 恢复护甲
             this.armorActive = true;
             const armorBonusIndex = 0;
-            const armorBonus = Utils.isNotNullOrUndefined(armorBonusIndex)
-                ? RunesConfig.armorBonus[armorBonusIndex]
-                : 0;
-            this.armor = this.armor - armorBonus;
+            const armorBonus = Utils.getRunesConfigByKey("armorBonus", armorBonusIndex);
+            const armorBonus2Index = 0;
+            const armorBonus2 = Utils.getRunesConfigByKey("armorBonus2", armorBonus2Index);
+            this.armor = this.armor - armorBonus - armorBonus2;
         }
         if (now - this.createTime > 10 && !this.magicResistActive) {
             // 恢复魔抗
             this.magicResistActive = true;
             const MRBonusIndex = 0;
-            const MRBonus = Utils.isNotNullOrUndefined(MRBonusIndex) ? RunesConfig.MRBonus[MRBonusIndex] : 0;
+            const MRBonus = Utils.getRunesConfigByKey("MRBonus", MRBonusIndex);
+            const MRBonus2Index = 0;
+            const MRBonus2 = Utils.getRunesConfigByKey("MRBonus2", MRBonus2Index);
+            this.magicResist = this.magicResist - MRBonus - MRBonus2;
         }
     }
 

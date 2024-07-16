@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-10 18:45:52
  * @LastEditors  : xiaohao.li
@@ -14,14 +14,14 @@
  * @FilePath: \nevergiveup\JavaScripts\Modules\TowerModule\Tower\FarmTower.ts
  * @Description: 修改描述
  */
-import { CycleUtil } from '../../../CycleUtil';
-import { GameManager } from '../../../GameManager';
-import GainUI from '../../../UI/Tower/GainUI';
-import Utils from '../../../Utils';
-import { GameConfig } from '../../../config/GameConfig';
-import { SoundUtil } from '../../../tool/SoundUtil';
-import { TowerInfo } from '../TowerEnum';
-import TowerBase from './TowerBase';
+import { CycleUtil } from "../../../CycleUtil";
+import { GameManager } from "../../../GameManager";
+import GainUI from "../../../UI/Tower/GainUI";
+import Utils from "../../../Utils";
+import { GameConfig } from "../../../config/GameConfig";
+import { SoundUtil } from "../../../tool/SoundUtil";
+import { TowerInfo } from "../TowerEnum";
+import TowerBase from "./TowerBase";
 
 export default class FarmTower extends TowerBase {
     protected _accumulateDamage: number = 0;
@@ -49,8 +49,13 @@ export default class FarmTower extends TowerBase {
                     this._idleAnim.loop = 999999;
                     (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((go) => {
                         this._weaponRoot = go;
-                        this._towerCha.attachToSlot(this._weaponRoot, this.cfg.weaponSlot ?? HumanoidSlotType.RightHand);
-                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation ? new Vector(...this.cfg.weaponLocation) : Vector.zero;
+                        this._towerCha.attachToSlot(
+                            this._weaponRoot,
+                            this.cfg.weaponSlot ?? HumanoidSlotType.RightHand
+                        );
+                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation
+                            ? new Vector(...this.cfg.weaponLocation)
+                            : Vector.zero;
                         this._weaponRoot.localTransform.rotation = Rotation.zero;
                     });
                 });
@@ -59,7 +64,10 @@ export default class FarmTower extends TowerBase {
     }
 
     public get outputStr(): string {
-        return StringUtil.format(GameConfig.Language.getElement("Text_FarmTowerStr").Value, Utils.numTofix(this._accumulateDamage, 2));
+        return StringUtil.format(
+            GameConfig.Language.getElement("Text_FarmTowerStr").Value,
+            Utils.numTofix(this._accumulateDamage, 2)
+        );
     }
     /**
      * 周期函数 每帧执行
@@ -97,7 +105,14 @@ export default class FarmTower extends TowerBase {
 
     protected farm() {
         let value = this.property.attackDamage;
-        GameManager.addGold(this.property.attackDamage, this.tower?.worldTransform?.position);
+        const goldAffectIndex = 0;
+        const goldAffect = Utils.getRunesConfigByKey("goldAffect", goldAffectIndex);
+        const goldAffect2Index = 0;
+        const goldAffect2 = Utils.getRunesConfigByKey("goldAffect2", goldAffect2Index);
+        GameManager.addGold(
+            Math.floor(this.property.attackDamage * (1 + goldAffect + goldAffect2)),
+            this.tower?.worldTransform?.position
+        );
         this._accumulateDamage += value;
 
         let pos = Vector2.zero;
@@ -132,7 +147,7 @@ export default class FarmTower extends TowerBase {
             if (this.root?.getChildren().length > 0) {
                 for (let i of this.root?.getChildren()) {
                     if (i instanceof Sound) {
-                        if (this._isFisrtShow || i["hsfVolume"] == null) i["hsfVolume"] = i.volume
+                        if (this._isFisrtShow || i["hsfVolume"] == null) i["hsfVolume"] = i.volume;
                         i.volume = SoundUtil.attackVoiceFactor * i["hsfVolume"];
                         i.worldTransform.position = this.oriPos;
                         i.stop();
