@@ -22,6 +22,7 @@
  */
 
 import CardModuleC, { CardState } from "../../Modules/CardModule/CardModuleC";
+import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
 import { GlobalData } from "../../const/GlobalData";
@@ -102,6 +103,7 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.towerImg.imageGuid = this._cfg.imgGuid;
 		this.nameTxt.text = this._cfg.name;
 		this.txt_sell.text = this._cfg.shopPrice.toFixed(0);
+		this.txt_sell_1.text = Utils.formatNumber(this._cfg.attackDamage[0]);
 		this.refreshState();
 		const tags = this.getTags();
 		const len = tags?.length ?? 0;

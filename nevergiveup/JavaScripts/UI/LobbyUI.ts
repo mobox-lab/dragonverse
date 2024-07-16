@@ -24,6 +24,7 @@ import SettingUI from "./SettingUI";
 import TowerUI from "./Tower/TowerUI";
 import { EnergyModuleC } from "../Modules/Energy/EnergyModule";
 import GameServiceConfig from "../const/GameServiceConfig";
+import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 
 export default class LobbyUI extends LobbyUI_Generate {
 	/**任务滑动列表 */
@@ -50,9 +51,8 @@ export default class LobbyUI extends LobbyUI_Generate {
 			ModuleService.getModule(PlayerModuleC).techTree.show();
 		});
 		//打开任务
-		this.mButton_TaskSmall.onClicked.add(() => {
-			Utils.checkLevel(GameConfig.Global.getElement(1).unlockTaskLevel) && mw.UIService.show(UI_TaskMain);
-		})
+		this.mButton_TaskSmall.onClicked.add(this.showTaskPanel.bind(this))
+		this.taskBtn.onClicked.add(this.showTaskPanel.bind(this))
 		this.mButton_Taskreturn2.onClicked.add(() => {
 			this.mCanvas_NewTaskList.visibility = SlateVisibility.Collapsed;
 			this.mButton_Taskexpand.visibility = SlateVisibility.Visible;
@@ -76,8 +76,19 @@ export default class LobbyUI extends LobbyUI_Generate {
         this.freshBtn.onClicked.add(() => {
             ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
         });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
+    		UIService.getUI(TowerUI).shopBtn.onClicked.broadcast();
+        });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.O, () => {
+			UIService.show(SettingUI);
+        });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.L, () => {
+			this.showTaskPanel();
+        });
 	}
-
+	public showTaskPanel() {
+		Utils.checkLevel(GameConfig.Global.getElement(1).unlockTaskLevel) && mw.UIService.show(UI_TaskMain);
+	}
 	updateCurrency() {
 		let data = DataCenterC.getData(PlayerModuleData);
 		if (data) {

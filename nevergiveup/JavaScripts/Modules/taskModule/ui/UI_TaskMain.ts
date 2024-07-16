@@ -8,6 +8,7 @@ import { PlayerActions } from "../../../Actions";
 import { TweenCommon } from "../../../TweenCommon";
 import Utils from "../../../Utils";
 import { GameConfig } from "../../../config/GameConfig";
+import KeyOperationManager from "../../../controller/key-operation-manager/KeyOperationManager";
 import { MGSTool } from "../../../tool/MGSTool";
 import { UIMultiScroller } from "../../../tool/UIMultiScroller";
 import TaskMain_Generate from "../../../ui-generate/task/TaskMain_generate";
@@ -75,7 +76,6 @@ export default class UI_TaskMain extends TaskMain_Generate {
                 this.btnState = EmTaskType.Daily;
             }
         });
-        
     }
 
     /**
@@ -112,5 +112,13 @@ export default class UI_TaskMain extends TaskMain_Generate {
         } else {
             this.refresh();
         }
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
+            TweenCommon.popUpHide(this.rootCanvas, () => {
+                UIService.hideUI(this);
+            })
+        });
+    }
+    onHide() {
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 }
