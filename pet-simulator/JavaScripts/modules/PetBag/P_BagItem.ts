@@ -37,7 +37,7 @@ export class PetBag_Item extends Pet_item_Generate {
         this.undefineBgGuid = this.mPic_Equip.imageGuid;
         this.undefineSelectGuid = this.mPic_Equip_3.imageGuid;
         this.mButton_Equip.onClicked.add(this.onBtnClick.bind(this));
-		KeyOperationManager.getInstance().onWidgetEntered(this.uiObject, () => {
+		KeyOperationManager.getInstance().onWidgetEnter(this.uiObject, () => {
 			if(!this.enableHover) return;
 			this.onHoverAC.call(true, this); 
 		});
