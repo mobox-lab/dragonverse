@@ -16,7 +16,7 @@ import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import ModuleService = mwext.ModuleService;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import AchievementModuleS from "../AchievementModule/AchievementModuleS";
 import { comeDown, memorizePointIdToLocation, ResourceModuleS } from "./ResourceModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";

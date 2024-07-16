@@ -1,6 +1,6 @@
 import i18n from "../../language/i18n";
 import { ProximityPrompts } from "../../ui/common/ProximityPrompts";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { InitializeCheckerScript } from "../archtype/base/InitializeCheckScript";
 import { KeyItem } from "./KeyItemPuzzel";
 import { IPickerController } from "./PickerController";

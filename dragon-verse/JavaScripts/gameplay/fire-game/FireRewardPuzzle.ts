@@ -1,5 +1,5 @@
 import { Puzzle } from "../interactive/Puzzle";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { Delegate } from "../../depend/delegate/Delegate";
 import SimpleDelegate = Delegate.SimpleDelegate;
 import { GameConfig } from "../../config/GameConfig";

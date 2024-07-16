@@ -5,7 +5,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import KeyOperationManager from '../../controller/key-operation-manager/KeyOperationManager';
-import Gtk from '../../util/GToolkit';
+import Gtk from 'gtoolkit';
 import { oTraceError } from "../../util/LogManager";
 import MessageBox from "../../util/MessageBox";
 import { Singleton, utils } from "../../util/uitls";

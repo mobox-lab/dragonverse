@@ -16,7 +16,7 @@ import { GlobalEnum } from "../../const/Enum";
 import { EnchantBuff } from "./EnchantBuff";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { P_GlobalTips } from "../UI/P_GlobalTips";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
 import { PetBag_Item } from "./P_BagItem";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
@@ -198,12 +198,12 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         return arr;
     }
 
-    /**添加宠物
-     * @param id 宠物id
-     */
-    public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
-        await this.server.net_addPetWithMissingInfo(Player.localPlayer.playerId, id, type, addTime);
-    }
+    // /**添加宠物
+    //  * @param id 宠物id
+    //  */
+    // public async addPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+    //     await this.server.net_addPetWithMissingInfo(Player.localPlayer.playerId, id, type, addTime);
+    // }
 
     /**宠物公告 */
     public async net_petNotice(playerId: number, petId: number, type: GlobalEnum.PetNoticeTips) {
@@ -281,7 +281,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
 
         this.hudPetUI.removeRedPoint(keys);
         // 设置数据
-        this.server.net_deletePet(keys);
+        this.server.net_deletePet(keys, "删除");
     }
 
     /**是否可融合强化 */

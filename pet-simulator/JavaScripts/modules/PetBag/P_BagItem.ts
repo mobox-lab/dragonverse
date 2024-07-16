@@ -7,7 +7,7 @@ import { Singleton, stringToBuff, utils } from "../../util/uitls";
 import { BagTool } from "./BagTool";
 import { GlobalEnum } from "../../const/Enum";
 import { cubicBezier } from "../../util/MoveUtil";
-import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import KeyOperationManager, { OperationTypes } from "../../controller/key-operation-manager/KeyOperationManager";
 
 
 export class PetBag_Item extends Pet_item_Generate {
@@ -37,12 +37,11 @@ export class PetBag_Item extends Pet_item_Generate {
         this.undefineBgGuid = this.mPic_Equip.imageGuid;
         this.undefineSelectGuid = this.mPic_Equip_3.imageGuid;
         this.mButton_Equip.onClicked.add(this.onBtnClick.bind(this));
-		
-		KeyOperationManager.getInstance().onWidgetEntered(this.uiWidgetBase, () => {
+		KeyOperationManager.getInstance().onWidgetEnter(this.uiObject, () => {
 			if(!this.enableHover) return;
 			this.onHoverAC.call(true, this); 
 		});
-		KeyOperationManager.getInstance().onWidgetLeave(this.uiWidgetBase, () => {
+		KeyOperationManager.getInstance().onWidgetLeave(this.uiObject, () => {
 			if(!this.enableHover) return;
 			this.onHoverAC.call(false, this);
 		});
@@ -319,7 +318,6 @@ export class PetBag_Item extends Pet_item_Generate {
         this.fadeOutTween = fadeOutTween;
     }
 
-
     /**item设置位置 */
     private calcuItemPos(count: number): Vector2 {
         //距离左边的偏移量
@@ -507,5 +505,11 @@ export class PetBag_Item extends Pet_item_Generate {
         if (this.alphaTween && this.alphaTween.isPlaying()) {
             this.alphaTween.stop();
         }
+    }
+    
+    destroy(): void {
+        KeyOperationManager.getInstance().unregisterMouse(this.uiObject, OperationTypes.OnMouseEnter);
+        KeyOperationManager.getInstance().unregisterMouse(this.uiObject, OperationTypes.OnMouseLeave);
+        super.destroy();
     }
 }

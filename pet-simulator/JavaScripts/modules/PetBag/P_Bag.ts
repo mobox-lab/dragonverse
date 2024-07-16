@@ -249,7 +249,6 @@ export class P_Bag extends PetBagPanel_Generate {
         itemUI.init(uiData);
 
         itemUI.setClickFun(this.onClickItem.bind(this), this);
-        itemUI.onHoverAC.clear();
         itemUI.onHoverAC.add(this.showNewPetHoverUI.bind(this));
         this.itemArr.push(itemUI);
         return itemUI;
@@ -476,8 +475,6 @@ export class P_Bag extends PetBagPanel_Generate {
 
     protected onShow(...params: any[]): void {
         this.itemArr.forEach((item) => {
-			item.onHoverAC.clear(); 
-			item.onHoverAC.add(this.showNewPetHoverUI.bind(this));
 			item.setEnableHover(true);
 		})
         this.showAC.call();
@@ -537,7 +534,7 @@ export class P_Bag extends PetBagPanel_Generate {
 			item.mPic_Equip_4.visibility = mw.SlateVisibility.SelfHitTestInvisible;
 			item.mPic_Equip_4.setImageColorByHex(GlobalData.Bag.itemHoverLineColor[cfg.QualityType as GlobalEnum.PetQuality - 1]);
             let pos = item.uiObject.position;
-            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x + 125 + GlobalData.Bag.itemHoverOffsetX, pos.y + this.mCanvas.position.y - this.mScrollBox.scrollOffset + GlobalData.Bag.itemHoverOffsetY); 
+            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x + 125 + GlobalData.Bag.itemHoverOffsetX, pos.y + this.mCanvas.position.y - this.mScrollBox.scrollOffset + GlobalData.Bag.itemHoverOffsetY);
             buffNum > 2 ? mw.UIService.getUI(P_BagHoverNum3).setPetInfoShow(item.petData, loc) : mw.UIService.getUI(P_BagHoverNum2).setPetInfoShow(item.petData, loc);
         } else {
 			item.mPic_Equip_4.visibility = mw.SlateVisibility.Collapsed;

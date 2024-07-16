@@ -1,7 +1,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import { Singleton } from "../../util/GToolkit";
+import { Singleton } from "gtoolkit";
 import { utils } from "../../util/uitls";
 import { P_HudUI } from "../Hud/P_HudUI";
 

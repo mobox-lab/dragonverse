@@ -24,6 +24,7 @@ export class HudModuleS extends ModuleS<HudModuleC, null> {
         if (!GlobalData.pet.initPets.includes(id)) return;
         ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(this.currentPlayerId,
             id,
+            "初始化",
             type,
             addTime);
     }

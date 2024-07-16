@@ -2,7 +2,7 @@ import { State } from "../../../depend/hfsm/State";
 import { StateMachine } from "../../../depend/hfsm/StateMachine";
 import i18n from "../../../language/i18n";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
-import GToolkit, { Regulator } from "../../../util/GToolkit";
+import GToolkit, { Regulator } from "gtoolkit";
 import { SyncRootEntity } from "../base/SyncRootEntity";
 import { CompanionStateEnum, CompanionViewController } from "./CompanionController";
 import { CompanionState } from "./CompanionState";

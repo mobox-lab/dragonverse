@@ -1,7 +1,7 @@
 import P12ShopPanel from "../shop/P12ShopPanel";
 import { P12ItemResId } from "../../module/auth/AuthModule";
-import SenzuBeanReConfirmPanel from "./SenzuBeanReConfirmPanel";
 import { P12BagModuleC } from "../../module/bag/P12BagModule";
+import SenzuBeanReConfirmPanel from "./SenzuBeanReConfirmPanel";
 import { MouseLockController } from "../../controller/MouseLockController";
 import Online_Confirm_Generate from "../../ui-generate/Onlineshop/Online_Confirm_generate";
 

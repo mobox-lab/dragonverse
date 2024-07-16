@@ -1,4 +1,4 @@
-import Gtk, { Constructor, GtkTypes, IRecyclable, ObjectPool, Singleton } from "../../util/GToolkit";
+import Gtk, { Constructor, GtkTypes, IRecyclable, ObjectPool, Singleton } from "gtoolkit";
 import Log4Ts from "../log4ts/Log4Ts";
 import { FlowTweenTask } from "../waterween/tweenTask/FlowTweenTask";
 import Waterween from "../waterween/Waterween";

@@ -4,7 +4,7 @@ import Subdata = mwext.Subdata;
 import i18n, { LanguageTypes } from "../../language/i18n";
 import AudioController from "../../controller/audio/AudioController";
 import { ATransactItem, Transact } from "./ATransactItem";
-import { Constructor } from "../../util/GToolkit";
+import { Constructor } from "gtoolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
 

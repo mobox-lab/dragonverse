@@ -1,7 +1,7 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { AuthModuleS } from "../auth/AuthModule";
-import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
+import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import ModuleService = mwext.ModuleService;
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;

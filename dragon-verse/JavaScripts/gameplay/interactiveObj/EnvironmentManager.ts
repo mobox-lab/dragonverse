@@ -10,7 +10,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { ISceneEnvironmentElement } from "../../config/SceneEnvironment";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Gtk, { Singleton } from "../../util/GToolkit";
+import Gtk, { Singleton } from "gtoolkit";
 
 export default class EnvironmentManager extends Singleton<EnvironmentManager>() {
     public setEnvironment(sceneEnvironmentId: number) {

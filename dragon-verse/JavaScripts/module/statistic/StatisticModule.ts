@@ -1,5 +1,5 @@
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
+import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
 

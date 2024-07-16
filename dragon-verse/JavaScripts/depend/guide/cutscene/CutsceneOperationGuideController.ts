@@ -1,4 +1,4 @@
-import {Regulator} from "../../../util/GToolkit";
+import {Regulator} from "gtoolkit";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import OperationGuideControllerBase from "../base/OperationGuideControllerBase";
 import {BrokenStatus} from "../base/BrokenStatus";

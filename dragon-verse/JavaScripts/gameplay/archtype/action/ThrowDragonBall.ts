@@ -1,4 +1,4 @@
-import GToolkit from "../../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import GameServiceConfig from "../../../const/GameServiceConfig";
 

@@ -1,6 +1,6 @@
 import Enumerable from "linq";
 import {QuestStateEnum} from "../../module/quest/Config";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import {KeyItemPuzzle} from "../interactive/KeyItemPuzzel";
 import {PickableItem} from "../interactive/PickableItem";
 import WoodRewardPuzzle from "../interactive/WoodRewardPuzzle";

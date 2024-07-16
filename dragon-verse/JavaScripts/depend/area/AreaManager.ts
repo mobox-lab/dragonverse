@@ -1,15 +1,15 @@
-import Gtk, { Delegate, Singleton } from "../../util/GToolkit";
+import Gtk, { Delegate, Singleton } from "gtoolkit";
 import { AnyPoint, IPoint2, IPoint3 } from "./shape/base/IPoint";
 import { IAreaElement } from "./shape/base/IArea";
 import Enumerable from "linq";
-import Rectangle from "./shape/r-tree/Rectangle";
-import { RTree } from "./shape/r-tree/RTree";
 import { PolygonShape } from "./shape/PolygonShape";
 import { Point3Set } from "./shape/Point3Set";
 import { pointToArray } from "./shape/util/Util";
 import Log4Ts from "../log4ts/Log4Ts";
 import { GameConfig } from "../../config/GameConfig";
 import SimpleDelegate = Delegate.SimpleDelegate;
+import Rectangle from "./shape/Rectangle";
+import { RTree } from "./r-tree/RTree";
 
 /**
  * @desc # AreaManager 区域管理器.
@@ -301,7 +301,7 @@ export default class AreaManager extends Singleton<AreaManager>() {
                 () => {
                     let areas = Enumerable
                         .from(this._treeForShape
-                            .queryPoint(pointToArray(obj.worldTransform.position)))
+                            .queryIncludePoint(pointToArray(obj.worldTransform.position)))
                         .select((element) => (this._rectIndexer.get(element) as PolygonShape))
                         .where(element => element !== undefined && element.inShape(obj.worldTransform.position))
                         .select(element => this._areaElementIndexer.get(element) as number);

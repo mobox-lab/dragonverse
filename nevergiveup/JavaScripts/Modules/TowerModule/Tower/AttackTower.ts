@@ -16,7 +16,7 @@ import { SoundUtil } from "../../../tool/SoundUtil";
 import { RANGEUNIT, TowerInfo } from "../TowerEnum";
 import TowerBase from "./TowerBase";
 import AssetUtil = mw.AssetUtil;
-import Gtk from "../../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { FlyingComponent } from "../../../enemy/components/FlyingComponent";
 
 export default class AttackTower extends TowerBase {

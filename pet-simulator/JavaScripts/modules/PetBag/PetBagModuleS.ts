@@ -12,8 +12,9 @@ import { EnchantBuff } from "./EnchantBuff";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { EnchantPetState } from "./P_Enchants";
+import GameServiceConfig from "../../const/GameServiceConfig";
 
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     private _playerModuleS: PlayerModuleS;
@@ -74,7 +75,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     @Decorator.noReply()
-    public net_addPetWithMissingInfo(playerId: number, id: number, type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: {
+    public net_addPetWithMissingInfo(playerId: number, id: number, creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化", type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: {
         logObj: Object,
         logName: string
     }) {
@@ -93,7 +94,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 petName: name,
             });
         }
-        this.addPet(playerId, id, atk, name, type, addTime, logInfo);
+        this.addPet(playerId, id, atk, name, type, addTime, logInfo, creSource);
     }
 
     /**
@@ -117,7 +118,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 eggId: cfg.id,
                 petId,
             };
-            this.net_addPetWithMissingInfo(playerId, petId, cfg.AreaID, undefined, {logName: "P_Hatch", logObj});
+            this.net_addPetWithMissingInfo(playerId, petId, "孵化", cfg.AreaID, undefined, {
+                logName: "P_Hatch",
+                logObj,
+            });
             return petId;
         }
         return null;
@@ -185,9 +189,9 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: {
         logObj: Object,
         logName: string
-    }) {
+    }, creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化") {
         let data = this.getPlayerData(playerID);
-        data.addBagItem(id, atk, name, addTime, logInfo, playerID);
+        data.addBagItem(id, atk, name, addTime, logInfo, playerID, creSource);
         this.taskMS.getPet(Player.getPlayer(playerID), id, type);
         ModuleService.getModule(CollectModuleS).addPet(playerID, id, type);
         this.onGetPetAC.call(type, playerID);
@@ -237,11 +241,11 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             this.getAllClient().net_petNotice(playerId, id, tipsType);
     }
 
-    net_deletePet(keys: number[]) {
-        this.deletePet(this.currentPlayerId, keys);
+    net_deletePet(keys: number[], desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
+        this.deletePet(this.currentPlayerId, keys, desSource);
     }
 
-    public deletePet(playerId: number, keys: number[]) {
+    public deletePet(playerId: number, keys: number[], desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
         Log4Ts.log(PetBagModuleS, "deletePet keys:" + keys);
         let data = this.getPlayerData(playerId);
 
@@ -253,7 +257,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
         if (!Gtk.isNullOrEmpty(unEquipPets)) data.unEquipPet(unEquipPets);
 
-        data.removeBagItem(keys);
+        data.removeBagItem(keys, desSource);
         this.reportMaxAttackPetInfo(playerId, data);
 
         data.save(true);
@@ -287,17 +291,17 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return this.currentData.addPetFollowCount(num);
     }
 
-    /**训练 */
-    net_trainPet(keys: number[]) {
+    // /**训练 */
+    // net_trainPet(keys: number[], desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
 
-        for (let i = 0; i < keys.length; i++) {
-            const element = keys[i];
-            this.currentData.addTrainPet(element);
-            this.currentData.removeBagItem([element]);
-        }
-        this.currentData.save(true);
-        this.currentData.PetTrainChangeAC.call();
-    }
+    //     for (let i = 0; i < keys.length; i++) {
+    //         const element = keys[i];
+    //         this.currentData.addTrainPet(element);
+    //         this.currentData.removeBagItem([element], desSource);
+    //     }
+    //     this.currentData.save(true);
+    //     this.currentData.PetTrainChangeAC.call();
+    // }
 
     net_trainComplete(key: number) {
         let index = this.currentData.trainPet.findIndex(item => {
@@ -587,11 +591,12 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 petId: endPetId,
             },
         };
-        this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
+        this.petBagModuleS.deletePet(playerId, curSelectPetKeys, "合成");
         this.petBagModuleS
             .net_addPetWithMissingInfo(
                 playerId,
                 endPetId,
+                "合成",
                 GlobalEnum.PetGetType.Fusion,
                 earliestObtainTime,
                 logInfo);
@@ -662,11 +667,11 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             }
         });
 
-        let random = MathUtil.randomInt(0, 100);
+        let random = (GameServiceConfig.isRelease || GameServiceConfig.isBeta) ? MathUtil.randomInt(0, 100) : 0;
         const petInfo = GameConfig.PetARR.getElement(curPetId);
         let isSucc: boolean = true;
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
-        this.petBagModuleS.deletePet(playerId, curSelectPetKeys);
+        this.petBagModuleS.deletePet(playerId, curSelectPetKeys, isGold ? "爱心化" : "彩虹化");
         const logInfo = {
             logName: isGold ? "P_Heart" : "P_Rainbow", logObj: {
                 uid: userId,
@@ -683,6 +688,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(
                 this.currentPlayerId,
                 endPetId,
+                isGold ? "爱心化" : "彩虹化",
                 isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow,
                 earliestObtainTime,
                 logInfo);

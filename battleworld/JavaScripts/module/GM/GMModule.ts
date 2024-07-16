@@ -33,7 +33,7 @@ import { PlayerHeadUIModuleC } from "../PlayerHeadUIModule/PlayerHeadUIModuleC";
 import { EnergyModuleC, EnergyModuleS } from "../Energy/EnergyModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import WoodUnit from "../npc/WoodUnit";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import GodModService, { addGMCommand } from "mw-god-mod";
 
 // export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {

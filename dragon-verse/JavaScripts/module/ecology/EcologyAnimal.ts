@@ -1,9 +1,9 @@
 import FiniteStateMachine, { Region, State } from "../../depend/finite-state-machine/FiniteStateMachine";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { RandomGenerator } from "../../util/GToolkit";
+import { RandomGenerator } from "gtoolkit";
 import { IAnimalEcologyElement } from "../../config/AnimalEcology";
 import { Yoact } from "../../depend/yoact/Yoact";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import bindYoact = Yoact.bindYoact;
 import { GameConfig } from "../../config/GameConfig";
 import createYoact = Yoact.createYoact;

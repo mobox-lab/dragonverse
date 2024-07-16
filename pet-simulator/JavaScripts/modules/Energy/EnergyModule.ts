@@ -1,7 +1,7 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { AuthModuleS } from "../auth/AuthModule";
-import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
+import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import ModuleService = mwext.ModuleService;
 import { Yoact } from "../../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
@@ -369,7 +369,7 @@ export class EnergyModuleS extends mwext.ModuleS<EnergyModuleC, PSEnergyModuleDa
         if (limitRefresh !== undefined) d.tryUpdateLimit(limitRefresh);
         d.energy += val;
         d.save(false);
-        this.syncEnergyToClient(player.userId, d.energy);
+        this.syncEnergyToClient(player.userId, d.energy, limitRefresh);
         Log4Ts.log(EnergyModuleS, `add ${val} energy to player ${userId}.`, ` current: ${d.energy}`);
     }
 

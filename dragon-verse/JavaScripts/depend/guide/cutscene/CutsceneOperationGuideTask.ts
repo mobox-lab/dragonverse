@@ -1,6 +1,6 @@
 import OperationGuideTask, { OperationGuideType } from "../base/OperationGuideTask";
 import { ICutsceneOperationGuideControllerOption } from "./CutsceneOperationGuideController";
-import { Predicate } from "../../../util/GToolkit";
+import { Predicate } from "gtoolkit";
 
 export default class CutsceneOperationGuideTask extends OperationGuideTask {
     public stepId: number;

@@ -1,4 +1,4 @@
-import Gtk, { GtkTypes } from "../../util/GToolkit";
+import Gtk, { GtkTypes } from "gtoolkit";
 import OperationGuider from "../../depend/guide/OperationGuider";
 import { OperationTypes } from "../../controller/key-operation-manager/KeyOperationManager";
 import { TaskOptionalTypes } from "../../depend/guide/base/OperationGuideTaskGroup";

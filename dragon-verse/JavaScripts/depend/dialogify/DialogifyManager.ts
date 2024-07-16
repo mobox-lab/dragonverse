@@ -5,7 +5,7 @@ import ADialogifyConfigReader, {
     IDialogueInteractNodeConfigElement,
     IRelateEntityConfigElement,
 } from "./dialogify-config-reader/ADialogifyConfigReader";
-import { Singleton } from "../../util/GToolkit";
+import { Singleton } from "gtoolkit";
 
 /**
  * DialogifyManager.
@@ -92,7 +92,7 @@ export default class DialogifyManager extends Singleton<DialogifyManager>() {
 
     //#region Singleton
 
-    protected onConstruct(): void {
+    public onConstruct(): void {
         super.onConstruct();
 
         Event.addLocalListener(ADialoguePanelController.ControllerExitDialogueEventName, () => {

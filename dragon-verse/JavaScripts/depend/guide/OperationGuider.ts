@@ -1,6 +1,6 @@
 import UIOperationGuideController, { uiValid } from "./ui/UIOperationGuideController";
 import UIOperationGuideTask from "./ui/UIOperationGuideTask";
-import Gtk, { Delegate, Predicate, Singleton } from "../../util/GToolkit";
+import Gtk, { Delegate, Predicate, Singleton } from "gtoolkit";
 import OperationGuideTaskGroup, { TaskOptionalTypes } from "./base/OperationGuideTaskGroup";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import OperationGuideTask from "./base/OperationGuideTask";

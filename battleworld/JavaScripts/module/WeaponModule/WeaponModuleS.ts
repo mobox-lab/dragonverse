@@ -6,7 +6,7 @@ import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { WeaponModuleC } from "./WeaponModuleC";
 import { WeaponModuleData } from "./WeaponModuleData";
 import { AuthModuleS } from "../auth/AuthModule";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 
 export class WeaponModuleS extends ModuleS<WeaponModuleC, WeaponModuleData> {
     private _authModuleS: AuthModuleS;

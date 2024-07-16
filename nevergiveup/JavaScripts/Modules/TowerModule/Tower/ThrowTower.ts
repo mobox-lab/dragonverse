@@ -9,7 +9,7 @@
 import Utils from "../../../Utils";
 import AttackTower from "./AttackTower";
 import { Flyer } from "./Flyer";
-import Gtk from "../../../util/GToolkit";
+import Gtk from "gtoolkit";
 
 export default class ThrowTower extends AttackTower {
     protected async attack() {

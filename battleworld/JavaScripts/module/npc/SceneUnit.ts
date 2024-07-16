@@ -17,7 +17,7 @@ import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { IUnitBase } from "./IUnitBase";
 import { UnitManager } from "./UnitManager";
 import { MascotModuleS } from "./mascotNpc/MascotModuleS";
-import { GtkTypes } from "../../util/GToolkit";
+import { GtkTypes } from "gtoolkit";
 
 @Component
 export default class SceneUnit extends Script implements IUnitBase {

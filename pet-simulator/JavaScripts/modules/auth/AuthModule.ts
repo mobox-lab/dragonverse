@@ -1,7 +1,7 @@
 import CryptoJS from "crypto-js";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
-import Gtk, { Expression } from "../../util/GToolkit";
+import Gtk, { Expression } from "gtoolkit";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import noReply = mwext.Decorator.noReply;
 import { GameConfig } from "../../config/GameConfig";
@@ -733,6 +733,18 @@ interface PetSimulatorStatisticPetObj {
      * 当前状态，销毁、存在.
      */
     status: "destroyed" | "exist";
+
+    /**
+     * 创建来源.
+     * "删除" 为主动删除.
+     * 其余为合成时被动删除.
+     */
+    creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化";
+    /**
+     * 销毁来源.
+     */
+    desSource: "删除" | "合成" | "爱心化" | "彩虹化" | "";
+
     /**
      * 创建时间.
      */
@@ -2086,6 +2098,8 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 }
             }
             headers["Authorization"] = `Bearer ${token}`;
+
+            if (GameServiceConfig.isRelease) silence = true;
         }
 
         const url = GameServiceConfig.isRelease || !GameServiceConfig.isUseTestUrl ? releaseUrl : testUrl;

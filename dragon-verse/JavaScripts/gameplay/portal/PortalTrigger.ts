@@ -1,8 +1,8 @@
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import Rotation = mw.Rotation;
 import Nolan from "../../depend/nolan/Nolan";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 
 /**
  * 传送门 Trigger.

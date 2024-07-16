@@ -1,4 +1,4 @@
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { Quest } from "./Quest";
 import Enumerable from "linq";
 import FirePuzzleBlock, { FirePuzzleBlockTypes } from "../fire-game/FirePuzzleBlock";

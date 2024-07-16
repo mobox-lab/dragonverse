@@ -16,7 +16,7 @@ import stopEffect = Yoact.stopEffect;
 import Animation = mw.Animation;
 import Navigation = mw.Navigation;
 import GameObject = mw.GameObject;
-import GToolkit, {Regulator} from "../../util/GToolkit";
+import GToolkit, {Regulator} from "gtoolkit";
 
 class SceneDragonBehaviorState {
     //#region Constant

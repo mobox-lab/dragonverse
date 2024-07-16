@@ -20,7 +20,7 @@ import i18n from "../../language/i18n";
 import UnifiedRoleController from "../role/UnifiedRoleController";
 import { ObbyEndPanel, ObbyGameData } from "../../ui/obby/ObbyEndPanel";
 import { MapManager } from "../../gameplay/map/MapManager";
-import { NoOverride } from "../../util/GToolkit";
+import { NoOverride } from "gtoolkit";
 import { AuthModuleS } from "../auth/AuthModule";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 

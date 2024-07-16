@@ -4,7 +4,7 @@ import { EventDefine } from "../../const/EventDefine";
 import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import GToolkit, { Expression, RandomGenerator, Regulator } from "../../util/GToolkit";
+import GToolkit, { Expression, RandomGenerator, Regulator } from "gtoolkit";
 import { BagModuleS } from "../bag/BagModule";
 import SceneDragon from "./SceneDragon";
 import SceneDragonBehavior from "./SceneDragonBehavior";
@@ -19,7 +19,7 @@ import { ThrowDragonBall } from "../../gameplay/archtype/action/ThrowDragonBall"
 import GlobalTips from "../../depend/global-tips/GlobalTips";
 import AreaManager from "../../depend/area/AreaManager";
 import { GameConfig } from "../../config/GameConfig";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { IPoint3 } from "../../depend/area/shape/base/IPoint";
 import { AuthModuleS } from "../auth/AuthModule";
 import { addGMCommand } from "mw-god-mod";

@@ -5,7 +5,7 @@ import { DollMachineModuleC, DollType } from "./DollMachineModuleC";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { IDollMachineElement } from "../../config/DollMachine";
 import { GlobalData } from "../../const/GlobalData";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 

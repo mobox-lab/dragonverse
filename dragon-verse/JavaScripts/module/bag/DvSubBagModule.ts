@@ -1,5 +1,5 @@
 // import {JModuleC, JModuleData, JModuleS} from "../../depend/jibu-module/JModule";
-// import Gtk from "../../util/GToolkit";
+// import Gtk from "gtoolkit";
 // import Log4Ts from "../../depend/log4ts/Log4Ts";
 // import {Delegate} from "../../depend/delegate/Delegate";
 // import SimpleDelegate = Delegate.SimpleDelegate;

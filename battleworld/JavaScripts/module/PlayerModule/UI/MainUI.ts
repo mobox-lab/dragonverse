@@ -42,7 +42,7 @@ import { AuthModuleC } from "../../auth/AuthModule";
 import { MessageBox } from "../../../tool/MessageBox";
 import Tips from "../../../tool/P_Tips";
 import { JumpGamePanel } from "../../../ui/jump-game/JumpGamePanel";
-import Gtk from "../../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
 import SettingUI from "../../SettingModule/UI/SettingUI";
 import { P_Game_Action } from "../../action/ui/P_Game_Action";

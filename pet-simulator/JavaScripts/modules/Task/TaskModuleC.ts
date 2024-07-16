@@ -127,7 +127,8 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
             .getModule(PetBagModuleS)
             .net_addPetWithMissingInfo(
                 Player.localPlayer.playerId,
-                petId);
+                petId, "孵化");
+        // TODO: 任务模块清理 应该不需要了。
     }
 
     /**显示任务商店 */

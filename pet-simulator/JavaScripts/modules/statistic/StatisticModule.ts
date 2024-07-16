@@ -2,7 +2,7 @@ import { GlobalEnum } from "../../const/Enum";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
+import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import { PetBagModuleData } from "../PetBag/PetBagModuleData";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
@@ -454,13 +454,13 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             staRed,
             stamina,
         };
+        petStatisticData.recordLeave(now);
         Log4Ts.log( 
             StatisticModuleS,
             " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData),
         );
         ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData);
-        
-        petStatisticData.recordLeave(now);
+        petBagData.cleanPetStatistic();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
