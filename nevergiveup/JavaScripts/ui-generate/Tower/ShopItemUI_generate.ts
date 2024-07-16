@@ -71,6 +71,27 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.tagCanvas_Internal
 	}
+	private canvas_fight_Internal: mw.Canvas
+	public get canvas_fight(): mw.Canvas {
+		if(!this.canvas_fight_Internal&&this.uiWidgetBase) {
+			this.canvas_fight_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_fight') as mw.Canvas
+		}
+		return this.canvas_fight_Internal
+	}
+	private fightImg_Internal: mw.Image
+	public get fightImg(): mw.Image {
+		if(!this.fightImg_Internal&&this.uiWidgetBase) {
+			this.fightImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_fight/fightImg') as mw.Image
+		}
+		return this.fightImg_Internal
+	}
+	private txt_sell_1_Internal: mw.TextBlock
+	public get txt_sell_1(): mw.TextBlock {
+		if(!this.txt_sell_1_Internal&&this.uiWidgetBase) {
+			this.txt_sell_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_fight/txt_sell_1') as mw.TextBlock
+		}
+		return this.txt_sell_1_Internal
+	}
 	private chooseImg_Internal: mw.Image
 	public get chooseImg(): mw.Image {
 		if(!this.chooseImg_Internal&&this.uiWidgetBase) {
@@ -125,6 +146,9 @@ export default class ShopItemUI_Generate extends UIScript {
 	   //文本多语言
 	   
 	   this.initLanguage(this.txt_sell)
+	   
+	
+	   this.initLanguage(this.txt_sell_1)
 	   
 	
 	   this.initLanguage(this.equipTxt)
