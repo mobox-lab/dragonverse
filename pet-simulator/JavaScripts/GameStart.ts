@@ -42,7 +42,7 @@ import GameServiceConfig from "./const/GameServiceConfig";
 import PsStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./modules/statistic/StatisticModule";
 import { DropManagerC, DropManagerS } from "./modules/Resources/DropResouce";
 import Balancing from "./depend/balancing/Balancing";
-import { GtkTypes } from "./util/GToolkit";
+import { GtkTypes } from "gtoolkit";
 import GMHUD_Generate from "./ui-generate/common/GM/GMHUD_generate";
 import PlayerSettingModuleData, { PlayerSettingModuleC, PlayerSettingModuleS } from "./modules/player-setting/PlayerSettingModule";
 import { VectorExt } from "./declaration/vectorext";

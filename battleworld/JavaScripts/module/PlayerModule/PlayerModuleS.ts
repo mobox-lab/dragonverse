@@ -44,7 +44,7 @@ import { MotionModuleS } from "../MotionModule/MotionModuleS";
 import { AuthModuleS } from "../auth/AuthModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Gtk, { GtkTypes } from "../../util/GToolkit";
+import Gtk, { GtkTypes } from "gtoolkit";
 import { Utils } from "../../util/uitls";
 import EnumAttributeType = Attribute.EnumAttributeType;
 import { StatisticModuleS } from "../statistic/StatisticModule";

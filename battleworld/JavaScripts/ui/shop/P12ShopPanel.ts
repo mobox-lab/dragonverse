@@ -1,4 +1,4 @@
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { P12ShopConfig } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";

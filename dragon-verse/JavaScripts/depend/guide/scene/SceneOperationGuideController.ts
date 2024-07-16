@@ -1,4 +1,4 @@
-import Gtk, {IRecyclable, Method, ObjectPool} from "../../../util/GToolkit";
+import Gtk, {IRecyclable, Method, ObjectPool} from "gtoolkit";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 import OperationGuideControllerBase from "../base/OperationGuideControllerBase";
 import {BrokenStatus} from "../base/BrokenStatus";

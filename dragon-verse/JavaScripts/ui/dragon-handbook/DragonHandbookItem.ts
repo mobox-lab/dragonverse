@@ -2,7 +2,7 @@
 import { BagModuleC, DragonHandbookUnique } from "../../module/bag/BagModule";
 import { Yoact } from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { GameConfig } from "../../config/GameConfig";
 import DragonHandbookItem_Generate from "../../ui-generate/dragon-handbook/DragonHandbookItem_generate";
 

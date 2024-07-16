@@ -17,7 +17,7 @@ import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { EnergyModuleC } from "../Energy/EnergyModule";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
 import { TipsManager } from "../Hud/P_TipUI";
 import GameServiceConfig from "../../const/GameServiceConfig";

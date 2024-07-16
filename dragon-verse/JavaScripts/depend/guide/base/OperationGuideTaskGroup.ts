@@ -1,5 +1,5 @@
 import OperationGuideTask from "./OperationGuideTask";
-import {Predicate} from "../../../util/GToolkit";
+import {Predicate} from "gtoolkit";
 
 /**
  * 任务组可选性.

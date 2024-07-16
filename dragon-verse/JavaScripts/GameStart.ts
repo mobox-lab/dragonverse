@@ -23,7 +23,7 @@ import MainPanel from "./ui/main/MainPanel";
 import { VisualizeDebug } from "./util/VisualizeDebug";
 import { MapManager } from "./gameplay/map/MapManager";
 import { Delegate } from "./depend/delegate/Delegate";
-import GToolkit, { GtkTypes } from "./util/GToolkit";
+import GToolkit, { GtkTypes } from "gtoolkit";
 import SystemUtil = mw.SystemUtil;
 import Nolan from "./depend/nolan/Nolan";
 import AudioController, { BgmPlayStrategy } from "./controller/audio/AudioController";

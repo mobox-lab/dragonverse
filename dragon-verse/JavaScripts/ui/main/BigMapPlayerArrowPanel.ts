@@ -1,4 +1,4 @@
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import LinearColor = mw.LinearColor;
 import BigMapPlayerArrow_Generate from "../../ui-generate/map/BigMapPlayerArrow_generate";
 import { HeadUIController } from "../../controller/HeadUIController";
@@ -7,7 +7,7 @@ import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import Waterween from "../../depend/waterween/Waterween";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 
 export default class BigMapPlayerArrow extends BigMapPlayerArrow_Generate {
     //#region Member

@@ -1,4 +1,4 @@
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { P12ShopItem } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";
 import { GameConfig } from "../../config/GameConfig";

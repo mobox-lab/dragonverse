@@ -1,7 +1,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import PickerController from "../../gameplay/interactive/PickerController";
 import { Quest, QuestReporter } from "../../gameplay/quest/Quest";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleS } from "./QuestModuleS";

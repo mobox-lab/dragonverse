@@ -3,7 +3,7 @@ import { BagItemUnique, BagModuleC, HandbookItemUnique } from "../../module/bag/
 import ScrollView from "../../depend/scroll-view/ScrollView";
 import BagPanelItem from "../bag/BagPanelItem";
 import HandbookPanelItem from "./HandbookPanelItem";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { Yoact } from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
 import Enumerable from "linq";

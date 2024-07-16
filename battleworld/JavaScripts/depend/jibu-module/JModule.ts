@@ -1,5 +1,5 @@
 import Log4Ts from "../log4ts/Log4Ts";
-import { Delegate, NoOverride, Predicate } from "../../util/GToolkit";
+import { Delegate, NoOverride, Predicate } from "gtoolkit";
 import SimpleDelegate = Delegate.SimpleDelegate;
 import SimpleDelegateFunction = Delegate.SimpleDelegateFunction;
 

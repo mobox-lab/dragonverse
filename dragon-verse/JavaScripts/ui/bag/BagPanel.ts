@@ -2,7 +2,7 @@ import BagMain_Generate from "../../ui-generate/bag/BagMain_generate";
 import ScrollView from "../../depend/scroll-view/ScrollView";
 import { BagItemUnique, BagModuleC } from "../../module/bag/BagModule";
 import BagPanelItem from "./BagPanelItem";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { GameConfig } from "../../config/GameConfig";
 import i18n from "../../language/i18n";
 import { Yoact } from "../../depend/yoact/Yoact";

@@ -1,5 +1,5 @@
-import GToolkit, { GtkTypes } from "../util/GToolkit";
-import Gtk from "../util/GToolkit";
+import GToolkit, { GtkTypes } from "gtoolkit";
+import Gtk from "gtoolkit";
 
 export default class GameServiceConfig {
     //#region settings

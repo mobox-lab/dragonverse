@@ -9,7 +9,7 @@
 import MapPanel_Generate from "../../ui-generate/map/MapPanel_generate";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import MainCurtainPanel from "../main/MainCurtainPanel";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import BigMapPlayerArrow from "../main/BigMapPlayerArrowPanel";
 import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
 import Waterween from "../../depend/waterween/Waterween";
@@ -21,7 +21,7 @@ import { MouseLockController } from "../../controller/MouseLockController";
 import tipLandMap_Generate from "../../ui-generate/map/tipLandMap_generate";
 import { GameConfig } from "../../config/GameConfig";
 import i18n from "../../language/i18n";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 
 const sceneSize: mw.Vector2 = mw.Vector2.zero;
 

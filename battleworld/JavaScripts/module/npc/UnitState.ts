@@ -20,7 +20,7 @@ import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
 import { UnitStateMachine } from "./UnitStateMachine";
 import { MascotModuleS } from "./mascotNpc/MascotModuleS";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 
 export enum EUnitState {
     /** 正常寻路 */

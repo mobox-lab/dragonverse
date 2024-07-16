@@ -1,5 +1,5 @@
 import GlobalTips, { IContentSetter } from "../GlobalTips";
-import Gtk from "../../../util/GToolkit";
+import Gtk from "gtoolkit";
 import BubbleWidget_Generate from "../../../ui-generate/global-tips/BubbleWidget_generate";
 
 export default class BubbleWidget extends BubbleWidget_Generate implements IContentSetter {

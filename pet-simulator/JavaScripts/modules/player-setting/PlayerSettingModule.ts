@@ -3,7 +3,7 @@ import ModuleS = mwext.ModuleS;
 import Subdata = mwext.Subdata;
 
 import { ATransactItem, Transact } from "./ATransactItem";
-import { Constructor } from "../../util/GToolkit";
+import { Constructor } from "gtoolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { P_HudUI } from "../Hud/P_HudUI";
 import GameServiceConfig from "../../const/GameServiceConfig";

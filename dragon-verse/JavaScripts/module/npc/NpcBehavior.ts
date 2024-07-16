@@ -4,7 +4,7 @@ import { EventDefine } from "../../const/EventDefine";
 import { HeadUIController, HeadUIType } from "../../controller/HeadUIController";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import i18n from "../../language/i18n";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import PlayerInteractNpcEventArgs from "./trigger/PlayerInteractNpcEventArgs";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import DialogifyManager from "../../depend/dialogify/DialogifyManager";

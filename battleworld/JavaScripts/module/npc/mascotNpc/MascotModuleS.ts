@@ -25,7 +25,7 @@ import { UnitManager } from "../UnitManager";
 import { EUnitState } from "../UnitState";
 import { UnitStateMachine } from "../UnitStateMachine";
 import { MascotModuleC } from "./MascotModuleC";
-import Gtk, { GtkTypes, Regulator } from "../../../util/GToolkit";
+import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
 
 export class MascotModuleS extends ModuleS<MascotModuleC, null> {

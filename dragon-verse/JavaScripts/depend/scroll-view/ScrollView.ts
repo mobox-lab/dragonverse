@@ -1,7 +1,7 @@
 import IUnique from "../yoact/IUnique";
 import IScrollViewItem from "./IScrollViewItem";
 import { Delegate } from "../delegate/Delegate";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { AdvancedTweenTask } from "../waterween/tweenTask/AdvancedTweenTask";
 import Waterween from "../waterween/Waterween";
 import Easing from "../easing/Easing";
@@ -14,7 +14,7 @@ import UIService = mw.UIService;
 import UIScript = mw.UIScript;
 import SimpleDelegateFunction = Delegate.SimpleDelegateFunction;
 import Canvas = mw.Canvas;
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 
 // export class Margin {
 //     public top: number;

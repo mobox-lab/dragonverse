@@ -1,5 +1,5 @@
 import { BulletTask, DoneStatus, TaskStatus } from "./BulletTask";
-import { Delegate, GtkTypes } from "../../util/GToolkit";
+import { Delegate, GtkTypes } from "gtoolkit";
 import Log4Ts from "../log4ts/Log4Ts";
 
 /**

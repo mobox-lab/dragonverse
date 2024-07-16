@@ -22,7 +22,7 @@ import { ObbyModuleC } from "../../module/obby/ObbyModule";
 import { JumpGamePanel } from "../jump-game/JumpGamePanel";
 import Nolan from "../../depend/nolan/Nolan";
 import { MapPanel } from "../map/MapPanel";
-import Gtk, { Regulator } from "../../util/GToolkit";
+import Gtk, { Regulator } from "gtoolkit";
 import AccountService = mw.AccountService;
 import bindYoact = Yoact.bindYoact;
 import NpcBehavior from "../../module/npc/NpcBehavior";

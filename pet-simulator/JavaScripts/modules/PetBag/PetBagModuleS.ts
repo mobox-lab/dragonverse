@@ -12,7 +12,7 @@ import { EnchantBuff } from "./EnchantBuff";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { EnchantPetState } from "./P_Enchants";
 import GameServiceConfig from "../../const/GameServiceConfig";
 

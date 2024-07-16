@@ -1,4 +1,4 @@
-import GToolkit from "../../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import Log4Ts from "../../log4ts/Log4Ts";
 import { IDialogueContentNodeElement } from "../../../config/DialogueContentNode";
 import ADialogifyConfigReader, {

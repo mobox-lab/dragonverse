@@ -1,7 +1,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
 import Hover_item_Generate from "../../ui-generate/Hover_Bag/Hover_item_generate";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { utils } from "../../util/uitls";
 
 

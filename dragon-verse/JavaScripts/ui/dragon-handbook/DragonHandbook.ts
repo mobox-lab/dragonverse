@@ -2,7 +2,7 @@
 import ScrollView from "../../depend/scroll-view/ScrollView";
 import BagModuleData, { BagModuleC, DragonHandbookUnique } from "../../module/bag/BagModule";
 import DragonHandbookItem from "./DragonHandbookItem";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { GameConfig } from "../../config/GameConfig";
 import i18n from "../../language/i18n";
 import { Yoact } from "../../depend/yoact/Yoact";
@@ -17,7 +17,7 @@ import YoactArray from "../../depend/yoact/YoactArray";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import NewBag_Generate from "../../ui-generate/dragon-handbook/NewBag_generate";
 import { DragonElemental } from "../../const/DragonElemental";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { ElementalConfig } from "../../config/Elemental";
 
 export default class DragonHandbook extends NewBag_Generate {

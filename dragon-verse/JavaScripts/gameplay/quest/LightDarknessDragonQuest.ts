@@ -10,7 +10,7 @@ import { EventDefine } from "../../const/EventDefine";
 import { QuestModuleC } from "../../module/quest/QuestModuleC";
 import { Quest } from "./Quest";
 import Trigger = mw.Trigger;
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { Bubble } from "module_bubble";
 import { GameConfig } from "../../config/GameConfig";
 

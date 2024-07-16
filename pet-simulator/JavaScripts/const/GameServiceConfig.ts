@@ -1,4 +1,4 @@
-import GToolkit, { GtkTypes } from "../util/GToolkit";
+import GToolkit, { GtkTypes } from "gtoolkit";
 
 export default class GameServiceConfig {
 
