@@ -1,7 +1,7 @@
 import { GameConfig } from "../config/GameConfig";
 import { RankType } from "../modules/Rank/RankModuleS";
 import { GlobalEnum } from "./Enum";
-import Gtk from "../util/GToolkit";
+import Gtk from "gtoolkit";
 
 export class EggEndInfo {
     /**坐标z轴偏移 */

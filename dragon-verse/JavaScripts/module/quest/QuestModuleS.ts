@@ -5,7 +5,7 @@ import { QuestData } from "./QuestData";
 import { QuestModuleC } from "./QuestModuleC";
 import Enum = UE.Enum;
 import Enumerable from "linq";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { DragonElemental } from "../../const/DragonElemental";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 

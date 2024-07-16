@@ -4,7 +4,7 @@ import GlobalTipsPanel from "../../depend/global-tips/example/GlobalTipsPanel";
 import GlobalTips, { IContentSetter } from "../../depend/global-tips/GlobalTips";
 import i18n from "../../language/i18n";
 import BubbleWidget_Generate from "../../ui-generate/global-tips/BubbleWidget_generate";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 
 export default class CustomGlobalTips extends BubbleWidget_Generate implements IContentSetter {
     setContent(content: string, option?: void): void {

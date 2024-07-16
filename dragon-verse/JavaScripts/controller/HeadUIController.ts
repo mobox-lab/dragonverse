@@ -2,7 +2,7 @@ import { Singleton } from "../depend/singleton/Singleton";
 import i18n from "../language/i18n";
 import HeadUIPanel_Generate from "../ui-generate/head/HeadUIPanel_generate";
 import HiddenNameUI_Generate from "../ui-generate/head/HiddenNameUI_generate";
-import Gtk from "../util/GToolkit";
+import Gtk from "gtoolkit";
 
 
 @Serializable

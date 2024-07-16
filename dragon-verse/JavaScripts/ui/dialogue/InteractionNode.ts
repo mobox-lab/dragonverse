@@ -5,7 +5,7 @@ import InteractNode_Generate from "../../ui-generate/dialogue/InteractNode_gener
 export default class InteractionNode extends InteractNode_Generate {
     onStart(): void {
         super.onStart();
-        KeyOperationManager.getInstance().onWidgetEntered(this.uiObject, () => {
+        KeyOperationManager.getInstance().onWidgetEnter(this.uiObject, () => {
             this.btnMain.normalImageGuid = GameServiceConfig.DIALOGUE_PANEL_OPTION_ON_HOVER_IMG_GUID;
         });
 

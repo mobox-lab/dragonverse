@@ -4,7 +4,7 @@ import { AuthModuleS, ConsumeId, P12ItemResId } from "../auth/AuthModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import { StatisticModuleS } from "../statistic/StatisticModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import { Regulator } from "../../util/GToolkit";
+import { Regulator } from "gtoolkit";
 
 export class BwP12BagModuleData extends JModuleData {
 }

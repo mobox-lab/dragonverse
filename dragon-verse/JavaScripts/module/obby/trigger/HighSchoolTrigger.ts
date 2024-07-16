@@ -11,7 +11,7 @@ import Nolan from "../../../depend/nolan/Nolan";
 import i18n from "../../../language/i18n";
 import MainPanel from "../../../ui/main/MainPanel";
 import {ObbyEndPanel} from "../../../ui/obby/ObbyEndPanel";
-import GToolkit from "../../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import UnifiedRoleController from "../../role/UnifiedRoleController";
 import {ObbyModuleC} from "../ObbyModule";
 

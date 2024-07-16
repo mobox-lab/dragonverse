@@ -4,7 +4,7 @@ import { HandbookItemUnique } from "../../module/bag/BagModule";
 import { Yoact } from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
 import { GameConfig } from "../../config/GameConfig";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import i18n from "../../language/i18n";
 
 export default class HandbookPanelItem extends HandbookPanelItem_Generate implements IScrollViewItem<HandbookItemUnique> {

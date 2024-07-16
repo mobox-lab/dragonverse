@@ -1,4 +1,4 @@
-import { GtkTypes, Singleton } from "../../util/GToolkit";
+import { GtkTypes, Singleton } from "gtoolkit";
 import Gun from "./Gun";
 
 /**

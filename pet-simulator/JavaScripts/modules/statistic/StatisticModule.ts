@@ -2,7 +2,7 @@ import { GlobalEnum } from "../../const/Enum";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Gtk, { GtkTypes, Regulator } from "../../util/GToolkit";
+import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import { PetBagModuleData } from "../PetBag/PetBagModuleData";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";

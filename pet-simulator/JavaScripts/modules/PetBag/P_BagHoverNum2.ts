@@ -2,7 +2,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import Hover_number2_Generate from "../../ui-generate/Hover_Bag/Hover_number2_generate";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { P_HoverEnchantItem } from "./P_HoverEnchantItem";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 

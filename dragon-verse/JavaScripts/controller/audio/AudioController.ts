@@ -4,7 +4,7 @@ import { ISoundElement } from "../../config/Sound";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { Singleton } from "../../depend/singleton/Singleton";
 import Sound = mw.Sound;
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 
 export enum SoundIDEnum {
     /**

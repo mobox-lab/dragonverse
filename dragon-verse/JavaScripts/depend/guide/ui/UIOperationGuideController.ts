@@ -1,4 +1,4 @@
-import Gtk, { Regulator } from "../../../util/GToolkit";
+import Gtk, { Regulator } from "gtoolkit";
 import Waterween from "../../../depend/waterween/Waterween";
 import { FlowTweenTask } from "../../../depend/waterween/tweenTask/FlowTweenTask";
 import Easing from "../../../depend/easing/Easing";

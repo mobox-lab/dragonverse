@@ -1,4 +1,4 @@
-import Gtk, { Delegate, Singleton } from "../../util/GToolkit";
+import Gtk, { Delegate, Singleton } from "gtoolkit";
 import { AnyPoint, IPoint2, IPoint3 } from "./shape/base/IPoint";
 import { IAreaElement } from "./shape/base/IArea";
 import Enumerable from "linq";

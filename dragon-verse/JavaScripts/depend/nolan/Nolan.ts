@@ -6,7 +6,7 @@ import Rotation = mw.Rotation;
 import Easing, { CubicBezier, CubicBezierBase, EasingFunction } from "../easing/Easing";
 import Waterween from "../waterween/Waterween";
 import { FlowTweenTask } from "../waterween/tweenTask/FlowTweenTask";
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import { AdvancedTweenTask } from "../waterween/tweenTask/AdvancedTweenTask";
 import Log4Ts from "../log4ts/Log4Ts";
 import { Singleton } from "../singleton/Singleton";

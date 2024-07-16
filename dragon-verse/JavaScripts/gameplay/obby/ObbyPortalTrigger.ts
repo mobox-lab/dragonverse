@@ -12,8 +12,8 @@ import Nolan from "../../depend/nolan/Nolan";
 import { BagModuleC } from "../../module/bag/BagModule";
 import ObbyEnterFailPanel from "../../ui/obby/ObbyEnterFailPanel";
 import ObbyEnterPanel from "../../ui/obby/ObbyEnterPanel";
-import Gtk from "../../util/GToolkit";
-import GToolkit from "../../util/GToolkit";
+import Gtk from "gtoolkit";
+import GToolkit from "gtoolkit";
 
 import PortalTrigger from "../portal/PortalTrigger";
 @Component

@@ -5,7 +5,7 @@ import { stringToBuff } from "../../util/uitls";
 import { RewardTipsManager } from "../UI/RewardTips";
 import { BagTool } from "./BagTool";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 

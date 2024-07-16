@@ -12,7 +12,7 @@ import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { PetBag_Item } from "./P_BagItem";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { P_BagHoverNum3 } from "./P_BagHoverNum3";

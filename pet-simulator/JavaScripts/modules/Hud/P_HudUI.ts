@@ -16,7 +16,7 @@ import { TipsManager } from "./P_TipUI";
 import BuffEnergyTips_Generate from "../../ui-generate/common/BuffEnergyTips_generate";
 import { JumpGamePanel } from "../../ui/JumpGamePanel";
 import { Task_ModuleC } from "../Task/TaskModuleC";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { P_Transmit } from "../AreaDivide/P_Transmit";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import SettingsPanel from "../../ui/settings/SettingsPanel";

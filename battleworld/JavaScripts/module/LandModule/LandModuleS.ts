@@ -18,7 +18,7 @@ import { DressUpInfo } from "./PickUp/PickUpDressUp";
 import { PickManagerS } from "./PickManagerS";
 import { LandManagerS } from "./Land/LandManagerS";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 
 export type LandParce = {
     cfgId: number, obj: GameObject, BloodSwitch: boolean, SkillSwitch: boolean, GoldSwitch: boolean,

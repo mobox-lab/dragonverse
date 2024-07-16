@@ -1,4 +1,4 @@
-import GToolkit from "../../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import {EventDefine} from "../../../const/EventDefine";
 import Character = mw.Character;
 import PlayerInteractCollectibleItemEventArgs from "./PlayerInteractCollectibleItemEventArgs";

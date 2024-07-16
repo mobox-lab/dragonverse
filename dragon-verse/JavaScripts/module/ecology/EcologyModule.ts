@@ -1,6 +1,6 @@
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import { GameConfig } from "../../config/GameConfig";
-import Gtk, { RandomGenerator, Regulator } from "../../util/GToolkit";
+import Gtk, { RandomGenerator, Regulator } from "gtoolkit";
 import Balancing from "../../depend/balancing/Balancing";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import AreaManager from "../../depend/area/AreaManager";

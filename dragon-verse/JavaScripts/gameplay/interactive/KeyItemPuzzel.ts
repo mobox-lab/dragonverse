@@ -1,4 +1,4 @@
-import GToolkit from "../../util/GToolkit";
+import GToolkit from "gtoolkit";
 import {PickableItem} from "./PickableItem";
 import {Puzzle} from "./Puzzle";
 

@@ -3,7 +3,7 @@ import { SpawnManager } from '../../Modified027Editor/ModifiedSpawn';
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { EggEndInfo, GlobalData } from "../../const/GlobalData";
-import GToolkit from '../../util/GToolkit';
+import GToolkit from 'gtoolkit';
 import { EffectManager } from "../../util/EffectManager";
 
 import { cubicBezier } from "../../util/MoveUtil";

@@ -5,7 +5,7 @@ import { EventDefine } from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import MainPanel from "../../ui/main/MainPanel";
-import GToolkit, { Regulator } from "../../util/GToolkit";
+import GToolkit, { Regulator } from "gtoolkit";
 import { BagModuleS } from "../bag/BagModule";
 import CollectibleItem from "./CollectibleItem";
 import CollectibleItemTrigger from "./trigger/CollectibleItemTrigger";
@@ -14,7 +14,7 @@ import GameObject = mw.GameObject;
 import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import EventListener = mw.EventListener;
 import AreaManager from "../../depend/area/AreaManager";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { IPoint3 } from "../../depend/area/shape/base/IPoint";
 
 export default class CollectibleItemModuleData extends Subdata {

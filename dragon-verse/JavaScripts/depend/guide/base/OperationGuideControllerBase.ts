@@ -1,4 +1,4 @@
-import {Delegate} from "../../../util/GToolkit";
+import {Delegate} from "gtoolkit";
 import {BrokenStatus} from "./BrokenStatus";
 import SimpleDelegate = Delegate.SimpleDelegate;
 

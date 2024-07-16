@@ -1,7 +1,7 @@
 import CryptoJS from "crypto-js";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
-import Gtk, { Expression } from "../../util/GToolkit";
+import Gtk, { Expression } from "gtoolkit";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import noReply = mwext.Decorator.noReply;
 import { GameConfig } from "../../config/GameConfig";

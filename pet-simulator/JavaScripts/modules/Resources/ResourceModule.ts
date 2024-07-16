@@ -13,7 +13,7 @@ import { P_GlobalTips } from "../UI/P_GlobalTips";
 import ResourceScript, { SceneResourceMap } from "./Resource";
 import { BonusUI } from "./scenceUnitUI";
 import { RewardTipsManager } from "../UI/RewardTips";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 import { IPoint2 } from "../../depend/area/shape/base/IPoint";
 import { dimensionComeDown } from "../../depend/area/AreaManager";
 import GameServiceConfig from "../../const/GameServiceConfig";

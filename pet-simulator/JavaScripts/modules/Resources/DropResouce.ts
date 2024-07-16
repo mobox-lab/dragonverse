@@ -8,7 +8,7 @@ import { cubicBezier, getPos, setPos } from "../../util/MoveUtil";
 import { SoundManager } from "../../util/SoundManager";
 import { RewardTipsManager } from "../UI/RewardTips";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
-import Gtk, { GtkTypes, RandomGenerator } from "../../util/GToolkit";
+import Gtk, { GtkTypes, RandomGenerator } from "gtoolkit";
 import ModuleService = mwext.ModuleService;
 import Balancing from "../../depend/balancing/Balancing";
 import { DollMachineModuleS } from "../DollMachine/DollMachineModuleS";
