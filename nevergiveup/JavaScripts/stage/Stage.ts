@@ -120,7 +120,7 @@ export class StageS {
         const userHP2 = Utils.getRunesConfigByKey("userHP2", userHP2Index);
         const userHPDIndex = 0;
         const userHPD = Utils.getRunesConfigByKey("userHPD", userHPDIndex);
-        this._hp = baseHp * (1 + userHP + userHP2) * (1 + userHPD);
+        this._hp = Math.floor(baseHp * (1 + userHP + userHP2) * (1 + userHPD));
         // this._hp = baseHp;
         this._maxHp = this._hp;
         this.cumulativeCount = 0;
@@ -508,6 +508,22 @@ export class StageS {
             Event.dispatchToClient(player, "addGold", amount);
         });
     }
+
+    addHp(hp: number) {
+        if (this._hp === this._maxHp) {
+            return;
+        }
+        if (this._hp + hp >= this._maxHp) {
+            // 回血回满
+            this.boardcast((player) => {
+                Event.dispatchToClient(player, "setStageHp", this._maxHp, this._maxHp);
+            });
+        } else {
+            this.boardcast((player) => {
+                Event.dispatchToClient(player, "setStageHp", this._hp + hp, this._maxHp);
+            });
+        }
+    }
 }
 
 export class StageC {
@@ -593,7 +609,7 @@ export class StageC {
         const userHP2 = Utils.getRunesConfigByKey("userHP2", userHP2Index);
         const userHPDIndex = 0;
         const userHPD = Utils.getRunesConfigByKey("userHPD", userHPDIndex);
-        this.hp = baseHp * (1 + userHP + userHP2) * (1 + userHPD);
+        this.hp = Math.floor(baseHp * (1 + userHP + userHP2) * (1 + userHPD));
         ModuleService.getModule(PlayerModuleC)
             .getUnlockTechNodeMap(playerIds)
             .then((res: { [key: number]: number[] }) => {
@@ -1034,6 +1050,19 @@ class WaitState extends StageBaseState {
         this._wave = params[1];
         const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageId, this.fsm.owner.difficulty, this._wave + 1);
         this.fsm.owner.addGold(currentWave.waveGold);
+        if (this._wave > 0) {
+            const goldAmountIndex = 0;
+            const goldAmount = Utils.getRunesConfigByKey("goldAmount", goldAmountIndex);
+            const goldAmount2Index = 0;
+            const goldAmount2 = Utils.getRunesConfigByKey("goldAmount2", goldAmount2Index);
+            this.fsm.owner.addGold(goldAmount + goldAmount2);
+
+            const hpAmountIndex = 0;
+            const hpAmount = Utils.getRunesConfigByKey("hpAmount", hpAmountIndex);
+            const hpAmount2Index = 0;
+            const hpAmount2 = Utils.getRunesConfigByKey("hpAmount2", hpAmount2Index);
+            this.fsm.owner.addHp(hpAmount + hpAmount2);
+        }
         StageActions.onStageStateChanged.call(this.state, this.fsm.owner.id, this._time, this._wave);
     }
 }

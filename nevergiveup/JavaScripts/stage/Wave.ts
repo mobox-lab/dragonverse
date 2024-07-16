@@ -442,6 +442,7 @@ export class WaveUtil {
         this.baseEnemy.hpMultiplier = this.baseEnemy.hpMultiplier * Math.pow(this.hpBossPercent, multiple);
     }
 
+    // 适配老版本的数据
     static fitOldConfig(stageIndex, difficulty, wave?: number): [WaveConfig | null, number] {
         const index = StageUtil.getIndexFromIdAndDifficulty(stageIndex, difficulty);
         const waves = NEW_STAGE_CONFIG[index].waves;
