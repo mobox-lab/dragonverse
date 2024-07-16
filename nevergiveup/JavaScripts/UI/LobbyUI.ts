@@ -76,7 +76,9 @@ export default class LobbyUI extends LobbyUI_Generate {
         this.freshBtn.onClicked.add(() => {
             ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
         });
-		
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
+    		UIService.getUI(TowerUI).shopBtn.onClicked.broadcast();
+        });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.O, () => {
 			UIService.show(SettingUI);
         });

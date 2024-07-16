@@ -17,6 +17,7 @@ import TowerShopUI_Generate from "../../ui-generate/Tower/TowerShopUI_generate";
 import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
 import TextItemUI from "../TextItemUI";
 import ShopItemUI from "./ShopItemUI";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 export default class TowerShopUI extends TowerShopUI_Generate {
 	private _textItemUIs: TextItemUI[] = [];
@@ -276,6 +277,15 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.shopItemUIs[0].chooseBtn.onClicked.broadcast();
 		}
 		this.sortItems();
+		
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
+            TweenCommon.popUpHide(this.rootCanvas, () => {
+                UIService.hideUI(this);
+            })
+        });
 	}
 
+    onHide() {
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+    }
 }
