@@ -253,6 +253,13 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.txtButtontask_Internal
 	}
+	private mImage_hotpoint_Internal: mw.Image
+	public get mImage_hotpoint(): mw.Image {
+		if(!this.mImage_hotpoint_Internal&&this.uiWidgetBase) {
+			this.mImage_hotpoint_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/taskCanvas/mImage_hotpoint') as mw.Image
+		}
+		return this.mImage_hotpoint_Internal
+	}
 	private shopCanvas_Internal: mw.Canvas
 	public get shopCanvas(): mw.Canvas {
 		if(!this.shopCanvas_Internal&&this.uiWidgetBase) {
@@ -273,76 +280,6 @@ export default class LobbyUI_Generate extends UIScript {
 			this.txtButtonshop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/shopCanvas/txtButtonshop') as mw.TextBlock
 		}
 		return this.txtButtonshop_Internal
-	}
-	private mCanvas_TaskAll_Internal: mw.Canvas
-	public get mCanvas_TaskAll(): mw.Canvas {
-		if(!this.mCanvas_TaskAll_Internal&&this.uiWidgetBase) {
-			this.mCanvas_TaskAll_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_TaskAll') as mw.Canvas
-		}
-		return this.mCanvas_TaskAll_Internal
-	}
-	private mCanvas_Tasksolo_Internal: mw.Canvas
-	public get mCanvas_Tasksolo(): mw.Canvas {
-		if(!this.mCanvas_Tasksolo_Internal&&this.uiWidgetBase) {
-			this.mCanvas_Tasksolo_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_TaskAll/mCanvas_Tasksolo') as mw.Canvas
-		}
-		return this.mCanvas_Tasksolo_Internal
-	}
-	private mTextBlock_Task_Internal: mw.TextBlock
-	public get mTextBlock_Task(): mw.TextBlock {
-		if(!this.mTextBlock_Task_Internal&&this.uiWidgetBase) {
-			this.mTextBlock_Task_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_TaskAll/mCanvas_Tasksolo/mTextBlock_Task') as mw.TextBlock
-		}
-		return this.mTextBlock_Task_Internal
-	}
-	private mButton_TaskSmall_Internal: mw.Button
-	public get mButton_TaskSmall(): mw.Button {
-		if(!this.mButton_TaskSmall_Internal&&this.uiWidgetBase) {
-			this.mButton_TaskSmall_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_TaskAll/mCanvas_Tasksolo/mButton_TaskSmall') as mw.Button
-		}
-		return this.mButton_TaskSmall_Internal
-	}
-	private mButton_Taskexpand_Internal: mw.Button
-	public get mButton_Taskexpand(): mw.Button {
-		if(!this.mButton_Taskexpand_Internal&&this.uiWidgetBase) {
-			this.mButton_Taskexpand_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_TaskAll/mCanvas_Tasksolo/mButton_Taskexpand') as mw.Button
-		}
-		return this.mButton_Taskexpand_Internal
-	}
-	private mButton_Taskreturn2_Internal: mw.Button
-	public get mButton_Taskreturn2(): mw.Button {
-		if(!this.mButton_Taskreturn2_Internal&&this.uiWidgetBase) {
-			this.mButton_Taskreturn2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_TaskAll/mCanvas_Tasksolo/mButton_Taskreturn2') as mw.Button
-		}
-		return this.mButton_Taskreturn2_Internal
-	}
-	private mCanvas_NewTaskList_Internal: mw.Canvas
-	public get mCanvas_NewTaskList(): mw.Canvas {
-		if(!this.mCanvas_NewTaskList_Internal&&this.uiWidgetBase) {
-			this.mCanvas_NewTaskList_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_TaskAll/mCanvas_NewTaskList') as mw.Canvas
-		}
-		return this.mCanvas_NewTaskList_Internal
-	}
-	private mScrollBox_NewTask_Internal: mw.ScrollBox
-	public get mScrollBox_NewTask(): mw.ScrollBox {
-		if(!this.mScrollBox_NewTask_Internal&&this.uiWidgetBase) {
-			this.mScrollBox_NewTask_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_TaskAll/mCanvas_NewTaskList/mScrollBox_NewTask') as mw.ScrollBox
-		}
-		return this.mScrollBox_NewTask_Internal
-	}
-	private mCanvas_NewTask_Internal: mw.Canvas
-	public get mCanvas_NewTask(): mw.Canvas {
-		if(!this.mCanvas_NewTask_Internal&&this.uiWidgetBase) {
-			this.mCanvas_NewTask_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_TaskAll/mCanvas_NewTaskList/mScrollBox_NewTask/mCanvas_NewTask') as mw.Canvas
-		}
-		return this.mCanvas_NewTask_Internal
-	}
-	private mImage_hotpoint_Internal: mw.Image
-	public get mImage_hotpoint(): mw.Image {
-		if(!this.mImage_hotpoint_Internal&&this.uiWidgetBase) {
-			this.mImage_hotpoint_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_TaskAll/mImage_hotpoint') as mw.Image
-		}
-		return this.mImage_hotpoint_Internal
 	}
 
 
@@ -406,24 +343,6 @@ export default class LobbyUI_Generate extends UIScript {
 	   this.shopBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
-	   this.mButton_TaskSmall.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "mButton_TaskSmall");
-	   })
-	   this.mButton_TaskSmall.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-	   
-	
-	   this.mButton_Taskexpand.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "mButton_Taskexpand");
-	   })
-	   this.mButton_Taskexpand.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-	   
-	
-	   this.mButton_Taskreturn2.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "mButton_Taskreturn2");
-	   })
-	   this.mButton_Taskreturn2.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-	   
-	
 
 	   //按钮多语言
 	   
@@ -472,9 +391,6 @@ export default class LobbyUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txtButtonshop)
-	   
-	
-	   this.initLanguage(this.mTextBlock_Task)
 	   
 	
 	   //文本多语言

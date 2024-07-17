@@ -4,6 +4,7 @@
  * @LastEditTime: 2024-01-11 11:00:41
  * @Description: Avatar Creator Development
  */
+import Gtk from "gtoolkit";
 import { PlayerActions } from "../../../Actions";
 import { TweenCommon } from "../../../TweenCommon";
 import Utils from "../../../Utils";
@@ -29,17 +30,20 @@ export default class UI_TaskMain extends TaskMain_Generate {
     private _isLockDaily: boolean = false;
     public set isLockDaily(v: boolean) {
         this._isLockDaily = v;
-        this.mainTaskCanvas.position = this._isLockDaily ? this._btnPos[0] : this._btnPos[1];
-        this.dailyTaskCanvas.position = this._isLockDaily ? this._btnPos[1] : this._btnPos[0];
+        // this.mainTaskCanvas.position = this._isLockDaily ? this._btnPos[0] : this._btnPos[1];
+        // this.dailyTaskCanvas.position = this._isLockDaily ? this._btnPos[1] : this._btnPos[0];
     }
     public get btnState(): EmTaskType {
         return this._btnState;
     }
     public set btnState(v: EmTaskType) {
         this._btnState = v;
-        this.taskSetData(ModuleService.getModule(TaskModuleC).getTasksByType(v));
-        this.mainTaskBtn.enable = v != EmTaskType.Main;
+        const tasks = ModuleService.getModule(TaskModuleC).getTasksByType(v);
+        this.taskSetData(tasks);
+        this.mainTaskBtn.enable = v !== EmTaskType.Main;
         this.dailyTaskBtn.enable = v != EmTaskType.Daily;
+        Gtk.trySetVisibility(this.taskCountdown, v === EmTaskType.Daily ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
+        Gtk.trySetVisibility(this.taskCountdownTime, v === EmTaskType.Daily ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
     }
 
     private _btnPos: Vector2[];
@@ -47,7 +51,7 @@ export default class UI_TaskMain extends TaskMain_Generate {
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void {
         this.layer = mw.UILayerTop;
-        this._btnPos = [this.mainTaskCanvas.position.clone(), this.dailyTaskCanvas.position.clone()];
+        // this._btnPos = [this.mainTaskCanvas.position.clone(), this.dailyTaskCanvas.position.clone()];
         this.isLockDaily = PlayerUtil.getPlayerScript(Player.localPlayer.playerId)?.level < GameConfig.Global.getElement(1).unlockDailyTask;
         PlayerActions.onPlayerLevelChangedClient.add(() => {
             let level = PlayerUtil.getPlayerScript(Player.localPlayer.playerId)?.level;

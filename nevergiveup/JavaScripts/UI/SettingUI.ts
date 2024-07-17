@@ -6,6 +6,7 @@
  */
 
 import { TweenCommon } from "../TweenCommon";
+import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 import { VoiceEvent } from "../tool/SoundUtil";
 import Setting_Generate from "../ui-generate/Setting/Setting_generate";
 
@@ -85,8 +86,16 @@ export default class SettingUI extends Setting_Generate {
 	 */
 	protected onShow(...params: any[]) {
 		TweenCommon.popUpShow(this.rootCanvas);
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
+            TweenCommon.popUpHide(this.rootCanvas, () => {
+                UIService.hideUI(this);
+            })
+        });
 	}
 
+    protected onHide() {
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
+    }
 	/**
 	 * 设置不显示时触发
 	 */

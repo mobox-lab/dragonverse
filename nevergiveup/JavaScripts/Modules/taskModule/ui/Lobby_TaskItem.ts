@@ -49,7 +49,7 @@ export default class Lobby_TaskItem extends Lobby_Taskitem_Generate {
         this.layer = UILayerMiddle;
         this.mButton_OpenUI.touchMethod = mw.ButtonTouchMethod.PreciseTap;
         this.mButton_OpenUI.onClicked.add(() => {
-            UIService.getUI(LobbyUI).mButton_TaskSmall.onClicked.broadcast();
+            UIService.getUI(LobbyUI).taskBtn.onClicked.broadcast();
         })
     }
 

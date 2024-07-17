@@ -92,6 +92,13 @@ export default class TaskMain_Generate extends UIScript {
 		}
 		return this.dailyTaskBtn_Internal
 	}
+	private mImage_hotpoint_2_Internal: mw.Image
+	public get mImage_hotpoint_2(): mw.Image {
+		if(!this.mImage_hotpoint_2_Internal&&this.uiWidgetBase) {
+			this.mImage_hotpoint_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/dailyTaskCanvas/mImage_hotpoint_2') as mw.Image
+		}
+		return this.mImage_hotpoint_2_Internal
+	}
 	private mainTaskCanvas_Internal: mw.Canvas
 	public get mainTaskCanvas(): mw.Canvas {
 		if(!this.mainTaskCanvas_Internal&&this.uiWidgetBase) {
@@ -105,6 +112,13 @@ export default class TaskMain_Generate extends UIScript {
 			this.mainTaskBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/mainTaskCanvas/mainTaskBtn') as mw.StaleButton
 		}
 		return this.mainTaskBtn_Internal
+	}
+	private mImage_hotpoint_1_Internal: mw.Image
+	public get mImage_hotpoint_1(): mw.Image {
+		if(!this.mImage_hotpoint_1_Internal&&this.uiWidgetBase) {
+			this.mImage_hotpoint_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/mainTaskCanvas/mImage_hotpoint_1') as mw.Image
+		}
+		return this.mImage_hotpoint_1_Internal
 	}
 	private scroll_Task_Internal: mw.ScrollBox
 	public get scroll_Task(): mw.ScrollBox {
