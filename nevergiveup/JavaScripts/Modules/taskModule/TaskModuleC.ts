@@ -188,7 +188,6 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
                 }
             }
         });
-        mw.UIService.getUI(LobbyUI).taskSetData(arr);
         if (UIService.getUI(UI_TaskMain).visible) {
             UIService.getUI(UI_TaskMain).refresh(true);
         }

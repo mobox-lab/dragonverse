@@ -27,8 +27,6 @@ import GameServiceConfig from "../const/GameServiceConfig";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 
 export default class LobbyUI extends LobbyUI_Generate {
-	/**任务滑动列表 */
-	private _scrollTask: UIMultiScroller;
 	/** 
 	 * 构造UI文件成功后，在合适的时机最先初始化一次 
 	 */
@@ -51,18 +49,8 @@ export default class LobbyUI extends LobbyUI_Generate {
 			ModuleService.getModule(PlayerModuleC).techTree.show();
 		});
 		//打开任务
-		this.mButton_TaskSmall.onClicked.add(this.showTaskPanel.bind(this))
 		this.taskBtn.onClicked.add(this.showTaskPanel.bind(this))
-		this.mButton_Taskreturn2.onClicked.add(() => {
-			this.mCanvas_NewTaskList.visibility = SlateVisibility.Collapsed;
-			this.mButton_Taskexpand.visibility = SlateVisibility.Visible;
-			this.mButton_Taskreturn2.visibility = SlateVisibility.Collapsed;
-		})
-		this.mButton_Taskexpand.onClicked.add(() => {
-			this.mCanvas_NewTaskList.visibility = SlateVisibility.SelfHitTestInvisible;
-			this.mButton_Taskexpand.visibility = SlateVisibility.Collapsed;
-			this.mButton_Taskreturn2.visibility = SlateVisibility.Visible;
-		})
+
         Yoact.bindYoact(() =>
             Gtk.trySetText(this.mStamina_2,
                 Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
@@ -120,30 +108,6 @@ export default class LobbyUI extends LobbyUI_Generate {
 		this.mExpbar.percent = percent;
 		this.mExp.text = `${currentLevelExp.toFixed(0)}/${nextLevelExp.toFixed(0)} XP`;
 		this.mLevel.text = `Lv. ${level.toFixed(0)}`;
-	}
-
-	/**
-	 * 数据设置
-	 * @param tasks 任务数据
-	 */
-	taskSetData(tasks: Task[]) {
-		for (let i = tasks.length - 1; i >= 0; i--) {
-			if (tasks[i] === null) {
-				tasks.splice(i, 1);
-			}
-		}
-		UIService.getUI(LobbyUI).mCanvas_TaskAll.visibility = tasks.length <= 0 ? mw.SlateVisibility.Collapsed : mw.SlateVisibility.SelfHitTestInvisible;
-		if (tasks.length <= 0) {
-			return;
-		}
-		if (!this._scrollTask) {
-			this._scrollTask = new UIMultiScroller(	//初始化动作滑动框
-				this.mScrollBox_NewTask,
-				this.mCanvas_NewTask,
-				Lobby_TaskItem,
-				1, 0, 0, 1, 112, 3, 0, 8);
-		}
-		this._scrollTask.setData(tasks);
 	}
 
 	protected onShow() {
