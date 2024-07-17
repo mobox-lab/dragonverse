@@ -14,7 +14,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import { CompanionHelper } from "../companion/CompanionHelper";
-import Gtk from "../../util/GToolkit";
+import Gtk from "gtoolkit";
 
 export class BagItemUnique implements IUnique {
     public id: number;
