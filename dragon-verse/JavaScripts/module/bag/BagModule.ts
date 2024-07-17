@@ -14,6 +14,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import ObbyModuleData, { ObbyModuleS } from "../obby/ObbyModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import { CompanionHelper } from "../companion/CompanionHelper";
+import Gtk from "../../util/GToolkit";
 
 export class BagItemUnique implements IUnique {
     public id: number;
@@ -556,22 +557,22 @@ export class BagModuleS extends JModuleS<BagModuleC, BagModuleData> {
         this.authModuleS
             ?.queryUserP12Bag(player.userId, "dragon")
             .then(value => {
-                    const count = value?.list
-                        ?.find(item => item.resId === P12ItemResId.CaptureBall)
-                        ?.unuse;
-                    if (count !== undefined) {
-                        Log4Ts.log(BagModuleS,
-                            `query user dragon ball success.`,
-                            `userId: ${player.userId}.`,
-                            `count: ${count}.`);
-                        this.setItem(
-                            player.playerId,
-                            GameServiceConfig.DRAGON_BALL_BAG_ID,
-                            count);
-                    } else {
+                    if (Gtk.isNullOrUndefined(value)) {
                         Log4Ts.warn(BagModuleS,
                             `query user dragon ball failed. userId: ${player.userId}.`);
+                        return;
                     }
+
+                    const count = value!.list
+                        ?.find(item => item.resId === P12ItemResId.CaptureBall)
+                        ?.unuse ?? 0;
+                    Log4Ts.log(BagModuleS,
+                        `query user dragon ball success.`,
+                        `userId: ${player.userId}.`,
+                        `count: ${count}.`);
+                    this.setItem(player.playerId,
+                        GameServiceConfig.DRAGON_BALL_BAG_ID,
+                        count);
                 },
             );
 
