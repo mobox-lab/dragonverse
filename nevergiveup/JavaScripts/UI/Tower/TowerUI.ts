@@ -13,6 +13,7 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
+import Gtk from "gtoolkit";
 import { GameManager } from "../../GameManager";
 import { TowerEvent } from "../../Modules/TowerModule/TowerEnum";
 import { TowerModuleC } from "../../Modules/TowerModule/TowerModuleC";
@@ -75,6 +76,27 @@ export default class TowerUI extends TowerUI_Generate {
         Event.dispatchToLocal(TowerEvent.ChooseTower, null);
     }
 
+    public setStageTowerUI(inStage?: boolean) {
+        if (inStage) {
+            let containerWidth = 15;
+            for (let i = 0; i < TowerConfigConstants.maxEquip; i++) {
+                if(this._towerItemUIs[i]?.cfg) containerWidth += 15+116
+                Gtk.trySetVisibility(this._towerItemUIs[i], this._towerItemUIs[i]?.cfg ? mw.SlateVisibility.Visible : mw.SlateVisibility.Hidden);
+            }
+            this.mImage_5.size = new Vector(containerWidth, 216.00);
+            this.shopBtn.size = new Vector(containerWidth, 216.00);
+            this.destroyBtn.position = new Vector(containerWidth-20, -30);
+            this.towerCanvas.position = new Vector((1068 - containerWidth)/2 +426, 850.00);
+        } else {
+            for (let i = 0; i < TowerConfigConstants.maxEquip; i++) {
+                Gtk.trySetVisibility(this._towerItemUIs[i], mw.SlateVisibility.Visible);
+            }
+            this.mImage_5.size = new Vector(1068.00, 216.00);
+            this.shopBtn.size = new Vector(1068.00, 216.00);
+            this.destroyBtn.position = new Vector(1068.00-20, -30);
+            this.towerCanvas.position = new Vector(426.00, 850.00);
+        }
+    }
     public setPriceVisible(visibility: boolean) {
         // for (let i = 0; i < this.towerItemUIs.length; i++) {
         // 	this.towerItemUIs[i].setPriceVisible(visibility);

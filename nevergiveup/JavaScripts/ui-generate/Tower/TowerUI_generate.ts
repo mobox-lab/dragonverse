@@ -22,6 +22,13 @@ export default class TowerUI_Generate extends UIScript {
 		}
 		return this.destroyBtn_Internal
 	}
+	private mImage_5_Internal: mw.Image
+	public get mImage_5(): mw.Image {
+		if(!this.mImage_5_Internal&&this.uiWidgetBase) {
+			this.mImage_5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/mImage_5') as mw.Image
+		}
+		return this.mImage_5_Internal
+	}
 	private towerItemCanvas_Internal: mw.Canvas
 	public get towerItemCanvas(): mw.Canvas {
 		if(!this.towerItemCanvas_Internal&&this.uiWidgetBase) {

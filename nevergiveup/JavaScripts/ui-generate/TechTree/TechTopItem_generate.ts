@@ -6,8 +6,8 @@
 
 
 
-@UIBind('UI/TechTree/TechItem.ui')
-export default class TechItem_Generate extends UIScript {
+@UIBind('UI/TechTree/TechTopItem.ui')
+export default class TechTopItem_Generate extends UIScript {
 		private mItem_Internal: mw.Button
 	public get mItem(): mw.Button {
 		if(!this.mItem_Internal&&this.uiWidgetBase) {
@@ -57,12 +57,6 @@ export default class TechItem_Generate extends UIScript {
 	   //文本多语言
 	   
 	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextTechLevel") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextTechSlash") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextTechLevel_1") as any);
 	   
 	
 	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextTechName") as any);

@@ -16,7 +16,7 @@ import TowerItemUI_Generate from "../../ui-generate/Tower/TowerItemUI_generate";
 import TowerUI from "./TowerUI";
 
 export default class TowerItemUI extends TowerItemUI_Generate {
-	private _cfg: ITowerElement = null;
+	public cfg: ITowerElement = null;
 
 	public isSelect: boolean = false;
 	private _oriImg: string;
@@ -33,8 +33,8 @@ export default class TowerItemUI extends TowerItemUI_Generate {
             this.setSelected(ui == this);
         })
 		this.createBtn.onClicked.add(() => {
-			if (!this._cfg || !GameManager.getStageClient()) return;
-			ModuleService.getModule(TowerModuleC).chooseTowerByUI(this._cfg.id);
+			if (!this.cfg || !GameManager.getStageClient()) return;
+			ModuleService.getModule(TowerModuleC).chooseTowerByUI(this.cfg.id);
             Event.dispatchToLocal(TowerEvent.ChooseTower, this);
 		})
 	}
@@ -44,8 +44,8 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 	 * @param cfgID 信息id
 	 */
 	public init(cfgID: number) {
-		if (!cfgID) this._cfg = null;
-		else this._cfg = GameConfig.Tower.getElement(cfgID);
+		if (!cfgID) this.cfg = null;
+		else this.cfg = GameConfig.Tower.getElement(cfgID);
 		this.initObj();
 	}
 
@@ -54,7 +54,7 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 	 * 初始化组件
 	*/
 	private initObj() {
-		if (!this._cfg) {
+		if (!this.cfg) {
 			Gtk.trySetVisibility(this.towerImg, SlateVisibility.Visible);
 			Gtk.trySetVisibility(this.img_Icon, SlateVisibility.Collapsed);
 			this.towerImg.imageGuid = this._oriImg;
@@ -63,8 +63,8 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 			//Utils.setImageByAsset(this.towerImg, this._cfg);
 			Gtk.trySetVisibility(this.towerImg, SlateVisibility.Collapsed);
 			Gtk.trySetVisibility(this.img_Icon, SlateVisibility.HitTestInvisible);
-			this.img_Icon.imageGuid = this._cfg.imgGuid;
-			this.valueText.text = this._cfg.spend[0].toString();
+			this.img_Icon.imageGuid = this.cfg.imgGuid;
+			this.valueText.text = this.cfg.spend[0].toString();
 		}
 
 	}

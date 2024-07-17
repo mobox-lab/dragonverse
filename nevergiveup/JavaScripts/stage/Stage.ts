@@ -27,6 +27,7 @@ import CutsceneUI from "../UI/CutsceneUI";
 import LobbyUI from "../UI/LobbyUI";
 import { TipsManager } from "../UI/Tips/CommonTipsManagerUI";
 import { LastWaveTipsUI } from "../UI/Tips/LastWaveTipsUI";
+import TowerUI from "../UI/Tower/TowerUI";
 import { GuideDialog } from "../UI/UIDialog";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
@@ -685,6 +686,7 @@ export class StageC {
             });
             this.hasLoaded = true;
             UIService.getUI(CutsceneUI).hideCanvas();
+            UIService.getUI(TowerUI).setStageTowerUI(true);
         });
 
         StageListener.addServerListener(this.id, "setStageHp", (hp: number, maxHP: number) => {
@@ -828,6 +830,7 @@ export class StageC {
             } else {
                 UIService.hide(UIMain);
                 UIService.show(LobbyUI);
+                UIService.getUI(TowerUI).setStageTowerUI(false);
                 if (state == EStageState.End) {
                     UIService.hide(UISettle);
                     Event.dispatchToLocal("onStageEnd");
