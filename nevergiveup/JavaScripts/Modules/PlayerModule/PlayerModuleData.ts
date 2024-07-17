@@ -31,7 +31,11 @@ export default class PlayerModuleData extends Subdata {
     firstAction: string[];
     @Decorator.persistence()
     exp: number;
-    // 已解锁的科技点
+    /**
+     * 已解锁的科技点
+     * @type {number[]}
+     * @deprecated 改用天赋树
+     */
     @Decorator.persistence()
     unlockedTechNodes: number[];
     // 攻击音效
@@ -42,7 +46,12 @@ export default class PlayerModuleData extends Subdata {
     bgmVoiceFactor: number;
     @Decorator.persistence()
     firstMonsterTags: number[];
-
+    /**
+     * 已选择的天赋树
+     * @type {number[][]} -- [天赋Id, 解锁点数]
+     */
+    @Decorator.persistence()
+    talentTreeNodes: number[][];
 
 
     protected initDefaultData(): void {
@@ -54,6 +63,7 @@ export default class PlayerModuleData extends Subdata {
         this.firstMonsterTags = [];
         this.exp = 0;
         this.unlockedTechNodes = [];
+        this.talentTreeNodes = [];
         this.attackVoiceFactor = 1;
         this.bgmVoiceFactor = 1;
         this.completeStageCount = {
