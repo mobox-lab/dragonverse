@@ -40,7 +40,6 @@ export default class UI_TaskMain extends TaskMain_Generate {
         this._btnState = v;
         const tasks = ModuleService.getModule(TaskModuleC).getTasksByType(v);
         this.taskSetData(tasks);
-        console.log('#debug tasks:', JSON.stringify(tasks.map(task => task.taskID+`id, ${task.type}`)), 'v:', v, ' EmTaskType:', EmTaskType[v]);
         this.mainTaskBtn.enable = v !== EmTaskType.Main;
         this.dailyTaskBtn.enable = v != EmTaskType.Daily;
         Gtk.trySetVisibility(this.taskCountdown, v === EmTaskType.Daily ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);

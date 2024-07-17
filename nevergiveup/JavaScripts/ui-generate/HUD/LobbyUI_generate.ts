@@ -239,13 +239,6 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.taskCanvas_Internal
 	}
-	private mImage_hotpoint_Internal: mw.Image
-	public get mImage_hotpoint(): mw.Image {
-		if(!this.mImage_hotpoint_Internal&&this.uiWidgetBase) {
-			this.mImage_hotpoint_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/taskCanvas/mImage_hotpoint') as mw.Image
-		}
-		return this.mImage_hotpoint_Internal
-	}
 	private taskBtn_Internal: mw.Button
 	public get taskBtn(): mw.Button {
 		if(!this.taskBtn_Internal&&this.uiWidgetBase) {
@@ -259,6 +252,13 @@ export default class LobbyUI_Generate extends UIScript {
 			this.txtButtontask_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/taskCanvas/txtButtontask') as mw.TextBlock
 		}
 		return this.txtButtontask_Internal
+	}
+	private mImage_hotpoint_Internal: mw.Image
+	public get mImage_hotpoint(): mw.Image {
+		if(!this.mImage_hotpoint_Internal&&this.uiWidgetBase) {
+			this.mImage_hotpoint_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/taskCanvas/mImage_hotpoint') as mw.Image
+		}
+		return this.mImage_hotpoint_Internal
 	}
 	private shopCanvas_Internal: mw.Canvas
 	public get shopCanvas(): mw.Canvas {
