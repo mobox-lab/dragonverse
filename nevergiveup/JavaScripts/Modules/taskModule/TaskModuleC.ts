@@ -18,6 +18,7 @@ import { Reward } from "../../tool/Reward";
 import Utils from "../../Utils";
 import { GameManager } from "../../GameManager";
 import { addGMCommand } from "mw-god-mod";
+import Gtk from "gtoolkit";
 
 /**任务类型 */
 export enum EmTaskWay {
@@ -139,15 +140,23 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
      */
     public checkRedPoint() {
         let showFlag = false;
+        let isMainTask = false; // 是否为主线任务
         for (let [key, value] of this._tasks) {
             if (value.taskState == EmTaskState.Reward) {
+                if (value?.type == EmTaskType.Main) isMainTask = true;
                 showFlag = true;
                 break;
             }
         }
-        mw.UIService.getUI(LobbyUI).mImage_hotpoint.visibility = showFlag
-            ? mw.SlateVisibility.Visible
-            : mw.SlateVisibility.Collapsed;
+        Gtk.trySetVisibility(mw.UIService.getUI(LobbyUI).mImage_hotpoint, showFlag
+            ? mw.SlateVisibility.HitTestInvisible
+            : mw.SlateVisibility.Collapsed);
+        Gtk.trySetVisibility(mw.UIService.getUI(UI_TaskMain).mImage_hotpoint_1, (showFlag && isMainTask)
+            ? mw.SlateVisibility.HitTestInvisible
+            : mw.SlateVisibility.Collapsed); // 主线红点
+        Gtk.trySetVisibility(mw.UIService.getUI(UI_TaskMain).mImage_hotpoint_2, (showFlag && !isMainTask)
+            ? mw.SlateVisibility.HitTestInvisible
+            : mw.SlateVisibility.Collapsed); // 日常红点
     }
 
     /**

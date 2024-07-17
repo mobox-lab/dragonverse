@@ -79,7 +79,7 @@ export default class LobbyUI extends LobbyUI_Generate {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
     		UIService.getUI(TowerUI).shopBtn.onClicked.broadcast();
         });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.O, () => {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
 			UIService.show(SettingUI);
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.L, () => {
