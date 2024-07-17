@@ -52,12 +52,9 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				if(options.target === TowerTargetType.Multiple && towerCfg.attackCount[0] <= 1) continue; // 1以上则为aoe
 			}
 			if(options?.damage && options.damage !== towerCfg.adap) continue;
-			if(options?.strategy && options.strategy !== TowerStrategyType.AntiHidden) {
+			if(options?.strategy) {
 				const sInfo = GlobalData.Shop.getStrategyInfo(towerCfg.id);
 				if(options.strategy !== (sInfo?.strategyKey as TowerStrategyType)) continue;
-			}
-			if(options?.strategy && options.strategy === TowerStrategyType.AntiHidden) {
-				if(!towerCfg.attackTags?.includes(1)) continue;
 			}
 			this.shopItemUIs.push(item);
 			item.init(towerCfg.id);

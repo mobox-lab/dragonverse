@@ -95,8 +95,12 @@ export namespace GlobalData {
         // key 为 TowerStrategyType 的枚举, value 为 buffId 的数组
         public static towerStrategyBuffs:{[key: number]: number[]} = this.getTowerStrategyBuffs();
         // 获取塔的buff对策
-        public static getStrategyInfo =  (towerId: number)=> {
+        public static getStrategyInfo = (towerId: number)=> {
             const cfg = GameConfig.Tower.getElement(towerId);
+            if(cfg?.attackTags?.includes(1)) return { // 反隐
+                strategyStr: TowerStrategyType[TowerStrategyType.AntiHidden],
+                strategyKey: TowerStrategyType.AntiHidden,
+            }
             if(!cfg?.attackBuff?.length) return null
             const buffIds = cfg.attackBuff;
             const strategyBuffs = this.towerStrategyBuffs;
