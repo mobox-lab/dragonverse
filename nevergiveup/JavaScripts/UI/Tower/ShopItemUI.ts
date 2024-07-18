@@ -49,6 +49,10 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		return this._cfgID;
 	}
 	private _cfg: ITowerElement;
+
+	public get cfg(): ITowerElement {
+		return this._cfg;
+	}
 	/** 
 	 * 构造UI文件成功后，在合适的时机最先初始化一次 
 	 */
