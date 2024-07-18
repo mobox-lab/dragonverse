@@ -6,6 +6,7 @@ import { P12BagModuleC } from "../../modules/bag/P12BagModule";
 import { EnergyModuleC } from "../../modules/Energy/EnergyModule";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import Online_ReConfirm_Generate from "../../ui-generate/Onlineshop/Online_ReConfirm_generate";
+import { P12ShopConfig } from "../shop/P12ShopConfig";
 
 export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
     private _bagC: P12BagModuleC;
@@ -30,7 +31,8 @@ export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
         });
 
         Yoact.bindYoact(() => {
-            const recovery = Math.round(this.energyC.viewEnergyLimit.data * 0.6);
+            const staminaConfig = P12ShopConfig[0];
+            const recovery = Math.round(this.energyC.viewEnergyLimit.data * staminaConfig.effect);
             Gtk.trySetText(this.text_Recovery, StringUtil.format(GameConfig.Language.Online_shop011.Value, recovery));
         });
     }

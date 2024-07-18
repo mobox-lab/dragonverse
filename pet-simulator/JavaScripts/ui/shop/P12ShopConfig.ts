@@ -12,6 +12,7 @@ export type P12ShopItem = {
     icon: string; // 道具 icon guid
     description: string; // 多语言 描述
     tokenName: TokenNameEnum; // 使用的 cryptocurrency
+    effect: number; // 使用效果
 }
 
 export const P12ShopConfig: P12ShopItem[] = [
@@ -19,18 +20,20 @@ export const P12ShopConfig: P12ShopItem[] = [
         resId: P12ItemResId.StaminaPotion, // 体力药水(仙豆)
         consumeId: ConsumeId.StaminaPotion,
         name: "Online_shop001",
-        value: 1000000000000000000000n,
+        value: 1690000000000000000000n,
         icon: "373504",
         description: "Online_shop002",
         tokenName: TokenNameEnum.MDBL,
+        effect: 0.3,
     },
     {
         resId: P12ItemResId.CaptureBall, // 精灵球
         consumeId: ConsumeId.CaptureBall,
         name: "Online_shop003",
-        value: 1000000000000000000000n,
+        value: 420000000000000000000n,
         icon: "373564",
         description: "Online_shop004",
         tokenName: TokenNameEnum.MDBL,
+        effect: 1,
     },
 ];
