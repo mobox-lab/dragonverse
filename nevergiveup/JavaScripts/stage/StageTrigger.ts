@@ -9,9 +9,12 @@
 
 import { GameManager } from "../GameManager";
 import { GuideManager } from "../Guide/GuideManager";
+import { EnergyModuleS } from "../Modules/Energy/EnergyModule";
 import { TweenCommon } from "../TweenCommon";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
+import GameServiceConfig from "../const/GameServiceConfig";
+import Log4Ts from "../depend/log4ts/Log4Ts";
 import { StageUtil } from "./Stage";
 import { UIStageSelect } from "./ui/UIStageSelect";
 
@@ -225,6 +228,13 @@ export default class StageTrigger extends Script {
 
     @mw.RemoteFunction(mw.Server)
     startGame(playerID: number) {
+        Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`);
+        if (!ModuleService.getModule(EnergyModuleS).isAfford(playerID, GameServiceConfig.STAMINA_COST_START_GAME)) {
+            Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
+            return;
+        }
+        ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
+
         if (playerID == this.owner) {
             let ids = this.parsePlayerIds().splice(0, 4);
             GameManager.startGame(ids, this.stageId, this.difficulty);

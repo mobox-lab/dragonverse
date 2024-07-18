@@ -12,6 +12,7 @@ import { AirdropManager } from "../Airdrop/AirdropManager";
 import { GameManager } from "../GameManager";
 import { MapManager } from "../MapScript";
 import CardModuleS from "../Modules/CardModule/CardModuleS";
+import { EnergyModuleS } from "../Modules/Energy/EnergyModule";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 import { PlayerModuleS } from "../Modules/PlayerModule/PlayerModuleS";
 import { PlayerUtil } from "../Modules/PlayerModule/PlayerUtil";
@@ -31,6 +32,7 @@ import TowerUI from "../UI/Tower/TowerUI";
 import { GuideDialog } from "../UI/UIDialog";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
+import GameServiceConfig from "../const/GameServiceConfig";
 import Log4Ts from "../depend/log4ts/Log4Ts";
 import { Enemy } from "../enemy/EnemyBase";
 import { BaseState } from "../fsm/BaseState";
@@ -478,7 +480,6 @@ export class StageS {
         }
 
         this.settleData.reward = [];
-
         for (let i = 0; i < rewards.length; i++) {
             let [id, amount] = rewards[i];
             let item = GameConfig.Item.getElement(id);
@@ -501,6 +502,11 @@ export class StageS {
                 this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
                 ModuleService.getModule(PlayerModuleS).changeExp(player, amount);
             }
+        }
+        if (!this.settleData.hasWin) {
+            // 返还体力
+            this.settleData.reward.push({guid: "376844", amount: GameServiceConfig.STAMINA_BACK_START_GAME, type: null});
+            ModuleService.getModule(EnergyModuleS).addEnergy(player.userId, GameServiceConfig.STAMINA_BACK_START_GAME);
         }
     }
 
@@ -805,28 +811,28 @@ export class StageC {
                         });
                     }
 
-                    MGSTool.gameOver(
-                        waves,
-                        this.stageId,
-                        hasWin,
-                        isFirst,
-                        isPerfect,
-                        hp,
-                        this.gold,
-                        this._spent,
-                        hasWin ? null : this._lastMonster,
-                        ModuleService.getModule(TowerModuleC)
-                            .tryTowerMgs?.map((card) => card.toFixed(0))
-                            .join("")
-                    );
+                    // MGSTool.gameOver(
+                    //     waves,
+                    //     this.stageId,
+                    //     hasWin,
+                    //     isFirst,
+                    //     isPerfect,
+                    //     hp,
+                    //     this.gold,
+                    //     this._spent,
+                    //     hasWin ? null : this._lastMonster,
+                    //     ModuleService.getModule(TowerModuleC)
+                    //         .tryTowerMgs?.map((card) => card.toFixed(0))
+                    //         .join("")
+                    // );
 
                     UIService.show(UISettle, settleData);
                 }, 1);
-                let rewardArr = rewardAmounts.map((amount, index) => {
-                    let cfg = GameConfig.Item.getAllElement().find((item) => item.itemType == rewardTypes[index]);
-                    return [cfg.id, amount];
-                });
-                MGSTool.rewardMGS(rewardArr, 1);
+                // let rewardArr = rewardAmounts.map((amount, index) => {
+                //     let cfg = GameConfig.Item.getAllElement().find((item) => item.itemType == rewardTypes[index]);
+                //     return [cfg.id, amount];
+                // });
+                // MGSTool.rewardMGS(rewardArr, 1);
             } else {
                 UIService.hide(UIMain);
                 UIService.show(LobbyUI);
