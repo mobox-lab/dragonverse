@@ -56,6 +56,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				const sInfo = GlobalData.Shop.getStrategyInfo(towerCfg.id);
 				if(options.strategy !== (sInfo?.strategyKey as TowerStrategyType)) continue;
 			}
+
 			this.shopItemUIs.push(item);
 			item.init(towerCfg.id);
 		}
@@ -64,6 +65,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			const item = this.shopItemUIs[i];
 			this.towerItemCanvas.addChild(item.uiObject);
 		}
+		this.sortItems();
 	}
 
 	/** 
@@ -255,6 +257,13 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 
 	public sortItems() {
 		this.shopItemUIs.sort((a, b) => {
+			if(a.state == b.state) {
+				const aPrice = a?.cfg?.shopPrice ?? 0;
+				const bPrice = b?.cfg?.shopPrice ?? 0;
+				if(aPrice == bPrice)
+					return (a?.cfg?.elementTy ?? 0) - (b?.cfg?.elementTy ?? 0);
+				return aPrice - bPrice;
+			}
 			return b.state - a.state;
 		});
 

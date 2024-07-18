@@ -7,24 +7,19 @@
 
 import Gtk from "gtoolkit";
 import { PlayerActions } from "../Actions";
-import { GameManager } from "../GameManager";
-import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 import PlayerModuleData from "../Modules/PlayerModule/PlayerModuleData";
-import { PlayerUtil } from "../Modules/PlayerModule/PlayerUtil";
-import { Task } from "../Modules/taskModule/Task";
-import Lobby_TaskItem from "../Modules/taskModule/ui/Lobby_TaskItem";
 import UI_TaskMain from "../Modules/taskModule/ui/UI_TaskMain";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
 import { Yoact } from "../depend/yoact/Yoact";
 import { MGSTool } from "../tool/MGSTool";
-import { UIMultiScroller } from "../tool/UIMultiScroller";
 import LobbyUI_Generate from "../ui-generate/HUD/LobbyUI_generate";
 import SettingUI from "./SettingUI";
 import TowerUI from "./Tower/TowerUI";
 import { EnergyModuleC } from "../Modules/Energy/EnergyModule";
 import GameServiceConfig from "../const/GameServiceConfig";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
+import { TalentTreeContainer } from "../TalentTree/ui/TalentTreeContainer";
 
 export default class LobbyUI extends LobbyUI_Generate {
 	/** 
@@ -46,7 +41,8 @@ export default class LobbyUI extends LobbyUI_Generate {
 		})
 
 		this.techTreeBtn.onClicked.add(() => {
-			ModuleService.getModule(PlayerModuleC).techTree.show();
+            UIService.show(TalentTreeContainer);
+            // ModuleService.getModule(PlayerModuleC).techTree.show();
 		});
 		//打开任务
 		this.taskBtn.onClicked.add(this.showTaskPanel.bind(this))
