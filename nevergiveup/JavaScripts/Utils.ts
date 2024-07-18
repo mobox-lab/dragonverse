@@ -503,8 +503,15 @@ export default class Utils {
         return value !== null && value !== undefined;
     }
 
-    public static getRunesConfigByKey(key: string, index: number | undefined | null): number {
-        const res: number = Utils.isNotNullOrUndefined(index) ? RunesConfig[key][index] : 0;
-        return res;
+    public static getRunesConfigByKey(key: number, index: number | undefined | null): number {
+        const config = GameConfig.TalentBuff.getElement(key);
+        console.log(JSON.stringify(config), "config");
+
+        if (config) {
+            const res: number = Utils.isNotNullOrUndefined(index) ? config.value[index] : 0;
+            return res;
+        } else {
+            return 0;
+        }
     }
 }
