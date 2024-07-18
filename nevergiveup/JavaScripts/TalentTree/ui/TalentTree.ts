@@ -1,12 +1,20 @@
-import TalentTree_Generate from "../../ui-generate/TalentTree/TalentTree_generate";
 import { TalentItem } from "./TalentItem";
+import { GameConfig } from "../../config/GameConfig";
+import { ITalentTreeElement } from "../../config/TalentTree";
+import PlayerModuleC from "../../Modules/PlayerModule/PlayerModuleC";
+import TalentTree_Generate from "../../ui-generate/TalentTree/TalentTree_generate";
 
 export class TalentTree extends TalentTree_Generate {
+    private _playC: PlayerModuleC;
 
-    public data: any;
+    private get playC(): PlayerModuleC | null {
+        if (!this._playC) this._playC = ModuleService.getModule(PlayerModuleC);
+        return this._playC;
+    }
 
     protected onStart(): void {
-        this.createTalentItem();
+        const trees = GameConfig.TalentTree.getAllElement();
+        trees.forEach(item => this.createTalentItem(item));
     }
 
     protected onShow(...params: any[]) {
@@ -16,12 +24,9 @@ export class TalentTree extends TalentTree_Generate {
     protected onHide(): void {
     }
 
-    private createTalentItem(): void {
-        const item = UIService.create(TalentItem);
-        this.talentItemCanvas_1.addChild(item.uiObject);
-    }
-
-    public setData(data: any): void {
-        this.data = data;
+    private createTalentItem(data: ITalentTreeElement): void {
+        const itemUI = UIService.create(TalentItem);
+        itemUI.setData(data);
+        this[data.slot].addChild(itemUI.uiObject);
     }
 }

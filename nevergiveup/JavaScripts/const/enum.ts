@@ -28,3 +28,11 @@ export enum TowerStrategyType {
     MultiHit, // 多段伤害
     PriorityAir, // 优先对空
 }
+
+/**
+ * 天赋类型
+ */
+export enum ETalentType {
+    Base = 1, // 基础天赋
+    Peak // 巅峰天赋
+}
