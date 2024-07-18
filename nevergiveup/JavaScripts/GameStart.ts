@@ -37,6 +37,8 @@ import { ComponentFactory } from "./enemy/components/ComponentFactory";
 import GodModService from "mw-god-mod";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./Modules/auth/AuthModule";
 import TDEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./Modules/Energy/EnergyModule";
+import * as mwaction from "mwaction";
+
 export namespace Config {
     export let skipGuide: boolean = false;
     export let danmukuSpeed: number = 300;
@@ -95,7 +97,6 @@ export default class GameStart extends Script {
                 Config[k] = this[k];
             }
         }
-
         this.registerModules();
         GameManager.init(this);
         AirdropManager.init();
@@ -123,6 +124,7 @@ export default class GameStart extends Script {
             DanmuManager.init();
             ComponentFactory.init();
         }
+        mwaction;
     }
 
     /**
