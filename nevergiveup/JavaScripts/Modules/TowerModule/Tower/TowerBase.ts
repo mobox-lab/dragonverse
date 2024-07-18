@@ -139,22 +139,22 @@ export default abstract class TowerBase implements BuffBag {
         // todo 初始化天赋树的攻速增强 距离增强
         // todo 龙娘祝福的增加
         const attackSpeedIndex = 0;
-        const attackSpeed = Utils.getRunesConfigByKey("attackSpeed", attackSpeedIndex);
+        const attackSpeed = Utils.getRunesConfigByKey(1003, attackSpeedIndex);
 
         const attackRangeIndex = 0;
-        const attackRange = Utils.getRunesConfigByKey("attackRange", attackRangeIndex);
+        const attackRange = Utils.getRunesConfigByKey(1004, attackRangeIndex);
 
         const attackSpeed2Index = 0;
-        const attackSpeed2 = Utils.getRunesConfigByKey("attackSpeed2", attackSpeed2Index);
+        const attackSpeed2 = Utils.getRunesConfigByKey(1016, attackSpeed2Index);
 
         const attackRange2Index = 0;
-        const attackRange2 = Utils.getRunesConfigByKey("attackRange2", attackRange2Index);
+        const attackRange2 = Utils.getRunesConfigByKey(1017, attackRange2Index);
 
         const attackSpeedDIndex = 0;
-        const attackSpeedD = Utils.getRunesConfigByKey("attackSpeedD", attackSpeedDIndex);
+        const attackSpeedD = Utils.getRunesConfigByKey(1052, attackSpeedDIndex);
 
         const attackRangeDIndex = 0;
-        const attackRangeD = Utils.getRunesConfigByKey("attackRangeD", attackRangeDIndex);
+        const attackRangeD = Utils.getRunesConfigByKey(1049, attackRangeDIndex);
 
         this.property2 = {
             attackTime: this.property.attackTime - attackSpeed - attackSpeed2 - attackSpeedD,
