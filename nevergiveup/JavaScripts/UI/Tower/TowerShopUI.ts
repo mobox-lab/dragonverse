@@ -18,6 +18,7 @@ import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate
 import TextItemUI from "../TextItemUI";
 import ShopItemUI from "./ShopItemUI";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import Utils from "../../Utils";
 
 export default class TowerShopUI extends TowerShopUI_Generate {
 	private _textItemUIs: TextItemUI[] = [];
@@ -231,8 +232,8 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		const sInfo = GlobalData.Shop.getStrategyInfo(cfg.id);
 		if(sInfo?.strategyKey) {
 			Gtk.trySetVisibility(this.canvas_Desc, SlateVisibility.HitTestInvisible);
-			this.textTitle.text = GameConfig.Language.getElement(GlobalData.Shop.shopStrategyOpts[sInfo.strategyKey])?.Value;
-			this.textDesc.text = GameConfig.Language.getElement(GlobalData.Shop.shopStrategyDescLangs[sInfo.strategyKey])?.Value; // TODO: 填入数值
+			this.textTitle.text = sInfo.strategyTitle;
+			this.textDesc.text = sInfo.strategyDesc;
 		} else Gtk.trySetVisibility(this.canvas_Desc, SlateVisibility.Collapsed);
 
 		const tags = this.getTags();
