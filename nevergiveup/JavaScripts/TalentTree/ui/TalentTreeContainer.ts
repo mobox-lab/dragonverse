@@ -1,7 +1,6 @@
 import { TalentTree } from "./TalentTree";
 import { TweenCommon } from "../../TweenCommon";
 import TalentTreeContainer_Generate from "../../ui-generate/TalentTree/TalentTreeContainer_generate";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class TalentTreeContainer extends TalentTreeContainer_Generate {
     protected onStart(): void {
@@ -33,8 +32,7 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
      */
     private createTalentTree() {
         const talentTreeUI = UIService.create(TalentTree);
-        this.talentCanvas.addChild(talentTreeUI.uiObject);
-        Log4Ts.log(TalentTreeContainer,`talent cnv clip: ${this.talentCanvas.clipEnable}`);
-        // this.talentCanvas.size = talentTreeUI.uiObject.size;
+        this.talentTreeCanvas.addChild(talentTreeUI.uiObject);
+        this.talentTreeCanvas.size = talentTreeUI.uiObject.size;
     }
 }

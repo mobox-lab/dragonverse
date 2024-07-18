@@ -56,18 +56,6 @@ export default class TechItem_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextTechLevel") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextTechSlash") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextTechLevel_1") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextTechName") as any);
-	   
-	
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
