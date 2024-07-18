@@ -22,6 +22,7 @@
     "module_guide": "^5.0.8",
     "mw-god-mod": "^31.1.37",
     "mw-log4ts": "^1.4.0",
+    "mwaction": "^1.0.8",
     "pure-uuid": "^1.8.1"
   }
 }

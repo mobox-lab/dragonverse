@@ -11,6 +11,8 @@ import {SceneEnvironmentConfig} from "./SceneEnvironment";
 import {StageConfig} from "./Stage";
 import {SubLevelConfig} from "./SubLevel";
 import {TagConfig} from "./Tag";
+import {TalentBuffConfig} from "./TalentBuff";
+import {TalentTreeConfig} from "./TalentTree";
 import {TaskConfig} from "./Task";
 import {TechTreeConfig} from "./TechTree";
 import {TowerConfig} from "./Tower";
@@ -45,6 +47,8 @@ export class GameConfig{
 	public static get Stage():StageConfig{ return this.getConfig(StageConfig) };
 	public static get SubLevel():SubLevelConfig{ return this.getConfig(SubLevelConfig) };
 	public static get Tag():TagConfig{ return this.getConfig(TagConfig) };
+	public static get TalentBuff():TalentBuffConfig{ return this.getConfig(TalentBuffConfig) };
+	public static get TalentTree():TalentTreeConfig{ return this.getConfig(TalentTreeConfig) };
 	public static get Task():TaskConfig{ return this.getConfig(TaskConfig) };
 	public static get TechTree():TechTreeConfig{ return this.getConfig(TechTreeConfig) };
 	public static get Tower():TowerConfig{ return this.getConfig(TowerConfig) };
