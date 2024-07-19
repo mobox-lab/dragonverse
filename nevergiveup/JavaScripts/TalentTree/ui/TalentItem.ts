@@ -5,6 +5,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { ITalentTreeElement } from "../../config/TalentTree";
 import { ITalentBuffElement } from "../../config/TalentBuff";
 import TalentItem_Generate from "../../ui-generate/TalentTree/TalentItem_generate";
+import { TalentTreeActions } from "./TalentTreeContainer";
 
 /**
  * 基础天赋
@@ -16,7 +17,10 @@ export class TalentItem extends TalentItem_Generate {
     public buff: ITalentBuffElement;
     public isActive = Yoact.createYoact({status: false});
     public canActive = Yoact.createYoact({status: false});
-    public parentTalents: TalentItem[] = [];
+
+    public get level() {
+        return this._currentLevel.count;
+    }
 
     protected onStart(): void {
         this.mLocked.renderOpacity = 0.4;
@@ -25,6 +29,9 @@ export class TalentItem extends TalentItem_Generate {
         });
         this.mItem.onUnhovered.add(() => {
             this.mLocked.renderOpacity = 0.4;
+        });
+        this.mItem.onClicked.add(() => {
+            TalentTreeActions.onItemSelected.call(this.data.id);
         });
         Yoact.bindYoact(() => {
             const currentLevel = this._currentLevel.count;
@@ -71,5 +78,13 @@ export class TalentItem extends TalentItem_Generate {
         if (index > 0) {
             this.isActive.status = true;
         }
+    }
+
+    /**
+     * 获取当前 buff等级 的数值
+     * @returns {number}
+     */
+    public getCurrentBuffValue(): number {
+        return this.buff.value[this._currentLevel.count - 1] ?? 0;
     }
 }

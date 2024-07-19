@@ -42,4 +42,8 @@ export class TalentTree extends TalentTree_Generate {
         this[data.slot].addChild(itemUI.uiObject);
         this._treeMap.set(itemUI.data.id, itemUI);
     }
+
+    public getTalentItem(id: number) {
+        return this._treeMap.get(id);
+    }
 }
