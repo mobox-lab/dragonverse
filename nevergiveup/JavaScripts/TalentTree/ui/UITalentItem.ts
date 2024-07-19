@@ -29,10 +29,10 @@ export class UITalentItem extends TalentItem_Generate {
                 this.textTalentName.fontColor = LinearColor.white;
                 this.textTalentName.outlineColor = LinearColor.black;
             } else {
-                Gtk.trySetVisibility(this.mNotActive, false);
+                Gtk.trySetVisibility(this.mNotActive, true);
                 this.textTalentLevel.setFontColorByHex("#6D6D6D");
                 this.textTalentLevel.setOutlineColorByHex("#BDBDBD");
-                this.textTalentName.setOutlineColorByHex("#6D6D6D");
+                this.textTalentName.setFontColorByHex("#6D6D6D");
                 this.textTalentName.setOutlineColorByHex("#BDBDBD");
             }
         });
