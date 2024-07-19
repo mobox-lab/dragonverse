@@ -15,12 +15,12 @@ export default class TalentItem_Generate extends UIScript {
 		}
 		return this.mItem_Internal
 	}
-	private mSelected_Internal: mw.Image
-	public get mSelected(): mw.Image {
-		if(!this.mSelected_Internal&&this.uiWidgetBase) {
-			this.mSelected_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSelected') as mw.Image
+	private mNotActive_Internal: mw.Image
+	public get mNotActive(): mw.Image {
+		if(!this.mNotActive_Internal&&this.uiWidgetBase) {
+			this.mNotActive_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mNotActive') as mw.Image
 		}
-		return this.mSelected_Internal
+		return this.mNotActive_Internal
 	}
 	private mLocked_Internal: mw.Image
 	public get mLocked(): mw.Image {
