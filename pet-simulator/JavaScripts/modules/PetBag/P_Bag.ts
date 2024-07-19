@@ -489,8 +489,6 @@ export class P_Bag extends PetBagPanel_Generate {
     }
 
     protected onHide(): void {
-        console.log("OnHide");
-
         this.hideAC.call();
         if (this.isDel)
             this.setDelUI();
@@ -500,6 +498,7 @@ export class P_Bag extends PetBagPanel_Generate {
             item.stopTipsTween();
         });
         this.itemArr.forEach((item) => {
+            item.onHoverShow(false);
 			item.setEnableHover(false);
             if (item.isEquip) {
                 try {
