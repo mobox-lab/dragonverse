@@ -50,6 +50,13 @@ export default class SettleUI_Generate extends UIScript {
 		}
 		return this.img_star_Internal
 	}
+	private img_lilbg2_Internal: mw.Image
+	public get img_lilbg2(): mw.Image {
+		if(!this.img_lilbg2_Internal&&this.uiWidgetBase) {
+			this.img_lilbg2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mResult/canvas_win/img_lilbg2') as mw.Image
+		}
+		return this.img_lilbg2_Internal
+	}
 	private canvas_TotalWin_Internal: mw.Canvas
 	public get canvas_TotalWin(): mw.Canvas {
 		if(!this.canvas_TotalWin_Internal&&this.uiWidgetBase) {
@@ -77,6 +84,13 @@ export default class SettleUI_Generate extends UIScript {
 			this.img_diamond2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mResult/canvas_TotalWin/img_diamond2') as mw.Image
 		}
 		return this.img_diamond2_Internal
+	}
+	private img_lilbg3_Internal: mw.Image
+	public get img_lilbg3(): mw.Image {
+		if(!this.img_lilbg3_Internal&&this.uiWidgetBase) {
+			this.img_lilbg3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mResult/canvas_TotalWin/img_lilbg3') as mw.Image
+		}
+		return this.img_lilbg3_Internal
 	}
 	private canvas_lose_Internal: mw.Canvas
 	public get canvas_lose(): mw.Canvas {
@@ -106,6 +120,13 @@ export default class SettleUI_Generate extends UIScript {
 		}
 		return this.img_skull2_Internal
 	}
+	private img_lilbg4_Internal: mw.Image
+	public get img_lilbg4(): mw.Image {
+		if(!this.img_lilbg4_Internal&&this.uiWidgetBase) {
+			this.img_lilbg4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mResult/canvas_lose/img_lilbg4') as mw.Image
+		}
+		return this.img_lilbg4_Internal
+	}
 	private bg_Internal: mw.Image
 	public get bg(): mw.Image {
 		if(!this.bg_Internal&&this.uiWidgetBase) {
@@ -127,12 +148,12 @@ export default class SettleUI_Generate extends UIScript {
 		}
 		return this.mCanvas_ItemDetails_Internal
 	}
-	private img_lilbg2_Internal: mw.Image
-	public get img_lilbg2(): mw.Image {
-		if(!this.img_lilbg2_Internal&&this.uiWidgetBase) {
-			this.img_lilbg2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mCanvas_ItemDetails/img_lilbg2') as mw.Image
+	private img_lilbg5_Internal: mw.Image
+	public get img_lilbg5(): mw.Image {
+		if(!this.img_lilbg5_Internal&&this.uiWidgetBase) {
+			this.img_lilbg5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mCanvas_ItemDetails/img_lilbg5') as mw.Image
 		}
-		return this.img_lilbg2_Internal
+		return this.img_lilbg5_Internal
 	}
 	private mTimeTaken_Internal: mw.TextBlock
 	public get mTimeTaken(): mw.TextBlock {

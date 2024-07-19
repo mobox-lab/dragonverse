@@ -22,6 +22,13 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.bg_Internal
 	}
+	private bg_1_Internal: mw.Image
+	public get bg_1(): mw.Image {
+		if(!this.bg_1_Internal&&this.uiWidgetBase) {
+			this.bg_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/bg_1') as mw.Image
+		}
+		return this.bg_1_Internal
+	}
 	private txt_title_Internal: mw.TextBlock
 	public get txt_title(): mw.TextBlock {
 		if(!this.txt_title_Internal&&this.uiWidgetBase) {
@@ -161,6 +168,13 @@ export default class TowerInfoUI_Generate extends UIScript {
 			this.canvas_tag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag') as mw.Canvas
 		}
 		return this.canvas_tag_Internal
+	}
+	private tagbg_Internal: mw.Image
+	public get tagbg(): mw.Image {
+		if(!this.tagbg_Internal&&this.uiWidgetBase) {
+			this.tagbg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag/tagbg') as mw.Image
+		}
+		return this.tagbg_Internal
 	}
 	private tagScrollBox_Internal: mw.ScrollBox
 	public get tagScrollBox(): mw.ScrollBox {

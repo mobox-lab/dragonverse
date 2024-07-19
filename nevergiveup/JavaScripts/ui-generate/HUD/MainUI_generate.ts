@@ -8,19 +8,19 @@
 
 @UIBind('UI/HUD/MainUI.ui')
 export default class MainUI_Generate extends UIScript {
-		private mHpBar_Internal: mw.ProgressBar
-	public get mHpBar(): mw.ProgressBar {
-		if(!this.mHpBar_Internal&&this.uiWidgetBase) {
-			this.mHpBar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mHpBar') as mw.ProgressBar
-		}
-		return this.mHpBar_Internal
-	}
-	private img_BG_1_Internal: mw.Image
+		private img_BG_1_Internal: mw.Image
 	public get img_BG_1(): mw.Image {
 		if(!this.img_BG_1_Internal&&this.uiWidgetBase) {
 			this.img_BG_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/img_BG_1') as mw.Image
 		}
 		return this.img_BG_1_Internal
+	}
+	private mHpBar_Internal: mw.ProgressBar
+	public get mHpBar(): mw.ProgressBar {
+		if(!this.mHpBar_Internal&&this.uiWidgetBase) {
+			this.mHpBar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mHpBar') as mw.ProgressBar
+		}
+		return this.mHpBar_Internal
 	}
 	private mHp_Internal: mw.TextBlock
 	public get mHp(): mw.TextBlock {
@@ -28,6 +28,20 @@ export default class MainUI_Generate extends UIScript {
 			this.mHp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mHp') as mw.TextBlock
 		}
 		return this.mHp_Internal
+	}
+	private mSlash_Internal: mw.TextBlock
+	public get mSlash(): mw.TextBlock {
+		if(!this.mSlash_Internal&&this.uiWidgetBase) {
+			this.mSlash_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mSlash') as mw.TextBlock
+		}
+		return this.mSlash_Internal
+	}
+	private mHp_1_Internal: mw.TextBlock
+	public get mHp_1(): mw.TextBlock {
+		if(!this.mHp_1_Internal&&this.uiWidgetBase) {
+			this.mHp_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mHp_1') as mw.TextBlock
+		}
+		return this.mHp_1_Internal
 	}
 	private mWait_Internal: mw.TextBlock
 	public get mWait(): mw.TextBlock {
@@ -57,6 +71,13 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.mBossContainer_Internal
 	}
+	private img_BG_Internal: mw.Image
+	public get img_BG(): mw.Image {
+		if(!this.img_BG_Internal&&this.uiWidgetBase) {
+			this.img_BG_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBossContainer/img_BG') as mw.Image
+		}
+		return this.img_BG_Internal
+	}
 	private mBossHP_Internal: mw.ProgressBar
 	public get mBossHP(): mw.ProgressBar {
 		if(!this.mBossHP_Internal&&this.uiWidgetBase) {
@@ -71,12 +92,19 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.mBossInfo_Internal
 	}
-	private img_BG_Internal: mw.Image
-	public get img_BG(): mw.Image {
-		if(!this.img_BG_Internal&&this.uiWidgetBase) {
-			this.img_BG_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBossContainer/img_BG') as mw.Image
+	private mSlash01_Internal: mw.TextBlock
+	public get mSlash01(): mw.TextBlock {
+		if(!this.mSlash01_Internal&&this.uiWidgetBase) {
+			this.mSlash01_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBossContainer/mSlash01') as mw.TextBlock
 		}
-		return this.img_BG_Internal
+		return this.mSlash01_Internal
+	}
+	private mBossInfo_1_Internal: mw.TextBlock
+	public get mBossInfo_1(): mw.TextBlock {
+		if(!this.mBossInfo_1_Internal&&this.uiWidgetBase) {
+			this.mBossInfo_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBossContainer/mBossInfo_1') as mw.TextBlock
+		}
+		return this.mBossInfo_1_Internal
 	}
 	private towerCanvas_Internal: mw.Canvas
 	public get towerCanvas(): mw.Canvas {
@@ -91,6 +119,13 @@ export default class MainUI_Generate extends UIScript {
 			this.towerTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/towerCanvas/towerTxt') as mw.TextBlock
 		}
 		return this.towerTxt_Internal
+	}
+	private towerTxt_1_Internal: mw.TextBlock
+	public get towerTxt_1(): mw.TextBlock {
+		if(!this.towerTxt_1_Internal&&this.uiWidgetBase) {
+			this.towerTxt_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/towerCanvas/towerTxt_1') as mw.TextBlock
+		}
+		return this.towerTxt_1_Internal
 	}
 	private goldCanvas_Internal: mw.Canvas
 	public get goldCanvas(): mw.Canvas {
@@ -290,6 +325,12 @@ export default class MainUI_Generate extends UIScript {
 	   this.initLanguage(this.mHp)
 	   
 	
+	   this.initLanguage(this.mSlash)
+	   
+	
+	   this.initLanguage(this.mHp_1)
+	   
+	
 	   this.initLanguage(this.mWait)
 	   
 	
@@ -302,7 +343,16 @@ export default class MainUI_Generate extends UIScript {
 	   this.initLanguage(this.mBossInfo)
 	   
 	
+	   this.initLanguage(this.mSlash01)
+	   
+	
+	   this.initLanguage(this.mBossInfo_1)
+	   
+	
 	   this.initLanguage(this.towerTxt)
+	   
+	
+	   this.initLanguage(this.towerTxt_1)
 	   
 	
 	   this.initLanguage(this.goldTxt)
