@@ -29,7 +29,6 @@ import { TaskModuleS } from "./Modules/taskModule/TaskModuleS";
 import { GuideDialog } from "./UI/UIDialog";
 import Utils from "./Utils";
 import { GameConfig } from "./config/GameConfig";
-import { UIMain } from "./stage/ui/UIMain";
 import { EventsTool } from "./tool/EventsTool";
 import { Reward } from "./tool/Reward";
 import { SoundUtil } from "./tool/SoundUtil";
@@ -38,6 +37,9 @@ import GodModService from "mw-god-mod";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./Modules/auth/AuthModule";
 import TDEnergyModuleData, { EnergyModuleC, EnergyModuleS } from "./Modules/Energy/EnergyModule";
 import * as mwaction from "mwaction";
+import TalentModuleC from "./Modules/talent/TalentModuleC";
+import TalentModuleS from "./Modules/talent/TalentModuleS";
+import TalentModuleData from "./Modules/talent/TalentModuleData";
 
 export namespace Config {
     export let skipGuide: boolean = false;
@@ -151,6 +153,7 @@ export default class GameStart extends Script {
         ModuleService.registerModule(CardModuleS, CardModuleC, CardModuleData);
         ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
         ModuleService.registerModule(TaskModuleS, TaskModuleC, TaskModuleDataHelper);
+        ModuleService.registerModule(TalentModuleS, TalentModuleC, TalentModuleData);
     }
 
     // private checkGM() {
