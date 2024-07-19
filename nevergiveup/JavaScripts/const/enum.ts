@@ -36,3 +36,11 @@ export enum ETalentType {
     Base = 1, // 基础天赋
     Peak // 巅峰天赋
 }
+
+/**
+ * 天赋Buff数值
+ */
+export enum ETalentBuffValue {
+    Integer = 1, // 数字
+    Percent // 百分比
+}

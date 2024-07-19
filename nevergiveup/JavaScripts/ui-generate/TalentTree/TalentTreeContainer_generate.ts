@@ -134,12 +134,26 @@ export default class TalentTreeContainer_Generate extends UIScript {
 		}
 		return this.infoLevel1_Internal
 	}
+	private levelSlash1_Internal: mw.TextBlock
+	public get levelSlash1(): mw.TextBlock {
+		if(!this.levelSlash1_Internal&&this.uiWidgetBase) {
+			this.levelSlash1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/levelSlash1') as mw.TextBlock
+		}
+		return this.levelSlash1_Internal
+	}
 	private infoLevel2_Internal: mw.TextBlock
 	public get infoLevel2(): mw.TextBlock {
 		if(!this.infoLevel2_Internal&&this.uiWidgetBase) {
 			this.infoLevel2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoLevel2') as mw.TextBlock
 		}
 		return this.infoLevel2_Internal
+	}
+	private levelSlash2_Internal: mw.TextBlock
+	public get levelSlash2(): mw.TextBlock {
+		if(!this.levelSlash2_Internal&&this.uiWidgetBase) {
+			this.levelSlash2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/levelSlash2') as mw.TextBlock
+		}
+		return this.levelSlash2_Internal
 	}
 	private infoLevel3_Internal: mw.TextBlock
 	public get infoLevel3(): mw.TextBlock {
@@ -148,12 +162,26 @@ export default class TalentTreeContainer_Generate extends UIScript {
 		}
 		return this.infoLevel3_Internal
 	}
+	private levelSlash3_Internal: mw.TextBlock
+	public get levelSlash3(): mw.TextBlock {
+		if(!this.levelSlash3_Internal&&this.uiWidgetBase) {
+			this.levelSlash3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/levelSlash3') as mw.TextBlock
+		}
+		return this.levelSlash3_Internal
+	}
 	private infoLevel4_Internal: mw.TextBlock
 	public get infoLevel4(): mw.TextBlock {
 		if(!this.infoLevel4_Internal&&this.uiWidgetBase) {
 			this.infoLevel4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoLevel4') as mw.TextBlock
 		}
 		return this.infoLevel4_Internal
+	}
+	private levelSlash4_Internal: mw.TextBlock
+	public get levelSlash4(): mw.TextBlock {
+		if(!this.levelSlash4_Internal&&this.uiWidgetBase) {
+			this.levelSlash4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/levelSlash4') as mw.TextBlock
+		}
+		return this.levelSlash4_Internal
 	}
 	private infoLevel5_Internal: mw.TextBlock
 	public get infoLevel5(): mw.TextBlock {
@@ -319,13 +347,25 @@ export default class TalentTreeContainer_Generate extends UIScript {
 	   this.initLanguage(this.infoLevel1)
 	   
 	
+	   this.initLanguage(this.levelSlash1)
+	   
+	
 	   this.initLanguage(this.infoLevel2)
+	   
+	
+	   this.initLanguage(this.levelSlash2)
 	   
 	
 	   this.initLanguage(this.infoLevel3)
 	   
 	
+	   this.initLanguage(this.levelSlash3)
+	   
+	
 	   this.initLanguage(this.infoLevel4)
+	   
+	
+	   this.initLanguage(this.levelSlash4)
 	   
 	
 	   this.initLanguage(this.infoLevel5)
@@ -348,18 +388,6 @@ export default class TalentTreeContainer_Generate extends UIScript {
 	
 	   //文本多语言
 	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/LevelSlash1") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/LevelSlash2") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/LevelSlash3") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/LevelSlash4") as any);
-	   
-	
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

@@ -53,6 +53,10 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
     public getTalentIndex(id: number): number {
         return this.talentItemYoact.getItem(id)?.index ?? 0;
     }
+
+    public tryTalentLevelUp(id: number) {
+
+    }
 }
 
 
