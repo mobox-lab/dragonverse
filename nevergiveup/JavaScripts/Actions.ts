@@ -78,8 +78,3 @@ export const TechTreeActions = {
     onItemClicked: new Action1<number>(),
     onItemUnlocked: new Action1<number>(),
 }
-
-export const GuideActions = {
-    onGuideStageTriggered: new Action(),
-    onGuideStageSelect: new Action()
-}

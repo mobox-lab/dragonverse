@@ -1,9 +1,6 @@
-import { GameManager } from "../../GameManager";
-import { GuideManager } from "../../Guide/GuideManager";
-import GuideStageTrigger from "../../GuideStageTrigger";
 import PlayerModuleData from "../../Modules/PlayerModule/PlayerModuleData";
 import { PlayerUtil } from "../../Modules/PlayerModule/PlayerUtil";
-import { NEW_STAGE_CONFIG, STAGE_CONFIG } from "../../StageConfig";
+import { STAGE_CONFIG } from "../../StageConfig";
 import { TweenCommon } from "../../TweenCommon";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import Utils from "../../Utils";
@@ -35,20 +32,19 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
         this.index = index;
         this.mdifficultly.text = `${this.difficluty[index]}`;
         // this.mdifficultly.setFontColorByHex(this.difficultyColor[index]);
-        let stages = StageUtil.getStageDataWithId(this.stageId);
-        let config = stages[index];
+        const stageCfg = StageUtil.getStageCfgById(this.stageId);
         this.unlocked = true;
         if (index != 0) {
-            let firstClears = DataCenterC.getData(PlayerModuleData).firstClears;
-            let lastDifficulty = stages[index - 1];
-            if (firstClears.indexOf(lastDifficulty.id) == -1) {
+            const firstClears = DataCenterC.getData(PlayerModuleData).firstClears;
+            const preDifficultyId = StageUtil.getPreDifficultyId(index, stageCfg?.groupIndex);
+            if (firstClears.indexOf(preDifficultyId) == -1) {
                 this.unlocked = false;
             }
         }
         if (this.unlocked) {
             this.mRecommandedLevel.setFontColorByHex("#867160");
             this.mRecommandedLevel.text =
-                GameConfig.Language.getElement("Text_RecommendLevel").Value + `${config.recommandedLevel}`;
+                GameConfig.Language.getElement("Text_RecommendLevel").Value + `${stageCfg.recommandedLevel}`;
             this.mdifficultly.renderOpacity = 1;
         } else {
             this.mRecommandedLevel.setFontColorByHex("#A1A1A1");
@@ -74,7 +70,7 @@ export class UIStageSelect extends StageSelect_Generate {
     private _queueItem: UIStageSelectItem[] = [];
     private _difficulty: UIStageDifficulty[] = [];
     private _ownerId: number = 0;
-    private _script: StageTrigger | GuideStageTrigger;
+    private _script: StageTrigger;
     onStart() {
         this.layer = UILayerTop;
         for (let i = 0; i < 4; i++) {
@@ -127,16 +123,15 @@ export class UIStageSelect extends StageSelect_Generate {
                 this._difficulty.push(item);
                 this.mSelectDifficulty.addChild(item.uiObject);
             }
-            item.init(this._script.stageId, i);
+            item.init(this._script.stageCfgId, i);
         }
     }
 
-    setData(stageId: number, difficluty: number) {
-        let stages = StageUtil.getStageDataWithId(stageId);
-        let config = stages[difficluty];
-        this.mMapImage.imageGuid = config.stageImageGuid;
-        this.mStageName.text = `${config.stageName}`;
-        let typeString = this.getEnemyTypeString(stageId, difficluty);
+    setData(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
+        const stageCfg = StageUtil.getCfgFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
+        this.mMapImage.imageGuid = stageCfg.stageImageGuid;
+        this.mStageName.text = `${stageCfg.stageName}`;
+        let typeString = this.getEnemyTypeString(stageWorldIndex, difficulty);
         if (typeString.length == 0) {
             this.mMonsters.text = "";
         } else {
@@ -201,7 +196,7 @@ export class UIStageSelect extends StageSelect_Generate {
         this._ownerId = id;
     }
 
-    onShow(script: StageTrigger | GuideStageTrigger) {
+    onShow(script: StageTrigger) {
         MGSTool.page("level");
         this._script = script;
         this.setDifficulty();

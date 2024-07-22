@@ -143,7 +143,7 @@ export namespace AirdropManager {
             destroyAirdrop(go);
             TipsManager.showTips(GameConfig.Language.getElement("Text_AirdropGainText").Value + str);
             let stage = GameManager.getStageClient();
-            let currentStage = stage ? stage.stageId : -1;
+            let currentStage = stage ? stage.stageCfgId : -1;
             MGSTool.getAirdrop(dropCfg.dropType, count, currentStage);
         }
     }

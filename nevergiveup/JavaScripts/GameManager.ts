@@ -48,12 +48,8 @@ export namespace GameManager {
                 player.character.collisionWithOtherCharacterEnabled = false;
             });
 
-            Event.addClientListener("startGuideStage", (player: Player) => {
-                startGame([player.playerId], 99, 0);
-            });
-
-            Event.addClientListener("startStage", (player: Player, stageId: number, difficulty: number) => {
-                startGame([player.playerId], stageId, difficulty);
+            Event.addClientListener("startStage", (player: Player, stageCfgId: number) => {
+                startGame([player.playerId], stageCfgId);
             });
 
             Event.addClientListener("boardcastMessage", (player: Player, message: string, type: number) => {
@@ -68,13 +64,13 @@ export namespace GameManager {
             RankManager.init();
             UIService.show(TowerUI);
 
-            Event.addServerListener("onStageCreated", (playerIds: number[], id: number, stageId: number, difficluty: number) => {
-                stage = new StageC(playerIds, id, stageId, difficluty);
+            Event.addServerListener("onStageCreated", (playerIds: number[], id: number, stageCfgId: number) => {
+                stage = new StageC(playerIds, id, stageCfgId);
                 StageActions.onStageCreated.call(id);
                 StageActions.onPlayerCountChanged.call(stage.playerIds.length);
                 WaveManager.init();
                 let getPlayerLevels = () => stage.playerIds.map(id => PlayerUtil.getPlayerScript(id)?.level);
-                MGSTool.gameStart(stage.stageId, stage.playerIds.length, getPlayerLevels(), ModuleService.getModule(CardModuleC).equipCards);
+                MGSTool.gameStart(stage.stageCfgId, stage.playerIds.length, getPlayerLevels(), ModuleService.getModule(CardModuleC).equipCards);
             });
 
 
@@ -171,12 +167,12 @@ export namespace GameManager {
         }
     }
 
-    export function startGame(playerIds: number[], stageId: number, difficluty: number) {
-        console.log("startGame", playerIds, stageId, difficluty);
+    export function startGame(playerIds: number[], stageCfgId: number) {
+        console.log("#debug startGame playerIds:" + playerIds + " stageCfgId:"+ stageCfgId);
         let gamePlayers = playerIds.map(playerId => Player.getPlayer(playerId));
         let validGamePlayers = gamePlayers.filter(player => players.indexOf(player) != -1);
         if (validGamePlayers.length == 0) return;
-        startStage(validGamePlayers, stageId, difficluty);
+        startStage(validGamePlayers, stageCfgId);
         for (let i = 0; i < players.length; i++) {
             if (validGamePlayers.indexOf(players[i]) != -1) {
                 players.splice(i, 1);
@@ -188,9 +184,10 @@ export namespace GameManager {
         return script;
     }
 
-    export function startStage(gamePlayers: Player[], stageId: number, difficluty: number) {
+    export function startStage(gamePlayers: Player[], stageCfgId: number) {
+        console.log("#debug startStage playerIds:" + gamePlayers.map(p => p.playerId) + " stageCfgId:"+ stageCfgId);
         // 初始化游戏
-        let stage = new StageS(gamePlayers, stageId, difficluty);
+        let stage = new StageS(gamePlayers, stageCfgId);
         stages.push(stage);
     }
 
@@ -273,12 +270,8 @@ export namespace GameManager {
         return 1;
     }
 
-    export function startGuideClient() {
-        Event.dispatchToServer("startGuideStage");
-    }
-
-    export function startGameClient(stageId: number, difficluty: number) {
-        Event.dispatchToServer("startStage", stageId, difficluty);
+    export function startGameClient(stageCfgId: number) {
+        Event.dispatchToServer("startStage", stageCfgId);
     }
 
 
