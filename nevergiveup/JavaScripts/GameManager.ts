@@ -48,12 +48,8 @@ export namespace GameManager {
                 player.character.collisionWithOtherCharacterEnabled = false;
             });
 
-            Event.addClientListener("startGuideStage", (player: Player) => {
-                startGame([player.playerId], 99, 0);
-            });
-
-            Event.addClientListener("startStage", (player: Player, stageId: number, difficulty: number) => {
-                startGame([player.playerId], stageId, difficulty);
+            Event.addClientListener("startStage", (player: Player, stageCfgId: number) => {
+                startGame([player.playerId], stageCfgId);
             });
 
             Event.addClientListener("boardcastMessage", (player: Player, message: string, type: number) => {
@@ -171,12 +167,12 @@ export namespace GameManager {
         }
     }
 
-    export function startGame(playerIds: number[], stageId: number, difficluty: number) {
-        console.log("startGame", playerIds, stageId, difficluty);
+    export function startGame(playerIds: number[], stageCfgId: number) {
+        console.log("startGame", playerIds, stageCfgId);
         let gamePlayers = playerIds.map(playerId => Player.getPlayer(playerId));
         let validGamePlayers = gamePlayers.filter(player => players.indexOf(player) != -1);
         if (validGamePlayers.length == 0) return;
-        startStage(validGamePlayers, stageId, difficluty);
+        startStage(validGamePlayers, stageCfgId);
         for (let i = 0; i < players.length; i++) {
             if (validGamePlayers.indexOf(players[i]) != -1) {
                 players.splice(i, 1);
@@ -188,9 +184,9 @@ export namespace GameManager {
         return script;
     }
 
-    export function startStage(gamePlayers: Player[], stageId: number, difficluty: number) {
+    export function startStage(gamePlayers: Player[], stageCfgId: number) {
         // 初始化游戏
-        let stage = new StageS(gamePlayers, stageId, difficluty);
+        let stage = new StageS(gamePlayers, stageCfgId);
         stages.push(stage);
     }
 
@@ -273,12 +269,8 @@ export namespace GameManager {
         return 1;
     }
 
-    export function startGuideClient() {
-        Event.dispatchToServer("startGuideStage");
-    }
-
-    export function startGameClient(stageId: number, difficluty: number) {
-        Event.dispatchToServer("startStage", stageId, difficluty);
+    export function startGameClient(stageCfgId: number) {
+        Event.dispatchToServer("startStage", stageCfgId);
     }
 
 
