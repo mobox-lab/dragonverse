@@ -711,7 +711,7 @@ export class StageC {
                 this.duration = param[0];
                 let wave = param[1];
                 this.currentWave = wave;
-                const [waveContent, waveMax] = WaveUtil.fitOldConfig(this.stageCfgId);
+                const [waveContent, waveMax] = WaveUtil.fitOldConfig(this.stageCfgId, wave);
                 // let waves: WaveConfig[] =
                 //     STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageIndex, this.difficulty)].waves;
                 // let waveMax = waves.length;
