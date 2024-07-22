@@ -94,7 +94,6 @@ export default class StageTrigger extends Script {
                 this.onTriggeredPlayerChanged();
                 this.onOwnerChanged();
             });
-            console.log("#debug init stageCfgId:" + this.stageCfgId, " stageWorldIndex:" + this.stageWorldIndex + " stageGroupId:" + this.stageGroupId + " difficulty:" + this.difficulty);
             let trigger = this.gameObject as Trigger;
             trigger.onEnter.add((gameObject: GameObject) => {
                 if (gameObject instanceof mw.Character) {
@@ -237,7 +236,6 @@ export default class StageTrigger extends Script {
             return;
         }
         ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
-        console.log("#debug startGame stageCfgId:" + this.stageCfgId, " stageWorldIndex:" + this.stageWorldIndex + " stageGroupId:" + this.stageGroupId + " difficulty:" + this.difficulty);
         if (playerID == this.owner) {
             let ids = this.parsePlayerIds().splice(0, 4);
             this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(this.stageWorldIndex, this.stageGroupId, this.difficulty);

@@ -168,7 +168,6 @@ export namespace GameManager {
     }
 
     export function startGame(playerIds: number[], stageCfgId: number) {
-        console.log("#debug startGame playerIds:" + playerIds + " stageCfgId:"+ stageCfgId);
         let gamePlayers = playerIds.map(playerId => Player.getPlayer(playerId));
         let validGamePlayers = gamePlayers.filter(player => players.indexOf(player) != -1);
         if (validGamePlayers.length == 0) return;
@@ -185,7 +184,6 @@ export namespace GameManager {
     }
 
     export function startStage(gamePlayers: Player[], stageCfgId: number) {
-        console.log("#debug startStage playerIds:" + gamePlayers.map(p => p.playerId) + " stageCfgId:"+ stageCfgId);
         // 初始化游戏
         let stage = new StageS(gamePlayers, stageCfgId);
         stages.push(stage);

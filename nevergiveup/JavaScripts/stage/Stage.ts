@@ -123,11 +123,11 @@ export class StageS {
         });
         // todo 天赋树和龙娘血量加成
         const userHPIndex = 0;
-        const userHP = Utils.getRunesConfigByKey(1027, userHPIndex);
+        const userHP = Utils.getRunesConfigByKey(1003, userHPIndex);
         const userHP2Index = 0;
-        const userHP2 = Utils.getRunesConfigByKey(1031, userHP2Index);
+        const userHP2 = Utils.getRunesConfigByKey(1027, userHP2Index);
         const userHPDIndex = 0;
-        const userHPD = Utils.getRunesConfigByKey(1051, userHPDIndex);
+        const userHPD = Utils.getRunesConfigByKey(2005, userHPDIndex);
         this._hp = Math.floor(baseHp * (1 + userHP + userHP2) * (1 + userHPD));
         // this._hp = baseHp;
         this._maxHp = this._hp;
@@ -611,11 +611,11 @@ export class StageC {
         this.gold = 0;
         // todo 天赋树和龙娘血量加成
         const userHPIndex = 0;
-        const userHP = Utils.getRunesConfigByKey(1027, userHPIndex);
+        const userHP = Utils.getRunesConfigByKey(1003, userHPIndex);
         const userHP2Index = 0;
-        const userHP2 = Utils.getRunesConfigByKey(1031, userHP2Index);
+        const userHP2 = Utils.getRunesConfigByKey(1027, userHP2Index);
         const userHPDIndex = 0;
-        const userHPD = Utils.getRunesConfigByKey(1051, userHPDIndex);
+        const userHPD = Utils.getRunesConfigByKey(2005, userHPDIndex);
         this.hp = Math.floor(baseHp * (1 + userHP + userHP2) * (1 + userHPD));
         ModuleService.getModule(PlayerModuleC)
             .getUnlockTechNodeMap(playerIds)
@@ -1059,15 +1059,15 @@ class WaitState extends StageBaseState {
         this.fsm.owner.addGold(currentWave.waveGold);
         if (this._wave > 0) {
             const goldAmountIndex = 0;
-            const goldAmount = Utils.getRunesConfigByKey(1028, goldAmountIndex);
+            const goldAmount = Utils.getRunesConfigByKey(1005, goldAmountIndex);
             const goldAmount2Index = 0;
-            const goldAmount2 = Utils.getRunesConfigByKey(1032, goldAmount2Index);
+            const goldAmount2 = Utils.getRunesConfigByKey(1029, goldAmount2Index);
             this.fsm.owner.addGold(goldAmount + goldAmount2);
 
             const hpAmountIndex = 0;
-            const hpAmount = Utils.getRunesConfigByKey(1029, hpAmountIndex);
+            const hpAmount = Utils.getRunesConfigByKey(1010, hpAmountIndex);
             const hpAmount2Index = 0;
-            const hpAmount2 = Utils.getRunesConfigByKey(1033, hpAmount2Index);
+            const hpAmount2 = Utils.getRunesConfigByKey(1034, hpAmount2Index);
             this.fsm.owner.addHp(hpAmount + hpAmount2);
         }
         StageActions.onStageStateChanged.call(this.state, this.fsm.owner.id, this._time, this._wave);
@@ -1115,7 +1115,6 @@ export namespace StageUtil {
     }
     export function getIdFromGroupIndexAndDifficulty(index: number, groupIndex: number, difficulty: number) {
         const stageCfg = getCfgFromGroupIndexAndDifficulty(index, groupIndex, difficulty);
-        console.log("#debug getIdFromGroupIndexAndDifficulty id:" + stageCfg?.id + " index:" + index + " groupIndex:" + groupIndex + " difficulty:" + difficulty);
         return stageCfg?.id;
     }
     export function getWaveIndexFromId(cfgId: number) {
