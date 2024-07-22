@@ -64,13 +64,13 @@ export namespace GameManager {
             RankManager.init();
             UIService.show(TowerUI);
 
-            Event.addServerListener("onStageCreated", (playerIds: number[], id: number, stageId: number, difficluty: number) => {
-                stage = new StageC(playerIds, id, stageId, difficluty);
+            Event.addServerListener("onStageCreated", (playerIds: number[], id: number, stageCfgId: number) => {
+                stage = new StageC(playerIds, id, stageCfgId);
                 StageActions.onStageCreated.call(id);
                 StageActions.onPlayerCountChanged.call(stage.playerIds.length);
                 WaveManager.init();
                 let getPlayerLevels = () => stage.playerIds.map(id => PlayerUtil.getPlayerScript(id)?.level);
-                MGSTool.gameStart(stage.stageId, stage.playerIds.length, getPlayerLevels(), ModuleService.getModule(CardModuleC).equipCards);
+                MGSTool.gameStart(stage.stageCfgId, stage.playerIds.length, getPlayerLevels(), ModuleService.getModule(CardModuleC).equipCards);
             });
 
 
@@ -168,7 +168,7 @@ export namespace GameManager {
     }
 
     export function startGame(playerIds: number[], stageCfgId: number) {
-        console.log("startGame", playerIds, stageCfgId);
+        console.log("#debug startGame playerIds:" + playerIds + " stageCfgId:"+ stageCfgId);
         let gamePlayers = playerIds.map(playerId => Player.getPlayer(playerId));
         let validGamePlayers = gamePlayers.filter(player => players.indexOf(player) != -1);
         if (validGamePlayers.length == 0) return;
@@ -185,6 +185,7 @@ export namespace GameManager {
     }
 
     export function startStage(gamePlayers: Player[], stageCfgId: number) {
+        console.log("#debug startStage playerIds:" + gamePlayers.map(p => p.playerId) + " stageCfgId:"+ stageCfgId);
         // 初始化游戏
         let stage = new StageS(gamePlayers, stageCfgId);
         stages.push(stage);

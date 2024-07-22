@@ -47,7 +47,7 @@ export default class StageTrigger extends Script {
     @mw.Property({ replicated: true, onChanged: "onOwnerChanged", hideInEditor: true })
     public owner = 0;
     countDown: number = 30;
-    public stageCfgId: number = StageUtil.getIdFromGroupIndexAndDifficulty(this.stageWorldIndex, this.stageGroupId, this.difficulty);
+    public stageCfgId: number = 1;
 
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void { 
@@ -88,13 +88,13 @@ export default class StageTrigger extends Script {
                     this.playerCountUI = ui.findChildByPath("RootCanvas/Canvas/mPlayerCount") as TextBlock;
                     this.waitProgress = ui.findChildByPath("RootCanvas/Canvas/mWaitProgress") as ProgressBar;
                     this.waitTimerUI = ui.findChildByPath("RootCanvas/Canvas/mTranportText") as TextBlock;
-                    this.mapNameUI.text = stageCfg?.stageName;
+                    this.mapNameUI.text = stageCfg?.stageName ?? "";
                 }
                 this.onWaitTimeChanged();
                 this.onTriggeredPlayerChanged();
                 this.onOwnerChanged();
             });
-
+            console.log("#debug init stageCfgId:" + this.stageCfgId, " stageWorldIndex:" + this.stageWorldIndex + " stageGroupId:" + this.stageGroupId + " difficulty:" + this.difficulty);
             let trigger = this.gameObject as Trigger;
             trigger.onEnter.add((gameObject: GameObject) => {
                 if (gameObject instanceof mw.Character) {
@@ -237,9 +237,10 @@ export default class StageTrigger extends Script {
             return;
         }
         ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
-
+        console.log("#debug startGame stageCfgId:" + this.stageCfgId, " stageWorldIndex:" + this.stageWorldIndex + " stageGroupId:" + this.stageGroupId + " difficulty:" + this.difficulty);
         if (playerID == this.owner) {
             let ids = this.parsePlayerIds().splice(0, 4);
+            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(this.stageWorldIndex, this.stageGroupId, this.difficulty);
             GameManager.startGame(ids, this.stageCfgId);
         }
     }
@@ -260,7 +261,8 @@ export default class StageTrigger extends Script {
     }
 
     onDifficultyChanged() {
-        if (this._triggered) {
+        if (this._triggered) {        
+            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(this.stageWorldIndex, this.stageGroupId, this.difficulty);
             let ui = UIService.getUI(UIStageSelect);
             ui.setSelectDifficulty(this.difficulty);
             ui.setData(this.stageWorldIndex, this.difficulty, this.stageGroupId);

@@ -176,7 +176,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     public onStageStateChanged(state: EStageState, waitTime: number, wave: number) {
         let towerUI = UIService.getUI(TowerUI);
         let stage = GameManager.getStageClient();
-        let currentStage = stage ? stage.stageId : -1;
+        let currentStage = stage ? stage.stageCfgId : -1;
         let currentWave = stage ? stage.currentWave : -1;
         // let currentWave = stage ? stage.stageId : -1;
         switch (state) {

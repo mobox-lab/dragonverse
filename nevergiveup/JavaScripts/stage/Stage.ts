@@ -108,8 +108,7 @@ export class StageS {
                 "onStageCreated",
                 this.players.map((player) => player.playerId),
                 this.id,
-                this.stageWorldIndex,
-                this.difficulty,
+                this.stageCfgId,
             );
             PlayerUtil.getPlayerScript(player.playerId).id = this.id;
 
@@ -545,7 +544,7 @@ export class StageC {
     playerIds: number[] = [];
     stage: GameObject;
     id: number;
-    stageId: number; // configId
+    stageCfgId: number; // configId
     stageIndex: number;
     difficulty: number;
     speedMultipler: number = 1;
@@ -602,13 +601,13 @@ export class StageC {
         this._dataChanged = true;
     }
 
-    constructor(playerIds: number[], id: number, stageId: number, difficulty: number) {
+    constructor(playerIds: number[], id: number, stageCfgId: number) {
         this.id = id;
         this.playerIds = playerIds;
-        this.difficulty = difficulty;
+        this.stageCfgId = stageCfgId;
+        const stageConfig = StageUtil.getStageCfgById(stageCfgId);
+        this.difficulty = stageConfig?.difficulty ?? 0;
         this.currentWave = 0;
-        const stageConfig = StageUtil.getStageCfgById(stageId);
-        this.stageId = stageId;
         this.stageIndex = stageConfig?.index ?? 0;
         this.gold = 0;
         // todo 天赋树和龙娘血量加成
@@ -670,13 +669,13 @@ export class StageC {
         });
 
         StageActions.onMapLoaded.add(() => {
-            const stageCfg = GameConfig.Stage.getElement(this.stageId);
+            const stageCfg = GameConfig.Stage.getElement(this.stageCfgId);
             if (stageCfg?.sceneEnvId) {
                 EnvironmentManager.getInstance().setEnvironment(stageCfg.sceneEnvId);
                 Log4Ts.log(
                     StageC,
                     "stage onMapLoaded stage:" +
-                        this.stageId +
+                        this.stageCfgId +
                         " difficulty:" +
                         this.difficulty +
                         " sceneEnvId:" +
@@ -1119,6 +1118,7 @@ export namespace StageUtil {
     }
     export function getIdFromGroupIndexAndDifficulty(index: number, groupIndex: number, difficulty: number) {
         const stageCfg = getCfgFromGroupIndexAndDifficulty(index, groupIndex, difficulty);
+        console.log("#debug getIdFromGroupIndexAndDifficulty id:" + stageCfg?.id + " index:" + index + " groupIndex:" + groupIndex + " difficulty:" + difficulty);
         return stageCfg?.id;
     }
     export function getIndexFromIdAndDifficulty(id: number, difficulty: number) {
