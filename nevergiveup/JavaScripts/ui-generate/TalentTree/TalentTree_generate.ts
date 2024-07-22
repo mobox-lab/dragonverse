@@ -330,26 +330,26 @@ export default class TalentTree_Generate extends UIScript {
 		}
 		return this.talentItemCanvas_46_Internal
 	}
-	private talentTopItemCanvas_1_Internal: mw.Canvas
-	public get talentTopItemCanvas_1(): mw.Canvas {
-		if(!this.talentTopItemCanvas_1_Internal&&this.uiWidgetBase) {
-			this.talentTopItemCanvas_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/talentTopItemCanvas_1') as mw.Canvas
+	private talentItemCanvas_47_Internal: mw.Canvas
+	public get talentItemCanvas_47(): mw.Canvas {
+		if(!this.talentItemCanvas_47_Internal&&this.uiWidgetBase) {
+			this.talentItemCanvas_47_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/talentItemCanvas_47') as mw.Canvas
 		}
-		return this.talentTopItemCanvas_1_Internal
+		return this.talentItemCanvas_47_Internal
 	}
-	private talentTopItemCanvas_2_Internal: mw.Canvas
-	public get talentTopItemCanvas_2(): mw.Canvas {
-		if(!this.talentTopItemCanvas_2_Internal&&this.uiWidgetBase) {
-			this.talentTopItemCanvas_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/talentTopItemCanvas_2') as mw.Canvas
+	private talentItemCanvas_48_Internal: mw.Canvas
+	public get talentItemCanvas_48(): mw.Canvas {
+		if(!this.talentItemCanvas_48_Internal&&this.uiWidgetBase) {
+			this.talentItemCanvas_48_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/talentItemCanvas_48') as mw.Canvas
 		}
-		return this.talentTopItemCanvas_2_Internal
+		return this.talentItemCanvas_48_Internal
 	}
-	private talentTopItemCanvas_3_Internal: mw.Canvas
-	public get talentTopItemCanvas_3(): mw.Canvas {
-		if(!this.talentTopItemCanvas_3_Internal&&this.uiWidgetBase) {
-			this.talentTopItemCanvas_3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/talentTopItemCanvas_3') as mw.Canvas
+	private talentItemCanvas_49_Internal: mw.Canvas
+	public get talentItemCanvas_49(): mw.Canvas {
+		if(!this.talentItemCanvas_49_Internal&&this.uiWidgetBase) {
+			this.talentItemCanvas_49_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/talentItemCanvas_49') as mw.Canvas
 		}
-		return this.talentTopItemCanvas_3_Internal
+		return this.talentItemCanvas_49_Internal
 	}
 
 

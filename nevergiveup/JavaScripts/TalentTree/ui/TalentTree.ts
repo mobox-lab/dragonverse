@@ -1,9 +1,8 @@
 import { TalentItem } from "./TalentItem";
 import { GameConfig } from "../../config/GameConfig";
-import { ITalentTreeElement } from "../../config/TalentTree";
-import TalentModuleC from "../../Modules/talent/TalentModuleC";
-import TalentTree_Generate from "../../ui-generate/TalentTree/TalentTree_generate";
 import { TalentTreeActions } from "./TalentTreeContainer";
+import { ITalentTreeElement } from "../../config/TalentTree";
+import TalentTree_Generate from "../../ui-generate/TalentTree/TalentTree_generate";
 
 export class TalentTree extends TalentTree_Generate {
     private _treeMap: Map<number, TalentItem> = new Map();
