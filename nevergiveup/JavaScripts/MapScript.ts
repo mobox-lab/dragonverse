@@ -15,8 +15,7 @@ import { StageUtil } from "./stage/Stage";
 
 export namespace MapManager {
     export let script: MapScript;
-    export let stageID: number = 0;
-    export let difficulty: number = 0;
+    export let stageCfgId: number = 0;
     export let birthPosition: Vector = Vector.zero;
     export let birthRotation: Rotation = Rotation.zero;
 
@@ -106,7 +105,7 @@ export default class MapScript extends Script {
 
     protected async onStart(): Promise<void> {
         if (SystemUtil.isClient()) {
-            this.gameObject.worldTransform.position = GameConfig.Stage.getAllElement()[StageUtil.getIndexFromIdAndDifficulty(MapManager.stageID, MapManager.difficulty)].stagePosition.clone();
+            this.gameObject.worldTransform.position = StageUtil.getStageCfgById(MapManager.stageCfgId)?.stagePosition.clone();
             let center = Vector.zero;
             let extend = Vector.zero;
             this.gameObject.getBounds(false, center, extend, true);
@@ -180,7 +179,7 @@ export default class MapScript extends Script {
 
     private resetMaterial(node: Model) {
         if (node) {
-            let config = GameConfig.Stage.getAllElement()[StageUtil.getIndexFromIdAndDifficulty(MapManager.stageID, MapManager.difficulty)];
+            const config = StageUtil.getStageCfgById(MapManager.stageCfgId)
             for (let i = 0; i < config.slotMaterials.length; i++) {
                 node.setMaterial(config.slotMaterials[i], i);
             }

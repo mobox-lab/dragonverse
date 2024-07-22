@@ -123,11 +123,11 @@ export class StageS {
         });
         // todo 天赋树和龙娘血量加成
         const userHPIndex = 0;
-        const userHP = Utils.getRunesConfigByKey(1003, userHPIndex);
+        const userHP = Utils.getRunesConfigByKey(1027, userHPIndex);
         const userHP2Index = 0;
-        const userHP2 = Utils.getRunesConfigByKey(1027, userHP2Index);
+        const userHP2 = Utils.getRunesConfigByKey(1031, userHP2Index);
         const userHPDIndex = 0;
-        const userHPD = Utils.getRunesConfigByKey(2005, userHPDIndex);
+        const userHPD = Utils.getRunesConfigByKey(1051, userHPDIndex);
         this._hp = Math.floor(baseHp * (1 + userHP + userHP2) * (1 + userHPD));
         // this._hp = baseHp;
         this._maxHp = this._hp;
@@ -424,7 +424,7 @@ export class StageS {
 
     onCountChanged() {
         if (this._deadIds.length == this.cumulativeCount) {
-            const [, length] = WaveUtil.fitOldConfig(this.stageWorldIndex, this.difficulty);
+            const [, length] = WaveUtil.fitOldConfig(this.stageCfgId);
             if (this.currentWave >= length) {
                 this._fsm.changeState(SettleState, true);
             } else {
@@ -450,10 +450,9 @@ export class StageS {
     updateSettleData(player: Player) {
         this.settleData.time = this.time;
         this.settleData.waves = this.settleData.hasWin ? this.currentWave : this.currentWave - 1;
-        const [, length] = WaveUtil.fitOldConfig(this.stageWorldIndex, this.difficulty);
+        const [, length] = WaveUtil.fitOldConfig(this.stageCfgId);
         this.settleData.wavesMax = length;
-        let stageIndex = StageUtil.getIndexFromIdAndDifficulty(this.stageWorldIndex, this.difficulty);
-        let stageConfig = GameConfig.Stage.getAllElement()[stageIndex];
+        const stageConfig = StageUtil.getStageCfgById(this.stageCfgId);
         let stageId = stageConfig.id;
         let rewards = [];
         if (this.settleData.hasWin) {
@@ -545,7 +544,7 @@ export class StageC {
     stage: GameObject;
     id: number;
     stageCfgId: number; // configId
-    stageIndex: number;
+    stageWorldIndex: number;
     difficulty: number;
     speedMultipler: number = 1;
     hasLoaded: boolean = false;
@@ -608,15 +607,15 @@ export class StageC {
         const stageConfig = StageUtil.getStageCfgById(stageCfgId);
         this.difficulty = stageConfig?.difficulty ?? 0;
         this.currentWave = 0;
-        this.stageIndex = stageConfig?.index ?? 0;
+        this.stageWorldIndex = stageConfig?.index ?? 0;
         this.gold = 0;
         // todo 天赋树和龙娘血量加成
         const userHPIndex = 0;
-        const userHP = Utils.getRunesConfigByKey(1003, userHPIndex);
+        const userHP = Utils.getRunesConfigByKey(1027, userHPIndex);
         const userHP2Index = 0;
-        const userHP2 = Utils.getRunesConfigByKey(1027, userHP2Index);
+        const userHP2 = Utils.getRunesConfigByKey(1031, userHP2Index);
         const userHPDIndex = 0;
-        const userHPD = Utils.getRunesConfigByKey(2005, userHPDIndex);
+        const userHPD = Utils.getRunesConfigByKey(1051, userHPDIndex);
         this.hp = Math.floor(baseHp * (1 + userHP + userHP2) * (1 + userHPD));
         ModuleService.getModule(PlayerModuleC)
             .getUnlockTechNodeMap(playerIds)
@@ -632,8 +631,7 @@ export class StageC {
 
             GameObject.asyncSpawn(stageConfig.guid).then((go: GameObject) => {
                 this.stage = go;
-                MapManager.stageID = this.stageIndex;
-                MapManager.difficulty = this.difficulty;
+                MapManager.stageCfgId = this.stageCfgId;
             });
         });
         this.registerListeners();
@@ -713,7 +711,7 @@ export class StageC {
                 this.duration = param[0];
                 let wave = param[1];
                 this.currentWave = wave;
-                const [waveContent, waveMax] = WaveUtil.fitOldConfig(this.stageIndex, this.difficulty, wave);
+                const [waveContent, waveMax] = WaveUtil.fitOldConfig(this.stageCfgId);
                 // let waves: WaveConfig[] =
                 //     STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageIndex, this.difficulty)].waves;
                 // let waveMax = waves.length;
@@ -742,8 +740,7 @@ export class StageC {
                 // let currentWave = config.waves(this.currentWave + 1);
                 // console.log(this.currentWave, "this.currentWave");
                 const [currentWave, waveMax] = WaveUtil.fitOldConfig(
-                    this.stageIndex,
-                    this.difficulty,
+                    this.stageCfgId,
                     this.currentWave + 1
                 );
 
@@ -784,11 +781,11 @@ export class StageC {
                 let [hasWin, isPerfect, isFirst, time, waves, wavesMax, rewardGuids, rewardAmounts, rewardTypes, hp] =
                     param;
                 if (hasWin) {
-                    StageActions.onStageWin.call(this.stageIndex);
+                    StageActions.onStageWin.call(this.stageWorldIndex);
                 }
                 GuideDialog.hide();
                 ModuleService.getModule(PlayerModuleC).onStageCompleted();
-                StageActions.onStageComplete.call(this.stageIndex);
+                StageActions.onStageComplete.call(this.stageWorldIndex);
                 let settleData: SettleData = {
                     hasWin: hasWin,
                     isFirst: isFirst,
@@ -1013,7 +1010,7 @@ class GameState extends StageBaseState {
     onUpdate(dt: number): void {
         this._time -= dt * this.fsm.owner.speedMultipler;
         if (this._time <= 0) {
-            const [, length] = WaveUtil.fitOldConfig(this.fsm.owner.stageWorldIndex, this.fsm.owner.difficulty);
+            const [, length] = WaveUtil.fitOldConfig(this.fsm.owner.stageCfgId);
             if (this._wave < length) {
                 this.fsm.changeState(WaitState, 5, this._wave);
             } else {
@@ -1023,7 +1020,7 @@ class GameState extends StageBaseState {
     }
     onEnter(...params: any[]): void {
         this._wave = params[0];
-        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageWorldIndex, this.fsm.owner.difficulty, this._wave);
+        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageCfgId, this._wave);
         this._time = currentWave.waveTime;
         this.fsm.owner.currentWaveCount = 0;
         this.fsm.owner.currentWaveDeadIds = [];
@@ -1043,7 +1040,7 @@ class WaitState extends StageBaseState {
     onUpdate(dt: number): void {
         this._time -= dt * this.fsm.owner.speedMultipler;
         if (this._time <= 0) {
-            const [, length] = WaveUtil.fitOldConfig(this.fsm.owner.stageWorldIndex, this.fsm.owner.difficulty);
+            const [, length] = WaveUtil.fitOldConfig(this.fsm.owner.stageCfgId);
             if (this._wave < length) {
                 this.fsm.changeState(GameState, this._wave + 1);
             } else {
@@ -1058,19 +1055,19 @@ class WaitState extends StageBaseState {
     onEnter(...params: any[]): void {
         this._time = params[0];
         this._wave = params[1];
-        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageWorldIndex, this.fsm.owner.difficulty, this._wave + 1);
+        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageCfgId, this._wave + 1);
         this.fsm.owner.addGold(currentWave.waveGold);
         if (this._wave > 0) {
             const goldAmountIndex = 0;
-            const goldAmount = Utils.getRunesConfigByKey(1005, goldAmountIndex);
+            const goldAmount = Utils.getRunesConfigByKey(1028, goldAmountIndex);
             const goldAmount2Index = 0;
-            const goldAmount2 = Utils.getRunesConfigByKey(1029, goldAmount2Index);
+            const goldAmount2 = Utils.getRunesConfigByKey(1032, goldAmount2Index);
             this.fsm.owner.addGold(goldAmount + goldAmount2);
 
             const hpAmountIndex = 0;
-            const hpAmount = Utils.getRunesConfigByKey(1010, hpAmountIndex);
+            const hpAmount = Utils.getRunesConfigByKey(1029, hpAmountIndex);
             const hpAmount2Index = 0;
-            const hpAmount2 = Utils.getRunesConfigByKey(1034, hpAmount2Index);
+            const hpAmount2 = Utils.getRunesConfigByKey(1033, hpAmount2Index);
             this.fsm.owner.addHp(hpAmount + hpAmount2);
         }
         StageActions.onStageStateChanged.call(this.state, this.fsm.owner.id, this._time, this._wave);
@@ -1121,10 +1118,10 @@ export namespace StageUtil {
         console.log("#debug getIdFromGroupIndexAndDifficulty id:" + stageCfg?.id + " index:" + index + " groupIndex:" + groupIndex + " difficulty:" + difficulty);
         return stageCfg?.id;
     }
-    export function getIndexFromIdAndDifficulty(id: number, difficulty: number) {
-        let stages = GameConfig.Stage.getAllElement();
-        let indexBegin = stages.findIndex((stage) => stage.index == id);
-        return indexBegin + difficulty;
+    export function getWaveIndexFromId(cfgId: number) {
+        const cfg = GameConfig.Stage.getElement(cfgId);
+        const waveIndex = (cfg?.index ?? 0) * 3 + (cfg?.difficulty ?? 0) + 1;
+        return waveIndex;
     }
     // 获取上一关难度的id
     export function getPreDifficultyId(difficulty: number, groupIndex: number) {

@@ -105,7 +105,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 		if (Utils.isLocalPlayer(tower.info.playerID)) {
 			this.canvas_levelup.visibility = SlateVisibility.Visible;
 			let stage = GameManager.getStageClient();
-			if (stage && stage.stageIndex == 99) {
+			if (stage && stage.stageWorldIndex == 99) {
 				this.canvas_sell.visibility = SlateVisibility.Collapsed;
 			}
 			else {

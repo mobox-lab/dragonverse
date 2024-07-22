@@ -106,9 +106,9 @@ export default class FarmTower extends TowerBase {
     protected farm() {
         let value = this.property.attackDamage;
         const goldAffectIndex = 0;
-        const goldAffect = Utils.getRunesConfigByKey(1006, goldAffectIndex);
+        const goldAffect = Utils.getRunesConfigByKey(1030, goldAffectIndex);
         const goldAffect2Index = 0;
-        const goldAffect2 = Utils.getRunesConfigByKey(1030, goldAffect2Index);
+        const goldAffect2 = Utils.getRunesConfigByKey(1034, goldAffect2Index);
         GameManager.addGold(
             Math.floor(this.property.attackDamage * (1 + goldAffect + goldAffect2)),
             this.tower?.worldTransform?.position

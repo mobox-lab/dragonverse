@@ -94,7 +94,7 @@ export class Enemy implements BuffBag {
         let stageConfig = GameManager.getStageConfig();
         let stage = GameManager.getStageClient();
         // let waveConfig = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)].waves[wave]; //老版本
-        const [waveConfig] = WaveUtil.fitOldConfig(stage.stageIndex, stage.difficulty, wave + 1);
+        const [waveConfig] = WaveUtil.fitOldConfig(stage.stageCfgId, wave + 1);
         // let waveConfig = NEW_STAGE_CONFIG[
         //     StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)
         // ].waves(wave + 1);
@@ -116,23 +116,23 @@ export class Enemy implements BuffBag {
         this.createTime = now;
         // 减速持续5s
         const speedBonusIndex = 0;
-        const speedBonus = Utils.getRunesConfigByKey(1014, speedBonusIndex);
+        const speedBonus = Utils.getRunesConfigByKey(1036, speedBonusIndex);
         const speedBonus2Index = 0;
-        const speedBonus2 = Utils.getRunesConfigByKey(1038, speedBonus2Index);
+        const speedBonus2 = Utils.getRunesConfigByKey(1041, speedBonus2Index);
         const speedBonusDIndex = 0;
-        const speedBonusD = Utils.getRunesConfigByKey(2004, speedBonusDIndex);
-        this._speed = this._speed * (1 - speedBonus - speedBonus2 - speedBonusD);
+        const speedBonusD = Utils.getRunesConfigByKey(1050, speedBonusDIndex);
+        this._speed = this._speed + speedBonus + speedBonus2 + speedBonusD;
         // 减护甲和减魔抗持续10s
         const armorBonusIndex = 0;
-        const armorBonus = Utils.getRunesConfigByKey(1018, armorBonusIndex);
+        const armorBonus = Utils.getRunesConfigByKey(1039, armorBonusIndex);
         const MRBonusIndex = 0;
-        const MRBonus = Utils.getRunesConfigByKey(1019, MRBonusIndex);
+        const MRBonus = Utils.getRunesConfigByKey(1040, MRBonusIndex);
         const armorBonus2Index = 0;
         const armorBonus2 = Utils.getRunesConfigByKey(1042, armorBonus2Index);
         const MRBonus2Index = 0;
         const MRBonus2 = Utils.getRunesConfigByKey(1043, MRBonus2Index);
-        this.armor = this.armor - armorBonus - armorBonus2;
-        this.magicResist = this.magicResist - MRBonus - MRBonus2;
+        this.armor = this.armor + armorBonus + armorBonus2;
+        this.magicResist = this.magicResist + MRBonus + MRBonus2;
         // 初始化科技树的buff
         let unlockedTechNodes = GameManager.getStageClient().unlockedTechNodes;
         let buffIds = [];
@@ -160,6 +160,7 @@ export class Enemy implements BuffBag {
             }
         }
         this.updateAttributes();
+        console.log("#debug EnemyBase wave:" + wave + " configId:" + configId + " gate:" + gate);
         this.init(config.guid, config);
     }
 
@@ -369,8 +370,10 @@ export class Enemy implements BuffBag {
     }
 
     async init(desc: string, config: IMonsterElement) {
+        console.log("#debug EnemyBase:" + desc+JSON.stringify(config));
         if (MapManager.script) {
             let position = MapManager.getRoadPositions(this.gate)[0];
+            console.log("#debug position:" + JSON.stringify(position));
             if (!position) position = [0, 0, 0];
             this.position.set(position[0], position[1], position[2]);
         }
@@ -609,9 +612,9 @@ export class Enemy implements BuffBag {
             const adBonusIndex = 0;
             const adBonus = Utils.getRunesConfigByKey(1001, adBonusIndex);
             const adBonus2Index = 0;
-            const adBonus2 = Utils.getRunesConfigByKey(1025, adBonus2Index);
+            const adBonus2 = Utils.getRunesConfigByKey(1014, adBonus2Index);
             const adBonusDIndex = 0;
-            const adBonusD = Utils.getRunesConfigByKey(2001, adBonusDIndex);
+            const adBonusD = Utils.getRunesConfigByKey(1047, adBonusDIndex);
             damage = damage + adBonus + adBonus2 + adBonusD;
         } else if (damageType === DamageType.MAGIC) {
             // todo 天赋树的魔法攻击加成
@@ -619,16 +622,16 @@ export class Enemy implements BuffBag {
             const apBonusIndex = 0;
             const apBonus = Utils.getRunesConfigByKey(1002, apBonusIndex);
             const apBonus2Index = 0;
-            const apBonus2 = Utils.getRunesConfigByKey(1027, apBonus2Index);
+            const apBonus2 = Utils.getRunesConfigByKey(1015, apBonus2Index);
             const apBonusDIndex = 0;
-            const apBonusD = Utils.getRunesConfigByKey(2002, apBonusDIndex);
+            const apBonusD = Utils.getRunesConfigByKey(1048, apBonusDIndex);
             damage = damage + apBonus + apBonus2 + apBonusD;
         }
         // todo 天赋树的对空加成
         const flyingBonusIndex = 0;
-        const flyingBonus = Utils.getRunesConfigByKey(1020, flyingBonusIndex);
+        const flyingBonus = Utils.getRunesConfigByKey(1013, flyingBonusIndex);
         const flyingBonus2Index = 0;
-        const flyingBonus2 = Utils.getRunesConfigByKey(1044, flyingBonus2Index);
+        const flyingBonus2 = Utils.getRunesConfigByKey(1026, flyingBonus2Index);
         // P1 伤害
         const P1Damage = damage * (1 + flyingBonus + flyingBonus2) + flyingDamageBoost;
         // P2 伤害
@@ -637,14 +640,14 @@ export class Enemy implements BuffBag {
         // P3 伤害
         // todo 天赋树的物理斩杀和魔法压制
         const adExecuteIndex = 0;
-        const adExecute = Utils.getRunesConfigByKey(1017, adExecuteIndex);
+        const adExecute = Utils.getRunesConfigByKey(1011, adExecuteIndex);
         const apExecuteIndex = 0;
-        const apExecute = Utils.getRunesConfigByKey(1021, apExecuteIndex);
+        const apExecute = Utils.getRunesConfigByKey(1012, apExecuteIndex);
 
         const adExecute2Index = 0;
-        const adExecute2 = Utils.getRunesConfigByKey(1041, adExecute2Index);
+        const adExecute2 = Utils.getRunesConfigByKey(1024, adExecute2Index);
         const apExecute2Index = 0;
-        const apExecute2 = Utils.getRunesConfigByKey(1045, apExecute2Index);
+        const apExecute2 = Utils.getRunesConfigByKey(1025, apExecute2Index);
         let P3Damage = 0;
         if (damageType === DamageType.ARMOR) {
             // 物理伤害
@@ -664,13 +667,7 @@ export class Enemy implements BuffBag {
         }
         // todo 天赋树的全体怪物受到伤害增加x%
         const damageBonusIndex = 0;
-        const damageBonus = Utils.getRunesConfigByKey(1015, damageBonusIndex);
-        const damageBonus2Index = 0;
-        const damageBonus2 = Utils.getRunesConfigByKey(1024, damageBonus2Index);
-        const damageBonus3Index = 0;
-        const damageBonus3 = Utils.getRunesConfigByKey(1039, damageBonus3Index);
-        const damageBonus4Index = 0;
-        const damageBonus4 = Utils.getRunesConfigByKey(1046, damageBonus4Index);
+        const damageBonus = Utils.getRunesConfigByKey(1035, damageBonusIndex);
         P3Damage = P3Damage * (1 + damageBonus);
         const finalDamage = Math.min(P3Damage, this.hp);
         // this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
@@ -784,54 +781,54 @@ export class Enemy implements BuffBag {
             result = result * (1 + buffPercent);
             // todo 天赋树的元素克制时额外造成x%伤害
             const counterIndex = 0;
-            const counter = Utils.getRunesConfigByKey(1022, counterIndex);
+            const counter = Utils.getRunesConfigByKey(1037, counterIndex);
             result = result * (1 + counter);
         } else if (advantageMap[monsterElement] === towerElement) {
             // 怪物克制塔
             result = result * (1 - debuffPercent);
             // todo 元素被克制时减少x%伤害削弱
             const counteredIndex = 0;
-            const countered = Utils.getRunesConfigByKey(1023, counteredIndex);
+            const countered = Utils.getRunesConfigByKey(1038, counteredIndex);
             result = result * (1 - countered);
         }
         // todo 天赋树的元素增伤
         // 光系塔伤害增加x%
         const lightBonusIndex = 0;
-        const lightBonus = Utils.getRunesConfigByKey(1007, lightBonusIndex);
+        const lightBonus = Utils.getRunesConfigByKey(1005, lightBonusIndex);
         // 暗系塔伤害增加x%
         const darkBonusIndex = 0;
-        const darkBonus = Utils.getRunesConfigByKey(1011, darkBonusIndex);
+        const darkBonus = Utils.getRunesConfigByKey(1006, darkBonusIndex);
         // 水系塔伤害增加x%
         const waterBonusIndex = 0;
-        const waterBonus = Utils.getRunesConfigByKey(1008, waterBonusIndex);
+        const waterBonus = Utils.getRunesConfigByKey(1007, waterBonusIndex);
         // 火系塔伤害增加x%
         const fireBonusIndex = 0;
-        const fireBonus = Utils.getRunesConfigByKey(1012, fireBonusIndex);
+        const fireBonus = Utils.getRunesConfigByKey(1008, fireBonusIndex);
         // 土系塔伤害增加x%
         const earthBonusIndex = 0;
         const earthBonus = Utils.getRunesConfigByKey(1009, earthBonusIndex);
         // 木系塔伤害增加x%
         const woodBonusIndex = 0;
-        const woodBonus = Utils.getRunesConfigByKey(1013, woodBonusIndex);
+        const woodBonus = Utils.getRunesConfigByKey(1010, woodBonusIndex);
 
         // 光系塔伤害增加x%
         const lightBonus2Index = 0;
-        const lightBonus2 = Utils.getRunesConfigByKey(1031, lightBonus2Index);
+        const lightBonus2 = Utils.getRunesConfigByKey(1018, lightBonus2Index);
         // 暗系塔伤害增加x%
         const darkBonus2Index = 0;
-        const darkBonus2 = Utils.getRunesConfigByKey(1032, darkBonus2Index);
+        const darkBonus2 = Utils.getRunesConfigByKey(1019, darkBonus2Index);
         // 水系塔伤害增加x%
         const waterBonus2Index = 0;
-        const waterBonus2 = Utils.getRunesConfigByKey(1033, waterBonus2Index);
+        const waterBonus2 = Utils.getRunesConfigByKey(1020, waterBonus2Index);
         // 火系塔伤害增加x%
         const fireBonus2Index = 0;
-        const fireBonus2 = Utils.getRunesConfigByKey(1035, fireBonus2Index);
+        const fireBonus2 = Utils.getRunesConfigByKey(1021, fireBonus2Index);
         // 土系塔伤害增加x%
         const earthBonus2Index = 0;
-        const earthBonus2 = Utils.getRunesConfigByKey(1036, earthBonus2Index);
+        const earthBonus2 = Utils.getRunesConfigByKey(1022, earthBonus2Index);
         // 木系塔伤害增加x%
         const woodBonus2Index = 0;
-        const woodBonus2 = Utils.getRunesConfigByKey(1037, woodBonus2Index);
+        const woodBonus2 = Utils.getRunesConfigByKey(1023, woodBonus2Index);
 
         if (towerElement === ElementEnum.LIGHT) {
             result = result * (1 + lightBonus + lightBonus2);
@@ -908,30 +905,30 @@ export class Enemy implements BuffBag {
             this.speedActive = true;
             // 恢复速度
             const speedBonusIndex = 0;
-            const speedBonus = Utils.getRunesConfigByKey(1014, speedBonusIndex);
+            const speedBonus = Utils.getRunesConfigByKey(1036, speedBonusIndex);
             const speedBonus2Index = 0;
-            const speedBonus2 = Utils.getRunesConfigByKey(1038, speedBonus2Index);
+            const speedBonus2 = Utils.getRunesConfigByKey(1041, speedBonus2Index);
             const speedBonusDIndex = 0;
-            const speedBonusD = Utils.getRunesConfigByKey(2004, speedBonusDIndex);
-            this._speed = this._speed + speedBonus + speedBonus2 + speedBonusD;
+            const speedBonusD = Utils.getRunesConfigByKey(1050, speedBonusDIndex);
+            this._speed = this._speed - speedBonus - speedBonus2 - speedBonusD;
         }
         if (now - this.createTime > 10 && !this.armorActive) {
             // 恢复护甲
             this.armorActive = true;
             const armorBonusIndex = 0;
-            const armorBonus = Utils.getRunesConfigByKey(1018, armorBonusIndex);
+            const armorBonus = Utils.getRunesConfigByKey(1039, armorBonusIndex);
             const armorBonus2Index = 0;
             const armorBonus2 = Utils.getRunesConfigByKey(1042, armorBonus2Index);
-            this.armor = this.armor + armorBonus + armorBonus2;
+            this.armor = this.armor - armorBonus - armorBonus2;
         }
         if (now - this.createTime > 10 && !this.magicResistActive) {
             // 恢复魔抗
             this.magicResistActive = true;
             const MRBonusIndex = 0;
-            const MRBonus = Utils.getRunesConfigByKey(1019, MRBonusIndex);
+            const MRBonus = Utils.getRunesConfigByKey(1040, MRBonusIndex);
             const MRBonus2Index = 0;
             const MRBonus2 = Utils.getRunesConfigByKey(1043, MRBonus2Index);
-            this.magicResist = this.magicResist + MRBonus + MRBonus2;
+            this.magicResist = this.magicResist - MRBonus - MRBonus2;
         }
     }
 

@@ -139,21 +139,25 @@ export default abstract class TowerBase implements BuffBag {
         // todo 初始化天赋树的攻速增强 距离增强
         // todo 龙娘祝福的增加
         const attackSpeedIndex = 0;
-        const attackSpeed = Utils.getRunesConfigByKey(1004, attackSpeedIndex);
-        const attackSpeed2Index = 0;
-        const attackSpeed2 = Utils.getRunesConfigByKey(1028, attackSpeed2Index);
-        const attackSpeedDIndex = 0;
-        const attackSpeedD = Utils.getRunesConfigByKey(2006, attackSpeedDIndex);
+        const attackSpeed = Utils.getRunesConfigByKey(1003, attackSpeedIndex);
 
         const attackRangeIndex = 0;
-        const attackRange = Utils.getRunesConfigByKey(1016, attackRangeIndex);
+        const attackRange = Utils.getRunesConfigByKey(1004, attackRangeIndex);
+
+        const attackSpeed2Index = 0;
+        const attackSpeed2 = Utils.getRunesConfigByKey(1016, attackSpeed2Index);
+
         const attackRange2Index = 0;
-        const attackRange2 = Utils.getRunesConfigByKey(1040, attackRange2Index);
+        const attackRange2 = Utils.getRunesConfigByKey(1017, attackRange2Index);
+
+        const attackSpeedDIndex = 0;
+        const attackSpeedD = Utils.getRunesConfigByKey(1052, attackSpeedDIndex);
+
         const attackRangeDIndex = 0;
-        const attackRangeD = Utils.getRunesConfigByKey(2003, attackRangeDIndex);
+        const attackRangeD = Utils.getRunesConfigByKey(1049, attackRangeDIndex);
 
         this.property2 = {
-            attackTime: this.property.attackTime * (1 - (attackSpeed + attackSpeed2 + attackSpeedD) / 100),
+            attackTime: this.property.attackTime - attackSpeed - attackSpeed2 - attackSpeedD,
             findRange: this.property.findRange + attackRange + attackRange2 + attackRangeD,
             attackCount: 0,
             attackRange: 0,

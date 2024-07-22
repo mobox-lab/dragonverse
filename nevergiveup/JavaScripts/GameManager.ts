@@ -94,7 +94,7 @@ export namespace GameManager {
 
             EnemyActions.onBossDie.add(() => {
                 if (stage) {
-                    Event.dispatchToServer("onBossDie", stage.stageIndex);
+                    Event.dispatchToServer("onBossDie", stage.stageWorldIndex);
                 }
             });
 
@@ -257,8 +257,8 @@ export namespace GameManager {
 
     export function getStageConfig() {
         if (stage) {
-            let configs = GameConfig.Stage.getAllElement();
-            return configs[StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)];
+            const cfg = StageUtil.getStageCfgById(stage.stageCfgId);
+            return cfg ?? null;
         }
         return null;
     }

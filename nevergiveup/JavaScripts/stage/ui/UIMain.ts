@@ -217,7 +217,7 @@ export class UIMain extends MainUI_Generate {
 
     onCanSkipWave(count: number, maxCount: number) {
         let stage = GameManager.getStageClient();
-        if (stage && stage.stageIndex == 99) return;
+        if (stage && stage.stageWorldIndex == 99) return;
         this.mSkipWave.visibility = SlateVisibility.Visible;
         this.updateSkipWaveCount(count, maxCount);
     }
@@ -228,7 +228,7 @@ export class UIMain extends MainUI_Generate {
 
     updateSpeedControl() {
         let stage = GameManager.getStageClient();
-        if (stage && stage.stageIndex == 99) {
+        if (stage && stage.stageWorldIndex == 99) {
             this.mSpeedControl.visibility = SlateVisibility.Collapsed;
         }
         else {
