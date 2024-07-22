@@ -154,7 +154,7 @@ export default abstract class TowerBase implements BuffBag {
 
         this.property2 = {
             attackTime: this.property.attackTime * (1 - (attackSpeed + attackSpeed2 + attackSpeedD) / 100),
-            findRange: this.property.findRange + attackRange + attackRange2 + attackRangeD,
+            findRange: this.property.findRange * (1 + (attackRange + attackRange2 + attackRangeD) / 100),
             attackCount: 0,
             attackRange: 0,
             attackDamage: 0,

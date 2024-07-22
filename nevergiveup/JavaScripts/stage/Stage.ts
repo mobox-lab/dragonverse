@@ -108,7 +108,7 @@ export class StageS {
                 "onStageCreated",
                 this.players.map((player) => player.playerId),
                 this.id,
-                this.stageCfgId,
+                this.stageCfgId
             );
             PlayerUtil.getPlayerScript(player.playerId).id = this.id;
 
@@ -128,7 +128,7 @@ export class StageS {
         const userHP2 = Utils.getRunesConfigByKey(1027, userHP2Index);
         const userHPDIndex = 0;
         const userHPD = Utils.getRunesConfigByKey(2005, userHPDIndex);
-        this._hp = Math.floor(baseHp * (1 + userHP + userHP2) * (1 + userHPD));
+        this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD);
         // this._hp = baseHp;
         this._maxHp = this._hp;
         this.cumulativeCount = 0;
@@ -509,7 +509,11 @@ export class StageS {
         }
         if (!this.settleData.hasWin) {
             // 返还体力
-            this.settleData.reward.push({guid: "376844", amount: GameServiceConfig.STAMINA_BACK_START_GAME, type: null});
+            this.settleData.reward.push({
+                guid: "376844",
+                amount: GameServiceConfig.STAMINA_BACK_START_GAME,
+                type: null,
+            });
             ModuleService.getModule(EnergyModuleS).addEnergy(player.userId, GameServiceConfig.STAMINA_BACK_START_GAME);
         }
     }
@@ -616,7 +620,7 @@ export class StageC {
         const userHP2 = Utils.getRunesConfigByKey(1027, userHP2Index);
         const userHPDIndex = 0;
         const userHPD = Utils.getRunesConfigByKey(2005, userHPDIndex);
-        this.hp = Math.floor(baseHp * (1 + userHP + userHP2) * (1 + userHPD));
+        this.hp = Math.floor(baseHp + userHP + userHP2 + userHPD);
         ModuleService.getModule(PlayerModuleC)
             .getUnlockTechNodeMap(playerIds)
             .then((res: { [key: number]: number[] }) => {
@@ -1106,12 +1110,14 @@ class EndState extends StageBaseState {
 
 export namespace StageUtil {
     export function getStageCfgById(id: number) {
-        const stageCfg = GameConfig.Stage.getElement(id) 
+        const stageCfg = GameConfig.Stage.getElement(id);
         return stageCfg;
     }
     export function getCfgFromGroupIndexAndDifficulty(index: number, groupIndex: number, difficulty: number) {
         const stages = GameConfig.Stage.getAllElement();
-        return stages.find((stage) => stage.difficulty == difficulty && stage.groupIndex == groupIndex && stage.index == index);
+        return stages.find(
+            (stage) => stage.difficulty == difficulty && stage.groupIndex == groupIndex && stage.index == index
+        );
     }
     export function getIdFromGroupIndexAndDifficulty(index: number, groupIndex: number, difficulty: number) {
         const stageCfg = getCfgFromGroupIndexAndDifficulty(index, groupIndex, difficulty);
