@@ -121,7 +121,7 @@ export class Enemy implements BuffBag {
         const speedBonus2 = Utils.getRunesConfigByKey(1038, speedBonus2Index);
         const speedBonusDIndex = 0;
         const speedBonusD = Utils.getRunesConfigByKey(2004, speedBonusDIndex);
-        this._speed = this._speed * (1 - speedBonus - speedBonus2 - speedBonusD);
+        this._speed = this._speed * (1 - (speedBonus + speedBonus2 + speedBonusD) / 100);
         // 减护甲和减魔抗持续10s
         const armorBonusIndex = 0;
         const armorBonus = Utils.getRunesConfigByKey(1018, armorBonusIndex);
@@ -612,17 +612,19 @@ export class Enemy implements BuffBag {
             const adBonus2 = Utils.getRunesConfigByKey(1025, adBonus2Index);
             const adBonusDIndex = 0;
             const adBonusD = Utils.getRunesConfigByKey(2001, adBonusDIndex);
-            damage = damage + adBonus + adBonus2 + adBonusD;
+            damage = damage * (1 + (adBonus + adBonus2 + adBonusD) / 100);
+            console.log(adBonus, adBonus2, adBonusD, damage, "adBonus,adBonus2 , adBonusD,damage");
         } else if (damageType === DamageType.MAGIC) {
             // todo 天赋树的魔法攻击加成
             // todo 龙娘祝福
             const apBonusIndex = 0;
             const apBonus = Utils.getRunesConfigByKey(1002, apBonusIndex);
             const apBonus2Index = 0;
-            const apBonus2 = Utils.getRunesConfigByKey(1027, apBonus2Index);
+            const apBonus2 = Utils.getRunesConfigByKey(1026, apBonus2Index);
             const apBonusDIndex = 0;
             const apBonusD = Utils.getRunesConfigByKey(2002, apBonusDIndex);
-            damage = damage + apBonus + apBonus2 + apBonusD;
+            damage = damage * (1 + (apBonus + apBonus2 + apBonusD) / 100);
+            console.log(apBonus, apBonus2, apBonusD, damage, "apBonus, apBonus2, apBonusD, damage");
         }
         // todo 天赋树的对空加成
         const flyingBonusIndex = 0;
@@ -630,10 +632,12 @@ export class Enemy implements BuffBag {
         const flyingBonus2Index = 0;
         const flyingBonus2 = Utils.getRunesConfigByKey(1044, flyingBonus2Index);
         // P1 伤害
-        const P1Damage = damage * (1 + flyingBonus + flyingBonus2) + flyingDamageBoost;
+        const P1Damage = damage * (1 + (flyingBonus + flyingBonus2) / 100) + flyingDamageBoost;
+        console.log(flyingBonus, flyingBonus2, P1Damage, "flyingBonus, flyingBonus2, P1Damage");
         // P2 伤害
         const P2Percent = this.elementalRestraint(tower);
         const P2Damage = P1Damage * P2Percent;
+        console.log(P2Percent, P2Damage, "P2Percent, P2Damage");
         // P3 伤害
         // todo 天赋树的物理斩杀和魔法压制
         const adExecuteIndex = 0;
@@ -651,17 +655,20 @@ export class Enemy implements BuffBag {
             P3Damage = P2Damage * (1 - (this.armor - armorPen) / (200 + this.armor - armorPen));
             if (this.hp < this.hpMax * 0.2) {
                 // 物理对于血量低于20%造成x%额外伤害
-                P3Damage = P3Damage * (1 + adExecute + adExecute2);
+                P3Damage = P3Damage * (1 + (adExecute + adExecute2) / 100);
+                console.log(adExecute, adExecute2, P3Damage, "adExecute, adExecute2, P3Damage");
             }
         } else if (damageType === DamageType.MAGIC) {
             P3Damage = P2Damage * (1 - (this.magicResist - magicPen) / (200 + this.magicResist - magicPen));
             if (this.hp > this.hpMax * 0.8) {
                 // 魔法对于血量高于80%造成x%额外伤害
-                P3Damage = P3Damage * (1 + apExecute + apExecute2);
+                P3Damage = P3Damage * (1 + (apExecute + apExecute2) / 100);
+                console.log(apExecute, apExecute2, P3Damage, "apExecute, apExecute2, P3Damage");
             }
         } else {
             P3Damage = 0;
         }
+
         // todo 天赋树的全体怪物受到伤害增加x%
         const damageBonusIndex = 0;
         const damageBonus = Utils.getRunesConfigByKey(1015, damageBonusIndex);
@@ -671,8 +678,17 @@ export class Enemy implements BuffBag {
         const damageBonus3 = Utils.getRunesConfigByKey(1039, damageBonus3Index);
         const damageBonus4Index = 0;
         const damageBonus4 = Utils.getRunesConfigByKey(1046, damageBonus4Index);
-        P3Damage = P3Damage * (1 + damageBonus);
+        P3Damage = P3Damage * (1 + (damageBonus + damageBonus2 + damageBonus3 + damageBonus4) / 100);
+        console.log(
+            damageBonus,
+            damageBonus2,
+            damageBonus3,
+            damageBonus4,
+            P3Damage,
+            "damageBonus, damageBonus2, damageBonus3, damageBonus4, P3Damage"
+        );
         const finalDamage = Math.min(P3Damage, this.hp);
+        console.log(finalDamage, "finalDamage");
         // this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
         // 多段伤害
         const multiHits = buffs.filter((buff) => buff.cfg.multiHit !== 0);
@@ -785,14 +801,14 @@ export class Enemy implements BuffBag {
             // todo 天赋树的元素克制时额外造成x%伤害
             const counterIndex = 0;
             const counter = Utils.getRunesConfigByKey(1022, counterIndex);
-            result = result * (1 + counter);
+            result = result * (1 + counter / 100);
         } else if (advantageMap[monsterElement] === towerElement) {
             // 怪物克制塔
             result = result * (1 - debuffPercent);
             // todo 元素被克制时减少x%伤害削弱
             const counteredIndex = 0;
             const countered = Utils.getRunesConfigByKey(1023, counteredIndex);
-            result = result * (1 - countered);
+            result = result * (1 - countered / 100);
         }
         // todo 天赋树的元素增伤
         // 光系塔伤害增加x%
@@ -834,17 +850,17 @@ export class Enemy implements BuffBag {
         const woodBonus2 = Utils.getRunesConfigByKey(1037, woodBonus2Index);
 
         if (towerElement === ElementEnum.LIGHT) {
-            result = result * (1 + lightBonus + lightBonus2);
+            result = result * (1 + (lightBonus + lightBonus2) / 100);
         } else if (towerElement === ElementEnum.DARK) {
-            result = result * (1 + darkBonus + darkBonus2);
+            result = result * (1 + (darkBonus + darkBonus2) / 100);
         } else if (towerElement === ElementEnum.WATER) {
-            result = result * (1 + waterBonus + waterBonus2);
+            result = result * (1 + (waterBonus + waterBonus2) / 100);
         } else if (towerElement === ElementEnum.FIRE) {
-            result = result * (1 + fireBonus + fireBonus2);
+            result = result * (1 + (fireBonus + fireBonus2) / 100);
         } else if (towerElement === ElementEnum.EARTH) {
-            result = result * (1 + earthBonus + earthBonus2);
+            result = result * (1 + (earthBonus + earthBonus2) / 100);
         } else if (towerElement === ElementEnum.WOOD) {
-            result = result * (1 + woodBonus + woodBonus2);
+            result = result * (1 + (woodBonus + woodBonus2) / 100);
         }
 
         return result;
@@ -913,7 +929,7 @@ export class Enemy implements BuffBag {
             const speedBonus2 = Utils.getRunesConfigByKey(1038, speedBonus2Index);
             const speedBonusDIndex = 0;
             const speedBonusD = Utils.getRunesConfigByKey(2004, speedBonusDIndex);
-            this._speed = this._speed + speedBonus + speedBonus2 + speedBonusD;
+            this._speed = this._speed * (1 + (speedBonus + speedBonus2 + speedBonusD) / 100);
         }
         if (now - this.createTime > 10 && !this.armorActive) {
             // 恢复护甲
