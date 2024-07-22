@@ -40,6 +40,7 @@ import * as mwaction from "mwaction";
 import TalentModuleC from "./Modules/talent/TalentModuleC";
 import TalentModuleS from "./Modules/talent/TalentModuleS";
 import TalentModuleData from "./Modules/talent/TalentModuleData";
+import GameServiceConfig from "./const/GameServiceConfig";
 
 export namespace Config {
     export let skipGuide: boolean = false;
@@ -57,6 +58,18 @@ export namespace Config {
 }
 @Component
 export default class GameStart extends Script {
+    @mw.Property()
+    private isOnline: boolean = false;
+
+    @mw.Property({ displayName: "是否发布", group: "发布" })
+    public isRelease: boolean = false;
+
+    @mw.Property({ displayName: "是否 Beta 发布", group: "发布" })
+    public isBeta: boolean = false;
+
+    @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
+    public isUseTestUrl: boolean = true;
+
     @mw.Property({ displayName: "是否开启gm（勾选开启）", group: "测试" })
     public isGM: boolean = false;
     @mw.Property({ displayName: "持久存档（勾选为持久存档）", group: "测试" })
@@ -93,7 +106,10 @@ export default class GameStart extends Script {
     goldAnimRandAmount: Vector2 = new Vector2(1, 3);
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected async onStart(): Promise<void> {
-        DataStorage.setTemporaryStorage(SystemUtil.isPIE || !this.presistSaving);
+        GameServiceConfig.isRelease = this.isRelease;
+        GameServiceConfig.isBeta = this.isBeta;
+        GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
+        DataStorage.setTemporaryStorage(!(GameServiceConfig.isRelease || GameServiceConfig.isBeta || this.isOnline));
         for (const k in Config) {
             if (this.hasOwnProperty(k)) {
                 Config[k] = this[k];
