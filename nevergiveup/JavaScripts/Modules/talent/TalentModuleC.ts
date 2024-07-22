@@ -3,6 +3,8 @@ import YoactArray from "../../depend/yoact/YoactArray";
 import TalentModuleS from "./TalentModuleS";
 import IUnique from "../../depend/yoact/IUnique";
 import TalentModuleData from "./TalentModuleData";
+import { GameConfig } from "../../config/GameConfig";
+import PlayerModuleC from "../PlayerModule/PlayerModuleC";
 
 export class TalentItemUnique implements IUnique {
     public id: number;
@@ -37,12 +39,31 @@ export class TalentItemUnique implements IUnique {
 }
 
 export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleData> {
+    private _playC: PlayerModuleC;
     public talentItemYoact: YoactArray<TalentItemUnique> = new YoactArray<TalentItemUnique>();
+
+    private get playC(): PlayerModuleC | null {
+        if (!this._playC) this._playC = ModuleService.getModule(PlayerModuleC);
+        return this._playC;
+    }
 
     protected onJStart(): void {
         super.onJStart();
 
         this.talentItemYoact.setAll(TalentItemUnique.arrayFromObject(this.data));
+    }
+
+    /**
+     * 检查是否足够消费
+     * @param {number[]} nums
+     * @returns {boolean}
+     * @private
+     */
+    private checkEnoughCost(nums: number[]): boolean {
+        const [gold, tech] = nums;
+        const enoughGold = this.playC.checkGold(gold);
+        const enoughTech = this.playC.checkTechPoint(tech);
+        return enoughGold && enoughTech;
     }
 
     /**
@@ -55,7 +76,11 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
     }
 
     public tryTalentLevelUp(id: number) {
-
+        const talent = GameConfig.TalentTree.getElement(id);
+        const level = this.getTalentIndex(id);
+        const isEnoughCost = this.checkEnoughCost([talent.cost[0][level + 1], talent.cost[1][level + 1]]);
+        if (!isEnoughCost) return;
+        console.log("tryTalentLevelUp: ", 123);
     }
 }
 
