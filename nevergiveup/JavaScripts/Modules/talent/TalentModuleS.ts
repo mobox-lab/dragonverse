@@ -13,7 +13,12 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         return this._playS;
     }
 
-    private setTalent(id: number, level: number) {
+    private async setTalent(player: Player, id: number, level: number) {
+        const playerData = this.getPlayerData(player.userId);
+        playerData.setTalentIndex(id, level);
+        playerData.save(true);
+        await this.getClient(player).net_setItem(id, level);
+        return true;
     }
 
     public getPlayerTalentIndex(userId: string, id: number) {
@@ -21,13 +26,15 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         return data.getTalentIndex(id);
     }
 
-    public async net_updateTalentLevel(player: Player, id: number) {
+    public async net_updateTalentLevel(id: number) {
+        const player = this.currentPlayer;
         const talent = GameConfig.TalentTree.getElement(id);
         const level = this.getPlayerTalentIndex(player.userId, id);
         const goldCost = [talent.cost[0][0], talent.cost[0][level + 1]];
         const techCost = [talent.cost[1][0], talent.cost[1][level + 1]];
         const result = this.playS.checkTalentCost(player, [goldCost, techCost]);
-        if (!result) return;
-        // 设置
+        if (!result) return false;
+        await this.setTalent(player, id, level + 1);
+        return true;
     }
 }

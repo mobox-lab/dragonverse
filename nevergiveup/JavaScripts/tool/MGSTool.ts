@@ -232,7 +232,7 @@ export class MGSTool {
 	 */
 	static quickChat(index: number) {
 		let statge = GameManager.getStageClient();
-		let placeId = statge ? statge.stageId : 1;
+		let placeId = statge ? statge.stageCfgId : 1;
 		this.msgUpload(`ts_interaction`, "快捷聊天埋点", {
 			area_id: placeId,
 			interaction_id: index + 10001
@@ -243,7 +243,7 @@ export class MGSTool {
 	 */
 	static quickEmoji(index: number) {
 		let statge = GameManager.getStageClient();
-		let placeId = statge ? statge.stageId : 1;
+		let placeId = statge ? statge.stageCfgId : 1;
 		this.msgUpload(`ts_interaction`, "快捷表情埋点", {
 			area_id: placeId,
 			interaction_id: index + 20001

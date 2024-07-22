@@ -5,6 +5,8 @@ import IUnique from "../../depend/yoact/IUnique";
 import TalentModuleData from "./TalentModuleData";
 import { GameConfig } from "../../config/GameConfig";
 import PlayerModuleC from "../PlayerModule/PlayerModuleC";
+import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
 
 export class TalentItemUnique implements IUnique {
     public id: number;
@@ -66,6 +68,16 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
         return enoughGold && enoughTech;
     }
 
+    private selfSetItem(id: number, index: number = 0) {
+        if (index < 0) return;
+        const item = this.talentItemYoact.getItem(id);
+        if (item) {
+            item.index = index;
+        } else {
+            this.talentItemYoact.addItem(new TalentItemUnique(id, index));
+        }
+    }
+
     /**
      * 获取天赋解锁点数
      * @param {number} id
@@ -75,12 +87,31 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
         return this.talentItemYoact.getItem(id)?.index ?? 0;
     }
 
-    public tryTalentLevelUp(id: number) {
+    public async tryTalentLevelUp(id: number) {
         const item = GameConfig.TalentTree.getElement(id);
         const level = this.getTalentIndex(id);
         const isEnoughCost = this.checkEnoughCost([item.cost[0][level + 1], item.cost[1][level + 1]]);
-        if (!isEnoughCost) return;
-        console.log("tryTalentLevelUp: ", 123);
+        if (!isEnoughCost) {
+            TipsManager.showTips(GameConfig.Language.getElement("Text_LessMaterial").Value);
+            return false;
+        }
+        try {
+            const result = await this.server.net_updateTalentLevel(id);
+            if (!result) {
+                TipsManager.showTips(GameConfig.Language.getElement("Text_Unlocked").Value);
+                return false;
+            }
+            TipsManager.showTips(GameConfig.Language.getElement("Text_SuccessUnlock").Value);
+            return true;
+        } catch (error) {
+            Log4Ts.error(TalentModuleC, error);
+            return false;
+        }
+    }
+
+    public async net_setItem(id: number, index: number) {
+        this.selfSetItem(id, index);
+        return true;
     }
 }
 

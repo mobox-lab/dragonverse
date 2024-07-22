@@ -32,6 +32,7 @@ import TowerUI from "../UI/Tower/TowerUI";
 import { GuideDialog } from "../UI/UIDialog";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
+import { IStageElement } from "../config/Stage";
 import GameServiceConfig from "../const/GameServiceConfig";
 import Log4Ts from "../depend/log4ts/Log4Ts";
 import { Enemy } from "../enemy/EnemyBase";
@@ -63,7 +64,9 @@ export class StageS {
     currentWaveDeadIds: number[] = [];
     private _hp: number;
     private _maxHp: number;
-    stageId: number;
+    stageWorldIndex: number;
+    stageCfgId: number;
+    stageCfg: IStageElement;
     cumulativeCount: number = 0;
     currentWaveCount: number = 0;
     currentWave: number = 1;
@@ -89,12 +92,15 @@ export class StageS {
     private _tempDeadIds: number[] = [];
     private _tempEscapeIds: number[] = [];
 
-    constructor(public players: Player[], stageId: number, difficulty: number) {
+    constructor(public players: Player[], stageCfgId: number) {
         this._fsm = new StageFSM(this);
         StageS.counter++;
         this.id = StageS.counter;
-        this.stageId = stageId;
-        this.difficulty = difficulty;
+        this.stageCfgId = stageCfgId;
+        const stageCfg = StageUtil.getStageCfgById(stageCfgId);
+        this.stageCfg = stageCfg;
+        this.stageWorldIndex = stageCfg?.index ?? 0;
+        this.difficulty = stageCfg?.difficulty ?? 0;
         this._fsm.start();
         this.boardcast((player) => {
             Event.dispatchToClient(
@@ -102,8 +108,7 @@ export class StageS {
                 "onStageCreated",
                 this.players.map((player) => player.playerId),
                 this.id,
-                this.stageId,
-                difficulty
+                this.stageCfgId,
             );
             PlayerUtil.getPlayerScript(player.playerId).id = this.id;
 
@@ -419,7 +424,7 @@ export class StageS {
 
     onCountChanged() {
         if (this._deadIds.length == this.cumulativeCount) {
-            const [, length] = WaveUtil.fitOldConfig(this.stageId, this.difficulty);
+            const [, length] = WaveUtil.fitOldConfig(this.stageWorldIndex, this.difficulty);
             if (this.currentWave >= length) {
                 this._fsm.changeState(SettleState, true);
             } else {
@@ -445,9 +450,9 @@ export class StageS {
     updateSettleData(player: Player) {
         this.settleData.time = this.time;
         this.settleData.waves = this.settleData.hasWin ? this.currentWave : this.currentWave - 1;
-        const [, length] = WaveUtil.fitOldConfig(this.stageId, this.difficulty);
+        const [, length] = WaveUtil.fitOldConfig(this.stageWorldIndex, this.difficulty);
         this.settleData.wavesMax = length;
-        let stageIndex = StageUtil.getIndexFromIdAndDifficulty(this.stageId, this.difficulty);
+        let stageIndex = StageUtil.getIndexFromIdAndDifficulty(this.stageWorldIndex, this.difficulty);
         let stageConfig = GameConfig.Stage.getAllElement()[stageIndex];
         let stageId = stageConfig.id;
         let rewards = [];
@@ -539,6 +544,7 @@ export class StageC {
     playerIds: number[] = [];
     stage: GameObject;
     id: number;
+    stageCfgId: number; // configId
     stageIndex: number;
     difficulty: number;
     speedMultipler: number = 1;
@@ -559,11 +565,6 @@ export class StageC {
     private _rankItems: RankItem[] = [];
     public get gold(): number {
         return this._gold;
-    }
-
-    public get stageId(): number {
-        return GameConfig.Stage.getAllElement()[StageUtil.getIndexFromIdAndDifficulty(this.stageIndex, this.difficulty)]
-            .id;
     }
 
     public set gold(value: number) {
@@ -600,14 +601,14 @@ export class StageC {
         this._dataChanged = true;
     }
 
-    constructor(playerIds: number[], id: number, stageId: number, difficulty: number) {
+    constructor(playerIds: number[], id: number, stageCfgId: number) {
         this.id = id;
         this.playerIds = playerIds;
-        this.stageIndex = stageId;
-        this.difficulty = difficulty;
+        this.stageCfgId = stageCfgId;
+        const stageConfig = StageUtil.getStageCfgById(stageCfgId);
+        this.difficulty = stageConfig?.difficulty ?? 0;
         this.currentWave = 0;
-        let stages = StageUtil.getStageDataWithId(stageId);
-        let stageConfig = stages[this.difficulty];
+        this.stageIndex = stageConfig?.index ?? 0;
         this.gold = 0;
         // todo 天赋树和龙娘血量加成
         const userHPIndex = 0;
@@ -668,13 +669,13 @@ export class StageC {
         });
 
         StageActions.onMapLoaded.add(() => {
-            const stageCfg = GameConfig.Stage.getElement(this.stageId);
+            const stageCfg = GameConfig.Stage.getElement(this.stageCfgId);
             if (stageCfg?.sceneEnvId) {
                 EnvironmentManager.getInstance().setEnvironment(stageCfg.sceneEnvId);
                 Log4Ts.log(
                     StageC,
                     "stage onMapLoaded stage:" +
-                        this.stageId +
+                        this.stageCfgId +
                         " difficulty:" +
                         this.difficulty +
                         " sceneEnvId:" +
@@ -991,7 +992,7 @@ class StageFSM extends Fsm<StageS> {
     }
 
     public start() {
-        if (this.owner.stageId == 99) {
+        if (this.owner.stageWorldIndex == 99) {
             this.changeState(WaitState, 5, 0);
         } else {
             this.changeState(WaitState, 10, 0);
@@ -1012,7 +1013,7 @@ class GameState extends StageBaseState {
     onUpdate(dt: number): void {
         this._time -= dt * this.fsm.owner.speedMultipler;
         if (this._time <= 0) {
-            const [, length] = WaveUtil.fitOldConfig(this.fsm.owner.stageId, this.fsm.owner.difficulty);
+            const [, length] = WaveUtil.fitOldConfig(this.fsm.owner.stageWorldIndex, this.fsm.owner.difficulty);
             if (this._wave < length) {
                 this.fsm.changeState(WaitState, 5, this._wave);
             } else {
@@ -1022,7 +1023,7 @@ class GameState extends StageBaseState {
     }
     onEnter(...params: any[]): void {
         this._wave = params[0];
-        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageId, this.fsm.owner.difficulty, this._wave);
+        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageWorldIndex, this.fsm.owner.difficulty, this._wave);
         this._time = currentWave.waveTime;
         this.fsm.owner.currentWaveCount = 0;
         this.fsm.owner.currentWaveDeadIds = [];
@@ -1042,7 +1043,7 @@ class WaitState extends StageBaseState {
     onUpdate(dt: number): void {
         this._time -= dt * this.fsm.owner.speedMultipler;
         if (this._time <= 0) {
-            const [, length] = WaveUtil.fitOldConfig(this.fsm.owner.stageId, this.fsm.owner.difficulty);
+            const [, length] = WaveUtil.fitOldConfig(this.fsm.owner.stageWorldIndex, this.fsm.owner.difficulty);
             if (this._wave < length) {
                 this.fsm.changeState(GameState, this._wave + 1);
             } else {
@@ -1057,7 +1058,7 @@ class WaitState extends StageBaseState {
     onEnter(...params: any[]): void {
         this._time = params[0];
         this._wave = params[1];
-        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageId, this.fsm.owner.difficulty, this._wave + 1);
+        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageWorldIndex, this.fsm.owner.difficulty, this._wave + 1);
         this.fsm.owner.addGold(currentWave.waveGold);
         if (this._wave > 0) {
             const goldAmountIndex = 0;
@@ -1107,14 +1108,29 @@ class EndState extends StageBaseState {
 }
 
 export namespace StageUtil {
-    export function getStageDataWithId(id: number) {
-        let stages = GameConfig.Stage.getAllElement().filter((stage) => stage.index == id);
-        return stages;
+    export function getStageCfgById(id: number) {
+        const stageCfg = GameConfig.Stage.getElement(id) 
+        return stageCfg;
     }
-
-    export function getIndexFromIdAndDifficulty(id: number, difficluty: number) {
+    export function getCfgFromGroupIndexAndDifficulty(index: number, groupIndex: number, difficulty: number) {
+        const stages = GameConfig.Stage.getAllElement();
+        return stages.find((stage) => stage.difficulty == difficulty && stage.groupIndex == groupIndex && stage.index == index);
+    }
+    export function getIdFromGroupIndexAndDifficulty(index: number, groupIndex: number, difficulty: number) {
+        const stageCfg = getCfgFromGroupIndexAndDifficulty(index, groupIndex, difficulty);
+        console.log("#debug getIdFromGroupIndexAndDifficulty id:" + stageCfg?.id + " index:" + index + " groupIndex:" + groupIndex + " difficulty:" + difficulty);
+        return stageCfg?.id;
+    }
+    export function getIndexFromIdAndDifficulty(id: number, difficulty: number) {
         let stages = GameConfig.Stage.getAllElement();
         let indexBegin = stages.findIndex((stage) => stage.index == id);
-        return indexBegin + difficluty;
+        return indexBegin + difficulty;
+    }
+    // 获取上一关难度的id
+    export function getPreDifficultyId(difficulty: number, groupIndex: number) {
+        const preDifficulty = difficulty - 1;
+        const stages = GameConfig.Stage.getAllElement();
+        const index = stages.findIndex((stage) => stage.groupIndex == groupIndex && stage.difficulty == preDifficulty);
+        return index === -1 ? 0 : stages[index].id;
     }
 }

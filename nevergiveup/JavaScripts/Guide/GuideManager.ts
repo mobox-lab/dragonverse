@@ -1,26 +1,17 @@
 import { GuideDataHelper, GuideModuleC } from "module_guide";
-import { GuideActions, PlayerActions, StageActions } from "../Actions";
+import { StageActions } from "../Actions";
 import { GameManager } from "../GameManager";
-import { Config } from "../GameStart";
 import { MapManager } from "../MapScript";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
-import { TowerModuleC } from "../Modules/TowerModule/TowerModuleC";
 import { EmTaskWay } from "../Modules/taskModule/TaskModuleC";
 import UI_TaskMain from "../Modules/taskModule/ui/UI_TaskMain";
 import { EStageState } from "../StageEnums";
-import { UITechTree } from "../TechTree/ui/UITechTree";
-import LobbyUI from "../UI/LobbyUI";
 import TowerInfoUI from "../UI/Tower/TowerInfoUI";
 import TowerShopUI from "../UI/Tower/TowerShopUI";
-import TowerUI from "../UI/Tower/TowerUI";
 import { GuideDialog } from "../UI/UIDialog";
 import { GameConfig } from "../config/GameConfig";
 import { StageTriggerInst } from "../stage/StageTrigger";
-import { UIMain } from "../stage/ui/UIMain";
-import { UIStageSelect } from "../stage/ui/UIStageSelect";
-import { MGSTool, FirstEvent } from '../tool/MGSTool';
-import { GuideUI } from "./ui/UIGuideBtn";
-import Utils from "../Utils";
+import { MGSTool } from '../tool/MGSTool';
 
 /** 
  * @Author       : xiaohao.li
