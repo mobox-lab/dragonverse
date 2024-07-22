@@ -443,9 +443,9 @@ export class WaveUtil {
     }
 
     // 适配老版本的数据
-    static fitOldConfig(stageIndex, difficulty, wave?: number): [WaveConfig | null, number] {
-        const index = StageUtil.getIndexFromIdAndDifficulty(stageIndex, difficulty);
-        const waves = NEW_STAGE_CONFIG[index].waves;
+    static fitOldConfig(stageCfgId: number, wave?: number): [WaveConfig | null, number] {
+        const waveIndex = StageUtil.getWaveIndexFromId(stageCfgId);
+        const waves = NEW_STAGE_CONFIG[waveIndex].waves;
         if (Array.isArray(waves)) {
             const currentWaves = waves as WaveConfig[];
             const waveMax = currentWaves.length;
@@ -456,7 +456,7 @@ export class WaveUtil {
             return [waveContent, waveMax];
         } else {
             const currentWaves: (wave: number) => WaveConfig = waves;
-            const waveMax = NEW_STAGE_CONFIG[index].waveLength;
+            const waveMax = NEW_STAGE_CONFIG[waveIndex].waveLength;
             if (!wave) {
                 return [null, waveMax];
             }

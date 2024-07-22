@@ -48,7 +48,7 @@ export namespace GuideManager {
     let cbStageChanged = (state: EStageState, waitTime: number, wave: number) => {
         if (state == EStageState.Wait) {
             let stage = GameManager.getStageClient();
-            if (stage && stage.stageIndex == 99) {
+            if (stage && stage.stageWorldIndex == 99) {
                 if (wave == 1) {
                     MGSTool.guide(4);
                 }
@@ -60,7 +60,7 @@ export namespace GuideManager {
                 }
             }
 
-            if (stage && stage.stageIndex == 0) {
+            if (stage && stage.stageWorldIndex == 0) {
                 if (wave == 2) {
                     MGSTool.guide(13);
                 }
@@ -68,10 +68,10 @@ export namespace GuideManager {
         }
         else if (state == EStageState.Settle) {
             let stage = GameManager.getStageClient();
-            if (stage && stage.stageIndex == 99) {
+            if (stage && stage.stageWorldIndex == 99) {
                 MGSTool.guide(8);
             }
-            if (stage && stage.stageIndex == 0) {
+            if (stage && stage.stageWorldIndex == 0) {
                 MGSTool.guide(14);
                 StageActions.onStageStateChanged.remove(cbStageChanged);
             }
@@ -238,7 +238,7 @@ export namespace GuideManager {
 
     export function skip() {
         let stage = GameManager.getStageClient();
-        if (stage && stage.stageIndex == 99) {
+        if (stage && stage.stageWorldIndex == 99) {
             GameManager.leaveStageClient();
         }
 

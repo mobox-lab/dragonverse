@@ -94,7 +94,7 @@ export class Enemy implements BuffBag {
         let stageConfig = GameManager.getStageConfig();
         let stage = GameManager.getStageClient();
         // let waveConfig = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)].waves[wave]; //老版本
-        const [waveConfig] = WaveUtil.fitOldConfig(stage.stageIndex, stage.difficulty, wave + 1);
+        const [waveConfig] = WaveUtil.fitOldConfig(stage.stageCfgId, wave + 1);
         // let waveConfig = NEW_STAGE_CONFIG[
         //     StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)
         // ].waves(wave + 1);

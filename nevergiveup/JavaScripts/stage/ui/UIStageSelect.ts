@@ -131,7 +131,7 @@ export class UIStageSelect extends StageSelect_Generate {
         const stageCfg = StageUtil.getCfgFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
         this.mMapImage.imageGuid = stageCfg.stageImageGuid;
         this.mStageName.text = `${stageCfg.stageName}`;
-        let typeString = this.getEnemyTypeString(stageWorldIndex, difficulty);
+        let typeString = this.getEnemyTypeString(stageCfg.id);
         if (typeString.length == 0) {
             this.mMonsters.text = "";
         } else {
@@ -139,9 +139,9 @@ export class UIStageSelect extends StageSelect_Generate {
         }
     }
 
-    getEnemyTypeString(stageId: number, difficluty: number) {
+    getEnemyTypeString(stageCfgId: number) {
         // todo 这里要改
-        let index = StageUtil.getIndexFromIdAndDifficulty(stageId, difficluty);
+        let index = StageUtil.getWaveIndexFromId(stageCfgId);
         let stageConfig = STAGE_CONFIG[index];
         let waves = stageConfig.waves;
         let typeString: string[] = [];
