@@ -197,6 +197,31 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     }
 
     public net_checkEnouthItems(player: Player, items: number[][]) {
+        return false;
+        // let flag = true;
+        // for (let i = 0; i < items.length; i++) {
+        //     if (!this.checkItem(player, items[i])) {
+        //         console.log("物品不足", items[i]);
+        //         flag = false;
+        //         break;
+        //     }
+        // }
+        // if (flag) {
+        //     for (let i = 0; i < items.length; i++) {
+        //         let [id, amount] = items[i];
+        //         let item = GameConfig.Item.getElement(id);
+        //         if (item.itemType == ItemType.Gold) {
+        //             this.changeGold(player, -amount);
+        //         }
+        //         else if (item.itemType == ItemType.TechPoint) {
+        //             this.changeTechPoint(player, -amount);
+        //         }
+        //     }
+        // }
+        // return flag;
+    }
+
+    public checkTalentCost(player: Player, items: number[][]) {
         let flag = true;
         for (let i = 0; i < items.length; i++) {
             if (!this.checkItem(player, items[i])) {
@@ -211,8 +236,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
                 let item = GameConfig.Item.getElement(id);
                 if (item.itemType == ItemType.Gold) {
                     this.changeGold(player, -amount);
-                }
-                else if (item.itemType == ItemType.TechPoint) {
+                } else if (item.itemType == ItemType.TechPoint) {
                     this.changeTechPoint(player, -amount);
                 }
             }
