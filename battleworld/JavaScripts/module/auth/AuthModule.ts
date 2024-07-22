@@ -2062,6 +2062,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         if (!GameServiceConfig.isBeta && !GameServiceConfig.isRelease) {
             return AuthModuleS.INVALID_SCENE_ID;
         }
+        if (Gtk.getEditorVersion().main >= 35 && !Gtk.isNullOrEmpty(mw.SystemUtil["sceneId"]))
+            return mw.SystemUtil["sceneId"];
+
         const roomInfo = await mw.TeleportService.asyncGetPlayerRoomInfo(userId).catch((e) => {
             Log4Ts.error(AuthModuleS, e);
             return Promise.resolve(undefined as mw.RoomInfo);
