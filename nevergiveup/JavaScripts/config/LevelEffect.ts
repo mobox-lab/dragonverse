@@ -1,5 +1,5 @@
 import { ConfigBase, IElementBase } from "./ConfigBase";
-const EXCELDATA:Array<Array<any>> = [["id","effectGuid","slot","nameCN","circulate","location"],["","","","","",""],[1,"E718B09E4408CE5534779780E5365B64",10,"炫酷的特效",true,[10,10,100]]];
+const EXCELDATA:Array<Array<any>> = [["id","effectGuid","slot","nameCN","circulate","location"],["","","","","",""],[1,"E718B09E4408CE5534779780E5365B64",10,"炫酷的特效",true,[10,10,100]],[2,"E141AC6246FA01BC41E98BB4D9423F80E141AC6246FA01BC41E98BB4D9423F80",23,null,true,[0,0,150]],[3,"E0D79BB64C2DCD08AEC54388C11A6AE7E0D79BB64C2DCD08AEC54388C11A6AE7",23,null,true,[0,0,150]]];
 export interface ILevelEffectElement extends IElementBase{
  	/**特效id*/
 	id:number
