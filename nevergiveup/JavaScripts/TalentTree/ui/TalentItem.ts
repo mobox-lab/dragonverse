@@ -6,11 +6,13 @@ import { ITalentTreeElement } from "../../config/TalentTree";
 import { ITalentBuffElement } from "../../config/TalentBuff";
 import TalentItem_Generate from "../../ui-generate/TalentTree/TalentItem_generate";
 import { TalentTreeActions } from "./TalentTreeContainer";
+import TalentModuleC from "../../Modules/talent/TalentModuleC";
 
 /**
  * 基础天赋
  */
 export class TalentItem extends TalentItem_Generate {
+    private _talentC: TalentModuleC;
     private _currentLevel = Yoact.createYoact({count: 0});
     private _maxLevel = Yoact.createYoact({count: 0});
     public data: ITalentTreeElement;
@@ -18,9 +20,19 @@ export class TalentItem extends TalentItem_Generate {
     public isActive = Yoact.createYoact({status: false});
     public canActive = Yoact.createYoact({status: false});
 
+    private get talentC(): TalentModuleC | null {
+        if (!this._talentC) this._talentC = ModuleService.getModule(TalentModuleC);
+        return this._talentC;
+    }
+
     public get level() {
         return this._currentLevel.count;
     }
+
+    public get maxLevel() {
+        return this._maxLevel.count;
+    }
+
 
     protected onStart(): void {
         this.mLocked.renderOpacity = 0.4;
@@ -67,9 +79,12 @@ export class TalentItem extends TalentItem_Generate {
 
     public setData(data: ITalentTreeElement): void {
         this.data = data;
+        this.buff = GameConfig.TalentBuff.getElement(data.buffId);
+        const currentLevel = this.talentC.getTalentIndex(data.id);
+        this.setCurrentLevel(currentLevel);
+        this.refreshCanActive();
         this.textTalentName.text = data.nameCN;
         this.mItem.normalImageGuid = data.icon;
-        this.buff = GameConfig.TalentBuff.getElement(data.buffId);
         this._maxLevel.count = this.buff.value.length;
     }
 
@@ -86,5 +101,16 @@ export class TalentItem extends TalentItem_Generate {
      */
     public getCurrentBuffValue(): number {
         return this.buff.value[this._currentLevel.count - 1] ?? 0;
+    }
+
+    public refreshCanActive() {
+        if (this.data.frontTalent?.length) {
+            const parentsLevel = this.data.frontTalent.map(id => this.talentC.getTalentIndex(id));
+            if (parentsLevel.every(n => n > 0)) {
+                this.canActive.status = true;
+            }
+        } else {
+            this.canActive.status = true;
+        }
     }
 }

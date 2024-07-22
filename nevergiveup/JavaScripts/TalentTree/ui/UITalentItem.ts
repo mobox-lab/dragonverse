@@ -4,12 +4,12 @@ import { GameConfig } from "../../config/GameConfig";
 import { ITalentBuffElement } from "../../config/TalentBuff";
 import { ITalentTreeElement } from "../../config/TalentTree";
 import TalentItem_Generate from "../../ui-generate/TalentTree/TalentItem_generate";
+import { TalentItem } from "./TalentItem";
 
 export class UITalentItem extends TalentItem_Generate {
     private _currentLevel = Yoact.createYoact({count: 0});
     private _maxLevel = Yoact.createYoact({count: 0});
-    public data: ITalentTreeElement;
-    public buff: ITalentBuffElement;
+    private _talent: TalentItem;
 
     public canActive = Yoact.createYoact({status: false});
 
@@ -38,15 +38,19 @@ export class UITalentItem extends TalentItem_Generate {
         });
     }
 
-    public setData(data: ITalentTreeElement): void {
-        this.data = data;
-        this.textTalentName.text = data.nameCN;
-        this.mItem.normalImageGuid = data.icon;
-        this.buff = GameConfig.TalentBuff.getElement(data.buffId);
-        this._maxLevel.count = this.buff.value.length;
+    public bindTalent(talent: TalentItem) {
+        this._talent = talent;
+        this.refreshStatus();
     }
 
-    public setCurrentLevel(index: number) {
-        this._currentLevel.count = index;
+    /**
+     * 刷新状态
+     */
+    public refreshStatus() {
+        this.textTalentName.text = this._talent.data.nameCN;
+        this.mItem.normalImageGuid = this._talent.data.icon;
+        this.canActive.status = this._talent.canActive.status;
+        this._currentLevel.count = this._talent.level;
+        this._maxLevel.count = this._talent.maxLevel;
     }
 }
