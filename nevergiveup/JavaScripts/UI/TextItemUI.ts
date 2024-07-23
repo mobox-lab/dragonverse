@@ -5,6 +5,8 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
+import Gtk from "gtoolkit";
+import FlyItem_Generate from "../ui-generate/FlyIcon/FlyItem_generate";
 import TextItemUI_Generate from "../ui-generate/Sundry/TextItemUI_generate";
 
 
@@ -20,16 +22,22 @@ export default class TextItemUI extends TextItemUI_Generate {
 	}
 
 	// isInfo 是否局内升级预览
-	public initText(titleText: string, valueTxt: string, isInfo?: boolean) {
+	// isCost 是否为部署花费，Value增加小图标
+	public initText(titleText: string, valueTxt: string, options?:{ isInfo?: boolean, isCost?: boolean }) {
+		const { isInfo, isCost } = options ?? {};
 		// public initText(nameTxt: string, valueTxt: string) {
 		// this.nameTxt.text = nameTxt;
 		this.txt_title.text = titleText;
 		this.txt_value.text = valueTxt;
 		if(isInfo) {
-			this.rootCanvas.size = new Vector(205, 50);
-			this.txt_value.position = new Vector(105.00, 0);
-			this.txt_value.size = new Vector(100.00, 22);
+			this.rootCanvas.size = new Vector2(205, 50);
+			this.txt_value.position = new Vector2(105.00, 0);
+			this.txt_value.size = new Vector2(100.00, 22);
 		}
+		if(isCost) {
+			this.img_icon.imageGuid = "385388";
+			Gtk.trySetVisibility(this.img_icon, mw.SlateVisibility.HitTestInvisible);
+		} else Gtk.trySetVisibility(this.img_icon, mw.SlateVisibility.Collapsed);
 	}
 
 	/** 

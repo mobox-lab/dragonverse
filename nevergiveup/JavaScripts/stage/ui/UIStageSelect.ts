@@ -18,29 +18,33 @@ export class UIStageSelectItem extends StageSelectQueueItem_Generate {
 }
 export class UIStageDifficulty extends StageDifficulty_Generate {
     unlocked: boolean = true;
-    difficluty: string[] = [
+    difficulties: string[] = [
         GameConfig.Language.getElement("Text_Easy").Value,
         GameConfig.Language.getElement("Text_Normal").Value,
         GameConfig.Language.getElement("Text_Difficult").Value,
     ];
     difficultyColor: string[] = ["#01B652", "#B68B00", "#BC322C"];
     index: number;
-    stageId: number;
+    stageCfgId: number;
 
-    init(stageId: number, index: number) {
-        this.stageId = stageId;
-        this.index = index;
-        this.mdifficultly.text = `${this.difficluty[index]}`;
+    init(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
+        this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
+        this.index = difficulty;
+        this.mdifficultly.text = `${this.difficulties[difficulty]}`;
         // this.mdifficultly.setFontColorByHex(this.difficultyColor[index]);
-        const stageCfg = StageUtil.getStageCfgById(this.stageId);
-        this.unlocked = true;
-        if (index != 0) {
-            const firstClears = DataCenterC.getData(PlayerModuleData).firstClears;
-            const preDifficultyId = StageUtil.getPreDifficultyId(index, stageCfg?.groupIndex);
-            if (firstClears.indexOf(preDifficultyId) == -1) {
-                this.unlocked = false;
+        const stageCfg = StageUtil.getStageCfgById(this.stageCfgId);
+        this.unlocked = false;
+        const firstClears = DataCenterC.getData(PlayerModuleData).firstClears;
+        const preDifficultyIds = StageUtil.getPreDifficultyIds(stageCfg);
+        console.log("#debug preDifficultyIds:", preDifficultyIds, " firstClears:", firstClears);
+        if(preDifficultyIds?.length) {
+            for(const id of preDifficultyIds) {
+                if (firstClears.includes(id)) {
+                    this.unlocked = true;
+                    break;
+                }
             }
-        }
+        } else this.unlocked = true;
         if (this.unlocked) {
             this.mRecommandedLevel.setFontColorByHex("#867160");
             this.mRecommandedLevel.text =
@@ -58,10 +62,10 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
     setSelectIndex(index: number) {
         if (index == this.index) {
             this.mSelected.visibility = SlateVisibility.Visible;
-            this.mdifficultly.text = `${this.difficluty[this.index]}`;
+            this.mdifficultly.text = `${this.difficulties[this.index]}`;
         } else {
             this.mSelected.visibility = SlateVisibility.Collapsed;
-            this.mdifficultly.text = `${this.difficluty[this.index]}`;
+            this.mdifficultly.text = `${this.difficulties[this.index]}`;
         }
     }
 }
@@ -123,7 +127,7 @@ export class UIStageSelect extends StageSelect_Generate {
                 this._difficulty.push(item);
                 this.mSelectDifficulty.addChild(item.uiObject);
             }
-            item.init(this._script.stageCfgId, i);
+            item.init(this._script.stageWorldIndex,  i, this._script.stageGroupId);
         }
     }
 

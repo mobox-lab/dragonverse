@@ -99,6 +99,13 @@ export default class TaskMain_Generate extends UIScript {
 		}
 		return this.mImage_hotpoint_2_Internal
 	}
+	private text_dailyTask_Internal: mw.TextBlock
+	public get text_dailyTask(): mw.TextBlock {
+		if(!this.text_dailyTask_Internal&&this.uiWidgetBase) {
+			this.text_dailyTask_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/dailyTaskCanvas/text_dailyTask') as mw.TextBlock
+		}
+		return this.text_dailyTask_Internal
+	}
 	private mainTaskCanvas_Internal: mw.Canvas
 	public get mainTaskCanvas(): mw.Canvas {
 		if(!this.mainTaskCanvas_Internal&&this.uiWidgetBase) {
@@ -119,6 +126,13 @@ export default class TaskMain_Generate extends UIScript {
 			this.mImage_hotpoint_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/mainTaskCanvas/mImage_hotpoint_1') as mw.Image
 		}
 		return this.mImage_hotpoint_1_Internal
+	}
+	private text_Task_Internal: mw.TextBlock
+	public get text_Task(): mw.TextBlock {
+		if(!this.text_Task_Internal&&this.uiWidgetBase) {
+			this.text_Task_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/mainTaskCanvas/text_Task') as mw.TextBlock
+		}
+		return this.text_Task_Internal
 	}
 	private scroll_Task_Internal: mw.ScrollBox
 	public get scroll_Task(): mw.ScrollBox {
@@ -189,6 +203,12 @@ export default class TaskMain_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.taskCountdownTime)
+	   
+	
+	   this.initLanguage(this.text_dailyTask)
+	   
+	
+	   this.initLanguage(this.text_Task)
 	   
 	
 	   //文本多语言

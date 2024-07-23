@@ -29,6 +29,13 @@ export default class TextItemUI_Generate extends UIScript {
 		}
 		return this.txt_value_Internal
 	}
+	private img_icon_Internal: mw.Image
+	public get img_icon(): mw.Image {
+		if(!this.img_icon_Internal&&this.uiWidgetBase) {
+			this.img_icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCanvas/img_icon') as mw.Image
+		}
+		return this.img_icon_Internal
+	}
 
 
 

@@ -8,6 +8,8 @@
  */
 
 import { PlayerUtil } from "./Modules/PlayerModule/PlayerUtil";
+import TalentModuleC from "./Modules/talent/TalentModuleC";
+import TalentModuleS from "./Modules/talent/TalentModuleS";
 import { RunesConfig } from "./Runes";
 import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
 import { IElementBase } from "./config/ConfigBase";
@@ -501,17 +503,5 @@ export default class Utils {
 
     public static isNotNullOrUndefined<T>(value: T | null | undefined): value is T {
         return value !== null && value !== undefined;
-    }
-
-    public static getRunesConfigByKey(key: number, index: number | undefined | null): number {
-        const config = GameConfig.TalentBuff.getElement(key);
-        console.log(JSON.stringify(config), "config");
-
-        if (config) {
-            const res: number = Utils.isNotNullOrUndefined(index) ? config.value[index] : 0;
-            return res;
-        } else {
-            return 0;
-        }
     }
 }

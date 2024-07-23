@@ -18,6 +18,7 @@ import TowerShopUI_Generate from "../../ui-generate/Tower/TowerShopUI_generate";
 import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
 import TextItemUI from "../TextItemUI";
 import ShopItemUI from "./ShopItemUI";
+import Utils from "../../Utils";
 
 export default class TowerShopUI extends TowerShopUI_Generate {
 	private _textItemUIs: TextItemUI[] = [];
@@ -171,14 +172,20 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this._textItemUIs = [];
 		this.infoItemCanvas.removeAllChildren();
 		if(!textItemLen) return;
+		
+		this.createTextUI("属性：",  GameConfig.Language.getElement(GlobalData.Shop.shopElementsOpts[this._cfg?.elementTy])?.Value); // TODO: GameConfig Language
+		this.createTextUI("部署花费：", Utils.formatNumber(this._cfg?.spend?.[this._selectLevel]), { isCost: true }); // TODO: GameConfig Language
 		for (let i = 0; i < textItemLen; i++) {
-			const ui = UIService.create(TextItemUI);
 			const title = GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value
 			const value = this._cfg[this._cfg.infoTexts[i]][this._selectLevel];
-			ui.initText(title, value);
-			this.infoItemCanvas.addChild(ui.uiObject);
-			this._textItemUIs.push(ui);
+			this.createTextUI(title, value);
 		}
+	}
+	public createTextUI(title: string, value: string, options?:{ isInfo?: boolean, isCost?:boolean }) {
+		const ui = UIService.create(TextItemUI);
+		ui.initText(title, value, options);
+		this.infoItemCanvas.addChild(ui.uiObject);
+		this._textItemUIs.push(ui);
 	}
 	public getTags() {
 		const cfg = this._cfg;

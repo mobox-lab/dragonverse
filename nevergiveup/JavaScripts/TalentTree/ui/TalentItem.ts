@@ -105,8 +105,8 @@ export class TalentItem extends TalentItem_Generate {
 
     public refreshCanActive() {
         if (this.data.frontTalent?.length) {
-            const parentsLevel = this.data.frontTalent.map(id => this.talentC.getTalentIndex(id));
-            if (parentsLevel.every(n => n > 0)) {
+            const frontLevels = this.data.frontTalent.map(id => this.talentC.getTalentIndex(id));
+            if (frontLevels.every(n => n > 0)) {
                 this.canActive.status = true;
             }
         } else {
