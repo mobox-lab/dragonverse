@@ -36,14 +36,18 @@ export default class UI_TaskMain extends TaskMain_Generate {
     public get btnState(): EmTaskType {
         return this._btnState;
     }
-    public set btnState(v: EmTaskType) {
-        this._btnState = v;
-        const tasks = ModuleService.getModule(TaskModuleC).getTasksByType(v);
+    public set btnState(newState: EmTaskType) {
+        this._btnState = newState;
+        const tasks = ModuleService.getModule(TaskModuleC).getTasksByType(newState);
         this.taskSetData(tasks);
-        this.mainTaskBtn.enable = v !== EmTaskType.Main;
-        this.dailyTaskBtn.enable = v != EmTaskType.Daily;
-        Gtk.trySetVisibility(this.taskCountdown, v === EmTaskType.Daily ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
-        Gtk.trySetVisibility(this.taskCountdownTime, v === EmTaskType.Daily ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
+        const newStateIsDaily = newState === EmTaskType.Daily;
+        this.mainTaskBtn.enable = newStateIsDaily;
+        this.text_Task.setFontColorByHex(newStateIsDaily ? "#F0CC9C" : "#FFFFFF");
+
+        this.dailyTaskBtn.enable = !newStateIsDaily;
+        this.text_dailyTask.setFontColorByHex(newStateIsDaily ? "#FFFFFF" : "#F0CC9C");
+        Gtk.trySetVisibility(this.taskCountdown, newState === EmTaskType.Daily ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
+        Gtk.trySetVisibility(this.taskCountdownTime, newState === EmTaskType.Daily ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
     }
 
     private _btnPos: Vector2[];
