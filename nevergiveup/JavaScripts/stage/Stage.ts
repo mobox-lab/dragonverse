@@ -18,6 +18,7 @@ import { PlayerModuleS } from "../Modules/PlayerModule/PlayerModuleS";
 import { PlayerUtil } from "../Modules/PlayerModule/PlayerUtil";
 import { TowerManager } from "../Modules/TowerModule/TowerManager";
 import { TowerModuleC } from "../Modules/TowerModule/TowerModuleC";
+import TalentUtils from "../Modules/talent/TalentUtils";
 import { RankItem } from "../Rank/RankManager";
 import { RunesConfig } from "../Runes";
 import { NEW_STAGE_CONFIG, STAGE_CONFIG, baseHp } from "../StageConfig";
@@ -121,15 +122,12 @@ export class StageS {
             };
             this.rankItems.push(rankItem);
         });
-        // todo 天赋树和龙娘血量加成
-        const userHPIndex = 0;
-        const userHP = Utils.getRunesConfigByKey(1003, userHPIndex);
-        const userHP2Index = 0;
-        const userHP2 = Utils.getRunesConfigByKey(1027, userHP2Index);
-        const userHPDIndex = 0;
-        const userHPD = Utils.getRunesConfigByKey(2005, userHPDIndex);
-        this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD);
-        // this._hp = baseHp;
+        // 天赋树和龙娘血量加成
+        // const userHP = TalentUtils.getModuleSRunesValueById(1003);
+        // const userHP2 = TalentUtils.getModuleSRunesValueById(1027);
+        // const userHPD = TalentUtils.getModuleSRunesValueById(2005);
+        // this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD);
+        this._hp = baseHp;
         this._maxHp = this._hp;
         this.cumulativeCount = 0;
         this.currentWaveCount = 0;
@@ -614,12 +612,9 @@ export class StageC {
         this.stageWorldIndex = stageConfig?.index ?? 0;
         this.gold = 0;
         // todo 天赋树和龙娘血量加成
-        const userHPIndex = 0;
-        const userHP = Utils.getRunesConfigByKey(1003, userHPIndex);
-        const userHP2Index = 0;
-        const userHP2 = Utils.getRunesConfigByKey(1027, userHP2Index);
-        const userHPDIndex = 0;
-        const userHPD = Utils.getRunesConfigByKey(2005, userHPDIndex);
+        const userHP = TalentUtils.getModuleCRunesValueById(1003);
+        const userHP2 = TalentUtils.getModuleCRunesValueById(1027);
+        const userHPD = TalentUtils.getModuleCRunesValueById(2005);
         this.hp = Math.floor(baseHp + userHP + userHP2 + userHPD);
         ModuleService.getModule(PlayerModuleC)
             .getUnlockTechNodeMap(playerIds)
@@ -743,10 +738,7 @@ export class StageC {
                 // let config = NEW_STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageId, this.difficulty)];
                 // let currentWave = config.waves(this.currentWave + 1);
                 // console.log(this.currentWave, "this.currentWave");
-                const [currentWave, waveMax] = WaveUtil.fitOldConfig(
-                    this.stageCfgId,
-                    this.currentWave + 1
-                );
+                const [currentWave, waveMax] = WaveUtil.fitOldConfig(this.stageCfgId, this.currentWave + 1);
 
                 if (currentWave) {
                     MGSTool.goldChange(3, currentWave.waveGold, 4);
@@ -1062,16 +1054,12 @@ class WaitState extends StageBaseState {
         const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageCfgId, this._wave + 1);
         this.fsm.owner.addGold(currentWave.waveGold);
         if (this._wave > 0) {
-            const goldAmountIndex = 0;
-            const goldAmount = Utils.getRunesConfigByKey(1005, goldAmountIndex);
-            const goldAmount2Index = 0;
-            const goldAmount2 = Utils.getRunesConfigByKey(1029, goldAmount2Index);
+            const goldAmount = TalentUtils.getModuleCRunesValueById(1005);
+            const goldAmount2 = TalentUtils.getModuleCRunesValueById(1029);
             this.fsm.owner.addGold(goldAmount + goldAmount2);
 
-            const hpAmountIndex = 0;
-            const hpAmount = Utils.getRunesConfigByKey(1010, hpAmountIndex);
-            const hpAmount2Index = 0;
-            const hpAmount2 = Utils.getRunesConfigByKey(1034, hpAmount2Index);
+            const hpAmount = TalentUtils.getModuleCRunesValueById(1010);
+            const hpAmount2 = TalentUtils.getModuleCRunesValueById(1034);
             this.fsm.owner.addHp(hpAmount + hpAmount2);
         }
         StageActions.onStageStateChanged.call(this.state, this.fsm.owner.id, this._time, this._wave);
