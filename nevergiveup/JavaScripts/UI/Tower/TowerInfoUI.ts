@@ -128,7 +128,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 			let value = ""+Utils.numTofix(this._tower.property[text], 2);
 			this._cfg[text][this._tower.level + 1] != null && (value += " → " +
 				Utils.numTofix((this._tower.property[text] + this._cfg[text][this._tower.level + 1] - this._cfg[text][this._tower.level]), 2));
-			ui.initText(title, value, true);
+			ui.initText(title, value, { isInfo: true });
 			this.infoCanvas.addChild(ui.uiObject);
 			this._textItemUIs.push(ui);
 		}
