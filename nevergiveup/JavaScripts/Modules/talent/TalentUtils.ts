@@ -20,10 +20,9 @@ export default class TalentUtils {
         return index;
     }
 
-    public static getModuleSRunesIndexById(id: number) {
+    public static getModuleSRunesIndexById(id: number, userId: string) {
         const moduleS = ModuleService.getModule(TalentModuleS);
-        const playerId = Player.localPlayer.userId;
-        const index = moduleS.getPlayerTalentIndex(playerId, id);
+        const index = moduleS.getPlayerTalentIndex(userId, id);
         return index;
     }
 
@@ -41,12 +40,12 @@ export default class TalentUtils {
         }
     }
 
-    public static getModuleSRunesValueById(id: number) {
+    public static getModuleSRunesValueById(id: number, userId: string) {
         // todo 龙娘的id
         if (id > 2000) {
             return 0;
         }
-        const index = this.getModuleSRunesIndexById(id);
+        const index = this.getModuleSRunesIndexById(id, userId);
         if (index > 0) {
             const value = this.getRunesConfigByKey(id, index - 1);
             return value;
