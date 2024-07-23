@@ -85,6 +85,7 @@ export class TalentItem extends TalentItem_Generate {
         this.refreshCanActive();
         this.textTalentName.text = data.nameCN;
         this.mItem.normalImageGuid = data.icon;
+        this.mNotActive.imageGuid = data.iconGray;
         this._maxLevel.count = this.buff.value.length;
     }
 

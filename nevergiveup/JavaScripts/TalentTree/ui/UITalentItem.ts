@@ -16,6 +16,20 @@ export class UITalentItem extends TalentItem_Generate {
     protected onStart(): void {
         Gtk.trySetVisibility(this.mLocked, false);
 
+        this.mItem.size = new Vector2(80, 80);
+        this.mItem.position = new Vector2(0, 0);
+
+        this.mNotActive.size = new Vector2(80, 80);
+        this.mNotActive.position = new Vector2(0, 0);
+
+        this.textTalentLevel.size = new Vector2(80, 15);
+        this.textTalentLevel.position = new Vector2(0, 70);
+        this.textTalentLevel.fontSize = 16;
+
+        this.textTalentName.size = new Vector2(80, 15);
+        this.textTalentName.position = new Vector2(0, 100);
+        this.textTalentName.fontSize = 16;
+
         Yoact.bindYoact(() => {
             const currentLevel = this._currentLevel.count;
             const maxLevel = this._maxLevel.count;
@@ -49,6 +63,7 @@ export class UITalentItem extends TalentItem_Generate {
     public refreshStatus() {
         this.textTalentName.text = this._talent.data.nameCN;
         this.mItem.normalImageGuid = this._talent.data.icon;
+        this.mNotActive.imageGuid = this._talent.data.iconGray;
         this.canActive.status = this._talent.canActive.status;
         this._currentLevel.count = this._talent.level;
         this._maxLevel.count = this._talent.maxLevel;
