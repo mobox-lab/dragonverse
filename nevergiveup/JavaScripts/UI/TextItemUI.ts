@@ -19,10 +19,17 @@ export default class TextItemUI extends TextItemUI_Generate {
 		this.layer = UILayerMiddle;
 	}
 
-	public initText(valueTxt: string) {
+	// isInfo 是否局内升级预览
+	public initText(titleText: string, valueTxt: string, isInfo?: boolean) {
 		// public initText(nameTxt: string, valueTxt: string) {
 		// this.nameTxt.text = nameTxt;
-		this.valueTxt.text = valueTxt;
+		this.txt_title.text = titleText;
+		this.txt_value.text = valueTxt;
+		if(isInfo) {
+			this.rootCanvas.size = new Vector(205, 50);
+			this.txt_value.position = new Vector(105.00, 0);
+			this.txt_value.size = new Vector(100.00, 22);
+		}
 	}
 
 	/** 

@@ -15,12 +15,19 @@ export default class TextItemUI_Generate extends UIScript {
 		}
 		return this.textCanvas_Internal
 	}
-	private valueTxt_Internal: mw.TextBlock
-	public get valueTxt(): mw.TextBlock {
-		if(!this.valueTxt_Internal&&this.uiWidgetBase) {
-			this.valueTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCanvas/valueTxt') as mw.TextBlock
+	private txt_title_Internal: mw.TextBlock
+	public get txt_title(): mw.TextBlock {
+		if(!this.txt_title_Internal&&this.uiWidgetBase) {
+			this.txt_title_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCanvas/txt_title') as mw.TextBlock
 		}
-		return this.valueTxt_Internal
+		return this.txt_title_Internal
+	}
+	private txt_value_Internal: mw.TextBlock
+	public get txt_value(): mw.TextBlock {
+		if(!this.txt_value_Internal&&this.uiWidgetBase) {
+			this.txt_value_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCanvas/txt_value') as mw.TextBlock
+		}
+		return this.txt_value_Internal
 	}
 
 
@@ -41,7 +48,10 @@ export default class TextItemUI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   this.initLanguage(this.valueTxt)
+	   this.initLanguage(this.txt_title)
+	   
+	
+	   this.initLanguage(this.txt_value)
 	   
 	
 	   //文本多语言

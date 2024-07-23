@@ -12,13 +12,12 @@ import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
 import { GlobalData } from "../../const/GlobalData";
 import { TowerDamageType, TowerElementType, TowerStrategyType, TowerTargetType } from "../../const/enum";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { MGSTool } from "../../tool/MGSTool";
 import TowerShopUI_Generate from "../../ui-generate/Tower/TowerShopUI_generate";
 import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
 import TextItemUI from "../TextItemUI";
 import ShopItemUI from "./ShopItemUI";
-import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-import Utils from "../../Utils";
 
 export default class TowerShopUI extends TowerShopUI_Generate {
 	private _textItemUIs: TextItemUI[] = [];
@@ -85,14 +84,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this.infoBtn.onClicked.add(() => {
 			ModuleService.getModule(CardModuleC).btnExecute(this._cfgID, this._state);
 			this.sortItems();
-		});
-
-		for (let i = 0; i < 4; i++) {
-			let item = UIService.create(TextItemUI);
-			item.visible = false;
-			this.infoItemCanvas.addChild(item.uiObject);
-			this._textItemUIs.push(item);
-		}
+		}); 
 		for (let i = 0; i < 4; i++) {
 			let item = UIService.create(TowerTagItem_Generate);
 			item.visible = false;
@@ -162,14 +154,6 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	}
 	public updateInfo(level: number = 0) {
 		this._selectLevel = level;
-		const cfg = this._cfg;
-		for (let i = 0; i < this._textItemUIs.length; i++) {
-			if (i < cfg.infoTexts.length) {
-				this._textItemUIs[i].initText(GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value + this._cfg[this._cfg.infoTexts[i]][this._selectLevel]);
-			} else {
-				this._textItemUIs[i].visible = false;
-			}
-		}
 		const selectedGuid = "376828";
 		const normalGuid = "376853";
 		this.infoLv1.normalImageGuid = this.infoLv2.normalImageGuid = this.infoLv3.normalImageGuid = normalGuid;
@@ -179,8 +163,23 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.infoLv2.normalImageGuid = selectedGuid;
 		else if(level == 2)
 			this.infoLv3.normalImageGuid = selectedGuid;
+		this.updateTexts();
 	}
-
+	public updateTexts() {		
+		const textItemLen = this._cfg?.infoTestsCn?.length ?? 0;
+		if(this._textItemUIs?.length) this._textItemUIs.forEach(v => v?.destroy());
+		this._textItemUIs = [];
+		this.infoItemCanvas.removeAllChildren();
+		if(!textItemLen) return;
+		for (let i = 0; i < textItemLen; i++) {
+			const ui = UIService.create(TextItemUI);
+			const title = GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value
+			const value = this._cfg[this._cfg.infoTexts[i]][this._selectLevel];
+			ui.initText(title, value);
+			this.infoItemCanvas.addChild(ui.uiObject);
+			this._textItemUIs.push(ui);
+		}
+	}
 	public getTags() {
 		const cfg = this._cfg;
 		const tags = [];
@@ -206,17 +205,8 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this.infoTxt.text = cfg.name;
 		this._cfgID = cfgID;
 		this._cfg = cfg;
-
-		for (let i = 0; i < this._textItemUIs.length; i++) {
-			if (i < cfg.infoTexts.length) {
-				this._textItemUIs[i].visible = true;
-				this._textItemUIs[i].initText(GameConfig.Language.getElement(cfg.infoTestsCn[i]).Value + cfg[cfg.infoTexts[i]][0]);
-			} else {
-				this._textItemUIs[i].visible = false;
-			}
-		}
-
 		this._state = state;
+		this.updateTexts();
 		switch (state) {
 			case CardState.Lock:
 				this.infoBtn.text = GameConfig.Language.getElement("Text_BuyCard").Value;

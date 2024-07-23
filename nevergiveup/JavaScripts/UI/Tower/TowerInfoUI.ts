@@ -59,12 +59,6 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 			}
 		});
 		for (let i = 0; i < 4; i++) {
-			let item = UIService.create(TextItemUI);
-			item.visible = false;
-			this.infoCanvas.addChild(item.uiObject);
-			this._textItemUIs.push(item);
-		}
-		for (let i = 0; i < 4; i++) {
 			let item = UIService.create(TowerTagItem_Generate);
 			item.visible = false;
 			this.tagCanvas.addChild(item.uiObject);
@@ -122,17 +116,21 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 
 	private initText() {
 		this.levelTxt.text = "Lv. " + (this._tower.level + 1 + this._upgradeCount);
-		for (let i = 0; i < this._textItemUIs.length; i++) {
-			if (i < this._cfg.infoTexts.length) {
-				let text = this._cfg.infoTexts[i];
-				let value = GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value + Utils.numTofix(this._tower.property[text], 2);
-				this._cfg[text][this._tower.level + 1] != null && (value += " → " +
-					Utils.numTofix((this._tower.property[text] + this._cfg[text][this._tower.level + 1] - this._cfg[text][this._tower.level]), 2));
-				this._textItemUIs[i].initText(value);
-				this._textItemUIs[i].visible = true;
-			} else {
-				this._textItemUIs[i].visible = false;
-			}
+		const textItemLen = this._cfg?.infoTestsCn?.length ?? 0;
+		if(this._textItemUIs?.length) this._textItemUIs.forEach(v => v?.destroy());
+		this._textItemUIs = [];
+		this.infoCanvas.removeAllChildren();
+		if(!textItemLen) return;
+		for (let i = 0; i < textItemLen; i++) {
+			const ui = UIService.create(TextItemUI);
+			const text = this._cfg?.infoTexts[i];
+			const title = GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value
+			let value = ""+Utils.numTofix(this._tower.property[text], 2);
+			this._cfg[text][this._tower.level + 1] != null && (value += " → " +
+				Utils.numTofix((this._tower.property[text] + this._cfg[text][this._tower.level + 1] - this._cfg[text][this._tower.level]), 2));
+			ui.initText(title, value, true);
+			this.infoCanvas.addChild(ui.uiObject);
+			this._textItemUIs.push(ui);
 		}
 	}
 

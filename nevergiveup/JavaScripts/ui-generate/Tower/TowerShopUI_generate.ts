@@ -15,13 +15,6 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.bgBtn_Internal
 	}
-	private closeBtn_Internal: mw.Button
-	public get closeBtn(): mw.Button {
-		if(!this.closeBtn_Internal&&this.uiWidgetBase) {
-			this.closeBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/closeBtn') as mw.Button
-		}
-		return this.closeBtn_Internal
-	}
 	private bg_Internal: mw.Image
 	public get bg(): mw.Image {
 		if(!this.bg_Internal&&this.uiWidgetBase) {
@@ -246,6 +239,41 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.infoItemCanvas_Internal
 	}
+	private infoBtn_Internal: mw.StaleButton
+	public get infoBtn(): mw.StaleButton {
+		if(!this.infoBtn_Internal&&this.uiWidgetBase) {
+			this.infoBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoBtn') as mw.StaleButton
+		}
+		return this.infoBtn_Internal
+	}
+	private imgDesc_Internal: mw.Image
+	public get imgDesc(): mw.Image {
+		if(!this.imgDesc_Internal&&this.uiWidgetBase) {
+			this.imgDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/imgDesc') as mw.Image
+		}
+		return this.imgDesc_Internal
+	}
+	private scro_Desc_Internal: mw.ScrollBox
+	public get scro_Desc(): mw.ScrollBox {
+		if(!this.scro_Desc_Internal&&this.uiWidgetBase) {
+			this.scro_Desc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/scro_Desc') as mw.ScrollBox
+		}
+		return this.scro_Desc_Internal
+	}
+	private textTitle_Internal: mw.TextBlock
+	public get textTitle(): mw.TextBlock {
+		if(!this.textTitle_Internal&&this.uiWidgetBase) {
+			this.textTitle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/scro_Desc/textTitle') as mw.TextBlock
+		}
+		return this.textTitle_Internal
+	}
+	private textDesc_Internal: mw.TextBlock
+	public get textDesc(): mw.TextBlock {
+		if(!this.textDesc_Internal&&this.uiWidgetBase) {
+			this.textDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/scro_Desc/textDesc') as mw.TextBlock
+		}
+		return this.textDesc_Internal
+	}
 	private canvas_Desc_Internal: mw.Canvas
 	public get canvas_Desc(): mw.Canvas {
 		if(!this.canvas_Desc_Internal&&this.uiWidgetBase) {
@@ -253,33 +281,12 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.canvas_Desc_Internal
 	}
-	private imgDesc_Internal: mw.Image
-	public get imgDesc(): mw.Image {
-		if(!this.imgDesc_Internal&&this.uiWidgetBase) {
-			this.imgDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_Desc/imgDesc') as mw.Image
+	private closeBtn_Internal: mw.Button
+	public get closeBtn(): mw.Button {
+		if(!this.closeBtn_Internal&&this.uiWidgetBase) {
+			this.closeBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/closeBtn') as mw.Button
 		}
-		return this.imgDesc_Internal
-	}
-	private textTitle_Internal: mw.TextBlock
-	public get textTitle(): mw.TextBlock {
-		if(!this.textTitle_Internal&&this.uiWidgetBase) {
-			this.textTitle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_Desc/textTitle') as mw.TextBlock
-		}
-		return this.textTitle_Internal
-	}
-	private textDesc_Internal: mw.TextBlock
-	public get textDesc(): mw.TextBlock {
-		if(!this.textDesc_Internal&&this.uiWidgetBase) {
-			this.textDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_Desc/textDesc') as mw.TextBlock
-		}
-		return this.textDesc_Internal
-	}
-	private infoBtn_Internal: mw.StaleButton
-	public get infoBtn(): mw.StaleButton {
-		if(!this.infoBtn_Internal&&this.uiWidgetBase) {
-			this.infoBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoBtn') as mw.StaleButton
-		}
-		return this.infoBtn_Internal
+		return this.closeBtn_Internal
 	}
 
 
