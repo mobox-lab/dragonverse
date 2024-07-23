@@ -10,7 +10,6 @@
 import { PlayerUtil } from "./Modules/PlayerModule/PlayerUtil";
 import TalentModuleC from "./Modules/talent/TalentModuleC";
 import TalentModuleS from "./Modules/talent/TalentModuleS";
-import { RunesConfig } from "./Runes";
 import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
 import { IElementBase } from "./config/ConfigBase";
 import { GameConfig } from "./config/GameConfig";

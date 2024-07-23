@@ -13,7 +13,6 @@ import { MapManager } from "../MapScript";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 import TowerBase from "../Modules/TowerModule/Tower/TowerBase";
 import TalentUtils from "../Modules/talent/TalentUtils";
-import { RunesConfig } from "../Runes";
 import { NEW_STAGE_CONFIG, STAGE_CONFIG } from "../StageConfig";
 import GainUI from "../UI/Tower/GainUI";
 import Utils from "../Utils";
