@@ -122,11 +122,12 @@ export class StageS {
             this.rankItems.push(rankItem);
         });
         // 天赋树和龙娘血量加成
-        // const userHP = TalentUtils.getModuleSRunesValueById(1003);
-        // const userHP2 = TalentUtils.getModuleSRunesValueById(1027);
-        // const userHPD = TalentUtils.getModuleSRunesValueById(2005);
-        // this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD);
-        this._hp = baseHp;
+        const userId = players[0].userId;
+        const userHP = TalentUtils.getModuleSRunesValueById(1003, userId);
+        const userHP2 = TalentUtils.getModuleSRunesValueById(1027, userId);
+        const userHPD = TalentUtils.getModuleSRunesValueById(2005, userId);
+        this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD);
+        // this._hp = baseHp;
         this._maxHp = this._hp;
         this.cumulativeCount = 0;
         this.currentWaveCount = 0;
