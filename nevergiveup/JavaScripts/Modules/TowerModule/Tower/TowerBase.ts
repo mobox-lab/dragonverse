@@ -16,7 +16,6 @@
  */
 import { GameManager } from "../../../GameManager";
 import { MapManager } from "../../../MapScript";
-import { RunesConfig } from "../../../Runes";
 import Utils from "../../../Utils";
 import { GameConfig } from "../../../config/GameConfig";
 import { ITowerElement } from "../../../config/Tower";

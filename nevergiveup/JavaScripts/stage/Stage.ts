@@ -20,7 +20,6 @@ import { TowerManager } from "../Modules/TowerModule/TowerManager";
 import { TowerModuleC } from "../Modules/TowerModule/TowerModuleC";
 import TalentUtils from "../Modules/talent/TalentUtils";
 import { RankItem } from "../Rank/RankManager";
-import { RunesConfig } from "../Runes";
 import { NEW_STAGE_CONFIG, STAGE_CONFIG, baseHp } from "../StageConfig";
 import { EStageState, WaveConfig } from "../StageEnums";
 import { StageListener } from "../StageListener";
