@@ -105,7 +105,9 @@ export default class MapScript extends Script {
 
     protected async onStart(): Promise<void> {
         if (SystemUtil.isClient()) {
-            this.gameObject.worldTransform.position = StageUtil.getStageCfgById(MapManager.stageCfgId)?.stagePosition.clone();
+            const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId)
+            this.gameObject.worldTransform.position = stageCfg?.stagePosition.clone();
+            this.gameObject.worldTransform.rotation = new Rotation(stageCfg?.rotation?.[0] ?? 200, stageCfg?.rotation?.[1] ?? 0, stageCfg?.rotation?.[2] ?? 0) 
             let center = Vector.zero;
             let extend = Vector.zero;
             this.gameObject.getBounds(false, center, extend, true);
