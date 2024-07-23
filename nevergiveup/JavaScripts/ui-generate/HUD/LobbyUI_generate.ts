@@ -260,6 +260,27 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.mImage_hotpoint_Internal
 	}
+	private announcerCanvas_Internal: mw.Canvas
+	public get announcerCanvas(): mw.Canvas {
+		if(!this.announcerCanvas_Internal&&this.uiWidgetBase) {
+			this.announcerCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/announcerCanvas') as mw.Canvas
+		}
+		return this.announcerCanvas_Internal
+	}
+	private announcerBtn_Internal: mw.Button
+	public get announcerBtn(): mw.Button {
+		if(!this.announcerBtn_Internal&&this.uiWidgetBase) {
+			this.announcerBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/announcerCanvas/announcerBtn') as mw.Button
+		}
+		return this.announcerBtn_Internal
+	}
+	private txtButtonAnnouncer_Internal: mw.TextBlock
+	public get txtButtonAnnouncer(): mw.TextBlock {
+		if(!this.txtButtonAnnouncer_Internal&&this.uiWidgetBase) {
+			this.txtButtonAnnouncer_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/announcerCanvas/txtButtonAnnouncer') as mw.TextBlock
+		}
+		return this.txtButtonAnnouncer_Internal
+	}
 	private shopCanvas_Internal: mw.Canvas
 	public get shopCanvas(): mw.Canvas {
 		if(!this.shopCanvas_Internal&&this.uiWidgetBase) {
@@ -337,6 +358,12 @@ export default class LobbyUI_Generate extends UIScript {
 	   this.taskBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.announcerBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "announcerBtn");
+	   })
+	   this.announcerBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.shopBtn.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "shopBtn");
 	   })
@@ -388,6 +415,9 @@ export default class LobbyUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txtButtontask)
+	   
+	
+	   this.initLanguage(this.txtButtonAnnouncer)
 	   
 	
 	   this.initLanguage(this.txtButtonshop)
