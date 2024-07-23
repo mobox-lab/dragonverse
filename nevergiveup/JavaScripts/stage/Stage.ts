@@ -1128,11 +1128,12 @@ export namespace StageUtil {
         const waveIndex = (cfg?.index ?? 0) * 3 + (cfg?.difficulty ?? 0) + 1;
         return waveIndex;
     }
-    // 获取上一关难度的id
-    export function getPreDifficultyId(difficulty: number, groupIndex: number) {
-        const preDifficulty = difficulty - 1;
+    // 获取同世界上一关难度的id数组（）
+    export function getPreDifficultyIds(cfg: IStageElement) {
+        const difficult = cfg?.difficulty ?? 0;
+        if(!difficult) return [];
+        const preDifficulty = (cfg?.difficulty ?? 0) - 1;
         const stages = GameConfig.Stage.getAllElement();
-        const index = stages.findIndex((stage) => stage.groupIndex == groupIndex && stage.difficulty == preDifficulty);
-        return index === -1 ? 0 : stages[index].id;
+        return stages.filter((stage) => stage.difficulty == preDifficulty && stage.index == cfg.index).map((stage) => stage.id);
     }
 }

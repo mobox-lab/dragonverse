@@ -168,6 +168,7 @@ export namespace GameManager {
     }
 
     export function startGame(playerIds: number[], stageCfgId: number) {
+        console.log("#debug startGame stageCfgId:", stageCfgId);
         let gamePlayers = playerIds.map(playerId => Player.getPlayer(playerId));
         let validGamePlayers = gamePlayers.filter(player => players.indexOf(player) != -1);
         if (validGamePlayers.length == 0) return;
