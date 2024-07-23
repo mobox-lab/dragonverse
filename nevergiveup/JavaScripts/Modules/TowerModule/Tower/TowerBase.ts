@@ -25,6 +25,7 @@ import { BuffApplyType, EEnemyComponentType } from "../../../tool/Enum";
 import { MGSTool } from "../../../tool/MGSTool";
 import { TowerEvent, TowerInfo } from "../TowerEnum";
 import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import TalentUtils from "../../talent/TalentUtils";
 
 export type TowerProperty = {
     attackTime: number;
@@ -138,19 +139,13 @@ export default abstract class TowerBase implements BuffBag {
         this.buffManager = new BuffManager();
         // todo 初始化天赋树的攻速增强 距离增强
         // todo 龙娘祝福的增加
-        const attackSpeedIndex = 0;
-        const attackSpeed = Utils.getRunesConfigByKey(1004, attackSpeedIndex);
-        const attackSpeed2Index = 0;
-        const attackSpeed2 = Utils.getRunesConfigByKey(1028, attackSpeed2Index);
-        const attackSpeedDIndex = 0;
-        const attackSpeedD = Utils.getRunesConfigByKey(2006, attackSpeedDIndex);
+        const attackSpeed = TalentUtils.getModuleCRunesValueById(1004);
+        const attackSpeed2 = TalentUtils.getModuleCRunesValueById(1028);
+        const attackSpeedD = TalentUtils.getModuleCRunesValueById(2006);
 
-        const attackRangeIndex = 0;
-        const attackRange = Utils.getRunesConfigByKey(1016, attackRangeIndex);
-        const attackRange2Index = 0;
-        const attackRange2 = Utils.getRunesConfigByKey(1040, attackRange2Index);
-        const attackRangeDIndex = 0;
-        const attackRangeD = Utils.getRunesConfigByKey(2003, attackRangeDIndex);
+        const attackRange = TalentUtils.getModuleCRunesValueById(1016);
+        const attackRange2 = TalentUtils.getModuleCRunesValueById(1040);
+        const attackRangeD = TalentUtils.getModuleCRunesValueById(2003);
 
         this.property2 = {
             attackTime: this.property.attackTime * (1 - (attackSpeed + attackSpeed2 + attackSpeedD) / 100),
