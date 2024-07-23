@@ -22,6 +22,13 @@ export default class Setting_Main_Generate extends UIScript {
 		}
 		return this.mCanvas_Setting_Internal
 	}
+	private text_SettingTitle_Internal: mw.TextBlock
+	public get text_SettingTitle(): mw.TextBlock {
+		if(!this.text_SettingTitle_Internal&&this.uiWidgetBase) {
+			this.text_SettingTitle_Internal = this.uiWidgetBase.findChildByPath('mCanvas_Setting/Setting/text_SettingTitle') as mw.TextBlock
+		}
+		return this.text_SettingTitle_Internal
+	}
 	private canvas_Setting_Internal: mw.Canvas
 	public get canvas_Setting(): mw.Canvas {
 		if(!this.canvas_Setting_Internal&&this.uiWidgetBase) {
@@ -156,6 +163,9 @@ export default class Setting_Main_Generate extends UIScript {
         
         // 文本控件
         
+        this.initLanguage(this.text_SettingTitle)
+        
+	
         this.initLanguage(this.text_SoundOn)
         
 	
@@ -183,6 +193,9 @@ export default class Setting_Main_Generate extends UIScript {
 
     protected overrideTextSetter() {
         
+        overrideTextBlockTextSetter(this.text_SettingTitle);
+        
+	
         overrideTextBlockTextSetter(this.text_SoundOn);
         
 	
@@ -201,6 +214,9 @@ export default class Setting_Main_Generate extends UIScript {
         
         // 文本多语言
         
+        this.unregisterLanKey(this.text_SettingTitle)
+        
+	
         this.unregisterLanKey(this.text_SoundOn)
         
 	

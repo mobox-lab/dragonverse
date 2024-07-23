@@ -225,6 +225,62 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.cnvMainFuntion_Internal
 	}
+	private bagCanvas_Internal: mw.Canvas
+	public get bagCanvas(): mw.Canvas {
+		if(!this.bagCanvas_Internal&&this.uiWidgetBase) {
+			this.bagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/bagCanvas') as mw.Canvas
+		}
+		return this.bagCanvas_Internal
+	}
+	private btnBag_Internal: mw.StaleButton
+	public get btnBag(): mw.StaleButton {
+		if(!this.btnBag_Internal&&this.uiWidgetBase) {
+			this.btnBag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/bagCanvas/btnBag') as mw.StaleButton
+		}
+		return this.btnBag_Internal
+	}
+	private transferCanvas_Internal: mw.Canvas
+	public get transferCanvas(): mw.Canvas {
+		if(!this.transferCanvas_Internal&&this.uiWidgetBase) {
+			this.transferCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/transferCanvas') as mw.Canvas
+		}
+		return this.transferCanvas_Internal
+	}
+	private btnCow_Internal: mw.StaleButton
+	public get btnCow(): mw.StaleButton {
+		if(!this.btnCow_Internal&&this.uiWidgetBase) {
+			this.btnCow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/transferCanvas/btnCow') as mw.StaleButton
+		}
+		return this.btnCow_Internal
+	}
+	private textCow_Internal: mw.TextBlock
+	public get textCow(): mw.TextBlock {
+		if(!this.textCow_Internal&&this.uiWidgetBase) {
+			this.textCow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/transferCanvas/textCow') as mw.TextBlock
+		}
+		return this.textCow_Internal
+	}
+	private switchRoomCanvas_Internal: mw.Canvas
+	public get switchRoomCanvas(): mw.Canvas {
+		if(!this.switchRoomCanvas_Internal&&this.uiWidgetBase) {
+			this.switchRoomCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas') as mw.Canvas
+		}
+		return this.switchRoomCanvas_Internal
+	}
+	private btnJumpGame_Internal: mw.StaleButton
+	public get btnJumpGame(): mw.StaleButton {
+		if(!this.btnJumpGame_Internal&&this.uiWidgetBase) {
+			this.btnJumpGame_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas/btnJumpGame') as mw.StaleButton
+		}
+		return this.btnJumpGame_Internal
+	}
+	private textRoom_Internal: mw.TextBlock
+	public get textRoom(): mw.TextBlock {
+		if(!this.textRoom_Internal&&this.uiWidgetBase) {
+			this.textRoom_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas/textRoom') as mw.TextBlock
+		}
+		return this.textRoom_Internal
+	}
 	private obbySkillCanvas_Internal: mw.Canvas
 	public get obbySkillCanvas(): mw.Canvas {
 		if(!this.obbySkillCanvas_Internal&&this.uiWidgetBase) {
@@ -274,75 +330,26 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.coin_1_Internal
 	}
-	private resetCanvas_Internal: mw.Canvas
-	public get resetCanvas(): mw.Canvas {
-		if(!this.resetCanvas_Internal&&this.uiWidgetBase) {
-			this.resetCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/resetCanvas') as mw.Canvas
+	private shopCanvas_Internal: mw.Canvas
+	public get shopCanvas(): mw.Canvas {
+		if(!this.shopCanvas_Internal&&this.uiWidgetBase) {
+			this.shopCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/shopCanvas') as mw.Canvas
 		}
-		return this.resetCanvas_Internal
+		return this.shopCanvas_Internal
 	}
-	private btnReset_Internal: mw.StaleButton
-	public get btnReset(): mw.StaleButton {
-		if(!this.btnReset_Internal&&this.uiWidgetBase) {
-			this.btnReset_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/resetCanvas/btnReset') as mw.StaleButton
+	private btnShop_Internal: mw.StaleButton
+	public get btnShop(): mw.StaleButton {
+		if(!this.btnShop_Internal&&this.uiWidgetBase) {
+			this.btnShop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/shopCanvas/btnShop') as mw.StaleButton
 		}
-		return this.btnReset_Internal
+		return this.btnShop_Internal
 	}
-	private bagCanvas_Internal: mw.Canvas
-	public get bagCanvas(): mw.Canvas {
-		if(!this.bagCanvas_Internal&&this.uiWidgetBase) {
-			this.bagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/bagCanvas') as mw.Canvas
+	private textShop_Internal: mw.TextBlock
+	public get textShop(): mw.TextBlock {
+		if(!this.textShop_Internal&&this.uiWidgetBase) {
+			this.textShop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/shopCanvas/textShop') as mw.TextBlock
 		}
-		return this.bagCanvas_Internal
-	}
-	private btnBag_Internal: mw.StaleButton
-	public get btnBag(): mw.StaleButton {
-		if(!this.btnBag_Internal&&this.uiWidgetBase) {
-			this.btnBag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/bagCanvas/btnBag') as mw.StaleButton
-		}
-		return this.btnBag_Internal
-	}
-	private switchRoomCanvas_Internal: mw.Canvas
-	public get switchRoomCanvas(): mw.Canvas {
-		if(!this.switchRoomCanvas_Internal&&this.uiWidgetBase) {
-			this.switchRoomCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas') as mw.Canvas
-		}
-		return this.switchRoomCanvas_Internal
-	}
-	private btnJumpGame_Internal: mw.StaleButton
-	public get btnJumpGame(): mw.StaleButton {
-		if(!this.btnJumpGame_Internal&&this.uiWidgetBase) {
-			this.btnJumpGame_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas/btnJumpGame') as mw.StaleButton
-		}
-		return this.btnJumpGame_Internal
-	}
-	private textRoom_Internal: mw.TextBlock
-	public get textRoom(): mw.TextBlock {
-		if(!this.textRoom_Internal&&this.uiWidgetBase) {
-			this.textRoom_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/switchRoomCanvas/textRoom') as mw.TextBlock
-		}
-		return this.textRoom_Internal
-	}
-	private mapCanvas_Internal: mw.Canvas
-	public get mapCanvas(): mw.Canvas {
-		if(!this.mapCanvas_Internal&&this.uiWidgetBase) {
-			this.mapCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/mapCanvas') as mw.Canvas
-		}
-		return this.mapCanvas_Internal
-	}
-	private btnMap_Internal: mw.StaleButton
-	public get btnMap(): mw.StaleButton {
-		if(!this.btnMap_Internal&&this.uiWidgetBase) {
-			this.btnMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/mapCanvas/btnMap') as mw.StaleButton
-		}
-		return this.btnMap_Internal
-	}
-	private textMap_Internal: mw.TextBlock
-	public get textMap(): mw.TextBlock {
-		if(!this.textMap_Internal&&this.uiWidgetBase) {
-			this.textMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/mapCanvas/textMap') as mw.TextBlock
-		}
-		return this.textMap_Internal
+		return this.textShop_Internal
 	}
 	private soundCanvas_Internal: mw.Canvas
 	public get soundCanvas(): mw.Canvas {
@@ -365,47 +372,40 @@ export default class MainPanel_Generate extends UIScript {
 		}
 		return this.textSound_Internal
 	}
-	private transferCanvas_Internal: mw.Canvas
-	public get transferCanvas(): mw.Canvas {
-		if(!this.transferCanvas_Internal&&this.uiWidgetBase) {
-			this.transferCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/transferCanvas') as mw.Canvas
+	private mapCanvas_Internal: mw.Canvas
+	public get mapCanvas(): mw.Canvas {
+		if(!this.mapCanvas_Internal&&this.uiWidgetBase) {
+			this.mapCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/mapCanvas') as mw.Canvas
 		}
-		return this.transferCanvas_Internal
+		return this.mapCanvas_Internal
 	}
-	private btnCow_Internal: mw.StaleButton
-	public get btnCow(): mw.StaleButton {
-		if(!this.btnCow_Internal&&this.uiWidgetBase) {
-			this.btnCow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/transferCanvas/btnCow') as mw.StaleButton
+	private btnMap_Internal: mw.StaleButton
+	public get btnMap(): mw.StaleButton {
+		if(!this.btnMap_Internal&&this.uiWidgetBase) {
+			this.btnMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/mapCanvas/btnMap') as mw.StaleButton
 		}
-		return this.btnCow_Internal
+		return this.btnMap_Internal
 	}
-	private textCow_Internal: mw.TextBlock
-	public get textCow(): mw.TextBlock {
-		if(!this.textCow_Internal&&this.uiWidgetBase) {
-			this.textCow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/transferCanvas/textCow') as mw.TextBlock
+	private textMap_Internal: mw.TextBlock
+	public get textMap(): mw.TextBlock {
+		if(!this.textMap_Internal&&this.uiWidgetBase) {
+			this.textMap_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/mapCanvas/textMap') as mw.TextBlock
 		}
-		return this.textCow_Internal
+		return this.textMap_Internal
 	}
-	private shopCanvas_Internal: mw.Canvas
-	public get shopCanvas(): mw.Canvas {
-		if(!this.shopCanvas_Internal&&this.uiWidgetBase) {
-			this.shopCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/shopCanvas') as mw.Canvas
+	private resetCanvas_Internal: mw.Canvas
+	public get resetCanvas(): mw.Canvas {
+		if(!this.resetCanvas_Internal&&this.uiWidgetBase) {
+			this.resetCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/resetCanvas') as mw.Canvas
 		}
-		return this.shopCanvas_Internal
+		return this.resetCanvas_Internal
 	}
-	private btnShop_Internal: mw.StaleButton
-	public get btnShop(): mw.StaleButton {
-		if(!this.btnShop_Internal&&this.uiWidgetBase) {
-			this.btnShop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/shopCanvas/btnShop') as mw.StaleButton
+	private btnReset_Internal: mw.StaleButton
+	public get btnReset(): mw.StaleButton {
+		if(!this.btnReset_Internal&&this.uiWidgetBase) {
+			this.btnReset_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/resetCanvas/btnReset') as mw.StaleButton
 		}
-		return this.btnShop_Internal
-	}
-	private textShop_Internal: mw.TextBlock
-	public get textShop(): mw.TextBlock {
-		if(!this.textShop_Internal&&this.uiWidgetBase) {
-			this.textShop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/cnvMainFuntion/shopCanvas/textShop') as mw.TextBlock
-		}
-		return this.textShop_Internal
+		return this.btnReset_Internal
 	}
 	private cnvInteract_Internal: mw.Canvas
 	public get cnvInteract(): mw.Canvas {
@@ -517,6 +517,18 @@ export default class MainPanel_Generate extends UIScript {
         this.btnCode.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
+        this.initLanguage(this.btnBag);
+        this.btnBag.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
+        this.initLanguage(this.btnCow);
+        this.btnCow.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
+        this.initLanguage(this.btnJumpGame);
+        this.btnJumpGame.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        
+	
         this.initLanguage(this.btnFindPath);
         this.btnFindPath.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
@@ -525,32 +537,20 @@ export default class MainPanel_Generate extends UIScript {
         this.btnShield.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        this.initLanguage(this.btnReset);
-        this.btnReset.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
-        
-	
-        this.initLanguage(this.btnBag);
-        this.btnBag.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
-        
-	
-        this.initLanguage(this.btnJumpGame);
-        this.btnJumpGame.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
-        
-	
-        this.initLanguage(this.btnMap);
-        this.btnMap.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        this.initLanguage(this.btnShop);
+        this.btnShop.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         this.initLanguage(this.btnSound);
         this.btnSound.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        this.initLanguage(this.btnCow);
-        this.btnCow.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        this.initLanguage(this.btnMap);
+        this.btnMap.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
-        this.initLanguage(this.btnShop);
-        this.btnShop.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
+        this.initLanguage(this.btnReset);
+        this.btnReset.onClicked.add(() => Event.dispatchToLocal("__BUTTON_CLICKED__"));
         
 	
         // 按钮
@@ -592,25 +592,25 @@ export default class MainPanel_Generate extends UIScript {
         this.initLanguage(this.txtDragonBallNum)
         
 	
+        this.initLanguage(this.textCow)
+        
+	
+        this.initLanguage(this.textRoom)
+        
+	
         this.initLanguage(this.cost)
         
 	
         this.initLanguage(this.cost_1)
         
 	
-        this.initLanguage(this.textRoom)
-        
-	
-        this.initLanguage(this.textMap)
+        this.initLanguage(this.textShop)
         
 	
         this.initLanguage(this.textSound)
         
 	
-        this.initLanguage(this.textCow)
-        
-	
-        this.initLanguage(this.textShop)
+        this.initLanguage(this.textMap)
         
 	
         this.initLanguage(this.txtInteractContent)
@@ -627,10 +627,10 @@ export default class MainPanel_Generate extends UIScript {
 	
         // 未暴露的文本控件
         
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/resetCanvas/TextBlock_1_1") as mw.TextBlock);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/bagCanvas/TextBlock_1") as mw.TextBlock);
         
 	
-        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/bagCanvas/TextBlock_1") as mw.TextBlock);
+        this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/resetCanvas/TextBlock_1_1") as mw.TextBlock);
         
 	
     }
@@ -655,25 +655,25 @@ export default class MainPanel_Generate extends UIScript {
         overrideTextBlockTextSetter(this.txtDragonBallNum);
         
 	
+        overrideTextBlockTextSetter(this.textCow);
+        
+	
+        overrideTextBlockTextSetter(this.textRoom);
+        
+	
         overrideTextBlockTextSetter(this.cost);
         
 	
         overrideTextBlockTextSetter(this.cost_1);
         
 	
-        overrideTextBlockTextSetter(this.textRoom);
-        
-	
-        overrideTextBlockTextSetter(this.textMap);
+        overrideTextBlockTextSetter(this.textShop);
         
 	
         overrideTextBlockTextSetter(this.textSound);
         
 	
-        overrideTextBlockTextSetter(this.textCow);
-        
-	
-        overrideTextBlockTextSetter(this.textShop);
+        overrideTextBlockTextSetter(this.textMap);
         
 	
         overrideTextBlockTextSetter(this.txtInteractContent);
@@ -696,31 +696,31 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.btnCode);
         
 	
+        this.unregisterLanKey(this.btnBag);
+        
+	
+        this.unregisterLanKey(this.btnCow);
+        
+	
+        this.unregisterLanKey(this.btnJumpGame);
+        
+	
         this.unregisterLanKey(this.btnFindPath);
         
 	
         this.unregisterLanKey(this.btnShield);
         
 	
-        this.unregisterLanKey(this.btnReset);
-        
-	
-        this.unregisterLanKey(this.btnBag);
-        
-	
-        this.unregisterLanKey(this.btnJumpGame);
-        
-	
-        this.unregisterLanKey(this.btnMap);
+        this.unregisterLanKey(this.btnShop);
         
 	
         this.unregisterLanKey(this.btnSound);
         
 	
-        this.unregisterLanKey(this.btnCow);
+        this.unregisterLanKey(this.btnMap);
         
 	
-        this.unregisterLanKey(this.btnShop);
+        this.unregisterLanKey(this.btnReset);
         
 	
         // 隐藏文本按钮多语言
@@ -745,25 +745,25 @@ export default class MainPanel_Generate extends UIScript {
         this.unregisterLanKey(this.txtDragonBallNum)
         
 	
+        this.unregisterLanKey(this.textCow)
+        
+	
+        this.unregisterLanKey(this.textRoom)
+        
+	
         this.unregisterLanKey(this.cost)
         
 	
         this.unregisterLanKey(this.cost_1)
         
 	
-        this.unregisterLanKey(this.textRoom)
-        
-	
-        this.unregisterLanKey(this.textMap)
+        this.unregisterLanKey(this.textShop)
         
 	
         this.unregisterLanKey(this.textSound)
         
 	
-        this.unregisterLanKey(this.textCow)
-        
-	
-        this.unregisterLanKey(this.textShop)
+        this.unregisterLanKey(this.textMap)
         
 	
         this.unregisterLanKey(this.txtInteractContent)
@@ -780,10 +780,10 @@ export default class MainPanel_Generate extends UIScript {
 	
         // 隐藏文本多语言
         
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/resetCanvas/TextBlock_1_1") as mw.TextBlock);
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/bagCanvas/TextBlock_1") as mw.TextBlock);
         
 	
-        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/bagCanvas/TextBlock_1") as mw.TextBlock);
+        this.unregisterLanKey(this.uiWidgetBase.findChildByPath("RootCanvas/cnvMainFuntion/resetCanvas/TextBlock_1_1") as mw.TextBlock);
         
 	
     }
