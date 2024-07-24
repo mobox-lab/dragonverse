@@ -44,7 +44,7 @@ export default class TowerUI extends TowerUI_Generate {
             if (GameManager.getStageClient()) {
                 return;
             }
-            UIService.show(TowerShopUI);
+            UIService.show(TowerShopUI, { isShop: false });
         });
         this.destroyBtn.onClicked.add(() => {
             ModuleService.getModule(TowerModuleC).cancelChosenTower();

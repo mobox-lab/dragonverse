@@ -125,7 +125,7 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 	public refreshState() { 
 		this.state = ModuleService.getModule(CardModuleC).getCardState(this._cfgID);
 		if (this.chooseImg?.visible) {//代表现在这个item现在被选中
-			this.chooseBtn.onClicked.broadcast();
+			this.chooseBtn?.onClicked?.broadcast();
 		}
 	}
 

@@ -28,7 +28,10 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	private _state: CardState;
 	private _cfg: ITowerElement;
 	private _selectLevel: number = 0; // 0 1 2
+	public isShop: boolean = true;
+	public showTowerIds: number[] = [];
 	public shopItemUIs: ShopItemUI[] = [];
+	public showShopItemUIs: ShopItemUI[] = [];
 	public opts: {
 		ele?: TowerElementType; // 不存在则为All
 		target?: TowerTargetType; // 不存在则为All
@@ -42,10 +45,9 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		strategy?: TowerStrategyType; // 不存在则为All
 	}) {
 		this.opts = options ?? {};
-		this.shopItemUIs = [];
-		let cfg = GameConfig.Tower.getAllElement();
+		this.showTowerIds = [];
+		const cfg = GameConfig.Tower.getAllElement();
 		for (let i = 0; i < cfg.length; i++) {
-			const item = UIService.create(ShopItemUI);
 			const towerCfg = cfg[i];
 			if(options?.ele && options.ele != towerCfg.elementTy) continue;
 			if(options?.target) {
@@ -57,14 +59,10 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				const sInfo = GlobalData.Shop.getStrategyInfo(towerCfg.id);
 				if(options.strategy !== (sInfo?.strategyKey as TowerStrategyType)) continue;
 			}
-
-			this.shopItemUIs.push(item);
-			item.init(towerCfg.id);
-		}
-		this.towerItemCanvas.removeAllChildren();
-		for (let i = 0; i < this.shopItemUIs.length; i++) {
-			const item = this.shopItemUIs[i];
-			this.towerItemCanvas.addChild(item.uiObject);
+			const state = ModuleService.getModule(CardModuleC).getCardState(towerCfg.id);
+			if(this.isShop && state !== CardState.Lock) continue;
+			if(!this.isShop && state === CardState.Lock) continue;
+			this.showTowerIds.push(towerCfg.id);
 		}
 		this.sortItems();
 	}
@@ -84,7 +82,6 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		});
 		this.infoBtn.onClicked.add(() => {
 			ModuleService.getModule(CardModuleC).btnExecute(this._cfgID, this._state);
-			this.sortItems();
 		}); 
 		for (let i = 0; i < 4; i++) {
 			let item = UIService.create(TowerTagItem_Generate);
@@ -101,7 +98,6 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this.infoLv3.onClicked.add(() => {
 			this.updateInfo(2);
 		})
-		this.setShopItemUIs();
 		this.initDropdowns();		
 	}
 
@@ -247,41 +243,64 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	 * 更新商店里的item
 	 */
 	public refreshItemsState() {
-		for (let item of this.shopItemUIs) {
+		for (let item of this.showShopItemUIs) {
 			item.refreshState();
 		}
 		this.sortItems();
+		if(this.isShop) { // 商店 购买成功刷新列表
+			this.setShopItemUIs({ ...this.opts });
+			this.showShopItemUIs[0]?.chooseBtn?.onClicked?.broadcast();
+		} else { // 兵营 装备/卸载
+			const target = this.showShopItemUIs.find((item) => item.cfgID === this._cfgID) ?? this.shopItemUIs[0];
+			target?.chooseBtn?.onClicked?.broadcast();
+		}
 	}
 
 	public sortItems() {
-		this.shopItemUIs.sort((a, b) => {
-			if(a.state == b.state) {
-				const aPrice = a?.cfg?.shopPrice ?? 0;
-				const bPrice = b?.cfg?.shopPrice ?? 0;
+		this.showTowerIds.sort((a, b) => {
+			const aCfg = GameConfig.Tower.getElement(a)
+			const bCfg = GameConfig.Tower.getElement(b);
+			const aState = ModuleService.getModule(CardModuleC).getCardState(a);
+			const bState = ModuleService.getModule(CardModuleC).getCardState(b);
+			if(aState == bState) {
+				const aPrice = aCfg?.shopPrice ?? 0;
+				const bPrice = bCfg?.shopPrice ?? 0;
 				if(aPrice == bPrice)
-					return (a?.cfg?.elementTy ?? 0) - (b?.cfg?.elementTy ?? 0);
+					return (aCfg?.elementTy ?? 0) - (bCfg?.elementTy ?? 0);
 				return aPrice - bPrice;
 			}
-			return b.state - a.state;
+			return bState - aState;
 		});
-
-		for (let i = 0; i < this.shopItemUIs.length; i++) {
-			this.rootCanvas.addChild(this.shopItemUIs[i].uiWidgetBase);
-			this.towerItemCanvas.addChild(this.shopItemUIs[i].uiWidgetBase);
+		this.showShopItemUIs = [];
+		this.towerItemCanvas.removeAllChildren();
+		for (let i = 0; i < this.showTowerIds.length; i++) {
+			const id = this.showTowerIds[i];
+			const item = UIService.create(ShopItemUI);
+			item.init(id);
+			this.towerItemCanvas.addChild(item.uiObject);
+			this.showShopItemUIs.push(item);
 		}
 	}
 
+	// 兵营/商店
+	public setIsShop(isShop?: boolean) {
+		this.isShop = isShop ?? false;
+		if (this.isShop) { // 商店
+			this.txt_title.text = GameConfig.Language.getElement("UI_5").Value;
+		} else { // 兵营
+			this.txt_title.text = GameConfig.Language.getElement("Tower_setting_3").Value;
+		}
+	}
 	/**
 	 * 设置显示时触发
 	 */
-	protected onShow(...params: any[]) {
+	protected onShow(options:{isShop?: boolean, cfgId?: number}, ...params: any[]) {
 		TweenCommon.popUpShow(this.rootCanvas);
-		MGSTool.page("bag");
-		if (!this._cfgID) {//没有点过的话默认第一个
-			this.shopItemUIs[0].chooseBtn.onClicked.broadcast();
-		}
-		this.sortItems();
-		
+		const { isShop, cfgId } = options ?? {}
+		this.setIsShop(isShop);
+		this.setShopItemUIs({...this.opts});
+		const target = cfgId ? this.showShopItemUIs.find(item => item.cfgID == cfgId) : this.showShopItemUIs[0];
+		target?.chooseBtn?.onClicked?.broadcast();
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             TweenCommon.popUpHide(this.rootCanvas, () => {
                 UIService.hideUI(this);

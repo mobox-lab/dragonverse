@@ -16,6 +16,7 @@
  */
 
 import { CardActions } from "../../Actions";
+import { GlobalData } from "../../const/GlobalData";
 
 export default class CardModuleData extends Subdata {
     /**已解锁的塔 */
@@ -42,14 +43,14 @@ export default class CardModuleData extends Subdata {
      * 数据初始化，给这些数据一个默认值
      */
     protected override initDefaultData(): void {
-        this._unlockCards = [1001];
-        this._equipCards = [1001];
+        this._unlockCards = [GlobalData.Tower.initUnlockTower];
+        this._equipCards = [GlobalData.Tower.initUnlockTower];
     }
 
     protected onDataInit(): void {
         console.error("数据初始化");
-        if (this._unlockCards == undefined) this._unlockCards = [1001];
-        if (this._unlockCards == undefined) this._equipCards = [1001];
+        if (this._unlockCards == undefined) this._unlockCards = [GlobalData.Tower.initUnlockTower];
+        if (this._unlockCards == undefined) this._equipCards = [GlobalData.Tower.initUnlockTower];
     }
 
     public addUnlockCard(cardID: number) {
