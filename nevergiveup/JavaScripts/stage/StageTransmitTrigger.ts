@@ -1,7 +1,10 @@
-﻿import GameServiceConfig from "../const/GameServiceConfig";
+﻿import { GameConfig } from "../config/GameConfig";
+import GameServiceConfig from "../const/GameServiceConfig";
+import { GlobalData } from "../const/GlobalData";
 import Nolan from "../depend/nolan/Nolan";
 import EnvironmentManager from "../gameplay/interactiveObj/EnvironmentManager";
 import JumpGameTransition_Generate from "../ui-generate/jumpGame/JumpGameTransition_generate";
+import CutsceneUI from "../UI/CutsceneUI";
 import Utils from "../Utils";
 
 @Component
@@ -61,26 +64,19 @@ export default class StageTransmitTrigger extends Script {
     protected onDestroy(): void {
 
     }
-    
-
-    private showTransitionAnimation(callBack: () => void) { 
-        let ui = UIService.show(JumpGameTransition_Generate)
-        callBack();
-        TimeUtil.delaySecond(2).then(() => {
-            ui.hide();
-        });
-    }
 
     public transmitPlayerClient(player: mw.Player) {
-        this.showTransitionAnimation(() => {
-            const character = player.character;
-            character.worldTransform = new Transform(
-                this.location,
-                this.isRefreshObjectRotation ? this.endRotation : character.worldTransform.rotation,
-                character.worldTransform.scale
-            );
-            if (this.isRefreshCameraRotation) this._nolan.lookToward(this.endRotation.rotateVector(Vector.forward));
-            EnvironmentManager.getInstance().setEnvironment(this.sceneID);
-        })
+        const character = player.character;
+        character.worldTransform = new Transform(
+            this.location,
+            this.isRefreshObjectRotation ? this.endRotation : character.worldTransform.rotation,
+            character.worldTransform.scale
+        );
+        if (this.isRefreshCameraRotation) this._nolan.lookToward(this.endRotation.rotateVector(Vector.forward));
+        EnvironmentManager.getInstance().setEnvironment(this.sceneID);
+        UIService.show(CutsceneUI);
+        TimeUtil.delaySecond(GlobalData.Anim.stageCrossAnimSeconds).then(() => {
+            UIService.getUI(CutsceneUI).hideCanvas();
+        });
     }
 }
