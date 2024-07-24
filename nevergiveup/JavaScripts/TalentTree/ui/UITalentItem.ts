@@ -1,10 +1,8 @@
 import Gtk from "gtoolkit";
 import { Yoact } from "../../depend/yoact/Yoact";
-import { GameConfig } from "../../config/GameConfig";
-import { ITalentBuffElement } from "../../config/TalentBuff";
-import { ITalentTreeElement } from "../../config/TalentTree";
 import TalentItem_Generate from "../../ui-generate/TalentTree/TalentItem_generate";
 import { TalentItem } from "./TalentItem";
+import { ETalentType } from "../../const/enum";
 
 export class UITalentItem extends TalentItem_Generate {
     private _currentLevel = Yoact.createYoact({count: 0});
@@ -24,16 +22,18 @@ export class UITalentItem extends TalentItem_Generate {
 
         this.textTalentLevel.size = new Vector2(80, 15);
         this.textTalentLevel.position = new Vector2(0, 70);
-        this.textTalentLevel.fontSize = 16;
 
         this.textTalentName.size = new Vector2(80, 15);
         this.textTalentName.position = new Vector2(0, 100);
-        this.textTalentName.fontSize = 16;
 
         Yoact.bindYoact(() => {
             const currentLevel = this._currentLevel.count;
             const maxLevel = this._maxLevel.count;
-            Gtk.trySetText(this.textTalentLevel, `${currentLevel}/${maxLevel}`);
+            if (this._talent?.type === ETalentType.Base) {
+                Gtk.trySetText(this.textTalentLevel, `${currentLevel}/${maxLevel}`);
+            } else {
+                Gtk.trySetText(this.textTalentLevel, `${currentLevel ? currentLevel : ""}`);
+            }
         });
         Yoact.bindYoact(() => {
             if (this.canActive.status) {

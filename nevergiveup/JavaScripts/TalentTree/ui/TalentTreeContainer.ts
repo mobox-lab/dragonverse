@@ -87,7 +87,6 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
         const level = talent.level;
         const data = talent.buff.value;
         const type = talent.buff.valueType;
-        const cost = talent.data.cost;
         this._levelInfo.forEach((info, index) => {
             if (index < data.length) {
                 info[0] && Gtk.trySetVisibility(info[0], true);
@@ -95,20 +94,19 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
                 info[1].text = type === ETalentBuffValue.Integer ? `${data[index]}` : `${data[index]}%`;
                 info[1].setFontColorByHex("#FFFFFF");
                 info[1].renderOpacity = 0.5;
-                info[1].fontSize = 16;
                 if (level - 1 === index) {
                     info[1].setFontColorByHex("#FFCB1C");
                     info[1].renderOpacity = 1;
-                    info[1].fontSize = 24;
                 }
-                this.goldTxt_1.text = `${cost[0][level + 1] ?? 0}`;
-                this.techPointTxt_1.text = `${cost[1][level + 1] ?? 0}`;
             } else {
                 info[0] && Gtk.trySetVisibility(info[0], false);
                 Gtk.trySetVisibility(info[1], false);
             }
         });
         const value = talent.getCurrentBuffValue();
+        const cost = talent.getUpdateLevelCost();
+        this.goldTxt_1.text = `${cost[0] ?? "--"}`;
+        this.techPointTxt_1.text = `${cost[1] ?? "--"}`;
         this.infoTxtDesc.text = StringUtil.format(talent.data.descCN, value);
         this.infoBtn.enable = talent.canActive.status && talent.level < talent.maxLevel;
     }
