@@ -85,6 +85,13 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.mLevel_1_Internal
 	}
+	private teamCanvas_Internal: mw.Canvas
+	public get teamCanvas(): mw.Canvas {
+		if(!this.teamCanvas_Internal&&this.uiWidgetBase) {
+			this.teamCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/teamCanvas') as mw.Canvas
+		}
+		return this.teamCanvas_Internal
+	}
 	private moneyCanvas_Internal: mw.Canvas
 	public get moneyCanvas(): mw.Canvas {
 		if(!this.moneyCanvas_Internal&&this.uiWidgetBase) {
@@ -425,6 +432,9 @@ export default class LobbyUI_Generate extends UIScript {
 	
 	   //文本多语言
 	   
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/teamCanvas/LineupTxt") as any);
+	   
+	
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
