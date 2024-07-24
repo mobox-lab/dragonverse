@@ -201,7 +201,11 @@ export default abstract class TowerBase implements BuffBag {
             // 解决buff or 父节点还没ready的处理方式
             if (this.tower?.isReady && buff.go?.isReady && buff.go.parent != this.tower) {
                 buff.go.parent = this.tower;
-                buff.go.localTransform.position = Vector.zero;
+                const position =
+                    Array.isArray(buff.cfg.guidPosition) && buff.cfg.guidPosition.length === 3
+                        ? new Vector(buff.cfg.guidPosition[0], buff.cfg.guidPosition[1], buff.cfg.guidPosition[2])
+                        : Vector.zero;
+                buff.go.localTransform.position = position;
             }
         }
     }
