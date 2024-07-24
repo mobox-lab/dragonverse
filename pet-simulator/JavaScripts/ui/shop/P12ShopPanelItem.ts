@@ -1,9 +1,9 @@
 import Gtk from "gtoolkit";
+import { utils } from "../../util/uitls";
 import { P12ShopItem } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";
 import { GameConfig } from "../../config/GameConfig";
 import Online_shopItem_Generate from "../../ui-generate/Onlineshop/Online_shopItem_generate";
-import { utils } from "../../util/uitls";
 
 export class P12ShopPanelItem extends Online_shopItem_Generate {
     private _count = Yoact.createYoact<{ data: number }>({data: 0});
@@ -14,6 +14,10 @@ export class P12ShopPanelItem extends Online_shopItem_Generate {
     protected onStart(): void {
         this.initElement();
 
+        this.btn_Item.onClicked.add(() => {
+            if (this._count.data > 0) return;
+            this.onChange.call(this, this._count.data);
+        });
         this.btn_Up.onClicked.add(() => {
             this._count.data++;
             this.onChange.call(this, this._count.data);
