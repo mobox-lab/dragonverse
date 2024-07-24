@@ -28,6 +28,8 @@ import TowerBase from './TowerBase';
 export default class BuffTower extends TowerBase {
     protected canBuffProperty: string[] = ["findRange"];
     protected _towerCha: Character;
+    protected _idleAnim: Animation;
+    protected _weaponRoot: GameObject;
 
     constructor(info: TowerInfo) {
         super(info, async () => {
@@ -35,10 +37,13 @@ export default class BuffTower extends TowerBase {
             if (this.tower && this.tower instanceof Character) {
                 this._towerCha = this.tower as Character;
                 this.tower.asyncReady().then(async () => {
-                    (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((weaponRoot) => {
-                        this._towerCha.attachToSlot(weaponRoot, this.cfg.weaponSlot ?? HumanoidSlotType.RightHand);
-                        weaponRoot.localTransform.position = this.cfg.weaponLocation ? new Vector(...this.cfg.weaponLocation) : Vector.zero;
-                        weaponRoot.localTransform.rotation = Rotation.zero;
+                    this._idleAnim = this._towerCha.loadAnimation(this.cfg.idleAnim);
+                    this._idleAnim.loop = 999999;
+                    (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((go) => {
+                        this._weaponRoot = go;
+                        this._towerCha.attachToSlot(this._weaponRoot, this.cfg.weaponSlot ?? HumanoidSlotType.RightHand);
+                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation ? new Vector(...this.cfg.weaponLocation) : Vector.zero;
+                        this._weaponRoot.localTransform.rotation = Rotation.zero;
                     });
                 });
             }
@@ -56,11 +61,22 @@ export default class BuffTower extends TowerBase {
     public onUpdate(dt: number): void {
         if (!this._useUpdate) return;
         super.onUpdate(dt);
+        if (!this._idleAnim?.isPlaying) {
+            this._idleAnim?.play();
+        }
         this.buffCheck(dt);
     }
 
     public onDestroy(): void {
         super.onDestroy();
+        if (this._weaponRoot) {
+            this._weaponRoot.parent = null;
+            GameObjPool.despawn(this._weaponRoot);
+        }
+        if (this._idleAnim) {
+            this._idleAnim.stop();
+            this._idleAnim = null;
+        }
     }
 
     protected buffCheck(dt: number) {
