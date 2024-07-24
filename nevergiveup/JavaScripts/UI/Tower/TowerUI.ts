@@ -52,6 +52,7 @@ export default class TowerUI extends TowerUI_Generate {
         Event.addLocalListener(TowerEvent.ChooseTower, (ui: UIScript) => {
             this.destroyBtn.visibility = ui == null ? SlateVisibility.Hidden : SlateVisibility.Visible;
         });
+        UIService.getUI(TowerUI).setStageTowerUI(false);
     }
 
     get towerItemUIs() {
@@ -77,24 +78,27 @@ export default class TowerUI extends TowerUI_Generate {
     }
 
     public setStageTowerUI(inStage?: boolean) {
+        const [leftUpPosX, leftUpPosY] = [340, 850];
+        const [leftPadding, gap, itemWidth] = [215, 15, 99];
+        const maxWidth = leftPadding + (itemWidth + gap) * TowerConfigConstants.maxEquip;  // 最大可能长度（装满TowerConfigConstants.maxEquip个塔） 
         if (inStage) {
-            let containerWidth = 210.00;
+            let containerWidth = leftPadding;
             for (let i = 0; i < TowerConfigConstants.maxEquip; i++) {
-                if(this._towerItemUIs[i]?.cfg) containerWidth += 15+116;
+                if (this._towerItemUIs[i]?.cfg) containerWidth += gap + itemWidth;
                 Gtk.trySetVisibility(this._towerItemUIs[i], this._towerItemUIs[i]?.cfg ? mw.SlateVisibility.Visible : mw.SlateVisibility.Hidden);
             }
             this.mImage_5.size = new Vector(containerWidth, 216.00);
             this.shopBtn.size = new Vector(containerWidth, 216.00);
-            this.destroyBtn.position = new Vector(containerWidth-20, -30);
-            this.towerCanvas.position = new Vector((1068 - containerWidth)/2 +426, 850.00);
+            this.destroyBtn.position = new Vector(containerWidth - 20, -30);
+            this.towerCanvas.position = new Vector((maxWidth - containerWidth) / 2 + leftUpPosX, leftUpPosY);
         } else {
             for (let i = 0; i < TowerConfigConstants.maxEquip; i++) {
                 Gtk.trySetVisibility(this._towerItemUIs[i], mw.SlateVisibility.Visible);
             }
-            this.mImage_5.size = new Vector(1273, 216.00);
-            this.shopBtn.size = new Vector(1273, 216.00);
-            this.destroyBtn.position = new Vector(1273-20, -30);
-            this.towerCanvas.position = new Vector(426.00, 850.00);
+            this.mImage_5.size = new Vector(maxWidth, 216.00);
+            this.shopBtn.size = new Vector(maxWidth, 216.00);
+            this.destroyBtn.position = new Vector(maxWidth - 20, -30);
+            this.towerCanvas.position = new Vector(leftUpPosX, leftUpPosY);
         }
     }
     public setPriceVisible(visibility: boolean) {
