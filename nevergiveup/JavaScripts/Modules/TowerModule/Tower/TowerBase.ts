@@ -50,6 +50,8 @@ export default abstract class TowerBase implements BuffBag {
     public property: TowerProperty;
     // 临时存的，用来兼容之前的代码
     public property2: TowerProperty;
+    // 暖机的特效
+    public propertyWarmUp: TowerProperty;
     public oriTransform: Transform;
     private _attackTags: EEnemyComponentType[];
     protected canBuffProperty: string[] = [];
@@ -218,7 +220,11 @@ export default abstract class TowerBase implements BuffBag {
     updateAttributes() {
         for (const p in this.property) {
             // console.log(`${property}: ${this.property[property]}`);
-            this.property[p] = this.property2[p] + this.calculateAttribute(p);
+            if (this.isWarmUp) {
+                this.property[p] = this.property2[p] + this.calculateAttribute(p) + this.propertyWarmUp[p];
+            } else {
+                this.property[p] = this.property2[p] + this.calculateAttribute(p);
+            }
         }
         console.log("hsfproperty====================== ", JSON.stringify(this.property));
         Event.dispatchToLocal(TowerEvent.UpdateInfo, this);
@@ -331,6 +337,12 @@ export default abstract class TowerBase implements BuffBag {
                     attackTime: this.property.attackTime - warmUp.cfg.warmUpAttackTime,
                     findRange: this.property.findRange + warmUp.cfg.warmUpFindRange,
                     attackDamage: this.property.attackDamage + warmUp.cfg.warmUpAttackDamage,
+                };
+                this.propertyWarmUp = {
+                    ...this.property,
+                    attackTime: warmUp.cfg.warmUpAttackTime,
+                    findRange: warmUp.cfg.warmUpFindRange,
+                    attackDamage: warmUp.cfg.warmUpAttackDamage,
                 };
             }
         }
