@@ -50,13 +50,8 @@ export default class FarmTower extends TowerBase {
                     this._idleAnim.loop = 999999;
                     (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((go) => {
                         this._weaponRoot = go;
-                        this._towerCha.attachToSlot(
-                            this._weaponRoot,
-                            this.cfg.weaponSlot ?? HumanoidSlotType.RightHand
-                        );
-                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation
-                            ? new Vector(...this.cfg.weaponLocation)
-                            : Vector.zero;
+                        this._towerCha.attachToSlot(this._weaponRoot, this.cfg.weaponSlot ?? HumanoidSlotType.RightHand);
+                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation ? new Vector(...this.cfg.weaponLocation) : Vector.zero;
                         this._weaponRoot.localTransform.rotation = Rotation.zero;
                     });
                 });
@@ -77,6 +72,18 @@ export default class FarmTower extends TowerBase {
     public onUpdate(dt: number): void {
         if (!this._useUpdate) return;
         super.onUpdate(dt);
+        if (this._attackAnim?.isPlaying) {
+            //判空是为了让模型还没加载出来也能攻击
+            this._animationTime -= dt;
+            if (this._animationTime <= 0) {
+                this._animationTime = 0;
+                if (!this._idleAnim?.isPlaying) {
+                    this._idleAnim?.play();
+                }
+            }
+        } else if (!this._idleAnim?.isPlaying) {
+            this._idleAnim?.play();
+        }
         this.farmCheck(dt);
     }
 

@@ -20,6 +20,8 @@ import { EnergyModuleC } from "../Modules/Energy/EnergyModule";
 import GameServiceConfig from "../const/GameServiceConfig";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 import { TalentTreeContainer } from "../TalentTree/ui/TalentTreeContainer";
+import { GameManager } from "../GameManager";
+import TowerShopUI from "./Tower/TowerShopUI";
 
 export default class LobbyUI extends LobbyUI_Generate {
 	/** 
@@ -34,7 +36,10 @@ export default class LobbyUI extends LobbyUI_Generate {
 			this.updateExp();
 		});
 		this.cardBtn.onClicked.add(() => {
-			UIService.getUI(TowerUI).shopBtn.onClicked.broadcast();
+            if (GameManager.getStageClient()) {
+                return;
+            }
+            UIService.show(TowerShopUI, { isShop: true });
 		})
 		this.settingBtn.onClicked.add(() => {
 			UIService.show(SettingUI);
@@ -61,7 +66,10 @@ export default class LobbyUI extends LobbyUI_Generate {
             ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
-    		UIService.getUI(TowerUI).shopBtn.onClicked.broadcast();
+            if (GameManager.getStageClient()) {
+                return;
+            }
+            UIService.show(TowerShopUI, { isShop: true });
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
 			UIService.show(SettingUI);

@@ -10,6 +10,7 @@
 import { GameManager } from "../GameManager";
 import { EnergyModuleS } from "../Modules/Energy/EnergyModule";
 import { TweenCommon } from "../TweenCommon";
+import { TipsManager } from "../UI/Tips/CommonTipsManagerUI";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
 import GameServiceConfig from "../const/GameServiceConfig";
@@ -233,6 +234,7 @@ export default class StageTrigger extends Script {
         Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`);
         if (!ModuleService.getModule(EnergyModuleS).isAfford(playerID, GameServiceConfig.STAMINA_COST_START_GAME)) {
             Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
+            TipsManager.showTips(GameConfig.Language.getElement("Text_insufficientStamina").Value);
             return;
         }
         ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
