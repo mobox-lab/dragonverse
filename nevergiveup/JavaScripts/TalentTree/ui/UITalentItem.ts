@@ -5,10 +5,7 @@ import { TalentItem } from "./TalentItem";
 import { ETalentType } from "../../const/enum";
 
 export class UITalentItem extends TalentItem_Generate {
-    private _currentLevel = Yoact.createYoact({count: 0});
-    private _maxLevel = Yoact.createYoact({count: 0});
     private _talent: TalentItem;
-
     public canActive = Yoact.createYoact({status: false});
 
     protected onStart(): void {
@@ -26,15 +23,6 @@ export class UITalentItem extends TalentItem_Generate {
         this.textTalentName.size = new Vector2(80, 15);
         this.textTalentName.position = new Vector2(0, 100);
 
-        Yoact.bindYoact(() => {
-            const currentLevel = this._currentLevel.count;
-            const maxLevel = this._maxLevel.count;
-            if (this._talent?.type === ETalentType.Base) {
-                Gtk.trySetText(this.textTalentLevel, `${currentLevel}/${maxLevel}`);
-            } else {
-                Gtk.trySetText(this.textTalentLevel, `${currentLevel ? currentLevel : ""}`);
-            }
-        });
         Yoact.bindYoact(() => {
             if (this.canActive.status) {
                 Gtk.trySetVisibility(this.mNotActive, false);
@@ -65,7 +53,12 @@ export class UITalentItem extends TalentItem_Generate {
         this.mItem.normalImageGuid = this._talent.data.icon;
         this.mNotActive.imageGuid = this._talent.data.iconGray;
         this.canActive.status = this._talent.canActive.status;
-        this._currentLevel.count = this._talent.level;
-        this._maxLevel.count = this._talent.maxLevel;
+        const level = this._talent.level;
+        const maxLevel = this._talent.maxLevel;
+        if (this._talent.type === ETalentType.Base) {
+            Gtk.trySetText(this.textTalentLevel, `${level}/${maxLevel}`);
+        } else {
+            Gtk.trySetText(this.textTalentLevel, `${level ? level : ""}`);
+        }
     }
 }
