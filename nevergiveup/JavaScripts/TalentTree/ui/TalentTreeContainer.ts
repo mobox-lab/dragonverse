@@ -94,7 +94,7 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
                 info[1].text = type === ETalentBuffValue.Integer ? `${data[index]}` : `${data[index]}%`;
                 info[1].setFontColorByHex("#FFFFFF");
                 info[1].renderOpacity = 0.5;
-                if (level - 1 === index || type === ETalentType.Peak) {
+                if (level - 1 === index || talent.type === ETalentType.Peak) {
                     info[1].setFontColorByHex("#FFCB1C");
                     info[1].renderOpacity = 1;
                 }
