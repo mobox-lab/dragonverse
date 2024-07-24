@@ -43,6 +43,13 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.txt_title_Internal
 	}
+	private txt_title_1_Internal: mw.TextBlock
+	public get txt_title_1(): mw.TextBlock {
+		if(!this.txt_title_1_Internal&&this.uiWidgetBase) {
+			this.txt_title_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/txt_title_1') as mw.TextBlock
+		}
+		return this.txt_title_1_Internal
+	}
 	private img_dec1_Internal: mw.Image
 	public get img_dec1(): mw.Image {
 		if(!this.img_dec1_Internal&&this.uiWidgetBase) {
@@ -348,6 +355,9 @@ export default class TowerShopUI_Generate extends UIScript {
 	   //文本多语言
 	   
 	   this.initLanguage(this.txt_title)
+	   
+	
+	   this.initLanguage(this.txt_title_1)
 	   
 	
 	   this.initLanguage(this.siftText)

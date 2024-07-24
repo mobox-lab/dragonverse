@@ -14,6 +14,7 @@ import { TipsManager } from "../UI/Tips/CommonTipsManagerUI";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
 import GameServiceConfig from "../const/GameServiceConfig";
+import { GlobalEventName } from "../const/enum";
 import Log4Ts from "../depend/log4ts/Log4Ts";
 import { StageUtil } from "./Stage";
 import { UIStageSelect } from "./ui/UIStageSelect";
@@ -234,7 +235,7 @@ export default class StageTrigger extends Script {
         Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`);
         if (!ModuleService.getModule(EnergyModuleS).isAfford(playerID, GameServiceConfig.STAMINA_COST_START_GAME)) {
             Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
-            TipsManager.showTips(GameConfig.Language.getElement("Text_insufficientStamina").Value);
+            mw.Event.dispatchToClient(Player.getPlayer(playerID), GlobalEventName.ServerTipsEventName, GameConfig.Language.getElement("Text_insufficientStamina").Value);
             return;
         }
         ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);

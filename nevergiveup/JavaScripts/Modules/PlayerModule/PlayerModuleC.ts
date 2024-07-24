@@ -13,6 +13,7 @@ import LobbyUI from "../../UI/LobbyUI";
 import SettingUI from "../../UI/SettingUI";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import { GameConfig } from "../../config/GameConfig";
+import { GlobalEventName } from "../../const/enum";
 import { ItemType } from "../../tool/Enum";
 import { FirstEvent, MGSTool } from '../../tool/MGSTool';
 import { VoiceEvent } from "../../tool/SoundUtil";
@@ -43,6 +44,10 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         Event.addLocalListener(VoiceEvent.Attack, (value: number) => {
             this.data.attackVoiceFactor = value;
             this.server.net_saveSetting(this.data.bgmVoiceFactor, this.data.attackVoiceFactor)
+        })
+        
+        Event.addServerListener(GlobalEventName.ServerTipsEventName, (str: string) => {
+            TipsManager.showTips(str);
         })
     }
 
