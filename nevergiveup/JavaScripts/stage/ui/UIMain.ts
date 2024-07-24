@@ -86,7 +86,7 @@ export class UIMain extends MainUI_Generate {
             this.setSpeed(this.curSpeed);
         });
 
-        this.mSpeeddown.onClicked.add(() => {
+        this.mSpeedDown.onClicked.add(() => {
             this.speedDown();
         });
     }
@@ -103,20 +103,20 @@ export class UIMain extends MainUI_Generate {
     play() {
         this.mPlay.visibility = SlateVisibility.Collapsed;
         this.mPause.visibility = SlateVisibility.Visible;
-        this.mSpeed.text = Math.ceil(this.curSpeed).toFixed(0) + "x";
+        // this.mSpeed.text = Math.ceil(this.curSpeed).toFixed(0) + "x";
         this.playing = true;
     }
 
     pause() {
         this.mPlay.visibility = SlateVisibility.Visible;
         this.mPause.visibility = SlateVisibility.Collapsed;
-        this.mSpeed.text = GameConfig.Language.getElement("Text_Pause").Value
+        // this.mSpeed.text = GameConfig.Language.getElement("Text_Pause").Value
         this.playing = false;
     }
 
     speedUp() {
         this.mSpeedUp.visibility = SlateVisibility.Collapsed;
-        this.mSpeeddown.visibility = SlateVisibility.Visible;
+        this.mSpeedDown.visibility = SlateVisibility.Visible;
         this.curSpeed = this.maxSpeed;
         if (this.playing) {
             this.setSpeed(this.curSpeed);
@@ -126,7 +126,7 @@ export class UIMain extends MainUI_Generate {
 
     speedDown() {
         this.mSpeedUp.visibility = SlateVisibility.Visible;
-        this.mSpeeddown.visibility = SlateVisibility.Collapsed;
+        this.mSpeedDown.visibility = SlateVisibility.Collapsed;
         this.curSpeed = 1;
         if (this.playing) {
             this.setSpeed(this.curSpeed);

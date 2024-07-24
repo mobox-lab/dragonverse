@@ -78,9 +78,9 @@ export default class TowerUI extends TowerUI_Generate {
 
     public setStageTowerUI(inStage?: boolean) {
         if (inStage) {
-            let containerWidth = 15;
+            let containerWidth = 210.00;
             for (let i = 0; i < TowerConfigConstants.maxEquip; i++) {
-                if(this._towerItemUIs[i]?.cfg) containerWidth += 15+116
+                if(this._towerItemUIs[i]?.cfg) containerWidth += 15+116;
                 Gtk.trySetVisibility(this._towerItemUIs[i], this._towerItemUIs[i]?.cfg ? mw.SlateVisibility.Visible : mw.SlateVisibility.Hidden);
             }
             this.mImage_5.size = new Vector(containerWidth, 216.00);
@@ -91,9 +91,9 @@ export default class TowerUI extends TowerUI_Generate {
             for (let i = 0; i < TowerConfigConstants.maxEquip; i++) {
                 Gtk.trySetVisibility(this._towerItemUIs[i], mw.SlateVisibility.Visible);
             }
-            this.mImage_5.size = new Vector(1068.00, 216.00);
-            this.shopBtn.size = new Vector(1068.00, 216.00);
-            this.destroyBtn.position = new Vector(1068.00-20, -30);
+            this.mImage_5.size = new Vector(1273, 216.00);
+            this.shopBtn.size = new Vector(1273, 216.00);
+            this.destroyBtn.position = new Vector(1273-20, -30);
             this.towerCanvas.position = new Vector(426.00, 850.00);
         }
     }

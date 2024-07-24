@@ -120,13 +120,6 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.towerTxt_Internal
 	}
-	private towerTxt_1_Internal: mw.TextBlock
-	public get towerTxt_1(): mw.TextBlock {
-		if(!this.towerTxt_1_Internal&&this.uiWidgetBase) {
-			this.towerTxt_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/towerCanvas/towerTxt_1') as mw.TextBlock
-		}
-		return this.towerTxt_1_Internal
-	}
 	private goldCanvas_Internal: mw.Canvas
 	public get goldCanvas(): mw.Canvas {
 		if(!this.goldCanvas_Internal&&this.uiWidgetBase) {
@@ -225,12 +218,12 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.mPlay_Internal
 	}
-	private mSpeeddown_Internal: mw.Button
-	public get mSpeeddown(): mw.Button {
-		if(!this.mSpeeddown_Internal&&this.uiWidgetBase) {
-			this.mSpeeddown_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSpeedControl/Canvas_3/mSpeeddown') as mw.Button
+	private mSpeedDown_Internal: mw.Button
+	public get mSpeedDown(): mw.Button {
+		if(!this.mSpeedDown_Internal&&this.uiWidgetBase) {
+			this.mSpeedDown_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSpeedControl/Canvas_3/mSpeedDown') as mw.Button
 		}
-		return this.mSpeeddown_Internal
+		return this.mSpeedDown_Internal
 	}
 	private mSpeedUp_Internal: mw.Button
 	public get mSpeedUp(): mw.Button {
@@ -238,13 +231,6 @@ export default class MainUI_Generate extends UIScript {
 			this.mSpeedUp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSpeedControl/Canvas_3/mSpeedUp') as mw.Button
 		}
 		return this.mSpeedUp_Internal
-	}
-	private mSpeed_Internal: mw.TextBlock
-	public get mSpeed(): mw.TextBlock {
-		if(!this.mSpeed_Internal&&this.uiWidgetBase) {
-			this.mSpeed_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSpeedControl/Canvas_3/mSpeed') as mw.TextBlock
-		}
-		return this.mSpeed_Internal
 	}
 	private bagCanvas_Internal: mw.Canvas
 	public get bagCanvas(): mw.Canvas {
@@ -305,10 +291,10 @@ export default class MainUI_Generate extends UIScript {
 	   this.mPlay.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
-	   this.mSpeeddown.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "mSpeeddown");
+	   this.mSpeedDown.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "mSpeedDown");
 	   })
-	   this.mSpeeddown.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   this.mSpeedDown.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 	   this.mSpeedUp.onClicked.add(()=>{
@@ -352,9 +338,6 @@ export default class MainUI_Generate extends UIScript {
 	   this.initLanguage(this.towerTxt)
 	   
 	
-	   this.initLanguage(this.towerTxt_1)
-	   
-	
 	   this.initLanguage(this.goldTxt)
 	   
 	
@@ -364,12 +347,12 @@ export default class MainUI_Generate extends UIScript {
 	   this.initLanguage(this.mSkipCount)
 	   
 	
-	   this.initLanguage(this.mSpeed)
-	   
-	
 	   //文本多语言
 	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSpeedControl/Canvas_3/mPause/TextBlock_1") as any);
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSpeedControl/Canvas_3/mSpeedDown/TxtSpeedDown") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSpeedControl/Canvas_3/mSpeedUp/TxtSpeedUp") as any);
 	   
 	
 

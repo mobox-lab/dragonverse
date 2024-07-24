@@ -44,3 +44,7 @@ export enum ETalentBuffValue {
     Integer = 1, // 数字
     Percent // 百分比
 }
+
+export enum GlobalEventName {
+    ServerTipsEventName = "TD_SERVER_TIPS_EVENT_NAME"
+}

@@ -78,6 +78,15 @@ export default class TowerUI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/towerCanvas/Settingup/ButtonSet/TextFoldBtn") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/towerCanvas/Settingup/TextSet") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/towerCanvas/Lineup/TextLineup") as any);
+	   
+	
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

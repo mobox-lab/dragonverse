@@ -183,6 +183,13 @@ export default class TaskItem_Generate extends UIScript {
 		}
 		return this.btnLock_Internal
 	}
+	private txt_lock_Internal: mw.TextBlock
+	public get txt_lock(): mw.TextBlock {
+		if(!this.txt_lock_Internal&&this.uiWidgetBase) {
+			this.txt_lock_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/canvasLock/txt_lock') as mw.TextBlock
+		}
+		return this.txt_lock_Internal
+	}
 	private canvasFinish_Internal: mw.Canvas
 	public get canvasFinish(): mw.Canvas {
 		if(!this.canvasFinish_Internal&&this.uiWidgetBase) {
@@ -252,6 +259,9 @@ export default class TaskItem_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txt_Des)
+	   
+	
+	   this.initLanguage(this.txt_lock)
 	   
 	
 	   this.initLanguage(this.txt_complete)
