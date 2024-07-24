@@ -126,7 +126,8 @@ export class StageS {
         const userHP = TalentUtils.getModuleSRunesValueById(1003, userId);
         const userHP2 = TalentUtils.getModuleSRunesValueById(1027, userId);
         const userHPD = TalentUtils.getModuleSRunesValueById(2005, userId);
-        this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD);
+        const userHPInfinite = TalentUtils.getModuleSRunesValueById(1049, userId);
+        this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD + userHPInfinite);
         // this._hp = baseHp;
         this._maxHp = this._hp;
         this.cumulativeCount = 0;
@@ -615,7 +616,8 @@ export class StageC {
         const userHP = TalentUtils.getModuleCRunesValueById(1003);
         const userHP2 = TalentUtils.getModuleCRunesValueById(1027);
         const userHPD = TalentUtils.getModuleCRunesValueById(2005);
-        this.hp = Math.floor(baseHp + userHP + userHP2 + userHPD);
+        const userHPInfinite = TalentUtils.getModuleCRunesValueById(1049);
+        this.hp = Math.floor(baseHp + userHP + userHP2 + userHPD + userHPInfinite);
         ModuleService.getModule(PlayerModuleC)
             .getUnlockTechNodeMap(playerIds)
             .then((res: { [key: number]: number[] }) => {
@@ -1119,9 +1121,11 @@ export namespace StageUtil {
     // 获取同世界上一关难度的id数组（）
     export function getPreDifficultyIds(cfg: IStageElement) {
         const difficult = cfg?.difficulty ?? 0;
-        if(!difficult) return [];
+        if (!difficult) return [];
         const preDifficulty = (cfg?.difficulty ?? 0) - 1;
         const stages = GameConfig.Stage.getAllElement();
-        return stages.filter((stage) => stage.difficulty == preDifficulty && stage.index == cfg.index).map((stage) => stage.id);
+        return stages
+            .filter((stage) => stage.difficulty == preDifficulty && stage.index == cfg.index)
+            .map((stage) => stage.id);
     }
 }

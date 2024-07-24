@@ -14,6 +14,17 @@ export default class TalentUtils {
         }
     }
 
+    // 无尽模式
+    public static getInfiniteRunesConfigByKey(key: number): number {
+        const config = GameConfig.TalentBuff.getElement(key);
+        if (config) {
+            const value: number = config.value?.[0] || 0;
+            return value;
+        } else {
+            return 0;
+        }
+    }
+
     public static getModuleCRunesIndexById(id: number) {
         const moduleC = ModuleService.getModule(TalentModuleC);
         const index = moduleC.getTalentIndex(id);
@@ -32,6 +43,16 @@ export default class TalentUtils {
             return 0;
         }
         const index = this.getModuleCRunesIndexById(id);
+        // 无尽天赋
+        if (id === 1047 || id === 1048 || id === 1049) {
+            if (index > 0) {
+                const value = this.getInfiniteRunesConfigByKey(id);
+                return index * value;
+            } else {
+                return 0;
+            }
+        }
+
         if (index > 0) {
             const value = this.getRunesConfigByKey(id, index - 1);
             return value;
@@ -46,6 +67,15 @@ export default class TalentUtils {
             return 0;
         }
         const index = this.getModuleSRunesIndexById(id, userId);
+        // 无尽天赋
+        if (id === 1047 || id === 1048 || id === 1049) {
+            if (index > 0) {
+                const value = this.getInfiniteRunesConfigByKey(id);
+                return index * value;
+            } else {
+                return 0;
+            }
+        }
         if (index > 0) {
             const value = this.getRunesConfigByKey(id, index - 1);
             return value;

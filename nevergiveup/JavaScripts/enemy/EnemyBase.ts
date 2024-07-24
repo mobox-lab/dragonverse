@@ -602,7 +602,8 @@ export class Enemy implements BuffBag {
             const adBonus = TalentUtils.getModuleCRunesValueById(1001);
             const adBonus2 = TalentUtils.getModuleCRunesValueById(1025);
             const adBonusD = TalentUtils.getModuleCRunesValueById(2001);
-            damage = damage * (1 + (adBonus + adBonus2 + adBonusD) / 100);
+            const adBonusInfinite = TalentUtils.getModuleCRunesValueById(1047);
+            damage = damage * (1 + (adBonus + adBonus2 + adBonusD + adBonusInfinite) / 100);
             console.log(adBonus, adBonus2, adBonusD, damage, "adBonus,adBonus2 , adBonusD,damage");
         } else if (damageType === DamageType.MAGIC) {
             // 天赋树的魔法攻击加成
@@ -610,7 +611,8 @@ export class Enemy implements BuffBag {
             const apBonus = TalentUtils.getModuleCRunesValueById(1002);
             const apBonus2 = TalentUtils.getModuleCRunesValueById(1026);
             const apBonusD = TalentUtils.getModuleCRunesValueById(2002);
-            damage = damage * (1 + (apBonus + apBonus2 + apBonusD) / 100);
+            const apBonusInfinite = TalentUtils.getModuleCRunesValueById(1048);
+            damage = damage * (1 + (apBonus + apBonus2 + apBonusD + apBonusInfinite) / 100);
             console.log(apBonus, apBonus2, apBonusD, damage, "apBonus, apBonus2, apBonusD, damage");
         }
         // 天赋树的对空加成
