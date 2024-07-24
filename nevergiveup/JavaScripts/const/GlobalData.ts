@@ -1,8 +1,11 @@
 import { GameConfig } from "../config/GameConfig";
 import Utils from "../Utils";
-import { TowerElementType, TowerStrategyType } from "./enum";
+import { TowerStrategyType } from "./enum";
 
 export namespace GlobalData {
+    export class Anim {
+        public static stageCrossAnimSeconds = 1; // 过场过渡动画时间
+    }
     /**商店 */
     export class Shop {
         /**筛选 - 元素选项 all, 光暗火水木土 */

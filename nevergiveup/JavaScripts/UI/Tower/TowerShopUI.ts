@@ -173,8 +173,8 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this.infoItemCanvas.removeAllChildren();
 		if(!textItemLen) return;
 		
-		this.createTextUI("属性：",  GameConfig.Language.getElement(GlobalData.Shop.shopElementsOpts[this._cfg?.elementTy])?.Value); // TODO: GameConfig Language
-		this.createTextUI("部署花费：", Utils.formatNumber(this._cfg?.spend?.[this._selectLevel]), { isCost: true }); // TODO: GameConfig Language
+		this.createTextUI(GameConfig.Language.getElement("Tower_attackTags_11").Value,  GameConfig.Language.getElement(GlobalData.Shop.shopElementsOpts[this._cfg?.elementTy])?.Value);
+		this.createTextUI(GameConfig.Language.getElement("Tower_attackTags_12").Value, Utils.formatNumber(this._cfg?.spend?.[this._selectLevel]), { isCost: true });
 		for (let i = 0; i < textItemLen; i++) {
 			const title = GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value
 			const value = this._cfg[this._cfg.infoTexts[i]][this._selectLevel];

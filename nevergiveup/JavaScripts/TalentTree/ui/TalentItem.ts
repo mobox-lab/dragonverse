@@ -8,6 +8,8 @@ import TalentItem_Generate from "../../ui-generate/TalentTree/TalentItem_generat
 import { TalentTreeActions } from "./TalentTreeContainer";
 import TalentModuleC from "../../Modules/talent/TalentModuleC";
 
+const TALENT_MAX_LEVEL = 10;
+
 /**
  * 基础天赋
  */
@@ -15,6 +17,7 @@ export class TalentItem extends TalentItem_Generate {
     private _talentC: TalentModuleC;
     private _currentLevel = Yoact.createYoact({count: 0});
     private _maxLevel = Yoact.createYoact({count: 0});
+    public type: ETalentType = ETalentType.Base;
     public data: ITalentTreeElement;
     public buff: ITalentBuffElement;
     public isActive = Yoact.createYoact({status: false});
@@ -48,7 +51,11 @@ export class TalentItem extends TalentItem_Generate {
         Yoact.bindYoact(() => {
             const currentLevel = this._currentLevel.count;
             const maxLevel = this._maxLevel.count;
-            Gtk.trySetText(this.textTalentLevel, `${currentLevel}/${maxLevel}`);
+            if (this.type === ETalentType.Base) {
+                Gtk.trySetText(this.textTalentLevel, `${currentLevel}/${maxLevel}`);
+            } else {
+                Gtk.trySetText(this.textTalentLevel, `${currentLevel ? currentLevel : ""}`);
+            }
         });
         Yoact.bindYoact(() => {
             if (this.isActive.status) {
@@ -79,6 +86,7 @@ export class TalentItem extends TalentItem_Generate {
 
     public setData(data: ITalentTreeElement): void {
         this.data = data;
+        this.type = data.type;
         this.buff = GameConfig.TalentBuff.getElement(data.buffId);
         const currentLevel = this.talentC.getTalentIndex(data.id);
         this.setCurrentLevel(currentLevel);
@@ -86,7 +94,7 @@ export class TalentItem extends TalentItem_Generate {
         this.textTalentName.text = data.nameCN;
         this.mItem.normalImageGuid = data.icon;
         this.mNotActive.imageGuid = data.iconGray;
-        this._maxLevel.count = this.buff.value.length;
+        this._maxLevel.count = data.maxLevel;
     }
 
     public setCurrentLevel(index: number) {
@@ -101,6 +109,10 @@ export class TalentItem extends TalentItem_Generate {
      * @returns {number}
      */
     public getCurrentBuffValue(): number {
+        // 巅峰天赋累加数值
+        if (this.type === ETalentType.Peak) {
+            return this.buff.value[0] * this._currentLevel.count;
+        }
         return this.buff.value[this._currentLevel.count - 1] ?? 0;
     }
 
@@ -113,5 +125,18 @@ export class TalentItem extends TalentItem_Generate {
         } else {
             this.canActive.status = true;
         }
+    }
+
+    /**
+     * 获取升级消耗
+     * @returns {[number | null, number | null]} -- [金币,科技点]
+     */
+    public getUpdateLevelCost(): [number | null, number | null] {
+        const level = this._currentLevel.count;
+        const maxLevel = this._maxLevel.count;
+        if (!this.data || level >= maxLevel) return [null, null];
+        const cost = this.data.cost;
+        if (this.type === ETalentType.Peak) return [cost[0][1], cost[1][1]];
+        return [cost[0][level + 1], cost[0][level + 1]];
     }
 }

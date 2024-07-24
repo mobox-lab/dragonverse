@@ -7,6 +7,7 @@ import { GameConfig } from "../../config/GameConfig";
 import PlayerModuleC from "../PlayerModule/PlayerModuleC";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { ETalentType } from "../../const/enum";
 
 export class TalentItemUnique implements IUnique {
     public id: number;
@@ -90,7 +91,17 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
     public async tryTalentLevelUp(id: number) {
         const item = GameConfig.TalentTree.getElement(id);
         const level = this.getTalentIndex(id);
-        const isEnoughCost = this.checkEnoughCost([item.cost[0][level + 1], item.cost[1][level + 1]]);
+        const maxLevel = item.maxLevel;
+        // 是否为最大等级
+        if (level >= maxLevel) {
+            TipsManager.showTips(GameConfig.Language.getElement("Text_Unlocked").Value);
+            return false;
+        }
+        // 判断是否足够解锁
+        const updateCost = item.type === ETalentType.Base
+            ? [item.cost[0][level + 1], item.cost[1][level + 1]]
+            : [item.cost[0][1], item.cost[1][1]];
+        const isEnoughCost = this.checkEnoughCost(updateCost);
         if (!isEnoughCost) {
             TipsManager.showTips(GameConfig.Language.getElement("Text_LessMaterial").Value);
             return false;

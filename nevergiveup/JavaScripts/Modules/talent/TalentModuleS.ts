@@ -5,6 +5,7 @@ import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import Player = mw.Player;
 import { GameConfig } from "../../config/GameConfig";
 import { ITalentTreeElement } from "../../config/TalentTree";
+import { ETalentType } from "../../const/enum";
 
 export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleData> {
     private _playS: PlayerModuleS;
@@ -43,13 +44,18 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
     public async net_updateTalentLevel(id: number) {
         const player = this.currentPlayer;
         const talent = GameConfig.TalentTree.getElement(id);
+        // 前置天赋解锁
         const canActive = this.checkTalentCanActive(player.userId, talent);
         if (!canActive) return false;
+        // 当前等级可升级
         const level = this.getPlayerTalentIndex(player.userId, id);
-        const goldCost = [talent.cost[0][0], talent.cost[0][level + 1]];
-        const techCost = [talent.cost[1][0], talent.cost[1][level + 1]];
+        if (level >= talent.maxLevel) return false;
+        // 巅峰天赋解锁金额固定
+        const goldCost = [talent.cost[0][0], talent.type === ETalentType.Base ? talent.cost[0][level + 1] : talent.cost[0][1]];
+        const techCost = [talent.cost[1][0], talent.type === ETalentType.Base ? talent.cost[1][level + 1] : talent.cost[1][1]];
         const result = this.playS.checkTalentCost(player, [goldCost, techCost]);
         if (!result) return false;
+
         await this.setTalent(player, id, level + 1);
         return true;
     }
