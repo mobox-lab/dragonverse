@@ -160,6 +160,8 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.infoLv2.normalImageGuid = selectedGuid;
 		else if(level == 2)
 			this.infoLv3.normalImageGuid = selectedGuid;
+		
+		this.updateStrategyUI();
 		this.updateTexts();
 	}
 	public updateTexts() {		
@@ -168,13 +170,21 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this._textItemUIs = [];
 		this.infoItemCanvas.removeAllChildren();
 		if(!textItemLen) return;
-		
 		this.createTextUI(GameConfig.Language.getElement("Tower_attackTags_11").Value,  GameConfig.Language.getElement(GlobalData.Shop.shopElementsOpts[this._cfg?.elementTy])?.Value);
 		this.createTextUI(GameConfig.Language.getElement("Tower_attackTags_12").Value, Utils.formatNumber(this._cfg?.spend?.[this._selectLevel]), { isCost: true });
 		for (let i = 0; i < textItemLen; i++) {
 			const title = GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value
 			const value = this._cfg[this._cfg.infoTexts[i]][this._selectLevel];
 			this.createTextUI(title, value);
+		}
+	}
+
+	public updateStrategyUI() {
+		const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
+		if(sInfo?.strategyKey) {
+			const descArr = sInfo.strategyDesc;
+			this.textTitle.text = sInfo.strategyTitle;
+			this.textDesc.text = descArr?.length === 3 ? descArr[this._selectLevel] : descArr[0];
 		}
 	}
 	public createTextUI(title: string, value: string, options?:{ isInfo?: boolean, isCost?:boolean }) {
@@ -210,6 +220,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this._cfg = cfg;
 		this._state = state;
 		this.updateTexts();
+		this.updateStrategyUI();
 		switch (state) {
 			case CardState.Lock:
 				this.infoBtn.text = GameConfig.Language.getElement("Text_BuyCard").Value;
@@ -222,13 +233,6 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				break;
 			default: break;
 		}
-		const sInfo = GlobalData.Shop.getStrategyInfo(cfg.id);
-		if(sInfo?.strategyKey) {
-			Gtk.trySetVisibility(this.canvas_Desc, SlateVisibility.HitTestInvisible);
-			this.textTitle.text = sInfo.strategyTitle;
-			this.textDesc.text = sInfo.strategyDesc;
-		} else Gtk.trySetVisibility(this.canvas_Desc, SlateVisibility.Collapsed);
-
 		const tags = this.getTags();
 		let len = tags?.length ?? 0;
 		for (let i = 0; i < this._tagItemUIs.length; i++) {

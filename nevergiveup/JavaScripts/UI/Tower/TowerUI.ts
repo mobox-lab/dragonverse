@@ -83,6 +83,7 @@ export default class TowerUI extends TowerUI_Generate {
     }
 
     public setStageTowerUI(inStage?: boolean) {
+        if(inStage) this.show();
         Gtk.trySetVisibility(this.settingUp, inStage ? mw.SlateVisibility.Collapsed : mw.SlateVisibility.Visible);
         Gtk.trySetVisibility(this.lineUp, inStage ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
         const [leftUpPosX, leftUpPosY] = [340, 850];

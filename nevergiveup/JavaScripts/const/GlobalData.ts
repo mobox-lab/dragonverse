@@ -127,17 +127,6 @@ export namespace GlobalData {
                 }
             }
             return strategyBuffs;
-            // switch (towerStrategyId) {
-            //     case TowerStrategyType.WarmUp: return buffs.filter((cfg) => cfg.warmUp !== 0);
-            //     case TowerStrategyType.ArmorBreak: return buffs.filter((cfg) => cfg.armorPen !== 0);
-            //     case TowerStrategyType.StunEffect: return buffs.filter((cfg) => cfg.speed === -999);
-            //     case TowerStrategyType.ArmorShred: return buffs.filter((cfg) => cfg.armorReduction !== 0);
-            //     case TowerStrategyType.SlowEffect: return buffs.filter((cfg) => cfg.speed !== 0 && cfg.speed !== -999);
-            //     case TowerStrategyType.MagicPenetration: return buffs.filter((cfg) => cfg.magicPen !== 0);
-            //     case TowerStrategyType.AntiAir: return buffs.filter((cfg) => cfg.flyingDamageBoost !== 0);
-            //     case TowerStrategyType.MultiHit: return buffs.filter((cfg) => cfg.multiHit !== 0);
-            //     case TowerStrategyType.PriorityAir: return buffs.filter((cfg) => cfg.flyFirst !== 0);
-            // }
         };
         // key 为 TowerStrategyType 的枚举, value 为 buffId 的数组
         public static towerStrategyBuffs: { [key: number]: number[] } = this.getTowerStrategyBuffs();
@@ -146,9 +135,8 @@ export namespace GlobalData {
             towerId: number
         ): {
             strategyTitle: string;
-            strategyDesc: string;
+            strategyDesc: string[];
             strategyKey: TowerStrategyType;
-            buffId?: number; // 对应buff中的id，不传表示该对策 没有对应的buff
         } => {
             const cfg = GameConfig.Tower.getElement(towerId);
             if (cfg?.attackTags?.includes(1))
@@ -157,86 +145,78 @@ export namespace GlobalData {
                     strategyTitle: GameConfig.Language.getElement(
                         GlobalData.Shop.shopStrategyOpts[TowerStrategyType.AntiHidden]
                     )?.Value,
-                    strategyDesc: this.getStrategyDesc(TowerStrategyType.AntiHidden),
+                    strategyDesc: [this.getStrategyDesc(TowerStrategyType.AntiHidden)],
                     strategyKey: TowerStrategyType.AntiHidden,
                 };
             if (!cfg?.attackBuff?.length) return null;
-            const buffIds = cfg.attackBuff.flat();
+            const levelBuffs = cfg.attackBuff;
             const strategyBuffs = this.towerStrategyBuffs;
-
-            for (let i = 0; i < buffIds.length; i++) {
-                const buffId = buffIds[i];
-                const buffCfg = GameConfig.Buff.getElement(buffId);
-                if (!buffCfg) continue;
-                for (const key in strategyBuffs) {
-                    if (strategyBuffs[key]?.includes(buffCfg.id)) {
-                        const strategyKey = Number(key) as TowerStrategyType;
-                        const title = GameConfig.Language.getElement(
-                            GlobalData.Shop.shopStrategyOpts[strategyKey]
-                        )?.Value;
-                        const desc = this.getStrategyDesc(strategyKey);
-                        return {
-                            strategyTitle: title,
-                            strategyDesc: desc,
-                            strategyKey,
-                            buffId,
-                        };
+            let strategyKey = null;
+            let title = null;
+            const descArr = [] // 每级对应的描述
+            for(const level in levelBuffs){
+                const levelBuff = levelBuffs[level];
+                if(levelBuff?.length){
+                    const buffId = levelBuff[0];
+                    const buffCfg = GameConfig.Buff.getElement(buffId);
+                    if(!buffCfg) continue;
+                    for (const key in strategyBuffs) {
+                        if (strategyBuffs[key]?.includes(buffCfg.id)) {
+                            strategyKey = Number(key) as TowerStrategyType;
+                            title = GameConfig.Language.getElement(
+                                GlobalData.Shop.shopStrategyOpts[strategyKey]
+                            )?.Value;
+                            const desc = this.getStrategyDesc(strategyKey, buffId);
+                            descArr.push(desc);
+                            break;
+                        }
                     }
                 }
+                
             }
-            return null;
+            return {
+                strategyTitle: title,
+                strategyDesc: descArr,
+                strategyKey,
+            };
         };
-        public static getStrategyDesc(strategyKey: TowerStrategyType) {
-            const args = [];
-            const buffs = this.towerStrategyBuffs[strategyKey];
+        public static getStrategyDesc(strategyKey: TowerStrategyType, buffId?: number): string {
             const desc =
                 GameConfig.Language.getElement(GlobalData.Shop.shopStrategyDescLangs[strategyKey])?.Value ?? "";
-            if (!buffs?.length || GameConfig.Buff.getElement(buffs[0])) return desc;
-            const buffCfg = GameConfig.Buff.getElement(buffs[0]);
+
+            const formatDesc = (buffCfg: any, props: string[], formatter?: (value: number) => void) => {
+                const args = props.map(prop => formatter ? formatter(buffCfg[prop]): buffCfg[prop]);
+                return Utils.Format(desc, ...args);
+            };
+            const processBuffs = (props: string[], formatter?: (value: number) => number) => {
+                if(!buffId) return desc;
+                const buffCfg = GameConfig.Buff.getElement(buffId);
+                if(!buffCfg) return desc;
+                return formatDesc(buffCfg, props, formatter);
+            };
+        
             switch (strategyKey) {
-                case TowerStrategyType.WarmUp: {
-                    args.push(
-                        buffCfg.warmUp,
-                        buffCfg.warmUpFindRange,
-                        buffCfg.warmUpAttackDamage,
-                        buffCfg.warmUpAttackTime
-                    );
-                    break;
-                }
-                case TowerStrategyType.ArmorBreak: {
-                    args.push(buffCfg.armorPen);
-                    break;
-                }
-                case TowerStrategyType.StunEffect: {
-                    args.push(buffCfg.duration);
-                    break;
-                }
-                case TowerStrategyType.ArmorShred: {
-                    args.push(buffCfg.armorReduction);
-                    break;
-                }
-                case TowerStrategyType.SlowEffect: {
-                    args.push(-buffCfg.speed);
-                    break;
-                }
-                case TowerStrategyType.MagicPenetration: {
-                    args.push(buffCfg.magicPen);
-                    break;
-                }
-                case TowerStrategyType.AntiAir: {
-                    args.push(buffCfg.flyingDamageBoost);
-                    break;
-                }
-                case TowerStrategyType.MultiHit: {
-                    args.push(buffCfg.multiHit);
-                    break;
-                }
+                case TowerStrategyType.WarmUp:
+                    return processBuffs(["warmUp", "warmUpFindRange", "warmUpAttackDamage", "warmUpAttackTime"]);
+                case TowerStrategyType.ArmorBreak:
+                    return processBuffs(["armorPen"]);
+                case TowerStrategyType.StunEffect:
+                    return processBuffs(["duration"]);
+                case TowerStrategyType.ArmorShred:
+                    return processBuffs(["armorReduction"]);
+                case TowerStrategyType.SlowEffect:
+                    return processBuffs(["speed"], value => -value);
+                case TowerStrategyType.MagicPenetration:
+                    return processBuffs(["magicPen"]);
+                case TowerStrategyType.AntiAir:
+                    return processBuffs(["flyingDamageBoost"]);
+                case TowerStrategyType.MultiHit:
+                    return processBuffs(["multiHit"]);
                 case TowerStrategyType.AntiHidden:
                 case TowerStrategyType.PriorityAir:
-                default: // 无参数
+                default:
                     return desc;
             }
-            return Utils.Format(desc, ...args);
         }
     }
 }
