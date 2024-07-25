@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-10 18:45:52
  * @LastEditors  : xiaohao.li
@@ -14,16 +14,16 @@
  * @FilePath: \nevergiveup\JavaScripts\Modules\TowerModule\Tower\BuffTower.ts
  * @Description: 修改描述
  */
-import { CycleUtil } from '../../../CycleUtil';
-import { GameManager } from '../../../GameManager';
-import GainUI from '../../../UI/Tower/GainUI';
-import Utils from '../../../Utils';
-import { Buff } from '../../../tool/BuffTool';
-import { SoundUtil } from '../../../tool/SoundUtil';
-import { RANGEUNIT, TowerInfo } from '../TowerEnum';
-import { TowerManager } from '../TowerManager';
-import AttackTower from './AttackTower';
-import TowerBase from './TowerBase';
+import { CycleUtil } from "../../../CycleUtil";
+import { GameManager } from "../../../GameManager";
+import GainUI from "../../../UI/Tower/GainUI";
+import Utils from "../../../Utils";
+import { Buff } from "../../../tool/BuffTool";
+import { SoundUtil } from "../../../tool/SoundUtil";
+import { RANGEUNIT, TowerInfo } from "../TowerEnum";
+import { TowerManager } from "../TowerManager";
+import AttackTower from "./AttackTower";
+import TowerBase from "./TowerBase";
 
 export default class BuffTower extends TowerBase {
     protected canBuffProperty: string[] = ["findRange"];
@@ -41,8 +41,13 @@ export default class BuffTower extends TowerBase {
                     this._idleAnim.loop = 999999;
                     (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((go) => {
                         this._weaponRoot = go;
-                        this._towerCha.attachToSlot(this._weaponRoot, this.cfg.weaponSlot ?? HumanoidSlotType.RightHand);
-                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation ? new Vector(...this.cfg.weaponLocation) : Vector.zero;
+                        this._towerCha.attachToSlot(
+                            this._weaponRoot,
+                            this.cfg.weaponSlot ?? HumanoidSlotType.RightHand
+                        );
+                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation
+                            ? new Vector(...this.cfg.weaponLocation)
+                            : Vector.zero;
                         this._weaponRoot.localTransform.rotation = Rotation.zero;
                     });
                 });
@@ -88,11 +93,18 @@ export default class BuffTower extends TowerBase {
     }
 
     protected addBuff() {
-        let towers = TowerManager.findTowers([this.oriPos.x, this.oriPos.y], RANGEUNIT / 2 + this.property.findRange * RANGEUNIT);
-        towers = towers.filter(tower => tower instanceof AttackTower);
-        towers.forEach(tower => {
-            tower.applyBuff(this.cfg.attackBuff[this.level]);
-        })
+        let towers = TowerManager.findTowers(
+            [this.oriPos.x, this.oriPos.y],
+            RANGEUNIT / 2 + this.property.findRange * RANGEUNIT
+        );
+        towers = towers.filter((tower) => tower instanceof AttackTower);
+        towers.forEach((tower) => {
+            if (Array.isArray(this.cfg.attackBuff?.[this.level])) {
+                this.cfg.attackBuff[this.level].forEach((buff) => {
+                    tower.applyBuff(buff);
+                });
+            }
+        });
         this.farmShow();
     }
 
@@ -100,7 +112,7 @@ export default class BuffTower extends TowerBase {
         if (this.tower?.getChildren().length > 0) {
             for (let i of this.tower?.getChildren()) {
                 if (i instanceof Sound) {
-                    if (this._isFisrtShow || i["hsfVolume"] == null) i["hsfVolume"] = i.volume
+                    if (this._isFisrtShow || i["hsfVolume"] == null) i["hsfVolume"] = i.volume;
                     i.volume = SoundUtil.attackVoiceFactor * i["hsfVolume"];
                     i.play();
                 }

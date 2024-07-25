@@ -165,8 +165,8 @@ export default abstract class TowerBase implements BuffBag {
             if (!cfg) return pre;
             return pre.concat(cfg.Effect);
         }, []);
-        if (Array.isArray(this.cfg.attackBuff)) {
-            buffIds = buffIds.concat(this.cfg.attackBuff);
+        if (Array.isArray(this.cfg.attackBuff) && Array.isArray(this.cfg.attackBuff?.[this.level])) {
+            buffIds = buffIds.concat(this.cfg.attackBuff[this.level]);
         }
         for (let i = 0; i < buffIds.length; i++) {
             const buffId = buffIds[i];
