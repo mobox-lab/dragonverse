@@ -53,8 +53,13 @@ export default class AttackTower extends TowerBase {
                     this._idleAnim.loop = 999999;
                     (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((go) => {
                         this._weaponRoot = go;
-                        this._towerCha.attachToSlot(this._weaponRoot, this.cfg.weaponSlot ?? HumanoidSlotType.RightHand);
-                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation ? new Vector(...this.cfg.weaponLocation) : Vector.zero;
+                        this._towerCha.attachToSlot(
+                            this._weaponRoot,
+                            this.cfg.weaponSlot ?? HumanoidSlotType.RightHand
+                        );
+                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation
+                            ? new Vector(...this.cfg.weaponLocation)
+                            : Vector.zero;
                         this._weaponRoot.localTransform.rotation = Rotation.zero;
                     });
                 });
@@ -170,7 +175,7 @@ export default class AttackTower extends TowerBase {
 
             // Tower 特效
             setTimeout(() => {
-                const effect = this.tower.getChildByName('effect01') as Effect;
+                const effect = this.tower.getChildByName("effect01") as Effect;
                 if (effect) {
                     effect.stop();
                     effect.play();
@@ -181,6 +186,7 @@ export default class AttackTower extends TowerBase {
 
     public makeDamage(enemys: Enemy[]) {
         // 造成伤害
+        const level = this.level;
         if (this.property.attackRange) {
             // AOE
             for (let enemy of enemys) {
@@ -192,9 +198,10 @@ export default class AttackTower extends TowerBase {
                 if (!around || around.length === 0) return null;
                 for (let i of around) {
                     let damage = 0;
-                    if (this.cfg.attackBuff?.length > 0) {
+
+                    if (this.cfg.attackBuff?.[level] && this.cfg.attackBuff?.[level]?.length > 0) {
                         damage = i.onHurt(this, () => {
-                            for (let buff of this.cfg.attackBuff) {
+                            for (let buff of this.cfg.attackBuff[level]) {
                                 i.applyBuff(buff);
                             }
                         });
@@ -216,9 +223,9 @@ export default class AttackTower extends TowerBase {
                 let damage = 0;
                 console.log(JSON.stringify(this.cfg.attackBuff), "this.cfg.attackBuff");
                 console.log(JSON.stringify(enemy.name), "enemy.name");
-                if (this.cfg.attackBuff?.length > 0) {
+                if (this.cfg.attackBuff?.[level] && this.cfg.attackBuff?.[level]?.length > 0) {
                     damage = enemy.onHurt(this, () => {
-                        for (let buff of this.cfg.attackBuff) {
+                        for (let buff of this.cfg.attackBuff[level]) {
                             enemy.applyBuff(buff);
                         }
                     });
