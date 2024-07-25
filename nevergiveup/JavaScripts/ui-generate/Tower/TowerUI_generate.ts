@@ -43,6 +43,48 @@ export default class TowerUI_Generate extends UIScript {
 		}
 		return this.shopBtn_Internal
 	}
+	private settingUp_Internal: mw.Canvas
+	public get settingUp(): mw.Canvas {
+		if(!this.settingUp_Internal&&this.uiWidgetBase) {
+			this.settingUp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/settingUp') as mw.Canvas
+		}
+		return this.settingUp_Internal
+	}
+	private setBtn_Internal: mw.Button
+	public get setBtn(): mw.Button {
+		if(!this.setBtn_Internal&&this.uiWidgetBase) {
+			this.setBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/settingUp/setBtn') as mw.Button
+		}
+		return this.setBtn_Internal
+	}
+	private textFold_Internal: mw.TextBlock
+	public get textFold(): mw.TextBlock {
+		if(!this.textFold_Internal&&this.uiWidgetBase) {
+			this.textFold_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/settingUp/textFold') as mw.TextBlock
+		}
+		return this.textFold_Internal
+	}
+	private textSet_Internal: mw.TextBlock
+	public get textSet(): mw.TextBlock {
+		if(!this.textSet_Internal&&this.uiWidgetBase) {
+			this.textSet_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/settingUp/textSet') as mw.TextBlock
+		}
+		return this.textSet_Internal
+	}
+	private lineUp_Internal: mw.Canvas
+	public get lineUp(): mw.Canvas {
+		if(!this.lineUp_Internal&&this.uiWidgetBase) {
+			this.lineUp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/lineUp') as mw.Canvas
+		}
+		return this.lineUp_Internal
+	}
+	private textLineup_Internal: mw.TextBlock
+	public get textLineup(): mw.TextBlock {
+		if(!this.textLineup_Internal&&this.uiWidgetBase) {
+			this.textLineup_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/lineUp/textLineup') as mw.TextBlock
+		}
+		return this.textLineup_Internal
+	}
 
 
 
@@ -71,22 +113,28 @@ export default class TowerUI_Generate extends UIScript {
 	
 	   //按钮添加点击
 	   
+	   this.setBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "setBtn");
+	   })
+	   this.setBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 
 	   //按钮多语言
 	   
 	   //文本多语言
 	   
+	   this.initLanguage(this.textFold)
+	   
+	
+	   this.initLanguage(this.textSet)
+	   
+	
+	   this.initLanguage(this.textLineup)
+	   
+	
 	   //文本多语言
 	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/towerCanvas/Settingup/ButtonSet/TextFoldBtn") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/towerCanvas/Settingup/TextSet") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/towerCanvas/Lineup/TextLineup") as any);
-	   
-	
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

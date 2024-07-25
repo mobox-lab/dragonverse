@@ -92,6 +92,13 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.teamCanvas_Internal
 	}
+	private addTowerBtn_Internal: mw.Button
+	public get addTowerBtn(): mw.Button {
+		if(!this.addTowerBtn_Internal&&this.uiWidgetBase) {
+			this.addTowerBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/teamCanvas/addTowerBtn') as mw.Button
+		}
+		return this.addTowerBtn_Internal
+	}
 	private moneyCanvas_Internal: mw.Canvas
 	public get moneyCanvas(): mw.Canvas {
 		if(!this.moneyCanvas_Internal&&this.uiWidgetBase) {
@@ -327,6 +334,12 @@ export default class LobbyUI_Generate extends UIScript {
 		   Event.dispatchToLocal("PlayButtonClick", "freshBtn");
 	   })
 	   this.freshBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.addTowerBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "addTowerBtn");
+	   })
+	   this.addTowerBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 	   this.techTreeBtn.onClicked.add(()=>{

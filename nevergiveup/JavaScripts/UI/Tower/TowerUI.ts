@@ -20,6 +20,7 @@ import { TowerModuleC } from "../../Modules/TowerModule/TowerModuleC";
 import TowerUI_Generate from "../../ui-generate/Tower/TowerUI_generate";
 import TowerItemUI from "./TowerItemUI";
 import TowerShopUI from "./TowerShopUI";
+import LobbyUI from "../LobbyUI";
 
 export class TowerConfigConstants {
     static readonly maxEquip = 8;
@@ -53,6 +54,10 @@ export default class TowerUI extends TowerUI_Generate {
             this.destroyBtn.visibility = ui == null ? SlateVisibility.Hidden : SlateVisibility.Visible;
         });
         UIService.getUI(TowerUI).setStageTowerUI(false);
+        this.setBtn.onClicked.add(() => {
+            Gtk.trySetVisibility(UIService.getUI(LobbyUI).teamCanvas, mw.SlateVisibility.Visible);
+            this.hide();
+        })
     }
 
     get towerItemUIs() {
@@ -78,6 +83,8 @@ export default class TowerUI extends TowerUI_Generate {
     }
 
     public setStageTowerUI(inStage?: boolean) {
+        Gtk.trySetVisibility(this.settingUp, inStage ? mw.SlateVisibility.Collapsed : mw.SlateVisibility.Visible);
+        Gtk.trySetVisibility(this.lineUp, inStage ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
         const [leftUpPosX, leftUpPosY] = [340, 850];
         const [leftPadding, gap, itemWidth] = [215, 15, 99];
         const maxWidth = leftPadding + (itemWidth + gap) * TowerConfigConstants.maxEquip;  // 最大可能长度（装满TowerConfigConstants.maxEquip个塔） 

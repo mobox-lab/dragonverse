@@ -50,7 +50,11 @@ export default class LobbyUI extends LobbyUI_Generate {
         });
         //打开任务
         this.taskBtn.onClicked.add(this.showTaskPanel.bind(this));
-
+        Gtk.trySetVisibility(this.teamCanvas, mw.SlateVisibility.Collapsed);
+        this.addTowerBtn.onClicked.add(() => {
+            Gtk.trySetVisibility(this.teamCanvas, mw.SlateVisibility.Collapsed)
+            UIService.show(TowerUI);
+        });
         Yoact.bindYoact(() =>
             Gtk.trySetText(this.mStamina_2,
                 Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
