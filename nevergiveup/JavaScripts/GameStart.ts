@@ -116,10 +116,6 @@ export default class GameStart extends Script {
             }
         }
         this.registerModules();
-        GameManager.init(this);
-        AirdropManager.init();
-        SoundUtil.init();
-        Reward.init();
         this.useUpdate = true;
         if (SystemUtil.isServer()) {
             EventsTool.start();
@@ -143,6 +139,10 @@ export default class GameStart extends Script {
             ComponentFactory.init();
         }
         mwaction;
+        GameManager.init(this);
+        AirdropManager.init();
+        SoundUtil.init();
+        Reward.init();
     }
 
     /**
