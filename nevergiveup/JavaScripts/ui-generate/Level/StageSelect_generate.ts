@@ -184,6 +184,57 @@ export default class StageSelect_Generate extends UIScript {
 	
 	   //文本多语言
 	   
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Element/TextElement") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/TextMonster") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkill/TextMonsterSkill1") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkill/TextMonsterSkill2") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkill/TextMonsterSkill3") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkill/TextMonsterSkill4") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkill/TextMonsterSkill5") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkillDesc1/MonsterSkill_2") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkillDesc1/TextMonsterSkillDesc1") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkillDesc2/TextMonsterSkill2") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkillDesc2/TextMonsterSkillDesc2") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkillDesc3/TextMonsterSkill3") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkillDesc3/TextMonsterSkillDesc3") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkillDesc4/TextMonsterSkill4") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkillDesc4/TextMonsterSkillDesc4") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkillDesc5/TextMonsterSkill5") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkillDesc5/TextMonsterSkillDesc5") as any);
+	   
+	
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

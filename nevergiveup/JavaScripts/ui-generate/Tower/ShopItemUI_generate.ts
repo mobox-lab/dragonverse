@@ -8,12 +8,12 @@
 
 @UIBind('UI/Tower/ShopItemUI.ui')
 export default class ShopItemUI_Generate extends UIScript {
-		private bgImg_Internal: mw.Image
-	public get bgImg(): mw.Image {
-		if(!this.bgImg_Internal&&this.uiWidgetBase) {
-			this.bgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/bgImg') as mw.Image
+		private bgElementImg_Internal: mw.Image
+	public get bgElementImg(): mw.Image {
+		if(!this.bgElementImg_Internal&&this.uiWidgetBase) {
+			this.bgElementImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/bgElementImg') as mw.Image
 		}
-		return this.bgImg_Internal
+		return this.bgElementImg_Internal
 	}
 	private towerImg_Internal: mw.Image
 	public get towerImg(): mw.Image {
@@ -21,6 +21,13 @@ export default class ShopItemUI_Generate extends UIScript {
 			this.towerImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/towerImg') as mw.Image
 		}
 		return this.towerImg_Internal
+	}
+	private bgImg_Internal: mw.Image
+	public get bgImg(): mw.Image {
+		if(!this.bgImg_Internal&&this.uiWidgetBase) {
+			this.bgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/bgImg') as mw.Image
+		}
+		return this.bgImg_Internal
 	}
 	private canvasLock_Internal: mw.Canvas
 	public get canvasLock(): mw.Canvas {
