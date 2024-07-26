@@ -602,46 +602,45 @@ export class DollMachineModuleS extends ModuleS<DollMachineModuleC, null> {
 
     /** 娃娃掉到触发器后执行的方法 */
     public onDollDrop(obj: GameObject, machineId: number) {
-        let machine = this.dollMachineList[machineId];
-        let player = Player.getPlayer(machine?.curPlayer?.playerId ?? null);
-        if (!player) return;
-        let name = obj.name;
-        console.log("抓到了 " + name);
-        machine.eggSet.delete(obj);
-        obj.destroy();
-        // 娃娃自己掉出来了，直接销毁
-        let curplayer = machine.curPlayer;
-        if (curplayer == null) {
-            oTraceError("娃娃掉出来了 del" + name);
-        } else {
-            // 根据娃娃名获得娃娃id，再获得娃娃类型
-            let dollId = this.dollNameMap.get(name);
-            let dollConfig = GameConfig.Doll.getElement(dollId);
-            let type = dollConfig.Type;
-            switch (type) {
-                case DollType.Pet:
-                    // 获得宠物
-                    ModuleService.getModule(PetBagModuleS).addPetById(curplayer.playerId, dollConfig.Pet);
-                    this.getClient(curplayer).net_getPet(dollConfig.Pet);
-                    break;
-                case DollType.Diamond:
-                    // 获得钻石
-                    let val = dollConfig.Diamond;
-                    let count = Math.ceil(val / 400);
-                    this.getClient(curplayer).net_getDiamond(val, count);
-                    break;
-                case DollType.Egg:
-                    // 获得 宠物蛋
-                    console.log("抓到的蛋的id为: " + dollConfig.Egg);
-                    let petId = this.getRandomPetIdByConfig(dollConfig.Egg);
-                    console.log("随机到的宠物id为：" + petId);
-                    let eggId = dollConfig.Egg;
-                    ModuleService.getModule(PetBagModuleS).addPetById(curplayer.playerId, petId);
-                    this.getClient(curplayer).net_getEgg(petId, eggId);
-                    break;
-            }
-        }
-
+        // let machine = this.dollMachineList[machineId];
+        // let player = Player.getPlayer(machine?.curPlayer?.playerId ?? null);
+        // if (!player) return;
+        // let name = obj.name;
+        // console.log("抓到了 " + name);
+        // machine.eggSet.delete(obj);
+        // obj.destroy();
+        // // 娃娃自己掉出来了，直接销毁
+        // let curplayer = machine.curPlayer;
+        // if (curplayer == null) {
+        //     oTraceError("娃娃掉出来了 del" + name);
+        // } else {
+        //     // 根据娃娃名获得娃娃id，再获得娃娃类型
+        //     let dollId = this.dollNameMap.get(name);
+        //     let dollConfig = GameConfig.Doll.getElement(dollId);
+        //     let type = dollConfig.Type;
+        //     switch (type) {
+        //         case DollType.Pet:
+        //             // 获得宠物
+        //             ModuleService.getModule(PetBagModuleS).addPetById(curplayer.playerId, dollConfig.Pet);
+        //             this.getClient(curplayer).net_getPet(dollConfig.Pet);
+        //             break;
+        //         case DollType.Diamond:
+        //             // 获得钻石
+        //             let val = dollConfig.Diamond;
+        //             let count = Math.ceil(val / 400);
+        //             this.getClient(curplayer).net_getDiamond(val, count);
+        //             break;
+        //         case DollType.Egg:
+        //             // 获得 宠物蛋
+        //             console.log("抓到的蛋的id为: " + dollConfig.Egg);
+        //             let petId = this.getRandomPetIdByConfig(dollConfig.Egg);
+        //             console.log("随机到的宠物id为：" + petId);
+        //             let eggId = dollConfig.Egg;
+        //             ModuleService.getModule(PetBagModuleS).addPetById(curplayer.playerId, petId);
+        //             this.getClient(curplayer).net_getEgg(petId, eggId);
+        //             break;
+        //     }
+        // }
     }
 
     /**设置娃娃物理模拟 */
