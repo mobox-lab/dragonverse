@@ -48,7 +48,7 @@ addGMCommand(
     (player: mw.Player, value: string) => {
         let id = Number(value);
         if (!id) id = 1;
-        ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(player.playerId, id, "孵化");
+        ModuleService.getModule(PetBagModuleS).addPetWithMissingInfo(player.playerId, id, "孵化");
     },
     undefined,
     "全服"

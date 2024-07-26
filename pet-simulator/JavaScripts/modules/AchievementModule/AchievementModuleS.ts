@@ -86,7 +86,7 @@ export default class AchievementModuleS extends ModuleS<
                 this.petBagModuleC.addBagCapacity(reward);
                 break;
             case GlobalEnum.AchievementReward.PetExpand:
-                this.petBagModuleS.net_addPetWithMissingInfo(this.currentPlayerId, reward, "孵化");// TODO: 成就里应该不奖励宠物了，可删除
+                this.petBagModuleS.addPetWithMissingInfo(this.currentPlayerId, reward, "孵化");
                 break;
             default:
                 break;

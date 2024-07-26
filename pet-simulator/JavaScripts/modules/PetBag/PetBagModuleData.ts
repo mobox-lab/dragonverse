@@ -331,7 +331,9 @@ export class PetBagModuleData extends Subdata {
      * @param name 宠物名字
      */
     public addBagItem(id: number, atk: number, name: string, addTime: number | undefined, logInfo: { logObj: Object, logName: string } | undefined, playerID: number, creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化"): boolean {
-
+        if (this.CurBagCapacity >= this.BagCapacity) {
+            return false;
+        }
         // let index = this.getFirstEmptyIndex();
         // if (index == -1) {
         //     oTraceError('lwj 背包已满');

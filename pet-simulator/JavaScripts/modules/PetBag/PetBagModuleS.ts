@@ -74,11 +74,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return arr;
     }
 
-    @Decorator.noReply()
-    public net_addPetWithMissingInfo(playerId: number, id: number, creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化", type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: {
+    public addPetWithMissingInfo(playerId: number, id: number, creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化", type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: {
         logObj: Object,
         logName: string
-    }) {
+    }): boolean {
         let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
 
         let atk: number = 0;
@@ -94,7 +93,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 petName: name,
             });
         }
-        this.addPet(playerId, id, atk, name, type, addTime, logInfo, creSource);
+        return this.addPet(playerId, id, atk, name, type, addTime, logInfo, creSource);
     }
 
     /**
@@ -114,7 +113,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         
         const playerId = this.currentPlayerId;
         const uid = this.currentPlayer.userId;
-        let res = await ModuleService.getModule(PlayerModuleS).reduceGold(playerId, price, this.judgeGold(cfgId));
+        let res = ModuleService.getModule(PlayerModuleS).reduceGold(playerId, price, this.judgeGold(cfgId));
         if (res) {
             let petId = this.calcProbability(cfgId);
             const logObj = {
@@ -124,10 +123,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 eggId: cfg.id,
                 petId,
             };
-            this.net_addPetWithMissingInfo(playerId, petId, "孵化", cfg.AreaID, undefined, {
+            const addRes = this.addPetWithMissingInfo(playerId, petId, "孵化", cfg.AreaID, undefined, {
                 logName: "P_Hatch",
                 logObj,
             });
+            if(!addRes) { // 背包已满 返还资源
+                ModuleService.getModule(PlayerModuleS).addGold(playerId, price, this.judgeGold(cfgId));
+                return "bagFull";
+            }
             return petId;
         }
         return null;
@@ -195,31 +198,33 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     public addPet(playerID: number, id: number, atk: number, name: string, type?: GlobalEnum.PetGetType, addTime?: number, logInfo?: {
         logObj: Object,
         logName: string
-    }, creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化") {
+    }, creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化"): boolean {
         let data = this.getPlayerData(playerID);
-        data.addBagItem(id, atk, name, addTime, logInfo, playerID, creSource);
+        const res = data.addBagItem(id, atk, name, addTime, logInfo, playerID, creSource);
+        if(!res) return false;
         this.taskMS.getPet(Player.getPlayer(playerID), id, type);
         ModuleService.getModule(CollectModuleS).addPet(playerID, id, type);
         this.onGetPetAC.call(type, playerID);
 
         this.reportMaxAttackPetInfo(playerID, data);
         this.petNotice(playerID, id);
+        return true;
     }
 
     /**根据id添加宠物 自动计算名字*/
-    public addPetById(playerID: number, id: number, type?: GlobalEnum.PetGetType) {
-        let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
+    // public addPetById(playerID: number, id: number, type?: GlobalEnum.PetGetType): boolean {
+    //     let atkArr = GameConfig.PetARR.getElement(id).PetAttack;
 
-        let atk: number = 0;
-        if (atkArr.length > 1)
-            atk = utils.GetRandomNum(atkArr[0], atkArr[1]);
-        else
-            atk = atkArr[0];
+    //     let atk: number = 0;
+    //     if (atkArr.length > 1)
+    //         atk = utils.GetRandomNum(atkArr[0], atkArr[1]);
+    //     else
+    //         atk = atkArr[0];
 
-        let nameId = utils.GetRandomNum(1, 200);
-        let name = GameConfig.Language.getElement(nameId).Value;
-        this.addPet(playerID, id, atk, name, type);
-    }
+    //     let nameId = utils.GetRandomNum(1, 200);
+    //     let name = GameConfig.Language.getElement(nameId).Value;
+    //     return this.addPet(playerID, id, atk, name, type);
+    // }
 
     /**宠物公告 */
     private petNotice(playerId: number, id: number) {
@@ -599,7 +604,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         };
         this.petBagModuleS.deletePet(playerId, curSelectPetKeys, "合成");
         this.petBagModuleS
-            .net_addPetWithMissingInfo(
+            .addPetWithMissingInfo(
                 playerId,
                 endPetId,
                 "合成",
@@ -691,13 +696,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
             Object.assign(logInfo.logObj, {isSucc: true});
-            ModuleService.getModule(PetBagModuleS).net_addPetWithMissingInfo(
+            const res = ModuleService.getModule(PetBagModuleS).addPetWithMissingInfo(
                 this.currentPlayerId,
                 endPetId,
                 isGold ? "爱心化" : "彩虹化",
                 isGold ? GlobalEnum.PetGetType.Love : GlobalEnum.PetGetType.Rainbow,
                 earliestObtainTime,
                 logInfo);
+            if(!res) Log4Ts.error(PetBagModuleS, "net_fuseDevPet addPetWithMissingInfo failed, bag full");
         } else {
             utils.logP12Info(logInfo.logName, {...logInfo.logObj, isSucc: false});
             isSucc = false;
