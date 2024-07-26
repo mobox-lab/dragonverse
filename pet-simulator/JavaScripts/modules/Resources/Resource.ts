@@ -617,9 +617,7 @@ export default class ResourceScript extends mw.Script {
 
     /**创建默认资源*/
     public async createDefaultObj(): Promise<boolean> {
-        if (!this.cfg || this.isStart || this.resObj != null) {
-            return false;
-        }
+        if (!this.cfg || this.isStart || this.resObj != null || this.curHp <= 0) return false;
         this.isStart = true;
         this.resObj = await Resource.instance.getResource(this.cfgId);
         Log4Ts.log(Resource, `createDefaultObj cfgId:${this.cfgId}, ${this.pointId},${this.rate}`);
@@ -912,14 +910,10 @@ export default class ResourceScript extends mw.Script {
 
     /**移除场景资源 */
     private removeScenceResource(areaID: number, resourceScript: ResourceScript) {
-        let arr = SceneResourceMap.get(areaID);
-        if (!arr) return;
-        let index = arr.findIndex((item) => {
-            return item == resourceScript;
-        });
-        if (index != -1) {
-            arr.splice(index, 1);
-        }
+        const resource = SceneResourceMap.get(areaID);
+        if (!resource) return;
+        const leftResource = resource.filter(item => item.scenePointId !== resourceScript.scenePointId);
+        SceneResourceMap.set(areaID, leftResource);
     }
 
     /**回收破坏物模型 */
