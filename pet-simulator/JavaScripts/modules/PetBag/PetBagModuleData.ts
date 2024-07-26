@@ -221,10 +221,11 @@ export class PetBagModuleData extends Subdata {
     }
 
     get version(): number {
-        return 5;
+        return 6;
     }
 
     protected onDataInit(): void {
+        let dataSave = false;
         while (this.currentVersion != this.version) {
             if (this.currentVersion == 1) {
                 this.refreshID();
@@ -240,10 +241,60 @@ export class PetBagModuleData extends Subdata {
                 this.checkBagCapacity();
                 this.currentVersion = 5;
             }
-
+            if(this.currentVersion == 5) {
+                dataSave = this.cleanPetOverBag();
+                this.currentVersion = 6;
+            }
         }
-		if(this.petStatisticMap == null) this.petStatisticMap = {};
-        this.save(false);
+        this.petStatisticMap = {};
+    }
+    public cleanPetOverBag() {// 补救措施
+        if(this.CurBagCapacity <= this.BagCapacity) return false; // 当前背包宠物数量 <= 总容量 不需要裁剪
+        // 裁剪 先排序 超出的销毁并记录
+        const sortedPets = this.sortBag();
+        sortedPets.filter(p => !this.curEquipPet.includes(p.k)).sort((a, b) => {
+            const bAtk = b.p.a;
+            const aAtk = a.p.a;
+            if(bAtk === aAtk) {
+                const bId = b.I;
+                const aId = a.I;
+                if(bId === aId) {
+                    return b.obtainTime - a.obtainTime;
+                }
+                return bId - aId;
+            };
+            return bAtk - aAtk;
+        });
+        const delNum = this.CurBagCapacity - this.BagCapacity;
+        const delPets = sortedPets.slice(sortedPets.length - delNum);
+        Log4Ts.log(PetBagModuleData, " cleanPetOverBag delPets:" + JSON.stringify(delPets) +  " delPetsKeys:" + JSON.stringify(delPets.map(p => p.k))); 
+        const delKeys = delPets.map((p) => p.k);
+        delKeys.forEach( (key) => {
+            const petItem = {...this.bagContainerNew[key]};
+			this.updatePetStatistic(petItem, "destroyed", true, { desSource: "删除" });
+            delete this.bagContainerNew[key];
+        });
+        const userId = this["mUserId"];
+        const now = new Date().getTime();
+        const recordInfo = {
+            [userId]: delPets.map((p) => ({
+                source: this.petStatisticMap[p.k]?.creSource ?? "",
+                attack: p.p.a,
+                delTime: now
+            }))
+        };
+        const dataKey = "PS_CLEAN_PET_OVER_BAG_RECORD"
+        DataStorage.asyncGetData(dataKey).then((dataStorageResult) => {
+            const { data } = dataStorageResult
+            if(data) {
+                if(data?.userId) {
+                    data[userId] = data[userId].concat(recordInfo[userId]);
+                } else Object.assign(data, recordInfo);
+                DataStorage.asyncSetData(dataKey, data);
+            } else 
+                DataStorage.asyncSetData(dataKey, recordInfo);
+        });
+        return true;
     }
     /**清理宠物统计数据 去除已经销毁的 */
 	public cleanPetStatistic() {
