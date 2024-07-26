@@ -49,7 +49,7 @@ export class PlayerNameManager {
     /**异步获取玩家名字(如果map获取不到则重新获取并添加到map) */
     public async getPlayerNameAsync(playerID: number): Promise<string> {
         let name = null;
-        let player = (await Player.asyncGetPlayer(playerID))
+        let player = Player.getPlayer(playerID);
         if (!player) {
             console.error("获取不到玩家 " + playerID);
             return "233";

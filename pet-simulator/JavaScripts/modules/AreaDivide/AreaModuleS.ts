@@ -11,10 +11,9 @@ export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData> {
     }
 
 
-    public addArea(id: number, isFirst: boolean) {
-        console.log(this.currentPlayerId)
+    public addArea(playerId: number, id: number, isFirst: boolean) {
         this.currentData.unlockAreaById(id, isFirst);
-        this.noticeArea(this.currentPlayerId, [id]);
+        this.noticeArea(playerId, [id]);
     }
     public net_addArea(ids: string, isFirst: boolean) {
         let idArr = stringToNumberArr(ids);
@@ -35,7 +34,7 @@ export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData> {
 		const playerId = this.currentPlayerId;
         const isSuccess = ModuleService.getModule(PlayerModuleS).reduceDiamond(cfg.Gem, playerId)
         if (!isSuccess) return false
-        this.addArea(id, false);
+        this.addArea(playerId, id, false);
         return true;
     }
 }
