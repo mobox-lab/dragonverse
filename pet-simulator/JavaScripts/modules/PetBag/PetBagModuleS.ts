@@ -102,10 +102,16 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
      * @param cfgId 扭蛋配置id
      * @return
      */
-    public async net_buyEgg(cfgId: number): Promise<number | null> {
+    public async net_buyEgg(cfgId: number): Promise<number | "bagFull" | null> {
+        const data = this.currentData;
+        if (data.CurBagCapacity >= data.BagCapacity) {
+            return "bagFull";
+        }
+
         let cfg = GameConfig.EggMachine.getElement(cfgId);
         let price = cfg.Price[0];
         if (!price || price === 0) return null;
+        
         const playerId = this.currentPlayerId;
         const uid = this.currentPlayer.userId;
         let res = await ModuleService.getModule(PlayerModuleS).reduceGold(playerId, price, this.judgeGold(cfgId));

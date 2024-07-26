@@ -355,7 +355,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, curPets);
     }
 
-    async buyEgg(cfgId: number): Promise<number | null> {
+    async buyEgg(cfgId: number): Promise<number | "bagFull" | null> {
         return await this.server.net_buyEgg(cfgId);
     }
 

@@ -180,7 +180,7 @@ export class PetBagModuleData extends Subdata {
         this.initPet();
     }
 
-    /**当前背包容量 */
+    /**当前背包宠物数量 */
     public get CurBagCapacity(): number {
         return Object.keys(this.bagContainerNew).length;
     }

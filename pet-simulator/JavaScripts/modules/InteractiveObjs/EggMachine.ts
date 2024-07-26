@@ -430,21 +430,20 @@ class EggM {
         }
         MessageBox.showTwoBtnMessage(mgs, (res) => {
             if (res)
-                this.buyEgg(price);
+                this.buyEgg();
         })
     }
 
 
-    private async buyEgg(price: number) {
-
+    private async buyEgg() {
         let petMC = ModuleService.getModule(PetBagModuleC);
+  
+        let res = await petMC.buyEgg(this.cfgID);
 
-        if (petMC.getCurPetNum() >= petMC.getBagCapacity()) {
+        if(res === "bagFull") {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_4.Value);
             return;
         }
-
-        let res = await petMC.buyEgg(this.cfgID);
         if (res !== null) {
             this.hasArr.push(res);
             this.getEgg(res);
