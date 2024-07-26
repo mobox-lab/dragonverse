@@ -4,9 +4,10 @@ import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModul
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import { EnergyModuleS } from "../Energy/EnergyModule";
-import { PetBagModuleData } from "../PetBag/PetBagModuleData";
+import { PetBagModuleData, PetSimulatorStatisticPetObj, petItemDataNew } from "../PetBag/PetBagModuleData";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { AuthModuleS, PetSimulatorStatisticNeedFill } from "../auth/AuthModule";
+import { GameConfig } from "../../config/GameConfig";
 
 type PlayerConsumeData = {
     diamondAdd: number;
@@ -357,6 +358,7 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, PsStatisticModu
 }
 
 export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModuleData> {
+    public destroyPetsMap: { [key: number]: PetSimulatorStatisticPetObj } = {};
     //#region Member
     private _eventListeners: EventListener[] = [];
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -403,6 +405,41 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         d.recordEnter(now);
         d.save(false);
     }
+    public getStatisticEnchantedInfo(petInfo: petItemDataNew) {
+		const buffs = Array.from(petInfo.p.b);
+		const enchanted: string[] = buffs?.length ? buffs.map((b) => {
+			const cfg = GameConfig.Enchants.getElement(b);
+			const name = cfg.Name;
+			return `${b}-${name}`
+		}): [];  // id-name arr
+        return enchanted?.join(",") ?? "";
+    }
+
+    // 更新宠物销毁数据
+    public updateDestroyPetsInfo(userId: number, delPets: petItemDataNew[],desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
+        if(!delPets?.length) return;
+        const petBagData = DataCenterS.getData(userId, PetBagModuleData);
+		const now = Math.floor(Date.now() / 1000);
+        for (let i = 0; i < delPets.length; i++) {
+            const delPet = delPets[i];
+            const key = delPet.k;
+            const persistInfo = petBagData.getPersistStatisticInfoByKey(key);
+            const destroyPetsInfo: PetSimulatorStatisticPetObj = {
+                petkey: key,
+                proId: delPet.I,
+                name: delPet.p.n,
+                attack: delPet.p.a,
+                enchanted: this.getStatisticEnchantedInfo(delPet),
+                status: "destroyed",
+                creSource: persistInfo.creSource,
+                desSource,
+                create: persistInfo.create,
+                update: now,
+            }
+            this.destroyPetsMap[key] = destroyPetsInfo;
+            petBagData.delPersistPetStatisticByKey(key);
+        }
+    }
 
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
@@ -425,9 +462,29 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         const login = Math.floor((petStatisticData.playerLoginRecord[0][0] || 0) / 1000);
         const logout = Math.floor((now || 0) / 1000);
         const online = logout - login;
-        const allPets = petBagData.PetStatisticArr ?? [];
         const petBagSortedItems = petBagData.sortBag();
         const petMax = petBagSortedItems?.length ? Math.max(...petBagSortedItems.map((pet) => pet.p.a)) : 0;
+
+        const curPets = petBagData.PetStatisticArr ?? [];
+        const destroyPets = Object.values(this.destroyPetsMap || {});
+        const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
+            const petInfo = petBagData.bagItemsByKey(p.petkey)
+            const info: PetSimulatorStatisticPetObj = {
+                petkey: p.petkey,
+                proId: petInfo.I,
+                name: petInfo.p.n,
+                attack: petInfo.p.a,
+                enchanted: this.getStatisticEnchantedInfo(petInfo),
+
+                status: "exist",
+                creSource: p.creSource,
+                desSource: "",
+                create: p.create,
+                update: p.update,
+            }
+            return info;
+        }).concat(destroyPets)
+
         const statisticData: PetSimulatorStatisticNeedFill = {
             diamond: playerData?.diamond ?? 0,
             diamondAdd: playerConsumeData?.diamondAdd ?? 0,
@@ -444,7 +501,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             login,
             logout,
             online,
-            pet: allPets,
+            pet: petStatistics,
             petAdd: petStatisticData?.playerPetAdd ?? 0,
             petCnt: petBagSortedItems?.length ?? 0,
             petMax,
@@ -460,7 +517,6 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData),
         );
         ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData);
-        petBagData.cleanPetStatistic();
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

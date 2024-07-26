@@ -268,7 +268,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
         if (!Gtk.isNullOrEmpty(unEquipPets)) data.unEquipPet(unEquipPets);
 
-        data.removeBagItem(keys, desSource);
+        data.removeBagItem(playerId, keys, desSource);
         this.reportMaxAttackPetInfo(playerId, data);
 
         data.save(true);
