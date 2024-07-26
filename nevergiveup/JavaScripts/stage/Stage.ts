@@ -18,6 +18,7 @@ import { PlayerModuleS } from "../Modules/PlayerModule/PlayerModuleS";
 import { PlayerUtil } from "../Modules/PlayerModule/PlayerUtil";
 import { TowerManager } from "../Modules/TowerModule/TowerManager";
 import { TowerModuleC } from "../Modules/TowerModule/TowerModuleC";
+import { AuthModuleS } from "../Modules/auth/AuthModule";
 import TalentUtils from "../Modules/talent/TalentUtils";
 import { RankItem } from "../Rank/RankManager";
 import { NEW_STAGE_CONFIG, STAGE_CONFIG, baseHp } from "../StageConfig";
@@ -121,15 +122,8 @@ export class StageS {
             };
             this.rankItems.push(rankItem);
         });
-        // 天赋树和龙娘血量加成
-        const userId = players[0].userId;
-        const userHP = TalentUtils.getModuleSRunesValueById(1003, userId);
-        const userHP2 = TalentUtils.getModuleSRunesValueById(1027, userId);
-        const userHPD = TalentUtils.getModuleSRunesValueById(2005, userId);
-        const userHPInfinite = TalentUtils.getModuleSRunesValueById(1049, userId);
-        this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD + userHPInfinite);
+        this.initHp(players);
         // this._hp = baseHp;
-        this._maxHp = this._hp;
         this.cumulativeCount = 0;
         this.currentWaveCount = 0;
         this._deadIds = [];
@@ -137,6 +131,17 @@ export class StageS {
         this.currentSkippingPlayers = [];
         this.registerListeners();
         this.updateRankItems();
+    }
+
+    async initHp(players: Player[]) {
+        // 天赋树和龙娘血量加成
+        const player = players[0];
+        const userHP = await TalentUtils.getModuleSRunesValueById(1003, player);
+        const userHP2 = await TalentUtils.getModuleSRunesValueById(1027, player);
+        const userHPD = await TalentUtils.getModuleSRunesValueById(2005, player);
+        const userHPInfinite = await TalentUtils.getModuleSRunesValueById(1049, player);
+        this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD + userHPInfinite);
+        this._maxHp = this._hp;
     }
 
     registerListeners() {

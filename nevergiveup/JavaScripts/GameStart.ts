@@ -133,6 +133,7 @@ export default class GameStart extends Script {
             ModuleService.ready().then(() => {
                 GuideManager.init();
                 // GuideManager.triggerNextGuide(true);
+                ModuleService.getModule(AuthModuleC).net_queryDragon();
             });
             Utils.requestAssetIcons(GameConfig.Tower.getAllElement(), "imgGuid", true);
             DanmuManager.init();
