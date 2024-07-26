@@ -12,6 +12,7 @@ import { P12ShopConfig } from "../shop/P12ShopConfig";
 export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
     private _bagC: P12BagModuleC;
     private _energyC: EnergyModuleC;
+    private _isUsing: boolean = false;
 
     private get bagC(): P12BagModuleC | null {
         if (!this._bagC) this._bagC = ModuleService.getModule(P12BagModuleC);
@@ -59,13 +60,16 @@ export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
      * @private
      */
     private useSenzuBean() {
+        if (this._isUsing) return;
+        this._isUsing = true;
         Gtk.trySetVisibility(this.can_Confirming, true);
         Gtk.trySetVisibility(this.btn_Confirm_Use, false);
         Gtk.trySetVisibility(this.btn_UnConfirm_Use, false);
+        this.bagC.changeItemCount(P12ItemResId.StaminaPotion, -1);
 
         this.bagC.consumePotion(1)?.then(() => {
+            this._isUsing = false;
             UIService.hide(SenzuBeanReConfirmPanel);
-            this.bagC.changeItemCount(P12ItemResId.StaminaPotion, -1);
         });
     }
 }

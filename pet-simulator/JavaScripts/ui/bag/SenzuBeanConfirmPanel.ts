@@ -31,7 +31,7 @@ export default class SenzuBeanConfirmPanel extends Online_Confirm_Generate {
     protected onShow(...params: any[]) {
         super.onShow(...params);
         const spCount = this.bagC.getItem(P12ItemResId.StaminaPotion);
-        this.btn_Confirm_Use.enable = !!spCount;
+        this.btn_Confirm_Use.enable = spCount > 0;
         this.text_Number.text = spCount.toString();
     }
 }

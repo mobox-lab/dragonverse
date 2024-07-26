@@ -56,6 +56,10 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, PsP12BagModuleData> {
         this._itemsMap = map;
     }
 
+    public net_setItem(key: P12ItemResId, value: number) {
+        this._itemsMap.set(key, value);
+    }
+
     /**
      * 刷新背包物品
      */
@@ -112,14 +116,15 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
 
     /**
      * 使用体力药水
-     * @param {string} userId -- 用户Id
+     * @param {mw.Player} player
      * @param {number} count 使用数量
      */
-    private async consumePotion(userId: string, count: number) {
+    private async consumePotion(player: mw.Player, count: number) {
         try {
-            const res = await this.authS.consumePotion(userId, GameServiceConfig.SCENE_NAME, count);
-            this.energyS.addEnergy(userId, res.recoveryStaminaAmount, res.stamina);
-            this.reportStatistic(userId, count, res.recoveryStaminaAmount);
+            const res = await this.authS.consumePotion(player.userId, GameServiceConfig.SCENE_NAME, count);
+            this.energyS.addEnergy(player.userId, res.recoveryStaminaAmount, res.stamina);
+            this.reportStatistic(player.userId, count, res.recoveryStaminaAmount);
+            this.getClient(player).net_setItem(P12ItemResId.StaminaPotion, res.balance);
         } catch (error) {
             Log4Ts.error(P12BagModuleS, error);
         }
@@ -129,7 +134,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
         const player = this.currentPlayer;
         if (!player) return;
         Log4Ts.log(P12BagModuleS, `player ${player.userId} use senzu bean ${count}`);
-        return this.consumePotion(player.userId, count);
+        return this.consumePotion(player, count);
     }
 
     /**

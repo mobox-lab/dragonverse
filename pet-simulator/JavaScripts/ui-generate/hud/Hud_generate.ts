@@ -50,13 +50,6 @@ export default class Hud_Generate extends UIScript {
 		}
 		return this.mCanvas_diamond_Internal
 	}
-	private mPic_diamondback_Internal: mw.Image
-	public get mPic_diamondback(): mw.Image {
-		if(!this.mPic_diamondback_Internal&&this.uiWidgetBase) {
-			this.mPic_diamondback_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas_coin/mCanvas_diamond/mPic_diamondback') as mw.Image
-		}
-		return this.mPic_diamondback_Internal
-	}
 	private mPic_diamond_Internal: mw.Image
 	public get mPic_diamond(): mw.Image {
 		if(!this.mPic_diamond_Internal&&this.uiWidgetBase) {
