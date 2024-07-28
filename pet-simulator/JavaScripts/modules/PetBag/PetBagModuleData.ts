@@ -312,10 +312,12 @@ export class PetBagModuleData extends Subdata {
         },0.5e3)
         delKeys.forEach( (key) => {
             delete this.bagContainerNew[key];
+            delete this.petStatisticMap[key];
         });
         const now = new Date().getTime();
         const recordInfo = {
             [userId]: delPets.map((p) => ({
+                petKey: p.k,
                 source: this.petStatisticMap[p.k]?.creSource ?? "",
                 attack: p.p.a,
                 delTime: now
@@ -341,7 +343,7 @@ export class PetBagModuleData extends Subdata {
 
     /**清理宠物统计数据 去除已经销毁的 */
 	public delPersistPetStatisticByKey(key: number) {
-        delete this.petStatisticMap[key];
+        if(this.petStatisticMap[key]) delete this.petStatisticMap[key];
     }
 	public cleanOldPetStatistic() {
         const petStatisticMap = this.petStatisticMap;

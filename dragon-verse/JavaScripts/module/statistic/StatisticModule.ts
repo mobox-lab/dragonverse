@@ -2,6 +2,7 @@ import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModul
 import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
+import { PetBagModuleData, PetSimulatorStatisticPetObj, petItemDataNew } from "./PetBagModuleData";
 
 export default class DvStatisticModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -214,6 +215,7 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, DvStatisticModu
 }
 
 export class StatisticModuleS extends JModuleS<StatisticModuleC, DvStatisticModuleData> {
+    public destroyPetsMap: { [key: number]: PetSimulatorStatisticPetObj } = {};
 //#region Member
     private _eventListeners: EventListener[] = [];
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -249,6 +251,8 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, DvStatisticModu
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
+        const d = DataCenterS.getData(player, PetBagModuleData);
+        console.log(d.BagCapacity);
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -282,6 +286,32 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, DvStatisticModu
 //#region Method
     public getPlayerData(player: mw.Player | string | number): DvStatisticModuleData {
         return super.getPlayerData(player);
+    }
+    // 更新宠物销毁数据
+    public updateDestroyPetsInfo(userId: number, delPets: petItemDataNew[],desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
+        if(!delPets?.length) return;
+        const petBagData = DataCenterS.getData(userId, PetBagModuleData);
+		const now = Math.floor(Date.now() / 1000);
+        for (let i = 0; i < delPets.length; i++) {
+            const delPet = delPets[i];
+            const key = delPet.k;
+            const persistInfo = petBagData.getPersistStatisticInfoByKey(key);
+            const destroyPetsInfo: PetSimulatorStatisticPetObj = {
+                petkey: key,
+                proId: delPet.I,
+                name: delPet.p.n,
+                attack: delPet.p.a,
+                enchanted: "",
+                status: "destroyed",
+                creSource: persistInfo.creSource,
+                desSource,
+                create: persistInfo.create,
+                update: now,
+            }
+            this.destroyPetsMap[key] = destroyPetsInfo;
+            petBagData.delPersistPetStatisticByKey(key);
+        }
+        petBagData.save(true);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
