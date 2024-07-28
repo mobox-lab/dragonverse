@@ -679,6 +679,7 @@ export default class PetBehavior {
         } else {
             this.attackPrivot.localTransform.rotation = new mw.Rotation(0, this.attackRotY, 0);
         }
+        console.log('SceneResourceMap: ', SceneResourceMap.get(1002).map(item => item.scenePointId));
     }
 
     private _attackAni: Animation;

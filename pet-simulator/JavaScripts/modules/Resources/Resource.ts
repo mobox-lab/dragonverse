@@ -910,10 +910,14 @@ export default class ResourceScript extends mw.Script {
 
     /**移除场景资源 */
     private removeScenceResource(areaID: number, resourceScript: ResourceScript) {
-        const resource = SceneResourceMap.get(areaID);
-        if (!resource) return;
-        const leftResource = resource.filter(item => item.scenePointId !== resourceScript.scenePointId);
-        SceneResourceMap.set(areaID, leftResource);
+        let arr = SceneResourceMap.get(areaID);
+        if (!arr) return;
+        let index = arr.findIndex((item) => {
+            return item == resourceScript;
+        });
+        if (index != -1) {
+            arr.splice(index, 1);
+        }
     }
 
     /**回收破坏物模型 */
