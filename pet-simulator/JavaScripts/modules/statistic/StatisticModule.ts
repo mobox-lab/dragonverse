@@ -4,7 +4,7 @@ import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModul
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import { EnergyModuleS } from "../Energy/EnergyModule";
-import { PetBagModuleData, PetSimulatorStatisticPetObj, petItemDataNew } from "../PetBag/PetBagModuleData";
+import { CreSourceStr, PSStatisticPetKey, PetBagModuleData, PetSimulatorStatisticPetObj, petItemDataNew } from "../PetBag/PetBagModuleData";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { AuthModuleS, PetSimulatorStatisticNeedFill } from "../auth/AuthModule";
 import { GameConfig } from "../../config/GameConfig";
@@ -433,9 +433,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 attack: delPet.p.a,
                 enchanted: this.getStatisticEnchantedInfo(delPet),
                 status: "destroyed",
-                creSource: persistInfo.creSource,
+                creSource: CreSourceStr[persistInfo[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
                 desSource,
-                create: persistInfo.create,
+                create: persistInfo[PSStatisticPetKey.create],
                 update: now,
             }
             this.destroyPetsMap[key] = destroyPetsInfo;
@@ -471,19 +471,19 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         const curPets = petBagData.PetStatisticArr ?? [];
         const destroyPets = Object.values(this.destroyPetsMap || {});
         const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
-            const petInfo = petBagData.bagItemsByKey(p.petkey)
+            const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
             const info: PetSimulatorStatisticPetObj = {
-                petkey: p.petkey,
+                petkey: p[PSStatisticPetKey.petKey],
                 proId: petInfo.I,
                 name: petInfo.p.n,
                 attack: petInfo.p.a,
                 enchanted: this.getStatisticEnchantedInfo(petInfo),
 
                 status: "exist",
-                creSource: p.creSource,
+                creSource: CreSourceStr[p[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
                 desSource: "",
-                create: p.create,
-                update: p.update,
+                create: p[PSStatisticPetKey.create],
+                update: p[PSStatisticPetKey.update],
             }
             return info;
         }).concat(destroyPets)

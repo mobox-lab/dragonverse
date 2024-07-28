@@ -149,6 +149,34 @@ export interface PetSimulatorStatisticPersistPetObj {
     update: number;
 }
 
+/**
+ * 宠物模拟器 统计信息 压缩信息 宠物对象.
+ */
+export enum PSStatisticPetKey {
+    /**
+     * 背包 Key.
+     */
+    petKey = 0,
+    /**
+     * 创建来源.
+     * "删除" 为主动删除.
+     * 其余为合成时被动删除.
+     */
+    creSource = 1,
+    create = 2,
+    update = 3
+} 
+/**
+ * 宠物模拟器 统计信息 压缩信息 creSourceStr.
+ */
+export enum CreSourceStr {
+    "孵化" = 0,
+    "合成" = 1,
+    "爱心化" = 2,
+    "彩虹化" = 3,
+    "初始化" = 4,
+}
+
 //物品容器
 //100-200 为宠物槽位
 export class PetBagModuleData extends Subdata {
@@ -174,6 +202,9 @@ export class PetBagModuleData extends Subdata {
 
     @Decorator.persistence()
     private petStatisticMap: { [key: number]: PetSimulatorStatisticPersistPetObj } = {};
+
+    @Decorator.persistence()
+    private petStatisticMapNew: number[][] = [];// PSStatisticPersistPetKey
 
     /**训练宠物集合 */
     @Decorator.persistence()
@@ -224,22 +255,12 @@ export class PetBagModuleData extends Subdata {
     }
 
     /**宠物统计数据 */
-    public get PetStatisticArr(): PetSimulatorStatisticPersistPetObj[] {
-        // const curPets = this.sortBag();
-		// curPets.forEach((petInfo) => { 
-		// 	this.updatePetStatistic(petInfo, false);
-		// })
-        let arr: PetSimulatorStatisticPersistPetObj[] = [];
-		for (let key in this.petStatisticMap) {
-			const obj = this.petStatisticMap[key];
-            if(obj) arr.push(obj);
-        }
-		Log4Ts.log(PetBagModuleData, " 宠物统计数据: ", JSON.stringify(arr));
-        return arr;
+    public get PetStatisticArr(): number[][] {
+        return this.petStatisticMapNew;
     }
 
     get version(): number {
-        return 7;
+        return 8;
     }
 
     protected onDataInit(): void {
@@ -272,12 +293,29 @@ export class PetBagModuleData extends Subdata {
                 if(SystemUtil.isServer()) this.cleanOldPetStatistic();
                 this.currentVersion = 7;
             }
+            if(this.currentVersion == 7) {
+                dataSave = true;
+                if(SystemUtil.isServer()) this.reduceDataSize();
+                this.currentVersion = 8;
+            }
         }
         // this.petStatisticMap = {};
         mw.setTimeout(()=>{
             this.save(dataSave);
         },0.5e3)
     }
+
+    public reduceDataSize() {
+        if(this.petStatisticMap) {
+            for (const key in this.petStatisticMap) {
+                const preObj = this.petStatisticMap[key];
+                this.petStatisticMapNew.push([preObj.petkey, CreSourceStr[preObj.creSource], preObj.create, preObj.update]);
+            }
+            this.petStatisticMap = {};
+        }
+    }
+
+
     public cleanPetOverBag() {// 补救措施
         if(this.CurBagCapacity <= this.BagCapacity) return; // 当前背包宠物数量 <= 总容量 不需要裁剪 
         // 裁剪 先排序 超出的销毁并记录
@@ -305,16 +343,20 @@ export class PetBagModuleData extends Subdata {
         },0.5e3)
         delKeys.forEach( (key) => {
             delete this.bagContainerNew[key];
-            delete this.petStatisticMap[key];
+
         });
         const now = new Date().getTime();
         const recordInfo = {
-            [userId]: delPets.map((p) => ({
-                petKey: p.k,
-                source: this.petStatisticMap[p.k]?.creSource ?? "",
-                attack: p.p.a,
-                delTime: now
-            }))
+            [userId]: delPets.map((p) => {
+                const persistInfo = this.getPersistStatisticInfoByKey(p.k);
+                const source = persistInfo[PSStatisticPetKey.creSource]
+                return {
+                    petKey: p.k,
+                    source: CreSourceStr[source] ?? "",
+                    attack: p.p.a,
+                    delTime: now
+                }
+            })
         };
         const dataKey = "PS_CLEAN_PET_OVER_BAG_RECORD"
         DataStorage.asyncGetData(dataKey).then((dataStorageResult) => {
@@ -330,14 +372,15 @@ export class PetBagModuleData extends Subdata {
     }
 
     /**宠物统计数据 */
-    public getPersistStatisticInfoByKey(key: number): PetSimulatorStatisticPersistPetObj {
-        return this.petStatisticMap[key];
+    public getPersistStatisticInfoByKey(key: number): number[] {
+        return this.petStatisticMapNew?.find((p) => p[PSStatisticPetKey.petKey] === key) ?? [];
     }
 
     /**清理宠物统计数据 去除已经销毁的 */
 	public delPersistPetStatisticByKey(key: number) {
-        if(this.petStatisticMap[key]) delete this.petStatisticMap[key];
+        this.petStatisticMapNew = this.petStatisticMapNew.filter((p) => p[PSStatisticPetKey.petKey] === key);
     }
+
 	public cleanOldPetStatistic() {
         const petStatisticMap = this.petStatisticMap;
         for (const key in petStatisticMap) {
@@ -347,6 +390,8 @@ export class PetBagModuleData extends Subdata {
             }
         }
     }
+
+
 	/**更新宠物统计数据 - 新增宠物 */
 	public updatePetStatistic(petInfo: petItemDataNew, isUpdate = true, creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化") {
 		const key = petInfo?.k;
@@ -356,24 +401,21 @@ export class PetBagModuleData extends Subdata {
 		}
 		const now = Math.floor(Date.now() / 1000);
 
-		const petStatistic: PetSimulatorStatisticPersistPetObj = {
-			petkey: key,
-            creSource,
-			create: now ?? 0,
-			update: now ?? 0,
-		}
-		if(!this.petStatisticMap[key]) {
-			this.petStatisticMap[key] = petStatistic;
-		} else { // 宠物已存在 更新信息。
-            const prePetData = this.petStatisticMap[key];
-			petStatistic.create = prePetData.create;
-			if(!isUpdate) petStatistic.update = prePetData.update; // 不是update则不更新更新时间
-            if(!creSource) petStatistic.creSource = prePetData.creSource;
-			this.petStatisticMap[key] = petStatistic;
+		const petStatistic = [key, CreSourceStr[creSource] ?? CreSourceStr["孵化"], now ?? 0, now ?? 0];
+        const prePetDataIdx = this.petStatisticMapNew.findIndex((p) => p[PSStatisticPetKey.petKey] === key);
+        if(prePetDataIdx === -1) {
+            this.petStatisticMapNew.push(petStatistic);
+        } else { // 宠物已存在 更新信息。
+            const prePetData = this.petStatisticMapNew[prePetDataIdx];
+			petStatistic[PSStatisticPetKey.create] = prePetData[PSStatisticPetKey.create];
+			if(!isUpdate) petStatistic[PSStatisticPetKey.update] = prePetData[PSStatisticPetKey.update]; // 不是update则不更新更新时间
+            if(!creSource) petStatistic[PSStatisticPetKey.creSource] = prePetData[PSStatisticPetKey.creSource];
+			this.petStatisticMapNew[prePetDataIdx] = petStatistic;
 		} 
 		Log4Ts.log(PetBagModuleData, " 更新宠物统计数据 petInfo:", JSON.stringify(petInfo) + " petStatistic:", JSON.stringify(petStatistic));
 		return petStatistic;
 	}
+
 
     /**背包排序 */
     public sortBag(): petItemDataNew[] {

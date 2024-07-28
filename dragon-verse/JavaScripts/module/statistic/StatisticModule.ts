@@ -2,7 +2,7 @@ import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModul
 import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import { PetBagModuleData, PetSimulatorStatisticPetObj, petItemDataNew } from "./PetBagModuleData";
+import { CreSourceStr, PSStatisticPetKey, PetBagModuleData, PetSimulatorStatisticPetObj, petItemDataNew } from "./PetBagModuleData";
 
 export default class DvStatisticModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -287,6 +287,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, DvStatisticModu
     public getPlayerData(player: mw.Player | string | number): DvStatisticModuleData {
         return super.getPlayerData(player);
     }
+
     // 更新宠物销毁数据
     public updateDestroyPetsInfo(userId: number, delPets: petItemDataNew[],desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
         if(!delPets?.length) return;
@@ -303,9 +304,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, DvStatisticModu
                 attack: delPet.p.a,
                 enchanted: "",
                 status: "destroyed",
-                creSource: persistInfo.creSource,
+                creSource: CreSourceStr[persistInfo[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
                 desSource,
-                create: persistInfo.create,
+                create: persistInfo[PSStatisticPetKey.create],
                 update: now,
             }
             this.destroyPetsMap[key] = destroyPetsInfo;
@@ -313,6 +314,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, DvStatisticModu
         }
         petBagData.save(true);
     }
+
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
