@@ -246,7 +246,7 @@ export class PetBagModuleData extends Subdata {
     }
 
     get version(): number {
-        return 6;
+        return 7;
     }
 
     protected onDataInit(): void {
@@ -273,6 +273,11 @@ export class PetBagModuleData extends Subdata {
                 dataSave = true;
                 if(SystemUtil.isServer()) this.cleanPetOverBag();
                 this.currentVersion = 6;
+            }
+            if(this.currentVersion == 6) {
+                dataSave = true;
+                if(SystemUtil.isServer()) this.cleanOldPetStatistic();
+                this.currentVersion = 7;
             }
         }
         // this.petStatisticMap = {};
@@ -337,9 +342,16 @@ export class PetBagModuleData extends Subdata {
     /**清理宠物统计数据 去除已经销毁的 */
 	public delPersistPetStatisticByKey(key: number) {
         delete this.petStatisticMap[key];
-        this.save(true);
     }
-
+	public cleanOldPetStatistic() {
+        const petStatisticMap = this.petStatisticMap;
+        for (const key in petStatisticMap) {
+            const petInfo = petStatisticMap[key] as any;
+            if(petInfo?.status === "destroyed") { 
+                delete petStatisticMap[key];
+            }
+        }
+    }
 	/**更新宠物统计数据 - 新增宠物 */
 	public updatePetStatistic(petInfo: petItemDataNew, isUpdate = true, creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化") {
 		const key = petInfo?.k;

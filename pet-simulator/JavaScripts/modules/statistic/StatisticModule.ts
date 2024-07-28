@@ -393,6 +393,8 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
 
     protected onPlayerJoined(player: Player): void {
         super.onPlayerJoined(player);
+        const d = DataCenterS.getData(player, PetBagModuleData)
+        console.log(d.CurBagCapacity); // 触发 PetBag 的 onDataInit
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -439,6 +441,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             this.destroyPetsMap[key] = destroyPetsInfo;
             petBagData.delPersistPetStatisticByKey(key);
         }
+        petBagData.save(true);
     }
 
     protected onPlayerLeft(player: Player): void {
