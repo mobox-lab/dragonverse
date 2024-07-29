@@ -316,23 +316,25 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
     }
 
     /**返还当前区域资源点 */
-    private returnAreaResCount(areaId: number, pointId: number, sceneId: number) {
+    private returnAreaResCount(areaId: number, pointId: number, sceneId: number, needRefreshNew = false) {
         if (!this.areaPointMap.has(areaId)) {
             this.areaPointMap.set(areaId, this.getAreaResIds(areaId));
         }
         let cfgs = this.areaPointMap.get(areaId);
         cfgs.push(pointId);
 
-        //保存历史记录
-        if (!this.areaHistoryMap.has(areaId)) {
-            this.areaHistoryMap.set(areaId, []);
+        if(needRefreshNew) {
+            //保存历史记录
+            if (!this.areaHistoryMap.has(areaId)) {
+                this.areaHistoryMap.set(areaId, []);
+            }
+            let arr = this.areaHistoryMap.get(areaId);
+            arr.push(sceneId);
         }
-        let arr = this.areaHistoryMap.get(areaId);
-        arr.push(sceneId);
     }
 
-    /**获取历史记录 */
-    public getHistoryRes(areaId: number): number {
+    /** 根据历史记录获取新的资源id */
+    public getNewResByHistoryRes(areaId: number): number {
         if (!this.areaHistoryMap.has(areaId)) {
             return 0;
         }
@@ -348,7 +350,8 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             const isDiamondOnly = cfg.Type?.length === 1 && cfg.Type[0] === GlobalEnum.DropResourceType.Diamond; // 当前资源是否只掉钻石
             return preIsDiamondOnly === isDiamondOnly; // 如果上一个只掉钻石，那么当前就只掉钻石
         });
-
+        
+        console.log("#debug preIsDiamondOnly:" + preIsDiamondOnly + ",preResId:" + preResId + ",areaId:" + areaId + ",cfgs.length:" + filteredCfgs.map(c=>c.ID));
         const otherProbability = 100 - GlobalData.SceneResource.sameProbability;
         const rate: number[] = [];
         for (let id = 0; id < filteredCfgs.length; id++) {
@@ -397,7 +400,7 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             oTraceWarning("lwj 超过上限");
             return;
         }
-        let historyScenceId = this.getHistoryRes(areaId);
+        let newResID = this.getNewResByHistoryRes(areaId);
         // if (historyScenceId == 0 && areaId == 1002) { //初始默认区域
         //     let type = this.isAreaOneFront(pointId);
         //     historyScenceId = this.getScenceUnitId(areaId, type);
@@ -409,8 +412,8 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
         //     historyScenceId = this.getScenceUnitId(areaId, type);
         // }
 
-        if (historyScenceId == 0) {
-            historyScenceId = this.randomCreate(areaId);
+        if (newResID == 0) {
+            newResID = this.randomCreate(areaId);
             // historyScenceId = this.getScenceUnitId(areaId, type);
         }
 
@@ -418,22 +421,23 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
         count++;
         this.areaMap.set(areaId, count);
 
-        res.initServer(pointId, historyScenceId);
+        res.initServer(pointId, newResID);
         res.onDead.add((playerId: number) => {
             let count = this.areaMap.get(areaId);
             count--;
             this.areaMap.set(areaId, count);
 
-            this.returnScript(res);
-            this.returnAreaResCount(areaId, pointId, historyScenceId);
             const minResourceCount = GameConfig.AreaDivide.getElement(areaId)?.minResourceCount ?? GlobalData.SceneResource.minResourceCount;
-            if (count < minResourceCount) {
+            const needRefreshNew = count < minResourceCount;
+            this.returnScript(res);
+            this.returnAreaResCount(areaId, pointId, newResID, needRefreshNew);
+            if (needRefreshNew) {
                 oTraceError("lwj 低于下限");
                 this.areaRandomRefresh(areaId);
             }
 
             this.onAttackDestroy.call(false, playerId);
-            ModuleService.getModule(Task_ModuleS).breakDestroy(Player.getPlayer(playerId), historyScenceId, areaId);
+            ModuleService.getModule(Task_ModuleS).breakDestroy(Player.getPlayer(playerId), newResID, areaId);
 
             // if (res.ResourceType >= GlobalEnum.DestructorType.Gold1) {
             //     if (res.ResourceType == GlobalEnum.DestructorType.Gold4) {
