@@ -393,7 +393,6 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             this.areaMap.set(areaId, 0);
         }
         let count = this.areaMap.get(areaId);
-
         if (count >= GlobalData.SceneResource.maxResourceCount) {
             oTraceWarning("lwj 超过上限");
             return;
@@ -427,8 +426,8 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
 
             this.returnScript(res);
             this.returnAreaResCount(areaId, pointId, historyScenceId);
-
-            if (count < GlobalData.SceneResource.minResourceCount) {
+            const minResourceCount = GameConfig.AreaDivide.getElement(areaId)?.minResourceCount ?? GlobalData.SceneResource.minResourceCount;
+            if (count < minResourceCount) {
                 oTraceError("lwj 低于下限");
                 this.areaRandomRefresh(areaId);
             }
