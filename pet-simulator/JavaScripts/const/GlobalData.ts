@@ -952,13 +952,13 @@ export namespace GlobalData {
         public static itemPositionInterval: number = 130;
         /**---------------------------------------------------------------------- */
         /**第一世界金币Icon */
-        public static firstWorldCoinImageIcon: string = "176088";
+        public static firstWorldCoinImageIcon: string = "394525";
         /**第二世界金币Icon */
         public static secondWorldCoinImageIcon: string = "176090";
         /**第三世界金币Icon */
         public static thirdWorldCoinImageIcon: string = "175733";
         /**钻石Icon */
-        public static diamondImageIcon: string = "176091";
+        public static diamondImageIcon: string = "394522";
         /**背包Icon */
         public static knapsackImageIcon: string = "136950";
         /**宠物Icon */
