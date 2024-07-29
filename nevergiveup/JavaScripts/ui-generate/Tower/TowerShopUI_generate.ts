@@ -155,6 +155,20 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.img_backg_Internal
 	}
+	private elementImg_Internal: mw.Image
+	public get elementImg(): mw.Image {
+		if(!this.elementImg_Internal&&this.uiWidgetBase) {
+			this.elementImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/elementImg') as mw.Image
+		}
+		return this.elementImg_Internal
+	}
+	private elementBgImg_Internal: mw.Image
+	public get elementBgImg(): mw.Image {
+		if(!this.elementBgImg_Internal&&this.uiWidgetBase) {
+			this.elementBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/elementBgImg') as mw.Image
+		}
+		return this.elementBgImg_Internal
+	}
 	private infoImg_Internal: mw.Image
 	public get infoImg(): mw.Image {
 		if(!this.infoImg_Internal&&this.uiWidgetBase) {

@@ -160,7 +160,6 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.infoLv2.normalImageGuid = selectedGuid;
 		else if(level == 2)
 			this.infoLv3.normalImageGuid = selectedGuid;
-		
 		this.updateStrategyUI();
 		this.updateTexts();
 	}
@@ -219,6 +218,8 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this._cfgID = cfgID;
 		this._cfg = cfg;
 		this._state = state;
+		this.elementBgImg.imageGuid = GlobalData.Shop.shopItemBgGuid[(this._cfg?.elementTy || 1) - 1];
+		this.elementImg.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(this._cfg?.elementTy || 1) - 1];
 		this.updateTexts();
 		this.updateStrategyUI();
 		switch (state) {
