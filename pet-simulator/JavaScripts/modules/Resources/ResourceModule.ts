@@ -234,7 +234,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
                 break;
         }
         str = name + " " + str;
-        mw.UIService.getUI(P_GlobalTips).showTips(str);
+        // mw.UIService.getUI(P_GlobalTips).showTips(str);
     }
 
     // protected onUpdate(dt: number): void {

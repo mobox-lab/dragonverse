@@ -230,7 +230,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
                 break;
         }
         str = name + " " + str + " " + cfg.petName;
-        mw.UIService.getUI(P_GlobalTips).showTips(str);
+        // mw.UIService.getUI(P_GlobalTips).showTips(str);
     }
 
     public async net_enchantNotice(playerId: number, enchantIds: number[]) {
@@ -246,7 +246,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
                 str = GameConfig.Language.World_Tips_16.Value;
         });
         str = name + " " + str;
-        mw.UIService.getUI(P_GlobalTips).showTips(str);
+        // mw.UIService.getUI(P_GlobalTips).showTips(str);
     }
 
     //************** 宠物背包*************/

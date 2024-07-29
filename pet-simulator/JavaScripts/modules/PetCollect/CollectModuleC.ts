@@ -103,7 +103,7 @@ export class CollectModuleC extends ModuleC<CollectModuleS, CollectModuleData> {
         let petName = GlobalData.Notice.collectPetCount[index];
         let str = utils.Format(GameConfig.Language.World_Tips_12.Value, petName);
         str = name + " " + str;
-        mw.UIService.getUI(P_GlobalTips).showTips(str);
+        // mw.UIService.getUI(P_GlobalTips).showTips(str);
     }
 
     /**获取宠物id 数 */

@@ -470,7 +470,7 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         } else {
             str = str + " " + GameConfig.Language.World_Tips_11.Value;
         }
-        mw.UIService.getUI(P_GlobalTips).showTips(str);
+        // mw.UIService.getUI(P_GlobalTips).showTips(str);
     }
 
     /**发送梯度埋点 */
