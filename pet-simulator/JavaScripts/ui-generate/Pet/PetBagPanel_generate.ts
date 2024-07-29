@@ -78,13 +78,6 @@ export default class PetBagPanel_Generate extends UIScript {
 		}
 		return this.mEquip_Internal
 	}
-	private mEquipImg_Internal: mw.Image
-	public get mEquipImg(): mw.Image {
-		if(!this.mEquipImg_Internal&&this.uiWidgetBase) {
-			this.mEquipImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/mEquipImg') as mw.Image
-		}
-		return this.mEquipImg_Internal
-	}
 	private mTextBlock_Petequipnum_Internal: mw.TextBlock
 	public get mTextBlock_Petequipnum(): mw.TextBlock {
 		if(!this.mTextBlock_Petequipnum_Internal&&this.uiWidgetBase) {
@@ -98,6 +91,13 @@ export default class PetBagPanel_Generate extends UIScript {
 			this.mSureDelBtn_Cancel_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/mSureDelBtn_Cancel') as mw.StaleButton
 		}
 		return this.mSureDelBtn_Cancel_Internal
+	}
+	private mEquipImg_Internal: mw.Image
+	public get mEquipImg(): mw.Image {
+		if(!this.mEquipImg_Internal&&this.uiWidgetBase) {
+			this.mEquipImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_1/mEquipImg') as mw.Image
+		}
+		return this.mEquipImg_Internal
 	}
 
 
