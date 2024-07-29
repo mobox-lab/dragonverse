@@ -22,7 +22,7 @@ export class P_RewardPanel extends GiftMain_Generate {
 
         for (let i = 0; i < arr.length; i++) {
             let ui = mw.UIService.create(RewardItem);
-            ui.uiObject.size = new mw.Vector2(144, 144);
+            // ui.uiObject.size = new mw.Vector2(144, 144);
             this.mCanvas_Gift.addChild(ui.uiObject);
             ui.init(arr[i]);
             this.itemArr.push(ui);
