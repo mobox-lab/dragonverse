@@ -336,37 +336,39 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
         if (!this.areaHistoryMap.has(areaId)) {
             return 0;
         }
-        let arr = this.areaHistoryMap.get(areaId);
+        const arr = this.areaHistoryMap.get(areaId);
         if (arr.length == 0) return 0;
-        let scenceID = arr.shift();
+        const preResId = arr.shift();
 
-        let cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
+        const cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
+        const preCfg = GameConfig.SceneUnit.getElement(preResId);
+        const preIsDiamondOnly = preCfg.Type?.length === 1 && preCfg.Type[0] === GlobalEnum.DropResourceType.Diamond; // 上一个资源是否只掉钻石
+        const filteredCfgs = cfgs.filter(cfg => {
+            if(isSceneUnitIdIsBigBox(cfg.ID)) return false;
+            const isDiamondOnly = cfg.Type?.length === 1 && cfg.Type[0] === GlobalEnum.DropResourceType.Diamond; // 当前资源是否只掉钻石
+            return preIsDiamondOnly === isDiamondOnly; // 如果上一个只掉钻石，那么当前就只掉钻石
+        });
 
-        for (let i = cfgs.length - 1; i >= 0; --i) {
-            if (isSceneUnitIdIsBigBox(cfgs[i].ID)) {
-                cfgs.splice(i, 1);
-            }
-        }
-        let otherProbability = 100 - GlobalData.SceneResource.sameProbability;
-        let rate: number[] = [];
-        for (let id = 0; id < cfgs.length; id++) {
-            const element = cfgs[id].ID;
+        const otherProbability = 100 - GlobalData.SceneResource.sameProbability;
+        const rate: number[] = [];
+        for (let id = 0; id < filteredCfgs.length; id++) {
+            const element = filteredCfgs[id].ID;
             if (isSceneUnitIdIsBigBox(element)) continue;
-            if (element == scenceID) {
+            if (element == preResId) {
                 rate.push(GlobalData.SceneResource.sameProbability);
             } else
-                rate.push(Number((otherProbability / (cfgs.length - 1)).toFixed(2)));
+                rate.push(Number((otherProbability / (filteredCfgs.length - 1)).toFixed(2)));
         }
 
         let probability = 0;
-        let random = MathUtil.randomFloat(0, 99);
+        const random = MathUtil.randomFloat(0, 99);
         for (let i = 0; i < rate.length; i++) {
             probability += rate[i];
             if (random <= probability) {
-                return cfgs[i].ID;
+                return filteredCfgs[i].ID;
             }
         }
-        oTraceError("lwj 获取历史记录失败" + scenceID + "  " + rate + "  " + random);
+        oTraceError("lwj 获取历史记录失败" + preResId + "  " + rate + "  " + random);
         return 0;
     }
 
@@ -391,7 +393,6 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             this.areaMap.set(areaId, 0);
         }
         let count = this.areaMap.get(areaId);
-
         if (count >= GlobalData.SceneResource.maxResourceCount) {
             oTraceWarning("lwj 超过上限");
             return;
@@ -425,8 +426,8 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
 
             this.returnScript(res);
             this.returnAreaResCount(areaId, pointId, historyScenceId);
-
-            if (count < GlobalData.SceneResource.minResourceCount) {
+            const minResourceCount = GameConfig.AreaDivide.getElement(areaId)?.minResourceCount ?? GlobalData.SceneResource.minResourceCount;
+            if (count < minResourceCount) {
                 oTraceError("lwj 低于下限");
                 this.areaRandomRefresh(areaId);
             }

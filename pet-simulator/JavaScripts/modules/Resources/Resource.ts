@@ -779,7 +779,7 @@ export default class ResourceScript extends mw.Script {
         let temp = utils.GetRandomNum(0, 10) % 2 == 0 ? 1 : -1;
 
         this.cfg.Type.forEach((item, index) => {
-            if (item != 2) {
+            if (item != GlobalEnum.DropResourceType.Diamond) {
                 let temp2 = this.cfg.WaveValue[index] + Math.log(attack);
                 let random = utils.GetRandomNum(0, temp2);
                 if (this.rate == 1) {
