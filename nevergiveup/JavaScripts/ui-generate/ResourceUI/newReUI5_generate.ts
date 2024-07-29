@@ -6,8 +6,8 @@
 
 
 
-@UIBind('UI/newReUI4.ui')
-export default class newReUI4_Generate extends UIScript {
+@UIBind('UI/ResourceUI/newReUI5.ui')
+export default class newReUI5_Generate extends UIScript {
 	
 
 

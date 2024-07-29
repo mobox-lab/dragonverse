@@ -211,6 +211,13 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.infoLv1_Internal
 	}
+	private txtLv1_Internal: mw.TextBlock
+	public get txtLv1(): mw.TextBlock {
+		if(!this.txtLv1_Internal&&this.uiWidgetBase) {
+			this.txtLv1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_level/txtLv1') as mw.TextBlock
+		}
+		return this.txtLv1_Internal
+	}
 	private infoLv2_Internal: mw.StaleButton
 	public get infoLv2(): mw.StaleButton {
 		if(!this.infoLv2_Internal&&this.uiWidgetBase) {
@@ -218,12 +225,26 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.infoLv2_Internal
 	}
+	private txtLv2_Internal: mw.TextBlock
+	public get txtLv2(): mw.TextBlock {
+		if(!this.txtLv2_Internal&&this.uiWidgetBase) {
+			this.txtLv2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_level/txtLv2') as mw.TextBlock
+		}
+		return this.txtLv2_Internal
+	}
 	private infoLv3_Internal: mw.StaleButton
 	public get infoLv3(): mw.StaleButton {
 		if(!this.infoLv3_Internal&&this.uiWidgetBase) {
 			this.infoLv3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_level/infoLv3') as mw.StaleButton
 		}
 		return this.infoLv3_Internal
+	}
+	private txtLv3_Internal: mw.TextBlock
+	public get txtLv3(): mw.TextBlock {
+		if(!this.txtLv3_Internal&&this.uiWidgetBase) {
+			this.txtLv3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_level/txtLv3') as mw.TextBlock
+		}
+		return this.txtLv3_Internal
 	}
 	private infoScrollCanvas_Internal: mw.Canvas
 	public get infoScrollCanvas(): mw.Canvas {
@@ -365,6 +386,15 @@ export default class TowerShopUI_Generate extends UIScript {
 	   this.initLanguage(this.infoTxt)
 	   
 	
+	   this.initLanguage(this.txtLv1)
+	   
+	
+	   this.initLanguage(this.txtLv2)
+	   
+	
+	   this.initLanguage(this.txtLv3)
+	   
+	
 	   this.initLanguage(this.textTitle)
 	   
 	
@@ -373,15 +403,6 @@ export default class TowerShopUI_Generate extends UIScript {
 	
 	   //文本多语言
 	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/canvas_level/TxtLv1") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/canvas_level/TxtLv2") as any);
-	   
-	
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Canvas/infoCanvas/canvas_level/TxtLv3") as any);
-	   
-	
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

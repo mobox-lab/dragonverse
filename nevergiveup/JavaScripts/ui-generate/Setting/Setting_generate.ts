@@ -92,6 +92,20 @@ export default class Setting_Generate extends UIScript {
 		}
 		return this.txtVoiceAttack_1_Internal
 	}
+	private txtProgressLow_Internal: mw.TextBlock
+	public get txtProgressLow(): mw.TextBlock {
+		if(!this.txtProgressLow_Internal&&this.uiWidgetBase) {
+			this.txtProgressLow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/txtProgressLow') as mw.TextBlock
+		}
+		return this.txtProgressLow_Internal
+	}
+	private txtProgressHigh_Internal: mw.TextBlock
+	public get txtProgressHigh(): mw.TextBlock {
+		if(!this.txtProgressHigh_Internal&&this.uiWidgetBase) {
+			this.txtProgressHigh_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/txtProgressHigh') as mw.TextBlock
+		}
+		return this.txtProgressHigh_Internal
+	}
 	private img_fakeEsc_Internal: mw.Image
 	public get img_fakeEsc(): mw.Image {
 		if(!this.img_fakeEsc_Internal&&this.uiWidgetBase) {
@@ -148,12 +162,26 @@ export default class Setting_Generate extends UIScript {
 		}
 		return this.bgmSelectTrue_Internal
 	}
+	private txtVoiceOn_Internal: mw.TextBlock
+	public get txtVoiceOn(): mw.TextBlock {
+		if(!this.txtVoiceOn_Internal&&this.uiWidgetBase) {
+			this.txtVoiceOn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasVoice/txtVoiceOn') as mw.TextBlock
+		}
+		return this.txtVoiceOn_Internal
+	}
 	private bgmSelectFalse_Internal: mw.StaleButton
 	public get bgmSelectFalse(): mw.StaleButton {
 		if(!this.bgmSelectFalse_Internal&&this.uiWidgetBase) {
 			this.bgmSelectFalse_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasVoice/bgmSelectFalse') as mw.StaleButton
 		}
 		return this.bgmSelectFalse_Internal
+	}
+	private txtVoiceOff_Internal: mw.TextBlock
+	public get txtVoiceOff(): mw.TextBlock {
+		if(!this.txtVoiceOff_Internal&&this.uiWidgetBase) {
+			this.txtVoiceOff_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasVoice/txtVoiceOff') as mw.TextBlock
+		}
+		return this.txtVoiceOff_Internal
 	}
 	private txtVoiceBgm_1_Internal: mw.TextBlock
 	public get txtVoiceBgm_1(): mw.TextBlock {
@@ -225,6 +253,18 @@ export default class Setting_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txtVoiceAttack_1)
+	   
+	
+	   this.initLanguage(this.txtProgressLow)
+	   
+	
+	   this.initLanguage(this.txtProgressHigh)
+	   
+	
+	   this.initLanguage(this.txtVoiceOn)
+	   
+	
+	   this.initLanguage(this.txtVoiceOff)
 	   
 	
 	   this.initLanguage(this.txtVoiceBgm_1)

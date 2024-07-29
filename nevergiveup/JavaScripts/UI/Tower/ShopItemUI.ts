@@ -105,6 +105,8 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this._cfg = GameConfig.Tower.getElement(this._cfgID);
 		//Utils.setImageByAsset(this.towerImg, this._cfg);
 		this.towerImg.imageGuid = this._cfg.imgGuid;
+		this.bgElementImg.imageGuid = GlobalData.Shop.shopItemBgGuid[(this._cfg?.elementTy || 1) - 1];
+		this.elementImg.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(this._cfg?.elementTy || 1) - 1];
 		this.nameTxt.text = this._cfg.name;
 		this.txt_sell.text = this._cfg.shopPrice.toFixed(0);
 		this.txt_sell_1.text = Utils.formatNumber(this._cfg.attackDamage[0]);

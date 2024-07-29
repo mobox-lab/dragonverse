@@ -6,7 +6,7 @@
 
 
 
-@UIBind('UI/NewUI.ui')
+@UIBind('UI/ResourceUI/NewUI.ui')
 export default class NewUI_Generate extends UIScript {
 	
 

@@ -6,16 +6,9 @@
 
 
 
-@UIBind('UI/Tower/InteractUI.ui')
-export default class InteractUI_Generate extends UIScript {
-		private interactBtn_Internal: mw.StaleButton
-	public get interactBtn(): mw.StaleButton {
-		if(!this.interactBtn_Internal&&this.uiWidgetBase) {
-			this.interactBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/interactBtn') as mw.StaleButton
-		}
-		return this.interactBtn_Internal
-	}
-
+@UIBind('UI/ResourceUI/newLineui.ui')
+export default class newLineui_Generate extends UIScript {
+	
 
 
    protected onAwake() {
@@ -27,13 +20,6 @@ export default class InteractUI_Generate extends UIScript {
    protected initButtons() {
 	   //按钮添加点击
 	   
-	   this.interactBtn.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "interactBtn");
-	   })
-	   this.initLanguage(this.interactBtn);
-	   this.interactBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-	   
-	
 	   //按钮添加点击
 	   
 
@@ -43,9 +29,6 @@ export default class InteractUI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/Textinteract") as any);
-	   
-	
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

@@ -29,6 +29,13 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.bgImg_Internal
 	}
+	private elementImg_Internal: mw.Image
+	public get elementImg(): mw.Image {
+		if(!this.elementImg_Internal&&this.uiWidgetBase) {
+			this.elementImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/elementImg') as mw.Image
+		}
+		return this.elementImg_Internal
+	}
 	private canvasLock_Internal: mw.Canvas
 	public get canvasLock(): mw.Canvas {
 		if(!this.canvasLock_Internal&&this.uiWidgetBase) {
