@@ -350,7 +350,7 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             const isDiamondOnly = cfg.Type?.length === 1 && cfg.Type[0] === GlobalEnum.DropResourceType.Diamond; // 当前资源是否只掉钻石
             return preIsDiamondOnly === isDiamondOnly; // 如果上一个只掉钻石，那么当前就只掉钻石
         });
-        
+         
         console.log("#debug preIsDiamondOnly:" + preIsDiamondOnly + ",preResId:" + preResId + ",areaId:" + areaId + ",cfgs.length:" + filteredCfgs.map(c=>c.ID));
         const otherProbability = 100 - GlobalData.SceneResource.sameProbability;
         const rate: number[] = [];
@@ -472,8 +472,8 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             }
             sum += weightArr[i].weight;
         }
-        //=probability的话就返回最后一个
-        return weightArr[weightArr.length - 1].id;
+        //=probability的话就返回第一个 
+        return weightArr[0].id;
     }
 
     private getAreaWeight(areaId: number): { id: number, weight: number }[] {
