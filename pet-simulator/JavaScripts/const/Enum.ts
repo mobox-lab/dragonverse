@@ -131,6 +131,15 @@ export namespace GlobalEnum {
         /**天堂大宝箱 */
         HeavenBigBox = 11,
     }
+    /**掉落物类型 */
+    export enum DropResourceType {
+        /** 第一世界金币 */
+        Gold1 = 1,
+        /**钻石 */
+        Diamond = 2,
+        /** 第一世界金币 */
+        Gold2 = 3
+    }
     /**宠物品质 */
     export enum PetQuality {
         /**普通 */
