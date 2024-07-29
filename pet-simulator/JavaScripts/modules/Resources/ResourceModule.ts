@@ -427,7 +427,7 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             count--;
             this.areaMap.set(areaId, count);
 
-            const minResourceCount = GameConfig.AreaDivide.getElement(areaId)?.minResourceCount ?? GlobalData.SceneResource.minResourceCount;
+            const minResourceCount = GameConfig.AreaDivide.getElement(areaId)?.minResourceCount || GlobalData.SceneResource.minResourceCount;
             const needRefreshNew = count < minResourceCount;
             this.returnScript(res);
             this.returnAreaResCount(areaId, pointId, newResID, needRefreshNew);
