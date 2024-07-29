@@ -8,8 +8,6 @@ import TalentItem_Generate from "../../ui-generate/TalentTree/TalentItem_generat
 import { TalentTreeActions } from "./TalentTreeContainer";
 import TalentModuleC from "../../Modules/talent/TalentModuleC";
 
-const TALENT_MAX_LEVEL = 10;
-
 /**
  * 基础天赋
  */
@@ -53,7 +51,7 @@ export class TalentItem extends TalentItem_Generate {
                 Gtk.trySetVisibility(this.mLocked, false);
                 Gtk.trySetVisibility(this.mNotActive, false);
                 this.textTalentLevel.fontColor = LinearColor.white;
-                this.textTalentLevel.outlineColor = LinearColor.black;
+                this.textTalentLevel.setOutlineColorByHex(this.data.outlineColor);
                 this.textTalentName.fontColor = LinearColor.white;
                 this.textTalentName.outlineColor = LinearColor.black;
             }
@@ -83,9 +81,16 @@ export class TalentItem extends TalentItem_Generate {
         const currentLevel = this.talentC.getTalentIndex(data.id);
         this.setCurrentLevel(currentLevel);
         this.refreshCanActive();
+
         this.textTalentName.text = data.nameCN;
         this.mItem.normalImageGuid = data.icon;
         this.mNotActive.imageGuid = data.iconGray;
+        this.mItem.size = new Vector2(data.iconSize, data.iconSize);
+        this.mLocked.size = new Vector2(data.iconSize, data.iconSize);
+        this.mNotActive.size = new Vector2(data.iconSize, data.iconSize);
+        this.mItem.position = new Vector2(data.iconPos[0], data.iconPos[1]);
+        this.mLocked.position = new Vector2(data.iconPos[0], data.iconPos[1]);
+        this.mNotActive.position = new Vector2(data.iconPos[0], data.iconPos[1]);
     }
 
     public setCurrentLevel(index: number) {
