@@ -1,0 +1,132 @@
+import { JModuleC } from "../../depend/jibu-module/JModule";
+import YoactArray from "../../depend/yoact/YoactArray";
+import TalentModuleS from "./TalentModuleS";
+import IUnique from "../../depend/yoact/IUnique";
+import TalentModuleData from "./TalentModuleData";
+import { GameConfig } from "../../config/GameConfig";
+import PlayerModuleC from "../PlayerModule/PlayerModuleC";
+import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
+import Log4Ts from "../../depend/log4ts/Log4Ts";
+import { ETalentType } from "../../const/enum";
+
+export class TalentItemUnique implements IUnique {
+    public id: number;
+    public index: number;
+
+    public static arrayFromObject(data: TalentModuleData): TalentItemUnique[] {
+        const result: TalentItemUnique[] = [];
+        for (const key in data.talentMap) {
+            const element = data.talentMap[key];
+            result.push(new TalentItemUnique(Number(key), element));
+        }
+        return result;
+    }
+
+    constructor(id: number, index: number) {
+        this.id = id;
+        this.index = index;
+    }
+
+    public move(updated: this): boolean {
+        let changed: boolean = false;
+        if (this.index !== updated.index) {
+            changed = true;
+            this.index = updated.index;
+        }
+
+        return changed;
+    }
+
+    public primaryKey = (): number => this.id;
+
+}
+
+export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleData> {
+    private _playC: PlayerModuleC;
+    public talentItemYoact: YoactArray<TalentItemUnique> = new YoactArray<TalentItemUnique>();
+
+    private get playC(): PlayerModuleC | null {
+        if (!this._playC) this._playC = ModuleService.getModule(PlayerModuleC);
+        return this._playC;
+    }
+
+    protected onJStart(): void {
+        super.onJStart();
+
+        this.talentItemYoact.setAll(TalentItemUnique.arrayFromObject(this.data));
+    }
+
+    /**
+     * 检查是否足够消费
+     * @param {number[]} nums
+     * @returns {boolean}
+     * @private
+     */
+    private checkEnoughCost(nums: number[]): boolean {
+        const [gold, tech] = nums;
+        const enoughGold = this.playC.checkGold(gold);
+        const enoughTech = this.playC.checkTechPoint(tech);
+        return enoughGold && enoughTech;
+    }
+
+    private selfSetItem(id: number, index: number = 0) {
+        if (index < 0) return;
+        const item = this.talentItemYoact.getItem(id);
+        if (item) {
+            item.index = index;
+        } else {
+            this.talentItemYoact.addItem(new TalentItemUnique(id, index));
+        }
+    }
+
+    /**
+     * 获取天赋解锁点数
+     * @param {number} id
+     * @returns {number}
+     */
+    public getTalentIndex(id: number): number {
+        return this.talentItemYoact.getItem(id)?.index ?? 0;
+    }
+
+    public async tryTalentLevelUp(id: number) {
+        const item = GameConfig.TalentTree.getElement(id);
+        const level = this.getTalentIndex(id);
+        const maxLevel = item.maxLevel;
+        // 是否为最大等级
+        if (level >= maxLevel) {
+            TipsManager.showTips(GameConfig.Language.getElement("Text_Unlocked").Value);
+            return false;
+        }
+        // 判断是否足够解锁
+        const updateCost = item.type === ETalentType.Base
+            ? [item.cost[0][level + 1], item.cost[1][level + 1]]
+            : [item.cost[0][1], item.cost[1][1]];
+        const isEnoughCost = this.checkEnoughCost(updateCost);
+        if (!isEnoughCost) {
+            TipsManager.showTips(GameConfig.Language.getElement("Text_LessMaterial").Value);
+            return false;
+        }
+        try {
+            const result = await this.server.net_updateTalentLevel(id);
+            if (!result) {
+                TipsManager.showTips(GameConfig.Language.getElement("Text_Unlocked").Value);
+                return false;
+            }
+            TipsManager.showTips(GameConfig.Language.getElement("Text_SuccessUnlock").Value);
+            return true;
+        } catch (error) {
+            Log4Ts.error(TalentModuleC, error);
+            return false;
+        }
+    }
+
+    public async net_setItem(id: number, index: number) {
+        this.selfSetItem(id, index);
+        return true;
+    }
+}
+
+
+
+
+
