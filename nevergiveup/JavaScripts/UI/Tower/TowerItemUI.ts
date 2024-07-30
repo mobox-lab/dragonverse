@@ -14,6 +14,9 @@ import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
 import TowerItemUI_Generate from "../../ui-generate/Tower/TowerItemUI_generate";
 import TowerUI from "./TowerUI";
+import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
+import { GlobalData } from "../../const/GlobalData";
+import TowerShopUI from "./TowerShopUI";
 
 export default class TowerItemUI extends TowerItemUI_Generate {
 	public cfg: ITowerElement = null;
@@ -32,10 +35,14 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 		Event.addLocalListener(TowerEvent.ChooseTower, (ui: UIScript) => {
             this.setSelected(ui == this);
         })
-		this.createBtn.onClicked.add(() => {
-			if (!this.cfg || !GameManager.getStageClient()) return;
-			ModuleService.getModule(TowerModuleC).chooseTowerByUI(this.cfg.id);
-            Event.dispatchToLocal(TowerEvent.ChooseTower, this);
+		this.itemBtn.onClicked.add(() => {
+			if(GameManager.getStageClient()) {
+				if (!this.cfg) return;
+				ModuleService.getModule(TowerModuleC).chooseTowerByUI(this.cfg.id);
+				Event.dispatchToLocal(TowerEvent.ChooseTower, this);
+			} else {
+				UIService.getUI(TowerShopUI).show({ isShop: false, cfgId: this.cfg.id });
+			}
 		})
 	}
 
@@ -49,24 +56,41 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 		this.initObj();
 	}
 
+	public getTags() {
+		const cfg = this.cfg;
+		const tags = [];
+		if(cfg?.attackCount?.length)
+			tags.push(GlobalData.Shop.shopTargetOpts[cfg.attackCount[0] > 1 ? 2 : 1]);
+		if(cfg?.adap)
+			tags.push(GlobalData.Shop.shopDamageOpts[cfg.adap]);
+		return tags
+	}
 
 	/**
 	 * 初始化组件
 	*/
 	private initObj() {
 		if (!this.cfg) {
-			Gtk.trySetVisibility(this.towerImg, SlateVisibility.Visible);
-			Gtk.trySetVisibility(this.img_Icon, SlateVisibility.Collapsed);
-			this.towerImg.imageGuid = this._oriImg;
-			this.valueText.text = "0";
+			Gtk.trySetVisibility(this.mContainer, SlateVisibility.Visible);
+			Gtk.trySetVisibility(this.mContainer_tower, SlateVisibility.Collapsed);
 		} else {
-			//Utils.setImageByAsset(this.towerImg, this._cfg);
-			Gtk.trySetVisibility(this.towerImg, SlateVisibility.Collapsed);
-			Gtk.trySetVisibility(this.img_Icon, SlateVisibility.HitTestInvisible);
+			Gtk.trySetVisibility(this.mContainer, SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.mContainer_tower, SlateVisibility.Visible);
 			this.img_Icon.imageGuid = this.cfg.imgGuid;
-			this.valueText.text = this.cfg.spend[0].toString();
+			this.txt_spend.text = this.cfg.spend[0].toString();
+			this.nameTxt.text = this.cfg.name;
+			this.txt_attack.text = this.cfg.attackDamage[0].toString();
+			this.tagCanvas.removeAllChildren();
+			this.bgElementImg.imageGuid = GlobalData.Shop.shopItemBgGuid[(this.cfg?.elementTy || 1) - 1];
+			this.elementImg.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(this.cfg?.elementTy || 1) - 1];
+			const tags = this.getTags();
+			const len = tags?.length ?? 0;
+			for (let i = 0; i < len; i++) {
+				let item = UIService.create(TowerTagItem_Generate);
+				this.tagCanvas.addChild(item.uiObject);
+				item.txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
+			}
 		}
-
 	}
 
 	/**

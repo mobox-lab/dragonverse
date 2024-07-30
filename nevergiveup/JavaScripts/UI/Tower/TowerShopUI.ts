@@ -302,6 +302,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	protected onShow(options:{isShop?: boolean, cfgId?: number}, ...params: any[]) {
 		TweenCommon.popUpShow(this.rootCanvas);
 		const { isShop, cfgId } = options ?? {}
+		console.log("#debug isShop:"+isShop+" cfgId:"+cfgId)
 		this.setIsShop(isShop);
 		this.setShopItemUIs({...this.opts});
 		const target = cfgId ? this.showShopItemUIs.find(item => item.cfgID == cfgId) : this.showShopItemUIs[0];
