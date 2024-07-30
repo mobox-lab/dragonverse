@@ -10,9 +10,7 @@ import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { BonusUI, ResourceUIPool } from "./scenceUnitUI";
 import { GlobalData } from "../../const/GlobalData";
-import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
 import { DropManagerS } from "./DropResouce";
-import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import ModuleService = mwext.ModuleService;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
@@ -21,7 +19,6 @@ import AchievementModuleS from "../AchievementModule/AchievementModuleS";
 import { comeDown, memorizePointIdToLocation, ResourceModuleS } from "./ResourceModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Enumerable from "linq";
 
 export class Resource {
 
@@ -617,6 +614,9 @@ export default class ResourceScript extends mw.Script {
 
     /**创建默认资源*/
     public async createDefaultObj(): Promise<boolean> {
+        if (SystemUtil.isClient()) {
+            await TimeUtil.delaySecond(MathUtil.randomFloat(0, 3));
+        }
         if (!this.cfg || this.isStart || this.resObj != null || this.curHp <= 0) return false;
         this.isStart = true;
         this.resObj = await Resource.instance.getResource(this.cfgId);
