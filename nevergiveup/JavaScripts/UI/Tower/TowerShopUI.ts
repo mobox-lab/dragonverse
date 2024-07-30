@@ -151,15 +151,14 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	}
 	public updateInfo(level: number = 0) {
 		this._selectLevel = level;
-		const selectedGuid = "376828";
-		const normalGuid = "376853";
-		this.infoLv1.normalImageGuid = this.infoLv2.normalImageGuid = this.infoLv3.normalImageGuid = normalGuid;
+		this.infoLv1.renderOpacity = this.infoLv2.renderOpacity = this.infoLv3.renderOpacity = 0;
 		if (level == 0)
-			this.infoLv1.normalImageGuid = selectedGuid;
+			this.infoLv1.renderOpacity = 1;
 		else if(level == 1)
-			this.infoLv2.normalImageGuid = selectedGuid;
+			this.infoLv2.renderOpacity = 1;
 		else if(level == 2)
-			this.infoLv3.normalImageGuid = selectedGuid;
+			this.infoLv3.renderOpacity = 1;
+		
 		this.updateStrategyUI();
 		this.updateTexts();
 	}
@@ -302,6 +301,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	protected onShow(options:{isShop?: boolean, cfgId?: number}, ...params: any[]) {
 		TweenCommon.popUpShow(this.rootCanvas);
 		const { isShop, cfgId } = options ?? {}
+		console.log("#debug isShop:"+isShop+" cfgId:"+cfgId)
 		this.setIsShop(isShop);
 		this.setShopItemUIs({...this.opts});
 		const target = cfgId ? this.showShopItemUIs.find(item => item.cfgID == cfgId) : this.showShopItemUIs[0];

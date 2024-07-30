@@ -15,6 +15,13 @@ export default class TowerUI_Generate extends UIScript {
 		}
 		return this.towerCanvas_Internal
 	}
+	private towerItemCanvas_Internal: mw.Canvas
+	public get towerItemCanvas(): mw.Canvas {
+		if(!this.towerItemCanvas_Internal&&this.uiWidgetBase) {
+			this.towerItemCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/towerItemCanvas') as mw.Canvas
+		}
+		return this.towerItemCanvas_Internal
+	}
 	private destroyBtn_Internal: mw.StaleButton
 	public get destroyBtn(): mw.StaleButton {
 		if(!this.destroyBtn_Internal&&this.uiWidgetBase) {
@@ -28,13 +35,6 @@ export default class TowerUI_Generate extends UIScript {
 			this.mImage_5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/mImage_5') as mw.Image
 		}
 		return this.mImage_5_Internal
-	}
-	private towerItemCanvas_Internal: mw.Canvas
-	public get towerItemCanvas(): mw.Canvas {
-		if(!this.towerItemCanvas_Internal&&this.uiWidgetBase) {
-			this.towerItemCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/towerItemCanvas') as mw.Canvas
-		}
-		return this.towerItemCanvas_Internal
 	}
 	private shopBtn_Internal: mw.StaleButton
 	public get shopBtn(): mw.StaleButton {
