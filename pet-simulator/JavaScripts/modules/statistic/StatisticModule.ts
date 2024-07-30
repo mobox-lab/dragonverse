@@ -201,9 +201,10 @@ export default class PsStatisticModuleData extends JModuleData {
     public recordLeave(now: number) {
         this.playerLoginRecord[0][1] = now;
         this.playerElapsedTimeS += this.playerLastedPlayTime;
-        if (this.playerLoginRecord.length >= GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
+        while (this.playerLoginRecord.length > GameServiceConfig.MAX_LOGIN_RECORD_STATISTIC_COUNT) {
             this.playerLoginRecord.pop();
         }
+        this.save(false);
     }
 
     public recordConsume(coinType: GlobalEnum.CoinType, value: number) {
