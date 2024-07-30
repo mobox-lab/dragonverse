@@ -35,7 +35,7 @@ export class Resource {
 
     public async getResource(cfgId: number): Promise<mw.GameObject> {
         let info = GameConfig.SceneUnit.getElement(cfgId);
-        let res = await SpawnManager.modifyPoolAsyncSpawn(info.Guid, GameObjPoolSourceType.Prefab);
+        let res = await GameObject.asyncSpawn(info.Guid);
         if (info.meshArr && info.meshArr.length > 0) {
 
             info.meshArr.forEach((item, index) => {
@@ -53,7 +53,7 @@ export class Resource {
     }
 
     public returnResource(res: mw.GameObject) {
-        GameObjPool.despawn(res);
+        res.destroy();
     }
 
 }
