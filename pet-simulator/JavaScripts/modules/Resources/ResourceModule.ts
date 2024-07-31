@@ -30,7 +30,6 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     protected onStart(): void {
         RewardTipsManager.getInstance().registerEvent();
         AreaDivideManager.instance.onAreaChangeAC.add(this.areaChange.bind(this));
-        BonusUI.instance;
         // this.server.net_start()
         Event.addLocalListener(GlobalEnum.EventName.AttackDestroy, () => {
             this.breakCount++;
@@ -299,15 +298,30 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
 
     /**当前区域随机生成一个 */
     private async areaRandomRefresh(areaId: number) {
-        let cfgId = this.getAreaResValidPoints(areaId).shift();
-        Log4Ts.log(ResourceModuleS, `random refresh, area id: ${areaId}, cfg id: ${cfgId}`);
-        if (memorizePointIdToLocation(cfgId) === undefined) {
-            Log4Ts.warn(ResourceModuleS, `point by id ${cfgId} is not found. whose area id is ${areaId}`);
+        const pointId = this.getAreaResValidPoints(areaId).shift();
+        Log4Ts.log(ResourceModuleS, `random refresh, area id: ${areaId}, cfg id: ${pointId}`);
+        if (memorizePointIdToLocation(pointId) === undefined) {
+            Log4Ts.warn(ResourceModuleS, `point by id ${pointId} is not found. whose area id is ${areaId}`);
             return;
         }
         await TimeUtil.delaySecond(GlobalData.SceneResource.initResourceRefresh);
 
-        this.addTranArea(areaId, cfgId);
+        this.addTranArea(areaId, pointId);
+    }
+
+    /** 刷新指定资源点 */
+    private async areaRefreshByPointId(areaId: number, pointId: number) {
+        const validPointIds = this.getAreaResValidPoints(areaId);
+        if(!validPointIds.includes(pointId)) { 
+            Log4Ts.warn(ResourceModuleS, `point ${pointId} is not in area ${areaId}`);
+            return;
+        }
+        if (memorizePointIdToLocation(pointId) === undefined) {
+            Log4Ts.warn(ResourceModuleS, `point by id ${pointId} is not found. whose area id is ${areaId}`);
+            return;
+        }
+
+        this.addTranArea(areaId, pointId);
     }
 
     /**获取当前区域的所有剩余资源点 */
@@ -433,9 +447,9 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
             this.returnAreaResCount(areaId, pointId, newResID, needRefreshNew);
             if (needRefreshNew) {
                 oTraceError("lwj 低于下限");
-                this.areaRandomRefresh(areaId);
+                // this.areaRandomRefresh(areaId); 
+                this.areaRefreshByPointId(areaId, pointId); // 原地刷新
             }
-
             this.onAttackDestroy.call(false, playerId);
             ModuleService.getModule(Task_ModuleS).breakDestroy(Player.getPlayer(playerId), newResID, areaId);
 

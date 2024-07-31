@@ -10,9 +10,7 @@ import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { BonusUI, ResourceUIPool } from "./scenceUnitUI";
 import { GlobalData } from "../../const/GlobalData";
-import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
 import { DropManagerS } from "./DropResouce";
-import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import ModuleService = mwext.ModuleService;
 import Log4Ts from "../../depend/log4ts/Log4Ts";
@@ -21,7 +19,6 @@ import AchievementModuleS from "../AchievementModule/AchievementModuleS";
 import { comeDown, memorizePointIdToLocation, ResourceModuleS } from "./ResourceModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Enumerable from "linq";
 
 export class Resource {
 
@@ -35,7 +32,7 @@ export class Resource {
 
     public async getResource(cfgId: number): Promise<mw.GameObject> {
         let info = GameConfig.SceneUnit.getElement(cfgId);
-        let res = await SpawnManager.modifyPoolAsyncSpawn(info.Guid, GameObjPoolSourceType.Prefab);
+        let res = await GameObject.asyncSpawn(info.Guid);
         if (info.meshArr && info.meshArr.length > 0) {
 
             info.meshArr.forEach((item, index) => {
@@ -53,7 +50,7 @@ export class Resource {
     }
 
     public returnResource(res: mw.GameObject) {
-        GameObjPool.despawn(res);
+        res.destroy();
     }
 
 }
@@ -617,6 +614,9 @@ export default class ResourceScript extends mw.Script {
 
     /**创建默认资源*/
     public async createDefaultObj(): Promise<boolean> {
+        if (SystemUtil.isClient()) {
+            await TimeUtil.delaySecond(MathUtil.randomFloat(0, 1));
+        }
         if (!this.cfg || this.isStart || this.resObj != null || this.curHp <= 0) return false;
         this.isStart = true;
         this.resObj = await Resource.instance.getResource(this.cfgId);
@@ -910,14 +910,9 @@ export default class ResourceScript extends mw.Script {
 
     /**移除场景资源 */
     private removeScenceResource(areaID: number, resourceScript: ResourceScript) {
-        let arr = SceneResourceMap.get(areaID);
-        if (!arr) return;
-        let index = arr.findIndex((item) => {
-            return item == resourceScript;
-        });
-        if (index != -1) {
-            arr.splice(index, 1);
-        }
+        const resources = SceneResourceMap.get(areaID);
+        const leftResources = resources.filter(item => item !== resourceScript);
+        SceneResourceMap.set(areaID, leftResources);
     }
 
     /**回收破坏物模型 */
