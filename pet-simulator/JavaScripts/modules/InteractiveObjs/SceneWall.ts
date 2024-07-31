@@ -2,6 +2,7 @@ import { PlayerManagerExtesion, } from '../../Modified027Editor/ModifiedPlayer';
 import { IAreaDivideElement } from "../../config/AreaDivide";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from '../../const/GlobalData';
 import WallInteract_Generate from "../../ui-generate/WorldUI/WallInteract_generate";
 import MessageBox from "../../util/MessageBox";
 import { utils } from "../../util/uitls";
@@ -18,6 +19,7 @@ export class SceneWall {
     private trigger: mw.Trigger = null;
     private worldUI: mw.UIWidget = null;
     private wall: mw.GameObject = null;
+    private wallObjs: mw.GameObject[] = [];// 场景中的解锁后也展示的墙，解锁后高度变矮
     private canInter: boolean = false;
     private gameObj: mw.GameObject;
 
@@ -34,6 +36,7 @@ export class SceneWall {
         }
         this.wall = this.gameObj.getChildByName("墙") as mw.GameObject;
         this.worldUI = this.gameObj.getChildByName("世界UI") as mw.UIWidget;
+        this.wallObjs = [this.gameObj.getChildByName("平面") as mw.GameObject, this.gameObj.getChildByName("平面-1") as mw.GameObject]
 
         this.setLockState(this.isLock());
     }
@@ -101,9 +104,22 @@ export class SceneWall {
         }
         this.worldUI.setVisibility(visible ? mw.PropertyStatus.On : mw.PropertyStatus.Off);
     }
+    private setWallObjIsLock(isLock: boolean) {
+        if (!this.wallObjs?.length || isLock) return;
+        const newScaleY = isLock ? GlobalData.TransferPoint.wallLockScale : GlobalData.TransferPoint.wallUnlockScale;
+        if(this.wallObjs[0]) {
+            const preScale = this.wallObjs[0].worldTransform.scale;
+            this.wallObjs[0].worldTransform.scale = new Vector( preScale.x, newScaleY, preScale.z);
+        }
+        if(this.wallObjs[1]) {
+            const preScale = this.wallObjs[1].worldTransform.scale;
+            this.wallObjs[1].worldTransform.scale = new Vector( preScale.x, newScaleY, preScale.z);
+        }
+    }
+
 
     private checkCanBuy() {
-			  if(!this.isLock()) return;
+            if(!this.isLock()) return;
         let mgs = "";
         if (this.cfg.Gold > 0) {
             mgs = utils.Format(GameConfig.Language.Text_messagebox_3.Value, utils.formatNumber(this.cfg.Gold));
@@ -136,7 +152,7 @@ export class SceneWall {
     }
     /**设置是否解锁状态 */
     private setLockState(isLock: boolean) {
-
+        this.setWallObjIsLock(isLock); 
         if (isLock) {
             this.canInter = true;
             this.initTrigger();
@@ -152,7 +168,7 @@ export class SceneWall {
             setTimeout(() => {
                 this.wall.destroy();
                 this.worldUI.destroy();
-                this.gameObj.destroy();
+                this.trigger.destroy();
             }, 1000);
         }
     }
