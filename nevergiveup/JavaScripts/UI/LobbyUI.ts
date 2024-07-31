@@ -46,7 +46,6 @@ export default class LobbyUI extends LobbyUI_Generate {
 
         this.techTreeBtn.onClicked.add(() => {
             UIService.show(TalentTreeContainer);
-            // ModuleService.getModule(PlayerModuleC).techTree.show();
         });
         //打开任务
         this.taskBtn.onClicked.add(this.showTaskPanel.bind(this));

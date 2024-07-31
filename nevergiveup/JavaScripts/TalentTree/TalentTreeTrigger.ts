@@ -1,3 +1,5 @@
+import { TalentTreeContainer } from "./ui/TalentTreeContainer";
+
 @Component
 export default class TalentTreeTrigger extends Script {
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
@@ -8,11 +10,19 @@ export default class TalentTreeTrigger extends Script {
     }
 
     onPlayerEnter(other: GameObject) {
-        // TODO: 打开天赋树, this
+        if (other instanceof Character) {
+            if (other === Player.localPlayer.character) {
+                UIService.show(TalentTreeContainer);
+            }
+        }
     }
 
     onPlayerLeave(other: GameObject) {
-        // TODO: 关闭天赋树
+        if (other instanceof Character) {
+            if (other === Player.localPlayer.character) {
+                UIService.getUI(TalentTreeContainer).hideTween();
+            }
+        }
     }
 
     /**
