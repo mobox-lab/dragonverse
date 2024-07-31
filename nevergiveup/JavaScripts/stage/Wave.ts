@@ -464,4 +464,15 @@ export class WaveUtil {
             return [waveContent, waveMax];
         }
     }
+
+    static getAllConfig(stageCfgId: number): WaveConfig[] | null {
+        const waveIndex = StageUtil.getWaveIndexFromId(stageCfgId);
+        const waves = NEW_STAGE_CONFIG[waveIndex].waves;
+        if (Array.isArray(waves)) {
+            return waves;
+        } else {
+            // 无尽模式是函数
+            return null;
+        }
+    }
 }

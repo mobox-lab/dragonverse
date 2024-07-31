@@ -5,6 +5,8 @@ import { TweenCommon } from "../../TweenCommon";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
+import { IMonsterElement } from "../../config/Monster";
+import { ElementEnum, advantageMap } from "../../enemy/EnemyBase";
 import { ComponentFactory } from "../../enemy/components/ComponentFactory";
 import { MGSTool } from "../../tool/MGSTool";
 import StageSelectQueueItem_Generate from "../../ui-generate/HUD/StageSelectQueueItem_generate";
@@ -12,6 +14,7 @@ import StageDifficulty_Generate from "../../ui-generate/Level/StageDifficulty_ge
 import StageSelect_Generate from "../../ui-generate/Level/StageSelect_generate";
 import { StageUtil } from "../Stage";
 import StageTrigger from "../StageTrigger";
+import { WaveUtil } from "../Wave";
 
 export class UIStageSelectItem extends StageSelectQueueItem_Generate {
     init() {}
@@ -37,8 +40,8 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
         const firstClears = DataCenterC.getData(PlayerModuleData).firstClears;
         const preDifficultyIds = StageUtil.getPreDifficultyIds(stageCfg);
         console.log("#debug preDifficultyIds:", preDifficultyIds, " firstClears:", firstClears);
-        if(preDifficultyIds?.length) {
-            for(const id of preDifficultyIds) {
+        if (preDifficultyIds?.length) {
+            for (const id of preDifficultyIds) {
                 if (firstClears.includes(id)) {
                     this.unlocked = true;
                     break;
@@ -75,6 +78,7 @@ export class UIStageSelect extends StageSelect_Generate {
     private _difficulty: UIStageDifficulty[] = [];
     private _ownerId: number = 0;
     private _script: StageTrigger;
+
     onStart() {
         this.layer = UILayerTop;
         for (let i = 0; i < 4; i++) {
@@ -91,7 +95,7 @@ export class UIStageSelect extends StageSelect_Generate {
                 TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
             }
         });
-        
+
         this.mClose.onClicked.add(() => {
             if (Utils.isLocalPlayer(this._ownerId)) {
                 this._script.clickLeaveBtn(Player.localPlayer.playerId);
@@ -127,12 +131,15 @@ export class UIStageSelect extends StageSelect_Generate {
                 this._difficulty.push(item);
                 this.mSelectDifficulty.addChild(item.uiObject);
             }
-            item.init(this._script.stageWorldIndex,  i, this._script.stageGroupId);
+            item.init(this._script.stageWorldIndex, i, this._script.stageGroupId);
         }
     }
 
     setData(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
         const stageCfg = StageUtil.getCfgFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
+        const stageCfgId = stageCfg.id;
+        this.getRecommendElement(stageCfgId);
+        this.getMonsterBuff(stageCfgId);
         this.mMapImage.imageGuid = stageCfg.stageImageGuid;
         this.mStageName.text = `${stageCfg.stageName}`;
         let typeString = this.getEnemyTypeString(stageCfg.id);
@@ -205,5 +212,100 @@ export class UIStageSelect extends StageSelect_Generate {
         this._script = script;
         this.setDifficulty();
         TweenCommon.popUpShow(this.rootCanvas);
+    }
+
+    getRecommendElement(id: number) {
+        const monsters = this.getFitEnemies(id);
+        const elementIds = monsters.map((item) => {
+            return item.elementTy;
+        });
+        // 转换成克制的
+        const counterElementIds = [];
+        for (let i = 0; i < elementIds.length; i++) {
+            const counterId = this.findCounter(elementIds[i]);
+            counterElementIds.push(counterId);
+        }
+        console.log(JSON.stringify(counterElementIds), "counterElementIds");
+        // todo（从1—6分别为光、暗、水、火、木、土）显示图片
+    }
+
+    getFitEnemies(id: number): IMonsterElement[] {
+        const allWaves = WaveUtil.getAllConfig(id);
+        if (allWaves && Array.isArray(allWaves)) {
+            const enemyIds: number[] = [];
+            for (let i = 0; i < allWaves.length; i++) {
+                const wave = allWaves[i];
+                for (let j = 0; j < wave.enemies.length; j++) {
+                    const enemy = wave.enemies[j];
+                    enemyIds.push(enemy.type);
+                }
+            }
+            const uniqueEnemyIds = [...new Set(enemyIds)];
+            const allMonster = GameConfig.Monster.getAllElement();
+            const monsters = allMonster.filter((item) => uniqueEnemyIds.includes(item.id));
+            return monsters;
+        }
+        return [];
+    }
+
+    findCounter(element: ElementEnum): ElementEnum {
+        for (const [key, value] of Object.entries(advantageMap)) {
+            if (value === element) {
+                return Number(key) as ElementEnum;
+            }
+        }
+        throw new Error("Invalid element");
+    }
+
+    getMonsterBuff(id: number) {
+        const monsters = this.getFitEnemies(id);
+        let stealth = false;
+        let fly = false;
+
+        // 隐身 和 飞行读的老数据，types
+        for (let i = 0; i < monsters.length; i++) {
+            const monster = monsters[i];
+            const types = monster.types;
+            for (let j = 0; j < types.length; j++) {
+                const type = types[j];
+                if (type === 1) {
+                    stealth = true;
+                }
+                if (type === 2) {
+                    fly = true;
+                }
+            }
+        }
+        const monsterBuffIds: number[] = [];
+        for (let i = 0; i < monsters.length; i++) {
+            const monster = monsters[i];
+            const buffs = monster.buff;
+            for (let j = 0; j < buffs.length; j++) {
+                const buffId = buffs[j];
+                monsterBuffIds.push(buffId);
+            }
+        }
+
+        const allBuffs = GameConfig.Buff.getAllElement();
+        const activeBuffs = allBuffs.filter((buff) => monsterBuffIds.includes(buff.id));
+        let healing = false;
+        let berserk = false;
+
+        for (let i = 0; i < activeBuffs.length; i++) {
+            const buff = activeBuffs[i];
+            if (buff.healing > 0) {
+                healing = true;
+            }
+            if (buff.berserk > 0) {
+                berserk = true;
+            }
+        }
+        return {
+            stealth,
+            fly,
+            healing,
+            berserk,
+        };
+        // todo 怪物属性
     }
 }

@@ -42,6 +42,15 @@ export enum ElementEnum {
     EARTH = 6,
 }
 
+export const advantageMap: { [key in ElementEnum]: ElementEnum } = {
+    [ElementEnum.LIGHT]: ElementEnum.DARK, // 光克暗
+    [ElementEnum.DARK]: ElementEnum.WOOD, // 暗克木
+    [ElementEnum.WATER]: ElementEnum.FIRE, // 水克火
+    [ElementEnum.FIRE]: ElementEnum.LIGHT, // 火克光
+    [ElementEnum.WOOD]: ElementEnum.EARTH, // 木克土
+    [ElementEnum.EARTH]: ElementEnum.WATER, // 土克水
+};
+
 export class Enemy implements BuffBag {
     time: number = 0;
     go: Character;
@@ -765,15 +774,6 @@ export class Enemy implements BuffBag {
         // （从1—6分别为光、暗、水、火、木、土）
         const buffPercent = 0.2;
         const debuffPercent = 0.2;
-
-        const advantageMap: { [key in ElementEnum]: ElementEnum } = {
-            [ElementEnum.LIGHT]: ElementEnum.DARK, // 光克暗
-            [ElementEnum.DARK]: ElementEnum.WOOD, // 暗克木
-            [ElementEnum.WATER]: ElementEnum.FIRE, // 水克火
-            [ElementEnum.FIRE]: ElementEnum.LIGHT, // 火克光
-            [ElementEnum.WOOD]: ElementEnum.EARTH, // 木克土
-            [ElementEnum.EARTH]: ElementEnum.WATER, // 土克水
-        };
 
         if (advantageMap[towerElement] === monsterElement) {
             // 塔克制怪物
