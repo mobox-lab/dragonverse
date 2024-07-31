@@ -50,14 +50,6 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
     }
 
     /**
-     * 关闭动画
-     * @private
-     */
-    private hideTween() {
-        TweenCommon.popUpHide(this.uiObject, () => UIService.hideUI(this));
-    }
-
-    /**
      * 生成天赋树
      * @private
      */
@@ -123,5 +115,13 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
             this._selectedTalentUI.refreshStatus();
             this.updateLevelInfo(item);
         }).catch(() => (this._isLevelUpdating = false));
+    }
+
+    /**
+     * 关闭动画
+     * @private
+     */
+    public hideTween() {
+        TweenCommon.popUpHide(this.uiObject, () => UIService.hideUI(this));
     }
 }
