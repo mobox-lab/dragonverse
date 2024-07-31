@@ -75,11 +75,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this.canUpdate = false;
 		this.layer = UILayerTop;
 		this._selectLevel = 0;
-		this.closeBtn.onClicked.add(() => {
-			TweenCommon.popUpHide(this.rootCanvas, () => {
-				UIService.hideUI(this);
-			})
-		});
+        this.closeBtn.onClicked.add(() => this.hideTween());
 		this.infoBtn.onClicked.add(() => {
 			ModuleService.getModule(CardModuleC).btnExecute(this._cfgID, this._state);
 		}); 
@@ -306,12 +302,16 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this.setShopItemUIs({...this.opts});
 		const target = cfgId ? this.showShopItemUIs.find(item => item.cfgID == cfgId) : this.showShopItemUIs[0];
 		target?.chooseBtn?.onClicked?.broadcast();
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
-            TweenCommon.popUpHide(this.rootCanvas, () => {
-                UIService.hideUI(this);
-            })
-        });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => this.hideTween());
 	}
+
+    /**
+     * 关闭动画
+     * @private
+     */
+    public hideTween() {
+        TweenCommon.popUpHide(this.rootCanvas, () => UIService.hideUI(this));
+    }
 
     onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);

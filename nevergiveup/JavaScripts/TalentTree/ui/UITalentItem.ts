@@ -27,7 +27,7 @@ export class UITalentItem extends TalentItem_Generate {
             if (this.canActive.status) {
                 Gtk.trySetVisibility(this.mNotActive, false);
                 this.textTalentLevel.fontColor = LinearColor.white;
-                this.textTalentLevel.outlineColor = LinearColor.black;
+                this.textTalentLevel.setOutlineColorByHex(this._talent?.data.outlineColor);
                 this.textTalentName.fontColor = LinearColor.white;
                 this.textTalentName.outlineColor = LinearColor.black;
             } else {
