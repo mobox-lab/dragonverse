@@ -30,7 +30,6 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     protected onStart(): void {
         RewardTipsManager.getInstance().registerEvent();
         AreaDivideManager.instance.onAreaChangeAC.add(this.areaChange.bind(this));
-        BonusUI.instance;
         // this.server.net_start()
         Event.addLocalListener(GlobalEnum.EventName.AttackDestroy, () => {
             this.breakCount++;
