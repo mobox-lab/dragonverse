@@ -1,7 +1,7 @@
 ﻿import PetHud_Generate from "../../ui-generate/Pet/PetHud_generate";
 import AchievementPanel from "../AchievementModule/ui/AchievementPanel";
 import { P_DollMachine } from "../DollMachine/P_DollMachine";
-import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
+import { P_HudPetGift } from "../OnlineModule/P_HudPetGift";
 import { P_Bag } from "../PetBag/P_Bag";
 import { P_Enchants } from "../PetBag/P_Enchants";
 import { P_FusePanel } from "../PetBag/P_FusePanel";

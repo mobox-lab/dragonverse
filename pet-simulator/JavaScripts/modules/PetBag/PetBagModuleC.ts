@@ -1,6 +1,6 @@
 import { GameConfig } from "../../config/GameConfig";
 import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
-import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
+import { P_HudPetGift } from "../OnlineModule/P_HudPetGift";
 import { P_Bag, PetBagItem } from "./P_Bag";
 import { PetBagModuleData, petItemDataNew, petTrain } from "./PetBagModuleData";
 import { PetBagModuleS } from "./PetBagModuleS";

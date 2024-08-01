@@ -23,7 +23,7 @@ export class P_HudPetGift extends HUDpetGift_Generate {
     /**红点提示数组 */
     private redPointArr: number[] = [];
 
-    async onStart() {
+    onStart() {
         this.layer = mw.UILayerScene;
         this.mBtn_Gift.onClicked.add(() => {
             if (!UIService.getUI(P_RewardPanel, false) || !UIService.getUI(P_RewardPanel).visible) {

@@ -4,7 +4,7 @@
 // import { IVIPLV111111111Element } from "../../config/VIPLV111111111";
 // import { GlobalEnum } from "../../const/Enum";
 // import { oTraceError } from "../../utils/LogManager";
-// import { OnlineModuleData } from "../OnlineModule.ts/OnlineModuleData";
+// import { OnlineModuleData } from "../OnlineModule/OnlineModuleData";
 // import { BagTool } from "../PetBag/BagTool";
 // import { PetBagModuleData } from "../PetBag/PetBagModuleData";
 // import { PetBagModuleS } from "../PetBag/PetBagModuleS";

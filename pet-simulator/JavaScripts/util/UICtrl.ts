@@ -1,8 +1,8 @@
 ﻿import { P_Transmit } from "../modules/AreaDivide/P_Transmit";
 import { P_HudUI } from "../modules/Hud/P_HudUI";
 import { P_PetHud } from "../modules/Hud/P_PetHud";
-import { P_HudPetGift } from "../modules/OnlineModule.ts/P_HudPetGift";
-import { P_RewardPanel } from "../modules/OnlineModule.ts/P_RewardPanel";
+import { P_HudPetGift } from "../modules/OnlineModule/P_HudPetGift";
+import { P_RewardPanel } from "../modules/OnlineModule/P_RewardPanel";
 import { P_Game_Buff } from "../modules/buff/ui/P_Game_Buff";
 import MessageBox from "./MessageBox";
 import { P_TaskShop } from "../modules/Task/P_TaskShop";

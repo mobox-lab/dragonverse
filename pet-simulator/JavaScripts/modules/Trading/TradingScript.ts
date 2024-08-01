@@ -8,7 +8,7 @@
 // import { PlayerNameManager } from "./PlayerNameManager";
 // import { GameConfig } from "../../config/GameConfig";
 // import { P_HudUI } from "../Hud/P_HudUI";
-// import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
+// import { P_HudPetGift } from "../OnlineModule/P_HudPetGift";
 // import { GlobalEnum } from "../../const/Enum";
 // import { TradingModuleS } from "./TradingModuleS";
 //

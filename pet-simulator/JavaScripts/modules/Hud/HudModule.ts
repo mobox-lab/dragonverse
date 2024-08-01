@@ -8,7 +8,7 @@ import { UICtrl } from "../../util/UICtrl";
 import { utils } from "../../util/uitls";
 import { P_Transmit } from "../AreaDivide/P_Transmit";
 import { EggMachineTween } from "../InteractiveObjs/EggMachineTween";
-import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
+import { P_HudPetGift } from "../OnlineModule/P_HudPetGift";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { P_Guide } from "./P_Guide";

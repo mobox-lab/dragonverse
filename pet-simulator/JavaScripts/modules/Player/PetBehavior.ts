@@ -18,7 +18,7 @@ import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import { EnergyModuleC } from "../Energy/EnergyModule";
 import GToolkit from "gtoolkit";
-import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
+import { P_HudPetGift } from "../OnlineModule/P_HudPetGift";
 import { TipsManager } from "../Hud/P_TipUI";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { memorizePointIdToLocation } from "../Resources/ResourceModule";
