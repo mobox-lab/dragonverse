@@ -395,15 +395,26 @@ export class MainUI extends Main_HUD_Generate {
         KeyOperationManager.getInstance().onKeyDown(this, Keys.RightCommand, () => (InputUtil.isLockMouse = false));
         KeyOperationManager.getInstance().onKeyUp(this, Keys.RightCommand, () => (InputUtil.isLockMouse = true));
 
+        let enable = true;
         KeyOperationManager.getInstance().onKeyUp(this, Keys.G, () => {
-            if (UIService.getUI(SkillPanel).visible) {
-                UIService.getUI(SkillPanel).mWaiveBtn.onClicked.broadcast();
-            } else if (UIService.getUI(SkillSelectPanel).visible) {
-                UIService.getUI(SkillSelectPanel).mDiscardBtn.onClicked.broadcast();
-            } else if (this.mSkillSelectBox.visibility === SlateVisibility.SelfHitTestInvisible) {
-                // //最后判断技能选择按钮，优先panel
-                // ModuleService.getModule(SkillModuleC).discardSkillLib();
+
+            if (enable) {
+                if (UIService.getUI(SkillPanel).visible) {
+                    UIService.getUI(SkillPanel).mWaiveBtn.onClicked.broadcast();
+                } else if (UIService.getUI(SkillSelectPanel).visible) {
+                    UIService.getUI(SkillSelectPanel).mDiscardBtn.onClicked.broadcast();
+                } else if (this.mSkillSelectBox.visibility === SlateVisibility.SelfHitTestInvisible) {
+                    // //最后判断技能选择按钮，优先panel
+                    // ModuleService.getModule(SkillModuleC).discardSkillLib();
+                }
+                enable = false;
+            } else {
+                Tips.show(GameConfig.Language.Shop_tips_3.Value);
             }
+            setTimeout(() => {
+                enable = true;
+            }, 1e3);
+
         });
 
         this.mCavasTrans.visibility = mw.SlateVisibility.Collapsed;
@@ -753,8 +764,8 @@ export class MainUI extends Main_HUD_Generate {
         }
         let time =
             backType == EbackType.break ? Globaldata.player_backTime_cd : Globaldata.player_backTime_self_cancle_cd;
-        this.reBackTween = new mw.Tween({alpha: 0})
-            .to({alpha: 1}, time * 1000)
+        this.reBackTween = new mw.Tween({ alpha: 0 })
+            .to({ alpha: 1 }, time * 1000)
             .onUpdate((data) => {
                 this.mMask_Back.fanShapedValue = data.alpha;
             })
@@ -811,8 +822,8 @@ export class MainUI extends Main_HUD_Generate {
      */
     private initReset() {
         this.mMask_Reborn.visibility = mw.SlateVisibility.Collapsed;
-        this.rebornTween = new mw.Tween({alpha: 0})
-            .to({alpha: 1}, Globaldata.player_rebornTime * 1000)
+        this.rebornTween = new mw.Tween({ alpha: 0 })
+            .to({ alpha: 1 }, Globaldata.player_rebornTime * 1000)
             .onUpdate((data) => {
                 this.mMask_Reborn.fanShapedValue = data.alpha;
             })
