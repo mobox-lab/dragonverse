@@ -99,178 +99,178 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.textMonster_Internal
 	}
-	private monsterSkill1btn_Internal: mw.Button
-	public get monsterSkill1btn(): mw.Button {
-		if(!this.monsterSkill1btn_Internal&&this.uiWidgetBase) {
-			this.monsterSkill1btn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkill/monsterSkill1btn') as mw.Button
+	private canvas_MonsterSkillDesc_1_Internal: mw.Canvas
+	public get canvas_MonsterSkillDesc_1(): mw.Canvas {
+		if(!this.canvas_MonsterSkillDesc_1_Internal&&this.uiWidgetBase) {
+			this.canvas_MonsterSkillDesc_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_1') as mw.Canvas
 		}
-		return this.monsterSkill1btn_Internal
+		return this.canvas_MonsterSkillDesc_1_Internal
 	}
-	private monsterSkill1btn2_Internal: mw.Button
-	public get monsterSkill1btn2(): mw.Button {
-		if(!this.monsterSkill1btn2_Internal&&this.uiWidgetBase) {
-			this.monsterSkill1btn2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkill/monsterSkill1btn2') as mw.Button
+	private btn_monsterSkill_1_Internal: mw.Button
+	public get btn_monsterSkill_1(): mw.Button {
+		if(!this.btn_monsterSkill_1_Internal&&this.uiWidgetBase) {
+			this.btn_monsterSkill_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_1/btn_monsterSkill_1') as mw.Button
 		}
-		return this.monsterSkill1btn2_Internal
-	}
-	private monsterSkill1btn3_Internal: mw.Button
-	public get monsterSkill1btn3(): mw.Button {
-		if(!this.monsterSkill1btn3_Internal&&this.uiWidgetBase) {
-			this.monsterSkill1btn3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkill/monsterSkill1btn3') as mw.Button
-		}
-		return this.monsterSkill1btn3_Internal
-	}
-	private monsterSkill1btn4_Internal: mw.Button
-	public get monsterSkill1btn4(): mw.Button {
-		if(!this.monsterSkill1btn4_Internal&&this.uiWidgetBase) {
-			this.monsterSkill1btn4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkill/monsterSkill1btn4') as mw.Button
-		}
-		return this.monsterSkill1btn4_Internal
-	}
-	private monsterSkill1btn5_Internal: mw.Button
-	public get monsterSkill1btn5(): mw.Button {
-		if(!this.monsterSkill1btn5_Internal&&this.uiWidgetBase) {
-			this.monsterSkill1btn5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/Canvas_MonsterSkill/monsterSkill1btn5') as mw.Button
-		}
-		return this.monsterSkill1btn5_Internal
-	}
-	private canvas_MonsterSkillDesc1_Internal: mw.Canvas
-	public get canvas_MonsterSkillDesc1(): mw.Canvas {
-		if(!this.canvas_MonsterSkillDesc1_Internal&&this.uiWidgetBase) {
-			this.canvas_MonsterSkillDesc1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc1') as mw.Canvas
-		}
-		return this.canvas_MonsterSkillDesc1_Internal
+		return this.btn_monsterSkill_1_Internal
 	}
 	private monsterSkillDesc1_Internal: mw.Image
 	public get monsterSkillDesc1(): mw.Image {
 		if(!this.monsterSkillDesc1_Internal&&this.uiWidgetBase) {
-			this.monsterSkillDesc1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc1/monsterSkillDesc1') as mw.Image
+			this.monsterSkillDesc1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_1/monsterSkillDesc1') as mw.Image
 		}
 		return this.monsterSkillDesc1_Internal
 	}
 	private textMonsterSkill1_Internal: mw.TextBlock
 	public get textMonsterSkill1(): mw.TextBlock {
 		if(!this.textMonsterSkill1_Internal&&this.uiWidgetBase) {
-			this.textMonsterSkill1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc1/textMonsterSkill1') as mw.TextBlock
+			this.textMonsterSkill1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_1/textMonsterSkill1') as mw.TextBlock
 		}
 		return this.textMonsterSkill1_Internal
 	}
 	private textMonsterSkillDesc1_Internal: mw.TextBlock
 	public get textMonsterSkillDesc1(): mw.TextBlock {
 		if(!this.textMonsterSkillDesc1_Internal&&this.uiWidgetBase) {
-			this.textMonsterSkillDesc1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc1/textMonsterSkillDesc1') as mw.TextBlock
+			this.textMonsterSkillDesc1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_1/textMonsterSkillDesc1') as mw.TextBlock
 		}
 		return this.textMonsterSkillDesc1_Internal
 	}
-	private canvas_MonsterSkillDesc2_Internal: mw.Canvas
-	public get canvas_MonsterSkillDesc2(): mw.Canvas {
-		if(!this.canvas_MonsterSkillDesc2_Internal&&this.uiWidgetBase) {
-			this.canvas_MonsterSkillDesc2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc2') as mw.Canvas
+	private canvas_MonsterSkillDesc_2_Internal: mw.Canvas
+	public get canvas_MonsterSkillDesc_2(): mw.Canvas {
+		if(!this.canvas_MonsterSkillDesc_2_Internal&&this.uiWidgetBase) {
+			this.canvas_MonsterSkillDesc_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_2') as mw.Canvas
 		}
-		return this.canvas_MonsterSkillDesc2_Internal
+		return this.canvas_MonsterSkillDesc_2_Internal
+	}
+	private btn_monsterSkill_2_Internal: mw.Button
+	public get btn_monsterSkill_2(): mw.Button {
+		if(!this.btn_monsterSkill_2_Internal&&this.uiWidgetBase) {
+			this.btn_monsterSkill_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_2/btn_monsterSkill_2') as mw.Button
+		}
+		return this.btn_monsterSkill_2_Internal
 	}
 	private monsterSkillDesc2_Internal: mw.Image
 	public get monsterSkillDesc2(): mw.Image {
 		if(!this.monsterSkillDesc2_Internal&&this.uiWidgetBase) {
-			this.monsterSkillDesc2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc2/monsterSkillDesc2') as mw.Image
+			this.monsterSkillDesc2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_2/monsterSkillDesc2') as mw.Image
 		}
 		return this.monsterSkillDesc2_Internal
 	}
 	private textMonsterSkill2_Internal: mw.TextBlock
 	public get textMonsterSkill2(): mw.TextBlock {
 		if(!this.textMonsterSkill2_Internal&&this.uiWidgetBase) {
-			this.textMonsterSkill2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc2/textMonsterSkill2') as mw.TextBlock
+			this.textMonsterSkill2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_2/textMonsterSkill2') as mw.TextBlock
 		}
 		return this.textMonsterSkill2_Internal
 	}
 	private textMonsterSkillDesc2_Internal: mw.TextBlock
 	public get textMonsterSkillDesc2(): mw.TextBlock {
 		if(!this.textMonsterSkillDesc2_Internal&&this.uiWidgetBase) {
-			this.textMonsterSkillDesc2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc2/textMonsterSkillDesc2') as mw.TextBlock
+			this.textMonsterSkillDesc2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_2/textMonsterSkillDesc2') as mw.TextBlock
 		}
 		return this.textMonsterSkillDesc2_Internal
 	}
-	private canvas_MonsterSkillDesc3_Internal: mw.Canvas
-	public get canvas_MonsterSkillDesc3(): mw.Canvas {
-		if(!this.canvas_MonsterSkillDesc3_Internal&&this.uiWidgetBase) {
-			this.canvas_MonsterSkillDesc3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc3') as mw.Canvas
+	private canvas_MonsterSkillDesc_3_Internal: mw.Canvas
+	public get canvas_MonsterSkillDesc_3(): mw.Canvas {
+		if(!this.canvas_MonsterSkillDesc_3_Internal&&this.uiWidgetBase) {
+			this.canvas_MonsterSkillDesc_3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_3') as mw.Canvas
 		}
-		return this.canvas_MonsterSkillDesc3_Internal
+		return this.canvas_MonsterSkillDesc_3_Internal
+	}
+	private btn_monsterSkill_3_Internal: mw.Button
+	public get btn_monsterSkill_3(): mw.Button {
+		if(!this.btn_monsterSkill_3_Internal&&this.uiWidgetBase) {
+			this.btn_monsterSkill_3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_3/btn_monsterSkill_3') as mw.Button
+		}
+		return this.btn_monsterSkill_3_Internal
 	}
 	private monsterSkillDesc3_Internal: mw.Image
 	public get monsterSkillDesc3(): mw.Image {
 		if(!this.monsterSkillDesc3_Internal&&this.uiWidgetBase) {
-			this.monsterSkillDesc3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc3/monsterSkillDesc3') as mw.Image
+			this.monsterSkillDesc3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_3/monsterSkillDesc3') as mw.Image
 		}
 		return this.monsterSkillDesc3_Internal
 	}
 	private textMonsterSkill3_Internal: mw.TextBlock
 	public get textMonsterSkill3(): mw.TextBlock {
 		if(!this.textMonsterSkill3_Internal&&this.uiWidgetBase) {
-			this.textMonsterSkill3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc3/textMonsterSkill3') as mw.TextBlock
+			this.textMonsterSkill3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_3/textMonsterSkill3') as mw.TextBlock
 		}
 		return this.textMonsterSkill3_Internal
 	}
 	private textMonsterSkillDesc3_Internal: mw.TextBlock
 	public get textMonsterSkillDesc3(): mw.TextBlock {
 		if(!this.textMonsterSkillDesc3_Internal&&this.uiWidgetBase) {
-			this.textMonsterSkillDesc3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc3/textMonsterSkillDesc3') as mw.TextBlock
+			this.textMonsterSkillDesc3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_3/textMonsterSkillDesc3') as mw.TextBlock
 		}
 		return this.textMonsterSkillDesc3_Internal
 	}
-	private canvas_MonsterSkillDesc4_Internal: mw.Canvas
-	public get canvas_MonsterSkillDesc4(): mw.Canvas {
-		if(!this.canvas_MonsterSkillDesc4_Internal&&this.uiWidgetBase) {
-			this.canvas_MonsterSkillDesc4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc4') as mw.Canvas
+	private canvas_MonsterSkillDesc_4_Internal: mw.Canvas
+	public get canvas_MonsterSkillDesc_4(): mw.Canvas {
+		if(!this.canvas_MonsterSkillDesc_4_Internal&&this.uiWidgetBase) {
+			this.canvas_MonsterSkillDesc_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_4') as mw.Canvas
 		}
-		return this.canvas_MonsterSkillDesc4_Internal
+		return this.canvas_MonsterSkillDesc_4_Internal
+	}
+	private btn_monsterSkill_4_Internal: mw.Button
+	public get btn_monsterSkill_4(): mw.Button {
+		if(!this.btn_monsterSkill_4_Internal&&this.uiWidgetBase) {
+			this.btn_monsterSkill_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_4/btn_monsterSkill_4') as mw.Button
+		}
+		return this.btn_monsterSkill_4_Internal
 	}
 	private monsterSkillDesc4_Internal: mw.Image
 	public get monsterSkillDesc4(): mw.Image {
 		if(!this.monsterSkillDesc4_Internal&&this.uiWidgetBase) {
-			this.monsterSkillDesc4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc4/monsterSkillDesc4') as mw.Image
+			this.monsterSkillDesc4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_4/monsterSkillDesc4') as mw.Image
 		}
 		return this.monsterSkillDesc4_Internal
 	}
 	private textMonsterSkill4_Internal: mw.TextBlock
 	public get textMonsterSkill4(): mw.TextBlock {
 		if(!this.textMonsterSkill4_Internal&&this.uiWidgetBase) {
-			this.textMonsterSkill4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc4/textMonsterSkill4') as mw.TextBlock
+			this.textMonsterSkill4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_4/textMonsterSkill4') as mw.TextBlock
 		}
 		return this.textMonsterSkill4_Internal
 	}
 	private textMonsterSkillDesc4_Internal: mw.TextBlock
 	public get textMonsterSkillDesc4(): mw.TextBlock {
 		if(!this.textMonsterSkillDesc4_Internal&&this.uiWidgetBase) {
-			this.textMonsterSkillDesc4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc4/textMonsterSkillDesc4') as mw.TextBlock
+			this.textMonsterSkillDesc4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_4/textMonsterSkillDesc4') as mw.TextBlock
 		}
 		return this.textMonsterSkillDesc4_Internal
 	}
-	private canvas_MonsterSkillDesc5_Internal: mw.Canvas
-	public get canvas_MonsterSkillDesc5(): mw.Canvas {
-		if(!this.canvas_MonsterSkillDesc5_Internal&&this.uiWidgetBase) {
-			this.canvas_MonsterSkillDesc5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc5') as mw.Canvas
+	private canvas_MonsterSkillDesc_5_Internal: mw.Canvas
+	public get canvas_MonsterSkillDesc_5(): mw.Canvas {
+		if(!this.canvas_MonsterSkillDesc_5_Internal&&this.uiWidgetBase) {
+			this.canvas_MonsterSkillDesc_5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_5') as mw.Canvas
 		}
-		return this.canvas_MonsterSkillDesc5_Internal
+		return this.canvas_MonsterSkillDesc_5_Internal
+	}
+	private btn_monsterSkill_5_Internal: mw.Button
+	public get btn_monsterSkill_5(): mw.Button {
+		if(!this.btn_monsterSkill_5_Internal&&this.uiWidgetBase) {
+			this.btn_monsterSkill_5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_5/btn_monsterSkill_5') as mw.Button
+		}
+		return this.btn_monsterSkill_5_Internal
 	}
 	private monsterSkillDesc5_Internal: mw.Image
 	public get monsterSkillDesc5(): mw.Image {
 		if(!this.monsterSkillDesc5_Internal&&this.uiWidgetBase) {
-			this.monsterSkillDesc5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc5/monsterSkillDesc5') as mw.Image
+			this.monsterSkillDesc5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_5/monsterSkillDesc5') as mw.Image
 		}
 		return this.monsterSkillDesc5_Internal
 	}
 	private textMonsterSkill5_Internal: mw.TextBlock
 	public get textMonsterSkill5(): mw.TextBlock {
 		if(!this.textMonsterSkill5_Internal&&this.uiWidgetBase) {
-			this.textMonsterSkill5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc5/textMonsterSkill5') as mw.TextBlock
+			this.textMonsterSkill5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_5/textMonsterSkill5') as mw.TextBlock
 		}
 		return this.textMonsterSkill5_Internal
 	}
 	private textMonsterSkillDesc5_Internal: mw.TextBlock
 	public get textMonsterSkillDesc5(): mw.TextBlock {
 		if(!this.textMonsterSkillDesc5_Internal&&this.uiWidgetBase) {
-			this.textMonsterSkillDesc5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc5/textMonsterSkillDesc5') as mw.TextBlock
+			this.textMonsterSkillDesc5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Monster/canvas_MonsterSkillDesc_5/textMonsterSkillDesc5') as mw.TextBlock
 		}
 		return this.textMonsterSkillDesc5_Internal
 	}
@@ -379,34 +379,34 @@ export default class StageSelect_Generate extends UIScript {
 	
 	   //按钮添加点击
 	   
-	   this.monsterSkill1btn.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "monsterSkill1btn");
+	   this.btn_monsterSkill_1.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "btn_monsterSkill_1");
 	   })
-	   this.monsterSkill1btn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   this.btn_monsterSkill_1.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
-	   this.monsterSkill1btn2.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "monsterSkill1btn2");
+	   this.btn_monsterSkill_2.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "btn_monsterSkill_2");
 	   })
-	   this.monsterSkill1btn2.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   this.btn_monsterSkill_2.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
-	   this.monsterSkill1btn3.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "monsterSkill1btn3");
+	   this.btn_monsterSkill_3.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "btn_monsterSkill_3");
 	   })
-	   this.monsterSkill1btn3.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   this.btn_monsterSkill_3.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
-	   this.monsterSkill1btn4.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "monsterSkill1btn4");
+	   this.btn_monsterSkill_4.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "btn_monsterSkill_4");
 	   })
-	   this.monsterSkill1btn4.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   this.btn_monsterSkill_4.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
-	   this.monsterSkill1btn5.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "monsterSkill1btn5");
+	   this.btn_monsterSkill_5.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "btn_monsterSkill_5");
 	   })
-	   this.monsterSkill1btn5.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   this.btn_monsterSkill_5.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 

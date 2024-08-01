@@ -1,8 +1,19 @@
 import { GameConfig } from "../config/GameConfig";
 import Utils from "../Utils";
-import { TowerStrategyType } from "./enum";
+import { StageMonsterSkillType, TowerStrategyType } from "./enum";
 
 export namespace GlobalData {
+    export class Stage {
+        public static stageMonsterSkillTitleArr = ["MonsterSkill_1", "MonsterSkill_2", "MonsterSkill_3", "MonsterSkill_4"];
+        public static stageMonsterSkillDescArr = ["MonsterSkillDesc_1", "MonsterSkillDesc_2", "MonsterSkillDesc_3", "MonsterSkillDesc_4"];
+
+        public getStageMonsterSkillInfo(type: StageMonsterSkillType) {
+            return {
+                title: Stage.stageMonsterSkillTitleArr[type],
+                desc: Stage.stageMonsterSkillDescArr[type]
+            };
+        }
+    }
     export class Tower {
         public static initUnlockTower = 1020; // 最初解锁的塔
     }

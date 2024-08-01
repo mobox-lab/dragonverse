@@ -1,3 +1,4 @@
+import Gtk from "gtoolkit";
 import PlayerModuleData from "../../Modules/PlayerModule/PlayerModuleData";
 import { PlayerUtil } from "../../Modules/PlayerModule/PlayerUtil";
 import { STAGE_CONFIG } from "../../StageConfig";
@@ -6,6 +7,7 @@ import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { IMonsterElement } from "../../config/Monster";
+import { StageMonsterSkillType } from "../../const/enum";
 import { ElementEnum, advantageMap } from "../../enemy/EnemyBase";
 import { ComponentFactory } from "../../enemy/components/ComponentFactory";
 import { MGSTool } from "../../tool/MGSTool";
@@ -29,7 +31,6 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
     difficultyColor: string[] = ["#01B652", "#B68B00", "#BC322C"];
     index: number;
     stageCfgId: number;
-
     init(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
         this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
         this.index = difficulty;
@@ -78,6 +79,8 @@ export class UIStageSelect extends StageSelect_Generate {
     private _difficulty: UIStageDifficulty[] = [];
     private _ownerId: number = 0;
     private _script: StageTrigger;
+    public selectedMonsterSkillIndex: number = 0;
+    public monsterSkillTypes: StageMonsterSkillType[] = [];
 
     onStart() {
         this.layer = UILayerTop;
@@ -139,7 +142,31 @@ export class UIStageSelect extends StageSelect_Generate {
         const stageCfg = StageUtil.getCfgFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
         const stageCfgId = stageCfg.id;
         this.getRecommendElement(stageCfgId);
-        this.getMonsterBuff(stageCfgId);
+        const {  stealth, fly, healing, berserk } = this.getMonsterBuff(stageCfgId);
+        const skills = [];
+        if(healing) skills.push(StageMonsterSkillType.Healing);
+        if(berserk) skills.push(StageMonsterSkillType.Berserk);
+        if(stealth) skills.push(StageMonsterSkillType.Stealth);
+        if(fly) skills.push(StageMonsterSkillType.Fly);
+        this.monsterSkillTypes = skills;
+        console.log("#debug monsterSkillTypes", skills);
+        for(let i = 0; i < 5; i++) {
+            const skillEle = this[`canvas_MonsterSkillDesc_${i+1}`] as mw.Canvas;
+            console.log("#debug skillEle", skillEle);
+            if(!skillEle) continue;
+            if(i < skills.length) {
+                const skillType = skills[i];
+                Gtk.trySetVisibility(skillEle, mw.SlateVisibility.SelfHitTestInvisible);
+                const btn: mw.Button = this[`btn_monsterSkill_${i+1}`]
+                btn?.onClicked?.clear();
+                btn?.onClicked?.add(() => {
+                    this.selectedMonsterSkillIndex = i;
+                    this.setMonsterSkillUI();
+                })
+            } else {
+                Gtk.trySetVisibility(skillEle, mw.SlateVisibility.Collapsed);
+            }
+        }
         this.mMapImage.imageGuid = stageCfg.stageImageGuid;
         this.mStageName.text = `${stageCfg.stageName}`;
         let typeString = this.getEnemyTypeString(stageCfg.id);
@@ -149,7 +176,12 @@ export class UIStageSelect extends StageSelect_Generate {
             this.mMonsters.text = GameConfig.Language.getElement("Text_SpecialEnemy").Value + `${typeString.join(" ")}`;
         }
     }
-
+    setMonsterSkillUI() {
+        for(let i = 0; i < this.monsterSkillTypes.length; i++) {
+            const skillEle = this[`canvas_MonsterSkillDesc_${i+1}`] as mw.Canvas;
+            skillEle.zOrder = i === this.selectedMonsterSkillIndex ? 1 : 0;
+        }
+    }
     getEnemyTypeString(stageCfgId: number) {
         // todo 这里要改
         let index = StageUtil.getWaveIndexFromId(stageCfgId);
@@ -310,6 +342,5 @@ export class UIStageSelect extends StageSelect_Generate {
             healing,
             berserk,
         };
-        // todo 怪物属性
     }
 }

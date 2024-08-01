@@ -29,6 +29,13 @@ export enum TowerStrategyType {
     PriorityAir, // 优先对空
 }
 
+export enum StageMonsterSkillType {
+    Healing = 0,
+    Berserk,
+    Stealth, // 隐身
+    Fly,
+}
+
 /**
  * 天赋类型
  */
