@@ -3,9 +3,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
 import { utils } from "../../util/uitls";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
-import { P_GlobalTips } from "../UI/P_GlobalTips";
 import { CollectModuleData } from "./CollectModuleData";
 import { CollectModuleS } from "./CollectModuleS";
 import { P_Collect, P_PetHover } from "./P_Collect";
@@ -69,7 +67,6 @@ export class CollectModuleC extends ModuleC<CollectModuleS, CollectModuleData> {
         this.isShowAndHideUnlockBtn();
         this.petPanel.setCurHasCount(this.data.HasArr.length, this.data.level);
         this.collectCountAC.call(this.data.HasArr.length);
-        AnalyticsTool.action_unlock_atlas(id);
     }
     private levelChange(num: number) {
         this.petPanel.setLevel(this.data.level);

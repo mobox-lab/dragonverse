@@ -1,6 +1,5 @@
 
 import { GlobalData } from "../../const/GlobalData";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { P_HudUI } from "../Hud/P_HudUI";
 import ResourceScript, { SceneResourceMap } from "../Resources/Resource";
@@ -54,7 +53,8 @@ export class InputModuleC extends ModuleC<InputModuleS, null> {
 
     private startLineTrace() {
         // this.touch = n
-        InputUtil.onTouchBegin(this.touchEvent.bind(this));
+        InputUtil.onTouchBegin(index => console.log('onTouchBegin: ', index));
+        // InputUtil.onTouchBegin(this.touchEvent.bind(this));
         InputUtil.onTouchEnd((index, loc, touchType) => {
             let v3 = InputUtil.convertScreenLocationToWorldSpace(loc.x, loc.y);
             let forVect = v3.worldDirection;
@@ -120,7 +120,6 @@ export class InputModuleC extends ModuleC<InputModuleS, null> {
     /**发送检测资源埋点 */
     public sendLineTraceAC() {
         this.hitCount++;
-        AnalyticsTool.action_hit(this.hitCount);
     }
 
     // 设置手指事件

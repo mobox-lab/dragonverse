@@ -6,7 +6,6 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import BuyCoinPanel from "../../ui/BuyCoinPanel";
 import MessageBox from "../../util/MessageBox";
 import { utils } from "../../util/uitls";
-import { AnalyticsTool, ButtonAnaly } from "../Analytics/AnalyticsTool";
 import { EggMachineTween } from "../InteractiveObjs/EggMachineTween";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
@@ -203,8 +202,6 @@ export class DollMachineModuleC extends ModuleC<DollMachineModuleS, null> {
 
     /**开始按钮点击 */
     private async startBtnClick(machineId: number) {
-        AnalyticsTool.action_click(ButtonAnaly.claw);
-        console.log("进入点击事件");
         let name = mw.AccountService.getNickName();
         if (!name) {
             name = "玩家1";

@@ -6,7 +6,6 @@ import MessageBox from "../../util/MessageBox";
 import { SoundManager } from "../../util/SoundManager";
 import { UICtrl } from "../../util/UICtrl";
 import { utils } from "../../util/uitls";
-import { AnalyticsTool, ButtonAnaly, Page } from "../Analytics/AnalyticsTool";
 import { P_Transmit } from "../AreaDivide/P_Transmit";
 import { EggMachineTween } from "../InteractiveObjs/EggMachineTween";
 import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
@@ -80,12 +79,10 @@ export class HudModuleC extends ModuleC<HudModuleS, null> {
         let bagCount = this.petBagModule.getCurPetNum();
         if (bagCount > 0) {
             this.hudUI.show();
-            AnalyticsTool.page(Page.main);
             this.hudPetUI.show();
             return;
         }
         this.guideUI.show();
-        AnalyticsTool.page(Page.choose);
     }
 
     /**游戏房间信息 */
@@ -109,7 +106,6 @@ export class HudModuleC extends ModuleC<HudModuleS, null> {
         }
         this.guideUI.hide();
         this.hudUI.show();
-        AnalyticsTool.page(Page.main);
         this.hudPetUI.show();
     }
 
@@ -137,7 +133,6 @@ export class HudModuleC extends ModuleC<HudModuleS, null> {
 
     /**快捷传送 */
     private fastTransmit() {
-        AnalyticsTool.action_click(ButtonAnaly.quickegg);
         MessageBox.showTwoBtnMessage(GameConfig.Language.Text_messagebox_2.Value, (res) => {
             if (res) {
                 // 初始城镇的扭蛋位置

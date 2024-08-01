@@ -1,5 +1,4 @@
 ﻿import Guide_Generate from "../../ui-generate/common/Guide_generate";
-import { AnalyticsTool, ButtonAnaly } from "../Analytics/AnalyticsTool";
 
 export class P_Guide extends Guide_Generate {
 
@@ -25,7 +24,6 @@ export class P_Guide extends Guide_Generate {
         })
         this.mBtn_OK.onClicked.add(() => {
             this.pickPetAction.call(this.currentPick);
-            AnalyticsTool.action_click(ButtonAnaly.choose);
         });
     }
 

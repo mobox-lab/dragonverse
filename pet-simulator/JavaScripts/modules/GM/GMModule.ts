@@ -1,4 +1,3 @@
-import { DebugConsole } from "debug_console";
 import { Bubble } from "module_bubble";
 // import { GMBasePanel } from "module_gm";
 import { GlobalEnum } from "../../const/Enum";
@@ -772,13 +771,6 @@ addGMCommand(
         TeleportService.asyncTeleportToScene("dragon-verse", [player.userId]).then(() => {}, onFailed);
     }
 );
-
-addGMCommand("Show Debug log", "string", () => {
-    DebugConsole.start(false);
-});
-addGMCommand("Hide Debug log", "string", () => {
-    DebugConsole.stop();
-});
 
 addGMCommand(
     "恢复满体力",

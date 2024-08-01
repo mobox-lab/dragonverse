@@ -3,7 +3,6 @@ import { GameConfig } from "../../config/GameConfig";
 import { EModule_Events, EModule_Events_S } from "../../const/Enum";
 import { PlayerModuleS } from "../../module/PlayerModule/PlayerModuleS";
 import { Attribute } from "../../module/PlayerModule/sub_attribute/AttributeValueObject";
-//import { BagModuleS } from "../../module/BagModule/BagModuleS";
 import { EventManager } from "../../tool/EventManager";
 import { InteractObject, InteractLogic_C, InteractLogic_S } from "../InteractiveObjs/InteractObject";
 import { SoundParam, RP_DestroyManager } from "./RP_DestroyManager";
@@ -214,15 +213,16 @@ export class RP_Destroy_Physics_S extends InteractLogic_S<RP_Destroy_Physics>{
             force = player.character.worldTransform.getForwardVector();
         }
 
-        const uForce = new UE.Vector();
-        uForce.X = force.x * this.info.impulse;
-        uForce.Y = force.y * this.info.impulse;
-        uForce.Z = force.z * this.info.impulse;
+        const uForce = new Vector(
+            force.x * this.info.impulse,
+            force.y * this.info.impulse,
+            force.z * this.info.impulse,
+        );
 
         let loc = player.character.worldTransform.position.clone().add(this.info.soundOffset);
         await TimeUtil.delaySecond(0.01);
 
-        this.meshObj["privateActor"].GetStaticMeshComponent().AddImpulse(uForce, "None", true);
+        this.meshObj.addImpulse(uForce, true);
         SoundService.play3DSound(this.info.soundGuid, loc, this.info.soundPlayTimes, this.info.soundVolume, this.info.soundParam)
 
         this.timer = 0;

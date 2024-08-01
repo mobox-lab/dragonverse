@@ -10,11 +10,8 @@ import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { P_TaskShop } from "./P_TaskShop";
 import { TaskModuleData } from "./TaskModuleData";
 import { Task_ModuleS } from "./Task_ModuleS";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { GlobalEnum } from "../../const/Enum";
-import { P_PetHud } from "../Hud/P_PetHud";
 import { P_HudUI } from "../Hud/P_HudUI";
-import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 
 export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
 
@@ -71,7 +68,6 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
             let diff = upper - count;
             if (diff <= 0) {
                 TipsManager.instance.showTip(utils.Format(GameConfig.Language.Task_shop_18.Value, info.Points));
-                AnalyticsTool.action_task(id);
             }
             worldUI.onTaskComplete(info, count);
         }
@@ -110,7 +106,6 @@ export class Task_ModuleC extends ModuleC<Task_ModuleS, TaskModuleData> {
     /**购买成功 */
     public taskShopBuySuccess(id: number, diff: number): void {
         TipsManager.instance.showTip(GameConfig.Language.Text_tips_1.Value);
-        AnalyticsTool.action_buy_energybag(id);
         if (diff == 0 && id == GlobalData.Task.gashaponId[0]) {
             this.buyGashapon(id);
             return;

@@ -11,7 +11,6 @@ import KeyOperationManager from "../../../controller/key-operation-manager/KeyOp
 import AchievementMain_Generate from "../../../ui-generate/Achievement/AchievementMain_generate";
 import {oTraceError} from "../../../util/LogManager";
 import {utils} from "../../../util/uitls";
-import {AnalyticsTool, Page} from "../../Analytics/AnalyticsTool";
 import {Achievement, AchievementNew} from "../AchievementData";
 import AchievementModuleC, {CoinType} from "../AchievementModuleC";
 
@@ -46,7 +45,6 @@ export default class AchievementPanel extends AchievementMain_Generate {
 
     protected onShow(...params: any[]): void {
         oTraceError("[AchievementPanel--onShow]");
-        AnalyticsTool.page(Page.achieve);
         this.updatePanelData();
         utils.showUITween(this);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {

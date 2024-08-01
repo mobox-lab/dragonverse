@@ -13,7 +13,6 @@ import MessageBox from "./util/MessageBox";
 
 import { utils } from "./util/uitls";
 import { PlayerModuleC } from "./modules/Player/PlayerModuleC";
-import { AnalyticsTool, ButtonAnaly } from "./modules/Analytics/AnalyticsTool";
 
 @Component
 export default class enterGame extends mw.Script {
@@ -25,13 +24,6 @@ export default class enterGame extends mw.Script {
     protected async onStart(): Promise<void> {
         // 不是客户端则返回
         if (!SystemUtil.isClient()) return;
-
-        RouteService.getGameCarryingData().then(data => {
-            // 从交易广场跳转而来的埋点
-            if (data == GlobalData.JumpGame.tradingPlazaToMain) {
-                AnalyticsTool.action_click(ButtonAnaly.BackToPet);
-            }
-        });
 
         await DataCenterC.ready();
 
@@ -64,8 +56,6 @@ export default class enterGame extends mw.Script {
                         // }
                         playerMC.setPlaza(true);
                         MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_1.Value);
-                    } else {
-                        AnalyticsTool.action_click(ButtonAnaly.NoTrade);
                     }
                 })
             } else {

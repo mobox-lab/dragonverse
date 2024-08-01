@@ -3,17 +3,12 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import WallInteract_Generate from '../../ui-generate/WorldUI/WallInteract_generate';
-import { oTraceError } from "../../util/LogManager";
 import MessageBox from "../../util/MessageBox";
 import { numberArrToString, utils } from "../../util/uitls";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { TipsManager } from "../Hud/P_TipUI";
-import { InterBtn } from "../InteractiveObjs/P_EggMachine";
 import { SceneWall } from "../InteractiveObjs/SceneWall";
 import { TeleportationGate } from "../InteractiveObjs/TeleportationGate";
-import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
-import { P_GlobalTips } from "../UI/P_GlobalTips";
 import { AreaDivideManager } from "./AreaDivideManager";
 import { AreaModuleData } from "./AreaModuleData";
 import { AreaModuleS } from "./AreaModuleS";
@@ -272,7 +267,6 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
         })
 
         if (areaId == 1002 && level == 2 && isData) {
-            AnalyticsTool.action_unlock_area(areaId);
             return;
         }
         if (level == 2) {
@@ -280,7 +274,6 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
             if (isData && areaId < 3000) {
                 //临时修改为解锁第二世界时不提示购买成功，没法改了，这流程只能这么写了(ˉ▽ˉ；)...
                 if (areaId !== 2001 && areaId !== 2002) MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_1.Value);
-                AnalyticsTool.action_unlock_area(areaId);
             }
         } else {
         }

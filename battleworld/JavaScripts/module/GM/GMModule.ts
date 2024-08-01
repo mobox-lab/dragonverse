@@ -5,7 +5,6 @@ import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import { Globaldata } from "../../const/Globaldata";
 import { EventManager } from "../../tool/EventManager";
 import {
-    EAttributeEvents_C,
     EAttributeEvents_S,
     EModule_Events,
     EMotion_Events,
@@ -22,15 +21,11 @@ import { BattleWorldPlayerModuleData } from "../PlayerModule/PlayerModuleData";
 import { BulletModuleS } from "../BulletModule/BulletModuleS";
 import { WeaponModuleS } from "../WeaponModule/WeaponModuleS";
 import { LandModuleS } from "../LandModule/LandModuleS";
-// import { GMBasePanel } from "module_gm";
 import GMHUD_Generate from "../../ui-generate/GM/GMHUD_generate";
-import GMItem_Generate from "../../ui-generate/GM/GMItem_generate";
 import { LandModuleC } from "../LandModule/LandModuleC";
 import { BuffModuleC } from "../buffModule/BuffModuleC";
-import { EPlayerState } from "../PlayerModule/FSM/PlyerState";
 import { MascotModuleS } from "../npc/mascotNpc/MascotModuleS";
 import { PlayerHeadUIModuleC } from "../PlayerHeadUIModule/PlayerHeadUIModuleC";
-import { EnergyModuleC, EnergyModuleS } from "../Energy/EnergyModule";
 import Log4Ts from "../../depend/log4ts/Log4Ts";
 import WoodUnit from "../npc/WoodUnit";
 import Gtk from "gtoolkit";
@@ -629,76 +624,6 @@ addGMCommand(
     (player: mw.Player, value: string) => {},
     undefined,
     "相机"
-);
-
-addGMCommand(
-    "fps",
-    "string",
-    (value: string) => {
-        UE.KismetSystemLibrary.ExecuteConsoleCommand(Player.localPlayer.character["actor"], "stat FPS");
-    },
-    undefined,
-    undefined,
-    "调试"
-);
-addGMCommand(
-    "打开性能参数",
-    "string",
-    (value: string) => {
-        UE.KismetSystemLibrary.ExecuteConsoleCommand(Player.localPlayer.character["actor"], "stat unit");
-    },
-    undefined,
-    undefined,
-    "调试"
-);
-addGMCommand(
-    "打开性能参数MAX",
-    "string",
-    (value: string) => {
-        UE.KismetSystemLibrary.ExecuteConsoleCommand(Player.localPlayer.character["actor"], "stat unitMax");
-    },
-    undefined,
-    undefined,
-    "调试"
-);
-
-addGMCommand(
-    "打开碰撞体",
-    "string",
-    (value: string) => {
-        UE.KismetSystemLibrary.ExecuteConsoleCommand(Player.localPlayer.character["actor"], "show collision");
-    },
-    undefined,
-    undefined,
-    "调试"
-);
-
-addGMCommand(
-    "设置网络延迟",
-    "string",
-    (value: string) => {
-        UE.KismetSystemLibrary.ExecuteConsoleCommand(
-            Player.localPlayer.character["actor"],
-            `net pktlag=${Number(value)}`
-        );
-    },
-    undefined,
-    undefined,
-    "调试"
-);
-
-addGMCommand(
-    "输入命令",
-    "string",
-    (value: string) => {
-        if (StringUtil.isEmpty(value)) {
-            return;
-        }
-        UE.KismetSystemLibrary.ExecuteConsoleCommand(Player.localPlayer.character["actor"], value);
-    },
-    undefined,
-    undefined,
-    "调试"
 );
 
 addGMCommand(

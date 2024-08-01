@@ -1,7 +1,5 @@
 import { GameConfig } from "../../config/GameConfig";
-import { oTraceError } from "../../util/LogManager";
 import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { P_HudPetGift } from "../OnlineModule.ts/P_HudPetGift";
 import { P_Bag, PetBagItem } from "./P_Bag";
 import { PetBagModuleData, petItemDataNew, petTrain } from "./PetBagModuleData";
@@ -13,13 +11,9 @@ import MessageBox from "../../util/MessageBox";
 import { EnchantPetState, P_Enchants } from "./P_Enchants";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { GlobalEnum } from "../../const/Enum";
-import { EnchantBuff } from "./EnchantBuff";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
-import { P_GlobalTips } from "../UI/P_GlobalTips";
 import Gtk from "gtoolkit";
-import { P_HudPet2 } from "../Hud/P_HudPet2";
-import { PetBag_Item } from "./P_BagItem";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+
 
 export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     private achievementModuleC: AchievementModuleC = null;

@@ -6,7 +6,6 @@ import PetBagPanel_Generate from "../../ui-generate/Pet/PetBagPanel_generate";
 import ReName_Generate from "../../ui-generate/Pet/ReName_generate";
 import MessageBox from "../../util/MessageBox";
 import { Singleton, stringToBuff, utils } from "../../util/uitls";
-import { AnalyticsTool, ButtonAnaly, Page } from "../Analytics/AnalyticsTool";
 import { P_PetHover } from "../PetCollect/P_Collect";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
@@ -420,7 +419,6 @@ export class P_Bag extends PetBagPanel_Generate {
             this.setReNameUI();
         }
         if (this.isDel) {
-            AnalyticsTool.action_click(ButtonAnaly.opendelete);
             this.setCancelBtn();
             this.mReNameBtn.visibility = mw.SlateVisibility.Collapsed;
             this.mEquipBtn.visibility = mw.SlateVisibility.Collapsed;
@@ -461,7 +459,6 @@ export class P_Bag extends PetBagPanel_Generate {
 
         MessageBox.showTwoBtnMessage(GameConfig.Language.Text_messagebox_13.Value, (res) => {
             if (res) {
-                AnalyticsTool.action_click(ButtonAnaly.suredelete);
                 this.onDelAC.call(this.delArr);
             }
             this.hide();

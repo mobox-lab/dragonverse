@@ -4,19 +4,15 @@ import { IEggMachineElement } from "../../config/EggMachine";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import KeyOperationManager from '../../controller/key-operation-manager/KeyOperationManager';
 import Gtk from 'gtoolkit';
 import { oTraceError } from "../../util/LogManager";
 import MessageBox from "../../util/MessageBox";
 import { Singleton, utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { AreaModuleC } from "../AreaDivide/AreaModuleC";
 import { AreaModuleData } from "../AreaDivide/AreaModuleData";
-import { BagTool } from "../PetBag/BagTool";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
-import { PetBagModuleS } from '../PetBag/PetBagModuleS';
 import { CollectModuleData } from "../PetCollect/CollectModuleData";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
@@ -448,7 +444,6 @@ class EggM {
             this.hasArr.push(res);
             this.getEgg(res);
             EggMachineTween.instance.startTween(this.petEgg, res, this.cfg.id);
-            AnalyticsTool.action_buy_item(this.cfgID);
             this.broadcastExecuteAchievement(res);
         } else {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_4.Value);

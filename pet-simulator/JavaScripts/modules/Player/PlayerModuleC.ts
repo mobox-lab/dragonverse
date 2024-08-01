@@ -7,7 +7,6 @@ import { oTraceError } from "../../util/LogManager";
 import MessageBox from "../../util/MessageBox";
 import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
-import { AnalyticsTool, ButtonAnaly } from "../Analytics/AnalyticsTool";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { AreaModuleC } from "../AreaDivide/AreaModuleC";
 import { P_HudUI } from "../Hud/P_HudUI";
@@ -85,7 +84,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         });
         this.data.onLevelChange.add((id, grade) => {
             this.onLevelChange(id, grade);
-            AnalyticsTool.action_upgrade_skill(id + 1, this.data.getLevelData(id));
         });
         GlobalData.LevelUp.initPlayer(Player.localPlayer.playerId, this.data.levelData);
         this.hudUI = mw.UIService.getUI(P_HudUI);
@@ -169,7 +167,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
         if (this.isLeftAttack) {
             anim = GlobalData.SpeedUp.rightAttack;
             time = GlobalData.SpeedUp.rightAttackDelay;
-            AnalyticsTool.action_click(ButtonAnaly.speed);
         }
         if (!this.curBehavior.isPetAttack) {
             TipsManager.instance.showTip(GameConfig.Language.Text_tips_7.Value);
@@ -567,7 +564,6 @@ export class PlayerModuleC extends ModuleC<PlayerModuleS, PetSimulatorPlayerModu
                 break;
         }
         for (let i = count; i > start; i--) {
-            AnalyticsTool.game_result(i + "" + tar);
             await TimeUtil.delaySecond(0.1);
         }
     }

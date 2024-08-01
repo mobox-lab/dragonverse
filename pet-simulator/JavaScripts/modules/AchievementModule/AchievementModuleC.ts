@@ -4,7 +4,6 @@ import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { oTraceError } from "../../util/LogManager";
 import { utils } from "../../util/uitls";
-import { AnalyticsTool } from "../Analytics/AnalyticsTool";
 import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { TipsManager } from "../Hud/P_TipUI";
 import AchievementData, { AchievementNew } from "./AchievementData";
@@ -236,7 +235,6 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
             this.completedPanel.showCompletedTips(achievementId, o, p, tragetNum, currentValue);
             this.updateAchievementJudgeData(achievementId);
             this.calculateRewardType(achievementId);
-            AnalyticsTool.achieveDone(achievementId);
         }
         else {
             let isTips: boolean = true;
