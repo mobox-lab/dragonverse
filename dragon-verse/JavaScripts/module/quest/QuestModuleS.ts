@@ -3,7 +3,6 @@ import { BagModuleS } from "../bag/BagModule";
 import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleC } from "./QuestModuleC";
-import Enum = UE.Enum;
 import Enumerable from "linq";
 import GToolkit from "gtoolkit";
 import { DragonElemental } from "../../const/DragonElemental";

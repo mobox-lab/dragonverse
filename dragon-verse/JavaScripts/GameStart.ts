@@ -20,7 +20,6 @@ import { QuestModuleS } from "./module/quest/QuestModuleS";
 import RoleModuleData, { RoleModuleC, RoleModuleS } from "./module/role/RoleModule";
 import SceneDragonModuleData, { SceneDragonModuleC, SceneDragonModuleS } from "./module/scene-dragon/SceneDragonModule";
 import MainPanel from "./ui/main/MainPanel";
-import { VisualizeDebug } from "./util/VisualizeDebug";
 import { MapManager } from "./gameplay/map/MapManager";
 import { Delegate } from "./depend/delegate/Delegate";
 import GToolkit, { GtkTypes } from "gtoolkit";
@@ -257,8 +256,6 @@ export default class GameStart extends mw.Script {
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         this.initI18n();
-
-        VisualizeDebug.init(mw.Player.localPlayer);
 
         DialogifyManager.getInstance().initController(new DialoguePanelController());
 
