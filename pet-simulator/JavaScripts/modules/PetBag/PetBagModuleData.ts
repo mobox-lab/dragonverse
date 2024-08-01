@@ -382,8 +382,8 @@ export class PetBagModuleData extends Subdata {
     }
 
     /**清理宠物统计数据 去除已经销毁的 */
-	public delPersistPetStatisticByKey(key: number) {
-        this.petStatisticMapNew = this.petStatisticMapNew.filter((p) => p[PSStatisticPetKey.petKey] === key);
+	public delPersistPetStatisticByKeys(delKeys: number[]) { 
+        this.petStatisticMapNew = this.petStatisticMapNew.filter((p) => !delKeys.includes(p[PSStatisticPetKey.petKey]));
     }
 	public cleanOldPetStatistic() {
         const petStatisticMap = this.petStatisticMap;

@@ -423,6 +423,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         if(!delPets?.length) return;
         const petBagData = DataCenterS.getData(userId, PetBagModuleData);
 		const now = Math.floor(Date.now() / 1000);
+        const delKeys = [];
         for (let i = 0; i < delPets.length; i++) {
             const delPet = delPets[i];
             const key = delPet.k;
@@ -440,8 +441,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 update: now,
             }
             this.destroyPetsMap[key] = destroyPetsInfo;
-            petBagData.delPersistPetStatisticByKey(key);
+            delKeys.push(key);
         }
+        petBagData.delPersistPetStatisticByKeys(delKeys);
         petBagData.save(true);
     }
 
