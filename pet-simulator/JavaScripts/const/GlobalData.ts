@@ -506,6 +506,10 @@ export namespace GlobalData {
         public static wallIds: number[] = [
             1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 2003, 2010, 3003, 3004, 3005, 3006, 3007, 3008,
         ];
+        /**场景墙解锁后的缩放 */
+        public static wallUnlockScale: number = 0.25;
+        /**场景墙解锁墙的缩放 */
+        public static wallLockScale: number = 5.69;
         /**传送门的id数组 */
         public static doorIds: number[] = [2004, 2005, 2006, 2007, 2008, 2009];
     }
