@@ -1,4 +1,4 @@
-﻿/** 
+﻿/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-04 16:48:32
  * @LastEditors  : xiaohao.li
@@ -31,12 +31,12 @@ export namespace MapManager {
 
     export function getRoadPositions(index: number) {
         if (!script) return [];
-        return script.roads[index].map(road => road.position);
+        return script.roads[index].map((road) => road.position);
     }
 
     export function getFlyPositions(index: number) {
         if (!script) return [];
-        return script.flyRoads[index].map(road => road.position);
+        return script.flyRoads[index].map((road) => road.position);
     }
 
     export function getDistances(index: number) {
@@ -105,20 +105,24 @@ export default class MapScript extends Script {
 
     protected async onStart(): Promise<void> {
         if (SystemUtil.isClient()) {
-            const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId)
+            const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
             this.gameObject.worldTransform.position = stageCfg?.stagePosition.clone();
-            this.gameObject.worldTransform.rotation = new Rotation(stageCfg?.rotation?.[0] ?? 200, stageCfg?.rotation?.[1] ?? 0, stageCfg?.rotation?.[2] ?? 0) 
+            this.gameObject.worldTransform.rotation = new Rotation(
+                stageCfg?.rotation?.[0] ?? 200,
+                stageCfg?.rotation?.[1] ?? 0,
+                stageCfg?.rotation?.[2] ?? 0
+            );
             let center = Vector.zero;
             let extend = Vector.zero;
             this.gameObject.getBounds(false, center, extend, true);
             await this.parseNode(this.gameObject);
             MapManager.script = this;
             this.useUpdate = true;
-            
+
             let distance = (a: number[], b: number[]): number => {
                 return Math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2);
-            }
-            
+            };
+
             for (let i = 0; i < this.roads.length; i++) {
                 let points = MapManager.getRoadPositions(i);
                 this.totalDistance[i] = 0;
@@ -127,10 +131,10 @@ export default class MapScript extends Script {
                     let d = distance(points[index - 1], point);
                     return d;
                 });
-                
+
                 this.totalDistance[i] = this.distances[i].reduce((a, b) => a + b, 0);
             }
-            
+
             for (let i = 0; i < this.flyRoads.length; i++) {
                 let flyPoints = MapManager.getFlyPositions(i);
                 this.totalFlyDistance[i] = 0;
@@ -139,10 +143,9 @@ export default class MapScript extends Script {
                     let d = distance(flyPoints[index - 1], point);
                     return d;
                 });
-                
+
                 this.totalFlyDistance[i] = this.flyDistances[i].reduce((a, b) => a + b, 0);
             }
-
 
             this.towerCreateEvent = Event.addLocalListener(TowerEvent.Create, (v: number) => {
                 this.slots[v].isFree = false;
@@ -165,7 +168,7 @@ export default class MapScript extends Script {
             for (let i = 0; i < this.roads.length; i++) {
                 this.arrowTimers[i] = 0;
                 this.arrowLoops[i] = 0;
-                let arrow = await GameObjPool.asyncSpawn("128901") as Effect;
+                let arrow = (await GameObjPool.asyncSpawn("128901")) as Effect;
                 if (arrow) {
                     arrow.worldTransform.rotation = new Rotation(90, 0, 0);
                     arrow.worldTransform.scale = new Vector(6, 1, 10);
@@ -181,7 +184,7 @@ export default class MapScript extends Script {
 
     private resetMaterial(node: Model) {
         if (node) {
-            const config = StageUtil.getStageCfgById(MapManager.stageCfgId)
+            const config = StageUtil.getStageCfgById(MapManager.stageCfgId);
             for (let i = 0; i < config.slotMaterials.length; i++) {
                 node.setMaterial(config.slotMaterials[i], i);
             }
@@ -193,7 +196,7 @@ export default class MapScript extends Script {
             if (node.name.startsWith(name)) {
                 let paramStr = node.name.substring(name.length);
                 let params = paramStr.split("|");
-                let paramInt = params.map(param => parseInt(param));
+                let paramInt = params.map((param) => parseInt(param));
                 if (node.name.startsWith("slot")) {
                     let model = node as Model;
                     let center = Vector.zero;
@@ -204,49 +207,59 @@ export default class MapScript extends Script {
                     node.tag = "slot" + (this.slots.length - 1);
                     this.resetMaterial(node as Model);
                     await slot.init();
-                }
-                else if (node.name.startsWith("path")) {
+                } else if (node.name.startsWith("path")) {
                     let n = node as Model;
                     n.setCollision(PropertyStatus.Off);
-                    let road = new Road(this, [node.worldTransform.position.x, node.worldTransform.position.y, node.worldTransform.position.z]);
+                    let road = new Road(this, [
+                        node.worldTransform.position.x,
+                        node.worldTransform.position.y,
+                        node.worldTransform.position.z,
+                    ]);
                     if (params.length === 2) {
                         if (!this.roads[paramInt[0]]) {
                             this.roads[paramInt[0]] = [];
                         }
                         this.roads[paramInt[0]][paramInt[1]] = road;
-                    }
-                    else {
+                    } else {
                         if (!this.roads[0]) {
                             this.roads[0] = [];
                         }
-                        this.roads[0][paramInt[0]] = road
+                        this.roads[0][paramInt[0]] = road;
                     }
                     node.setVisibility(PropertyStatus.Off);
-                }
-                else if (node.name.startsWith("flypath")) {
+                } else if (node.name.startsWith("flypath")) {
                     let n = node as Model;
                     n.setCollision(PropertyStatus.Off);
-                    let road = new Road(this, [node.worldTransform.position.x, node.worldTransform.position.y, node.worldTransform.position.z]);
+                    let road = new Road(this, [
+                        node.worldTransform.position.x,
+                        node.worldTransform.position.y,
+                        node.worldTransform.position.z,
+                    ]);
                     if (params.length === 2) {
                         if (!this.flyRoads[paramInt[0]]) {
                             this.flyRoads[paramInt[0]] = [];
                         }
                         this.flyRoads[paramInt[0]][paramInt[1]] = road;
-                    }
-                    else {
+                    } else {
                         if (!this.flyRoads[0]) {
                             this.flyRoads[0] = [];
                         }
                         this.flyRoads[0][paramInt[0]] = road;
                     }
                     node.setVisibility(PropertyStatus.Off);
-                }
-                else if (node.name.startsWith("birthpoint")) {
-                    MapManager.birthPosition.set(node.worldTransform.position.x, node.worldTransform.position.y, node.worldTransform.position.z);
-                    MapManager.birthRotation.set(node.worldTransform.rotation.x, node.worldTransform.rotation.y, node.worldTransform.rotation.z);
+                } else if (node.name.startsWith("birthpoint")) {
+                    MapManager.birthPosition.set(
+                        node.worldTransform.position.x,
+                        node.worldTransform.position.y,
+                        node.worldTransform.position.z
+                    );
+                    MapManager.birthRotation.set(
+                        node.worldTransform.rotation.x,
+                        node.worldTransform.rotation.y,
+                        node.worldTransform.rotation.z
+                    );
                     node.setVisibility(PropertyStatus.Off);
-                }
-                else if (node.name.startsWith("maparea")) {
+                } else if (node.name.startsWith("maparea")) {
                     let center = Vector.zero;
                     let extend = Vector.zero;
                     node.getBounds(false, center, extend, false);
@@ -256,7 +269,7 @@ export default class MapScript extends Script {
                     this.mapBounds[3] = extend.y;
                 }
             }
-        }
+        };
         await pushNode(gameObject, "slot");
         await pushNode(gameObject, "path");
         await pushNode(gameObject, "flypath");
@@ -294,15 +307,11 @@ export default class MapScript extends Script {
     }
 
     getRotation(a: number[], b: number[]): number {
-        return Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+        return (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI;
     }
 
     lerp(a: number[], b: number[], t: number): number[] {
-        return [
-            a[0] + (b[0] - a[0]) * t,
-            a[1] + (b[1] - a[1]) * t,
-            a[2] + (b[2] - a[2]) * t
-        ];
+        return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
     }
 
     getPositionAndIndex(index: number, points: number[][], speed: number, totalTime: number): [number[], number] {
@@ -359,7 +368,8 @@ export default class MapScript extends Script {
 
     public showFreeSlot(isShow: boolean) {
         for (let slot of this.slots) {
-            const model = (slot.node as Model);
+            const model = slot.node as Model;
+
             if (slot.isFree) {
                 if (isShow) {
                     model.setMaterial("2C8CCDCF45133522BCAE39969724548E");
@@ -377,7 +387,7 @@ export default class MapScript extends Script {
     }
 
     public getFreeSlotsCount() {
-        return this.slots.filter(slot => slot.isFree).length;
+        return this.slots.filter((slot) => slot.isFree).length;
     }
 
     public getSlotsCount() {
@@ -389,7 +399,9 @@ export default class MapScript extends Script {
         // let flattenedRoads = this.roads.reduce((acc, val) => acc.concat(val), []).map(v => v.position);
 
         // 使用map获取slots的positions
-        let slotPositions = this.slots.filter(slot => slot.node.localTransform.position.z < 150).map(slot => slot.position)
+        let slotPositions = this.slots
+            .filter((slot) => slot.node.localTransform.position.z < 150)
+            .map((slot) => slot.position);
         return slotPositions;
         // // 返回flattenedRoads和slotPositions的连接
         // return flattenedRoads.concat(slotPositions);
@@ -403,9 +415,7 @@ export default class MapScript extends Script {
 }
 
 abstract class IMapComponent {
-
     protected _map: MapScript;
-
 }
 
 class Slot extends IMapComponent {
@@ -418,7 +428,9 @@ class Slot extends IMapComponent {
         if (!(gameObject instanceof Model)) return;
         let model = gameObject as Model;
         let rot = Rotation.zero;
-        rot.set(model.worldTransform.rotation.x, model.worldTransform.rotation.y, model.worldTransform.rotation.z);
+        const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
+        // rot.set(model.worldTransform.rotation.x, model.worldTransform.rotation.y, model.worldTransform.rotation.z);
+        rot.set(stageCfg?.rotation?.[0] ?? 200, stageCfg?.rotation?.[1] ?? 0, stageCfg?.rotation?.[2] ?? 0);
         model.worldTransform.rotation = rot;
         let boundMin = Vector.zero;
         let boundMax = Vector.zero;
@@ -444,7 +456,10 @@ class Slot extends IMapComponent {
         // Define edge indices
         const edgeIndices = [
             // [0, 1], [1, 3], [3, 2], [2, 0], // Bottom face edges
-            [4, 5], [5, 7], [7, 6], [6, 4], // Top face edges
+            [4, 5],
+            [5, 7],
+            [7, 6],
+            [6, 4], // Top face edges
             // [0, 4], [1, 5], [3, 7], [2, 6]  // Vertical edges
         ];
 
@@ -467,7 +482,7 @@ class Slot extends IMapComponent {
         let cubeArr: mw.GameObject[] = [];
         let width = 0.05;
         for (let i = 0; i < midpoints.length; i++) {
-            let cube = await GameObjPool.asyncSpawn("197386") as Model;
+            let cube = (await GameObjPool.asyncSpawn("197386")) as Model;
             cube.worldTransform.position = midpoints[i];
             cube.parent = model;
             let material = "532554D8416C3609A871FCBC92273DC8";
@@ -477,25 +492,22 @@ class Slot extends IMapComponent {
 
             // cube.worldTransform.scale = new Vector(0.1, 0.1, 0.1);
             if (i < 8 && i % 2 == 0) {
-                cube.worldTransform.scale = new Vector((distance[i] / 100 + width), width, width);
-            }
-            else if (i < 8 && i % 2 == 1) {
-                cube.worldTransform.scale = new Vector(width, (distance[i] / 100 + width), width);
-            }
-            else {
-                cube.worldTransform.scale = new Vector(width, width, (distance[i] / 100 + width));
+                cube.worldTransform.scale = new Vector(distance[i] / 100 + width, width, width);
+            } else if (i < 8 && i % 2 == 1) {
+                cube.worldTransform.scale = new Vector(width, distance[i] / 100 + width, width);
+            } else {
+                cube.worldTransform.scale = new Vector(width, width, distance[i] / 100 + width);
                 cube.worldTransform.position = midpoints[i].clone().subtract(new Vector(0, 0, distance[i] / 2));
             }
             cubeArr.push(cube);
             this._cubeOutlines.push(cube);
         }
         model.worldTransform.rotation = rot;
-        cubeArr.forEach(c => {
+        cubeArr.forEach((c) => {
             c.parent = null;
             c.setVisibility(PropertyStatus.On);
         });
-
-    }
+    };
     constructor(map: MapScript, position: number[], node: GameObject) {
         super();
         this._map = map;
@@ -521,7 +533,6 @@ class Slot extends IMapComponent {
         }
     }
 }
-
 
 class Road extends IMapComponent {
     public position: number[];
