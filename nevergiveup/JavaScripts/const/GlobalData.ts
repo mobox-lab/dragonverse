@@ -4,9 +4,11 @@ import { StageMonsterSkillType, TowerStrategyType } from "./enum";
 
 export namespace GlobalData {
     export class Stage {
+        /** 关卡推荐元素图标 各元素对应 光 暗 水 火 木 土 guid */
+        public static stageRecommendElementIcon: string[] = ["392791", "392792", "392800", "392788", "392801", "392804"];
+
         public static stageMonsterSkillTitleArr = ["MonsterSkill_1", "MonsterSkill_2", "MonsterSkill_3", "MonsterSkill_4"];
         public static stageMonsterSkillDescArr = ["MonsterSkillDesc_1", "MonsterSkillDesc_2", "MonsterSkillDesc_3", "MonsterSkillDesc_4"];
-
         public getStageMonsterSkillInfo(type: StageMonsterSkillType) {
             return {
                 title: Stage.stageMonsterSkillTitleArr[type],

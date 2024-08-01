@@ -64,31 +64,38 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.textElement_Internal
 	}
+	private mCanvas_recoElements_Internal: mw.Canvas
+	public get mCanvas_recoElements(): mw.Canvas {
+		if(!this.mCanvas_recoElements_Internal&&this.uiWidgetBase) {
+			this.mCanvas_recoElements_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Element/mCanvas_recoElements') as mw.Canvas
+		}
+		return this.mCanvas_recoElements_Internal
+	}
 	private elementImg1_Internal: mw.Image
 	public get elementImg1(): mw.Image {
 		if(!this.elementImg1_Internal&&this.uiWidgetBase) {
-			this.elementImg1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Element/elementImg1') as mw.Image
+			this.elementImg1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Element/mCanvas_recoElements/elementImg1') as mw.Image
 		}
 		return this.elementImg1_Internal
 	}
 	private elementImg2_Internal: mw.Image
 	public get elementImg2(): mw.Image {
 		if(!this.elementImg2_Internal&&this.uiWidgetBase) {
-			this.elementImg2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Element/elementImg2') as mw.Image
+			this.elementImg2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Element/mCanvas_recoElements/elementImg2') as mw.Image
 		}
 		return this.elementImg2_Internal
 	}
 	private elementImg3_Internal: mw.Image
 	public get elementImg3(): mw.Image {
 		if(!this.elementImg3_Internal&&this.uiWidgetBase) {
-			this.elementImg3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Element/elementImg3') as mw.Image
+			this.elementImg3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Element/mCanvas_recoElements/elementImg3') as mw.Image
 		}
 		return this.elementImg3_Internal
 	}
 	private elementImg4_Internal: mw.Image
 	public get elementImg4(): mw.Image {
 		if(!this.elementImg4_Internal&&this.uiWidgetBase) {
-			this.elementImg4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Element/elementImg4') as mw.Image
+			this.elementImg4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_Element/mCanvas_recoElements/elementImg4') as mw.Image
 		}
 		return this.elementImg4_Internal
 	}

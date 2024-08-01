@@ -17,6 +17,7 @@ import StageSelect_Generate from "../../ui-generate/Level/StageSelect_generate";
 import { StageUtil } from "../Stage";
 import StageTrigger from "../StageTrigger";
 import { WaveUtil } from "../Wave";
+import { GlobalData } from "../../const/GlobalData";
 
 export class UIStageSelectItem extends StageSelectQueueItem_Generate {
     init() {}
@@ -141,7 +142,13 @@ export class UIStageSelect extends StageSelect_Generate {
     setData(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
         const stageCfg = StageUtil.getCfgFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
         const stageCfgId = stageCfg.id;
-        this.getRecommendElement(stageCfgId);
+        const elementIds = this.getRecommendElement(stageCfgId);
+        this.mCanvas_recoElements.removeAllChildren();
+        for (const id of elementIds) {
+            const icon = Image.newObject(this.mCanvas_recoElements, `element_${id}`) as Image;
+            icon.size = new Vector2(40, 40)
+            icon.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[id - 1]
+        }
         const {  stealth, fly, healing, berserk } = this.getMonsterBuff(stageCfgId);
         const skills = [];
         if(healing) skills.push(StageMonsterSkillType.Healing);
@@ -258,7 +265,7 @@ export class UIStageSelect extends StageSelect_Generate {
             counterElementIds.push(counterId);
         }
         console.log(JSON.stringify(counterElementIds), "counterElementIds");
-        // todo（从1—6分别为光、暗、水、火、木、土）显示图片
+        return counterElementIds;
     }
 
     getFitEnemies(id: number): IMonsterElement[] {
