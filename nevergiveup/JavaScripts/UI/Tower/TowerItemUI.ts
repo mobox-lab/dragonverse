@@ -30,7 +30,7 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 		//设置能否每帧触发onUpdate
 		this.canUpdate = false;
 		this.layer = UILayerMiddle;
-		this._oriImg = this.towerImg.imageGuid;
+		this._oriImg = this.img_Icon.imageGuid;
 		this.mPriceCanvas.visibility = SlateVisibility.Visible;
 		Event.addLocalListener(TowerEvent.ChooseTower, (ui: UIScript) => {
             this.setSelected(ui == this);
@@ -57,7 +57,7 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 	}
 
 	public getTags() {
-		const cfg = this.cfg;
+		const cfg = this.cfg; 
 		const tags = [];
 		if(cfg?.attackCount?.length)
 			tags.push(GlobalData.Shop.shopTargetOpts[cfg.attackCount[0] > 1 ? 2 : 1]);
@@ -71,10 +71,10 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 	*/
 	private initObj() {
 		if (!this.cfg) {
-			Gtk.trySetVisibility(this.mContainer, SlateVisibility.Visible);
+			Gtk.trySetVisibility(this.mCanvas_add, SlateVisibility.Visible);
 			Gtk.trySetVisibility(this.mContainer_tower, SlateVisibility.Collapsed);
 		} else {
-			Gtk.trySetVisibility(this.mContainer, SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.mCanvas_add, SlateVisibility.Collapsed);
 			Gtk.trySetVisibility(this.mContainer_tower, SlateVisibility.Visible);
 			this.img_Icon.imageGuid = this.cfg.imgGuid;
 			this.txt_spend.text = this.cfg.spend[0].toString();

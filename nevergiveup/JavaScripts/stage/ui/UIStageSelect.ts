@@ -266,13 +266,15 @@ export class UIStageSelect extends StageSelect_Generate {
         for (let i = 0; i < monsters.length; i++) {
             const monster = monsters[i];
             const types = monster.types;
-            for (let j = 0; j < types.length; j++) {
-                const type = types[j];
-                if (type === 1) {
-                    stealth = true;
-                }
-                if (type === 2) {
-                    fly = true;
+            if (types && Array.isArray(types)) {
+                for (let j = 0; j < types.length; j++) {
+                    const type = types[j];
+                    if (type === 1) {
+                        stealth = true;
+                    }
+                    if (type === 2) {
+                        fly = true;
+                    }
                 }
             }
         }
@@ -280,9 +282,11 @@ export class UIStageSelect extends StageSelect_Generate {
         for (let i = 0; i < monsters.length; i++) {
             const monster = monsters[i];
             const buffs = monster.buff;
-            for (let j = 0; j < buffs.length; j++) {
-                const buffId = buffs[j];
-                monsterBuffIds.push(buffId);
+            if (buffs && Array.isArray(buffs)) {
+                for (let j = 0; j < buffs.length; j++) {
+                    const buffId = buffs[j];
+                    monsterBuffIds.push(buffId);
+                }
             }
         }
 

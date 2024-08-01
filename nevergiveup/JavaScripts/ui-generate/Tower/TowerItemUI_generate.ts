@@ -22,19 +22,19 @@ export default class TowerItemUI_Generate extends UIScript {
 		}
 		return this.selectImg_Internal
 	}
-	private mContainer_Internal: mw.Canvas
-	public get mContainer(): mw.Canvas {
-		if(!this.mContainer_Internal&&this.uiWidgetBase) {
-			this.mContainer_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mContainer') as mw.Canvas
+	private mCanvas_add_Internal: mw.Canvas
+	public get mCanvas_add(): mw.Canvas {
+		if(!this.mCanvas_add_Internal&&this.uiWidgetBase) {
+			this.mCanvas_add_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_add') as mw.Canvas
 		}
-		return this.mContainer_Internal
+		return this.mCanvas_add_Internal
 	}
-	private towerImg_Internal: mw.Image
-	public get towerImg(): mw.Image {
-		if(!this.towerImg_Internal&&this.uiWidgetBase) {
-			this.towerImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mContainer/towerImg') as mw.Image
+	private bgAddImg_Internal: mw.Image
+	public get bgAddImg(): mw.Image {
+		if(!this.bgAddImg_Internal&&this.uiWidgetBase) {
+			this.bgAddImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCanvas_add/bgAddImg') as mw.Image
 		}
-		return this.towerImg_Internal
+		return this.bgAddImg_Internal
 	}
 	private mContainer_tower_Internal: mw.Canvas
 	public get mContainer_tower(): mw.Canvas {
