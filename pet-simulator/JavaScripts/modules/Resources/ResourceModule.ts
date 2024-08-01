@@ -125,7 +125,7 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
         Log4Ts.log(ResourceModuleC, " areaChange preId:" + preId + " curId:" + curId);    
         this.server.net_createArea(preId, curId);
         //开始生成资源
-        if (curId == 1001) {
+        if (curId == 1001 || (curId == 1002 && preId == 1001)) {
             // this.getResMapByAreaId(1002);
         } else if (curId == 2001) {
             this.getResMapByAreaId(2002);
