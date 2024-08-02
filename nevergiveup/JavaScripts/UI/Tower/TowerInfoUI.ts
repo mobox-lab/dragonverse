@@ -20,6 +20,7 @@ import { TowerModuleC } from "../../Modules/TowerModule/TowerModuleC";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
+import { GlobalData } from "../../const/GlobalData";
 import { MGSTool } from "../../tool/MGSTool";
 import TowerInfoUI_Generate from "../../ui-generate/Tower/TowerInfoUI_generate";
 import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
@@ -64,7 +65,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         for (let i = 0; i < 4; i++) {
             let item = UIService.create(TowerTagItem_Generate);
             item.visible = false;
-            this.tagCanvas.addChild(item.uiObject);
+            this.tagCanvas_1.addChild(item.uiObject);
             this._tagItemUIs.push(item);
         }
     }
@@ -74,6 +75,15 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         ModuleService.getModule(TowerModuleC).setAttackEffect(null);
     }
 
+	public getTags() {
+		const cfg = this._cfg;
+		const tags = [];
+		if(cfg?.attackCount?.length)
+			tags.push(GlobalData.Shop.shopTargetOpts[cfg.attackCount[0] > 1 ? 2 : 1]);
+		if(cfg?.adap)
+			tags.push(GlobalData.Shop.shopDamageOpts[cfg.adap]);
+		return tags
+	}
     /**
      * 设置显示时触发
      */
@@ -87,16 +97,23 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         this._cfg = cfg;
         this._tower = tower;
         this.txt_title.text = this._cfg.name;
-        let length = tower.attackTags?.length ? tower.attackTags.length : 0;
-        for (let i = 0; i < this._tagItemUIs.length; i++) {
-            this._tagItemUIs[i].visible = (i < length);
-            if (i < length) {
-                this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement("Text_AttackTag" + tower.attackTags[i]).Value;
-            }
-        }
         // this._tower = Utils.shallowCopy(towerInfo);
         Utils.setImageByAsset(this.towerImg, this._cfg);
+        this.bgElementImg.imageGuid = GlobalData.Shop.shopItemBgGuid[(this._cfg?.elementTy || 1) - 1];
+		this.tagElementImg.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(this._cfg?.elementTy || 1) - 1];
+        this.nameTxt.text = this._cfg.name;
         this.ownerTxt.text = StringUtil.format(GameConfig.Language.getElement("Text_CreatePlayerName").Value, Utils.truncateString(this._tower.info.playerName, 13));
+        this.txt_price_deploy.text = this._cfg.spend.slice(0, tower.level+1).reduce((pre, cur) => pre+cur,0).toFixed(0);
+        this.txt_fight.text = Utils.formatNumber(this._cfg.attackDamage[tower.level]);
+		const tags = this.getTags();
+		const len = tags?.length ?? 0;
+		for (let i = 0; i < this._tagItemUIs.length; i++) {
+			this._tagItemUIs[i].visible = (i < len);
+			if (i < len) {
+				this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
+			}
+		}
+
         this.showLevel();
         if (Utils.isLocalPlayer(tower.info.playerID)) {
             this.canvas_levelup.visibility = SlateVisibility.Visible;
@@ -148,17 +165,18 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
      */
     private showLevel() {
         if (this._cfg.spend[this._tower.level + 1 + this._upgradeCount] != null) {
-            this.txt_cost.text = this._cfg.spend[this._tower.level + 1 + this._upgradeCount].toFixed();
-            this.levelBtn.visibility = SlateVisibility.Visible;
-            this.levelBtn.text = GameConfig.Language.getElement("Text_Upgrade").Value;
+            this.txt_cost_value.text = "-" + this._cfg.spend[this._tower.level + 1 + this._upgradeCount].toFixed();
+            this.canvas_levelup_inner_left.visibility = SlateVisibility.SelfHitTestInvisible;
+            this.txt_cost.text = GameConfig.Language.getElement("Text_Upgrade").Value;
             this.levelBtn.enable = true;
         } else {
-            this.txt_cost.text = "0";
-            this.levelBtn.text = GameConfig.Language.getElement("Text_MaxLevel").Value;
+            this.txt_cost_value.text = "0";
+            this.canvas_levelup_inner_left.visibility = SlateVisibility.Collapsed;
+            this.txt_cost.text = GameConfig.Language.getElement("Text_MaxLevel").Value;
             this.levelBtn.enable = false;
 
         }
-        this.txt_price.text = this._cfg.sellBack[this._tower.level + this._upgradeCount].toFixed();
+        this.txt_sell_value.text = "+" + this._cfg.sellBack[this._tower.level + this._upgradeCount].toFixed();
         this.initText();
     }
 
