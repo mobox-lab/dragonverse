@@ -187,6 +187,7 @@ export class SkillPanel extends SkillPanel_Generate {
 
     }
 
+    private _isShowing: boolean = false;
     onShow(...param: any[]) {
 
         if (param[0]) {
@@ -211,7 +212,11 @@ export class SkillPanel extends SkillPanel_Generate {
             this.mCollapsedBtn.onClicked.broadcast();
         })
 
-        MouseLockController.getInstance().needMouseUnlock();
+        if (!this._isShowing) {
+            MouseLockController.getInstance().needMouseUnlock();
+        }
+
+        this._isShowing = true;
     }
 
     private refresh_nodeList() {
@@ -234,6 +239,8 @@ export class SkillPanel extends SkillPanel_Generate {
         this.onAction_closePanel.clear();
 
         MouseLockController.getInstance().cancelMouseUnlock();
+
+        this._isShowing = false;
     }
 
 }

@@ -48,7 +48,7 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
 
     }
 
-
+    private _isShow = false;
     onShow(...param: any[]) {
         this.selectSkillLibId = param[0];
 
@@ -94,16 +94,21 @@ export class SkillSelectPanel extends SkillSelectPanel_Generate {
             }
         }
 
+
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             UIService.hide(SkillSelectPanel);
         });
+        if (!this._isShow) {
+            MouseLockController.getInstance().needMouseUnlock();
+        }
 
-        MouseLockController.getInstance().needMouseUnlock();
+        this._isShow = true;
     }
 
     onHide() {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
         MouseLockController.getInstance().cancelMouseUnlock();
+        this._isShow = false;
     }
 
     private getBgImageGuid(weaponId: number): string {
