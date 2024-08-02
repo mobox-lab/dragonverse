@@ -9,6 +9,7 @@ var commonjs = require('@rollup/plugin-commonjs');
 var worker_threads = require('worker_threads');
 var node_path = require('node:path');
 var promises = require('node:fs/promises');
+var terser = require("@rollup/plugin-terser");
 require('log4js');
 
 function _interopNamespaceDefault(e) {
@@ -19,7 +20,9 @@ function _interopNamespaceDefault(e) {
                 var d = Object.getOwnPropertyDescriptor(e, k);
                 Object.defineProperty(n, k, d.get ? d : {
                     enumerable: true,
-                    get: function () { return e[k]; }
+                    get: function () {
+                        return e[k];
+                    }
                 });
             }
         });
@@ -44,6 +47,7 @@ const ignorePaths = new Set([
     "dist",
     "Plugins",
 ]);
+
 async function genEntry(projectDir, sourceList) {
     const imports = [];
     const exports = [];
@@ -69,6 +73,7 @@ async function genEntry(projectDir, sourceList) {
     // logger && logger.log(`virtualEntry: ${virtualEntry}`);
     return virtualEntry;
 }
+
 async function getSourceList(projectPath, dirPath = "") {
     const typeScripts = [];
     const dir = await promises.opendir(node_path.join(projectPath, dirPath));
@@ -83,28 +88,27 @@ async function getSourceList(projectPath, dirPath = "") {
         if (!lowerFileName.startsWith(".")) {
             if (dirent.isFile() && lowerFileName.endsWith(".ts") && !lowerFileName.endsWith(".d.ts")) {
                 typeScripts.push(subPath);
-            }
-            else if (dirent.isDirectory() && !ignorePaths.has(dirent.name)) {
+            } else if (dirent.isDirectory() && !ignorePaths.has(dirent.name)) {
                 typeScripts.push(...await getSourceList(projectPath, subPath));
-            }
-            else ;
+            } else ;
         }
     }
     return typeScripts;
 }
 
 const tsconfigName = "tsconfig.json";
+
 function isDirectory(path) {
     try {
         const stats = fs__namespace.statSync(path);
         return stats.isDirectory();
-    }
-    catch (error) {
+    } catch (error) {
         // 处理错误，比如路径不存在
         console.error('Error:', error);
         return false;
     }
 }
+
 function getTsconfigPath(projectPath) {
     if (isDirectory(projectPath)) {
         const tsconfigPath = path.join(projectPath, tsconfigName);
@@ -115,9 +119,11 @@ function getTsconfigPath(projectPath) {
     return "";
     // return getTsconfigPath(path.dirname(projectPath));
 }
+
 const warningCodes = new Set([
     "CIRCULAR_DEPENDENCY"
 ]);
+
 function renderWarning(warning) {
     const type = warning.code && warningCodes.has(warning.code) ? "Warn" : "Error";
     if (type == "Warn") {
@@ -136,6 +142,7 @@ function renderWarning(warning) {
     }
     return `${msg}[${type}]\n`;
 }
+
 function mwbuild(sourceList) {
     return {
         name: "mwbuild",
@@ -162,14 +169,17 @@ function mwbuild(sourceList) {
         }
     };
 }
+
 let virtualEntry = "mw-virtual-entry";
 let projectPath = "";
 let tslibPath = "";
+
 function getTslibPath(inProjectPath) {
     tslibPath = inProjectPath.split("MetaWorldSaved")[0];
     tslibPath = path.join(tslibPath, "WindowsNoEditor/MW/Content/BuildTool/node_modules/tslib");
     // console.log(`tslibPath: ${tslibPath}`);
 }
+
 async function build(inProjectPath) {
     projectPath = inProjectPath;
     getTslibPath(inProjectPath);
@@ -189,12 +199,20 @@ async function build(inProjectPath) {
                 commonjs(),
                 typescript({
                     compilerOptions: {
+                        sourceMap: false,
                         paths: {
                             tslib: [tslibPath],
                         }
                     },
                     tsconfig: tsconfigPath,
                     outputToFilesystem: true,
+                }),
+                terser({
+                    mangle: false,
+                    format: {
+                        comments: false,
+                        beautify: false,
+                    },
                 }),
             ],
             cache: true,
@@ -205,21 +223,20 @@ async function build(inProjectPath) {
         let output = {
             file: path.join(projectPath, "dist", "game.js"),
             format: "cjs",
-            sourcemap: "inline",
+            sourcemap: false,
         };
         await rollupBuild.write(output);
-    }
-    catch (e) {
+    } catch (e) {
         if (e.id && e.loc) {
             errMsg = `${e} at ${e.loc.file}:${e.loc.line}:${e.loc.column}`;
-        }
-        else {
+        } else {
             errMsg = `${e}`;
         }
     }
     // errMsg && console.error(`build msg: ${errMsg}`);
     return errMsg;
 }
+
 (async () => {
     // 接收主线程发送的消息
     worker_threads.parentPort && worker_threads.parentPort.on('message', async (message) => {
