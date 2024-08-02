@@ -2,7 +2,7 @@ import GToolkit from "gtoolkit";
 import { Quest } from "./Quest";
 import Enumerable from "linq";
 import FirePuzzleBlock, { FirePuzzleBlockTypes } from "../fire-game/FirePuzzleBlock";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { RoleModuleC } from "../../module/role/RoleModule";
 import { EventDefine } from "../../const/EventDefine";
 import FireRewardPuzzle from "../fire-game/FireRewardPuzzle";

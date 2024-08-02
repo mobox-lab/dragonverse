@@ -3,7 +3,7 @@ import Waterween from "../../depend/waterween/Waterween";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import {FlowTweenTask} from "../../depend/waterween/tweenTask/FlowTweenTask";
 import Easing from "../../depend/easing/Easing";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import GToolkit, {Expression} from "gtoolkit";
 import SlateVisibility = mw.SlateVisibility;
 

@@ -7,7 +7,7 @@
  * @Description  : 带进度条的传送门交互物
  */
 
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
 import { SharedInteractiveObj } from "./BaseInteractiveScript";
 import { InteractiveObjModuleC } from "./InteractiveObjModule";

@@ -8,7 +8,7 @@
  */
 
 import {GlobalData} from "../../const/GlobalData";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import {TipsManager} from "../../modules/Hud/P_TipUI";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
 

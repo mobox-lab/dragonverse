@@ -8,7 +8,7 @@ import Waterween from "../waterween/Waterween";
 import { FlowTweenTask } from "../waterween/tweenTask/FlowTweenTask";
 import GToolkit from "gtoolkit";
 import { AdvancedTweenTask } from "../waterween/tweenTask/AdvancedTweenTask";
-import Log4Ts from "../log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { Singleton } from "../singleton/Singleton";
 
 /**

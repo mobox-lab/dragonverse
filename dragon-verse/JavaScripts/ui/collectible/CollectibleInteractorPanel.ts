@@ -1,4 +1,4 @@
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { CollectibleItemModuleC } from "../../module/collectible-item/CollectibleItemModule";
 import CollectiblePanel_Generate from "../../ui-generate/collectible-item/CollectiblePanel_generate";
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";

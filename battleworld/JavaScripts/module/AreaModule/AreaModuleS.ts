@@ -11,7 +11,7 @@ import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import { EHurtSource, THurtSourceData } from "../AnalyticsModule/AnalyticsTool";
 import { LandModuleS } from "../LandModule/LandModuleS";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 /**
  * 区域判定模块

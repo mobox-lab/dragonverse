@@ -1,6 +1,6 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { numberArrToString, utils } from "../../util/uitls";
 import { AreaModuleData } from "../AreaDivide/AreaModuleData";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";

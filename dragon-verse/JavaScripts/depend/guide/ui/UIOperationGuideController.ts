@@ -2,7 +2,7 @@ import Gtk, { Regulator } from "gtoolkit";
 import Waterween from "../../../depend/waterween/Waterween";
 import { FlowTweenTask } from "../../../depend/waterween/tweenTask/FlowTweenTask";
 import Easing from "../../../depend/easing/Easing";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import OperationGuideControllerBase from "../base/OperationGuideControllerBase";
 import { BrokenStatus } from "../base/BrokenStatus";
 import SlateVisibility = mw.SlateVisibility;

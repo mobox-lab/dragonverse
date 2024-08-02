@@ -8,7 +8,7 @@
  */
 
 import AudioController from "../../controller/audio/AudioController";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { ActivateByTrigger, ActivateMode, TriggerType } from "./ActiveMode";
 import { PortalTriggerWithProgress } from "./PortalTriggerWithProgress";
 

@@ -7,7 +7,7 @@ import GToolkit from "gtoolkit";
 import { Yoact } from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
 import Enumerable from "linq";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 export default class HandbookPanel extends HandbookPanel_Generate {
 //#region Member

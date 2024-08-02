@@ -6,7 +6,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import AreaManager from "../../depend/area/AreaManager";
 import Enumerable from "linq";
 import EcologyAnimal from "./EcologyAnimal";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { IPoint3 } from "../../depend/area/shape/base/IPoint";
 import { addGMCommand } from "mw-god-mod";
 

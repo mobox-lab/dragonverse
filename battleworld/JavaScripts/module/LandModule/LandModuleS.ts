@@ -17,7 +17,7 @@ import { PillInfo } from "./PickUp/PickUpPill";
 import { DressUpInfo } from "./PickUp/PickUpDressUp";
 import { PickManagerS } from "./PickManagerS";
 import { LandManagerS } from "./Land/LandManagerS";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Gtk from "gtoolkit";
 
 export type LandParce = {

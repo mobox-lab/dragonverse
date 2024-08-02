@@ -4,7 +4,7 @@ import { SettingModuleS } from "./SettingModuleS";
 import SettingUI from "./UI/SettingUI";
 import { EWorldType, GlobalWorld } from "../../const/GlobalWorld";
 import PlayerSettingModuleData, { SettingOptions } from "./SettingModuleData";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { Globaldata } from "../../const/Globaldata";
 
 

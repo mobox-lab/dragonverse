@@ -1,7 +1,5 @@
 import BuffBase from "../depend/buff/Buff";
 import UnifiedRoleController from "../module/role/UnifiedRoleController";
-import Log4Ts from "../depend/log4ts/Log4Ts";
-import EffectService = mw.EffectService;
 import { BuffType } from "./BuffType";
 
 /**

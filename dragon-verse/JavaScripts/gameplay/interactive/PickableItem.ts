@@ -5,7 +5,7 @@ import { InitializeCheckerScript } from "../archtype/base/InitializeCheckScript"
 import { KeyItem } from "./KeyItemPuzzel";
 import { IPickerController } from "./PickerController";
 import UnifiedRoleController from "../../module/role/UnifiedRoleController";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import MainPanel from "../../ui/main/MainPanel";
 import GameServiceConfig from "../../const/GameServiceConfig";
 

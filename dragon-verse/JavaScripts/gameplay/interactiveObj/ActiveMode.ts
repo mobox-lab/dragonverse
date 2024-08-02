@@ -7,7 +7,7 @@
  * @Description  : 交互物触发模式
  */
 
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { InteractiveObjModuleC, InteractiveObjModuleS } from "./InteractiveObjModule";
 
 /**

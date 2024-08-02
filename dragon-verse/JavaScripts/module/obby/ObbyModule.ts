@@ -5,7 +5,7 @@ import { EventDefine } from "../../const/EventDefine";
 import { BagTypes } from "../../const/ForeignKeyIndexer";
 
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import MainPanel from "../../ui/main/MainPanel";
 
 import { BagModuleS } from "../bag/BagModule";

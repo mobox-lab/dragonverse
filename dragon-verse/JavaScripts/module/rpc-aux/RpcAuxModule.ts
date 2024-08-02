@@ -5,7 +5,7 @@ import Animation = mw.Animation;
 import Stance = mw.Stance;
 import Player = mw.Player;
 import EffectService = mw.EffectService;
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 /**
  * 初始化模块.

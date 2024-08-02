@@ -6,7 +6,7 @@ import { QuestModuleC } from "./QuestModuleC";
 import Enumerable from "linq";
 import GToolkit from "gtoolkit";
 import { DragonElemental } from "../../const/DragonElemental";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 export class QuestModuleS extends ModuleS<QuestModuleC, QuestData> {
 

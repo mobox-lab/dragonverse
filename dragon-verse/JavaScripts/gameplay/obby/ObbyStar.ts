@@ -1,4 +1,4 @@
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Gtk, { IPoint3, Regulator } from "gtoolkit";
 import GameObject = mw.GameObject;
 import GameServiceConfig from "../../const/GameServiceConfig";

@@ -7,7 +7,7 @@ import { SyncRootEntity } from "../base/SyncRootEntity";
 import { CompanionStateEnum, CompanionViewController } from "./CompanionController";
 import { CompanionState } from "./CompanionState";
 import DragonEntity from "./DragonEntity";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import GameServiceConfig from "../../../const/GameServiceConfig";
 import UnifiedRoleController from "../../../module/role/UnifiedRoleController";
 

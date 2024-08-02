@@ -3,7 +3,7 @@ import Enumerable from "linq";
 import { IBagItemElement } from "../../config/BagItem";
 import { GameConfig } from "../../config/GameConfig";
 import ByteArray from "../../depend/byteArray/ByteArray";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import IUnique from "../../depend/yoact/IUnique";
 import { Yoact } from "../../depend/yoact/Yoact";
 import YoactArray from "../../depend/yoact/YoactArray";

@@ -1,4 +1,4 @@
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 /**
  * 事务原子 抽象类.

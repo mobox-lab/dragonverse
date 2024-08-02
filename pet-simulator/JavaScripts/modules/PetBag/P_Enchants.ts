@@ -9,14 +9,11 @@ import { utils } from "../../util/uitls";
 import { P_PetHover } from "../PetCollect/P_Collect";
 import { PetBagItem } from "./P_Bag";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
-
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Gtk from "gtoolkit";
 import { PetBag_Item } from "./P_BagItem";
 import { PetBagModuleC } from "./PetBagModuleC";
-import { P_BagHoverNum3 } from "./P_BagHoverNum3";
-import { P_BagHoverNum2 } from "./P_BagHoverNum2";
 
 export enum EnchantPetState {
     IS_ALL_ENCHANT = "is_all_enchant", // 已经全部附魔 会重置其中一条

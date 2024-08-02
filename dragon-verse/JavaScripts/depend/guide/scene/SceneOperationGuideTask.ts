@@ -1,6 +1,6 @@
 import OperationGuideTask from "../base/OperationGuideTask";
 import { ISceneOperationGuideControllerOption, ValidGuidelineStyles } from "./SceneOperationGuideController";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Gtk from "gtoolkit";
 
 export default class SceneOperationGuideTask extends OperationGuideTask {

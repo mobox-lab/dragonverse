@@ -3,7 +3,7 @@ import { AttributeModuleC } from "../AttributeModule/AttributeModuleC";
 import { PlayerManager } from "../PlayerModule/PlayerManager";
 import PlayerHeadUI from "../PlayerModule/UI/PlayerHeadUI";
 import { Attribute } from "../PlayerModule/sub_attribute/AttributeValueObject";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 export class RankModelInfo {
     /** character模型 */

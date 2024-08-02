@@ -2,7 +2,7 @@ import * as mwaction from "mwaction";
 import { HeadUIController } from "./controller/HeadUIController";
 import { TimeManager } from "./controller/TimeManager";
 import { VectorExt } from "./declaration/vectorext";
-import Log4Ts, { DebugLevels } from "./depend/log4ts/Log4Ts";
+import Log4Ts, { DebugLevels } from "mw-log4ts";
 import i18n, { LanguageTypes } from "./language/i18n";
 import AuthModuleData, { AuthModuleC, AuthModuleS } from "./module/auth/AuthModule";
 import BagModuleData, { BagModuleC, BagModuleS } from "./module/bag/BagModule";

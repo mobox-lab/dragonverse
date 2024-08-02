@@ -9,7 +9,7 @@
 
 import { EventDefine } from "../../const/EventDefine";
 import AudioController, { SoundIDEnum } from "../../controller/audio/AudioController";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import i18n from "../../language/i18n";
 import { PromotTips } from "../../ui/common/PromotTips";
 import MainPanel from "../../ui/main/MainPanel";

@@ -1,5 +1,5 @@
 import NpcInteractionPanel from "../../../ui/npc-interaction/NpcInteractionPanel";
-import Log4Ts from "../../log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 /**
  * 对话节点功能 enum.

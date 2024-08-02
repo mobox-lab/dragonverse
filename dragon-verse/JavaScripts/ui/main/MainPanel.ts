@@ -4,7 +4,7 @@ import BagPanel from "../bag/BagPanel";
 import HandbookPanel from "../handbook/HandbookPanel";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import Waterween from "../../depend/waterween/Waterween";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import CodeVerifyPanel from "../auth/CodeVerifyPanel";
 import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";
 import { BagModuleC } from "../../module/bag/BagModule";

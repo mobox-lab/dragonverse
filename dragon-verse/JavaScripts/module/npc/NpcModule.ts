@@ -4,7 +4,7 @@ import Subdata = mwext.Subdata;
 import GameObjPoolSourceType = mwext.GameObjPoolSourceType;
 import {GameConfig} from "../../config/GameConfig";
 import {INpcElement} from "../../config/Npc";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import GToolkit from "gtoolkit";
 import NpcBehavior from "./NpcBehavior";
 import NpcTrigger from "./trigger/NpcTrigger";

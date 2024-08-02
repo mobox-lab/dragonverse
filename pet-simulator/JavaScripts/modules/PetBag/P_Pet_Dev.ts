@@ -7,12 +7,9 @@ import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { PetBagItem } from "./P_Bag";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
-
 import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
-import { P_BagHoverNum3 } from "./P_BagHoverNum3";
-import { P_BagHoverNum2 } from "./P_BagHoverNum2";
+import Log4Ts from "mw-log4ts";
 
 export class P_Pet_Dev extends Dev_Generate {
     /**当前容器中的所有item */

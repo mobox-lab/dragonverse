@@ -10,7 +10,7 @@
 import { GameConfig } from "../../config/GameConfig";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import GlobalTips from "../../depend/global-tips/GlobalTips";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Nolan from "../../depend/nolan/Nolan";
 import i18n from "../../language/i18n";
 import JumpGameTransition_Generate from "../../ui-generate/jumpGame/JumpGameTransition_generate";

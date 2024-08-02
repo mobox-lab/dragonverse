@@ -5,7 +5,7 @@ import { IPetARRElement } from "../../config/PetARR";
 import { GlobalData, endInfo } from "../../const/GlobalData";
 import { Arrow } from "../../util/ArrowControul";
 import { EffectManager } from "../../util/EffectManager";
-import { cubicBezier, getRot, getTransform, setPos, setRot, setTransform } from "../../util/MoveUtil";
+import { cubicBezier, getRot, getTransform, setPos, setTransform } from "../../util/MoveUtil";
 import { SoundManager } from "../../util/SoundManager";
 import { utils } from "../../util/uitls";
 import { VectorUtil } from "../../util/VectorUtil";
@@ -15,13 +15,12 @@ import PlayerBehavior from "./PlayerBehavior";
 import { GlobalEnum } from "../../const/Enum";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { EnergyModuleC } from "../Energy/EnergyModule";
 import GToolkit from "gtoolkit";
 import { P_HudPetGift } from "../OnlineModule/P_HudPetGift";
 import { TipsManager } from "../Hud/P_TipUI";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import { memorizePointIdToLocation } from "../Resources/ResourceModule";
 
 /**宠物状态 */
 export enum PetState {

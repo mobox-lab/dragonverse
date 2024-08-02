@@ -1,6 +1,6 @@
 import { GameConfig } from "../config/GameConfig";
 import { ILanguageElement } from "../config/Language";
-import Log4Ts from "../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { Yoact } from "../depend/yoact/Yoact";
 import createYoact = Yoact.createYoact;
 import bindYoact = Yoact.bindYoact;

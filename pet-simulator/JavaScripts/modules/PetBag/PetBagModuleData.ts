@@ -1,9 +1,9 @@
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { oTraceError } from "../../util/LogManager";
-import { stringToNumberArr, utils } from "../../util/uitls";
+import { utils } from "../../util/uitls";
 import PsStatisticModuleData, { StatisticModuleS } from "../statistic/StatisticModule";
 import { EnchantBuff } from "./EnchantBuff";
 

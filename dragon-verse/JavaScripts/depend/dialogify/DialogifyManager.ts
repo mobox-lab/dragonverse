@@ -1,4 +1,4 @@
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import ADialoguePanelController from "./dialogue-panel-controller/ADialoguePanelController";
 import ADialogifyConfigReader, {
     IDialogueContentNodeConfigElement,

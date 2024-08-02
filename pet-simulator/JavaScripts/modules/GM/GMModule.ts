@@ -1,10 +1,7 @@
 import { Bubble } from "module_bubble";
-// import { GMBasePanel } from "module_gm";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
-import GMHUD_Generate from "../../ui-generate/common/GM/GMHUD_generate";
-import GMItem_Generate from "../../ui-generate/common/GM/GMItem_generate";
+import Log4Ts from "mw-log4ts";
 import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { EnergyModuleS } from "../Energy/EnergyModule";

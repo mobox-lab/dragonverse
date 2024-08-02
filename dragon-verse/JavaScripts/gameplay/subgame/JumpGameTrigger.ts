@@ -1,5 +1,5 @@
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
 import {PromotTips} from "../../ui/common/PromotTips";
 

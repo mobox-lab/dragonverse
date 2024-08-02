@@ -1,7 +1,7 @@
 // import ModuleService = mwext.ModuleService;
 // import GameServiceConfig from "../../const/GameServiceConfig";
 // import Easing from "../../depend/easing/Easing";
-// import Log4Ts from "../../depend/log4ts/Log4Ts";
+// import Log4Ts from "mw-log4ts";
 // import Regulator from "../../depend/regulator/Regulator";
 // import SceneDragonBehavior from "../../module/scene-dragon/SceneDragonBehavior";
 // import { SceneDragonModuleC } from "../../module/scene-dragon/SceneDragonModule";

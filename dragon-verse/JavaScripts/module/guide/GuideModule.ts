@@ -1,5 +1,5 @@
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Gtk from "gtoolkit";
 import loadGuide, { GuideStep } from "./GuideConfig";
 import OperationGuider from "../../depend/guide/OperationGuider";

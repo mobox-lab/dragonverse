@@ -8,7 +8,7 @@
  */
 
 import { GameConfig } from "../../config/GameConfig";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { P_HudUI } from "../Hud/P_HudUI";
 import { TipsManager } from "../Hud/P_TipUI";
 

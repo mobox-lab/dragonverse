@@ -8,7 +8,7 @@ import { SettingModuleC } from "../SettingModuleC";
 import { MainUI } from "../../PlayerModule/UI/MainUI";
 import { MouseLockController } from "../../../controller/MouseLockController";
 import { SettingOptions } from "../SettingModuleData";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 /**设置*/
 export default class SettingUI extends Setting_Main_Generate {

@@ -1,4 +1,4 @@
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { BagModuleC, BagModuleS } from "../../module/bag/BagModule";
 import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 import { EventDefine } from "../../const/EventDefine";

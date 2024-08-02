@@ -1,13 +1,10 @@
-import { oTraceError } from "odin";
 import { GameConfig } from "../../config/GameConfig";
 import { BagTool } from "../PetBag/BagTool";
-import { DollMachineModuleC, DollType } from "./DollMachineModuleC";
-import { PetBagModuleS } from "../PetBag/PetBagModuleS";
+import { DollMachineModuleC } from "./DollMachineModuleC";
 import { IDollMachineElement } from "../../config/DollMachine";
 import { GlobalData } from "../../const/GlobalData";
 import GToolkit from "gtoolkit";
-
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 
 /**娃娃机服务端类 */

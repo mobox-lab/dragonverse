@@ -7,7 +7,7 @@
  * @Description  : 修改描述
  */
 
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Nolan from "../../depend/nolan/Nolan";
 import { BagModuleC } from "../../module/bag/BagModule";
 import ObbyEnterFailPanel from "../../ui/obby/ObbyEnterFailPanel";

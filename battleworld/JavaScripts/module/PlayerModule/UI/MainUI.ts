@@ -47,7 +47,7 @@ import { PillInfo } from "../../LandModule/PickUp/PickUpPill";
 import SettingUI from "../../SettingModule/UI/SettingUI";
 import { P_Game_Action } from "../../action/ui/P_Game_Action";
 import { SkillSelectPanel } from "../../SkillModule/UI/SkillSelectPanel";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import GameServiceConfig from "../../../const/GameServiceConfig";
 import { addGMCommand } from "mw-god-mod";
 import P12ShopPanel from "../../../ui/shop/P12ShopPanel";

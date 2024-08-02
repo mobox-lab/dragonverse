@@ -1,6 +1,6 @@
 import { Point, QuadTree, Rectangle } from "./QuadTree";
 import noReply = mwext.Decorator.noReply;
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { BaseInteractiveObj } from "./BaseInteractiveScript";
 
 export class InteractiveObjModuleS extends ModuleS<InteractiveObjModuleC, null> {

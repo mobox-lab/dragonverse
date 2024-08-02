@@ -2,7 +2,7 @@ import { GeneralManager } from "../Modified027Editor/ModifiedStaticAPI";
 import { GameConfig } from "../config/GameConfig";
 import { GlobalData } from "../const/GlobalData";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
-import Log4Ts from "../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import GameServiceConfig from "../const/GameServiceConfig";
 
 export class utils {

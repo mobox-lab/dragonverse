@@ -2,7 +2,6 @@ import { SpawnManager } from "../../Modified027Editor/ModifiedSpawn";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import { ObjectPoolServices } from "../../Tools/ObjectPool";
 import { oTraceError } from "../../util/LogManager";
 import { cubicBezier, getPos, setPos } from "../../util/MoveUtil";
 import { SoundManager } from "../../util/SoundManager";
@@ -11,8 +10,7 @@ import { PlayerModuleS } from "../Player/PlayerModuleS";
 import Gtk, { GtkTypes, RandomGenerator } from "gtoolkit";
 import ModuleService = mwext.ModuleService;
 import Balancing from "../../depend/balancing/Balancing";
-import { DollMachineModuleS } from "../DollMachine/DollMachineModuleS";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 export class DropManagerC extends ModuleC<DropManagerS, null> {
     private _dropItems: DropInClient[] = [];

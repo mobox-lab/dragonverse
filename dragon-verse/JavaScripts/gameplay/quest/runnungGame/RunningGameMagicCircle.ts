@@ -12,7 +12,7 @@ import { EventDefine } from "../../../const/EventDefine";
 import { CompanionHelper } from "../../../module/companion/CompanionHelper";
 import { CompanionModule_C } from "../../../module/companion/CompanionModule_C";
 import { GameConfig } from "../../../config/GameConfig";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 
 /**

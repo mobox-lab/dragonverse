@@ -1,7 +1,7 @@
 import { State } from "../../../depend/hfsm/State";
 import { StateMachine } from "../../../depend/hfsm/StateMachine";
 import { CompanionState } from "./CompanionState";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 export enum CompanionStateEnum {
 

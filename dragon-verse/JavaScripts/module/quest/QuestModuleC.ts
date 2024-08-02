@@ -5,7 +5,7 @@ import GToolkit from "gtoolkit";
 import { QuestStateEnum } from "./Config";
 import { QuestData } from "./QuestData";
 import { QuestModuleS } from "./QuestModuleS";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { EventDefine } from "../../const/EventDefine";
 import UnifiedRoleController from "../role/UnifiedRoleController";
 

@@ -5,7 +5,7 @@ import Enumerable from "linq";
 import { PolygonShape } from "./shape/PolygonShape";
 import { Point3Set } from "./shape/Point3Set";
 import { pointToArray } from "./shape/util/Util";
-import Log4Ts from "../log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { GameConfig } from "../../config/GameConfig";
 import SimpleDelegate = Delegate.SimpleDelegate;
 import Rectangle from "./shape/Rectangle";

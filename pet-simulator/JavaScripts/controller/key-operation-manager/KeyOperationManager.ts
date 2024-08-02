@@ -1,4 +1,4 @@
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Gtk, { GtkTypes, IRecyclable, Regulator, Singleton } from "gtoolkit";
 import { KOMUtil } from "./extends/AABB";
 import { KeyOperationHoverController } from "./KeyOperationHoverController";

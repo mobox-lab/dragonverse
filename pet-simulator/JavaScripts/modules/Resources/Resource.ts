@@ -13,7 +13,7 @@ import { GlobalData } from "../../const/GlobalData";
 import { DropManagerS } from "./DropResouce";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import ModuleService = mwext.ModuleService;
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Gtk from "gtoolkit";
 import AchievementModuleS from "../AchievementModule/AchievementModuleS";
 import { comeDown, memorizePointIdToLocation, ResourceModuleS } from "./ResourceModule";

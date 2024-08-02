@@ -1,6 +1,6 @@
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Gtk, { GtkTypes, Regulator } from "gtoolkit";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { CreSourceStr, PSStatisticPetKey, PetBagModuleData, PetSimulatorStatisticPetObj, petItemDataNew } from "./PetBagModuleData";
 

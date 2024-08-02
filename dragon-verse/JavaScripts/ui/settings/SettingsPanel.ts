@@ -2,7 +2,7 @@ import GameServiceConfig from "../../const/GameServiceConfig";
 import AudioController from "../../controller/audio/AudioController";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { MouseLockController } from "../../controller/MouseLockController";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { PlayerSettingModuleC } from "../../module/player-setting/PlayerSettingModule";
 import Setting_Main_Generate from "../../ui-generate/setting/Setting_Main_generate";
 

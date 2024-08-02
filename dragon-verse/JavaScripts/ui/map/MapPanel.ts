@@ -14,7 +14,7 @@ import BigMapPlayerArrow from "../main/BigMapPlayerArrowPanel";
 import { FlowTweenTask } from "../../depend/waterween/tweenTask/FlowTweenTask";
 import Waterween from "../../depend/waterween/Waterween";
 import Easing, { CubicBezier, CubicBezierBase } from "../../depend/easing/Easing";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import MwBehaviorDelegate from "../../util/MwBehaviorDelegate";
 import KeyOperationManager, { IKeyInteractive } from "../../controller/key-operation-manager/KeyOperationManager";
 import { MouseLockController } from "../../controller/MouseLockController";

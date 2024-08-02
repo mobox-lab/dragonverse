@@ -14,7 +14,7 @@ import { CompanionModule_C } from "../../module/companion/CompanionModule_C";
 import { MouseLockController } from "../../controller/MouseLockController";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import YoactArray from "../../depend/yoact/YoactArray";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import NewBag_Generate from "../../ui-generate/dragon-handbook/NewBag_generate";
 import { DragonElemental } from "../../const/DragonElemental";
 import Gtk from "gtoolkit";

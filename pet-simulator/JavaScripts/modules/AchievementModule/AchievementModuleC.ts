@@ -9,7 +9,7 @@ import { TipsManager } from "../Hud/P_TipUI";
 import AchievementData, { AchievementNew } from "./AchievementData";
 import AchievementModuleS from "./AchievementModuleS";
 import CompletedPanel from "./ui/CompletedPanel";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 
 export default class AchievementModuleC extends ModuleC<AchievementModuleS, AchievementData> {

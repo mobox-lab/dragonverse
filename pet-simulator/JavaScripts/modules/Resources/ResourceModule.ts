@@ -9,15 +9,12 @@ import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
-import { P_GlobalTips } from "../UI/P_GlobalTips";
 import ResourceScript, { SceneResourceMap } from "./Resource";
-import { BonusUI } from "./scenceUnitUI";
 import { RewardTipsManager } from "../UI/RewardTips";
 import Gtk from "gtoolkit";
-import { IPoint2 } from "../../depend/area/shape/base/IPoint";
 import { dimensionComeDown } from "../../depend/area/AreaManager";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
 

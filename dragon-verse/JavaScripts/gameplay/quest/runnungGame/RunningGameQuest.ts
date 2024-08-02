@@ -13,7 +13,7 @@ import { CircleType } from "../../interactive/CircleTrigger";
 import { Quest } from "../Quest";
 import { RunningGameMagicCircle } from "./RunningGameMagicCircle";
 import { RunningGameMode, RunningGameStatus } from "./RunningGameMode";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 
 export const RunningGameGetParticle: string = "153617";

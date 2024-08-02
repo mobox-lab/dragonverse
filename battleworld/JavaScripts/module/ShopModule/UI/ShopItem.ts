@@ -1,6 +1,6 @@
 ﻿import { EEquipPartType } from "../../../const/Enum";
 import GameServiceConfig from "../../../const/GameServiceConfig";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { IItemRender } from "../../../tool/UIMultiScroller";
 import { util } from "../../../tool/Utils";
 import UIDecItem_Generate from "../../../ui-generate/Shop/UIDecorate/UIDecItem_generate";

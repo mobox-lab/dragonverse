@@ -1,4 +1,4 @@
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import GToolkit from "gtoolkit";
 import Rotation = mw.Rotation;
 import Nolan from "../../depend/nolan/Nolan";

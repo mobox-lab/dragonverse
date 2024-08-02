@@ -52,9 +52,7 @@ export class InputModuleC extends ModuleC<InputModuleS, null> {
     }
 
     private startLineTrace() {
-        // this.touch = n
-        InputUtil.onTouchBegin(index => console.log('onTouchBegin: ', index));
-        // InputUtil.onTouchBegin(this.touchEvent.bind(this));
+        InputUtil.onTouchBegin(this.touchEvent.bind(this));
         InputUtil.onTouchEnd((index, loc, touchType) => {
             let v3 = InputUtil.convertScreenLocationToWorldSpace(loc.x, loc.y);
             let forVect = v3.worldDirection;

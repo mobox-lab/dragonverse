@@ -1,5 +1,5 @@
 import { Globaldata } from "../const/Globaldata";
-import Log4Ts from "../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Tips_Generate from "../ui-generate/common/Tips_generate";
 import { Tween } from "./Tween";
 

@@ -2,7 +2,7 @@ import {EventDefine} from "../../const/EventDefine";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import {HeadUIController, HeadUIType} from "../../controller/HeadUIController";
 import FiniteStateMachine, {Region, State} from "../../depend/finite-state-machine/FiniteStateMachine";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import {Yoact} from "../../depend/yoact/Yoact";
 import i18n from "../../language/i18n";
 import SceneDragon from "./SceneDragon";

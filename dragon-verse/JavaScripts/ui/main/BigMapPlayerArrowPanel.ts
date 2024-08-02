@@ -3,7 +3,7 @@ import LinearColor = mw.LinearColor;
 import BigMapPlayerArrow_Generate from "../../ui-generate/map/BigMapPlayerArrow_generate";
 import { HeadUIController } from "../../controller/HeadUIController";
 import { calculatePositionRatioInMap } from "../map/MapPanel";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { AdvancedTweenTask } from "../../depend/waterween/tweenTask/AdvancedTweenTask";
 import Waterween from "../../depend/waterween/Waterween";
 import GameServiceConfig from "../../const/GameServiceConfig";

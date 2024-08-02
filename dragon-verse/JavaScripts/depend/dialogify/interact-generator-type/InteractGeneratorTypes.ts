@@ -1,4 +1,4 @@
-import Log4Ts from "../../log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 /**
  * 交互条件 enum.

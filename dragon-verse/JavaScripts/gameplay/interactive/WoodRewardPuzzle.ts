@@ -1,6 +1,6 @@
 import AudioController from "../../controller/audio/AudioController";
 import { Puzzle } from "./Puzzle";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 
 @mw.Component

@@ -2,7 +2,7 @@ import UIOperationGuideController, { uiValid } from "./ui/UIOperationGuideContro
 import UIOperationGuideTask from "./ui/UIOperationGuideTask";
 import Gtk, { Delegate, Predicate, Singleton } from "gtoolkit";
 import OperationGuideTaskGroup, { TaskOptionalTypes } from "./base/OperationGuideTaskGroup";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import OperationGuideTask from "./base/OperationGuideTask";
 import SceneOperationGuideController from "./scene/SceneOperationGuideController";
 import SceneOperationGuideTask from "./scene/SceneOperationGuideTask";

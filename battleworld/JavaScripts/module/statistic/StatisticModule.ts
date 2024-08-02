@@ -1,4 +1,4 @@
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { AuthModuleS } from "../auth/AuthModule";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";

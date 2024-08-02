@@ -1,5 +1,5 @@
 import Gtk, { Constructor, GtkTypes, IRecyclable, ObjectPool, Singleton } from "gtoolkit";
-import Log4Ts from "../log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { FlowTweenTask } from "../waterween/tweenTask/FlowTweenTask";
 import Waterween from "../waterween/Waterween";
 import Easing from "../easing/Easing";

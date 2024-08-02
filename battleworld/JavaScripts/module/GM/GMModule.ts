@@ -26,7 +26,7 @@ import { LandModuleC } from "../LandModule/LandModuleC";
 import { BuffModuleC } from "../buffModule/BuffModuleC";
 import { MascotModuleS } from "../npc/mascotNpc/MascotModuleS";
 import { PlayerHeadUIModuleC } from "../PlayerHeadUIModule/PlayerHeadUIModuleC";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import WoodUnit from "../npc/WoodUnit";
 import Gtk from "gtoolkit";
 import GodModService, { addGMCommand } from "mw-god-mod";

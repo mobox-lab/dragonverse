@@ -1,4 +1,4 @@
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { AddBuffResult, BuffContainer } from "../../depend/buff/BuffContainer";
 import { CheckMoveBuff } from "../../buffs/CheckMoveBuff";
 import { WetBuff } from "../../buffs/WetBuff";

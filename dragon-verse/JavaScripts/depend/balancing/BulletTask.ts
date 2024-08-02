@@ -1,4 +1,4 @@
-import Log4Ts from "../log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { Delegate } from "gtoolkit";
 import SimpleDelegate = Delegate.SimpleDelegate;
 

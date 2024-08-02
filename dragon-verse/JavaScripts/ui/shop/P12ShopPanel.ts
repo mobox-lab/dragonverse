@@ -1,5 +1,5 @@
 import Gtk from "gtoolkit";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { P12ShopConfig } from "./P12ShopConfig";
 import { Yoact } from "../../depend/yoact/Yoact";
 import { P12ShopPanelItem } from "./P12ShopPanelItem";

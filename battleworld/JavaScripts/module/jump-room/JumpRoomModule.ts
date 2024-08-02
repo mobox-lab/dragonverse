@@ -8,7 +8,7 @@
  */
 
 import { GameConfig } from "../../config/GameConfig";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import Tips from "../../tool/P_Tips";
 import { MainUI } from "../PlayerModule/UI/MainUI";
 

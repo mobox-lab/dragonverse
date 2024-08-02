@@ -26,7 +26,7 @@ import { EUnitState } from "../UnitState";
 import { UnitStateMachine } from "../UnitStateMachine";
 import { MascotModuleC } from "./MascotModuleC";
 import Gtk, { GtkTypes, Regulator } from "gtoolkit";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 export class MascotModuleS extends ModuleS<MascotModuleC, null> {
     /** 吉祥物npc配置 */

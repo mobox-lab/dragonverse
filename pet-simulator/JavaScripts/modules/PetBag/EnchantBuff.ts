@@ -7,7 +7,7 @@ import { BagTool } from "./BagTool";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import Gtk from "gtoolkit";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 
 type petBuff = {
     /**伤害加成 */

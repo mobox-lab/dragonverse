@@ -3,7 +3,7 @@ import UUID from "pure-uuid";
 import { EventDefine } from "../../const/EventDefine";
 import ForeignKeyIndexer, { BagTypes } from "../../const/ForeignKeyIndexer";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import GToolkit, { Expression, RandomGenerator, Regulator } from "gtoolkit";
 import { BagModuleS } from "../bag/BagModule";
 import SceneDragon from "./SceneDragon";
