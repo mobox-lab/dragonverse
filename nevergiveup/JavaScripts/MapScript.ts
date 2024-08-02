@@ -428,9 +428,8 @@ class Slot extends IMapComponent {
         if (!(gameObject instanceof Model)) return;
         let model = gameObject as Model;
         let rot = Rotation.zero;
-        const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
-        // rot.set(model.worldTransform.rotation.x, model.worldTransform.rotation.y, model.worldTransform.rotation.z);
-        rot.set(stageCfg?.rotation?.[0] ?? 200, stageCfg?.rotation?.[1] ?? 0, stageCfg?.rotation?.[2] ?? 0);
+        rot.set(model.worldTransform.rotation.x, model.worldTransform.rotation.y, model.worldTransform.rotation.z);
+        // rot.set(stageCfg?.rotation?.[0] ?? 200, stageCfg?.rotation?.[1] ?? 0, stageCfg?.rotation?.[2] ?? 0);
         model.worldTransform.rotation = rot;
         let boundMin = Vector.zero;
         let boundMax = Vector.zero;
@@ -499,6 +498,14 @@ class Slot extends IMapComponent {
                 cube.worldTransform.scale = new Vector(width, width, distance[i] / 100 + width);
                 cube.worldTransform.position = midpoints[i].clone().subtract(new Vector(0, 0, distance[i] / 2));
             }
+            // const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
+            // const cubeRotation = Rotation.zero;
+            // cubeRotation.set(
+            //     stageCfg?.rotation?.[0] ?? 200,
+            //     stageCfg?.rotation?.[1] ?? 0,
+            //     stageCfg?.rotation?.[2] ?? 0
+            // );
+            // cube.worldTransform.rotation = cubeRotation;
             cubeArr.push(cube);
             this._cubeOutlines.push(cube);
         }
