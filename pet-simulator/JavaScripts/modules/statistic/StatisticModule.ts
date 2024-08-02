@@ -416,6 +416,29 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         const destroyPets = Object.values(this.destroyPetsMap || {});
         const totalLen = (curPets?.length ?? 0) + (destroyPets?.length ?? 0);
         if(totalLen <= GlobalData.Statistic.petArrMaxLength) return; // 未达到上限，不需要上报
+        const player = Player.getPlayer(userId);
+        const now = Date.now();
+        const playerData = DataCenterS.getData(userId, PetSimulatorPlayerModuleData);
+        const petStatisticData = DataCenterS.getData(userId, PsStatisticModuleData);
+        const playerConsumeData = petStatisticData.playerConsumeData ?? {
+            diamondAdd: 0,
+            diamondRed: 0,
+            gold_1_add: 0,
+            gold_1_red: 0,
+            gold_2_add: 0,
+            gold_2_red: 0,
+            gold_3_add: 0,
+            gold_3_red: 0,
+        };
+        const login = Math.floor((petStatisticData.playerLoginRecord[0][0] || 0) / 1000);
+        const logout = Math.floor((now || 0) / 1000);
+        const online = logout - login;
+        const petBagSortedItems = petBagData.sortBag();
+        const petMax = petBagSortedItems?.length ? Math.max(...petBagSortedItems.map((pet) => pet.p.a)) : 0;
+
+        const energyS = ModuleService.getModule(EnergyModuleS);
+        const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
+    
         const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
             const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
             const info: PetSimulatorStatisticPetObj = {
@@ -434,36 +457,42 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         }).concat(destroyPets)
 
         const statisticData: PetSimulatorStatisticNeedFill = {
-            diamond: 0,
-            diamondAdd: 0,
-            diamondRed: 0,
-            gold_1: 0,
-            gold_1_add: 0,
-            gold_1_red: 0,
-            gold_2: 0,
-            gold_2_add: 0,
-            gold_2_red: 0,
-            gold_3: 0,
-            gold_3_add: 0,
-            gold_3_red: 0,
-            login: 0,
-            logout: 0,
-            online: 0,
+            diamond: playerData?.diamond ?? 0,
+            diamondAdd: playerConsumeData?.diamondAdd ?? 0,
+            diamondRed: playerConsumeData?.diamondRed ?? 0,
+            gold_1: playerData?.gold ?? 0,
+            gold_1_add: playerConsumeData?.gold_1_add ?? 0,
+            gold_1_red: playerConsumeData?.gold_1_red ?? 0,
+            gold_2: playerData.gold2 ?? 0,
+            gold_2_add: playerConsumeData?.gold_2_add ?? 0,
+            gold_2_red: playerConsumeData?.gold_2_red ?? 0,
+            gold_3: playerData.gold3 ?? 0,
+            gold_3_add: playerConsumeData?.gold_3_add ?? 0,
+            gold_3_red: playerConsumeData?.gold_3_red ?? 0,
+            login,
+            logout,
+            online,
             pet: petStatistics,
-            petAdd: 0,
-            petCnt: 0,
-            petMax: 0,
-            staMax: 0,
-            staPotAdd: 0,
-            staPotCnt: 0,
-            staRed: 0,
-            stamina: 0,
+            petAdd: petStatisticData?.playerPetAdd ?? 0,
+            petCnt: petBagSortedItems?.length ?? 0,
+            petMax,
+            staMax,
+            staPotAdd: petStatisticData.playerStaPotAdd ?? 0,
+            staPotCnt: petStatisticData.playerStaPotCnt ?? 0,
+            staRed,
+            stamina,
         };
         Log4Ts.log( 
             StatisticModuleS,
             "overStatistic shouldReportPsStatistic statisticData:" + JSON.stringify(statisticData),
         );
+        // destroyed
+        petStatisticData.recordLeave(now);
+        energyS.resetPlayerEnergyConsumeMap(userId);
         this.destroyPetsMap = {};
+        petStatisticData.resetConsumeRecord();
+        petStatisticData.recordEnter(now+1);
+        
         ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(userId, statisticData);
     }
 
