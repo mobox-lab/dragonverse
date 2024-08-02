@@ -305,15 +305,15 @@ export default abstract class TowerBase implements BuffBag {
             (this.tower as Model).setCollision(CollisionStatus.QueryOnly);
         }
         this.tower.tag = "tower" + this.info.placeID;
-        GameObjPool.asyncSpawn(
-            Utils.isLocalPlayer(this.info.playerID)
-                ? "C9F5FFD94363A60D67BC4397C21AEC3D"
-                : "056EFC0F43BA0708EFCC0091F5BB59DC"
-        ).then((effect) => {
-            if (!effect) return;
-            this._bottomEff = effect;
-            this._bottomEff.worldTransform.position = this.oriPos;
-        });
+        // GameObjPool.asyncSpawn(
+        //     Utils.isLocalPlayer(this.info.playerID)
+        //         ? "C9F5FFD94363A60D67BC4397C21AEC3D"
+        //         : "056EFC0F43BA0708EFCC0091F5BB59DC"
+        // ).then((effect) => {
+        //     if (!effect) return;
+        //     this._bottomEff = effect;
+        //     this._bottomEff.worldTransform.position = this.oriPos;
+        // });
     }
 
     /**
