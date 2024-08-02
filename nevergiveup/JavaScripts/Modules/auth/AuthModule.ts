@@ -1,6 +1,6 @@
 import CryptoJS from "crypto-js";
 import GameServiceConfig from "../../const/GameServiceConfig";
-import Log4Ts, { Announcer, LogString } from "../../depend/log4ts/Log4Ts";
+import Log4Ts, { Announcer, MessageGetter } from "mw-log4ts";
 import Gtk, { Expression } from "gtoolkit";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import noReply = mwext.Decorator.noReply;
@@ -2202,7 +2202,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 function logState(
     announcer: Announcer,
     logType: "log" | "warn" | "error",
-    messages: string[] | string | LogString,
+    messages: string[] | string | MessageGetter,
     showTime: boolean,
     playerId: number,
     uid: string = undefined,

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "update gsc depend": "npm update mw-god-mod gtoolkit --save"
+    "update gsc depend": "npm update mw-log4ts mw-god-mod gtoolkit --save"
   },
   "repository": {
     "type": "git",
@@ -16,12 +16,12 @@
   "dependencies": {
     "@types/crypto-js": "^4.2.2",
     "crypto-js": "^4.2.0",
-    "gtoolkit": "^31.16.16",
+    "gtoolkit": "^36.1.4",
     "module_bubble": "^5.1.0",
     "module_gm": "^5.0.5",
     "module_guide": "^5.0.8",
-    "mw-god-mod": "^31.1.37",
-    "mw-log4ts": "^1.4.0",
+    "mw-god-mod": "^36.1.2",
+    "mw-log4ts": "^1.4.3",
     "mwaction": "^1.0.8",
     "pure-uuid": "^1.8.1"
   }

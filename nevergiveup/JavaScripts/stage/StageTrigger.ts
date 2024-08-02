@@ -15,7 +15,7 @@ import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
 import GameServiceConfig from "../const/GameServiceConfig";
 import { GlobalEventName } from "../const/enum";
-import Log4Ts from "../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { StageUtil } from "./Stage";
 import { UIStageSelect } from "./ui/UIStageSelect";
 

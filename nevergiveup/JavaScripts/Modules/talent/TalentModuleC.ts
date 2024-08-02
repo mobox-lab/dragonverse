@@ -6,7 +6,7 @@ import TalentModuleData from "./TalentModuleData";
 import { GameConfig } from "../../config/GameConfig";
 import PlayerModuleC from "../PlayerModule/PlayerModuleC";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { ETalentType } from "../../const/enum";
 
 export class TalentItemUnique implements IUnique {

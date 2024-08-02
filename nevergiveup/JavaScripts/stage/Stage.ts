@@ -35,7 +35,7 @@ import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
 import { IStageElement } from "../config/Stage";
 import GameServiceConfig from "../const/GameServiceConfig";
-import Log4Ts from "../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { Enemy } from "../enemy/EnemyBase";
 import { BaseState } from "../fsm/BaseState";
 import { Fsm } from "../fsm/Fsm";

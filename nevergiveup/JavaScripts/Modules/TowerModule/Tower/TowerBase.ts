@@ -23,7 +23,7 @@ import { Buff, BuffBag, BuffManager } from "../../../tool/BuffTool";
 import { BuffApplyType, EEnemyComponentType } from "../../../tool/Enum";
 import { MGSTool } from "../../../tool/MGSTool";
 import { TowerEvent, TowerInfo } from "../TowerEnum";
-import Log4Ts from "../../../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import TalentUtils from "../../talent/TalentUtils";
 
 export type TowerProperty = {
