@@ -1060,15 +1060,22 @@ class WaitState extends StageBaseState {
         this._wave = params[1];
         const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageCfgId, this._wave + 1);
         this.fsm.owner.addGold(currentWave.waveGold);
-        if (this._wave > 0) {
-            const goldAmount = TalentUtils.getModuleCRunesValueById(1005);
-            const goldAmount2 = TalentUtils.getModuleCRunesValueById(1029);
-            this.fsm.owner.addGold(goldAmount + goldAmount2);
+        // TODO 把S端的代码改同步
+        // if (this._wave > 0) {
+        //     Player.asyncGetLocalPlayer().then((player) => {
+        //         const promiseRes = [];
+        //         const goldAmount = TalentUtils.getModuleSRunesValueById(1005, player);
+        //         const goldAmount2 = TalentUtils.getModuleSRunesValueById(1029, player);
 
-            const hpAmount = TalentUtils.getModuleCRunesValueById(1010);
-            const hpAmount2 = TalentUtils.getModuleCRunesValueById(1034);
-            this.fsm.owner.addHp(hpAmount + hpAmount2);
-        }
+        //         const hpAmount = TalentUtils.getModuleSRunesValueById(1010, player);
+        //         const hpAmount2 = TalentUtils.getModuleSRunesValueById(1034, player);
+        //         promiseRes.push(goldAmount, goldAmount2, hpAmount, hpAmount2);
+        //         Promise.all(promiseRes).then((res) => {
+        //             this.fsm.owner.addGold(res[0] + res[2]);
+        //             this.fsm.owner.addHp(res[3] + res[4]);
+        //         });
+        //     });
+        // }
         StageActions.onStageStateChanged.call(this.state, this.fsm.owner.id, this._time, this._wave);
     }
 }
