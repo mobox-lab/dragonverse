@@ -8,6 +8,7 @@ import { CreSourceStr, PSStatisticPetKey, PetBagModuleData, PetSimulatorStatisti
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { AuthModuleS, PetSimulatorStatisticNeedFill } from "../auth/AuthModule";
 import { GameConfig } from "../../config/GameConfig";
+import { GlobalData } from "../../const/GlobalData";
 
 type PlayerConsumeData = {
     diamondAdd: number;
@@ -408,6 +409,64 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         d.recordEnter(now);
         d.save(false);
     }
+    
+    public shouldReportPsStatistic(userId: string) {
+        const petBagData = DataCenterS.getData(userId, PetBagModuleData);
+        const curPets = petBagData.PetStatisticArr ?? [];
+        const destroyPets = Object.values(this.destroyPetsMap || {});
+        const totalLen = (curPets?.length ?? 0) + (destroyPets?.length ?? 0);
+        if(totalLen <= GlobalData.Statistic.petArrMaxLength) return; // 未达到上限，不需要上报
+        const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
+            const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
+            const info: PetSimulatorStatisticPetObj = {
+                petkey: p[PSStatisticPetKey.petKey],
+                proId: petInfo.I,
+                name: petInfo.p.n,
+                attack: petInfo.p.a,
+                enchanted: this.getStatisticEnchantedInfo(petInfo),
+                status: "exist",
+                creSource: CreSourceStr[p[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
+                desSource: "",
+                create: p[PSStatisticPetKey.create],
+                update: p[PSStatisticPetKey.update],
+            }
+            return info;
+        }).concat(destroyPets)
+
+        const statisticData: PetSimulatorStatisticNeedFill = {
+            diamond: 0,
+            diamondAdd: 0,
+            diamondRed: 0,
+            gold_1: 0,
+            gold_1_add: 0,
+            gold_1_red: 0,
+            gold_2: 0,
+            gold_2_add: 0,
+            gold_2_red: 0,
+            gold_3: 0,
+            gold_3_add: 0,
+            gold_3_red: 0,
+            login: 0,
+            logout: 0,
+            online: 0,
+            pet: petStatistics,
+            petAdd: 0,
+            petCnt: 0,
+            petMax: 0,
+            staMax: 0,
+            staPotAdd: 0,
+            staPotCnt: 0,
+            staRed: 0,
+            stamina: 0,
+        };
+        Log4Ts.log( 
+            StatisticModuleS,
+            "overStatistic shouldReportPsStatistic statisticData:" + JSON.stringify(statisticData),
+        );
+        this.destroyPetsMap = {};
+        ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(userId, statisticData);
+    }
+
     public getStatisticEnchantedInfo(petInfo: petItemDataNew) {
 		const buffs = Array.from(petInfo.p.b);
 		const enchanted: string[] = buffs?.length ? buffs.map((b) => {
@@ -419,7 +478,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
     }
 
     // 更新宠物销毁数据
-    public updateDestroyPetsInfo(userId: number, delPets: petItemDataNew[],desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
+    public updateDestroyPetsInfo(userId: string, delPets: petItemDataNew[],desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
         if(!delPets?.length) return;
         const petBagData = DataCenterS.getData(userId, PetBagModuleData);
 		const now = Math.floor(Date.now() / 1000);
@@ -444,9 +503,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             delKeys.push(key);
         }
         petBagData.delPersistPetStatisticByKeys(delKeys);
+        this.shouldReportPsStatistic(userId); // 检查数据是否超过限制，超过的话则上报后清理
         petBagData.save(true);
     }
-
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
         let now = Date.now();
