@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-04 11:02:29
  * @LastEditors  : xiaohao.li
@@ -22,11 +22,10 @@ import { StageC, StageS, StageUtil } from "./stage/Stage";
 import { WaveManager } from "./stage/Wave";
 import { MGSTool } from "./tool/MGSTool";
 
-
 export const ChatType = {
     Text: 1,
     Emoji: 2,
-}
+};
 
 export namespace GameManager {
     let script: GameStart;
@@ -59,8 +58,7 @@ export namespace GameManager {
                     }
                 }
             });
-        }
-        else {
+        } else {
             RankManager.init();
             UIService.show(TowerUI);
 
@@ -69,10 +67,14 @@ export namespace GameManager {
                 StageActions.onStageCreated.call(id);
                 StageActions.onPlayerCountChanged.call(stage.playerIds.length);
                 WaveManager.init();
-                let getPlayerLevels = () => stage.playerIds.map(id => PlayerUtil.getPlayerScript(id)?.level);
-                MGSTool.gameStart(stage.stageCfgId, stage.playerIds.length, getPlayerLevels(), ModuleService.getModule(CardModuleC).equipCards);
+                let getPlayerLevels = () => stage.playerIds.map((id) => PlayerUtil.getPlayerScript(id)?.level);
+                MGSTool.gameStart(
+                    stage.stageCfgId,
+                    stage.playerIds.length,
+                    getPlayerLevels(),
+                    ModuleService.getModule(CardModuleC).equipCards
+                );
             });
-
 
             StageActions.onStageStateChanged.add((state: EStageState) => {
                 if (state == EStageState.End) {
@@ -86,10 +88,8 @@ export namespace GameManager {
                 }
             });
 
-
-
             Event.addServerListener("setWaveCount", (amount: number) => {
-                setWaveCount(amount)
+                setWaveCount(amount);
             });
 
             EnemyActions.onBossDie.add(() => {
@@ -106,7 +106,7 @@ export namespace GameManager {
                     }
                     let script = PlayerUtil.getPlayerScript(playerId);
                     if (script) {
-                        DanmuManager.pushChat(script.playerName, message, type)
+                        DanmuManager.pushChat(script.playerName, message, type);
                     }
                 }
             });
@@ -118,8 +118,7 @@ export namespace GameManager {
             for (let i = 0; i < stages.length; i++) {
                 stages[i].onUpdate(dt);
             }
-        }
-        else {
+        } else {
             if (stage) {
                 stage.onUpdated(dt);
             }
@@ -160,8 +159,7 @@ export namespace GameManager {
         if (stage) {
             if (worldLocation) {
                 stage.setGold(stage.gold + amount, worldLocation);
-            }
-            else {
+            } else {
                 stage.gold += amount;
             }
         }
@@ -169,8 +167,8 @@ export namespace GameManager {
 
     export function startGame(playerIds: number[], stageCfgId: number) {
         console.log("#debug startGame stageCfgId:", stageCfgId);
-        let gamePlayers = playerIds.map(playerId => Player.getPlayer(playerId));
-        let validGamePlayers = gamePlayers.filter(player => players.indexOf(player) != -1);
+        let gamePlayers = playerIds.map((playerId) => Player.getPlayer(playerId));
+        let validGamePlayers = gamePlayers.filter((player) => players.indexOf(player) != -1);
         if (validGamePlayers.length == 0) return;
         startStage(validGamePlayers, stageCfgId);
         for (let i = 0; i < players.length; i++) {
@@ -210,7 +208,7 @@ export namespace GameManager {
     export function getStagePlayersServer(player: Player): number[] {
         let stage = getPlayerStage(player);
         if (!stage) return [];
-        return stage.players.map(player => player.playerId);
+        return stage.players.map((player) => player.playerId);
     }
 
     export function addPlayer(player) {
@@ -235,15 +233,19 @@ export namespace GameManager {
         if (SystemUtil.isServer()) {
             waveAmount = amount;
             Event.dispatchToAllClient("setWaveCount", amount);
-        }
-        else {
+        } else {
             waveAmount = amount;
         }
     }
 
     export function backToLobby() {
-        Player.asyncGetLocalPlayer().then(player => {
-            player.character.worldTransform.position = new Vector(413.769989, 151.250000, 317.369995)
+        Player.asyncGetLocalPlayer().then((player) => {
+            const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
+            if (stageCfg.resetPosition) {
+                player.character.worldTransform.position = stageCfg?.resetPosition.clone();
+            } else {
+                player.character.worldTransform.position = new Vector(413.769989, 151.25, 317.369995);
+            }
         });
     }
 
@@ -272,7 +274,6 @@ export namespace GameManager {
     export function startGameClient(stageCfgId: number) {
         Event.dispatchToServer("startStage", stageCfgId);
     }
-
 
     export function leaveStageClient() {
         Event.dispatchToServer("clientLeaveStage");

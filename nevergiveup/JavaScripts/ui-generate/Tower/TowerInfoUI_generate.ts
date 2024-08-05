@@ -50,13 +50,6 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.canvas_levelup_Internal
 	}
-	private img_lilBG_Internal: mw.Image
-	public get img_lilBG(): mw.Image {
-		if(!this.img_lilBG_Internal&&this.uiWidgetBase) {
-			this.img_lilBG_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/img_lilBG') as mw.Image
-		}
-		return this.img_lilBG_Internal
-	}
 	private levelBtn_Internal: mw.StaleButton
 	public get levelBtn(): mw.StaleButton {
 		if(!this.levelBtn_Internal&&this.uiWidgetBase) {
@@ -64,19 +57,33 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.levelBtn_Internal
 	}
-	private img_money_Internal: mw.Image
-	public get img_money(): mw.Image {
-		if(!this.img_money_Internal&&this.uiWidgetBase) {
-			this.img_money_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/img_money') as mw.Image
-		}
-		return this.img_money_Internal
-	}
 	private txt_cost_Internal: mw.TextBlock
 	public get txt_cost(): mw.TextBlock {
 		if(!this.txt_cost_Internal&&this.uiWidgetBase) {
-			this.txt_cost_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/txt_cost') as mw.TextBlock
+			this.txt_cost_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/Canvas_levelup_inner_right/txt_cost') as mw.TextBlock
 		}
 		return this.txt_cost_Internal
+	}
+	private canvas_levelup_inner_left_Internal: mw.Canvas
+	public get canvas_levelup_inner_left(): mw.Canvas {
+		if(!this.canvas_levelup_inner_left_Internal&&this.uiWidgetBase) {
+			this.canvas_levelup_inner_left_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/canvas_levelup_inner_left') as mw.Canvas
+		}
+		return this.canvas_levelup_inner_left_Internal
+	}
+	private img_money_Internal: mw.Image
+	public get img_money(): mw.Image {
+		if(!this.img_money_Internal&&this.uiWidgetBase) {
+			this.img_money_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/canvas_levelup_inner_left/img_money') as mw.Image
+		}
+		return this.img_money_Internal
+	}
+	private txt_cost_value_Internal: mw.TextBlock
+	public get txt_cost_value(): mw.TextBlock {
+		if(!this.txt_cost_value_Internal&&this.uiWidgetBase) {
+			this.txt_cost_value_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/canvas_levelup_inner_left/txt_cost_value') as mw.TextBlock
+		}
+		return this.txt_cost_value_Internal
 	}
 	private canvas_sell_Internal: mw.Canvas
 	public get canvas_sell(): mw.Canvas {
@@ -85,13 +92,6 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.canvas_sell_Internal
 	}
-	private img_lilBG_1_Internal: mw.Image
-	public get img_lilBG_1(): mw.Image {
-		if(!this.img_lilBG_1_Internal&&this.uiWidgetBase) {
-			this.img_lilBG_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell/img_lilBG_1') as mw.Image
-		}
-		return this.img_lilBG_1_Internal
-	}
 	private sellBtn_Internal: mw.StaleButton
 	public get sellBtn(): mw.StaleButton {
 		if(!this.sellBtn_Internal&&this.uiWidgetBase) {
@@ -99,19 +99,26 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.sellBtn_Internal
 	}
+	private txt_sell_Internal: mw.TextBlock
+	public get txt_sell(): mw.TextBlock {
+		if(!this.txt_sell_Internal&&this.uiWidgetBase) {
+			this.txt_sell_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell/Canvas_sell_inner_right/txt_sell') as mw.TextBlock
+		}
+		return this.txt_sell_Internal
+	}
 	private img_money_1_Internal: mw.Image
 	public get img_money_1(): mw.Image {
 		if(!this.img_money_1_Internal&&this.uiWidgetBase) {
-			this.img_money_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell/img_money_1') as mw.Image
+			this.img_money_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell/Canvas_sell_inner_left/img_money_1') as mw.Image
 		}
 		return this.img_money_1_Internal
 	}
-	private txt_price_Internal: mw.TextBlock
-	public get txt_price(): mw.TextBlock {
-		if(!this.txt_price_Internal&&this.uiWidgetBase) {
-			this.txt_price_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell/txt_price') as mw.TextBlock
+	private txt_sell_value_Internal: mw.TextBlock
+	public get txt_sell_value(): mw.TextBlock {
+		if(!this.txt_sell_value_Internal&&this.uiWidgetBase) {
+			this.txt_sell_value_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell/Canvas_sell_inner_left/txt_sell_value') as mw.TextBlock
 		}
-		return this.txt_price_Internal
+		return this.txt_sell_value_Internal
 	}
 	private showCanvas_Internal: mw.Canvas
 	public get showCanvas(): mw.Canvas {
@@ -347,7 +354,13 @@ export default class TowerInfoUI_Generate extends UIScript {
 	   this.initLanguage(this.txt_cost)
 	   
 	
-	   this.initLanguage(this.txt_price)
+	   this.initLanguage(this.txt_cost_value)
+	   
+	
+	   this.initLanguage(this.txt_sell)
+	   
+	
+	   this.initLanguage(this.txt_sell_value)
 	   
 	
 	   this.initLanguage(this.nameTxt)

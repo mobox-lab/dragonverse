@@ -1,8 +1,21 @@
 import { GameConfig } from "../config/GameConfig";
 import Utils from "../Utils";
-import { TowerStrategyType } from "./enum";
+import { StageMonsterSkillType, TowerStrategyType } from "./enum";
 
 export namespace GlobalData {
+    export class Stage {
+        /** 关卡推荐元素图标 各元素对应 光 暗 水 火 木 土 guid */
+        public static stageRecommendElementIcon: string[] = ["385296", "385306", "385304", "385295", "385302", "385301"];
+
+        public static stageMonsterSkillTitleArr = ["MonsterSkill_1", "MonsterSkill_2", "MonsterSkill_3", "MonsterSkill_4"];
+        public static stageMonsterSkillDescArr = ["MonsterSkillDesc_1", "MonsterSkillDesc_2", "MonsterSkillDesc_3", "MonsterSkillDesc_4"];
+        public getStageMonsterSkillInfo(type: StageMonsterSkillType) {
+            return {
+                title: Stage.stageMonsterSkillTitleArr[type],
+                desc: Stage.stageMonsterSkillDescArr[type]
+            };
+        }
+    }
     export class Tower {
         public static initUnlockTower = 1020; // 最初解锁的塔
     }
