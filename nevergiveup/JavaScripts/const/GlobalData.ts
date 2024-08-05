@@ -152,25 +152,30 @@ export namespace GlobalData {
             towerId: number
         ): {
             strategyTitle: string;
-            strategyDesc: string[];
+            strategyDesc: string[]; // 不同等级对应的 desc
+            strategyDescArgs: string[][]; // 不同等级对应的 args
             strategyKey: TowerStrategyType;
         } => {
             const cfg = GameConfig.Tower.getElement(towerId);
-            if (cfg?.attackTags?.includes(1))
+            if (cfg?.attackTags?.includes(1)) {
+                const { desc, args } = this.getStrategyDesc(TowerStrategyType.AntiHidden)
                 return {
                     // 反隐
                     strategyTitle: GameConfig.Language.getElement(
                         GlobalData.Shop.shopStrategyOpts[TowerStrategyType.AntiHidden]
                     )?.Value,
-                    strategyDesc: [this.getStrategyDesc(TowerStrategyType.AntiHidden)],
+                    strategyDesc: [desc],
+                    strategyDescArgs: [args],
                     strategyKey: TowerStrategyType.AntiHidden,
                 };
+            }
             if (!cfg?.attackBuff?.length) return null;
             const levelBuffs = cfg.attackBuff;
             const strategyBuffs = this.towerStrategyBuffs;
             let strategyKey = null;
             let title = null;
             const descArr = [] // 每级对应的描述
+            const argsArr = [] // 每级对应的参数
             for(const level in levelBuffs){
                 const levelBuff = levelBuffs[level];
                 if(levelBuff?.length){
@@ -183,8 +188,9 @@ export namespace GlobalData {
                             title = GameConfig.Language.getElement(
                                 GlobalData.Shop.shopStrategyOpts[strategyKey]
                             )?.Value;
-                            const desc = this.getStrategyDesc(strategyKey, buffId);
+                            const { desc, args } = this.getStrategyDesc(strategyKey, buffId);
                             descArr.push(desc);
+                            argsArr.push(args);
                             break;
                         }
                     }
@@ -194,21 +200,22 @@ export namespace GlobalData {
             return {
                 strategyTitle: title,
                 strategyDesc: descArr,
+                strategyDescArgs: argsArr,
                 strategyKey,
             };
         };
-        public static getStrategyDesc(strategyKey: TowerStrategyType, buffId?: number): string {
+        public static getStrategyDesc(strategyKey: TowerStrategyType, buffId?: number): { desc: string; args: any[]}  {
             const desc =
                 GameConfig.Language.getElement(GlobalData.Shop.shopStrategyDescLangs[strategyKey])?.Value ?? "";
 
             const formatDesc = (buffCfg: any, props: string[], formatter?: (value: number) => void) => {
                 const args = props.map(prop => formatter ? formatter(buffCfg[prop]): buffCfg[prop]);
-                return Utils.Format(desc, ...args);
+                return { desc: Utils.Format(desc, ...args), args: args };
             };
             const processBuffs = (props: string[], formatter?: (value: number) => number) => {
-                if(!buffId) return desc;
+                if(!buffId) return { desc, args: [] };
                 const buffCfg = GameConfig.Buff.getElement(buffId);
-                if(!buffCfg) return desc;
+                if(!buffCfg) return { desc, args: [] };
                 return formatDesc(buffCfg, props, formatter);
             };
         
@@ -232,7 +239,7 @@ export namespace GlobalData {
                 case TowerStrategyType.AntiHidden:
                 case TowerStrategyType.PriorityAir:
                 default:
-                    return desc;
+                    return { desc: desc, args: [] };
             }
         }
     }

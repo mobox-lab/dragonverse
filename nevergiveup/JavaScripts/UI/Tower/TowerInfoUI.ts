@@ -84,6 +84,27 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 			tags.push(GlobalData.Shop.shopDamageOpts[cfg.adap]);
 		return tags
 	}
+
+	public updateStrategyUI() {
+		const { strategyKey, strategyTitle, strategyDescArgs, strategyDesc } = GlobalData.Shop.getStrategyInfo(this._cfg.id);
+        if(!strategyDescArgs?.length) {
+			this.txt_Strategy.text = '';
+			this.txt_Strategy_Desc.text = '';
+            return
+        }
+        if(strategyDesc.length === 1) {
+            this.txt_Strategy.text = strategyTitle;
+            this.txt_Strategy_Desc.text = strategyDesc[0];
+            return
+        }
+        const curLevel = this._tower.level;
+		if(strategyKey) {
+            const desc = Utils.Format(GameConfig.Language.getElement(GlobalData.Shop.shopStrategyDescLangs[strategyKey])?.Value ?? "", curLevel === 2 ? strategyDescArgs[curLevel]: `${strategyDescArgs[curLevel]} → ${strategyDescArgs[curLevel + 1]}`);
+                this.txt_Strategy.text = strategyTitle;
+                this.txt_Strategy_Desc.text = desc;
+        }
+	}
+
     /**
      * 设置显示时触发
      */
@@ -101,10 +122,12 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         Utils.setImageByAsset(this.towerImg, this._cfg);
         this.bgElementImg.imageGuid = GlobalData.Shop.shopItemBgGuid[(this._cfg?.elementTy || 1) - 1];
 		this.tagElementImg.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(this._cfg?.elementTy || 1) - 1];
+        
         this.nameTxt.text = this._cfg.name;
         this.ownerTxt.text = StringUtil.format(GameConfig.Language.getElement("Text_CreatePlayerName").Value, Utils.truncateString(this._tower.info.playerName, 13));
         this.txt_price_deploy.text = this._cfg.spend.slice(0, tower.level+1).reduce((pre, cur) => pre+cur,0).toFixed(0);
         this.txt_fight.text = Utils.formatNumber(this._cfg.attackDamage[tower.level]);
+        this.updateStrategyUI();
 		const tags = this.getTags();
 		const len = tags?.length ?? 0;
 		for (let i = 0; i < this._tagItemUIs.length; i++) {
