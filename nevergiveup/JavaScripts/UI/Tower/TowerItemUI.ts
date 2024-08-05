@@ -41,7 +41,7 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 				ModuleService.getModule(TowerModuleC).chooseTowerByUI(this.cfg.id);
 				Event.dispatchToLocal(TowerEvent.ChooseTower, this);
 			} else {
-				UIService.getUI(TowerShopUI).show({ isShop: false, cfgId: this.cfg.id });
+				UIService.getUI(TowerShopUI).show({ isShop: false, cfgId: this.cfg?.id  });
 			}
 		})
 	}
