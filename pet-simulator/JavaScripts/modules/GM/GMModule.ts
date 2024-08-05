@@ -123,6 +123,16 @@ addGMCommand(
     "宠物"
 );
 addGMCommand(
+    "清空升级数据",
+    "void",
+    () => {},
+    (player: mw.Player) => {
+        ModuleService.getModule(PlayerModuleS).gmClearLevelUp(player.playerId);
+    },
+    undefined,
+    "宠物"
+);
+addGMCommand(
     "增加金币(第一世界)",
     "string",
     (value: string) => {},
