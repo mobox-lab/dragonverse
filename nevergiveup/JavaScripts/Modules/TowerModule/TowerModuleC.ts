@@ -29,6 +29,7 @@ import TowerUI from "../../UI/Tower/TowerUI";
 import Utils from '../../Utils';
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
+import EnvironmentManager from "../../gameplay/interactiveObj/EnvironmentManager";
 import { UIMain } from "../../stage/ui/UIMain";
 import { MGSTool } from "../../tool/MGSTool";
 import InteractUI_Generate from "../../ui-generate/Tower/InteractUI_generate";
@@ -277,6 +278,8 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
      * 关卡结束回调
      */
     private onStageEnd() {
+        // 环境恢复
+        EnvironmentManager.getInstance().setEnvironment(1);
         TowerManager.destroyAllTower();
         this._interactMap.forEach((v, k) => {
             v.destroy();
