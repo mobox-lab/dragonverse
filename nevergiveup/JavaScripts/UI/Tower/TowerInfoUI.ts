@@ -125,6 +125,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         
         this.nameTxt.text = this._cfg.name;
         this.ownerTxt.text = StringUtil.format(GameConfig.Language.getElement("Text_CreatePlayerName").Value, Utils.truncateString(this._tower.info.playerName, 13));
+        this.valueTxt.text = tower.outputStr;
         this.txt_price_deploy.text = this._cfg.spend.slice(0, tower.level+1).reduce((pre, cur) => pre+cur,0).toFixed(0);
         this.txt_fight.text = Utils.formatNumber(this._cfg.attackDamage[tower.level]);
         this.updateStrategyUI();
@@ -152,7 +153,6 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
             this.canvas_sell.visibility = SlateVisibility.Collapsed;
         }
         ModuleService.getModule(TowerModuleC).setAttackEffect(tower);
-        this.valueTxt.text = tower.outputStr;
     }
 
     private initText() {

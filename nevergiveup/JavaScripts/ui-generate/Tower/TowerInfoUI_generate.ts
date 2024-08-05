@@ -176,20 +176,6 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.levelTxt_Internal
 	}
-	private ownerTxt_Internal: mw.TextBlock
-	public get ownerTxt(): mw.TextBlock {
-		if(!this.ownerTxt_Internal&&this.uiWidgetBase) {
-			this.ownerTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/ownerTxt') as mw.TextBlock
-		}
-		return this.ownerTxt_Internal
-	}
-	private valueTxt_Internal: mw.TextBlock
-	public get valueTxt(): mw.TextBlock {
-		if(!this.valueTxt_Internal&&this.uiWidgetBase) {
-			this.valueTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/valueTxt') as mw.TextBlock
-		}
-		return this.valueTxt_Internal
-	}
 	private img_dec1_Internal: mw.Image
 	public get img_dec1(): mw.Image {
 		if(!this.img_dec1_Internal&&this.uiWidgetBase) {
@@ -197,33 +183,47 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.img_dec1_Internal
 	}
-	private canvas_tag_Internal: mw.Canvas
-	public get canvas_tag(): mw.Canvas {
-		if(!this.canvas_tag_Internal&&this.uiWidgetBase) {
-			this.canvas_tag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag') as mw.Canvas
+	private canvas_tower_info_Internal: mw.Canvas
+	public get canvas_tower_info(): mw.Canvas {
+		if(!this.canvas_tower_info_Internal&&this.uiWidgetBase) {
+			this.canvas_tower_info_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info') as mw.Canvas
 		}
-		return this.canvas_tag_Internal
+		return this.canvas_tower_info_Internal
 	}
-	private tagbg_Internal: mw.Image
-	public get tagbg(): mw.Image {
-		if(!this.tagbg_Internal&&this.uiWidgetBase) {
-			this.tagbg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag/tagbg') as mw.Image
+	private towerInfoBg_Internal: mw.Image
+	public get towerInfoBg(): mw.Image {
+		if(!this.towerInfoBg_Internal&&this.uiWidgetBase) {
+			this.towerInfoBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBg') as mw.Image
 		}
-		return this.tagbg_Internal
+		return this.towerInfoBg_Internal
 	}
-	private tagScrollBox_Internal: mw.ScrollBox
-	public get tagScrollBox(): mw.ScrollBox {
-		if(!this.tagScrollBox_Internal&&this.uiWidgetBase) {
-			this.tagScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag/tagScrollBox') as mw.ScrollBox
+	private towerInfoBox_Internal: mw.ScrollBox
+	public get towerInfoBox(): mw.ScrollBox {
+		if(!this.towerInfoBox_Internal&&this.uiWidgetBase) {
+			this.towerInfoBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox') as mw.ScrollBox
 		}
-		return this.tagScrollBox_Internal
+		return this.towerInfoBox_Internal
 	}
-	private tagCanvas_Internal: mw.Canvas
-	public get tagCanvas(): mw.Canvas {
-		if(!this.tagCanvas_Internal&&this.uiWidgetBase) {
-			this.tagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag/tagScrollBox/tagCanvas') as mw.Canvas
+	private towerInfoCanvas_Internal: mw.Canvas
+	public get towerInfoCanvas(): mw.Canvas {
+		if(!this.towerInfoCanvas_Internal&&this.uiWidgetBase) {
+			this.towerInfoCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox/towerInfoCanvas') as mw.Canvas
 		}
-		return this.tagCanvas_Internal
+		return this.towerInfoCanvas_Internal
+	}
+	private ownerTxt_Internal: mw.TextBlock
+	public get ownerTxt(): mw.TextBlock {
+		if(!this.ownerTxt_Internal&&this.uiWidgetBase) {
+			this.ownerTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox/towerInfoCanvas/ownerTxt') as mw.TextBlock
+		}
+		return this.ownerTxt_Internal
+	}
+	private valueTxt_Internal: mw.TextBlock
+	public get valueTxt(): mw.TextBlock {
+		if(!this.valueTxt_Internal&&this.uiWidgetBase) {
+			this.valueTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox/towerInfoCanvas/valueTxt') as mw.TextBlock
+		}
+		return this.valueTxt_Internal
 	}
 	private canvas_fight_Internal: mw.Canvas
 	public get canvas_fight(): mw.Canvas {
