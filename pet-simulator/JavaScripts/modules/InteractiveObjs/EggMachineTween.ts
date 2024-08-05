@@ -325,6 +325,7 @@ export class EggMachineTween {
         this.cube1.worldTransform.scale = mw.Vector.one;
         this.pet.destroy();
         this._wing?.destroy();
+        this.egg?.destroy();
         this.pet = null;
         this.endTween?.stop();
         this.endTween = null;
