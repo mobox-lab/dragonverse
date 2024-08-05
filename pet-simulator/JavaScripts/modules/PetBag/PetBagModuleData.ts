@@ -341,7 +341,7 @@ export class PetBagModuleData extends Subdata {
         const delNum = this.CurBagCapacity - this.BagCapacity;
         const delPets = sortedPets.slice(sortedPets.length - delNum);
         Log4Ts.log(PetBagModuleData, " cleanPetOverBag delPets:" + JSON.stringify(delPets) +  " delPetsKeys:" + JSON.stringify(delPets.map(p => p.k))); 
-        const userId = this["mUserId"];
+        const userId = this["mUserId"] as string;
         const delKeys = delPets.map((p) => p.k);
         mw.setTimeout(()=>{
             ModuleService.getModule(StatisticModuleS).updateDestroyPetsInfo(userId, delPets, "删除");
@@ -382,8 +382,8 @@ export class PetBagModuleData extends Subdata {
     }
 
     /**清理宠物统计数据 去除已经销毁的 */
-	public delPersistPetStatisticByKey(key: number) {
-        this.petStatisticMapNew = this.petStatisticMapNew.filter((p) => p[PSStatisticPetKey.petKey] === key);
+	public delPersistPetStatisticByKeys(delKeys: number[]) { 
+        this.petStatisticMapNew = this.petStatisticMapNew.filter((p) => !delKeys.includes(p[PSStatisticPetKey.petKey]));
     }
 	public cleanOldPetStatistic() {
         const petStatisticMap = this.petStatisticMap;
@@ -539,8 +539,9 @@ export class PetBagModuleData extends Subdata {
     }
 
     /**删除元素 */
-    public removeBagItem(userId: number, keys: number[], desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
+    public removeBagItem(playerId: number, keys: number[], desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
         if(SystemUtil.isServer()) {
+            const userId = Player.getPlayer(playerId).userId;
             keys.forEach( (key) => {
                 const petItem = {...this.bagContainerNew[key]};
                 // this.updatePetStatistic(petItem, "destroyed", true, { desSource });

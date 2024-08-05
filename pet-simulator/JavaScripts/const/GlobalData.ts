@@ -632,7 +632,7 @@ export namespace GlobalData {
         /**背包容量 */
         public static bagCapacity: number = 30;
         /**背包最大容量 */
-        public static bagMaxCapacity: number = 100;
+        public static bagMaxCapacity: number = 60;
 
         /**背包详情UI 稀有度 普通 稀有 史诗 传说 神话 底板颜色 */
         public static rareColor: string[] = ["#94999DFF", "#3956F4", "#B442EDFF", "#FFD864FF", "#FF3B08FF"];
@@ -1493,5 +1493,9 @@ export namespace GlobalData {
     export enum PetCharacterType {
         GameObject = 0,
         Character = 1,
+    }
+
+    export class Statistic {
+        public static petArrMaxLength: number = 65;
     }
 }

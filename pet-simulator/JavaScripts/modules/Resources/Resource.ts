@@ -615,9 +615,6 @@ export default class ResourceScript extends mw.Script {
     /**创建默认资源*/
     public async createDefaultObj(): Promise<boolean> {
         if (!this.cfg || this.isStart || this.resObj != null || this.curHp <= 0) return false;
-        if (SystemUtil.isClient()) {
-            await TimeUtil.delaySecond(MathUtil.randomFloat(0, 1));
-        } 
         this.isStart = true;
         this.resObj = await Resource.instance.getResource(this.cfgId);
         Log4Ts.log(Resource, `createDefaultObj cfgId:${this.cfgId}, ${this.pointId},${this.rate}`);
