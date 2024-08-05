@@ -359,4 +359,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
         return data.clearDiamondAndGold(playerId);
     }
+
+    /**
+     * GM 测试用 清空升级数据
+     */
+    public gmClearLevelUp(playerId: number) {
+        const data = DataCenterS.getData(playerId, PetSimulatorPlayerModuleData);
+        return data.clearLevelUp();
+    }
 }

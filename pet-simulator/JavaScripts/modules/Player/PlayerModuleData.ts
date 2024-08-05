@@ -186,4 +186,16 @@ export class PetSimulatorPlayerModuleData extends Subdata {
         this.reduceGold(this.gold2, GlobalEnum.CoinType.SecondWorldGold, true, playerId);
         this.reduceGold(this.gold3, GlobalEnum.CoinType.ThirdWorldGold, true, playerId);
     }
+    /**
+     * GM 测试用 清空升级数据
+     */
+    public clearLevelUp(): void {
+        let items = GameConfig.Upgrade.getAllElement();
+        for (let i = 0; i < items.length; i++) {
+            const id = i;
+            this.levelData[id] = 0;
+            this.onLevelChange.call(id, this.levelData[id]);
+        }
+        this.save(true);
+    }
 }
