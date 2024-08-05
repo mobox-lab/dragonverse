@@ -1055,6 +1055,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
     }
 
     private heartbeat() {
+        if (!GameServiceConfig.isRelease && !GameServiceConfig.isBeta) return;
         const timestamp = Date.now();
         this.server.net_heartbeat(timestamp);
     }
