@@ -368,6 +368,7 @@ export default abstract class TowerBase implements BuffBag {
             }
             this.tower.worldTransform = this.oriTransform;
             this.tower.tag = "";
+            this.tower?.destroy();
         }
         this.root && GameObjPool.despawn(this.root);
         this._bottomEff && GameObjPool.despawn(this._bottomEff);
