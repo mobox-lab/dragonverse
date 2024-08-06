@@ -763,7 +763,8 @@ export default class ResourceScript extends mw.Script {
     private getRewardByAttack(playerId: number, attack: number, key: number): number {
         if (Gtk.tryGet(this.lastDamage, playerId, 0) >= attack) return;
         this.lastDamage.set(playerId, attack);
-
+        const player = Player.getPlayer(playerId);
+        const userId = player?.userId ?? "";
         //指数
         let pow = 0;
 
@@ -774,7 +775,10 @@ export default class ResourceScript extends mw.Script {
         }
 
         let temp = utils.GetRandomNum(0, 10) % 2 == 0 ? 1 : -1;
-
+        Log4Ts.log(EnchantBuff, "getRewardByAttack" +
+            " userId:" + userId +
+            " getPetBuff key:" + key +
+            " petBuff:" + JSON.stringify(EnchantBuff.getPetBuff(playerId, key)));
         this.cfg.Type.forEach((item, index) => {
             if (item != GlobalEnum.DropResourceType.Diamond) {
                 let temp2 = this.cfg.WaveValue[index] + Math.log(attack);
@@ -791,16 +795,20 @@ export default class ResourceScript extends mw.Script {
                     this.rewardGold.set(playerId, rewardGold);
 
                     Log4Ts.log(
-                        ResourceScript, `getRewardByAttack`,
-                        `RewardGold:${rewardGold}`,
-                        `goldBuff:${goldBuff}`,
-                        `worldGoldBuff:${worldGoldBuff}`,
-                        `judgeGold:${this.judgeGold()}`,
-                        `cfg.Iconreward:${this.cfg.Iconreward}`,
-                        `rate:${this.rate}`,
-                        `attack:${attack}`,
-                        `pow:${pow}`,
-                        `random:${random * temp}`,
+                        ResourceScript, 
+                        "getRewardByAttack" +
+                        " userId:" + userId +
+                        ` finalRewardGold:${rewardGold}` +
+                        ` goldBuff:${goldBuff}` +
+                        ` worldGoldBuff:${worldGoldBuff}` +
+                        ` judgeGold:${this.judgeGold()}` +
+                        ` cfg.Iconreward:${this.cfg.Iconreward}` +
+                        ` rate:${this.rate}` +
+                        ` attack:${attack}` +
+                        ` pow:${pow}` +
+                        ` random:${random * temp}` +
+                        ` SceneUnitID:${this.cfg.ID}` +
+                        ` areaId:${this.cfg.AreaID} #resource`,
                     );
                 } else {
                     const goldBuff = 1 + EnchantBuff.getPetBuff(playerId, key).goldAdd / 100;
@@ -817,17 +825,19 @@ export default class ResourceScript extends mw.Script {
 
                     Log4Ts.log(
                         ResourceScript,
-                        `getRewardByAttack`,
-                        `RewardGold:${rewardGold}`,
-                        `goldBuff:${goldBuff}`,
-                        `worldGoldBuff:${worldGoldBuff}`,
-                        `judgeGold:${this.judgeGold()}`,
-                        `rateGoldBuff:${rateGoldBuff}`,
-                        `cfg.Iconreward:${this.cfg.Iconreward}`,
-                        `rate:${this.rate}`,
-                        `attack:${attack}`,
-                        `pow:${pow}`,
-                        `random:${random * temp}`,
+                        "getRewardByAttack" +
+                        " userId:" + userId +
+                        ` finalRewardGold:${rewardGold}` +
+                        ` goldBuff:${goldBuff}` +
+                        ` worldGoldBuff:${worldGoldBuff}` +
+                        ` judgeGold:${this.judgeGold()}` +
+                        ` cfg.Iconreward:${this.cfg.Iconreward}` +
+                        ` rate:${this.rate}` +
+                        ` attack:${attack}` +
+                        ` pow:${pow}` +
+                        ` random:${random * temp}` +
+                        ` SceneUnitID:${this.cfg.ID}` +
+                        ` areaId:${this.cfg.AreaID} #resource`,
                     );
                 }
 
@@ -836,10 +846,16 @@ export default class ResourceScript extends mw.Script {
                 const diamondBuff = (1 + EnchantBuff.getPetBuff(playerId, key).diamondAdd / 100); // 乘算
                 const diamondReward = this.cfg.DiamondReward * this.rate * diamondBuff;
                 Log4Ts.log(ResourceScript,
-                    `finalRewardDiamond:${diamondReward}`,
-                    `diamondBuff:${diamondBuff}`,
-                    `cfg.DiamondReward:${this.cfg.DiamondReward}`,
-                    `rate:${this.rate}`);
+                    "getRewardByAttack" +
+                    " userId:" + userId +
+                    ` finalRewardDiamond:${diamondReward}` +
+                    ` diamondBuff:${diamondBuff}` +
+                    ` cfg.DiamondReward:${this.cfg.DiamondReward}` +
+                    ` rate:${this.rate}` +
+                    ` moreDiamond:${GlobalData.LevelUp.moreDiamond(playerId)}` +
+                    ` SceneUnitID:${this.cfg.ID}` +
+                    ` areaId:${this.cfg.AreaID} #resource`,
+                );
                 this.rewardGem.set(playerId, Number(diamondReward.toFixed(1)));
             }
         });
@@ -978,10 +994,12 @@ export function calDamage(playerId: number,
         GlobalData.Buff.damageBuff(playerId) *
         (1 + (isBox ? EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100 : 0)) *
         EnchantBuff.getTeamDamageAddBuff(playerId, key);
-
+    const userId = Player.getPlayer(playerId)?.userId ?? "";
     Log4Ts.log(
         ResourceScript,
-        "damage:" +
+        "calDamage" +
+        " userId:" + userId +
+        " damage:" +
         damage +
         " atk:" +
         petData.p.a +
@@ -996,7 +1014,8 @@ export function calDamage(playerId: number,
         " boxDamageAdd:" +
         (1 + EnchantBuff.getPetBuff(playerId, key).boxDamageAdd / 100) +
         " teamDamageAddBuff:" +
-        EnchantBuff.getTeamDamageAddBuff(playerId, key),
+        EnchantBuff.getTeamDamageAddBuff(playerId, key) +
+        ' #resource'
     );
     return damage;
 }
