@@ -423,7 +423,6 @@ export class P_Bag extends PetBagPanel_Generate {
             this.mReNameBtn.visibility = mw.SlateVisibility.Collapsed;
             this.mEquipBtn.visibility = mw.SlateVisibility.Collapsed;
             this.mEquip.visibility = mw.SlateVisibility.Collapsed;
-            this.mEquipImg.visibility = mw.SlateVisibility.Collapsed;
         } else {
             this.mDelBtn.normalImageGuid = "174835";
             this.mSureDelBtn_Cancel.visibility = mw.SlateVisibility.Collapsed;
@@ -432,7 +431,6 @@ export class P_Bag extends PetBagPanel_Generate {
             this.mReNameBtn.visibility = mw.SlateVisibility.Visible;
             this.mEquipBtn.visibility = mw.SlateVisibility.Visible;
             this.mEquip.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-            this.mEquipImg.visibility = mw.SlateVisibility.Visible;
         }
 
     }

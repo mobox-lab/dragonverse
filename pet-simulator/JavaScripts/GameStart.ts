@@ -1,5 +1,4 @@
-﻿// import { GM } from "module_gm";
-import { GameConfig } from "./config/GameConfig";
+﻿import { GameConfig } from "./config/GameConfig";
 import { GlobalData } from "./const/GlobalData";
 import { HudModuleC, HudModuleS } from "./modules/Hud/HudModule";
 import { PlayerModuleC } from "./modules/Player/PlayerModuleC";
@@ -48,6 +47,8 @@ import PlayerSettingModuleData, { PlayerSettingModuleC, PlayerSettingModuleS } f
 import { VectorExt } from "./declaration/vectorext";
 import GodModService from "mw-god-mod";
 import { P12BagModuleC, P12BagModuleS, PsP12BagModuleData } from "./modules/bag/P12BagModule";
+import { ChainId } from "./const/Chains";
+
 
 // declare global {
 //     var UE: any;
@@ -78,6 +79,9 @@ export default class GameStart extends mw.Script {
 
     @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
     public isUseTestUrl: boolean = true;
+
+    @mw.Property({displayName: "ChainId", group: "发布", enumType: ChainId})
+    public chainId: ChainId = ChainId.MerlinTestnet;
 
     @mw.Property({ displayName: "是否开启主页GM开关按钮" })
     private isOpenGm = false;
@@ -133,6 +137,7 @@ export default class GameStart extends mw.Script {
         GameServiceConfig.isRelease = this.isRelease;
         GameServiceConfig.isBeta = this.isBeta;
         GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
+        GameServiceConfig.chainId = this.chainId;
         GlobalData.Global.isSameGoBack = this.isSameGoBack;
         GlobalData.Global.isOpenCollectMachine = this.isOpenCollectMachine;
         GlobalData.Global.isShowGM = this.isOpenGm;
