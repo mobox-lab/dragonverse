@@ -1,5 +1,5 @@
 import GToolkit, { GtkTypes } from "gtoolkit";
-import Gtk from "gtoolkit";
+import { ChainId } from "./Chains";
 
 export default class GameServiceConfig {
     //#region settings
@@ -854,6 +854,11 @@ export default class GameServiceConfig {
      * 是否使用测试地址.
      */
     public static isUseTestUrl: boolean = undefined;
+
+    /**
+     * 当前游戏发行的 chain.
+     */
+    public static chainId: ChainId = undefined;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Cryptocurrency

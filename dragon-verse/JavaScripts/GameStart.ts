@@ -45,6 +45,7 @@ import GameServiceConfig from "./const/GameServiceConfig";
 import GMHUD_Generate from "./ui-generate/gm/GMHUD_generate";
 import GodModService, { addGMCommand } from "mw-god-mod";
 import { DvP12BagModuleData, P12BagModuleC, P12BagModuleS } from "./module/bag/P12BagModule";
+import { ChainId } from "./const/Chains";
 
 // 新版本的GM
 
@@ -115,6 +116,9 @@ export default class GameStart extends mw.Script {
     @mw.Property({displayName: "是否使用测试 Url", group: "发布"})
     public isUseTestUrl: boolean = true;
 
+    @mw.Property({displayName: "ChainId", group: "发布", enumType: ChainId})
+    public chainId: ChainId = ChainId.MerlinTestnet;
+
     @mw.Property({
         displayName: "语言",
         group: "发布",
@@ -162,6 +166,7 @@ export default class GameStart extends mw.Script {
         GameServiceConfig.isRelease = this.isRelease;
         GameServiceConfig.isBeta = this.isBeta;
         GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
+        GameServiceConfig.chainId = this.chainId;
         this.initialize();
     }
 
