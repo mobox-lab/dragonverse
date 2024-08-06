@@ -661,9 +661,9 @@ export namespace GlobalData {
         public static pressTime: number = 200;
 
         /**背包item 距离左、上边缘 */
-        public static itemOffset: number[] = [15, 15];
+        public static itemOffset: number[] = [10, 10]; 
         /**背包item 距离item间距 */
-        public static itemSpace: number = 20;
+        public static itemSpace: number = 25;
         /**背包item 大小 */
         public static itemSize: mw.Vector2 = new mw.Vector2(95, 95);
         /**背包itemUI 爱心化、彩虹化图标 Guid */
