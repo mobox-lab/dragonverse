@@ -999,12 +999,10 @@ export function calDamage(playerId: number,
         ResourceScript,
         "calDamage" +
         " userId:" + userId +
-        " damage:" +
-        damage +
-        " atk:" +
-        petData.p.a +
-        " upgrade:" +
-        upgrade +
+        " damage:" + damage +
+        " petKey:" + key +
+        " atk:" + petData.p.a +
+        " upgrade:" + upgrade +
         " damageAddBuff:" +
         (1 + EnchantBuff.getPetBuff(playerId, key).damageAdd / 100) +
         " GlobalData.Buff.damageBuff:" +
