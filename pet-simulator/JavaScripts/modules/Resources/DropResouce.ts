@@ -257,18 +257,28 @@ class DropInServer extends DropItem {
             this.position,
         )) {
             const pms = ModuleService.getModule(PlayerModuleS);
+            const userId = Player.getPlayer(this.owner).userId;
+            let realValue = this.value;
             switch (this.type) {
                 case GlobalEnum.CoinType.FirstWorldGold:
                 case GlobalEnum.CoinType.SecondWorldGold:
                 case GlobalEnum.CoinType.ThirdWorldGold:
                 case GlobalEnum.CoinType.SummerGold:
-                    pms.addGold(this.owner, this.value, this.type);
+                    pms.addGold(this.owner, realValue, this.type);
                     break;
                 case GlobalEnum.CoinType.Diamond:
-                    pms.addDiamond(this.owner, this.value * GlobalData.LevelUp.moreDiamond(this.owner));
+                    realValue *= GlobalData.LevelUp.moreDiamond(this.owner)
+                    pms.addDiamond(this.owner, realValue);
                     break;
             }
-            // Log4Ts.log(DropInServer, `player ${this.owner} get ${this.value} ${this.type}`);
+            Log4Ts.log(DropInServer, 
+                "absorbDropInServer" +
+                " userId:" + userId +
+                ` dropValue:${this.value}` +
+                ` coinType:${GlobalEnum.CoinType[this.type]}` +
+                ` moreDiamond:${GlobalData.LevelUp.moreDiamond(this.owner)}` +
+                ` realAddValue:${realValue} #drop`
+            );
             return true;
         }
         return false;
