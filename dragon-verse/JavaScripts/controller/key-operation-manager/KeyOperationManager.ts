@@ -98,6 +98,8 @@ export default class KeyOperationManager extends Singleton<KeyOperationManager>(
 
     public onConstruct(): void {
         super.onConstruct();
+        WindowUtil["getInstance"]?.();
+
         mw.TimeUtil.onEnterFrame.add(() => {
                 const now = Date.now();
                 for (let guard of this._keyHoldMap.values()) {
