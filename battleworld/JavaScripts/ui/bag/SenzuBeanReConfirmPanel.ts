@@ -7,7 +7,6 @@ import { EnergyModuleC } from "../../module/Energy/EnergyModule";
 import { MouseLockController } from "../../controller/MouseLockController";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import Online_ReConfirm_Generate from "../../ui-generate/Onlineshop/Online_ReConfirm_generate";
-import { P12ShopConfig } from "../shop/P12ShopConfig";
 
 export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
     private _bagC: P12BagModuleC;
@@ -30,8 +29,9 @@ export default class SenzuBeanReConfirmPanel extends Online_ReConfirm_Generate {
         this.btn_Confirm_Use.onClicked.add(() => this.useSenzuBean());
 
         Yoact.bindYoact(() => {
-            const staminaConfig = P12ShopConfig[0];
-            const recovery = Math.round(this.energyC.viewEnergyLimit.data * staminaConfig.effect);
+            // const staminaConfig = P12ShopConfig[0];
+            // const recovery = Math.round(this.energyC.viewEnergyLimit.data * staminaConfig.effect);
+            const recovery = 200;
             Gtk.trySetText(this.text_Recovery, StringUtil.format(GameConfig.Language.Online_shop011.Value, recovery));
         });
     }
