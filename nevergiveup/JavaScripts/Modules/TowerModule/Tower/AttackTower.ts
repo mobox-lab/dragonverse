@@ -287,13 +287,22 @@ export default class AttackTower extends TowerBase {
                 if (targets.length >= count) break;
                 // }
             }
-        }
-        if (targets.length < count) {
-            for (let enemy of othersEnemies) {
-                if (targets.length < count) {
-                    targets.push(enemy);
+            if (targets.length < count) {
+                for (let enemy of othersEnemies) {
+                    if (targets.length < count) {
+                        targets.push(enemy);
+                    }
+                    if (targets.length >= count) break;
                 }
-                if (targets.length >= count) break;
+            }
+        } else {
+            if (targets.length < count) {
+                for (let enemy of enemies) {
+                    if (targets.length < count) {
+                        targets.push(enemy);
+                    }
+                    if (targets.length >= count) break;
+                }
             }
         }
 
