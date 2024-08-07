@@ -2,7 +2,6 @@ import { GuideDataHelper, GuideModuleC } from "module_guide";
 import { StageActions } from "../Actions";
 import { GameManager } from "../GameManager";
 import { MapManager } from "../MapScript";
-import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 import { EmTaskWay } from "../Modules/taskModule/TaskModuleC";
 import UI_TaskMain from "../Modules/taskModule/ui/UI_TaskMain";
 import { EStageState } from "../StageEnums";
@@ -168,7 +167,7 @@ export namespace GuideManager {
                 UIService.show(TowerShopUI);
                 break;
             case EmTaskWay.UnlockTech:
-                ModuleService.getModule(PlayerModuleC).techTree.show();
+                // ModuleService.getModule(PlayerModuleC).techTree.show();
                 break;
             case EmTaskWay.PassLevel:
                 guideTaskPos = StageTriggerInst.posMap[GameConfig.Stage.getElement(cfg.taskSolvetime)?.index];

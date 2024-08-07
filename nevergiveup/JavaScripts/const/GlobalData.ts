@@ -17,7 +17,7 @@ export namespace GlobalData {
         }
     }
     export class Tower {
-        public static initUnlockTower = 1020; // 最初解锁的塔
+        public static initUnlockTower = 1008; // 最初解锁的塔
     }
     export class Anim {
         public static stageCrossAnimSeconds = 1; // 过场过渡动画时间

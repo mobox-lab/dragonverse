@@ -8,6 +8,7 @@ import PlayerModuleC from "../PlayerModule/PlayerModuleC";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import Log4Ts from "mw-log4ts";
 import { ETalentType } from "../../const/enum";
+import { TalentTree } from "../../TalentTree/ui/TalentTree";
 
 export class TalentItemUnique implements IUnique {
     public id: number;
@@ -123,6 +124,11 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
     public async net_setItem(id: number, index: number) {
         this.selfSetItem(id, index);
         return true;
+    }
+
+    public net_updateTalentLevel(id: number) {
+        const level = this.data.getTalentIndex(id);
+        UIService.getUI(TalentTree).updatedCompleted(id, level);
     }
 }
 
