@@ -15,7 +15,7 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         return this._playS;
     }
 
-    private async setTalent(player: Player, id: number, level: number) {
+    public async setTalent(player: Player, id: number, level: number) {
         const playerData = this.getPlayerData(player.userId);
         playerData.setTalentIndex(id, level);
         playerData.save(true);
@@ -39,6 +39,10 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         if (!talent.frontTalent?.length) return true;
         const frontLevels = talent.frontTalent.map(frontId => this.getPlayerTalentIndex(userId, frontId));
         return frontLevels.every(n => n > 0);
+    }
+
+    public updatePlayerTalent(player: Player, id: number) {
+        this.getClient(player).net_updateTalentLevel(id);
     }
 
     public async net_updateTalentLevel(id: number) {

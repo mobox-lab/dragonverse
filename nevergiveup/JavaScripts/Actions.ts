@@ -73,8 +73,3 @@ export const InteractActions = {
 export const RankActions = {
     onRankItemsChanged: new Action1<RankItem[]>()
 }
-
-export const TechTreeActions = {
-    onItemClicked: new Action1<number>(),
-    onItemUnlocked: new Action1<number>(),
-}

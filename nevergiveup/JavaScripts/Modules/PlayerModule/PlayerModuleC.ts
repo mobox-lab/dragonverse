@@ -7,8 +7,7 @@
  * @Description  : 修改描述
  */
 
-import { PlayerActions, TechTreeActions } from "../../Actions";
-import { TechTree } from "../../TechTree/TechTree";
+import { PlayerActions } from "../../Actions";
 import LobbyUI from "../../UI/LobbyUI";
 import SettingUI from "../../UI/SettingUI";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
@@ -22,14 +21,12 @@ import PlayerModuleData from "./PlayerModuleData";
 import { PlayerModuleS } from "./PlayerModuleS";
 
 export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
-    techTree: TechTree;
     private _enemyCount: number = 0;
     protected onEnterScene(sceneType: number): void {
         this.data.onDataChange.add(() => {
             PlayerActions.onPlayerDataChanged.call();
         });
         UIService.show(LobbyUI);
-        this.techTree = new TechTree();
         this.updateCurrency();
         TimerModuleUtils.addOnlineDayListener(() => this.clearDailyCount(false), this);
         TimerModuleUtils.addLoginDayListener(() => this.clearDailyCount(true), this);
@@ -163,49 +160,6 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
             return this.checkTechPoint(amount);
         }
         return false;
-    }
-
-    /**
-     * 解锁科技树节点
-     */
-    public async tryUnlockTechNode(id: number) {
-        if (this.data.unlockedTechNodes.indexOf(id) == -1) {
-            let cfg = GameConfig.TechTree.getElement(id);
-            if (this.checkEnouthItems(cfg.Cost)) {
-                let success = await this.server.net_checkEnouthItems(this.localPlayer, cfg.Cost);
-                if (success) {
-                    this.data.unlockedTechNodes.push(id);
-                    let unlocked = await this.server.net_unlockTechNode(this.localPlayer, id);
-                    if (unlocked) {
-                        TipsManager.showTips(GameConfig.Language.getElement("Text_SuccessUnlock").Value);
-                        TechTreeActions.onItemUnlocked.call(id);
-                        MGSTool.unlockTech(id);
-                        MGSTool.costMGS(cfg.Cost, 9);
-                    }
-                    else {
-                        TipsManager.showTips(GameConfig.Language.getElement("Text_Unlocked").Value);
-                    }
-                }
-                else {
-                    TipsManager.showTips(GameConfig.Language.getElement("Text_LessMaterial").Value);
-                }
-            }
-            else {
-                TipsManager.showTips(GameConfig.Language.getElement("Text_LessMaterial").Value);
-            }
-        }
-    }
-
-
-    public checkEnouthItems(items: number[][]) {
-        let flag = true;
-        for (let i = 0; i < items.length; i++) {
-            if (!this.checkItem(items[i])) {
-                flag = false;
-                break;
-            }
-        }
-        return flag;
     }
 
     public hasFirstMonsterTag(tagId: number) {

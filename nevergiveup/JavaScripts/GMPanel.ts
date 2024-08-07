@@ -8,26 +8,16 @@
  */
 import { GameManager } from "./GameManager";
 import { GuideManager } from "./Guide/GuideManager";
-import PlayerModuleC from "./Modules/PlayerModule/PlayerModuleC";
 import { PlayerModuleS } from "./Modules/PlayerModule/PlayerModuleS";
-import { GuideDialog } from "./UI/UIDialog";
 import { SettleState } from "./stage/Stage";
-import { UISettle } from "./stage/ui/UISettle";
-import GMHUD_Generate from "./ui-generate/gmModule/GMHUD_generate";
-import GMItem_Generate from "./ui-generate/gmModule/GMItem_generate";
 import { UIMain } from "./stage/ui/UIMain";
-import { Config } from "./GameStart";
 import { TowerModuleC } from "./Modules/TowerModule/TowerModuleC";
 import { TowerManager } from "./Modules/TowerModule/TowerManager";
 import { MapManager } from "./MapScript";
 import { AirdropManager } from "./Airdrop/AirdropManager";
 import { addGMCommand } from "mw-god-mod";
-
-// export class GMPanel extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
-//     constructor() {
-//         super(GMHUD_Generate, GMItem_Generate);
-//     }
-// }
+import { GameConfig } from "./config/GameConfig";
+import TalentModuleS from "./Modules/talent/TalentModuleS";
 
 // new GMPanel
 addGMCommand(
@@ -140,6 +130,30 @@ addGMCommand(
     },
     (player, value: string) => {}
 );
+
+addGMCommand("修改天赋数等级", "string", null,
+    (player, params) => {
+        const talentE = GameConfig.TalentTree.getAllElement();
+        const talentS = ModuleService.getModule(TalentModuleS);
+        if (params && params.includes("-")) {
+            const [id, level] = params.split("-").map(item => parseInt(item));
+            if (!isNaN(id) && !isNaN(level) && level >= 0) {
+                const talentItemE = GameConfig.TalentTree.getElement(id);
+                if (talentItemE) {
+                    talentS.setTalent(player, talentItemE.id, Math.min(level, talentItemE.maxLevel)).then();
+                    talentS.updatePlayerTalent(player, talentItemE.id);
+                }
+            }
+        }
+        let resultStr = "";
+        for (let i = 0; i < talentE.length; i += 2) {
+            resultStr += `${talentE[i].id}-${talentE[i].nameCN}-${talentS.getPlayerTalentIndex(player.userId, talentE[i].id)}`;
+            resultStr += talentE[i + 1] ? `  ${talentE[i + 1].id}-${talentE[i + 1].nameCN}-${talentS.getPlayerTalentIndex(player.userId, talentE[i + 1].id)}\n` : "\n";
+        }
+        return resultStr;
+    }, {
+        label: "天赋ID-天赋等级, 不清楚ID可直接点Run",
+    });
 
 // AddGMCommand("获取队伍", (player, value) => {
 //     console.log(GameManager.getStagePlayersClient());
