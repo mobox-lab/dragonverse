@@ -41,6 +41,9 @@ import TalentModuleC from "./Modules/talent/TalentModuleC";
 import TalentModuleS from "./Modules/talent/TalentModuleS";
 import TalentModuleData from "./Modules/talent/TalentModuleData";
 import GameServiceConfig from "./const/GameServiceConfig";
+import { DragonDataModuleS } from "./Modules/dragonData/DragonDataModuleS";
+import { DragonDataModuleC } from "./Modules/dragonData/DragonDataModuleC";
+import DragonDataModuleData from "./Modules/dragonData/DragonDataModuleData";
 
 export namespace Config {
     export let skipGuide: boolean = false;
@@ -133,7 +136,7 @@ export default class GameStart extends Script {
             ModuleService.ready().then(() => {
                 GuideManager.init();
                 // GuideManager.triggerNextGuide(true);
-                ModuleService.getModule(AuthModuleC).net_queryDragon();
+                ModuleService.getModule(DragonDataModuleC).net_queryDragon();
             });
             Utils.requestAssetIcons(GameConfig.Tower.getAllElement(), "imgGuid", true);
             DanmuManager.init();
@@ -171,6 +174,7 @@ export default class GameStart extends Script {
         ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
         ModuleService.registerModule(TaskModuleS, TaskModuleC, TaskModuleDataHelper);
         ModuleService.registerModule(TalentModuleS, TalentModuleC, TalentModuleData);
+        ModuleService.registerModule(DragonDataModuleS, DragonDataModuleC, DragonDataModuleData);
     }
 
     // private checkGM() {

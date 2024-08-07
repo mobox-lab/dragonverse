@@ -430,7 +430,7 @@ class Slot extends IMapComponent {
         let rot = Rotation.zero;
         rot.set(model.worldTransform.rotation.x, model.worldTransform.rotation.y, model.worldTransform.rotation.z);
         // rot.set(stageCfg?.rotation?.[0] ?? 200, stageCfg?.rotation?.[1] ?? 0, stageCfg?.rotation?.[2] ?? 0);
-        model.worldTransform.rotation = rot;
+        // model.worldTransform.rotation = rot;
         let boundMin = Vector.zero;
         let boundMax = Vector.zero;
         let vertices = new Array<Vector>();
@@ -480,10 +480,14 @@ class Slot extends IMapComponent {
         }
         let cubeArr: mw.GameObject[] = [];
         let width = 0.05;
+        let anchor = await mw.GameObject.asyncSpawn("Anchor");
+        anchor.parent = model;
+        anchor.localTransform.position = mw.Vector.zero;
         for (let i = 0; i < midpoints.length; i++) {
             let cube = (await GameObjPool.asyncSpawn("197386")) as Model;
-            cube.worldTransform.position = midpoints[i];
-            cube.parent = model;
+            cube.localTransform.position = midpoints[i];
+            cube.parent = anchor;
+            // cube.parent = model;
             let material = "532554D8416C3609A871FCBC92273DC8";
             if (material) {
                 cube.setMaterial(material);
@@ -496,20 +500,19 @@ class Slot extends IMapComponent {
                 cube.worldTransform.scale = new Vector(width, distance[i] / 100 + width, width);
             } else {
                 cube.worldTransform.scale = new Vector(width, width, distance[i] / 100 + width);
-                cube.worldTransform.position = midpoints[i].clone().subtract(new Vector(0, 0, distance[i] / 2));
+                cube.localTransform.position = midpoints[i].clone().subtract(new Vector(0, 0, distance[i] / 2));
             }
-            // const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
-            // const cubeRotation = Rotation.zero;
-            // cubeRotation.set(
-            //     stageCfg?.rotation?.[0] ?? 200,
-            //     stageCfg?.rotation?.[1] ?? 0,
-            //     stageCfg?.rotation?.[2] ?? 0
-            // );
-            // cube.worldTransform.rotation = cubeRotation;
+
+            cube.localTransform.rotation = mw.Rotation.zero;
             cubeArr.push(cube);
             this._cubeOutlines.push(cube);
         }
-        model.worldTransform.rotation = rot;
+        const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
+        const cubeRotation = Rotation.zero;
+        cubeRotation.set(stageCfg?.rotation?.[0] ?? 200, stageCfg?.rotation?.[1] ?? 0, stageCfg?.rotation?.[2] ?? 0);
+
+        anchor.worldTransform.rotation = cubeRotation;
+        // model.worldTransform.rotation = rot;
         cubeArr.forEach((c) => {
             c.parent = null;
             c.setVisibility(PropertyStatus.On);
