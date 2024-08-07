@@ -649,6 +649,7 @@ export class StageC {
             });
         });
         this.registerListeners();
+        this.playBGM();
     }
 
     getUnlockedTechNodes(playerId: number): number[] {
@@ -847,6 +848,7 @@ export class StageC {
                 UIService.show(LobbyUI);
                 UIService.getUI(TowerUI).setStageTowerUI(false);
                 if (state == EStageState.End) {
+                    this.stopBGM();
                     UIService.hide(UISettle);
                     Event.dispatchToLocal("onStageEnd");
                 }
@@ -991,6 +993,21 @@ export class StageC {
             this.stage.destroy();
             this.stage = null;
         }
+    }
+
+    /**播放背景音乐 */
+    public playBGM(): void {
+        if (SoundService.BGMVolumeScale === 0) return;
+        const stageConfig = StageUtil.getStageCfgById(this.stageCfgId);
+        const bgm = stageConfig.bgm;
+        if (bgm) {
+            SoundService.playBGM(bgm);
+        }
+    }
+
+    /**停止背景音乐 */
+    public stopBGM(): void {
+        SoundService.stopBGM();
     }
 }
 
