@@ -52,48 +52,48 @@ export class ResourceModuleC extends ModuleC<ResourceModuleS, null> {
     }
 
     protected onEnterScene(sceneType: number): void {
-        this.guideClickDestroyable();
+        // this.guideClickDestroyable();
     }
 
     private objs: mw.GameObject[] = [];
 
     /**引导点击破坏物 */
-    public guideClickDestroyable(): void {
-        let PlayerData = DataCenterC.getData(PetSimulatorPlayerModuleData);
-        let isNewPlayer = PlayerData.gold == 0;
-        if (!isNewPlayer) return;
+    // public guideClickDestroyable(): void {
+    //     let PlayerData = DataCenterC.getData(PetSimulatorPlayerModuleData);
+    //     let isNewPlayer = PlayerData.gold == 0;
+    //     if (!isNewPlayer) return;
 
-        this.createObj();
-        SceneResourceMap
-            .get(1002)
-            ?.forEach((item) => {
-                if (item.cfgId == 3) {
-                    let pointCfg = GameConfig.DropPoint.getElement(item.pointId);
-                    if (pointCfg.areaPoints.y >= GlobalData.SceneResource.areaY) {
-                        if (this.objs.indexOf(item.Obj) == -1 && this.objs.length <= 10)
-                            this.objs.push(item.Obj);
-                    }
-                }
-            });
+    //     this.createObj();
+    //     SceneResourceMap
+    //         .get(1002)
+    //         ?.forEach((item) => {
+    //             if (item.cfgId == 3) {
+    //                 let pointCfg = GameConfig.DropPoint.getElement(item.pointId);
+    //                 if (pointCfg.areaPoints.y >= GlobalData.SceneResource.areaY) {
+    //                     if (this.objs.indexOf(item.Obj) == -1 && this.objs.length <= 10)
+    //                         this.objs.push(item.Obj);
+    //                 }
+    //             }
+    //         });
 
-        for (let i = this.curIndex; i < this.objs.length; i++) {
-            const element = this.objs[i];
-            let ui = this.uis[i];
-            if (!ui) {
-                break;
-            }
-            ui.parent = element;
-            ui.localTransform.position = (new mw.Vector(0, 0, 0));
-            this.curIndex++;
-        }
-        if (this.objs.length < 10) {
-            setTimeout(() => {
-                this.guideClickDestroyable();
-            }, 5000);
-            return;
-        }
+    //     for (let i = this.curIndex; i < this.objs.length; i++) {
+    //         const element = this.objs[i];
+    //         let ui = this.uis[i];
+    //         if (!ui) {
+    //             break;
+    //         }
+    //         ui.parent = element;
+    //         ui.localTransform.position = (new mw.Vector(0, 0, 0));
+    //         this.curIndex++;
+    //     }
+    //     if (this.objs.length < 10) {
+    //         setTimeout(() => {
+    //             this.guideClickDestroyable();
+    //         }, 5000);
+    //         return;
+    //     }
 
-    }
+    // }
 
     private uis: mw.GameObject[] = [];
 

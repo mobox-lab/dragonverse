@@ -136,7 +136,6 @@ export class EnchantBuff {
     /**获取宠物词条buff */
     public static getPetBuff(playerId: number, key: number): petBuff {
         const petBuff = Gtk.tryGet(this.playerPetBuff, playerId, () => new Map());
-        Log4Ts.log(EnchantBuff, "getPetBuff key:" + key + " petBuff:" + JSON.stringify(Array.from(petBuff)));
         return Gtk.tryGet(petBuff, key, () => this.getEmptyBuff());
     }
 
@@ -170,15 +169,6 @@ export class EnchantBuff {
             if (!buff.teamDamageAdd) continue;
             totalTeamDamageAdd += buff.teamDamageAdd;
         }
-        Log4Ts.log(
-            EnchantBuff,
-            "totalTeamDamageBuff:" +
-            (1 + totalTeamDamageAdd / 100) +
-            " curKey:" +
-            curKey +
-            " petBuff:" +
-            JSON.stringify(Array.from(petBuff)),
-        );
         return 1 + totalTeamDamageAdd / 100;
     }
 

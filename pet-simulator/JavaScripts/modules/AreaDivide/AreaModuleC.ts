@@ -171,6 +171,7 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
         let char = obj as mw.Character;
         if (char != Player.localPlayer.character) return;
         let ui = UIService.show(WallInteract_Generate);
+        if(trigger.gameObjectId == "04C97D8E") ui.textBlock.text = GameConfig.Language.button_21.Value;
         ui.mBtn_Interact.onClicked.add(() => {
             if (trigger.gameObjectId == "2503B6A9" || trigger.gameObjectId == "155F1359") {
                 MessageBox.showTwoBtnMessage(GameConfig.Language.Portol_Tip_3.Value, (res) => {
@@ -223,7 +224,7 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
         // }, offest);
 
         if (locId == 2002) {
-            this.unlockArea([2001, 2002])
+            this.unlockArea([2001, 2002, 2003]) 
         } else if (locId == 3001) {
             this.unlockArea([3001, 3002])
         }

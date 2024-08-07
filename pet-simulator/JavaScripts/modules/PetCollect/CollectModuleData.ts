@@ -1,3 +1,4 @@
+import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
 import { oTraceError } from "../../util/LogManager";
 import { utils } from "../../util/uitls";
@@ -68,7 +69,6 @@ export class CollectModuleData extends Subdata {
         if (this.hasArr.indexOf(id) != -1) return false;
         this.hasArr.push(id);
         this.save(true);
-        this.onHasChangeAC.call(id);
         return true
     }
 
@@ -81,4 +81,11 @@ export class CollectModuleData extends Subdata {
         this.onLevelChangeAC.call(val);
     }
 
+    /** GM 解锁全部 测试用 */
+    public gmUnlockAll() {
+        this.hasArr = GameConfig.PetARR.getAllElement().map(item => item.id);
+        console.log("#debug hasArr:", JSON.stringify(this.hasArr));
+        this.onHasChangeAC.call(10);
+        this.save(true);
+    }
 }
