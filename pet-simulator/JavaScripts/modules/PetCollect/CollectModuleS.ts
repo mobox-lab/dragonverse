@@ -156,4 +156,9 @@ export class CollectModuleS extends ModuleS<CollectModuleC, CollectModuleData>{
         this.getAllDataSend();
     }
 
+    /** GM 解锁全部 测试用 */
+    public gmUnlockAll(playerId: number) {
+        const data = this.getPlayerData(playerId);
+        data.gmUnlockAll();
+    }
 }

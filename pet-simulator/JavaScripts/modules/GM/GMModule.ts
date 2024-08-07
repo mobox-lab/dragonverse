@@ -16,6 +16,7 @@ import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { AuthModuleS } from "../auth/AuthModule";
 import { BuffModuleS } from "../buff/BuffModuleS";
 import { addGMCommand } from "mw-god-mod";
+import { CollectModuleS } from "../PetCollect/CollectModuleS";
 
 //主面板
 // export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
@@ -132,6 +133,16 @@ addGMCommand(
     () => {},
     (player: mw.Player) => {
         ModuleService.getModule(PlayerModuleS).gmClearLevelUp(player.playerId);
+    },
+    undefined,
+    "宠物"
+);
+addGMCommand(
+    "解锁全图鉴",
+    "void",
+    () => {},
+    (player: mw.Player) => {
+        ModuleService.getModule(CollectModuleS).gmUnlockAll(player.playerId);
     },
     undefined,
     "宠物"
