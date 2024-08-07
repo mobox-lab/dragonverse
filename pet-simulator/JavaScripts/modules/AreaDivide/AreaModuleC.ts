@@ -229,7 +229,7 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
         // }, offest);
 
         if (locId == 2002) {
-            this.unlockArea([2001, 2002])
+            this.unlockArea([2001, 2002, 2003]) 
         } else if (locId == 3001) {
             this.unlockArea([3001, 3002])
         }
