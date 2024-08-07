@@ -176,6 +176,7 @@ export class AreaModuleC extends ModuleC<AreaModuleS, AreaModuleData> {
         let char = obj as mw.Character;
         if (char != Player.localPlayer.character) return;
         let ui = UIService.show(WallInteract_Generate);
+        if(trigger.gameObjectId == "04C97D8E") ui.textBlock.text = GameConfig.Language.button_21.Value;
         ui.mBtn_Interact.onClicked.add(() => {
             if (trigger.gameObjectId == "2503B6A9" || trigger.gameObjectId == "155F1359") {
                 MessageBox.showTwoBtnMessage(GameConfig.Language.Portol_Tip_3.Value, (res) => {
