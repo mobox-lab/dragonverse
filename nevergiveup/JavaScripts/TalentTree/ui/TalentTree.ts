@@ -32,10 +32,9 @@ export class TalentTree extends TalentTree_Generate {
         return this._treeMap.get(id);
     }
 
-    private updatedCompleted(id: number) {
+    public updatedCompleted(id: number, level?: number) {
         const item = this.getTalentItem(id);
-        const level = item.level;
-        item.setCurrentLevel(level + 1);
+        item.setCurrentLevel(level ?? item.level + 1);
         const backTalentIds = item.data.backTalent;
         backTalentIds.forEach(id => {
             const backTalent = this.getTalentItem(id);

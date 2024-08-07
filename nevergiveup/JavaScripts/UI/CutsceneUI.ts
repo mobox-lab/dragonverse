@@ -17,7 +17,7 @@
 
 import { GuideManager } from "../Guide/GuideManager";
 import UI_TaskMain from "../Modules/taskModule/ui/UI_TaskMain";
-import { UITechTree } from "../TechTree/ui/UITechTree";
+import { TalentTreeContainer } from "../TalentTree/ui/TalentTreeContainer";
 import Utils from "../Utils";
 import { MGSTool } from "../tool/MGSTool";
 import CutsceneUI_Generate from "../ui-generate/Sundry/CutsceneUI_generate";
@@ -78,7 +78,7 @@ export default class CutsceneUI extends CutsceneUI_Generate {
 		UIService.hide(UI_TaskMain);
 		UIService.hide(SettingUI);
 		UIService.hide(TowerShopUI);
-		UIService.hide(UITechTree);
+		UIService.hide(TalentTreeContainer);
 	}
 
 	/**
