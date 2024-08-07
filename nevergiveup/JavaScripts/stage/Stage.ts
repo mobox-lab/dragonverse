@@ -19,6 +19,7 @@ import { PlayerUtil } from "../Modules/PlayerModule/PlayerUtil";
 import { TowerManager } from "../Modules/TowerModule/TowerManager";
 import { TowerModuleC } from "../Modules/TowerModule/TowerModuleC";
 import { AuthModuleS } from "../Modules/auth/AuthModule";
+import { DragonDataModuleS } from "../Modules/dragonData/DragonDataModuleS";
 import TalentUtils from "../Modules/talent/TalentUtils";
 import { RankItem } from "../Rank/RankManager";
 import { NEW_STAGE_CONFIG, STAGE_CONFIG, baseHp } from "../StageConfig";
@@ -131,17 +132,20 @@ export class StageS {
         this.currentSkippingPlayers = [];
         this.registerListeners();
         this.updateRankItems();
+        ModuleService.getModule(DragonDataModuleS).initData(players);
     }
 
-    async initHp(players: Player[]) {
+    initHp(players: Player[]) {
         // 天赋树和龙娘血量加成
-        const player = players[0];
-        const userHP = await TalentUtils.getModuleSRunesValueById(1003, player);
-        const userHP2 = await TalentUtils.getModuleSRunesValueById(1027, player);
-        const userHPD = await TalentUtils.getModuleSRunesValueById(2005, player);
-        const userHPInfinite = await TalentUtils.getModuleSRunesValueById(1049, player);
-        this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD + userHPInfinite);
-        this._maxHp = this._hp;
+        for (let index = 0; index < players.length; index++) {
+            const player = players[index];
+            const userHP = TalentUtils.getModuleSRunesValueById(1003, player);
+            const userHP2 = TalentUtils.getModuleSRunesValueById(1027, player);
+            const userHPD = TalentUtils.getModuleSRunesValueById(2005, player);
+            const userHPInfinite = TalentUtils.getModuleSRunesValueById(1049, player);
+            this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD + userHPInfinite);
+            this._maxHp = this._hp;
+        }
     }
 
     registerListeners() {
@@ -526,6 +530,10 @@ export class StageS {
         this.boardcast((player) => {
             Event.dispatchToClient(player, "addGold", amount);
         });
+    }
+
+    addPlayerGold(amount: number, player: Player) {
+        Event.dispatchToClient(player, "addGold", amount);
     }
 
     addHp(hp: number) {
@@ -1059,23 +1067,20 @@ class WaitState extends StageBaseState {
         this._time = params[0];
         this._wave = params[1];
         const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageCfgId, this._wave + 1);
+
         this.fsm.owner.addGold(currentWave.waveGold);
         // TODO 把S端的代码改同步
-        // if (this._wave > 0) {
-        //     Player.asyncGetLocalPlayer().then((player) => {
-        //         const promiseRes = [];
-        //         const goldAmount = TalentUtils.getModuleSRunesValueById(1005, player);
-        //         const goldAmount2 = TalentUtils.getModuleSRunesValueById(1029, player);
+        if (this._wave > 0) {
+            for (const player of this.fsm.owner.players) {
+                const goldAmount = TalentUtils.getModuleSRunesValueById(1005, player);
+                const goldAmount2 = TalentUtils.getModuleSRunesValueById(1029, player);
 
-        //         const hpAmount = TalentUtils.getModuleSRunesValueById(1010, player);
-        //         const hpAmount2 = TalentUtils.getModuleSRunesValueById(1034, player);
-        //         promiseRes.push(goldAmount, goldAmount2, hpAmount, hpAmount2);
-        //         Promise.all(promiseRes).then((res) => {
-        //             this.fsm.owner.addGold(res[0] + res[2]);
-        //             this.fsm.owner.addHp(res[3] + res[4]);
-        //         });
-        //     });
-        // }
+                const hpAmount = TalentUtils.getModuleSRunesValueById(1010, player);
+                const hpAmount2 = TalentUtils.getModuleSRunesValueById(1034, player);
+                this.fsm.owner.addPlayerGold(goldAmount + goldAmount2, player);
+                this.fsm.owner.addHp(hpAmount + hpAmount2);
+            }
+        }
         StageActions.onStageStateChanged.call(this.state, this.fsm.owner.id, this._time, this._wave);
     }
 }

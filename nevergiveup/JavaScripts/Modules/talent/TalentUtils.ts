@@ -1,6 +1,8 @@
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
-import { AuthModuleC, AuthModuleS, UserDragonRespData } from "../auth/AuthModule";
+import { UserDragonRespData } from "../auth/AuthModule";
+import { DragonDataModuleC } from "../dragonData/DragonDataModuleC";
+import { DragonDataModuleS } from "../dragonData/DragonDataModuleS";
 import TalentModuleC from "./TalentModuleC";
 import TalentModuleS from "./TalentModuleS";
 
@@ -39,7 +41,7 @@ export default class TalentUtils {
     }
 
     public static getDragonIndex(id: number): number {
-        const dragonData = ModuleService.getModule(AuthModuleC).dragonData;
+        const dragonData = ModuleService.getModule(DragonDataModuleC).dragonData;
         const index = this.getDragonIndexByData(dragonData, id);
         return index;
     }
@@ -113,9 +115,9 @@ export default class TalentUtils {
         }
     }
 
-    public static async getModuleSRunesValueById(id: number, player: Player) {
+    public static getModuleSRunesValueById(id: number, player: Player) {
         if (id > 2000) {
-            const dragonData = await ModuleService.getModule(AuthModuleS).queryUserDragon(player.playerId);
+            const dragonData = ModuleService.getModule(DragonDataModuleS).getDragonData(player);
             const index = this.getDragonIndexByData(dragonData, id);
             if (index > 0) {
                 const value = this.getRunesConfigByKey(id, index - 1);
