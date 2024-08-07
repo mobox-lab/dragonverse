@@ -442,7 +442,7 @@ addGMCommand(
     "string",
     async (value: string) => {
         let arr: AreaData[] = [];
-        await getPoints(arr, "3B548E5D");
+        await getPoints(arr, "1884B56F");
         let str = JSON.stringify(arr);
         console.log("areaDatas:" + str);
     },
