@@ -1,5 +1,4 @@
 import GToolkit, { GtkTypes } from "gtoolkit";
-import { ChainId } from "./Chains";
 
 export default class GameServiceConfig {
     //#region settings
@@ -858,7 +857,7 @@ export default class GameServiceConfig {
     /**
      * 当前游戏发行的 chain.
      */
-    public static chainId: ChainId = undefined;
+    public static chainId: string = 'merlin';
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Cryptocurrency
