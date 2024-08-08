@@ -263,6 +263,7 @@ export default abstract class TowerBase implements BuffBag {
         if (!this.root) return; //解决线上报错问题
         this.tower = this.root.getChildren()[0];
         if (!this.tower) return;
+        this?.tower?.setVisibility(PropertyStatus.On);
         this.initTower();
         this.oriTransform = this.tower.worldTransform.clone();
     }
@@ -363,12 +364,12 @@ export default abstract class TowerBase implements BuffBag {
         if (this.tower) {
             if (this.tower instanceof Character) {
                 (this.tower as Character)?.setCollision(CollisionStatus.Off);
+                (this.tower as Character)?.setVisibility(PropertyStatus.Off);
             } else {
                 (this.tower as Model)?.setCollision(CollisionStatus.Off);
             }
             this.tower.worldTransform = this.oriTransform;
             this.tower.tag = "";
-            // this.tower?.destroy();
         }
         this.root && GameObjPool.despawn(this.root);
         this._bottomEff && GameObjPool.despawn(this._bottomEff);
