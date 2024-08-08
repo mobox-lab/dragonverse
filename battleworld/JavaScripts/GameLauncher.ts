@@ -70,7 +70,6 @@ import GMHUD_Generate from "./ui-generate/GM/GMHUD_generate";
 import PlayerSettingModuleData from "./module/SettingModule/SettingModuleData";
 import BwStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
 import { BwP12BagModuleData, P12BagModuleC, P12BagModuleS } from "./module/bag/P12BagModule";
-import { ChainId,Chains } from "./const/Chains";
 
 declare global {
     var UE: any;
@@ -116,10 +115,6 @@ export default class GameLauncher extends mw.Script {
     @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
     public isUseTestUrl: boolean = true;
 
-    @mw.Property({displayName: "ChainId", group: "发布", selectOptions: Chains})
-    public chainId: ChainId = Chains.Merlin;
-
-
     @mw.Property({ displayName: "是否开启RPC统计" })
     public isRecordRPC: boolean = false;
 
@@ -129,7 +124,6 @@ export default class GameLauncher extends mw.Script {
         GameServiceConfig.isRelease = this.isRelease;
         GameServiceConfig.isBeta = this.isBeta;
         GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
-        GameServiceConfig.chainId = this.chainId;
         mwaction;
         // 开启作弊检测
         //this.checkCheat();
