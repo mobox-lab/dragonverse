@@ -47,7 +47,7 @@ import PlayerSettingModuleData, { PlayerSettingModuleC, PlayerSettingModuleS } f
 import { VectorExt } from "./declaration/vectorext";
 import GodModService from "mw-god-mod";
 import { P12BagModuleC, P12BagModuleS, PsP12BagModuleData } from "./modules/bag/P12BagModule";
-import { ChainId } from "./const/Chains";
+import { ChainId, Chains } from "./const/Chains";
 
 
 // declare global {
@@ -80,8 +80,8 @@ export default class GameStart extends mw.Script {
     @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
     public isUseTestUrl: boolean = true;
 
-    @mw.Property({displayName: "ChainId", group: "发布", enumType: ChainId})
-    public chainId: ChainId = ChainId.MerlinTestnet;
+    @mw.Property({displayName: "ChainId", group: "发布", selectOptions: Chains})
+    public chainId: ChainId = Chains.Merlin;
 
     @mw.Property({ displayName: "是否开启主页GM开关按钮" })
     private isOpenGm = false;
