@@ -1000,8 +1000,9 @@ export class StageC {
         if (SoundService.BGMVolumeScale === 0) return;
         const stageConfig = StageUtil.getStageCfgById(this.stageCfgId);
         const bgm = stageConfig.bgm;
+        const volume = stageConfig?.bgmVolume || 0.5;
         if (bgm) {
-            SoundService.playBGM(bgm);
+            SoundService.playBGM(bgm, volume);
         }
     }
 

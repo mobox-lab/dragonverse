@@ -29,12 +29,10 @@ export namespace SoundUtil {
                 let players = Player.getAllPlayers();
                 for (let i = 0; i < Player.getAllPlayers().length; i++) {
                     let p = players[i];
-                    if (player.playerId != p.playerId)
-                        Event.dispatchToClient(p, "playSound", player.playerId, id, pos);
+                    if (player.playerId != p.playerId) Event.dispatchToClient(p, "playSound", player.playerId, id, pos);
                 }
             });
-        }
-        else {
+        } else {
             Event.addServerListener("playSound", (playerId: number, id: number, pos: Vector) => {
                 let player = Player.getPlayer(playerId);
                 if (player) {
@@ -48,29 +46,32 @@ export namespace SoundUtil {
 
             Event.addLocalListener(VoiceEvent.Bgm, (value: number) => {
                 bgmVoiceFactor = value;
-            })
+            });
 
             Event.addLocalListener(VoiceEvent.Attack, (value: number) => {
                 attackVoiceFactor = value;
-            })
-
+            });
         }
     }
     /**
      * 播放音乐
      * @param cfg 配置
      * @param pos 位置
-     * @param isDestroy 是否删除 
+     * @param isDestroy 是否删除
      * @returns 音乐数据
      */
-    export async function PlaySound(cfg: IVoiceElement, pos: Vector = null, isDestroy: boolean = true): Promise<mw.Sound> {
+    export async function PlaySound(
+        cfg: IVoiceElement,
+        pos: Vector = null,
+        isDestroy: boolean = true
+    ): Promise<mw.Sound> {
         if (!cfg) return null;
-        let soundObj = await GameObjPool.asyncSpawn(cfg.Guid) as mw.Sound;
+        let soundObj = (await GameObjPool.asyncSpawn(cfg.Guid)) as mw.Sound;
         soundObj.isLoop = cfg.isLoop;
         soundObj.volume = cfg.Volume * bgmVoiceFactor + 100;
         if (cfg.Distance > 0 && pos) {
             soundObj.isSpatialization = true;
-            soundObj.worldTransform.position = (pos);
+            soundObj.worldTransform.position = pos;
             soundObj.attenuationShapeExtents = TEMP_VECTOR.set(cfg.Distance, 0, 0);
         }
         soundObj.play();
@@ -90,21 +91,25 @@ export namespace SoundUtil {
      * @param isDestroy 是否删除
      * @returns 音乐数据
      */
-    export async function PlaySoundById(id: number, isSync: boolean = false, pos: Vector = null, isDestroy: boolean = true): Promise<mw.Sound> {
+    export async function PlaySoundById(
+        id: number,
+        isSync: boolean = false,
+        pos: Vector = null,
+        isDestroy: boolean = true
+    ): Promise<mw.Sound> {
         let voice;
         const cfg = GameConfig.Voice.getElement(id);
         if (cfg) {
             if (cfg.IsBgm) {
                 mw.SoundService.playBGM(cfg.Guid, cfg.Volume);
-            }
-            else {
+            } else {
                 if (isSync) {
                     Event.dispatchToServer("playSound", id, pos);
                 }
                 voice = await SoundUtil.PlaySound(cfg, pos, isDestroy);
             }
         } else {
-            console.log('找不到音效!!!!!!!!!!!!!!!!!!!!! ', (id))
+            console.log("找不到音效!!!!!!!!!!!!!!!!!!!!! ", id);
         }
         return voice;
     }
@@ -114,5 +119,9 @@ export namespace SoundUtil {
      */
     export function stopBGM() {
         mw.SoundService.stopBGM();
+    }
+
+    export function playBGM() {
+        mw.SoundService.playBGM("404265", 0.5);
     }
 }
