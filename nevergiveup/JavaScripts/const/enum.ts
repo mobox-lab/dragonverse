@@ -55,3 +55,15 @@ export enum ETalentBuffValue {
 export enum GlobalEventName {
     ServerTipsEventName = "TD_SERVER_TIPS_EVENT_NAME"
 }
+
+/** 
+ * DV 中的龙娘元素类型，顺序不太一样 
+ */
+export enum DragonElemental {
+    Fire = 1,
+    Water = 2,
+    Wood = 3,
+    Earth = 4,
+    Light = 5,
+    Dark = 6,
+}

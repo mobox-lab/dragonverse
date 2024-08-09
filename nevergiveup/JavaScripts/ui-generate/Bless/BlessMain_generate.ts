@@ -8,7 +8,140 @@
 
 @UIBind('UI/Bless/BlessMain.ui')
 export default class BlessMain_Generate extends UIScript {
-	
+		private mBtnClose_Internal: mw.Button
+	public get mBtnClose(): mw.Button {
+		if(!this.mBtnClose_Internal&&this.uiWidgetBase) {
+			this.mBtnClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtnClose') as mw.Button
+		}
+		return this.mBtnClose_Internal
+	}
+	private bar_Light_Internal: mw.Canvas
+	public get bar_Light(): mw.Canvas {
+		if(!this.bar_Light_Internal&&this.uiWidgetBase) {
+			this.bar_Light_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/bar_Light') as mw.Canvas
+		}
+		return this.bar_Light_Internal
+	}
+	private scr_LightDragon_Internal: mw.ScrollBox
+	public get scr_LightDragon(): mw.ScrollBox {
+		if(!this.scr_LightDragon_Internal&&this.uiWidgetBase) {
+			this.scr_LightDragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_LightDragon') as mw.ScrollBox
+		}
+		return this.scr_LightDragon_Internal
+	}
+	private can_Light_Internal: mw.Canvas
+	public get can_Light(): mw.Canvas {
+		if(!this.can_Light_Internal&&this.uiWidgetBase) {
+			this.can_Light_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_LightDragon/can_Light') as mw.Canvas
+		}
+		return this.can_Light_Internal
+	}
+	private bar_Dark_Internal: mw.Canvas
+	public get bar_Dark(): mw.Canvas {
+		if(!this.bar_Dark_Internal&&this.uiWidgetBase) {
+			this.bar_Dark_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/bar_Dark') as mw.Canvas
+		}
+		return this.bar_Dark_Internal
+	}
+	private scr_DarkDragon_Internal: mw.ScrollBox
+	public get scr_DarkDragon(): mw.ScrollBox {
+		if(!this.scr_DarkDragon_Internal&&this.uiWidgetBase) {
+			this.scr_DarkDragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_DarkDragon') as mw.ScrollBox
+		}
+		return this.scr_DarkDragon_Internal
+	}
+	private can_Dark_Internal: mw.Canvas
+	public get can_Dark(): mw.Canvas {
+		if(!this.can_Dark_Internal&&this.uiWidgetBase) {
+			this.can_Dark_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_DarkDragon/can_Dark') as mw.Canvas
+		}
+		return this.can_Dark_Internal
+	}
+	private bar_Water_Internal: mw.Canvas
+	public get bar_Water(): mw.Canvas {
+		if(!this.bar_Water_Internal&&this.uiWidgetBase) {
+			this.bar_Water_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/bar_Water') as mw.Canvas
+		}
+		return this.bar_Water_Internal
+	}
+	private scr_WaterDragon_Internal: mw.ScrollBox
+	public get scr_WaterDragon(): mw.ScrollBox {
+		if(!this.scr_WaterDragon_Internal&&this.uiWidgetBase) {
+			this.scr_WaterDragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_WaterDragon') as mw.ScrollBox
+		}
+		return this.scr_WaterDragon_Internal
+	}
+	private can_Water_Internal: mw.Canvas
+	public get can_Water(): mw.Canvas {
+		if(!this.can_Water_Internal&&this.uiWidgetBase) {
+			this.can_Water_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_WaterDragon/can_Water') as mw.Canvas
+		}
+		return this.can_Water_Internal
+	}
+	private bar_Fire_Internal: mw.Canvas
+	public get bar_Fire(): mw.Canvas {
+		if(!this.bar_Fire_Internal&&this.uiWidgetBase) {
+			this.bar_Fire_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/bar_Fire') as mw.Canvas
+		}
+		return this.bar_Fire_Internal
+	}
+	private scr_FireDragon_Internal: mw.ScrollBox
+	public get scr_FireDragon(): mw.ScrollBox {
+		if(!this.scr_FireDragon_Internal&&this.uiWidgetBase) {
+			this.scr_FireDragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_FireDragon') as mw.ScrollBox
+		}
+		return this.scr_FireDragon_Internal
+	}
+	private can_Fire_Internal: mw.Canvas
+	public get can_Fire(): mw.Canvas {
+		if(!this.can_Fire_Internal&&this.uiWidgetBase) {
+			this.can_Fire_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_FireDragon/can_Fire') as mw.Canvas
+		}
+		return this.can_Fire_Internal
+	}
+	private bar_Wood_Internal: mw.Canvas
+	public get bar_Wood(): mw.Canvas {
+		if(!this.bar_Wood_Internal&&this.uiWidgetBase) {
+			this.bar_Wood_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/bar_Wood') as mw.Canvas
+		}
+		return this.bar_Wood_Internal
+	}
+	private scr_WoodDragon_Internal: mw.ScrollBox
+	public get scr_WoodDragon(): mw.ScrollBox {
+		if(!this.scr_WoodDragon_Internal&&this.uiWidgetBase) {
+			this.scr_WoodDragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_WoodDragon') as mw.ScrollBox
+		}
+		return this.scr_WoodDragon_Internal
+	}
+	private can_Wood_Internal: mw.Canvas
+	public get can_Wood(): mw.Canvas {
+		if(!this.can_Wood_Internal&&this.uiWidgetBase) {
+			this.can_Wood_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_WoodDragon/can_Wood') as mw.Canvas
+		}
+		return this.can_Wood_Internal
+	}
+	private bar_Soil_Internal: mw.Canvas
+	public get bar_Soil(): mw.Canvas {
+		if(!this.bar_Soil_Internal&&this.uiWidgetBase) {
+			this.bar_Soil_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/bar_Soil') as mw.Canvas
+		}
+		return this.bar_Soil_Internal
+	}
+	private scr_SoilDragon_Internal: mw.ScrollBox
+	public get scr_SoilDragon(): mw.ScrollBox {
+		if(!this.scr_SoilDragon_Internal&&this.uiWidgetBase) {
+			this.scr_SoilDragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_SoilDragon') as mw.ScrollBox
+		}
+		return this.scr_SoilDragon_Internal
+	}
+	private can_Soil_Internal: mw.Canvas
+	public get can_Soil(): mw.Canvas {
+		if(!this.can_Soil_Internal&&this.uiWidgetBase) {
+			this.can_Soil_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/scr_SoilDragon/can_Soil') as mw.Canvas
+		}
+		return this.can_Soil_Internal
+	}
+
 
 
    protected onAwake() {
@@ -22,6 +155,12 @@ export default class BlessMain_Generate extends UIScript {
 	   
 	   //按钮添加点击
 	   
+	   this.mBtnClose.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "mBtnClose");
+	   })
+	   this.mBtnClose.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 
 	   //按钮多语言
 	   

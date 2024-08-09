@@ -1,12 +1,17 @@
+import { NoOverride } from "gtoolkit";
 import { JModuleS } from "../../depend/jibu-module/JModule";
 import { AuthModuleS, UserDragonRespData } from "../auth/AuthModule";
 import { DragonDataModuleC } from "./DragonDataModuleC";
 import DragonDataModuleData from "./DragonDataModuleData";
+import IUnique from "../../depend/yoact/IUnique";
 
 export class DragonDataModuleS extends JModuleS<DragonDataModuleC, DragonDataModuleData> {
     public dragonDataMap: Map<string, UserDragonRespData> = new Map();
 
-    public async queryLocalUserDragon() {
+    protected onJStart() {
+        
+    }
+    public async net_queryUserDragon() {
         const playerId = this.currentPlayerId;
         const res = await ModuleService.getModule(AuthModuleS).queryUserDragon(playerId);
         return res;

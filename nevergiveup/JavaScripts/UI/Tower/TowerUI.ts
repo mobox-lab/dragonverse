@@ -86,8 +86,8 @@ export default class TowerUI extends TowerUI_Generate {
         if(inStage) this.show();
         Gtk.trySetVisibility(this.settingUp, inStage ? mw.SlateVisibility.Collapsed : mw.SlateVisibility.Visible);
         Gtk.trySetVisibility(this.lineUp, inStage ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
-        const [leftUpPosX, leftUpPosY] = [340, 850];
-        const [leftPadding, gap, itemWidth] = [215, 15, 99];
+        const [leftUpPosX, leftUpPosY] = [540, 850];
+        const [leftPadding, gap, itemWidth] = [0, 15, 99];
         const maxWidth = leftPadding + (itemWidth + gap) * TowerConfigConstants.maxEquip;  // 最大可能长度（装满TowerConfigConstants.maxEquip个塔） 
         if (inStage) {
             let containerWidth = leftPadding;
