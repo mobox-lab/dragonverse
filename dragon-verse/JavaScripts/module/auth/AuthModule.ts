@@ -210,6 +210,9 @@ addGMCommand(
                     petAdd: 0,
                     petCnt: 0,
                     petMax: 0,
+                    petMaxEnchanted: "",
+                    petMaxEnchantScore: 0,
+                    totalScore: 0,
                     staMax: 0,
                     staPotAdd: 0,
                     staPotCnt: 0,
@@ -718,6 +721,18 @@ interface PetSimulatorStatistic {
      * 最强战力.
      */
     petMax: number;
+    /**
+     * 最强战力宠物的附魔数组
+     */
+    petMaxEnchanted: string;    
+    /**
+     * 最强战力宠物总附魔分数
+     */
+    petMaxEnchantScore: number;    
+    /**
+     * 最强战力宠物总分 = petMax + petMaxEnchantScore
+     */
+    totalScore: number;
     pet: PetSimulatorStatisticPetObj[];
 }
 
