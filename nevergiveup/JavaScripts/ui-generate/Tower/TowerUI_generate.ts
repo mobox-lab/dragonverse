@@ -57,13 +57,6 @@ export default class TowerUI_Generate extends UIScript {
 		}
 		return this.setBtn_Internal
 	}
-	private textFold_Internal: mw.TextBlock
-	public get textFold(): mw.TextBlock {
-		if(!this.textFold_Internal&&this.uiWidgetBase) {
-			this.textFold_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/settingUp/textFold') as mw.TextBlock
-		}
-		return this.textFold_Internal
-	}
 	private textSet_Internal: mw.TextBlock
 	public get textSet(): mw.TextBlock {
 		if(!this.textSet_Internal&&this.uiWidgetBase) {
@@ -124,9 +117,6 @@ export default class TowerUI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   this.initLanguage(this.textFold)
-	   
-	
 	   this.initLanguage(this.textSet)
 	   
 	
