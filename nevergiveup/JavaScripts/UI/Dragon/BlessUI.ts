@@ -3,10 +3,8 @@ import ScrollView from "../../depend/scroll-view/ScrollView";
 import { Yoact } from "../../depend/yoact/Yoact";
 import BlessMain_Generate from "../../ui-generate/Bless/BlessMain_generate";
 import BlessItemUI from "./BlessItemUI";
-import bindYoact = Yoact.bindYoact;
 import { DragonElemental } from "../../const/enum";
-import Log4Ts from "../../depend/log4ts/Log4Ts";
-import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import Log4Ts from "mw-log4ts";
 
 export default class BlessUI extends BlessMain_Generate {
     private _scrollViews: ScrollView<DragonBlessListUnique, BlessItemUI>[];
