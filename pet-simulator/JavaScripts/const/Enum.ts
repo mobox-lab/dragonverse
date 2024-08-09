@@ -129,7 +129,7 @@ export namespace GlobalEnum {
         /**沙漠大宝箱 */
         DesertBigBox = 9,
         /**天堂大宝箱 */
-        HeavenBigBox = 11,
+        HeavenBigBox = 17,
     }
     /**掉落物类型 */
     export enum DropResourceType {

@@ -47,7 +47,6 @@ import PlayerSettingModuleData, { PlayerSettingModuleC, PlayerSettingModuleS } f
 import { VectorExt } from "./declaration/vectorext";
 import GodModService from "mw-god-mod";
 import { P12BagModuleC, P12BagModuleS, PsP12BagModuleData } from "./modules/bag/P12BagModule";
-import { ChainId } from "./const/Chains";
 
 
 // declare global {
@@ -80,9 +79,6 @@ export default class GameStart extends mw.Script {
     @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
     public isUseTestUrl: boolean = true;
 
-    @mw.Property({displayName: "ChainId", group: "发布", enumType: ChainId})
-    public chainId: ChainId = ChainId.MerlinTestnet;
-
     @mw.Property({ displayName: "是否开启主页GM开关按钮" })
     private isOpenGm = false;
     @mw.Property({ displayName: "是否免费送滑板" })
@@ -101,13 +97,6 @@ export default class GameStart extends mw.Script {
         selectOptions: { "系统默认": "-1", "English": "0", "简体中文": "1", "日本語": "2", "Deutsch": "3" },
     })
     private selectedLanguageIndex: string = "-1";
-
-    @mw.Property({
-        displayName: "Log级别",
-        group: "Odin设置",
-        selectOptions: { "None": "0", "Error": "1", "Warn": "2", "Log": "3" },
-    })
-    private logLevel: string = "0";
 
     /**下载资源 */
     private assetsInit() {
@@ -137,7 +126,6 @@ export default class GameStart extends mw.Script {
         GameServiceConfig.isRelease = this.isRelease;
         GameServiceConfig.isBeta = this.isBeta;
         GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
-        GameServiceConfig.chainId = this.chainId;
         GlobalData.Global.isSameGoBack = this.isSameGoBack;
         GlobalData.Global.isOpenCollectMachine = this.isOpenCollectMachine;
         GlobalData.Global.isShowGM = this.isOpenGm;

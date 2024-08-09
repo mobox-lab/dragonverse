@@ -326,6 +326,7 @@ interface UserSceneReq {
  */
 interface UserDataReq extends UserSceneReq {
     userId: string;
+    gameId: string;
 }
 
 /**
@@ -418,6 +419,11 @@ interface ConsumeCurrencyReq extends UserSceneReq {
      * @desc 未定.
      */
     price?: number;
+
+    /**
+     * 游戏发布所在的链Chain
+     */
+    gameId: string;
 }
 
 /**
@@ -1728,6 +1734,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         }
 
         const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
         const requestParam: ConsumeCurrencyReq = {
             sceneId,
             sceneName,
@@ -1736,6 +1743,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             buyCnt: count,
             timestamp: Math.floor(Date.now() / 1e3),
             price,
+            gameId,
         };
 
         const respInJson =
@@ -1768,11 +1776,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         }
 
         const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
         const requestParam: ConsumePotionReq = {
             userId,
             sceneId,
             sceneName,
             useAmount: count,
+            gameId,
         };
 
         const respInJson = await this.correspondHandler<QueryResp<ConsumePotionRespData>>(
@@ -1800,10 +1810,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
     public async queryUserP12Bag(userId: string, sceneName: SceneName): Promise<UserP12BagRespData | undefined> {
         const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
         const requestParam: UserDataReq = {
             userId,
             sceneId,
             sceneName,
+            gameId,
         };
 
         const respInJson = await this.correspondHandler<QueryResp<UserP12BagRespData>>(
@@ -1834,6 +1846,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         if (Gtk.isNullOrUndefined(userId)) return [undefined, undefined];
 
         const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
         const requestParam: CatchDragonReq = {
             userId,
             dragonPalId,
@@ -1841,6 +1854,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             attributionType: "game",
             sceneId,
             sceneName: "dragon",
+            gameId,
         };
 
         const respInJson =
@@ -1865,10 +1879,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         if (Gtk.isNullOrUndefined(userId)) return;
 
         const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
         const requestParam: UserDataReq = {
             userId,
             sceneId,
             sceneName: "dragon",
+            gameId,
         };
 
         const respInJson = await this.correspondHandler<QueryResp<UserDragonRespData>>(
@@ -1890,10 +1906,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     public async queryRegisterStaminaLimit(userId: string,
                                            sceneName: SceneName) {
         const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
         const requestParam: UserDataReq = {
             userId,
             sceneId,
             sceneName,
+            gameId,
         };
 
         const respInJson = await this.correspondHandler<QueryResp<QueryStaminaLimitRespData>>(
@@ -1942,6 +1960,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const userName = this.getPlayerData(player)?.holdNickName ?? player.nickname;
         const userAvatar = player["avatarUrl"];
         const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
         const requestParam: UpdatePetSimulatorRankDataReq = {
             userId,
             sceneId,
@@ -1954,6 +1973,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             petEnchantScore,
             recordTime: Math.floor(recordTime / 1000),
             round,
+            gameId,
         };
 
         Gtk.waitDo(requestParam, this.userPSRankDataReporter.get(userId), GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
@@ -1978,6 +1998,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         const userName = player.nickname;
         const userAvatar = player["avatarUrl"];
         const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
         const requestParam: UpdateBattleWorldRankDataReq = {
             userId,
             sceneId,
@@ -1988,6 +2009,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             gradeOriginalPower,
             round,
             recordTime: Math.floor(Date.now() / 1000),
+            gameId,
         };
 
         Gtk.waitDo(requestParam, this.userBWRankDataReporter.get(userId), GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
@@ -2008,11 +2030,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return false;
         }
 
+        const gameId = GameServiceConfig.chainId;
         const requestParam: UserStatisticReq<PetSimulatorStatistic> = {
             userId,
             sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
             address: d.holdAddress,
             sceneName: "pet",
+            gameId,
             data: {
                 ...statistic,
                 user_id: userId,
@@ -2038,11 +2062,13 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             return false;
         }
 
+        const gameId = GameServiceConfig.chainId;
         const requestParam: UserStatisticReq<BattleWorldStatistic> = {
             userId,
             sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
             address: d.holdAddress,
             sceneName: "fight",
+            gameId,
             data: {
                 ...statistic,
                 user_id: userId,
