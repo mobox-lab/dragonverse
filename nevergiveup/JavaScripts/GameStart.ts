@@ -146,6 +146,7 @@ export default class GameStart extends Script {
         GameManager.init(this);
         AirdropManager.init();
         SoundUtil.init();
+        SoundUtil.playBGM();
         Reward.init();
     }
 

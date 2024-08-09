@@ -43,6 +43,7 @@ import { Fsm } from "../fsm/Fsm";
 import EnvironmentManager from "../gameplay/interactiveObj/EnvironmentManager";
 import { EEnemyComponentType } from "../tool/Enum";
 import { MGSTool } from "../tool/MGSTool";
+import { SoundUtil } from "../tool/SoundUtil";
 import { Wave, WaveAirdrop, WaveManager, WaveUtil } from "./Wave";
 import { UIMain } from "./ui/UIMain";
 import { SettleData, UISettle } from "./ui/UISettle";
@@ -849,6 +850,7 @@ export class StageC {
                 UIService.getUI(TowerUI).setStageTowerUI(false);
                 if (state == EStageState.End) {
                     this.stopBGM();
+                    SoundUtil.playBGM();
                     UIService.hide(UISettle);
                     Event.dispatchToLocal("onStageEnd");
                 }
@@ -1000,8 +1002,9 @@ export class StageC {
         if (SoundService.BGMVolumeScale === 0) return;
         const stageConfig = StageUtil.getStageCfgById(this.stageCfgId);
         const bgm = stageConfig.bgm;
+        const volume = stageConfig?.bgmVolume || 0.5;
         if (bgm) {
-            SoundService.playBGM(bgm);
+            SoundService.playBGM(bgm, volume);
         }
     }
 

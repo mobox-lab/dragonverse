@@ -15,18 +15,15 @@ import AttackTower from "./Tower/AttackTower";
 import BuffTower from "./Tower/BuffTower";
 import FarmTower from "./Tower/FarmTower";
 import ThrowTower from "./Tower/ThrowTower";
-import TowerBase from './Tower/TowerBase';
+import TowerBase from "./Tower/TowerBase";
 import { TowerInfo, TowerType } from "./TowerEnum";
 
 export namespace TowerManager {
-
     export let towerMap: Map<number, TowerBase> = new Map();
     export let myTowerCount: number = 0;
     let quadTree: QuadTree;
 
-
-    export function init() {
-    }
+    export function init() {}
 
     export function findTowers(position: number[], radius: number) {
         return queryTowers(position[0], position[1], radius, radius);
@@ -130,8 +127,7 @@ export namespace TowerManager {
         if (bounds) {
             let [x, y, w, h] = bounds;
             quadTree = new QuadTree(new Rectangle(x, y, w, h), 4);
-        }
-        else {
+        } else {
             quadTree = null;
         }
         for (let tower of towerMap.values()) {
@@ -144,10 +140,10 @@ export namespace TowerManager {
         for (let tower of towerMap.values()) {
             tower.onUpdate(dt);
         }
-
     }
 
     export function queryTowers(x: number, y: number, w: number, h) {
-        return quadTree.query(new Rectangle(x, y, w, h)).map(point => point.obj as TowerBase);
+        if (!quadTree) return [];
+        return quadTree.query(new Rectangle(x, y, w, h)).map((point) => point.obj as TowerBase);
     }
 }
