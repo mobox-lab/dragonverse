@@ -1,6 +1,7 @@
 import {ConfigBase, IElementBase} from "./ConfigBase";
 import {AirdropConfig} from "./Airdrop";
 import {BuffConfig} from "./Buff";
+import {DragonConfig} from "./Dragon";
 import {GlobalConfig} from "./Global";
 import {ItemConfig} from "./Item";
 import {LanguageConfig} from "./Language";
@@ -37,6 +38,7 @@ export class GameConfig{
 	}
 	public static get Airdrop():AirdropConfig{ return this.getConfig(AirdropConfig) };
 	public static get Buff():BuffConfig{ return this.getConfig(BuffConfig) };
+	public static get Dragon():DragonConfig{ return this.getConfig(DragonConfig) };
 	public static get Global():GlobalConfig{ return this.getConfig(GlobalConfig) };
 	public static get Item():ItemConfig{ return this.getConfig(ItemConfig) };
 	public static get Language():LanguageConfig{ return this.getConfig(LanguageConfig) };

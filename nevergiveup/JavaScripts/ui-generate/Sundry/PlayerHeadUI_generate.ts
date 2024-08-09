@@ -15,13 +15,6 @@ export default class PlayerHeadUI_Generate extends UIScript {
 		}
 		return this.image_Internal
 	}
-	private title_Internal: mw.TextBlock
-	public get title(): mw.TextBlock {
-		if(!this.title_Internal&&this.uiWidgetBase) {
-			this.title_Internal = this.uiWidgetBase.findChildByPath('Background/title') as mw.TextBlock
-		}
-		return this.title_Internal
-	}
 	private bgName_Internal: mw.Image
 	public get bgName(): mw.Image {
 		if(!this.bgName_Internal&&this.uiWidgetBase) {
@@ -57,6 +50,13 @@ export default class PlayerHeadUI_Generate extends UIScript {
 		}
 		return this.subTitle_Internal
 	}
+	private title_Internal: mw.TextBlock
+	public get title(): mw.TextBlock {
+		if(!this.title_Internal&&this.uiWidgetBase) {
+			this.title_Internal = this.uiWidgetBase.findChildByPath('Background/title') as mw.TextBlock
+		}
+		return this.title_Internal
+	}
 
 
 
@@ -76,9 +76,6 @@ export default class PlayerHeadUI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   this.initLanguage(this.title)
-	   
-	
 	   this.initLanguage(this.playerLevel)
 	   
 	
@@ -86,6 +83,9 @@ export default class PlayerHeadUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.subTitle)
+	   
+	
+	   this.initLanguage(this.title)
 	   
 	
 	   //文本多语言
