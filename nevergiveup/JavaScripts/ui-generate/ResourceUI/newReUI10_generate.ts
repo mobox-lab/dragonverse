@@ -6,23 +6,9 @@
 
 
 
-@UIBind('UI/Bless/BlessItem.ui')
-export default class BlessItem_Generate extends UIScript {
-		private img_Icon_Internal: mw.Image
-	public get img_Icon(): mw.Image {
-		if(!this.img_Icon_Internal&&this.uiWidgetBase) {
-			this.img_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/img_Icon') as mw.Image
-		}
-		return this.img_Icon_Internal
-	}
-	private txt_Percent_Internal: mw.TextBlock
-	public get txt_Percent(): mw.TextBlock {
-		if(!this.txt_Percent_Internal&&this.uiWidgetBase) {
-			this.txt_Percent_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/txt_Percent') as mw.TextBlock
-		}
-		return this.txt_Percent_Internal
-	}
-
+@UIBind('UI/ResourceUI/newReUI10.ui')
+export default class newReUI10_Generate extends UIScript {
+	
 
 
    protected onAwake() {
@@ -41,9 +27,6 @@ export default class BlessItem_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   this.initLanguage(this.txt_Percent)
-	   
-	
 	   //文本多语言
 	   
 

@@ -21,6 +21,7 @@ import KeyOperationManager from "../controller/key-operation-manager/KeyOperatio
 import { TalentTreeContainer } from "../TalentTree/ui/TalentTreeContainer";
 import { GameManager } from "../GameManager";
 import TowerShopUI from "./Tower/TowerShopUI";
+import BlessUI from "./Dragon/BlessUI";
 
 export default class LobbyUI extends LobbyUI_Generate {
     /**
@@ -79,6 +80,7 @@ export default class LobbyUI extends LobbyUI_Generate {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.L, () => {
             this.showTaskPanel();
         });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.N, () => UIService.show(BlessUI));
     }
 
     public showTaskPanel() {
