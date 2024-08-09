@@ -8,7 +8,14 @@
 
 @UIBind('UI/Bless/BlessItem.ui')
 export default class BlessItem_Generate extends UIScript {
-		private img_Icon_Internal: mw.Image
+		private img_IconBg_Internal: mw.Image
+	public get img_IconBg(): mw.Image {
+		if(!this.img_IconBg_Internal&&this.uiWidgetBase) {
+			this.img_IconBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/img_IconBg') as mw.Image
+		}
+		return this.img_IconBg_Internal
+	}
+	private img_Icon_Internal: mw.Image
 	public get img_Icon(): mw.Image {
 		if(!this.img_Icon_Internal&&this.uiWidgetBase) {
 			this.img_Icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/img_Icon') as mw.Image
@@ -21,6 +28,13 @@ export default class BlessItem_Generate extends UIScript {
 			this.txt_Percent_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/txt_Percent') as mw.TextBlock
 		}
 		return this.txt_Percent_Internal
+	}
+	private img_Corner_Internal: mw.Image
+	public get img_Corner(): mw.Image {
+		if(!this.img_Corner_Internal&&this.uiWidgetBase) {
+			this.img_Corner_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/img_Corner') as mw.Image
+		}
+		return this.img_Corner_Internal
 	}
 
 

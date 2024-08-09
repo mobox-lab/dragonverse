@@ -4,6 +4,7 @@ import IScrollViewItem from "../../depend/scroll-view/IScrollViewItem";
 import BlessItem_Generate from "../../ui-generate/Bless/BlessItem_generate";
 import { Yoact } from "../../depend/yoact/Yoact";
 import bindYoact = Yoact.bindYoact;
+import { GlobalData } from "../../const/GlobalData";
 
 export default class BlessItemUI extends BlessItem_Generate implements IScrollViewItem<DragonBlessListUnique>{
     //#region IScrollViewItem
@@ -15,6 +16,8 @@ export default class BlessItemUI extends BlessItem_Generate implements IScrollVi
         const dragons = GameConfig.Dragon.getAllElement();
         const dragon = dragons?.find((d) => d.dragonPalId === data.id);
         this.img_Icon.imageGuid = dragon?.imgGuid;
+        this.img_IconBg.imageGuid = GlobalData.Shop.shopItemBgGuid[(dragon?.tdElemetType || 1) - 1];
+        this.img_Corner.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(dragon?.tdElemetType || 1) - 1];
     }
 
     get clickObj(): mw.StaleButton {
