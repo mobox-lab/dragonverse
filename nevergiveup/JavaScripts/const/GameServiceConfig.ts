@@ -1,4 +1,5 @@
 import GToolkit, { GtkTypes } from "gtoolkit";
+import { ChainId } from "./Chains";
 
 export default class GameServiceConfig {
     //#region Global Config
@@ -16,6 +17,10 @@ export default class GameServiceConfig {
      * 是否使用测试地址.
      */
     public static isUseTestUrl: boolean = undefined;
+    /**
+     * 当前游戏发行的 chain.
+     */
+    public static chainId: ChainId = undefined;
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Statistic
@@ -86,9 +91,15 @@ export default class GameServiceConfig {
      */
     public static readonly EXPIRED_REFRESH_INTERVAL = 10e3;
 
+    public static readonly HEARTBEAT_REFRESH: number = 5;
+
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Cryptocurrency
     public static Ether: bigint = 10n ** 18n;
+    //#endregion
+
+    //#region Log
+    public static readonly HEARTBEAT_KIND: string = "P_PING";
     //#endregion
 }

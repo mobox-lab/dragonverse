@@ -590,7 +590,7 @@ interface CatchDragonRespData {
 /**
  * 查询 用户龙 返回值.
  */
-interface UserDragonRespData {
+export interface UserDragonRespData {
     /**
      * 用户龙列表.
      */

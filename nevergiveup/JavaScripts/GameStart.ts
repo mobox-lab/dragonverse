@@ -44,6 +44,7 @@ import GameServiceConfig from "./const/GameServiceConfig";
 import { DragonDataModuleS } from "./Modules/dragonData/DragonDataModuleS";
 import { DragonDataModuleC } from "./Modules/dragonData/DragonDataModuleC";
 import DragonDataModuleData from "./Modules/dragonData/DragonDataModuleData";
+import { ChainId, Chains } from "./const/Chains";
 
 export namespace Config {
     export let skipGuide: boolean = false;
@@ -72,6 +73,9 @@ export default class GameStart extends Script {
 
     @mw.Property({ displayName: "是否使用测试 Url", group: "发布" })
     public isUseTestUrl: boolean = true;
+
+    @mw.Property({displayName: "主网链", group: "发布", selectOptions: Chains})
+    public customChainId: ChainId = Chains.Merlin;
 
     @mw.Property({ displayName: "是否开启gm（勾选开启）", group: "测试" })
     public isGM: boolean = false;
@@ -112,6 +116,7 @@ export default class GameStart extends Script {
         GameServiceConfig.isRelease = this.isRelease;
         GameServiceConfig.isBeta = this.isBeta;
         GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
+        GameServiceConfig.chainId = this.customChainId;
         DataStorage.setTemporaryStorage(!(GameServiceConfig.isRelease || GameServiceConfig.isBeta || this.isOnline));
         for (const k in Config) {
             if (this.hasOwnProperty(k)) {
