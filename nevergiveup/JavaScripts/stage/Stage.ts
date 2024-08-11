@@ -21,6 +21,7 @@ import { TowerModuleC } from "../Modules/TowerModule/TowerModuleC";
 import { AuthModuleS } from "../Modules/auth/AuthModule";
 import { DragonDataModuleS } from "../Modules/dragonData/DragonDataModuleS";
 import TalentUtils from "../Modules/talent/TalentUtils";
+import { WaveModuleC } from "../Modules/waveModule/WaveModuleC";
 import { RankItem } from "../Rank/RankManager";
 import { NEW_STAGE_CONFIG, STAGE_CONFIG, baseHp } from "../StageConfig";
 import { EStageState, WaveConfig } from "../StageEnums";
@@ -569,6 +570,7 @@ export class StageC {
     hp: number = baseHp;
     unlockedTechNodes: { [id: number]: number } = {};
     techNodeMap: { [id: number]: number[] } = {};
+
     private _gold: number = 0;
     private _damage: number = 0;
     private _dataChanged: boolean = false;
@@ -727,15 +729,16 @@ export class StageC {
                 this.duration = param[0];
                 let wave = param[1];
                 this.currentWave = wave;
-                const [waveContent, waveMax] = WaveUtil.fitOldConfig(this.stageCfgId, wave);
+                const [waveContent, waveMax] = WaveUtil.fitOldConfig(this.stageCfgId, wave, true, this.id);
                 // let waves: WaveConfig[] =
                 //     STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageIndex, this.difficulty)].waves;
                 // let waveMax = waves.length;
 
+                // todo waveMax 为99999的是无尽模式
                 ui.setTimer(this.duration);
                 ui.setWave(wave, waveMax);
 
-                WaveManager.addWave(new Wave(waveContent));
+                WaveManager.addWave(new Wave(waveContent, waveMax === 99999));
                 // if (waveContent.airDrop) {
                 //     WaveManager.addAirdrop(new WaveAirdrop(waveContent.airDrop));
                 // }
@@ -849,6 +852,7 @@ export class StageC {
                 UIService.show(LobbyUI);
                 UIService.getUI(TowerUI).setStageTowerUI(false);
                 if (state == EStageState.End) {
+                    ModuleService.getModule(WaveModuleC).syncWaveUtil(this.id, null);
                     this.stopBGM();
                     SoundUtil.playBGM();
                     UIService.hide(UISettle);
@@ -1051,7 +1055,7 @@ class GameState extends StageBaseState {
     }
     onEnter(...params: any[]): void {
         this._wave = params[0];
-        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageCfgId, this._wave);
+        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageCfgId, this._wave, false, this.fsm.owner.id);
         this._time = currentWave.waveTime;
         this.fsm.owner.currentWaveCount = 0;
         this.fsm.owner.currentWaveDeadIds = [];
@@ -1086,7 +1090,12 @@ class WaitState extends StageBaseState {
     onEnter(...params: any[]): void {
         this._time = params[0];
         this._wave = params[1];
-        const [currentWave] = WaveUtil.fitOldConfig(this.fsm.owner.stageCfgId, this._wave + 1);
+        const [currentWave] = WaveUtil.fitOldConfig(
+            this.fsm.owner.stageCfgId,
+            this._wave + 1,
+            false,
+            this.fsm.owner.id
+        );
 
         this.fsm.owner.addGold(currentWave.waveGold);
         // TODO 把S端的代码改同步
@@ -1153,6 +1162,10 @@ export namespace StageUtil {
     export function getWaveIndexFromId(cfgId: number) {
         const cfg = GameConfig.Stage.getElement(cfgId);
         const waveIndex = (cfg?.index ?? 0) * 3 + (cfg?.difficulty ?? 0) + 1;
+        return waveIndex;
+    }
+    export function getWaveIndexByIndexAndDifficulty(index: number, difficulty: number) {
+        const waveIndex = (index ?? 0) * 3 + (difficulty ?? 0) + 1;
         return waveIndex;
     }
     // 获取同世界上一关难度的id数组（）

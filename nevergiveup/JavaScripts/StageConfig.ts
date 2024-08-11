@@ -7,8 +7,8 @@
  * @Description  : 修改描述
  */
 
-import { NewStageConfig, StageConfig, WaveEnemy } from "./StageEnums";
-import { GameConfig } from "./config/GameConfig";
+import { WaveModuleC } from "./Modules/waveModule/WaveModuleC";
+import { NewStageConfig, StageConfig } from "./StageEnums";
 import { WaveUtil } from "./stage/Wave";
 
 export const baseHp = 1000;
@@ -1213,37 +1213,49 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
     {
         waves: [
             {
-                enemies: [{ type: 1004, count: 5, spawnInterval: 5 },],
+                enemies: [{ type: 1004, count: 5, spawnInterval: 5 }],
                 waveGold: 100,
                 waveTime: 30,
                 hpMultiplier: 1,
             },
             {
-                 enemies: [{ type: 1038, count: 5, spawnInterval: 5 }],
-                 waveGold: 30,
-                 waveTime: 30,
-                 hpMultiplier: 1,
+                enemies: [{ type: 1038, count: 5, spawnInterval: 5 }],
+                waveGold: 30,
+                waveTime: 30,
+                hpMultiplier: 1,
             },
             {
-                 enemies: [{ type: 1037, count: 5, spawnInterval: 5 }],
-                 waveGold: 40,
-                 waveTime: 30,
-                 hpMultiplier: 1,
+                enemies: [{ type: 1037, count: 5, spawnInterval: 5 }],
+                waveGold: 40,
+                waveTime: 30,
+                hpMultiplier: 1,
             },
             {
-                 enemies: [{ type: 1036, count: 3, spawnInterval: 5 }],
-                 waveGold: 50,
-                 waveTime: 30,
-                 hpMultiplier: 1,
+                enemies: [{ type: 1036, count: 3, spawnInterval: 5 }],
+                waveGold: 50,
+                waveTime: 30,
+                hpMultiplier: 1,
             },
         ],
     },
     // {
-    //     waves: (wave: number) => {
-    //         const waveUtil = new WaveUtil();
-    //         const waveEnemy = waveUtil.calculateWaveContent(wave);
+    //     waves: (wave: number, execute: boolean, stageId?: number) => {
+    //         let waveUtil: WaveUtil = new WaveUtil();
+    //         if (SystemUtil.isClient()) {
+    //             waveUtil = ModuleService.getModule(WaveModuleC).waveUtil;
+    //         }
 
-    //         return waveEnemy;
+    //         if (waveUtil) {
+    //             const waveEnemy = waveUtil.newCalculateWave(wave, execute, stageId);
+    //             return waveEnemy;
+    //         } else {
+    //             return {
+    //                 waveGold: 100,
+    //                 enemies: [],
+    //                 waveTime: 0,
+    //                 hpMultiplier: 0,
+    //             };
+    //         }
     //     },
     //     waveLength: 99999,
     // },
