@@ -19,8 +19,9 @@ import { EStageState } from "./StageEnums";
 import TowerUI from "./UI/Tower/TowerUI";
 import { GameConfig } from "./config/GameConfig";
 import { StageC, StageS, StageUtil } from "./stage/Stage";
-import { WaveManager } from "./stage/Wave";
+import { WaveManager, WaveUtil } from "./stage/Wave";
 import { MGSTool } from "./tool/MGSTool";
+import { WaveModuleC } from "./Modules/waveModule/WaveModuleC";
 
 export const ChatType = {
     Text: 1,
@@ -64,6 +65,9 @@ export namespace GameManager {
 
             Event.addServerListener("onStageCreated", (playerIds: number[], id: number, stageCfgId: number) => {
                 stage = new StageC(playerIds, id, stageCfgId);
+                const waveUtil = new WaveUtil();
+                waveUtil.clearCurrent(id);
+                ModuleService.getModule(WaveModuleC).syncWaveUtil(stage.id, waveUtil);
                 StageActions.onStageCreated.call(id);
                 StageActions.onPlayerCountChanged.call(stage.playerIds.length);
                 WaveManager.init();

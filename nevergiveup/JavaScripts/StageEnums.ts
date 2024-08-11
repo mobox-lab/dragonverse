@@ -87,7 +87,7 @@ export const DifficlutyEnemyHpMultipliers = [1, 1.5, 2];
 // }
 
 export type NewStageConfig = {
-    waves: WaveConfig[] | ((wave: number) => WaveConfig);
+    waves: WaveConfig[] | ((wave: number, execute: boolean, stageId: number) => WaveConfig);
     waveLength?: number;
 };
 
