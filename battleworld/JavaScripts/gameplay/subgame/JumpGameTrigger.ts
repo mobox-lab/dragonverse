@@ -1,15 +1,6 @@
-/**
- * @Author       : zewei.zhang
- * @Date         : 2024-01-16 14:42:38
- * @LastEditors  : zewei.zhang
- * @LastEditTime : 2024-03-01 14:26:23
- * @FilePath     : \DragonVerse\battleworld\JavaScripts\gameplay\subgame\JumpGameTrigger.ts
- * @Description  : 跳游戏触发器
- */
-
-import {Globaldata} from "../../const/Globaldata";
 import Log4Ts from "mw-log4ts";
 import Tips from "../../tool/P_Tips";
+import {Globaldata} from "../../const/Globaldata";
 import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
 
 const progressTag = "JumpProgress";
@@ -21,7 +12,7 @@ export default class JumpGameTrigger extends Script {
     private _progressBar: ProgressBar;
     private _cnvProgressBar: Canvas;
 
-    @mw.Property({displayName: "要跳转的游戏", enumType: {"DragonVerse": 1, "PetSimulator": 2, "HauntedParadise": 3}})
+    @mw.Property({displayName: "要跳转的游戏", enumType: {"DragonVerse": 1, "PetSimulator": 2, "NeverGiveUp": 3}})
     public jumpGameId: number = 1;
 
     protected onStart(): void {
@@ -40,7 +31,7 @@ export default class JumpGameTrigger extends Script {
 
     onProgressDone() {
         //跳游戏
-        console.log(this, "跳游戏", this.getJumpSceneName(this.jumpGameId));
+        Log4Ts.log(this, "跳游戏", this.getJumpSceneName(this.jumpGameId));
         this.jumpGame(Player.localPlayer.userId);
     }
 
@@ -110,7 +101,7 @@ export default class JumpGameTrigger extends Script {
             case 2:
                 return "pet-simulator";
             case 3:
-                return "hauntedparadise";
+                return "nevergiveup";
             default:
                 return "battleworld";
         }

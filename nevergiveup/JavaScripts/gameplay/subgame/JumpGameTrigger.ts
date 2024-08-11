@@ -1,10 +1,9 @@
 import Log4Ts from "mw-log4ts";
-import {GlobalData} from "../../const/GlobalData";
-import {TipsManager} from "../../modules/Hud/P_TipUI";
-import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
+import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
+import GameServiceConfig from "../../const/GameServiceConfig";
+// import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
 
 const progressTag = "JumpProgress";
-
 
 @Component
 export default class JumpGameTrigger extends Script {
@@ -12,7 +11,7 @@ export default class JumpGameTrigger extends Script {
     private _progressBar: ProgressBar;
     private _cnvProgressBar: Canvas;
 
-    @mw.Property({displayName: "要跳转的游戏", enumType: {"BattleWorld": 1, "DragonVerse": 2, "NeverGiveUp": 3}})
+    @mw.Property({displayName: "要跳转的游戏", enumType: {"DragonVerse": 1, "BattleWorld": 2, "PetSimulator": 3}})
     public jumpGameId: number = 1;
 
     protected onStart(): void {
@@ -20,13 +19,14 @@ export default class JumpGameTrigger extends Script {
             this._trigger = this.gameObject as Trigger;
             this._trigger.onEnter.add(this.onPlayerEnter.bind(this));
             this._trigger.onLeave.add(this.onPlayerLeave.bind(this));
-            Event.addServerListener("onJumpGameFailed", (msg: string) => {
-                TipsManager.instance.showTip(msg);
-                Log4Ts.log(this, "onJumpGameFailed", msg);
+        } else if (SystemUtil.isServer()) {
+            Event.addClientListener("onJumpToRoom", (player: Player, roomId: string) => {
+                Log4Ts.log(this, "onJumpToRoom", player.userId, roomId);
+                TeleportService.asyncTeleportToRoom(roomId, [player.userId], null).then(() => {
+                }, this.onFailed);
             });
         }
     }
-
 
     onProgressDone() {
         //跳游戏
@@ -34,30 +34,31 @@ export default class JumpGameTrigger extends Script {
         this.jumpGame(Player.localPlayer.userId);
     }
 
-    @RemoteFunction(Server)
-    jumpGame(userId: string) {
-        const onFailed = (result: mw.TeleportResult) => {
-            // 将错误信息发给所有参与的客户端
+    onFailed = (result: mw.TeleportResult) => {
+        // 将错误信息发给所有参与的客户端
+        for (const userId in result.userIds) {
             const player = Player.getPlayer(userId);
             if (player) {
-                Event.dispatchToClient(player, "onJumpGameFailed", result.message);
-                Log4Ts.log(this, "onJumpGameFailed", result.message);
+                TipsManager.showToClient(player, result.message);
+                Log4Ts.log(this, "onJumpGameFail", result.message);
             }
+        }
+    };
 
-        };
-        TeleportService.asyncTeleportToScene(this.getJumpSceneName(this.jumpGameId), [userId], null).then(() => {
-        }, onFailed);
+    @RemoteFunction(Server)
+    jumpGame(userId: string) {
+        TeleportService.asyncTeleportToScene(this.getJumpSceneName(this.jumpGameId), [userId]).then(() => {
+        }, this.onFailed);
     }
-
 
     onPlayerEnter(other: GameObject) {
         if (other instanceof Character) {
             Player.asyncGetLocalPlayer().then((player) => {
                 if (player.character === other) {
                     //跳子游戏，播进度条
-                    let ui = UIService.show(JumpProgress_Generate);
-                    this._progressBar = ui.progressBar;
-                    this._cnvProgressBar = ui.cnvProgressBar;
+                    // let ui = UIService.show(JumpProgress_Generate);
+                    // this._progressBar = ui.progressBar;
+                    // this._cnvProgressBar = ui.cnvProgressBar;
                     this._progressBar.percent = 0;
                     this._cnvProgressBar.renderOpacity = 0;
                     this.playProgress();
@@ -72,7 +73,7 @@ export default class JumpGameTrigger extends Script {
                 if (player.character === other) {
                     //关闭进度条
                     actions.tweens.stopAllByTag(progressTag);
-                    UIService.hide(JumpProgress_Generate);
+                    // UIService.hide(JumpProgress_Generate);
                 }
             });
         }
@@ -82,7 +83,7 @@ export default class JumpGameTrigger extends Script {
      * 播放 Progress 动画.
      */
     public playProgress() {
-        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GlobalData.Global.jumpGameProgressDuration, {percent: 1}).call(() => {
+        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, {percent: 1}).call(() => {
             this.onProgressDone();
         });
 
@@ -94,13 +95,13 @@ export default class JumpGameTrigger extends Script {
     getJumpSceneName(id: number): string {
         switch (id) {
             case 1:
-                return "battleworld";
-            case 2:
                 return "dragon-verse";
+            case 2:
+                return "battleworld";
             case 3:
-                return "nevergiveup";
-            default:
                 return "pet-simulator";
+            default:
+                return "nevergiveup";
         }
     }
 }

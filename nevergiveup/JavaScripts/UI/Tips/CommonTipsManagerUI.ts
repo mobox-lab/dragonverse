@@ -3,12 +3,18 @@ import CommonTipsItemUI from "./CommonTipsItemUI";
 import { LastWaveTipsUI } from "./LastWaveTipsUI";
 
 export namespace TipsManager {
+
     export function showTips(value: string) {
         mw.UIService.getUI(CommonTipsManagerUI).showTips(value);
     }
 
     export function showWaveTips(value: string, size: number = 48, cb = () => { }) {
         mw.UIService.show(LastWaveTipsUI, value, size, cb);
+    }
+
+    export function showToClient(player: mw.Player, message: string) {
+        if (SystemUtil.isClient()) return;
+        Event.dispatchToClient(player, "Event_ShowTips", message);
     }
 }
 
@@ -57,6 +63,13 @@ export default class CommonTipsManagerUI extends CommonTipsUI_Generate {
     protected onAwake(): void {
         this.layer = mw.UILayerTop;
         this.canUpdate = true;
+    }
+
+    protected onStart(): void {
+        Event.addServerListener("Event_ShowTips", (message: string) => {
+            if (!message) return;
+            this.showTips(message);
+        });
     }
 
     /**
