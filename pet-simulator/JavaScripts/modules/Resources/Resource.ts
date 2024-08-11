@@ -33,19 +33,19 @@ export class Resource {
     public async getResource(cfgId: number): Promise<mw.GameObject> {
         let info = GameConfig.SceneUnit.getElement(cfgId);
         let res = await GameObject.asyncSpawn(info.Guid);
-        if (info.meshArr && info.meshArr.length > 0) {
+        // if (info.meshArr && info.meshArr.length > 0) {
 
-            info.meshArr.forEach((item, index) => {
-                let name = index + 1;
-                let obj = res.getChildByName(name.toString());
-                if (obj) {
-                    let mesh = obj as mw.Model;
-                    mesh.setMaterial(item);
-                } else {
-                    console.error(`lwj 未找到资源cfg${cfgId}的indedx${index}}`);
-                }
-            });
-        }
+        //     info.meshArr.forEach((item, index) => {
+        //         let name = index + 1;
+        //         let obj = res.getChildByName(name.toString());
+        //         if (obj) {
+        //             let mesh = obj as mw.Model;
+        //             mesh.setMaterial(item);
+        //         } else {
+        //             console.error(`lwj 未找到资源cfg${cfgId}的indedx${index}}`);
+        //         }
+        //     });
+        // }
         return res;
     }
 
