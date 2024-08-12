@@ -29,7 +29,7 @@ export default class WorldinfinityUI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock") as any);
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock_1") as any);
 	   
 	
 

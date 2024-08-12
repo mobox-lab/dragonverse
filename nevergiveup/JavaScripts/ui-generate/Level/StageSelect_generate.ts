@@ -344,6 +344,13 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.mStageName_Internal
 	}
+	private mBGImage_Internal: mw.Image
+	public get mBGImage(): mw.Image {
+		if(!this.mBGImage_Internal&&this.uiWidgetBase) {
+			this.mBGImage_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/Canvas_1/mBGImage') as mw.Image
+		}
+		return this.mBGImage_Internal
+	}
 	private mOff_Internal: mw.StaleButton
 	public get mOff(): mw.StaleButton {
 		if(!this.mOff_Internal&&this.uiWidgetBase) {

@@ -10,26 +10,27 @@ import { DragonDataModuleS } from "./DragonDataModuleS";
 export class DragonBlessListUnique implements IUnique {
     public categoryId: DragonElemental;
     public id: number; // dragonPalId
+    public index: number; // 顺序
     public cnt: number;
 
     public static arrayFromByteArray(data: UserDragonRespData, categoryId: DragonElemental): DragonBlessListUnique[] {
-        const result: DragonBlessListUnique[] = [];
         const dragonIds = GameConfig.Dragon.getAllElement().filter(cfg => cfg.elementalId === categoryId).map(cfg => cfg.dragonPalId);
-        
+        const arr: {id: number, cnt: number, categoryId: DragonElemental}[] = []         
         for (const id of dragonIds) {
             const list = data?.DragonPalList ?? [];
             const cnt = list.length ? (list.find(d => d.dragonPalId === id)?.amount ?? 0) : 0;
-            result.push(new DragonBlessListUnique(id, cnt, categoryId));
+            arr.push({id, cnt, categoryId});
         }
-        result.sort((a, b) => a.cnt - b.cnt);
+        arr.sort((a, b) => b.cnt - a.cnt);
         console.log("#debug dragonIds:" + dragonIds + " data:" + JSON.stringify(data)); 
-        return result;
+        return arr.map(({id, cnt, categoryId}, index) => new DragonBlessListUnique(id, cnt, categoryId, index));
     }
 
-    constructor(id: number, cnt: number, categoryId: DragonElemental) {
+    constructor(id: number, cnt: number, categoryId: DragonElemental, index: number) {
         this.categoryId = categoryId;
         this.cnt = cnt;
         this.id = id;
+        this.index = index;
     }
 
     //#region IUnique
@@ -37,6 +38,7 @@ export class DragonBlessListUnique implements IUnique {
         this.id = updated.id;
         this.categoryId = updated.categoryId;
         this.cnt = updated.cnt;
+        this.index = updated.index;
         return true;
     }
 

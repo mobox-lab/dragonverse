@@ -26,7 +26,7 @@ export namespace GlobalData {
         /** Bless item 背景 各元素对应 光 暗 水 火 木 土 guid */
         public static blessItemBgGuid: string[] = ["405044", "405054", "405050", "405041", "405049", "405045"]; 
         /** Bless item位置对应进度 3% 6% 10% 0则不显示*/
-        public static blessProgress: number[] = [3, 0, 6, 0, 0, 0, 10]; 
+        public static blessProgress: number[] = [3, 3, 6, 6, 6, 6, 10]; 
     }
     /**商店 */
     export class Shop {
