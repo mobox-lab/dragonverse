@@ -45,6 +45,9 @@ import { DragonDataModuleS } from "./Modules/dragonData/DragonDataModuleS";
 import { DragonDataModuleC } from "./Modules/dragonData/DragonDataModuleC";
 import DragonDataModuleData from "./Modules/dragonData/DragonDataModuleData";
 import { ChainId, Chains } from "./const/Chains";
+import { WaveModuleS } from "./Modules/waveModule/WaveModuleS";
+import { WaveModuleC } from "./Modules/waveModule/WaveModuleC";
+import WaveModuleData from "./Modules/waveModule/WaveModuleData";
 
 export namespace Config {
     export let skipGuide: boolean = false;
@@ -180,6 +183,7 @@ export default class GameStart extends Script {
         ModuleService.registerModule(TaskModuleS, TaskModuleC, TaskModuleDataHelper);
         ModuleService.registerModule(TalentModuleS, TalentModuleC, TalentModuleData);
         ModuleService.registerModule(DragonDataModuleS, DragonDataModuleC, DragonDataModuleData);
+        ModuleService.registerModule(WaveModuleS, WaveModuleC, WaveModuleData);
     }
 
     // private checkGM() {
