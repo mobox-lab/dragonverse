@@ -167,6 +167,7 @@ export default class GameStart extends Script {
         GuideDialog.onUpdate(dt);
         DanmuManager.update(dt);
         TweenUtil.TWEEN.update();
+        actions.AcitonMgr.update(dt * 1000);
     }
 
     /** 脚本被销毁时最后一帧执行完调用此函数 */
