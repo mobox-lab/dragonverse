@@ -4,8 +4,8 @@ import { IVoiceElement } from "../config/Voice";
 /*
  * @Author: shifu.huang
  * @Date: 2023-06-08 10:17:41
- * @LastEditors: shifu.huang
- * @LastEditTime: 2023-12-21 09:42:57
+ * @LastEditors: haoran.zhang haoran.zhang@appshahe.com
+ * @LastEditTime: 2024-08-12 11:21:48
  * @FilePath: \nevergiveup\JavaScripts\tool\SoundUtil.ts
  * @Description: 修改描述
  */
@@ -122,6 +122,6 @@ export namespace SoundUtil {
     }
 
     export function playBGM() {
-        mw.SoundService.playBGM("404265", 0.5);
+        mw.SoundService.playBGM("404265", 0.1);
     }
 }
