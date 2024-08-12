@@ -490,18 +490,11 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
     }
 
     private getAreaWeight(areaId: number): { id: number, weight: number }[] {
-        let cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
-        // let cfgs = GameConfig.SceneUnit.getAllElement();
-        let weightArr: { id: number, weight: number }[] = [];
-        // let weight = 0;
-        cfgs.forEach((item) => {
-            // if (item.AreaID == areaId) {
-            // if (item.Weight != 0) {
-            // weight += item.Weight;
-            weightArr.push({ id: item.ID, weight: item.Weight });
-            // }
-            // }
-        });
+        const cfgs = GameConfig.SceneUnit.findElements("AreaID", areaId);
+        if(!cfgs?.length) return [];
+        const validCfgs = cfgs.filter((item) => item?.Weight > 0);
+        if(!validCfgs?.length) return [];
+        const weightArr: { id: number, weight: number }[] = validCfgs.map((item) => ({ id: item.ID, weight: item.Weight }));
         return weightArr;
     }
 
