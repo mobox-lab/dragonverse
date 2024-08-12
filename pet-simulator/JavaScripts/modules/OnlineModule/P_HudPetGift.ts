@@ -6,6 +6,7 @@ import HUDpetGift_Generate from "../../ui-generate/hud/HUDpetGift_generate";
 import PetStateItemUI_Generate from "../../ui-generate/hud/PetStateItemUI_generate";
 import { utils } from "../../util/uitls";
 import { P_HudPet2 } from "../Hud/P_HudPet2";
+import { P_Bag } from "../PetBag/P_Bag";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { petItemDataNew } from "../PetBag/PetBagModuleData";
 import { PetState } from "../Player/PetBehavior";
@@ -40,7 +41,10 @@ export class P_HudPetGift extends HUDpetGift_Generate {
         this.onRedPointAC.add(this.addRedPoint, this);
 
         KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
-            ModuleService.getModule(PetBagModuleC).showBag();
+            const bagUI = UIService.getUI(P_Bag) ;
+            if(bagUI.visible) {
+                bagUI.hide();
+            } else ModuleService.getModule(PetBagModuleC).showBag();
         });
     }
 

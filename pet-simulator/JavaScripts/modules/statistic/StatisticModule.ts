@@ -409,7 +409,29 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         d.recordEnter(now);
         d.save(false);
     }
-    
+    public getPetMaxInfo(pets: petItemDataNew[]) {
+        const emptyData = { petMax: 0, petMaxEnchanted: "", petMaxEnchantScore: 0, totalScore: 0 };
+        if(!pets?.length) return emptyData;
+        let petMax = 0;
+        let petMaxEnchantScore = 0;
+        let petMaxEnchanted = "";
+        for (const pet of pets) {
+            if (pet.p.a > petMax) {
+                petMax = pet.p.a;
+                const { score } = this.getStatisticEnchantedInfo(pet);
+                petMaxEnchantScore = score;
+                petMaxEnchanted = score > 0 ? pet.p.b.join(',') : "";
+            } else if (pet.p.a === petMax) {
+                const { score } = this.getStatisticEnchantedInfo(pet);
+                if(score > petMaxEnchantScore) {
+                    petMaxEnchantScore = score;
+                    petMax = pet.p.a;
+                    petMaxEnchanted = score > 0 ? pet.p.b.join(',') : "";
+                }
+            }
+        }
+        return { petMax, petMaxEnchanted, petMaxEnchantScore, totalScore: petMax + petMaxEnchantScore }
+    }
     public shouldReportPsStatistic(userId: string) {
         const petBagData = DataCenterS.getData(userId, PetBagModuleData);
         const curPets = petBagData.PetStatisticArr ?? [];
@@ -434,8 +456,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         const logout = Math.floor((now || 0) / 1000);
         const online = logout - login;
         const petBagSortedItems = petBagData.sortBag();
-        const petMax = petBagSortedItems?.length ? Math.max(...petBagSortedItems.map((pet) => pet.p.a)) : 0;
-
+        const { petMax, petMaxEnchanted, petMaxEnchantScore, totalScore } = this.getPetMaxInfo(petBagSortedItems)
         const energyS = ModuleService.getModule(EnergyModuleS);
         const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
     
@@ -446,7 +467,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 proId: petInfo.I,
                 name: petInfo.p.n,
                 attack: petInfo.p.a,
-                enchanted: this.getStatisticEnchantedInfo(petInfo),
+                enchanted: this.getStatisticEnchantedInfo(petInfo).enchanted,
                 status: "exist",
                 creSource: CreSourceStr[p[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
                 desSource: "",
@@ -476,6 +497,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             petAdd: petStatisticData?.playerPetAdd ?? 0,
             petCnt: petBagSortedItems?.length ?? 0,
             petMax,
+            petMaxEnchanted: "",
+            petMaxEnchantScore: 0,
+            totalScore,
             staMax,
             staPotAdd: petStatisticData.playerStaPotAdd ?? 0,
             staPotCnt: petStatisticData.playerStaPotCnt ?? 0,
@@ -498,12 +522,10 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
 
     public getStatisticEnchantedInfo(petInfo: petItemDataNew) {
 		const buffs = Array.from(petInfo.p.b);
-		const enchanted: string[] = buffs?.length ? buffs.map((b) => {
-			const cfg = GameConfig.Enchants.getElement(b);
-			const name = cfg.Name;
-			return `${b}-${name}`
-		}): [];  // id-name arr
-        return enchanted?.join(",") ?? "";
+        if(!buffs?.length) return { enchanted: "", score: 0 };
+		const enchanted: string = buffs.join(",");
+        const score = buffs.reduce((pre, cur) => pre + (GameConfig.Enchants.getElement(cur)?.RankScore ?? 0), 0);
+        return { enchanted: enchanted ?? "", score };
     }
 
     // 更新宠物销毁数据
@@ -521,7 +543,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 proId: delPet.I,
                 name: delPet.p.n,
                 attack: delPet.p.a,
-                enchanted: this.getStatisticEnchantedInfo(delPet),
+                enchanted: this.getStatisticEnchantedInfo(delPet).enchanted,
                 status: "destroyed",
                 creSource: CreSourceStr[persistInfo[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
                 desSource,
@@ -557,7 +579,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         const logout = Math.floor((now || 0) / 1000);
         const online = logout - login;
         const petBagSortedItems = petBagData.sortBag();
-        const petMax = petBagSortedItems?.length ? Math.max(...petBagSortedItems.map((pet) => pet.p.a)) : 0;
+        const { petMax, petMaxEnchanted, petMaxEnchantScore, totalScore } = this.getPetMaxInfo(petBagSortedItems)
 
         const curPets = petBagData.PetStatisticArr ?? [];
         const destroyPets = Object.values(this.destroyPetsMap || {});
@@ -568,7 +590,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 proId: petInfo.I,
                 name: petInfo.p.n,
                 attack: petInfo.p.a,
-                enchanted: this.getStatisticEnchantedInfo(petInfo),
+                enchanted: this.getStatisticEnchantedInfo(petInfo).enchanted,
 
                 status: "exist",
                 creSource: CreSourceStr[p[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
@@ -599,6 +621,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             petAdd: petStatisticData?.playerPetAdd ?? 0,
             petCnt: petBagSortedItems?.length ?? 0,
             petMax,
+            petMaxEnchanted,
+            petMaxEnchantScore,
+            totalScore,
             staMax,
             staPotAdd: petStatisticData.playerStaPotAdd ?? 0,
             staPotCnt: petStatisticData.playerStaPotCnt ?? 0,

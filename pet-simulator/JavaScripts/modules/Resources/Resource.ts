@@ -33,19 +33,19 @@ export class Resource {
     public async getResource(cfgId: number): Promise<mw.GameObject> {
         let info = GameConfig.SceneUnit.getElement(cfgId);
         let res = await GameObject.asyncSpawn(info.Guid);
-        if (info.meshArr && info.meshArr.length > 0) {
+        // if (info.meshArr && info.meshArr.length > 0) {
 
-            info.meshArr.forEach((item, index) => {
-                let name = index + 1;
-                let obj = res.getChildByName(name.toString());
-                if (obj) {
-                    let mesh = obj as mw.Model;
-                    mesh.setMaterial(item);
-                } else {
-                    console.error(`lwj 未找到资源cfg${cfgId}的indedx${index}}`);
-                }
-            });
-        }
+        //     info.meshArr.forEach((item, index) => {
+        //         let name = index + 1;
+        //         let obj = res.getChildByName(name.toString());
+        //         if (obj) {
+        //             let mesh = obj as mw.Model;
+        //             mesh.setMaterial(item);
+        //         } else {
+        //             console.error(`lwj 未找到资源cfg${cfgId}的indedx${index}}`);
+        //         }
+        //     });
+        // }
         return res;
     }
 
@@ -416,7 +416,13 @@ export default class ResourceScript extends mw.Script {
             if (isCritical) {
                 this.playCritEffectByLast(Player.getPlayer(playerId));
             }
-
+            const userId = Player.getPlayer(playerId).userId;
+            Log4Ts.log(
+                ResourceScript, 
+                "checkHpStage" +
+                " userId:" + userId +
+                ` criticalRate:${criticalRate}% #resource` 
+            );
             this.playReward(
                 playerId,
                 GlobalEnum.ResourceAttackStage.Destroy,
@@ -461,6 +467,13 @@ export default class ResourceScript extends mw.Script {
                 `come down location: ${curPos}`);
             curPos = comeDown(this.pointId);
         }
+        const userId = Player.getPlayer(playerId).userId;
+        Log4Ts.log(
+            ResourceScript, 
+            "playReward" +
+            " userId:" + userId +
+            ` goldVal:${goldVal} gemVal:${gemVal} isCritical:${isCritical} criticalRatio:${criticalRatio} finalGoldValue:${goldVal * criticalRatio} finalGemValue:${gemVal * criticalRatio} #resource` 
+        );
         if (goldCount > 0) {
             ModuleService
                 .getModule(DropManagerS)
