@@ -1,7 +1,7 @@
 import Log4Ts from "mw-log4ts";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import GameServiceConfig from "../../const/GameServiceConfig";
-// import JumpProgress_Generate from "../../ui-generate/subgame/JumpProgress_generate";
+import JumpProgress_Generate from "../../ui-generate/JumpProgress_generate";
 
 const progressTag = "JumpProgress";
 
@@ -56,9 +56,9 @@ export default class JumpGameTrigger extends Script {
             Player.asyncGetLocalPlayer().then((player) => {
                 if (player.character === other) {
                     //跳子游戏，播进度条
-                    // let ui = UIService.show(JumpProgress_Generate);
-                    // this._progressBar = ui.progressBar;
-                    // this._cnvProgressBar = ui.cnvProgressBar;
+                    let ui = UIService.show(JumpProgress_Generate);
+                    this._progressBar = ui.progressBar;
+                    this._cnvProgressBar = ui.cnvProgressBar;
                     this._progressBar.percent = 0;
                     this._cnvProgressBar.renderOpacity = 0;
                     this.playProgress();
@@ -73,7 +73,7 @@ export default class JumpGameTrigger extends Script {
                 if (player.character === other) {
                     //关闭进度条
                     actions.tweens.stopAllByTag(progressTag);
-                    // UIService.hide(JumpProgress_Generate);
+                    UIService.hide(JumpProgress_Generate);
                 }
             });
         }
