@@ -172,6 +172,6 @@ export default class P12ShopPanel extends Online_shop_Generate {
             this.bagC.changeItemCount(item.resId, count);
             this.toast(ShopToast.Success, "Buy succeeded");
             this.resetShopping();
-        });
+        }).catch(() => this.resetShopping());
     }
 }
