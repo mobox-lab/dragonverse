@@ -15,14 +15,13 @@ import { NEW_STAGE_CONFIG } from "../StageConfig";
 import { AirDropConifg, WaveConfig, WaveUtilConfig } from "../StageEnums";
 import { GuideDialog } from "../UI/UIDialog";
 import { GameConfig } from "../config/GameConfig";
-import { IMonsterElement } from "../config/Monster";
 import { Enemy } from "../enemy/EnemyBase";
 import { EEnemyComponentType } from "../tool/Enum";
 import { Point, QuadTree, Rectangle } from "../tool/QuadTree";
 import { StageC, StageUtil } from "./Stage";
 import { WaveUtilConstant } from "./Constant";
 import { UIMain } from "./ui/UIMain";
-import Log4Ts from "../depend/log4ts/Log4Ts";
+import Log4Ts from "mw-log4ts";
 import { WaveModuleC } from "../Modules/waveModule/WaveModuleC";
 import { WaveModuleS } from "../Modules/waveModule/WaveModuleS";
 
