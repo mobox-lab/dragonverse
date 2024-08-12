@@ -19,9 +19,12 @@ import { IMonsterElement } from "../config/Monster";
 import { Enemy } from "../enemy/EnemyBase";
 import { EEnemyComponentType } from "../tool/Enum";
 import { Point, QuadTree, Rectangle } from "../tool/QuadTree";
-import { StageUtil } from "./Stage";
+import { StageC, StageUtil } from "./Stage";
 import { WaveUtilConstant } from "./Constant";
 import { UIMain } from "./ui/UIMain";
+import Log4Ts from "../depend/log4ts/Log4Ts";
+import { WaveModuleC } from "../Modules/waveModule/WaveModuleC";
+import { WaveModuleS } from "../Modules/waveModule/WaveModuleS";
 
 export class Wave {
     enemyTypes: number[][] = [];
@@ -29,7 +32,7 @@ export class Wave {
     spawnIntervals: number[][] = [];
     gates: number[][] = [];
     spawnTimers: number[] = [];
-    constructor(wave: WaveConfig) {
+    constructor(wave: WaveConfig, isInfinite: boolean = false) {
         for (let i = 0; i < wave.enemies.length; i++) {
             this.enemyTypes[i] = [];
             this.spawnIntervals[i] = [];
@@ -37,7 +40,7 @@ export class Wave {
             for (let j = 0; j < wave.enemies[i].count; j++) {
                 this.enemyTypes[i].push(wave.enemies[i].type);
                 this.spawnIntervals[i].push(wave.enemies[i].spawnInterval);
-                if (wave.enemies[i].gate) {
+                if (wave.enemies[i].gate && !isInfinite) {
                     this.gates[i].push(wave.enemies[i].gate);
                 } else {
                     this.gates[i].push(0);
@@ -300,6 +303,12 @@ export class WaveUtil {
     hpPercent = WaveUtilConstant.HP_PERCENT; // 小怪每次加的血量
     hpBossPercent = WaveUtilConstant.HP_BOSS_PERCENT; // Boss每次加的血量
 
+    indexArray = [[], [], []]; // 简单关卡剩余状态  普通关卡剩余状态   // 困难关卡剩余状态
+    currentWaves: WaveConfig[] = [];
+    runningIndex = 0;
+
+    protected _sequence = [0, 0, 1, 1, 2];
+
     // 初始化怪物,也就是第一轮的怪物
     baseEnemy = {
         enemies: [{ type: 1001, count: 1, spawnInterval: 1 }],
@@ -321,6 +330,11 @@ export class WaveUtil {
             this.hpPercent = config?.hpPercent || WaveUtilConstant.HP_PERCENT;
             this.hpBossPercent = config?.hpBossPercent || WaveUtilConstant.HP_BOSS_PERCENT;
         }
+
+        const easyIndexArray = this.filterWaveIndexByDifficulty(0);
+        const normalIndexArray = this.filterWaveIndexByDifficulty(1);
+        const difficultyIndexArray = this.filterWaveIndexByDifficulty(2);
+        this.indexArray = [easyIndexArray, normalIndexArray, difficultyIndexArray];
     }
 
     getEnemies() {
@@ -442,8 +456,92 @@ export class WaveUtil {
         this.baseEnemy.hpMultiplier = this.baseEnemy.hpMultiplier * Math.pow(this.hpBossPercent, multiple);
     }
 
+    newCalculateWave(wave: number, execute: boolean, stageId: number) {
+        if (execute) {
+            if (SystemUtil.isClient()) {
+                let waveInfo: WaveConfig;
+                if (this.currentWaves.length > 0) {
+                    // 取出来了，但是没用完，直接用
+                    const waves = this.currentWaves;
+                    waveInfo = waves.shift();
+                    this.currentWaves = waves;
+                } else {
+                    // 用完了，重新取
+                    const currentValue = this._sequence[this.runningIndex];
+                    const randomIndex = this.getRandomElementAndRemove(currentValue);
+                    this.runningIndex = (this.runningIndex + 1) % this._sequence.length;
+                    const waves = NEW_STAGE_CONFIG[randomIndex].waves;
+                    if (Array.isArray(waves)) {
+                        waveInfo = waves.shift();
+                        this.currentWaves = waves;
+                    } else {
+                        Log4Ts.error(StageC, "error wave index");
+                    }
+                }
+                // todo buff 再算
+                ModuleService.getModule(WaveModuleC).syncCurrentWave(stageId, waveInfo);
+                return waveInfo;
+            }
+        } else {
+            // 不执行，只是获取
+            const defaultData = {
+                waveGold: 100,
+                enemies: [],
+                waveTime: 0,
+                hpMultiplier: 0,
+            };
+            if (SystemUtil.isServer()) {
+                if (stageId) {
+                    const currentWave = ModuleService.getModule(WaveModuleS).getCurrentWave(stageId);
+                    if (currentWave) {
+                        return currentWave;
+                    } else {
+                        return defaultData;
+                    }
+                } else {
+                    return defaultData;
+                }
+            } else {
+                const currentWave = ModuleService.getModule(WaveModuleC).currentWave;
+                if (currentWave) {
+                    return currentWave;
+                } else {
+                    return defaultData;
+                }
+            }
+        }
+    }
+
+    clearCurrent(stageId: number) {
+        ModuleService.getModule(WaveModuleC).syncCurrentWave(stageId, null);
+    }
+
+    filterWaveIndexByDifficulty(difficulty: number) {
+        const stageIndexes = [0, 1, 2, 3, 4];
+        const res = stageIndexes.map((item) => {
+            return StageUtil.getWaveIndexByIndexAndDifficulty(item, difficulty);
+        });
+        return res;
+    }
+
+    getRandomElementAndRemove(difficulty: number) {
+        if (this.indexArray[difficulty].length === 0) {
+            this.indexArray[difficulty] = this.filterWaveIndexByDifficulty(difficulty);
+        }
+        const arr = this.indexArray[difficulty];
+        const randomIndex = Math.floor(Math.random() * arr.length);
+        const [removedElement] = arr.splice(randomIndex, 1);
+        this.indexArray[difficulty] = arr;
+        return removedElement;
+    }
+
     // 适配老版本的数据
-    static fitOldConfig(stageCfgId: number, wave?: number): [WaveConfig | null, number] {
+    static fitOldConfig(
+        stageCfgId: number,
+        wave?: number,
+        execute = false,
+        stageId?: number
+    ): [WaveConfig | null, number] {
         const waveIndex = StageUtil.getWaveIndexFromId(stageCfgId);
         const waves = NEW_STAGE_CONFIG[waveIndex].waves;
         if (Array.isArray(waves)) {
@@ -455,12 +553,12 @@ export class WaveUtil {
             const waveContent = currentWaves[wave - 1];
             return [waveContent, waveMax];
         } else {
-            const currentWaves: (wave: number) => WaveConfig = waves;
+            const currentWaves: (wave: number, execute: boolean, stageId?: number) => WaveConfig = waves;
             const waveMax = NEW_STAGE_CONFIG[waveIndex].waveLength;
             if (!wave) {
                 return [null, waveMax];
             }
-            const waveContent = currentWaves(wave);
+            const waveContent = currentWaves(wave, execute, stageId);
             return [waveContent, waveMax];
         }
     }
