@@ -61,7 +61,7 @@ export class GuideModuleC extends JModuleC<GuideModuleS, GuideModuleData> {
         };
 
         this.manager.onComplete.add((param) => {
-            Gtk.patchDo(
+            Gtk.batchDo(
                 undefined,
                 requestSaveProgress,
             );

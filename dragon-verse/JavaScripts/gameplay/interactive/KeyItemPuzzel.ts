@@ -54,7 +54,7 @@ export abstract class KeyItemPuzzle extends Puzzle {
         if (!enter) {
             return;
         }
-        let storageItem: PickableItem = GToolkit.getFirstComponent(enter, PickableItem);
+        let storageItem: PickableItem = GToolkit.getFirstComponent(enter, PickableItem, 1);
 
         if (!storageItem) {
             this.onPutInSomeGameObject(enter, false);
