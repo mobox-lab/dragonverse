@@ -114,7 +114,7 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
         Log4Ts.log(DropManagerS, `reward generate ${generates.length} drops for player ${playerId} at ${pos} with type ${type} and value ${val}`);
         let logged = false;
 
-        Gtk.patchDo(
+        Gtk.batchDo(
             generates.map(item => {
                 let radiusSample = isBigBox ? GlobalData.DropAni.randomRadiusBig : GlobalData.DropAni.randomRadius;
                 let radius = Gtk.random(radiusSample[0], radiusSample[1]);
