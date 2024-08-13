@@ -149,11 +149,14 @@ export default class MapScript extends Script {
 
             this.towerCreateEvent = Event.addLocalListener(TowerEvent.Create, (v: number) => {
                 this.slots[v].isFree = false;
-                this.resetMaterial(this.slots[v].node as Model);
-                this.slots[v].showOutline(false);
+                // this.resetMaterial(this.slots[v].node as Model);
+                // this.slots[v].showOutline(false);
+                this.slots[v].showPlus(false);
+                this.slots[v].showBg(false);
             });
             this.towerDestroyEvent = Event.addLocalListener(TowerEvent.Destroy, (v: number) => {
                 this.slots[v].isFree = true;
+                this.slots[v].showPlus(true);
             });
 
             StageActions.onStageStateChanged.add((state: EStageState, ...param: number[]) => {
@@ -197,15 +200,17 @@ export default class MapScript extends Script {
                 let paramStr = node.name.substring(name.length);
                 let params = paramStr.split("|");
                 let paramInt = params.map((param) => parseInt(param));
-                if (node.name.startsWith("slot")) {
-                    let model = node as Model;
+                if (node.name === "地块") {
+                    let model = node;
+                    const parent = node.parent;
+                    const children = parent.getChildren();
                     let center = Vector.zero;
                     let extend = Vector.zero;
                     model.getBounds(false, center, extend, false);
-                    let slot = new Slot(this, [center.x, center.y, center.z + extend.z], node);
+                    let slot = new Slot(this, [center.x, center.y, center.z + extend.z], node, children);
                     this.slots.push(slot);
                     node.tag = "slot" + (this.slots.length - 1);
-                    this.resetMaterial(node as Model);
+                    // this.resetMaterial(node as Model);
                     await slot.init();
                 } else if (node.name.startsWith("path")) {
                     let n = node as Model;
@@ -270,7 +275,7 @@ export default class MapScript extends Script {
                 }
             }
         };
-        await pushNode(gameObject, "slot");
+        await pushNode(gameObject, "地块");
         await pushNode(gameObject, "path");
         await pushNode(gameObject, "flypath");
         await pushNode(gameObject, "birthpoint");
@@ -368,20 +373,19 @@ export default class MapScript extends Script {
 
     public showFreeSlot(isShow: boolean) {
         for (let slot of this.slots) {
-            const model = slot.node as Model;
-
             if (slot.isFree) {
+                slot.showBg(isShow);
                 if (isShow) {
-                    model.setMaterial("2C8CCDCF45133522BCAE39969724548E");
-                    slot.showOutline(true);
+                    // model.setMaterial("2C8CCDCF45133522BCAE39969724548E");
+                    // slot.showOutline(true);
                 } else {
-                    this.resetMaterial(model);
+                    // this.resetMaterial(model);
                     // model.setOutline(false);
-                    slot.showOutline(false);
+                    // slot.showOutline(false);
                 }
             } else if (!isShow) {
-                this.resetMaterial(model);
-                slot.showOutline(false);
+                // this.resetMaterial(model);
+                // slot.showOutline(false);
             }
         }
     }
@@ -423,6 +427,8 @@ class Slot extends IMapComponent {
     public isFree: boolean = true;
     public node: GameObject;
     private _cubeOutlines: Model[] = [];
+
+    public children: GameObject[] = [];
 
     generateOutline = async (gameObject: GameObject) => {
         if (!(gameObject instanceof Model)) return;
@@ -518,16 +524,36 @@ class Slot extends IMapComponent {
             c.setVisibility(PropertyStatus.On);
         });
     };
-    constructor(map: MapScript, position: number[], node: GameObject) {
+    constructor(map: MapScript, position: number[], node: GameObject, children: GameObject[]) {
         super();
         this._map = map;
         this.position = position;
         this.node = node;
+        this.children = children;
     }
 
     async init() {
-        await this.generateOutline(this.node);
-        this.showOutline(false);
+        // await this.generateOutline(this.node);
+        // this.showOutline(false);
+        this.showBg(false);
+    }
+
+    showPlus(isShow: boolean) {
+        for (let i = 0; i < this.children.length; i++) {
+            const child = this.children[i];
+            if (child.name.startsWith("待选加号")) {
+                child.setVisibility(isShow);
+            }
+        }
+    }
+
+    showBg(isShow: boolean) {
+        for (let i = 0; i < this.children.length; i++) {
+            const child = this.children[i];
+            if (child.name.startsWith("选中状态")) {
+                child.setVisibility(isShow);
+            }
+        }
     }
 
     destroy() {

@@ -260,6 +260,8 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
             if (obj.tag?.startsWith("slot")) {
                 this.chooseSlotID = +obj.tag?.substring(4);
                 this.chooseTowerID = null;
+                console.log("onClick createTowerByClick");
+                
                 if (!this.towerInstaceOfSlot() && this._isBuild && this._buildID > 0) {
                     await this.createTowerByClick();
                 }
