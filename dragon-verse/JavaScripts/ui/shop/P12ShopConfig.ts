@@ -30,7 +30,7 @@ export const P12ShopConfig: P12ShopItem[] = [
         resId: P12ItemResId.CaptureBall, // 精灵球
         consumeId: ConsumeId.CaptureBall,
         name: "Online_shop003",
-        value: 420000000000000000000n,
+        value: 210000000000000000000n,
         icon: "373564",
         description: "Online_shop004",
         tokenName: TokenNameEnum.MDBL,
