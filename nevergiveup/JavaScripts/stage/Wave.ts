@@ -308,6 +308,8 @@ export class WaveUtil {
 
     protected _sequence = [0, 0, 1, 1, 2];
 
+    waveTimes: number = 0;
+
     // 初始化怪物,也就是第一轮的怪物
     baseEnemy = {
         enemies: [{ type: 1001, count: 1, spawnInterval: 1 }],
@@ -466,18 +468,44 @@ export class WaveUtil {
                     this.currentWaves = waves;
                 } else {
                     // 用完了，重新取
+
                     const currentValue = this._sequence[this.runningIndex];
                     const randomIndex = this.getRandomElementAndRemove(currentValue);
                     this.runningIndex = (this.runningIndex + 1) % this._sequence.length;
                     const waves = NEW_STAGE_CONFIG[randomIndex].waves;
+
                     if (Array.isArray(waves)) {
-                        waveInfo = waves.shift();
-                        this.currentWaves = waves;
+                        let newWaves: WaveConfig[] = waves;
+                        if (this.waveTimes % 5 === 0) {
+                            const times = this.waveTimes / 5;
+                            newWaves = waves.map((item) => {
+                                const newEnemies = item.enemies.map((enemy) => {
+                                    const spawnInterval = enemy.spawnInterval * Math.pow(0.8, times);
+                                    return {
+                                        ...enemy,
+                                        count: Math.floor(enemy.count * Math.pow(1.2, times)),
+                                        spawnInterval: spawnInterval > 0.5 ? Number(spawnInterval.toFixed(2)) : 0.5,
+                                    };
+                                });
+                                const waveTime = item.waveTime * Math.pow(0.8, times);
+                                return {
+                                    ...item,
+                                    waveTime: waveTime > 0.5 ? Number(waveTime.toFixed(2)) : 0.5,
+                                    hpMultiplier: item.hpMultiplier * Math.pow(1.2, times),
+                                    enemies: newEnemies,
+                                };
+                            });
+                        }
+                        waveInfo = newWaves.shift();
+                        this.currentWaves = newWaves;
+                        this.waveTimes++;
                     } else {
                         Log4Ts.error(StageC, "error wave index");
                     }
+
+                    
                 }
-                // todo buff 再算
+
                 ModuleService.getModule(WaveModuleC).syncCurrentWave(stageId, waveInfo);
                 return waveInfo;
             }
