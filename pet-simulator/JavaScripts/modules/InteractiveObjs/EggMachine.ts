@@ -431,7 +431,7 @@ class EggM {
         MessageBox.showTwoBtnMessage(mgs, (res) => {
             if (res) this.buyEgg();
             else InterBtn.instance.closeUI();
-        }, 0, 0, () => InterBtn.instance.closeUI())
+        }, 0, 0, () => InterBtn.instance.closeUI());
     }
 
 
