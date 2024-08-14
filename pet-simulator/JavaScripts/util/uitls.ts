@@ -43,6 +43,28 @@ export class utils {
             });
     }
 
+    public static throttle(fn: Function, time = 500) {
+        let timer = null;
+        return function() {
+            if(!timer) {
+                fn.apply(this, arguments);
+                timer = setTimeout(() => {
+                    timer = null;
+                }, time);
+            }
+        }
+    } 
+
+    public static debounce(fn: Function, wait: number = 500) {
+        let timer = null;
+        return function(){
+            if(timer) clearTimeout(timer);
+            timer = setTimeout(() => {
+                fn.apply(this, arguments);
+            }, wait);
+        };
+    }
+
     // 日志优化 上报
     public static logP12Info(name: string, info: any) {
         Log4Ts.log({name}, JSON.stringify(info) + " #P12");

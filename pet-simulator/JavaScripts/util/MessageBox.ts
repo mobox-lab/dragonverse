@@ -57,8 +57,8 @@ export default class MessageBox extends MessageBox_Generate {
      * @param content 内容
      * @param confirmListener 确认回调
      */
-    public static showOneBtnMessage(content: string, resListener?: () => void, okKey: number = 0, hideListener?: () => void) {
-        if(MessageBox.instance.visible) MessageBox.instance.hide();
+    public static showOneBtnMessage(content: string, resListener?: () => void, okKey: number = 0, hideListener?: () => void, hidePreMsg: boolean = true) {
+        if(hidePreMsg && MessageBox.instance.visible) MessageBox.instance.hide();
         let okStr = GameConfig.Language.button_11.Value;
         MessageBox.instance.showMsg1(content, resListener, okStr, hideListener);
     }
@@ -70,8 +70,8 @@ export default class MessageBox extends MessageBox_Generate {
      * @param yListener “是”回调事件
      * @param nListener “否”回调事件
      */
-    public static showTwoBtnMessage(content: string, resListener: (res: boolean) => void, okKey: number = 0, noKey = 0, hideListener?: () => void) {
-        if(MessageBox.instance.visible) MessageBox.instance.hide();
+    public static showTwoBtnMessage(content: string, resListener: (res: boolean) => void, okKey: number = 0, noKey = 0, hideListener?: () => void, hidePreMsg: boolean = true) {
+        if(hidePreMsg && MessageBox.instance.visible) MessageBox.instance.hide();
         MessageBox.instance.show();
 
         let yesStr = GameConfig.Language.button_12.Value;

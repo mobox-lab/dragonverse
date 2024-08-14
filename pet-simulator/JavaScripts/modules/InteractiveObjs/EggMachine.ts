@@ -429,13 +429,14 @@ class EggM {
             mgs = utils.Format(GameConfig.Language.Text_messagebox_3.Value, utils.formatNumber(price));
         }
         MessageBox.showTwoBtnMessage(mgs, (res) => {
-            if (res) this.buyEgg();
-            else InterBtn.instance.closeUI();
-        }, 0, 0, () => InterBtn.instance.closeUI());
+            if (res) this.buyEgg(); // 动画结束后再把 isShow 设置为 false: EggMachineTween.state2Over
+             else InterBtn.instance.isShow = false;
+        }, 0, 0, () => InterBtn.instance.isShow = false, false);
     }
 
 
-    private async buyEgg() {
+    private async buyEgg() { 
+        InterBtn.instance.isShow = false
         let petMC = ModuleService.getModule(PetBagModuleC);
   
         let res = await petMC.buyEgg(this.cfgID);

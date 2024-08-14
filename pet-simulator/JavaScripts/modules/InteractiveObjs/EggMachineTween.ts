@@ -319,7 +319,6 @@ export class EggMachineTween {
 
 
     private state2Over(): void {
-        InterBtn.instance.closeUI();
         this.isStage1 = true;
         this.order = 0;
         this.isStart = false;

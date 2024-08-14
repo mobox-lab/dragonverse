@@ -6,7 +6,7 @@ import PetGet_Generate from "../../ui-generate/Pet/PetGet_generate";
 import EggInfo_Generate from "../../ui-generate/WorldUI/EggInfo_generate";
 import EggInteract_Generate from "../../ui-generate/WorldUI/EggInteract_generate";
 import { cubicBezier } from "../../util/MoveUtil";
-import { Singleton } from "../../util/uitls";
+import { Singleton, utils } from "../../util/uitls";
 import { DollMachineModuleC } from "../DollMachine/DollMachineModuleC";
 import { P_HudUI } from "../Hud/P_HudUI";
 
@@ -170,6 +170,8 @@ export class InterBtn {
         this.btn = this.root.button;
         mw.UIService.getUI(P_HudUI, false).rootCanvas.addChild(this.root.uiObject);
         this.btn.onClicked.add(() => {
+            if(InterBtn.instance.isShow) return;
+            InterBtn.instance.isShow = true;
             this.callBack();
         });
         this.hide();
@@ -185,15 +187,11 @@ export class InterBtn {
         this.root.uiObject.visibility = (mw.SlateVisibility.SelfHitTestInvisible);
         //挂null上的key是全局的，先把娃娃机的取消掉
         KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
-        KeyOperationManager.getInstance().onKeyUp(null, Keys.F, () => {
-            if(InterBtn.instance.isShow) return
-            this.callBack();
+        KeyOperationManager.getInstance().onKeyUp(null, Keys.F, utils.throttle(() => { 
+            if(InterBtn.instance.isShow) return;
             InterBtn.instance.isShow = true;
-        });
-    }
-
-    public closeUI(): void {
-        InterBtn.instance.isShow = false;
+            this.callBack(); 
+        }, 600));
     }
 
     private update() {
