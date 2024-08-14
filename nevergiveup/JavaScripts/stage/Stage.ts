@@ -472,8 +472,13 @@ export class StageS {
                 let isFirst = ModuleService.getModule(PlayerModuleS).setPerfectWin(player, stageId);
                 // 完美胜利也是胜利，所以也要检查是否是第一次胜利
                 ModuleService.getModule(PlayerModuleS).setWin(player, stageId);
+
+                // 既是完美胜利的首次，也是普通胜利的首次
+                const isNotPerfectFirst = ModuleService.getModule(PlayerModuleS).setWin(player, stageId);
                 this.settleData.isFirst = isFirst;
-                if (isFirst) {
+                if (isFirst && isNotPerfectFirst) {
+                    rewards = [...stageConfig.firstRewardPerfect, ...stageConfig.firstRewardNormal];
+                } else if (isFirst && !isNotPerfectFirst) {
                     rewards = stageConfig.firstRewardPerfect;
                 } else {
                     rewards = stageConfig.followRewardPerfect;
