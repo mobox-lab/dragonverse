@@ -163,7 +163,7 @@ export class InterBtn {
     private inter: any;
     private offset: mw.Vector2;
     public static instance: InterBtn;
-
+    public isShow: boolean = false;
     constructor() {
         this.root = UIService.create(EggInteract_Generate);
         this.root.uiObject.size = new mw.Vector(100, 100);
@@ -186,9 +186,14 @@ export class InterBtn {
         //挂null上的key是全局的，先把娃娃机的取消掉
         KeyOperationManager.getInstance().unregisterKey(null, Keys.F);
         KeyOperationManager.getInstance().onKeyUp(null, Keys.F, () => {
+            if(InterBtn.instance.isShow) return
             this.callBack();
+            InterBtn.instance.isShow = true;
         });
+    }
 
+    public closeUI(): void {
+        InterBtn.instance.isShow = false;
     }
 
     private update() {

@@ -12,7 +12,7 @@ import { UICtrl } from "../../util/UICtrl";
 import { utils } from "../../util/uitls";
 import { BagTool } from "../PetBag/BagTool";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
-import { P_EggGet } from "./P_EggMachine";
+import { InterBtn, P_EggGet } from "./P_EggMachine";
 
 
 export class EggMachineTween {
@@ -319,6 +319,7 @@ export class EggMachineTween {
 
 
     private state2Over(): void {
+        InterBtn.instance.closeUI();
         this.isStage1 = true;
         this.order = 0;
         this.isStart = false;

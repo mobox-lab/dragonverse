@@ -429,9 +429,9 @@ class EggM {
             mgs = utils.Format(GameConfig.Language.Text_messagebox_3.Value, utils.formatNumber(price));
         }
         MessageBox.showTwoBtnMessage(mgs, (res) => {
-            if (res)
-                this.buyEgg();
-        })
+            if (res) this.buyEgg();
+            else InterBtn.instance.closeUI();
+        }, 0, 0, () => InterBtn.instance.closeUI())
     }
 
 

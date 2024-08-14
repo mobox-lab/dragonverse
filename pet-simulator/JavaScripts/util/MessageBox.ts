@@ -14,6 +14,7 @@ import { utils } from "./uitls";
 export default class MessageBox extends MessageBox_Generate {
     private static _instance: MessageBox;
     private resListener: Function;//保存的结果回调方法
+    private hideListener: Function;//hide回调方法
 
     private static _oneMess: MessageOneBox;
 
@@ -69,13 +70,14 @@ export default class MessageBox extends MessageBox_Generate {
      * @param yListener “是”回调事件
      * @param nListener “否”回调事件
      */
-    public static showTwoBtnMessage(content: string, resListener: (res: boolean) => void, okKey: number = 0, noKey = 0) {
+    public static showTwoBtnMessage(content: string, resListener: (res: boolean) => void, okKey: number = 0, noKey = 0, hideListener?: () => void) {
         MessageBox.instance.hide();
         MessageBox.instance.show();
 
         let yesStr = GameConfig.Language.button_12.Value;
         let noStr = GameConfig.Language.button_13.Value;
-        MessageBox.instance.showMsg2(content, resListener, yesStr, noStr);
+
+        MessageBox.instance.showMsg2(content, resListener, yesStr, noStr, hideListener);
     }
     /**
      * 显示消息框（单个按钮）
@@ -93,10 +95,10 @@ export default class MessageBox extends MessageBox_Generate {
         MessageBox._oneMess.showMsg(content, resListener, okStr);
     }
 
-    private showMsg2(content: string, resListener: (res: boolean) => void, yesStr: string, noStr: string) {
-
+    private showMsg2(content: string, resListener: (res: boolean) => void, yesStr: string, noStr: string, hideListener?: () => void) {
         this.mContent_txt.text = (content);
         this.resListener = resListener;
+        this.hideListener = hideListener;
         this.mYes_btn.text = (yesStr);
         this.mNo_btn.text = (noStr);
     }
@@ -115,6 +117,7 @@ export default class MessageBox extends MessageBox_Generate {
 
     public hide(): void {
         super.hide();
+        if(this.hideListener) this.hideListener?.();
         KeyOperationManager.getInstance().unregisterKey(null, Keys.Escape);
     }
 }
