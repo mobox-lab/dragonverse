@@ -627,8 +627,20 @@ export class Enemy implements BuffBag {
         // 天赋树的对空加成
         const flyingBonus = TalentUtils.getModuleCRunesValueById(1020);
         const flyingBonus2 = TalentUtils.getModuleCRunesValueById(1044);
+
+        // 固定增伤
+        let attackFixDamage = 0;
+        const attackFixes = buffs.filter((buff) => buff.cfg.attackFixDamage !== 0);
+        if (attackFixes.length > 0) {
+            const maxAttackFixItem = attackFixes.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.attackFixDamage > (maxItem ? maxItem.cfg.attackFixDamage : -Infinity)
+                    ? currentItem
+                    : maxItem;
+            }, null);
+            attackFixDamage = maxAttackFixItem.cfg.attackFixDamage;
+        }
         // P1 伤害
-        const P1Damage = damage * (1 + (flyingBonus + flyingBonus2) / 100) + flyingDamageBoost;
+        const P1Damage = damage * (1 + (flyingBonus + flyingBonus2) / 100) + flyingDamageBoost + attackFixDamage;
         console.log(flyingBonus, flyingBonus2, P1Damage, "flyingBonus, flyingBonus2, P1Damage");
         // P2 伤害
         const P2Percent = this.elementalRestraint(tower);
