@@ -50,7 +50,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
     /**是否正在附魔 */
     private isEnchanting: boolean = false;
     private bagData: PetBagModuleData;
-
+    public msgUIShowing: boolean = false;
     onStart() {
         this.mButton.onClicked.add(() => {
             if (this.isEnchanting) {
@@ -278,13 +278,13 @@ export class P_Enchants extends EnchantsPanel_Generate {
 
     /**点击宠物item */
     private onClickItem(item: PetBag_Item) {
+        if(this.msgUIShowing) return;
         if (this.isEnchanting) {
             oTraceError("正在附魔中");
             return;
         }
         this.updateSelectKey(item);
     }
-
     /**更新选择key */
     private updateSelectKey(item: PetBag_Item) {
         const isSelected = this.selectPetKey === item.petData.k;
@@ -323,33 +323,42 @@ export class P_Enchants extends EnchantsPanel_Generate {
         }
         const petBagMC = ModuleService.getModule(PetBagModuleC);
         const enchantPetState = await petBagMC.getPetEnchantState(this.selectPetKey);
-
-        const startEnchantFn = async (isOK: boolean) => {
+        
+        const startEnchantFn = async (isOK: boolean) => { 
+            this.msgUIShowing = false;
             if (!isOK) return;
             const res = await petBagMC.enchant(this.selectPetKey, this.selectEnchantId);
             if (res === EnchantPetState.NO_ENOUGH_DIAMOND) {
+                this.msgUIShowing = true;
                 MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
                     super.show();
-                });
+                }, 0, () => this.msgUIShowing = false);
                 return;
             }
             if (res === EnchantPetState.FAILED) {
-                console.error("附魔出错");
+                console.error("附魔出错"); 
                 return;
             }
             this.startEnchant(); // 特效等
         };
+        
+        const hideFn = () => {
+            this.msgUIShowing = false;
+        };
+
+        this.msgUIShowing = true; 
         switch (enchantPetState) {
             case EnchantPetState.IS_ALL_ENCHANT: {
-                MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_2.Value, startEnchantFn);
+                MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_2.Value, startEnchantFn, 0, 0, hideFn);
                 break;
             }
             case EnchantPetState.HAS_NO_ENCHANT:
             case EnchantPetState.IS_HAS_ENCHANT: {
-                MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_1.Value, startEnchantFn);
+                MessageBox.showTwoBtnMessage(GameConfig.Language.Tips_Enchants_1.Value, startEnchantFn, 0, 0, hideFn);
                 break;
             }
             default:
+                this.msgUIShowing = false;
                 break;
         }
     }

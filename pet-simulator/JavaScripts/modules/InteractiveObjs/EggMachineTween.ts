@@ -12,7 +12,7 @@ import { UICtrl } from "../../util/UICtrl";
 import { utils } from "../../util/uitls";
 import { BagTool } from "../PetBag/BagTool";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
-import { P_EggGet } from "./P_EggMachine";
+import { InterBtn, P_EggGet } from "./P_EggMachine";
 
 
 export class EggMachineTween {
