@@ -116,7 +116,8 @@ export class Enemy implements BuffBag {
         this.hpMax = this.hp;
         this.speed = config.speed;
         this.hurtAmount = 0;
-        this.escapeDamage = config.escapeDamage;
+        const escapeDamagePercent = waveConfig?.escapeDamagePercent || 1;
+        this.escapeDamage = Math.floor(config.escapeDamage * escapeDamagePercent);
         this.goldAmount = config.goldAmount;
         this.name = config.name;
         this.buffManager = new BuffManager();

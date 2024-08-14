@@ -488,11 +488,13 @@ export class WaveUtil {
                                     };
                                 });
                                 const waveTime = item.waveTime * Math.pow(0.8, times);
+                                const escapeDamagePercent = 1 * Math.pow(1.2, times);
                                 return {
                                     ...item,
                                     waveTime: waveTime > 0.5 ? Number(waveTime.toFixed(2)) : 0.5,
                                     hpMultiplier: item.hpMultiplier * Math.pow(1.2, times),
                                     enemies: newEnemies,
+                                    escapeDamagePercent: escapeDamagePercent,
                                 };
                             });
                         }
@@ -502,8 +504,6 @@ export class WaveUtil {
                     } else {
                         Log4Ts.error(StageC, "error wave index");
                     }
-
-                    
                 }
 
                 ModuleService.getModule(WaveModuleC).syncCurrentWave(stageId, waveInfo);
