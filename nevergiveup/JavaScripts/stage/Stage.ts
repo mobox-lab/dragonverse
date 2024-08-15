@@ -470,9 +470,6 @@ export class StageS {
                 this.settleData.isPerfect = true;
                 // 完美胜利
                 let isFirst = ModuleService.getModule(PlayerModuleS).setPerfectWin(player, stageId);
-                // 完美胜利也是胜利，所以也要检查是否是第一次胜利
-                ModuleService.getModule(PlayerModuleS).setWin(player, stageId);
-
                 // 既是完美胜利的首次，也是普通胜利的首次
                 const isNotPerfectFirst = ModuleService.getModule(PlayerModuleS).setWin(player, stageId);
                 this.settleData.isFirst = isFirst;
@@ -950,13 +947,13 @@ export class StageC {
         //     selfRankItem.gold = this.gold;
         //     selfRankItem.damage = this.damage;
         //     selfRankItem.name = GameManager.playerName;
-            // this.updateRankItems(
-            //     this._rankItems.map((item) => item.userId),
-            //     this._rankItems.map((item) => item.name),
-            //     this._rankItems.map((item) => item.gold),
-            //     this._rankItems.map((item) => item.damage),
-            //     true
-            // );
+        // this.updateRankItems(
+        //     this._rankItems.map((item) => item.userId),
+        //     this._rankItems.map((item) => item.name),
+        //     this._rankItems.map((item) => item.gold),
+        //     this._rankItems.map((item) => item.damage),
+        //     true
+        // );
         // }
         this.periodicSync(dt);
     }
