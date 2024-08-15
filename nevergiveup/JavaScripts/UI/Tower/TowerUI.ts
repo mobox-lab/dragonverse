@@ -77,7 +77,7 @@ export default class TowerUI extends TowerUI_Generate {
     public setTowerUI(towerIDs: number[]) {
         if (!towerIDs || towerIDs.length < 0) return;
         for (let i = 0; i < TowerConfigConstants.maxEquip; i++) {
-            this._towerItemUIs[i]?.init(towerIDs[i] ? towerIDs[i] : null);
+            this._towerItemUIs[i]?.init(towerIDs[i] ? towerIDs[i] : null, true);
         }
         Event.dispatchToLocal(TowerEvent.ChooseTower, null);
     }
