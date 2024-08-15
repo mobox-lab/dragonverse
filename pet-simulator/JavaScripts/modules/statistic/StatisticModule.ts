@@ -360,7 +360,7 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, PsStatisticModu
 }
 
 export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModuleData> {
-    public destroyPetsMap: { [key: number]: PetSimulatorStatisticPetObj } = {};
+    public destroyPetsMap: { [userId: string]: { [key: number]: PetSimulatorStatisticPetObj } } = {};
     //#region Member
     private _eventListeners: EventListener[] = [];
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -435,7 +435,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
     public shouldReportPsStatistic(userId: string) {
         const petBagData = DataCenterS.getData(userId, PetBagModuleData);
         const curPets = petBagData.PetStatisticArr ?? [];
-        const destroyPets = Object.values(this.destroyPetsMap || {});
+        const destroyPets = Object.values(this.destroyPetsMap?.[userId] || {});
         const totalLen = (curPets?.length ?? 0) + (destroyPets?.length ?? 0);
         if(totalLen <= GlobalData.Statistic.petArrMaxLength) return; // 未达到上限，不需要上报
         const player = Player.getPlayer(userId);
@@ -513,7 +513,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         // destroyed
         petStatisticData.recordLeave(now);
         energyS.resetPlayerEnergyConsumeMap(userId);
-        this.destroyPetsMap = {};
+        this.destroyPetsMap[userId] = {};
         petStatisticData.resetConsumeRecord();
         petStatisticData.recordEnter(now+1);
         
@@ -531,6 +531,8 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
     // 更新宠物销毁数据
     public updateDestroyPetsInfo(userId: string, delPets: petItemDataNew[],desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
         if(!delPets?.length) return;
+        if(!this.destroyPetsMap[userId]) this.destroyPetsMap[userId] = {};
+        const destroyPets = this.destroyPetsMap[userId];
         const petBagData = DataCenterS.getData(userId, PetBagModuleData);
 		const now = Math.floor(Date.now() / 1000);
         const delKeys = [];
@@ -550,7 +552,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 create: persistInfo[PSStatisticPetKey.create],
                 update: now,
             }
-            this.destroyPetsMap[key] = destroyPetsInfo;
+            destroyPets[key] = destroyPetsInfo;
             delKeys.push(key);
         }
         petBagData.delPersistPetStatisticByKeys(delKeys);
@@ -582,10 +584,10 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         const { petMax, petMaxEnchanted, petMaxEnchantScore, totalScore } = this.getPetMaxInfo(petBagSortedItems)
 
         const curPets = petBagData.PetStatisticArr ?? [];
-        const destroyPets = Object.values(this.destroyPetsMap || {});
+        const destroyPets = Object.values(this.destroyPetsMap?.[player.userId] || {});
         const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
             const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
-            const info: PetSimulatorStatisticPetObj = {
+            const info: PetSimulatorStatisticPetObj = { 
                 petkey: p[PSStatisticPetKey.petKey],
                 proId: petInfo.I,
                 name: petInfo.p.n,
