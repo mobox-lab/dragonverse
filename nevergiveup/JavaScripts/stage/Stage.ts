@@ -1008,10 +1008,9 @@ export class StageC {
 
     /**播放背景音乐 */
     public playBGM(): void {
-        if (SoundService.BGMVolumeScale === 0) return;
         const stageConfig = StageUtil.getStageCfgById(this.stageCfgId);
         const bgm = stageConfig.bgm;
-        const volume = stageConfig?.bgmVolume || 0.5;
+        const volume = SoundUtil.bgmVoiceFactor === 0 ? 0 : stageConfig?.bgmVolume || SoundUtil.bgmVoiceFactor;
         if (bgm) {
             SoundService.playBGM(bgm, volume);
         }
