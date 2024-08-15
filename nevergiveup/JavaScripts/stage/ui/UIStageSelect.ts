@@ -114,6 +114,7 @@ export class UIStageSelect extends StageSelect_Generate {
     }
 
     setDifficulty() {
+        let unlockMaxDifficultyIdx = 0;
         for (let i = 0; i < 3; i++) {
             let item: UIStageDifficulty;
             if (this._difficulty.length > i) {
@@ -136,7 +137,11 @@ export class UIStageSelect extends StageSelect_Generate {
                 this.mSelectDifficulty.addChild(item.uiObject);
             }
             item.init(this._script.stageWorldIndex, i, this._script.stageGroupId);
+            if(item.unlocked) unlockMaxDifficultyIdx = i;
         }
+        setTimeout(() => {
+            this._script.setDifficulty(Player.localPlayer.playerId, unlockMaxDifficultyIdx); // 选择已解锁的最高难度
+        }, 0)
     }
 
     setData(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
@@ -149,7 +154,7 @@ export class UIStageSelect extends StageSelect_Generate {
             icon.size = new Vector2(40, 40)
             icon.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[id - 1]
         }
-        const {  stealth, fly, healing, berserk } = this.getMonsterBuff(stageCfgId);
+        const { stealth, fly, healing, berserk } = this.getMonsterBuff(stageCfgId);
         const skills = [];
         if(healing) skills.push(StageMonsterSkillType.Healing);
         if(berserk) skills.push(StageMonsterSkillType.Berserk);
