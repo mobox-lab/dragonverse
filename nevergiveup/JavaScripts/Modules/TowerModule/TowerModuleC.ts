@@ -78,6 +78,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
             UIService.hideUI(this._towerInfoUI);
         } else if (this._towerInfoUI) {
             const towerClass = TowerManager.getTowerByPlaceID(this.chooseTowerID);
+            console.log("#debug chooseTowerID tower:" + JSON.stringify(towerClass.info) + " placeID:" + this.chooseTowerID);
             if (towerClass) {
                 UIService.showUI(this._towerInfoUI, UILayerTop, towerClass);
                 TowerActions.onTowerSelected.call(towerClass.info.placeID);

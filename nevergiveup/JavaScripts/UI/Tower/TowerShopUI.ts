@@ -176,9 +176,12 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	public updateStrategyUI() {
 		const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
 		if(sInfo?.strategyKey) {
+			Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Visible);
 			const descArr = sInfo.strategyDesc;
 			this.textTitle.text = sInfo.strategyTitle;
 			this.textDesc.text = descArr?.length === 3 ? descArr[this._selectLevel] : descArr[0];
+		} else {
+			Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Collapsed);
 		}
 	}
 	public createTextUI(title: string, value: string, options?:{ isInfo?: boolean, isCost?:boolean }) {

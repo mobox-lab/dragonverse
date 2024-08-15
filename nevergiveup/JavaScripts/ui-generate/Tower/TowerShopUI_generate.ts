@@ -281,31 +281,38 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.infoBtn_Internal
 	}
+	private can_strategy_Internal: mw.Canvas
+	public get can_strategy(): mw.Canvas {
+		if(!this.can_strategy_Internal&&this.uiWidgetBase) {
+			this.can_strategy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/can_strategy') as mw.Canvas
+		}
+		return this.can_strategy_Internal
+	}
 	private imgDesc_Internal: mw.Image
 	public get imgDesc(): mw.Image {
 		if(!this.imgDesc_Internal&&this.uiWidgetBase) {
-			this.imgDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/imgDesc') as mw.Image
+			this.imgDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/can_strategy/imgDesc') as mw.Image
 		}
 		return this.imgDesc_Internal
 	}
 	private scro_Desc_Internal: mw.ScrollBox
 	public get scro_Desc(): mw.ScrollBox {
 		if(!this.scro_Desc_Internal&&this.uiWidgetBase) {
-			this.scro_Desc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/scro_Desc') as mw.ScrollBox
+			this.scro_Desc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/can_strategy/scro_Desc') as mw.ScrollBox
 		}
 		return this.scro_Desc_Internal
 	}
 	private textTitle_Internal: mw.TextBlock
 	public get textTitle(): mw.TextBlock {
 		if(!this.textTitle_Internal&&this.uiWidgetBase) {
-			this.textTitle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/scro_Desc/textTitle') as mw.TextBlock
+			this.textTitle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/can_strategy/scro_Desc/textTitle') as mw.TextBlock
 		}
 		return this.textTitle_Internal
 	}
 	private textDesc_Internal: mw.TextBlock
 	public get textDesc(): mw.TextBlock {
 		if(!this.textDesc_Internal&&this.uiWidgetBase) {
-			this.textDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/scro_Desc/textDesc') as mw.TextBlock
+			this.textDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/can_strategy/scro_Desc/textDesc') as mw.TextBlock
 		}
 		return this.textDesc_Internal
 	}

@@ -13,6 +13,7 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
+import Gtk from "gtoolkit";
 import { GameManager } from "../../GameManager";
 import TowerBase from "../../Modules/TowerModule/Tower/TowerBase";
 import { TowerEvent } from "../../Modules/TowerModule/TowerEnum";
@@ -86,16 +87,22 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 	}
 
 	public updateStrategyUI() {
-		const { strategyKey, strategyTitle, strategyDescArgs, strategyDesc } = GlobalData.Shop.getStrategyInfo(this._cfg.id);
+        const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
+        if(!sInfo) {
+			Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Collapsed);
+            return;
+        }
+        Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Visible);
+		const { strategyKey, strategyTitle, strategyDescArgs, strategyDesc } = sInfo
         if(!strategyDescArgs?.length) {
 			this.txt_Strategy.text = '';
 			this.txt_Strategy_Desc.text = '';
-            return
+            return;
         }
         if(strategyDesc.length === 1) {
             this.txt_Strategy.text = strategyTitle;
             this.txt_Strategy_Desc.text = strategyDesc[0];
-            return
+            return;
         }
         const curLevel = this._tower.level;
 		if(strategyKey) {
@@ -110,6 +117,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
      */
     protected onShow(tower: TowerBase) {
         const cfg = GameConfig.Tower.getElement(tower?.info.configID);
+        console.log("#debug TowerInfoUI tower level:" + JSON.stringify(tower.level) + " tower" + JSON.stringify(tower.id) + " cfg" + JSON.stringify(cfg));
         if (!tower || !cfg) {
             UIService.hideUI(this);
             return;

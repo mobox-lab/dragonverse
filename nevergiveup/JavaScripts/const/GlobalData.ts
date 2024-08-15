@@ -161,7 +161,7 @@ export namespace GlobalData {
             strategyDesc: string[]; // 不同等级对应的 desc
             strategyDescArgs: string[][]; // 不同等级对应的 args
             strategyKey: TowerStrategyType;
-        } => {
+        } | null => {
             const cfg = GameConfig.Tower.getElement(towerId);
             if (cfg?.attackTags?.includes(1)) {
                 const { desc, args } = this.getStrategyDesc(TowerStrategyType.AntiHidden)

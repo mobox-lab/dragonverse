@@ -281,17 +281,24 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.txt_price_deploy_Internal
 	}
+	private can_strategy_Internal: mw.Canvas
+	public get can_strategy(): mw.Canvas {
+		if(!this.can_strategy_Internal&&this.uiWidgetBase) {
+			this.can_strategy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_strategy') as mw.Canvas
+		}
+		return this.can_strategy_Internal
+	}
 	private txt_Strategy_Internal: mw.TextBlock
 	public get txt_Strategy(): mw.TextBlock {
 		if(!this.txt_Strategy_Internal&&this.uiWidgetBase) {
-			this.txt_Strategy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/txt_Strategy') as mw.TextBlock
+			this.txt_Strategy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_strategy/txt_Strategy') as mw.TextBlock
 		}
 		return this.txt_Strategy_Internal
 	}
 	private txt_Strategy_Desc_Internal: mw.TextBlock
 	public get txt_Strategy_Desc(): mw.TextBlock {
 		if(!this.txt_Strategy_Desc_Internal&&this.uiWidgetBase) {
-			this.txt_Strategy_Desc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/txt_Strategy_Desc') as mw.TextBlock
+			this.txt_Strategy_Desc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_strategy/txt_Strategy_Desc') as mw.TextBlock
 		}
 		return this.txt_Strategy_Desc_Internal
 	}
