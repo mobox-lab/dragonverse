@@ -262,7 +262,7 @@ export class UIStageSelect extends StageSelect_Generate {
         const counterElementIds = [];
         for (let i = 0; i < elementIds.length; i++) {
             const counterId = this.findCounter(elementIds[i]);
-            counterElementIds.push(counterId);
+            if(!counterElementIds.includes(counterId)) counterElementIds.push(counterId);
         }
         console.log(JSON.stringify(counterElementIds), "counterElementIds");
         return counterElementIds;
