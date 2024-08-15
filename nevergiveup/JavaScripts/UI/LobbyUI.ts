@@ -80,7 +80,6 @@ export default class LobbyUI extends LobbyUI_Generate {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.L, () => {
             this.showTaskPanel();
         });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.N, () => UIService.show(BlessUI));
     }
 
     public showTaskPanel() {
