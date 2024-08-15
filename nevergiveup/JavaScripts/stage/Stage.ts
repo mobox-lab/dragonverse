@@ -133,7 +133,7 @@ export class StageS {
         this.currentWaveDeadIds = [];
         this.currentSkippingPlayers = [];
         this.registerListeners();
-        this.updateRankItems();
+        // this.updateRankItems();
         ModuleService.getModule(DragonDataModuleS).initData(players);
     }
 
@@ -366,22 +366,22 @@ export class StageS {
         }
     }
 
-    updateRankItems() {
-        this._shouldSync = false;
-        this.rankItems.sort((a, b) => {
-            return b.damage - a.damage;
-        });
-        this.boardcast((player) => {
-            Event.dispatchToClient(
-                player,
-                "updateRankItems",
-                this.rankItems.map((rankItem) => rankItem.userId),
-                this.rankItems.map((rankItem) => rankItem.name),
-                this.rankItems.map((rankItem) => rankItem.gold),
-                this.rankItems.map((rankItem) => rankItem.damage)
-            );
-        });
-    }
+    // updateRankItems() {
+    //     this._shouldSync = false;
+    //     this.rankItems.sort((a, b) => {
+    //         return b.damage - a.damage;
+    //     });
+    //     this.boardcast((player) => {
+    //         Event.dispatchToClient(
+    //             player,
+    //             "updateRankItems",
+    //             this.rankItems.map((rankItem) => rankItem.userId),
+    //             this.rankItems.map((rankItem) => rankItem.name),
+    //             this.rankItems.map((rankItem) => rankItem.gold),
+    //             this.rankItems.map((rankItem) => rankItem.damage)
+    //         );
+    //     });
+    // }
 
     onPlayerCountChanged() {
         if (this.players.length == 0) {
@@ -426,9 +426,9 @@ export class StageS {
                 this._syncTimer = 0;
             }
 
-            if (this._shouldSync) {
-                this.updateRankItems();
-            }
+            // if (this._shouldSync) {
+            //     this.updateRankItems();
+            // }
         }
     }
 
@@ -585,7 +585,7 @@ export class StageC {
     private _currentEscapeData: EscapeData[] = [];
     private _lastMonster: number = null;
     private _spent: number = 0;
-    private _rankItems: RankItem[] = [];
+    // private _rankItems: RankItem[] = [];
     public get gold(): number {
         return this._gold;
     }
@@ -883,47 +883,47 @@ export class StageC {
             StageActions.onPlayerCountChanged.call(this.playerIds.length);
         });
 
-        StageListener.addServerListener(
-            this.id,
-            "updateRankItems",
-            (userIds: string[], names: string[], golds: number[], damages: number[]) => {
-                this.updateRankItems(userIds, names, golds, damages);
-            }
-        );
+        // StageListener.addServerListener(
+        //     this.id,
+        //     "updateRankItems",
+        //     (userIds: string[], names: string[], golds: number[], damages: number[]) => {
+        //         this.updateRankItems(userIds, names, golds, damages);
+        //     }
+        // );
     }
 
-    updateRankItems(
-        userIds: string[],
-        names: string[],
-        golds: number[],
-        damages: number[],
-        updateLocal: boolean = false
-    ) {
-        // filter this._rankItems not in userIds
-        this._rankItems = this._rankItems.filter((rankItem) => {
-            return userIds.indexOf(rankItem.userId) != -1;
-        });
-        for (let i = 0; i < userIds.length; i++) {
-            let item = this._rankItems.find((rankItem) => rankItem.userId == userIds[i]);
-            if (!item) {
-                item = {
-                    userId: userIds[i],
-                    name: names[i],
-                    gold: golds[i],
-                    damage: damages[i],
-                };
-                this._rankItems.push(item);
-            } else {
-                if (!updateLocal) {
-                    if (userIds[i] == Player.localPlayer.userId) continue;
-                }
-                item.name = names[i];
-                item.gold = golds[i];
-                item.damage = damages[i];
-            }
-        }
-        RankActions.onRankItemsChanged.call(this._rankItems);
-    }
+    // updateRankItems(
+    //     userIds: string[],
+    //     names: string[],
+    //     golds: number[],
+    //     damages: number[],
+    //     updateLocal: boolean = false
+    // ) {
+    //     // filter this._rankItems not in userIds
+    //     this._rankItems = this._rankItems.filter((rankItem) => {
+    //         return userIds.indexOf(rankItem.userId) != -1;
+    //     });
+    //     for (let i = 0; i < userIds.length; i++) {
+    //         let item = this._rankItems.find((rankItem) => rankItem.userId == userIds[i]);
+    //         if (!item) {
+    //             item = {
+    //                 userId: userIds[i],
+    //                 name: names[i],
+    //                 gold: golds[i],
+    //                 damage: damages[i],
+    //             };
+    //             this._rankItems.push(item);
+    //         } else {
+    //             if (!updateLocal) {
+    //                 if (userIds[i] == Player.localPlayer.userId) continue;
+    //             }
+    //             item.name = names[i];
+    //             item.gold = golds[i];
+    //             item.damage = damages[i];
+    //         }
+    //     }
+    //     RankActions.onRankItemsChanged.call(this._rankItems);
+    // }
 
     setSpeed(speedMultipler: number) {
         Event.dispatchToServer("speedUp", this.id, speedMultipler);
@@ -945,20 +945,19 @@ export class StageC {
             TowerManager.onUpdate(updateRate);
             dtUpdate -= updateRate;
         }
-        let selfRankItem = this._rankItems.find((rankItem) => rankItem.userId == Player.localPlayer.userId);
-        if (selfRankItem) {
-            selfRankItem.gold = this.gold;
-            selfRankItem.damage = this.damage;
-            selfRankItem.name = GameManager.playerName;
-
-            this.updateRankItems(
-                this._rankItems.map((item) => item.userId),
-                this._rankItems.map((item) => item.name),
-                this._rankItems.map((item) => item.gold),
-                this._rankItems.map((item) => item.damage),
-                true
-            );
-        }
+        // let selfRankItem = this._rankItems.find((rankItem) => rankItem.userId == Player.localPlayer.userId);
+        // if (selfRankItem) {
+        //     selfRankItem.gold = this.gold;
+        //     selfRankItem.damage = this.damage;
+        //     selfRankItem.name = GameManager.playerName;
+            // this.updateRankItems(
+            //     this._rankItems.map((item) => item.userId),
+            //     this._rankItems.map((item) => item.name),
+            //     this._rankItems.map((item) => item.gold),
+            //     this._rankItems.map((item) => item.damage),
+            //     true
+            // );
+        // }
         this.periodicSync(dt);
     }
 

@@ -19,7 +19,6 @@ import { GlobalRankDataHelper } from "../GlobalRankDataHelper";
 import { GlobalRankModuleC } from "../GlobalRankModuleC";
 import { GlobalRankModuleS } from "../GlobalRankModuleS";
 import { EmRankType, EmRankTypeMap } from "../const/EmRankType";
-import { GlobalRankPanel } from "../ui/UIGlobalRankPanel";
 
 /**
  * 全局排行榜组件,这里是使用实例
@@ -52,9 +51,9 @@ export default class GlobalRankCom extends Script {
             console.log(this.key);
             this.worldUI = await GameObject.asyncFindGameObjectById(this.worldUIGuid) as UIWidget;
             // 初始化ui
-            const rankPanel = UIService.create(GlobalRankPanel);
-            rankPanel.initRank(rankData.key, rankData.title, true, [GameConfig.Language.getElement("Text_RankLevel").Value, GameConfig.Language.getElement("Text_Name").Value, rankData.typeString]);
-            this.worldUI.setTargetUIWidget(rankPanel.uiWidgetBase);
+            // const rankPanel = UIService.create(GlobalRankPanel);
+            // rankPanel.initRank(rankData.key, rankData.title, true, [GameConfig.Language.getElement("Text_RankLevel").Value, GameConfig.Language.getElement("Text_Name").Value, rankData.typeString]);
+            // this.worldUI.setTargetUIWidget(rankPanel.uiWidgetBase);
 
             // 设置积分
             InputUtil.onKeyDown(Keys.F7, () => {
