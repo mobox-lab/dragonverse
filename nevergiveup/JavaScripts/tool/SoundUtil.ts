@@ -1,5 +1,6 @@
 import { GameConfig } from "../config/GameConfig";
 import { IVoiceElement } from "../config/Voice";
+import { GameManager } from "../GameManager";
 
 /*
  * @Author: shifu.huang
@@ -46,6 +47,22 @@ export namespace SoundUtil {
 
             Event.addLocalListener(VoiceEvent.Bgm, (value: number) => {
                 bgmVoiceFactor = value;
+                mw.SoundService.BGMVolumeScale = value;
+                if (value === 0) {
+                    const stage = GameManager.getStageClient();
+                    if (stage) {
+                        stage.stopBGM();
+                    } else {
+                        stopBGM();
+                    }
+                } else {
+                    const stage = GameManager.getStageClient();
+                    if (stage) {
+                        stage.playBGM();
+                    } else {
+                        playBGM();
+                    }
+                }
             });
 
             Event.addLocalListener(VoiceEvent.Attack, (value: number) => {
@@ -122,6 +139,6 @@ export namespace SoundUtil {
     }
 
     export function playBGM() {
-        mw.SoundService.playBGM("404265", 0.1);
+        mw.SoundService.playBGM("404265", bgmVoiceFactor);
     }
 }

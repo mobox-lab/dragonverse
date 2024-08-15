@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-05 17:42:04
  * @LastEditors  : xiaohao.li
@@ -26,10 +26,11 @@ import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import TowerInfoUI from "../../UI/Tower/TowerInfoUI";
 import TowerShopUI from "../../UI/Tower/TowerShopUI";
 import TowerUI from "../../UI/Tower/TowerUI";
-import Utils from '../../Utils';
+import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
 import EnvironmentManager from "../../gameplay/interactiveObj/EnvironmentManager";
+import { StageUtil } from "../../stage/Stage";
 import { UIMain } from "../../stage/ui/UIMain";
 import { MGSTool } from "../../tool/MGSTool";
 import InteractUI_Generate from "../../ui-generate/Tower/InteractUI_generate";
@@ -45,7 +46,6 @@ import { TowerModuleS } from "./TowerModuleS";
  * 玩家客户端模块，管理玩家的各种信息
  */
 export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
-
     private _maxTower: number = 20;
     private _try: boolean;
     public get maxTower(): number {
@@ -82,7 +82,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
             if (towerClass) {
                 UIService.showUI(this._towerInfoUI, UILayerTop, towerClass);
                 TowerActions.onTowerSelected.call(towerClass.info.placeID);
-                this.isBuild = false;//把建造状态关了
+                this.isBuild = false; //把建造状态关了
             }
         }
     }
@@ -95,7 +95,6 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         this._interactID = v;
     }
 
-
     private _isBuild: boolean = false;
     public get isBuild(): boolean {
         return this._isBuild;
@@ -103,7 +102,8 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     public set isBuild(v: boolean) {
         this.showSlotBuilding(v);
         this._isBuild = v;
-        if (v) {//开始建造就把资料卡关了
+        if (v) {
+            //开始建造就把资料卡关了
             UIService.hideUI(this._towerInfoUI);
         } else {
             Event.dispatchToLocal(TowerEvent.ChooseTower, null);
@@ -120,7 +120,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     private _tryTowerMap: Map<number, number> = new Map();
     public tryTowerMgs: number[] = [];
     protected onStart(): void {
-        console.log('hsfTowerModuleC====================== 启动');
+        console.log("hsfTowerModuleC====================== 启动");
         Event.addLocalListener(CLICKEVENT, this.onClick.bind(this));
         this.interactID = null;
         StageActions.onStageStateChanged.add(this.onStageStateChanged.bind(this));
@@ -136,9 +136,10 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
 
     protected onUpdate(dt: number): void {
         this._interactMap.forEach((v, k) => {
-            v.rootCanvas.position = InputUtil.projectWorldPositionToWidgetPosition(MapManager.getPositionFromId(k)).screenPosition
-                .subtract(UIService.getUI(InteractUI_Generate).interactBtn.size.divide(2));
-        })
+            v.rootCanvas.position = InputUtil.projectWorldPositionToWidgetPosition(
+                MapManager.getPositionFromId(k)
+            ).screenPosition.subtract(UIService.getUI(InteractUI_Generate).interactBtn.size.divide(2));
+        });
     }
 
     get towerInfoUI(): TowerInfoUI {
@@ -150,7 +151,9 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     }
 
     private async initEffect() {
-        this._attackRangeEff = await GameObjPool.asyncSpawn("7019B887451AAB6CCC9821846AE1BFE7") as GameObject;
+        this._attackRangeEff = (await GameObjPool.asyncSpawn("7019B887451AAB6CCC9821846AE1BFE7")) as GameObject;
+        // this._attackRangeEff = (await GameObjPool.asyncSpawn("360869")) as Model;
+        // this._attackRangeEff.setMaterial("93277");
         this.setAttackEffect(null);
     }
 
@@ -160,16 +163,20 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
             this._attackRangeEff.worldTransform.position = Utils.TEMP_VECTOR.set(0, 0, -99999);
         } else {
             let range = tower.property.findRange;
-            let position = tower.oriPos;
+            let position = tower.oriPos.clone().add(new Vector(0, 0, 1));
             // let position = tower.tower.worldTransform.position;
             // position.z += 100;
             // let position = tower.oriPos;
             let scale = range * 2 + 1;
             this._attackRangeEff.worldTransform.scale = Utils.TEMP_VECTOR.set(scale, scale, 1);
             this._attackRangeEff.worldTransform.position = position;
+            const stageCfg = StageUtil.getStageCfgById(MapManager.stageCfgId);
+            const rotation = Rotation.zero;
+            rotation.set(stageCfg?.rotation?.[0] ?? 200, stageCfg?.rotation?.[1] ?? 0, stageCfg?.rotation?.[2] ?? 0);
+
+            this._attackRangeEff.worldTransform.rotation = rotation;
         }
     }
-
 
     /**
      * 状态切换回调
@@ -199,9 +206,14 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                     this.tryTowerMgs = [];
                 } else {
                     this._tempTowerMap.forEach((v, k) => {
-                        MGSTool.waveOver(k, v, currentWave, currentStage,
-                            DataCenterC.getData(PlayerModuleData).firstClears.includes(currentStage) ? 1 : 0)
-                    })
+                        MGSTool.waveOver(
+                            k,
+                            v,
+                            currentWave,
+                            currentStage,
+                            DataCenterC.getData(PlayerModuleData).firstClears.includes(currentStage) ? 1 : 0
+                        );
+                    });
                     this._tempTowerMap = new Map();
                     for (let i of ModuleService.getModule(CardModuleC).equipCards) {
                         this._tempTowerMap.set(i, 0);
@@ -212,9 +224,9 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                 UIService.hide(TowerShopUI);
                 break;
             case EStageState.Settle:
-
                 break;
-            default: break;
+            default:
+                break;
         }
     }
 
@@ -231,19 +243,18 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     interactToShowInfo = (id: number) => {
         this.interactID = id;
         this.onInteractBtnClick();
-    }
+    };
 
     private onInteractEnd(tag, index) {
         if (tag != "tower") return;
         if (!this._interactMap.has(index)) return;
         this._interactMap.get(index).destroy();
         this._interactMap.delete(index);
-
     }
 
     /**
      * towerui的InteractBtn的点击事件
-     * @returns 
+     * @returns
      */
     public onInteractBtnClick() {
         if (this.interactID == null) return;
@@ -254,15 +265,18 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     private async onClick(obj: GameObject) {
         if (!obj) return;
         // if (!obj || this._towerInfoUI.visible) return;
-        if (GuideManager.guideState != GuideState.None && GuideManager.guideState != GuideState.UpgradeTowerSelected && GuideManager.guideState != GuideState.Complete) {
+        if (
+            GuideManager.guideState != GuideState.None &&
+            GuideManager.guideState != GuideState.UpgradeTowerSelected &&
+            GuideManager.guideState != GuideState.Complete
+        ) {
             await this.onGuide(obj);
-        }
-        else {
+        } else {
             if (obj.tag?.startsWith("slot")) {
                 this.chooseSlotID = +obj.tag?.substring(4);
                 this.chooseTowerID = null;
                 console.log("onClick createTowerByClick");
-                
+
                 if (!this.towerInstaceOfSlot() && this._isBuild && this._buildID > 0) {
                     await this.createTowerByClick();
                 }
@@ -287,7 +301,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         this._interactMap.forEach((v, k) => {
             v.destroy();
             this._interactMap.delete(k);
-        })
+        });
         this._interactMap = new Map();
         this.chooseSlotID = null;
         this.chooseTowerID = null;
@@ -297,7 +311,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
 
     /**
      * 新手引导相关 by xiaohao.li
-     * @param obj 
+     * @param obj
      */
     private async onGuide(obj: GameObject) {
         if (GuideManager.guideState == GuideState.CreateTower || GuideManager.guideState == GuideState.CreateTower2) {
@@ -309,28 +323,23 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                     if (this._isBuild && this._buildID > 0) {
                         await this.createTowerByClick();
                     }
-                }
-                else {
+                } else {
                     TipsManager.showTips(GameConfig.Language.getElement("Text_AppointedCreate").Value);
                 }
-            }
-            else {
+            } else {
                 TipsManager.showTips(GameConfig.Language.getElement("Text_CantDo").Value);
             }
-        }
-        else if (GuideManager.guideState == GuideState.UpgradeTower) {
+        } else if (GuideManager.guideState == GuideState.UpgradeTower) {
             if (obj.tag?.startsWith("tower")) {
                 let chooseTowerID = +obj.tag?.substring(5);
                 if (chooseTowerID == 11) {
                     this.chooseTowerID = chooseTowerID;
                     this.chooseSlotID = null;
-                }
-                else {
+                } else {
                     TipsManager.showTips(GameConfig.Language.getElement("Text_AppointedUpgrade").Value);
                 }
             }
-        }
-        else {
+        } else {
             if (obj.tag?.startsWith("slot")) {
                 this.chooseSlotID = +obj.tag?.substring(4);
                 this.chooseTowerID = null;
@@ -393,9 +402,10 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
             return;
         } else {
             let fullFlag = TowerManager.myTowerCount >= this.maxTower;
-            if (fullFlag) {//自创塔满的tips
+            if (fullFlag) {
+                //自创塔满的tips
                 TweenCommon.goldFailedShow(UIService.getUI(UIMain).towerTxt);
-                TipsManager.showTips(GameConfig.Language.getElement("Text_TowerFull").Value)
+                TipsManager.showTips(GameConfig.Language.getElement("Text_TowerFull").Value);
             } else if (this._try && this._tryTowerMap.has(this._buildID)) {
                 await this.createTower({
                     playerID: this.localPlayer.playerId,
@@ -403,21 +413,20 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                     configID: this._buildID,
                     placeID: this.chooseSlotID,
                     level: 0,
-                })
+                });
                 this.cancelChosenTower();
-            } else if (GameManager.checkGold(this._cfg.spend[0]) &&
-                !fullFlag) {
+            } else if (GameManager.checkGold(this._cfg.spend[0]) && !fullFlag) {
                 await this.createTower({
                     playerID: this.localPlayer.playerId,
                     playerName: GameManager.playerName,
                     configID: this._buildID,
                     placeID: this.chooseSlotID,
                     level: 0,
-                })
+                });
                 this.cancelChosenTower();
             } else {
                 TweenCommon.goldFailedShow(UIService.getUI(UIMain).goldTxt);
-                TipsManager.showTips(GameConfig.Language.getElement("Text_LessGold").Value)
+                TipsManager.showTips(GameConfig.Language.getElement("Text_LessGold").Value);
             }
         }
     }
@@ -522,7 +531,8 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         try {
             flag = await this.server.net_createTower(info);
             if (flag) {
-                if (this._try) {//扣掉1次试用塔，如果没了就清空
+                if (this._try) {
+                    //扣掉1次试用塔，如果没了就清空
                     this.reduceTryTower(this._buildID);
                 } else {
                     MGSTool.goldChange(4, this._cfg.spend[0], 7);
@@ -576,5 +586,4 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     public net_destroyTower(placeID: number) {
         TowerManager.destroyTower(placeID);
     }
-
 }

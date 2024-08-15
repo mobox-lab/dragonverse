@@ -60,7 +60,7 @@ export namespace GameManager {
                 }
             });
         } else {
-            RankManager.init();
+            // RankManager.init();
             UIService.show(TowerUI);
 
             Event.addServerListener("onStageCreated", (playerIds: number[], id: number, stageCfgId: number) => {
