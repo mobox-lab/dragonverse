@@ -316,6 +316,20 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.txtButtonshop_Internal
 	}
+	private roomidCanvas_Internal: mw.Canvas
+	public get roomidCanvas(): mw.Canvas {
+		if(!this.roomidCanvas_Internal&&this.uiWidgetBase) {
+			this.roomidCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/roomidCanvas') as mw.Canvas
+		}
+		return this.roomidCanvas_Internal
+	}
+	private text_roomid_Internal: mw.TextBlock
+	public get text_roomid(): mw.TextBlock {
+		if(!this.text_roomid_Internal&&this.uiWidgetBase) {
+			this.text_roomid_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/roomidCanvas/text_roomid') as mw.TextBlock
+		}
+		return this.text_roomid_Internal
+	}
 
 
 
@@ -441,6 +455,9 @@ export default class LobbyUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txtButtonshop)
+	   
+	
+	   this.initLanguage(this.text_roomid)
 	   
 	
 	   //文本多语言

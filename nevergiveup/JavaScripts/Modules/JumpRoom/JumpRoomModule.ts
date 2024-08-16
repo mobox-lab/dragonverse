@@ -31,7 +31,7 @@ export class JumpRoomModuleS extends ModuleS<JumpRoomModuleC, null> {
 export class JumpRoomModuleC extends ModuleC<JumpRoomModuleS, null> {
 
     public net_jumpRoomFailed(msg: string) {
-        // TipsManager.showTips(GameConfig.Language.JumpGameFailed.Value);
+        TipsManager.showTips(GameConfig.Language.JumpGameFailed.Value);
         Log4Ts.log(JumpRoomModuleC, "onJumpRoomFailed", msg);
     }
 
@@ -40,6 +40,6 @@ export class JumpRoomModuleC extends ModuleC<JumpRoomModuleS, null> {
     }
 
     public net_showRoomId(roomId: string) {
-        // UIService.getUI(LobbyUI).roomIdText.text = StringUtil.format(GameConfig.Language.CurrentRoomId.Value, roomId);
+        UIService.getUI(LobbyUI).text_roomid.text = StringUtil.format(GameConfig.Language.CurrentRoomId.Value, roomId);
     }
 }
