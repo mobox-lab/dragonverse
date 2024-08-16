@@ -21,6 +21,7 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
+import Gtk from "gtoolkit";
 import CardModuleC, { CardState } from "../../Modules/CardModule/CardModuleC";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
@@ -40,8 +41,22 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 	public set state(v: CardState) {
 		if (this._state == v) return;
 		this._state = v;
-		this.equipTxt.visibility = v == CardState.Equip ? SlateVisibility.Visible : SlateVisibility.Collapsed;
-		this.canvasLock.visibility = v == CardState.Lock ? SlateVisibility.Visible : SlateVisibility.Collapsed;
+		if(v === CardState.Lock) {
+			Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Visible);
+			Gtk.trySetVisibility(this.lockImg, SlateVisibility.Visible);
+			Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Collapsed);
+			Gtk.trySetText(this.txt_sell, this._cfg.shopPrice.toFixed(0) ?? "0");
+			this.img_money.imageGuid = GlobalData.Shop.priceGoldIconGuid[0];
+		} else if(v === CardState.Unlock) {
+			Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Visible);
+			Gtk.trySetVisibility(this.lockImg, SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Collapsed);
+			Gtk.trySetText(this.txt_sell, this._cfg.spend[0].toFixed(0) ?? "0");
+			this.img_money.imageGuid = GlobalData.Shop.priceGoldIconGuid[1];
+		} else if(v === CardState.Equip) {
+			Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Visible);
+		}
 	}
 
 	private _cfgID: number;

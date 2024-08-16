@@ -30,6 +30,8 @@ export namespace GlobalData {
     }
     /**商店 */
     export class Shop {
+        /** 局外金币、局内金币图标 guid */
+        public static priceGoldIconGuid: string[] =["376847", "385388"];
         /** 商店item背景 各元素对应 光 暗 水 火 木 土 guid */
         public static shopItemBgGuid: string[] = ["392100", "392110", "392113", "392115", "392101", "392103"];
         /** 商店item角标 各元素对应 光 暗 水 火 木 土 guid */
