@@ -463,15 +463,17 @@ export class StageS {
         const [, length] = WaveUtil.fitOldConfig(this.stageCfgId);
         this.settleData.wavesMax = length;
         const stageConfig = StageUtil.getStageCfgById(this.stageCfgId);
-        let stageId = stageConfig.id;
+        const index = stageConfig.index;
+        const difficulty = stageConfig.difficulty;
+        const unique = Number(index.toString() + difficulty.toString());
         let rewards = [];
         if (this.settleData.hasWin) {
             if (this._hp == this._maxHp) {
                 this.settleData.isPerfect = true;
                 // 完美胜利
-                let isFirst = ModuleService.getModule(PlayerModuleS).setPerfectWin(player, stageId);
+                let isFirst = ModuleService.getModule(PlayerModuleS).setPerfectWin(player, unique);
                 // 既是完美胜利的首次，也是普通胜利的首次
-                const isNotPerfectFirst = ModuleService.getModule(PlayerModuleS).setWin(player, stageId);
+                const isNotPerfectFirst = ModuleService.getModule(PlayerModuleS).setWin(player, unique);
                 this.settleData.isFirst = isFirst;
                 if (isFirst && isNotPerfectFirst) {
                     rewards = [...stageConfig.firstRewardPerfect, ...stageConfig.firstRewardNormal];
@@ -482,7 +484,7 @@ export class StageS {
                 }
             } else {
                 // 普通胜利
-                let isFirst = ModuleService.getModule(PlayerModuleS).setWin(player, stageId);
+                let isFirst = ModuleService.getModule(PlayerModuleS).setWin(player, unique);
                 this.settleData.isFirst = isFirst;
                 if (isFirst) {
                     rewards = stageConfig.firstRewardNormal;
