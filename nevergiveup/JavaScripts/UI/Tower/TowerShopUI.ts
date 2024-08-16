@@ -60,7 +60,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				if(options.strategy !== (sInfo?.strategyKey as TowerStrategyType)) continue;
 			}
 			const state = ModuleService.getModule(CardModuleC).getCardState(towerCfg.id);
-			if(this.isShop && state !== CardState.Lock) continue;
+			// if(this.isShop && state !== CardState.Lock) continue;
 			if(!this.isShop && state === CardState.Lock) continue;
 			this.showTowerIds.push(towerCfg.id);
 		}
@@ -265,6 +265,12 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			const bCfg = GameConfig.Tower.getElement(b);
 			const aState = ModuleService.getModule(CardModuleC).getCardState(a);
 			const bState = ModuleService.getModule(CardModuleC).getCardState(b);
+			if(this.isShop && aState !== bState) {
+				if(aState === CardState.Lock || bState === CardState.Lock) {
+					if(aState !== CardState.Lock) return 1;
+					if(bState !== CardState.Lock) return -1;
+				}
+			} 		
 			if(aState == bState) {
 				const aPrice = aCfg?.shopPrice ?? 0;
 				const bPrice = bCfg?.shopPrice ?? 0;
