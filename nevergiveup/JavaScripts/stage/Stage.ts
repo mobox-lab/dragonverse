@@ -668,7 +668,7 @@ export class StageC {
 
     registerListeners() {
         EnemyActions.onDie.add((enemy: Enemy) => {
-            this.gold += enemy.goldAmount;
+            // this.gold += enemy.goldAmount;
             GameManager.addGold(enemy.goldAmount, enemy.position);
 
             this._currentDeathData.push({
