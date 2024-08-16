@@ -41,6 +41,7 @@ import { TowerEvent, TowerInfo } from "./TowerEnum";
 import { TowerManager } from "./TowerManager";
 import { TowerModuleData } from "./TowerModuleData";
 import { TowerModuleS } from "./TowerModuleS";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 /**
  * 玩家客户端模块，管理玩家的各种信息
@@ -233,11 +234,12 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     private onInteract(tag, index) {
         if (tag != "tower") return;
         if (this._interactMap.has(index)) return;
-        let infoUI = UIService.create(InteractUI_Generate);
-        this._interactMap.set(index, infoUI);
-        infoUI.interactBtn.onClicked.clear();
-        infoUI.interactBtn.onClicked.add(this.interactToShowInfo.bind(this, index));
-        UIService.showUI(infoUI, UILayerTop);
+        const interactUI = UIService.create(InteractUI_Generate);
+        this._interactMap.set(index, interactUI);
+        interactUI.interactBtn.onClicked.clear();
+        interactUI.interactBtn.onClicked.add(this.interactToShowInfo.bind(this, index));
+        UIService.showUI(interactUI, UILayerTop);
+        KeyOperationManager.getInstance().onKeyUp(interactUI, Keys.F, this.interactToShowInfo.bind(this, index));
     }
 
     interactToShowInfo = (id: number) => {
@@ -248,7 +250,9 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     private onInteractEnd(tag, index) {
         if (tag != "tower") return;
         if (!this._interactMap.has(index)) return;
-        this._interactMap.get(index).destroy();
+        const interactUI = this._interactMap.get(index);
+        KeyOperationManager.getInstance().unregisterKey(interactUI, Keys.F);
+        interactUI.destroy();
         this._interactMap.delete(index);
     }
 
