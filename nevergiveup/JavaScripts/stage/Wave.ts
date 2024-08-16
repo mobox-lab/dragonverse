@@ -58,36 +58,37 @@ export class Wave {
             let enemy = new Enemy(WaveManager.currentWaveIndex, enemyType, gate);
             this.enemies.push(enemy);
             WaveManager.enemies.push(enemy);
-            let enemyCfg = GameConfig.Monster.getElement(enemyType);
-            if (enemyCfg && enemyCfg.types && enemyCfg.types.length > 0) {
-                let tagId = enemyCfg.types[0];
-                if (tagId) {
-                    let tag = GameConfig.Tag.getElement(tagId);
-                    if (tag && tag.dialog) {
-                        let hasFirst = ModuleService.getModule(PlayerModuleC).hasFirstMonsterTag(tagId);
-                        if (!hasFirst) {
-                            let stage = GameManager.getStageClient();
-                            if (stage && stage.playerIds.length == 1) {
-                                // pause
-                                UIService.getUI(UIMain).mPause.onClicked.broadcast();
-                            }
-                            ModuleService.getModule(PlayerModuleC).setFirstMonsterTag(tagId);
+            // 新怪物提示删除
+            // let enemyCfg = GameConfig.Monster.getElement(enemyType);
+            // if (enemyCfg && enemyCfg.types && enemyCfg.types.length > 0) {
+            //     let tagId = enemyCfg.types[0];
+            //     if (tagId) {
+            //         let tag = GameConfig.Tag.getElement(tagId);
+            //         if (tag && tag.dialog) {
+            //             let hasFirst = ModuleService.getModule(PlayerModuleC).hasFirstMonsterTag(tagId);
+            //             if (!hasFirst) {
+            //                 let stage = GameManager.getStageClient();
+            //                 if (stage && stage.playerIds.length == 1) {
+            //                     // pause
+            //                     UIService.getUI(UIMain).mPause.onClicked.broadcast();
+            //                 }
+            //                 ModuleService.getModule(PlayerModuleC).setFirstMonsterTag(tagId);
 
-                            if (GuideDialog.dialogs.length > 0) {
-                                GuideDialog.dialogs = [];
-                            }
-                            GuideDialog.push("领航员", tag.dialog, () => {
-                                GuideDialog.hide();
-                                if (stage && stage.playerIds.length == 1) {
-                                    // play
-                                    UIService.getUI(UIMain).mPlay.onClicked.broadcast();
-                                }
-                            });
-                            GuideDialog.show();
-                        }
-                    }
-                }
-            }
+            //                 if (GuideDialog.dialogs.length > 0) {
+            //                     GuideDialog.dialogs = [];
+            //                 }
+            //                 GuideDialog.push("领航员", tag.dialog, () => {
+            //                     GuideDialog.hide();
+            //                     if (stage && stage.playerIds.length == 1) {
+            //                         // play
+            //                         UIService.getUI(UIMain).mPlay.onClicked.broadcast();
+            //                     }
+            //                 });
+            //                 GuideDialog.show();
+            //             }
+            //         }
+            //     }
+            // }
         }
     }
 
