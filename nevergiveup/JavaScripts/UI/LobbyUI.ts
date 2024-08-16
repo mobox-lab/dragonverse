@@ -21,7 +21,7 @@ import KeyOperationManager from "../controller/key-operation-manager/KeyOperatio
 import { TalentTreeContainer } from "../TalentTree/ui/TalentTreeContainer";
 import { GameManager } from "../GameManager";
 import TowerShopUI from "./Tower/TowerShopUI";
-import BlessUI from "./Dragon/BlessUI";
+import { JumpGamePanel } from "./JumpGame/JumpGamePanel";
 
 export default class LobbyUI extends LobbyUI_Generate {
     /**
@@ -68,6 +68,15 @@ export default class LobbyUI extends LobbyUI_Generate {
         this.freshBtn.onClicked.add(() => {
             ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
         });
+
+        this.jumpBtn.onClicked.add(() => {
+            if (UIService.getUI(JumpGamePanel).isShowing) {
+                UIService.hide(JumpGamePanel);
+            } else {
+                UIService.show(JumpGamePanel);
+            }
+        });
+
         KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
             if (GameManager.getStageClient()) {
                 return;
@@ -79,6 +88,9 @@ export default class LobbyUI extends LobbyUI_Generate {
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.L, () => {
             this.showTaskPanel();
+        });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.O, () => {
+            UIService.show(JumpGamePanel);
         });
     }
 

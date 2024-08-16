@@ -48,6 +48,7 @@ import { ChainId, Chains } from "./const/Chains";
 import { WaveModuleS } from "./Modules/waveModule/WaveModuleS";
 import { WaveModuleC } from "./Modules/waveModule/WaveModuleC";
 import WaveModuleData from "./Modules/waveModule/WaveModuleData";
+import { JumpRoomModuleC, JumpRoomModuleS } from "./Modules/JumpRoom/JumpRoomModule";
 
 export namespace Config {
     export let skipGuide: boolean = false;
@@ -185,6 +186,7 @@ export default class GameStart extends Script {
         ModuleService.registerModule(TalentModuleS, TalentModuleC, TalentModuleData);
         ModuleService.registerModule(DragonDataModuleS, DragonDataModuleC, DragonDataModuleData);
         ModuleService.registerModule(WaveModuleS, WaveModuleC, WaveModuleData);
+        ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
     }
 
     // private checkGM() {
