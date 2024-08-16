@@ -124,7 +124,7 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.elementImg.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(this._cfg?.elementTy || 1) - 1];
 		this.nameTxt.text = this._cfg.name;
 		this.txt_sell.text = this._cfg.shopPrice.toFixed(0);
-		this.txt_sell_1.text = Utils.formatNumber(this._cfg.attackDamage[0]);
+		this.txt_atk.text = Utils.formatNumber(this._cfg.attackDamage[0]);
 		this.refreshState();
 		const tags = this.getTags();
 		const len = tags?.length ?? 0;

@@ -99,12 +99,12 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.fightImg_Internal
 	}
-	private txt_sell_1_Internal: mw.TextBlock
-	public get txt_sell_1(): mw.TextBlock {
-		if(!this.txt_sell_1_Internal&&this.uiWidgetBase) {
-			this.txt_sell_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_fight/txt_sell_1') as mw.TextBlock
+	private txt_atk_Internal: mw.TextBlock
+	public get txt_atk(): mw.TextBlock {
+		if(!this.txt_atk_Internal&&this.uiWidgetBase) {
+			this.txt_atk_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_fight/txt_atk') as mw.TextBlock
 		}
-		return this.txt_sell_1_Internal
+		return this.txt_atk_Internal
 	}
 	private chooseImg_Internal: mw.Image
 	public get chooseImg(): mw.Image {
@@ -162,7 +162,7 @@ export default class ShopItemUI_Generate extends UIScript {
 	   this.initLanguage(this.txt_sell)
 	   
 	
-	   this.initLanguage(this.txt_sell_1)
+	   this.initLanguage(this.txt_atk)
 	   
 	
 	   this.initLanguage(this.equipTxt)
