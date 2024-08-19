@@ -542,12 +542,14 @@ export class PetBagModuleData extends Subdata {
     public removeBagItem(playerId: number, keys: number[], desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
         if(SystemUtil.isServer()) {
             const userId = Player.getPlayer(playerId).userId;
+            const delPets = [];
             keys.forEach( (key) => {
                 const petItem = {...this.bagContainerNew[key]};
                 // this.updatePetStatistic(petItem, "destroyed", true, { desSource });
-                ModuleService.getModule(StatisticModuleS).updateDestroyPetsInfo(userId, [petItem], desSource);
+                delPets.push(petItem);
                 delete this.bagContainerNew[key];
             });
+            ModuleService.getModule(StatisticModuleS).updateDestroyPetsInfo(userId, delPets, desSource);
             this.save(true);
         }
     }
