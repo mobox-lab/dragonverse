@@ -56,7 +56,7 @@ export default class JumpGameTrigger extends Script {
             Player.asyncGetLocalPlayer().then((player) => {
                 if (player.character === other) {
                     //跳子游戏，播进度条
-                    let ui = UIService.show(JumpProgress_Generate);
+                    const ui = UIService.show(JumpProgress_Generate);
                     this._progressBar = ui.progressBar;
                     this._cnvProgressBar = ui.cnvProgressBar;
                     this._progressBar.percent = 0;
@@ -83,7 +83,7 @@ export default class JumpGameTrigger extends Script {
      * 播放 Progress 动画.
      */
     public playProgress() {
-        let progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, {percent: 1}).call(() => {
+        const progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, {percent: 1}).call(() => {
             this.onProgressDone();
         });
 

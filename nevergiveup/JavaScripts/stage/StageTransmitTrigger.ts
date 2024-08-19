@@ -1,11 +1,10 @@
-﻿import { GameConfig } from "../config/GameConfig";
-import GameServiceConfig from "../const/GameServiceConfig";
-import { GlobalData } from "../const/GlobalData";
-import Nolan from "../depend/nolan/Nolan";
-import EnvironmentManager from "../gameplay/interactiveObj/EnvironmentManager";
-import JumpGameTransition_Generate from "../ui-generate/jumpGame/JumpGameTransition_generate";
+﻿import Nolan from "../depend/nolan/Nolan";
 import CutsceneUI from "../UI/CutsceneUI";
-import Utils from "../Utils";
+import { GlobalData } from "../const/GlobalData";
+import GameServiceConfig from "../const/GameServiceConfig";
+import JumpProgress_Generate from "../ui-generate/JumpProgress_generate";
+
+const progressTag = "StageProgress";
 
 @Component
 export default class StageTransmitTrigger extends Script {
@@ -34,51 +33,75 @@ export default class StageTransmitTrigger extends Script {
     public endRotation: Rotation = Rotation.zero;
 
     private _nolan: Nolan;
+    private _progressBar: ProgressBar;
+    private _cnvProgressBar: Canvas;
 
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void {
         super.onStart();
         if (SystemUtil.isClient()) {
             this._nolan = Nolan.getInstance();
-            let trigger = this.gameObject as Trigger;
-            trigger.onEnter.add((gameObject: GameObject) => {
-                if (gameObject instanceof mw.Character) {
-                    if (Utils.isLocalPlayer(gameObject?.player?.playerId)) {
-                        this.transmitPlayerClient(gameObject.player);
-                    }
+            const trigger = this.gameObject as Trigger;
+            trigger.onEnter.add(this.onPlayerEnter.bind(this));
+            trigger.onLeave.add(this.onPlayerLeave.bind(this));
+        }
+    }
+
+    onPlayerEnter(other: GameObject) {
+        if (other instanceof Character) {
+            Player.asyncGetLocalPlayer().then((player) => {
+                if (player.character === other) {
+                    // 展示进度掉
+                    const ui = UIService.show(JumpProgress_Generate);
+                    this._progressBar = ui.progressBar;
+                    this._cnvProgressBar = ui.cnvProgressBar;
+                    this._progressBar.percent = 0;
+                    this._cnvProgressBar.renderOpacity = 0;
+                    this.playProgress();
+                }
+            });
+        }
+    }
+
+    onPlayerLeave(other: GameObject) {
+        if (other instanceof Character) {
+            Player.asyncGetLocalPlayer().then((player) => {
+                if (player.character === other) {
+                    //关闭进度条
+                    actions.tweens.stopAllByTag(progressTag);
+                    UIService.hide(JumpProgress_Generate);
                 }
             });
         }
     }
 
     /**
-     * 周期函数 每帧执行
-     * 此函数执行需要将this.useUpdate赋值为true
-     * @param dt 当前帧与上一帧的延迟 / 秒
+     * 播放 Progress 动画.
      */
-    protected onUpdate(dt: number): void {
+    public playProgress() {
+        const progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, {percent: 1}).call(() => {
+            this.onProgressDone();
+        });
 
+        actions.tween(this._cnvProgressBar).setTag(progressTag).to(100, {renderOpacity: 1}).call(() => {
+            progressTask.start();
+        }).start();
     }
 
-    /** 脚本被销毁时最后一帧执行完调用此函数 */
-    protected onDestroy(): void {
-
-    }
-
-    public transmitPlayerClient(player: mw.Player) {
+    onProgressDone() {
         UIService.show(CutsceneUI, () => {
-            const character = player.character;
+            const character = Player.localPlayer.character;
             character.worldTransform = new Transform(
                 this.location,
                 this.isRefreshObjectRotation ? this.endRotation : character.worldTransform.rotation,
-                character.worldTransform.scale
+                character.worldTransform.scale,
             );
             if (this.isRefreshCameraRotation) this._nolan.lookToward(this.endRotation.rotateVector(Vector.forward));
-            
-            // EnvironmentManager.getInstance().setEnvironment(this.sceneID);
+
         });
         TimeUtil.delaySecond(GlobalData.Anim.stageCrossAnimSeconds).then(() => {
             UIService.getUI(CutsceneUI).hideCanvas();
         });
     }
+
 }
