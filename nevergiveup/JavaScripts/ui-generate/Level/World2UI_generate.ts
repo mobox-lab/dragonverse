@@ -8,7 +8,14 @@
 
 @UIBind('UI/Level/World2UI.ui')
 export default class World2UI_Generate extends UIScript {
-	
+		private textBlock_Internal: mw.TextBlock
+	public get textBlock(): mw.TextBlock {
+		if(!this.textBlock_Internal&&this.uiWidgetBase) {
+			this.textBlock_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textBlock') as mw.TextBlock
+		}
+		return this.textBlock_Internal
+	}
+
 
 
    protected onAwake() {
@@ -27,11 +34,11 @@ export default class World2UI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   //文本多语言
-	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock") as any);
+	   this.initLanguage(this.textBlock)
 	   
 	
+	   //文本多语言
+	   
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {

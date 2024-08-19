@@ -8,7 +8,14 @@
 
 @UIBind('UI/Level/World5UI.ui')
 export default class World5UI_Generate extends UIScript {
-	
+		private textBlock_1_Internal: mw.TextBlock
+	public get textBlock_1(): mw.TextBlock {
+		if(!this.textBlock_1_Internal&&this.uiWidgetBase) {
+			this.textBlock_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textBlock_1') as mw.TextBlock
+		}
+		return this.textBlock_1_Internal
+	}
+
 
 
    protected onAwake() {
@@ -27,11 +34,11 @@ export default class World5UI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   //文本多语言
-	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/TextBlock_1") as any);
+	   this.initLanguage(this.textBlock_1)
 	   
 	
+	   //文本多语言
+	   
 
    }
    private initLanguage(ui: mw.StaleButton | mw.TextBlock) {
