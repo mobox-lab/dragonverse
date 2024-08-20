@@ -127,6 +127,13 @@ export default class TaskItem_Generate extends UIScript {
 		}
 		return this.txt_Name_Internal
 	}
+	private progressBar_Internal: mw.ProgressBar
+	public get progressBar(): mw.ProgressBar {
+		if(!this.progressBar_Internal&&this.uiWidgetBase) {
+			this.progressBar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas/progressBar') as mw.ProgressBar
+		}
+		return this.progressBar_Internal
+	}
 	private txt_Process_Internal: mw.TextBlock
 	public get txt_Process(): mw.TextBlock {
 		if(!this.txt_Process_Internal&&this.uiWidgetBase) {

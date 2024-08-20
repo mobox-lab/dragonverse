@@ -69,6 +69,9 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
         this.txt_Des.text = data.taskInfoUI;
         // this.txt_Des.text = StringUtil.format(cfg.taskInfo, data.totalSolveTime);
         this.txt_Process.text = Utils.formatNumber(data.curSolveTime) + "/" + Utils.formatNumber(data.totalSolveTime);
+        const percent = data?.totalSolveTime ? ((data?.curSolveTime ?? 0) / data.totalSolveTime): 0;
+        this.progressBar.percent = percent;
+        this.progressBar.currentValue = percent;
         switch (data.taskState) {
             case EmTaskState.Doing:
                 this.btnReward.visibility = mw.SlateVisibility.Hidden;
