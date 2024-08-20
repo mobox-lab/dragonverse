@@ -7,6 +7,7 @@
  * @Description  : 修改描述
  */
 
+import Gtk from "gtoolkit";
 import Utils from "../../Utils";
 import { ZwtTween } from "../../ZwtTween";
 import { GameConfig } from "../../config/GameConfig";
@@ -30,7 +31,7 @@ export class UISettleCommon extends SettleCommon_Generate {
      */
     onAwake() {
         this.layer = mw.UILayerSystem;
-        this.enUI_1.imageGuid = GameConfig.Language.getElement("Img_Reward").Value;
+        // this.enUI_1.imageGuid = GameConfig.Language.getElement("Img_Reward").Value;
         this.btnScreen.onClicked.add(() => {
             // this._callBack && this._callBack();
             new ZwtTween(this.rootCanvas)
@@ -48,10 +49,6 @@ export class UISettleCommon extends SettleCommon_Generate {
         //     this._commonItems.push(item);
         //     this.mCommon.addChild(item.uiObject);
         // }
-        this.mCommon.visibility = mw.SlateVisibility.Collapsed;
-        this.rewardText1.visibility = mw.SlateVisibility.Collapsed;
-        this.rewardText2.visibility = mw.SlateVisibility.Collapsed;
-        this._canvasSize = this.mCommon.size;
     }
 
     /**
@@ -69,10 +66,8 @@ export class UISettleCommon extends SettleCommon_Generate {
      * @param rewards 奖励数组
      */
     onShow(callBack: Function, rewards: RewardUIInfo[]) {
-        this.rewardText1.visibility = mw.SlateVisibility.Collapsed;
-        this.rewardText2.visibility = mw.SlateVisibility.Collapsed;
         // merge rewards by guid
-        let mergeRewards: RewardUIInfo[] = [];
+        const mergeRewards: RewardUIInfo[] = [];
         for (let i = 0; i < rewards.length; i++) {
             let reward = rewards[i];
             // if (reward.isHave) {
@@ -92,8 +87,10 @@ export class UISettleCommon extends SettleCommon_Generate {
                 mergeRewards.push(reward);
             }
         }
-
-
+        if(!mergeRewards?.length) {
+            this.hide();
+            return;
+        }
         this._callBack = callBack;
         this.btnScreen.visibility = mw.SlateVisibility.Visible;
         this.rootCanvas.renderOpacity = 0;
@@ -103,41 +100,14 @@ export class UISettleCommon extends SettleCommon_Generate {
             .scaleTo(Vector.one, 0.15, false)
             .start();
 
-        // let canvasSize = mw.getViewportSize();
-        // let canvasSize = mw.getViewportSize().divide(mw.getViewportScale());
-        // console.log('hsfgetViewportSize====================== ', mw.getViewportScale(), mw.getViewportSize(), JSON.stringify(canvasSize))
-        // x denpens on the number of items, if there are 1 item, put it in the middle of the canvas
-        // middle of the canvas is canvasSize / 2
-
-        this.mCommon.visibility = mw.SlateVisibility.Visible;
-        for (let i = this._commonItems.length - 1; i < mergeRewards.length; i++) {//弹性扩容
-            let item = mw.UIService.create(UICommonItem);
+        this._commonItems = [];
+        this.mCommon.removeAllChildren();
+        for (let i = 0; i < mergeRewards.length; i++) {
+            const info = mergeRewards[i];
+            const item = mw.UIService.create(UICommonItem);
+            item.init(info);
             this._commonItems.push(item);
             this.mCommon.addChild(item.uiObject);
-        }
-        for (let i = 0; i < this._commonItems.length; i++) {
-            this._commonItems[i].uiObject.visibility = mw.SlateVisibility.Collapsed;
-        }
-
-        let itemWidth = 180.114;
-        let padding = 20;
-        for (let i = 0; i < mergeRewards.length; i++) {
-            if (this._commonItems[i]) {
-                this._commonItems[i].init(mergeRewards[i]);
-                // x denpens on the number of items, if there are 1 item, put it in the middle of the canvas
-                // middle of the canvas is canvasSize / 2
-                if (mergeRewards.length > 10) {
-                    this._commonItems[i].uiObject.position = Utils.TEMP_VECTOR2.set((itemWidth + padding) * i - padding, 0);
-                } else {
-                    this._commonItems[i].uiObject.position = Utils.TEMP_VECTOR2.set((i - (mergeRewards.length - 1) / 2) * (itemWidth + padding) + this._canvasSize.x / 2 - itemWidth / 2, 0);
-                }
-                this._commonItems[i].uiObject.visibility = mw.SlateVisibility.Visible;
-            }
-        }
-        if (mergeRewards.length > 10) {
-            this.mCommon.size = Utils.TEMP_VECTOR2.set(padding + (itemWidth + padding) * mergeRewards.length, 0);
-        } else {
-            this.mCommon.size = this._canvasSize;
         }
     }
 }

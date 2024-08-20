@@ -39,7 +39,7 @@ export default class SettleCommon_Generate extends UIScript {
 	private mCommon_Internal: mw.Canvas
 	public get mCommon(): mw.Canvas {
 		if(!this.mCommon_Internal&&this.uiWidgetBase) {
-			this.mCommon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/ScrollBox/mCommon') as mw.Canvas
+			this.mCommon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mCommon') as mw.Canvas
 		}
 		return this.mCommon_Internal
 	}

@@ -20,9 +20,9 @@ export class UICommonItem extends CommonItem_Generate {
      * 初始化奖励icon
      * @param info 奖励信息
      */
-    init(info: RewardUIInfo) {
+    public init(info: RewardUIInfo) {
         //背景图片根据等级更换
-        if (info.assetID) {
+        if (info?.assetID) {
             const cfg = GameConfig.Tower.getElement(info.assetID);
             if (cfg) {
                 Utils.setImageByAsset(this.mImg_common, cfg);
@@ -30,8 +30,6 @@ export class UICommonItem extends CommonItem_Generate {
         } else {
             this.mImg_common.imageGuid = info.guid.toFixed();
         }
-        this.mImageBack.imageGuid = Reward.getGuid(info.level);
         this.txt_common.text = Utils.formatNumber(info.count);
-
     }
 }

@@ -220,8 +220,6 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
         if (await this.finishTask(taskId)) {
             //服务器验证
             console.log("hsf====================== 领取奖励", JSON.stringify(taskId));
-            MGSTool.finishTask(task.type.toFixed(0), taskId);
-            MGSTool.rewardMGS(task.cfg.rewards, 8);
             Event.dispatchToLocal(EmTaskEvent.TaskFinish, taskId);
             this.refreshUI();
             return true;
