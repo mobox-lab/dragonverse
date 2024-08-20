@@ -1180,4 +1180,13 @@ export namespace StageUtil {
             .filter((stage) => stage.difficulty == preDifficulty && stage.index == cfg.index)
             .map((stage) => stage.id);
     }
+    export function getPreDifficultyUniqueIds(cfg: IStageElement) {
+        const difficult = cfg?.difficulty ?? 0;
+        if (!difficult) return [];
+        const preDifficulty = (cfg?.difficulty ?? 0) - 1;
+        const stages = GameConfig.Stage.getAllElement();
+        return stages
+            .filter((stage) => stage.difficulty == preDifficulty && stage.index == cfg.index)
+            .map((stage) => Number(stage.index.toString() + stage.difficulty.toString()));
+    }
 }

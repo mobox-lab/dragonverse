@@ -79,7 +79,9 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
             UIService.hideUI(this._towerInfoUI);
         } else if (this._towerInfoUI) {
             const towerClass = TowerManager.getTowerByPlaceID(this.chooseTowerID);
-            console.log("#debug chooseTowerID tower:" + JSON.stringify(towerClass.info) + " placeID:" + this.chooseTowerID);
+            console.log(
+                "#debug chooseTowerID tower:" + JSON.stringify(towerClass.info) + " placeID:" + this.chooseTowerID
+            );
             if (towerClass) {
                 UIService.showUI(this._towerInfoUI, UILayerTop, towerClass);
                 TowerActions.onTowerSelected.call(towerClass.info.placeID);
@@ -187,6 +189,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         let towerUI = UIService.getUI(TowerUI);
         let stage = GameManager.getStageClient();
         let currentStage = stage ? stage.stageCfgId : -1;
+        const stageCfg = StageUtil.getStageCfgById(currentStage);
         let currentWave = stage ? stage.currentWave : -1;
         // let currentWave = stage ? stage.stageId : -1;
         switch (state) {
@@ -212,7 +215,11 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                             v,
                             currentWave,
                             currentStage,
-                            DataCenterC.getData(PlayerModuleData).firstClears.includes(currentStage) ? 1 : 0
+                            DataCenterC.getData(PlayerModuleData).firstClears.includes(
+                                Number(stageCfg.index.toString() + stageCfg.difficulty.toString())
+                            )
+                                ? 1
+                                : 0
                         );
                     });
                     this._tempTowerMap = new Map();
