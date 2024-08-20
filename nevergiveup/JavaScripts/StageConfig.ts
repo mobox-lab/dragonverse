@@ -1360,10 +1360,10 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
     {
         waves: [
             {
-                enemies: [{ type: 1008, count: 5, spawnInterval: 5 }],
+                enemies: [{ type: 1035, count: 5, spawnInterval: 4 }],
                 waveGold: 200,
                 waveTime: 30,
-                hpMultiplier: 1,
+                hpMultiplier: 0.8,
             },
             {
                 enemies: [{ type: 1009, count: 5, spawnInterval: 5 }],
@@ -1378,8 +1378,20 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 hpMultiplier: 1,
             },
             {
-                enemies: [{ type: 1012, count: 3, spawnInterval: 5 }],
+                enemies: [{ type: 1010, count: 8, spawnInterval: 2 }],
                 waveGold: 150,
+                waveTime: 20,
+                hpMultiplier: 1,
+            },
+            {
+                enemies: [{ type: 1035, count: 10, spawnInterval: 3 }],
+                waveGold: 0,
+                waveTime: 30,
+                hpMultiplier: 0.8,
+            },
+            {
+                enemies: [{ type: 1012, count: 3, spawnInterval: 5 }],
+                waveGold: 0,
                 waveTime: 30,
                 hpMultiplier: 1,
             },
