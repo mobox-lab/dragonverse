@@ -998,6 +998,12 @@ export class StageC {
 
     destroy() {
         StageListener.removeAllListeners(this.id);
+
+        EnemyActions.onDie = new Action1<Enemy>();
+
+        EnemyActions.onEscaped = new Action1<Enemy>();
+
+        StageActions.onMapLoaded = new Action();
         if (this.stage) {
             this.stage.destroy();
             this.stage = null;
