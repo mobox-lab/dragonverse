@@ -12,7 +12,7 @@ import { PlayerActions } from "../../Actions";
 import { GameConfig } from "../../config/GameConfig";
 import { ItemType } from "../../tool/Enum";
 import { TimerModuleUtils } from "../TimeModule/time";
-import { GlobalRankModuleS } from "../globalRank/GlobalRankModuleS";
+// import { GlobalRankModuleS } from "../globalRank/GlobalRankModuleS";
 import PlayerModuleC from "./PlayerModuleC";
 import PlayerModuleData from "./PlayerModuleData";
 import PlayerScript from "./PlayerScript";
@@ -87,8 +87,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         if (gold >= 0 || (gold < 0 && data.gold >= -gold)) {
             data.gold += gold;
             data.save(true);
-            const rankModuleS = ModuleService.getModule(GlobalRankModuleS);
-            rankModuleS.setScoreOnServer("gold", data.gold, player.playerId);
+            // const rankModuleS = ModuleService.getModule(GlobalRankModuleS);
+            // rankModuleS.setScoreOnServer("gold", data.gold, player.playerId);
             return true;
         }
         return false;
@@ -139,8 +139,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     setLevel(player: Player, level: number) {
         let script = PlayerUtil.getPlayerScript(player.playerId);
         script.level = level;
-        const rankModuleS = ModuleService.getModule(GlobalRankModuleS);
-        rankModuleS.setScoreOnServer("level", level, player.playerId);
+        // const rankModuleS = ModuleService.getModule(GlobalRankModuleS);
+        // rankModuleS.setScoreOnServer("level", level, player.playerId);
         PlayerActions.onPlayerLevelChangedServer.call(player, level);
     }
 
