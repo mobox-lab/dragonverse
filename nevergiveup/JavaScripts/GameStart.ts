@@ -122,6 +122,7 @@ export default class GameStart extends Script {
         GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
         GameServiceConfig.chainId = this.customChainId;
         DataStorage.setTemporaryStorage(!(GameServiceConfig.isRelease || GameServiceConfig.isBeta || this.isOnline));
+        this.setlanguage();
         for (const k in Config) {
             if (this.hasOwnProperty(k)) {
                 Config[k] = this[k];
@@ -141,7 +142,6 @@ export default class GameStart extends Script {
                 }
             }
 
-            this.setlanguage();
             ModuleService.ready().then(() => {
                 GuideManager.init();
                 // GuideManager.triggerNextGuide(true);
@@ -210,16 +210,20 @@ export default class GameStart extends Script {
             if (ele == null) return "unknow_" + key;
             return ele.Value;
         });
-        mw.UIScript.addBehavior("lan", (ui: mw.StaleButton | mw.TextBlock) => {
-            let key: string = ui.text;
-            if (key) {
-                let lan = GameConfig.Language.getElement(key);
-                if (lan) {
-                    ui.text = lan.Value;
+        if (mw.SystemUtil.isClient()) {
+            mw.UIScript.addBehavior("lan", (ui: mw.StaleButton | mw.TextBlock) => {
+                if (ui == null) return;
+                const key: string = ui.text;
+                if (key == null) return;
+                if (key) {
+                    let lan = GameConfig.Language.getElement(key);
+                    if (lan) {
+                        ui.text = lan.Value;
+                    }
                 }
-            }
-        });
-        Event.dispatchToLocal(`LanguageInit`);
-        console.error("初始化多语言.....");
+            });
+            Event.dispatchToLocal(`LanguageInit`);
+            console.error("初始化多语言.....");
+        }
     }
 }

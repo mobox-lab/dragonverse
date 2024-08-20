@@ -85,6 +85,13 @@ export default class TowerItemUI_Generate extends UIScript {
 		}
 		return this.canvas_fight_Internal
 	}
+	private fightBgImg_Internal: mw.Image
+	public get fightBgImg(): mw.Image {
+		if(!this.fightBgImg_Internal&&this.uiWidgetBase) {
+			this.fightBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mContainer_tower/canvas_fight/fightBgImg') as mw.Image
+		}
+		return this.fightBgImg_Internal
+	}
 	private fightImg_Internal: mw.Image
 	public get fightImg(): mw.Image {
 		if(!this.fightImg_Internal&&this.uiWidgetBase) {

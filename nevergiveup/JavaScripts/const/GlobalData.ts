@@ -3,6 +3,9 @@ import Utils from "../Utils";
 import { StageMonsterSkillType, TowerStrategyType } from "./enum";
 
 export namespace GlobalData {
+    export class Global {
+        public static worldLangInitDelay: number = 1500;
+    }
     export class Stage {
         /** 关卡推荐元素图标 各元素对应 光 暗 水 火 木 土 guid */
         public static stageRecommendElementIcon: string[] = ["385296", "385306", "385304", "385295", "385302", "385301"];
