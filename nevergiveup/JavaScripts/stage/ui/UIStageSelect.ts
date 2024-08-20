@@ -40,7 +40,8 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
         const stageCfg = StageUtil.getStageCfgById(this.stageCfgId);
         this.unlocked = false;
         const firstClears = DataCenterC.getData(PlayerModuleData).firstClears;
-        const preDifficultyIds = StageUtil.getPreDifficultyIds(stageCfg);
+        // const preDifficultyIds = StageUtil.getPreDifficultyIds(stageCfg);
+        const preDifficultyIds = StageUtil.getPreDifficultyUniqueIds(stageCfg);
         console.log("#debug preDifficultyIds:", preDifficultyIds, " firstClears:", firstClears);
         if (preDifficultyIds?.length) {
             for (const id of preDifficultyIds) {
@@ -137,11 +138,11 @@ export class UIStageSelect extends StageSelect_Generate {
                 this.mSelectDifficulty.addChild(item.uiObject);
             }
             item.init(this._script.stageWorldIndex, i, this._script.stageGroupId);
-            if(item.unlocked) unlockMaxDifficultyIdx = i;
+            if (item.unlocked) unlockMaxDifficultyIdx = i;
         }
         setTimeout(() => {
             this._script.setDifficulty(Player.localPlayer.playerId, unlockMaxDifficultyIdx); // 选择已解锁的最高难度
-        }, 0)
+        }, 0);
     }
 
     setData(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
@@ -151,30 +152,30 @@ export class UIStageSelect extends StageSelect_Generate {
         this.mCanvas_recoElements.removeAllChildren();
         for (const id of elementIds) {
             const icon = Image.newObject(this.mCanvas_recoElements, `element_${id}`) as Image;
-            icon.size = new Vector2(40, 40)
-            icon.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[id - 1]
+            icon.size = new Vector2(40, 40);
+            icon.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[id - 1];
         }
         const { stealth, fly, healing, berserk } = this.getMonsterBuff(stageCfgId);
         const skills = [];
-        if(healing) skills.push(StageMonsterSkillType.Healing);
-        if(berserk) skills.push(StageMonsterSkillType.Berserk);
-        if(stealth) skills.push(StageMonsterSkillType.Stealth);
-        if(fly) skills.push(StageMonsterSkillType.Fly);
+        if (healing) skills.push(StageMonsterSkillType.Healing);
+        if (berserk) skills.push(StageMonsterSkillType.Berserk);
+        if (stealth) skills.push(StageMonsterSkillType.Stealth);
+        if (fly) skills.push(StageMonsterSkillType.Fly);
         this.monsterSkillTypes = skills;
         console.log("#debug monsterSkillTypes", skills);
-        for(let i = 0; i < 5; i++) {
-            const skillEle = this[`canvas_MonsterSkillDesc_${i+1}`] as mw.Canvas;
+        for (let i = 0; i < 5; i++) {
+            const skillEle = this[`canvas_MonsterSkillDesc_${i + 1}`] as mw.Canvas;
             console.log("#debug skillEle", skillEle);
-            if(!skillEle) continue;
-            if(i < skills.length) {
+            if (!skillEle) continue;
+            if (i < skills.length) {
                 const skillType = skills[i];
                 Gtk.trySetVisibility(skillEle, mw.SlateVisibility.SelfHitTestInvisible);
-                const btn: mw.Button = this[`btn_monsterSkill_${i+1}`]
+                const btn: mw.Button = this[`btn_monsterSkill_${i + 1}`];
                 btn?.onClicked?.clear();
                 btn?.onClicked?.add(() => {
                     this.selectedMonsterSkillIndex = i;
                     this.setMonsterSkillUI();
-                })
+                });
             } else {
                 Gtk.trySetVisibility(skillEle, mw.SlateVisibility.Collapsed);
             }
@@ -189,8 +190,8 @@ export class UIStageSelect extends StageSelect_Generate {
         }
     }
     setMonsterSkillUI() {
-        for(let i = 0; i < this.monsterSkillTypes.length; i++) {
-            const skillEle = this[`canvas_MonsterSkillDesc_${i+1}`] as mw.Canvas;
+        for (let i = 0; i < this.monsterSkillTypes.length; i++) {
+            const skillEle = this[`canvas_MonsterSkillDesc_${i + 1}`] as mw.Canvas;
             skillEle.zOrder = i === this.selectedMonsterSkillIndex ? 1 : 0;
         }
     }
@@ -267,7 +268,7 @@ export class UIStageSelect extends StageSelect_Generate {
         const counterElementIds = [];
         for (let i = 0; i < elementIds.length; i++) {
             const counterId = this.findCounter(elementIds[i]);
-            if(!counterElementIds.includes(counterId)) counterElementIds.push(counterId);
+            if (!counterElementIds.includes(counterId)) counterElementIds.push(counterId);
         }
         console.log(JSON.stringify(counterElementIds), "counterElementIds");
         return counterElementIds;
