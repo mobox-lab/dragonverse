@@ -9,6 +9,7 @@ import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import Log4Ts from "mw-log4ts";
 import { ETalentType } from "../../const/enum";
 import { TalentTree } from "../../TalentTree/ui/TalentTree";
+import { PlayerUtil } from "../PlayerModule/PlayerUtil";
 
 export class TalentItemUnique implements IUnique {
     public id: number;
@@ -80,6 +81,12 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
         }
     }
 
+    private checkUnlockLevel(unLockLevel: number) {
+        const playerScript = PlayerUtil.getPlayerScript(Player.localPlayer.playerId);
+        if (!playerScript) return false;
+        return playerScript.level >= unLockLevel;
+    }
+
     /**
      * 获取天赋解锁点数
      * @param {number} id
@@ -96,6 +103,12 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
         // 是否为最大等级
         if (level >= maxLevel) {
             TipsManager.showTips(GameConfig.Language.getElement("Text_Unlocked").Value);
+            return false;
+        }
+        // TODO: 判断当前玩家等级是否能解锁
+        const isEnoughLevel = this.checkUnlockLevel(item.unlockLevel);
+        if (!isEnoughLevel) {
+            TipsManager.showTips("Unlock level");
             return false;
         }
         // 判断是否足够解锁

@@ -6,6 +6,7 @@ import Player = mw.Player;
 import { GameConfig } from "../../config/GameConfig";
 import { ITalentTreeElement } from "../../config/TalentTree";
 import { ETalentType } from "../../const/enum";
+import { PlayerUtil } from "../PlayerModule/PlayerUtil";
 
 export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleData> {
     private _playS: PlayerModuleS;
@@ -41,6 +42,12 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         return frontLevels.every(n => n > 0);
     }
 
+    private checkUnlockLevel(player: Player, unLockLevel: number) {
+        const playerScript = PlayerUtil.getPlayerScript(player.playerId);
+        if (!playerScript) return false;
+        return playerScript.level >= unLockLevel;
+    }
+
     public updatePlayerTalent(player: Player, id: number) {
         this.getClient(player).net_updateTalentLevel(id);
     }
@@ -48,6 +55,9 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
     public async net_updateTalentLevel(id: number) {
         const player = this.currentPlayer;
         const talent = GameConfig.TalentTree.getElement(id);
+        // TODO: 判断当前玩家等级是否能解锁
+        const isEnoughLevel = this.checkUnlockLevel(player, talent.unlockLevel);
+        if (!isEnoughLevel) return false;
         // 前置天赋解锁
         const canActive = this.checkTalentCanActive(player.userId, talent);
         if (!canActive) return false;
