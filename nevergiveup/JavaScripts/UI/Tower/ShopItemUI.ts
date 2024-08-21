@@ -33,7 +33,7 @@ import TowerShopUI from "./TowerShopUI";
 
 export default class ShopItemUI extends ShopItemUI_Generate {
 	private _tagItemUIs: TowerTagItem_Generate[] = [];
-
+	public isShop: boolean = true;
 	private _state: CardState;
 	public get state(): CardState {
 		return this._state;
@@ -41,6 +41,20 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 	public set state(v: CardState) {
 		if (this._state == v) return;
 		this._state = v;
+		if(this.isShop) {
+			if(v === CardState.Lock) {
+				Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Visible);
+				Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Collapsed);
+				Gtk.trySetVisibility(this.unlockedTxt, SlateVisibility.Collapsed);
+				Gtk.trySetText(this.txt_sell, this._cfg.shopPrice.toFixed(0) ?? "0");
+				this.img_money.imageGuid = GlobalData.Shop.priceGoldIconGuid[0];
+			} else {
+				Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Collapsed);
+				Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Collapsed);
+				Gtk.trySetVisibility(this.unlockedTxt, SlateVisibility.Visible);
+			}
+			return;
+		}
 		if(v === CardState.Lock) {
 			Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Visible);
 			Gtk.trySetVisibility(this.lockImg, SlateVisibility.Visible);
@@ -98,7 +112,8 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.chooseImg.visibility = isChoose ? SlateVisibility.Visible : SlateVisibility.Collapsed;
 	}
 
-	public init(cfgID: number) {
+	public init(cfgID: number, isShop: boolean = false) {
+		this.isShop = isShop;
 		if (cfgID) {
 			this._cfgID = cfgID;
 			this.initObj();

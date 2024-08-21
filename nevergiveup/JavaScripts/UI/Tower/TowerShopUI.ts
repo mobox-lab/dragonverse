@@ -97,6 +97,14 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this.initDropdowns();		
 	}
 
+	public resetShopOpts() {
+		this.opts = {};
+		this.mDropdown_1.selectedOptionIndex = 0;
+		this.mDropdown_2.selectedOptionIndex = 0;
+		this.mDropdown_3.selectedOptionIndex = 0;
+		this.mDropdown_4.selectedOptionIndex = 0;
+	}
+
 	public initDropdowns() {
 		this.mDropdown_1.clearOptions();
 		GlobalData.Shop.shopElementsOpts.map((item) => {
@@ -285,7 +293,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		for (let i = 0; i < this.showTowerIds.length; i++) {
 			const id = this.showTowerIds[i];
 			const item = UIService.create(ShopItemUI);
-			item.init(id);
+			item.init(id, this.isShop);
 			this.towerItemCanvas.addChild(item.uiObject);
 			this.showShopItemUIs.push(item);
 		}
@@ -308,7 +316,8 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		const { isShop, cfgId } = options ?? {}
 		console.log("#debug isShop:"+isShop+" cfgId:"+cfgId)
 		this.setIsShop(isShop);
-		this.setShopItemUIs({...this.opts});
+		this.resetShopOpts();
+		this.setShopItemUIs();
 		const target = cfgId ? this.showShopItemUIs.find(item => item.cfgID == cfgId) : this.showShopItemUIs[0];
 		target?.chooseBtn?.onClicked?.broadcast();
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => this.hideTween());
