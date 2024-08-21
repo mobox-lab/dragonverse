@@ -215,8 +215,8 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	public showTowerInfo(cfgID: number, state: CardState) {
 		let cfg = GameConfig.Tower.getElement(cfgID);
 		if (!cfg) return;
-		for (let i = 0; i < this.shopItemUIs.length; i++) {
-			this.shopItemUIs[i].setChoose(cfgID == this.shopItemUIs[i].cfgID);
+		for (let i = 0; i < this.showShopItemUIs.length; i++) {
+			this.showShopItemUIs[i].setChoose(cfgID == this.showShopItemUIs[i].cfgID);
 		}
 		// Utils.setImageByAsset(this.infoImg, cfg);`
 		this.infoImg.imageGuid = cfg.imgGuid;
