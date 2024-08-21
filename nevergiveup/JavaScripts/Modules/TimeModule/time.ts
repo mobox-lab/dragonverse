@@ -424,7 +424,8 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
             this.lastTime = nowDate.getTime();
             return;
         }
-        if (TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime())) {
+        const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime()); 
+        if (isNewDay) {
             this.onDayRefresh.call(nowDate);
         }
     }
@@ -535,7 +536,8 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
             this.lastTime = nowDate.getTime();
             return;
         }
-        if (TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime())) {
+        const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime())
+        if (isNewDay) {
             this.onDayRefresh.call(nowDate);
         }
     }
@@ -565,7 +567,8 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
         const oldTime = this.currentData.lastTimeStamp;
         this.currentData.lastTimeStamp = nowTime;
         this.currentData.save(true);
-        if (!TimerModuleUtils.judgeIsNewDay(oldTime, nowTime)) {
+        const isNewDay = TimerModuleUtils.judgeIsNewDay(oldTime, nowTime)
+        if (isNewDay) {
             //当天第一次登录
             this.onPlayerEnterSceneIsNewDay.call(this.currentPlayerId);
             // console.error(`rkc----玩家${this.currentPlayerId}新的一天登录`);
