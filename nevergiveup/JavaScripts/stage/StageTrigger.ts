@@ -208,19 +208,19 @@ export default class StageTrigger extends Script {
      * @param dt 当前帧与上一帧的延迟 / 秒
      */
     protected onUpdate(dt: number): void {
-        if (SystemUtil.isServer()) {
-            let ids = this.parsePlayerIds();
-            if (ids.length > 0) {
-                this.waitTime -= dt;
-                if (this.waitTime <= 0) {
-                    this.waitTime = this.countDown;
-                    this.startGame(this.owner);
-                }
-            }
-            else {
-                this.waitTime = this.countDown;
-            }
-        }
+        // if (SystemUtil.isServer()) {
+        //     let ids = this.parsePlayerIds();
+        //     if (ids.length > 0) {
+        //         this.waitTime -= dt;
+        //         if (this.waitTime <= 0) {
+        //             this.waitTime = this.countDown;
+        //             this.startGame(this.owner);
+        //         }
+        //     }
+        //     else {
+        //         this.waitTime = this.countDown;
+        //     }
+        // }
     }
 
     @mw.RemoteFunction(mw.Server)
