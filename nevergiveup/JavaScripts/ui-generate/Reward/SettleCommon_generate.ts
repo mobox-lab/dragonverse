@@ -22,12 +22,12 @@ export default class SettleCommon_Generate extends UIScript {
 		}
 		return this.rewardText1_Internal
 	}
-	private rewardText2_Internal: mw.TextBlock
-	public get rewardText2(): mw.TextBlock {
-		if(!this.rewardText2_Internal&&this.uiWidgetBase) {
-			this.rewardText2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/rewardText2') as mw.TextBlock
+	private rewardImg_Internal: mw.Image
+	public get rewardImg(): mw.Image {
+		if(!this.rewardImg_Internal&&this.uiWidgetBase) {
+			this.rewardImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/rewardImg') as mw.Image
 		}
-		return this.rewardText2_Internal
+		return this.rewardImg_Internal
 	}
 	private btnScreen_Internal: mw.Button
 	public get btnScreen(): mw.Button {
@@ -69,9 +69,6 @@ export default class SettleCommon_Generate extends UIScript {
 	   //文本多语言
 	   
 	   this.initLanguage(this.rewardText1)
-	   
-	
-	   this.initLanguage(this.rewardText2)
 	   
 	
 	   //文本多语言

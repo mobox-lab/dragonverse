@@ -113,41 +113,6 @@ export default class TaskItem_Generate extends UIScript {
 		}
 		return this.txt_num3_Internal
 	}
-	private infoCanvas_Internal: mw.Canvas
-	public get infoCanvas(): mw.Canvas {
-		if(!this.infoCanvas_Internal&&this.uiWidgetBase) {
-			this.infoCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas') as mw.Canvas
-		}
-		return this.infoCanvas_Internal
-	}
-	private txt_Name_Internal: mw.TextBlock
-	public get txt_Name(): mw.TextBlock {
-		if(!this.txt_Name_Internal&&this.uiWidgetBase) {
-			this.txt_Name_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas/txt_Name') as mw.TextBlock
-		}
-		return this.txt_Name_Internal
-	}
-	private progressBar_Internal: mw.ProgressBar
-	public get progressBar(): mw.ProgressBar {
-		if(!this.progressBar_Internal&&this.uiWidgetBase) {
-			this.progressBar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas/progressBar') as mw.ProgressBar
-		}
-		return this.progressBar_Internal
-	}
-	private txt_Process_Internal: mw.TextBlock
-	public get txt_Process(): mw.TextBlock {
-		if(!this.txt_Process_Internal&&this.uiWidgetBase) {
-			this.txt_Process_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas/txt_Process') as mw.TextBlock
-		}
-		return this.txt_Process_Internal
-	}
-	private txt_Des_Internal: mw.TextBlock
-	public get txt_Des(): mw.TextBlock {
-		if(!this.txt_Des_Internal&&this.uiWidgetBase) {
-			this.txt_Des_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas/txt_Des') as mw.TextBlock
-		}
-		return this.txt_Des_Internal
-	}
 	private canvasReward_Internal: mw.Canvas
 	public get canvasReward(): mw.Canvas {
 		if(!this.canvasReward_Internal&&this.uiWidgetBase) {
@@ -176,6 +141,62 @@ export default class TaskItem_Generate extends UIScript {
 		}
 		return this.btnDoing_Internal
 	}
+	private canvasFinish_Internal: mw.Canvas
+	public get canvasFinish(): mw.Canvas {
+		if(!this.canvasFinish_Internal&&this.uiWidgetBase) {
+			this.canvasFinish_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/canvasFinish') as mw.Canvas
+		}
+		return this.canvasFinish_Internal
+	}
+	private txt_complete_Internal: mw.TextBlock
+	public get txt_complete(): mw.TextBlock {
+		if(!this.txt_complete_Internal&&this.uiWidgetBase) {
+			this.txt_complete_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/canvasFinish/txt_complete') as mw.TextBlock
+		}
+		return this.txt_complete_Internal
+	}
+	private infoCanvas_Internal: mw.Canvas
+	public get infoCanvas(): mw.Canvas {
+		if(!this.infoCanvas_Internal&&this.uiWidgetBase) {
+			this.infoCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas') as mw.Canvas
+		}
+		return this.infoCanvas_Internal
+	}
+	private txt_Name_Internal: mw.TextBlock
+	public get txt_Name(): mw.TextBlock {
+		if(!this.txt_Name_Internal&&this.uiWidgetBase) {
+			this.txt_Name_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas/txt_Name') as mw.TextBlock
+		}
+		return this.txt_Name_Internal
+	}
+	private progressBgImg_Internal: mw.Image
+	public get progressBgImg(): mw.Image {
+		if(!this.progressBgImg_Internal&&this.uiWidgetBase) {
+			this.progressBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas/progressBgImg') as mw.Image
+		}
+		return this.progressBgImg_Internal
+	}
+	private progressBar_Internal: mw.ProgressBar
+	public get progressBar(): mw.ProgressBar {
+		if(!this.progressBar_Internal&&this.uiWidgetBase) {
+			this.progressBar_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas/progressBar') as mw.ProgressBar
+		}
+		return this.progressBar_Internal
+	}
+	private txt_Process_Internal: mw.TextBlock
+	public get txt_Process(): mw.TextBlock {
+		if(!this.txt_Process_Internal&&this.uiWidgetBase) {
+			this.txt_Process_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas/txt_Process') as mw.TextBlock
+		}
+		return this.txt_Process_Internal
+	}
+	private txt_Des_Internal: mw.TextBlock
+	public get txt_Des(): mw.TextBlock {
+		if(!this.txt_Des_Internal&&this.uiWidgetBase) {
+			this.txt_Des_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/infoCanvas/txt_Des') as mw.TextBlock
+		}
+		return this.txt_Des_Internal
+	}
 	private canvasLock_Internal: mw.Canvas
 	public get canvasLock(): mw.Canvas {
 		if(!this.canvasLock_Internal&&this.uiWidgetBase) {
@@ -196,20 +217,6 @@ export default class TaskItem_Generate extends UIScript {
 			this.txt_lock_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/canvasLock/txt_lock') as mw.TextBlock
 		}
 		return this.txt_lock_Internal
-	}
-	private canvasFinish_Internal: mw.Canvas
-	public get canvasFinish(): mw.Canvas {
-		if(!this.canvasFinish_Internal&&this.uiWidgetBase) {
-			this.canvasFinish_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/canvasFinish') as mw.Canvas
-		}
-		return this.canvasFinish_Internal
-	}
-	private txt_complete_Internal: mw.TextBlock
-	public get txt_complete(): mw.TextBlock {
-		if(!this.txt_complete_Internal&&this.uiWidgetBase) {
-			this.txt_complete_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/canvasFinish/txt_complete') as mw.TextBlock
-		}
-		return this.txt_complete_Internal
 	}
 
 
@@ -259,6 +266,9 @@ export default class TaskItem_Generate extends UIScript {
 	   this.initLanguage(this.txt_num3)
 	   
 	
+	   this.initLanguage(this.txt_complete)
+	   
+	
 	   this.initLanguage(this.txt_Name)
 	   
 	
@@ -269,9 +279,6 @@ export default class TaskItem_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txt_lock)
-	   
-	
-	   this.initLanguage(this.txt_complete)
 	   
 	
 	   //文本多语言

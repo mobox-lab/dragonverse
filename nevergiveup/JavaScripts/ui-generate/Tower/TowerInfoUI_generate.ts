@@ -169,6 +169,13 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.nameTxt_Internal
 	}
+	private fightBgImg_Internal: mw.Image
+	public get fightBgImg(): mw.Image {
+		if(!this.fightBgImg_Internal&&this.uiWidgetBase) {
+			this.fightBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/fightBgImg') as mw.Image
+		}
+		return this.fightBgImg_Internal
+	}
 	private levelTxt_Internal: mw.TextBlock
 	public get levelTxt(): mw.TextBlock {
 		if(!this.levelTxt_Internal&&this.uiWidgetBase) {
@@ -231,13 +238,6 @@ export default class TowerInfoUI_Generate extends UIScript {
 			this.canvas_fight_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_fight') as mw.Canvas
 		}
 		return this.canvas_fight_Internal
-	}
-	private fightBgImg_Internal: mw.Image
-	public get fightBgImg(): mw.Image {
-		if(!this.fightBgImg_Internal&&this.uiWidgetBase) {
-			this.fightBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_fight/fightBgImg') as mw.Image
-		}
-		return this.fightBgImg_Internal
 	}
 	private fightImg_Internal: mw.Image
 	public get fightImg(): mw.Image {

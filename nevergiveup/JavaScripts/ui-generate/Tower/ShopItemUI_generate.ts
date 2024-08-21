@@ -29,6 +29,13 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.bgImg_Internal
 	}
+	private fightBgImg_Internal: mw.Image
+	public get fightBgImg(): mw.Image {
+		if(!this.fightBgImg_Internal&&this.uiWidgetBase) {
+			this.fightBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/fightBgImg') as mw.Image
+		}
+		return this.fightBgImg_Internal
+	}
 	private elementImg_Internal: mw.Image
 	public get elementImg(): mw.Image {
 		if(!this.elementImg_Internal&&this.uiWidgetBase) {
@@ -92,13 +99,6 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.canvas_fight_Internal
 	}
-	private fightBgImg_Internal: mw.Image
-	public get fightBgImg(): mw.Image {
-		if(!this.fightBgImg_Internal&&this.uiWidgetBase) {
-			this.fightBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_fight/fightBgImg') as mw.Image
-		}
-		return this.fightBgImg_Internal
-	}
 	private fightImg_Internal: mw.Image
 	public get fightImg(): mw.Image {
 		if(!this.fightImg_Internal&&this.uiWidgetBase) {
@@ -126,6 +126,13 @@ export default class ShopItemUI_Generate extends UIScript {
 			this.equipTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/equipTxt') as mw.TextBlock
 		}
 		return this.equipTxt_Internal
+	}
+	private unlockedTxt_Internal: mw.TextBlock
+	public get unlockedTxt(): mw.TextBlock {
+		if(!this.unlockedTxt_Internal&&this.uiWidgetBase) {
+			this.unlockedTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/unlockedTxt') as mw.TextBlock
+		}
+		return this.unlockedTxt_Internal
 	}
 	private nameTxt_Internal: mw.TextBlock
 	public get nameTxt(): mw.TextBlock {
@@ -173,6 +180,9 @@ export default class ShopItemUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.equipTxt)
+	   
+	
+	   this.initLanguage(this.unlockedTxt)
 	   
 	
 	   this.initLanguage(this.nameTxt)
