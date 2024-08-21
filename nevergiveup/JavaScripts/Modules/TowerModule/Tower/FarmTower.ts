@@ -50,8 +50,13 @@ export default class FarmTower extends TowerBase {
                     this._idleAnim.loop = 999999;
                     (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((go) => {
                         this._weaponRoot = go;
-                        this._towerCha.attachToSlot(this._weaponRoot, this.cfg.weaponSlot ?? HumanoidSlotType.RightHand);
-                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation ? new Vector(...this.cfg.weaponLocation) : Vector.zero;
+                        this._towerCha.attachToSlot(
+                            this._weaponRoot,
+                            this.cfg.weaponSlot ?? HumanoidSlotType.RightHand
+                        );
+                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation
+                            ? new Vector(...this.cfg.weaponLocation)
+                            : Vector.zero;
                         this._weaponRoot.localTransform.rotation = Rotation.zero;
                     });
                 });
@@ -116,7 +121,7 @@ export default class FarmTower extends TowerBase {
         const goldAffect = TalentUtils.getModuleCRunesValueById(1006);
         const goldAffect2 = TalentUtils.getModuleCRunesValueById(1030);
         GameManager.addGold(
-            Math.floor(this.property.attackDamage * (1 + goldAffect + goldAffect2)),
+            Math.floor(this.property.attackDamage * (1 + goldAffect / 100 + goldAffect2 / 100)),
             this.tower?.worldTransform?.position
         );
         this._accumulateDamage += value;
