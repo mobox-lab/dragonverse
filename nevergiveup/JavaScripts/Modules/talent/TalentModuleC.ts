@@ -10,6 +10,7 @@ import Log4Ts from "mw-log4ts";
 import { ETalentType } from "../../const/enum";
 import { TalentTree } from "../../TalentTree/ui/TalentTree";
 import { PlayerUtil } from "../PlayerModule/PlayerUtil";
+import { StageActions } from "../../Actions";
 
 export class TalentItemUnique implements IUnique {
     public id: number;
@@ -127,6 +128,7 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
                 return false;
             }
             TipsManager.showTips(GameConfig.Language.getElement("Text_SuccessUnlock").Value);
+            StageActions.onTalentActivate.call(id);
             return true;
         } catch (error) {
             Log4Ts.error(TalentModuleC, error);

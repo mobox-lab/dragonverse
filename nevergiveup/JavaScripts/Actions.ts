@@ -41,6 +41,7 @@ export const StageActions = {
     onStageWin: new Action1<number>(),
     onStageComplete: new Action1<number>(),
     onPlayerLeaveStage: new Action1<Player>(),
+    onTalentActivate: new Action1<number>(),
 }
 export const StageTriggerActions = {
 

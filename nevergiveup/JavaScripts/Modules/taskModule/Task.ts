@@ -1,22 +1,13 @@
-/*
- * @Author: shifu.huang
- * @Date: 2023-07-26 10:11:27
- * @LastEditors: shifu.huang
- * @LastEditTime: 2024-01-29 14:49:27
- * @FilePath: \nevergiveup\nevergiveup\JavaScripts\Modules\taskModule\Task.ts
- * @Description: 修改描述
- */
-import { CardActions, EnemyActions, PlayerActions, StageActions } from '../../Actions';
+import { CardActions, PlayerActions, StageActions } from '../../Actions';
 import CommonTipsManagerUI from '../../UI/Tips/CommonTipsManagerUI';
-import Utils from '../../Utils';
 import { GameConfig } from '../../config/GameConfig';
 import { ITaskElement } from '../../config/Task';
 import { EmTaskEvent } from '../../tool/Enum';
 import CardModuleC from '../CardModule/CardModuleC';
-import PlayerModuleC from '../PlayerModule/PlayerModuleC';
 import PlayerModuleData from '../PlayerModule/PlayerModuleData';
 import { PlayerUtil } from '../PlayerModule/PlayerUtil';
 import { EmTaskState, EmTaskType, EmTaskWay, TaskModuleC } from './TaskModuleC';
+import TalentModuleC from "../talent/TalentModuleC";
 
 /**
  * 任务的信息记录类
@@ -69,8 +60,9 @@ export class Task {
         let info = this.cfg.taskInfo;
         switch (this.cfg.taskSolveType) {
             case EmTaskWay.UnlockTech:
-                let cfg = GameConfig.TechTree.getElement(this.cfg.taskSolvetime);
-                info = StringUtil.format(this.cfg.taskInfo, cfg.NameKey)
+                // TODO: 适配多语言
+                let cfg = GameConfig.TalentTree.getElement(this.cfg.taskSolvetime);
+                info = StringUtil.format(this.cfg.taskInfo, cfg.nameCN);
                 break;
             case EmTaskWay.UnlockTower:
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime)
@@ -244,11 +236,10 @@ export class Task {
      */
     private initUnlockTech() {
         this.totalSolveTime = 1;
-        this.curSolveTime = DataCenterC.getData(PlayerModuleData).unlockedTechNodes.includes(this.cfg.taskSolvetime) ? 1 : 0;
-        StageActions.onStageWin.add((id: number) => {
-            this.curSolveTime = DataCenterC.getData(PlayerModuleData).unlockedTechNodes.includes(this.cfg.taskSolvetime) ? 1 : 0;
+        StageActions.onTalentActivate.add((id: number) => {
+            this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentIndex(this.cfg.taskSolvetime) ? 1 : 0;
             this.checkState();
-        })
+        });
     }
 
     /**
