@@ -236,7 +236,7 @@ export class Task {
      */
     private initUnlockTech() {
         this.totalSolveTime = 1;
-        StageActions.onStageWin.add((id: number) => {
+        StageActions.onTalentActivate.add((id: number) => {
             this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentIndex(this.cfg.taskSolvetime) ? 1 : 0;
             this.checkState();
         });

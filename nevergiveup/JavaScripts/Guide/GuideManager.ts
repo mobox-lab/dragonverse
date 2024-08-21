@@ -11,15 +11,7 @@ import { GuideDialog } from "../UI/UIDialog";
 import { GameConfig } from "../config/GameConfig";
 import { StageTriggerInst } from "../stage/StageTrigger";
 import { MGSTool } from '../tool/MGSTool';
-
-/** 
- * @Author       : xiaohao.li
- * @Date         : 2023-12-18 11:16:56
- * @LastEditors  : xiaohao.li
- * @LastEditTime : 2023-12-20 13:56:39
- * @FilePath     : \nevergiveup\JavaScripts\GuideManager.ts
- * @Description  : 修改描述
- */
+import { TalentTreeContainer } from "../TalentTree/ui/TalentTreeContainer";
 
 export enum GuideState {
     None,
@@ -167,7 +159,7 @@ export namespace GuideManager {
                 UIService.show(TowerShopUI);
                 break;
             case EmTaskWay.UnlockTech:
-                // ModuleService.getModule(PlayerModuleC).techTree.show();
+                UIService.show(TalentTreeContainer);
                 break;
             case EmTaskWay.PassLevel:
                 guideTaskPos = StageTriggerInst.posMap[GameConfig.Stage.getElement(cfg.taskSolvetime)?.index];
