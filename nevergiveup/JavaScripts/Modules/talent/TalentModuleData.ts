@@ -8,9 +8,13 @@ export default class TalentModuleData extends JModuleData {
     @Decorator.persistence()
     talentMap: Record<string, number> = {};
 
+    @Decorator.persistence()
+    dailyCount: number = 0;
+
     protected initDefaultData(): void {
         this.currentVersion = this.version;
         this.talentMap = {};
+        this.dailyCount = 0;
     }
 
     /**

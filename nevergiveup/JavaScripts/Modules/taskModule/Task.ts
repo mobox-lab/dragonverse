@@ -1,12 +1,12 @@
-import { CardActions, PlayerActions, StageActions } from '../../Actions';
-import CommonTipsManagerUI from '../../UI/Tips/CommonTipsManagerUI';
-import { GameConfig } from '../../config/GameConfig';
-import { ITaskElement } from '../../config/Task';
-import { EmTaskEvent } from '../../tool/Enum';
-import CardModuleC from '../CardModule/CardModuleC';
-import PlayerModuleData from '../PlayerModule/PlayerModuleData';
-import { PlayerUtil } from '../PlayerModule/PlayerUtil';
-import { EmTaskState, EmTaskType, EmTaskWay, TaskModuleC } from './TaskModuleC';
+import { CardActions, PlayerActions, StageActions } from "../../Actions";
+import CommonTipsManagerUI from "../../UI/Tips/CommonTipsManagerUI";
+import { GameConfig } from "../../config/GameConfig";
+import { ITaskElement } from "../../config/Task";
+import { EmTaskEvent } from "../../tool/Enum";
+import CardModuleC from "../CardModule/CardModuleC";
+import PlayerModuleData from "../PlayerModule/PlayerModuleData";
+import { PlayerUtil } from "../PlayerModule/PlayerUtil";
+import { EmTaskState, EmTaskType, EmTaskWay, TaskModuleC } from "./TaskModuleC";
 import TalentModuleC from "../talent/TalentModuleC";
 
 /**
@@ -236,6 +236,15 @@ export class Task {
      */
     private initUnlockTech() {
         this.totalSolveTime = 1;
+        if (this.type === EmTaskType.Daily) {
+            this.curSolveTime = ModuleService.getModule(TalentModuleC).getDailyCount();
+            StageActions.onTalentActivate.add((id: number) => {
+                this.curSolveTime = ModuleService.getModule(TalentModuleC).getDailyCount();
+                this.checkState();
+            });
+            return;
+        }
+        this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentIndex(this.cfg.taskSolvetime) ? 1 : 0;
         StageActions.onTalentActivate.add((id: number) => {
             this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentIndex(this.cfg.taskSolvetime) ? 1 : 0;
             this.checkState();

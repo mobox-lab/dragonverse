@@ -7,6 +7,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { ITalentTreeElement } from "../../config/TalentTree";
 import { ETalentType } from "../../const/enum";
 import { PlayerUtil } from "../PlayerModule/PlayerUtil";
+import { TimerModuleUtils } from "../TimeModule/time";
 
 export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleData> {
     private _playS: PlayerModuleS;
@@ -16,8 +17,25 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         return this._playS;
     }
 
+    protected onJStart() {
+        super.onJStart();
+        TimerModuleUtils.addOnlineDayListener(this.clearDailyCount, this);
+    }
+
+    private clearDailyCount() {
+        const players = Player.getAllPlayers();
+        players.forEach(player => {
+            const data = this.getPlayerData(player);
+            if (data) {
+                data.dailyCount = 0;
+                data.save(false);
+            }
+        });
+    }
+
     public async setTalent(player: Player, id: number, level: number) {
         const playerData = this.getPlayerData(player.userId);
+        playerData.dailyCount++;
         playerData.setTalentIndex(id, level);
         playerData.save(true);
         await this.getClient(player).net_setItem(id, level);
@@ -72,5 +90,10 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
 
         await this.setTalent(player, id, level + 1);
         return true;
+    }
+
+    public net_clearDailyCount() {
+        this.currentData.dailyCount = 0;
+        this.currentData.save(false);
     }
 }

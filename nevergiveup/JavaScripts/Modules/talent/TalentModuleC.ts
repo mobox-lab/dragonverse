@@ -11,6 +11,7 @@ import { ETalentType } from "../../const/enum";
 import { TalentTree } from "../../TalentTree/ui/TalentTree";
 import { PlayerUtil } from "../PlayerModule/PlayerUtil";
 import { StageActions } from "../../Actions";
+import { TimerModuleUtils } from "../TimeModule/time";
 
 export class TalentItemUnique implements IUnique {
     public id: number;
@@ -56,7 +57,14 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
     protected onJStart(): void {
         super.onJStart();
 
+        TimerModuleUtils.addOnlineDayListener(() => this.clearDailyCount(false), this);
+        TimerModuleUtils.addLoginDayListener(() => this.clearDailyCount(true), this);
         this.talentItemYoact.setAll(TalentItemUnique.arrayFromObject(this.data));
+    }
+
+    private clearDailyCount(isSave: boolean) {
+        this.data.dailyCount = 0;
+        isSave && this.server.net_clearDailyCount();
     }
 
     /**
@@ -134,6 +142,10 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
             Log4Ts.error(TalentModuleC, error);
             return false;
         }
+    }
+
+    public getDailyCount() {
+        return this.data.dailyCount;
     }
 
     public async net_setItem(id: number, index: number) {
