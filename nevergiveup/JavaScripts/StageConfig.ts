@@ -1660,28 +1660,28 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
     {
         waves: [
             {
-                enemies: [{ type: 1028, count: 5, spawnInterval: 5, gate: 0 }],
+                enemies: [{ type: 1028, count: 5, spawnInterval: 5, gate: 0 },{ type: 1027, count: 5, spawnInterval: 4, gate: 1 }],
                 waveGold: 200,
-                waveTime: 30,
-                hpMultiplier: 2.3,
+                waveTime: 20,
+                hpMultiplier: 1,
             },
             {
-                enemies: [{ type: 1025, count: 5, spawnInterval: 5, gate: 1 }],
-                waveGold: 150,
-                waveTime: 30,
-                hpMultiplier: 4.6,
+                enemies: [{ type: 1025, count: 3, spawnInterval: 10, gate: 1 },{ type: 1025, count: 2, spawnInterval: 6, gate: 1 }],
+                waveGold: 100,
+                waveTime: 20,
+                hpMultiplier: 2,
             },
             {
-                enemies: [{ type: 1027, count: 5, spawnInterval: 5, gate: 1 }],
+                enemies: [{ type: 1027, count: 10, spawnInterval: 4, gate: 1 }],
                 waveGold: 150,
                 waveTime: 30,
                 hpMultiplier: 6.9,
             },
             {
-                enemies: [{ type: 1026, count: 3, spawnInterval: 5 }],
+                enemies: [{ type: 1026, count: 1, spawnInterval: 10, gate: 1 },{ type: 1026, count: 1, spawnInterval: 10, gate: 0 }],
                 waveGold: 150,
-                waveTime: 30,
-                hpMultiplier: 9.2,
+                waveTime: 400,
+                hpMultiplier: 3,
             },
         ],
     },
@@ -1847,5 +1847,27 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 hpMultiplier: 15,
             },
         ],
+    },
+    //无尽
+    {
+        waves: (wave: number, execute: boolean, stageId?: number) => {
+            let waveUtil: WaveUtil = new WaveUtil();
+            if (SystemUtil.isClient()) {
+                waveUtil = ModuleService.getModule(WaveModuleC).waveUtil;
+            }
+
+            if (waveUtil) {
+                const waveEnemy = waveUtil.newCalculateWave(wave, execute, stageId);
+                return waveEnemy;
+            } else {
+                return {
+                    waveGold: 100,
+                    enemies: [],
+                    waveTime: 0,
+                    hpMultiplier: 0,
+                };
+            }
+        },
+        waveLength: 99999,
     },
 ];
