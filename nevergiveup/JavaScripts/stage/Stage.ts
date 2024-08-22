@@ -23,7 +23,7 @@ import { DragonDataModuleS } from "../Modules/dragonData/DragonDataModuleS";
 import TalentUtils from "../Modules/talent/TalentUtils";
 import { WaveModuleC } from "../Modules/waveModule/WaveModuleC";
 import { RankItem } from "../Rank/RankManager";
-import { NEW_STAGE_CONFIG, STAGE_CONFIG, baseHp } from "../StageConfig";
+import { baseHp } from "../StageConfig";
 import { EStageState, WaveConfig } from "../StageEnums";
 import { StageListener } from "../StageListener";
 import { TweenCommon } from "../TweenCommon";
