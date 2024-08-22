@@ -266,6 +266,12 @@ export class PetBagModuleData extends Subdata {
         return this.petStatisticMapNew;
     }
 
+    /**合成时获取 作为备份用 */
+    public get BagItems(): { [key: number]: petItemDataNew } {
+        return Object.assign({}, this.bagContainerNew);
+    }
+
+
     get version(): number {
         return 8;
     }
@@ -311,7 +317,11 @@ export class PetBagModuleData extends Subdata {
             this.save(dataSave);
         },0.5e3)
     }
-
+    /** 合成时使用 备份恢复 */
+    public recoverBagItems(preBagItems: { [key: number]: petItemDataNew }) {
+        this.bagContainerNew = preBagItems;
+        this.save(true);
+    }
     public reduceDataSize() {
         if(this.petStatisticMap) {
             for (const key in this.petStatisticMap) {
