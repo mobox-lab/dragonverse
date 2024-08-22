@@ -1,4 +1,4 @@
-﻿/** 
+﻿/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-07 15:37:27
  * @LastEditors  : xiaohao.li
@@ -20,9 +20,7 @@ import { StageUtil } from "./Stage";
 import { UIStageSelect } from "./ui/UIStageSelect";
 
 export namespace StageTriggerInst {
-    export let posMap: { [stageId: number]: Vector } = {
-
-    }
+    export let posMap: { [stageId: number]: Vector } = {};
 }
 
 @Component
@@ -52,7 +50,7 @@ export default class StageTrigger extends Script {
     public stageCfgId: number = 1;
 
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
-    protected onStart(): void { 
+    protected onStart(): void {
         if (SystemUtil.isServer()) {
             this.useUpdate = true;
             let trigger = this.gameObject as Trigger;
@@ -75,10 +73,13 @@ export default class StageTrigger extends Script {
             Player.onPlayerLeave.add((player: Player) => {
                 this.removePlayerId(player.playerId);
             });
-        }
-        else {
+        } else {
             mw.Event.addServerListener("TD_STAGE_SELECT_CLOSE_UI", this.closeUI);
-            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(this.stageWorldIndex, this.stageGroupId, this.difficulty);
+            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(
+                this.stageWorldIndex,
+                this.stageGroupId,
+                this.difficulty
+            );
             const stageCfg = GameConfig.Stage.getElement(this.stageCfgId);
             StageTriggerInst.posMap[this.stageCfgId] = this.gameObject.worldTransform.position.clone();
             GameObject.asyncFindGameObjectById(this.worldUIGUID).then((widget: UIWidget) => {
@@ -123,7 +124,7 @@ export default class StageTrigger extends Script {
         TweenCommon.popUpHide(UIService.getUI(UIStageSelect).rootCanvas, () => {
             UIService.hide(UIStageSelect);
         });
-    }
+    };
 
     onTrigger() {
         this._triggered = true;
@@ -136,8 +137,8 @@ export default class StageTrigger extends Script {
 
     parsePlayerIds() {
         if (!this.triggeredPlayers) return [];
-        let arr = this.triggeredPlayers.split("|").filter(id => id != "");
-        return arr.map(id => +id);
+        let arr = this.triggeredPlayers.split("|").filter((id) => id != "");
+        return arr.map((id) => +id);
     }
 
     addPlayerId(id: number) {
@@ -165,8 +166,7 @@ export default class StageTrigger extends Script {
             console.log(this.owner, "owner");
             this.waitTime = this.countDown;
             this.difficulty = 0;
-        }
-        else if (ids.length == 0) {
+        } else if (ids.length == 0) {
             this.owner = 0;
             this.waitTime = this.countDown;
             this.difficulty = 0;
@@ -190,7 +190,7 @@ export default class StageTrigger extends Script {
 
     onWaitTimeChanged() {
         if (this.waitProgress) {
-            this.waitProgress.percent = 1 - (this.waitTime / this.countDown);
+            this.waitProgress.percent = 1 - this.waitTime / this.countDown;
         }
         if (this.waitTimerUI) {
             this.waitTimerUI.text = Math.ceil(this.waitTime) + GameConfig.Language.getElement("Text_SecondStart").Value;
@@ -198,7 +198,7 @@ export default class StageTrigger extends Script {
 
         if (this._triggered) {
             let ui = UIService.getUI(UIStageSelect);
-            ui.updateCountDown(Math.ceil(this.waitTime))
+            ui.updateCountDown(Math.ceil(this.waitTime));
         }
     }
 
@@ -235,40 +235,54 @@ export default class StageTrigger extends Script {
         Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`);
         if (!ModuleService.getModule(EnergyModuleS).isAfford(playerID, GameServiceConfig.STAMINA_COST_START_GAME)) {
             Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
-            mw.Event.dispatchToClient(Player.getPlayer(playerID), GlobalEventName.ServerTipsEventName, GameConfig.Language.getElement("Text_insufficientStamina").Value);
+            mw.Event.dispatchToClient(
+                Player.getPlayer(playerID),
+                GlobalEventName.ServerTipsEventName,
+                GameConfig.Language.getElement("Text_insufficientStamina").Value
+            );
             return;
         }
         ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
         if (playerID == this.owner) {
             let ids = this.parsePlayerIds().splice(0, 4);
-            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(this.stageWorldIndex, this.stageGroupId, this.difficulty);
+            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(
+                this.stageWorldIndex,
+                this.stageGroupId,
+                this.difficulty
+            );
             GameManager.startGame(ids, this.stageCfgId);
         }
     }
 
-
     /** 脚本被销毁时最后一帧执行完调用此函数 */
-    protected onDestroy(): void {
-
-    }
-
+    protected onDestroy(): void {}
 
     @mw.RemoteFunction(mw.Server)
     setDifficulty(playerId: number, value: number) {
         if (playerId == this.owner) {
             this.difficulty = value;
-            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(this.stageWorldIndex, this.stageGroupId, this.difficulty);
+            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(
+                this.stageWorldIndex,
+                this.stageGroupId,
+                this.difficulty
+            );
         }
     }
 
     onDifficultyChanged() {
-        if (this._triggered) {        
-            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(this.stageWorldIndex, this.stageGroupId, this.difficulty);
+        if (this._triggered) {
+            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(
+                this.stageWorldIndex,
+                this.stageGroupId,
+                this.difficulty
+            );
             let ui = UIService.getUI(UIStageSelect);
             ui.setSelectDifficulty(this.difficulty);
             ui.setData(this.stageWorldIndex, this.difficulty, this.stageGroupId);
         }
-        this.mapNameUI.text = StageUtil.getStageCfgById(this.stageCfgId)?.stageName;
+        if (this.mapNameUI?.text) {
+            this.mapNameUI.text = StageUtil.getStageCfgById(this.stageCfgId)?.stageName;
+        }
     }
 
     onOwnerChanged() {

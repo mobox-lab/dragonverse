@@ -1,7 +1,7 @@
 import Gtk from "gtoolkit";
 import PlayerModuleData from "../../Modules/PlayerModule/PlayerModuleData";
 import { PlayerUtil } from "../../Modules/PlayerModule/PlayerUtil";
-import { STAGE_CONFIG } from "../../StageConfig";
+import { NEW_STAGE_CONFIG } from "../../StageConfig";
 import { TweenCommon } from "../../TweenCommon";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import Utils from "../../Utils";
@@ -196,28 +196,31 @@ export class UIStageSelect extends StageSelect_Generate {
         }
     }
     getEnemyTypeString(stageCfgId: number) {
-        // todo 这里要改
         let index = StageUtil.getWaveIndexFromId(stageCfgId);
-        let stageConfig = STAGE_CONFIG[index];
+        let stageConfig = NEW_STAGE_CONFIG[index];
         let waves = stageConfig.waves;
-        let typeString: string[] = [];
-        for (let i = 0; i < waves.length; i++) {
-            let wave = waves[i];
-            for (let j = 0; j < wave.enemies.length; j++) {
-                let enemyConfig = GameConfig.Monster.getElement(wave.enemies[j].type);
-                let types = enemyConfig.types;
-                if (!types) {
-                    types = [0];
-                }
-                for (let k = 0; k < types.length; k++) {
-                    let enemyTypeStr = ComponentFactory.EnemeyTypeString[types[k]];
-                    if (!typeString.includes(enemyTypeStr) && enemyTypeStr != "") {
-                        typeString.push(enemyTypeStr);
+        if (Array.isArray(waves)) {
+            let typeString: string[] = [];
+            for (let i = 0; i < waves.length; i++) {
+                let wave = waves[i];
+                for (let j = 0; j < wave.enemies.length; j++) {
+                    let enemyConfig = GameConfig.Monster.getElement(wave.enemies[j].type);
+                    let types = enemyConfig.types;
+                    if (!types) {
+                        types = [0];
+                    }
+                    for (let k = 0; k < types.length; k++) {
+                        let enemyTypeStr = ComponentFactory.EnemeyTypeString[types[k]];
+                        if (!typeString.includes(enemyTypeStr) && enemyTypeStr != "") {
+                            typeString.push(enemyTypeStr);
+                        }
                     }
                 }
             }
+            return typeString;
+        } else {
+            return [];
         }
-        return typeString;
     }
 
     updateCountDown(time: number) {

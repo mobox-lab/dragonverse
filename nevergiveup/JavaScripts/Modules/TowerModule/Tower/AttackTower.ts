@@ -243,15 +243,6 @@ export default class AttackTower extends TowerBase {
         }
     }
 
-    calculateDamage() {
-        let damage = 0;
-        // 1. P1：加成伤害 = 基础伤害 * （1 + 伤害加成）
-        // 2. P2： 元素加成伤害 = 加成伤害 * （1 + 元素克制伤害加成）
-        // 元素抵抗伤害 = 加成伤害 * （1 - 元素抵抗伤害加成）
-        // 3. P3：实际单次攻击造成伤害 = 元素加成/抵抗伤害 * （ 1 - 护甲或魔抗 /（200 + 护甲或魔抗））
-        // const P1Damage =
-    }
-
     onDamage(amount: number) {
         this._accumulateDamage += amount;
         if (Utils.isLocalPlayer(this.info.playerID) && GameManager.getStageClient()) {
