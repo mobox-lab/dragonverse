@@ -516,20 +516,30 @@ export class ResourceModuleS extends mwext.ModuleS<ResourceModuleC, null> {
 
     /**初始化巨大宝箱 */
     private initBigBox() {
-        GameConfig
+        const bigBoxIds =GameConfig
             .SceneUnit
             .getAllElement()
             .filter(item => isBigBox(item.resType))
             .map(item => item.ID)
-            .forEach(id => this.createBigBox(id));
+        const areaMap = {}
+        const dropPointsMap: {[areaID: number]: number[]} = GameConfig.DropPoint.getAllElement().filter(item => item.isBigBox === 1).reduce((pre, cur) => {
+            pre[cur.areaID] = pre[cur.areaID] || [];
+            pre[cur.areaID].push(cur.id);
+            return pre;
+        },{});
+        for(const id of bigBoxIds){
+            const areaID = GameConfig.SceneUnit.getElement(id)?.AreaID;
+            areaMap[areaID] = areaMap[areaID] || 0;
+            const dropPoint = dropPointsMap[areaID]?.[areaMap[areaID]];
+            this.createBigBox(id, dropPoint);
+            areaMap[areaID]++;
+        }
     }
 
     /**创建宝箱 */
-    private async createBigBox(cfgId: number, pointId?: number) {
-
+    private async createBigBox(cfgId: number, pointId: number) {
         let res = await this.getScript();
         // pointId = pointId ?? this.getAreaResValidPoints(GameConfig.SceneUnit.getElement(cfgId)?.AreaID ?? 0)?.[0] ?? undefined;
-        pointId = pointId ?? GameConfig.DropPoint.getAllElement().find(item => item.isBigBox === 1 && item.areaID === GameConfig.SceneUnit.getElement(cfgId)?.AreaID).id;
         if (Gtk.isNullOrUndefined(pointId)) return;
         Log4Ts.log(ResourceModuleS, `create big box, cfg id: ${cfgId} point id: ${pointId}`);
         res.initServer(pointId, cfgId);

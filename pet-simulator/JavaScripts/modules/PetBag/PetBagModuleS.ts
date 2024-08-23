@@ -257,7 +257,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     }
 
     public deletePet(playerId: number, keys: number[], desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
-        Log4Ts.log(PetBagModuleS, "deletePet keys:" + keys);
+        const userId = Player.getPlayer(playerId)?.userId;
+        Log4Ts.log(PetBagModuleS, "userId:" + userId + " deletePet keys:" + keys);
         let data = this.getPlayerData(playerId);
 
         let delAbleKeys = data.getFilteredDelAbleKeys(keys);
@@ -273,6 +274,12 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
 
         data.save(true);
         data.BagItemChangeAC.call(false, 1, 1);
+    }
+    public recoverFusePets(playerId: number, bagItems: { [key: number]: petItemDataNew }) {
+        const userId = Player.getPlayer(playerId).userId;
+        Log4Ts.log(PetBagModuleS, "userId:" + userId + " recoverFusePets:" + JSON.stringify(bagItems));
+        const data = this.getPlayerData(playerId);
+        data.recoverBagItems(bagItems);
     }
 
     /**根据概率返回本次是否成功 */
@@ -528,90 +535,99 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         const data = this.currentData;
         if (curSelectPets.length >= data.CurBagCapacity) return false;
 
-        /**最多相同id的宠物数量 */
-        let maxSameIdCount = 0;
-        /**所有宠物攻击力的合 */
-        let allPetAtk = 0;
-        let countMap = new Map<number, number>();
-        let devType = this.judgePetType(curSelectPets);
-        for (let i = 0; i < curSelectPets.length; i++) {
-            let pet = curSelectPets[i];
-            if (!countMap.has(pet.I)) {
-                countMap.set(pet.I, 1);
-            } else {
-                let count = countMap.get(pet.I);
-                countMap.set(pet.I, count + 1);
-                if (count + 1 > maxSameIdCount) {
-                    maxSameIdCount = count + 1;
+        const preBagItems = data.BagItems;
+        try {
+            /**最多相同id的宠物数量 */
+            let maxSameIdCount = 0;
+            /**所有宠物攻击力的合 */
+            let allPetAtk = 0;
+            let countMap = new Map<number, number>();
+            let devType = this.judgePetType(curSelectPets);
+            for (let i = 0; i < curSelectPets.length; i++) {
+                let pet = curSelectPets[i];
+                if (!countMap.has(pet.I)) {
+                    countMap.set(pet.I, 1);
+                } else {
+                    let count = countMap.get(pet.I);
+                    countMap.set(pet.I, count + 1);
+                    if (count + 1 > maxSameIdCount) {
+                        maxSameIdCount = count + 1;
+                    }
                 }
+                allPetAtk += pet.p.a;
             }
-            allPetAtk += pet.p.a;
-        }
-        if (maxSameIdCount == 0) maxSameIdCount = 1;
-        let minAtk = allPetAtk / GlobalData.Fuse.minDamageRate;
-        let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
-        let allPetIds: number[] = [];
-        /**与最大攻击力差值 */
-            //获取ts最大整数数值
-        let max = Number.MAX_VALUE;
-        let allMaxAtkDiff = max;
-        /**攻击力差值最小的宠物id */
-        let allMinAtkDiffPetId = 1;
-        /**稀有度相同的最大攻击力差值 */
-        let sameMaxAtkDiff = max;
-        /**稀有度相同的攻击力差值最小的宠物id */
-        let sameMinAtkDiffPetId = 0;
-        GameConfig
-            .PetARR
-            .getAllElement()
-            .forEach(item => {
-                if (item.IfFuse) {
-                    let atks = item.PetAttack;
-                    let min = atks[0];
-                    let max = atks[1];
-                    if (min >= minAtk && max <= maxAtk && item.DevType == devType) {
-                        allPetIds.push(item.id);
-                    }
-                    let diff = Math.abs(max - maxAtk);
-                    if (diff < allMaxAtkDiff) {
-                        allMaxAtkDiff = diff;
-                        allMinAtkDiffPetId = item.id;
-                    }
-                    if (item.DevType == devType) {
-                        if (diff < sameMaxAtkDiff) {
-                            sameMaxAtkDiff = diff;
-                            sameMinAtkDiffPetId = item.id;
+            if (maxSameIdCount == 0) maxSameIdCount = 1;
+            let minAtk = allPetAtk / GlobalData.Fuse.minDamageRate;
+            let maxAtk = allPetAtk / GlobalData.Fuse.maxDamageRate;
+            let allPetIds: number[] = [];
+            /**与最大攻击力差值 */
+                //获取ts最大整数数值
+            let max = Number.MAX_VALUE;
+            let allMaxAtkDiff = max;
+            /**攻击力差值最小的宠物id */
+            let allMinAtkDiffPetId = 1;
+            /**稀有度相同的最大攻击力差值 */
+            let sameMaxAtkDiff = max;
+            /**稀有度相同的攻击力差值最小的宠物id */
+            let sameMinAtkDiffPetId = 0;
+            GameConfig
+                .PetARR
+                .getAllElement()
+                .forEach(item => {
+                    if (item.IfFuse) {
+                        let atks = item.PetAttack;
+                        let min = atks[0];
+                        let max = atks[1];
+                        if (min >= minAtk && max <= maxAtk && item.DevType == devType) {
+                            allPetIds.push(item.id);
+                        }
+                        let diff = Math.abs(max - maxAtk);
+                        if (diff < allMaxAtkDiff) {
+                            allMaxAtkDiff = diff;
+                            allMinAtkDiffPetId = item.id;
+                        }
+                        if (item.DevType == devType) {
+                            if (diff < sameMaxAtkDiff) {
+                                sameMaxAtkDiff = diff;
+                                sameMinAtkDiffPetId = item.id;
+                            }
                         }
                     }
-                }
-            });
-        if (allPetIds.length == 0) {
-            let minAtkDiffPetId = sameMinAtkDiffPetId == 0 ? allMinAtkDiffPetId : sameMinAtkDiffPetId;
-            allPetIds.push(minAtkDiffPetId);
+                });
+            if (allPetIds.length == 0) {
+                let minAtkDiffPetId = sameMinAtkDiffPetId == 0 ? allMinAtkDiffPetId : sameMinAtkDiffPetId;
+                allPetIds.push(minAtkDiffPetId);
+            }
+            let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
+            if(!endPetId) return false;
+            const logInfo = {
+                logName: "P_Merge", logObj: {
+                    uid: userId,
+                    diamond: GlobalData.Fuse.cost,
+                    inputPets: curSelectPets,
+                    petId: endPetId,
+                },
+            };
+            this.petBagModuleS.deletePet(playerId, curSelectPetKeys, "合成");
+            const res = this.petBagModuleS
+                .addPetWithMissingInfo(
+                    playerId,
+                    endPetId,
+                    "合成",
+                    GlobalEnum.PetGetType.Fusion,
+                    earliestObtainTime,
+                    logInfo);
+            mw.Event.dispatchToClient(this.currentPlayer,
+                "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
+                endPetId);
+            if (!res) throw new Error("addPetWithMissingInfo error");
+            return true;
+        } catch (e) {
+            const userId = Player.getPlayer(playerId)?.userId;
+            this.petBagModuleS.recoverFusePets(playerId, preBagItems);
+            console.error("#P12 userId:" + userId + " Fuse Pet Error:" + e);
+            return false;
         }
-        let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
-        mw.Event.dispatchToClient(this.currentPlayer,
-            "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
-            endPetId);
-
-        const logInfo = {
-            logName: "P_Merge", logObj: {
-                uid: userId,
-                diamond: GlobalData.Fuse.cost,
-                inputPets: curSelectPets,
-                petId: endPetId,
-            },
-        };
-        this.petBagModuleS.deletePet(playerId, curSelectPetKeys, "合成");
-        this.petBagModuleS
-            .addPetWithMissingInfo(
-                playerId,
-                endPetId,
-                "合成",
-                GlobalEnum.PetGetType.Fusion,
-                earliestObtainTime,
-                logInfo);
-        return true;
     }
 
     /**词条buff初始化 */
