@@ -161,6 +161,14 @@ export class UIStageSelect extends StageSelect_Generate {
         if (berserk) skills.push(StageMonsterSkillType.Berserk);
         if (stealth) skills.push(StageMonsterSkillType.Stealth);
         if (fly) skills.push(StageMonsterSkillType.Fly);
+
+        if(skills.length) {
+            Gtk.trySetVisibility(this.can_Monster, mw.SlateVisibility.Visible);
+        } else {
+            Gtk.trySetVisibility(this.can_Monster, mw.SlateVisibility.Collapsed);
+        }
+        this.bg.size = this.can_inner.size.clone();
+
         this.monsterSkillTypes = skills;
         console.log("#debug monsterSkillTypes", skills);
         for (let i = 0; i < 5; i++) {
