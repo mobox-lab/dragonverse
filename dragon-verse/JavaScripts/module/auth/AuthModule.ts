@@ -724,11 +724,11 @@ interface PetSimulatorStatistic {
     /**
      * 最强战力宠物的附魔数组
      */
-    petMaxEnchanted: string;    
+    petMaxEnchanted: string;
     /**
      * 最强战力宠物总附魔分数
      */
-    petMaxEnchantScore: number;    
+    petMaxEnchantScore: number;
     /**
      * 最强战力宠物总分 = petMax + petMaxEnchantScore
      */
@@ -1011,7 +1011,7 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
         //#region Event Subscribe
-        TimeUtil.setInterval(() => this.heartbeat(), GameServiceConfig.HEARTBEAT_REFRESH);
+        this.heartbeatC();
         //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
     }
 
@@ -1075,10 +1075,10 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
         this.server.net_refreshCurrency();
     }
 
-    private heartbeat() {
-        if (!GameServiceConfig.isRelease && !GameServiceConfig.isBeta) return;
-        const timestamp = Date.now();
-        this.server.net_heartbeat(timestamp);
+    private heartbeatC() {
+        Event.addServerListener(GameServiceConfig.HEARTBEAT_KIND, (sentTime: number) => {
+            Event.dispatchToServerUnreliable(GameServiceConfig.HEARTBEAT_KIND, sentTime);
+        });
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -1094,13 +1094,6 @@ export class AuthModuleC extends JModuleC<AuthModuleS, AuthModuleData> {
 
     public net_refreshAccess(access: boolean) {
         this.access = access;
-    }
-
-    public net_heartbeatCall(sentTime: number) {
-        const receivedTime = Date.now();
-        const rtt = receivedTime - sentTime;
-        const player = this.localPlayer;
-        this.server.net_serverLog(GameServiceConfig.HEARTBEAT_KIND, [GameServiceConfig.SCENE_NAME, player.userId, player.ping, rtt]);
     }
 
 //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
@@ -1483,6 +1476,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         //#endregion ------------------------------------------------------------------------------------------
 
         //#region Event Subscribe
+        this.heartbeatS();
         //#endregion ------------------------------------------------------------------------------------------
     }
 
@@ -2221,6 +2215,21 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             this.getClient(Player.getPlayer(userId))?.net_refreshToken();
     }
 
+    private heartbeatS() {
+        if (!GameServiceConfig.isRelease && !GameServiceConfig.isBeta) return;
+
+        TimeUtil.setInterval(() => {
+            const timestamp = Date.now();
+            Event.dispatchToAllClientUnreliable(GameServiceConfig.HEARTBEAT_KIND, timestamp);
+        }, GameServiceConfig.HEARTBEAT_REFRESH);
+
+        Event.addClientListener(GameServiceConfig.HEARTBEAT_KIND, (player: mw.Player, sentTime: number) => {
+            const receivedTime = Date.now();
+            const rtt = receivedTime - sentTime;
+            this.serverLog(GameServiceConfig.HEARTBEAT_KIND, [GameServiceConfig.SCENE_NAME, player.userId, player.ping, rtt]);
+        });
+    }
+
     public serverLog(kind: string, params: any) {
         Log4Ts.log({name: kind}, JSON.stringify(params) + " #P12");
     }
@@ -2260,12 +2269,6 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         if (!this.checkRequestRegulator(userId, "currency")) return;
 
         this.queryCurrency(userId);
-    }
-
-    @noReply()
-    public net_heartbeat(timestamp: number) {
-        const currentPlayer = this.currentPlayer;
-        this.getClient(currentPlayer).net_heartbeatCall(timestamp);
     }
 
     @noReply()
