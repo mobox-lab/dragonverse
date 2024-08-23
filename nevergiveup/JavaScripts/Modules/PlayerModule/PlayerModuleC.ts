@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-14 15:24:15
  * @LastEditors  : xiaohao.li
@@ -13,8 +13,9 @@ import SettingUI from "../../UI/SettingUI";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEventName } from "../../const/enum";
+import { ElementEnum } from "../../enemy/EnemyBase";
 import { ItemType } from "../../tool/Enum";
-import { FirstEvent, MGSTool } from '../../tool/MGSTool';
+import { FirstEvent, MGSTool } from "../../tool/MGSTool";
 import { VoiceEvent } from "../../tool/SoundUtil";
 import { TimerModuleUtils } from "../TimeModule/time";
 import PlayerModuleData from "./PlayerModuleData";
@@ -30,29 +31,57 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.updateCurrency();
         TimerModuleUtils.addOnlineDayListener(() => this.clearDailyCount(false), this);
         TimerModuleUtils.addLoginDayListener(() => this.clearDailyCount(true), this);
-        UIService.getUI(SettingUI)["attackSelect" + (this.data.attackVoiceFactor > 0 ? "False" : "True")].onClicked.broadcast();
-        UIService.getUI(SettingUI)["bgmSelect" + (this.data.bgmVoiceFactor > 0 ? "False" : "True")].onClicked.broadcast();
+        UIService.getUI(SettingUI)[
+            "attackSelect" + (this.data.attackVoiceFactor > 0 ? "False" : "True")
+        ].onClicked.broadcast();
+        UIService.getUI(SettingUI)[
+            "bgmSelect" + (this.data.bgmVoiceFactor > 0 ? "False" : "True")
+        ].onClicked.broadcast();
 
         Event.addLocalListener(VoiceEvent.Bgm, (value: number) => {
             this.data.bgmVoiceFactor = value;
-            this.server.net_saveSetting(this.data.bgmVoiceFactor, this.data.attackVoiceFactor)
-        })
+            this.server.net_saveSetting(this.data.bgmVoiceFactor, this.data.attackVoiceFactor);
+        });
 
         Event.addLocalListener(VoiceEvent.Attack, (value: number) => {
             this.data.attackVoiceFactor = value;
-            this.server.net_saveSetting(this.data.bgmVoiceFactor, this.data.attackVoiceFactor)
-        })
-        
+            this.server.net_saveSetting(this.data.bgmVoiceFactor, this.data.attackVoiceFactor);
+        });
+
         Event.addServerListener(GlobalEventName.ServerTipsEventName, (str: string) => {
             TipsManager.showTips(str);
-        })
+        });
     }
 
     private clearDailyCount(isSave: boolean) {
         this.data.completeStageCount.daily = 0;
+        this.data.perfectCompleteStageCount.daily = 0;
         this.data.killEnemyCount.daily = 0;
-        isSave && this.server.net_SaveSumCount(this.data.completeStageCount.sum, this.data.completeStageCount.daily,
-            this.data.killEnemyCount.sum, this.data.killEnemyCount.daily);
+        isSave &&
+            this.server.net_SaveSumCount(
+                this.data.completeStageCount.sum,
+                this.data.completeStageCount.daily,
+                this.data.killEnemyCount.sum,
+                this.data.killEnemyCount.daily,
+                this.data.perfectCompleteStageCount.sum,
+                this.data.perfectCompleteStageCount.daily
+            );
+
+        this.data.lightTowerCount.daily = 0;
+        this.data.darkTowerCount.daily = 0;
+        this.data.waterTowerCount.daily = 0;
+        this.data.fireTowerCount.daily = 0;
+        this.data.woodTowerCount.daily = 0;
+        this.data.earthTowerCount.daily = 0;
+        isSave &&
+            this.server.net_SaveTowerSumCount(
+                this.data.lightTowerCount,
+                this.data.darkTowerCount,
+                this.data.waterTowerCount,
+                this.data.fireTowerCount,
+                this.data.woodTowerCount,
+                this.data.earthTowerCount
+            );
     }
 
     public onEnemyKilled() {
@@ -60,16 +89,56 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         MGSTool.doFirstEvent(FirstEvent.CoreStep3);
     }
 
-    public onStageCompleted() {
+    public onStageCompleted(isPerfect: boolean) {
         this.data.completeStageCount.sum = this.data.completeStageCount.sum + 1;
         this.data.completeStageCount.daily = this.data.completeStageCount.daily + 1;
+        if (isPerfect) {
+            this.data.perfectCompleteStageCount.sum = this.data.perfectCompleteStageCount.sum + 1;
+            this.data.perfectCompleteStageCount.daily = this.data.perfectCompleteStageCount.daily + 1;
+        }
         this.data.killEnemyCount.sum = this.data.killEnemyCount.sum + this._enemyCount;
         this.data.killEnemyCount.daily = this.data.killEnemyCount.daily + this._enemyCount;
-        this.server.net_SaveSumCount(this.data.completeStageCount.sum, this.data.completeStageCount.daily,
-            this.data.killEnemyCount.sum, this.data.killEnemyCount.daily);
+        this.server.net_SaveSumCount(
+            this.data.completeStageCount.sum,
+            this.data.completeStageCount.daily,
+            this.data.killEnemyCount.sum,
+            this.data.killEnemyCount.daily,
+            this.data.perfectCompleteStageCount.sum,
+            this.data.perfectCompleteStageCount.daily
+        );
         this._enemyCount = 0;
     }
 
+    // 更新部署塔的数据
+    public onTowerBuild(type: ElementEnum) {
+        if (type === ElementEnum.LIGHT) {
+            this.data.lightTowerCount.sum = this.data.lightTowerCount.sum + 1;
+            this.data.lightTowerCount.daily = this.data.lightTowerCount.daily + 1;
+        } else if (type === ElementEnum.DARK) {
+            this.data.darkTowerCount.sum = this.data.darkTowerCount.sum + 1;
+            this.data.darkTowerCount.daily = this.data.darkTowerCount.daily + 1;
+        } else if (type === ElementEnum.WATER) {
+            this.data.waterTowerCount.sum = this.data.waterTowerCount.sum + 1;
+            this.data.waterTowerCount.daily = this.data.waterTowerCount.daily + 1;
+        } else if (type === ElementEnum.FIRE) {
+            this.data.fireTowerCount.sum = this.data.fireTowerCount.sum + 1;
+            this.data.fireTowerCount.daily = this.data.fireTowerCount.daily + 1;
+        } else if (type === ElementEnum.WOOD) {
+            this.data.woodTowerCount.sum = this.data.woodTowerCount.sum + 1;
+            this.data.woodTowerCount.daily = this.data.woodTowerCount.daily + 1;
+        } else if (type === ElementEnum.EARTH) {
+            this.data.earthTowerCount.sum = this.data.earthTowerCount.sum + 1;
+            this.data.earthTowerCount.daily = this.data.earthTowerCount.daily + 1;
+        }
+        this.server.net_SaveTowerSumCount(
+            this.data.lightTowerCount,
+            this.data.darkTowerCount,
+            this.data.waterTowerCount,
+            this.data.fireTowerCount,
+            this.data.woodTowerCount,
+            this.data.earthTowerCount
+        );
+    }
 
     /**
      * 是否第一次做某事
@@ -82,7 +151,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
 
     /**
      * 设置第一次做某事
-     * @param action 
+     * @param action
      */
     public setFirstAction(action: string) {
         // if (!await this.hasFirstAction(action))
@@ -110,8 +179,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
             for (let i = 0; i < nodes.length; i++) {
                 if (map[nodes[i]]) {
                     map[nodes[i]]++;
-                }
-                else {
+                } else {
                     map[nodes[i]] = 1;
                 }
             }
@@ -155,8 +223,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         let item = GameConfig.Item.getElement(id);
         if (item.itemType == ItemType.Gold) {
             return this.checkGold(amount);
-        }
-        else if (item.itemType == ItemType.TechPoint) {
+        } else if (item.itemType == ItemType.TechPoint) {
             return this.checkTechPoint(amount);
         }
         return false;
@@ -168,12 +235,11 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
 
     /**
      * 设置第一次做某事
-     * @param action 
+     * @param action
      */
     public setFirstMonsterTag(tagId: number) {
         // if (!await this.hasFirstAction(action))
         this.data.firstMonsterTags.push(tagId);
         this.server.net_setFirstMonsterTag(tagId);
     }
-
 }

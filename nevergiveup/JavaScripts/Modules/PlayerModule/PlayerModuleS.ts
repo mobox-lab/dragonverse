@@ -1,5 +1,4 @@
-
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-14 15:24:22
  * @LastEditors  : xiaohao.li
@@ -14,18 +13,17 @@ import { ItemType } from "../../tool/Enum";
 import { TimerModuleUtils } from "../TimeModule/time";
 // import { GlobalRankModuleS } from "../globalRank/GlobalRankModuleS";
 import PlayerModuleC from "./PlayerModuleC";
-import PlayerModuleData from "./PlayerModuleData";
+import PlayerModuleData, { SumCount } from "./PlayerModuleData";
 import PlayerScript from "./PlayerScript";
 import { PlayerUtil } from "./PlayerUtil";
 
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
-
     protected onStart(): void {
         TimerModuleUtils.addOnlineDayListener(this.clearDailyCount, this);
     }
     /**
      * 设置第一次做某事
-     * @param action 
+     * @param action
      */
     public net_setFirstAction(action: string) {
         this.currentData.firstAction.push(action);
@@ -44,19 +42,55 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
             if (!data) continue;
             data.completeStageCount.daily = 0;
             data.killEnemyCount.daily = 0;
+            data.perfectCompleteStageCount.daily = 0;
+            data.lightTowerCount.daily = 0;
+            data.darkTowerCount.daily = 0;
+            data.waterTowerCount.daily = 0;
+            data.fireTowerCount.daily = 0;
+            data.woodTowerCount.daily = 0;
+            data.earthTowerCount.daily = 0;
             data.save(false);
         }
     }
 
-    public net_SaveSumCount(sumCompleteStageCount: number, dailyCompleteStageCount: number,
-        sumKillEnemyCount: number, dailyKillEnemyCount: number) {
+    public net_SaveSumCount(
+        sumCompleteStageCount: number,
+        dailyCompleteStageCount: number,
+        sumKillEnemyCount: number,
+        dailyKillEnemyCount: number,
+        sumPerfectCompleteStageCount: number,
+        dailyPerfectCompleteStageCount: number
+    ) {
         this.net_saveCompleteStageCount(sumCompleteStageCount, dailyCompleteStageCount);
         this.net_saveKillEnemyCount(sumKillEnemyCount, dailyKillEnemyCount);
+        this.net_savePerfectCompleteStageCount(sumPerfectCompleteStageCount, dailyPerfectCompleteStageCount);
+    }
+
+    public net_SaveTowerSumCount(
+        light: SumCount,
+        dark: SumCount,
+        water: SumCount,
+        fire: SumCount,
+        wood: SumCount,
+        earth: SumCount
+    ) {
+        this.net_saveLightTowerCount(light.sum, light.daily);
+        this.net_saveDarkTowerCount(dark.sum, dark.daily);
+        this.net_saveWaterTowerCount(water.sum, water.daily);
+        this.net_saveFireTowerCount(fire.sum, fire.daily);
+        this.net_saveWoodTowerCount(wood.sum, wood.daily);
+        this.net_saveEarthTowerCount(earth.sum, earth.daily);
     }
 
     public net_saveCompleteStageCount(sum: number, daily: number) {
         this.currentData.completeStageCount.sum = sum;
         this.currentData.completeStageCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_savePerfectCompleteStageCount(sum: number, daily: number) {
+        this.currentData.perfectCompleteStageCount.sum = sum;
+        this.currentData.perfectCompleteStageCount.daily = daily;
         this.currentData.save(false);
     }
 
@@ -70,7 +104,42 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         this.currentData.bgmVoiceFactor = bgmVoiceFactor;
         this.currentData.attackVoiceFactor = attackVoiceFactor;
         this.currentData.save(false);
+    }
 
+    public net_saveLightTowerCount(sum: number, daily: number) {
+        this.currentData.lightTowerCount.sum = sum;
+        this.currentData.lightTowerCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveDarkTowerCount(sum: number, daily: number) {
+        this.currentData.darkTowerCount.sum = sum;
+        this.currentData.darkTowerCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveWaterTowerCount(sum: number, daily: number) {
+        this.currentData.waterTowerCount.sum = sum;
+        this.currentData.waterTowerCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveFireTowerCount(sum: number, daily: number) {
+        this.currentData.fireTowerCount.sum = sum;
+        this.currentData.fireTowerCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveWoodTowerCount(sum: number, daily: number) {
+        this.currentData.woodTowerCount.sum = sum;
+        this.currentData.woodTowerCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveEarthTowerCount(sum: number, daily: number) {
+        this.currentData.earthTowerCount.sum = sum;
+        this.currentData.earthTowerCount.daily = daily;
+        this.currentData.save(false);
     }
 
     protected onPlayerLeft(player: mw.Player): void {
@@ -189,8 +258,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         let item = GameConfig.Item.getElement(id);
         if (item.itemType == ItemType.Gold) {
             return this.checkGold(player, amount);
-        }
-        else if (item.itemType == ItemType.TechPoint) {
+        } else if (item.itemType == ItemType.TechPoint) {
             return this.checkTechPoint(player, amount);
         }
         return false;

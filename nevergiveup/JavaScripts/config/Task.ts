@@ -25,7 +25,15 @@ export interface ITaskElement extends IElementBase{
 3.解锁多少个塔
 4.副本获得多少星星
 5.游玩几局游戏
-6.击败多少只怪物*/
+6.击败多少只怪物
+7.完美通过某个关卡
+8.完美游玩次数
+9.部署光塔次数
+10.部署暗塔次数
+11.部署水塔次数
+12.部署火塔次数
+13.部署木塔次数
+14.部署土塔次数*/
 	taskSolveType:number
 	/**任务需要的量*/
 	taskSolvetime:number
