@@ -49,6 +49,7 @@ import { WaveModuleS } from "./Modules/waveModule/WaveModuleS";
 import { WaveModuleC } from "./Modules/waveModule/WaveModuleC";
 import WaveModuleData from "./Modules/waveModule/WaveModuleData";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./Modules/JumpRoom/JumpRoomModule";
+import LogoAnimUI from "./UI/LogoAnimUI";
 
 export namespace Config {
     export let skipGuide: boolean = false;
@@ -156,6 +157,7 @@ export default class GameStart extends Script {
         SoundUtil.init();
         SoundUtil.playBGM();
         Reward.init();
+        UIService.show(LogoAnimUI)
     }
 
     /**

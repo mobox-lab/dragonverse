@@ -43,6 +43,13 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.freshBtn_Internal
 	}
+	private addBtn_Internal: mw.Button
+	public get addBtn(): mw.Button {
+		if(!this.addBtn_Internal&&this.uiWidgetBase) {
+			this.addBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/staminaCanvas/addBtn') as mw.Button
+		}
+		return this.addBtn_Internal
+	}
 	private imgStamina_Internal: mw.Image
 	public get imgStamina(): mw.Image {
 		if(!this.imgStamina_Internal&&this.uiWidgetBase) {
@@ -348,6 +355,12 @@ export default class LobbyUI_Generate extends UIScript {
 		   Event.dispatchToLocal("PlayButtonClick", "freshBtn");
 	   })
 	   this.freshBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.addBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "addBtn");
+	   })
+	   this.addBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 	   this.addTowerBtn.onClicked.add(()=>{

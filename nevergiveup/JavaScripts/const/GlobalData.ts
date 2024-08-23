@@ -24,6 +24,7 @@ export namespace GlobalData {
     }
     export class Anim {
         public static stageCrossAnimSeconds = 1; // 过场过渡动画时间
+        public static logoAnimFilNum = 12; // logo 动画 序列帧 1~12
     }
     export class Bless {
         /** Bless item 背景 各元素对应 光 暗 水 火 木 土 guid */
