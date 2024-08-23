@@ -1,4 +1,4 @@
-import { CardActions, PlayerActions, StageActions } from "../../Actions";
+import { CardActions, PlayerActions, StageActions, TowerActions } from "../../Actions";
 import CommonTipsManagerUI from "../../UI/Tips/CommonTipsManagerUI";
 import { GameConfig } from "../../config/GameConfig";
 import { ITaskElement } from "../../config/Task";
@@ -8,6 +8,7 @@ import PlayerModuleData from "../PlayerModule/PlayerModuleData";
 import { PlayerUtil } from "../PlayerModule/PlayerUtil";
 import { EmTaskState, EmTaskType, EmTaskWay, TaskModuleC } from "./TaskModuleC";
 import TalentModuleC from "../talent/TalentModuleC";
+import { ElementEnum } from "../../enemy/EnemyBase";
 
 /**
  * 任务的信息记录类
@@ -50,8 +51,32 @@ export class Task {
             case EmTaskWay.PlayCount:
                 // name = "PlayCount";
                 break;
-
-            default: break;
+            case EmTaskWay.PerfectPassLevel:
+                // name = "PerfectPassLevel";
+                break;
+            case EmTaskWay.PerfectPlayCount:
+                // name = "PerfectPlayCount";
+                break;
+            case EmTaskWay.LightTowerCount:
+                // name = "LightTowerCount";
+                break;
+            case EmTaskWay.DarkTowerCount:
+                // name = "DarkTowerCount";
+                break;
+            case EmTaskWay.WaterTowerCount:
+                // name = "WaterTowerCount";
+                break;
+            case EmTaskWay.FireTowerCount:
+                // name = "FireTowerCount";
+                break;
+            case EmTaskWay.WoodTowerCount:
+                // name = "WoodTowerCount";
+                break;
+            case EmTaskWay.EarthTowerCount:
+                // name = "EarthTowerCount";
+                break;
+            default:
+                break;
         }
         return name;
     }
@@ -65,18 +90,43 @@ export class Task {
                 info = StringUtil.format(this.cfg.taskInfo, cfg.nameCN);
                 break;
             case EmTaskWay.UnlockTower:
-                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime)
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             case EmTaskWay.PassLevel:
-                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskName)
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskName);
                 break;
             case EmTaskWay.KillCount:
-                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime)
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             case EmTaskWay.PlayCount:
-                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime)
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
-            default: break;
+            case EmTaskWay.PerfectPassLevel:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskName);
+                break;
+            case EmTaskWay.PerfectPlayCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.LightTowerCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.DarkTowerCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.WaterTowerCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.FireTowerCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.WoodTowerCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.EarthTowerCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            default:
+                break;
         }
         return info;
     }
@@ -98,17 +148,18 @@ export class Task {
 
     private initAction() {
         this.type == EmTaskType.Main && Event.addLocalListener(EmTaskEvent.TaskFinish, this.onTaskFinish.bind(this));
-        this.type == EmTaskType.Daily && PlayerActions.onPlayerLevelChangedClient.add((v) => {
-            if (this.taskState == EmTaskState.Lock) {
-                this.checkState();
-            }
-        })
+        this.type == EmTaskType.Daily &&
+            PlayerActions.onPlayerLevelChangedClient.add((v) => {
+                if (this.taskState == EmTaskState.Lock) {
+                    this.checkState();
+                }
+            });
     }
 
     /**
      * 初始化属性
      * @param id 任务id
-     * @returns 
+     * @returns
      */
     private initProperty(id: number) {
         const cfg = GameConfig.Task.getElement(id);
@@ -146,7 +197,32 @@ export class Task {
             case EmTaskWay.KillCount:
                 this.initKillCount();
                 break;
-            default: break;
+            case EmTaskWay.PerfectPassLevel:
+                this.initPerfectPassLevel();
+                break;
+            case EmTaskWay.PerfectPlayCount:
+                this.initPerfectPlayCount();
+                break;
+            case EmTaskWay.LightTowerCount:
+                this.initTowerCount(ElementEnum.LIGHT);
+                break;
+            case EmTaskWay.DarkTowerCount:
+                this.initTowerCount(ElementEnum.DARK);
+                break;
+            case EmTaskWay.WaterTowerCount:
+                this.initTowerCount(ElementEnum.WATER);
+                break;
+            case EmTaskWay.FireTowerCount:
+                this.initTowerCount(ElementEnum.FIRE);
+                break;
+            case EmTaskWay.WoodTowerCount:
+                this.initTowerCount(ElementEnum.WOOD);
+                break;
+            case EmTaskWay.EarthTowerCount:
+                this.initTowerCount(ElementEnum.EARTH);
+                break;
+            default:
+                break;
         }
         setTimeout(() => {
             this.checkState();
@@ -167,7 +243,8 @@ export class Task {
                     }
                 }
                 break;
-            default: break;
+            default:
+                break;
         }
         return isOpen;
     }
@@ -202,7 +279,8 @@ export class Task {
                 break;
             case EmTaskState.Reward:
                 break;
-            default: break;
+            default:
+                break;
         }
         this._taskModule.refreshUI();
     }
@@ -226,9 +304,29 @@ export class Task {
         this.totalSolveTime = 1;
         this.curSolveTime = DataCenterC.getData(PlayerModuleData).firstClears.includes(this.cfg.taskSolvetime) ? 1 : 0;
         StageActions.onStageWin.add((id: number) => {
-            this.curSolveTime = DataCenterC.getData(PlayerModuleData).firstClears.includes(this.cfg.taskSolvetime) ? 1 : 0;
+            this.curSolveTime = DataCenterC.getData(PlayerModuleData).firstClears.includes(this.cfg.taskSolvetime)
+                ? 1
+                : 0;
             this.checkState();
-        })
+        });
+    }
+
+    /**
+     * 初始化单一种任务类型
+     */
+    private initPerfectPassLevel() {
+        this.totalSolveTime = 1;
+        this.curSolveTime = DataCenterC.getData(PlayerModuleData).firstPerfectClears.includes(this.cfg.taskSolvetime)
+            ? 1
+            : 0;
+        StageActions.onStagePerfectWin.add((id: number) => {
+            this.curSolveTime = DataCenterC.getData(PlayerModuleData).firstPerfectClears.includes(
+                this.cfg.taskSolvetime
+            )
+                ? 1
+                : 0;
+            this.checkState();
+        });
     }
 
     /**
@@ -255,22 +353,95 @@ export class Task {
      * 初始化单一种任务类型
      */
     private initKillCount() {
-        this.curSolveTime = DataCenterC.getData(PlayerModuleData).killEnemyCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        this.curSolveTime =
+            DataCenterC.getData(PlayerModuleData).killEnemyCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
         StageActions.onStageComplete.add(() => {
-            this.curSolveTime = DataCenterC.getData(PlayerModuleData).killEnemyCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).killEnemyCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
             this.checkState();
-        })
+        });
     }
 
     /**
      * 初始化单一种任务类型
      */
     private initPlayCount() {
-        this.curSolveTime = DataCenterC.getData(PlayerModuleData).completeStageCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        this.curSolveTime =
+            DataCenterC.getData(PlayerModuleData).completeStageCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
         StageActions.onStageComplete.add(() => {
-            this.curSolveTime = DataCenterC.getData(PlayerModuleData).completeStageCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).completeStageCount[
+                    this.type == EmTaskType.Daily ? "daily" : "sum"
+                ];
             this.checkState();
-        })
+        });
+    }
+
+    /**
+     * 初始化单一种任务类型
+     */
+    private initPerfectPlayCount() {
+        this.curSolveTime =
+            DataCenterC.getData(PlayerModuleData).perfectCompleteStageCount[
+                this.type == EmTaskType.Daily ? "daily" : "sum"
+            ];
+        StageActions.onStageComplete.add(() => {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).perfectCompleteStageCount[
+                    this.type == EmTaskType.Daily ? "daily" : "sum"
+                ];
+            this.checkState();
+        });
+    }
+
+    /**
+     * 元素塔部署次数信息
+     */
+    private initTowerCount(type: ElementEnum) {
+        if (type === ElementEnum.LIGHT) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).lightTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        } else if (type === ElementEnum.DARK) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).darkTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        } else if (type === ElementEnum.WATER) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).waterTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        } else if (type === ElementEnum.FIRE) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).fireTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        } else if (type === ElementEnum.WOOD) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).woodTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        } else if (type === ElementEnum.EARTH) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).earthTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        }
+        // 部署回调
+        TowerActions.onTowerBuild.add(this.towerBuildByType);
+    }
+
+    towerBuildByType(type: ElementEnum) {
+        if (type === ElementEnum.LIGHT) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).lightTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        } else if (type === ElementEnum.DARK) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).darkTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        } else if (type === ElementEnum.WATER) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).waterTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        } else if (type === ElementEnum.FIRE) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).fireTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        } else if (type === ElementEnum.WOOD) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).woodTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        } else if (type === ElementEnum.EARTH) {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).earthTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        }
+        this.checkState();
     }
 
     // /**
@@ -292,8 +463,6 @@ export class Task {
         CardActions.onCardChanged.add((count) => {
             this.curSolveTime = ModuleService.getModule(CardModuleC)?.unlockCards.length;
             this.checkState();
-        })
+        });
     }
-
 }
-
