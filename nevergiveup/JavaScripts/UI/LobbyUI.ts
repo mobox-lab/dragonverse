@@ -81,21 +81,30 @@ export default class LobbyUI extends LobbyUI_Generate {
             if (GameManager.getStageClient()) {
                 return;
             }
-            UIService.show(TowerShopUI, {isShop: true});
+            const ui = UIService.getUI(TowerShopUI);
+            if(ui.visible) ui.hideTween(); 
+            else UIService.show(TowerShopUI, { isShop: true });
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
-            UIService.show(SettingUI);
+            const ui = UIService.getUI(SettingUI);
+            if(ui.visible) ui.hide(); 
+            else ui.show();
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.L, () => {
             this.showTaskPanel();
         });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.O, () => {
-            UIService.show(JumpGamePanel);
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.O, () => {            
+            const ui = UIService.getUI(JumpGamePanel);
+            if(ui.visible) ui.hide(); 
+            else ui.show();
         });
     }
 
     public showTaskPanel() {
-        Utils.checkLevel(GameConfig.Global.getElement(1).unlockTaskLevel) && mw.UIService.show(UI_TaskMain);
+        if(!Utils.checkLevel(GameConfig.Global.getElement(1).unlockTaskLevel)) return;
+        const ui = UIService.getUI(UI_TaskMain);
+        if(ui.visible) ui.hide(); 
+        else ui.show();
     }
 
     updateCurrency() {
