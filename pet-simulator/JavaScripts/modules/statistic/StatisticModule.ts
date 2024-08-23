@@ -530,34 +530,42 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
 
     // 更新宠物销毁数据
     public updateDestroyPetsInfo(userId: string, delPets: petItemDataNew[],desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
-        if(!delPets?.length) return;
-        if(!this.destroyPetsMap[userId]) this.destroyPetsMap[userId] = {};
-        const destroyPets = this.destroyPetsMap[userId];
-        const petBagData = DataCenterS.getData(userId, PetBagModuleData);
-		const now = Math.floor(Date.now() / 1000);
-        const delKeys = [];
-        for (let i = 0; i < delPets.length; i++) {
-            const delPet = delPets[i];
-            const key = delPet.k;
-            const persistInfo = petBagData.getPersistStatisticInfoByKey(key);
-            const destroyPetsInfo: PetSimulatorStatisticPetObj = {
-                petkey: key,
-                proId: delPet.I,
-                name: delPet.p.n,
-                attack: delPet.p.a,
-                enchanted: this.getStatisticEnchantedInfo(delPet).enchanted,
-                status: "destroyed",
-                creSource: CreSourceStr[persistInfo[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
-                desSource,
-                create: persistInfo[PSStatisticPetKey.create],
-                update: now,
+        try {
+            if(!delPets?.length) return;
+            if(!this.destroyPetsMap[userId]) this.destroyPetsMap[userId] = {};
+            const destroyPets = this.destroyPetsMap[userId];
+            const petBagData = DataCenterS.getData(userId, PetBagModuleData);
+            const now = Math.floor(Date.now() / 1000);
+            const delKeys = [];
+            for (let i = 0; i < delPets.length; i++) {
+                const delPet = delPets[i];
+                if(!delPet?.k || !delPet?.I || !delPet?.p) {
+                    Log4Ts.error(StatisticModuleS, `updateDestroyPetsInfo delPet error: ${JSON.stringify(delPet)} userId: ${userId} desSource: ${desSource}`);
+                    continue;
+                }
+                const key = delPet?.k ?? 0;
+                const persistInfo = petBagData.getPersistStatisticInfoByKey(key);
+                const destroyPetsInfo: PetSimulatorStatisticPetObj = {
+                    petkey: key,
+                    proId: delPet?.I ?? 0,
+                    name: delPet?.p?.n ?? "",
+                    attack: delPet?.p?.a ?? 0,
+                    enchanted: this.getStatisticEnchantedInfo(delPet).enchanted,
+                    status: "destroyed",
+                    creSource: CreSourceStr[persistInfo[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
+                    desSource,
+                    create: persistInfo[PSStatisticPetKey.create],
+                    update: now,
+                }
+                destroyPets[key] = destroyPetsInfo;
+                delKeys.push(key);
             }
-            destroyPets[key] = destroyPetsInfo;
-            delKeys.push(key);
+            petBagData.delPersistPetStatisticByKeys(delKeys);
+            this.shouldReportPsStatistic(userId); // 检查数据是否超过限制，超过的话则上报后清理
+            petBagData.save(true);
+        } catch (error) {
+            Log4Ts.error(StatisticModuleS, " userId:" + userId + " updateDestroyPetsInfo:" + error);
         }
-        petBagData.delPersistPetStatisticByKeys(delKeys);
-        this.shouldReportPsStatistic(userId); // 检查数据是否超过限制，超过的话则上报后清理
-        petBagData.save(true);
     }
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
