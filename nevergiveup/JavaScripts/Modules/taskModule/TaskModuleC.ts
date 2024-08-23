@@ -34,6 +34,22 @@ export enum EmTaskWay {
     PlayCount = 5,
     /**击败多少只怪物 */
     KillCount = 6,
+    /**完美通过某关卡id */
+    PerfectPassLevel = 7,
+    /**完美游玩几局游戏 */
+    PerfectPlayCount = 8,
+    /**部署光塔次数 */
+    LightTowerCount = 9,
+    /**部署暗塔次数 */
+    DarkTowerCount = 10,
+    /**部署水塔次数 */
+    WaterTowerCount = 11,
+    /**部署火塔次数 */
+    FireTowerCount = 12,
+    /**部署木塔次数 */
+    WoodTowerCount = 13,
+    /**部署土塔次数 */
+    EarthTowerCount = 14,
 }
 
 /**任务状态 */
@@ -148,15 +164,18 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
                 break;
             }
         }
-        Gtk.trySetVisibility(mw.UIService.getUI(LobbyUI).mImage_hotpoint, showFlag
-            ? mw.SlateVisibility.HitTestInvisible
-            : mw.SlateVisibility.Collapsed);
-        Gtk.trySetVisibility(mw.UIService.getUI(UI_TaskMain).mImage_hotpoint_1, (showFlag && isMainTask)
-            ? mw.SlateVisibility.HitTestInvisible
-            : mw.SlateVisibility.Collapsed); // 主线红点
-        Gtk.trySetVisibility(mw.UIService.getUI(UI_TaskMain).mImage_hotpoint_2, (showFlag && !isMainTask)
-            ? mw.SlateVisibility.HitTestInvisible
-            : mw.SlateVisibility.Collapsed); // 日常红点
+        Gtk.trySetVisibility(
+            mw.UIService.getUI(LobbyUI).mImage_hotpoint,
+            showFlag ? mw.SlateVisibility.HitTestInvisible : mw.SlateVisibility.Collapsed
+        );
+        Gtk.trySetVisibility(
+            mw.UIService.getUI(UI_TaskMain).mImage_hotpoint_1,
+            showFlag && isMainTask ? mw.SlateVisibility.HitTestInvisible : mw.SlateVisibility.Collapsed
+        ); // 主线红点
+        Gtk.trySetVisibility(
+            mw.UIService.getUI(UI_TaskMain).mImage_hotpoint_2,
+            showFlag && !isMainTask ? mw.SlateVisibility.HitTestInvisible : mw.SlateVisibility.Collapsed
+        ); // 日常红点
     }
 
     /**

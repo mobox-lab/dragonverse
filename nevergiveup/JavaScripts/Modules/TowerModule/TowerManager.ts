@@ -11,6 +11,7 @@ import { MapManager } from "../../MapScript";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { Point, QuadTree, Rectangle } from "../../tool/QuadTree";
+import PlayerModuleC from "../PlayerModule/PlayerModuleC";
 import AttackTower from "./Tower/AttackTower";
 import BuffTower from "./Tower/BuffTower";
 import FarmTower from "./Tower/FarmTower";
@@ -52,7 +53,9 @@ export namespace TowerManager {
                 break;
         }
         towerMap.set(info.placeID, tower);
+        ModuleService.getModule(PlayerModuleC).onTowerBuild(cfg.elementTy);
         TowerActions.onCreateTower.call(info.placeID);
+        TowerActions.onTowerBuild.call(cfg.elementTy);
         if (Utils.isLocalPlayer(info.playerID)) {
             updateMyTouwerCount();
         }

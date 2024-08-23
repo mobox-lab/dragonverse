@@ -801,10 +801,14 @@ export class StageC {
                 let [hasWin, isPerfect, isFirst, time, waves, wavesMax, rewardGuids, rewardAmounts, rewardTypes, hp] =
                     param;
                 if (hasWin) {
-                    StageActions.onStageWin.call(this.stageWorldIndex);
+                    if (isPerfect) {
+                        StageActions.onStagePerfectWin.call(this.stageWorldIndex);
+                    } else {
+                        StageActions.onStageWin.call(this.stageWorldIndex);
+                    }
                 }
                 GuideDialog.hide();
-                ModuleService.getModule(PlayerModuleC).onStageCompleted();
+                ModuleService.getModule(PlayerModuleC).onStageCompleted(isPerfect);
                 StageActions.onStageComplete.call(this.stageWorldIndex);
                 let settleData: SettleData = {
                     hasWin: hasWin,

@@ -6,7 +6,7 @@
  * @FilePath: \nevergiveup\JavaScripts\Actions.ts
  * @Description: 修改描述
  */
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-10 16:02:00
  * @LastEditors  : xiaohao.li
@@ -15,19 +15,19 @@
  * @Description  : 修改描述
  */
 import { RankItem } from "./Rank/RankManager";
-import { Enemy } from "./enemy/EnemyBase";
+import { ElementEnum, Enemy } from "./enemy/EnemyBase";
 import { StageS } from "./stage/Stage";
 
 export const CardActions = {
     onCardChanged: new Action1<number>(),
-}
+};
 export const EnemyActions = {
     onDie: new Action1<Enemy>(),
     onEscaped: new Action1<Enemy>(),
     onBossSpawned: new Action1<Enemy>(),
     onBossHpChanged: new Action1<Enemy>(),
     onBossDie: new Action1<Enemy>(),
-}
+};
 export const StageActions = {
     onStageStateChanged: new Action(),
     onHPChanged: new Action1<number>(),
@@ -39,13 +39,12 @@ export const StageActions = {
     onStageEndClient: new Action1<number>(),
     onPlayerCountChanged: new Action1<number>(),
     onStageWin: new Action1<number>(),
+    onStagePerfectWin: new Action1<number>(),
     onStageComplete: new Action1<number>(),
     onPlayerLeaveStage: new Action1<Player>(),
     onTalentActivate: new Action1<number>(),
-}
-export const StageTriggerActions = {
-
-}
+};
+export const StageTriggerActions = {};
 
 export const PlayerActions = {
     onPlayerDataChanged: new Action(),
@@ -53,24 +52,26 @@ export const PlayerActions = {
     onPlayerNameChanged: new Action2<Player, string>(),
     onPlayerLevelChangedServer: new Action2<Player, number>(),
     onPlayerLevelChangedClient: new Action1<number>(),
-}
+};
 
 export const DialogActions = {
-    onDialogEnd: new Action1<number>()
-}
+    onDialogEnd: new Action1<number>(),
+};
 
 export const TowerActions = {
     onCreateTower: new Action1<number>(),
     onMyTowerCountChanged: new Action1<number>(),
     onTowerSelected: new Action1<number>(),
     onUpgradeTower: new Action1<number>(),
-}
+    // 新的逻辑，老的不动
+    onTowerBuild: new Action1<ElementEnum>(),
+};
 
 export const InteractActions = {
     onInteract: new Action2<string, number>(),
-    onInteractEnd: new Action2<string, number>()
-}
+    onInteractEnd: new Action2<string, number>(),
+};
 
 export const RankActions = {
-    onRankItemsChanged: new Action1<RankItem[]>()
-}
+    onRankItemsChanged: new Action1<RankItem[]>(),
+};
