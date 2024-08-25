@@ -76,8 +76,12 @@ export namespace TowerManager {
 
     export function upgradeTower(info: TowerInfo, playerId: number = null) {
         if (SystemUtil.isServer()) return;
+
         let tower = towerMap.get(info.placeID);
         if (tower) {
+            if (info.playerID === Player.localPlayer.playerId && Math.max(info.level, tower.level) === 2) {
+                ModuleService.getModule(PlayerModuleC).onLevelUp();
+            }
             tower.level = Math.max(info.level, tower.level);
             TowerActions.onUpgradeTower.call(info.placeID);
         }

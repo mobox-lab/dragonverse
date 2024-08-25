@@ -75,6 +75,27 @@ export class Task {
             case EmTaskWay.EarthTowerCount:
                 // name = "EarthTowerCount";
                 break;
+            case EmTaskWay.UserLevel:
+                // name = "UserLevel";
+                break;
+            case EmTaskWay.InfinityWaveTimes:
+                // name = "InfinityWaveTimes";
+                break;
+            case EmTaskWay.LevelThreeCount:
+                // name = "LevelThreeCount";
+                break;
+            case EmTaskWay.KillHealCount:
+                // name = "KillHealCount";
+                break;
+            case EmTaskWay.KillBerserkCount:
+                // name = "KillBerserkCount";
+                break;
+            case EmTaskWay.KillFlyCount:
+                // name = "KillFlyCount";
+                break;
+            case EmTaskWay.KillStealthCount:
+                // name = "KillStealthCount";
+                break;
             default:
                 break;
         }
@@ -123,6 +144,27 @@ export class Task {
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             case EmTaskWay.EarthTowerCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.UserLevel:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.InfinityWaveTimes:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.LevelThreeCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.KillHealCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.KillBerserkCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.KillFlyCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.KillStealthCount:
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             default:
@@ -220,6 +262,27 @@ export class Task {
                 break;
             case EmTaskWay.EarthTowerCount:
                 this.initTowerCount(ElementEnum.EARTH);
+                break;
+            case EmTaskWay.UserLevel:
+                this.initUserLevel();
+                break;
+            case EmTaskWay.InfinityWaveTimes:
+                this.initInfinityWaveTimes();
+                break;
+            case EmTaskWay.LevelThreeCount:
+                this.initLevelThreeCount();
+                break;
+            case EmTaskWay.KillHealCount:
+                this.initKillMonsterTypeCount("killHealEnemyCount");
+                break;
+            case EmTaskWay.KillBerserkCount:
+                this.initKillMonsterTypeCount("killBerserkEnemyCount");
+                break;
+            case EmTaskWay.KillFlyCount:
+                this.initKillMonsterTypeCount("killFlyEnemyCount");
+                break;
+            case EmTaskWay.KillStealthCount:
+                this.initKillMonsterTypeCount("killStealthEnemyCount");
                 break;
             default:
                 break;
@@ -365,6 +428,19 @@ export class Task {
     /**
      * 初始化单一种任务类型
      */
+    private initKillMonsterTypeCount(type: string) {
+        this.curSolveTime =
+            DataCenterC.getData(PlayerModuleData)[type][this.type == EmTaskType.Daily ? "daily" : "sum"];
+        StageActions.onStageComplete.add(() => {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData)[type][this.type == EmTaskType.Daily ? "daily" : "sum"];
+            this.checkState();
+        });
+    }
+
+    /**
+     * 初始化单一种任务类型
+     */
     private initPlayCount() {
         this.curSolveTime =
             DataCenterC.getData(PlayerModuleData).completeStageCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
@@ -390,6 +466,40 @@ export class Task {
                 DataCenterC.getData(PlayerModuleData).perfectCompleteStageCount[
                     this.type == EmTaskType.Daily ? "daily" : "sum"
                 ];
+            this.checkState();
+        });
+    }
+
+    /**
+     * 初始化单一种任务类型
+     */
+    private initUserLevel() {
+        const playerId = Player.localPlayer?.playerId;
+        this.curSolveTime = PlayerUtil.getPlayerScript(playerId)?.level;
+        PlayerActions.onPlayerLevelChangedClient2.add((v) => {
+            this.curSolveTime = v;
+            this.checkState();
+        });
+    }
+
+    /**
+     * 初始化单一种任务类型
+     */
+    private initInfinityWaveTimes() {
+        this.curSolveTime = DataCenterC.getData(PlayerModuleData).infinityWaveTimes;
+        StageActions.onStageComplete.add(() => {
+            this.curSolveTime = DataCenterC.getData(PlayerModuleData).infinityWaveTimes;
+            this.checkState();
+        });
+    }
+
+    /**
+     * 初始化单一种任务类型
+     */
+    private initLevelThreeCount() {
+        this.curSolveTime = DataCenterC.getData(PlayerModuleData).levelThreeCount;
+        StageActions.onStageComplete.add(() => {
+            this.curSolveTime = DataCenterC.getData(PlayerModuleData).levelThreeCount;
             this.checkState();
         });
     }

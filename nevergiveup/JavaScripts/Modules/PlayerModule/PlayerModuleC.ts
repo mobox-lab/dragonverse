@@ -23,6 +23,12 @@ import { PlayerModuleS } from "./PlayerModuleS";
 
 export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
     private _enemyCount: number = 0;
+    private _waveCount: number = 0;
+    private _levelThreeCount: number = 0;
+    private _enemyHealCount: number = 0;
+    private _enemyBerserkCount: number = 0;
+    private _enemyFlyCount: number = 0;
+    private _enemyStealthCount: number = 0;
     protected onEnterScene(sceneType: number): void {
         this.data.onDataChange.add(() => {
             PlayerActions.onPlayerDataChanged.call();
@@ -57,7 +63,17 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.data.completeStageCount.daily = 0;
         this.data.perfectCompleteStageCount.daily = 0;
         this.data.killEnemyCount.daily = 0;
-        isSave &&
+        this.data.killHealEnemyCount.daily = 0;
+        this.data.killBerserkEnemyCount.daily = 0;
+        this.data.killFlyEnemyCount.daily = 0;
+        this.data.killStealthEnemyCount.daily = 0;
+        this.data.lightTowerCount.daily = 0;
+        this.data.darkTowerCount.daily = 0;
+        this.data.waterTowerCount.daily = 0;
+        this.data.fireTowerCount.daily = 0;
+        this.data.woodTowerCount.daily = 0;
+        this.data.earthTowerCount.daily = 0;
+        if (isSave) {
             this.server.net_SaveSumCount(
                 this.data.completeStageCount.sum,
                 this.data.completeStageCount.daily,
@@ -66,14 +82,6 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
                 this.data.perfectCompleteStageCount.sum,
                 this.data.perfectCompleteStageCount.daily
             );
-
-        this.data.lightTowerCount.daily = 0;
-        this.data.darkTowerCount.daily = 0;
-        this.data.waterTowerCount.daily = 0;
-        this.data.fireTowerCount.daily = 0;
-        this.data.woodTowerCount.daily = 0;
-        this.data.earthTowerCount.daily = 0;
-        isSave &&
             this.server.net_SaveTowerSumCount(
                 this.data.lightTowerCount,
                 this.data.darkTowerCount,
@@ -82,11 +90,41 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
                 this.data.woodTowerCount,
                 this.data.earthTowerCount
             );
+            this.server.net_SaveKillTypeCount(
+                this.data.killHealEnemyCount,
+                this.data.killBerserkEnemyCount,
+                this.data.killFlyEnemyCount,
+                this.data.killStealthEnemyCount
+            );
+        }
     }
 
     public onEnemyKilled() {
         this._enemyCount++;
         MGSTool.doFirstEvent(FirstEvent.CoreStep3);
+    }
+
+    public onInfinityWaveRefresh() {
+        this._waveCount++;
+    }
+
+    public onLevelUp() {
+        this._levelThreeCount++;
+    }
+
+    public onEnemyTypeKilled(type: number[]) {
+        if (type.includes(1)) {
+            this._enemyStealthCount++;
+        }
+        if (type.includes(2)) {
+            this._enemyFlyCount++;
+        }
+        if (type.includes(11)) {
+            this._enemyHealCount++;
+        }
+        if (type.includes(12)) {
+            this._enemyBerserkCount++;
+        }
     }
 
     public onStageCompleted(isPerfect: boolean) {
@@ -107,6 +145,40 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
             this.data.perfectCompleteStageCount.daily
         );
         this._enemyCount = 0;
+
+        this.data.infinityWaveTimes = this.data.infinityWaveTimes + this._waveCount;
+        this.server.net_saveInfinityWaveTimes(this.data.infinityWaveTimes);
+        this._waveCount = 0;
+
+        this.data.levelThreeCount = this.data.levelThreeCount + this._levelThreeCount;
+        this.server.net_saveLevelThreeCount(this.data.levelThreeCount);
+        this._levelThreeCount = 0;
+
+        this.data.killHealEnemyCount.sum = this.data.killHealEnemyCount.sum + this._enemyHealCount;
+        this.data.killHealEnemyCount.daily = this.data.killHealEnemyCount.daily + this._enemyHealCount;
+        this.server.net_saveKillHealCount(this.data.killHealEnemyCount.sum, this.data.killHealEnemyCount.daily);
+        this._enemyHealCount = 0;
+
+        this.data.killBerserkEnemyCount.sum = this.data.killBerserkEnemyCount.sum + this._enemyBerserkCount;
+        this.data.killBerserkEnemyCount.daily = this.data.killBerserkEnemyCount.daily + this._enemyBerserkCount;
+        this.server.net_saveKillBerserkCount(
+            this.data.killBerserkEnemyCount.sum,
+            this.data.killBerserkEnemyCount.daily
+        );
+        this._enemyBerserkCount = 0;
+
+        this.data.killFlyEnemyCount.sum = this.data.killFlyEnemyCount.sum + this._enemyFlyCount;
+        this.data.killFlyEnemyCount.daily = this.data.killFlyEnemyCount.daily + this._enemyFlyCount;
+        this.server.net_saveKillFlyCount(this.data.killFlyEnemyCount.sum, this.data.killFlyEnemyCount.daily);
+        this._enemyFlyCount = 0;
+
+        this.data.killStealthEnemyCount.sum = this.data.killStealthEnemyCount.sum + this._enemyStealthCount;
+        this.data.killStealthEnemyCount.daily = this.data.killStealthEnemyCount.daily + this._enemyStealthCount;
+        this.server.net_saveKillStealthCount(
+            this.data.killStealthEnemyCount.sum,
+            this.data.killStealthEnemyCount.daily
+        );
+        this._enemyStealthCount = 0;
     }
 
     // 更新部署塔的数据

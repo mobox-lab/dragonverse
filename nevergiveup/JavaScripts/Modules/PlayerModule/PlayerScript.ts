@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-19 16:50:15
  * @LastEditors  : xiaohao.li
@@ -18,13 +18,12 @@ class HeadUI {
     /** 配置表中的数据 */
     config: ILevelElement;
 
-    constructor(public uiWidget: mw.UIWidget,
+    constructor(
+        public uiWidget: mw.UIWidget,
         public ui: PlayerHeadUI_Generate,
         public playerId: number,
         public _playerName: string
-    ) {
-
-    }
+    ) {}
 
     set playerName(name: string) {
         this._playerName = name;
@@ -87,8 +86,15 @@ export default class PlayerScript extends Script {
             let char = this.gameObject as Character;
             char.displayName = "";
             char.asyncReady().then(() => {
-                if (char && Player.localPlayer && Player.localPlayer.character && char.gameObjectId == Player.localPlayer.character.gameObjectId) {
-                    let name = mw.AccountService.getNickName() ? mw.AccountService.getNickName() : "PIE_" + Player.localPlayer.playerId;
+                if (
+                    char &&
+                    Player.localPlayer &&
+                    Player.localPlayer.character &&
+                    char.gameObjectId == Player.localPlayer.character.gameObjectId
+                ) {
+                    let name = mw.AccountService.getNickName()
+                        ? mw.AccountService.getNickName()
+                        : "PIE_" + Player.localPlayer.playerId;
                     this.setName(name);
                     GameManager.playerName = name;
                 }
@@ -103,12 +109,10 @@ export default class PlayerScript extends Script {
 
     async playerReady() {
         while (this.gameObject == null || !(this.gameObject as Character).player) {
-            await new Promise(resolve => setTimeout(resolve, 100)); // 等待 0.1 秒
+            await new Promise((resolve) => setTimeout(resolve, 100)); // 等待 0.1 秒
         }
         return true;
     }
-
-
 
     @mw.RemoteFunction(mw.Server)
     setName(name: string) {
@@ -123,9 +127,7 @@ export default class PlayerScript extends Script {
      * 此函数执行需要将this.useUpdate赋值为true
      * @param dt 当前帧与上一帧的延迟 / 秒
      */
-    protected onUpdate(dt: number): void {
-
-    }
+    protected onUpdate(dt: number): void {}
 
     /** 脚本被销毁时最后一帧执行完调用此函数 */
     protected onDestroy(): void {
@@ -143,26 +145,26 @@ export default class PlayerScript extends Script {
         }
     }
 
-
-
     async onIdChanged() {
         await this.playerReady();
         let char = this.gameObject as Character;
         if (char) {
             await char.asyncReady();
-            if (Player.localPlayer && Player.localPlayer.character && char.gameObjectId == Player.localPlayer.character.gameObjectId) return;
+            if (
+                Player.localPlayer &&
+                Player.localPlayer.character &&
+                char.gameObjectId == Player.localPlayer.character.gameObjectId
+            )
+                return;
             let stage = GameManager.getStageClient();
             let visible = false;
             if (this.id == -1) {
                 visible = true;
-            }
-            else if (stage && stage.id == this.id) {
+            } else if (stage && stage.id == this.id) {
                 visible = true;
-            }
-            else if (stage && stage.id != this.id) {
+            } else if (stage && stage.id != this.id) {
                 visible = false;
-            }
-            else {
+            } else {
                 visible = true;
             }
             TimeUtil.delayExecute(() => {
@@ -201,18 +203,19 @@ export default class PlayerScript extends Script {
                 char.displayName = "";
             }
             PlayerActions.onPlayerNameChanged.call((this.gameObject as Character).player, this.playerName);
-        })
+        });
     }
 
     onLevelChanged() {
         this.playerReady().then(() => {
             if (this.headUI) {
-                this.headUI.title = `Lv.${this.level != undefined? this.level : ''}`;
+                this.headUI.title = `Lv.${this.level != undefined ? this.level : ""}`;
             }
             let char = this.gameObject as Character;
 
             if (char?.player?.playerId == Player.localPlayer?.playerId) {
                 PlayerActions.onPlayerLevelChangedClient.call(this.level);
+                PlayerActions.onPlayerLevelChangedClient2.call(this.level);
             }
         });
     }

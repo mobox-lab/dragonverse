@@ -62,6 +62,25 @@ export default class PlayerModuleData extends Subdata {
     @Decorator.persistence()
     earthTowerCount: SumCount;
 
+    @Decorator.persistence()
+    infinityWaveTimes: number;
+
+    @Decorator.persistence()
+    levelThreeCount: number;
+
+    // 复原力
+    @Decorator.persistence()
+    killHealEnemyCount: SumCount;
+    // 狂暴
+    @Decorator.persistence()
+    killBerserkEnemyCount: SumCount;
+    // 飞行
+    @Decorator.persistence()
+    killFlyEnemyCount: SumCount;
+    // 隐身
+    @Decorator.persistence()
+    killStealthEnemyCount: SumCount;
+
     protected initDefaultData(): void {
         this.gold = GameConfig.Global.getAllElement()[0].initialGold;
         this.techPoint = GameConfig.Global.getAllElement()[0].initialTechPoint;
@@ -82,6 +101,22 @@ export default class PlayerModuleData extends Subdata {
             daily: 0,
         };
         this.killEnemyCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.killHealEnemyCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.killBerserkEnemyCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.killFlyEnemyCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.killStealthEnemyCount = {
             sum: 0,
             daily: 0,
         };
@@ -132,6 +167,26 @@ export default class PlayerModuleData extends Subdata {
             };
         if (this.killEnemyCount === undefined)
             this.killEnemyCount = {
+                sum: 0,
+                daily: 0,
+            };
+        if (this.killHealEnemyCount === undefined)
+            this.killHealEnemyCount = {
+                sum: 0,
+                daily: 0,
+            };
+        if (this.killBerserkEnemyCount === undefined)
+            this.killBerserkEnemyCount = {
+                sum: 0,
+                daily: 0,
+            };
+        if (this.killFlyEnemyCount === undefined)
+            this.killFlyEnemyCount = {
+                sum: 0,
+                daily: 0,
+            };
+        if (this.killStealthEnemyCount === undefined)
+            this.killStealthEnemyCount = {
                 sum: 0,
                 daily: 0,
             };

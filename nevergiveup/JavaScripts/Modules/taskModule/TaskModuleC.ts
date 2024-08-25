@@ -50,6 +50,20 @@ export enum EmTaskWay {
     WoodTowerCount = 13,
     /**部署土塔次数 */
     EarthTowerCount = 14,
+    /**部署土塔次数 */
+    UserLevel = 15,
+    /**无尽模式的波次 */
+    InfinityWaveTimes = 16,
+    /**升级lv3 次数 */
+    LevelThreeCount = 17,
+    /**击败多少只复原力怪物  */
+    KillHealCount = 18,
+    /**击败多少只狂暴怪物 */
+    KillBerserkCount = 19,
+    /**击败多少只飞行怪物 */
+    KillFlyCount = 20,
+    /**击败多少只隐身怪物 */
+    KillStealthCount = 21,
 }
 
 /**任务状态 */
