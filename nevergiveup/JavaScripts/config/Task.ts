@@ -33,7 +33,14 @@ export interface ITaskElement extends IElementBase{
 11.部署水塔次数
 12.部署火塔次数
 13.部署木塔次数
-14.部署土塔次数*/
+14.部署土塔次数
+15.玩家级数
+16.无尽模式的波次
+17.升级lv3 次数
+18.击败多少只复原力怪物
+19.击败多少只狂暴怪物
+20.击败多少只飞行怪物
+21.击败多少只隐身怪物*/
 	taskSolveType:number
 	/**任务需要的量*/
 	taskSolvetime:number

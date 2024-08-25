@@ -549,6 +549,21 @@ export class Enemy implements BuffBag {
         // AirdropManager.createAirdrop(1001, this.position);
         this.destroy(showAnim);
         ModuleService.getModule(PlayerModuleC).onEnemyKilled();
+        let config = GameConfig.Monster.getElement(this.configId);
+        let types: number[] = [];
+        types = [...types, ...config.types];
+        const buffs = this.buffManager.buffs;
+        const heal = buffs.filter((buff) => buff.cfg.healing !== 0);
+        const berserk = buffs.filter((buff) => buff.cfg.berserk !== 0);
+        if (heal.length > 0) {
+            // 复原力
+            types.push(11);
+        }
+        if (berserk) {
+            // 狂暴
+            types.push(12);
+        }
+        ModuleService.getModule(PlayerModuleC).onEnemyTypeKilled(types);
         EnemyActions.onDie.call(this);
     }
 
@@ -556,8 +571,6 @@ export class Enemy implements BuffBag {
         if (this.destroyed) return 0;
         // 先让buff生成
         cb && cb();
-        console.log(JSON.stringify(this.buffManager.buffs), "this.buffManager.buffs");
-        console.log(JSON.stringify(this.hasComponent(FlyingComponent)), "this.hasComponent(FlyingComponent)");
         const buffs = this.buffManager.buffs;
         // 增伤buff
         // let sumHurtAmount = 0;

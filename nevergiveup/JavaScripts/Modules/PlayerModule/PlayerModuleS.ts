@@ -42,6 +42,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
             if (!data) continue;
             data.completeStageCount.daily = 0;
             data.killEnemyCount.daily = 0;
+            data.killHealEnemyCount.daily = 0;
+            data.killBerserkEnemyCount.daily = 0;
+            data.killFlyEnemyCount.daily = 0;
+            data.killStealthEnemyCount.daily = 0;
             data.perfectCompleteStageCount.daily = 0;
             data.lightTowerCount.daily = 0;
             data.darkTowerCount.daily = 0;
@@ -80,6 +84,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         this.net_saveFireTowerCount(fire.sum, fire.daily);
         this.net_saveWoodTowerCount(wood.sum, wood.daily);
         this.net_saveEarthTowerCount(earth.sum, earth.daily);
+    }
+
+    public net_SaveKillTypeCount(heal: SumCount, berserk: SumCount, fly: SumCount, stealth: SumCount) {
+        this.net_saveKillHealCount(heal.sum, heal.daily);
+        this.net_saveKillBerserkCount(berserk.sum, berserk.daily);
+        this.net_saveKillFlyCount(fly.sum, fly.daily);
+        this.net_saveKillStealthCount(stealth.sum, stealth.daily);
     }
 
     public net_saveCompleteStageCount(sum: number, daily: number) {
@@ -149,6 +160,30 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
 
     public net_saveLevelThreeCount(count: number) {
         this.currentData.levelThreeCount = count;
+        this.currentData.save(false);
+    }
+
+    public net_saveKillHealCount(sum: number, daily: number) {
+        this.currentData.killHealEnemyCount.sum = sum;
+        this.currentData.killHealEnemyCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveKillBerserkCount(sum: number, daily: number) {
+        this.currentData.killBerserkEnemyCount.sum = sum;
+        this.currentData.killBerserkEnemyCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveKillFlyCount(sum: number, daily: number) {
+        this.currentData.killFlyEnemyCount.sum = sum;
+        this.currentData.killFlyEnemyCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveKillStealthCount(sum: number, daily: number) {
+        this.currentData.killStealthEnemyCount.sum = sum;
+        this.currentData.killStealthEnemyCount.daily = daily;
         this.currentData.save(false);
     }
 
