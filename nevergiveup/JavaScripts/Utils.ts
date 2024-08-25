@@ -13,6 +13,7 @@ import TalentModuleS from "./Modules/talent/TalentModuleS";
 import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
 import { IElementBase } from "./config/ConfigBase";
 import { GameConfig } from "./config/GameConfig";
+import GameServiceConfig from "./const/GameServiceConfig";
 
 /**
  * 多语言/时间转换工具类
@@ -502,5 +503,10 @@ export default class Utils {
 
     public static isNotNullOrUndefined<T>(value: T | null | undefined): value is T {
         return value !== null && value !== undefined;
+    }
+
+    public static formatEtherInteger(token: bigint): string {
+        const tokenE = token / GameServiceConfig.Ether;
+        return tokenE.toString(10);
     }
 }

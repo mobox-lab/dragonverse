@@ -22,6 +22,8 @@ import { TalentTreeContainer } from "../TalentTree/ui/TalentTreeContainer";
 import { GameManager } from "../GameManager";
 import TowerShopUI from "./Tower/TowerShopUI";
 import { JumpGamePanel } from "./JumpGame/JumpGamePanel";
+import SenzuBeanConfirmPanel from "./Bag/SenzuBeanConfirmPanel";
+import P12ShopPanel from "./Shop/P12ShopPanel";
 
 export default class LobbyUI extends LobbyUI_Generate {
     /**
@@ -75,6 +77,20 @@ export default class LobbyUI extends LobbyUI_Generate {
             } else {
                 UIService.show(JumpGamePanel);
             }
+        });
+
+        // 打开商店
+        KeyOperationManager.getInstance().bindButton(this, Keys.M, this.shopBtn);
+        this.shopBtn.onClicked.add(() => {
+            if (UIService.getUI(P12ShopPanel)?.isShowing) {
+                UIService.hide(P12ShopPanel);
+            } else {
+                UIService.show(P12ShopPanel);
+            }
+        });
+
+        this.addBtn.onClicked.add(() => {
+            UIService.show(SenzuBeanConfirmPanel);
         });
 
         KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {

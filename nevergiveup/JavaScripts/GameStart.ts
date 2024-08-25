@@ -50,6 +50,7 @@ import { WaveModuleC } from "./Modules/waveModule/WaveModuleC";
 import WaveModuleData from "./Modules/waveModule/WaveModuleData";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./Modules/JumpRoom/JumpRoomModule";
 import LogoAnimUI from "./UI/LogoAnimUI";
+import { P12BagModuleC, P12BagModuleS, TdP12BagModuleData } from "./Modules/bag/P12BagModule";
 
 export namespace Config {
     export let skipGuide: boolean = false;
@@ -189,6 +190,7 @@ export default class GameStart extends Script {
         ModuleService.registerModule(DragonDataModuleS, DragonDataModuleC, DragonDataModuleData);
         ModuleService.registerModule(WaveModuleS, WaveModuleC, WaveModuleData);
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
+        ModuleService.registerModule(P12BagModuleS, P12BagModuleC, TdP12BagModuleData);
     }
 
     // private checkGM() {
