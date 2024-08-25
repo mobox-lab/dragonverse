@@ -23,6 +23,8 @@ import { PlayerModuleS } from "./PlayerModuleS";
 
 export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
     private _enemyCount: number = 0;
+    private _waveCount: number = 0;
+    private _levelThreeCount: number = 0;
     protected onEnterScene(sceneType: number): void {
         this.data.onDataChange.add(() => {
             PlayerActions.onPlayerDataChanged.call();
@@ -89,6 +91,14 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         MGSTool.doFirstEvent(FirstEvent.CoreStep3);
     }
 
+    public onInfinityWaveRefresh() {
+        this._waveCount++;
+    }
+
+    public onLevelUp() {
+        this._levelThreeCount++;
+    }
+
     public onStageCompleted(isPerfect: boolean) {
         this.data.completeStageCount.sum = this.data.completeStageCount.sum + 1;
         this.data.completeStageCount.daily = this.data.completeStageCount.daily + 1;
@@ -107,6 +117,14 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
             this.data.perfectCompleteStageCount.daily
         );
         this._enemyCount = 0;
+
+        this.data.infinityWaveTimes = this.data.infinityWaveTimes + this._waveCount;
+        this.server.net_saveInfinityWaveTimes(this.data.infinityWaveTimes);
+        this._waveCount = 0;
+
+        this.data.levelThreeCount = this.data.levelThreeCount + this._levelThreeCount;
+        this.server.net_saveLevelThreeCount(this.data.levelThreeCount);
+        this._levelThreeCount = 0;
     }
 
     // 更新部署塔的数据

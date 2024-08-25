@@ -62,6 +62,12 @@ export default class PlayerModuleData extends Subdata {
     @Decorator.persistence()
     earthTowerCount: SumCount;
 
+    @Decorator.persistence()
+    infinityWaveTimes: number;
+
+    @Decorator.persistence()
+    levelThreeCount: number;
+
     protected initDefaultData(): void {
         this.gold = GameConfig.Global.getAllElement()[0].initialGold;
         this.techPoint = GameConfig.Global.getAllElement()[0].initialTechPoint;

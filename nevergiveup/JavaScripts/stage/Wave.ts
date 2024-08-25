@@ -506,7 +506,7 @@ export class WaveUtil {
                         Log4Ts.error(StageC, "error wave index");
                     }
                 }
-
+                ModuleService.getModule(PlayerModuleC).onInfinityWaveRefresh();
                 ModuleService.getModule(WaveModuleC).syncCurrentWave(stageId, waveInfo);
                 return waveInfo;
             }

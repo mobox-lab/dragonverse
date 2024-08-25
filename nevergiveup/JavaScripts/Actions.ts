@@ -52,6 +52,8 @@ export const PlayerActions = {
     onPlayerNameChanged: new Action2<Player, string>(),
     onPlayerLevelChangedServer: new Action2<Player, number>(),
     onPlayerLevelChangedClient: new Action1<number>(),
+    // 这是任务系统的，上面的是原来逻辑的，不动原来
+    onPlayerLevelChangedClient2: new Action1<number>(),
 };
 
 export const DialogActions = {

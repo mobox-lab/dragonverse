@@ -142,6 +142,16 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         this.currentData.save(false);
     }
 
+    public net_saveInfinityWaveTimes(times: number) {
+        this.currentData.infinityWaveTimes = times;
+        this.currentData.save(false);
+    }
+
+    public net_saveLevelThreeCount(count: number) {
+        this.currentData.levelThreeCount = count;
+        this.currentData.save(false);
+    }
+
     protected onPlayerLeft(player: mw.Player): void {
         PlayerUtil.deletePlayerScript(player.playerId);
     }
