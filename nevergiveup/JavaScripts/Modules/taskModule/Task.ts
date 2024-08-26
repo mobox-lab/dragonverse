@@ -205,6 +205,8 @@ export class Task {
     public cfg: ITaskElement;
     /**任务模块 */
     private _taskModule: TaskModuleC;
+
+    private ownType: ElementEnum;
     constructor(id: number) {
         this._taskModule = ModuleService.getModule(TaskModuleC);
         this.initProperty(id);
@@ -574,6 +576,7 @@ export class Task {
      * 元素塔部署次数信息
      */
     private initTowerCount(type: ElementEnum) {
+        this.ownType = type;
         if (type === ElementEnum.LIGHT) {
             this.curSolveTime =
                 DataCenterC.getData(PlayerModuleData).lightTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
@@ -594,7 +597,41 @@ export class Task {
                 DataCenterC.getData(PlayerModuleData).earthTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
         }
         // 部署回调
-        TowerActions.onTowerBuild.add(this.towerBuildByType);
+        // TowerActions.onTowerBuild.add(this.towerBuildByType);
+        TowerActions.onTowerBuild.add((type: ElementEnum) => {
+            if (type === ElementEnum.LIGHT && this.ownType === type) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).lightTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            } else if (type === ElementEnum.DARK && this.ownType === type) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).darkTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            } else if (type === ElementEnum.WATER && this.ownType === type) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).waterTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            } else if (type === ElementEnum.FIRE && this.ownType === type) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).fireTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            } else if (type === ElementEnum.WOOD && this.ownType === type) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).woodTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            } else if (type === ElementEnum.EARTH && this.ownType === type) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).earthTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            }
+            this.checkState();
+        });
     }
 
     towerBuildByType(type: ElementEnum) {
