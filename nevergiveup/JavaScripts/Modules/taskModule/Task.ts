@@ -96,6 +96,18 @@ export class Task {
             case EmTaskWay.KillStealthCount:
                 // name = "KillStealthCount";
                 break;
+            case EmTaskWay.InfinityGameTimes:
+                // name = "InfinityGameTimes";
+                break;
+            case EmTaskWay.InfinityBossCount:
+                // name = "InfinityBossCount";
+                break;
+            case EmTaskWay.TowerLevelUpCount:
+                // name = "TowerLevelUpCount";
+                break;
+            case EmTaskWay.UnlockTowerDaily:
+                // name = "UnlockTowerDaily";
+                break;
             default:
                 break;
         }
@@ -165,6 +177,18 @@ export class Task {
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             case EmTaskWay.KillStealthCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.InfinityGameTimes:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.InfinityBossCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.TowerLevelUpCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.UnlockTowerDaily:
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             default:
@@ -283,6 +307,18 @@ export class Task {
                 break;
             case EmTaskWay.KillStealthCount:
                 this.initKillMonsterTypeCount("killStealthEnemyCount");
+                break;
+            case EmTaskWay.InfinityGameTimes:
+                this.initInfinityGameTimes();
+                break;
+            case EmTaskWay.InfinityBossCount:
+                this.initStageCompleteByType("infinityBossCount");
+                break;
+            case EmTaskWay.TowerLevelUpCount:
+                this.initStageCompleteByType("towerLevelUpCount");
+                break;
+            case EmTaskWay.UnlockTowerDaily:
+                this.initUnlockTowerDaily();
                 break;
             default:
                 break;
@@ -497,9 +533,39 @@ export class Task {
      * 初始化单一种任务类型
      */
     private initLevelThreeCount() {
-        this.curSolveTime = DataCenterC.getData(PlayerModuleData).levelThreeCount;
+        this.curSolveTime =
+            DataCenterC.getData(PlayerModuleData).levelThreeCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
         StageActions.onStageComplete.add(() => {
-            this.curSolveTime = DataCenterC.getData(PlayerModuleData).levelThreeCount;
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).levelThreeCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+            this.checkState();
+        });
+    }
+
+    /**
+     * 初始化单一种任务类型
+     */
+    private initInfinityGameTimes() {
+        this.curSolveTime =
+            DataCenterC.getData(PlayerModuleData).infinityGameTimes[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        StageActions.onStageComplete.add(() => {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).infinityGameTimes[
+                    this.type == EmTaskType.Daily ? "daily" : "sum"
+                ];
+            this.checkState();
+        });
+    }
+
+    /**
+     * 初始化以游戏结束为结算的任务
+     */
+    private initStageCompleteByType(type: string) {
+        this.curSolveTime =
+            DataCenterC.getData(PlayerModuleData)[type][this.type == EmTaskType.Daily ? "daily" : "sum"];
+        StageActions.onStageComplete.add(() => {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData)[type][this.type == EmTaskType.Daily ? "daily" : "sum"];
             this.checkState();
         });
     }
@@ -572,6 +638,14 @@ export class Task {
         this.curSolveTime = ModuleService.getModule(CardModuleC)?.unlockCards.length;
         CardActions.onCardChanged.add((count) => {
             this.curSolveTime = ModuleService.getModule(CardModuleC)?.unlockCards.length;
+            this.checkState();
+        });
+    }
+
+    private initUnlockTowerDaily() {
+        this.curSolveTime = DataCenterC.getData(PlayerModuleData).unlockTowerDaily;
+        CardActions.onCardChanged.add((count) => {
+            this.curSolveTime = DataCenterC.getData(PlayerModuleData).unlockTowerDaily;
             this.checkState();
         });
     }

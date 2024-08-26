@@ -29,6 +29,8 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
     private _enemyBerserkCount: number = 0;
     private _enemyFlyCount: number = 0;
     private _enemyStealthCount: number = 0;
+    private _enemyInfinityBossCount: number = 0;
+    private _towerLevelUpCount: number = 0;
     protected onEnterScene(sceneType: number): void {
         this.data.onDataChange.add(() => {
             PlayerActions.onPlayerDataChanged.call();
@@ -73,6 +75,11 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.data.fireTowerCount.daily = 0;
         this.data.woodTowerCount.daily = 0;
         this.data.earthTowerCount.daily = 0;
+        this.data.levelThreeCount.daily = 0;
+        this.data.infinityGameTimes.daily = 0;
+        this.data.infinityBossCount.daily = 0;
+        this.data.towerLevelUpCount.daily = 0;
+        this.data.unlockTowerDaily = 0;
         if (isSave) {
             this.server.net_SaveSumCount(
                 this.data.completeStageCount.sum,
@@ -96,6 +103,11 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
                 this.data.killFlyEnemyCount,
                 this.data.killStealthEnemyCount
             );
+            this.server.net_saveLevelThreeCount(this.data.levelThreeCount.sum, this.data.levelThreeCount.daily);
+            this.server.net_saveInfinityGameTimes(this.data.infinityGameTimes.sum, this.data.infinityGameTimes.daily);
+            this.server.net_saveInfinityBossCount(this.data.infinityBossCount.sum, this.data.infinityBossCount.daily);
+            this.server.net_saveTowerLevelUpCount(this.data.towerLevelUpCount.sum, this.data.towerLevelUpCount.daily);
+            this.server.net_saveUnlockTowerDaily(this.data.unlockTowerDaily);
         }
     }
 
@@ -108,8 +120,11 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this._waveCount++;
     }
 
-    public onLevelUp() {
-        this._levelThreeCount++;
+    public onLevelUp(targetLevel: number) {
+        if (targetLevel === 2) {
+            this._levelThreeCount++;
+        }
+        this._towerLevelUpCount++;
     }
 
     public onEnemyTypeKilled(type: number[]) {
@@ -125,9 +140,13 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         if (type.includes(12)) {
             this._enemyBerserkCount++;
         }
+        if (type.includes(5)) {
+            // boss
+            this._enemyInfinityBossCount++;
+        }
     }
 
-    public onStageCompleted(isPerfect: boolean) {
+    public onStageCompleted(isPerfect: boolean, index?: number) {
         this.data.completeStageCount.sum = this.data.completeStageCount.sum + 1;
         this.data.completeStageCount.daily = this.data.completeStageCount.daily + 1;
         if (isPerfect) {
@@ -150,8 +169,9 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.server.net_saveInfinityWaveTimes(this.data.infinityWaveTimes);
         this._waveCount = 0;
 
-        this.data.levelThreeCount = this.data.levelThreeCount + this._levelThreeCount;
-        this.server.net_saveLevelThreeCount(this.data.levelThreeCount);
+        this.data.levelThreeCount.sum = this.data.levelThreeCount.sum + this._levelThreeCount;
+        this.data.levelThreeCount.daily = this.data.levelThreeCount.daily + this._levelThreeCount;
+        this.server.net_saveLevelThreeCount(this.data.levelThreeCount.sum, this.data.levelThreeCount.daily);
         this._levelThreeCount = 0;
 
         this.data.killHealEnemyCount.sum = this.data.killHealEnemyCount.sum + this._enemyHealCount;
@@ -179,6 +199,22 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
             this.data.killStealthEnemyCount.daily
         );
         this._enemyStealthCount = 0;
+
+        if (index === 5) {
+            this.data.infinityGameTimes.sum = this.data.infinityGameTimes.sum + 1;
+            this.data.infinityGameTimes.daily = this.data.infinityGameTimes.daily + 1;
+            this.server.net_saveInfinityGameTimes(this.data.infinityGameTimes.sum, this.data.infinityGameTimes.daily);
+        }
+
+        this.data.infinityBossCount.sum = this.data.infinityBossCount.sum + this._enemyInfinityBossCount;
+        this.data.infinityBossCount.daily = this.data.infinityBossCount.daily + this._enemyInfinityBossCount;
+        this.server.net_saveInfinityBossCount(this.data.infinityBossCount.sum, this.data.infinityBossCount.daily);
+        this._enemyInfinityBossCount = 0;
+
+        this.data.towerLevelUpCount.sum = this.data.towerLevelUpCount.sum + this._towerLevelUpCount;
+        this.data.towerLevelUpCount.daily = this.data.towerLevelUpCount.daily + this._towerLevelUpCount;
+        this.server.net_saveTowerLevelUpCount(this.data.towerLevelUpCount.sum, this.data.towerLevelUpCount.daily);
+        this._towerLevelUpCount = 0;
     }
 
     // 更新部署塔的数据
@@ -210,6 +246,12 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
             this.data.woodTowerCount,
             this.data.earthTowerCount
         );
+    }
+
+    // 解锁卡牌
+    public onCardUnlock() {
+        this.data.unlockTowerDaily = this.data.unlockTowerDaily + 1;
+        this.server.net_saveUnlockTowerDaily(this.data.unlockTowerDaily);
     }
 
     /**

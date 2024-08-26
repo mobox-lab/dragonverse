@@ -1,4 +1,4 @@
-﻿/** 
+﻿/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-18 16:49:09
  * @LastEditors  : xiaohao.li
@@ -17,6 +17,7 @@
 
 import { CardActions } from "../../Actions";
 import { GlobalData } from "../../const/GlobalData";
+import PlayerModuleC from "../PlayerModule/PlayerModuleC";
 
 export default class CardModuleData extends Subdata {
     /**已解锁的塔 */
@@ -56,6 +57,7 @@ export default class CardModuleData extends Subdata {
     public addUnlockCard(cardID: number) {
         if (!this._unlockCards.includes(cardID)) {
             this._unlockCards.push(cardID);
+            ModuleService.getModule(PlayerModuleC).onCardUnlock();
             CardActions.onCardChanged.call(cardID);
         }
     }

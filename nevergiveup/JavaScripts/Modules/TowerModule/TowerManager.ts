@@ -79,10 +79,11 @@ export namespace TowerManager {
 
         let tower = towerMap.get(info.placeID);
         if (tower) {
-            if (info.playerID === Player.localPlayer.playerId && Math.max(info.level, tower.level) === 2) {
-                ModuleService.getModule(PlayerModuleC).onLevelUp();
+            const targetLevel = Math.max(info.level, tower.level);
+            if (info.playerID === Player.localPlayer.playerId) {
+                ModuleService.getModule(PlayerModuleC).onLevelUp(targetLevel);
             }
-            tower.level = Math.max(info.level, tower.level);
+            tower.level = targetLevel;
             TowerActions.onUpgradeTower.call(info.placeID);
         }
     }
