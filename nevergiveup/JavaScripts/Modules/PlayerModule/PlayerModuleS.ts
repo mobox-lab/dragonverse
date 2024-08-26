@@ -53,6 +53,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
             data.fireTowerCount.daily = 0;
             data.woodTowerCount.daily = 0;
             data.earthTowerCount.daily = 0;
+            data.levelThreeCount.daily = 0;
+            data.infinityGameTimes.daily = 0;
+            data.infinityBossCount.daily = 0;
+            data.towerLevelUpCount.daily = 0;
+            data.unlockTowerDaily = 0;
             data.save(false);
         }
     }
@@ -158,8 +163,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         this.currentData.save(false);
     }
 
-    public net_saveLevelThreeCount(count: number) {
-        this.currentData.levelThreeCount = count;
+    public net_saveLevelThreeCount(sum: number, daily: number) {
+        this.currentData.levelThreeCount.sum = sum;
+        this.currentData.levelThreeCount.daily = daily;
         this.currentData.save(false);
     }
 
@@ -184,6 +190,29 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     public net_saveKillStealthCount(sum: number, daily: number) {
         this.currentData.killStealthEnemyCount.sum = sum;
         this.currentData.killStealthEnemyCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveInfinityGameTimes(sum: number, daily: number) {
+        this.currentData.infinityGameTimes.sum = sum;
+        this.currentData.infinityGameTimes.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveInfinityBossCount(sum: number, daily: number) {
+        this.currentData.infinityBossCount.sum = sum;
+        this.currentData.infinityBossCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveTowerLevelUpCount(sum: number, daily: number) {
+        this.currentData.towerLevelUpCount.sum = sum;
+        this.currentData.towerLevelUpCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveUnlockTowerDaily(daily: number) {
+        this.currentData.unlockTowerDaily = daily;
         this.currentData.save(false);
     }
 

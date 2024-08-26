@@ -66,7 +66,7 @@ export default class PlayerModuleData extends Subdata {
     infinityWaveTimes: number;
 
     @Decorator.persistence()
-    levelThreeCount: number;
+    levelThreeCount: SumCount;
 
     // 复原力
     @Decorator.persistence()
@@ -81,6 +81,19 @@ export default class PlayerModuleData extends Subdata {
     @Decorator.persistence()
     killStealthEnemyCount: SumCount;
 
+    // 无限关卡次数
+    @Decorator.persistence()
+    infinityGameTimes: SumCount;
+
+    @Decorator.persistence()
+    infinityBossCount: SumCount;
+
+    @Decorator.persistence()
+    towerLevelUpCount: SumCount;
+
+    @Decorator.persistence()
+    unlockTowerDaily: number;
+
     protected initDefaultData(): void {
         this.gold = GameConfig.Global.getAllElement()[0].initialGold;
         this.techPoint = GameConfig.Global.getAllElement()[0].initialTechPoint;
@@ -92,6 +105,7 @@ export default class PlayerModuleData extends Subdata {
         this.unlockedTechNodes = [];
         this.attackVoiceFactor = 1;
         this.bgmVoiceFactor = 1;
+        this.unlockTowerDaily = 0;
         this.completeStageCount = {
             sum: 0,
             daily: 0,
@@ -141,6 +155,22 @@ export default class PlayerModuleData extends Subdata {
             daily: 0,
         };
         this.earthTowerCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.levelThreeCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.infinityGameTimes = {
+            sum: 0,
+            daily: 0,
+        };
+        this.infinityBossCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.towerLevelUpCount = {
             sum: 0,
             daily: 0,
         };
@@ -220,7 +250,29 @@ export default class PlayerModuleData extends Subdata {
                 sum: 0,
                 daily: 0,
             };
+        if (this.levelThreeCount === undefined)
+            this.levelThreeCount = {
+                sum: 0,
+                daily: 0,
+            };
+        if (this.infinityGameTimes === undefined)
+            this.infinityGameTimes = {
+                sum: 0,
+                daily: 0,
+            };
+        if (this.infinityBossCount === undefined)
+            this.infinityBossCount = {
+                sum: 0,
+                daily: 0,
+            };
+        if (this.towerLevelUpCount === undefined)
+            this.towerLevelUpCount = {
+                sum: 0,
+                daily: 0,
+            };
         if (this.attackVoiceFactor === undefined) this.attackVoiceFactor = 1;
         if (this.bgmVoiceFactor === undefined) this.bgmVoiceFactor = 1;
+        if (this.infinityWaveTimes === undefined) this.infinityWaveTimes = 0;
+        if (this.unlockTowerDaily === undefined) this.unlockTowerDaily = 0;
     }
 }
