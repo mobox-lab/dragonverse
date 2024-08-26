@@ -253,27 +253,6 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.txt_fight_Internal
 	}
-	private canvas_tag_1_Internal: mw.Canvas
-	public get canvas_tag_1(): mw.Canvas {
-		if(!this.canvas_tag_1_Internal&&this.uiWidgetBase) {
-			this.canvas_tag_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag_1') as mw.Canvas
-		}
-		return this.canvas_tag_1_Internal
-	}
-	private tagScrollBox_1_Internal: mw.ScrollBox
-	public get tagScrollBox_1(): mw.ScrollBox {
-		if(!this.tagScrollBox_1_Internal&&this.uiWidgetBase) {
-			this.tagScrollBox_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag_1/tagScrollBox_1') as mw.ScrollBox
-		}
-		return this.tagScrollBox_1_Internal
-	}
-	private tagCanvas_1_Internal: mw.Canvas
-	public get tagCanvas_1(): mw.Canvas {
-		if(!this.tagCanvas_1_Internal&&this.uiWidgetBase) {
-			this.tagCanvas_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag_1/tagScrollBox_1/tagCanvas_1') as mw.Canvas
-		}
-		return this.tagCanvas_1_Internal
-	}
 	private img_priceBg_Internal: mw.Image
 	public get img_priceBg(): mw.Image {
 		if(!this.img_priceBg_Internal&&this.uiWidgetBase) {

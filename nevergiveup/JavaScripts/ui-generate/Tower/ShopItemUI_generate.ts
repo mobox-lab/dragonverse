@@ -43,20 +43,6 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.elementImg_Internal
 	}
-	private tagScrollBox_Internal: mw.ScrollBox
-	public get tagScrollBox(): mw.ScrollBox {
-		if(!this.tagScrollBox_Internal&&this.uiWidgetBase) {
-			this.tagScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/tagScrollBox') as mw.ScrollBox
-		}
-		return this.tagScrollBox_Internal
-	}
-	private tagCanvas_Internal: mw.Canvas
-	public get tagCanvas(): mw.Canvas {
-		if(!this.tagCanvas_Internal&&this.uiWidgetBase) {
-			this.tagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/tagScrollBox/tagCanvas') as mw.Canvas
-		}
-		return this.tagCanvas_Internal
-	}
 	private canvasLock_Internal: mw.Canvas
 	public get canvasLock(): mw.Canvas {
 		if(!this.canvasLock_Internal&&this.uiWidgetBase) {
@@ -88,23 +74,16 @@ export default class ShopItemUI_Generate extends UIScript {
 	private img_money_Internal: mw.Image
 	public get img_money(): mw.Image {
 		if(!this.img_money_Internal&&this.uiWidgetBase) {
-			this.img_money_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvasLock/img_money') as mw.Image
+			this.img_money_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvasLock/Canvas_1/img_money') as mw.Image
 		}
 		return this.img_money_Internal
 	}
 	private txt_sell_Internal: mw.TextBlock
 	public get txt_sell(): mw.TextBlock {
 		if(!this.txt_sell_Internal&&this.uiWidgetBase) {
-			this.txt_sell_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvasLock/txt_sell') as mw.TextBlock
+			this.txt_sell_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvasLock/Canvas_1/txt_sell') as mw.TextBlock
 		}
 		return this.txt_sell_Internal
-	}
-	private canvas_tag_Internal: mw.Canvas
-	public get canvas_tag(): mw.Canvas {
-		if(!this.canvas_tag_Internal&&this.uiWidgetBase) {
-			this.canvas_tag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag') as mw.Canvas
-		}
-		return this.canvas_tag_Internal
 	}
 	private canvas_Icontag_Internal: mw.Canvas
 	public get canvas_Icontag(): mw.Canvas {

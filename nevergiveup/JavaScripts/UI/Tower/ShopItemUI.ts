@@ -76,7 +76,7 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		for (let i = 0; i < 4; i++) {
 			let item = UIService.create(TowerTagItem_Generate);
 			item.visible = false;
-			this.tagCanvas.addChild(item.uiObject);
+			this.icontagCanvas.addChild(item.uiObject);
 			this._tagItemUIs.push(item);
 		}
 	}

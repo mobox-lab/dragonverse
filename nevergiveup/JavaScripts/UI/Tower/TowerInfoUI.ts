@@ -66,7 +66,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         for (let i = 0; i < 4; i++) {
             let item = UIService.create(TowerTagItem_Generate);
             item.visible = false;
-            this.tagCanvas_1.addChild(item.uiObject);
+            this.icontagCanvas.addChild(item.uiObject);
             this._tagItemUIs.push(item);
         }
     }
