@@ -66,7 +66,7 @@ export default class PlayerModuleData extends Subdata {
     infinityWaveTimes: number;
 
     @Decorator.persistence()
-    levelThreeCount: number;
+    levelThreeCount: SumCount;
 
     // 复原力
     @Decorator.persistence()
@@ -141,6 +141,10 @@ export default class PlayerModuleData extends Subdata {
             daily: 0,
         };
         this.earthTowerCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.levelThreeCount = {
             sum: 0,
             daily: 0,
         };
@@ -220,7 +224,14 @@ export default class PlayerModuleData extends Subdata {
                 sum: 0,
                 daily: 0,
             };
+        if (this.levelThreeCount === undefined)
+            this.levelThreeCount = {
+                sum: 0,
+                daily: 0,
+            };
         if (this.attackVoiceFactor === undefined) this.attackVoiceFactor = 1;
         if (this.bgmVoiceFactor === undefined) this.bgmVoiceFactor = 1;
+        if (this.infinityWaveTimes === undefined) this.infinityWaveTimes = 0;
+        
     }
 }

@@ -73,6 +73,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.data.fireTowerCount.daily = 0;
         this.data.woodTowerCount.daily = 0;
         this.data.earthTowerCount.daily = 0;
+        this.data.levelThreeCount.daily = 0;
         if (isSave) {
             this.server.net_SaveSumCount(
                 this.data.completeStageCount.sum,
@@ -96,6 +97,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
                 this.data.killFlyEnemyCount,
                 this.data.killStealthEnemyCount
             );
+            this.server.net_saveLevelThreeCount(this.data.levelThreeCount.sum, this.data.levelThreeCount.daily);
         }
     }
 
@@ -150,8 +152,9 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.server.net_saveInfinityWaveTimes(this.data.infinityWaveTimes);
         this._waveCount = 0;
 
-        this.data.levelThreeCount = this.data.levelThreeCount + this._levelThreeCount;
-        this.server.net_saveLevelThreeCount(this.data.levelThreeCount);
+        this.data.levelThreeCount.sum = this.data.levelThreeCount.sum + this._levelThreeCount;
+        this.data.levelThreeCount.daily = this.data.levelThreeCount.daily + this._levelThreeCount;
+        this.server.net_saveLevelThreeCount(this.data.levelThreeCount.sum, this.data.levelThreeCount.daily);
         this._levelThreeCount = 0;
 
         this.data.killHealEnemyCount.sum = this.data.killHealEnemyCount.sum + this._enemyHealCount;

@@ -497,9 +497,9 @@ export class Task {
      * 初始化单一种任务类型
      */
     private initLevelThreeCount() {
-        this.curSolveTime = DataCenterC.getData(PlayerModuleData).levelThreeCount;
+        this.curSolveTime = DataCenterC.getData(PlayerModuleData).levelThreeCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
         StageActions.onStageComplete.add(() => {
-            this.curSolveTime = DataCenterC.getData(PlayerModuleData).levelThreeCount;
+            this.curSolveTime = DataCenterC.getData(PlayerModuleData).levelThreeCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
             this.checkState();
         });
     }

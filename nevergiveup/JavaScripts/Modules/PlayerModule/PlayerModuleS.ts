@@ -53,6 +53,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
             data.fireTowerCount.daily = 0;
             data.woodTowerCount.daily = 0;
             data.earthTowerCount.daily = 0;
+            data.levelThreeCount.daily = 0;
             data.save(false);
         }
     }
@@ -158,8 +159,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         this.currentData.save(false);
     }
 
-    public net_saveLevelThreeCount(count: number) {
-        this.currentData.levelThreeCount = count;
+    public net_saveLevelThreeCount(sum: number, daily: number) {
+        this.currentData.levelThreeCount.sum = sum;
+        this.currentData.levelThreeCount.daily = daily;
         this.currentData.save(false);
     }
 
