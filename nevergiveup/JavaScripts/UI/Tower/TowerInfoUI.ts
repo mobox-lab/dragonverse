@@ -24,7 +24,7 @@ import { ITowerElement } from "../../config/Tower";
 import { GlobalData } from "../../const/GlobalData";
 import { MGSTool } from "../../tool/MGSTool";
 import TowerInfoUI_Generate from "../../ui-generate/Tower/TowerInfoUI_generate";
-import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
+import TowerSmallTagItem_Generate from "../../ui-generate/Tower/TowerSmallTagItem_generate";
 import TextItemUI from "../TextItemUI";
 
 export default class TowerInfoUI extends TowerInfoUI_Generate {
@@ -33,7 +33,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
     private _tower: TowerBase;
     private _upgradeCount: number = 0;
     private _textItemUIs: TextItemUI[] = [];
-    private _tagItemUIs: TowerTagItem_Generate[] = [];
+    private _tagItemUIs: TowerSmallTagItem_Generate[] = [];
 
     /**
      * 构造UI文件成功后，在合适的时机最先初始化一次
@@ -64,7 +64,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
             }
         });
         for (let i = 0; i < 4; i++) {
-            let item = UIService.create(TowerTagItem_Generate);
+            let item = UIService.create(TowerSmallTagItem_Generate);
             item.visible = false;
             this.icontagCanvas.addChild(item.uiObject);
             this._tagItemUIs.push(item);
