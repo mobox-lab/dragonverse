@@ -64,20 +64,6 @@ export default class TowerUI_Generate extends UIScript {
 		}
 		return this.textSet_Internal
 	}
-	private lineUp_Internal: mw.Canvas
-	public get lineUp(): mw.Canvas {
-		if(!this.lineUp_Internal&&this.uiWidgetBase) {
-			this.lineUp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/lineUp') as mw.Canvas
-		}
-		return this.lineUp_Internal
-	}
-	private textLineup_Internal: mw.TextBlock
-	public get textLineup(): mw.TextBlock {
-		if(!this.textLineup_Internal&&this.uiWidgetBase) {
-			this.textLineup_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/lineUp/textLineup') as mw.TextBlock
-		}
-		return this.textLineup_Internal
-	}
 
 
 
@@ -118,9 +104,6 @@ export default class TowerUI_Generate extends UIScript {
 	   //文本多语言
 	   
 	   this.initLanguage(this.textSet)
-	   
-	
-	   this.initLanguage(this.textLineup)
 	   
 	
 	   //文本多语言

@@ -66,7 +66,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         for (let i = 0; i < 4; i++) {
             let item = UIService.create(TowerTagItem_Generate);
             item.visible = false;
-            this.tagCanvas_1.addChild(item.uiObject);
+            this.icontagCanvas.addChild(item.uiObject);
             this._tagItemUIs.push(item);
         }
     }
@@ -130,7 +130,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         this._tower = tower;
         this.txt_title.text = this._cfg.name;
         // this._tower = Utils.shallowCopy(towerInfo);
-        Utils.setImageByAsset(this.towerImg, this._cfg);
+        this.towerImg.imageGuid = this._cfg.imgGuid;
         this.bgElementImg.imageGuid = GlobalData.Shop.shopItemBgGuid[(this._cfg?.elementTy || 1) - 1];
 		this.tagElementImg.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(this._cfg?.elementTy || 1) - 1];
         
