@@ -23,7 +23,9 @@ export namespace GlobalData {
         public static initUnlockTower = 1008; // 最初解锁的塔
     }
     export class Anim {
-        public static stageCrossAnimSeconds = 1; // 过场过渡动画时间
+        public static stageCrossAnimSeconds = 1; // Stage 过场过渡动画时间
+        public static logoCrossAnimSeconds = 1; // Logo 过场黑屏渐进过渡动画时间
+        public static logoScaleAnimSeconds = 0.8; // Logo 缩放过渡动画时间
         public static logoAnimFilNum = 12; // logo 动画 序列帧 1~12
     }
     export class Bless {

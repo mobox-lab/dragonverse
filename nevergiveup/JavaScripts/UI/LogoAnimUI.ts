@@ -25,10 +25,14 @@ export default class LogoAnimUI extends logo_anim_Generate {
         //设置能否每帧触发onUpdate
         this.canUpdate = false;
         this.layer = mw.UILayerSystem;
-        this._closeTween = new mw.Tween({percent: 1}).to({percent: 0.01}, 0.8 * 1000).onUpdate((obj) => {
+        this._closeTween = new mw.Tween({percent: 1}).to({percent: 0.01}, GlobalData.Anim.logoScaleAnimSeconds * 1000).onUpdate((obj) => {
             this.can_logo.renderScale = Utils.TEMP_VECTOR2.set(obj.percent, obj.percent);
         }).easing(TweenUtil.Easing.Quintic.In).onComplete(() => {
-            mw.UIService.hideUI(this);
+            new mw.Tween({percent: 1}).to({percent: 0.01}, GlobalData.Anim.logoCrossAnimSeconds * 1000).onUpdate((obj) => {
+                this.maskImg.renderOpacity = obj.percent;
+            }).onComplete(() => {
+                mw.UIService.hideUI(this);
+            }).start();
         });
         this.resetAnim();
     }
@@ -67,8 +71,13 @@ export default class LogoAnimUI extends logo_anim_Generate {
      */
     protected onShow(callback?: () => void) {
         this._callback = callback;
-        Gtk.trySetVisibility(this.flip_anim1, mw.SlateVisibility.Visible);
-        this.flip_anim1.play();
+        this.maskImg.renderOpacity = 0;
+        new mw.Tween({percent: 0.01}).to({percent: 1}, GlobalData.Anim.logoCrossAnimSeconds * 1000).onUpdate((obj) => {
+            this.maskImg.renderOpacity = obj.percent;
+        }).easing(TweenUtil.Easing.Quintic.Out).onComplete(() => {
+            Gtk.trySetVisibility(this.flip_anim1, mw.SlateVisibility.Visible);
+            this.flip_anim1.play();
+        }).start();
     }
 
     public hideAnim() {
