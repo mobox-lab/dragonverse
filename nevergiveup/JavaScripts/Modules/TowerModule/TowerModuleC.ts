@@ -597,4 +597,9 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     public net_destroyTower(placeID: number) {
         TowerManager.destroyTower(placeID);
     }
+
+    /** 提前结束 */
+    public earlySettle() {
+        this.server.net_earlySettle();
+    }
 }

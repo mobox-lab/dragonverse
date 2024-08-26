@@ -253,6 +253,48 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.towerItemCanvas_Internal
 	}
+	private returnCanvas_Internal: mw.Canvas
+	public get returnCanvas(): mw.Canvas {
+		if(!this.returnCanvas_Internal&&this.uiWidgetBase) {
+			this.returnCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/returnCanvas') as mw.Canvas
+		}
+		return this.returnCanvas_Internal
+	}
+	private returnBtn_Internal: mw.Button
+	public get returnBtn(): mw.Button {
+		if(!this.returnBtn_Internal&&this.uiWidgetBase) {
+			this.returnBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/returnCanvas/returnBtn') as mw.Button
+		}
+		return this.returnBtn_Internal
+	}
+	private txtButtonReturn_Internal: mw.TextBlock
+	public get txtButtonReturn(): mw.TextBlock {
+		if(!this.txtButtonReturn_Internal&&this.uiWidgetBase) {
+			this.txtButtonReturn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/returnCanvas/txtButtonReturn') as mw.TextBlock
+		}
+		return this.txtButtonReturn_Internal
+	}
+	private settingCanvas_Internal: mw.Canvas
+	public get settingCanvas(): mw.Canvas {
+		if(!this.settingCanvas_Internal&&this.uiWidgetBase) {
+			this.settingCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas') as mw.Canvas
+		}
+		return this.settingCanvas_Internal
+	}
+	private settingBtn_Internal: mw.Button
+	public get settingBtn(): mw.Button {
+		if(!this.settingBtn_Internal&&this.uiWidgetBase) {
+			this.settingBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/settingBtn') as mw.Button
+		}
+		return this.settingBtn_Internal
+	}
+	private txtButtonSetting_Internal: mw.TextBlock
+	public get txtButtonSetting(): mw.TextBlock {
+		if(!this.txtButtonSetting_Internal&&this.uiWidgetBase) {
+			this.txtButtonSetting_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/txtButtonSetting') as mw.TextBlock
+		}
+		return this.txtButtonSetting_Internal
+	}
 
 
 
@@ -303,6 +345,18 @@ export default class MainUI_Generate extends UIScript {
 	   this.mSpeedUp.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.returnBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "returnBtn");
+	   })
+	   this.returnBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.settingBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "settingBtn");
+	   })
+	   this.settingBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 
 	   //按钮多语言
 	   
@@ -345,6 +399,12 @@ export default class MainUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.mSkipCount)
+	   
+	
+	   this.initLanguage(this.txtButtonReturn)
+	   
+	
+	   this.initLanguage(this.txtButtonSetting)
 	   
 	
 	   //文本多语言

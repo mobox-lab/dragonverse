@@ -12,11 +12,15 @@ import { GameManager } from "../../GameManager";
 import { TowerEvent } from "../../Modules/TowerModule/TowerEnum";
 import { TowerManager } from "../../Modules/TowerModule/TowerManager";
 import { TowerModuleC } from "../../Modules/TowerModule/TowerModuleC";
+import { TowerModuleS } from "../../Modules/TowerModule/TowerModuleS";
 import { EStageState } from "../../StageEnums";
+import SettingUI from "../../UI/SettingUI";
 import { GameConfig } from "../../config/GameConfig";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { Enemy } from "../../enemy/EnemyBase";
 import { MGSTool } from "../../tool/MGSTool";
 import MainUI_Generate from "../../ui-generate/HUD/MainUI_generate";
+import { SettleState } from "../Stage";
 
 export class UIMain extends MainUI_Generate {
     public maxSpeed: number = 1.5;
@@ -88,6 +92,13 @@ export class UIMain extends MainUI_Generate {
 
         this.mSpeedDown.onClicked.add(() => {
             this.speedDown();
+        });
+        
+        this.returnBtn.onClicked.add(() => {// 回到房间
+            ModuleService.getModule(TowerModuleC).earlySettle();
+        });
+        this.settingBtn.onClicked.add(() => {
+            UIService.show(SettingUI);
         });
     }
 
@@ -243,9 +254,21 @@ export class UIMain extends MainUI_Generate {
 
 
     onShow() {
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.T, () => {
+            ModuleService.getModule(TowerModuleC).earlySettle();
+        });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
+            const ui = UIService.getUI(SettingUI);
+            if(ui.visible) ui.hide(); 
+            else ui.show();
+        });
         this.playing = true;
         this.play();
         this.speedDown();
         this.towerTxt.text = TowerManager.myTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxTower?.toFixed(0);
+    }
+    protected onHide(): void {
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.I);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.T);
     }
 }

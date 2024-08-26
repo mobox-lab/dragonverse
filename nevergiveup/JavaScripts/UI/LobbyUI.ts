@@ -79,8 +79,6 @@ export default class LobbyUI extends LobbyUI_Generate {
             }
         });
 
-        // 打开商店
-        KeyOperationManager.getInstance().bindButton(this, Keys.M, this.shopBtn);
         this.shopBtn.onClicked.add(() => {
             if (UIService.getUI(P12ShopPanel)?.isShowing) {
                 UIService.hide(P12ShopPanel);
@@ -93,27 +91,6 @@ export default class LobbyUI extends LobbyUI_Generate {
             UIService.show(SenzuBeanConfirmPanel);
         });
 
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
-            if (GameManager.getStageClient()) {
-                return;
-            }
-            const ui = UIService.getUI(TowerShopUI);
-            if(ui.visible) ui.hideTween(); 
-            else UIService.show(TowerShopUI, { isShop: true });
-        });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
-            const ui = UIService.getUI(SettingUI);
-            if(ui.visible) ui.hide(); 
-            else ui.show();
-        });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.L, () => {
-            this.showTaskPanel();
-        });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.O, () => {            
-            const ui = UIService.getUI(JumpGamePanel);
-            if(ui.visible) ui.hide(); 
-            else ui.show();
-        });
     }
 
     public showTaskPanel() {
@@ -157,10 +134,39 @@ export default class LobbyUI extends LobbyUI_Generate {
     }
 
     protected onShow() {
-        MGSTool.page("main");
+        // 打开商店
+        KeyOperationManager.getInstance().bindButton(this, Keys.M, this.shopBtn);
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
+            if (GameManager.getStageClient()) {
+                return;
+            }
+            const ui = UIService.getUI(TowerShopUI);
+            if(ui.visible) ui.hideTween(); 
+            else UIService.show(TowerShopUI, { isShop: true });
+        });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
+            const ui = UIService.getUI(SettingUI);
+            if(ui.visible) ui.hide(); 
+            else ui.show();
+        });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.L, () => {
+            this.showTaskPanel();
+        });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.O, () => {            
+            const ui = UIService.getUI(JumpGamePanel);
+            if(ui.visible) ui.hide(); 
+            else ui.show();
+        });
         this.updateCurrency();
     }
 
+    protected onHide() {
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.M);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.B);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.I);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.L);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.O);
+    }
     /**
      * 构造UI文件成功后，onStart之后
      * 对于UI的根节点的添加操作，进行调用

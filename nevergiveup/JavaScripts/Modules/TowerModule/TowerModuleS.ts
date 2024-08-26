@@ -9,7 +9,7 @@
 
 import { StageActions } from '../../Actions';
 import { GameManager } from "../../GameManager";
-import { StageS } from "../../stage/Stage";
+import { SettleState, StageS } from "../../stage/Stage";
 import { TowerInfo } from "./TowerEnum";
 import { TowerModuleC } from "./TowerModuleC";
 import { TowerModuleData } from "./TowerModuleData";
@@ -131,5 +131,12 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
         }
     }
 
-
+    /** 提前结束 */
+    public net_earlySettle() {
+        if(!this.currentPlayer) return;
+        const stage = GameManager.getPlayerStage(this.currentPlayer);
+        if (stage) {
+            stage["_fsm"].changeState(SettleState);
+        }
+    }
 }
