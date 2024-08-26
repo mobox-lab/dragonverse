@@ -274,6 +274,13 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.tagCanvas_1_Internal
 	}
+	private img_priceBg_Internal: mw.Image
+	public get img_priceBg(): mw.Image {
+		if(!this.img_priceBg_Internal&&this.uiWidgetBase) {
+			this.img_priceBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/img_priceBg') as mw.Image
+		}
+		return this.img_priceBg_Internal
+	}
 	private img_price_Internal: mw.Image
 	public get img_price(): mw.Image {
 		if(!this.img_price_Internal&&this.uiWidgetBase) {
@@ -308,6 +315,27 @@ export default class TowerInfoUI_Generate extends UIScript {
 			this.txt_Strategy_Desc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_strategy/txt_Strategy_Desc') as mw.TextBlock
 		}
 		return this.txt_Strategy_Desc_Internal
+	}
+	private canvas_icontag_Internal: mw.Canvas
+	public get canvas_icontag(): mw.Canvas {
+		if(!this.canvas_icontag_Internal&&this.uiWidgetBase) {
+			this.canvas_icontag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_icontag') as mw.Canvas
+		}
+		return this.canvas_icontag_Internal
+	}
+	private icontagScrollBox_Internal: mw.ScrollBox
+	public get icontagScrollBox(): mw.ScrollBox {
+		if(!this.icontagScrollBox_Internal&&this.uiWidgetBase) {
+			this.icontagScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_icontag/icontagScrollBox') as mw.ScrollBox
+		}
+		return this.icontagScrollBox_Internal
+	}
+	private icontagCanvas_Internal: mw.Canvas
+	public get icontagCanvas(): mw.Canvas {
+		if(!this.icontagCanvas_Internal&&this.uiWidgetBase) {
+			this.icontagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_icontag/icontagScrollBox/icontagCanvas') as mw.Canvas
+		}
+		return this.icontagCanvas_Internal
 	}
 	private closeBtn_Internal: mw.StaleButton
 	public get closeBtn(): mw.StaleButton {

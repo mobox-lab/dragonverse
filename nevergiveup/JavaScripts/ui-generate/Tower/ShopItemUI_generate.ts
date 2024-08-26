@@ -43,12 +43,40 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.elementImg_Internal
 	}
+	private tagScrollBox_Internal: mw.ScrollBox
+	public get tagScrollBox(): mw.ScrollBox {
+		if(!this.tagScrollBox_Internal&&this.uiWidgetBase) {
+			this.tagScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/tagScrollBox') as mw.ScrollBox
+		}
+		return this.tagScrollBox_Internal
+	}
+	private tagCanvas_Internal: mw.Canvas
+	public get tagCanvas(): mw.Canvas {
+		if(!this.tagCanvas_Internal&&this.uiWidgetBase) {
+			this.tagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/tagScrollBox/tagCanvas') as mw.Canvas
+		}
+		return this.tagCanvas_Internal
+	}
 	private canvasLock_Internal: mw.Canvas
 	public get canvasLock(): mw.Canvas {
 		if(!this.canvasLock_Internal&&this.uiWidgetBase) {
 			this.canvasLock_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvasLock') as mw.Canvas
 		}
 		return this.canvasLock_Internal
+	}
+	private moneyBgImg_Internal: mw.Image
+	public get moneyBgImg(): mw.Image {
+		if(!this.moneyBgImg_Internal&&this.uiWidgetBase) {
+			this.moneyBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvasLock/moneyBgImg') as mw.Image
+		}
+		return this.moneyBgImg_Internal
+	}
+	private lockBgImg_Internal: mw.Image
+	public get lockBgImg(): mw.Image {
+		if(!this.lockBgImg_Internal&&this.uiWidgetBase) {
+			this.lockBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvasLock/lockBgImg') as mw.Image
+		}
+		return this.lockBgImg_Internal
 	}
 	private lockImg_Internal: mw.Image
 	public get lockImg(): mw.Image {
@@ -78,19 +106,26 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.canvas_tag_Internal
 	}
-	private tagScrollBox_Internal: mw.ScrollBox
-	public get tagScrollBox(): mw.ScrollBox {
-		if(!this.tagScrollBox_Internal&&this.uiWidgetBase) {
-			this.tagScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag/tagScrollBox') as mw.ScrollBox
+	private canvas_Icontag_Internal: mw.Canvas
+	public get canvas_Icontag(): mw.Canvas {
+		if(!this.canvas_Icontag_Internal&&this.uiWidgetBase) {
+			this.canvas_Icontag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_Icontag') as mw.Canvas
 		}
-		return this.tagScrollBox_Internal
+		return this.canvas_Icontag_Internal
 	}
-	private tagCanvas_Internal: mw.Canvas
-	public get tagCanvas(): mw.Canvas {
-		if(!this.tagCanvas_Internal&&this.uiWidgetBase) {
-			this.tagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tag/tagScrollBox/tagCanvas') as mw.Canvas
+	private icontagScrollBox_Internal: mw.ScrollBox
+	public get icontagScrollBox(): mw.ScrollBox {
+		if(!this.icontagScrollBox_Internal&&this.uiWidgetBase) {
+			this.icontagScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_Icontag/icontagScrollBox') as mw.ScrollBox
 		}
-		return this.tagCanvas_Internal
+		return this.icontagScrollBox_Internal
+	}
+	private icontagCanvas_Internal: mw.Canvas
+	public get icontagCanvas(): mw.Canvas {
+		if(!this.icontagCanvas_Internal&&this.uiWidgetBase) {
+			this.icontagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_Icontag/icontagScrollBox/icontagCanvas') as mw.Canvas
+		}
+		return this.icontagCanvas_Internal
 	}
 	private canvas_fight_Internal: mw.Canvas
 	public get canvas_fight(): mw.Canvas {
