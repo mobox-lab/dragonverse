@@ -105,6 +105,9 @@ export class Task {
             case EmTaskWay.TowerLevelUpCount:
                 // name = "TowerLevelUpCount";
                 break;
+            case EmTaskWay.UnlockTowerDaily:
+                // name = "UnlockTowerDaily";
+                break;
             default:
                 break;
         }
@@ -183,6 +186,9 @@ export class Task {
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             case EmTaskWay.TowerLevelUpCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.UnlockTowerDaily:
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             default:
@@ -310,6 +316,9 @@ export class Task {
                 break;
             case EmTaskWay.TowerLevelUpCount:
                 this.initStageCompleteByType("towerLevelUpCount");
+                break;
+            case EmTaskWay.UnlockTowerDaily:
+                this.initUnlockTowerDaily();
                 break;
             default:
                 break;
@@ -629,6 +638,14 @@ export class Task {
         this.curSolveTime = ModuleService.getModule(CardModuleC)?.unlockCards.length;
         CardActions.onCardChanged.add((count) => {
             this.curSolveTime = ModuleService.getModule(CardModuleC)?.unlockCards.length;
+            this.checkState();
+        });
+    }
+
+    private initUnlockTowerDaily() {
+        this.curSolveTime = DataCenterC.getData(PlayerModuleData).unlockTowerDaily;
+        CardActions.onCardChanged.add((count) => {
+            this.curSolveTime = DataCenterC.getData(PlayerModuleData).unlockTowerDaily;
             this.checkState();
         });
     }

@@ -70,6 +70,8 @@ export enum EmTaskWay {
     InfinityBossCount = 23,
     /**升级防御塔的次数 */
     TowerLevelUpCount = 24,
+    /**日常解锁一次塔 */
+    UnlockTowerDaily = 25,
 }
 
 /**任务状态 */

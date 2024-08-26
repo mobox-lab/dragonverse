@@ -57,6 +57,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
             data.infinityGameTimes.daily = 0;
             data.infinityBossCount.daily = 0;
             data.towerLevelUpCount.daily = 0;
+            data.unlockTowerDaily = 0;
             data.save(false);
         }
     }
@@ -207,6 +208,11 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     public net_saveTowerLevelUpCount(sum: number, daily: number) {
         this.currentData.towerLevelUpCount.sum = sum;
         this.currentData.towerLevelUpCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveUnlockTowerDaily(daily: number) {
+        this.currentData.unlockTowerDaily = daily;
         this.currentData.save(false);
     }
 
