@@ -64,6 +64,12 @@ export enum EmTaskWay {
     KillFlyCount = 20,
     /**击败多少只隐身怪物 */
     KillStealthCount = 21,
+    /**挑战无尽关卡的次数 */
+    InfinityGameTimes = 22,
+    /**无尽关卡的boss击杀次数 */
+    InfinityBossCount = 23,
+    /**升级防御塔的次数 */
+    TowerLevelUpCount = 24,
 }
 
 /**任务状态 */

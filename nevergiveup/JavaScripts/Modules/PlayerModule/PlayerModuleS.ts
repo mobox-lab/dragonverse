@@ -54,6 +54,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
             data.woodTowerCount.daily = 0;
             data.earthTowerCount.daily = 0;
             data.levelThreeCount.daily = 0;
+            data.infinityGameTimes.daily = 0;
+            data.infinityBossCount.daily = 0;
+            data.towerLevelUpCount.daily = 0;
             data.save(false);
         }
     }
@@ -186,6 +189,24 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     public net_saveKillStealthCount(sum: number, daily: number) {
         this.currentData.killStealthEnemyCount.sum = sum;
         this.currentData.killStealthEnemyCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveInfinityGameTimes(sum: number, daily: number) {
+        this.currentData.infinityGameTimes.sum = sum;
+        this.currentData.infinityGameTimes.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveInfinityBossCount(sum: number, daily: number) {
+        this.currentData.infinityBossCount.sum = sum;
+        this.currentData.infinityBossCount.daily = daily;
+        this.currentData.save(false);
+    }
+
+    public net_saveTowerLevelUpCount(sum: number, daily: number) {
+        this.currentData.towerLevelUpCount.sum = sum;
+        this.currentData.towerLevelUpCount.daily = daily;
         this.currentData.save(false);
     }
 

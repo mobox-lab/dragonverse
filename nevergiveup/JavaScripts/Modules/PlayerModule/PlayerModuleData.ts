@@ -81,6 +81,16 @@ export default class PlayerModuleData extends Subdata {
     @Decorator.persistence()
     killStealthEnemyCount: SumCount;
 
+    // 无限关卡次数
+    @Decorator.persistence()
+    infinityGameTimes: SumCount;
+
+    @Decorator.persistence()
+    infinityBossCount: SumCount;
+
+    @Decorator.persistence()
+    towerLevelUpCount: SumCount;
+
     protected initDefaultData(): void {
         this.gold = GameConfig.Global.getAllElement()[0].initialGold;
         this.techPoint = GameConfig.Global.getAllElement()[0].initialTechPoint;
@@ -145,6 +155,18 @@ export default class PlayerModuleData extends Subdata {
             daily: 0,
         };
         this.levelThreeCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.infinityGameTimes = {
+            sum: 0,
+            daily: 0,
+        };
+        this.infinityBossCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.towerLevelUpCount = {
             sum: 0,
             daily: 0,
         };
@@ -229,9 +251,23 @@ export default class PlayerModuleData extends Subdata {
                 sum: 0,
                 daily: 0,
             };
+        if (this.infinityGameTimes === undefined)
+            this.infinityGameTimes = {
+                sum: 0,
+                daily: 0,
+            };
+        if (this.infinityBossCount === undefined)
+            this.infinityBossCount = {
+                sum: 0,
+                daily: 0,
+            };
+        if (this.towerLevelUpCount === undefined)
+            this.towerLevelUpCount = {
+                sum: 0,
+                daily: 0,
+            };
         if (this.attackVoiceFactor === undefined) this.attackVoiceFactor = 1;
         if (this.bgmVoiceFactor === undefined) this.bgmVoiceFactor = 1;
         if (this.infinityWaveTimes === undefined) this.infinityWaveTimes = 0;
-        
     }
 }
