@@ -118,10 +118,10 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
                             if (cfg) {
                                 Utils.setImageByAsset(this[`img_Icon${index + 1}`], cfg);
                             }
-                            this[`img_Bg${index + 1}`].imageGuid = Reward.getGuid(reward.itemLevel);
+                            // this[`img_Bg${index + 1}`].imageGuid = Reward.getGuid(reward.itemLevel);
                         } else {
                             this[`img_Icon${index + 1}`].imageGuid = reward.itemImgGuid;
-                            this[`img_Bg${index + 1}`].imageGuid = Reward.getGuid(reward.itemLevel);
+                            // this[`img_Bg${index + 1}`].imageGuid = Reward.getGuid(reward.itemLevel);
                         }
                     } else {
                         console.log('hsf=======UI显示找不到奖励=============== ', JSON.stringify(i[0]))

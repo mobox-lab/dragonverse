@@ -1,27 +1,4 @@
-﻿/*
- * @Author: shifu.huang
- * @Date: 2024-01-03 14:03:02
- * @LastEditors: haoran.zhang haoran.zhang@appshahe.com
- * @LastEditTime: 2024-07-02 09:41:08
- * @FilePath: \nevergiveup\JavaScripts\UI\Tower\ShopItemUI.ts
- * @Description: 修改描述
- */
-/** 
- * @Author       : xiaohao.li
- * @Date         : 2023-12-29 15:43:49
- * @LastEditors  : xiaohao.li
- * @LastEditTime : 2024-01-03 16:16:01
- * @FilePath     : \nevergiveup\JavaScripts\UI\Tower\ShopItemUI.ts
- * @Description  : 修改描述
- */
-
-/** 
- * AUTHOR: 泪染倾城（找闺）
- * TIME: 2023.12.14-16.49.03
- * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
- */
-
-import Gtk from "gtoolkit";
+﻿import Gtk from "gtoolkit";
 import CardModuleC, { CardState } from "../../Modules/CardModule/CardModuleC";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
