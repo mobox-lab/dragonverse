@@ -8,7 +8,14 @@
 
 @UIBind('UI/Tower/TowerSmallTagItem.ui')
 export default class TowerSmallTagItem_Generate extends UIScript {
-		private txt_tag_Internal: mw.TextBlock
+		private img_tag_Internal: mw.Image
+	public get img_tag(): mw.Image {
+		if(!this.img_tag_Internal&&this.uiWidgetBase) {
+			this.img_tag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/img_tag') as mw.Image
+		}
+		return this.img_tag_Internal
+	}
+	private txt_tag_Internal: mw.TextBlock
 	public get txt_tag(): mw.TextBlock {
 		if(!this.txt_tag_Internal&&this.uiWidgetBase) {
 			this.txt_tag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/txt_tag') as mw.TextBlock

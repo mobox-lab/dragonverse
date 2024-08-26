@@ -6,21 +6,14 @@
 
 
 
-@UIBind('UI/Tower/TowerTagItem.ui')
-export default class TowerTagItem_Generate extends UIScript {
-		private img_tag_Internal: mw.Image
-	public get img_tag(): mw.Image {
-		if(!this.img_tag_Internal&&this.uiWidgetBase) {
-			this.img_tag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/img_tag') as mw.Image
+@UIBind('UI/Tower/IconTagUI.ui')
+export default class IconTagUI_Generate extends UIScript {
+		private iconImg_Internal: mw.Image
+	public get iconImg(): mw.Image {
+		if(!this.iconImg_Internal&&this.uiWidgetBase) {
+			this.iconImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/iconImg') as mw.Image
 		}
-		return this.img_tag_Internal
-	}
-	private txt_tag_Internal: mw.TextBlock
-	public get txt_tag(): mw.TextBlock {
-		if(!this.txt_tag_Internal&&this.uiWidgetBase) {
-			this.txt_tag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/txt_tag') as mw.TextBlock
-		}
-		return this.txt_tag_Internal
+		return this.iconImg_Internal
 	}
 
 
@@ -41,9 +34,6 @@ export default class TowerTagItem_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   this.initLanguage(this.txt_tag)
-	   
-	
 	   //文本多语言
 	   
 

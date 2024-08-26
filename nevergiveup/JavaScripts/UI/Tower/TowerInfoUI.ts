@@ -80,10 +80,13 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 		const cfg = this._cfg;
 		const tags = [];
 		if(cfg?.attackCount?.length)
-			tags.push(GlobalData.Shop.shopTargetOpts[cfg.attackCount[0] > 1 ? 2 : 1]);
-		if(cfg?.adap)
-			tags.push(GlobalData.Shop.shopDamageOpts[cfg.adap]);
-		return tags
+			tags.push(cfg.attackCount[0] > 1 ? GlobalData.Shop.shopTagIconGuid[1] : GlobalData.Shop.shopTagIconGuid[0]); // shopTagIconGuid[0] 单体 shopTagIconGuid[1] 群体
+		// adap 1为物理伤害，2为法术伤害，3为产出，4为增益
+		if(cfg?.adap === 1)
+			tags.push(GlobalData.Shop.shopTagIconGuid[2]);
+		else if(cfg?.adap === 2)
+			tags.push(GlobalData.Shop.shopTagIconGuid[3]);
+		return tags;
 	}
 
 	public updateStrategyUI() {
@@ -142,7 +145,8 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 		for (let i = 0; i < this._tagItemUIs.length; i++) {
 			this._tagItemUIs[i].visible = (i < len);
 			if (i < len) {
-				this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
+				// this._tagItemUIs[i].txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
+				this._tagItemUIs[i].img_tag.imageGuid = tags[i];
 			}
 		}
 

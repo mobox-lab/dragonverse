@@ -58,13 +58,16 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 	}
 
 	public getTags() {
-		const cfg = this.cfg; 
+		const cfg = this.cfg;
 		const tags = [];
 		if(cfg?.attackCount?.length)
-			tags.push(GlobalData.Shop.shopTargetOpts[cfg.attackCount[0] > 1 ? 2 : 1]);
-		if(cfg?.adap)
-			tags.push(GlobalData.Shop.shopDamageOpts[cfg.adap]);
-		return tags
+			tags.push(cfg.attackCount[0] > 1 ? GlobalData.Shop.shopTagIconGuid[1] : GlobalData.Shop.shopTagIconGuid[0]); // shopTagIconGuid[0] 单体 shopTagIconGuid[1] 群体
+		// adap 1为物理伤害，2为法术伤害，3为产出，4为增益
+		if(cfg?.adap === 1)
+			tags.push(GlobalData.Shop.shopTagIconGuid[2]);
+		else if(cfg?.adap === 2)
+			tags.push(GlobalData.Shop.shopTagIconGuid[3]);
+		return tags;
 	}
 
 	/**
@@ -81,15 +84,16 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 			this.txt_spend.text = this.cfg.spend[0].toString();
 			this.nameTxt.text = this.cfg.name;
 			this.txt_attack.text = this.cfg.attackDamage[0].toString();
-			this.tagCanvas.removeAllChildren();
+			this.icontagCanvas.removeAllChildren();
 			this.bgElementImg.imageGuid = GlobalData.Shop.shopItemBgGuid[(this.cfg?.elementTy || 1) - 1];
 			this.elementImg.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(this.cfg?.elementTy || 1) - 1];
 			const tags = this.getTags();
 			const len = tags?.length ?? 0;
 			for (let i = 0; i < len; i++) {
 				let item = smallTag ? UIService.create(TowerSmallTagItem_Generate): UIService.create(TowerTagItem_Generate);
-				this.tagCanvas.addChild(item.uiObject);
-				item.txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
+				this.icontagCanvas.addChild(item.uiObject);
+				// item.txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
+				item.img_tag.imageGuid = tags[i];
 			}
 		}
 	}
