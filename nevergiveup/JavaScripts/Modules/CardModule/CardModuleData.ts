@@ -57,7 +57,7 @@ export default class CardModuleData extends Subdata {
     public addUnlockCard(cardID: number) {
         if (!this._unlockCards.includes(cardID)) {
             this._unlockCards.push(cardID);
-            ModuleService.getModule(PlayerModuleC).onCardUnlock();
+            // ModuleService.getModule(PlayerModuleC).onCardUnlock();
             CardActions.onCardChanged.call(cardID);
         }
     }

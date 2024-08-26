@@ -805,6 +805,7 @@ export class StageC {
                 if (hasWin) {
                     if (isPerfect) {
                         StageActions.onStagePerfectWin.call(this.stageWorldIndex);
+                        StageActions.onStageWin.call(this.stageWorldIndex);
                     } else {
                         StageActions.onStageWin.call(this.stageWorldIndex);
                     }

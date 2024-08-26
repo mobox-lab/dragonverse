@@ -594,7 +594,41 @@ export class Task {
                 DataCenterC.getData(PlayerModuleData).earthTowerCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
         }
         // 部署回调
-        TowerActions.onTowerBuild.add(this.towerBuildByType);
+        // TowerActions.onTowerBuild.add(this.towerBuildByType);
+        TowerActions.onTowerBuild.add((type: ElementEnum) => {
+            if (type === ElementEnum.LIGHT) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).lightTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            } else if (type === ElementEnum.DARK) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).darkTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            } else if (type === ElementEnum.WATER) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).waterTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            } else if (type === ElementEnum.FIRE) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).fireTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            } else if (type === ElementEnum.WOOD) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).woodTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            } else if (type === ElementEnum.EARTH) {
+                this.curSolveTime =
+                    DataCenterC.getData(PlayerModuleData).earthTowerCount[
+                        this.type == EmTaskType.Daily ? "daily" : "sum"
+                    ];
+            }
+            this.checkState();
+        });
     }
 
     towerBuildByType(type: ElementEnum) {
