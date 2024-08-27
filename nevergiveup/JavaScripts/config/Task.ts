@@ -44,7 +44,11 @@ export interface ITaskElement extends IElementBase{
 22.挑战无尽关卡的次数
 23.无尽关卡的boss击杀次数
 24.升级防御塔的次数
-25.日常解锁一次塔（只支持日常）*/
+25.日常解锁一次塔（只支持日常）
+26.累计天赋解锁
+1047.终极天赋物理
+1048.终极天赋魔法
+1049.终极天赋耐久*/
 	taskSolveType:number
 	/**任务需要的量*/
 	taskSolvetime:number
