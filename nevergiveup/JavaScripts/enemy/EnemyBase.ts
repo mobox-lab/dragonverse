@@ -549,21 +549,24 @@ export class Enemy implements BuffBag {
         // AirdropManager.createAirdrop(1001, this.position);
         this.destroy(showAnim);
         ModuleService.getModule(PlayerModuleC).onEnemyKilled();
-        let config = GameConfig.Monster.getElement(this.configId);
-        let types: number[] = [];
-        types = [...types, ...config.types];
-        const buffs = this.buffManager.buffs;
-        const heal = buffs.filter((buff) => buff.cfg.healing !== 0);
-        const berserk = buffs.filter((buff) => buff.cfg.berserk !== 0);
-        if (heal.length > 0) {
-            // 复原力
-            types.push(11);
+        try {
+            let config = GameConfig.Monster.getElement(this.configId);
+            let types: number[] = config.types;
+            const buffs = this.buffManager.buffs;
+            const heal = buffs.filter((buff) => buff.cfg.healing !== 0);
+            const berserk = buffs.filter((buff) => buff.cfg.berserk !== 0);
+            if (heal.length > 0) {
+                // 复原力
+                types.push(11);
+            }
+            if (berserk.length > 0) {
+                // 狂暴
+                types.push(12);
+            }
+            ModuleService.getModule(PlayerModuleC).onEnemyTypeKilled(types);
+        } catch (error) {
+            console.log(error);
         }
-        if (berserk) {
-            // 狂暴
-            types.push(12);
-        }
-        ModuleService.getModule(PlayerModuleC).onEnemyTypeKilled(types);
         EnemyActions.onDie.call(this);
     }
 
