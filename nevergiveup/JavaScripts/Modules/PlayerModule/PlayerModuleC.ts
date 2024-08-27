@@ -24,7 +24,7 @@ import { PlayerModuleS } from "./PlayerModuleS";
 export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleData> {
     private _enemyCount: number = 0;
     private _waveCount: number = 0;
-    private _levelThreeCount: number = 0;
+    private _towerLevelThreeCount: number = 0;
     private _enemyHealCount: number = 0;
     private _enemyBerserkCount: number = 0;
     private _enemyFlyCount: number = 0;
@@ -122,7 +122,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
 
     public onLevelUp(targetLevel: number) {
         if (targetLevel === 2) {
-            this._levelThreeCount++;
+            this._towerLevelThreeCount++;
         }
         this._towerLevelUpCount++;
     }
@@ -168,11 +168,11 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.data.infinityWaveTimes = this.data.infinityWaveTimes + this._waveCount;
         this.server.net_saveInfinityWaveTimes(this.data.infinityWaveTimes);
         this._waveCount = 0;
-
-        this.data.levelThreeCount.sum = this.data.levelThreeCount.sum + this._levelThreeCount;
-        this.data.levelThreeCount.daily = this.data.levelThreeCount.daily + this._levelThreeCount;
+        
+        this.data.levelThreeCount.sum = this.data.levelThreeCount.sum + this._towerLevelThreeCount;
+        this.data.levelThreeCount.daily = this.data.levelThreeCount.daily + this._towerLevelThreeCount;
         this.server.net_saveLevelThreeCount(this.data.levelThreeCount.sum, this.data.levelThreeCount.daily);
-        this._levelThreeCount = 0;
+        this._towerLevelThreeCount = 0;
 
         this.data.killHealEnemyCount.sum = this.data.killHealEnemyCount.sum + this._enemyHealCount;
         this.data.killHealEnemyCount.daily = this.data.killHealEnemyCount.daily + this._enemyHealCount;
