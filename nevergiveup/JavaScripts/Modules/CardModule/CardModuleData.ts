@@ -51,7 +51,7 @@ export default class CardModuleData extends Subdata {
     protected onDataInit(): void {
         console.error("数据初始化");
         if (this._unlockCards == undefined) this._unlockCards = [GlobalData.Tower.initUnlockTower];
-        if (this._unlockCards == undefined) this._equipCards = [GlobalData.Tower.initUnlockTower];
+        if (this._equipCards == undefined) this._equipCards = [GlobalData.Tower.initUnlockTower];
     }
 
     public addUnlockCard(cardID: number) {
