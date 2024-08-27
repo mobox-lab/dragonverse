@@ -1822,13 +1822,13 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 enemies: [{ type: 1031, count: 1, spawnInterval: 5 , gate: 0},{ type: 1031, count: 1, spawnInterval: 5 , gate: 1}],
                 waveGold: 0,
                 waveTime: 10,
-                hpMultiplier: 3,
+                hpMultiplier: 2.2,
             },
             {
                 enemies: [{ type: 1034, count: 15, spawnInterval: 3, gate: 0 },{ type: 1034, count: 15, spawnInterval: 3, gate: 1 }],
                 waveGold: 100,
                 waveTime: 40,
-                hpMultiplier: 3,
+                hpMultiplier: 2.5,
             },
             {
                 enemies: [{ type: 1036, count: 1, spawnInterval: 5, gate: 1 }],
@@ -1884,7 +1884,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
         waves: [
             {
                 enemies: [{ type: 1028, count: 15, spawnInterval: 5, gate: 0 },{ type: 1027, count: 15, spawnInterval: 5, gate: 1 }],
-                waveGold: 200,
+                waveGold: 300,
                 waveTime: 30,
                 hpMultiplier: 1.5,
             },
