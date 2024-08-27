@@ -106,7 +106,6 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 			tags.push(GlobalData.Shop.shopTagIconGuid[2]);
 		else if(cfg?.adap === 2)
 			tags.push(GlobalData.Shop.shopTagIconGuid[3]);
-		console.log("#debug shop tags",tags);
 		return tags;
 	}
 	/**
