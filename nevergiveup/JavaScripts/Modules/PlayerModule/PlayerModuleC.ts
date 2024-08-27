@@ -168,16 +168,12 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.data.infinityWaveTimes = this.data.infinityWaveTimes + this._waveCount;
         this.server.net_saveInfinityWaveTimes(this.data.infinityWaveTimes);
         this._waveCount = 0;
-
-        console.log(JSON.stringify(this.data.levelThreeCount), "this.data.levelThreeCount");
-        console.log(this._towerLevelThreeCount, "_towerLevelThreeCount");
         
-        // this.data.levelThreeCount.sum = this.data.levelThreeCount.sum + this._levelThreeCount;
-        // this.data.levelThreeCount.daily = this.data.levelThreeCount.daily + this._levelThreeCount;
-        // this.server.net_saveLevelThreeCount(this.data.levelThreeCount.sum, this.data.levelThreeCount.daily);
-        // this._levelThreeCount = 0;
+        this.data.levelThreeCount.sum = this.data.levelThreeCount.sum + this._towerLevelThreeCount;
+        this.data.levelThreeCount.daily = this.data.levelThreeCount.daily + this._towerLevelThreeCount;
+        this.server.net_saveLevelThreeCount(this.data.levelThreeCount.sum, this.data.levelThreeCount.daily);
+        this._towerLevelThreeCount = 0;
 
-        console.log(JSON.stringify(this.data.killHealEnemyCount), "this.data.killHealEnemyCount");
         this.data.killHealEnemyCount.sum = this.data.killHealEnemyCount.sum + this._enemyHealCount;
         this.data.killHealEnemyCount.daily = this.data.killHealEnemyCount.daily + this._enemyHealCount;
         this.server.net_saveKillHealCount(this.data.killHealEnemyCount.sum, this.data.killHealEnemyCount.daily);
