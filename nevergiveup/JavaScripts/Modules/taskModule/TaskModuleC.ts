@@ -72,6 +72,14 @@ export enum EmTaskWay {
     TowerLevelUpCount = 24,
     /**日常解锁一次塔 */
     UnlockTowerDaily = 25,
+    /**天赋总解锁数量 */
+    TalentCount = 26,
+    /**终极天赋物理 */
+    TalentUlti01 = 1047,
+    /**终极天赋魔法 */
+    TalentUlti02 = 1048,
+    /**终极天赋耐久 */
+    TalentUlti03 = 1049,
 }
 
 /**任务状态 */

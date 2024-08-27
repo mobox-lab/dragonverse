@@ -159,6 +159,10 @@ export namespace GuideManager {
                 UIService.show(TowerShopUI);
                 break;
             case EmTaskWay.UnlockTech:
+            case EmTaskWay.TalentCount:
+            case EmTaskWay.TalentUlti01:
+            case EmTaskWay.TalentUlti02:
+            case EmTaskWay.TalentUlti03:
                 UIService.show(TalentTreeContainer);
                 break;
             case EmTaskWay.PassLevel:

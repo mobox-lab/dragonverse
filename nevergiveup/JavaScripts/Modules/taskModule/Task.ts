@@ -108,6 +108,18 @@ export class Task {
             case EmTaskWay.UnlockTowerDaily:
                 // name = "UnlockTowerDaily";
                 break;
+            case EmTaskWay.TalentCount:
+                // name = "TalentCount";
+                break;
+            case EmTaskWay.TalentUlti01:
+                // name = "TalentUlti01";
+                break;
+            case EmTaskWay.TalentUlti02:
+                // name = "TalentUlti02";
+                break;
+            case EmTaskWay.TalentUlti03:
+                // name = "TalentUlti03";
+                break;
             default:
                 break;
         }
@@ -189,6 +201,18 @@ export class Task {
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             case EmTaskWay.UnlockTowerDaily:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.TalentCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.TalentUlti01:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.TalentUlti02:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.TalentUlti03:
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             default:
@@ -321,6 +345,18 @@ export class Task {
                 break;
             case EmTaskWay.UnlockTowerDaily:
                 this.initUnlockTowerDaily();
+                break;
+            case EmTaskWay.TalentCount:
+                this.initTalentCount();
+                break;
+            case EmTaskWay.TalentUlti01:
+                this.initTalentUlti(EmTaskWay.TalentUlti01);
+                break;
+            case EmTaskWay.TalentUlti02:
+                this.initTalentUlti(EmTaskWay.TalentUlti02);
+                break;
+            case EmTaskWay.TalentUlti03:
+                this.initTalentUlti(EmTaskWay.TalentUlti03);
                 break;
             default:
                 break;
@@ -683,6 +719,22 @@ export class Task {
         this.curSolveTime = DataCenterC.getData(PlayerModuleData).unlockTowerDaily;
         CardActions.onCardChanged.add((count) => {
             this.curSolveTime = DataCenterC.getData(PlayerModuleData).unlockTowerDaily;
+            this.checkState();
+        });
+    }
+
+    private initTalentCount() {
+        this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentCount();
+        StageActions.onTalentActivate.add(() => {
+            this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentCount();
+            this.checkState();
+        });
+    }
+
+    private initTalentUlti(id: number) {
+        this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentIndex(id);
+        StageActions.onTalentActivate.add(() => {
+            this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentIndex(id);
             this.checkState();
         });
     }
