@@ -153,7 +153,7 @@ export class UIStageSelect extends StageSelect_Generate {
         for (const id of elementIds) {
             const icon = Image.newObject(this.mCanvas_recoElements, `element_${id}`) as Image;
             icon.size = new Vector2(40, 40);
-            icon.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[id - 1];
+            icon.imageGuid = GlobalData.Stage.stageRecommendElementIcon[id - 1];
         }
         const { stealth, fly, healing, berserk } = this.getMonsterBuff(stageCfgId);
         const skills = [];

@@ -43,19 +43,19 @@ export default class TowerItemUI_Generate extends UIScript {
 		}
 		return this.mContainer_tower_Internal
 	}
-	private bg_Internal: mw.Image
-	public get bg(): mw.Image {
-		if(!this.bg_Internal&&this.uiWidgetBase) {
-			this.bg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mContainer_tower/bg') as mw.Image
-		}
-		return this.bg_Internal
-	}
 	private bgElementImg_Internal: mw.Image
 	public get bgElementImg(): mw.Image {
 		if(!this.bgElementImg_Internal&&this.uiWidgetBase) {
 			this.bgElementImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mContainer_tower/bgElementImg') as mw.Image
 		}
 		return this.bgElementImg_Internal
+	}
+	private bg_Internal: mw.Image
+	public get bg(): mw.Image {
+		if(!this.bg_Internal&&this.uiWidgetBase) {
+			this.bg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mContainer_tower/bg') as mw.Image
+		}
+		return this.bg_Internal
 	}
 	private img_Icon_Internal: mw.Image
 	public get img_Icon(): mw.Image {

@@ -22,6 +22,146 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.bg_Internal
 	}
+	private can_outter_Internal: mw.Canvas
+	public get can_outter(): mw.Canvas {
+		if(!this.can_outter_Internal&&this.uiWidgetBase) {
+			this.can_outter_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter') as mw.Canvas
+		}
+		return this.can_outter_Internal
+	}
+	private infoBg_Internal: mw.Image
+	public get infoBg(): mw.Image {
+		if(!this.infoBg_Internal&&this.uiWidgetBase) {
+			this.infoBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/infoBg') as mw.Image
+		}
+		return this.infoBg_Internal
+	}
+	private canvas_tower_info_Internal: mw.Canvas
+	public get canvas_tower_info(): mw.Canvas {
+		if(!this.canvas_tower_info_Internal&&this.uiWidgetBase) {
+			this.canvas_tower_info_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info') as mw.Canvas
+		}
+		return this.canvas_tower_info_Internal
+	}
+	private towerInfoBg_Internal: mw.Image
+	public get towerInfoBg(): mw.Image {
+		if(!this.towerInfoBg_Internal&&this.uiWidgetBase) {
+			this.towerInfoBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info/towerInfoBg') as mw.Image
+		}
+		return this.towerInfoBg_Internal
+	}
+	private towerInfoBox_Internal: mw.ScrollBox
+	public get towerInfoBox(): mw.ScrollBox {
+		if(!this.towerInfoBox_Internal&&this.uiWidgetBase) {
+			this.towerInfoBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info/towerInfoBox') as mw.ScrollBox
+		}
+		return this.towerInfoBox_Internal
+	}
+	private towerInfoCanvas_Internal: mw.Canvas
+	public get towerInfoCanvas(): mw.Canvas {
+		if(!this.towerInfoCanvas_Internal&&this.uiWidgetBase) {
+			this.towerInfoCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info/towerInfoBox/towerInfoCanvas') as mw.Canvas
+		}
+		return this.towerInfoCanvas_Internal
+	}
+	private ownerTxt_Internal: mw.TextBlock
+	public get ownerTxt(): mw.TextBlock {
+		if(!this.ownerTxt_Internal&&this.uiWidgetBase) {
+			this.ownerTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info/towerInfoBox/towerInfoCanvas/ownerTxt') as mw.TextBlock
+		}
+		return this.ownerTxt_Internal
+	}
+	private valueTxt_Internal: mw.TextBlock
+	public get valueTxt(): mw.TextBlock {
+		if(!this.valueTxt_Internal&&this.uiWidgetBase) {
+			this.valueTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info/towerInfoBox/towerInfoCanvas/valueTxt') as mw.TextBlock
+		}
+		return this.valueTxt_Internal
+	}
+	private btn_group_Internal: mw.Canvas
+	public get btn_group(): mw.Canvas {
+		if(!this.btn_group_Internal&&this.uiWidgetBase) {
+			this.btn_group_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group') as mw.Canvas
+		}
+		return this.btn_group_Internal
+	}
+	private canvas_sell_Internal: mw.Canvas
+	public get canvas_sell(): mw.Canvas {
+		if(!this.canvas_sell_Internal&&this.uiWidgetBase) {
+			this.canvas_sell_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_sell') as mw.Canvas
+		}
+		return this.canvas_sell_Internal
+	}
+	private sellBtn_Internal: mw.StaleButton
+	public get sellBtn(): mw.StaleButton {
+		if(!this.sellBtn_Internal&&this.uiWidgetBase) {
+			this.sellBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_sell/sellBtn') as mw.StaleButton
+		}
+		return this.sellBtn_Internal
+	}
+	private txt_sell_Internal: mw.TextBlock
+	public get txt_sell(): mw.TextBlock {
+		if(!this.txt_sell_Internal&&this.uiWidgetBase) {
+			this.txt_sell_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_sell/Canvas_sell_inner_right/txt_sell') as mw.TextBlock
+		}
+		return this.txt_sell_Internal
+	}
+	private img_money_1_Internal: mw.Image
+	public get img_money_1(): mw.Image {
+		if(!this.img_money_1_Internal&&this.uiWidgetBase) {
+			this.img_money_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_sell/Canvas_sell_inner_left/img_money_1') as mw.Image
+		}
+		return this.img_money_1_Internal
+	}
+	private txt_sell_value_Internal: mw.TextBlock
+	public get txt_sell_value(): mw.TextBlock {
+		if(!this.txt_sell_value_Internal&&this.uiWidgetBase) {
+			this.txt_sell_value_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_sell/Canvas_sell_inner_left/txt_sell_value') as mw.TextBlock
+		}
+		return this.txt_sell_value_Internal
+	}
+	private canvas_levelup_Internal: mw.Canvas
+	public get canvas_levelup(): mw.Canvas {
+		if(!this.canvas_levelup_Internal&&this.uiWidgetBase) {
+			this.canvas_levelup_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_levelup') as mw.Canvas
+		}
+		return this.canvas_levelup_Internal
+	}
+	private levelBtn_Internal: mw.StaleButton
+	public get levelBtn(): mw.StaleButton {
+		if(!this.levelBtn_Internal&&this.uiWidgetBase) {
+			this.levelBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_levelup/levelBtn') as mw.StaleButton
+		}
+		return this.levelBtn_Internal
+	}
+	private txt_cost_Internal: mw.TextBlock
+	public get txt_cost(): mw.TextBlock {
+		if(!this.txt_cost_Internal&&this.uiWidgetBase) {
+			this.txt_cost_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_levelup/Canvas_levelup_inner_right/txt_cost') as mw.TextBlock
+		}
+		return this.txt_cost_Internal
+	}
+	private canvas_levelup_inner_left_Internal: mw.Canvas
+	public get canvas_levelup_inner_left(): mw.Canvas {
+		if(!this.canvas_levelup_inner_left_Internal&&this.uiWidgetBase) {
+			this.canvas_levelup_inner_left_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_levelup/canvas_levelup_inner_left') as mw.Canvas
+		}
+		return this.canvas_levelup_inner_left_Internal
+	}
+	private img_money_Internal: mw.Image
+	public get img_money(): mw.Image {
+		if(!this.img_money_Internal&&this.uiWidgetBase) {
+			this.img_money_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_levelup/canvas_levelup_inner_left/img_money') as mw.Image
+		}
+		return this.img_money_Internal
+	}
+	private txt_cost_value_Internal: mw.TextBlock
+	public get txt_cost_value(): mw.TextBlock {
+		if(!this.txt_cost_value_Internal&&this.uiWidgetBase) {
+			this.txt_cost_value_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/btn_group/canvas_levelup/canvas_levelup_inner_left/txt_cost_value') as mw.TextBlock
+		}
+		return this.txt_cost_value_Internal
+	}
 	private bg_1_Internal: mw.Image
 	public get bg_1(): mw.Image {
 		if(!this.bg_1_Internal&&this.uiWidgetBase) {
@@ -35,90 +175,6 @@ export default class TowerInfoUI_Generate extends UIScript {
 			this.txt_title_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/txt_title') as mw.TextBlock
 		}
 		return this.txt_title_Internal
-	}
-	private infoBg_Internal: mw.Image
-	public get infoBg(): mw.Image {
-		if(!this.infoBg_Internal&&this.uiWidgetBase) {
-			this.infoBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoBg') as mw.Image
-		}
-		return this.infoBg_Internal
-	}
-	private canvas_levelup_Internal: mw.Canvas
-	public get canvas_levelup(): mw.Canvas {
-		if(!this.canvas_levelup_Internal&&this.uiWidgetBase) {
-			this.canvas_levelup_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup') as mw.Canvas
-		}
-		return this.canvas_levelup_Internal
-	}
-	private levelBtn_Internal: mw.StaleButton
-	public get levelBtn(): mw.StaleButton {
-		if(!this.levelBtn_Internal&&this.uiWidgetBase) {
-			this.levelBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/levelBtn') as mw.StaleButton
-		}
-		return this.levelBtn_Internal
-	}
-	private txt_cost_Internal: mw.TextBlock
-	public get txt_cost(): mw.TextBlock {
-		if(!this.txt_cost_Internal&&this.uiWidgetBase) {
-			this.txt_cost_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/Canvas_levelup_inner_right/txt_cost') as mw.TextBlock
-		}
-		return this.txt_cost_Internal
-	}
-	private canvas_levelup_inner_left_Internal: mw.Canvas
-	public get canvas_levelup_inner_left(): mw.Canvas {
-		if(!this.canvas_levelup_inner_left_Internal&&this.uiWidgetBase) {
-			this.canvas_levelup_inner_left_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/canvas_levelup_inner_left') as mw.Canvas
-		}
-		return this.canvas_levelup_inner_left_Internal
-	}
-	private img_money_Internal: mw.Image
-	public get img_money(): mw.Image {
-		if(!this.img_money_Internal&&this.uiWidgetBase) {
-			this.img_money_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/canvas_levelup_inner_left/img_money') as mw.Image
-		}
-		return this.img_money_Internal
-	}
-	private txt_cost_value_Internal: mw.TextBlock
-	public get txt_cost_value(): mw.TextBlock {
-		if(!this.txt_cost_value_Internal&&this.uiWidgetBase) {
-			this.txt_cost_value_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_levelup/canvas_levelup_inner_left/txt_cost_value') as mw.TextBlock
-		}
-		return this.txt_cost_value_Internal
-	}
-	private canvas_sell_Internal: mw.Canvas
-	public get canvas_sell(): mw.Canvas {
-		if(!this.canvas_sell_Internal&&this.uiWidgetBase) {
-			this.canvas_sell_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell') as mw.Canvas
-		}
-		return this.canvas_sell_Internal
-	}
-	private sellBtn_Internal: mw.StaleButton
-	public get sellBtn(): mw.StaleButton {
-		if(!this.sellBtn_Internal&&this.uiWidgetBase) {
-			this.sellBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell/sellBtn') as mw.StaleButton
-		}
-		return this.sellBtn_Internal
-	}
-	private txt_sell_Internal: mw.TextBlock
-	public get txt_sell(): mw.TextBlock {
-		if(!this.txt_sell_Internal&&this.uiWidgetBase) {
-			this.txt_sell_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell/Canvas_sell_inner_right/txt_sell') as mw.TextBlock
-		}
-		return this.txt_sell_Internal
-	}
-	private img_money_1_Internal: mw.Image
-	public get img_money_1(): mw.Image {
-		if(!this.img_money_1_Internal&&this.uiWidgetBase) {
-			this.img_money_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell/Canvas_sell_inner_left/img_money_1') as mw.Image
-		}
-		return this.img_money_1_Internal
-	}
-	private txt_sell_value_Internal: mw.TextBlock
-	public get txt_sell_value(): mw.TextBlock {
-		if(!this.txt_sell_value_Internal&&this.uiWidgetBase) {
-			this.txt_sell_value_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_sell/Canvas_sell_inner_left/txt_sell_value') as mw.TextBlock
-		}
-		return this.txt_sell_value_Internal
 	}
 	private showCanvas_Internal: mw.Canvas
 	public get showCanvas(): mw.Canvas {
@@ -134,19 +190,19 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.infoCanvas_Internal
 	}
-	private img_backg_Internal: mw.Image
-	public get img_backg(): mw.Image {
-		if(!this.img_backg_Internal&&this.uiWidgetBase) {
-			this.img_backg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/img_backg') as mw.Image
-		}
-		return this.img_backg_Internal
-	}
 	private bgElementImg_Internal: mw.Image
 	public get bgElementImg(): mw.Image {
 		if(!this.bgElementImg_Internal&&this.uiWidgetBase) {
 			this.bgElementImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/bgElementImg') as mw.Image
 		}
 		return this.bgElementImg_Internal
+	}
+	private img_backg_Internal: mw.Image
+	public get img_backg(): mw.Image {
+		if(!this.img_backg_Internal&&this.uiWidgetBase) {
+			this.img_backg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/img_backg') as mw.Image
+		}
+		return this.img_backg_Internal
 	}
 	private towerImg_Internal: mw.Image
 	public get towerImg(): mw.Image {
@@ -189,48 +245,6 @@ export default class TowerInfoUI_Generate extends UIScript {
 			this.img_dec1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/img_dec1') as mw.Image
 		}
 		return this.img_dec1_Internal
-	}
-	private canvas_tower_info_Internal: mw.Canvas
-	public get canvas_tower_info(): mw.Canvas {
-		if(!this.canvas_tower_info_Internal&&this.uiWidgetBase) {
-			this.canvas_tower_info_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info') as mw.Canvas
-		}
-		return this.canvas_tower_info_Internal
-	}
-	private towerInfoBg_Internal: mw.Image
-	public get towerInfoBg(): mw.Image {
-		if(!this.towerInfoBg_Internal&&this.uiWidgetBase) {
-			this.towerInfoBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBg') as mw.Image
-		}
-		return this.towerInfoBg_Internal
-	}
-	private towerInfoBox_Internal: mw.ScrollBox
-	public get towerInfoBox(): mw.ScrollBox {
-		if(!this.towerInfoBox_Internal&&this.uiWidgetBase) {
-			this.towerInfoBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox') as mw.ScrollBox
-		}
-		return this.towerInfoBox_Internal
-	}
-	private towerInfoCanvas_Internal: mw.Canvas
-	public get towerInfoCanvas(): mw.Canvas {
-		if(!this.towerInfoCanvas_Internal&&this.uiWidgetBase) {
-			this.towerInfoCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox/towerInfoCanvas') as mw.Canvas
-		}
-		return this.towerInfoCanvas_Internal
-	}
-	private ownerTxt_Internal: mw.TextBlock
-	public get ownerTxt(): mw.TextBlock {
-		if(!this.ownerTxt_Internal&&this.uiWidgetBase) {
-			this.ownerTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox/towerInfoCanvas/ownerTxt') as mw.TextBlock
-		}
-		return this.ownerTxt_Internal
-	}
-	private valueTxt_Internal: mw.TextBlock
-	public get valueTxt(): mw.TextBlock {
-		if(!this.valueTxt_Internal&&this.uiWidgetBase) {
-			this.valueTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox/towerInfoCanvas/valueTxt') as mw.TextBlock
-		}
-		return this.valueTxt_Internal
 	}
 	private canvas_fight_Internal: mw.Canvas
 	public get canvas_fight(): mw.Canvas {
@@ -335,18 +349,18 @@ export default class TowerInfoUI_Generate extends UIScript {
    protected initButtons() {
 	   //按钮添加点击
 	   
-	   this.levelBtn.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "levelBtn");
-	   })
-	   this.initLanguage(this.levelBtn);
-	   this.levelBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-	   
-	
 	   this.sellBtn.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "sellBtn");
 	   })
 	   this.initLanguage(this.sellBtn);
 	   this.sellBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.levelBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "levelBtn");
+	   })
+	   this.initLanguage(this.levelBtn);
+	   this.levelBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 	   this.closeBtn.onClicked.add(()=>{
@@ -369,13 +383,10 @@ export default class TowerInfoUI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   this.initLanguage(this.txt_title)
+	   this.initLanguage(this.ownerTxt)
 	   
 	
-	   this.initLanguage(this.txt_cost)
-	   
-	
-	   this.initLanguage(this.txt_cost_value)
+	   this.initLanguage(this.valueTxt)
 	   
 	
 	   this.initLanguage(this.txt_sell)
@@ -384,16 +395,19 @@ export default class TowerInfoUI_Generate extends UIScript {
 	   this.initLanguage(this.txt_sell_value)
 	   
 	
+	   this.initLanguage(this.txt_cost)
+	   
+	
+	   this.initLanguage(this.txt_cost_value)
+	   
+	
+	   this.initLanguage(this.txt_title)
+	   
+	
 	   this.initLanguage(this.nameTxt)
 	   
 	
 	   this.initLanguage(this.levelTxt)
-	   
-	
-	   this.initLanguage(this.ownerTxt)
-	   
-	
-	   this.initLanguage(this.valueTxt)
 	   
 	
 	   this.initLanguage(this.txt_fight)
