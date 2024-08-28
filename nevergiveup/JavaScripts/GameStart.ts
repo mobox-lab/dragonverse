@@ -84,7 +84,7 @@ export default class GameStart extends Script {
     public customChainId: ChainId = Chains.Merlin;
 
     @mw.Property({ displayName: "是否开启gm（勾选开启）", group: "测试" })
-    public isGM: boolean = false;
+    public isGM: boolean = true;
     @mw.Property({ displayName: "持久存档（勾选为持久存档）", group: "测试" })
     presistSaving: boolean = true;
     /**语言设置 */
