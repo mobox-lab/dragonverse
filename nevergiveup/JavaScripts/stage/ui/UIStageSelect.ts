@@ -18,6 +18,7 @@ import { StageUtil } from "../Stage";
 import StageTrigger from "../StageTrigger";
 import { WaveUtil } from "../Wave";
 import { GlobalData } from "../../const/GlobalData";
+import { GameManager } from "../../GameManager";
 
 export class UIStageSelectItem extends StageSelectQueueItem_Generate {
     init() {}
@@ -96,7 +97,12 @@ export class UIStageSelect extends StageSelect_Generate {
 
         this.mGo.onClicked.add(() => {
             if (Utils.isLocalPlayer(this._ownerId)) {
-                this._script.startGame(Player.localPlayer.playerId);
+                const stageC = GameManager.getStageClient();
+                if (stageC) {
+                    // game is already exist
+                } else {
+                    this._script.startGame(Player.localPlayer.playerId);
+                }
             } else {
                 TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
             }
@@ -379,6 +385,8 @@ export class UIStageSelect extends StageSelect_Generate {
                 berserk = true;
             }
         }
+        console.log(stealth, fly, healing, berserk, "stealth, fly, healing, berserk");
+
         return {
             stealth,
             fly,
