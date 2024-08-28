@@ -132,7 +132,12 @@ export default class StageTrigger extends Script {
         ui.setData(this.stageWorldIndex, this.difficulty, this.stageGroupId);
         this.onDifficultyChanged();
         this.onOwnerChanged();
-        UIService.show(UIStageSelect, this);
+        const stageC = GameManager.getStageClient();
+        if (stageC) {
+            // game is already exist
+        } else {
+            UIService.show(UIStageSelect, this);
+        }
     }
 
     parsePlayerIds() {
