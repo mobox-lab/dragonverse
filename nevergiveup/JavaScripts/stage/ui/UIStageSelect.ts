@@ -34,34 +34,35 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
     stageCfgId: number;
     init(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
         this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
-        this.index = difficulty;
-        this.mdifficultly.text = `${this.difficulties[difficulty]}`;
-        // this.mdifficultly.setFontColorByHex(this.difficultyColor[index]);
-        const stageCfg = StageUtil.getStageCfgById(this.stageCfgId);
-        this.unlocked = false;
-        const firstClears = DataCenterC.getData(PlayerModuleData).firstClears;
-        // const preDifficultyIds = StageUtil.getPreDifficultyIds(stageCfg);
-        const preDifficultyIds = StageUtil.getPreDifficultyUniqueIds(stageCfg);
-        console.log("#debug preDifficultyIds:", preDifficultyIds, " firstClears:", firstClears);
-        if (preDifficultyIds?.length) {
-            for (const id of preDifficultyIds) {
-                if (firstClears.includes(id)) {
-                    this.unlocked = true;
-                    break;
+        if (this.stageCfgId) {
+            this.index = difficulty;
+            this.mdifficultly.text = `${this.difficulties[difficulty]}`;
+            // this.mdifficultly.setFontColorByHex(this.difficultyColor[index]);
+            const stageCfg = StageUtil.getStageCfgById(this.stageCfgId);
+            this.unlocked = false;
+            const firstClears = DataCenterC.getData(PlayerModuleData).firstClears;
+            // const preDifficultyIds = StageUtil.getPreDifficultyIds(stageCfg);
+            const preDifficultyIds = StageUtil.getPreDifficultyUniqueIds(stageCfg);
+            console.log("#debug preDifficultyIds:", preDifficultyIds, " firstClears:", firstClears);
+            if (preDifficultyIds?.length) {
+                for (const id of preDifficultyIds) {
+                    if (firstClears.includes(id)) {
+                        this.unlocked = true;
+                        break;
+                    }
                 }
+            } else this.unlocked = true;
+            if (this.unlocked) {
+                this.mRecommandedLevel.setFontColorByHex("#867160");
+                this.mRecommandedLevel.text =
+                    GameConfig.Language.getElement("Text_RecommendLevel").Value + `${stageCfg.recommandedLevel}`;
+                this.mdifficultly.renderOpacity = 1;
+            } else {
+                this.mRecommandedLevel.setFontColorByHex("#A1A1A1");
+                this.mRecommandedLevel.text = GameConfig.Language.getElement("Text_UnlockAfterLastDifficulty").Value;
+                this.mdifficultly.renderOpacity = 0.7;
             }
-        } else this.unlocked = true;
-        if (this.unlocked) {
-            this.mRecommandedLevel.setFontColorByHex("#867160");
-            this.mRecommandedLevel.text =
-                GameConfig.Language.getElement("Text_RecommendLevel").Value + `${stageCfg.recommandedLevel}`;
-            this.mdifficultly.renderOpacity = 1;
-        } else {
-            this.mRecommandedLevel.setFontColorByHex("#A1A1A1");
-            this.mRecommandedLevel.text = GameConfig.Language.getElement("Text_UnlockAfterLastDifficulty").Value;
-            this.mdifficultly.renderOpacity = 0.7;
         }
-
         this.setSelectIndex(0);
     }
 
@@ -148,21 +149,25 @@ export class UIStageSelect extends StageSelect_Generate {
     setData(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
         const stageCfg = StageUtil.getCfgFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
         const stageCfgId = stageCfg.id;
-        const elementIds = this.getRecommendElement(stageCfgId);
+        if (stageWorldIndex === 5 || stageWorldIndex === 6) {
+            this._difficulty = [];
+            this.mSelectDifficulty.removeAllChildren();
+        }
+        const elementIds = this.getRecommendElement(stageCfgId, stageWorldIndex);
         this.mCanvas_recoElements.removeAllChildren();
         for (const id of elementIds) {
             const icon = Image.newObject(this.mCanvas_recoElements, `element_${id}`) as Image;
             icon.size = new Vector2(40, 40);
             icon.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[id - 1];
         }
-        const { stealth, fly, healing, berserk } = this.getMonsterBuff(stageCfgId);
+        const { stealth, fly, healing, berserk } = this.getMonsterBuff(stageCfgId, stageWorldIndex);
         const skills = [];
         if (healing) skills.push(StageMonsterSkillType.Healing);
         if (berserk) skills.push(StageMonsterSkillType.Berserk);
         if (stealth) skills.push(StageMonsterSkillType.Stealth);
         if (fly) skills.push(StageMonsterSkillType.Fly);
 
-        if(skills.length) {
+        if (skills.length) {
             Gtk.trySetVisibility(this.can_Monster, mw.SlateVisibility.Visible);
         } else {
             Gtk.trySetVisibility(this.can_Monster, mw.SlateVisibility.Collapsed);
@@ -270,8 +275,15 @@ export class UIStageSelect extends StageSelect_Generate {
         TweenCommon.popUpShow(this.rootCanvas);
     }
 
-    getRecommendElement(id: number) {
-        const monsters = this.getFitEnemies(id);
+    getRecommendElement(id: number, index: number) {
+        // 如果是无尽模式，输出全部
+        let monsters: IMonsterElement[] = [];
+        if (index === 5 || index === 6) {
+            monsters = GameConfig.Monster.getAllElement();
+        } else {
+            monsters = this.getFitEnemies(id);
+        }
+
         const elementIds = monsters.map((item) => {
             return item.elementTy;
         });
@@ -281,7 +293,6 @@ export class UIStageSelect extends StageSelect_Generate {
             const counterId = this.findCounter(elementIds[i]);
             if (!counterElementIds.includes(counterId)) counterElementIds.push(counterId);
         }
-        console.log(JSON.stringify(counterElementIds), "counterElementIds");
         return counterElementIds;
     }
 
@@ -313,7 +324,15 @@ export class UIStageSelect extends StageSelect_Generate {
         throw new Error("Invalid element");
     }
 
-    getMonsterBuff(id: number) {
+    getMonsterBuff(id: number, index: number) {
+        if (index === 5 || index === 6) {
+            return {
+                stealth: true,
+                fly: true,
+                healing: true,
+                berserk: true,
+            };
+        }
         const monsters = this.getFitEnemies(id);
         let stealth = false;
         let fly = false;
