@@ -14,6 +14,7 @@ import { TowerManager } from "../../Modules/TowerModule/TowerManager";
 import { TowerModuleC } from "../../Modules/TowerModule/TowerModuleC";
 import { TowerModuleS } from "../../Modules/TowerModule/TowerModuleS";
 import { EStageState } from "../../StageEnums";
+import ReturnUI from "../../UI/ReturnUI";
 import SettingUI from "../../UI/SettingUI";
 import { GameConfig } from "../../config/GameConfig";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
@@ -95,7 +96,7 @@ export class UIMain extends MainUI_Generate {
         });
         
         this.returnBtn.onClicked.add(() => {// 回到房间
-            ModuleService.getModule(TowerModuleC).earlySettle();
+            mw.UIService.show(ReturnUI);
         });
         this.settingBtn.onClicked.add(() => {
             UIService.show(SettingUI);
@@ -255,7 +256,7 @@ export class UIMain extends MainUI_Generate {
 
     onShow() {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.T, () => {
-            ModuleService.getModule(TowerModuleC).earlySettle();
+            mw.UIService.show(ReturnUI);
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
             const ui = UIService.getUI(SettingUI);
