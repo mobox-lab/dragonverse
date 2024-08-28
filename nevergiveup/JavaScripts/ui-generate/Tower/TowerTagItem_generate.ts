@@ -15,13 +15,6 @@ export default class TowerTagItem_Generate extends UIScript {
 		}
 		return this.img_tag_Internal
 	}
-	private txt_tag_Internal: mw.TextBlock
-	public get txt_tag(): mw.TextBlock {
-		if(!this.txt_tag_Internal&&this.uiWidgetBase) {
-			this.txt_tag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/txt_tag') as mw.TextBlock
-		}
-		return this.txt_tag_Internal
-	}
 
 
 
@@ -41,9 +34,6 @@ export default class TowerTagItem_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
-	   this.initLanguage(this.txt_tag)
-	   
-	
 	   //文本多语言
 	   
 

@@ -90,7 +90,8 @@ export default class LobbyUI extends LobbyUI_Generate {
         this.addBtn.onClicked.add(() => {
             UIService.show(SenzuBeanConfirmPanel);
         });
-
+        UIService.show(TowerShopUI, {isShop: true});
+        UIService.hide(TowerShopUI);
     }
 
     public showTaskPanel() {

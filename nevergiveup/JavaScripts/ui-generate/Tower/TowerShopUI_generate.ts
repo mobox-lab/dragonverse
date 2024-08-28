@@ -148,13 +148,6 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.infoCanvas_Internal
 	}
-	private elementBgImg_Internal: mw.Image
-	public get elementBgImg(): mw.Image {
-		if(!this.elementBgImg_Internal&&this.uiWidgetBase) {
-			this.elementBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/elementBgImg') as mw.Image
-		}
-		return this.elementBgImg_Internal
-	}
 	private img_backg_Internal: mw.Image
 	public get img_backg(): mw.Image {
 		if(!this.img_backg_Internal&&this.uiWidgetBase) {
@@ -168,6 +161,13 @@ export default class TowerShopUI_Generate extends UIScript {
 			this.elementImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/elementImg') as mw.Image
 		}
 		return this.elementImg_Internal
+	}
+	private elementBgImg_Internal: mw.Image
+	public get elementBgImg(): mw.Image {
+		if(!this.elementBgImg_Internal&&this.uiWidgetBase) {
+			this.elementBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/elementBgImg') as mw.Image
+		}
+		return this.elementBgImg_Internal
 	}
 	private infoImg_Internal: mw.Image
 	public get infoImg(): mw.Image {
@@ -322,27 +322,6 @@ export default class TowerShopUI_Generate extends UIScript {
 			this.canvas_Desc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvas_Desc') as mw.Canvas
 		}
 		return this.canvas_Desc_Internal
-	}
-	private canvas_icontag_Internal: mw.Canvas
-	public get canvas_icontag(): mw.Canvas {
-		if(!this.canvas_icontag_Internal&&this.uiWidgetBase) {
-			this.canvas_icontag_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_icontag') as mw.Canvas
-		}
-		return this.canvas_icontag_Internal
-	}
-	private icontagScrollBox_Internal: mw.ScrollBox
-	public get icontagScrollBox(): mw.ScrollBox {
-		if(!this.icontagScrollBox_Internal&&this.uiWidgetBase) {
-			this.icontagScrollBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_icontag/icontagScrollBox') as mw.ScrollBox
-		}
-		return this.icontagScrollBox_Internal
-	}
-	private icontagCanvas_Internal: mw.Canvas
-	public get icontagCanvas(): mw.Canvas {
-		if(!this.icontagCanvas_Internal&&this.uiWidgetBase) {
-			this.icontagCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_icontag/icontagScrollBox/icontagCanvas') as mw.Canvas
-		}
-		return this.icontagCanvas_Internal
 	}
 	private closeBtn_Internal: mw.Button
 	public get closeBtn(): mw.Button {
