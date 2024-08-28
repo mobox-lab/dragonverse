@@ -148,7 +148,11 @@ export class UIStageSelect extends StageSelect_Generate {
             if (item.unlocked) unlockMaxDifficultyIdx = i;
         }
         setTimeout(() => {
-            this._script.setDifficulty(Player.localPlayer.playerId, unlockMaxDifficultyIdx); // 选择已解锁的最高难度
+            if (this._script.stageWorldIndex === 5 || this._script.stageWorldIndex === 6) {
+                this._script.setDifficulty(Player.localPlayer.playerId, 0); // 默认0
+            } else {
+                this._script.setDifficulty(Player.localPlayer.playerId, unlockMaxDifficultyIdx); // 选择已解锁的最高难度
+            }
         }, 0);
     }
 
