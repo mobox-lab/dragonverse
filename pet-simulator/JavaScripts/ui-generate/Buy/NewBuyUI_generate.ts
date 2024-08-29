@@ -22,34 +22,6 @@ export default class NewBuyUI_Generate extends UIScript {
 		}
 		return this.img_Bg_Internal
 	}
-	private can_Up_Down_Internal: mw.Canvas
-	public get can_Up_Down(): mw.Canvas {
-		if(!this.can_Up_Down_Internal&&this.uiWidgetBase) {
-			this.can_Up_Down_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Main/can_Up_Down') as mw.Canvas
-		}
-		return this.can_Up_Down_Internal
-	}
-	private inp_Number_Internal: mw.InputBox
-	public get inp_Number(): mw.InputBox {
-		if(!this.inp_Number_Internal&&this.uiWidgetBase) {
-			this.inp_Number_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Main/can_Up_Down/inp_Number') as mw.InputBox
-		}
-		return this.inp_Number_Internal
-	}
-	private btn_Up_Internal: mw.Button
-	public get btn_Up(): mw.Button {
-		if(!this.btn_Up_Internal&&this.uiWidgetBase) {
-			this.btn_Up_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Main/can_Up_Down/btn_Up') as mw.Button
-		}
-		return this.btn_Up_Internal
-	}
-	private btn_Down_Internal: mw.Button
-	public get btn_Down(): mw.Button {
-		if(!this.btn_Down_Internal&&this.uiWidgetBase) {
-			this.btn_Down_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Main/can_Up_Down/btn_Down') as mw.Button
-		}
-		return this.btn_Down_Internal
-	}
 	private text_Title_Internal: mw.TextBlock
 	public get text_Title(): mw.TextBlock {
 		if(!this.text_Title_Internal&&this.uiWidgetBase) {
@@ -106,6 +78,41 @@ export default class NewBuyUI_Generate extends UIScript {
 		}
 		return this.btn_Close_Internal
 	}
+	private can_Up_Down_Internal: mw.Canvas
+	public get can_Up_Down(): mw.Canvas {
+		if(!this.can_Up_Down_Internal&&this.uiWidgetBase) {
+			this.can_Up_Down_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Main/can_Up_Down') as mw.Canvas
+		}
+		return this.can_Up_Down_Internal
+	}
+	private img_BackGround_Internal: mw.Image
+	public get img_BackGround(): mw.Image {
+		if(!this.img_BackGround_Internal&&this.uiWidgetBase) {
+			this.img_BackGround_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Main/can_Up_Down/img_BackGround') as mw.Image
+		}
+		return this.img_BackGround_Internal
+	}
+	private inp_Number_Internal: mw.InputBox
+	public get inp_Number(): mw.InputBox {
+		if(!this.inp_Number_Internal&&this.uiWidgetBase) {
+			this.inp_Number_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Main/can_Up_Down/inp_Number') as mw.InputBox
+		}
+		return this.inp_Number_Internal
+	}
+	private btn_Up_Internal: mw.Button
+	public get btn_Up(): mw.Button {
+		if(!this.btn_Up_Internal&&this.uiWidgetBase) {
+			this.btn_Up_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Main/can_Up_Down/btn_Up') as mw.Button
+		}
+		return this.btn_Up_Internal
+	}
+	private btn_Down_Internal: mw.Button
+	public get btn_Down(): mw.Button {
+		if(!this.btn_Down_Internal&&this.uiWidgetBase) {
+			this.btn_Down_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Main/can_Up_Down/btn_Down') as mw.Button
+		}
+		return this.btn_Down_Internal
+	}
 
 
 
@@ -124,18 +131,6 @@ export default class NewBuyUI_Generate extends UIScript {
 		
 		//按钮添加点击
 		
-		this.btn_Up.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "btn_Up");
-		})
-		this.btn_Up.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
-		this.btn_Down.onClicked.add(()=>{
-			Event.dispatchToLocal("PlayButtonClick", "btn_Down");
-		})
-		this.btn_Down.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-		
-	
 		this.btn_Buy.onClicked.add(()=>{
 			Event.dispatchToLocal("PlayButtonClick", "btn_Buy");
 		})
@@ -146,6 +141,18 @@ export default class NewBuyUI_Generate extends UIScript {
 			Event.dispatchToLocal("PlayButtonClick", "btn_Close");
 		})
 		this.btn_Close.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.btn_Up.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btn_Up");
+		})
+		this.btn_Up.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+		
+	
+		this.btn_Down.onClicked.add(()=>{
+			Event.dispatchToLocal("PlayButtonClick", "btn_Down");
+		})
+		this.btn_Down.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 		
 	
 

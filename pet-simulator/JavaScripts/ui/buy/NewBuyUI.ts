@@ -1,5 +1,7 @@
 import { PetBagModuleData } from "../../modules/PetBag/PetBagModuleData";
 import { PetSimulatorPlayerModuleData } from "../../modules/Player/PlayerModuleData";
+import { P_GlobalTips } from "../../modules/UI/P_GlobalTips";
+import { TipsManager } from "../../modules/UI/Tips/CommonTipsManagerUI";
 import NewBuyUI_Generate from "../../ui-generate/Buy/NewBuyUI_generate";
 import MessageBox from "../../util/MessageBox";
 
@@ -26,7 +28,10 @@ export default class NewBuyUI extends NewBuyUI_Generate {
         this.btn_Up.onClicked.add(() => {
             const data = DataCenterC.getData(PetBagModuleData);
             const maxCnt = data.BagCapacity - data.CurBagCapacity;
-            if(this.cnt + 1 > maxCnt) return;
+            if(this.cnt + 1 > maxCnt) {
+                TipsManager.showTips("已达到背包上限！"); // TODO: 多语言
+                return;
+            }
             this.cnt++;
         })
         this.btn_Close.onClicked.add(() => {
