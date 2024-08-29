@@ -143,8 +143,6 @@ export class Enemy implements BuffBag {
             buffIds = buffIds.concat(config.buff);
         }
 
-        console.log(config.buff, "config.buff");
-
         for (let id in unlockedTechNodes) {
             let count = unlockedTechNodes[id];
             let cfg = GameConfig.TechTree.getElement(parseInt(id));
@@ -156,7 +154,6 @@ export class Enemy implements BuffBag {
         for (let i = 0; i < buffIds.length; i++) {
             const buffId = buffIds[i];
             let buff = GameConfig.Buff.getElement(buffId);
-            console.log(JSON.stringify(buff), "buff info");
             if (buff.applyType == BuffApplyType.Enemy) {
                 this.applyBuff(buffId);
             }
@@ -376,7 +373,11 @@ export class Enemy implements BuffBag {
             if (!position) position = [0, 0, 0];
             this.position.set(position[0], position[1], position[2]);
         }
+        const guideType = config?.guidType || 1;
         let go = (await GameObjPool.asyncSpawn("Character")) as Character;
+        if (guideType === 2) {
+            go = (await GameObjPool.asyncSpawn(desc)) as Character;
+        }
         if (!go) {
             GameObjPool.despawn(go);
             return;
@@ -389,7 +390,9 @@ export class Enemy implements BuffBag {
         go.worldTransform.position = new Vector(0, 0, 300000);
         go.collisionWithOtherCharacterEnabled = false;
         go.displayName = "";
-        await this.setV1Desc(go, desc);
+        if (guideType === 1) {
+            await this.setV1Desc(go, desc);
+        }
         go.complexMovementEnabled = false;
         await this.initHeadUI(go);
         // await this.initTail(go, "142959", HumanoidSlotType.LeftFoot);

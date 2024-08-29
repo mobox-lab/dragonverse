@@ -138,8 +138,8 @@ export default abstract class TowerBase implements BuffBag {
             attackDamage: 0,
         };
         this.buffManager = new BuffManager();
-        // todo 初始化天赋树的攻速增强 距离增强
-        // todo 龙娘祝福的增加
+        // 初始化天赋树的攻速增强 距离增强
+        //  龙娘祝福的增加
         const attackSpeed = TalentUtils.getModuleCRunesValueById(1004);
         const attackSpeed2 = TalentUtils.getModuleCRunesValueById(1028);
         const attackSpeedD = TalentUtils.getModuleCRunesValueById(2006);
@@ -158,7 +158,6 @@ export default abstract class TowerBase implements BuffBag {
 
         // 初始化科技树的buff
         let unlockedTechNodes = GameManager.getStageClient().getUnlockedTechNodes(info.playerID);
-        console.log(unlockedTechNodes, "unlockedTechNodes");
 
         let buffIds: number[] = unlockedTechNodes.reduce((pre, cur) => {
             let cfg = GameConfig.TechTree.getElement(cur);
@@ -175,8 +174,6 @@ export default abstract class TowerBase implements BuffBag {
                 this.applyBuff(buffId);
             }
         }
-        console.log(JSON.stringify(this.buffManager.buffs), "Tower Buff");
-
         this._attackTags = this.cfg.attackTags ? this.cfg.attackTags : [];
         Event.dispatchToLocal(TowerEvent.Create, this.info.placeID);
         this._useUpdate = true;
@@ -230,7 +227,6 @@ export default abstract class TowerBase implements BuffBag {
                 this.property[p] = this.property2[p] + this.calculateAttribute(p);
             }
         }
-        console.log("hsfproperty====================== ", JSON.stringify(this.property));
         Event.dispatchToLocal(TowerEvent.UpdateInfo, this);
     }
 
