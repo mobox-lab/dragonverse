@@ -186,7 +186,7 @@ export enum CreSourceStr {
 //100-200 为宠物槽位
 export class PetBagModuleData extends Subdata {
     /**true:装备 id,Key */
-    public BagItemChangeAC: Action3<boolean, number, number> = new Action3();
+    public BagItemChangeAC: Action2<boolean, number[]> = new Action2();
     public PetTrainChangeAC: Action = new Action();
     /**词条改变事件 key,词条id */
     public PetEnchantChangeAC: Action2<number, number[]> = new Action2();
@@ -487,9 +487,52 @@ export class PetBagModuleData extends Subdata {
 		const statisticData = DataCenterS.getData(playerID, PsStatisticModuleData)
 		statisticData.recordAddPet();
         this.save(true);
-        this.BagItemChangeAC.call(true, id, index);
+        this.BagItemChangeAC.call(true, [index]);
         return true;
     }
+
+    public batchAddBagItem(playerID: number, creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化", infos: {id: number, atk: number, name: string, addTime: number | undefined, logInfo: { logObj: Object, logName: string } | undefined}[]): boolean {
+        if(!infos?.length) return false;
+        if (this.CurBagCapacity + infos.length > this.BagCapacity) {
+            return false;
+        }
+        const keys = [];
+        const statisticData = DataCenterS.getData(playerID, PsStatisticModuleData);
+        for(let i = 0; i < infos.length; i++) {
+            this.newPetKey++;
+            let index = this.newPetKey;
+            const { id, atk, name, addTime, logInfo } = infos[i];
+            keys.push(index);
+            this.bagContainerNew[index] = new petItemDataNew(index, id);
+            if (atk) {
+                this.bagContainerNew[index].p.a = atk;
+            }
+            if (name) {
+                this.bagContainerNew[index].p.n = name;
+            }
+            if (addTime) {
+                this.bagContainerNew[index].obtainTime = addTime;
+            } else {
+                this.bagContainerNew[index].obtainTime = Date.now();
+            }
+            let type = GameConfig.PetARR.getElement(id).QualityType;
+            this.bornRandomEnchant(this.bagContainerNew[index], type);
+            Log4Ts.log(PetBagModuleData, " #debug batchAddBagItem index:" + index + " id:" + id + " atk:" + atk + " name:" + name);
+            // if(logInfo?.logName) {
+            //     Object.assign(logInfo.logObj, {
+            //         petBuffs: this.bagContainerNew[index].p.b,
+            //         petKey: index,
+            //     });  
+            //     utils.logP12Info(logInfo.logName, logInfo.logObj)
+            // }
+            this.updatePetStatistic(this.bagContainerNew[index], true, creSource);
+            statisticData.recordAddPet();
+        }
+        this.save(true);
+        this.BagItemChangeAC.call(true, keys);
+        return true;
+    }
+
 
     public getPetEnchantScore(enchantIds: number[]): number {
         if (!enchantIds?.length) return 0;

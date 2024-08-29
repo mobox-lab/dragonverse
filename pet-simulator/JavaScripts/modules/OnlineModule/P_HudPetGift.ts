@@ -17,7 +17,7 @@ export class P_HudPetGift extends HUDpetGift_Generate {
     /**领取按钮 */
     public onBtnAC: Action = new Action();
     /**红点提示事件key */
-    public onRedPointAC: Action1<number> = new Action1();
+    public onRedPointAC: Action1<number[]> = new Action1();
     /**打开背包事件 */
     public onOpenBagAC: Action1<number[]> = new Action();
 
@@ -49,8 +49,9 @@ export class P_HudPetGift extends HUDpetGift_Generate {
     }
 
     /**添加红点提示 */
-    public addRedPoint(key: number) {
-        this.redPointArr.push(key);
+    public addRedPoint(keys: number[]) {
+        if(!keys?.length) return;
+        this.redPointArr.push(...keys);
         if (this.mCanvas_Point.visible == false) {
             this.mCanvas_Point.visibility = mw.SlateVisibility.SelfHitTestInvisible;
         }

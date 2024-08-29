@@ -72,6 +72,18 @@ export class CollectModuleData extends Subdata {
         return true
     }
 
+    public batchAddHas(ids: number[]): boolean {
+        let hasNew = false;
+        for (let i = 0; i < ids.length; i++) {
+            if (!this.hasArr.includes(ids[i])) {
+                this.hasArr.push(ids[i]);
+                if(!hasNew) hasNew = true;
+            }
+        }
+        this.save(hasNew);
+        return hasNew;
+    }
+
     public addLevle(val: number) {
         if (this.level > GlobalData.Collect.levelCount.length) {
             return;

@@ -62,8 +62,8 @@ export class CollectModuleS extends ModuleS<CollectModuleC, CollectModuleData>{
         this.currentData.addHas(id);
     }
 
-    public addPet(playerId: number, id: number, type?: GlobalEnum.PetGetType) {
-        if (type) this.isCompleteTask(playerId, id, type);
+    public addPet(playerId: number, id: number) {
+        // if (type) this.isCompleteTask(playerId, id, type);
         let isNew = this.getPlayerData(playerId).addHas(id);
         if (!isNew) return;
         this.petNotice(playerId);
@@ -73,6 +73,20 @@ export class CollectModuleS extends ModuleS<CollectModuleC, CollectModuleData>{
         }
         this.tempPetCountMap.set(id, this.tempPetCountMap.get(id) + 1);
     }
+
+    public batchAddPet(playerId: number, ids: number[]) {
+        // if (type) this.isCompleteTask(playerId, id, type);
+        let isNew = this.getPlayerData(playerId).batchAddHas(ids);
+        if (!isNew) return;
+        this.petNotice(playerId);
+        for(let id of ids) {
+            if (!this.tempPetCountMap.has(id)) {
+                this.tempPetCountMap.set(id, 0);
+            }
+            this.tempPetCountMap.set(id, this.tempPetCountMap.get(id) + 1);
+        }
+    }
+
     /**公告 */
     public petNotice(playerId: number) {
         let count = this.getPlayerData(playerId).HasArr.length;
@@ -83,17 +97,17 @@ export class CollectModuleS extends ModuleS<CollectModuleC, CollectModuleData>{
         }
     }
 
-    /**判断获得该宠物是否完成任务 */
-    public isCompleteTask(playerId: number, id: number, type?: GlobalEnum.PetGetType) {
-        let taskModules = ModuleService.getModule(Task_ModuleS);
-        let player = Player.getPlayer(playerId);
-        if (!player) return;
-        switch (type) {
-            case GlobalEnum.PetGetType.Fusion:
-                taskModules.fusion(player, id);
-                break;
-        }
-    }
+    // /**判断获得该宠物是否完成任务 */
+    // public isCompleteTask(playerId: number, id: number, type?: GlobalEnum.PetGetType) {
+    //     let taskModules = ModuleService.getModule(Task_ModuleS);
+    //     let player = Player.getPlayer(playerId);
+    //     if (!player) return;
+    //     switch (type) {
+    //         case GlobalEnum.PetGetType.Fusion:
+    //             taskModules.fusion(player, id);
+    //             break;
+    //     }
+    // }
 
     public net_addLevle(val: number) {
         this.currentData.addLevle(val);

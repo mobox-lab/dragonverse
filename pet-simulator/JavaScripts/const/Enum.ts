@@ -173,15 +173,17 @@ export namespace GlobalEnum {
         /**附魔 */
         Enchant = 4,
     }
-    /**宠物获得方式 */
-    export enum PetGetType {
-        /**合成 */
-        Fusion = 1,
-        /**爱心化 */
-        Love = 2,
-        /**彩虹化 */
-        Rainbow = 3,
-    }
+    // /**宠物获得方式 */
+    // export enum PetGetType {
+    //     /**合成 */
+    //     Fusion = 1,
+    //     /**爱心化 */
+    //     Love = 2,
+    //     /**彩虹化 */
+    //     Rainbow = 3,
+    //     /**孵蛋 */
+    //     Egg = 4,
+    // }
 
     export enum CoinType {
         /**第一世界金币 */

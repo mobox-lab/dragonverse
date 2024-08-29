@@ -139,7 +139,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     }
 
     /**背包添加完毕 */
-    private itemChange(isEquip: boolean, id: number, key: number) {
+    private itemChange(isEquip: boolean, keys: number[]) {
         this.calcBuff();
         if (!isEquip) return;
 
@@ -160,15 +160,14 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
                 }
             }
             this.equipEvent(true, arrId);
-
         }
-        this.hudPetUI.onRedPointAC.call(key);
-
-        let name = this.data.bagItemsByKey(key)?.p?.n ?? undefined;
+        this.hudPetUI.onRedPointAC.call(keys);
+        if(!keys[0]) return;
+        let name = this.data.bagItemsByKey(keys[0])?.p?.n ?? undefined;
         if (Gtk.isNullOrEmpty(name)) {
             let nameId = utils.GetRandomNum(1, 200);
             let name = utils.GetUIText(nameId);
-            this.reNameEvent(key, name);
+            this.reNameEvent(keys[0], name);
         }
     }
 
@@ -349,8 +348,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         UIService.getUI(P_HudPetGift)?.setBattlePets(this.data.CurFollowPets, curPets);
     }
 
-    async buyEgg(cfgId: number): Promise<number | "bagFull" | null> {
-        return await this.server.net_buyEgg(cfgId);
+    async buyEgg(cfgId: number, buyEggNum: number): Promise<number[] | "bagFull" | null> {
+        return await this.server.net_buyEgg(cfgId, buyEggNum);
     }
 
     protected onUpdate(dt: number): void {

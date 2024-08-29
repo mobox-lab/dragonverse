@@ -18,6 +18,7 @@ import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { EggMachineTween } from "./EggMachineTween";
 import { EggInfo, InterBtn } from "./P_EggMachine";
+import NewBuyUI from '../../ui/buy/NewBuyUI';
 
 
 @Singleton()
@@ -419,32 +420,29 @@ class EggM {
 
 
     private checkCanBuy() {
-        let price = this.cfg.Price[0];
-        let mgs = "";
-        if (price > 0) {
-            mgs = utils.Format(GameConfig.Language.Text_messagebox_3.Value, utils.formatNumber(price));
-        }
-        MessageBox.showTwoBtnMessage(mgs, (res) => {
-            if (res) this.buyEgg(); // 动画结束后再把 isShow 设置为 false: EggMachineTween.state2Over
-             else InterBtn.instance.isShow = false;
-        }, 0, 0, () => InterBtn.instance.isShow = false, false);
+        const price = this.cfg.Price[0];
+        UIService.show(NewBuyUI, price, this.buyEgg.bind(this));
+        // MessageBox.showTwoBtnMessage(mgs, (res) => {
+        //     if (res) this.buyEgg(); // 动画结束后再把 isShow 设置为 false: EggMachineTween.state2Over
+        //     else InterBtn.instance.isShow = false;
+        // }, 0, 0, () => InterBtn.instance.isShow = false, false);
     }
 
 
-    private async buyEgg() { 
-        InterBtn.instance.isShow = false
+    private async buyEgg(buyEggNum: number) {
+        InterBtn.instance.isShow = false;
         let petMC = ModuleService.getModule(PetBagModuleC);
   
-        let res = await petMC.buyEgg(this.cfgID);
+        let res = await petMC.buyEgg(this.cfgID, buyEggNum);
 
         if(res === "bagFull") {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_4.Value);
             return;
         }
         if (res !== null) {
-            this.hasArr.push(res);
+            MessageBox.showOneBtnMessage("购买成功！"); // TODO: 多语言
             this.getEgg(res);
-            EggMachineTween.instance.startTween(this.petEgg, res, this.cfg.id);
+            // EggMachineTween.instance.startTween(this.petEgg, res, this.cfg.id);
             this.broadcastExecuteAchievement(res);
         } else {
             MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_4.Value);
@@ -452,38 +450,44 @@ class EggM {
     }
 
     /**广播成就 (开蛋次数|孵化出稀有宠物|孵化出稀有宠物|孵化出传说宠物|孵化出神话宠物)*/
-    private broadcastExecuteAchievement(id: number) {
-        oTraceError("开蛋成功一次");
-        this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.OpenEggNum, 1);
-
-        let achievementType: GlobalEnum.AchievementType = null;
-        let cfg = GameConfig.PetARR.getElement(id);
-        switch (cfg.QualityType) {
-            case GlobalEnum.PetQuality.Rare:
-                achievementType = GlobalEnum.AchievementType.HatchRarePetNum;
-                break;
-            case GlobalEnum.PetQuality.Epic:
-                achievementType = GlobalEnum.AchievementType.HatchEpicPetNum;
-                break;
-            case GlobalEnum.PetQuality.Legend:
-                achievementType = GlobalEnum.AchievementType.HatchLegendPetNum;
-                break;
-            case GlobalEnum.PetQuality.Myth:
-                achievementType = GlobalEnum.AchievementType.HatchMythPetNum;
-                break;
-            default:
-                break;
+    private broadcastExecuteAchievement(ids: number[]) {
+        if(!ids?.length) return;
+        this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.OpenEggNum, ids.length);
+        for (let i = 0; i < ids.length; i++) {
+            const id = ids[i];
+            let achievementType: GlobalEnum.AchievementType = null;
+            const cfg = GameConfig.PetARR.getElement(id);
+            switch (cfg.QualityType) {
+                case GlobalEnum.PetQuality.Rare:
+                    achievementType = GlobalEnum.AchievementType.HatchRarePetNum;
+                    break;
+                case GlobalEnum.PetQuality.Epic:
+                    achievementType = GlobalEnum.AchievementType.HatchEpicPetNum;
+                    break;
+                case GlobalEnum.PetQuality.Legend:
+                    achievementType = GlobalEnum.AchievementType.HatchLegendPetNum;
+                    break;
+                case GlobalEnum.PetQuality.Myth:
+                    achievementType = GlobalEnum.AchievementType.HatchMythPetNum;
+                    break;
+                default:
+                    break;
+            }
+            if (achievementType == null) return;
+            this.achievementModuleC.onExecuteAchievementAction.call(achievementType, 1);
         }
-        if (achievementType == null) return;
-        this.achievementModuleC.onExecuteAchievementAction.call(achievementType, 1);
     }
 
-    private getEgg(id: number) {
-        let pet = this.petArr.find((item) => {
-            return item.id == id
-        });
-        if (pet)
-            pet.setBackVis(false);
+    private getEgg(ids: number[]) {
+        if(!ids?.length) return;
+        for(let i = 0; i < ids.length; i++) {
+            let id = ids[i];
+            this.hasArr.push(id);
+            let pet = this.petArr.find((item) => {
+                return item.id == id
+            });
+            if (pet) pet.setBackVis(false);
+        }
     }
 
     /**判断是否获得 */

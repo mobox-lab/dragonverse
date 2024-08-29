@@ -19,12 +19,11 @@ import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 
 export class HudModuleS extends ModuleS<HudModuleC, null> {
     @Decorator.noReply()
-    public net_addInitPet(id: number, type?: GlobalEnum.PetGetType, addTime?: number) {
+    public net_addInitPet(id: number, addTime?: number) {
         if (!GlobalData.pet.initPets.includes(id)) return;
         ModuleService.getModule(PetBagModuleS).addPetWithMissingInfo(this.currentPlayerId,
             id,
             "初始化",
-            type,
             addTime);
     }
 }
