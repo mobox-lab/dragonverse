@@ -4,9 +4,9 @@ import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModul
 import Log4Ts from "mw-log4ts";
 import Gtk, { GtkTypes, Regulator } from "gtoolkit";
 import { EnergyModuleS } from "../Energy/EnergyModule";
-import { CreSourceStr, PSStatisticPetKey, PetBagModuleData, PetSimulatorStatisticPetObj, petItemDataNew } from "../PetBag/PetBagModuleData";
+import { CreSourceStr, PSStatisticPetKey, PetBagModuleData, petItemDataNew } from "../PetBag/PetBagModuleData";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
-import { AuthModuleS, PetSimulatorStatisticNeedFill } from "../auth/AuthModule";
+import { AuthModuleS, PetSimulatorStatisticNeedFill, PetSimulatorStatisticPetObj } from "../auth/AuthModule";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
 
@@ -433,91 +433,40 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         return { petMax, petMaxEnchanted, petMaxEnchantScore, totalScore: petMax + petMaxEnchantScore }
     }
     public shouldReportPsStatistic(userId: string) {
-        const petBagData = DataCenterS.getData(userId, PetBagModuleData);
-        const curPets = petBagData.PetStatisticArr ?? [];
-        const destroyPets = Object.values(this.destroyPetsMap?.[userId] || {});
-        const totalLen = (curPets?.length ?? 0) + (destroyPets?.length ?? 0);
-        if(totalLen <= GlobalData.Statistic.petArrMaxLength) return; // 未达到上限，不需要上报
-        const player = Player.getPlayer(userId);
-        const now = Date.now();
-        const playerData = DataCenterS.getData(userId, PetSimulatorPlayerModuleData);
-        const petStatisticData = DataCenterS.getData(userId, PsStatisticModuleData);
-        const playerConsumeData = petStatisticData.playerConsumeData ?? {
-            diamondAdd: 0,
-            diamondRed: 0,
-            gold_1_add: 0,
-            gold_1_red: 0,
-            gold_2_add: 0,
-            gold_2_red: 0,
-            gold_3_add: 0,
-            gold_3_red: 0,
-        };
-        const login = Math.floor((petStatisticData.playerLoginRecord[0][0] || 0) / 1000);
-        const logout = Math.floor((now || 0) / 1000);
-        const online = logout - login;
-        const petBagSortedItems = petBagData.sortBag();
-        const { petMax, petMaxEnchanted, petMaxEnchantScore, totalScore } = this.getPetMaxInfo(petBagSortedItems)
-        const energyS = ModuleService.getModule(EnergyModuleS);
-        const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
+        try {
+            const petBagData = DataCenterS.getData(userId, PetBagModuleData);
+            const curPets = petBagData.PetStatisticArr ?? [];
+            const destroyPets = Object.values(this.destroyPetsMap?.[userId] || {});
+            const totalLen = (curPets?.length ?? 0) + (destroyPets?.length ?? 0);
+            if(totalLen <= GlobalData.Statistic.petArrMaxLength) return; // 未达到上限，不需要上报
+            const player = Player.getPlayer(userId);
+            const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
+                const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
+                const info: PetSimulatorStatisticPetObj = {
+                    petkey: p[PSStatisticPetKey.petKey],
+                    proId: petInfo.I,
+                    name: petInfo.p.n,
+                    attack: petInfo.p.a,
+                    enchanted: this.getStatisticEnchantedInfo(petInfo).enchanted,
+                    status: "exist",
+                    creSource: CreSourceStr[p[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
+                    desSource: "",
+                    create: p[PSStatisticPetKey.create],
+                    update: p[PSStatisticPetKey.update],
+                }
+                return info;
+            }).concat(destroyPets)
     
-        const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
-            const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
-            const info: PetSimulatorStatisticPetObj = {
-                petkey: p[PSStatisticPetKey.petKey],
-                proId: petInfo.I,
-                name: petInfo.p.n,
-                attack: petInfo.p.a,
-                enchanted: this.getStatisticEnchantedInfo(petInfo).enchanted,
-                status: "exist",
-                creSource: CreSourceStr[p[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
-                desSource: "",
-                create: p[PSStatisticPetKey.create],
-                update: p[PSStatisticPetKey.update],
-            }
-            return info;
-        }).concat(destroyPets)
-
-        const statisticData: PetSimulatorStatisticNeedFill = {
-            diamond: playerData?.diamond ?? 0,
-            diamondAdd: playerConsumeData?.diamondAdd ?? 0,
-            diamondRed: playerConsumeData?.diamondRed ?? 0,
-            gold_1: playerData?.gold ?? 0,
-            gold_1_add: playerConsumeData?.gold_1_add ?? 0,
-            gold_1_red: playerConsumeData?.gold_1_red ?? 0,
-            gold_2: playerData.gold2 ?? 0,
-            gold_2_add: playerConsumeData?.gold_2_add ?? 0,
-            gold_2_red: playerConsumeData?.gold_2_red ?? 0,
-            gold_3: playerData.gold3 ?? 0,
-            gold_3_add: playerConsumeData?.gold_3_add ?? 0,
-            gold_3_red: playerConsumeData?.gold_3_red ?? 0,
-            login,
-            logout,
-            online,
-            pet: petStatistics,
-            petAdd: petStatisticData?.playerPetAdd ?? 0,
-            petCnt: petBagSortedItems?.length ?? 0,
-            petMax,
-            petMaxEnchanted: "",
-            petMaxEnchantScore: 0,
-            totalScore,
-            staMax,
-            staPotAdd: petStatisticData.playerStaPotAdd ?? 0,
-            staPotCnt: petStatisticData.playerStaPotCnt ?? 0,
-            staRed,
-            stamina,
-        };
-        Log4Ts.log( 
-            StatisticModuleS,
-            "overStatistic shouldReportPsStatistic statisticData:" + JSON.stringify(statisticData),
-        );
-        // destroyed
-        petStatisticData.recordLeave(now);
-        energyS.resetPlayerEnergyConsumeMap(userId);
-        this.destroyPetsMap[userId] = {};
-        petStatisticData.resetConsumeRecord();
-        petStatisticData.recordEnter(now+1);
-        
-        ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(userId, statisticData);
+            Log4Ts.log( 
+                StatisticModuleS,
+                "overStatistic shouldReportPsStatistic petStatistics:" + JSON.stringify(petStatistics) + " userId:" + userId,
+            );
+            // destroyed
+            this.destroyPetsMap[userId] = {};
+            ModuleService.getModule(AuthModuleS).reportPetSimulatorPetDataStatistic(player.userId, petStatistics);
+        } catch (err) {
+            Log4Ts.error(StatisticModuleS, " overStatistic shouldReportPsStatistic error:" + err + " userId:" + userId);
+        }
     }
 
     public getStatisticEnchantedInfo(petInfo: petItemDataNew) {
@@ -569,83 +518,93 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
     }
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
-        let now = Date.now();
-        const playerData = DataCenterS.getData(player, PetSimulatorPlayerModuleData);
-        const petBagData = DataCenterS.getData(player, PetBagModuleData);
-        const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData);
-        const energyS = ModuleService.getModule(EnergyModuleS);
-        const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
-        const playerConsumeData = petStatisticData.playerConsumeData ?? {
-            diamondAdd: 0,
-            diamondRed: 0,
-            gold_1_add: 0,
-            gold_1_red: 0,
-            gold_2_add: 0,
-            gold_2_red: 0,
-            gold_3_add: 0,
-            gold_3_red: 0,
-        };
-        const login = Math.floor((petStatisticData.playerLoginRecord[0][0] || 0) / 1000);
-        const logout = Math.floor((now || 0) / 1000);
-        const online = logout - login;
-        const petBagSortedItems = petBagData.sortBag();
-        const { petMax, petMaxEnchanted, petMaxEnchantScore, totalScore } = this.getPetMaxInfo(petBagSortedItems)
+        try {
 
-        const curPets = petBagData.PetStatisticArr ?? [];
-        const destroyPets = Object.values(this.destroyPetsMap?.[player.userId] || {});
-        const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
-            const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
-            const info: PetSimulatorStatisticPetObj = { 
-                petkey: p[PSStatisticPetKey.petKey],
-                proId: petInfo.I,
-                name: petInfo.p.n,
-                attack: petInfo.p.a,
-                enchanted: this.getStatisticEnchantedInfo(petInfo).enchanted,
-
-                status: "exist",
-                creSource: CreSourceStr[p[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
-                desSource: "",
-                create: p[PSStatisticPetKey.create],
-                update: p[PSStatisticPetKey.update],
-            }
-            return info;
-        }).concat(destroyPets)
-
-        const statisticData: PetSimulatorStatisticNeedFill = {
-            diamond: playerData?.diamond ?? 0,
-            diamondAdd: playerConsumeData?.diamondAdd ?? 0,
-            diamondRed: playerConsumeData?.diamondRed ?? 0,
-            gold_1: playerData?.gold ?? 0,
-            gold_1_add: playerConsumeData?.gold_1_add ?? 0,
-            gold_1_red: playerConsumeData?.gold_1_red ?? 0,
-            gold_2: playerData.gold2 ?? 0,
-            gold_2_add: playerConsumeData?.gold_2_add ?? 0,
-            gold_2_red: playerConsumeData?.gold_2_red ?? 0,
-            gold_3: playerData.gold3 ?? 0,
-            gold_3_add: playerConsumeData?.gold_3_add ?? 0,
-            gold_3_red: playerConsumeData?.gold_3_red ?? 0,
-            login,
-            logout,
-            online,
-            pet: petStatistics,
-            petAdd: petStatisticData?.playerPetAdd ?? 0,
-            petCnt: petBagSortedItems?.length ?? 0,
-            petMax,
-            petMaxEnchanted,
-            petMaxEnchantScore,
-            totalScore,
-            staMax,
-            staPotAdd: petStatisticData.playerStaPotAdd ?? 0,
-            staPotCnt: petStatisticData.playerStaPotCnt ?? 0,
-            staRed,
-            stamina,
-        };
-        petStatisticData.recordLeave(now);
-        Log4Ts.log( 
-            StatisticModuleS,
-            " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData),
-        );
-        ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(player.userId, statisticData);
+            let now = Date.now();
+            const playerData = DataCenterS.getData(player, PetSimulatorPlayerModuleData);
+            const petBagData = DataCenterS.getData(player, PetBagModuleData);
+            const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData);
+            const energyS = ModuleService.getModule(EnergyModuleS);
+            const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
+            const playerConsumeData = petStatisticData.playerConsumeData ?? {
+                diamondAdd: 0,
+                diamondRed: 0,
+                gold_1_add: 0,
+                gold_1_red: 0,
+                gold_2_add: 0,
+                gold_2_red: 0,
+                gold_3_add: 0,
+                gold_3_red: 0,
+            };
+            const login = Math.floor((petStatisticData.playerLoginRecord[0][0] || 0) / 1000);
+            const logout = Math.floor((now || 0) / 1000);
+            const online = logout - login;
+            const petBagSortedItems = petBagData.sortBag();
+            const { petMax, petMaxEnchanted, petMaxEnchantScore, totalScore } = this.getPetMaxInfo(petBagSortedItems)
+    
+            const curPets = petBagData.PetStatisticArr ?? [];
+            const destroyPets = Object.values(this.destroyPetsMap?.[player.userId] || {});
+            const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
+                const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
+                const info: PetSimulatorStatisticPetObj = { 
+                    petkey: p[PSStatisticPetKey.petKey],
+                    proId: petInfo.I,
+                    name: petInfo.p.n,
+                    attack: petInfo.p.a,
+                    enchanted: this.getStatisticEnchantedInfo(petInfo).enchanted,
+    
+                    status: "exist",
+                    creSource: CreSourceStr[p[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
+                    desSource: "",
+                    create: p[PSStatisticPetKey.create],
+                    update: p[PSStatisticPetKey.update],
+                }
+                return info;
+            }).concat(destroyPets)
+            const statisticData: PetSimulatorStatisticNeedFill = {
+                diamond: playerData?.diamond ?? 0,
+                diamondAdd: playerConsumeData?.diamondAdd ?? 0,
+                diamondRed: playerConsumeData?.diamondRed ?? 0,
+                gold_1: playerData?.gold ?? 0,
+                gold_1_add: playerConsumeData?.gold_1_add ?? 0,
+                gold_1_red: playerConsumeData?.gold_1_red ?? 0,
+                gold_2: playerData.gold2 ?? 0,
+                gold_2_add: playerConsumeData?.gold_2_add ?? 0,
+                gold_2_red: playerConsumeData?.gold_2_red ?? 0,
+                gold_3: playerData.gold3 ?? 0,
+                gold_3_add: playerConsumeData?.gold_3_add ?? 0,
+                gold_3_red: playerConsumeData?.gold_3_red ?? 0,
+                login,
+                logout,
+                online,
+                pet: [],
+                petAdd: petStatisticData?.playerPetAdd ?? 0,
+                petCnt: petBagSortedItems?.length ?? 0,
+                petMax,
+                petMaxEnchanted,
+                petMaxEnchantScore,
+                totalScore,
+                staMax,
+                staPotAdd: petStatisticData.playerStaPotAdd ?? 0,
+                staPotCnt: petStatisticData.playerStaPotCnt ?? 0,
+                staRed,
+                stamina,
+            };
+            petStatisticData.recordLeave(now);
+            const userId = player?.userId ?? "";
+            Log4Ts.log( 
+                StatisticModuleS,
+                " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData + " userId:" + userId)
+            );
+            Log4Ts.log( 
+                StatisticModuleS,
+                " reportPetSimulatorPetDataStatistic petStatistics:" + JSON.stringify(petStatistics) + " userId:" + userId
+            );
+            ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(userId, statisticData);
+            ModuleService.getModule(AuthModuleS).reportPetSimulatorPetDataStatistic(userId, petStatistics);    
+        } catch (err) {
+            Log4Ts.error(StatisticModuleS, " reportPetSimulatorStatistic error:" + err + " userId:" + player?.userId ?? '');
+        }
     }
 
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄

@@ -88,51 +88,6 @@ export class petInfoNew {
 /**
  * 宠物模拟器 统计信息 宠物对象.
  */
-export interface PetSimulatorStatisticPetObj {
-    /**
-     * 背包 Key.
-     */
-    petkey: number;
-    /**
-     * Config Id.
-     */
-    proId: number;
-    name: string;
-    attack: number;
-    /**
-     * 当前状态，销毁、存在.
-     */
-    status: "destroyed" | "exist";
-    
-    /**
-     * 创建来源.
-     * "删除" 为主动删除.
-     * 其余为合成时被动删除.
-     */
-    creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化";
-    /**
-     * 销毁来源.
-     */
-    desSource: "删除" | "合成" | "爱心化" | "彩虹化" | "";
-
-    /**
-     * 创建时间.
-     */
-    create: number;
-    /**
-     * 更新时间.
-     * 任何触发以上属性更新的操作都应更新这个时间.
-     */
-    update: number;
-    /**
-     * 附魔信息.
-     */
-    enchanted: string;
-}
-
-/**
- * 宠物模拟器 统计信息 宠物对象.
- */
 export interface PetSimulatorStatisticPersistPetObj {
     /**
      * 背包 Key.

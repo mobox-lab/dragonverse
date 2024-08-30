@@ -341,6 +341,7 @@ interface UserStatisticReq<S extends object>
     extends UserDataReq {
     address: string;
     sceneName: SceneName;
+    time?: number; // 目前只有宠物数组统计需要，判断赛季
     data: S;
 }
 
@@ -739,7 +740,7 @@ interface PetSimulatorStatistic {
 /**
  * 宠物模拟器 统计信息 宠物对象.
  */
-interface PetSimulatorStatisticPetObj {
+export interface PetSimulatorStatisticPetObj {
     /**
      * 背包 Key.
      */
@@ -1179,6 +1180,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly STATISTIC_REPORT_URI = "/pge-client-log/add";
 
     /**
+     * 宠物汇报 统计信息 Uri.
+     * @private
+     */
+    private static readonly PET_STATISTIC_REPORT_URI = "/pge-client-log/pet";
+
+    /**
      * 查询 用户 P12 背包 Uri.
      * @private
      */
@@ -1379,6 +1386,20 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
      */
     private static get RELEASE_STATISTIC_REPORT_URL() {
         return this.RELEASE_P12_DOMAIN + this.STATISTIC_REPORT_URI;
+    }
+
+    /**
+     * 测试用 汇报 游戏统计信息 Url.
+     */
+    private static get TEST_PET_STATISTIC_REPORT_URL() {
+        return this.TEST_P12_DOMAIN + this.PET_STATISTIC_REPORT_URI;
+    }
+
+    /**
+     * 发布用 汇报 游戏统计信息 Url.
+     */
+    private static get RELEASE_PET_STATISTIC_REPORT_URL() {
+        return this.RELEASE_P12_DOMAIN + this.PET_STATISTIC_REPORT_URI;
     }
 
     /**
@@ -2059,6 +2080,35 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             requestParam,
             AuthModuleS.RELEASE_STATISTIC_REPORT_URL,
             AuthModuleS.TEST_STATISTIC_REPORT_URL,
+        );
+
+        return respInJson?.message === "success";
+    }
+
+    public async reportPetSimulatorPetDataStatistic(userId: string, statistic: PetSimulatorStatisticPetObj[]) {
+        const d = mwext.DataCenterS.getData(userId, AuthModuleData);
+        if (!d) {
+            Log4Ts.error(AuthModuleS, `player data of user ${userId} is not exist.`);
+            return false;
+        }
+        const gameId = GameServiceConfig.chainId;
+        const time = Math.floor(Date.now() / 1000);
+        const requestParam: UserStatisticReq<PetSimulatorStatisticPetObj[]> = {
+            userId,
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
+            address: d.holdAddress,
+            sceneName: "pet",
+            gameId,
+            time,
+            data: {
+                ...statistic,
+            },
+        };
+
+        const respInJson = await this.correspondHandler<QueryResp>(
+            requestParam,
+            AuthModuleS.RELEASE_PET_STATISTIC_REPORT_URL,
+            AuthModuleS.TEST_PET_STATISTIC_REPORT_URL,
         );
 
         return respInJson?.message === "success";
