@@ -149,9 +149,6 @@ export default class GameLauncher extends mw.Script {
             }
         }
 
-        // 设置玩家数据存储位置
-        DataStorage.setTemporaryStorage(!(GameServiceConfig.isRelease || GameServiceConfig.isBeta || this.isOnline));
-
         Globaldata.logLevel = this.logLevel;
         LogManager.instance.setLogLevel(Globaldata.logLevel);
 

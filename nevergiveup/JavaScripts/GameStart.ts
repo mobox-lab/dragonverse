@@ -123,7 +123,6 @@ export default class GameStart extends Script {
         GameServiceConfig.isBeta = this.isBeta;
         GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
         GameServiceConfig.chainId = this.customChainId;
-        DataStorage.setTemporaryStorage(!(GameServiceConfig.isRelease || GameServiceConfig.isBeta || this.isOnline));
         this.setlanguage();
         for (const k in Config) {
             if (this.hasOwnProperty(k)) {

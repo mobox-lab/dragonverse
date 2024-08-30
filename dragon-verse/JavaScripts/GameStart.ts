@@ -280,7 +280,6 @@ export default class GameStart extends mw.Script {
 
     private initializeServer() {
         Log4Ts.debugLevel = this.serverLogLevel;
-        DataStorage.setTemporaryStorage(!this.isOnline);
 
         GameObject.asyncFindGameObjectById("0B48E050").then((value) => {
             const effect = value as mw.Effect;
