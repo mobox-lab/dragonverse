@@ -21,7 +21,7 @@ export enum VoiceEvent {
 
 /**声音工具 */
 export namespace SoundUtil {
-    export let bgmVoiceFactor: number = 1;
+    export let bgmVoiceFactor: number = 0.3;
     export let attackVoiceFactor: number = 1;
     /**初始化 */
     export function init() {

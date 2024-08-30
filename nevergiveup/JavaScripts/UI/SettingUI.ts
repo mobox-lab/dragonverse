@@ -46,7 +46,7 @@ export default class SettingUI extends Setting_Generate {
             this.bgmSelectTrue.visibility = SlateVisibility.Visible;
             this.txtVoiceOn.visibility = SlateVisibility.Visible;
             this.txtVoiceOff.visibility = SlateVisibility.Hidden;
-            Event.dispatchToLocal(VoiceEvent.Bgm, 1);
+            Event.dispatchToLocal(VoiceEvent.Bgm, 0.3);
         });
         this.bgmSelectFalse.visibility = SlateVisibility.Collapsed;
         this.bgmSelectTrue.visibility = SlateVisibility.Visible;

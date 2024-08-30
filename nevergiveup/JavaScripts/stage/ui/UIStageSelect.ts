@@ -298,12 +298,12 @@ export class UIStageSelect extends StageSelect_Generate {
             return item.elementTy;
         });
         // 转换成克制的
-        const counterElementIds = [];
-        for (let i = 0; i < elementIds.length; i++) {
-            const counterId = this.findCounter(elementIds[i]);
-            if (!counterElementIds.includes(counterId)) counterElementIds.push(counterId);
-        }
-        return counterElementIds;
+        // const counterElementIds = [];
+        // for (let i = 0; i < elementIds.length; i++) {
+        //     const counterId = this.findCounter(elementIds[i]);
+        //     if (!counterElementIds.includes(counterId)) counterElementIds.push(counterId);
+        // }
+        return [...new Set(elementIds)];
     }
 
     getFitEnemies(id: number): IMonsterElement[] {
