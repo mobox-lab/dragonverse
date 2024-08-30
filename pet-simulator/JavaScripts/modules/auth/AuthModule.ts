@@ -2100,9 +2100,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             sceneName: "pet",
             gameId,
             time,
-            data: {
-                ...statistic,
-            },
+            data: statistic,
         };
 
         const respInJson = await this.correspondHandler<QueryResp>(

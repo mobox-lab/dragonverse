@@ -421,7 +421,7 @@ class EggM {
 
     private checkCanBuy() {
         const price = this.cfg.Price[0];
-        UIService.show(NewBuyUI, price, this.buyEgg.bind(this));
+        UIService.show(NewBuyUI, this.cfg, this.buyEgg.bind(this));
         // MessageBox.showTwoBtnMessage(mgs, (res) => {
         //     if (res) this.buyEgg(); // 动画结束后再把 isShow 设置为 false: EggMachineTween.state2Over
         //     else InterBtn.instance.isShow = false;

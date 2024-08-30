@@ -594,7 +594,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             const userId = player?.userId ?? "";
             Log4Ts.log( 
                 StatisticModuleS,
-                " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData + " userId:" + userId)
+                " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData) + " userId:" + userId
             );
             Log4Ts.log( 
                 StatisticModuleS,
