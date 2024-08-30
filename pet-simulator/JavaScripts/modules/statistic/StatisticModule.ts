@@ -208,8 +208,8 @@ export default class PsStatisticModuleData extends JModuleData {
         this.save(false);
     }
 
-    public recordConsume(coinType: GlobalEnum.CoinType, value: number) {
-        Log4Ts.log(PsStatisticModuleData, `record consume. type: ${coinType}. value: ${value}. `);
+    public recordConsume(coinType: GlobalEnum.CoinType, value: number, userId: string) {
+        Log4Ts.log(PsStatisticModuleData, `record consume. type: ${coinType}. value: ${value} userId: ${userId} #record_consume`);
         const isAdd = value > 0;
         const val = Math.abs(value);
         switch (coinType) {

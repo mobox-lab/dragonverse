@@ -143,7 +143,8 @@ export class PetSimulatorPlayerModuleData extends Subdata {
                 break;
         }
         const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData);
-        statisticData.recordConsume(coinType, value);
+        const userId = Player.getPlayer(playerId)?.userId ?? '';
+        statisticData.recordConsume(coinType, value, userId);
         this.save(isSync);
         this.onGoldChange.call(coinType);
     }
@@ -174,7 +175,8 @@ export class PetSimulatorPlayerModuleData extends Subdata {
         isAdd ? this.diamond += value : this.diamond -= value;
         this.diamond = this.isMaxCoin(this.diamond);
         const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData);
-        statisticData.recordConsume(GlobalEnum.CoinType.Diamond, isAdd ? value : -value);
+        const userId = Player.getPlayer(playerId)?.userId ?? '';
+        statisticData.recordConsume(GlobalEnum.CoinType.Diamond, isAdd ? value : -value, userId);
         this.save(isSync);
         this.onDiamondChange.call();
     }

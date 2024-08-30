@@ -10,6 +10,7 @@ import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
+import Log4Ts from "mw-log4ts";
 
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModuleData> {
 
@@ -303,8 +304,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         }
         const cfg = GameConfig.AreaDivide.getElement(cfgID);
 		const playerId = this.currentPlayerId;
+		const userId = this.currentPlayer?.userId ?? "";
+        Log4Ts.log(PlayerModuleS, " buyArea areaId: " + cfgID + " cost_gold: " + cfg.Gold + " userId: " + userId + " #unlock_area");
         return this.currentData.reduceGold(cfg.Gold, goldType, true, playerId);
-        ;
     }
 
     public async randomDiamond(playerId: number): Promise<number> {

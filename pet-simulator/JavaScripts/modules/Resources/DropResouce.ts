@@ -79,7 +79,8 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
         type: GlobalEnum.CoinType,
         allValue: number,
         count: number,
-        isBigBox: boolean = false): void {
+        isBigBox: boolean = false,
+        logInfo?: { areaId: number, resType: number }): void {
         if (count <= 0 || allValue <= 0) return;
         let val = Math.ceil(allValue / count);
         let generates: DropInServer[] = [];
@@ -111,7 +112,8 @@ export class DropManagerS extends ModuleS<DropManagerC, null> {
             drop.value += diff;
             allValue -= diff;
         }
-        Log4Ts.log(DropManagerS, `reward generate ${generates.length} drops for player ${playerId} at ${pos} with type ${type} and value ${val}`);
+        const userId = Player.getPlayer(playerId)?.userId ?? '';
+        Log4Ts.log(DropManagerS, `reward generate ${generates.length} drops for userid ${userId} at ${pos} with type ${type} and value ${val} areaid: ${logInfo?.areaId} resType: ${logInfo?.resType} #generate_drop`);
         let logged = false;
 
         Gtk.batchDo(

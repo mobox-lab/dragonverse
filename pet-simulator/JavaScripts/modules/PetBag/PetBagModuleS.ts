@@ -657,7 +657,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         } catch (e) {
             const userId = Player.getPlayer(playerId)?.userId;
             this.petBagModuleS.recoverFusePets(playerId, preBagItems);
-            utils.logP12Info('P_Error', "Fuse Pet Error:" + e)
+            Log4Ts.log(PetBagModuleS, " Fuse Pet Error:" + e + " userId:" + userId + " #error")
             return false;
         }
     }

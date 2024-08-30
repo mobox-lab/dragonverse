@@ -483,7 +483,9 @@ export default class ResourceScript extends mw.Script {
                     this.judgeGold(),
                     goldVal * criticalRatio,
                     goldCount,
-                    this.isBigBox);
+                    this.isBigBox,
+                    { areaId: this.cfg.AreaID, resType: this.resourceType }
+                );
         }
         if (gemCount > 0) {
             ModuleService
@@ -494,7 +496,9 @@ export default class ResourceScript extends mw.Script {
                     GlobalEnum.CoinType.Diamond,
                     gemVal * criticalRatio,
                     gemCount,
-                    this.isBigBox);
+                    this.isBigBox,
+                    { areaId: this.cfg.AreaID, resType: this.resourceType }
+                );
         }
         // Log4Ts.log(Resource,
         //     `playReward playerId:${playerId}`,

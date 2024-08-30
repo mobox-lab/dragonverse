@@ -1,5 +1,6 @@
+import Log4Ts from "mw-log4ts";
 import { GameConfig } from "../../config/GameConfig";
-import { numberArrToString, stringToNumberArr } from "../../util/uitls";
+import { stringToNumberArr } from "../../util/uitls";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { AreaModuleC } from "./AreaModuleC";
 import { AreaModuleData } from "./AreaModuleData";
@@ -30,11 +31,18 @@ export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData> {
     }
 
     public async net_buyTranArea(id: number): Promise<boolean> {
-        let cfg = GameConfig.AreaDivide.getElement(id);
-		const playerId = this.currentPlayerId;
-        const isSuccess = ModuleService.getModule(PlayerModuleS).reduceDiamond(cfg.Gem, playerId)
-        if (!isSuccess) return false
-        this.addArea(playerId, id, false);
-        return true;
+        const userId = this.currentPlayer?.userId ?? '';
+        try {
+            let cfg = GameConfig.AreaDivide.getElement(id);
+            const playerId = this.currentPlayerId;
+            const isSuccess = ModuleService.getModule(PlayerModuleS).reduceDiamond(cfg.Gem, playerId)
+            if (!isSuccess) return false;
+            Log4Ts.log(AreaModuleS, " buyAreaPortal areaId: " + id + " cost_gem: " + cfg.Gem + " userId: " + userId + " #unlock_portal");
+            this.addArea(playerId, id, false);
+            return true;
+        } catch (e) {
+            Log4Ts.error(AreaModuleS, " net_buyTranArea error:" + e + " userId:" + userId);
+            return false;
+        }
     }
 }
