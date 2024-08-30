@@ -104,7 +104,7 @@ export default class PlayerModuleData extends Subdata {
         this.exp = 0;
         this.unlockedTechNodes = [];
         this.attackVoiceFactor = 1;
-        this.bgmVoiceFactor = 1;
+        this.bgmVoiceFactor = 0.3;
         this.unlockTowerDaily = 0;
         this.completeStageCount = {
             sum: 0,
@@ -271,7 +271,7 @@ export default class PlayerModuleData extends Subdata {
                 daily: 0,
             };
         if (this.attackVoiceFactor === undefined) this.attackVoiceFactor = 1;
-        if (this.bgmVoiceFactor === undefined) this.bgmVoiceFactor = 1;
+        if (this.bgmVoiceFactor === undefined) this.bgmVoiceFactor = 0.3;
         if (this.infinityWaveTimes === undefined) this.infinityWaveTimes = 0;
         if (this.unlockTowerDaily === undefined) this.unlockTowerDaily = 0;
     }

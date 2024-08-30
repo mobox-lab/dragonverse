@@ -187,7 +187,7 @@ export default class PlayerScript extends Script {
                 character.attachToSlot(ui, mw.HumanoidSlotType.Nameplate);
                 ui.scaledByDistanceEnable = false;
                 ui.hideByDistanceEnable = true;
-                ui.headUIMaxVisibleDistance = 3000;
+                ui.headUIMaxVisibleDistance = 9000;
                 ui.occlusionEnable = true;
                 ui.drawSize = Utils.TEMP_VECTOR2.set(264, 110);
                 ui.localTransform.position = Utils.TEMP_VECTOR.set(0, 0, -10);
