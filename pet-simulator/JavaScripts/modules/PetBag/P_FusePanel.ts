@@ -124,8 +124,8 @@ export class P_FusePanel extends Fusepanel_Generate {
         const data = DataCenterC.getData(PetBagModuleData);
         const cost = utils.fuseCostCompute(data?.fuseNumToday ?? 0);
         this.mText_Money.text = utils.formatNumber(cost);
-        this.text_FuseNum.text = `${count}/${GlobalData.Fuse.maxFuseCount}只`;
-        this.text_CumulativeNum.text = `${data?.fuseNumToday ?? 0}次`;
+        this.text_FuseNum.text = `${count}/` + utils.Format(GameConfig.Language.Pet_NewBuy007.Value, GlobalData.Fuse.maxFuseCount);
+        this.text_CumulativeNum.text = utils.Format(GameConfig.Language.Pet_NewBuy006.Value, data?.fuseNumToday ?? 0);
         if (count < GlobalData.Fuse.minFuseCount) {
             this.mText_Number.text = utils.Format(GameConfig.Language.Page_UI_Tips_13.Value, count);
             this.probabilityCanvas.visibility = SlateVisibility.Hidden;
