@@ -446,17 +446,19 @@ export class PetBagModuleData extends Subdata {
         return true;
     }
 
-    public batchAddBagItem(playerID: number, creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化", infos: {id: number, atk: number, name: string, addTime: number | undefined, logInfo: { logObj: Object, logName: string } | undefined}[]): boolean {
+    public batchAddBagItem(playerID: number, creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化", infos: {id: number, atk: number, name: string, addTime: number | undefined}[], logInfo?: { logObj: Object, logName: string }): boolean {
         if(!infos?.length) return false;
         if (this.CurBagCapacity + infos.length > this.BagCapacity) {
             return false;
         }
         const keys = [];
+        const userId = Player.getPlayer(playerID)?.userId ?? '';
         const statisticData = DataCenterS.getData(playerID, PsStatisticModuleData);
+        const pets: petItemDataNew[] = [];
         for(let i = 0; i < infos.length; i++) {
             this.newPetKey++;
             let index = this.newPetKey;
-            const { id, atk, name, addTime, logInfo } = infos[i];
+            const { id, atk, name, addTime } = infos[i];
             keys.push(index);
             this.bagContainerNew[index] = new petItemDataNew(index, id);
             if (atk) {
@@ -472,16 +474,24 @@ export class PetBagModuleData extends Subdata {
             }
             let type = GameConfig.PetARR.getElement(id).QualityType;
             this.bornRandomEnchant(this.bagContainerNew[index], type);
-            Log4Ts.log(PetBagModuleData, " #debug batchAddBagItem index:" + index + " id:" + id + " atk:" + atk + " name:" + name);
-            // if(logInfo?.logName) {
-            //     Object.assign(logInfo.logObj, {
-            //         petBuffs: this.bagContainerNew[index].p.b,
-            //         petKey: index,
-            //     });  
-            //     utils.logP12Info(logInfo.logName, logInfo.logObj)
-            // }
+            pets.push(this.bagContainerNew[index]);
             this.updatePetStatistic(this.bagContainerNew[index], true, creSource);
             statisticData.recordAddPet();
+        }
+        if(logInfo?.logName) {
+            const hatchPets = pets.map(p => ({
+                petKey: p?.k,
+                petId: p?.I,
+                petAtk: p?.p?.a,
+                petName: p?.p?.n,
+                petBuffs: Array.from(p?.p?.b),
+            }));
+            Object.assign(logInfo.logObj, {
+                timestamp: Date.now(),
+                userId,
+                hatchPets
+            });  
+            utils.logP12Info(logInfo.logName, logInfo.logObj)
         }
         this.save(true);
         this.BagItemChangeAC.call(true, keys);

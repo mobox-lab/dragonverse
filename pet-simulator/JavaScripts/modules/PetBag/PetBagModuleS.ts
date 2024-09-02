@@ -110,21 +110,23 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         const userId = this.currentPlayer?.userId ?? '';
         try {
             const playerId = this.currentPlayerId;
-            let res = ModuleService.getModule(PlayerModuleS).reduceGold(playerId, totalPrice, this.judgeGold(cfgId));
-            if (res) {
-                // const logObj = {
-                //     uid: userId,
-                //     coin: price,
-                //     coinType: this.judgeGold(cfgId),
-                //     eggId: cfg.id,
-                //     petId,
-                // };
+            const coinType = this.judgeGold(cfgId);
+            let res = ModuleService.getModule(PlayerModuleS).reduceGold(playerId, totalPrice, coinType);
+            if (res) { 
                 const infos = new Array(buyEggNum).fill(0).map(v => {
                     const petId = this.calcProbability(cfgId);
                     return { id: petId };
                 });
-                Log4Ts.error(PetBagModuleS, "#debug net_buyEgg cfgId:" + cfgId + " buyEggNum:" + buyEggNum + " totalPrice:" + totalPrice + " userId:" + userId);
-                const addRes = this.batchAddPet(playerId, infos, "孵化");
+                const addRes = this.batchAddPet(playerId, infos, "孵化", {
+                    logName: "P_Hatch",
+                    logObj: {
+                        coinType: coinType,
+                        eggId: cfg?.id,
+                        eggUnitPrice: price,
+                        amount: buyEggNum,
+                        cost: totalPrice
+                    } 
+                });
                 if(!addRes) { // 背包已满 返还资源
                     ModuleService.getModule(PlayerModuleS).addGold(playerId, totalPrice, this.judgeGold(cfgId));
                     return "bagFull";
@@ -211,7 +213,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return true;
     }
 
-    public batchAddPet(playerID: number, infos: { atk?: number, id: number, name?: string; addTime?: number }[], creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化"): boolean {
+    public batchAddPet(playerID: number, infos: { atk?: number, id: number, name?: string; addTime?: number }[], creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化", logInfo?: { logObj: Object, logName: string }): boolean {
         if(!infos?.length) {
             Log4Ts.warn(PetBagModuleS, "batchAddPet infos is null");
             return false;
@@ -231,11 +233,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 const nameId = utils.GetRandomNum(1, 200);
                 name = utils.GetUIText(nameId);
             }
-            console.log("#batch Info:",atk, id, name, addTime);
             addInfos.push({ atk, id, name, addTime });
             this.petNotice(playerID, id);
         }
-        const res = data.batchAddBagItem(playerID, creSource, addInfos);
+        const res = data.batchAddBagItem(playerID, creSource, addInfos, logInfo);
         if(!res) return false;
         const ids = infos.map(info => info.id);
         ModuleService.getModule(CollectModuleS).batchAddPet(playerID, ids);
