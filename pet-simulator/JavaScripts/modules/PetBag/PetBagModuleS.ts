@@ -15,6 +15,7 @@ import { EnchantBuff } from "./EnchantBuff";
 import { EnchantPetState } from "./P_Enchants";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
+import PsStatisticModuleData, { StatisticModuleS } from "../statistic/StatisticModule";
 
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     private _playerModuleS: PlayerModuleS;
@@ -111,6 +112,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                     const petId = this.calcProbability(cfgId);
                     return { id: petId };
                 });
+                const sData = DataCenterS.getData(userId, PsStatisticModuleData);
+                const { eggCnt = 0, hatchCnt = 0 } = sData?.totalStatisticData ?? {};
+                const nextEggCnt = eggCnt + buyEggNum;
+                const nextHatchCnt = hatchCnt + 1;
                 const addRes = this.batchAddPet(playerId, infos, "孵化", {
                     logName: "P_Hatch",
                     logObj: {
@@ -118,9 +123,12 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                         eggId: cfg?.id,
                         eggUnitPrice: price,
                         amount: buyEggNum,
-                        cost: totalPrice
+                        cost: totalPrice,
+                        eggCnt: nextEggCnt,
+                        hatchCnt: nextHatchCnt,
                     } 
                 });
+                sData.recordTotalData({ eggCnt: nextEggCnt, hatchCnt: nextHatchCnt });
                 if(!addRes) { // 背包已满 返还资源
                     ModuleService.getModule(PlayerModuleS).addGold(playerId, totalPrice, this.judgeGold(cfgId));
                     return "bagFull";
@@ -572,6 +580,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         if (curSelectPets.length >= data.CurBagCapacity) return false;
 
         const preBagItems = data.BagItems;
+
         try {
             /**最多相同id的宠物数量 */
             let maxSameIdCount = 0;
@@ -636,30 +645,37 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             }
             let endPetId = this.getPetByAtkWeight(allPetIds, maxSameIdCount);
             if(!endPetId) return false;
+            
+            const sData = DataCenterS.getData(userId, PsStatisticModuleData);
+            const { fuseCostPetNum = 0, fuseCnt = 0 } = sData?.totalStatisticData ?? {};
+            const nextFuseCnt = fuseCnt + 1;
+            const nextFuseCostPetNum = fuseCostPetNum + curSelectPetKeys.length;
             const logInfo = {
                 logName: "P_Merge", logObj: {
                     userId,
                     coinType: GlobalEnum.CoinType.Diamond,
                     cost,
                     inputPets: curSelectPets,
-                    dailyCount: data?.fuseNumToday ?? 0,
-                    inputCount: data?.fuseTotalCostPetNum ?? 0,
-                    mergeCount: data?.fuseTotalNum ?? 0,
+                    dailyCount: (data?.fuseNumToday ?? 0) + 1,
+                    inputCount: nextFuseCnt,
+                    mergeCount: nextFuseCostPetNum,
                 },
             };
             this.petBagModuleS.deletePet(playerId, curSelectPetKeys, "合成");
             const res = this.petBagModuleS
-                .addPetWithMissingInfo(
-                    playerId,
-                    endPetId,
-                    "合成",
-                    earliestObtainTime,
-                    logInfo);
-            mw.Event.dispatchToClient(this.currentPlayer,
-                "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
-                endPetId);
-            if (!res) throw new Error("addPetWithMissingInfo error");
-            data.fusePetStatistic(curSelectPetKeys.length);
+            .addPetWithMissingInfo(
+                playerId,
+                endPetId,
+                "合成",
+                earliestObtainTime,
+                logInfo);
+                mw.Event.dispatchToClient(this.currentPlayer,
+                    "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
+                    endPetId);
+                    if (!res) throw new Error("addPetWithMissingInfo error");
+            sData.recordTotalData({ fuseCnt: nextFuseCnt, fuseCostPetNum: nextFuseCostPetNum });
+            data.fusePetStatistic();
+            ModuleService.getModule(StatisticModuleS)?.recordFuseConsume(cost, userId, "fuse");
             return true;
         } catch (e) {
             const userId = Player.getPlayer(playerId)?.userId;
@@ -744,6 +760,16 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         let isSucc: boolean = true;
         let endPetId = isGold ? petInfo.goldID : petInfo.RainBowId;
         this.petBagModuleS.deletePet(playerId, curSelectPetKeys, isGold ? "爱心化" : "彩虹化");
+        
+        const sData = DataCenterS.getData(userId, PsStatisticModuleData);
+        const { loveCnt = 0, loveCostPetNum = 0, rainbowCnt = 0, rainbowCostPetNum = 0 } = sData?.totalStatisticData ?? {};
+        const logTotalData = isGold ? {
+            loveCnt: loveCnt + 1,
+            loveCostPetNum: loveCostPetNum + curSelectPets.length,
+        } : {
+            rainbowCnt: rainbowCnt + 1,
+            rainbowCostPetNum: rainbowCostPetNum + curSelectPets.length,
+        };
         const logInfo = {
             logName: isGold ? "P_Heart" : "P_Rainbow", logObj: {
                 userId,
@@ -752,10 +778,11 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 chance: rate + "%",
                 cost,
                 inputPets: curSelectPets,
-                // TODO: "heartCount": 12 // 赛季总爱心化次数
-                // TODO: "rainbowCount": 12 // 赛季总彩虹化次数
+                ...logTotalData
             },
         };
+        sData.recordTotalData(logTotalData);
+
         if (random <= rate) {
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
             Object.assign(logInfo.logObj, {isSucc: true});
@@ -764,8 +791,12 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 endPetId,
                 isGold ? "爱心化" : "彩虹化",
                 earliestObtainTime,
-                logInfo);
-            if(!res) Log4Ts.error(PetBagModuleS, "net_fuseDevPet addPetWithMissingInfo failed, bag full");
+                logInfo);                
+                if(!res) { // 一般也不会出现
+                    Log4Ts.error(PetBagModuleS, "net_fuseDevPet addPetWithMissingInfo failed, bag full");
+                    return false;
+                }
+                ModuleService.getModule(StatisticModuleS)?.recordFuseConsume(cost, userId, isGold ? "love": "rainbow");
         } else {
             isSucc = false;
             utils.logP12Info(logInfo.logName, {...logInfo.logObj, isSucc: false});
@@ -957,6 +988,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             const [min, max] = GlobalData.Enchant.specialEnchantIdRange;
             return id >= min && id <= max;
         });
+        
+        const sData = DataCenterS.getData(userId, PsStatisticModuleData);
+        const { enchantCnt = 0 } = sData?.totalStatisticData ?? {};
+
         utils.logP12Info("P_Enchants", {
             userId,
             timestamp: Date.now(),
@@ -968,8 +1003,11 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             prePetEnchantIds,
             newEnchantIds: newIds,
             finalEnchantIds: enchantIds,
-            // TODO: "enchantCount": 12 // 赛季总附魔化次数（和该宠物无关）
+            enchantCnt: enchantCnt + 1,    
         });
+        sData.recordTotalData({ enchantCnt: enchantCnt + 1 });
+
+        ModuleService.getModule(StatisticModuleS)?.recordEnchantConsume(cost, userId)
         if (specialIds?.length) mw.Event.dispatchToClient(player, "ENCHANT_BROADCAST_ACHIEVEMENT_ENCHANT_SPECIAL");
         return EnchantPetState.SUCCESS;
     }

@@ -2,7 +2,7 @@ import { GlobalEnum } from "../../const/Enum";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import Log4Ts from "mw-log4ts";
-import Gtk, { GtkTypes, Regulator } from "gtoolkit";
+import Gtk, { GtkTypes, NoOverride, Regulator } from "gtoolkit";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import { CreSourceStr, PSStatisticPetKey, PetBagModuleData, petItemDataNew } from "../PetBag/PetBagModuleData";
 import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
@@ -25,6 +25,33 @@ type PlayerConsumeData = {
     staPotCnt: number; // 体力药水使用次数
     petAdd: number; // 本次增加宠物数量
 
+    levelDiaRed: number;    // 升级台消耗钻石数量
+    levelCnt: number;       // 升级台次数
+    fuseDiaRed: number;      // 合成台消耗钻石数量
+    fuseCnt: number;         // 合成台次数
+    enchantDiaRed: number;   // 附魔台消耗钻石数量
+    enchantCnt: number;      // 附魔台次数
+    loveDiaRed: number;      // 爱心化台消耗钻石数量
+    loveCnt: number;         // 爱心化台次数
+    rainbowDiaRed: number;   // 彩虹化台消耗钻石数量
+    rainbowCnt: number;      // 彩虹化台次数
+}
+// 赛季总统计 - 持久化 log用
+type PersistTotalStatisticData = {
+    hatchCnt?: number; // 赛季总买蛋次数（一次可以买多个蛋）
+    eggCnt?: number; // 赛季总孵化次数
+    fuseCnt?: number; // 赛季总合成次数
+    fuseCostPetNum?: number; // 赛季合成时总消耗宠物数量
+    loveCnt?: number; // 赛季总爱心化次数
+    loveCostPetNum?: number; // 赛季爱心化时总消耗宠物数量
+    rainbowCnt?: number; // 赛季总彩虹化次数
+    rainbowCostPetNum?: number; // 赛季彩虹化时总消耗宠物数量
+    levelCnt?: number; // 赛季总升级次数
+    enchantCnt?: number; // 赛季总附魔次数
+    achievementCnt?: number; // 赛季总成就完成次数
+    onlineRewardCount?: number; // 赛季总领取在线奖励次数
+    unlockAreaCount?: number; // 赛季总解锁关卡次数
+    unlockPortalCount?: number; // 赛季总解锁传送门次数
 }
 export default class PsStatisticModuleData extends JModuleData {
     //@Decorator.persistence()
@@ -51,6 +78,8 @@ export default class PsStatisticModuleData extends JModuleData {
     @Decorator.persistence()
     playerLoginRecord: [number, number][] = [];
 
+    @Decorator.persistence()
+    totalStatisticData: PersistTotalStatisticData = {};
     /**
      * 上次登录时间. ms
      * @return {number}
@@ -96,6 +125,9 @@ export default class PsStatisticModuleData extends JModuleData {
         }
         return todayCounter;
     }
+    protected onJDataInit() {
+        if(!this.totalStatisticData) this.totalStatisticData = {};
+    }
  
     public recordEnter(now: number) {
         ++this.playerEnteredCounterS;
@@ -108,7 +140,6 @@ export default class PsStatisticModuleData extends JModuleData {
         if (Gtk.isNullOrUndefined(lastLeave)) records[0][1] = now; // 若上次没记录到 leave 数据则补数据
         records.unshift([now, undefined]);
     }
-
     public recordLeave(now: number) {
         this.playerLoginRecord[0][1] = now;
         this.playerElapsedTimeS += this.playerLastedPlayTime;
@@ -118,6 +149,10 @@ export default class PsStatisticModuleData extends JModuleData {
         this.save(false);
     }
 
+    public recordTotalData(data: PersistTotalStatisticData) {
+        Object.assign(this.totalStatisticData, data);
+        this.save(false);
+    }
     // /**
     //  * 疑似作弊原因.
     //  * @type {string[]}
@@ -288,41 +323,79 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             staPotAdd: 0,
             staPotCnt: 0,
             petAdd: 0,
+            levelDiaRed: 0,
+            levelCnt: 0,
+            fuseDiaRed: 0,
+            fuseCnt: 0,
+            enchantDiaRed: 0,
+            enchantCnt: 0,
+            loveDiaRed: 0,
+            loveCnt: 0,
+            rainbowDiaRed: 0,
+            rainbowCnt: 0,
         });
     }
 
-    public recordConsume(coinType: GlobalEnum.CoinType, value: number, userId: string) {
+    public addPlayerConsumeData(userId: string, key: keyof PlayerConsumeData, val: number) {
         const consumeData = this.getPlayerConsumeRecord(userId);
+        consumeData[key] += val;
+    }
+
+    public recordConsume(coinType: GlobalEnum.CoinType, value: number, userId: string) {
         Log4Ts.log(PsStatisticModuleData, `record consume. type: ${coinType}. value: ${value} userId: ${userId} #record_consume`);
         const isAdd = value > 0;
         const val = Math.abs(value);
+        let key: keyof PlayerConsumeData = "diamondAdd"; 
         switch (coinType) {
             case GlobalEnum.CoinType.Diamond:
-                isAdd ? consumeData.diamondAdd += val: consumeData.diamondRed += val;
+                isAdd ? key = "diamondAdd": key = "diamondRed";
                 break;
             case GlobalEnum.CoinType.FirstWorldGold:
-                isAdd ? consumeData.gold_1_add += val : consumeData.gold_1_red += val;
+                isAdd ? key = "gold_1_add" : key = "gold_1_red";
                 break;
             case GlobalEnum.CoinType.SecondWorldGold:
-                isAdd ? consumeData.gold_2_add += val : consumeData.gold_2_red += val;
+                isAdd ? key = "gold_2_add" : key = "gold_2_red";
                 break;
             case GlobalEnum.CoinType.ThirdWorldGold:
-                isAdd ? consumeData.gold_3_add += val : consumeData.gold_3_red += val;
+                isAdd ? key = "gold_3_add" : key = "gold_3_red";
                 break;
             default:
                 break;
         }
+        this.addPlayerConsumeData(userId, key, val)
     }
 
     public recordAddPet(userId: string) {
-        const consumeData = this.getPlayerConsumeRecord(userId);
-        consumeData.petAdd++;
+        this.addPlayerConsumeData(userId, "petAdd", 1);
     }
 
     public recordStaPotConsume(val: number, userId: string) {
-        const consumeData = this.getPlayerConsumeRecord(userId);
-        consumeData.staPotAdd += val;
-        consumeData.staPotCnt++;
+        this.addPlayerConsumeData(userId, "staPotAdd", val);
+        this.addPlayerConsumeData(userId, "staPotCnt", 1);
+    }
+
+    public recordLevelConsume(costDiamond: number, userId: string) {
+        this.addPlayerConsumeData(userId, "levelCnt", 1);
+        this.addPlayerConsumeData(userId, "levelDiaRed", costDiamond);
+    }
+
+    public recordFuseConsume(costDiamond: number, userId: string, type: "fuse" | "rainbow" | "love") {
+        let cntKey: keyof PlayerConsumeData = "fuseCnt";
+        let redKey: keyof PlayerConsumeData = "fuseDiaRed";
+        if(type === "rainbow") {
+            cntKey = "rainbowCnt";
+            redKey = "rainbowDiaRed";
+        } else if(type === "love") {
+            cntKey = "loveCnt";
+            redKey = "loveDiaRed";
+        }
+        this.addPlayerConsumeData(userId, cntKey, 1);
+        this.addPlayerConsumeData(userId, redKey, costDiamond);
+    }
+
+    public recordEnchantConsume(costDiamond: number, userId: string) {
+        this.addPlayerConsumeData(userId, "enchantCnt", 1);
+        this.addPlayerConsumeData(userId, "enchantDiaRed", costDiamond);
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -463,19 +536,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData);
             const energyS = ModuleService.getModule(EnergyModuleS);
             const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
-            const playerConsumeData = this.getPlayerConsumeRecord(player?.userId) ?? {
-                diamondAdd: 0,
-                diamondRed: 0,
-                gold_1_add: 0,
-                gold_1_red: 0,
-                gold_2_add: 0,
-                gold_2_red: 0,
-                gold_3_add: 0,
-                gold_3_red: 0,
-                staPotAdd: 0,
-                staPotCnt: 0,
-                petAdd: 0,
-            };
+            const playerConsumeData = this.getPlayerConsumeRecord(player?.userId);
             const login = Math.floor((petStatisticData.playerLoginRecord[0][0] || 0) / 1000);
             const logout = Math.floor((now || 0) / 1000);
             const online = logout - login;

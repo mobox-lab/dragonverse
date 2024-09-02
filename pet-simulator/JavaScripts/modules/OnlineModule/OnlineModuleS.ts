@@ -4,7 +4,7 @@ import { GlobalEnum } from "../../const/Enum";
 import { numberArrToString, utils } from "../../util/uitls";
 import { AreaModuleData } from "../AreaDivide/AreaModuleData";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
-import { StatisticModuleS } from "../statistic/StatisticModule";
+import PsStatisticModuleData, { StatisticModuleS } from "../statistic/StatisticModule";
 import { OnlineModuleC } from "./OnlineModuleC";
 import { OnlineModuleData } from "./OnlineModuleData";
 
@@ -76,14 +76,17 @@ export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
             rewardCount.push(arr[1]);
             logRewardCountArr[1] = arr[1];
         }
+        const sData = DataCenterS.getData(userId, PsStatisticModuleData);
+        const { onlineRewardCount = 0 } = sData?.totalStatisticData ?? {};
         utils.logP12Info("P_ClaimLoginReward", {
             userId,
             timestamp: Date.now(),
             cfgId: id,
             coinType: type,
             reward: logRewardCountArr,
-            // TODO: "claimLoginRewardCount": 4 // 新增赛季总领取登录奖励次数
+            claimLoginRewardCount: onlineRewardCount + 1, // 赛季总领取登录奖励次数
         });
+        sData.recordTotalData({ onlineRewardCount: onlineRewardCount + 1 });
         this.getClient(playerId).net_showTips(numberArrToString(tipsArr), numberArrToString(rewardCount));
 
         if (cfg.buff.length == 0) return;

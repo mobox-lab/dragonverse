@@ -3,6 +3,7 @@ import { utils } from "../../util/uitls";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
+import PsStatisticModuleData from "../statistic/StatisticModule";
 import AchievementData from "./AchievementData";
 import AchievementModuleC from "./AchievementModuleC";
 
@@ -93,13 +94,17 @@ export default class AchievementModuleS extends ModuleS<
             default:
                 break;
         }
+        const userId = this.currentPlayer?.userId ?? '';
+        const sData = DataCenterS.getData(userId, PsStatisticModuleData);
+        const { achievementCnt = 0 } = sData?.totalStatisticData ?? {};
         utils.logP12Info("P_Achievement",{
             timestamp: Date.now(),
-            userId: this.currentPlayer?.userId ?? '',
+            userId,
             achievementId,
             rewardType: achievementReward,
             rewardNum: reward,
-            //TODO: "achievementCount": 12 // 新增赛季总成就完成次数
+            achievementCnt: achievementCnt + 1,// 赛季总成就完成次数
         });
+        sData.recordTotalData({achievementCnt: achievementCnt + 1});
     }
 }

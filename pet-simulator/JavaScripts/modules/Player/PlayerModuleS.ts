@@ -7,6 +7,7 @@ import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
 import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { petItemDataNew } from "../PetBag/PetBagModuleData";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
+import PsStatisticModuleData, { StatisticModuleS } from "../statistic/StatisticModule";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import PlayerBehavior from "./PlayerBehavior";
 import { PlayerModuleC } from "./PlayerModuleC";
@@ -160,6 +161,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         }
 
         this.levelUpNotice(this.currentPlayerId);
+        ModuleService.getModule(StatisticModuleS).recordLevelConsume(cost, userId);
+        const sData = DataCenterS.getData(userId, PsStatisticModuleData);
+        const { levelCnt = 0 } = sData?.totalStatisticData ?? {};
         utils.logP12Info("P_Upgrade", {
             userId,
             timestamp: Date.now(),
@@ -167,8 +171,9 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
             cost,
             cfgId: cfg.id,
             level: curLevel + 1,
-            // TODO: "upgradeCount": 12 // 新增赛季总升级次数
+            upgradeCount: levelCnt + 1,// 赛季总升级次数
         });
+        sData.recordTotalData({ levelCnt: levelCnt + 1 });
         return true;
     }
 
@@ -315,14 +320,20 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         const cfg = GameConfig.AreaDivide.getElement(cfgID);
 		const playerId = this.currentPlayerId;
 		const userId = this.currentPlayer?.userId ?? "";
+        
+        const sData = DataCenterS.getData(userId, PsStatisticModuleData);
+        const { unlockAreaCount = 0 } = sData?.totalStatisticData ?? {};
+
         utils.logP12Info("P_UnlockArea", {
             userId,
             timestamp: Date.now(),
             coinType: GlobalEnum.CoinType.SecondWorldGold,
             cost: cfg.Gold,
             areaId: cfg.id,
-            // TODO: "unlockAreaCount": 12 // 赛季总解锁关卡次数
+            unlockAreaCount: unlockAreaCount + 1,
         })
+        sData.recordTotalData({unlockAreaCount: unlockAreaCount + 1});
+
         return this.currentData.reduceGold(cfg.Gold, goldType, true, playerId);
     }
 
