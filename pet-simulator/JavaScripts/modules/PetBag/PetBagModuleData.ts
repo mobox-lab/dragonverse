@@ -431,13 +431,22 @@ export class PetBagModuleData extends Subdata {
         }
         let type = GameConfig.PetARR.getElement(id).QualityType;
         this.bornRandomEnchant(this.bagContainerNew[index], type);
-		if(logInfo?.logName) {
-			Object.assign(logInfo.logObj, {
-				petBuffs: this.bagContainerNew[index].p.b,
-				petKey: index,
-			});  
-			utils.logP12Info(logInfo.logName, logInfo.logObj)
-		}
+
+        const logPetInfo = {
+            I: id,
+            k: index,
+            petAtk: atk,
+            petName: name,
+            petBuffs: Array.from(this.bagContainerNew[index]?.p?.b ?? []),
+        }
+        if(["P_Merge", "P_Rainbow", "P_Heart"].includes(logInfo?.logName))
+            Object.assign(logInfo.logObj, {
+                outputPet: logPetInfo,
+            })
+        else if (logInfo?.logName)
+            Object.assign(logInfo.logObj, logPetInfo);
+		if(logInfo?.logName) utils.logP12Info(logInfo.logName, logInfo.logObj)
+
 		this.updatePetStatistic(this.bagContainerNew[index], true, creSource);
 		const statisticData = DataCenterS.getData(playerID, PsStatisticModuleData)
 		statisticData.recordAddPet();

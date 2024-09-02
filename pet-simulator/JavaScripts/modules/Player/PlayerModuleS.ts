@@ -1,16 +1,16 @@
 import { MapEx, oTraceError } from "odin";
+import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
+import { GlobalData } from "../../const/GlobalData";
+import { utils } from "../../util/uitls";
+import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
+import { EnchantBuff } from "../PetBag/EnchantBuff";
 import { petItemDataNew } from "../PetBag/PetBagModuleData";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
 import PlayerBehavior from "./PlayerBehavior";
 import { PlayerModuleC } from "./PlayerModuleC";
 import { PetSimulatorPlayerModuleData } from "./PlayerModuleData";
-import { AreaDivideManager } from "../AreaDivide/AreaDivideManager";
-import { GlobalData } from "../../const/GlobalData";
-import { GameConfig } from "../../config/GameConfig";
-import { EnchantBuff } from "../PetBag/EnchantBuff";
-import Log4Ts from "mw-log4ts";
 
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModuleData> {
 
@@ -305,7 +305,14 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         const cfg = GameConfig.AreaDivide.getElement(cfgID);
 		const playerId = this.currentPlayerId;
 		const userId = this.currentPlayer?.userId ?? "";
-        Log4Ts.log(PlayerModuleS, " buyArea areaId: " + cfgID + " cost_gold: " + cfg.Gold + " userId: " + userId + " #unlock_area");
+        utils.logP12Info("P_UnlockArea", {
+            userId,
+            timestamp: Date.now(),
+            coinType: GlobalEnum.CoinType.SecondWorldGold,
+            cost: cfg.Gold,
+            areaId: cfg.id,
+            // TODO: "unlockAreaCount": 12 // 赛季总解锁关卡次数
+        })
         return this.currentData.reduceGold(cfg.Gold, goldType, true, playerId);
     }
 

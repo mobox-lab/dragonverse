@@ -1,9 +1,10 @@
 import Log4Ts from "mw-log4ts";
 import { GameConfig } from "../../config/GameConfig";
-import { stringToNumberArr } from "../../util/uitls";
+import { stringToNumberArr, utils } from "../../util/uitls";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { AreaModuleC } from "./AreaModuleC";
 import { AreaModuleData } from "./AreaModuleData";
+import { GlobalEnum } from "../../const/Enum";
 
 export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData> {
 
@@ -37,7 +38,14 @@ export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData> {
             const playerId = this.currentPlayerId;
             const isSuccess = ModuleService.getModule(PlayerModuleS).reduceDiamond(cfg.Gem, playerId)
             if (!isSuccess) return false;
-            Log4Ts.log(AreaModuleS, " buyAreaPortal areaId: " + id + " cost_gem: " + cfg.Gem + " userId: " + userId + " #unlock_portal");
+            utils.logP12Info("P_UnlockPortal", {
+                userId,
+                timestamp: Date.now(),
+                coinType: GlobalEnum.CoinType.Diamond,
+                cost: cfg.Gem,
+                areaId: cfg.id,
+                // TODO: "unlockPortalCount": 12 // 赛季总解锁传送门次数
+            })
             this.addArea(playerId, id, false);
             return true;
         } catch (e) {
