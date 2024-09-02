@@ -188,6 +188,7 @@ addGMCommand(
     undefined,
     (player) => {
         Log4Ts.log(AuthModuleS, `report ps statistic data...`);
+        const d = DataCenterS.getData(player, AuthModuleData);
         mwext.ModuleService.getModule(AuthModuleS)
             .reportPetSimulatorStatistic(player.userId,
                 {
@@ -218,7 +219,7 @@ addGMCommand(
                     staPotCnt: 0,
                     staRed: 0,
                     stamina: 0,
-                })
+                }, {address: d?.holdAddress ?? '', nickname: d?.holdNickName ?? ''})
             .then(() => {
                 Log4Ts.log(AuthModuleS, `report ps statistic data success.`);
             });
@@ -2053,25 +2054,21 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         );
     }
 
-    public async reportPetSimulatorStatistic(userId: string, statistic: PetSimulatorStatisticNeedFill) {
-        const d = mwext.DataCenterS.getData(userId, AuthModuleData);
-        if (!d) {
-            Log4Ts.error(AuthModuleS, `player data of user ${userId} is not exist.`);
-            return false;
-        }
-
+    public async reportPetSimulatorStatistic(userId: string, statistic: PetSimulatorStatisticNeedFill, authInfo?: { address: string, nickname: string }) {
+        // 可能在 onPlayerLeft 的时候调用，所以在外层传 authInfo。
+        const { address, nickname } = authInfo ?? {};
         const gameId = GameServiceConfig.chainId;
         const requestParam: UserStatisticReq<PetSimulatorStatistic> = {
             userId,
             sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
-            address: d.holdAddress,
+            address,
             sceneName: "pet",
             gameId,
             data: {
                 ...statistic,
                 user_id: userId,
-                address: d.holdAddress,
-                nickname: d.holdNickName,
+                address,
+                nickname,
                 device_id: "",
             },
         };
@@ -2085,18 +2082,15 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         return respInJson?.message === "success";
     }
 
-    public async reportPetSimulatorPetDataStatistic(userId: string, statistic: PetSimulatorStatisticPetObj[]) {
-        const d = mwext.DataCenterS.getData(userId, AuthModuleData);
-        if (!d) {
-            Log4Ts.error(AuthModuleS, `player data of user ${userId} is not exist.`);
-            return false;
-        }
+    public async reportPetSimulatorPetDataStatistic(userId: string, statistic: PetSimulatorStatisticPetObj[], authInfo?: { address: string, nickname: string }) {
+        // 可能在 onPlayerLeft 的时候调用，所以在外层传 authInfo。
+        const { address } = authInfo ?? {};
         const gameId = GameServiceConfig.chainId;
         const time = Math.floor(Date.now() / 1000);
         const requestParam: UserStatisticReq<PetSimulatorStatisticPetObj[]> = {
             userId,
             sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
-            address: d.holdAddress,
+            address,
             sceneName: "pet",
             gameId,
             time,

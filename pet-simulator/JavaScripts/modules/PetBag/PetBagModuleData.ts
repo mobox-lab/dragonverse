@@ -469,8 +469,8 @@ export class PetBagModuleData extends Subdata {
 		if(logInfo?.logName) utils.logP12Info(logInfo.logName, logInfo.logObj)
 
 		this.updatePetStatistic(this.bagContainerNew[index], true, creSource);
-		const statisticData = DataCenterS.getData(playerID, PsStatisticModuleData)
-		statisticData.recordAddPet();
+        const userId = Player.getPlayer(playerID)?.userId ?? '';
+        if(SystemUtil.isServer()) ModuleService.getModule(StatisticModuleS).recordAddPet(userId);
         this.save(true);
         this.BagItemChangeAC.call(true, [index]);
         return true;
@@ -483,7 +483,6 @@ export class PetBagModuleData extends Subdata {
         }
         const keys = [];
         const userId = Player.getPlayer(playerID)?.userId ?? '';
-        const statisticData = DataCenterS.getData(playerID, PsStatisticModuleData);
         const pets: petItemDataNew[] = [];
         for(let i = 0; i < infos.length; i++) {
             this.newPetKey++;
@@ -506,7 +505,8 @@ export class PetBagModuleData extends Subdata {
             this.bornRandomEnchant(this.bagContainerNew[index], type);
             pets.push(this.bagContainerNew[index]);
             this.updatePetStatistic(this.bagContainerNew[index], true, creSource);
-            statisticData.recordAddPet();
+            if(SystemUtil.isServer()) ModuleService.getModule(StatisticModuleS).recordAddPet(userId);
+
         }
         if(logInfo?.logName) {
             const hatchPets = pets.map(p => ({
