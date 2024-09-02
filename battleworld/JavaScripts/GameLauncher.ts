@@ -71,6 +71,7 @@ import PlayerSettingModuleData from "./module/SettingModule/SettingModuleData";
 import BwStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./module/statistic/StatisticModule";
 import { BwP12BagModuleData, P12BagModuleC, P12BagModuleS } from "./module/bag/P12BagModule";
 import { ChainId, Chains } from "./const/Chains";
+import Log4Ts from "mw-log4ts";
 
 @Component
 export default class GameLauncher extends mw.Script {
@@ -148,7 +149,8 @@ export default class GameLauncher extends mw.Script {
                 this.registerGMVisibleKey();
             }
         }
-
+        Log4Ts.log(GameLauncher, `isPIE: ${SystemUtil.isPIE}`);
+        DataStorage.setTemporaryStorage(SystemUtil.isPIE);
         Globaldata.logLevel = this.logLevel;
         LogManager.instance.setLogLevel(Globaldata.logLevel);
 

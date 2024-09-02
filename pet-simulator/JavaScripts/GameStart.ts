@@ -48,6 +48,7 @@ import { VectorExt } from "./declaration/vectorext";
 import GodModService from "mw-god-mod";
 import { P12BagModuleC, P12BagModuleS, PsP12BagModuleData } from "./modules/bag/P12BagModule";
 import { ChainId, Chains } from "./const/Chains";
+import Log4Ts from "mw-log4ts";
 
 
 // declare global {
@@ -141,7 +142,8 @@ export default class GameStart extends mw.Script {
         this.onRegisterModule();
         mwaction;
         VectorExt.initialize();
-
+        Log4Ts.log(GameStart, `isPIE: ${SystemUtil.isPIE}`);
+        DataStorage.setTemporaryStorage(SystemUtil.isPIE);
         //初始化表格语言
         GameConfig.initLanguage(GameServiceConfig.isRelease ? -1 : Number(this.selectedLanguageIndex),
             (key) => {
