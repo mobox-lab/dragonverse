@@ -63,10 +63,7 @@ export default class LobbyUI extends LobbyUI_Generate {
                     .toString()));
         Yoact.bindYoact(() =>
             Gtk.trySetText(this.mStamina,
-                (GameServiceConfig.isRelease || GameServiceConfig.isBeta ?
-                        Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data) :
-                        ModuleService.getModule(EnergyModuleC).viewEnergy.data.toFixed(2)
-                ).toString()));
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString()));
         this.freshBtn.onClicked.add(() => {
             ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
         });

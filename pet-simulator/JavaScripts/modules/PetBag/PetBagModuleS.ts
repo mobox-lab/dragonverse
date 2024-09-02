@@ -1,5 +1,8 @@
+import Gtk from "gtoolkit";
+import Log4Ts from "mw-log4ts";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
+import GameServiceConfig from "../../const/GameServiceConfig";
 import { GlobalData } from "../../const/GlobalData";
 import { oTraceError } from "../../util/LogManager";
 import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
@@ -9,12 +12,9 @@ import { Task_ModuleS } from "../Task/Task_ModuleS";
 import { AuthModuleS } from "../auth/AuthModule";
 import { BagTool } from "./BagTool";
 import { EnchantBuff } from "./EnchantBuff";
+import { EnchantPetState } from "./P_Enchants";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
-import Log4Ts from "mw-log4ts";
-import Gtk from "gtoolkit";
-import { EnchantPetState } from "./P_Enchants";
-import GameServiceConfig from "../../const/GameServiceConfig";
 
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     private _playerModuleS: PlayerModuleS;
@@ -84,12 +84,6 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             atk = atkArr[0];
         let nameId = utils.GetRandomNum(1, 200);
         let name = utils.GetUIText(nameId);
-        if (logInfo?.logName) {
-            Object.assign(logInfo.logObj, {
-                petAtk: atk,
-                petName: name,
-            });
-        }
         return this.addPet(playerId, id, atk, name, addTime, logInfo, creSource);
     }
 
@@ -110,21 +104,23 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         const userId = this.currentPlayer?.userId ?? '';
         try {
             const playerId = this.currentPlayerId;
-            let res = ModuleService.getModule(PlayerModuleS).reduceGold(playerId, totalPrice, this.judgeGold(cfgId));
-            if (res) {
-                // const logObj = {
-                //     uid: userId,
-                //     coin: price,
-                //     coinType: this.judgeGold(cfgId),
-                //     eggId: cfg.id,
-                //     petId,
-                // };
+            const coinType = this.judgeGold(cfgId);
+            let res = ModuleService.getModule(PlayerModuleS).reduceGold(playerId, totalPrice, coinType);
+            if (res) { 
                 const infos = new Array(buyEggNum).fill(0).map(v => {
                     const petId = this.calcProbability(cfgId);
                     return { id: petId };
                 });
-                Log4Ts.error(PetBagModuleS, "#debug net_buyEgg cfgId:" + cfgId + " buyEggNum:" + buyEggNum + " totalPrice:" + totalPrice + " userId:" + userId);
-                const addRes = this.batchAddPet(playerId, infos, "孵化");
+                const addRes = this.batchAddPet(playerId, infos, "孵化", {
+                    logName: "P_Hatch",
+                    logObj: {
+                        coinType: coinType,
+                        eggId: cfg?.id,
+                        eggUnitPrice: price,
+                        amount: buyEggNum,
+                        cost: totalPrice
+                    } 
+                });
                 if(!addRes) { // 背包已满 返还资源
                     ModuleService.getModule(PlayerModuleS).addGold(playerId, totalPrice, this.judgeGold(cfgId));
                     return "bagFull";
@@ -211,7 +207,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         return true;
     }
 
-    public batchAddPet(playerID: number, infos: { atk?: number, id: number, name?: string; addTime?: number }[], creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化"): boolean {
+    public batchAddPet(playerID: number, infos: { atk?: number, id: number, name?: string; addTime?: number }[], creSource: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化", logInfo?: { logObj: Object, logName: string }): boolean {
         if(!infos?.length) {
             Log4Ts.warn(PetBagModuleS, "batchAddPet infos is null");
             return false;
@@ -231,11 +227,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 const nameId = utils.GetRandomNum(1, 200);
                 name = utils.GetUIText(nameId);
             }
-            console.log("#batch Info:",atk, id, name, addTime);
             addInfos.push({ atk, id, name, addTime });
             this.petNotice(playerID, id);
         }
-        const res = data.batchAddBagItem(playerID, creSource, addInfos);
+        const res = data.batchAddBagItem(playerID, creSource, addInfos, logInfo);
         if(!res) return false;
         const ids = infos.map(info => info.id);
         ModuleService.getModule(CollectModuleS).batchAddPet(playerID, ids);
@@ -635,10 +630,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             if(!endPetId) return false;
             const logInfo = {
                 logName: "P_Merge", logObj: {
-                    uid: userId,
-                    diamond: GlobalData.Fuse.cost,
+                    userId,
+                    coinType: GlobalEnum.CoinType.Diamond,
+                    cost: GlobalData.Fuse.cost,
                     inputPets: curSelectPets,
-                    petId: endPetId,
+                    // TODO: dailyCount
+                    // TODO: "inputCount": 331, //赛季总合成消耗的宠物数量
+                    // TODO: "mergeCount": 12, // 赛季总合成次数
                 },
             };
             this.petBagModuleS.deletePet(playerId, curSelectPetKeys, "合成");
@@ -733,15 +731,17 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         this.petBagModuleS.deletePet(playerId, curSelectPetKeys, isGold ? "爱心化" : "彩虹化");
         const logInfo = {
             logName: isGold ? "P_Heart" : "P_Rainbow", logObj: {
-                uid: userId,
-                diamond: cost,
+                userId,
+                timestamp: Date.now(),
+                coinType: GlobalEnum.CoinType.Diamond,
                 chance: rate + "%",
+                cost,
                 inputPets: curSelectPets,
-                petId: endPetId,
+                // TODO: "heartCount": 12 // 赛季总爱心化次数
+                // TODO: "rainbowCount": 12 // 赛季总彩虹化次数
             },
         };
         if (random <= rate) {
-            // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_5.Value);
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseSuccess");
             Object.assign(logInfo.logObj, {isSucc: true});
             const res = ModuleService.getModule(PetBagModuleS).addPetWithMissingInfo(
@@ -752,9 +752,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 logInfo);
             if(!res) Log4Ts.error(PetBagModuleS, "net_fuseDevPet addPetWithMissingInfo failed, bag full");
         } else {
-            utils.logP12Info(logInfo.logName, {...logInfo.logObj, isSucc: false});
             isSucc = false;
-            // MessageBox.showOneBtnMessage(GameConfig.Language.Text_messagebox_6.Value);
+            utils.logP12Info(logInfo.logName, {...logInfo.logObj, isSucc: false});
             mw.Event.dispatchToClient(this.currentPlayer, "P_PET_DEV_SHOW_FUSE_MESSAGE", "devFuseFailed");
         }
         mw.Event.dispatchToClient(this.currentPlayer, "FUSE_BROADCAST_ACHIEVEMENT_CHANGE_TYPE", endPetId, isSucc, petIds);
@@ -945,13 +944,16 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         });
         utils.logP12Info("P_Enchants", {
             userId,
-            diamond: cost,
+            timestamp: Date.now(),
+            cost,
+            coinType: GlobalEnum.CoinType.Diamond,
             curSelectPet,
             curSelectPetEnchantCnt,
             selectEnchantId,
             prePetEnchantIds,
             newEnchantIds: newIds,
             finalEnchantIds: enchantIds,
+            // TODO: "enchantCount": 12 // 赛季总附魔化次数（和该宠物无关）
         });
         if (specialIds?.length) mw.Event.dispatchToClient(player, "ENCHANT_BROADCAST_ACHIEVEMENT_ENCHANT_SPECIAL");
         return EnchantPetState.SUCCESS;

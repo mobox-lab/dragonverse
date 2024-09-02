@@ -246,6 +246,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         interactUI.interactBtn.onClicked.clear();
         interactUI.interactBtn.onClicked.add(this.interactToShowInfo.bind(this, index));
         UIService.showUI(interactUI, UILayerTop);
+        interactUI.rootCanvas.size = new Vector2(63.5, 61.5);
         KeyOperationManager.getInstance().onKeyUp(interactUI, Keys.F, this.interactToShowInfo.bind(this, index));
     }
 

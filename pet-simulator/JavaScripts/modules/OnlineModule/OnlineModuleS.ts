@@ -1,9 +1,8 @@
+import Log4Ts from "mw-log4ts";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
-import Log4Ts from "mw-log4ts";
 import { numberArrToString, utils } from "../../util/uitls";
 import { AreaModuleData } from "../AreaDivide/AreaModuleData";
-import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { StatisticModuleS } from "../statistic/StatisticModule";
 import { OnlineModuleC } from "./OnlineModuleC";
@@ -59,40 +58,32 @@ export class OnlineModuleS extends ModuleS<OnlineModuleC, OnlineModuleData> {
             return;
         }
         this.currentData.addHasGet(id);
-        let arr = cfg.RewardArr;
-        let type = this.judgeGold(playerId);
-        let tipsArr: number[] = [];
-        let rewardCount: number[] = [];
-
+        const arr = cfg.RewardArr;
+        const type = this.judgeGold(playerId);
+        const tipsArr: number[] = [];
+        const rewardCount: number[] = [];
+        const logRewardCountArr: number[] = [0, 0];
+        const userId = Player.getPlayer(playerId)?.userId ?? '';
         if (arr[0]) {
             this.playerModuleS.addGold(playerId, arr[0], type);
             tipsArr.push(267);
             rewardCount.push(arr[0]);
+            logRewardCountArr[0] = arr[0];
         }
         if (arr[1]) {
             this.playerModuleS.addDiamond(playerId, arr[1]);
             tipsArr.push(268);
             rewardCount.push(arr[1]);
+            logRewardCountArr[1] = arr[1];
         }
-        if (arr[2]) {
-            let arrAtk = GameConfig.PetARR.getElement(arr[2]).PetAttack;
-            let atk = 0;
-            if (arrAtk.length > 1)
-                atk = utils.GetRandomNum(arrAtk[0], arrAtk[1]);
-            else
-                atk = arrAtk[0];
-            let nameId = utils.GetRandomNum(1, 200);
-            let name = GameConfig.Language.getElement(nameId).Value;
-            ModuleService.getModule(PetBagModuleS).addPet(playerId, arr[2], atk, name);
-            tipsArr.push(269);
-            rewardCount.push(0);
-        }
-        if (arr[3]) {
-            this.playerModuleS.addGold(playerId, arr[3], GlobalEnum.CoinType.SummerGold);
-            tipsArr.push(766);
-            rewardCount.push(0);
-        }
-
+        utils.logP12Info("P_ClaimLoginReward", {
+            userId,
+            timestamp: Date.now(),
+            cfgId: id,
+            coinType: type,
+            reward: logRewardCountArr,
+            // TODO: "claimLoginRewardCount": 4 // 新增赛季总领取登录奖励次数
+        });
         this.getClient(playerId).net_showTips(numberArrToString(tipsArr), numberArrToString(rewardCount));
 
         if (cfg.buff.length == 0) return;
