@@ -178,6 +178,11 @@ export default class StageTrigger extends Script {
         }
     }
 
+    // 谁先点go，谁是owner
+    public changeOwnerByClick(owner: number) {
+        this.owner = owner;
+    }
+
     onTriggeredPlayerChanged() {
         if (this.playerCountUI) {
             let count = this.parsePlayerIds().length;
@@ -249,12 +254,13 @@ export default class StageTrigger extends Script {
         }
         ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
         if (playerID == this.owner) {
-            let ids = this.parsePlayerIds().splice(0, 4);
+            // let ids = this.parsePlayerIds().splice(0, 4);
             this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(
                 this.stageWorldIndex,
                 this.stageGroupId,
                 this.difficulty
             );
+            const ids = [this.owner];
             GameManager.startGame(ids, this.stageCfgId);
         }
     }
