@@ -17,7 +17,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
     /**执行成就（参数成就类型-对应次数） */
     public onExecuteAchievementAction: Action2<GlobalEnum.AchievementType, number> = new Action2<GlobalEnum.AchievementType, number>();
     /**成就奖励事件 */
-    public onAchievementRewardAction: Action2<GlobalEnum.AchievementReward, number> = new Action2<GlobalEnum.AchievementReward, number>();
+    public onAchievementRewardAction: Action3<number, GlobalEnum.AchievementReward, number> = new Action3<number, GlobalEnum.AchievementReward, number>();
 
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void {
@@ -306,7 +306,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
             tipsTxt = GameConfig.Language.Tips_gift_3.Value;
         }
         if (rewardAmount == 0) return;
-        this.onAchievementRewardAction.call(rewardType, rewardAmount);
+        this.onAchievementRewardAction.call(achievementId, rewardType, rewardAmount);
         TipsManager.instance.showTip(utils.Format(tipsTxt, rewardAmount));
     }
 

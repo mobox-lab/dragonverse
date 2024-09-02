@@ -1,4 +1,5 @@
 ﻿import { GlobalEnum } from "../../const/Enum";
+import { utils } from "../../util/uitls";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
 import { PetBagModuleS } from "../PetBag/PetBagModuleS";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
@@ -54,6 +55,7 @@ export default class AchievementModuleS extends ModuleS<
      */
     @Decorator.noReply()
     public net_getAchievementReward(
+        achievementId: number,
         achievementReward: GlobalEnum.AchievementReward,
         reward: number,
     ): void {
@@ -91,5 +93,13 @@ export default class AchievementModuleS extends ModuleS<
             default:
                 break;
         }
+        utils.logP12Info("P_Achievement",{
+            timestamp: Date.now(),
+            userId: this.currentPlayer?.userId ?? '',
+            achievementId,
+            rewardType: achievementReward,
+            rewardNum: reward,
+            //TODO: "achievementCount": 12 // 新增赛季总成就完成次数
+        });
     }
 }

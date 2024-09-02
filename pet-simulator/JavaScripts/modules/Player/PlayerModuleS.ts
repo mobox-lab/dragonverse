@@ -130,9 +130,10 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
     public async net_levelUp(id: number): Promise<boolean> {
         const cfg = GameConfig.Upgrade.getElement(id + 1);
         if (!cfg) return false;
-
+        const userId = this.currentPlayer?.userId ?? '';
 		const playerId = this.currentPlayerId;
-        let cost = cfg.Diamond[this.currentData.getLevelData(id)] ?? 0;
+        const curLevel = this.currentData.getLevelData(id) ?? 0;
+        let cost = cfg.Diamond[curLevel] ?? 0;
         if (!this.currentData.reduceDiamond(cost, true, playerId)) return false;
 
         ModuleService.getModule(Task_ModuleS).strengthen(this.currentPlayer, GlobalEnum.StrengthenType.LevelUp);
@@ -159,6 +160,15 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         }
 
         this.levelUpNotice(this.currentPlayerId);
+        utils.logP12Info("P_Upgrade", {
+            userId,
+            timestamp: Date.now(),
+            coinType: GlobalEnum.CoinType.Diamond,
+            cost,
+            cfgId: cfg.id,
+            level: curLevel + 1,
+            // TODO: "upgradeCount": 12 // 新增赛季总升级次数
+        });
         return true;
     }
 
