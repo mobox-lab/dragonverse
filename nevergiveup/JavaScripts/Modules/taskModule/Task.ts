@@ -130,9 +130,8 @@ export class Task {
         let info = this.cfg.taskInfo;
         switch (this.cfg.taskSolveType) {
             case EmTaskWay.UnlockTech:
-                // TODO: 适配多语言
-                let cfg = GameConfig.TalentTree.getElement(this.cfg.taskSolvetime);
-                info = StringUtil.format(this.cfg.taskInfo, cfg.nameCN);
+                const cfg = GameConfig.TalentTree.getElement(this.cfg.taskSolvetime);
+                info = StringUtil.format(this.cfg.taskInfo, GameConfig.Language.getElement(cfg.name).Value);
                 break;
             case EmTaskWay.UnlockTower:
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);

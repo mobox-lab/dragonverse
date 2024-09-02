@@ -6,6 +6,7 @@ import { TweenCommon } from "../../TweenCommon";
 import { ETalentBuffValue, ETalentType } from "../../const/enum";
 import TalentModuleC from "../../Modules/talent/TalentModuleC";
 import TalentTreeContainer_Generate from "../../ui-generate/TalentTree/TalentTreeContainer_generate";
+import { GameConfig } from "../../config/GameConfig";
 
 export const TalentTreeActions = {
     onItemSelected: new Action1<number>(),
@@ -99,7 +100,7 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
         const cost = talent.getUpdateLevelCost();
         this.goldTxt_1.text = `${cost[0] ?? "--"}`;
         this.techPointTxt_1.text = `${cost[1] ?? "--"}`;
-        this.infoTxtDesc.text = StringUtil.format(talent.data.descCN, value);
+        this.infoTxtDesc.text = StringUtil.format(GameConfig.Language.getElement(talent.data.desc).Value, value);
         this.infoBtn.enable = talent.canActive.status && talent.level < talent.maxLevel;
     }
 
