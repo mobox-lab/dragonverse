@@ -46,7 +46,7 @@ export class OnlineModuleC extends ModuleC<OnlineModuleS, OnlineModuleData> {
 
     /**玩家进入游戏 初始化 */
     private onOnlineDayChange() {
-				const playerTotalOnlineTime = ModuleService.getModule(StatisticModuleC).getPlayerData().playerTotalOnlineTime;
+        const playerTotalOnlineTime = ModuleService.getModule(StatisticModuleC).getPlayerData().playerTotalOnlineTime;
 				// console.log('=====net_requestAccept=== playerTotalOnlineTime', playerTotalOnlineTime)
         let curId = 0;
         this.data.HasGetArr.forEach((item) => {

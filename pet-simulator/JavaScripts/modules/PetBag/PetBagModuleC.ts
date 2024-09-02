@@ -13,6 +13,7 @@ import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { GlobalEnum } from "../../const/Enum";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import Gtk from "gtoolkit";
+import { TimerModuleUtils } from "../TimeModule/time";
 
 
 export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
@@ -37,6 +38,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.initEvent();
         this.trainChange();
         this.devInit();
+        TimerModuleUtils.addOnlineDayListener(() => this.clearFuseToday(), this);
+        TimerModuleUtils.addLoginDayListener(() => this.clearFuseToday(), this);
     }
 
     private initData() {
@@ -49,7 +52,15 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     protected onEnterScene(sceneType: number): void {
         this.calcBuff();
     }
-
+    public clearFuseToday() {
+        console.log("#P12 今日合成次数刷新");
+        // setTimeout(() => {//可能出现的情况，服务器还没就绪的时候请求，有概率报错https://pandora.233leyuan.com/crashAnalysis/exceptionDetails?app_name=com.meta.box&start_time=1704816000&end_time=1704956700&request_id=1745342006802169857&requestIdDetail=1745342130244730881&kindIndex=0
+        //     Utils.log2FeiShu("C端日常任务刷新" + Player?.localPlayer?.userId + "hsf" + GameManager?.playerName);
+        // }, 3000)
+        TimeUtil.delayExecute(() => {
+            this.server.net_clearFuseToday();
+        }, 1);
+    }
     private initUI() {
         this.bagUI = mw.UIService.getUI(P_Bag);
         this.devUI = mw.UIService.getUI(P_Pet_Dev);

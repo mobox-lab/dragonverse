@@ -165,7 +165,7 @@ export namespace TweenCommon {
             let node = TweenCommon.flyItemPool.spawn();
             flyView.rootCanvas.addChild(node.uiObject);
             node.uiObject.position = startPos.clone();
-            let offsetPos = new mw.Vector2(MathUtil.randomInt(-100, 100), MathUtil.randomInt(-100, 100)).add(startPos);
+            let offsetPos = new mw.Vector2(MathUtil.randomInt(-10, 10), MathUtil.randomInt(-10, 10)).add(startPos);
 
             let tween = new mw.Tween({ pos: offsetPos.clone(), scale: new mw.Vector2(0.6, 0.6) })
                 .to({ pos: endPos.clone(), scale: new mw.Vector2(1, 1) }, Config.goldAnimInitTime * 1000)

@@ -82,7 +82,7 @@ export class TalentItem extends TalentItem_Generate {
         this.setCurrentLevel(currentLevel);
         this.refreshCanActive();
 
-        this.textTalentName.text = data.nameCN;
+        this.textTalentName.text = GameConfig.Language.getElement(data.name).Value;
         this.mItem.normalImageGuid = data.icon;
         this.mNotActive.imageGuid = data.iconGray;
         this.mItem.size = new Vector2(data.iconSize, data.iconSize);

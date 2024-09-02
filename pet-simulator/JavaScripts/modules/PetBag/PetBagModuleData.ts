@@ -178,6 +178,18 @@ export class PetBagModuleData extends Subdata {
     @Decorator.persistence()
     private curEquipPet: number[];
 
+    /** 今日已合成次数 每天刷新 */
+    @Decorator.persistence()
+    public fuseNumToday: number = 0;
+
+    /** 总已合成次数 */
+    @Decorator.persistence()
+    public fuseTotalNum: number = 0;
+
+    /** 总合成消耗的宠物数量 */
+    @Decorator.persistence()
+    public fuseTotalCostPetNum: number = 0;
+
     /**宠物跟随数量 */
     @Decorator.persistence()
     private petFollowCount: number;
@@ -340,7 +352,16 @@ export class PetBagModuleData extends Subdata {
                 DataStorage.asyncSetData(dataKey, recordInfo);
         });
     }
-
+    public clearFuseToday() {
+        this.fuseNumToday = 0;
+        this.save(true);
+    }
+    public fusePetStatistic(costPetNum: number) {
+        this.fuseTotalCostPetNum += costPetNum;
+        this.fuseNumToday++;
+        this.fuseTotalNum++;
+        this.save(true);
+    }
     /**宠物统计数据 */
     public getPersistStatisticInfoByKey(key: number): number[] {
         return this.petStatisticMapNew?.find((p) => p[PSStatisticPetKey.petKey] === key) ?? [];

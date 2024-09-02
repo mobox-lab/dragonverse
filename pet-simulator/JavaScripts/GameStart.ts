@@ -48,6 +48,8 @@ import { VectorExt } from "./declaration/vectorext";
 import GodModService from "mw-god-mod";
 import { P12BagModuleC, P12BagModuleS, PsP12BagModuleData } from "./modules/bag/P12BagModule";
 import { ChainId, Chains } from "./const/Chains";
+import Log4Ts from "mw-log4ts";
+import { TimerModuleC, TimerModuleData, TimerModuleS } from "./modules/TimeModule/time";
 
 
 // declare global {
@@ -141,7 +143,8 @@ export default class GameStart extends mw.Script {
         this.onRegisterModule();
         mwaction;
         VectorExt.initialize();
-
+        Log4Ts.log(GameStart, `isPIE: ${SystemUtil.isPIE}`);
+        DataStorage.setTemporaryStorage(SystemUtil.isPIE);
         //初始化表格语言
         GameConfig.initLanguage(GameServiceConfig.isRelease ? -1 : Number(this.selectedLanguageIndex),
             (key) => {
@@ -222,6 +225,7 @@ export default class GameStart extends mw.Script {
     }
 
     protected onRegisterModule(): void {
+        ModuleService.registerModule(TimerModuleS, TimerModuleC, TimerModuleData);
         ModuleService.registerModule(AuthModuleS, AuthModuleC, PetSimulatorAuthModuleData);
         ModuleService.registerModule(HudModuleS, HudModuleC, null);
         ModuleService.registerModule(AreaModuleS, AreaModuleC, AreaModuleData);

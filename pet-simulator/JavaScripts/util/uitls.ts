@@ -66,8 +66,30 @@ export class utils {
     }
 
     // 日志优化 上报
-    public static logP12Info(name: string, info: any) {
-        Log4Ts.log({name}, JSON.stringify(info) + " #P12");
+    public static logP12Info(name: string, info: any, type?: "error" | "info" | "warn"): void {
+        const announcer = { name };
+        const msg = JSON.stringify(info) + " #P12";
+        if(type == "error"){
+            Log4Ts.error(announcer, msg);
+        } else if(type == "warn"){
+            Log4Ts.warn(announcer, msg);
+        } else {
+            Log4Ts.log(announcer, msg);
+        }
+    }
+
+    /** 计算合成所需花费，参数为今日已合成过的次数 */
+    public static fuseCostCompute(fusedNum: number) {
+        // 第1-10次： 每次合成都是5000
+        // 第11-300次： 5000+ （n-10）*2000
+        // 第301次-无穷： 585000 * power （1.2， （n-300））
+        if(fusedNum <= 10) {
+            return 5000;
+        } else if(fusedNum <= 300) {
+            return 5000 + (fusedNum - 10) * 2000;
+        } else {
+            return 585000 * Math.pow(1.2, fusedNum - 300);
+        }
     }
 
     /**

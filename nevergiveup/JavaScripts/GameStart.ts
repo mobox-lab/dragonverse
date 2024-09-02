@@ -51,6 +51,7 @@ import WaveModuleData from "./Modules/waveModule/WaveModuleData";
 import { JumpRoomModuleC, JumpRoomModuleS } from "./Modules/JumpRoom/JumpRoomModule";
 import LogoAnimUI from "./UI/LogoAnimUI";
 import { P12BagModuleC, P12BagModuleS, TdP12BagModuleData } from "./Modules/bag/P12BagModule";
+import Log4Ts from "mw-log4ts";
 
 export namespace Config {
     export let skipGuide: boolean = false;
@@ -123,6 +124,8 @@ export default class GameStart extends Script {
         GameServiceConfig.isBeta = this.isBeta;
         GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
         GameServiceConfig.chainId = this.customChainId;
+        Log4Ts.log(GameStart, `isPIE: ${SystemUtil.isPIE}`);
+        DataStorage.setTemporaryStorage(SystemUtil.isPIE);
         this.setlanguage();
         for (const k in Config) {
             if (this.hasOwnProperty(k)) {

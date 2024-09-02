@@ -49,11 +49,11 @@ export class FlyText {
             textBlock = this._textPools.pop();
         }
         // 给一点初始偏移，方便做动画
-        vec2.x -= 120
-        vec2.y -= 100;
-        let toX = Utils.getRandomIntInclusive(50, 100);
+        vec2.x -= 30
+        vec2.y -= 20;
+        let toX = Utils.getRandomIntInclusive(5, 10);
         Math.random() < 0.5 ? toX = -toX : toX = toX;
-        let toY = Utils.getRandomIntInclusive(-100, -50);
+        let toY = Utils.getRandomIntInclusive(-10, -5);
         // 用Tween，并结合PI来做曲线动画
         let animator = new Tween({ a: 0 }).to({ a: Math.PI }, Config.hurtTextDuration * 1000).onUpdate((object) => {
             textBlock.position = vec2.clone().add(new Vector2(toX * object.a / Math.PI, toY * Math.sin(object.a) * 2));

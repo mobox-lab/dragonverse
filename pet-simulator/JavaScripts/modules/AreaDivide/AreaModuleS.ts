@@ -49,7 +49,12 @@ export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData> {
             this.addArea(playerId, id, false);
             return true;
         } catch (e) {
-            Log4Ts.error(AreaModuleS, " net_buyTranArea error:" + e + " userId:" + userId);
+            utils.logP12Info("P_Error", {
+                userId: userId,
+                timestamp: Date.now(),
+                errorMsg: "AreaModuleS net_buyTranArea error: " + e,
+                cfgId: id,
+            }, "error");
             return false;
         }
     }

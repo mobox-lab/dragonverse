@@ -3,6 +3,7 @@ import { Yoact } from "../../depend/yoact/Yoact";
 import TalentItem_Generate from "../../ui-generate/TalentTree/TalentItem_generate";
 import { TalentItem } from "./TalentItem";
 import { ETalentType } from "../../const/enum";
+import { GameConfig } from "../../config/GameConfig";
 
 export class UITalentItem extends TalentItem_Generate {
     private _talent: TalentItem;
@@ -49,7 +50,7 @@ export class UITalentItem extends TalentItem_Generate {
      * 刷新状态
      */
     public refreshStatus() {
-        this.textTalentName.text = this._talent.data.nameCN;
+        this.textTalentName.text = GameConfig.Language.getElement(this._talent.data.name).Value;
         this.mItem.normalImageGuid = this._talent.data.icon;
         this.mNotActive.imageGuid = this._talent.data.iconGray;
         this.canActive.status = this._talent.canActive.status;
