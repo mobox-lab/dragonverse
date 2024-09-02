@@ -10,7 +10,7 @@
 import { GameManager } from "../GameManager";
 import { EnergyModuleS } from "../Modules/Energy/EnergyModule";
 import { TweenCommon } from "../TweenCommon";
-import { TipsManager } from "../UI/Tips/CommonTipsManagerUI";
+import CommonTipsManagerUI from "../UI/Tips/CommonTipsManagerUI";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
 import GameServiceConfig from "../const/GameServiceConfig";
@@ -261,6 +261,14 @@ export default class StageTrigger extends Script {
                 this.difficulty
             );
             const ids = [this.owner];
+            const stages = GameManager.getStages();
+            const allStageCfgIds = stages.map((stage) => stage.stageCfgId);
+            const isAlreadyUsed = allStageCfgIds.includes(this.stageCfgId);
+            if (isAlreadyUsed) {
+                // todo改多语言
+                mw.UIService.show(CommonTipsManagerUI).showTips("该舞台已经开始，请前往其他舞台开始游戏");
+                return;
+            }
             GameManager.startGame(ids, this.stageCfgId);
         }
     }
