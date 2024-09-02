@@ -565,9 +565,10 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 `found: ${curSelectPets}.`);
             return false;
         }
-        if (!this.playerModuleS.reduceDiamond(GlobalData.Fuse.cost, playerId)) return false;
-
         const data = this.currentData;
+        const cost = utils.fuseCostCompute(data?.fuseNumToday ?? 0);
+        if (!this.playerModuleS.reduceDiamond(cost, playerId)) return false;
+
         if (curSelectPets.length >= data.CurBagCapacity) return false;
 
         const preBagItems = data.BagItems;
@@ -639,11 +640,11 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 logName: "P_Merge", logObj: {
                     userId,
                     coinType: GlobalEnum.CoinType.Diamond,
-                    cost: GlobalData.Fuse.cost,
+                    cost,
                     inputPets: curSelectPets,
-                    // TODO: dailyCount
-                    // TODO: "inputCount": 331, //赛季总合成消耗的宠物数量
-                    // TODO: "mergeCount": 12, // 赛季总合成次数
+                    dailyCount: data?.fuseNumToday ?? 0,
+                    inputCount: data?.fuseTotalCostPetNum ?? 0,
+                    mergeCount: data?.fuseTotalNum ?? 0,
                 },
             };
             this.petBagModuleS.deletePet(playerId, curSelectPetKeys, "合成");
@@ -658,6 +659,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                 "FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
                 endPetId);
             if (!res) throw new Error("addPetWithMissingInfo error");
+            data.fusePetStatistic(curSelectPetKeys.length);
             return true;
         } catch (e) {
             const userId = Player.getPlayer(playerId)?.userId;
@@ -1013,5 +1015,9 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         if (specialIds?.length) mw.Event.dispatchToClient(player, "ENCHANT_BROADCAST_ACHIEVEMENT_ENCHANT_SPECIAL");
     }
 
+    public net_clearFuseToday() {
+        const playerId = this.currentPlayerId;
+        DataCenterS.getData(playerId, PetBagModuleData)?.clearFuseToday();
+    }
 }
 

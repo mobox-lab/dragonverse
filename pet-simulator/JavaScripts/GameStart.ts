@@ -49,6 +49,7 @@ import GodModService from "mw-god-mod";
 import { P12BagModuleC, P12BagModuleS, PsP12BagModuleData } from "./modules/bag/P12BagModule";
 import { ChainId, Chains } from "./const/Chains";
 import Log4Ts from "mw-log4ts";
+import { TimerModuleC, TimerModuleData, TimerModuleS } from "./modules/TimeModule/time";
 
 
 // declare global {
@@ -224,6 +225,7 @@ export default class GameStart extends mw.Script {
     }
 
     protected onRegisterModule(): void {
+        ModuleService.registerModule(TimerModuleS, TimerModuleC, TimerModuleData);
         ModuleService.registerModule(AuthModuleS, AuthModuleC, PetSimulatorAuthModuleData);
         ModuleService.registerModule(HudModuleS, HudModuleC, null);
         ModuleService.registerModule(AreaModuleS, AreaModuleC, AreaModuleData);

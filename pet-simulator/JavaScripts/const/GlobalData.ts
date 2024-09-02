@@ -905,7 +905,7 @@ export namespace GlobalData {
         /**花费 */
         public static cost: number = 5000;
         /**最多融合数量 */
-        public static maxFuseCount: number = 12;
+        public static maxFuseCount: number = 8;
         /**最少融合数量 */
         public static minFuseCount: number = 3;
         /**融合触发器guid */

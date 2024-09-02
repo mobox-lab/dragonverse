@@ -8,7 +8,7 @@ import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
 import { PetBagItem } from "./P_Bag";
 import { PetBagModuleC } from "./PetBagModuleC";
-import { petItemDataNew } from "./PetBagModuleData";
+import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
 import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
@@ -65,14 +65,14 @@ export class P_FusePanel extends Fusepanel_Generate {
     /**改变目前容器展示 */
     public changeContainer(petItem: PetBag_Item) {
         petItem.setLockVis(!petItem.getLockVis());
-		
+  
         let isEquip = petItem.getLockVis();
 
         if (isEquip) {
             if (this.isCanClick) this.curSelectPets.push(petItem.petData);
-			else petItem.setLockVis(false);
+   else petItem.setLockVis(false);
         } else {
-			this.curSelectPets = this.curSelectPets.filter((item) => item.k != petItem.petData.k);
+   this.curSelectPets = this.curSelectPets.filter((item) => item.k != petItem.petData.k);
         }
         this.changeUIText();
     }
@@ -80,10 +80,11 @@ export class P_FusePanel extends Fusepanel_Generate {
     /**点击按钮进行合成 */
     private onClickFuse() {
         if (this.curSelectPets.length < GlobalData.Fuse.minFuseCount) return;
-
+        const data = DataCenterC.getData(PetBagModuleData);
+        const cost = utils.fuseCostCompute(data?.fuseNumToday ?? 0);
         if (!ModuleService
             .getModule(PlayerModuleC)
-            .isDiamondEnough(GlobalData.Fuse.cost)) {
+            .isDiamondEnough(cost)) {
             this.hide();
             MessageBox.showOneBtnMessage(
                 GameConfig.Language.Text_Fuse_UI_3.Value,
@@ -120,7 +121,11 @@ export class P_FusePanel extends Fusepanel_Generate {
     /**改变花费 */
     private changeUIText() {
         let count = this.curSelectPets.length;
-        this.mText_Money.text = utils.formatNumber(GlobalData.Fuse.cost);
+        const data = DataCenterC.getData(PetBagModuleData);
+        const cost = utils.fuseCostCompute(data?.fuseNumToday ?? 0);
+        this.mText_Money.text = utils.formatNumber(cost);
+        this.text_FuseNum.text = `${count}/${GlobalData.Fuse.maxFuseCount}只`;
+        this.text_CumulativeNum.text = `${data?.fuseNumToday ?? 0}次`;
         if (count < GlobalData.Fuse.minFuseCount) {
             this.mText_Number.text = utils.Format(GameConfig.Language.Page_UI_Tips_13.Value, count);
             this.probabilityCanvas.visibility = SlateVisibility.Hidden;

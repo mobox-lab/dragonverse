@@ -78,6 +78,20 @@ export class utils {
         }
     }
 
+    /** 计算合成所需花费，参数为今日已合成过的次数 */
+    public static fuseCostCompute(fusedNum: number) {
+        // 第1-10次： 每次合成都是5000
+        // 第11-300次： 5000+ （n-10）*2000
+        // 第301次-无穷： 585000 * power （1.2， （n-300））
+        if(fusedNum <= 10) {
+            return 5000;
+        } else if(fusedNum <= 300) {
+            return 5000 + (fusedNum - 10) * 2000;
+        } else {
+            return 585000 * Math.pow(1.2, fusedNum - 300);
+        }
+    }
+
     /**
      * 随机获取指定范围内的整数
      * @param Min 起始值
