@@ -3,7 +3,7 @@ import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
 import { GameConfig } from "../../config/GameConfig";
 import { PetBagModuleC } from "../PetBag/PetBagModuleC";
-import PsStatisticModuleData from "../statistic/StatisticModule";
+import PsStatisticModuleData, { StatisticModuleS } from "../statistic/StatisticModule";
 
 export class PetSimulatorPlayerModuleData extends Subdata {
 
@@ -122,6 +122,7 @@ export class PetSimulatorPlayerModuleData extends Subdata {
 
     /**金币改变 */
     private changeGold(value: number, coinType: GlobalEnum.CoinType, isSync: boolean, playerId: number): void {
+        if(SystemUtil.isClient()) return;
         switch (coinType) {
             case GlobalEnum.CoinType.FirstWorldGold:
                 this.gold += value;
@@ -142,9 +143,8 @@ export class PetSimulatorPlayerModuleData extends Subdata {
             default:
                 break;
         }
-        const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData);
         const userId = Player.getPlayer(playerId)?.userId ?? '';
-        statisticData.recordConsume(coinType, value, userId);
+        ModuleService.getModule(StatisticModuleS).recordConsume(coinType, value, userId);
         this.save(isSync);
         this.onGoldChange.call(coinType);
     }
@@ -172,11 +172,12 @@ export class PetSimulatorPlayerModuleData extends Subdata {
 
     /**钻石改变 */
     private changeDiamond(value: number, isAdd: boolean, isSync: boolean, playerId: number): void {
+        if(SystemUtil.isClient()) return;
         isAdd ? this.diamond += value : this.diamond -= value;
         this.diamond = this.isMaxCoin(this.diamond);
-        const statisticData = DataCenterS.getData(playerId, PsStatisticModuleData);
         const userId = Player.getPlayer(playerId)?.userId ?? '';
-        statisticData.recordConsume(GlobalEnum.CoinType.Diamond, isAdd ? value : -value, userId);
+        ModuleService.getModule(StatisticModuleS).recordConsume(GlobalEnum.CoinType.Diamond, isAdd ? value : -value, userId);
+
         this.save(isSync);
         this.onDiamondChange.call();
     }

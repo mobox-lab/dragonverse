@@ -2,7 +2,7 @@ import Log4Ts from "mw-log4ts";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import { AuthModuleS, ConsumeId, P12ItemResId } from "../auth/AuthModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import PsStatisticModuleData from "../statistic/StatisticModule";
+import PsStatisticModuleData, { StatisticModuleS } from "../statistic/StatisticModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { Regulator } from "gtoolkit";
 
@@ -145,8 +145,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
      * @private
      */
     private reportStatistic(userId: string, count: number, recovery: number) {
-        const statisticData = DataCenterS.getData(userId, PsStatisticModuleData);
-        statisticData.recordStaPotConsume(recovery);
+        ModuleService.getModule(StatisticModuleS).recordStaPotConsume(recovery, userId);
         Log4Ts.log(P12BagModuleS, `player ${userId} used ${count} recovery stamina ${recovery}`);
     }
 
