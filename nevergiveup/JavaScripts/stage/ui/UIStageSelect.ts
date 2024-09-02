@@ -101,6 +101,7 @@ export class UIStageSelect extends StageSelect_Generate {
                 if (stageC) {
                     // game is already exist
                 } else {
+                    this._script.changeOwnerByClick(Player.localPlayer.playerId);
                     this._script.startGame(Player.localPlayer.playerId);
                 }
             } else {

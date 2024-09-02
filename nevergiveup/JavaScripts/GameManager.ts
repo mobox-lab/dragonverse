@@ -209,6 +209,10 @@ export namespace GameManager {
         return stage;
     }
 
+    export function getStages(): StageS[] {
+        return stages;
+    }
+
     export function getStagePlayersServer(player: Player): number[] {
         let stage = getPlayerStage(player);
         if (!stage) return [];

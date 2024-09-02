@@ -601,7 +601,7 @@ export class StageC {
             StageActions.onGoldChanged.call(this._gold);
         } else {
             if (worldLocation) {
-                TweenCommon.addGoldAnim(value - this._gold, worldLocation, new Vector2(0, -200), () => {
+                TweenCommon.addGoldAnim(value - this._gold, worldLocation, new Vector2(0, -50), () => {
                     StageActions.onGoldChanged.call(this._gold);
                 });
                 this._gold = value;

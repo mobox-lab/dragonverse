@@ -407,10 +407,10 @@ export class Task {
             case EmTaskState.Doing:
                 if (this.curSolveTime >= this.totalSolveTime) {
                     this.taskState = EmTaskState.Reward;
-                    const str = StringUtil.format(this.cfg.taskName, this.totalSolveTime);
-                    const tips = str + " " + GameConfig.Language.getElement("UI_9").Value;
+                    // const str = StringUtil.format(this.cfg.taskName, this.totalSolveTime);
+                    // const tips = str + " " + GameConfig.Language.getElement("UI_9").Value;
                     // const tips = StringUtil.format(GameConfig.Language.getElement("{0} 已完成!").Value, str);
-                    mw.UIService.show(CommonTipsManagerUI).showTips(tips);
+                    // mw.UIService.show(CommonTipsManagerUI).showTips(tips);
                 }
                 break;
             case EmTaskState.Reward:
