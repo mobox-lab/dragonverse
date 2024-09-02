@@ -66,8 +66,16 @@ export class utils {
     }
 
     // 日志优化 上报
-    public static logP12Info(name: string, info: any) {
-        Log4Ts.log({name}, JSON.stringify(info) + " #P12");
+    public static logP12Info(name: string, info: any, type?: "error" | "info" | "warn"): void {
+        const announcer = { name };
+        const msg = JSON.stringify(info) + " #P12";
+        if(type == "error"){
+            Log4Ts.error(announcer, msg);
+        } else if(type == "warn"){
+            Log4Ts.warn(announcer, msg);
+        } else {
+            Log4Ts.log(announcer, msg);
+        }
     }
 
     /**

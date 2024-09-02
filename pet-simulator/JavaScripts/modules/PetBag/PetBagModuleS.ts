@@ -129,7 +129,14 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             }
             return null;
         } catch (e) {
-            Log4Ts.error(PetBagModuleS, "net_buyEgg error. cfgId:" + cfgId + " buyEggNum:" + buyEggNum + " totalPrice:" + totalPrice + " userId:" + userId + " error:" + e);
+            utils.logP12Info("P_Error", {
+                userId: userId,
+                timestamp: Date.now(),
+                errorMsg: "PetBagModuleS buyEgg Error: " + e,
+                cfgId: cfgId,
+                buyEggNum: buyEggNum,
+                totalPrice: totalPrice,
+            }, "error")
         }
     }
 
@@ -655,7 +662,13 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         } catch (e) {
             const userId = Player.getPlayer(playerId)?.userId;
             this.petBagModuleS.recoverFusePets(playerId, preBagItems);
-            Log4Ts.log(PetBagModuleS, " Fuse Pet Error:" + e + " userId:" + userId + " #error")
+            utils.logP12Info("P_Error", {
+                userId: userId,
+                timestamp: Date.now(),
+                errorMsg: "PetBagModuleS fusePet error: " + e,
+                curSelectPetKeys,
+                recoverPreBagItems: preBagItems,
+            }, "error")
             return false;
         }
     }

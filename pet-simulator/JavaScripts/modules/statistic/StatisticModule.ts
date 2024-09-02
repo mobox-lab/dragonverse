@@ -9,6 +9,7 @@ import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
 import { AuthModuleS, PetSimulatorStatisticNeedFill, PetSimulatorStatisticPetObj } from "../auth/AuthModule";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalData } from "../../const/GlobalData";
+import { utils } from "../../util/uitls";
 
 type PlayerConsumeData = {
     diamondAdd: number;
@@ -465,7 +466,11 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             this.destroyPetsMap[userId] = {};
             ModuleService.getModule(AuthModuleS).reportPetSimulatorPetDataStatistic(player.userId, petStatistics);
         } catch (err) {
-            Log4Ts.error(StatisticModuleS, " overStatistic shouldReportPsStatistic error:" + err + " userId:" + userId);
+            utils.logP12Info("P_Error", {
+                userId: userId,
+                timestamp: Date.now(),
+                errorMsg: "StatisticModuleS overStatistic shouldReportPsStatistic error: " + err,
+            }, "error");
         }
     }
 
@@ -512,8 +517,12 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             petBagData.delPersistPetStatisticByKeys(delKeys);
             this.shouldReportPsStatistic(userId); // 检查数据是否超过限制，超过的话则上报后清理
             petBagData.save(true);
-        } catch (error) {
-            Log4Ts.error(StatisticModuleS, " userId:" + userId + " updateDestroyPetsInfo:" + error);
+        } catch (e) {
+            utils.logP12Info("P_Error", {
+                userId: userId,
+                timestamp: Date.now(),
+                errorMsg: "StatisticModuleS updateDestroyPetsInfo error: " + e,
+            }, "error");
         }
     }
     protected onPlayerLeft(player: Player): void {
@@ -603,7 +612,12 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
             ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(userId, statisticData);
             ModuleService.getModule(AuthModuleS).reportPetSimulatorPetDataStatistic(userId, petStatistics);    
         } catch (err) {
-            Log4Ts.error(StatisticModuleS, " reportPetSimulatorStatistic error:" + err + " userId:" + player?.userId ?? '');
+            const userId = player?.userId ?? '';
+            utils.logP12Info("P_Error", {
+                userId,
+                timestamp: Date.now(),
+                errorMsg: "StatisticModuleS reportPetSimulatorStatistic error: " + err,
+            }, "error");
         }
     }
 
