@@ -5,6 +5,7 @@ import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { AreaModuleC } from "./AreaModuleC";
 import { AreaModuleData } from "./AreaModuleData";
 import { GlobalEnum } from "../../const/Enum";
+import PsStatisticModuleData from "../statistic/StatisticModule";
 
 export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData> {
 
@@ -38,14 +39,19 @@ export class AreaModuleS extends ModuleS<AreaModuleC, AreaModuleData> {
             const playerId = this.currentPlayerId;
             const isSuccess = ModuleService.getModule(PlayerModuleS).reduceDiamond(cfg.Gem, playerId)
             if (!isSuccess) return false;
+
+            const sData = DataCenterS.getData(userId, PsStatisticModuleData);
+            const { unlockPortalCount = 0 } = sData?.totalStatisticData ?? {};
+    
             utils.logP12Info("P_UnlockPortal", {
                 userId,
                 timestamp: Date.now(),
                 coinType: GlobalEnum.CoinType.Diamond,
                 cost: cfg.Gem,
                 areaId: cfg.id,
-                // TODO: "unlockPortalCount": 12 // 赛季总解锁传送门次数
+                unlockPortalCount: unlockPortalCount + 1
             })
+            sData.recordTotalData({ unlockPortalCount: unlockPortalCount + 1 })
             this.addArea(playerId, id, false);
             return true;
         } catch (e) {

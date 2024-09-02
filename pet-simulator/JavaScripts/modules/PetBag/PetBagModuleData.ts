@@ -1,10 +1,10 @@
+import Log4Ts from "mw-log4ts";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import Log4Ts from "mw-log4ts";
 import { oTraceError } from "../../util/LogManager";
 import { utils } from "../../util/uitls";
-import PsStatisticModuleData, { StatisticModuleS } from "../statistic/StatisticModule";
+import { StatisticModuleS } from "../statistic/StatisticModule";
 import { EnchantBuff } from "./EnchantBuff";
 
 export enum BagItemKey {
@@ -182,14 +182,6 @@ export class PetBagModuleData extends Subdata {
     @Decorator.persistence()
     public fuseNumToday: number = 0;
 
-    /** 总已合成次数 */
-    @Decorator.persistence()
-    public fuseTotalNum: number = 0;
-
-    /** 总合成消耗的宠物数量 */
-    @Decorator.persistence()
-    public fuseTotalCostPetNum: number = 0;
-
     /**宠物跟随数量 */
     @Decorator.persistence()
     private petFollowCount: number;
@@ -356,10 +348,8 @@ export class PetBagModuleData extends Subdata {
         this.fuseNumToday = 0;
         this.save(true);
     }
-    public fusePetStatistic(costPetNum: number) {
-        this.fuseTotalCostPetNum += costPetNum;
+    public fusePetStatistic() {
         this.fuseNumToday++;
-        this.fuseTotalNum++;
         this.save(true);
     }
     /**宠物统计数据 */
@@ -505,7 +495,7 @@ export class PetBagModuleData extends Subdata {
             this.bornRandomEnchant(this.bagContainerNew[index], type);
             pets.push(this.bagContainerNew[index]);
             this.updatePetStatistic(this.bagContainerNew[index], true, creSource);
-            if(SystemUtil.isServer()) ModuleService.getModule(StatisticModuleS).recordAddPet(userId);
+            ModuleService.getModule(StatisticModuleS).recordAddPet(userId);
 
         }
         if(logInfo?.logName) {
@@ -519,7 +509,7 @@ export class PetBagModuleData extends Subdata {
             Object.assign(logInfo.logObj, {
                 timestamp: Date.now(),
                 userId,
-                hatchPets
+                hatchPets,
             });  
             utils.logP12Info(logInfo.logName, logInfo.logObj)
         }
