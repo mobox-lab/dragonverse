@@ -36,19 +36,26 @@ export default class Fusepanel_Generate extends UIScript {
 		}
 		return this.mBtn_Fuse_Internal
 	}
+	private mText_Money_Internal: mw.TextBlock
+	public get mText_Money(): mw.TextBlock {
+		if(!this.mText_Money_Internal&&this.uiWidgetBase) {
+			this.mText_Money_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBtn_Fuse/mText_Money') as mw.TextBlock
+		}
+		return this.mText_Money_Internal
+	}
+	private mText_Fuset_Internal: mw.TextBlock
+	public get mText_Fuset(): mw.TextBlock {
+		if(!this.mText_Fuset_Internal&&this.uiWidgetBase) {
+			this.mText_Fuset_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mBtn_Fuse/mText_Fuset') as mw.TextBlock
+		}
+		return this.mText_Fuset_Internal
+	}
 	private mText_Number_Internal: mw.TextBlock
 	public get mText_Number(): mw.TextBlock {
 		if(!this.mText_Number_Internal&&this.uiWidgetBase) {
 			this.mText_Number_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Number') as mw.TextBlock
 		}
 		return this.mText_Number_Internal
-	}
-	private mText_Money_Internal: mw.TextBlock
-	public get mText_Money(): mw.TextBlock {
-		if(!this.mText_Money_Internal&&this.uiWidgetBase) {
-			this.mText_Money_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/mText_Money') as mw.TextBlock
-		}
-		return this.mText_Money_Internal
 	}
 	private mBtn_Close_Internal: mw.Button
 	public get mBtn_Close(): mw.Button {
@@ -71,12 +78,12 @@ export default class Fusepanel_Generate extends UIScript {
 		}
 		return this.mText_Love_Probability_Internal
 	}
-	private mText_Love_Internal: mw.TextBlock
-	public get mText_Love(): mw.TextBlock {
-		if(!this.mText_Love_Internal&&this.uiWidgetBase) {
-			this.mText_Love_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Love') as mw.TextBlock
+	private img_HeartIcon_Internal: mw.Image
+	public get img_HeartIcon(): mw.Image {
+		if(!this.img_HeartIcon_Internal&&this.uiWidgetBase) {
+			this.img_HeartIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/img_HeartIcon') as mw.Image
 		}
-		return this.mText_Love_Internal
+		return this.img_HeartIcon_Internal
 	}
 	private mText_Rainbow_Probability_Internal: mw.TextBlock
 	public get mText_Rainbow_Probability(): mw.TextBlock {
@@ -85,12 +92,12 @@ export default class Fusepanel_Generate extends UIScript {
 		}
 		return this.mText_Rainbow_Probability_Internal
 	}
-	private mText_Rainbow_Internal: mw.TextBlock
-	public get mText_Rainbow(): mw.TextBlock {
-		if(!this.mText_Rainbow_Internal&&this.uiWidgetBase) {
-			this.mText_Rainbow_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Rainbow') as mw.TextBlock
+	private img_RainbowIcon_Internal: mw.Image
+	public get img_RainbowIcon(): mw.Image {
+		if(!this.img_RainbowIcon_Internal&&this.uiWidgetBase) {
+			this.img_RainbowIcon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/img_RainbowIcon') as mw.Image
 		}
-		return this.mText_Rainbow_Internal
+		return this.img_RainbowIcon_Internal
 	}
 	private mText_Normal_Probability_Internal: mw.TextBlock
 	public get mText_Normal_Probability(): mw.TextBlock {
@@ -105,6 +112,55 @@ export default class Fusepanel_Generate extends UIScript {
 			this.mText_Normal_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/probabilityCanvas/mText_Normal') as mw.TextBlock
 		}
 		return this.mText_Normal_Internal
+	}
+	private can_DetailText_Internal: mw.Canvas
+	public get can_DetailText(): mw.Canvas {
+		if(!this.can_DetailText_Internal&&this.uiWidgetBase) {
+			this.can_DetailText_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/can_DetailText') as mw.Canvas
+		}
+		return this.can_DetailText_Internal
+	}
+	private text_ResetNum_Internal: mw.TextBlock
+	public get text_ResetNum(): mw.TextBlock {
+		if(!this.text_ResetNum_Internal&&this.uiWidgetBase) {
+			this.text_ResetNum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/can_DetailText/text_ResetNum') as mw.TextBlock
+		}
+		return this.text_ResetNum_Internal
+	}
+	private text_Reset_Internal: mw.TextBlock
+	public get text_Reset(): mw.TextBlock {
+		if(!this.text_Reset_Internal&&this.uiWidgetBase) {
+			this.text_Reset_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/can_DetailText/text_Reset') as mw.TextBlock
+		}
+		return this.text_Reset_Internal
+	}
+	private text_CumulativeNum_Internal: mw.TextBlock
+	public get text_CumulativeNum(): mw.TextBlock {
+		if(!this.text_CumulativeNum_Internal&&this.uiWidgetBase) {
+			this.text_CumulativeNum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/can_DetailText/text_CumulativeNum') as mw.TextBlock
+		}
+		return this.text_CumulativeNum_Internal
+	}
+	private text_Cumulative_Internal: mw.TextBlock
+	public get text_Cumulative(): mw.TextBlock {
+		if(!this.text_Cumulative_Internal&&this.uiWidgetBase) {
+			this.text_Cumulative_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/can_DetailText/text_Cumulative') as mw.TextBlock
+		}
+		return this.text_Cumulative_Internal
+	}
+	private text_FuseNum_Internal: mw.TextBlock
+	public get text_FuseNum(): mw.TextBlock {
+		if(!this.text_FuseNum_Internal&&this.uiWidgetBase) {
+			this.text_FuseNum_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/can_DetailText/text_FuseNum') as mw.TextBlock
+		}
+		return this.text_FuseNum_Internal
+	}
+	private text_Fuse_Internal: mw.TextBlock
+	public get text_Fuse(): mw.TextBlock {
+		if(!this.text_Fuse_Internal&&this.uiWidgetBase) {
+			this.text_Fuse_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/can_DetailText/text_Fuse') as mw.TextBlock
+		}
+		return this.text_Fuse_Internal
 	}
 
 
@@ -141,22 +197,19 @@ export default class Fusepanel_Generate extends UIScript {
 		
 		//文本多语言
 		
-		this.initLanguage(this.mText_Number)
+		this.initLanguage(this.mText_Money)
 		
 	
-		this.initLanguage(this.mText_Money)
+		this.initLanguage(this.mText_Fuset)
+		
+	
+		this.initLanguage(this.mText_Number)
 		
 	
 		this.initLanguage(this.mText_Love_Probability)
 		
 	
-		this.initLanguage(this.mText_Love)
-		
-	
 		this.initLanguage(this.mText_Rainbow_Probability)
-		
-	
-		this.initLanguage(this.mText_Rainbow)
 		
 	
 		this.initLanguage(this.mText_Normal_Probability)
@@ -165,11 +218,26 @@ export default class Fusepanel_Generate extends UIScript {
 		this.initLanguage(this.mText_Normal)
 		
 	
-		//文本多语言
-		
-		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvas/mBtn_Fuse/TextBlock") as any);
+		this.initLanguage(this.text_ResetNum)
 		
 	
+		this.initLanguage(this.text_Reset)
+		
+	
+		this.initLanguage(this.text_CumulativeNum)
+		
+	
+		this.initLanguage(this.text_Cumulative)
+		
+	
+		this.initLanguage(this.text_FuseNum)
+		
+	
+		this.initLanguage(this.text_Fuse)
+		
+	
+		//文本多语言
+		
 		this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mCanvas/TextBlock_Top") as any);
 		
 	
