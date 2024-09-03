@@ -1122,12 +1122,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     /**
      * 测试用 P12 端 域名.
      */
-    private static readonly TEST_P12_DOMAIN = "http://modragon-api-test.mobox.app";
+    private static readonly TEST_P12_DOMAIN = "https://modragon-api-test.mobox.app";
 
     /**
      * 发布用 P12 端 域名.
      */
-    private static readonly RELEASE_P12_DOMAIN = "http://modragon-api.mobox.app";
+    private static readonly RELEASE_P12_DOMAIN = "https://modragon-api.mobox.app";
 
     /**
      * 获取 P12 token Uri.
