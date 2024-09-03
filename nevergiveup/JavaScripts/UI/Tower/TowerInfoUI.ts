@@ -32,7 +32,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
     private _cfg: ITowerElement;
     private _tower: TowerBase;
     private _upgradeCount: number = 0;
-    private _textItemUIs: TextItemUI[] = [];
+    // private _textItemUIs: TextItemUI[] = [];
     private _tagItemUIs: TowerSmallTagItem_Generate[] = [];
 
     /**
@@ -172,32 +172,58 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
     }
 
     private initText() {
-        this.levelTxt.text = "Lv. " + (this._tower.level + 1 + this._upgradeCount);
+
+        // this.levelTxt.text = "Lv. " + (this._tower.level + 1 + this._upgradeCount);
         const textItemLen = this._cfg?.infoTestsCn?.length ?? 0;
-        if (this._textItemUIs?.length) this._textItemUIs.forEach(v => v?.destroy());
-        this._textItemUIs = [];
-        this.infoCanvas.removeAllChildren();
+        // if (this._textItemUIs?.length) this._textItemUIs.forEach(v => v?.destroy());
+        // this._textItemUIs = [];
+        // this.infoCanvas.removeAllChildren();
         if (!textItemLen) return;
-        this.createTextUI(
-            GameConfig.Language.getElement("Tower_attackTags_13").Value,
-            this._tower.level === 2 ? "3" : `${this._tower.level+1} → ${this._tower.level + 2}`,
-        );
-        for (let i = 0; i < textItemLen; i++) {
-            const text = this._cfg?.infoTexts[i];
-            const title = GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value;
-            let value = "" + Utils.numTofix(this._tower.property[text], 2);
-            this._cfg[text][this._tower.level + 1] != null && (value += " → " +
-                Utils.numTofix((this._tower.property[text] + this._cfg[text][this._tower.level + 1] - this._cfg[text][this._tower.level]), 2));
-            this.createTextUI(title, value);
+        // this.createTextUI(
+        //     GameConfig.Language.getElement("Tower_attackTags_13").Value,
+        //     this._tower.level === 2 ? "3" : `${this._tower.level+1} → ${this._tower.level + 2}`,
+        // );
+        const curLevel = this._tower.level + 1; // 1 2 3
+        for (let i = 0; i < 4; i++) {
+            const attrTitle = this?.[`attribute${i+1}`] as mw.TextBlock;
+            const vis = i < textItemLen ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
+            Gtk.trySetVisibility(attrTitle, vis);
+            if(i >= textItemLen) continue;
+            if(attrTitle) attrTitle.text = GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value
         }
+        const lv1Title = this?.[`txt_lv1`] as mw.TextBlock;
+        const lv2Title = this?.[`txt_lv2`] as mw.TextBlock;
+        const lv3Title = this?.[`txt_lv3`] as mw.TextBlock;
+        const curLvTitle = this?.[`txt_lv${curLevel}`] as mw.TextBlock;
+        lv1Title.renderOpacity = lv2Title.renderOpacity = lv3Title.renderOpacity = 0.7;
+        curLvTitle.renderOpacity = 1;
+        for(let lv = 1; lv <= 3; lv++) {
+            const can = this?.[`canvas_lv${lv}`] as mw.Canvas;
+            const isCurLevel = lv === curLevel;
+            if (can) can.renderOpacity = isCurLevel ? 1 : 0.7;
+            for(let attr = 1; attr <= 4; attr++) {
+                const attrEle = this?.[`lv${lv}Attribute${attr}`] as mw.TextBlock;
+                if(attrEle) {
+                    const isVis = attr <= textItemLen;
+                    Gtk.trySetVisibility(attrEle, isVis ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
+                    if(isVis) {
+                        const text = this._cfg?.infoTexts[attr-1];
+                        const attrVal = this._cfg[text][lv-1];
+                        attrEle.text = attrVal + '';
+                        attrEle.setFontColorByHex(isCurLevel ? "#62E063" : "#FFFFFF")
+                    }
+                };
+            }
+        }
+        
     }
 
-    public createTextUI(title: string, value: string) {
-        const ui = UIService.create(TextItemUI);
-        ui.initText(title, value, {isInfo: true});
-        this.infoCanvas.addChild(ui.uiObject);
-        this._textItemUIs.push(ui);
-    }
+    // public createTextUI(title: string, value: string) {
+    //     const ui = UIService.create(TextItemUI);
+    //     ui.initText(title, value, {isInfo: true});
+    //     this.infoCanvas.addChild(ui.uiObject);
+    //     this._textItemUIs.push(ui);
+    // }
 
     /**
      * 等级相关UI
