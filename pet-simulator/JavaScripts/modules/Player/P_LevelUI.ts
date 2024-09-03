@@ -84,11 +84,11 @@ class P_levelItem extends TypeItem_Generate {
         for (let i = 0; i < 5; i++) {
             (this["mImage_Piece_" + i] as mw.Image).visibility = (i < level) ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
         }
-        if (this.info.PetNum !== 0) {
+        if (this.info.PetNum[0]) { // 是背包上限
             if (level < 5) {
-                this.mTxt_detail.text = `${GameConfig.Language.NextLevelAttributes.Value} + ${this.info.PetNum}`
+                this.mTxt_detail.text = `${GameConfig.Language.NextLevelAttributes.Value} + ${this.info.PetNum[level]}`
             } else if (level === 5) {
-                this.mTxt_detail.text = `+ 25`
+                this.mTxt_detail.text = `+ 70`
             }
 
         } else {

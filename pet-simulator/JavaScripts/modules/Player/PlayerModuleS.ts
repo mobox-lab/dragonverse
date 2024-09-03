@@ -134,33 +134,34 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         const userId = this.currentPlayer?.userId ?? '';
 		const playerId = this.currentPlayerId;
         const curLevel = this.currentData.getLevelData(id) ?? 0;
-        let cost = cfg.Diamond[curLevel] ?? 0;
+        const cost = cfg.Diamond[curLevel] ?? 0;
         if (!this.currentData.reduceDiamond(cost, true, playerId)) return false;
 
         ModuleService.getModule(Task_ModuleS).strengthen(this.currentPlayer, GlobalEnum.StrengthenType.LevelUp);
         this.currentData.levelUp(id);
 
-        let config = GameConfig.Upgrade.getAllElement()[id];
-        let upgrade = config?.Upgradenum[this.currentData.getLevelData(id) - 1] ?? 0;
+        const config = GameConfig.Upgrade.getAllElement()[id];
+        const index = curLevel - 1;
+        const upgrade = curLevel ? (config?.Upgradenum[index] ?? 0) : 0;
         switch (id) {
             case 0:
-                GlobalData.LevelUp.levelRangeMap.set(this.currentPlayerId, 1 + upgrade);
+                GlobalData.LevelUp.levelRangeMap.set(playerId, 1 + upgrade);
                 break;
             case 1:
-                GlobalData.LevelUp.moreDiamondMap.set(this.currentPlayerId, 1 + upgrade);
+                GlobalData.LevelUp.moreDiamondMap.set(playerId, 1 + upgrade);
                 break;
             case 2:
-                GlobalData.LevelUp.petDamageMap.set(this.currentPlayerId, 1 + upgrade);
+                GlobalData.LevelUp.petDamageMap.set(playerId, 1 + upgrade);
                 break;
             case 3:
-                GlobalData.LevelUp.petAttackSpeedMap.set(this.currentPlayerId, 1 + upgrade);
+                GlobalData.LevelUp.petAttackSpeedMap.set(playerId, 1 + upgrade);
                 break;
             case 4:
-                ModuleService.getModule(PetBagModuleS).addBagCapacity(this.currentPlayerId, config.PetNum);
+                ModuleService.getModule(PetBagModuleS).addBagCapacity(playerId, config?.PetNum[curLevel] ?? 0);
                 break;
         }
 
-        this.levelUpNotice(this.currentPlayerId);
+        this.levelUpNotice(playerId);
         ModuleService.getModule(StatisticModuleS).recordLevelConsume(cost, userId);
         const sData = DataCenterS.getData(userId, PsStatisticModuleData);
         const { levelCnt = 0 } = sData?.totalStatisticData ?? {};
