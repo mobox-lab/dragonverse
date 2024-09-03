@@ -337,6 +337,41 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.text_roomid_Internal
 	}
+	private tokenCanvas_Internal: mw.Canvas
+	public get tokenCanvas(): mw.Canvas {
+		if(!this.tokenCanvas_Internal&&this.uiWidgetBase) {
+			this.tokenCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/tokenCanvas') as mw.Canvas
+		}
+		return this.tokenCanvas_Internal
+	}
+	private tokenBg_Internal: mw.Image
+	public get tokenBg(): mw.Image {
+		if(!this.tokenBg_Internal&&this.uiWidgetBase) {
+			this.tokenBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/tokenCanvas/tokenBg') as mw.Image
+		}
+		return this.tokenBg_Internal
+	}
+	private mToken_Internal: mw.TextBlock
+	public get mToken(): mw.TextBlock {
+		if(!this.mToken_Internal&&this.uiWidgetBase) {
+			this.mToken_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/tokenCanvas/mToken') as mw.TextBlock
+		}
+		return this.mToken_Internal
+	}
+	private freshTokenBtn_Internal: mw.Button
+	public get freshTokenBtn(): mw.Button {
+		if(!this.freshTokenBtn_Internal&&this.uiWidgetBase) {
+			this.freshTokenBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/tokenCanvas/freshTokenBtn') as mw.Button
+		}
+		return this.freshTokenBtn_Internal
+	}
+	private imgToekn_Internal: mw.Image
+	public get imgToekn(): mw.Image {
+		if(!this.imgToekn_Internal&&this.uiWidgetBase) {
+			this.imgToekn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/tokenCanvas/imgToekn') as mw.Image
+		}
+		return this.imgToekn_Internal
+	}
 
 
 
@@ -417,6 +452,12 @@ export default class LobbyUI_Generate extends UIScript {
 	   this.shopBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.freshTokenBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "freshTokenBtn");
+	   })
+	   this.freshTokenBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 
 	   //按钮多语言
 	   
@@ -471,6 +512,9 @@ export default class LobbyUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.text_roomid)
+	   
+	
+	   this.initLanguage(this.mToken)
 	   
 	
 	   //文本多语言

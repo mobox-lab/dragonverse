@@ -148,13 +148,6 @@ export default class TowerShopUI_Generate extends UIScript {
 		}
 		return this.infoCanvas_Internal
 	}
-	private img_backg_Internal: mw.Image
-	public get img_backg(): mw.Image {
-		if(!this.img_backg_Internal&&this.uiWidgetBase) {
-			this.img_backg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/img_backg') as mw.Image
-		}
-		return this.img_backg_Internal
-	}
 	private elementImg_Internal: mw.Image
 	public get elementImg(): mw.Image {
 		if(!this.elementImg_Internal&&this.uiWidgetBase) {
@@ -175,6 +168,13 @@ export default class TowerShopUI_Generate extends UIScript {
 			this.infoImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoImg') as mw.Image
 		}
 		return this.infoImg_Internal
+	}
+	private img_backg_Internal: mw.Image
+	public get img_backg(): mw.Image {
+		if(!this.img_backg_Internal&&this.uiWidgetBase) {
+			this.img_backg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/img_backg') as mw.Image
+		}
+		return this.img_backg_Internal
 	}
 	private infoTxt_Internal: mw.TextBlock
 	public get infoTxt(): mw.TextBlock {
