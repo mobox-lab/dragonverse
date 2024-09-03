@@ -187,7 +187,11 @@ export class Enemy implements BuffBag {
 
     set speed(value: number) {
         let distance = this._speed * this.time;
-        this._speed = value;
+        if (value <= 0) {
+            this._speed = 1;
+        } else {
+            this._speed = value;
+        }
         this.time = distance / this._speed;
     }
 
@@ -256,11 +260,7 @@ export class Enemy implements BuffBag {
                 }, null);
                 this.speed = this.speed + minSpeedItem.cfg.speed;
             }
-        } else {
-            this.speed = config.speed;
         }
-
-        //
     }
 
     calculateAttribute(attribute: string) {
