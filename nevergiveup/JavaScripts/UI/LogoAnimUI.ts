@@ -38,32 +38,12 @@ export default class LogoAnimUI extends logo_anim_Generate {
     }
 
     resetAnim() {
-        this.can_logo.renderScale = Utils.TEMP_VECTOR2.set(1, 1);
-        const len = GlobalData.Anim.logoAnimFilNum;
-        for (let i = 1; i <= len; i++) {
-            const flip = this?.[`flip_anim${i}`] as mw.FlipBook | null;
-            if (!flip) continue;
-            Gtk.trySetVisibility(flip, mw.SlateVisibility.Collapsed);
-            if (i + 1 > len) { // 最后一帧
-                flip.onFinish.add(() => {
-                    // console.log(`#debug logo anim ${i} final finish`);
-                    this.resetAnim();
-                    this.hideAnim();
-                });
-                continue;
-            }
-            const nextFlip = this?.[`flip_anim${i + 1}`] as mw.FlipBook | null;
-            if (!nextFlip) continue;
-            flip.onFinish?.clear();
-            flip.onFinish.add(() => {
-                // console.log(`#debug logo anim ${i} finish`);
-                nextFlip.visibility = mw.SlateVisibility.Visible;
-                nextFlip.play();
-                setTimeout(() => {
-                    flip.visibility = mw.SlateVisibility.Collapsed;
-                }, 70)
-            });
-        }
+        this.can_logo.renderScale = Utils.TEMP_VECTOR2.set(1, 1);    
+        Gtk.trySetVisibility(this.flip_anim1, mw.SlateVisibility.Collapsed);
+        this.flip_anim1.onFinish.add(() => {
+            this.resetAnim();
+            this.hideAnim();
+        });
     }
     /**
      * 设置显示时触发

@@ -90,8 +90,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 	}
 
 	public updateStrategyUI() {
-        this.infoBg.size = new Vector2(360.00, 191.00);
-        this.bg.size = new Vector2(440.00, 458.00);
+        this.bg.size = new Vector2(490.00, 331.00);
         const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
         if(!sInfo) {
             Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Collapsed);
@@ -102,11 +101,11 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         if(!strategyDescArgs?.length) {
             this.txt_Strategy.text = '';
 			this.txt_Strategy_Desc.text = '';
+            Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Collapsed);
             return;
         }
         Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Visible);
-        this.infoBg.size = new Vector2(360.00, 262.00);
-        this.bg.size = new Vector2(440.00, 530.00);
+        this.bg.size = new Vector2(490.00, 411.00);
         if(strategyDesc.length === 1) {
             this.txt_Strategy.text = strategyTitle;
             this.txt_Strategy_Desc.text = strategyDesc[0];
@@ -133,7 +132,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         this._upgradeCount = 0;
         this._cfg = cfg;
         this._tower = tower;
-        this.txt_title.text = this._cfg.name;
+        this.nameTxt.text = this._cfg.name;
         // this._tower = Utils.shallowCopy(towerInfo);
         this.towerImg.imageGuid = this._cfg.imgGuid;
         this.bgElementImg.imageGuid = GlobalData.Shop.shopItemBgGuid[(this._cfg?.elementTy || 1) - 1];
