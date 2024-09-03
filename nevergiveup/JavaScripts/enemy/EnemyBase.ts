@@ -93,6 +93,7 @@ export class Enemy implements BuffBag {
     magicResistActive: boolean = false;
     speedActiveTime: number = 0;
     activeDuration: number = 0;
+    activeStatus: boolean = true;
 
     constructor(wave: number, configId: number, gate: number) {
         this.id = Enemy.count;
@@ -257,9 +258,15 @@ export class Enemy implements BuffBag {
             const root = slowAndRoot.filter((buff) => buff.cfg.speed === -999);
             const now = Math.floor(new Date().getTime() / 1000);
             this.speedActiveTime = now;
+            this.activeStatus = false;
             if (root.length > 0) {
                 this.speed = 1;
                 this.activeDuration = root[0].cfg.duration;
+                this.anim = this.go.loadAnimation("217836");
+                if (GameManager.getStageClient()) {
+                    this.anim.loop = 1;
+                    this.anim.play();
+                }
             } else {
                 const minSpeedItem = slowAndRoot.reduce((minItem, currentItem) => {
                     return currentItem.cfg.speed < (minItem ? minItem.cfg.speed : Infinity) ? currentItem : minItem;
@@ -411,7 +418,6 @@ export class Enemy implements BuffBag {
             let c = ComponentFactory.createComponent(component);
             promises.push(this.addComponent(c));
         });
-
         this.anim = go.loadAnimation(config.walkAnim);
         if (GameManager.getStageClient()) {
             this.anim.speed = GameManager.getStageClient().speedMultipler;
@@ -953,11 +959,18 @@ export class Enemy implements BuffBag {
 
     speedRecover() {
         const now = Math.floor(new Date().getTime() / 1000);
-        if (this.activeDuration > 0 && this.speedActiveTime > 0) {
+        if (this.activeDuration > 0 && this.speedActiveTime > 0 && !this.activeStatus) {
             if (now - this.speedActiveTime > this.activeDuration) {
                 // 恢复速度
+                this.activeStatus = true;
                 const config = GameConfig.Monster.getElement(this.configId);
                 this.speed = config.speed;
+                this.anim = this.go.loadAnimation(config.walkAnim);
+                if (GameManager.getStageClient()) {
+                    this.anim.speed = GameManager.getStageClient().speedMultipler;
+                    this.anim.loop = 0;
+                    this.anim.play();
+                }
             }
         }
     }
