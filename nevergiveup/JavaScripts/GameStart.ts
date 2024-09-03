@@ -125,7 +125,7 @@ export default class GameStart extends Script {
         GameServiceConfig.isUseTestUrl = this.isUseTestUrl;
         GameServiceConfig.chainId = this.customChainId;
         Log4Ts.log(GameStart, `isPIE: ${SystemUtil.isPIE}`);
-        DataStorage.setTemporaryStorage(SystemUtil.isPIE);
+        DataStorage.setTemporaryStorage?.(SystemUtil.isPIE);
         this.setlanguage();
         for (const k in Config) {
             if (this.hasOwnProperty(k)) {
