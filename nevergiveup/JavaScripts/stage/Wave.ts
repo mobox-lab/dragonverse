@@ -31,7 +31,7 @@ export class Wave {
     spawnIntervals: number[][] = [];
     gates: number[][] = [];
     spawnTimers: number[] = [];
-    constructor(wave: WaveConfig, isInfinite: boolean = false) {
+    constructor(wave: WaveConfig) {
         for (let i = 0; i < wave.enemies.length; i++) {
             this.enemyTypes[i] = [];
             this.spawnIntervals[i] = [];
@@ -39,7 +39,7 @@ export class Wave {
             for (let j = 0; j < wave.enemies[i].count; j++) {
                 this.enemyTypes[i].push(wave.enemies[i].type);
                 this.spawnIntervals[i].push(wave.enemies[i].spawnInterval);
-                if (wave.enemies[i].gate && !isInfinite) {
+                if (wave.enemies[i].gate) {
                     this.gates[i].push(wave.enemies[i].gate);
                 } else {
                     this.gates[i].push(0);
