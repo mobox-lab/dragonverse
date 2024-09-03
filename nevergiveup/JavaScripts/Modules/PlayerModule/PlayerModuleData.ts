@@ -94,6 +94,10 @@ export default class PlayerModuleData extends Subdata {
     @Decorator.persistence()
     unlockTowerDaily: number;
 
+    public get dataName() {
+        return "TdPlayerModuleData";
+    }
+
     protected initDefaultData(): void {
         this.gold = GameConfig.Global.getAllElement()[0].initialGold;
         this.techPoint = GameConfig.Global.getAllElement()[0].initialTechPoint;

@@ -187,7 +187,6 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(NoticeModuleS, NoticeModuleC, null);
         ModuleService.registerModule(LoginModuleS, LoginModuleC, null);
         ModuleService.registerModule(AreaModuleS, AreaModuleC, null);
-        // ModuleService.registerModule(RedPointModuleS, RedPointModuleC, null);
         ModuleService.registerModule(AnalyticsModuleS, AnalyticsModuleC, AnalyticsModuleData);
         ModuleService.registerModule(ActionModuleS, ActionModuleC, null);
         ModuleService.registerModule(GlobalAttrModuleS, GlobalAttrModuleC, null);
@@ -199,8 +198,6 @@ export default class GameLauncher extends mw.Script {
         ModuleService.registerModule(MascotModuleS, MascotModuleC, null);
         ModuleService.registerModule(RankListModuleS, RankListModuleC, null);
         ModuleService.registerModule(DressUpModuleS, DressUpModuleC, null);
-        // ModuleService.registerModule(GuideModuleS, GuideModuleC, GuideDataHelper);
-        // ModuleService.registerModule(GuideModuleS2, GuideModuleC2, null);
         ModuleService.registerModule(InteractiveModuleS, InteractiveModuleC, null);
         ModuleService.registerModule(EnergyModuleS, EnergyModuleC, BWEnergyModuleData);
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);

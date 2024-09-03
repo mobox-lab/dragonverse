@@ -73,7 +73,7 @@ export class BattleWorldPlayerModuleData extends Subdata {
 
 
     public get dataName() {
-        return "PlayerModuleData";
+        return "BwPlayerModuleData";
     }
 
     //当前最新的版本号(默认是1，升级数据需要重写)
