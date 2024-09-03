@@ -71,6 +71,13 @@ export default class NewBuyUI_Generate extends UIScript {
 		}
 		return this.text_All_Internal
 	}
+	private price_icon_Internal: mw.Image
+	public get price_icon(): mw.Image {
+		if(!this.price_icon_Internal&&this.uiWidgetBase) {
+			this.price_icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Main/can_NumberLeft/text_All/price_icon') as mw.Image
+		}
+		return this.price_icon_Internal
+	}
 	private btn_Close_Internal: mw.Button
 	public get btn_Close(): mw.Button {
 		if(!this.btn_Close_Internal&&this.uiWidgetBase) {

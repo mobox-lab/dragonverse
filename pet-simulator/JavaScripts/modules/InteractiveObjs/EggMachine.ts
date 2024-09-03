@@ -440,7 +440,7 @@ class EggM {
             return;
         }
         if (res !== null) {
-            MessageBox.showOneBtnMessage("购买成功！"); // TODO: 多语言
+            MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_1.Value);
             this.getEgg(res);
             // EggMachineTween.instance.startTween(this.petEgg, res, this.cfg.id);
             this.broadcastExecuteAchievement(res);
