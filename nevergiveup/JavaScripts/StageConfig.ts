@@ -1213,7 +1213,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
     {
         waves: [
             {
-                enemies: [{ type: 1035, count: 5, spawnInterval: 5 }],
+                enemies: [{ type: 1040, count: 5, spawnInterval: 5 }],
                 waveGold: 100,
                 waveTime: 30,
                 hpMultiplier: 0.8,
