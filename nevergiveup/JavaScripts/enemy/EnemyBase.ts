@@ -91,6 +91,8 @@ export class Enemy implements BuffBag {
     speedActive: boolean = false;
     armorActive: boolean = false;
     magicResistActive: boolean = false;
+    speedActiveTime: number = 0;
+    activeDuration: number = 0;
 
     constructor(wave: number, configId: number, gate: number) {
         this.id = Enemy.count;
@@ -127,7 +129,7 @@ export class Enemy implements BuffBag {
         const speedBonus = TalentUtils.getModuleCRunesValueById(1014);
         const speedBonus2 = TalentUtils.getModuleCRunesValueById(1038);
         const speedBonusD = TalentUtils.getModuleCRunesValueById(2004);
-        this._speed = this._speed * (1 - (speedBonus + speedBonus2 + speedBonusD) / 100);
+        this.speed = this.speed * (1 - (speedBonus + speedBonus2 + speedBonusD) / 100);
         // 减护甲和减魔抗持续10s
         const armorBonus = TalentUtils.getModuleCRunesValueById(1018);
         const MRBonus = TalentUtils.getModuleCRunesValueById(1019);
@@ -251,14 +253,19 @@ export class Enemy implements BuffBag {
         // 减速和禁锢
         const slowAndRoot = this.buffManager.buffs.filter((buff) => buff.cfg.speed !== 0);
         if (slowAndRoot.length > 0) {
+            // 记录生效时间，和生效的时长
             const root = slowAndRoot.filter((buff) => buff.cfg.speed === -999);
+            const now = Math.floor(new Date().getTime() / 1000);
+            this.speedActiveTime = now;
             if (root.length > 0) {
                 this.speed = 1;
+                this.activeDuration = root[0].cfg.duration;
             } else {
                 const minSpeedItem = slowAndRoot.reduce((minItem, currentItem) => {
                     return currentItem.cfg.speed < (minItem ? minItem.cfg.speed : Infinity) ? currentItem : minItem;
                 }, null);
                 this.speed = this.speed + minSpeedItem.cfg.speed;
+                this.activeDuration = minSpeedItem.cfg.duration;
             }
         }
     }
@@ -535,6 +542,7 @@ export class Enemy implements BuffBag {
     onUpdate(dt: number) {
         this.healingMonster();
         this.dealRunes();
+        this.speedRecover();
         this.time += dt;
         this.updatePosionAndRotation();
         this._components.forEach((component) => component.update(dt));
@@ -923,7 +931,9 @@ export class Enemy implements BuffBag {
             const speedBonus = TalentUtils.getModuleCRunesValueById(1014);
             const speedBonus2 = TalentUtils.getModuleCRunesValueById(1038);
             const speedBonusD = TalentUtils.getModuleCRunesValueById(2004);
-            this._speed = this._speed * (1 + (speedBonus + speedBonus2 + speedBonusD) / 100);
+            const config = GameConfig.Monster.getElement(this.configId);
+            // this.speed = this.speed * (1 + (speedBonus + speedBonus2 + speedBonusD) / 100);
+            this.speed = config.speed;
         }
         if (now - this.createTime > 10 && !this.armorActive) {
             // 恢复护甲
@@ -938,6 +948,17 @@ export class Enemy implements BuffBag {
             const MRBonus = TalentUtils.getModuleCRunesValueById(1019);
             const MRBonus2 = TalentUtils.getModuleCRunesValueById(1043);
             this.magicResist = this.magicResist + MRBonus + MRBonus2;
+        }
+    }
+
+    speedRecover() {
+        const now = Math.floor(new Date().getTime() / 1000);
+        if (this.activeDuration > 0 && this.speedActiveTime > 0) {
+            if (now - this.speedActiveTime > this.activeDuration) {
+                // 恢复速度
+                const config = GameConfig.Monster.getElement(this.configId);
+                this.speed = config.speed;
+            }
         }
     }
 
