@@ -280,7 +280,7 @@ export default class GameStart extends mw.Script {
 
     private initializeServer() {
         Log4Ts.debugLevel = this.serverLogLevel;
-        Log4Ts.log(GameStart, `isPIE: ${SystemUtil.isPIE}`);
+        console.log(`isPIE: ${SystemUtil.isPIE}`);
         DataStorage.setTemporaryStorage?.(SystemUtil.isPIE);
         GameObject.asyncFindGameObjectById("0B48E050").then((value) => {
             const effect = value as mw.Effect;

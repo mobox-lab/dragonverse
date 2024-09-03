@@ -149,7 +149,7 @@ export default class GameLauncher extends mw.Script {
                 this.registerGMVisibleKey();
             }
         }
-        Log4Ts.log(GameLauncher, `isPIE: ${SystemUtil.isPIE}`);
+        console.log(`isPIE: ${SystemUtil.isPIE}`);
         DataStorage.setTemporaryStorage?.(SystemUtil.isPIE);
         Globaldata.logLevel = this.logLevel;
         LogManager.instance.setLogLevel(Globaldata.logLevel);

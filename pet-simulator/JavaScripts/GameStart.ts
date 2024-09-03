@@ -143,7 +143,7 @@ export default class GameStart extends mw.Script {
         this.onRegisterModule();
         mwaction;
         VectorExt.initialize();
-        Log4Ts.log(GameStart, `isPIE: ${SystemUtil.isPIE}`);
+        console.log(`isPIE: ${SystemUtil.isPIE}`);
         DataStorage.setTemporaryStorage?.(SystemUtil.isPIE);
         //初始化表格语言
         GameConfig.initLanguage(GameServiceConfig.isRelease ? -1 : Number(this.selectedLanguageIndex),
