@@ -657,8 +657,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                     cost,
                     inputPets: curSelectPets,
                     dailyCount: (data?.fuseNumToday ?? 0) + 1,
-                    inputCount: nextFuseCnt,
-                    mergeCount: nextFuseCostPetNum,
+                    inputCount: nextFuseCostPetNum,
+                    mergeCount: nextFuseCnt,
                 },
             };
             this.petBagModuleS.deletePet(playerId, curSelectPetKeys, "合成");

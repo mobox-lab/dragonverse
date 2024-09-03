@@ -328,7 +328,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         utils.logP12Info("P_UnlockArea", {
             userId,
             timestamp: Date.now(),
-            coinType: GlobalEnum.CoinType.SecondWorldGold,
+            coinType: goldType,
             cost: cfg.Gold,
             areaId: cfg.id,
             unlockAreaCount: unlockAreaCount + 1,
