@@ -201,7 +201,9 @@ export default class AttackTower extends TowerBase {
 
                     if (this.cfg.attackBuff?.[level] && this.cfg.attackBuff?.[level]?.length > 0) {
                         damage = i.onHurt(this, () => {
-                            for (let buff of this.cfg.attackBuff[level]) {
+                            const towerBuffs = this.buffManager.buffs.map((buff) => buff.id);
+                            const allBuff = [...this.cfg.attackBuff[level], ...towerBuffs];
+                            for (let buff of allBuff) {
                                 i.applyBuff(buff);
                             }
                         });
@@ -225,7 +227,9 @@ export default class AttackTower extends TowerBase {
                 console.log(JSON.stringify(enemy.name), "enemy.name");
                 if (this.cfg.attackBuff?.[level] && this.cfg.attackBuff?.[level]?.length > 0) {
                     damage = enemy.onHurt(this, () => {
-                        for (let buff of this.cfg.attackBuff[level]) {
+                        const towerBuffs = this.buffManager.buffs.map((buff) => buff.id);
+                        const allBuff = [...this.cfg.attackBuff[level], ...towerBuffs];
+                        for (let buff of allBuff) {
                             enemy.applyBuff(buff);
                         }
                     });

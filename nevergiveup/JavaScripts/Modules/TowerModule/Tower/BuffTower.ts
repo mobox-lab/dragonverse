@@ -39,17 +39,19 @@ export default class BuffTower extends TowerBase {
                 this.tower.asyncReady().then(async () => {
                     this._idleAnim = this._towerCha.loadAnimation(this.cfg.idleAnim);
                     this._idleAnim.loop = 999999;
-                    (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((go) => {
-                        this._weaponRoot = go;
-                        this._towerCha.attachToSlot(
-                            this._weaponRoot,
-                            this.cfg.weaponSlot ?? HumanoidSlotType.RightHand
-                        );
-                        this._weaponRoot.localTransform.position = this.cfg.weaponLocation
-                            ? new Vector(...this.cfg.weaponLocation)
-                            : Vector.zero;
-                        this._weaponRoot.localTransform.rotation = Rotation.zero;
-                    });
+                    if (this.cfg.weaponGuid) {
+                        (await GameObjPool.asyncSpawn(this.cfg.weaponGuid)).asyncReady().then((go) => {
+                            this._weaponRoot = go;
+                            this._towerCha.attachToSlot(
+                                this._weaponRoot,
+                                this.cfg.weaponSlot ?? HumanoidSlotType.RightHand
+                            );
+                            this._weaponRoot.localTransform.position = this.cfg.weaponLocation
+                                ? new Vector(...this.cfg.weaponLocation)
+                                : Vector.zero;
+                            this._weaponRoot.localTransform.rotation = Rotation.zero;
+                        });
+                    }
                 });
             }
         });
