@@ -265,6 +265,8 @@ export class Enemy implements BuffBag {
                 this.anim = this.go.loadAnimation("217836");
                 if (GameManager.getStageClient()) {
                     this.anim.loop = 1;
+                    let speedMultipler = GameManager.getStageClient().speedMultipler || 1;
+                    this.anim.speed = speedMultipler;
                     this.anim.play();
                 }
             } else {
@@ -532,12 +534,17 @@ export class Enemy implements BuffBag {
             if (showAnim) {
                 let cfg = GameConfig.Monster.getElement(this.configId);
                 let anim = this.go.loadAnimation(cfg.deadAnim);
+                let speedMultipler = 1;
+                if (GameManager.getStageClient()) {
+                    speedMultipler = GameManager.getStageClient().speedMultipler;
+                    anim.speed = speedMultipler;
+                }
                 anim.loop = 1;
                 anim.play();
                 setTimeout(() => {
                     GameObjPool.despawn(this.go);
                     this.go = null;
-                }, cfg.deadAnimDur * 1000);
+                }, (cfg.deadAnimDur * 1000) / speedMultipler);
             } else {
                 GameObjPool.despawn(this.go);
                 this.go = null;
