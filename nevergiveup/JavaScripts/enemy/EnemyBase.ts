@@ -91,9 +91,6 @@ export class Enemy implements BuffBag {
     speedActive: boolean = false;
     armorActive: boolean = false;
     magicResistActive: boolean = false;
-    speedActiveTime: number = 0;
-    activeDuration: number = 0;
-    activeStatus: boolean = true;
 
     constructor(wave: number, configId: number, gate: number) {
         this.id = Enemy.count;
@@ -172,6 +169,17 @@ export class Enemy implements BuffBag {
             if (buff.cfg.duration >= 0) {
                 buff.duration -= dt;
                 if (buff.duration <= 0) {
+                    let cfg = GameConfig.Buff.getElement(buff.id);
+                    if (cfg.speed === -999) {
+                        const config = GameConfig.Monster.getElement(this.configId);
+                        this.speed = config.speed;
+                        this.anim = this.go.loadAnimation(config.walkAnim);
+                        if (GameManager.getStageClient()) {
+                            this.anim.speed = GameManager.getStageClient().speedMultipler;
+                            this.anim.loop = 0;
+                            this.anim.play();
+                        }
+                    }
                     this.destroyBuff(buff);
                 }
             }
@@ -256,12 +264,8 @@ export class Enemy implements BuffBag {
         if (slowAndRoot.length > 0) {
             // 记录生效时间，和生效的时长
             const root = slowAndRoot.filter((buff) => buff.cfg.speed === -999);
-            const now = Math.floor(new Date().getTime() / 1000);
-            this.speedActiveTime = now;
-            this.activeStatus = false;
             if (root.length > 0) {
                 this.speed = 1;
-                this.activeDuration = root[0].cfg.duration;
                 this.anim = this.go.loadAnimation("217836");
                 if (GameManager.getStageClient()) {
                     this.anim.loop = 1;
@@ -274,8 +278,9 @@ export class Enemy implements BuffBag {
                     return currentItem.cfg.speed < (minItem ? minItem.cfg.speed : Infinity) ? currentItem : minItem;
                 }, null);
                 this.speed = this.speed + minSpeedItem.cfg.speed;
-                this.activeDuration = minSpeedItem.cfg.duration;
             }
+        } else {
+            this.speed = config.speed;
         }
     }
 
@@ -555,7 +560,7 @@ export class Enemy implements BuffBag {
     onUpdate(dt: number) {
         this.healingMonster();
         this.dealRunes();
-        this.speedRecover();
+        // this.speedRecover();
         this.time += dt;
         this.updatePosionAndRotation();
         this._components.forEach((component) => component.update(dt));
@@ -961,24 +966,6 @@ export class Enemy implements BuffBag {
             const MRBonus = TalentUtils.getModuleCRunesValueById(1019);
             const MRBonus2 = TalentUtils.getModuleCRunesValueById(1043);
             this.magicResist = this.magicResist + MRBonus + MRBonus2;
-        }
-    }
-
-    speedRecover() {
-        const now = Math.floor(new Date().getTime() / 1000);
-        if (this.activeDuration > 0 && this.speedActiveTime > 0 && !this.activeStatus) {
-            if (now - this.speedActiveTime > this.activeDuration) {
-                // 恢复速度
-                this.activeStatus = true;
-                const config = GameConfig.Monster.getElement(this.configId);
-                this.speed = config.speed;
-                this.anim = this.go.loadAnimation(config.walkAnim);
-                if (GameManager.getStageClient()) {
-                    this.anim.speed = GameManager.getStageClient().speedMultipler;
-                    this.anim.loop = 0;
-                    this.anim.play();
-                }
-            }
         }
     }
 
