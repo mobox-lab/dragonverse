@@ -472,7 +472,7 @@ class EggM {
                 default:
                     break;
             }
-            if (achievementType == null) return;
+            if (achievementType == null) continue;
             this.achievementModuleC.onExecuteAchievementAction.call(achievementType, 1);
         }
     }
