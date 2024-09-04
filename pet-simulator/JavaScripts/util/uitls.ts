@@ -84,9 +84,9 @@ export class utils {
         // 第11-300次： 5000+ （n-10）*2000
         // 第301次-无穷： 585000 * power （1.2， （n-300））
         const pow = 20; // TODO: test 20 -> 300
-        if(fusedNum <= 10) {
+        if(fusedNum < 10) {
             return 5000;
-        } else if(fusedNum <= pow) {
+        } else if(fusedNum < pow) {
             return 5000 + (fusedNum + 1 - 10) * 2000;
         } else {
             return 585000 * Math.pow(1.2, (fusedNum + 1) - pow);
