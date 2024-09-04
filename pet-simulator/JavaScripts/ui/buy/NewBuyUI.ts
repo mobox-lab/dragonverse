@@ -77,7 +77,8 @@ export default class NewBuyUI extends NewBuyUI_Generate {
             if(this.cnt + "" !== this.inp_Number.text) {
                 return;
             }
-            if(DataCenterC.getData(PetSimulatorPlayerModuleData).gold < this.unitPrice * this.cnt) {
+            const totalGold = this.getTotalGold();
+            if(totalGold < this.unitPrice * this.cnt) {
                 MessageBox.showOneBtnMessage(GameConfig.Language.Text_tips_4.Value);
                 return;
             }
