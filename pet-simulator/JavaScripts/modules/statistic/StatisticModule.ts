@@ -545,7 +545,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
     
             const curPets = petBagData.PetStatisticArr ?? [];
             const destroyPets = Object.values(this.destroyPetsMap?.[player.userId] || {});
-            const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
+            const petStatisticsCur: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
                 const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
                 const info: PetSimulatorStatisticPetObj = { 
                     petkey: p[PSStatisticPetKey.petKey],
@@ -561,7 +561,8 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                     update: p[PSStatisticPetKey.update],
                 }
                 return info;
-            }).concat(destroyPets)
+            })
+            const petStatistics = petStatisticsCur.concat(destroyPets)
             const statisticData: PetSimulatorStatisticNeedFill = {
                 diamond: playerData?.diamond ?? 0,
                 gold_1: playerData?.gold ?? 0,
@@ -571,7 +572,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
                 login,
                 logout,
                 online,
-                pet: [],
+                pet: petStatisticsCur,
                 petCnt: petBagSortedItems?.length ?? 0,
                 petMax,
                 petMaxEnchanted,
