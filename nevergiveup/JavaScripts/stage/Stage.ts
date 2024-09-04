@@ -139,13 +139,14 @@ export class StageS {
 
     initHp(players: Player[]) {
         // 天赋树和龙娘血量加成
+        const bh = this.stageCfgId === 7001 ? 1000000 : baseHp;
         for (let index = 0; index < players.length; index++) {
             const player = players[index];
             const userHP = TalentUtils.getModuleSRunesValueById(1003, player);
             const userHP2 = TalentUtils.getModuleSRunesValueById(1027, player);
             const userHPD = TalentUtils.getModuleSRunesValueById(2005, player);
             const userHPInfinite = TalentUtils.getModuleSRunesValueById(1049, player);
-            this._hp = Math.floor(baseHp + userHP + userHP2 + userHPD + userHPInfinite);
+            this._hp = Math.floor(bh + userHP + userHP2 + userHPD + userHPInfinite);
             this._maxHp = this._hp;
         }
     }
@@ -637,7 +638,8 @@ export class StageC {
         const userHP2 = TalentUtils.getModuleCRunesValueById(1027);
         const userHPD = TalentUtils.getModuleCRunesValueById(2005);
         const userHPInfinite = TalentUtils.getModuleCRunesValueById(1049);
-        this.hp = Math.floor(baseHp + userHP + userHP2 + userHPD + userHPInfinite);
+        const bh = stageCfgId === 7001 ? 1000000 : baseHp;
+        this.hp = Math.floor(bh + userHP + userHP2 + userHPD + userHPInfinite);
         ModuleService.getModule(PlayerModuleC)
             .getUnlockTechNodeMap(playerIds)
             .then((res: { [key: number]: number[] }) => {
