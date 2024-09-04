@@ -16,6 +16,8 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
     private completedPanel: CompletedPanel = null;
     /**执行成就（参数成就类型-对应次数） */
     public onExecuteAchievementAction: Action2<GlobalEnum.AchievementType, number> = new Action2<GlobalEnum.AchievementType, number>();
+    /**批量执行成就（参数成就类型-对应次数）*/
+    public onExecuteAchievementActionBatch: Action2<GlobalEnum.AchievementType, number> = new Action2<GlobalEnum.AchievementType, number>();
     /**成就奖励事件 */
     public onAchievementRewardAction: Action3<number, GlobalEnum.AchievementReward, number> = new Action3<number, GlobalEnum.AchievementReward, number>();
 
@@ -58,6 +60,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
     /**事件绑定 */
     private bindActions(): void {
         this.onExecuteAchievementAction.add(this.executeAchievementAction.bind(this));
+        this.onExecuteAchievementActionBatch.add(this.executeAchievementActionBatch.bind(this));
         AreaDivideManager.instance.onAreaChangeAC.add((preId: number, curId: number) => {
             if (preId < 2000 && curId >= 2000) {
                 this.onExecuteAchievementAction.call(GlobalEnum.AchievementType.ReachFantasyWorldNum, 1)
@@ -155,6 +158,85 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
     private executeAchievementAction(achievementType: GlobalEnum.AchievementType, num: number): void {
         this.saveAchievementStage(achievementType, num);
     }
+    /**
+     * 批量执行成就
+     * @param achievementType 成就类型
+     * @param num 完成的进度
+     */
+    private executeAchievementActionBatch(achievementType: GlobalEnum.AchievementType, num: number): void {
+        this.saveAchievementStageBatch(achievementType, num);
+    }
+
+    /**
+     * 保存成就数据 - 批量的场景（如宠物批量开蛋）
+     * @param achievementType 成就类型
+     * @param num 本次增加的进度
+     * @returns 
+     */
+    private saveAchievementStageBatch(achievementType: GlobalEnum.AchievementType, num: number): void {
+        let hasOld = MapEx.has(this.achievementStageC, achievementType);
+        let curAchievement: AchievementC | AchievementNew | null = hasOld ? MapEx.get(this.achievementStageC, achievementType) : null;
+        let costNum = 0;
+        if(!hasOld) {
+            // 之前没有完成过该系列成就
+            if (!this.achievementJudgeMap.has(achievementType)) {
+                Log4Ts.error(AchievementC, "[成就类型为" + achievementType + "的成就不存在]");
+                return;
+            }
+            const achievementCfg = this.achievementJudgeMap.get(achievementType);
+            const targetNum = achievementCfg.TragetNum;
+            const aid = achievementCfg.id;
+            const achievement = new AchievementNew(aid, 0, false);
+            if (!targetNum) return;
+            const needNum = targetNum;
+            const leftNum = num - costNum;
+            if(leftNum < needNum) {
+                achievement.p = leftNum;
+                achievement.o = false;
+                costNum += leftNum;
+            } else {
+                achievement.p = 0;
+                achievement.o = true;
+                costNum += needNum;
+            }
+            this.saveAchievementStageC(aid, achievementType, achievement.p, achievement.o);
+            this.achievementTips(aid, achievementType, achievement.p, targetNum, achievement.o);
+            let tmpAchievement = new AchievementNew(aid, achievement.p, achievement.o);
+            MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
+            if(!achievement.o) return;
+            const nextId = GameConfig.Achievements.getElement(aid).NextId;
+            curAchievement = new AchievementNew(nextId, 0, false);
+        }
+        while(costNum < num) {
+            // 之前有完成过该系列成就
+            const achievement = new AchievementNew(curAchievement.i, curAchievement.p, curAchievement.o);
+            if (achievement.o) {
+                Log4Ts.error(AchievementC, "[成就ID为" + achievement.i + "的成就已完成]");
+                return;
+            }
+            const aid = achievement.i;
+            const targetNum = GameConfig.Achievements.getElement(aid).TragetNum;
+            if (!targetNum) break;
+            const needNum = targetNum - achievement.p; // 5 - 2 = 3
+            const leftNum = num - costNum;
+            if(leftNum < needNum) { // 6 < 3
+                achievement.p = achievement.p + leftNum;
+                achievement.o = false;
+                costNum += leftNum;
+            } else {
+                achievement.p = 0;
+                achievement.o = true;
+                costNum += needNum;
+            }
+            this.saveAchievementStageC(aid, achievementType, achievement.p, achievement.o);
+            this.achievementTips(aid, achievementType, achievement.p, targetNum, achievement.o);
+            let tmpAchievement = new AchievementNew(aid, achievement.p, achievement.o);
+            MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
+            if(!achievement.o) return;
+            const nextId = GameConfig.Achievements.getElement(aid).NextId;
+            curAchievement = new AchievementNew(nextId, 0, false);
+        }
+    }
 
     /**
      * 保存成就数据
@@ -228,11 +310,11 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
      * @param o 是否已完成
      * @returns 
      */
-    private achievementTips(achievementId: number, achievementType: GlobalEnum.AchievementType, p: number, tragetNum: number, o: boolean): void {
-        oTraceError("[成就ID为" + achievementId + "的成就进度为" + p + "/" + tragetNum + "]");
-        let currentValue = Number((p / tragetNum).toFixed(2));
+    private achievementTips(achievementId: number, achievementType: GlobalEnum.AchievementType, p: number, targetNum: number, o: boolean): void {
+        oTraceError("[成就ID为" + achievementId + "的成就进度为" + p + "/" + targetNum + "]" + " a:" + JSON.stringify({achievementId, p, o, achievementType}));
+        let currentValue = Number((p / targetNum).toFixed(2));
         if (o) {
-            this.completedPanel.showCompletedTips(achievementId, o, p, tragetNum, currentValue);
+            this.completedPanel.showCompletedTips(achievementId, o, p, targetNum, currentValue);
             this.updateAchievementJudgeData(achievementId);
             this.calculateRewardType(achievementId);
         }
@@ -259,7 +341,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
             if (isTips || isTipsIndex == -1) return;
             achievement.isTips[isTipsIndex] = true;
             MapEx.set(this.achievementStageC, achievementType, achievement);
-            this.completedPanel.showCompletedTips(achievementId, o, p, tragetNum, currentValue);
+            this.completedPanel.showCompletedTips(achievementId, o, p, targetNum, currentValue);
         }
     }
 
