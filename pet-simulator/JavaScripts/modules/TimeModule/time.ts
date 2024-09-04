@@ -192,7 +192,6 @@ export namespace TimerModuleUtils {
     export function checkTimer(timerModule: ITimerModule, date: Date): void {
         // console.log("#time onMinuteRefresh date:", date + " lastHour:" + timerModule?.lastHour + " lastTime:" + timerModule?.lastTime + " data.getHours:" + date?.getHours());
     
-        timerModule.lastTime = date.getTime();
         //借用分钟改变的回调判断小时刷新
         if (timerModule.lastHour == null) {
             timerModule.lastHour = date.getHours();
@@ -200,8 +199,8 @@ export namespace TimerModuleUtils {
         if (date.getHours() != timerModule.lastHour) {
             //小时改变
             timerModule.lastHour = date.getHours();
-            timerModule.onHourRefresh.call(date);
-        }
+            timerModule.onHourRefresh.call(date);// 会在里面设置 lastTime
+        } else timerModule.lastTime = date.getTime();
 
         //处理定时器相关内容
         const key = `${date.getFullYear()}-${
@@ -397,6 +396,7 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
         //延迟一会是保证其它模块已经监听完毕
         setTimeout(async () => {
             const newDay = await this.server.net_setLastTimestampIfFirst();
+            this.lastTime = this.data.lastTimeStamp;
             if (newDay) {
                 this.onPlayerEnterSceneIsNewDay.call(this.localPlayerId);
                 //触发一次后就可以清空了
