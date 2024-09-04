@@ -22,6 +22,48 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.bg_Internal
 	}
+	private canvas_tower_info_Internal: mw.Canvas
+	public get canvas_tower_info(): mw.Canvas {
+		if(!this.canvas_tower_info_Internal&&this.uiWidgetBase) {
+			this.canvas_tower_info_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info') as mw.Canvas
+		}
+		return this.canvas_tower_info_Internal
+	}
+	private towerInfoBg_Internal: mw.Image
+	public get towerInfoBg(): mw.Image {
+		if(!this.towerInfoBg_Internal&&this.uiWidgetBase) {
+			this.towerInfoBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBg') as mw.Image
+		}
+		return this.towerInfoBg_Internal
+	}
+	private towerInfoBox_Internal: mw.ScrollBox
+	public get towerInfoBox(): mw.ScrollBox {
+		if(!this.towerInfoBox_Internal&&this.uiWidgetBase) {
+			this.towerInfoBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox') as mw.ScrollBox
+		}
+		return this.towerInfoBox_Internal
+	}
+	private towerInfoCanvas_Internal: mw.Canvas
+	public get towerInfoCanvas(): mw.Canvas {
+		if(!this.towerInfoCanvas_Internal&&this.uiWidgetBase) {
+			this.towerInfoCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox/towerInfoCanvas') as mw.Canvas
+		}
+		return this.towerInfoCanvas_Internal
+	}
+	private ownerTxt_Internal: mw.TextBlock
+	public get ownerTxt(): mw.TextBlock {
+		if(!this.ownerTxt_Internal&&this.uiWidgetBase) {
+			this.ownerTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox/towerInfoCanvas/ownerTxt') as mw.TextBlock
+		}
+		return this.ownerTxt_Internal
+	}
+	private valueTxt_Internal: mw.TextBlock
+	public get valueTxt(): mw.TextBlock {
+		if(!this.valueTxt_Internal&&this.uiWidgetBase) {
+			this.valueTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_tower_info/towerInfoBox/towerInfoCanvas/valueTxt') as mw.TextBlock
+		}
+		return this.valueTxt_Internal
+	}
 	private can_outter_Internal: mw.Canvas
 	public get can_outter(): mw.Canvas {
 		if(!this.can_outter_Internal&&this.uiWidgetBase) {
@@ -36,47 +78,26 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.infoBg_Internal
 	}
-	private canvas_tower_info_Internal: mw.Canvas
-	public get canvas_tower_info(): mw.Canvas {
-		if(!this.canvas_tower_info_Internal&&this.uiWidgetBase) {
-			this.canvas_tower_info_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info') as mw.Canvas
+	private can_strategy_Internal: mw.Canvas
+	public get can_strategy(): mw.Canvas {
+		if(!this.can_strategy_Internal&&this.uiWidgetBase) {
+			this.can_strategy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/can_strategy') as mw.Canvas
 		}
-		return this.canvas_tower_info_Internal
+		return this.can_strategy_Internal
 	}
-	private towerInfoBg_Internal: mw.Image
-	public get towerInfoBg(): mw.Image {
-		if(!this.towerInfoBg_Internal&&this.uiWidgetBase) {
-			this.towerInfoBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info/towerInfoBg') as mw.Image
+	private txt_Strategy_Internal: mw.TextBlock
+	public get txt_Strategy(): mw.TextBlock {
+		if(!this.txt_Strategy_Internal&&this.uiWidgetBase) {
+			this.txt_Strategy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/can_strategy/txt_Strategy') as mw.TextBlock
 		}
-		return this.towerInfoBg_Internal
+		return this.txt_Strategy_Internal
 	}
-	private towerInfoBox_Internal: mw.ScrollBox
-	public get towerInfoBox(): mw.ScrollBox {
-		if(!this.towerInfoBox_Internal&&this.uiWidgetBase) {
-			this.towerInfoBox_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info/towerInfoBox') as mw.ScrollBox
+	private txt_Strategy_Desc_Internal: mw.TextBlock
+	public get txt_Strategy_Desc(): mw.TextBlock {
+		if(!this.txt_Strategy_Desc_Internal&&this.uiWidgetBase) {
+			this.txt_Strategy_Desc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/can_strategy/txt_Strategy_Desc') as mw.TextBlock
 		}
-		return this.towerInfoBox_Internal
-	}
-	private towerInfoCanvas_Internal: mw.Canvas
-	public get towerInfoCanvas(): mw.Canvas {
-		if(!this.towerInfoCanvas_Internal&&this.uiWidgetBase) {
-			this.towerInfoCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info/towerInfoBox/towerInfoCanvas') as mw.Canvas
-		}
-		return this.towerInfoCanvas_Internal
-	}
-	private ownerTxt_Internal: mw.TextBlock
-	public get ownerTxt(): mw.TextBlock {
-		if(!this.ownerTxt_Internal&&this.uiWidgetBase) {
-			this.ownerTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info/towerInfoBox/towerInfoCanvas/ownerTxt') as mw.TextBlock
-		}
-		return this.ownerTxt_Internal
-	}
-	private valueTxt_Internal: mw.TextBlock
-	public get valueTxt(): mw.TextBlock {
-		if(!this.valueTxt_Internal&&this.uiWidgetBase) {
-			this.valueTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_outter/canvas_tower_info/towerInfoBox/towerInfoCanvas/valueTxt') as mw.TextBlock
-		}
-		return this.valueTxt_Internal
+		return this.txt_Strategy_Desc_Internal
 	}
 	private btn_group_Internal: mw.Canvas
 	public get btn_group(): mw.Canvas {
@@ -435,27 +456,6 @@ export default class TowerInfoUI_Generate extends UIScript {
 		}
 		return this.txt_price_deploy_Internal
 	}
-	private can_strategy_Internal: mw.Canvas
-	public get can_strategy(): mw.Canvas {
-		if(!this.can_strategy_Internal&&this.uiWidgetBase) {
-			this.can_strategy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_strategy') as mw.Canvas
-		}
-		return this.can_strategy_Internal
-	}
-	private txt_Strategy_Internal: mw.TextBlock
-	public get txt_Strategy(): mw.TextBlock {
-		if(!this.txt_Strategy_Internal&&this.uiWidgetBase) {
-			this.txt_Strategy_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_strategy/txt_Strategy') as mw.TextBlock
-		}
-		return this.txt_Strategy_Internal
-	}
-	private txt_Strategy_Desc_Internal: mw.TextBlock
-	public get txt_Strategy_Desc(): mw.TextBlock {
-		if(!this.txt_Strategy_Desc_Internal&&this.uiWidgetBase) {
-			this.txt_Strategy_Desc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_strategy/txt_Strategy_Desc') as mw.TextBlock
-		}
-		return this.txt_Strategy_Desc_Internal
-	}
 	private canvas_icontag_Internal: mw.Canvas
 	public get canvas_icontag(): mw.Canvas {
 		if(!this.canvas_icontag_Internal&&this.uiWidgetBase) {
@@ -534,6 +534,12 @@ export default class TowerInfoUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.valueTxt)
+	   
+	
+	   this.initLanguage(this.txt_Strategy)
+	   
+	
+	   this.initLanguage(this.txt_Strategy_Desc)
 	   
 	
 	   this.initLanguage(this.txt_sell)
@@ -615,12 +621,6 @@ export default class TowerInfoUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txt_price_deploy)
-	   
-	
-	   this.initLanguage(this.txt_Strategy)
-	   
-	
-	   this.initLanguage(this.txt_Strategy_Desc)
 	   
 	
 	   //文本多语言
