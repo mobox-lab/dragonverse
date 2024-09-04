@@ -73,7 +73,7 @@ export class Task_ModuleS extends ModuleS<Task_ModuleC, TaskModuleData> {
 
     /**增加宠物装备量 */
     private addPetEquipCount(award: number, player: mw.Player): void {
-        ModuleService.getModule(PetBagModuleS).addSlot(player);
+        // ModuleService.getModule(PetBagModuleS).addSlot(player);
     }
 
     /**增加宠物容量 */

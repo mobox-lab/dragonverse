@@ -345,12 +345,12 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         d.addCapacity(count);
     }
 
-    addSlot(player: mw.Player = null, num: number = 1) {
-        if (player) {
-            return this.getPlayerData(player).addPetFollowCount(num);
-        }
-        return this.currentData.addPetFollowCount(num);
-    }
+    // addSlot(player: mw.Player = null, num: number = 1) {
+    //     if (player) {
+    //         return this.getPlayerData(player).addPetFollowCount(num);
+    //     }
+    //     return this.currentData.addPetFollowCount(num);
+    // }
 
     // /**训练 */
     // net_trainPet(keys: number[], desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
