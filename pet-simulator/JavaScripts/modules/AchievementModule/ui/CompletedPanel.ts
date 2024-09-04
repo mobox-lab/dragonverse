@@ -60,10 +60,10 @@ export default class CompletedPanel extends Completed_Generate {
 	 * @param achId 成就
 	 * @param isOnComplete 是否完成 
 	 * @param progress 进度
-	 * @param tragetNum 目标数
+	 * @param targetNum 目标数
 	 * @param currentValue 当前值
 	 */
-	public showCompletedTips(achId: number, isOnComplete: boolean, progress: number = 0, tragetNum: number = 0, currentValue: number): void {
+	public showCompletedTips(achId: number, isOnComplete: boolean, progress: number = 0, targetNum: number = 0, currentValue: number): void {
 		let achievementsElement = GameConfig.Achievements.getElement(achId);
 		this.mText_AMname.text = achievementsElement.Name;
 		if (isOnComplete) {
@@ -76,7 +76,7 @@ export default class CompletedPanel extends Completed_Generate {
 			this.mText_Target.visibility = mw.SlateVisibility.SelfHitTestInvisible;
 			this.mText_Finish.visibility = mw.SlateVisibility.Collapsed;
 			this.mProgressBar.currentValue = currentValue;
-			this.mText_Target.text = progress + "/" + tragetNum;
+			this.mText_Target.text = progress + "/" + targetNum;
 		}
 		this.show();
 	}
