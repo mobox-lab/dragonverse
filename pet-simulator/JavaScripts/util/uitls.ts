@@ -89,7 +89,7 @@ export class utils {
         } else if(fusedNum < pow) {
             return 5000 + (fusedNum + 1 - 10) * 2000;
         } else {
-            return 585000 * Math.pow(1.2, (fusedNum + 1) - pow);
+            return Math.floor(585000 * Math.pow(1.2, (fusedNum + 1) - pow));
         }
     }
 

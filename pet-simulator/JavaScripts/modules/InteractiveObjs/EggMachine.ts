@@ -451,7 +451,7 @@ class EggM {
     /**广播成就 (开蛋次数|孵化出稀有宠物|孵化出稀有宠物|孵化出传说宠物|孵化出神话宠物)*/
     private broadcastExecuteAchievement(ids: number[]) {
         if(!ids?.length) return;
-        this.achievementModuleC.onExecuteAchievementAction.call(GlobalEnum.AchievementType.OpenEggNum, ids.length);
+        this.achievementModuleC.onExecuteAchievementActionBatch.call(GlobalEnum.AchievementType.OpenEggNum, ids.length);
         for (let i = 0; i < ids.length; i++) {
             const id = ids[i];
             let achievementType: GlobalEnum.AchievementType = null;

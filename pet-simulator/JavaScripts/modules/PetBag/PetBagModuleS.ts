@@ -990,8 +990,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         });
         
         const sData = DataCenterS.getData(userId, PsStatisticModuleData);
-        const { enchantCnt = 0 } = sData?.totalStatisticData ?? {};
-
+        const { enchantCnt = 0 } = sData?.totalStatisticData ?? {}; // 这个 enchantCnt 是赛季总的附魔次数
         utils.logP12Info("P_Enchants", {
             userId,
             timestamp: Date.now(),
@@ -1003,7 +1002,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             prePetEnchantIds,
             newEnchantIds: newIds,
             finalEnchantIds: enchantIds,
-            enchantCnt: enchantCnt + 1,    
+            enchantSeasonCnt: enchantCnt + 1,    
         });
         sData.recordTotalData({ enchantCnt: enchantCnt + 1 });
 
