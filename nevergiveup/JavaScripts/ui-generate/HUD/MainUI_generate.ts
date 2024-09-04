@@ -43,13 +43,6 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.mHp_1_Internal
 	}
-	private mWait_Internal: mw.TextBlock
-	public get mWait(): mw.TextBlock {
-		if(!this.mWait_Internal&&this.uiWidgetBase) {
-			this.mWait_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_2/mWait') as mw.TextBlock
-		}
-		return this.mWait_Internal
-	}
 	private mWave_Internal: mw.TextBlock
 	public get mWave(): mw.TextBlock {
 		if(!this.mWave_Internal&&this.uiWidgetBase) {
@@ -63,6 +56,13 @@ export default class MainUI_Generate extends UIScript {
 			this.mTimer_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_2/mTimer') as mw.TextBlock
 		}
 		return this.mTimer_Internal
+	}
+	private mWait_Internal: mw.TextBlock
+	public get mWait(): mw.TextBlock {
+		if(!this.mWait_Internal&&this.uiWidgetBase) {
+			this.mWait_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas_2/mWait') as mw.TextBlock
+		}
+		return this.mWait_Internal
 	}
 	private mBossContainer_Internal: mw.Canvas
 	public get mBossContainer(): mw.Canvas {
@@ -295,6 +295,76 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.txtButtonSetting_Internal
 	}
+	private roomidCanvas_Internal: mw.Canvas
+	public get roomidCanvas(): mw.Canvas {
+		if(!this.roomidCanvas_Internal&&this.uiWidgetBase) {
+			this.roomidCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/roomidCanvas') as mw.Canvas
+		}
+		return this.roomidCanvas_Internal
+	}
+	private text_roomid_Internal: mw.TextBlock
+	public get text_roomid(): mw.TextBlock {
+		if(!this.text_roomid_Internal&&this.uiWidgetBase) {
+			this.text_roomid_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/roomidCanvas/text_roomid') as mw.TextBlock
+		}
+		return this.text_roomid_Internal
+	}
+	private staminaCanvas_Internal: mw.Canvas
+	public get staminaCanvas(): mw.Canvas {
+		if(!this.staminaCanvas_Internal&&this.uiWidgetBase) {
+			this.staminaCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/staminaCanvas') as mw.Canvas
+		}
+		return this.staminaCanvas_Internal
+	}
+	private imgStaminaBg_Internal: mw.Image
+	public get imgStaminaBg(): mw.Image {
+		if(!this.imgStaminaBg_Internal&&this.uiWidgetBase) {
+			this.imgStaminaBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/staminaCanvas/imgStaminaBg') as mw.Image
+		}
+		return this.imgStaminaBg_Internal
+	}
+	private mStamina_Internal: mw.TextBlock
+	public get mStamina(): mw.TextBlock {
+		if(!this.mStamina_Internal&&this.uiWidgetBase) {
+			this.mStamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/staminaCanvas/mStamina') as mw.TextBlock
+		}
+		return this.mStamina_Internal
+	}
+	private mSlashStamina_Internal: mw.TextBlock
+	public get mSlashStamina(): mw.TextBlock {
+		if(!this.mSlashStamina_Internal&&this.uiWidgetBase) {
+			this.mSlashStamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/staminaCanvas/mSlashStamina') as mw.TextBlock
+		}
+		return this.mSlashStamina_Internal
+	}
+	private mStamina_2_Internal: mw.TextBlock
+	public get mStamina_2(): mw.TextBlock {
+		if(!this.mStamina_2_Internal&&this.uiWidgetBase) {
+			this.mStamina_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/staminaCanvas/mStamina_2') as mw.TextBlock
+		}
+		return this.mStamina_2_Internal
+	}
+	private freshBtn_Internal: mw.Button
+	public get freshBtn(): mw.Button {
+		if(!this.freshBtn_Internal&&this.uiWidgetBase) {
+			this.freshBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/staminaCanvas/freshBtn') as mw.Button
+		}
+		return this.freshBtn_Internal
+	}
+	private addBtn_Internal: mw.Button
+	public get addBtn(): mw.Button {
+		if(!this.addBtn_Internal&&this.uiWidgetBase) {
+			this.addBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/staminaCanvas/addBtn') as mw.Button
+		}
+		return this.addBtn_Internal
+	}
+	private imgStamina_Internal: mw.Image
+	public get imgStamina(): mw.Image {
+		if(!this.imgStamina_Internal&&this.uiWidgetBase) {
+			this.imgStamina_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/staminaCanvas/imgStamina') as mw.Image
+		}
+		return this.imgStamina_Internal
+	}
 
 
 
@@ -357,6 +427,18 @@ export default class MainUI_Generate extends UIScript {
 	   this.settingBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.freshBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "freshBtn");
+	   })
+	   this.freshBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.addBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "addBtn");
+	   })
+	   this.addBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 
 	   //按钮多语言
 	   
@@ -371,13 +453,13 @@ export default class MainUI_Generate extends UIScript {
 	   this.initLanguage(this.mHp_1)
 	   
 	
-	   this.initLanguage(this.mWait)
-	   
-	
 	   this.initLanguage(this.mWave)
 	   
 	
 	   this.initLanguage(this.mTimer)
+	   
+	
+	   this.initLanguage(this.mWait)
 	   
 	
 	   this.initLanguage(this.mBossInfo)
@@ -405,6 +487,18 @@ export default class MainUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txtButtonSetting)
+	   
+	
+	   this.initLanguage(this.text_roomid)
+	   
+	
+	   this.initLanguage(this.mStamina)
+	   
+	
+	   this.initLanguage(this.mSlashStamina)
+	   
+	
+	   this.initLanguage(this.mStamina_2)
 	   
 	
 	   //文本多语言
