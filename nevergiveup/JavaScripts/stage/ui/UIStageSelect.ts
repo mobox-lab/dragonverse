@@ -189,12 +189,18 @@ export class UIStageSelect extends StageSelect_Generate {
         }
         this.bg.size = this.can_inner.size.clone();
 
+        this.selectedMonsterSkillIndex = 0;
         this.monsterSkillTypes = skills;
         console.log("#debug monsterSkillTypes", skills);
         for (let i = 0; i < 5; i++) {
             const skillEle = this[`canvas_MonsterSkillDesc_${i + 1}`] as mw.Canvas;
+            const textEle = this[`textMonsterSkill${i + 1}`] as mw.TextBlock;
+
             console.log("#debug skillEle", skillEle);
-            if (!skillEle) continue;
+            if (!skillEle || !textEle) continue;
+            const isSelect = i === this.selectedMonsterSkillIndex;
+            skillEle.zOrder =  isSelect ? 1 : 0;
+            textEle.setFontColorByHex(isSelect ? "#FFCB1C": "#FFFFFF");
             if (i < skills.length) {
                 const skillType = skills[i];
                 Gtk.trySetVisibility(skillEle, mw.SlateVisibility.SelfHitTestInvisible);
@@ -220,7 +226,10 @@ export class UIStageSelect extends StageSelect_Generate {
     setMonsterSkillUI() {
         for (let i = 0; i < this.monsterSkillTypes.length; i++) {
             const skillEle = this[`canvas_MonsterSkillDesc_${i + 1}`] as mw.Canvas;
-            skillEle.zOrder = i === this.selectedMonsterSkillIndex ? 1 : 0;
+            const textEle = this[`textMonsterSkill${i + 1}`] as mw.TextBlock;
+            const isSelect = i === this.selectedMonsterSkillIndex;
+            skillEle.zOrder =  isSelect ? 1 : 0;
+            textEle.setFontColorByHex(isSelect ? "#FFCB1C": "#FFFFFF");
         }
     }
     getEnemyTypeString(stageCfgId: number) {
