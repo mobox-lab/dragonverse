@@ -242,17 +242,6 @@ export default class StageTrigger extends Script {
 
     @mw.RemoteFunction(mw.Server)
     startGame(playerID: number) {
-        Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`);
-        if (!ModuleService.getModule(EnergyModuleS).isAfford(playerID, GameServiceConfig.STAMINA_COST_START_GAME)) {
-            Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
-            mw.Event.dispatchToClient(
-                Player.getPlayer(playerID),
-                GlobalEventName.ServerTipsEventName,
-                GameConfig.Language.getElement("Text_insufficientStamina").Value
-            );
-            return;
-        }
-        ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
         if (playerID == this.owner) {
             // let ids = this.parsePlayerIds().splice(0, 4);
             this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(
@@ -266,10 +255,32 @@ export default class StageTrigger extends Script {
             const isAlreadyUsed = allStageCfgIds.includes(this.stageCfgId);
             if (isAlreadyUsed) {
                 // todo改多语言
-                mw.UIService.show(CommonTipsManagerUI).showTips("该舞台已经开始，请前往其他舞台开始游戏");
-                return;
+                console.log("该舞台已经开始，请前往其他舞台开始游戏");
+                const player = Player.getPlayer(playerID);
+                mw.Event.dispatchToClient(
+                    player,
+                    GlobalEventName.ServerTipsEventName,
+                    GameConfig.Language.getElement("Text_stageAlreadyUsed").Value
+                );
+            } else {
+                Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`);
+                if (
+                    !ModuleService.getModule(EnergyModuleS).isAfford(
+                        playerID,
+                        GameServiceConfig.STAMINA_COST_START_GAME
+                    )
+                ) {
+                    Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
+                    mw.Event.dispatchToClient(
+                        Player.getPlayer(playerID),
+                        GlobalEventName.ServerTipsEventName,
+                        GameConfig.Language.getElement("Text_insufficientStamina").Value
+                    );
+                    return;
+                }
+                ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
+                GameManager.startGame(ids, this.stageCfgId);
             }
-            GameManager.startGame(ids, this.stageCfgId);
         }
     }
 
