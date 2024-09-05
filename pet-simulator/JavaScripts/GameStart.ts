@@ -225,8 +225,8 @@ export default class GameStart extends mw.Script {
     }
 
     protected onRegisterModule(): void {
-        ModuleService.registerModule(TimerModuleS, TimerModuleC, TimerModuleData);
         ModuleService.registerModule(AuthModuleS, AuthModuleC, PetSimulatorAuthModuleData);
+        ModuleService.registerModule(TimerModuleS, TimerModuleC, TimerModuleData);
         ModuleService.registerModule(HudModuleS, HudModuleC, null);
         ModuleService.registerModule(AreaModuleS, AreaModuleC, AreaModuleData);
         ModuleService.registerModule(InputModuleS, InputModuleC, null);

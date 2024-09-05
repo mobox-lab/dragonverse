@@ -190,13 +190,26 @@ export namespace TimerModuleUtils {
      * @param date Date
      */
     export function checkTimer(timerModule: ITimerModule, date: Date): void {
+        // console.log("#time onMinuteRefresh date:", date + " lastHour:" + timerModule?.lastHour + " lastTime:" + timerModule?.lastTime + " data.getHours:" + date?.getHours());
+    
+        timerModule.lastTime = date.getTime();
+        //借用分钟改变的回调判断小时刷新
+        if (timerModule.lastHour == null) {
+            timerModule.lastHour = date.getHours();
+        }
+        if (date.getHours() != timerModule.lastHour) {
+            //小时改变
+            timerModule.lastHour = date.getHours();
+            timerModule.onHourRefresh.call(date);
+        }
+
         //处理定时器相关内容
         const key = `${date.getFullYear()}-${
             date.getMonth() + 1
         }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
         let acts = timerModule.onTimerMap.get(key);
         timerModule.onTimerMap.delete(key);
-        if (!acts) return;
+        if (!acts) return; 
         for (let i = 0; i < acts.length; i++) {
             const act = acts[i];
             if (!act) continue;
@@ -222,18 +235,6 @@ export namespace TimerModuleUtils {
                     act.periodMinute
                 );
             }
-        }
-
-        timerModule.lastTime = date.getTime();
-        //借用分钟改变的回调判断小时刷新
-        if (timerModule.lastHour == null) {
-            timerModule.lastHour = date.getHours();
-            return;
-        }
-        if (date.getHours() != timerModule.lastHour) {
-            //小时改变
-            timerModule.lastHour = date.getHours();
-            timerModule.onHourRefresh.call(date);
         }
     }
 
@@ -276,6 +277,7 @@ export namespace TimerModuleUtils {
         const newDate = new Date(newTime);
         const timeZone = -newDate.getTimezoneOffset() / 60;
         const ddl = newDate.setHours(8 + timeZone, 0, 0, 0);
+        // console.log("#hour judgeNewDay oldTime:" + oldTime + " newTime:" + newTime + " ddl:" + ddl + " timeZone:" + timeZone + " newDate:" + newDate);
         if (!oldTime ||
             oldTime < ddl - GtkTypes.Interval.PerHour * 24 ||
             (newTime > ddl && oldTime < ddl)) return true;
@@ -419,12 +421,14 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
      * @param nowDate 当前时间
      */
     private onHourChanged(nowDate: Date): void {
+        // console.log("#hour onHourChange date:", nowDate);
         //利用小时改变的回调判断天刷新
         if (this.lastTime == null) {
             this.lastTime = nowDate.getTime();
             return;
         }
         const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime()); 
+        // console.log("#hour isNewDay:" + isNewDay);
         if (isNewDay) {
             this.onDayRefresh.call(nowDate);
         }
@@ -547,6 +551,7 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
      * @param nowDate 当前时间
      */
     private onDayChanged(nowDate: Date): void {
+        // console.log("#hour onDayChanged date:", nowDate);
         //对在线的玩家主动更新一下数据，避免已经跨天后因为lastTimeStamp没有更新而导致当前上线再次触发新一天登录的逻辑，不在线的玩家在新一天登录时会主动调用net_setLastTimestampIfFirst来进行数据处理
         Player.getAllPlayers().forEach((player) => {
             const data = this.getPlayerData(player);
