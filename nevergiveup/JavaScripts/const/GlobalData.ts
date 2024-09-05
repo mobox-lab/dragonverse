@@ -43,6 +43,9 @@ export namespace GlobalData {
         public static shopItemBgGuid: string[] = ["392100", "392110", "392113", "392115", "392101", "392103"];
         /** 商店item角标 各元素对应 光 暗 水 火 木 土 guid */
         public static shopItemCornerIconGuid: string[] = ["392791", "392792", "392800", "392788", "392801", "392804"];
+        /** 商店攻击力图标 攻击/产出/增益 guid */
+        public static shopItemFightIconGuid: string[] = ["423971", "421493", "424749"];
+
         /**筛选 - 元素选项 all, 光暗水火木土 */
         public static shopElementsOpts: string[] = [
             "Sift_1",

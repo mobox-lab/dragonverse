@@ -22,6 +22,8 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 			if(v === CardState.Lock) {
 				Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Visible);
 				Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Collapsed);
+				Gtk.trySetVisibility(this.lockImg, SlateVisibility.Visible);
+				Gtk.trySetVisibility(this.lockBgImg, SlateVisibility.Visible);
 				Gtk.trySetVisibility(this.unlockedTxt, SlateVisibility.Collapsed);
 				Gtk.trySetText(this.txt_sell, this._cfg.shopPrice.toFixed(0) ?? "0");
 				this.img_money.imageGuid = GlobalData.Shop.priceGoldIconGuid[0];
@@ -32,19 +34,16 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 			}
 			return;
 		}
-		if(v === CardState.Lock) {
-			Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Visible);
-			Gtk.trySetVisibility(this.lockImg, SlateVisibility.Visible);
-			Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Collapsed);
-			Gtk.trySetText(this.txt_sell, this._cfg.shopPrice.toFixed(0) ?? "0");
-			this.img_money.imageGuid = GlobalData.Shop.priceGoldIconGuid[0];
-		} else if(v === CardState.Unlock) {
+		if(v === CardState.Unlock) {
 			Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Visible);
 			Gtk.trySetVisibility(this.lockImg, SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.lockBgImg, SlateVisibility.Collapsed);
 			Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.unlockedTxt, SlateVisibility.Collapsed);
 			Gtk.trySetText(this.txt_sell, this._cfg.spend[0].toFixed(0) ?? "0");
 			this.img_money.imageGuid = GlobalData.Shop.priceGoldIconGuid[1];
 		} else if(v === CardState.Equip) {
+			Gtk.trySetVisibility(this.unlockedTxt, SlateVisibility.Collapsed);
 			Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Collapsed);
 			Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Visible);
 		}
@@ -120,6 +119,9 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.nameTxt.text = this._cfg.name;
 		this.txt_sell.text = this._cfg.shopPrice.toFixed(0);
 		this.txt_atk.text = Utils.formatNumber(this._cfg.attackDamage[0]);
+		this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[0];
+		if(this._cfg.adap === 3) this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[1];
+		if(this._cfg.adap === 4) this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[2];
 		this.refreshState();
 		const tags = this.getTags();
 		const len = tags?.length ?? 0;

@@ -84,6 +84,9 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 			this.txt_spend.text = this.cfg.spend[0].toString();
 			this.nameTxt.text = this.cfg.name;
 			this.txt_attack.text = this.cfg.attackDamage[0].toString();
+			this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[0];
+			if(this.cfg.adap === 3) this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[1];
+			if(this.cfg.adap === 4) this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[2];	
 			this.icontagCanvas.removeAllChildren();
 			this.bgElementImg.imageGuid = GlobalData.Shop.shopItemBgGuid[(this.cfg?.elementTy || 1) - 1];
 			this.elementImg.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(this.cfg?.elementTy || 1) - 1];
