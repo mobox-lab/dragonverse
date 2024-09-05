@@ -59,6 +59,11 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         Event.addServerListener(GlobalEventName.ServerTipsEventName, (str: string) => {
             TipsManager.showTips(str);
         });
+
+        Event.addServerListener(GlobalEventName.ServerStageState, (obj: string) => {
+            const info = JSON.parse(obj);
+            TipsManager.showTips(`${info?.userName} started game with ${info.difficulty}`);
+        });
     }
 
     private clearDailyCount(isSave: boolean) {
@@ -168,7 +173,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.data.infinityWaveTimes = this.data.infinityWaveTimes + this._waveCount;
         this.server.net_saveInfinityWaveTimes(this.data.infinityWaveTimes);
         this._waveCount = 0;
-        
+
         this.data.levelThreeCount.sum = this.data.levelThreeCount.sum + this._towerLevelThreeCount;
         this.data.levelThreeCount.daily = this.data.levelThreeCount.daily + this._towerLevelThreeCount;
         this.server.net_saveLevelThreeCount(this.data.levelThreeCount.sum, this.data.levelThreeCount.daily);
