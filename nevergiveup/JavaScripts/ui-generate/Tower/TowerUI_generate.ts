@@ -15,6 +15,13 @@ export default class TowerUI_Generate extends UIScript {
 		}
 		return this.towerCanvas_Internal
 	}
+	private mBgImg_Internal: mw.Image
+	public get mBgImg(): mw.Image {
+		if(!this.mBgImg_Internal&&this.uiWidgetBase) {
+			this.mBgImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/mBgImg') as mw.Image
+		}
+		return this.mBgImg_Internal
+	}
 	private towerItemCanvas_Internal: mw.Canvas
 	public get towerItemCanvas(): mw.Canvas {
 		if(!this.towerItemCanvas_Internal&&this.uiWidgetBase) {
@@ -22,40 +29,40 @@ export default class TowerUI_Generate extends UIScript {
 		}
 		return this.towerItemCanvas_Internal
 	}
+	private borderCanvas_Internal: mw.Canvas
+	public get borderCanvas(): mw.Canvas {
+		if(!this.borderCanvas_Internal&&this.uiWidgetBase) {
+			this.borderCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/borderCanvas') as mw.Canvas
+		}
+		return this.borderCanvas_Internal
+	}
+	private mImage_left_Internal: mw.Image
+	public get mImage_left(): mw.Image {
+		if(!this.mImage_left_Internal&&this.uiWidgetBase) {
+			this.mImage_left_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/borderCanvas/mImage_left') as mw.Image
+		}
+		return this.mImage_left_Internal
+	}
+	private mImage_mid_Internal: mw.Image
+	public get mImage_mid(): mw.Image {
+		if(!this.mImage_mid_Internal&&this.uiWidgetBase) {
+			this.mImage_mid_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/borderCanvas/mImage_mid') as mw.Image
+		}
+		return this.mImage_mid_Internal
+	}
+	private mImage_right_Internal: mw.Image
+	public get mImage_right(): mw.Image {
+		if(!this.mImage_right_Internal&&this.uiWidgetBase) {
+			this.mImage_right_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/borderCanvas/mImage_right') as mw.Image
+		}
+		return this.mImage_right_Internal
+	}
 	private destroyBtn_Internal: mw.StaleButton
 	public get destroyBtn(): mw.StaleButton {
 		if(!this.destroyBtn_Internal&&this.uiWidgetBase) {
 			this.destroyBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/destroyBtn') as mw.StaleButton
 		}
 		return this.destroyBtn_Internal
-	}
-	private mImage_5_Internal: mw.Image
-	public get mImage_5(): mw.Image {
-		if(!this.mImage_5_Internal&&this.uiWidgetBase) {
-			this.mImage_5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/mImage_5') as mw.Image
-		}
-		return this.mImage_5_Internal
-	}
-	private mImage_left_Internal: mw.Image
-	public get mImage_left(): mw.Image {
-		if(!this.mImage_left_Internal&&this.uiWidgetBase) {
-			this.mImage_left_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/mImage_left') as mw.Image
-		}
-		return this.mImage_left_Internal
-	}
-	private mImage_right_Internal: mw.Image
-	public get mImage_right(): mw.Image {
-		if(!this.mImage_right_Internal&&this.uiWidgetBase) {
-			this.mImage_right_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/mImage_right') as mw.Image
-		}
-		return this.mImage_right_Internal
-	}
-	private mImage_mid_Internal: mw.Image
-	public get mImage_mid(): mw.Image {
-		if(!this.mImage_mid_Internal&&this.uiWidgetBase) {
-			this.mImage_mid_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/mImage_mid') as mw.Image
-		}
-		return this.mImage_mid_Internal
 	}
 	private shopBtn_Internal: mw.StaleButton
 	public get shopBtn(): mw.StaleButton {
