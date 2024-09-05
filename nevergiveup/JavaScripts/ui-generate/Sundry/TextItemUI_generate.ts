@@ -22,19 +22,19 @@ export default class TextItemUI_Generate extends UIScript {
 		}
 		return this.txt_title_Internal
 	}
-	private txt_value_Internal: mw.TextBlock
-	public get txt_value(): mw.TextBlock {
-		if(!this.txt_value_Internal&&this.uiWidgetBase) {
-			this.txt_value_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCanvas/txt_value') as mw.TextBlock
-		}
-		return this.txt_value_Internal
-	}
 	private img_icon_Internal: mw.Image
 	public get img_icon(): mw.Image {
 		if(!this.img_icon_Internal&&this.uiWidgetBase) {
-			this.img_icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCanvas/img_icon') as mw.Image
+			this.img_icon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCanvas/Canvas/img_icon') as mw.Image
 		}
 		return this.img_icon_Internal
+	}
+	private txt_value_Internal: mw.TextBlock
+	public get txt_value(): mw.TextBlock {
+		if(!this.txt_value_Internal&&this.uiWidgetBase) {
+			this.txt_value_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textCanvas/Canvas/txt_value') as mw.TextBlock
+		}
+		return this.txt_value_Internal
 	}
 
 
