@@ -183,6 +183,12 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 
 	public updateStrategyUI() {
 		const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
+		if(!sInfo?.strategyKey && this._cfg?.adap === 4) {
+			Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Visible);
+			this.textTitle.text = GameConfig.Language.DamageType_4.Value;
+			this.textDesc.text = Utils.Format(GameConfig.Language.StrategyDesc_11.Value, this._cfg.attackDamage?.[this._selectLevel] ?? 0);
+			return;
+		}
 		if(sInfo?.strategyKey) {
 			Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Visible);
 			const descArr = sInfo.strategyDesc;
