@@ -36,6 +36,27 @@ export default class TowerUI_Generate extends UIScript {
 		}
 		return this.mImage_5_Internal
 	}
+	private mImage_left_Internal: mw.Image
+	public get mImage_left(): mw.Image {
+		if(!this.mImage_left_Internal&&this.uiWidgetBase) {
+			this.mImage_left_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/mImage_left') as mw.Image
+		}
+		return this.mImage_left_Internal
+	}
+	private mImage_right_Internal: mw.Image
+	public get mImage_right(): mw.Image {
+		if(!this.mImage_right_Internal&&this.uiWidgetBase) {
+			this.mImage_right_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/mImage_right') as mw.Image
+		}
+		return this.mImage_right_Internal
+	}
+	private mImage_mid_Internal: mw.Image
+	public get mImage_mid(): mw.Image {
+		if(!this.mImage_mid_Internal&&this.uiWidgetBase) {
+			this.mImage_mid_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/mImage_mid') as mw.Image
+		}
+		return this.mImage_mid_Internal
+	}
 	private shopBtn_Internal: mw.StaleButton
 	public get shopBtn(): mw.StaleButton {
 		if(!this.shopBtn_Internal&&this.uiWidgetBase) {

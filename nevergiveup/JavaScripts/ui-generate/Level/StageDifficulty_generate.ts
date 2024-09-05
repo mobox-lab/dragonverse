@@ -8,12 +8,12 @@
 
 @UIBind('UI/Level/StageDifficulty.ui')
 export default class StageDifficulty_Generate extends UIScript {
-		private mDifficulty_1_Internal: mw.StaleButton
-	public get mDifficulty_1(): mw.StaleButton {
-		if(!this.mDifficulty_1_Internal&&this.uiWidgetBase) {
-			this.mDifficulty_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/Canvas_2/mDifficulty_1') as mw.StaleButton
+		private mDifficultyImg_Internal: mw.Image
+	public get mDifficultyImg(): mw.Image {
+		if(!this.mDifficultyImg_Internal&&this.uiWidgetBase) {
+			this.mDifficultyImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mDifficultyImg') as mw.Image
 		}
-		return this.mDifficulty_1_Internal
+		return this.mDifficultyImg_Internal
 	}
 	private mSelected_Internal: mw.Image
 	public get mSelected(): mw.Image {
@@ -55,13 +55,6 @@ export default class StageDifficulty_Generate extends UIScript {
    protected initButtons() {
 	   //按钮添加点击
 	   
-	   this.mDifficulty_1.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "mDifficulty_1");
-	   })
-	   this.initLanguage(this.mDifficulty_1);
-	   this.mDifficulty_1.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-	   
-	
 	   this.mDifficulty.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "mDifficulty");
 	   })
