@@ -40,7 +40,7 @@ export namespace GlobalData {
         // 商店 tag 图标： 单体、群体、物理、魔法
         public static shopTagIconGuid: string[] = ["418947", "418886", "418960", "418940"];
         /** 商店item背景 各元素对应 光 暗 水 火 木 土 guid */
-        public static shopItemBgGuid: string[] = ["392100", "392110", "392113", "392115", "392101", "392103"];
+        public static shopItemBgGuid: string[] = ["426438", "426435", "426447", "426437", "426433", "426434"];
         /** 商店item角标 各元素对应 光 暗 水 火 木 土 guid */
         public static shopItemCornerIconGuid: string[] = ["392791", "392792", "392800", "392788", "392801", "392804"];
         /** 商店攻击力图标 攻击/产出/增益 guid */
