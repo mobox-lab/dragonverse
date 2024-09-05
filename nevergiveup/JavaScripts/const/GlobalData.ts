@@ -8,7 +8,7 @@ export namespace GlobalData {
     }
     export class Stage {
         /** 关卡推荐元素图标 各元素对应 光 暗 水 火 木 土 guid */
-        public static stageRecommendElementIcon: string[] = ["385296", "385306", "385304", "385295", "385302", "385301"];
+        public static stageRecommendElementIcon: string[] = ["425601", "425604", "425603", "425605", "425600", "425597"];
 
         public static stageMonsterSkillTitleArr = ["MonsterSkill_1", "MonsterSkill_2", "MonsterSkill_3", "MonsterSkill_4"];
         public static stageMonsterSkillDescArr = ["MonsterSkillDesc_1", "MonsterSkillDesc_2", "MonsterSkillDesc_3", "MonsterSkillDesc_4"];
