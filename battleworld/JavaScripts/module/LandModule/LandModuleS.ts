@@ -637,8 +637,8 @@ export class LandModuleS extends ModuleS<LandModuleC, null> {
         let result: Vector[] = [];
         while (num--) {
             let index = MathUtil.randomInt(0, landParcess.length);
-            let pos = landParcess[index].obj.worldTransform.position.add(new Vector(0, 0, 2300));
-            result.push(pos);
+            const pos = landParcess[index].obj.worldTransform.position;
+            result.push(new Vector(pos.x, pos.y, pos.z + 2300));
         }
         return result;
     }
