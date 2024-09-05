@@ -86,8 +86,8 @@ export default class TowerUI extends TowerUI_Generate {
         if(inStage) this.show();
         Gtk.trySetVisibility(this.settingUp, inStage ? mw.SlateVisibility.Collapsed : mw.SlateVisibility.Visible);
         Gtk.trySetVisibility(this.mImage_5, inStage? mw.SlateVisibility.Hidden: mw.SlateVisibility.HitTestInvisible);
-        const [leftUpPosX, leftUpPosY] = [540, 850];
-        const [leftPadding, rightPadding, gap, itemWidth] = [26, 26, 12, 100];
+        const [leftUpPosX, leftUpPosY] = [439, 850];
+        const [leftPadding, rightPadding, gap, itemWidth] = [0, 0, 12, 120];
         const maxWidth = leftPadding + rightPadding + (itemWidth + gap) * TowerConfigConstants.maxEquip - gap;  // 最大可能长度（装满TowerConfigConstants.maxEquip个塔） 
         if (inStage) {
             let containerWidth = leftPadding + rightPadding - gap;
@@ -97,7 +97,7 @@ export default class TowerUI extends TowerUI_Generate {
             }
             this.mImage_5.size = new Vector(containerWidth, 216.00);
             this.shopBtn.size = new Vector(containerWidth, 216.00);
-            this.destroyBtn.position = new Vector(containerWidth - 20, -30);
+            this.destroyBtn.position = new Vector(Math.floor(containerWidth / 2) - 16.5, 191);
             this.towerCanvas.position = new Vector((maxWidth - containerWidth) / 2 + leftUpPosX, leftUpPosY);
             Gtk.trySetVisibility(this.mImage_5, mw.SlateVisibility.Hidden);
         } else {
@@ -106,8 +106,8 @@ export default class TowerUI extends TowerUI_Generate {
             }
             this.mImage_5.size = new Vector(maxWidth, 216.00);
             Gtk.trySetVisibility(this.mImage_5, mw.SlateVisibility.HitTestInvisible);
+            Gtk.trySetVisibility(this.destroyBtn, mw.SlateVisibility.Collapsed);
             this.shopBtn.size = new Vector(maxWidth, 216.00);
-            this.destroyBtn.position = new Vector(maxWidth - 20, -30);
             this.towerCanvas.position = new Vector(leftUpPosX, leftUpPosY);
         }
     }

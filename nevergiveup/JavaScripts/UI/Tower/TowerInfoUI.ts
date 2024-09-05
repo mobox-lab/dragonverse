@@ -90,7 +90,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 	}
 
 	public updateStrategyUI() {
-        this.bg.size = new Vector2(490.00, 331.00);
+        this.bg.size = new Vector2(490.00, 347.00);
         const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
         if(!sInfo) {
             Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Collapsed);
@@ -105,7 +105,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
             return;
         }
         Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Visible);
-        this.bg.size = new Vector2(490.00, 411.00);
+        this.bg.size = new Vector2(490.00, 427.00);
         if(strategyDesc.length === 1) {
             this.txt_Strategy.text = strategyTitle;
             this.txt_Strategy_Desc.text = strategyDesc[0];
