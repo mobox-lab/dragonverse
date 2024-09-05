@@ -24,6 +24,7 @@ import { MGSTool } from "./tool/MGSTool";
 import { WaveModuleC } from "./Modules/waveModule/WaveModuleC";
 import CardModuleS from "./Modules/CardModule/CardModuleS";
 import { GlobalEventName } from "./const/enum";
+import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
 
 export const ChatType = {
     Text: 1,
@@ -73,6 +74,11 @@ export namespace GameManager {
         } else {
             // RankManager.init();
             UIService.show(TowerUI);
+
+            Event.addServerListener(GlobalEventName.ServerStageState, (obj: string) => {
+                const info = JSON.parse(obj);
+                TipsManager.showTips(`${info?.userName} started game with ${info.difficulty}`);
+            });
 
             Event.addServerListener("onStageCreated", (playerIds: number[], id: number, stageCfgId: number) => {
                 stage = new StageC(playerIds, id, stageCfgId);

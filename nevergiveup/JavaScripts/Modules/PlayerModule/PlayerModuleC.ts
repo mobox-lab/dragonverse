@@ -59,11 +59,6 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         Event.addServerListener(GlobalEventName.ServerTipsEventName, (str: string) => {
             TipsManager.showTips(str);
         });
-
-        Event.addServerListener(GlobalEventName.ServerStageState, (obj: string) => {
-            const info = JSON.parse(obj);
-            TipsManager.showTips(`${info?.userName} started game with ${info.difficulty}`);
-        });
     }
 
     private clearDailyCount(isSave: boolean) {
