@@ -54,14 +54,18 @@ export class UIStageDifficulty extends StageDifficulty_Generate {
                 }
             } else this.unlocked = true;
             if (this.unlocked) {
-                this.mRecommandedLevel.setFontColorByHex("#867160");
-                this.mRecommandedLevel.text =
-                    GameConfig.Language.getElement("Text_RecommendLevel").Value + `${stageCfg.recommandedLevel}`;
-                this.mdifficultly.renderOpacity = 1;
+                // this.mRecommandedLevel.setFontColorByHex("#867160");
+                // this.mRecommandedLevel.text =
+                //     GameConfig.Language.getElement("Text_RecommendLevel").Value + `${stageCfg.recommandedLevel}`;
+                this.mDifficulty.enable = true;
+                this.mdifficultly.setOutlineColorByHex("#412013");
+                this.mdifficultly.setFontColorByHex("#FFFFFF");
             } else {
-                this.mRecommandedLevel.setFontColorByHex("#A1A1A1");
-                this.mRecommandedLevel.text = GameConfig.Language.getElement("Text_UnlockAfterLastDifficulty").Value;
-                this.mdifficultly.renderOpacity = 0.7;
+                // this.mRecommandedLevel.setFontColorByHex("#A1A1A1");
+                // this.mRecommandedLevel.text = GameConfig.Language.getElement("Text_UnlockAfterLastDifficulty").Value;
+                this.mDifficulty.enable = false;
+                this.mdifficultly.setOutlineColorByHex("#A08F82");
+                this.mdifficultly.setFontColorByHex("#FFFEF8");
             }
         }
         this.setSelectIndex(0);
