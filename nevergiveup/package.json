@@ -16,6 +16,7 @@
   "dependencies": {
     "@types/crypto-js": "^4.2.2",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.13",
     "gtoolkit": "^36.1.4",
     "module_bubble": "^5.1.0",
     "module_gm": "^5.0.5",

@@ -1,5 +1,8 @@
-import { GtkTypes } from "gtoolkit";
+import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
 import { addGMCommand } from "mw-god-mod";
+
+dayjs.extend(utc);
 
 /**
  * 定时调用的参数数据结构
@@ -273,13 +276,21 @@ export namespace TimerModuleUtils {
      * @returns 是否是新的一天
      */
     export function judgeIsNewDay(oldTime: number, newTime: number): boolean {
-        if(!oldTime) return false;
-        const ddlDate = new Date(newTime);
-        const ddlTime = ddlDate.setUTCHours(8, 0, 0, 0);
-        console.log("#judge judgeNewDay oldTime:" + oldTime + " newTime:" + newTime + " ddl:" + ddlTime);
-        if (newTime > ddlTime && oldTime < ddlTime) return true;
-        else return false;
-    }
+        if (!oldTime || !newTime) return false;
+    
+        // oldTime 和 newTime 都为 UTC 时间戳
+        const oldDate = dayjs.utc(oldTime);
+        const newDate = dayjs.utc(newTime);
+    
+        // 设置一天重置时间为 UTC 08:00
+        const oldResetPoint = oldDate.startOf('d').add(8, 'h');
+        const newResetPoint = newDate.startOf('d').add(8, 'h');
+    
+        console.log("#judge judgeNewDay oldTime:", oldTime, " newTime:", newTime, " oldResetPoint:", oldResetPoint.toString(), " newResetPoint:", newResetPoint.toString());
+    
+        // 如果 newResetPoint 和 oldResetPoint 不同，意味着已经跨越新的一天
+        return newResetPoint.isAfter(oldResetPoint);
+     }
 
     //=====================================================工具函数==========================================================
 

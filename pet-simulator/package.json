@@ -4,6 +4,7 @@
     "@types/crypto-js": "^4.2.1",
     "@types/uuid": "^9.0.7",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.13",
     "gtoolkit": "^36.1.4",
     "linq": "^4.0.2",
     "module_bubble": "^5.1.1",
