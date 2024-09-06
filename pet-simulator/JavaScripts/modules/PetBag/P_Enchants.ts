@@ -6,7 +6,6 @@ import Enchants_item_Generate from "../../ui-generate/Enchants/Enchants_item_gen
 import { oTraceError } from "../../util/LogManager";
 import MessageBox from "../../util/MessageBox";
 import { utils } from "../../util/uitls";
-import { P_PetHover } from "../PetCollect/P_Collect";
 import { P_Bag, PetBagItem } from "./P_Bag";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
@@ -138,20 +137,6 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.selectPetKey = preSelectedPetKey;
         this.isCanClickBtn();
         this.updateEnchantIntroPanel();
-    }
-
-    /**悬浮UI */
-    private showHoverUI(isShow: boolean, item: PetBag_Item) {
-        if (isShow) {
-            let pos = item.uiObject.position;
-            let loc = new mw.Vector2(
-                pos.x + this.mCanvas.position.x + this.mlistCanvas.position.x,
-                pos.y + this.mCanvas.position.y + this.mlistCanvas.position.y,
-            );
-            mw.UIService.getUI(P_PetHover).setPetInfoShow(item.petData, loc);
-        } else {
-            mw.UIService.getUI(P_PetHover).hide();
-        }
     }
 
     private setPetInfoRarityUI(type: number) {

@@ -345,6 +345,7 @@ export class PetBagModuleData extends Subdata {
         });
     }
     public clearFuseToday() {
+        console.log("#P12 clearFuseToday 今日合成次数刷新");
         this.fuseNumToday = 0;
         this.save(true);
     }

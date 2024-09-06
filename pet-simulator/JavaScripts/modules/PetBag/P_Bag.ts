@@ -6,7 +6,6 @@ import PetBagPanel_Generate from "../../ui-generate/Pet/PetBagPanel_generate";
 import ReName_Generate from "../../ui-generate/Pet/ReName_generate";
 import MessageBox from "../../util/MessageBox";
 import { Singleton, stringToBuff, utils } from "../../util/uitls";
-import { P_PetHover } from "../PetCollect/P_Collect";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
 import { PetBag_Item } from "./P_BagItem";
@@ -503,6 +502,7 @@ export class P_Bag extends PetBagPanel_Generate {
             item.stopTipsTween();
         });
         this.itemArr.forEach((item) => {
+            this.showNewPetHoverUI(false, item);
             item.onHoverShow(false);
 			item.setEnableHover(false);
             if (item.isEquip) {
@@ -515,20 +515,20 @@ export class P_Bag extends PetBagPanel_Generate {
         PetBagItem.instance.UIPool.resetAll();
         this.itemTweenArr.length = 0;
 
-        mw.UIService.getUI(P_PetHover).hide();
+        // mw.UIService.getUI(P_PetHover).hide();
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
-    /**悬浮UI */
-    private showHoverUI(isShow: boolean, item: PetBag_Item) {
-        if (isShow) {
-            let pos = item.uiObject.position;
-            let loc = new mw.Vector2(pos.x + this.mCanvas.position.x, pos.y + this.mCanvas.position.y);
-            mw.UIService.getUI(P_PetHover).setPetInfoShow(item.petData, loc);
-        } else {
-            mw.UIService.getUI(P_PetHover).hide();
-        }
-    }
+    // /**悬浮UI */
+    // private showHoverUI(isShow: boolean, item: PetBag_Item) {
+    //     if (isShow) {
+    //         let pos = item.uiObject.position;
+    //         let loc = new mw.Vector2(pos.x + this.mCanvas.position.x, pos.y + this.mCanvas.position.y);
+    //         mw.UIService.getUI(P_PetHover).setPetInfoShow(item.petData, loc);
+    //     } else {
+    //         mw.UIService.getUI(P_PetHover).hide();
+    //     }
+    // }
 
     /**悬浮UI */
     private showNewPetHoverUI(isShow: boolean, item: PetBag_Item) {

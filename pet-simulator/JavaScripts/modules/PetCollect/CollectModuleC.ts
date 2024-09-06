@@ -6,12 +6,12 @@ import { utils } from "../../util/uitls";
 import { PlayerNameManager } from "../Trading/PlayerNameManager";
 import { CollectModuleData } from "./CollectModuleData";
 import { CollectModuleS } from "./CollectModuleS";
-import { P_Collect, P_PetHover } from "./P_Collect";
+import { P_Collect } from "./P_Collect";
 
 export class CollectModuleC extends ModuleC<CollectModuleS, CollectModuleData> {
 
     private petPanel: P_Collect;
-    private petHover: P_PetHover;
+    // private petHover: P_PetHover;
 
     /**全服宠物数 */
     private petCountMap: Map<number, number> = new Map<number, number>();
@@ -54,11 +54,11 @@ export class CollectModuleC extends ModuleC<CollectModuleS, CollectModuleData> {
 
     private initEvent() {
         this.petPanel = mw.UIService.getUI(P_Collect);
-        this.petHover = mw.UIService.getUI(P_PetHover);
+        // this.petHover = mw.UIService.getUI(P_PetHover);
 
         this.petPanel.mCloseBtn.onClicked.add(() => {
             this.petPanel.hide();
-            this.petHover.hide();
+            // this.petHover.hide();
         })
         this.data.onHasChangeAC.add(this.onHasChange, this);
         this.data.onLevelChangeAC.add(this.levelChange.bind(this))
