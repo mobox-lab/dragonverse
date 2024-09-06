@@ -273,13 +273,11 @@ export namespace TimerModuleUtils {
      * @returns 是否是新的一天
      */
     export function judgeIsNewDay(oldTime: number, newTime: number): boolean {
-        const newDate = new Date(newTime);
-        const timeZone = -newDate.getTimezoneOffset() / 60;
-        const ddl = newDate.setHours(8 + timeZone, 0, 0, 0);
-        // console.log("#hour judgeNewDay oldTime:" + oldTime + " newTime:" + newTime + " ddl:" + ddl + " timeZone:" + timeZone + " newDate:" + newDate);
-        if (!oldTime ||
-            oldTime < ddl - GtkTypes.Interval.PerHour * 24 ||
-            (newTime > ddl && oldTime < ddl)) return true;
+        if(!oldTime) return false;
+        const ddlDate = new Date(newTime);
+        const ddlTime = ddlDate.setUTCHours(8, 0, 0, 0);
+        console.log("#judge judgeNewDay oldTime:" + oldTime + " newTime:" + newTime + " ddl:" + ddlTime);
+        if (newTime > ddlTime && oldTime < ddlTime) return true;
         else return false;
     }
 
