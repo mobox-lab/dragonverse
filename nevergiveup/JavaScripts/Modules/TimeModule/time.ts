@@ -421,17 +421,11 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
      * @param nowDate 当前时间
      */
     private onHourChanged(nowDate: Date): void {
-        // console.log("#hour onHourChange date:", nowDate);
         //利用小时改变的回调判断天刷新
-        if (this.lastTime == null) {
-            this.lastTime = nowDate.getTime();
-            return;
-        }
-        const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime()); 
-        // console.log("#hour isNewDay:" + isNewDay);
-        if (isNewDay) {
-            this.onDayRefresh.call(nowDate);
-        }
+        const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime());
+        console.log("#hour TimerModuleC onHourChanged isNewDay:" + isNewDay + " lastTime:" + this.lastTime + " nowTime:" + nowDate.getTime());
+        if (isNewDay) this.onDayRefresh.call(nowDate);
+        this.lastTime = nowDate.getTime(); 
     }
 
     /**
@@ -535,15 +529,11 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
      * @param nowDate 当前时间
      */
     private onHourChanged(nowDate: Date): void {
-        //利用小时改变的回调判断天刷新
-        if (this.lastTime == null) {
-            this.lastTime = nowDate.getTime();
-            return;
-        }
+        //利用小时改变的回调判断天刷新 
         const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime())
-        if (isNewDay) {
-            this.onDayRefresh.call(nowDate);
-        }
+        console.log("#hour TimerModuleS onHourChanged isNewDay:" + isNewDay + " lastTime:" + this.lastTime + " nowTime:" + nowDate.getTime());
+        if (isNewDay) this.onDayRefresh.call(nowDate);
+        this.lastTime = nowDate.getTime();
     }
 
     /**
