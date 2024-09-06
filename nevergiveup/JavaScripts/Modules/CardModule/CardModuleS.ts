@@ -12,7 +12,6 @@ import CardModuleC from "./CardModuleC";
 import CardModuleData from "./CardModuleData";
 
 export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
-
     @Decorator.noReply()
     public net_setEquipCard(equipCards: number[]) {
         this.currentData.equipCards = equipCards;
@@ -25,7 +24,12 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
      */
     public net_buyCard(cardID: number) {
         if (!this.currentData.unlockCards.includes(cardID)) {
-            if (ModuleService.getModule(PlayerModuleS).changeGold(this.currentPlayer, -GameConfig.Tower.getElement(cardID)?.shopPrice)) {
+            if (
+                ModuleService.getModule(PlayerModuleS).changeGold(
+                    this.currentPlayer,
+                    -GameConfig.Tower.getElement(cardID)?.shopPrice
+                )
+            ) {
                 this.currentData.addUnlockCard(cardID);
                 this.currentData.save(false);
                 return true;
@@ -47,8 +51,11 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
         }
     }
 
-    /** 脚本被销毁时最后一帧执行完调用此函数 */
-    protected onDestroy(): void {
-
+    public getPlayerEquipCards(player: Player) {
+        let data = ModuleService.getModule(CardModuleS).getPlayerData(player);
+        return data.equipCards;
     }
+
+    /** 脚本被销毁时最后一帧执行完调用此函数 */
+    protected onDestroy(): void {}
 }

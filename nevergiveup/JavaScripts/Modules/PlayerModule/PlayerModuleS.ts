@@ -17,7 +17,17 @@ import PlayerModuleData, { SumCount } from "./PlayerModuleData";
 import PlayerScript from "./PlayerScript";
 import { PlayerUtil } from "./PlayerUtil";
 
+export type StageState = {
+    userName?: string;
+    level?: number;
+    difficulty?: number;
+    cards?: number[];
+    stageCfgId: number;
+    playerId?: number;
+};
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
+    stageStages: Map<number, StageState | null> = new Map();
+
     protected onStart(): void {
         TimerModuleUtils.addOnlineDayListener(this.clearDailyCount, this);
     }
@@ -419,5 +429,17 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
             return true;
         }
         return false;
+    }
+
+    public setStageState(state: StageState) {
+        if (state.playerId === null) {
+            this.stageStages.set(state.stageCfgId, null);
+        } else {
+            this.stageStages.set(state.stageCfgId, state);
+        }
+    }
+
+    public net_getStageStateById(stageId: number) {
+        return this.stageStages.get(stageId);
     }
 }

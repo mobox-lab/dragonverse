@@ -48,6 +48,7 @@ import { SoundUtil } from "../tool/SoundUtil";
 import { Wave, WaveAirdrop, WaveManager, WaveUtil } from "./Wave";
 import { UIMain } from "./ui/UIMain";
 import { SettleData, UISettle } from "./ui/UISettle";
+import { GlobalEventName } from "../const/enum";
 
 type DeathData = {
     id: number;
@@ -156,6 +157,18 @@ export class StageS {
             if (stageId == this.id) {
                 if (state == EStageState.End) {
                     GameManager.endStage(this);
+                    // 广播数据和清除数据
+                    const stageState = {
+                        stageCfgId: this.stageCfgId,
+                    };
+                    ModuleService.getModule(PlayerModuleS).setStageState(stageState);
+                    for (let i = 0; i < GameManager.allPlayers.length; i++) {
+                        Event.dispatchToClient(
+                            GameManager.allPlayers[i],
+                            GlobalEventName.ServerStageState,
+                            JSON.stringify(stageState)
+                        );
+                    }
                     this.boardcast((player) => {
                         GameManager.addPlayer(player);
                     });

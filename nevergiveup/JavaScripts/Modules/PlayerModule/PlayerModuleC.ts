@@ -168,7 +168,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.data.infinityWaveTimes = this.data.infinityWaveTimes + this._waveCount;
         this.server.net_saveInfinityWaveTimes(this.data.infinityWaveTimes);
         this._waveCount = 0;
-        
+
         this.data.levelThreeCount.sum = this.data.levelThreeCount.sum + this._towerLevelThreeCount;
         this.data.levelThreeCount.daily = this.data.levelThreeCount.daily + this._towerLevelThreeCount;
         this.server.net_saveLevelThreeCount(this.data.levelThreeCount.sum, this.data.levelThreeCount.daily);
@@ -355,5 +355,9 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         // if (!await this.hasFirstAction(action))
         this.data.firstMonsterTags.push(tagId);
         this.server.net_setFirstMonsterTag(tagId);
+    }
+
+    public getStageStateById(stageId: number) {
+        return this.server.net_getStageStateById(stageId);
     }
 }

@@ -1,20 +1,20 @@
 export enum TowerElementType {
-    Light = 1, 
-    Dark, 
+    Light = 1,
+    Dark,
     Water,
-    Fire, 
+    Fire,
     Wood,
-    Earth
+    Earth,
 }
 export enum TowerTargetType {
-    Single = 1, // 单体 
-    Multiple,   // 群体
-    Energy,     // 产出
-    Buff        // 增益
+    Single = 1, // 单体
+    Multiple, // 群体
+    Energy, // 产出
+    Buff, // 增益
 }
 export enum TowerDamageType {
     Physical = 1,
-    Magical
+    Magical,
 }
 export enum TowerStrategyType {
     WarmUp = 1, // 暖机
@@ -41,7 +41,7 @@ export enum StageMonsterSkillType {
  */
 export enum ETalentType {
     Base = 1, // 基础天赋
-    Peak // 巅峰天赋
+    Peak, // 巅峰天赋
 }
 
 /**
@@ -49,15 +49,16 @@ export enum ETalentType {
  */
 export enum ETalentBuffValue {
     Integer = 1, // 数字
-    Percent // 百分比
+    Percent, // 百分比
 }
 
 export enum GlobalEventName {
-    ServerTipsEventName = "TD_SERVER_TIPS_EVENT_NAME"
+    ServerTipsEventName = "TD_SERVER_TIPS_EVENT_NAME",
+    ServerStageState = "STAGE_STAGE_INFO",
 }
 
-/** 
- * DV 中的龙娘元素类型，顺序不太一样 
+/**
+ * DV 中的龙娘元素类型，顺序不太一样
  */
 export enum DragonElemental {
     Fire = 1,
