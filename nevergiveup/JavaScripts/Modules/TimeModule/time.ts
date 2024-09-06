@@ -12,15 +12,15 @@ class PeriodItem {
      * 构造函数
      * @param periodCount 调用次数
      * @param periodMinute 每隔多久调用一次，单位分钟
-     * @param actionDate Action1<Date>
+     * @param actionDate Action1<number>
      * @param fn 回调
      * @param thisArg 参数
      */
     constructor(
         public periodCount: number,
         public periodMinute: number,
-        public actionDate: Action1<Date>,
-        public fn: (a: Date) => void,
+        public actionDate: Action1<number>,
+        public fn: (a: number) => void,
         public thisArg: any
     ) {}
 }
@@ -32,11 +32,11 @@ interface ITimerModule {
     /** 定时器回调map */
     readonly onTimerMap: Map<string, Array<PeriodItem>>;
     /** 天刷新调用 */
-    readonly onDayRefresh: Action1<Date>;
+    readonly onDayRefresh: Action1<number>;
     /** 时刷新调用 */
-    readonly onHourRefresh: Action1<Date>;
+    readonly onHourRefresh: Action1<number>;
     /** 分刷新调用 */
-    readonly onMinuteRefresh: Action1<Date>;
+    readonly onMinuteRefresh: Action1<number>;
     /** 上一次的时间 */
     lastTime: number;
     /** 记录了上一个小时 */
@@ -76,7 +76,7 @@ export namespace TimerModuleUtils {
      * @param fn 回调
      * @param thisArg this
      */
-    export function addOnlineDayListener(fn: (a: Date) => void, thisArg?: any): void {
+    export function addOnlineDayListener(fn: (a: number) => void, thisArg?: any): void {
         if (SystemUtil.isClient()) {
             ModuleService.getModule(TimerModuleC).onDayRefresh.add(fn, thisArg);
         } else if (SystemUtil.isServer()) {
@@ -89,7 +89,7 @@ export namespace TimerModuleUtils {
      * @param fn 回调
      * @param thisArg this
      */
-    export function addHourListener(fn: (a: Date) => void, thisArg?: any): void {
+    export function addHourListener(fn: (a: number) => void, thisArg?: any): void {
         if (SystemUtil.isClient()) {
             ModuleService.getModule(TimerModuleC).onHourRefresh.add(fn, thisArg);
         } else if (SystemUtil.isServer()) {
@@ -102,7 +102,7 @@ export namespace TimerModuleUtils {
      * @param fn 回调
      * @param thisArg this
      */
-    export function addMinuteListener(fn: (a: Date) => void, thisArg?: any): void {
+    export function addMinuteListener(fn: (a: number) => void, thisArg?: any): void {
         console.error(`rkc--------------是否是客户端：${SystemUtil.isClient()}`);
         if (SystemUtil.isClient()) {
             ModuleService.getModule(TimerModuleC).onMinuteRefresh.add(fn, thisArg);
@@ -116,7 +116,7 @@ export namespace TimerModuleUtils {
      * @param fn 回调
      * @param thisArg this
      */
-    export function removeDayListener(fn: (a: Date) => void, thisArg?: any): void {
+    export function removeDayListener(fn: (a: number) => void, thisArg?: any): void {
         if (SystemUtil.isClient()) {
             ModuleService.getModule(TimerModuleC).onDayRefresh.remove(fn, thisArg);
         } else if (SystemUtil.isServer()) {
@@ -129,7 +129,7 @@ export namespace TimerModuleUtils {
      * @param fn 回调
      * @param thisArg this
      */
-    export function removeHourListener(fn: (a: Date) => void, thisArg?: any): void {
+    export function removeHourListener(fn: (a: number) => void, thisArg?: any): void {
         if (SystemUtil.isClient()) {
             ModuleService.getModule(TimerModuleC).onHourRefresh.remove(fn, thisArg);
         } else if (SystemUtil.isServer()) {
@@ -142,7 +142,7 @@ export namespace TimerModuleUtils {
      * @param fn 回调
      * @param thisArg this
      */
-    export function removeMinuteListener(fn: (a: Date) => void, thisArg?: any): void {
+    export function removeMinuteListener(fn: (a: number) => void, thisArg?: any): void {
         if (SystemUtil.isClient()) {
             ModuleService.getModule(TimerModuleC).onMinuteRefresh.remove(fn, thisArg);
         } else if (SystemUtil.isServer()) {
@@ -168,7 +168,7 @@ export namespace TimerModuleUtils {
         day: number,
         hour: number,
         minute: number,
-        fn: (a: Date) => void,
+        fn: (a: number) => void,
         thisArg: any = null,
         periodCount: number = 1,
         periodMinute: number = 0
@@ -182,7 +182,7 @@ export namespace TimerModuleUtils {
             acts = [];
             timerModule.onTimerMap.set(key, acts);
         }
-        let act = new PeriodItem(periodCount, periodMinute, new Action1<Date>(), fn, thisArg);
+        let act = new PeriodItem(periodCount, periodMinute, new Action1<number>(), fn, thisArg);
         act.actionDate.add(fn, thisArg);
         acts.push(act);
     }
@@ -190,47 +190,46 @@ export namespace TimerModuleUtils {
     /**
      * 检查是否有可用的定时器，如果有的话，则进行调用通知
      * @param timerModule ITimerModule
-     * @param date Date
+     * @param nowTime number
      */
-    export function checkTimer(timerModule: ITimerModule, date: Date): void {
+    export function checkTimer(timerModule: ITimerModule, nowTime: number): void {
         // console.log("#time onMinuteRefresh date:", date + " lastHour:" + timerModule?.lastHour + " lastTime:" + timerModule?.lastTime + " data.getHours:" + date?.getHours());
-    
+        const nowDate = dayjs.utc(nowTime);
+        const nowHour = nowDate.hour();
         //借用分钟改变的回调判断小时刷新
         if (timerModule.lastHour == null) {
-            timerModule.lastHour = date.getHours();
+            timerModule.lastHour = nowHour;
         }
-        if (date.getHours() != timerModule.lastHour) {
+        if (nowDate.hour() != timerModule.lastHour) {
             //小时改变
-            timerModule.lastHour = date.getHours();
-            timerModule.onHourRefresh.call(date);// 会在里面设置 lastTime
-        } else timerModule.lastTime = date.getTime();
+            timerModule.lastHour = nowHour;
+            timerModule.onHourRefresh.call(nowTime);// 会在里面设置 lastTime
+        } else timerModule.lastTime = nowTime;
 
         //处理定时器相关内容
-        const key = `${date.getFullYear()}-${
-            date.getMonth() + 1
-        }-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+        const key = nowDate.format('YYYY-M-D H:m');
         let acts = timerModule.onTimerMap.get(key);
         timerModule.onTimerMap.delete(key);
         if (!acts) return; 
         for (let i = 0; i < acts.length; i++) {
             const act = acts[i];
             if (!act) continue;
-            act.actionDate.call(date);
+            act.actionDate.call(nowTime);
 
             //检查周期次
-            let nextCallDate = null;
+            let nextCallDate: dayjs.Dayjs | null = null;
             if (act.periodCount == -1 || --act.periodCount > 0) {
                 //添加下一个周期时间
-                nextCallDate = new Date(date.getTime() + 1000 * 60 * act.periodMinute);
+                nextCallDate = dayjs.utc(nowTime + 1000 * 60 * act.periodMinute);
             }
             if (nextCallDate) {
                 //添加下一个周期的执行时间
                 addTimer(
-                    nextCallDate.getFullYear(),
-                    nextCallDate.getMonth() + 1,
-                    nextCallDate.getDate(),
-                    nextCallDate.getHours(),
-                    nextCallDate.getMinutes(),
+                    nextCallDate.year(),
+                    nextCallDate.month(),
+                    nextCallDate.date(),
+                    nextCallDate.hour(),
+                    nextCallDate.minute(),
                     act.fn,
                     act.thisArg,
                     act.periodCount,
@@ -239,36 +238,6 @@ export namespace TimerModuleUtils {
             }
         }
     }
-
-    /**
-     * 判断给定的两个date对象表示的是否是同一分钟内
-     * @param date1 date1
-     * @param date2 date2
-     * @returns 是否相同
-     */
-    export function dateEquals(date1: Date, date2: Date): boolean {
-        if (!date1 || !date2) return false;
-        return (
-            date1.getFullYear() == date2.getFullYear() &&
-            date1.getMonth() == date2.getMonth() &&
-            date1.getDate() == date2.getDate() &&
-            date1.getHours() == date2.getHours() &&
-            date1.getMinutes() == date2.getMinutes()
-        );
-    }
-
-    /**
-     * 判断两个时间戳是否是同一天
-     * @param time1 时间戳1
-     * @param time2 时间戳2
-     * @returns 是否是同一天
-     */
-    export function judgeSameDay(time1: number, time2: number): boolean {
-        const d1 = new Date(time1);
-        const d2 = new Date(time2);
-        return d1.getFullYear() == d2.getFullYear() && d1.getMonth() == d2.getMonth() && d1.getDate() == d2.getDate();
-    }
-
     /**
      * 判断 newTime 是否为新的一天
      * @param oldTime 旧的时间
@@ -277,95 +246,39 @@ export namespace TimerModuleUtils {
      */
     export function judgeIsNewDay(oldTime: number, newTime: number): boolean {
         if (!oldTime || !newTime) return false;
-    
+
         // oldTime 和 newTime 都为 UTC 时间戳
         const oldDate = dayjs.utc(oldTime);
         const newDate = dayjs.utc(newTime);
+
+        // 直接比较两个时间的小时数是否不同
+        const oldHour = oldDate.hour();
+        const newHour = newDate.hour();
+
+        console.log("#judge judgeNewHour oldTime:", oldTime, " newTime:", newTime, " oldHour:", oldHour, " newHour:", newHour);
+
+        // 如果 newHour 和 oldHour 不同，意味着已经跨越新的一小时
+        return newHour !== oldHour;
+        // TODO: 先改成每小时重置方便测试
+
+        // if (!oldTime || !newTime) return false;
     
-        // 设置一天重置时间为 UTC 08:00
-        const oldResetPoint = oldDate.startOf('d').add(8, 'h');
-        const newResetPoint = newDate.startOf('d').add(8, 'h');
+        // // oldTime 和 newTime 都为 UTC 时间戳
+        // const oldDate = dayjs.utc(oldTime);
+        // const newDate = dayjs.utc(newTime);
     
-        console.log("#judge judgeNewDay oldTime:", oldTime, " newTime:", newTime, " oldResetPoint:", oldResetPoint.toString(), " newResetPoint:", newResetPoint.toString());
+        // // 设置一天重置时间为 UTC 08:00
+        // const oldResetPoint = oldDate.startOf('d').add(8, 'h');
+        // const newResetPoint = newDate.startOf('d').add(8, 'h');
     
-        // 如果 newResetPoint 和 oldResetPoint 不同，意味着已经跨越新的一天
-        return newResetPoint.isAfter(oldResetPoint);
+        // console.log("#judge judgeNewDay oldTime:", oldTime, " newTime:", newTime, " oldResetPoint:", oldResetPoint.toString(), " newResetPoint:", newResetPoint.toString());
+    
+        // // 如果 newResetPoint 和 oldResetPoint 不同，意味着已经跨越新的一天
+        // return newResetPoint.isAfter(oldResetPoint);
      }
 
     //=====================================================工具函数==========================================================
-
-    /**
-     * 获取从startTime开始，经过interval时间后的时间
-     * @param startTime 开始时间（ms）
-     * @param interval 经过的时间（ms）
-     * @returns 结果
-     */
-    export function getNextExpire(startTime: number, interval: number): number {
-        // get relative timestamp from the Monday 00:00:00 of the start time to start time
-        // const start = startTime - (startTime - 8 * 3600 * 1000) % (7 * 24 * 3600 * 1000);
-        let currentTime = Date.now();
-        let timeDiff = currentTime - startTime;
-        let cycles = Math.ceil(timeDiff / interval);
-        return startTime + cycles * interval;
-    }
-
-    /**
-     * 获取下一天的刷新时间
-     * 如果刷新时间是凌晨5点，现在是凌晨4点，则返回的是今日的凌晨5点，否则返回次日的凌晨5点
-     * @param time 当前时间
-     * @param nextHour 下一天的刷新的小时
-     * @param nextMinute 下一天的刷新的分钟
-     * @returns Date
-     */
-    export function getNextDayDate(time: number, nextHour: number, nextMinute: number = 0): Date {
-        const date = new Date(time);
-        const dayOfWeek = date.getDate();
-        const currentTime = date.getTime();
-
-        const nextHourToday = new Date(date.getFullYear(), date.getMonth(), dayOfWeek, nextHour, nextMinute, 0, 0);
-
-        if (currentTime < nextHourToday.getTime()) {
-            return nextHourToday;
-        }
-        //返回次日
-        const nexHourTomorrow = new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            dayOfWeek + 1,
-            nextHour,
-            nextMinute,
-            0,
-            0
-        );
-        return nexHourTomorrow;
-    }
-
-    /**
-     * 获取下一次周刷新的时间
-     * 如果刷新时间是周一凌晨5点，现在是周一凌晨4点，则返回的是这周周一的凌晨5点，否则返回下周周一的凌晨5点
-     * @param time 需要计算的时间
-     * @param nextHour 下一天的刷新的小时
-     * @param nextMinute 下一天的刷新的分钟
-     * @returns Date
-     */
-    export function getNextWeekDate(time: number, nextHour: number, nextMinute: number = 0): Date {
-        const date = new Date(time);
-        let dayOfWeek = date.getDay(); // 0 表示周日，1 表示周一，依此类推
-        if (dayOfWeek == 1) {
-            const nextDate = new Date(time);
-            nextDate.setHours(nextHour, nextMinute);
-            if (date.getTime() < nextDate.getTime()) {
-                return nextDate;
-            }
-        }
-        if (dayOfWeek == 0) dayOfWeek = 7;
-        // 如果当前日期不是周一，则返回下一个周一的指定时间
-        date.setDate(date.getDate() + (1 - dayOfWeek + 7)); // 调整日期到下一周的周一
-        date.setHours(nextHour, nextMinute, 0, 0); // 设置时间为指定的下一个小时和分钟
-        return date;
-    }
 }
-
 /**
  * 时间管理模块的客户端，在客户端需要感知时间相关的内容时用到，其时间由服务端下发
  */
@@ -374,11 +287,11 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
     public readonly onPlayerEnterSceneIsNewDay: Action1<number> = new Action1();
 
     /** 天刷新调用 */
-    public readonly onDayRefresh: Action1<Date> = new Action1<Date>();
+    public readonly onDayRefresh: Action1<number> = new Action1<number>();
     /** 时刷新调用 */
-    public readonly onHourRefresh: Action1<Date> = new Action1<Date>();
+    public readonly onHourRefresh: Action1<number> = new Action1<number>();
     /** 分刷新调用 */
-    public readonly onMinuteRefresh: Action1<Date> = new Action1<Date>();
+    public readonly onMinuteRefresh: Action1<number> = new Action1<number>();
 
     /** 定时器回调map */
     public readonly onTimerMap: Map<string, Array<PeriodItem>> = new Map();
@@ -421,34 +334,34 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
      * 分钟改变进行调用
      * @param nowDate 当前时间
      */
-    private onMinuteChanged(nowDate: Date): void {
-        TimerModuleUtils.checkTimer(this, nowDate);
+    private onMinuteChanged(nowTime: number): void {
+        TimerModuleUtils.checkTimer(this, nowTime);
     }
 
     /**
      * 小时改变进行调用
      * @param nowDate 当前时间
      */
-    private onHourChanged(nowDate: Date): void {
+    private onHourChanged(nowTime: number): void {
         //利用小时改变的回调判断天刷新
-        const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime());
-        console.log("#hour TimerModuleC onHourChanged isNewDay:" + isNewDay + " lastTime:" + this.lastTime + " nowTime:" + nowDate.getTime());
-        if (isNewDay) this.onDayRefresh.call(nowDate);
-        this.lastTime = nowDate.getTime(); 
+        const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowTime);
+        console.log("#hour TimerModuleC onHourChanged isNewDay:" + isNewDay + " lastTime:" + this.lastTime + " nowTime:" + nowTime);
+        if (isNewDay) this.onDayRefresh.call(nowTime);
+        this.lastTime = nowTime; 
     }
 
     /**
      * 天改变进行调用
      * @param nowDate 当前时间
      */
-    private onDayChanged(nowDate: Date): void {}
+    private onDayChanged(nowTime: number): void {}
 
     /**
      * 服务器调用刷新
      * @param serverTime 当前服务器的时间
      */
     public net_refresh(serverTime: number): void {
-        this.onMinuteRefresh.call(new Date(serverTime));
+        this.onMinuteRefresh.call(serverTime);
     }
 
     /**
@@ -468,11 +381,11 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
     public readonly onPlayerEnterSceneIsNewDay: Action1<number> = new Action1<number>();
 
     /** 天刷新调用，不用和C端抽取出去，S端可以扩展出更精细化的时间控制 */
-    public readonly onDayRefresh: Action1<Date> = new Action1<Date>();
+    public readonly onDayRefresh: Action1<number> = new Action1<number>();
     /** 时刷新调用 */
-    public readonly onHourRefresh: Action1<Date> = new Action1<Date>();
+    public readonly onHourRefresh: Action1<number> = new Action1<number>();
     /** 分刷新调用 */
-    public readonly onMinuteRefresh: Action1<Date> = new Action1<Date>();
+    public readonly onMinuteRefresh: Action1<number> = new Action1<number>();
     /** 定时器回调map */
     public readonly onTimerMap: Map<string, Array<PeriodItem>> = new Map();
     /** 30s刷新一次 */
@@ -481,7 +394,7 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
     private _curTime: number = this._refreshTime;
 
     /** 上一个日期 */
-    private _lastTempDate: Date = null;
+    private _lastTempTime: number = null;
     
     /** 上一次的时间 */
     public lastTime: number = null;
@@ -505,12 +418,14 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
         this._curTime -= dt;
         if (this._curTime <= 0) {
             this._curTime = this._refreshTime;
-            let nowDate = new Date();
-            if (!TimerModuleUtils.dateEquals(this._lastTempDate, nowDate)) {
+            const preDate = dayjs.utc(this._lastTempTime)
+            const nowDate = dayjs.utc()
+            const nowTime = nowDate.valueOf();
+            if (nowDate.minute() !== preDate.minute()) {
                 //保证在一分钟内只调用一次
-                this.refresh(nowDate);
+                this.refresh(nowTime);
             }
-            this._lastTempDate = nowDate;
+            this._lastTempTime = nowTime;
         }
     }
 
@@ -518,44 +433,44 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
      * 刷新时间，按分刷新，也就是说一分钟内只会调用一次
      * @param nowDate 刷新时间
      */
-    private refresh(nowDate: Date): void {
+    private refresh(nowTime: number): void {
         // console.error(`rkc----refresh: ${nowDate}`);
         //每分钟改变进行调用
-        this.onMinuteRefresh.call(nowDate);
-        this.getAllClient().net_refresh(nowDate.getTime());
+        this.onMinuteRefresh.call(nowTime);
+        this.getAllClient().net_refresh(nowTime);
     }
 
     /**
      * 分钟改变进行调用
      * @param nowDate 当前时间
      */
-    private onMinuteChanged(nowDate: Date): void {
-        TimerModuleUtils.checkTimer(this, nowDate);
+    private onMinuteChanged(nowTime: number): void {
+        TimerModuleUtils.checkTimer(this, nowTime);
     }
 
     /**
      * 小时改变进行调用
      * @param nowDate 当前时间
      */
-    private onHourChanged(nowDate: Date): void {
+    private onHourChanged(nowTime: number): void {
         //利用小时改变的回调判断天刷新 
-        const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowDate.getTime())
-        console.log("#hour TimerModuleS onHourChanged isNewDay:" + isNewDay + " lastTime:" + this.lastTime + " nowTime:" + nowDate.getTime());
-        if (isNewDay) this.onDayRefresh.call(nowDate);
-        this.lastTime = nowDate.getTime();
+        const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowTime)
+        console.log("#hour TimerModuleS onHourChanged isNewDay:" + isNewDay + " lastTime:" + this.lastTime + " nowTime:" + nowTime);
+        if (isNewDay) this.onDayRefresh.call(nowTime);
+        this.lastTime = nowTime;
     }
 
     /**
      * 天改变进行调用
      * @param nowDate 当前时间
      */
-    private onDayChanged(nowDate: Date): void {
+    private onDayChanged(nowTime: number): void {
         // console.log("#hour onDayChanged date:", nowDate);
         //对在线的玩家主动更新一下数据，避免已经跨天后因为lastTimeStamp没有更新而导致当前上线再次触发新一天登录的逻辑，不在线的玩家在新一天登录时会主动调用net_setLastTimestampIfFirst来进行数据处理
         Player.getAllPlayers().forEach((player) => {
             const data = this.getPlayerData(player);
             if (data) {
-                data.lastTimeStamp = nowDate.getTime();
+                data.lastTimeStamp = nowTime;
                 data.save(true);
             }
         });
@@ -566,8 +481,7 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
      * @returns 是否是新的一天登录
      */
     public net_setLastTimestampIfFirst(): boolean {
-        const nowDate = new Date();
-        const nowTime = nowDate.getTime();
+        const nowTime = dayjs.utc().valueOf();
         const oldTime = this.currentData.lastTimeStamp;
         this.currentData.lastTimeStamp = nowTime;
         this.currentData.save(true);
@@ -609,9 +523,9 @@ addGMCommand(
     "新的一天",
     "string",
     (value) => {
-        ModuleService.getModule(TimerModuleC).onDayRefresh.call(new Date());
+        ModuleService.getModule(TimerModuleC).onDayRefresh.call(dayjs.utc().valueOf());
     },
     () => {
-        ModuleService.getModule(TimerModuleS).onDayRefresh.call(new Date());
+        ModuleService.getModule(TimerModuleS).onDayRefresh.call(dayjs.utc().valueOf());
     }
 );
