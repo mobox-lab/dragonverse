@@ -35,6 +35,7 @@ export default class AchievementModuleS extends ModuleS<
         isOnCompletes: boolean[],
     ): void {
         for (let i = 0; i < achievementTypes.length; i++) {
+            // console.log("#ach save: ", achievementIds[i], achievementTypes[i], progresss[i], isOnCompletes[i]);
             this.currentData.saveAchievementStage(
                 achievementIds[i],
                 achievementTypes[i],

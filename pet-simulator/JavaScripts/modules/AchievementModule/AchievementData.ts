@@ -83,7 +83,7 @@ export default class AchievementData extends Subdata {
     public saveAchievementStage(achievementId: number, achievementType: GlobalEnum.AchievementType, progress: number, isOnComplete: boolean): void {
         let nextId = GameConfig.Achievements.getElement(achievementId).NextId;
         let achievement: AchievementNew = null;
-        if (MapEx.has(this.AchievementStage, achievementType)) {
+        if (achievementType != GlobalEnum.AchievementType.OpenEggNum && MapEx.has(this.AchievementStage, achievementType)) { // 开蛋不用校验连续性
             achievement = MapEx.get(this.AchievementStage, achievementType);
             if (isOnComplete) {
                 if (nextId != 0) {
@@ -100,18 +100,19 @@ export default class AchievementData extends Subdata {
             }
         }
         else {
-            if (isOnComplete) {
-                if (nextId != 0) {
-                    achievement = new AchievementNew(nextId, progress, false);
+            if (isOnComplete) { // 本次完成
+                if (nextId != 0) { // 存下一次的成就
+                    achievement = new AchievementNew(nextId, 0, false);
                 }
-                else {
+                else { // 系列成就都完成了
                     achievement = new AchievementNew(achievementId, progress, true);
                 }
             }
-            else {
+            else { // 本次未完成
                 achievement = new AchievementNew(achievementId, progress, false);
             }
         }
+        // console.log("#ach achievement:" + JSON.stringify(achievement) + " AchievementStage:" + JSON.stringify(this.AchievementStage));
         MapEx.set(this.AchievementStage, achievementType, achievement);
     }
 }

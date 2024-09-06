@@ -13,6 +13,7 @@ import { AuthModuleS } from "../auth/AuthModule";
 import { BuffModuleS } from "../buff/BuffModuleS";
 import { addGMCommand } from "mw-god-mod";
 import { CollectModuleS } from "../PetCollect/CollectModuleS";
+import { PetBagModuleData } from "../PetBag/PetBagModuleData";
 
 //主面板
 // export class GMBasePanelUI extends GMBasePanel<GMHUD_Generate, GMItem_Generate> {
@@ -74,6 +75,18 @@ addGMCommand(
     undefined,
     "宠物"
 );
+addGMCommand(
+    "删除所有宠物，只保留第一个（del）",
+    "string",
+    undefined,
+    (player: mw.Player) => {
+        const delPetKeys = DataCenterS.getData(player, PetBagModuleData).sortBag().slice(1).map((pet) => pet.k);
+        ModuleService.getModule(PetBagModuleS).deletePet(player.playerId, delPetKeys, "删除");
+    },
+    undefined,
+    "宠物"
+);
+
 addGMCommand(
     "旋转角度",
     "string",

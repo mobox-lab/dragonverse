@@ -201,9 +201,12 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
             }
             this.saveAchievementStageC(aid, achievementType, achievement.p, achievement.o);
             this.achievementTips(aid, achievementType, achievement.p, targetNum, achievement.o);
-            let tmpAchievement = new AchievementNew(aid, achievement.p, achievement.o);
-            MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
-            if(!achievement.o) return;
+            if(!achievement.o) {
+                let tmpAchievement = new AchievementNew(aid, achievement.p, achievement.o);
+                MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
+                // console.log("#temp tempAchievementStage:" + JSON.stringify(this.tempAchievementStage) + " count:" + MapEx.count(this.tempAchievementStage) + " tempAchievement:" + JSON.stringify(tmpAchievement));
+                return;
+            }
             const nextId = GameConfig.Achievements.getElement(aid).NextId;
             curAchievement = new AchievementNew(nextId, 0, false);
         }
@@ -230,11 +233,19 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
             }
             this.saveAchievementStageC(aid, achievementType, achievement.p, achievement.o);
             this.achievementTips(aid, achievementType, achievement.p, targetNum, achievement.o);
-            let tmpAchievement = new AchievementNew(aid, achievement.p, achievement.o);
-            MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
-            if(!achievement.o) return;
+            if(!achievement.o) {
+                let tmpAchievement = new AchievementNew(aid, achievement.p, achievement.o);
+                MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
+                // console.log("#temp tempAchievementStage:" + JSON.stringify(this.tempAchievementStage) + " count:" + MapEx.count(this.tempAchievementStage) + " tempAchievement:" + JSON.stringify(tmpAchievement));
+                return;
+            }
             const nextId = GameConfig.Achievements.getElement(aid).NextId;
             curAchievement = new AchievementNew(nextId, 0, false);
+            if(costNum >= num) {
+                let tmpAchievement = curAchievement;
+                MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
+                // console.log("#temp tempAchievementStage:" + JSON.stringify(this.tempAchievementStage) + " count:" + MapEx.count(this.tempAchievementStage) + " tempAchievement:" + JSON.stringify(tmpAchievement));
+            }
         }
     }
 
@@ -283,22 +294,27 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
      * 保存成就数据给服务器
      */
     private saveAchievementToServer(): void {
-        if (MapEx.count(this.tempAchievementStage) <= 0) return;
-        // oTraceError("[MapEx.count(this.tempAchievementStage)] A = " + MapEx.count(this.tempAchievementStage));
-        let achievementTypes: number[] = [];
-        let achIds: number[] = [];
-        let progresss: number[] = [];
-        let isOnCompletes: boolean[] = [];
-        MapEx.forEach(this.tempAchievementStage, (key: number, value: AchievementNew) => {
-            achievementTypes.push(key);
-            achIds.push(value.i);
-            progresss.push(value.p);
-            isOnCompletes.push(value.o);
-            MapEx.del(this.tempAchievementStage, key);
-            //  oTraceError("[key] = " + key);
-        });
-        this.server.net_saveAchievementStage(achIds, achievementTypes, progresss, isOnCompletes);
-        //  oTraceError("[MapEx.count(this.tempAchievementStage)] B = " + MapEx.count(this.tempAchievementStage));
+        try {
+            if (MapEx.count(this.tempAchievementStage) <= 0) return;
+            // oTraceError("[MapEx.count(this.tempAchievementStage)] A = " + MapEx.count(this.tempAchievementStage));
+            let achievementTypes: number[] = [];
+            let achIds: number[] = [];
+            let progresss: number[] = [];
+            let isOnCompletes: boolean[] = [];
+            MapEx.forEach(this.tempAchievementStage, (key: number, value: AchievementNew) => {
+                achievementTypes.push(key);
+                achIds.push(value.i);
+                progresss.push(value.p);
+                isOnCompletes.push(value.o);
+                MapEx.del(this.tempAchievementStage, key);
+                //  oTraceError("[key] = " + key);
+            });
+            // console.log("#ach achIds:", JSON.stringify(achIds) + " achievementTypes:" + JSON.stringify(achievementTypes) + " progresss:" + JSON.stringify(progresss) + " isOnCompletes:" + JSON.stringify(isOnCompletes));
+            this.server.net_saveAchievementStage(achIds, achievementTypes, progresss, isOnCompletes);
+            //  oTraceError("[MapEx.count(this.tempAchievementStage)] B = " + MapEx.count(this.tempAchievementStage));
+        } catch (error) {
+            console.error("#achError [saveAchievementToServer] error = " + error);
+        }
     }
 
     /**
@@ -311,37 +327,41 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
      * @returns 
      */
     private achievementTips(achievementId: number, achievementType: GlobalEnum.AchievementType, p: number, targetNum: number, o: boolean): void {
-        oTraceError("[成就ID为" + achievementId + "的成就进度为" + p + "/" + targetNum + "]" + " a:" + JSON.stringify({achievementId, p, o, achievementType}));
-        let currentValue = Number((p / targetNum).toFixed(2));
-        if (o) {
-            this.completedPanel.showCompletedTips(achievementId, o, p, targetNum, currentValue);
-            this.updateAchievementJudgeData(achievementId);
-            this.calculateRewardType(achievementId);
-        }
-        else {
-            let isTips: boolean = true;
-            let isTipsIndex: number = -1;
-            let achievement = MapEx.get(this.achievementStageC, achievementType);
-            if (currentValue >= 0.25 && currentValue < 0.5) {
-                isTips = achievement.isTips[0];
-                isTipsIndex = 0;
+        try {        
+            oTraceError("[成就ID为" + achievementId + "的成就进度为" + p + "/" + targetNum + "]" + " a:" + JSON.stringify({achievementId, p, o, achievementType}));
+            let currentValue = Number((p / targetNum).toFixed(2));
+            if (o) {
+                this.completedPanel.showCompletedTips(achievementId, o, p, targetNum, currentValue);
+                this.updateAchievementJudgeData(achievementId);
+                this.calculateRewardType(achievementId);
             }
-            else if (currentValue >= 0.5 && currentValue < 0.75) {
-                isTips = achievement.isTips[1];
-                isTipsIndex = 1;
-            }
-            else if (currentValue >= 0.75 && currentValue < 0.9) {
-                isTips = achievement.isTips[2];
-                isTipsIndex = 2;
-            }
-            else if (currentValue >= 0.9 && currentValue < 1) {
-                isTips = achievement.isTips[3];
-                isTipsIndex = 3;
-            }
-            if (isTips || isTipsIndex == -1) return;
-            achievement.isTips[isTipsIndex] = true;
-            MapEx.set(this.achievementStageC, achievementType, achievement);
-            this.completedPanel.showCompletedTips(achievementId, o, p, targetNum, currentValue);
+            else {
+                let isTips: boolean = true;
+                let isTipsIndex: number = -1;
+                let achievement = MapEx.get(this.achievementStageC, achievementType);
+                if (currentValue >= 0.25 && currentValue < 0.5) {
+                    isTips = achievement.isTips[0];
+                    isTipsIndex = 0;
+                }
+                else if (currentValue >= 0.5 && currentValue < 0.75) {
+                    isTips = achievement.isTips[1];
+                    isTipsIndex = 1;
+                }
+                else if (currentValue >= 0.75 && currentValue < 0.9) {
+                    isTips = achievement.isTips[2];
+                    isTipsIndex = 2;
+                }
+                else if (currentValue >= 0.9 && currentValue < 1) {
+                    isTips = achievement.isTips[3];
+                    isTipsIndex = 3;
+                }
+                if (isTips || isTipsIndex == -1) return;
+                achievement.isTips[isTipsIndex] = true;
+                MapEx.set(this.achievementStageC, achievementType, achievement);
+                this.completedPanel.showCompletedTips(achievementId, o, p, targetNum, currentValue);
+            }        
+        } catch (error) {
+            console.error("#achError [achievementTip] error = " + error);
         }
     }
 

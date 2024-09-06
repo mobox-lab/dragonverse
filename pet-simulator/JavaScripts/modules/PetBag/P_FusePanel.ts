@@ -42,6 +42,7 @@ export class P_FusePanel extends Fusepanel_Generate {
             this.mListCanvas.addChild(petItem.uiObject);
 
             petItem.init(item);
+            petItem.setLockVis(false)
             this.petItems.push(petItem);
         });
         this.curSelectPets = [];
@@ -70,9 +71,9 @@ export class P_FusePanel extends Fusepanel_Generate {
 
         if (isEquip) {
             if (this.isCanClick) this.curSelectPets.push(petItem.petData);
-   else petItem.setLockVis(false);
+            else petItem.setLockVis(false);
         } else {
-   this.curSelectPets = this.curSelectPets.filter((item) => item.k != petItem.petData.k);
+            this.curSelectPets = this.curSelectPets.filter((item) => item.k != petItem.petData.k);
         }
         this.changeUIText();
     }
