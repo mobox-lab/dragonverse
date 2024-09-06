@@ -25,6 +25,7 @@ import { WaveModuleC } from "./Modules/waveModule/WaveModuleC";
 import CardModuleS from "./Modules/CardModule/CardModuleS";
 import { GlobalEventName } from "./const/enum";
 import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
+import { PlayerModuleS, StageState } from "./Modules/PlayerModule/PlayerModuleS";
 
 export const ChatType = {
     Text: 1,
@@ -75,9 +76,21 @@ export namespace GameManager {
             // RankManager.init();
             UIService.show(TowerUI);
 
-            Event.addServerListener(GlobalEventName.ServerStageState, (obj: string) => {
-                const info = JSON.parse(obj);
-                TipsManager.showTips(`${info?.userName} started game with ${info.difficulty}`);
+            Event.addServerListener(GlobalEventName.ServerStageState, (state: string) => {
+                const stageState: StageState = JSON.parse(state);
+                if (stageState.playerId) {
+                    // todo 进行ui展示
+                    const cards = stageState.cards;
+                    const cardsInfos = cards.map((card) => {
+                        return GameConfig.Tower.getElement(card);
+                    });
+                    TipsManager.showTips(
+                        `${stageState?.userName} started game ${stageState.stageCfgId} with ${stageState.difficulty}`
+                    );
+                } else {
+                    // todo 进行初始化ui的模式
+                    TipsManager.showTips(`game ${stageState.stageCfgId} end`);
+                }
             });
 
             Event.addServerListener("onStageCreated", (playerIds: number[], id: number, stageCfgId: number) => {
@@ -201,20 +214,19 @@ export namespace GameManager {
         const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(validGamePlayers[0]);
         console.log(JSON.stringify(cards), "cards");
         // 通过cards对应数据
-        // const cardsInfos = cards.map((card) => {
-        //     return GameConfig.Tower.getElement(card);
-        // });
-        const obj = {
+
+        const stageState: StageState = {
             userName,
             level,
             difficulty,
             cards,
             stageCfgId,
+            playerId: validGamePlayers[0].playerId,
         };
-        // s端存储 和广播
+        // s端存储 和 广播
+        ModuleService.getModule(PlayerModuleS).setStageState(stageState);
         for (let i = 0; i < allPlayers.length; i++) {
-            // 这里有个问题，原代码，进入游戏的人就会执行删除，需要适配一下
-            Event.dispatchToClient(allPlayers[i], GlobalEventName.ServerStageState, JSON.stringify(obj));
+            Event.dispatchToClient(allPlayers[i], GlobalEventName.ServerStageState, JSON.stringify(stageState));
         }
 
         startStage(validGamePlayers, stageCfgId);
