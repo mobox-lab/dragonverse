@@ -6,7 +6,7 @@ import MessageBox from "../../util/MessageBox";
 import { utils } from "../../util/uitls";
 import AchievementModuleC from "../AchievementModule/AchievementModuleC";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
-import { PetBagItem } from "./P_Bag";
+import { P_Bag, PetBagItem } from "./P_Bag";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 
@@ -14,6 +14,8 @@ import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import { P_BagHoverNum3 } from "./P_BagHoverNum3";
 import { P_BagHoverNum2 } from "./P_BagHoverNum2";
+import { P_Enchants } from "./P_Enchants";
+import { P_Pet_Dev } from "./P_Pet_Dev";
 
 export class P_FusePanel extends Fusepanel_Generate {
     /**当前容器中的所有item */
@@ -34,6 +36,9 @@ export class P_FusePanel extends Fusepanel_Generate {
 
     public show(petItems: petItemDataNew[], ...param: any[]): void {
         PetBagItem.instance.UIPool.resetAll();
+        UIService.getUI(P_Bag).hideWhenBagOpen();
+        UIService.getUI(P_Enchants).hideWhenBagOpen();
+        UIService.getUI(P_Pet_Dev).hideWhenBagOpen();
         this.petItems = [];
         petItems.forEach(item => {
             let petItem = PetBagItem.instance.UIPool.get();
@@ -52,7 +57,9 @@ export class P_FusePanel extends Fusepanel_Generate {
             this.hide();
         });
     }
-
+    public hideWhenBagOpen() {
+        this.hide();
+    }
     public hide(): void {
         super.hide();
         KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
