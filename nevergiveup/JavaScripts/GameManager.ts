@@ -22,6 +22,10 @@ import { StageC, StageS, StageUtil } from "./stage/Stage";
 import { WaveManager, WaveUtil } from "./stage/Wave";
 import { MGSTool } from "./tool/MGSTool";
 import { WaveModuleC } from "./Modules/waveModule/WaveModuleC";
+import CardModuleS from "./Modules/CardModule/CardModuleS";
+import { GlobalEventName } from "./const/enum";
+import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
+import { PlayerModuleS, StageState } from "./Modules/PlayerModule/PlayerModuleS";
 
 export const ChatType = {
     Text: 1,
@@ -31,6 +35,7 @@ export const ChatType = {
 export namespace GameManager {
     let script: GameStart;
     export let players: Player[] = [];
+    export let allPlayers: Player[] = [];
     let stage: StageC;
     let stages: StageS[] = [];
     export let playerName: string = "";
@@ -45,8 +50,16 @@ export namespace GameManager {
             // 玩家加入游戏
             Player.onPlayerJoin.add((player) => {
                 players.push(player);
+                allPlayers.push(player);
                 player.character.collisionWithOtherCharacterEnabled = false;
             });
+
+            // Player.onPlayerLeave.add((player) => {
+            //     const index = allPlayers.indexOf(player);
+            //     if (index != -1) {
+            //         players.splice(index, 1);
+            //     }
+            // });
 
             Event.addClientListener("startStage", (player: Player, stageCfgId: number) => {
                 startGame([player.playerId], stageCfgId);
@@ -62,6 +75,23 @@ export namespace GameManager {
         } else {
             // RankManager.init();
             UIService.show(TowerUI);
+
+            Event.addServerListener(GlobalEventName.ServerStageState, (state: string) => {
+                const stageState: StageState = JSON.parse(state);
+                if (stageState.playerId) {
+                    // todo 进行ui展示
+                    const cards = stageState.cards;
+                    const cardsInfos = cards.map((card) => {
+                        return GameConfig.Tower.getElement(card);
+                    });
+                    TipsManager.showTips(
+                        `${stageState?.userName} started game ${stageState.stageCfgId} with ${stageState.difficulty}`
+                    );
+                } else {
+                    // todo 进行初始化ui的模式
+                    TipsManager.showTips(`game ${stageState.stageCfgId} end`);
+                }
+            });
 
             Event.addServerListener("onStageCreated", (playerIds: number[], id: number, stageCfgId: number) => {
                 stage = new StageC(playerIds, id, stageCfgId);
@@ -174,6 +204,31 @@ export namespace GameManager {
         let gamePlayers = playerIds.map((playerId) => Player.getPlayer(playerId));
         let validGamePlayers = gamePlayers.filter((player) => players.indexOf(player) != -1);
         if (validGamePlayers.length == 0) return;
+
+        // todo 游戏开始后做存储，并且分发给所有的用户client
+        // 昵称，等级，进行中的stageId（可以反查难度）出战阵容、
+        const userName = PlayerUtil.getPlayerScript(validGamePlayers[0].playerId)?.playerName;
+        const level = PlayerUtil.getPlayerScript(validGamePlayers[0].playerId)?.level;
+        const difficulty = GameConfig.Stage.getElement(stageCfgId).difficulty;
+        console.log(userName, level, difficulty, "userName, level, difficulty");
+        const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(validGamePlayers[0]);
+        console.log(JSON.stringify(cards), "cards");
+        // 通过cards对应数据
+
+        const stageState: StageState = {
+            userName,
+            level,
+            difficulty,
+            cards,
+            stageCfgId,
+            playerId: validGamePlayers[0].playerId,
+        };
+        // s端存储 和 广播
+        ModuleService.getModule(PlayerModuleS).setStageState(stageState);
+        for (let i = 0; i < allPlayers.length; i++) {
+            Event.dispatchToClient(allPlayers[i], GlobalEventName.ServerStageState, JSON.stringify(stageState));
+        }
+
         startStage(validGamePlayers, stageCfgId);
         for (let i = 0; i < players.length; i++) {
             if (validGamePlayers.indexOf(players[i]) != -1) {
