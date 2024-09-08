@@ -473,7 +473,7 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
             const data = this.getPlayerData(player);
             console.log("#time TimerS onDayChanged call userId:", player.userId + " data:", data?.lastTimeStamp ?? 0);
             if (data) {
-                console.log("#time TimerS inside onDayChanged call userId:", player.userId + " data:", data);
+                console.log("#time TimerS inside onDayChanged call userId:", player?.userId + " data:", data);
                 data.lastTimeStamp = nowTime;
                 data.save(true);
             }
@@ -494,11 +494,9 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
         if (isNewDay) {
             //当天第一次登录
             this.onPlayerEnterSceneIsNewDay.call(this.currentPlayerId);
-            // console.error(`rkc----玩家${this.currentPlayerId}新的一天登录`);
             console.log("#time net_setLastTimestampIfFirst onPlayerEnterSceneIsNewDay called nowTime:" + nowTime + " oldTime:" + oldTime + " isNewDay:" + isNewDay);
             return { isNewDay: true, lastTimeStamp: nowTime };
         }
-        // console.error(`rkc----玩家${this.currentPlayerId}同一天登录`);
         return { isNewDay: false, lastTimeStamp: nowTime };
     }
 
