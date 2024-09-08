@@ -257,17 +257,17 @@ export class PetBagModuleData extends Subdata {
             }
             if(this.currentVersion == 5) {
                 dataSave = true;
-                if(SystemUtil.isServer()) this.cleanPetOverBag();
+                // if(SystemUtil.isServer()) this.cleanPetOverBag();
                 this.currentVersion = 6;
             }
             if(this.currentVersion == 6) {
                 dataSave = true;
-                if(SystemUtil.isServer()) this.cleanOldPetStatistic();
+                // if(SystemUtil.isServer()) this.cleanOldPetStatistic();
                 this.currentVersion = 7;
             }
             if(this.currentVersion == 7) {
                 dataSave = true;
-                if(SystemUtil.isServer()) this.reduceDataSize();
+                // if(SystemUtil.isServer()) this.reduceDataSize();
                 this.currentVersion = 8;
             }
         }
@@ -281,69 +281,69 @@ export class PetBagModuleData extends Subdata {
         this.bagContainerNew = preBagItems;
         this.save(true);
     }
-    public reduceDataSize() {
-        if(this.petStatisticMap) {
-            for (const key in this.petStatisticMap) {
-                const preObj = this.petStatisticMap[key];
-                this.petStatisticMapNew.push([preObj.petkey, CreSourceStr[preObj.creSource], preObj.create, preObj.update]);
-            }
-            this.petStatisticMap = {};
-        }
-    }
-    public cleanPetOverBag() {// 补救措施
-        if(this.CurBagCapacity <= this.BagCapacity) return; // 当前背包宠物数量 <= 总容量 不需要裁剪 
-        // 裁剪 先排序 超出的销毁并记录
-        const sortedPets = this.sortBag();
-        sortedPets.filter(p => !this.curEquipPet.includes(p.k)).sort((a, b) => {
-            const bAtk = b.p.a;
-            const aAtk = a.p.a;
-            if(bAtk === aAtk) {
-                const bId = b.I;
-                const aId = a.I;
-                if(bId === aId) {
-                    return b.obtainTime - a.obtainTime;
-                }
-                return bId - aId;
-            };
-            return bAtk - aAtk;
-        });
-        const delNum = this.CurBagCapacity - this.BagCapacity;
-        const delPets = sortedPets.slice(sortedPets.length - delNum);
-        Log4Ts.log(PetBagModuleData, " cleanPetOverBag delPets:" + JSON.stringify(delPets) +  " delPetsKeys:" + JSON.stringify(delPets.map(p => p.k))); 
-        const userId = this["mUserId"] as string;
-        const delKeys = delPets.map((p) => p.k);
-        mw.setTimeout(()=>{
-            ModuleService.getModule(StatisticModuleS).updateDestroyPetsInfo(userId, delPets, "删除");
-        },0.5e3)
-        delKeys.forEach( (key) => {
-            delete this.bagContainerNew[key];
+    // public reduceDataSize() {
+    //     if(this.petStatisticMap) {
+    //         for (const key in this.petStatisticMap) {
+    //             const preObj = this.petStatisticMap[key];
+    //             this.petStatisticMapNew.push([preObj.petkey, CreSourceStr[preObj.creSource], preObj.create, preObj.update]);
+    //         }
+    //         this.petStatisticMap = {};
+    //     }
+    // }
+    // public cleanPetOverBag() {// 补救措施
+    //     if(this.CurBagCapacity <= this.BagCapacity) return; // 当前背包宠物数量 <= 总容量 不需要裁剪 
+    //     // 裁剪 先排序 超出的销毁并记录
+    //     const sortedPets = this.sortBag();
+    //     sortedPets.filter(p => !this.curEquipPet.includes(p.k)).sort((a, b) => {
+    //         const bAtk = b.p.a;
+    //         const aAtk = a.p.a;
+    //         if(bAtk === aAtk) {
+    //             const bId = b.I;
+    //             const aId = a.I;
+    //             if(bId === aId) {
+    //                 return b.obtainTime - a.obtainTime;
+    //             }
+    //             return bId - aId;
+    //         };
+    //         return bAtk - aAtk;
+    //     });
+    //     const delNum = this.CurBagCapacity - this.BagCapacity;
+    //     const delPets = sortedPets.slice(sortedPets.length - delNum);
+    //     Log4Ts.log(PetBagModuleData, " cleanPetOverBag delPets:" + JSON.stringify(delPets) +  " delPetsKeys:" + JSON.stringify(delPets.map(p => p.k))); 
+    //     const userId = this["mUserId"] as string;
+    //     const delKeys = delPets.map((p) => p.k);
+    //     mw.setTimeout(()=>{
+    //         ModuleService.getModule(StatisticModuleS).updateDestroyPetsInfo(userId, delPets, "删除");
+    //     },0.5e3)
+    //     delKeys.forEach( (key) => {
+    //         delete this.bagContainerNew[key];
 
-        });
-        const now = new Date().getTime();
-        const recordInfo = {
-            [userId]: delPets.map((p) => {
-                const persistInfo = this.getPersistStatisticInfoByKey(p.k);
-                const source = persistInfo[PSStatisticPetKey.creSource]
-                return {
-                    petKey: p.k,
-                    source: CreSourceStr[source] ?? "",
-                    attack: p.p.a,
-                    delTime: now
-                }
-            })
-        };
-        const dataKey = "PS_CLEAN_PET_OVER_BAG_RECORD"
-        DataStorage.asyncGetData(dataKey).then((dataStorageResult) => {
-            const { data } = dataStorageResult
-            if(data) {
-                if(data?.userId) {
-                    data[userId] = data[userId].concat(recordInfo[userId]);
-                } else Object.assign(data, recordInfo);
-                DataStorage.asyncSetData(dataKey, data);
-            } else 
-                DataStorage.asyncSetData(dataKey, recordInfo);
-        });
-    }
+    //     });
+    //     const now = new Date().getTime();
+    //     const recordInfo = {
+    //         [userId]: delPets.map((p) => {
+    //             const persistInfo = this.getPersistStatisticInfoByKey(p.k);
+    //             const source = persistInfo[PSStatisticPetKey.creSource]
+    //             return {
+    //                 petKey: p.k,
+    //                 source: CreSourceStr[source] ?? "",
+    //                 attack: p.p.a,
+    //                 delTime: now
+    //             }
+    //         })
+    //     };
+    //     const dataKey = "PS_CLEAN_PET_OVER_BAG_RECORD"
+    //     DataStorage.asyncGetData(dataKey).then((dataStorageResult) => {
+    //         const { data } = dataStorageResult
+    //         if(data) {
+    //             if(data?.userId) {
+    //                 data[userId] = data[userId].concat(recordInfo[userId]);
+    //             } else Object.assign(data, recordInfo);
+    //             DataStorage.asyncSetData(dataKey, data);
+    //         } else 
+    //             DataStorage.asyncSetData(dataKey, recordInfo);
+    //     });
+    // }
     public clearFuseToday() {
         console.log("#time clearFuseToday");
         this.fuseNumToday = 0;
@@ -364,15 +364,15 @@ export class PetBagModuleData extends Subdata {
 	public delPersistPetStatisticByKeys(delKeys: number[]) { 
         this.petStatisticMapNew = this.petStatisticMapNew.filter((p) => !delKeys.includes(p[PSStatisticPetKey.petKey]));
     }
-	public cleanOldPetStatistic() {
-        const petStatisticMap = this.petStatisticMap;
-        for (const key in petStatisticMap) {
-            const petInfo = petStatisticMap[key] as any;
-            if(petInfo?.status === "destroyed") { 
-                delete petStatisticMap[key];
-            }
-        }
-    }
+	// public cleanOldPetStatistic() {
+    //     const petStatisticMap = this.petStatisticMap;
+    //     for (const key in petStatisticMap) {
+    //         const petInfo = petStatisticMap[key] as any;
+    //         if(petInfo?.status === "destroyed") { 
+    //             delete petStatisticMap[key];
+    //         }
+    //     }
+    // }
 
 	/**更新宠物统计数据 - 新增宠物 */
 	public updatePetStatistic(petInfo: petItemDataNew, isUpdate = true, creSource?: "孵化" | "合成" | "爱心化" | "彩虹化" | "初始化") {
