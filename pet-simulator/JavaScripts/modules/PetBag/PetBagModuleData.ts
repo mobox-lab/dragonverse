@@ -345,12 +345,14 @@ export class PetBagModuleData extends Subdata {
         });
     }
     public clearFuseToday() {
-        console.log("#P12 clearFuseToday 今日合成次数刷新");
+        console.log("#time clearFuseToday");
         this.fuseNumToday = 0;
         this.save(true);
     }
     public fusePetStatistic() {
+        console.log("#time fusePetStatistic fuseNumToday:" + this.fuseNumToday);
         this.fuseNumToday++;
+        console.log("#time fusePetStatistic after fuseNumToday:" + this.fuseNumToday);
         this.save(true);
     }
     /**宠物统计数据 */

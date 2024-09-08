@@ -318,14 +318,15 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
         //延迟一会是保证其它模块已经监听完毕
         setTimeout(async () => {
             const { isNewDay, lastTimeStamp } = await this.server.net_setLastTimestampIfFirst();
+            console.error('#time TimerModuleC onEnterScene isNewDay:' + isNewDay + ' lastTimeStamp:' + lastTimeStamp, ' this.lastTime' + this.lastTime);
             this.lastTime = lastTimeStamp;
             if (isNewDay) {
                 this.onPlayerEnterSceneIsNewDay.call(this.localPlayerId);
                 //触发一次后就可以清空了
                 this.onPlayerEnterSceneIsNewDay.clear();
-                // console.error(`rkc----TimerModuleC新的一天了`);
+                console.error(`#time rkc----TimerModuleC新的一天了`);
             } else {
-                // console.error(`rkc----TimerModuleC同一天`);
+                console.error(`#time rkc----TimerModuleC同一天`);
             }
         }, 3000);
     }
@@ -345,7 +346,7 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
     private onHourChanged(nowTime: number): void {
         //利用小时改变的回调判断天刷新
         const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowTime);
-        console.log("#hour TimerModuleC onHourChanged isNewDay:" + isNewDay + " lastTime:" + this.lastTime + " nowTime:" + nowTime);
+        console.log("#time TimerModuleC onHourChanged isNewDay:" + isNewDay + " lastTime:" + this.lastTime + " nowTime:" + nowTime);
         if (isNewDay) this.onDayRefresh.call(nowTime);
         this.lastTime = nowTime; 
     }
@@ -361,6 +362,7 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
      * @param serverTime 当前服务器的时间
      */
     public net_refresh(serverTime: number): void {
+        console.error(`#time net_refresh serverTime: ${serverTime}`);
         this.onMinuteRefresh.call(serverTime);
     }
 
@@ -455,7 +457,7 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
     private onHourChanged(nowTime: number): void {
         //利用小时改变的回调判断天刷新 
         const isNewDay = TimerModuleUtils.judgeIsNewDay(this.lastTime, nowTime)
-        console.log("#hour TimerModuleS onHourChanged isNewDay:" + isNewDay + " lastTime:" + this.lastTime + " nowTime:" + nowTime);
+        console.log("#time TimerModuleS onHourChanged isNewDay:" + isNewDay + " lastTime:" + this.lastTime + " nowTime:" + nowTime);
         if (isNewDay) this.onDayRefresh.call(nowTime);
         this.lastTime = nowTime;
     }
@@ -469,7 +471,9 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
         //对在线的玩家主动更新一下数据，避免已经跨天后因为lastTimeStamp没有更新而导致当前上线再次触发新一天登录的逻辑，不在线的玩家在新一天登录时会主动调用net_setLastTimestampIfFirst来进行数据处理
         Player.getAllPlayers().forEach((player) => {
             const data = this.getPlayerData(player);
+            console.log("#time TimerS onDayChanged call userId:", player.userId + " data:", data?.lastTimeStamp ?? 0);
             if (data) {
+                console.log("#time TimerS inside onDayChanged call userId:", player.userId + " data:", data);
                 data.lastTimeStamp = nowTime;
                 data.save(true);
             }
