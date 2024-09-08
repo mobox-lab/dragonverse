@@ -26,7 +26,8 @@ export default class NewBuyUI extends NewBuyUI_Generate {
         const cost = this.unitPrice * value;
         this.text_All.text = utils.formatNumber(cost);
         const totalGold = this.getTotalGold();
-        this.text_Left.text = utils.formatNumber(totalGold - cost);
+        const leftNum = totalGold - cost;
+        this.text_Left.text = leftNum < 0 ? `-${utils.formatNumber(Math.abs(leftNum))}`: utils.formatNumber(leftNum);
         if(totalGold - cost <= 0) this.text_Left.setFontColorByHex("#FF0000");
         else this.text_Left.setFontColorByHex("#FFFFFF");
     }
