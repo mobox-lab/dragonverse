@@ -52,7 +52,7 @@ export namespace TimerModuleUtils {
      * @param playerId 玩家id，服务端需要填写，客户端保持默认
      * @returns 最后一次登录时间
      */
-    export function getLastTimeStamp(playerId: number = -1): number {
+    export function getLastTimeStamp(playerId: number = -1) {
         if (SystemUtil.isClient()) return ModuleService.getModule(TimerModuleC).getLastTimeStamp();
         return ModuleService.getModule(TimerModuleS).getLastTimeStamp(playerId);
     }
@@ -193,19 +193,19 @@ export namespace TimerModuleUtils {
      * @param nowTime number
      */
     export function checkTimer(timerModule: ITimerModule, nowTime: number): void {
-        // console.log("#time onMinuteRefresh date:", date + " lastHour:" + timerModule?.lastHour + " lastTime:" + timerModule?.lastTime + " data.getHours:" + date?.getHours());
+        console.log("#minute onMinuteRefresh init lastHour:" + timerModule?.lastHour + " lastTime:" + timerModule?.lastTime + " nowTime:" + nowTime);
         const nowDate = dayjs.utc(nowTime);
         const nowHour = nowDate.hour();
         //借用分钟改变的回调判断小时刷新
         if (timerModule.lastHour == null) {
             timerModule.lastHour = nowHour;
         }
-        if (nowDate.hour() != timerModule.lastHour) {
+        if (nowHour != timerModule.lastHour) {
             //小时改变
             timerModule.lastHour = nowHour;
             timerModule.onHourRefresh.call(nowTime);// 会在里面设置 lastTime
         } else timerModule.lastTime = nowTime;
-
+        console.log("#minute onMinuteRefresh after lastHour:" + timerModule?.lastHour + " lastTime:" + timerModule?.lastTime + " nowTime:" + nowTime);
         //处理定时器相关内容
         const key = nowDate.format('YYYY-M-D H:m');
         let acts = timerModule.onTimerMap.get(key);
@@ -245,36 +245,36 @@ export namespace TimerModuleUtils {
      * @returns 是否是新的一天
      */
     export function judgeIsNewDay(oldTime: number, newTime: number): boolean {
-        if (!oldTime || !newTime) return false;
-
-        // oldTime 和 newTime 都为 UTC 时间戳
-        const oldDate = dayjs.utc(oldTime);
-        const newDate = dayjs.utc(newTime);
-
-        // 直接比较两个时间的小时数是否不同
-        const oldHour = oldDate.hour();
-        const newHour = newDate.hour();
-
-        console.log("#judge judgeNewHour oldTime:", oldTime, " newTime:", newTime, " oldHour:", oldHour, " newHour:", newHour);
-
-        // 如果 newHour 和 oldHour 不同，意味着已经跨越新的一小时
-        return newHour !== oldHour;
-        // TODO: 先改成每小时重置方便测试
-
         // if (!oldTime || !newTime) return false;
-    
+
         // // oldTime 和 newTime 都为 UTC 时间戳
         // const oldDate = dayjs.utc(oldTime);
         // const newDate = dayjs.utc(newTime);
+
+        // // 直接比较两个时间的小时数是否不同
+        // const oldHour = oldDate.hour();
+        // const newHour = newDate.hour();
+
+        // console.log("#judge judgeNewHour oldTime:", oldTime, " newTime:", newTime, " oldHour:", oldHour, " newHour:", newHour);
+
+        // // 如果 newHour 和 oldHour 不同，意味着已经跨越新的一小时
+        // return newHour !== oldHour;
+        // // TODO: 先改成每小时重置方便测试
+
+        if (!oldTime || !newTime) return false;
     
-        // // 设置一天重置时间为 UTC 08:00
-        // const oldResetPoint = oldDate.startOf('d').add(8, 'h');
-        // const newResetPoint = newDate.startOf('d').add(8, 'h');
+        // oldTime 和 newTime 都为 UTC 时间戳
+        const oldDate = dayjs.utc(oldTime);
+        const newDate = dayjs.utc(newTime);
     
-        // console.log("#judge judgeNewDay oldTime:", oldTime, " newTime:", newTime, " oldResetPoint:", oldResetPoint.toString(), " newResetPoint:", newResetPoint.toString());
+        // 设置一天重置时间为 UTC 08:00
+        const oldResetPoint = oldDate.startOf('d').add(8, 'h');
+        const newResetPoint = newDate.startOf('d').add(8, 'h');
     
-        // // 如果 newResetPoint 和 oldResetPoint 不同，意味着已经跨越新的一天
-        // return newResetPoint.isAfter(oldResetPoint);
+        console.log("#judge judgeNewDay oldTime:", oldTime, " newTime:", newTime, " oldResetPoint:", oldResetPoint.toString(), " newResetPoint:", newResetPoint.toString());
+    
+        // 如果 newResetPoint 和 oldResetPoint 不同，意味着已经跨越新的一天
+        return newResetPoint.isAfter(oldResetPoint);
      }
 
     //=====================================================工具函数==========================================================
@@ -317,9 +317,9 @@ export class TimerModuleC extends ModuleC<TimerModuleS, TimerModuleData> impleme
     protected onEnterScene(sceneType: number): void {
         //延迟一会是保证其它模块已经监听完毕
         setTimeout(async () => {
-            const newDay = await this.server.net_setLastTimestampIfFirst();
-            this.lastTime = this.data.lastTimeStamp;
-            if (newDay) {
+            const { isNewDay, lastTimeStamp } = await this.server.net_setLastTimestampIfFirst();
+            this.lastTime = lastTimeStamp;
+            if (isNewDay) {
                 this.onPlayerEnterSceneIsNewDay.call(this.localPlayerId);
                 //触发一次后就可以清空了
                 this.onPlayerEnterSceneIsNewDay.clear();
@@ -480,20 +480,22 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
      * 玩家进入游戏后主动调用，用于判断是否是新的一天上号
      * @returns 是否是新的一天登录
      */
-    public net_setLastTimestampIfFirst(): boolean {
+    public net_setLastTimestampIfFirst() {
         const nowTime = dayjs.utc().valueOf();
         const oldTime = this.currentData.lastTimeStamp;
+        const isNewDay = TimerModuleUtils.judgeIsNewDay(oldTime, nowTime)
+        console.log("#time net_setLastTimestampIfFirst nowTime:" + nowTime + " oldTime:" + oldTime + " isNewDay:" + isNewDay);
         this.currentData.lastTimeStamp = nowTime;
         this.currentData.save(true);
-        const isNewDay = TimerModuleUtils.judgeIsNewDay(oldTime, nowTime)
         if (isNewDay) {
             //当天第一次登录
             this.onPlayerEnterSceneIsNewDay.call(this.currentPlayerId);
             // console.error(`rkc----玩家${this.currentPlayerId}新的一天登录`);
-            return true;
+            console.log("#time net_setLastTimestampIfFirst onPlayerEnterSceneIsNewDay called nowTime:" + nowTime + " oldTime:" + oldTime + " isNewDay:" + isNewDay);
+            return { isNewDay: true, lastTimeStamp: nowTime };
         }
         // console.error(`rkc----玩家${this.currentPlayerId}同一天登录`);
-        return false;
+        return { isNewDay: false, lastTimeStamp: nowTime };
     }
 
     /**
@@ -501,12 +503,12 @@ export class TimerModuleS extends ModuleS<TimerModuleC, TimerModuleData> impleme
      * @param playerId 玩家id
      * @returns 最后一次登录时间
      */
-    public getLastTimeStamp(playerId: number): number {
+    public getLastTimeStamp(playerId: number) {
         const data = this.getPlayerData(playerId);
         if (data) {
             return data.lastTimeStamp;
         }
-        return -1;
+        return null;
     }
 }
 
