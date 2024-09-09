@@ -16,6 +16,8 @@ import { P_BagHoverNum3 } from "./P_BagHoverNum3";
 import { P_BagHoverNum2 } from "./P_BagHoverNum2";
 import { P_Enchants } from "./P_Enchants";
 import { P_Pet_Dev } from "./P_Pet_Dev";
+import { TimerModuleUtils } from "../TimeModule/time";
+import { PetBagModuleS } from "./PetBagModuleS";
 
 export class P_FusePanel extends Fusepanel_Generate {
     /**当前容器中的所有item */
@@ -128,12 +130,28 @@ export class P_FusePanel extends Fusepanel_Generate {
 
     /**改变花费 */
     private changeUIText() {
+        const userId = Player.localPlayer?.userId ?? '';
         let count = this.curSelectPets.length;
         const data = DataCenterC.getData(PetBagModuleData);
-        const cost = utils.fuseCostCompute(data?.fuseNumToday ?? 0);
+        let fuseNumToday = data?.fuseNumToday ?? 0;
+        if(data?.lastFuseRefreshTimestamp) {
+            const preTime = data?.lastFuseRefreshTimestamp;
+            const nowTime = Date.now();
+            const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
+            if(isNewDay) {
+                ModuleService.getModule(PetBagModuleS).net_clearFuseToday();
+                fuseNumToday = 0;
+                console.log("#time fusePet clear fuseNumToday:" + fuseNumToday + " isNewDay:" + isNewDay + " preTime:" + preTime + " nowTime:" + nowTime + " userId:" + userId);
+            }
+        } else {
+            ModuleService.getModule(PetBagModuleS).net_clearFuseToday();
+            console.log("#time fusePet lastRefresh null clear fuseNumToday:" + fuseNumToday + " userId:" + userId);
+        }
+        const cost = utils.fuseCostCompute(fuseNumToday);
+
         this.mText_Money.text = utils.formatNumber(cost);
         this.text_FuseNum.text = `${count}/` + utils.Format(GameConfig.Language.Pet_NewBuy007.Value, GlobalData.Fuse.maxFuseCount);
-        this.text_CumulativeNum.text = utils.Format(GameConfig.Language.Pet_NewBuy006.Value, data?.fuseNumToday ?? 0);
+        this.text_CumulativeNum.text = utils.Format(GameConfig.Language.Pet_NewBuy006.Value, fuseNumToday);
         if (count < GlobalData.Fuse.minFuseCount) {
             this.mText_Number.text = utils.Format(GameConfig.Language.Page_UI_Tips_13.Value, count);
             this.probabilityCanvas.visibility = SlateVisibility.Hidden;

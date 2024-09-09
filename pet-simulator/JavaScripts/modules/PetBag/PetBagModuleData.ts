@@ -6,6 +6,7 @@ import { oTraceError } from "../../util/LogManager";
 import { utils } from "../../util/uitls";
 import { StatisticModuleS } from "../statistic/StatisticModule";
 import { EnchantBuff } from "./EnchantBuff";
+import dayjs from "dayjs";
 
 export enum BagItemKey {
     itemStart = 100
@@ -182,6 +183,10 @@ export class PetBagModuleData extends Subdata {
     @Decorator.persistence()
     public fuseNumToday: number = 0;
 
+    /** 今日已合成次数 每天刷新 */
+    @Decorator.persistence()
+    public lastFuseRefreshTimestamp: number | null = null;
+
     /**宠物跟随数量 */
     @Decorator.persistence()
     private petFollowCount: number;
@@ -345,8 +350,9 @@ export class PetBagModuleData extends Subdata {
     //     });
     // }
     public clearFuseToday() {
-        console.log("#time clearFuseToday");
         this.fuseNumToday = 0;
+        this.lastFuseRefreshTimestamp = Date.now();
+        console.log("#time clearFuseToday fuseNumToday:" + this.fuseNumToday + " lastFuseRefreshTimestamp:" + this.lastFuseRefreshTimestamp);
         this.save(true);
     }
     public fusePetStatistic() {

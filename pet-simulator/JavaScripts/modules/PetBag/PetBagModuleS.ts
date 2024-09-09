@@ -9,13 +9,14 @@ import { numberArrToString, stringToNumberArr, utils } from "../../util/uitls";
 import { CollectModuleS } from "../PetCollect/CollectModuleS";
 import { PlayerModuleS } from "../Player/PlayerModuleS";
 import { Task_ModuleS } from "../Task/Task_ModuleS";
+import { TimerModuleUtils } from "../TimeModule/time";
 import { AuthModuleS } from "../auth/AuthModule";
+import PsStatisticModuleData, { StatisticModuleS } from "../statistic/StatisticModule";
 import { BagTool } from "./BagTool";
 import { EnchantBuff } from "./EnchantBuff";
 import { EnchantPetState } from "./P_Enchants";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
-import PsStatisticModuleData, { StatisticModuleS } from "../statistic/StatisticModule";
 
 export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
     private _playerModuleS: PlayerModuleS;
@@ -574,7 +575,20 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
             return false;
         }
         const data = this.currentData;
-        const cost = utils.fuseCostCompute(data?.fuseNumToday ?? 0);
+        if(!data) return false;
+        let fuseNumToday = data?.fuseNumToday ?? 0;
+        if(data?.lastFuseRefreshTimestamp) {
+            const preTime = data?.lastFuseRefreshTimestamp;
+            const nowTime = Date.now();
+            const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
+            if(isNewDay) {
+                data.clearFuseToday();
+                fuseNumToday = 0;
+                console.log("#time net_fusePet isNewDay clear fuseNumToday:" + fuseNumToday);
+            }
+        } else data.clearFuseToday();
+        const cost = utils.fuseCostCompute(fuseNumToday);
+        console.log("#time net_fusePet cost:" + cost + "  fuseNumToday:" + fuseNumToday);
         if (!this.playerModuleS.reduceDiamond(cost, playerId)) return false;
 
         if (curSelectPets.length >= data.CurBagCapacity) return false;
@@ -656,7 +670,7 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
                     coinType: GlobalEnum.CoinType.Diamond,
                     cost,
                     inputPets: curSelectPets,
-                    dailyCount: (data?.fuseNumToday ?? 0) + 1,
+                    dailyCount: fuseNumToday + 1,
                     inputCount: nextFuseCostPetNum,
                     mergeCount: nextFuseCnt,
                 },
