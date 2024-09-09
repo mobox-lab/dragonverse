@@ -26,6 +26,8 @@ import CardModuleS from "./Modules/CardModule/CardModuleS";
 import { GlobalEventName } from "./const/enum";
 import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
 import { PlayerModuleS, StageState } from "./Modules/PlayerModule/PlayerModuleS";
+import Gtk from "gtoolkit";
+import PlayerModuleC from "./Modules/PlayerModule/PlayerModuleC";
 
 export const ChatType = {
     Text: 1,
@@ -42,6 +44,8 @@ export namespace GameManager {
     export let useEffect: boolean = true;
     export let showDamage: boolean = false;
     export let waveAmount: number = 10;
+    export const allGuid = ["10C7B636"];
+    export const allGroupIndex = [10012];
 
     export function init(gameStart: GameStart) {
         script = gameStart;
@@ -75,21 +79,18 @@ export namespace GameManager {
         } else {
             // RankManager.init();
             UIService.show(TowerUI);
+            initNoticeBoard();
 
             Event.addServerListener(GlobalEventName.ServerStageState, (state: string) => {
                 const stageState: StageState = JSON.parse(state);
-                if (stageState.playerId) {
-                    // todo 进行ui展示
-                    const cards = stageState.cards;
-                    const cardsInfos = cards.map((card) => {
-                        return GameConfig.Tower.getElement(card);
+                console.log(JSON.stringify(stageState), "广播的stageState");
+                if (stageState?.groupIndex) {
+                    const index = allGroupIndex.indexOf(stageState?.groupIndex);
+                    const guid = allGuid[index];
+                    GameObject.asyncFindGameObjectById(guid).then((obj) => {
+                        if (Gtk.isNullOrUndefined(obj)) return;
+                        setNoticeUI(obj, stageState);
                     });
-                    TipsManager.showTips(
-                        `${stageState?.userName} started game ${stageState.stageCfgId} with ${stageState.difficulty}`
-                    );
-                } else {
-                    // todo 进行初始化ui的模式
-                    TipsManager.showTips(`game ${stageState.stageCfgId} end`);
                 }
             });
 
@@ -209,18 +210,19 @@ export namespace GameManager {
         // 昵称，等级，进行中的stageId（可以反查难度）出战阵容、
         const userName = PlayerUtil.getPlayerScript(validGamePlayers[0].playerId)?.playerName;
         const level = PlayerUtil.getPlayerScript(validGamePlayers[0].playerId)?.level;
-        const difficulty = GameConfig.Stage.getElement(stageCfgId).difficulty;
+        const stageCfg = GameConfig.Stage.getElement(stageCfgId);
+        const difficulty = stageCfg.difficulty;
         console.log(userName, level, difficulty, "userName, level, difficulty");
         const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(validGamePlayers[0]);
         console.log(JSON.stringify(cards), "cards");
         // 通过cards对应数据
-
         const stageState: StageState = {
             userName,
             level,
             difficulty,
             cards,
             stageCfgId,
+            groupIndex: stageCfg.groupIndex,
             playerId: validGamePlayers[0].playerId,
         };
         // s端存储 和 广播
@@ -344,5 +346,91 @@ export namespace GameManager {
 
     export function boardcastMessage(message: string, type: number = ChatType.Text) {
         Event.dispatchToServer("boardcastMessage", message, type);
+    }
+
+    export function initNoticeBoard() {
+        for (let i = 0; i < allGuid.length; i++) {
+            const guid = allGuid[i];
+            GameObject.asyncFindGameObjectById(guid).then((obj) => {
+                if (Gtk.isNullOrUndefined(obj)) return;
+                const groupIndex = Number(obj.name);
+                const stageState = ModuleService.getModule(PlayerModuleC).getStageStateById(groupIndex);
+                console.log(JSON.stringify(stageState), "stageState");
+                setNoticeUI(obj, stageState);
+            });
+        }
+    }
+
+    export function setNoticeUI(obj: mw.GameObject, stageState: StageState | null) {
+        let UIWidget = obj as mw.UIWidget;
+        // if (stageState?.playerId) {
+        //     // todo 进行ui展示
+        //     const cards = stageState.cards;
+        //     const cardsInfos = cards.map((card) => {
+        //         return GameConfig.Tower.getElement(card);
+        //     });
+        //     TipsManager.showTips(
+        //         `${stageState?.userName} started game ${stageState.stageCfgId} with ${stageState.difficulty}`
+        //     );
+        // } else {
+        //     const groupIndex = stageState?.groupIndex;
+        //     if (groupIndex) {
+        //         // todo 进行初始化ui的模式
+        //         TipsManager.showTips(`game ${stageState.stageCfgId} end`);
+        //     }
+        // }
+        if (stageState && stageState?.playerId) {
+            // 有人游玩
+            Gtk.trySetVisibility(
+                UIWidget.getTargetUIWidget().rootContent.findChildByPath("playingCanvas") as mw.Canvas,
+                mw.SlateVisibility.Visible
+            );
+            Gtk.trySetVisibility(
+                UIWidget.getTargetUIWidget().rootContent.findChildByPath("canvasFight") as mw.Canvas,
+                mw.SlateVisibility.Hidden
+            );
+            const cards = stageState.cards;
+            const cardsInfos = cards.map((card) => {
+                return GameConfig.Tower.getElement(card);
+            });
+            const difficultText = switchDifficultToText(stageState.difficulty);
+            (
+                UIWidget.getTargetUIWidget().rootContent.findChildByPath(
+                    "playingCanvas/textDifficultly"
+                ) as mw.TextBlock
+            ).text = difficultText;
+            (
+                UIWidget.getTargetUIWidget().rootContent.findChildByPath(
+                    "playingCanvas/canvasPlayerInfo/textPlayerName"
+                ) as mw.TextBlock
+            ).text = stageState?.userName || "";
+            (
+                UIWidget.getTargetUIWidget().rootContent.findChildByPath(
+                    "playingCanvas/canvasPlayerInfo/imgLvBg/textLv"
+                ) as mw.TextBlock
+            ).text = (stageState?.level || 0)?.toString();
+        } else {
+            // 无人游玩
+            Gtk.trySetVisibility(
+                UIWidget.getTargetUIWidget().rootContent.findChildByPath("playingCanvas") as mw.Canvas,
+                mw.SlateVisibility.Hidden
+            );
+            Gtk.trySetVisibility(
+                UIWidget.getTargetUIWidget().rootContent.findChildByPath("canvasFight") as mw.Canvas,
+                mw.SlateVisibility.Visible
+            );
+        }
+    }
+
+    export function switchDifficultToText(difficult: number) {
+        if (difficult == 0) {
+            return "简单";
+        } else if (difficult == 1) {
+            return "普通";
+        } else if (difficult == 2) {
+            return "困难";
+        } else {
+            return "";
+        }
     }
 }

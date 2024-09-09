@@ -244,15 +244,16 @@ export default class StageTrigger extends Script {
     startGame(playerID: number) {
         if (playerID == this.owner) {
             // let ids = this.parsePlayerIds().splice(0, 4);
-            this.stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(
+            const stageInfo = StageUtil.getCfgFromGroupIndexAndDifficulty(
                 this.stageWorldIndex,
                 this.stageGroupId,
                 this.difficulty
             );
+            this.stageCfgId = stageInfo?.id;
             const ids = [this.owner];
             const stages = GameManager.getStages();
-            const allStageCfgIds = stages.map((stage) => stage.stageCfgId);
-            const isAlreadyUsed = allStageCfgIds.includes(this.stageCfgId);
+            const allGroupIndex = stages.map((stage) => stage.stageCfg.groupIndex);
+            const isAlreadyUsed = allGroupIndex.includes(stageInfo.groupIndex);
             if (isAlreadyUsed) {
                 // todo改多语言
                 console.log("该舞台已经开始，请前往其他舞台开始游戏");
