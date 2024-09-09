@@ -80,16 +80,16 @@ export class utils {
 
     /** 计算合成所需花费，参数为今日已合成过的次数 */
     public static fuseCostCompute(fusedNum: number) {
-        // 第1-10次： 每次合成都是5000
-        // 第11-300次： 5000+ （n-10）*2000
-        // 第301次-无穷： 585000 * power （1.2， （n-300））
-        const pow = 300;
+        //   第1-10次： 5000
+        //   第11-500次： 5000+(n-10)*1000
+        //   第501次-无穷： 495000*(1.2^(n-500))
+        const pow = 500;
         if(fusedNum < 10) {
             return 5000;
         } else if(fusedNum < pow) {
-            return 5000 + (fusedNum + 1 - 10) * 2000;
+            return 5000 + (fusedNum + 1 - 10) * 1000;
         } else {
-            return Math.floor(585000 * Math.pow(1.2, (fusedNum + 1) - pow));
+            return Math.floor(495000 * Math.pow(1.2, (fusedNum + 1) - pow));
         }
     }
 
