@@ -107,9 +107,9 @@ export default class NewBuyUI extends NewBuyUI_Generate {
         console.log("#debug egg buy show cfg:" + JSON.stringify(cfg))
         this.buyEggCallback = buyEggCallBack;
         this.cfg = cfg;
+        this.judgeGoldType();
         this.unitPrice = cfg.Price[0];
         this.cnt = 1;
-        this.judgeGoldType();
     }
     onHide() {
         InterBtn.instance.isShow = false;

@@ -24,6 +24,7 @@ export type StageState = {
     cards?: number[];
     stageCfgId: number;
     playerId?: number;
+    groupIndex: number;
 };
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     stageStages: Map<number, StageState | null> = new Map();
@@ -433,13 +434,14 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
 
     public setStageState(state: StageState) {
         if (state.playerId === null) {
-            this.stageStages.set(state.stageCfgId, null);
+            this.stageStages.set(state.groupIndex, null);
         } else {
-            this.stageStages.set(state.stageCfgId, state);
+            this.stageStages.set(state.groupIndex, state);
         }
     }
 
-    public net_getStageStateById(stageId: number) {
-        return this.stageStages.get(stageId);
+    public net_getStageStateById(groupIndex: number) {
+        console.log("net_getStageStateById", groupIndex, this.stageStages, this.stageStages.get(groupIndex));
+        return this.stageStages.get(groupIndex);
     }
 }

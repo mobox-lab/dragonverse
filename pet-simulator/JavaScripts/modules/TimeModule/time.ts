@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import { addGMCommand } from "mw-god-mod";
+import { TipsManager } from "../UI/Tips/CommonTipsManagerUI";
 
 dayjs.extend(utc);
 
@@ -244,7 +245,7 @@ export namespace TimerModuleUtils {
      * @param newTime 新的时间
      * @returns 是否是新的一天
      */
-    export function judgeIsNewDay(oldTime: number, newTime: number): boolean {
+    export function judgeIsNewDay(oldTime: number, newTime: number, utcHour = 10): boolean {
         // if (!oldTime || !newTime) return false;
 
         // // oldTime 和 newTime 都为 UTC 时间戳
@@ -262,20 +263,26 @@ export namespace TimerModuleUtils {
         // // TODO: 先改成每小时重置方便测试
 
         if (!oldTime || !newTime) return false;
-    
         // oldTime 和 newTime 都为 UTC 时间戳
         const oldDate = dayjs.utc(oldTime);
         const newDate = dayjs.utc(newTime);
     
-        // 设置一天重置时间为 UTC 08:00
-        const oldResetPoint = oldDate.startOf('d').add(8, 'h');
-        const newResetPoint = newDate.startOf('d').add(8, 'h');
-    
-        console.log("#judge judgeNewDay oldTime:", oldTime, " newTime:", newTime, " oldResetPoint:", oldResetPoint.toString(), " newResetPoint:", newResetPoint.toString());
-    
-        // 如果 newResetPoint 和 oldResetPoint 不同，意味着已经跨越新的一天
-        return newResetPoint.isAfter(oldResetPoint);
-     }
+        console.log("#judge judgeNewDay oldTime:", oldTime, " newTime:", newTime);
+        
+        if(!oldDate.isBefore(newDate)) return false; // 不可能 容错处理
+       
+        const isSameDay = oldDate.date() === newDate.date();
+        if(isSameDay)
+            return oldDate.hour() < utcHour && newDate.hour() >= utcHour
+
+        // is not same day
+        if(oldDate.diff(newDate, 'd') > 1) return true;
+        
+        // 昨天和今天
+        if(oldDate.hour() >= utcHour && newDate.hour() < utcHour) return false;
+        
+        return true;
+    }
 
     //=====================================================工具函数==========================================================
 }
@@ -532,4 +539,18 @@ addGMCommand(
     () => {
         ModuleService.getModule(TimerModuleS).onDayRefresh.call(dayjs.utc().valueOf());
     }
+);
+
+
+addGMCommand(
+    "Test JudgeIsNewDay",
+    "string",
+    (value) => {
+        let [oldTime, newTime, utcHour] = value
+            .trim()
+            .split(/[,\s]/)
+            .map((v) => Number(v)); 
+        const isNewDay = TimerModuleUtils.judgeIsNewDay(oldTime, newTime, utcHour ?? 8);
+        TipsManager.showTips(`oldTime ${oldTime} newTime ${newTime} oldDate:${dayjs(oldTime).format()} newDate:${dayjs(newTime).format()} utcHour:${utcHour ?? 8}  isNewDay:${isNewDay}`);
+    },
 );
