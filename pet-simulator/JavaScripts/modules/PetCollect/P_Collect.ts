@@ -69,28 +69,27 @@ export class P_Collect extends PetCollectPanel_Generate {
 
     protected onStart() {
         this.collectMC = ModuleService.getModule(CollectModuleC);
-        this.mBtn_unlock.visibility = mw.SlateVisibility.Collapsed;
-        this.mBtn_unlock.onClicked.add(() => {
-            this.collectMC.setCurAddLevel();
-            this.switchState(false);
-        });
+        // this.mBtn_unlock.visibility = mw.SlateVisibility.Collapsed;
+        // this.mBtn_unlock.onClicked.add(() => {
+        //     this.collectMC.setCurAddLevel();
+        //     this.switchState(false);
+        // });
         this.list = new List(this.mScrollBox, this.mListCanvas, petItem);
 
     }
 
-    /**图签状态切换 */
-    public switchState(isShow: boolean): void {
-        if (isShow) {
-            this.mBtn_unlock.visibility = mw.SlateVisibility.Visible;
-            this.mProgressCanvas.visibility = mw.SlateVisibility.Collapsed;
-        } else {
-            this.mBtn_unlock.visibility = mw.SlateVisibility.Collapsed;
-            this.mProgressCanvas.visibility = mw.SlateVisibility.SelfHitTestInvisible;
-        }
-    }
+    // /**图签状态切换 */
+    // public switchState(isShow: boolean): void {
+    //     if (isShow) {
+    //         this.mBtn_unlock.visibility = mw.SlateVisibility.Visible;
+    //         this.mProgressCanvas.visibility = mw.SlateVisibility.Collapsed;
+    //     } else {
+    //         this.mBtn_unlock.visibility = mw.SlateVisibility.Collapsed;
+    //         this.mProgressCanvas.visibility = mw.SlateVisibility.SelfHitTestInvisible;
+    //     }
+    // }
 
     public initUI(arr: number[], level: number) {
-
         this.list.setDatas(arr);
         this.setCurHasCount(arr.length, level);
 
@@ -98,8 +97,8 @@ export class P_Collect extends PetCollectPanel_Generate {
 
     /**设置当前有个数 */
     public setCurHasCount(count: number, level: number) {
-        this.mHasText.text = utils.Format(GameConfig.Language.Page_UI_Tips_3.Value, count);
-        this.mbar_hp.currentValue = count / GlobalData.Collect.levelCount[level - 1];
+        // this.mHasText.text = utils.Format(GameConfig.Language.Page_UI_Tips_3.Value, count);
+        // this.mbar_hp.currentValue = count / GlobalData.Collect.levelCount[level - 1];
         this.setLevel(level);
     }
 
@@ -121,11 +120,11 @@ export class P_Collect extends PetCollectPanel_Generate {
     }
 
     public setLevel(level: number) {
-        if (level > GlobalData.Collect.levelCount.length)
-            this.mALLText.text = this.mHasText.text;
-        else
-            this.mALLText.text = utils.Format(GameConfig.Language.Page_UI_Tips_3.Value, GlobalData.Collect.levelCount[level - 1]);
-        this.mText_level.text = utils.Format(GameConfig.Language.Page_UI_Tips_4.Value, level);
+        // if (level > GlobalData.Collect.levelCount.length)
+        //     this.mALLText.text = this.mHasText.text;
+        // else
+        //     this.mALLText.text = utils.Format(GameConfig.Language.Page_UI_Tips_3.Value, GlobalData.Collect.levelCount[level - 1]);
+        // this.mText_level.text = utils.Format(GameConfig.Language.Page_UI_Tips_4.Value, level);
     }
 
 }

@@ -25,32 +25,32 @@ export class CollectModuleC extends ModuleC<CollectModuleS, CollectModuleData> {
         }
     }
 
-    protected onEnterScene(sceneType: number): void {
-        this.isShowAndHideUnlockBtn();
-    }
+    // protected onEnterScene(sceneType: number): void {
+    //     this.isShowAndHideUnlockBtn();
+    // }
 
-    private curAddLevel: number = 0;
+    // private curAddLevel: number = 0;
     /**是否显示解锁图签等级按钮 */
-    private isShowAndHideUnlockBtn(): void {
-        let levelCount = GlobalData.Collect.levelCount;
-        let petCount = this.data.HasArr.length;
-        let level = this.data.level;
-        this.curAddLevel = 0;
-        for (let i = levelCount.length - 1; i >= 0; --i) {
-            if (petCount >= levelCount[i] && level < i + 2) {
-                this.curAddLevel = i + 2 - level;
-                break;
-            }
-        }
-        if (this.curAddLevel == 0) return;
-        this.petPanel.switchState(true);
-    }
+    // private isShowAndHideUnlockBtn(): void {
+    //     let levelCount = GlobalData.Collect.levelCount;
+    //     let petCount = this.data.HasArr.length;
+    //     let level = this.data.level;
+    //     this.curAddLevel = 0;
+    //     for (let i = levelCount.length - 1; i >= 0; --i) {
+    //         if (petCount >= levelCount[i] && level < i + 2) {
+    //             this.curAddLevel = i + 2 - level;
+    //             break;
+    //         }
+    //     }
+    //     if (this.curAddLevel == 0) return;
+    //     // this.petPanel.switchState(true);
+    // }
 
-    public setCurAddLevel(): void {
-        if (this.curAddLevel == 0) return;
-        this.addLevel(this.curAddLevel);
-        this.curAddLevel = 0;
-    }
+    // public setCurAddLevel(): void {
+    //     if (this.curAddLevel == 0) return;
+    //     this.addLevel(this.curAddLevel);
+    //     this.curAddLevel = 0;
+    // }
 
     private initEvent() {
         this.petPanel = mw.UIService.getUI(P_Collect);
@@ -64,7 +64,7 @@ export class CollectModuleC extends ModuleC<CollectModuleS, CollectModuleData> {
         this.data.onLevelChangeAC.add(this.levelChange.bind(this))
     }
     private onHasChange(id: number) {
-        this.isShowAndHideUnlockBtn();
+        // this.isShowAndHideUnlockBtn();
         this.petPanel.setCurHasCount(this.data.HasArr.length, this.data.level);
         this.collectCountAC.call(this.data.HasArr.length);
     }
@@ -83,9 +83,9 @@ export class CollectModuleC extends ModuleC<CollectModuleS, CollectModuleData> {
         this.server.net_AddPet(id);
     }
 
-    public addLevel(value: number) {
-        this.server.net_addLevle(value);
-    }
+    // public addLevel(value: number) {
+    //     this.server.net_addLevle(value);
+    // }
 
 
     /**获取全服玩家宠物数 */
