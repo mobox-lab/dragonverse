@@ -357,7 +357,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.server.net_setFirstMonsterTag(tagId);
     }
 
-    public getStageStateById(stageId: number) {
-        return this.server.net_getStageStateById(stageId);
+    public getStageStateById(groupIndex: number) {
+        return this.server.net_getStageStateById(groupIndex);
     }
 }

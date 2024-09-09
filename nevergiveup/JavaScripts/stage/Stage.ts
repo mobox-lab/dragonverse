@@ -161,7 +161,7 @@ export class StageS {
                     const stageState = {
                         stageCfgId: this.stageCfgId,
                     };
-                    ModuleService.getModule(PlayerModuleS).setStageState(stageState);
+                    // ModuleService.getModule(PlayerModuleS).setStageState(stageState);
                     for (let i = 0; i < GameManager.allPlayers.length; i++) {
                         Event.dispatchToClient(
                             GameManager.allPlayers[i],
