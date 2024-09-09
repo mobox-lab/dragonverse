@@ -245,36 +245,36 @@ export namespace TimerModuleUtils {
      * @returns 是否是新的一天
      */
     export function judgeIsNewDay(oldTime: number, newTime: number): boolean {
-        if (!oldTime || !newTime) return false;
-
-        // oldTime 和 newTime 都为 UTC 时间戳
-        const oldDate = dayjs.utc(oldTime);
-        const newDate = dayjs.utc(newTime);
-
-        // 直接比较两个时间的小时数是否不同
-        const oldHour = oldDate.hour();
-        const newHour = newDate.hour();
-
-        console.log("#judge judgeNewHour oldTime:", oldTime, " newTime:", newTime, " oldHour:", oldHour, " newHour:", newHour);
-
-        // 如果 newHour 和 oldHour 不同，意味着已经跨越新的一小时
-        return newHour !== oldHour;
-        // TODO: 先改成每小时重置方便测试
-
         // if (!oldTime || !newTime) return false;
-    
+
         // // oldTime 和 newTime 都为 UTC 时间戳
         // const oldDate = dayjs.utc(oldTime);
         // const newDate = dayjs.utc(newTime);
+
+        // // 直接比较两个时间的小时数是否不同
+        // const oldHour = oldDate.hour();
+        // const newHour = newDate.hour();
+
+        // console.log("#judge judgeNewHour oldTime:", oldTime, " newTime:", newTime, " oldHour:", oldHour, " newHour:", newHour);
+
+        // // 如果 newHour 和 oldHour 不同，意味着已经跨越新的一小时
+        // return newHour !== oldHour;
+        // // TODO: 先改成每小时重置方便测试
+
+        if (!oldTime || !newTime) return false;
     
-        // // 设置一天重置时间为 UTC 08:00
-        // const oldResetPoint = oldDate.startOf('d').add(8, 'h');
-        // const newResetPoint = newDate.startOf('d').add(8, 'h');
+        // oldTime 和 newTime 都为 UTC 时间戳
+        const oldDate = dayjs.utc(oldTime);
+        const newDate = dayjs.utc(newTime);
     
-        // console.log("#judge judgeNewDay oldTime:", oldTime, " newTime:", newTime, " oldResetPoint:", oldResetPoint.toString(), " newResetPoint:", newResetPoint.toString());
+        // 设置一天重置时间为 UTC 08:00
+        const oldResetPoint = oldDate.startOf('d').add(8, 'h');
+        const newResetPoint = newDate.startOf('d').add(8, 'h');
     
-        // // 如果 newResetPoint 和 oldResetPoint 不同，意味着已经跨越新的一天
-        // return newResetPoint.isAfter(oldResetPoint);
+        console.log("#judge judgeNewDay oldTime:", oldTime, " newTime:", newTime, " oldResetPoint:", oldResetPoint.toString(), " newResetPoint:", newResetPoint.toString());
+    
+        // 如果 newResetPoint 和 oldResetPoint 不同，意味着已经跨越新的一天
+        return newResetPoint.isAfter(oldResetPoint);
      }
 
     //=====================================================工具函数==========================================================

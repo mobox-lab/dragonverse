@@ -130,23 +130,10 @@ export class P_FusePanel extends Fusepanel_Generate {
 
     /**改变花费 */
     private changeUIText() {
-        const userId = Player.localPlayer?.userId ?? '';
         let count = this.curSelectPets.length;
         const data = DataCenterC.getData(PetBagModuleData);
+        data.clearFuseTodayIfNewDay();
         let fuseNumToday = data?.fuseNumToday ?? 0;
-        if(data?.lastFuseRefreshTimestamp) {
-            const preTime = data?.lastFuseRefreshTimestamp;
-            const nowTime = Date.now();
-            const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
-            if(isNewDay) {
-                ModuleService.getModule(PetBagModuleS).net_clearFuseTodayIfNewDay();
-                fuseNumToday = 0;
-                console.log("#time fusePet clear fuseNumToday:" + fuseNumToday + " isNewDay:" + isNewDay + " preTime:" + preTime + " nowTime:" + nowTime + " userId:" + userId);
-            }
-        } else {
-            ModuleService.getModule(PetBagModuleS).net_clearFuseTodayIfNewDay();
-            console.log("#time fusePet lastRefresh null clear fuseNumToday:" + fuseNumToday + " userId:" + userId);
-        }
         const cost = utils.fuseCostCompute(fuseNumToday);
 
         this.mText_Money.text = utils.formatNumber(cost);

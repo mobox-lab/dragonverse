@@ -83,7 +83,7 @@ export class utils {
         // 第1-10次： 每次合成都是5000
         // 第11-300次： 5000+ （n-10）*2000
         // 第301次-无穷： 585000 * power （1.2， （n-300））
-        const pow = 20; // TODO: test 20 -> 300
+        const pow = 300;
         if(fusedNum < 10) {
             return 5000;
         } else if(fusedNum < pow) {
