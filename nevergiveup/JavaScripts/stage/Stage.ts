@@ -159,7 +159,7 @@ export class StageS {
                     GameManager.endStage(this);
                     // 广播数据和清除数据
                     const stageState = {
-                        stageCfgId: this.stageCfgId,
+                        groupIndex: this.stageCfg.groupIndex,
                     };
                     // ModuleService.getModule(PlayerModuleS).setStageState(stageState);
                     for (let i = 0; i < GameManager.allPlayers.length; i++) {

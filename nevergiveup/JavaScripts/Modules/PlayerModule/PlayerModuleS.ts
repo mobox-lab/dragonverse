@@ -441,7 +441,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     }
 
     public net_getStageStateById(groupIndex: number) {
-        console.log("net_getStageStateById", groupIndex);
+        console.log("net_getStageStateById", groupIndex, this.stageStages, this.stageStages.get(groupIndex));
         return this.stageStages.get(groupIndex);
     }
 }
