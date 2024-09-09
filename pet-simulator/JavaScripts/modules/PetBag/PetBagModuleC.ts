@@ -38,8 +38,8 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
         this.initEvent();
         this.trainChange();
         this.devInit();
-        TimerModuleUtils.addOnlineDayListener(() => this.clearFuseToday(1), this);
-        TimerModuleUtils.addLoginDayListener(() => this.clearFuseToday(2), this);
+        TimerModuleUtils.addOnlineDayListener(() => this.clearFuseToday(false), this);
+        TimerModuleUtils.addLoginDayListener(() => this.clearFuseToday(true), this);
     }
 
     private initData() {
@@ -52,12 +52,13 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
     protected onEnterScene(sceneType: number): void {
         this.calcBuff();
     }
-    public clearFuseToday(x:number) {
-        console.log(`#time clearFuseToday ${x === 1 ? 'onlineListener': 'loginListener'} 今日合成次数刷新`);
+    public clearFuseToday(isLogin: boolean) {
+        console.log(`#time clearFuseToday ${isLogin ? 'loginListener': 'onlineListener'} 今日合成次数刷新`);
         // setTimeout(() => {//可能出现的情况，服务器还没就绪的时候请求，有概率报错https://pandora.233leyuan.com/crashAnalysis/exceptionDetails?app_name=com.meta.box&start_time=1704816000&end_time=1704956700&request_id=1745342006802169857&requestIdDetail=1745342130244730881&kindIndex=0
          // }, 3000)
         TimeUtil.delayExecute(() => {
             console.log("#time clearFuseToday fuseNum refresh");
+            this.data.fuseNumToday = 0;
             this.server.net_clearFuseToday();
         }, 1);
     }
