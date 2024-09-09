@@ -576,17 +576,8 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         }
         const data = this.currentData;
         if(!data) return false;
+        data.clearFuseTodayIfNewDay();
         let fuseNumToday = data?.fuseNumToday ?? 0;
-        if(data?.lastFuseRefreshTimestamp) {
-            const preTime = data?.lastFuseRefreshTimestamp;
-            const nowTime = Date.now();
-            const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
-            if(isNewDay) {
-                data.clearFuseToday();
-                fuseNumToday = 0;
-                console.log("#time net_fusePet isNewDay clear fuseNumToday:" + fuseNumToday);
-            }
-        } else data.clearFuseToday();
         const cost = utils.fuseCostCompute(fuseNumToday);
         console.log("#time net_fusePet cost:" + cost + "  fuseNumToday:" + fuseNumToday);
         if (!this.playerModuleS.reduceDiamond(cost, playerId)) return false;
@@ -1066,9 +1057,9 @@ export class PetBagModuleS extends ModuleS<PetBagModuleC, PetBagModuleData> {
         if (specialIds?.length) mw.Event.dispatchToClient(player, "ENCHANT_BROADCAST_ACHIEVEMENT_ENCHANT_SPECIAL");
     }
 
-    public net_clearFuseToday() {
+    public net_clearFuseTodayIfNewDay() {
         const playerId = this.currentPlayerId;
-        DataCenterS.getData(playerId, PetBagModuleData)?.clearFuseToday();
+        DataCenterS.getData(playerId, PetBagModuleData)?.clearFuseTodayIfNewDay();
     }
 }
 

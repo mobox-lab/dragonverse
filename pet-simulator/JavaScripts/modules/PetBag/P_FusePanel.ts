@@ -139,12 +139,12 @@ export class P_FusePanel extends Fusepanel_Generate {
             const nowTime = Date.now();
             const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
             if(isNewDay) {
-                ModuleService.getModule(PetBagModuleS).net_clearFuseToday();
+                ModuleService.getModule(PetBagModuleS).net_clearFuseTodayIfNewDay();
                 fuseNumToday = 0;
                 console.log("#time fusePet clear fuseNumToday:" + fuseNumToday + " isNewDay:" + isNewDay + " preTime:" + preTime + " nowTime:" + nowTime + " userId:" + userId);
             }
         } else {
-            ModuleService.getModule(PetBagModuleS).net_clearFuseToday();
+            ModuleService.getModule(PetBagModuleS).net_clearFuseTodayIfNewDay();
             console.log("#time fusePet lastRefresh null clear fuseNumToday:" + fuseNumToday + " userId:" + userId);
         }
         const cost = utils.fuseCostCompute(fuseNumToday);

@@ -59,7 +59,7 @@ export class PetBagModuleC extends ModuleC<PetBagModuleS, PetBagModuleData> {
          // }, 3000)
         TimeUtil.delayExecute(() => {
             console.log("#time clearFuseToday fuseNum refresh");
-            this.server.net_clearFuseToday();
+            this.server.net_clearFuseTodayIfNewDay();
         }, 1);
     }
     private initUI() {

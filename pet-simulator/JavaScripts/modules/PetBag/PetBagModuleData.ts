@@ -7,6 +7,7 @@ import { utils } from "../../util/uitls";
 import { StatisticModuleS } from "../statistic/StatisticModule";
 import { EnchantBuff } from "./EnchantBuff";
 import dayjs from "dayjs";
+import { TimerModuleUtils } from "../TimeModule/time";
 
 export enum BagItemKey {
     itemStart = 100
@@ -349,11 +350,23 @@ export class PetBagModuleData extends Subdata {
     //             DataStorage.asyncSetData(dataKey, recordInfo);
     //     });
     // }
-    public clearFuseToday() {
-        this.fuseNumToday = 0;
-        this.lastFuseRefreshTimestamp = Date.now();
-        console.log("#time clearFuseToday fuseNumToday:" + this.fuseNumToday + " lastFuseRefreshTimestamp:" + this.lastFuseRefreshTimestamp);
-        this.save(true);
+    public clearFuseTodayIfNewDay() {
+        const nowTime = dayjs.utc().valueOf();
+        if(this.lastFuseRefreshTimestamp) {
+            const preTime = this.lastFuseRefreshTimestamp;
+            const isNewDay = TimerModuleUtils.judgeIsNewDay(preTime, nowTime);
+            if(isNewDay) {
+                console.log("#time clearFuseTodayIfNewDay fuseNumToday:" + this.fuseNumToday + " lastFuseRefreshTimestamp:" + this.lastFuseRefreshTimestamp);
+                this.fuseNumToday = 0;
+                this.lastFuseRefreshTimestamp = nowTime;
+                this.save(true);
+            }
+        } else {
+            console.log("#time clearFuseTodayIfNewDay first fuseNumToday:" + this.fuseNumToday + " lastFuseRefreshTimestamp:" + this.lastFuseRefreshTimestamp);
+            this.fuseNumToday = 0;
+            this.lastFuseRefreshTimestamp = nowTime;
+            this.save(true);
+        }
     }
     public fusePetStatistic() {
         console.log("#time fusePetStatistic fuseNumToday:" + this.fuseNumToday);
