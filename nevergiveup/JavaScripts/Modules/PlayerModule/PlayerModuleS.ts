@@ -27,7 +27,7 @@ export type StageState = {
     groupIndex: number;
 };
 export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
-    stageStages: Map<number, StageState | null> = new Map();
+    stageStages: { [groupIndex: number]: StageState | null } = {};
 
     protected onStart(): void {
         TimerModuleUtils.addOnlineDayListener(this.clearDailyCount, this);
@@ -434,14 +434,13 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
 
     public setStageState(state: StageState) {
         if (state.playerId === null) {
-            this.stageStages.set(state.groupIndex, null);
+            this.stageStages[state.groupIndex] = null;
         } else {
-            this.stageStages.set(state.groupIndex, state);
+            this.stageStages[state.groupIndex] = state;
         }
     }
 
-    public net_getStageStateById(groupIndex: number) {
-        console.log("net_getStageStateById", groupIndex, this.stageStages, this.stageStages.get(groupIndex));
-        return this.stageStages.get(groupIndex);
+    public async net_getStageStateById(groupIndex: number): Promise<StageState | null> {
+        return this.stageStages[groupIndex];
     }
 }
