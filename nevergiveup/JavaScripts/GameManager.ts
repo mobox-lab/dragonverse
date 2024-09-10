@@ -28,6 +28,7 @@ import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
 import { PlayerModuleS, StageState } from "./Modules/PlayerModule/PlayerModuleS";
 import Gtk from "gtoolkit";
 import PlayerModuleC from "./Modules/PlayerModule/PlayerModuleC";
+import BuildItemUI from "./UI/BuildItemUI";
 
 export const ChatType = {
     Text: 1,
@@ -211,9 +212,7 @@ export namespace GameManager {
         const level = PlayerUtil.getPlayerScript(validGamePlayers[0].playerId)?.level;
         const stageCfg = GameConfig.Stage.getElement(stageCfgId);
         const difficulty = stageCfg.difficulty;
-        console.log(userName, level, difficulty, "userName, level, difficulty");
         const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(validGamePlayers[0]);
-        console.log(JSON.stringify(cards), "cards");
         // 通过cards对应数据
         const stageState: StageState = {
             userName,
@@ -401,9 +400,18 @@ export namespace GameManager {
                 mw.SlateVisibility.Hidden
             );
             const cards = stageState.cards;
-            const cardsInfos = cards.map((card) => {
-                return GameConfig.Tower.getElement(card);
-            });
+            console.log(JSON.stringify(cards), "cards");
+            const canvasBuildItem = UIWidget.getTargetUIWidget().rootContent.findChildByPath(
+                "playingCanvas/canvasBuildItem"
+            ) as mw.Canvas;
+            canvasBuildItem.removeAllChildren();
+            for (let i = 0; i < cards.length; i++) {
+                const id = cards[i];
+                console.log("create item", id);
+                const item = UIService.create(BuildItemUI);
+                item.init(id);
+                canvasBuildItem.addChild(item.uiObject);
+            }
             const difficultText = switchDifficultToText(stageState.difficulty);
             (
                 UIWidget.getTargetUIWidget().rootContent.findChildByPath(
@@ -430,6 +438,9 @@ export namespace GameManager {
                 UIWidget.getTargetUIWidget().rootContent.findChildByPath("canvasFight") as mw.Canvas,
                 mw.SlateVisibility.Visible
             );
+            (
+                UIWidget.getTargetUIWidget().rootContent.findChildByPath("playingCanvas/canvasBuildItem") as mw.Canvas
+            ).removeAllChildren();
         }
     }
 
