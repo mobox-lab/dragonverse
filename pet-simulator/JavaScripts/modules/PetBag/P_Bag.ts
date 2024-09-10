@@ -14,9 +14,6 @@ import { PetBagModuleC } from "./PetBagModuleC";
 import { P_BagHoverNum2 } from "./P_BagHoverNum2";
 import { P_BagHoverNum3 } from "./P_BagHoverNum3";
 import { GlobalEnum } from "../../const/Enum";
-import { P_FusePanel } from "./P_FusePanel";
-import { P_Pet_Dev } from "./P_Pet_Dev";
-import { P_Enchants } from "./P_Enchants";
 
 export class P_Bag extends PetBagPanel_Generate {
 
@@ -470,17 +467,10 @@ export class P_Bag extends PetBagPanel_Generate {
         this.setDelUI();
     }
 
-    public hideWhenBagOpen() {
-        this.hide();
-    }
-
     protected onShow(...params: any[]): void {
         this.itemArr.forEach((item) => {
 			item.setEnableHover(true);
 		})
-        UIService.getUI(P_FusePanel).hideWhenBagOpen();
-        UIService.getUI(P_Enchants).hideWhenBagOpen();
-        UIService.getUI(P_Pet_Dev).hideWhenBagOpen();
         this.showAC.call();
         this.isReName = false;
         if (this.delArr.length > 0) {

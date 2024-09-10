@@ -104,8 +104,9 @@ class P_levelItem extends TypeItem_Generate {
             this.mBtn_Levelup.enable = false;
             return;
         }
-        // console.error("level", level, "this.info.Diamond", this.info.Diamond);
+        console.error("level", level, "this.info.Diamond", this.info.Diamond);
         this.mText_DiaNum.text = utils.formatNumber(this.info.Diamond[level]);
+
     }
 
 }
