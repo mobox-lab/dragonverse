@@ -634,8 +634,10 @@ export default class ResourceScript extends mw.Script {
         if (!this.cfg || this.isStart || this.resObj != null || this.curHp <= 0) return false;
         this.isStart = true;
         this.resObj = await Resource.instance.getResource(this.cfgId);
-        Log4Ts.log(Resource, `createDefaultObj cfgId:${this.cfgId}, ${this.pointId},${this.rate}`);
-
+        if(!this.resObj) {
+            Log4Ts.warn(Resource, `createDefaultObj failed cfgId:${this.cfgId}, ${this.pointId},${this.rate}`);
+            return false;
+        }
         if (!this.isBigBox) {
             let randomZ = MathUtil.randomInt(0, 360);
             this.resObj.worldTransform.rotation = new mw.Rotation(0, 0, randomZ);
