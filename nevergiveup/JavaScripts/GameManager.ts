@@ -350,11 +350,10 @@ export namespace GameManager {
     export function initNoticeBoard() {
         for (let i = 0; i < allGuid.length; i++) {
             const guid = allGuid[i];
-            GameObject.asyncFindGameObjectById(guid).then((obj) => {
+            GameObject.asyncFindGameObjectById(guid).then(async (obj) => {
                 if (Gtk.isNullOrUndefined(obj)) return;
                 const groupIndex = Number(obj.name);
-                const stageState = ModuleService.getModule(PlayerModuleC).getStageStateById(groupIndex);
-                console.log(JSON.stringify(stageState), "stageState");
+                const stageState = await ModuleService.getModule(PlayerModuleC).getStageStateById(groupIndex);
                 // GameConfig.Language.getElement("Text_insufficientStamina").Value
                 let UIWidget = obj as mw.UIWidget;
                 (
