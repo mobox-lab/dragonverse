@@ -407,7 +407,6 @@ export namespace GameManager {
             canvasBuildItem.removeAllChildren();
             for (let i = 0; i < cards.length; i++) {
                 const id = cards[i];
-                console.log("create item", id);
                 const item = UIService.create(BuildItemUI);
                 item.init(id);
                 canvasBuildItem.addChild(item.uiObject);
