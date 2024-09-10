@@ -317,7 +317,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
                 this.msgUIShowing = true;
                 MessageBox.showOneBtnMessage(GameConfig.Language.Text_Fuse_UI_3.Value, () => {
                     super.show();
-                }, 0, () => this.msgUIShowing = false);
+                }, 0, () => { this.msgUIShowing = false });
                 return;
             }
             if (res === EnchantPetState.FAILED) {
@@ -353,11 +353,9 @@ export class P_Enchants extends EnchantsPanel_Generate {
      * @param petKeyArr 宠物key数组
      */
     private async startEnchant() {
-        if (!this.isEnchanting) {
-            this.setEnchantBtnClickState(false);
-        }
-		this.isEnchanting = true;
-		this.moveUI(false);
+        if(this.isEnchanting) return;
+        this.setEnchantBtnClickState(false);
+        this.moveUI(false);
         this.playEffect();
     }
 
@@ -405,6 +403,7 @@ export class P_Enchants extends EnchantsPanel_Generate {
 
     protected onShow(...params: any[]): void {
         this.isCanClickBtn();
+        this.msgUIShowing = false;
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             if (this.isEnchanting) {
                 this.stopEnchant();
