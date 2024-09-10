@@ -206,7 +206,6 @@ export namespace GameManager {
         let validGamePlayers = gamePlayers.filter((player) => players.indexOf(player) != -1);
         if (validGamePlayers.length == 0) return;
 
-        // todo 游戏开始后做存储，并且分发给所有的用户client
         // 昵称，等级，进行中的stageId（可以反查难度）出战阵容、
         const userName = PlayerUtil.getPlayerScript(validGamePlayers[0].playerId)?.playerName;
         const level = PlayerUtil.getPlayerScript(validGamePlayers[0].playerId)?.level;
@@ -351,11 +350,23 @@ export namespace GameManager {
     export function initNoticeBoard() {
         for (let i = 0; i < allGuid.length; i++) {
             const guid = allGuid[i];
-            GameObject.asyncFindGameObjectById(guid).then((obj) => {
+            GameObject.asyncFindGameObjectById(guid).then(async (obj) => {
                 if (Gtk.isNullOrUndefined(obj)) return;
                 const groupIndex = Number(obj.name);
-                const stageState = ModuleService.getModule(PlayerModuleC).getStageStateById(groupIndex);
-                console.log(JSON.stringify(stageState), "stageState");
+                const stageState = await ModuleService.getModule(PlayerModuleC).getStageStateById(groupIndex);
+                // GameConfig.Language.getElement("Text_insufficientStamina").Value
+                let UIWidget = obj as mw.UIWidget;
+                (
+                    UIWidget.getTargetUIWidget().rootContent.findChildByPath(
+                        "playingCanvas/canvasPlayerInfo/textName"
+                    ) as mw.TextBlock
+                ).text = GameConfig.Language.getElement("BuildText_1").Value;
+                (
+                    UIWidget.getTargetUIWidget().rootContent.findChildByPath("playingCanvas/textBuild") as mw.TextBlock
+                ).text = GameConfig.Language.getElement("BuildText_2").Value;
+                (
+                    UIWidget.getTargetUIWidget().rootContent.findChildByPath("playingCanvas/textStatus") as mw.TextBlock
+                ).text = GameConfig.Language.getElement("BuildText_3").Value;
                 setNoticeUI(obj, stageState);
             });
         }
@@ -408,7 +419,7 @@ export namespace GameManager {
                 UIWidget.getTargetUIWidget().rootContent.findChildByPath(
                     "playingCanvas/canvasPlayerInfo/imgLvBg/textLv"
                 ) as mw.TextBlock
-            ).text = (stageState?.level || 0)?.toString();
+            ).text = `Lv.${(stageState?.level || 0)?.toString()}`;
         } else {
             // 无人游玩
             Gtk.trySetVisibility(

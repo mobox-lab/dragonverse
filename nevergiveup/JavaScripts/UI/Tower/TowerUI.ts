@@ -53,7 +53,7 @@ export default class TowerUI extends TowerUI_Generate {
         Event.addLocalListener(TowerEvent.ChooseTower, (ui: UIScript) => {
             this.destroyBtn.visibility = ui == null ? SlateVisibility.Hidden : SlateVisibility.Visible;
         });
-        UIService.getUI(TowerUI).setStageTowerUI(false);
+        this.setStageTowerUI(false);
         this.setBtn.onClicked.add(() => {
             Gtk.trySetVisibility(UIService.getUI(LobbyUI).teamCanvas, mw.SlateVisibility.Visible);
             this.hide();

@@ -17,7 +17,7 @@ export default class BlessUI extends BlessMain_Generate {
 
     protected onAwake(): void {
         super.onAwake();
-
+        this.layer = UILayerTop;
         //#region Member init
         this.mBtnClose.onClicked.add(
             () => UIService.hide(BlessUI),

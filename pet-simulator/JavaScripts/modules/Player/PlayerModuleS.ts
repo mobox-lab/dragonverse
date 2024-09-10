@@ -141,8 +141,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PetSimulatorPlayerModu
         this.currentData.levelUp(id);
 
         const config = GameConfig.Upgrade.getAllElement()[id];
-        const index = curLevel - 1;
-        const upgrade = curLevel ? (config?.Upgradenum[index] ?? 0) : 0;
+        const upgrade = config?.Upgradenum[this.currentData.getLevelData(id) - 1 ?? 0] ?? 0;
         switch (id) {
             case 0:
                 GlobalData.LevelUp.levelRangeMap.set(playerId, 1 + upgrade);
