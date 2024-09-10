@@ -660,16 +660,18 @@ export class StageC {
                 this.techNodeMap = res;
             });
         Enemy.count = 0;
-        UIService.show(CutsceneUI, () => {
-            Player.asyncGetLocalPlayer().then((player: Player) => {
-                GameManager.backToLobby();
-            });
 
-            GameObject.asyncSpawn(stageConfig.guid).then((go: GameObject) => {
-                this.stage = go;
-                MapManager.stageCfgId = this.stageCfgId;
-            });
+        // UIService.show(CutsceneUI, () => {
+        Player.asyncGetLocalPlayer().then((player: Player) => {
+            GameManager.backToLobby();
         });
+
+        GameObject.asyncSpawn(stageConfig.guid).then((go: GameObject) => {
+            this.stage = go;
+            MapManager.stageCfgId = this.stageCfgId;
+        });
+        // });
+
         this.registerListeners();
         this.playBGM();
     }
@@ -727,7 +729,7 @@ export class StageC {
                 }
             });
             this.hasLoaded = true;
-            UIService.getUI(CutsceneUI).hideCanvas();
+            // UIService.getUI(CutsceneUI).hideCanvas();
             UIService.getUI(TowerUI).setStageTowerUI(true);
         });
 
