@@ -86,10 +86,10 @@ export default class TowerUI extends TowerUI_Generate {
         if(inStage) this.show();
         Gtk.trySetVisibility(this.settingUp, inStage ? mw.SlateVisibility.Collapsed : mw.SlateVisibility.Visible);
         Gtk.trySetVisibility(this.mImage_mid, inStage? mw.SlateVisibility.HitTestInvisible: mw.SlateVisibility.Hidden);
-        const [leftUpPosX, leftUpPosY] = [439, 850];
+        const [leftUpPosX, leftUpPosY] = [447, 850];
         const [leftPadding, rightPadding, gap, itemWidth] = [0, 0, 8, 120];
-        const [borderLeftUpPosY] = [70]
-        const [borderWidthLeft, borderPaddingLeft, borderPaddingBottom, borderWidthBottom] = [30, 13, 14, 15]
+        const [borderLeftUpPosY] = [60]
+        const [borderWidthLeft, borderPaddingLeft, borderPaddingBottom, borderWidthBottom] = [21, 10, 0, 11]
         const maxWidth = leftPadding + rightPadding + (itemWidth + gap) * TowerConfigConstants.maxEquip - gap;  // 最大可能长度（装满TowerConfigConstants.maxEquip个塔）
         let computeWidth = maxWidth;
         if (inStage) {
@@ -114,8 +114,8 @@ export default class TowerUI extends TowerUI_Generate {
 
         this.mBgImg.size = new Vector(computeWidth + (borderWidthLeft/2 + borderPaddingLeft) * 2, 216-borderLeftUpPosY+borderPaddingBottom-borderWidthBottom);
         this.shopBtn.size = new Vector(computeWidth, 216.00);
-        this.mImage_left.size = new Vector(Math.floor(computeWidth / 2) -17 + borderWidthLeft + borderPaddingLeft, 216-borderLeftUpPosY+borderPaddingBottom);
-        this.mImage_right.size = new Vector(Math.floor(computeWidth / 2) -17 + borderWidthLeft + borderPaddingLeft, 216-borderLeftUpPosY+borderPaddingBottom);
+        this.mImage_left.size = new Vector(Math.floor(computeWidth / 2) - 20 + borderWidthLeft + borderPaddingLeft, 216-borderLeftUpPosY+borderPaddingBottom);
+        this.mImage_right.size = new Vector(Math.floor(computeWidth / 2) - 20 + borderWidthLeft + borderPaddingLeft, 216-borderLeftUpPosY+borderPaddingBottom);
         
     }
     public setPriceVisible(visibility: boolean) {
