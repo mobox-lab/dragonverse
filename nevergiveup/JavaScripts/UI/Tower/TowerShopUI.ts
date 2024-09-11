@@ -175,8 +175,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		this.createTextUI(GameConfig.Language.getElement("Tower_attackTags_11").Value,  GameConfig.Language.getElement(GlobalData.Shop.shopElementsOpts[this._cfg?.elementTy])?.Value);
 		this.createTextUI(GameConfig.Language.getElement("Tower_attackTags_12").Value, Utils.formatNumber(this._cfg?.spend?.[this._selectLevel]), { isCost: true });
 		for (let i = 0; i < textItemLen; i++) {
-			const title = GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value
-			const value = this._cfg[this._cfg.infoTexts[i]][this._selectLevel];
+			const { title, value } = GlobalData.Shop.getTowerBuffTextItem(this._cfg, this._selectLevel, i) ?? {};
 			this.createTextUI(title, value);
 		}
 	}
@@ -185,13 +184,15 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 		const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
 		if(!sInfo?.strategyKey && this._cfg?.adap === 4) {
 			Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Visible);
-			this.textTitle.text = GameConfig.Language.DamageType_4.Value;
-			this.textDesc.text = Utils.Format(GameConfig.Language.StrategyDesc_11.Value, this._cfg.attackDamage?.[this._selectLevel] ?? 0);
+			const { value } = GlobalData.Shop.getTowerBuffTextItem(this._cfg, this._selectLevel, 0) ?? {};
+			this.textTitle.text = GameConfig.Language.DamageType_4.Value; 
+			this.textDesc.text = Utils.Format(GameConfig.Language.StrategyDesc_11.Value, value);
 			return;
 		}
 		if(sInfo?.strategyKey) {
 			Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Visible);
 			const descArr = sInfo.strategyDesc;
+			
 			this.textTitle.text = sInfo.strategyTitle;
 			this.textDesc.text = descArr?.length === 3 ? descArr[this._selectLevel] : descArr[0];
 		} else {
@@ -319,6 +320,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			this.txt_title.text = GameConfig.Language.getElement("Tower_setting_3").Value;
 		}
 	}
+
 	/**
 	 * 设置显示时触发
 	 */

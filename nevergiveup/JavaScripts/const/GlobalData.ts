@@ -1,4 +1,5 @@
 import { GameConfig } from "../config/GameConfig";
+import { ITowerElement } from "../config/Tower";
 import Utils from "../Utils";
 import { StageMonsterSkillType, TowerStrategyType } from "./enum";
 
@@ -260,6 +261,38 @@ export namespace GlobalData {
                 case TowerStrategyType.PriorityAir:
                 default:
                     return { desc: desc, args: [] };
+            }
+        }
+        // level 0 1 2
+        public static getTowerBuffTextItem(cfg: ITowerElement, level: number, i: number): {
+            title: string; 
+            value: string;
+        } | null {
+            try {
+                if(!cfg) return null;
+                const infoTextCn = cfg.infoTestsCn[i];
+                const title = GameConfig.Language.getElement(infoTextCn).Value
+                let value = cfg[cfg.infoTexts[i]][level];
+                if(cfg?.adap !== 4 || infoTextCn !== "Tower_attackTags_9" || !cfg?.attackBuff?.length) return { title, value };
+
+                // 攻击增幅的数值应该读 attackBuff 字段对应等级的buff数值，并且需要区分固定值和百分比效果（buff表字段attackFixDamage为固定值，attackDamagePercent为百分比），百分比效果在数值后面加上 %
+                const allBuff = cfg.attackBuff
+                if(!allBuff?.[level]?.length) return null;
+                
+                const buff = allBuff[level][0]; // 是第一个buff
+                const buffCfg = GameConfig.Buff.getElement(buff);
+                
+                if(buffCfg.attackFixDamage)
+                    value = buffCfg.attackFixDamage.toString();
+                else if(buffCfg.attackDamagePercent)
+                    value = (buffCfg.attackDamagePercent * 100) + "%";
+                
+                return value ? {
+                    title, 
+                    value
+                } : null;
+            } catch (e) {
+                console.error(e)
             }
         }
     }
