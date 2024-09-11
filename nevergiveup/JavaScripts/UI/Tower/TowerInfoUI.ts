@@ -26,6 +26,7 @@ import { MGSTool } from "../../tool/MGSTool";
 import TowerInfoUI_Generate from "../../ui-generate/Tower/TowerInfoUI_generate";
 import TowerSmallTagItem_Generate from "../../ui-generate/Tower/TowerSmallTagItem_generate";
 import TextItemUI from "../TextItemUI";
+import Log4Ts from "mw-log4ts";
 
 export default class TowerInfoUI extends TowerInfoUI_Generate {
 
@@ -89,6 +90,31 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 		return tags;
 	}
 
+    // curLevel 0 1 2
+    public getColoredStrategyStrDesc(descStr: string, strategyDescArgs: string[][], curLevel: number): string {
+        try {
+            console.log("getColoredStrategyStrDesc strategyDescArgs:" + JSON.stringify(strategyDescArgs) + " descStr:" + descStr + " curLevel:" + curLevel);
+            if(!strategyDescArgs?.length || !strategyDescArgs[0]?.length) return descStr;
+            const args = []; 
+            // 假设 strategyDescArgs 是一个矩阵，转换每一列为字符串，并在指定的 curLevel 位置加颜色
+            for (let col = 0; col < strategyDescArgs[0].length; col++) {
+                let combined = [];
+                for (let row = 0; row < strategyDescArgs.length; row++) {
+                    if (row === curLevel) {
+                        // 在 curLevel 对应的值加上颜色
+                        combined.push(`<color=#62E063>${strategyDescArgs[row][col]}</color>`);
+                    } else {
+                        combined.push(strategyDescArgs[row][col]);
+                    }
+                }
+                args.push(combined.join('->'));  // 将列中元素用 "->" 连接起来
+            }
+            return Utils.Format(descStr, args);
+        } catch (e) {
+            Log4Ts.error(TowerInfoUI, "getColoredStrategyStrDesc:" + e);
+            return descStr;
+        }
+    }
 	public updateStrategyUI() {
         this.bg.size = new Vector2(490.00, 347.00);
         const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
@@ -118,7 +144,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
             return;
         }
         const curLevel = this._tower.level;
-        const desc = Utils.Format(GameConfig.Language.getElement(GlobalData.Shop.shopStrategyDescLangs[strategyKey])?.Value ?? "", curLevel === 2 ? strategyDescArgs[curLevel]: `${strategyDescArgs[curLevel]} → ${strategyDescArgs[curLevel + 1]}`);
+        const desc = this.getColoredStrategyStrDesc(GameConfig.Language.getElement(GlobalData.Shop.shopStrategyDescLangs[strategyKey])?.Value ?? "", strategyDescArgs, curLevel);
         this.txt_Strategy.text = strategyTitle;
         this.txt_Strategy_Desc.text = desc;
 	}
@@ -211,7 +237,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
                     const isVis = attr <= textItemLen;
                     Gtk.trySetVisibility(attrValue, isVis ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
                     if(isVis) {
-                        attrValue.text = GlobalData.Shop.getTowerBuffTextItem(this._cfg, lv - 1, attr - 1)?.value ?? '';
+                        attrValue.text = GlobalData.Shop.getTowerBuffTextItem(this._cfg,  lv - 1, attr - 1)?.value ?? '';
                         attrValue.setFontColorByHex(isCurLevel ? "#62E063" : "#FFFFFF")
                     }
                 };
