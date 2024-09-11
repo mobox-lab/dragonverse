@@ -25,8 +25,13 @@ import { JumpGamePanel } from "./JumpGame/JumpGamePanel";
 import SenzuBeanConfirmPanel from "./Bag/SenzuBeanConfirmPanel";
 import P12ShopPanel from "./Shop/P12ShopPanel";
 import { GlobalData } from "../const/GlobalData";
+import JumpProgress_Generate from "../ui-generate/JumpProgress_generate";
 
+const progressTag = "LobbyTransmitProgress";
 export default class LobbyUI extends LobbyUI_Generate {
+    private _progressBar: ProgressBar;
+    private _cnvProgressBar: Canvas;
+    private inProgress: boolean = false;
     /**
      * 构造UI文件成功后，在合适的时机最先初始化一次
      */
@@ -70,8 +75,17 @@ export default class LobbyUI extends LobbyUI_Generate {
         });
         // 脱离卡死
         this.returnBtn.onClicked.add(() => {
-            const player = Player.localPlayer;
-            player.character.worldTransform.position = GlobalData.Global.resetWorldPosition.clone();
+            if(this.inProgress) {
+                this.closeProgress();
+                return;
+            }
+            // 展示进度条
+            const ui = UIService.show(JumpProgress_Generate);
+            this._progressBar = ui.progressBar;
+            this._cnvProgressBar = ui.cnvProgressBar;
+            this._progressBar.percent = 0;
+            this._cnvProgressBar.renderOpacity = 0;
+            this.playProgress();
         })
 
         this.jumpBtn.onClicked.add(() => {
@@ -95,6 +109,36 @@ export default class LobbyUI extends LobbyUI_Generate {
         });
         UIService.show(TowerShopUI, {isShop: true});
         UIService.hide(TowerShopUI);
+    }
+
+    public closeProgress() {
+        this.inProgress = false;
+        //关闭进度条
+        actions.tweens.stopAllByTag(progressTag);
+        UIService.hide(JumpProgress_Generate);
+    }
+
+    /**
+     * 播放 Progress 动画.
+     */
+    public playProgress() {
+        if(this.inProgress) return;
+        this.inProgress = true;
+        const progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, {percent: 1}).call(() => {
+            this.onProgressDone();
+        });
+        actions.tween(this._cnvProgressBar).setTag(progressTag).to(100, {renderOpacity: 1}).call(() => {
+            progressTask.start();
+        }).start();
+    }
+
+    onProgressDone() {
+        this.inProgress = false;
+        UIService.hide(JumpProgress_Generate);
+        const character = Player.localPlayer.character;
+        if(!character) return;
+        character.worldTransform.position = GlobalData.Global.resetWorldPosition.clone();
+        
     }
 
     public showTaskPanel() {
