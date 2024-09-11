@@ -24,6 +24,7 @@ import TowerShopUI from "./Tower/TowerShopUI";
 import { JumpGamePanel } from "./JumpGame/JumpGamePanel";
 import SenzuBeanConfirmPanel from "./Bag/SenzuBeanConfirmPanel";
 import P12ShopPanel from "./Shop/P12ShopPanel";
+import { GlobalData } from "../const/GlobalData";
 
 export default class LobbyUI extends LobbyUI_Generate {
     /**
@@ -67,6 +68,11 @@ export default class LobbyUI extends LobbyUI_Generate {
         this.freshBtn.onClicked.add(() => {
             ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
         });
+        // 脱离卡死
+        this.returnBtn.onClicked.add(() => {
+            const player = Player.localPlayer;
+            player.character.worldTransform.position = GlobalData.Global.resetWorldPosition.clone();
+        })
 
         this.jumpBtn.onClicked.add(() => {
             if (UIService.getUI(JumpGamePanel).isShowing) {
@@ -133,6 +139,7 @@ export default class LobbyUI extends LobbyUI_Generate {
 
     protected onShow() {
         // 打开商店
+        KeyOperationManager.getInstance().bindButton(this, Keys.T, this.returnBtn);
         KeyOperationManager.getInstance().bindButton(this, Keys.M, this.shopBtn);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.B, () => {
             if (GameManager.getStageClient()) {
@@ -159,6 +166,7 @@ export default class LobbyUI extends LobbyUI_Generate {
     }
 
     protected onHide() {
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.T);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.M);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.B);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.I);

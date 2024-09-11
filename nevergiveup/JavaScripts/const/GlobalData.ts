@@ -5,6 +5,8 @@ import { StageMonsterSkillType, TowerStrategyType } from "./enum";
 export namespace GlobalData {
     export class Global {
         public static worldLangInitDelay: number = 1500;
+        // 游戏结束传送回大厅的位置 / 脱离卡死的位置
+        public static resetWorldPosition: Vector = new Vector(413, 151.25, 317);
     }
     export class Stage {
         /** 关卡推荐元素图标 各元素对应 光 暗 水 火 木 土 guid */

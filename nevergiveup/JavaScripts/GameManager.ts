@@ -29,6 +29,7 @@ import { PlayerModuleS, StageState } from "./Modules/PlayerModule/PlayerModuleS"
 import Gtk from "gtoolkit";
 import PlayerModuleC from "./Modules/PlayerModule/PlayerModuleC";
 import BuildItemUI from "./UI/BuildItemUI";
+import { GlobalData } from "./const/GlobalData";
 
 export const ChatType = {
     Text: 1,
@@ -307,7 +308,7 @@ export namespace GameManager {
             if (stageCfg.resetPosition) {
                 player.character.worldTransform.position = stageCfg?.resetPosition.clone();
             } else {
-                player.character.worldTransform.position = new Vector(413.769989, 151.25, 317.369995);
+                player.character.worldTransform.position = GlobalData.Global.resetWorldPosition.clone();
             }
         });
     }
