@@ -39,16 +39,16 @@ abstract class ChatClient extends ChatPFDef {
 
     onStart(): void {
         super.onStart();
-        if (mw.SystemUtil.isClient()) {
-            this.initMain();
-            this.addLayoutNodes();
-            // Event.addLocalListener('LanguageInit', this.addWordBtnEvents.bind(this));
-            TimeUtil.delayExecute(() => {
-                this.addWordBtnEvents();
-            }, 3)
-            // this.initBubble();
-            // this.useUpdate = true;
-        }
+        // if (mw.SystemUtil.isClient()) {
+        //     this.initMain();
+        //     this.addLayoutNodes();
+        //     // Event.addLocalListener('LanguageInit', this.addWordBtnEvents.bind(this));
+        //     TimeUtil.delayExecute(() => {
+        //         this.addWordBtnEvents();
+        //     }, 3)
+        //     // this.initBubble();
+        //     // this.useUpdate = true;
+        // }
     }
 
     /**初始化UI */

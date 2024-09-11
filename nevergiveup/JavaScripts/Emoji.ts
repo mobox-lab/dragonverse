@@ -41,11 +41,11 @@ abstract class EmojiClient extends EmojiPFDef {
 
     onStart(): void {
         super.onStart();
-        if (mw.SystemUtil.isClient()) {
-            this.initMain();
-            this.addLayoutNodes();
-            this.addEmojiBtnEvents();
-        }
+        // if (mw.SystemUtil.isClient()) {
+        //     this.initMain();
+        //     this.addLayoutNodes();
+        //     this.addEmojiBtnEvents();
+        // }
     }
 
     /**初始化UI */
