@@ -2,6 +2,7 @@ import Log4Ts from "mw-log4ts";
 import LobbyUI from "../../UI/LobbyUI";
 import { GameConfig } from "../../config/GameConfig";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
+import { UIMain } from "../../stage/ui/UIMain";
 
 export class JumpRoomModuleS extends ModuleS<JumpRoomModuleC, null> {
 
@@ -41,5 +42,6 @@ export class JumpRoomModuleC extends ModuleC<JumpRoomModuleS, null> {
 
     public net_showRoomId(roomId: string) {
         UIService.getUI(LobbyUI).text_roomid.text = StringUtil.format(GameConfig.Language.CurrentRoomId.Value, roomId);
+        UIService.getUI(UIMain).text_roomid.text = StringUtil.format(GameConfig.Language.CurrentRoomId.Value, roomId);
     }
 }

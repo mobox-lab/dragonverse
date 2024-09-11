@@ -6,13 +6,12 @@
  * @FilePath: \nevergiveup\JavaScripts\stage\ui\UIMain.ts
  * @Description: 修改描述
  */
+import Gtk from "gtoolkit";
 import { EnemyActions, StageActions, TowerActions } from "../../Actions";
 import TryTowerUI from "../../Game/TryTowerUI";
 import { GameManager } from "../../GameManager";
-import { TowerEvent } from "../../Modules/TowerModule/TowerEnum";
 import { TowerManager } from "../../Modules/TowerModule/TowerManager";
 import { TowerModuleC } from "../../Modules/TowerModule/TowerModuleC";
-import { TowerModuleS } from "../../Modules/TowerModule/TowerModuleS";
 import { EStageState } from "../../StageEnums";
 import ReturnUI from "../../UI/ReturnUI";
 import SettingUI from "../../UI/SettingUI";
@@ -21,7 +20,8 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
 import { Enemy } from "../../enemy/EnemyBase";
 import { MGSTool } from "../../tool/MGSTool";
 import MainUI_Generate from "../../ui-generate/HUD/MainUI_generate";
-import { SettleState } from "../Stage";
+import { Yoact } from "../../depend/yoact/Yoact";
+import { EnergyModuleC } from "../../Modules/Energy/EnergyModule";
 
 export class UIMain extends MainUI_Generate {
     public maxSpeed: number = 1.5;
@@ -101,6 +101,13 @@ export class UIMain extends MainUI_Generate {
         this.settingBtn.onClicked.add(() => {
             UIService.show(SettingUI);
         });
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mStamina_2,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
+                    .toString()));
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mStamina,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString()));
     }
 
 

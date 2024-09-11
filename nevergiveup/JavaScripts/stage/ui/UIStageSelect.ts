@@ -182,12 +182,13 @@ export class UIStageSelect extends StageSelect_Generate {
         if (stealth) skills.push(StageMonsterSkillType.Stealth);
         if (fly) skills.push(StageMonsterSkillType.Fly);
 
-        if (skills.length) {
+        if (skills?.length) {
             Gtk.trySetVisibility(this.can_Monster, mw.SlateVisibility.Visible);
+            this.bg.size = new Vector2(444, 540);
         } else {
             Gtk.trySetVisibility(this.can_Monster, mw.SlateVisibility.Collapsed);
+            this.bg.size = new Vector2(444, 372);
         }
-        this.bg.size = this.can_inner.size.clone();
 
         this.selectedMonsterSkillIndex = 0;
         this.monsterSkillTypes = skills;
@@ -202,7 +203,6 @@ export class UIStageSelect extends StageSelect_Generate {
             skillEle.zOrder =  isSelect ? 1 : 0;
             textEle.setFontColorByHex(isSelect ? "#FFCB1C": "#FFFFFF");
             if (i < skills.length) {
-                const skillType = skills[i];
                 Gtk.trySetVisibility(skillEle, mw.SlateVisibility.SelfHitTestInvisible);
                 const btn: mw.Button = this[`btn_monsterSkill_${i + 1}`];
                 btn?.onClicked?.clear();
