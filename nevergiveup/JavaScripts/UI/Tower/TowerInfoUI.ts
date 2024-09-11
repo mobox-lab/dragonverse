@@ -92,31 +92,35 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 	public updateStrategyUI() {
         this.bg.size = new Vector2(490.00, 347.00);
         const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
+        if(!sInfo?.strategyKey && this._cfg?.adap === 4) {
+		
+            Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Visible);
+            this.bg.size = new Vector2(490.00, 427.00);
+		
+            const { value } = GlobalData.Shop.getTowerBuffTextItem(this._cfg, this._tower.level, 0) ?? {};
+            this.txt_Strategy.text = GameConfig.Language.DamageType_4.Value; 
+			this.txt_Strategy_Desc.text = Utils.Format(GameConfig.Language.StrategyDesc_11.Value, value);
+            return;
+        }
+
         if(!sInfo) {
             Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Collapsed);
             return;
         }
         
-		const { strategyKey, strategyTitle, strategyDescArgs, strategyDesc } = sInfo
-        if(!strategyDescArgs?.length) {
-            this.txt_Strategy.text = '';
-			this.txt_Strategy_Desc.text = '';
-            Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Collapsed);
-            return;
-        }
         Gtk.trySetVisibility(this.can_strategy, mw.SlateVisibility.Visible);
         this.bg.size = new Vector2(490.00, 427.00);
-        if(strategyDesc.length === 1) {
+
+		const { strategyKey, strategyTitle, strategyDescArgs, strategyDesc } = sInfo
+        if(strategyDesc?.length === 1) {
             this.txt_Strategy.text = strategyTitle;
             this.txt_Strategy_Desc.text = strategyDesc[0];
             return;
         }
         const curLevel = this._tower.level;
-		if(strategyKey) {
-            const desc = Utils.Format(GameConfig.Language.getElement(GlobalData.Shop.shopStrategyDescLangs[strategyKey])?.Value ?? "", curLevel === 2 ? strategyDescArgs[curLevel]: `${strategyDescArgs[curLevel]} → ${strategyDescArgs[curLevel + 1]}`);
-                this.txt_Strategy.text = strategyTitle;
-                this.txt_Strategy_Desc.text = desc;
-        }
+        const desc = Utils.Format(GameConfig.Language.getElement(GlobalData.Shop.shopStrategyDescLangs[strategyKey])?.Value ?? "", curLevel === 2 ? strategyDescArgs[curLevel]: `${strategyDescArgs[curLevel]} → ${strategyDescArgs[curLevel + 1]}`);
+        this.txt_Strategy.text = strategyTitle;
+        this.txt_Strategy_Desc.text = desc;
 	}
 
     /**
@@ -172,14 +176,14 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
     }
 
     private initText() {
-
-        // this.levelTxt.text = "Lv. " + (this._tower.level + 1 + this._upgradeCount);
         const textItemLen = this._cfg?.infoTestsCn?.length ?? 0;
+        // this.levelTxt.text = "Lv. " + (this._tower.level + 1 + this._upgradeCount);
+ 
         // if (this._textItemUIs?.length) this._textItemUIs.forEach(v => v?.destroy());
         // this._textItemUIs = [];
         // this.infoCanvas.removeAllChildren();
         if (!textItemLen) return;
-        // this.createTextUI(
+            // this.createTextUI(
         //     GameConfig.Language.getElement("Tower_attackTags_13").Value,
         //     this._tower.level === 2 ? "3" : `${this._tower.level+1} → ${this._tower.level + 2}`,
         // );
@@ -189,7 +193,7 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
             const vis = i < textItemLen ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed;
             Gtk.trySetVisibility(attrTitle, vis);
             if(i >= textItemLen) continue;
-            if(attrTitle) attrTitle.text = GameConfig.Language.getElement(this._cfg.infoTestsCn[i]).Value
+            if(attrTitle) attrTitle.text = GlobalData.Shop.getTowerBuffTextItem(this._cfg, 0, i)?.title ?? '';
         }
         const lv1Title = this?.[`txt_lv1`] as mw.TextBlock;
         const lv2Title = this?.[`txt_lv2`] as mw.TextBlock;
@@ -202,15 +206,13 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
             const isCurLevel = lv === curLevel;
             if (can) can.renderOpacity = isCurLevel ? 1 : 0.7;
             for(let attr = 1; attr <= 4; attr++) {
-                const attrEle = this?.[`lv${lv}Attribute${attr}`] as mw.TextBlock;
-                if(attrEle) {
+                const attrValue = this?.[`lv${lv}Attribute${attr}`] as mw.TextBlock;
+                if(attrValue) {
                     const isVis = attr <= textItemLen;
-                    Gtk.trySetVisibility(attrEle, isVis ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
+                    Gtk.trySetVisibility(attrValue, isVis ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
                     if(isVis) {
-                        const text = this._cfg?.infoTexts[attr-1];
-                        const attrVal = this._cfg[text][lv-1];
-                        attrEle.text = attrVal + '';
-                        attrEle.setFontColorByHex(isCurLevel ? "#62E063" : "#FFFFFF")
+                        attrValue.text = GlobalData.Shop.getTowerBuffTextItem(this._cfg, lv - 1, attr - 1)?.value ?? '';
+                        attrValue.setFontColorByHex(isCurLevel ? "#62E063" : "#FFFFFF")
                     }
                 };
             }
