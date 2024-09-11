@@ -81,7 +81,11 @@ addGMCommand(
 );
 
 addGMCommand("增加局内金币", "string", (value) => {
-    GameManager.addGold(+value);
+    if(value){
+        GameManager.addGold(+value);
+    }else{
+        GameManager.addGold(+100000);
+    }
 });
 
 addGMCommand("进入结算", "string", undefined, (player: Player) => {
