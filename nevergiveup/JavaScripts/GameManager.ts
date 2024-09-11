@@ -46,8 +46,8 @@ export namespace GameManager {
     export let useEffect: boolean = true;
     export let showDamage: boolean = false;
     export let waveAmount: number = 10;
-    export const allGuid = ["10C7B636"];
-    export const allGroupIndex = [10012];
+    export const allGuid = ["39E568CB","3F2CB133","06B7E697","2ABA4967","33FD8D2A","25AF42F4","10C7B636","022CC035","3D8E1E1F","223C608D","0929444E","33A03C83","3A88D662","149281A6","0072EA3F","25A98146","146B5105","3F89A52C","2821FFF8","3401BF86"];
+    export const allGroupIndex = [10006,10007,10008,10009,10010,10011,10012,10013,10014,10015,10016,10017,10018,10019,10020,10021,10022,10023,10024,10025];
 
     export function init(gameStart: GameStart) {
         script = gameStart;
