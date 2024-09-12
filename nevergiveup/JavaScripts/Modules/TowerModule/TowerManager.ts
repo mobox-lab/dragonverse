@@ -11,6 +11,7 @@ import { MapManager } from "../../MapScript";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { Point, QuadTree, Rectangle } from "../../tool/QuadTree";
+import { SoundUtil } from "../../tool/SoundUtil";
 import PlayerModuleC from "../PlayerModule/PlayerModuleC";
 import AttackTower from "./Tower/AttackTower";
 import BuffTower from "./Tower/BuffTower";
@@ -36,6 +37,7 @@ export namespace TowerManager {
         let cfg = GameConfig.Tower.getElement(info.configID);
         if (!cfg) return;
         let tower: TowerBase = null;
+        SoundUtil.PlaySoundById(2005);
         switch (cfg.type) {
             case TowerType.Attack:
                 tower = new AttackTower(info);

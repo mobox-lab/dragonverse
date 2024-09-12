@@ -27,6 +27,7 @@ import TowerInfoUI_Generate from "../../ui-generate/Tower/TowerInfoUI_generate";
 import TowerSmallTagItem_Generate from "../../ui-generate/Tower/TowerSmallTagItem_generate";
 import TextItemUI from "../TextItemUI";
 import Log4Ts from "mw-log4ts";
+import { SoundUtil } from "../../tool/SoundUtil";
 
 export default class TowerInfoUI extends TowerInfoUI_Generate {
 
@@ -48,12 +49,14 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         });
         this.sellBtn.onClicked.add(() => {
             MGSTool.clickBtn("8");
+            SoundUtil.PlaySoundById(2007);
             ModuleService.getModule(TowerModuleC).destroyTowerByUI(this._tower.info);
             UIService.hideUI(this);
         });
         this.levelBtn.onClicked.add(() => {
             MGSTool.clickBtn("7");
             if (ModuleService.getModule(TowerModuleC).upgradeTowerByUI(this._tower.info, ++this._upgradeCount)) {
+                SoundUtil.PlaySoundById(2006);
                 this.showLevel();
             } else {
                 --this._upgradeCount;

@@ -826,6 +826,9 @@ export class StageC {
                     } else {
                         StageActions.onStageWin.call(this.stageWorldIndex);
                     }
+                    SoundUtil.PlaySoundById(2008);
+                }else{
+                    SoundUtil.PlaySoundById(2009);
                 }
                 StageActions.onStageComplete.call(this.stageWorldIndex);
                 let settleData: SettleData = {

@@ -10,6 +10,7 @@ import { GameManager } from "../../GameManager";
 import { TweenCommon } from "../../TweenCommon";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
+import { SoundUtil } from "../../tool/SoundUtil";
 import SettleRewardItemUI_Generate from "../../ui-generate/Level/SettleRewardItemUI_generate";
 import SettleUI_Generate from "../../ui-generate/Level/SettleUI_generate";
 
@@ -42,6 +43,7 @@ export class UISettle extends SettleUI_Generate {
         this.layer = UILayerDialog;
         this.mBack.onClicked.add(() => {
             this.hideTween();
+            SoundUtil.PlaySoundById(2010);
             GameManager.leaveStageClient();
         });
     }

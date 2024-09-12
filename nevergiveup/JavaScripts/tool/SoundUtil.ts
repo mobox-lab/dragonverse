@@ -85,7 +85,8 @@ export namespace SoundUtil {
         if (!cfg) return null;
         let soundObj = (await GameObjPool.asyncSpawn(cfg.Guid)) as mw.Sound;
         soundObj.isLoop = cfg.isLoop;
-        soundObj.volume = cfg.Volume * bgmVoiceFactor + 100;
+        // soundObj.volume = cfg.Volume * bgmVoiceFactor + 100;
+        soundObj.volume = cfg.Volume;
         if (cfg.Distance > 0 && pos) {
             soundObj.isSpatialization = true;
             soundObj.worldTransform.position = pos;

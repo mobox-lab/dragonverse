@@ -13,6 +13,7 @@ import TowerShopUI from "../../UI/Tower/TowerShopUI";
 import TowerUI, { TowerConfigConstants } from "../../UI/Tower/TowerUI";
 import { GameConfig } from "../../config/GameConfig";
 import { MGSTool } from "../../tool/MGSTool";
+import { SoundUtil } from "../../tool/SoundUtil";
 import PlayerModuleC from "../PlayerModule/PlayerModuleC";
 import CardModuleData from "./CardModuleData";
 import CardModuleS from "./CardModuleS";
@@ -50,12 +51,15 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
     public btnExecute(cardID: number, state: CardState) {
         switch (state) {
             case CardState.Unlock:
+                SoundUtil.PlaySoundById(2002);
                 this.equipCard(cardID, true);
                 break;
             case CardState.Equip:
+                SoundUtil.PlaySoundById(2003);
                 this.equipCard(cardID, false);
                 break;
             case CardState.Lock:
+                SoundUtil.PlaySoundById(2001);
                 this.buyCard(cardID);
                 break;
             default:
