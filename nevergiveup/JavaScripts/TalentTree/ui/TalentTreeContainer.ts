@@ -64,12 +64,15 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
 
     private onTalentSelected(id: number) {
         const talent = this._tree.getTalentItem(id);
-
         // 初始化选择框 UI
         if (!this._selectedTalentUI) {
             this._selectedTalentUI = UIService.create(UITalentItem);
             this.talentItemCanvas.addChild(this._selectedTalentUI.uiObject);
         }
+        if (this._selectedTalent) {
+            Gtk.trySetVisibility(this._selectedTalent.mSelected, false);
+        }
+        Gtk.trySetVisibility(talent.mSelected, true);
         this._selectedTalent = talent;
         this._selectedTalentUI.bindTalent(talent);
         this.updateLevelInfo(talent);

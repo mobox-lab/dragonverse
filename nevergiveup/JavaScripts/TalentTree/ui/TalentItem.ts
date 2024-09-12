@@ -51,13 +51,17 @@ export class TalentItem extends TalentItem_Generate {
                 Gtk.trySetVisibility(this.mLocked, false);
                 Gtk.trySetVisibility(this.mNotActive, false);
                 this.textTalentLevel.fontColor = LinearColor.white;
-                this.textTalentLevel.setOutlineColorByHex(this.data.outlineColor);
+                this.textTalentLevel.outlineColor = LinearColor.black;
                 this.textTalentName.fontColor = LinearColor.white;
                 this.textTalentName.outlineColor = LinearColor.black;
             }
             if (!this.isActive.status && this.canActive.status) {
                 Gtk.trySetVisibility(this.mLocked, true);
                 Gtk.trySetVisibility(this.mNotActive, false);
+                this.textTalentLevel.fontColor = LinearColor.white;
+                this.textTalentLevel.outlineColor = LinearColor.black;
+                this.textTalentName.fontColor = LinearColor.white;
+                this.textTalentName.outlineColor = LinearColor.black;
             }
             if (!this.isActive.status && !this.canActive.status) {
                 Gtk.trySetVisibility(this.mLocked, false);

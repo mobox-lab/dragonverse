@@ -2258,7 +2258,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     private heartbeatS() {
-        if (!GameServiceConfig.isRelease && !GameServiceConfig.isBeta) return;
+        if (SystemUtil.isPIE) return;
 
         TimeUtil.setInterval(() => {
             const timestamp = Date.now();
