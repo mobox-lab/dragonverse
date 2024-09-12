@@ -75,9 +75,8 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
     private equipCard(cardID: number, isEquip: boolean) {
         let flag = false;
         if (isEquip) {
-            MGSTool.clickBtn("4");
             if (this.data.equipCards.length >= TowerConfigConstants.maxEquip) {
-                TipsManager.showTips(GameConfig.Language.getElement("Text_CardsFull").Value);
+                TipsManager.showTips(GameConfig.Language.Text_CardsFull.Value);
                 return;
             }
             if (!this.data.equipCards.includes(cardID)) {
@@ -85,11 +84,10 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
                 flag = true;
             }
         } else {
-            MGSTool.clickBtn("5");
             const index = this.data.equipCards.indexOf(cardID);
             if (index >= 0) {
                 if (this.data.equipCards.length <= 1) {
-                    TipsManager.showTips(GameConfig.Language.getElement("Text_CardNotEmpty").Value);
+                    TipsManager.showTips(GameConfig.Language.Text_CardNotEmpty.Value);
                     return;
                 } else {
                     this.data.equipCards.splice(index, 1);
@@ -110,7 +108,7 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
     private async buyCard(cardID: number) {
         MGSTool.clickBtn("6");
         if (!this._canBuyCard) {
-            TipsManager.showTips(GameConfig.Language.getElement("Text_TooFase").Value);
+            TipsManager.showTips(GameConfig.Language.Text_TooFase.Value);
             return;
         }
         const cfg = GameConfig.Tower.getElement(cardID);
@@ -120,7 +118,7 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
             try {
                 let flag = await this.server.net_buyCard(cardID);
                 if (flag) {
-                    TipsManager.showTips(GameConfig.Language.getElement("Text_BuyAndEquip").Value);
+                    TipsManager.showTips(GameConfig.Language.Text_BuyAndEquip.Value);
                     MGSTool.goldChange(2, cfg.shopPrice, 2);
                     this.net_addUnlockCard(cardID);
                     this.equipCard(cardID, true);
@@ -134,8 +132,8 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
             !checkFlag && TweenCommon.goldFailedShow(UIService.getUI(LobbyUI).goldTxt);
             TipsManager.showTips(
                 !checkFlag
-                    ? GameConfig.Language.getElement("Text_LessGold").Value
-                    : GameConfig.Language.getElement("Text_CardIsUnlock").Value
+                    ? GameConfig.Language.Text_Less_1.Value
+                    : GameConfig.Language.Text_CardIsUnlock.Value
             );
         }
     }
