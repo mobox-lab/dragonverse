@@ -86,7 +86,7 @@ export default class TowerUI extends TowerUI_Generate {
         if(inStage) this.show();
         Gtk.trySetVisibility(this.settingUp, inStage ? mw.SlateVisibility.Collapsed : mw.SlateVisibility.Visible);
         Gtk.trySetVisibility(this.mImage_mid, inStage? mw.SlateVisibility.HitTestInvisible: mw.SlateVisibility.Hidden);
-        const [leftUpPosX, leftUpPosY] = [447, 850];
+        const [leftUpPosX, leftUpPosY] = [456, 850];
         const [leftPadding, rightPadding, gap, itemWidth] = [0, 0, 8, 120];
         const [borderLeftUpPosY] = [60]
         const [borderWidthLeft, borderPaddingLeft, borderPaddingBottom, borderWidthBottom] = [21, 10, 0, 11]
@@ -106,7 +106,7 @@ export default class TowerUI extends TowerUI_Generate {
                 Gtk.trySetVisibility(this._towerItemUIs[i], mw.SlateVisibility.Visible);
             }
             Gtk.trySetVisibility(this.destroyBtn, mw.SlateVisibility.Collapsed);
-            this.setBtn.position = new Vector(maxWidth/2-15.5,190.00)
+            this.setBtn.position = new Vector(maxWidth/2 - 17,190.00)
             this.towerCanvas.position = new Vector(leftUpPosX, leftUpPosY);
         }
         this.borderCanvas.position = new Vector(-borderWidthLeft-borderPaddingLeft, borderLeftUpPosY);
