@@ -19,6 +19,7 @@ import StageTrigger from "../StageTrigger";
 import { WaveUtil } from "../Wave";
 import { GlobalData } from "../../const/GlobalData";
 import { GameManager } from "../../GameManager";
+import { SoundUtil } from "../../tool/SoundUtil";
 
 export class UIStageSelectItem extends StageSelectQueueItem_Generate {
     init() {}
@@ -105,6 +106,7 @@ export class UIStageSelect extends StageSelect_Generate {
                 if (stageC) {
                     // game is already exist
                 } else {
+                    SoundUtil.PlaySoundById(2011);
                     this._script.changeOwnerByClick(Player.localPlayer.playerId);
                     this._script.startGame(Player.localPlayer.playerId);
                 }
@@ -200,8 +202,8 @@ export class UIStageSelect extends StageSelect_Generate {
             console.log("#debug skillEle", skillEle);
             if (!skillEle || !textEle) continue;
             const isSelect = i === this.selectedMonsterSkillIndex;
-            skillEle.zOrder =  isSelect ? 1 : 0;
-            textEle.setFontColorByHex(isSelect ? "#FFCB1C": "#FFFFFF");
+            skillEle.zOrder = isSelect ? 1 : 0;
+            textEle.setFontColorByHex(isSelect ? "#FFCB1C" : "#FFFFFF");
             if (i < skills.length) {
                 Gtk.trySetVisibility(skillEle, mw.SlateVisibility.SelfHitTestInvisible);
                 const btn: mw.Button = this[`btn_monsterSkill_${i + 1}`];
@@ -228,8 +230,8 @@ export class UIStageSelect extends StageSelect_Generate {
             const skillEle = this[`canvas_MonsterSkillDesc_${i + 1}`] as mw.Canvas;
             const textEle = this[`textMonsterSkill${i + 1}`] as mw.TextBlock;
             const isSelect = i === this.selectedMonsterSkillIndex;
-            skillEle.zOrder =  isSelect ? 1 : 0;
-            textEle.setFontColorByHex(isSelect ? "#FFCB1C": "#FFFFFF");
+            skillEle.zOrder = isSelect ? 1 : 0;
+            textEle.setFontColorByHex(isSelect ? "#FFCB1C" : "#FFFFFF");
         }
     }
     getEnemyTypeString(stageCfgId: number) {

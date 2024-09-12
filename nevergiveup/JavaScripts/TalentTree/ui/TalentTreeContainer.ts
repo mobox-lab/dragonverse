@@ -7,6 +7,7 @@ import { ETalentBuffValue, ETalentType } from "../../const/enum";
 import TalentModuleC from "../../Modules/talent/TalentModuleC";
 import TalentTreeContainer_Generate from "../../ui-generate/TalentTree/TalentTreeContainer_generate";
 import { GameConfig } from "../../config/GameConfig";
+import { SoundUtil } from "../../tool/SoundUtil";
 
 export const TalentTreeActions = {
     onItemSelected: new Action1<number>(),
@@ -112,6 +113,7 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
         this.talentC.tryTalentLevelUp(item.data.id).then(result => {
             this._isLevelUpdating = false;
             if (!result) return;
+            SoundUtil.PlaySoundById(2004);
             TalentTreeActions.onItemUpdated.call(item.data.id);
             this._selectedTalentUI.refreshStatus();
             this.updateLevelInfo(item);
