@@ -35,6 +35,7 @@ export class Task {
 
     public get taskNameUI(): string {
         let name = StringUtil.format(this.cfg.taskName, this.cfg.id % 1000);
+
         switch (this.cfg.taskSolveType) {
             case EmTaskWay.UnlockTech:
                 // name = "解锁科技";
@@ -130,8 +131,7 @@ export class Task {
         let info = this.cfg.taskInfo;
         switch (this.cfg.taskSolveType) {
             case EmTaskWay.UnlockTech:
-                const cfg = GameConfig.TalentTree.getElement(this.cfg.taskSolvetime);
-                info = StringUtil.format(this.cfg.taskInfo, GameConfig.Language.getElement(cfg.name).Value);
+                info = StringUtil.format(this.cfg.taskInfo);
                 break;
             case EmTaskWay.UnlockTower:
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);

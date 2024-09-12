@@ -112,7 +112,6 @@ export default class UI_TaskMain extends TaskMain_Generate {
      * 显示该UI时调用，发送埋点
      */
     onShow() {
-        MGSTool.page("task");
         TweenCommon.popUpShow(this.rootCanvas);
         const module = ModuleService.getModule(TaskModuleC);
         if (module.task.size <= 0) {
