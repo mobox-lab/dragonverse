@@ -51,7 +51,15 @@ export default class TowerUI extends TowerUI_Generate {
             ModuleService.getModule(TowerModuleC).cancelChosenTower();
         });
         Event.addLocalListener(TowerEvent.ChooseTower, (ui: UIScript) => {
-            this.destroyBtn.visibility = ui == null ? SlateVisibility.Hidden : SlateVisibility.Visible;
+            if(ui) {
+                this.destroyBtn.visibility = SlateVisibility.Visible;
+                this.mImage_mid.visibility = SlateVisibility.Hidden;
+                this.destroyBtn.enable = true;
+            } else {
+                this.destroyBtn.visibility = SlateVisibility.Hidden;
+                this.mImage_mid.visibility = SlateVisibility.HitTestInvisible;
+                this.destroyBtn.enable = false;
+            }
         });
         this.setStageTowerUI(false);
         this.setBtn.onClicked.add(() => {
@@ -99,7 +107,7 @@ export default class TowerUI extends TowerUI_Generate {
                 Gtk.trySetVisibility(this._towerItemUIs[i], this._towerItemUIs[i]?.cfg ? mw.SlateVisibility.Visible : mw.SlateVisibility.Hidden);
             }
             computeWidth = containerWidth;
-            this.destroyBtn.position = new Vector(Math.floor(containerWidth / 2) - 16.5, 191);
+            this.destroyBtn.position = new Vector(Math.floor(containerWidth / 2) - 16.5, 190);
             this.towerCanvas.position = new Vector((maxWidth - containerWidth) / 2 + leftUpPosX, leftUpPosY);
         } else {
             for (let i = 0; i < TowerConfigConstants.maxEquip; i++) {

@@ -57,13 +57,6 @@ export default class TowerUI_Generate extends UIScript {
 		}
 		return this.mImage_right_Internal
 	}
-	private destroyBtn_Internal: mw.StaleButton
-	public get destroyBtn(): mw.StaleButton {
-		if(!this.destroyBtn_Internal&&this.uiWidgetBase) {
-			this.destroyBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/destroyBtn') as mw.StaleButton
-		}
-		return this.destroyBtn_Internal
-	}
 	private shopBtn_Internal: mw.StaleButton
 	public get shopBtn(): mw.StaleButton {
 		if(!this.shopBtn_Internal&&this.uiWidgetBase) {
@@ -92,6 +85,13 @@ export default class TowerUI_Generate extends UIScript {
 		}
 		return this.textSet_Internal
 	}
+	private destroyBtn_Internal: mw.StaleButton
+	public get destroyBtn(): mw.StaleButton {
+		if(!this.destroyBtn_Internal&&this.uiWidgetBase) {
+			this.destroyBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/towerCanvas/destroyBtn') as mw.StaleButton
+		}
+		return this.destroyBtn_Internal
+	}
 
 
 
@@ -104,18 +104,18 @@ export default class TowerUI_Generate extends UIScript {
    protected initButtons() {
 	   //按钮添加点击
 	   
-	   this.destroyBtn.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "destroyBtn");
-	   })
-	   this.initLanguage(this.destroyBtn);
-	   this.destroyBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-	   
-	
 	   this.shopBtn.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "shopBtn");
 	   })
 	   this.initLanguage(this.shopBtn);
 	   this.shopBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.destroyBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "destroyBtn");
+	   })
+	   this.initLanguage(this.destroyBtn);
+	   this.destroyBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 	   //按钮添加点击
