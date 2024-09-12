@@ -72,13 +72,13 @@ export default abstract class TowerBase implements BuffBag {
     private async setLevelEffect(ids: number[]) {
         try {
             // 卸载旧特效
-            this._levelShow.forEach((go) => go && GameObjPool.despawn(go));
+            this._levelShow.forEach((go) => go?.destroy());
             this._levelShow = [];
             const elements = ids.map((id) => GameConfig.LevelEffect.getElement(id));
-            const elementGos = await Promise.all(elements.map((element) => GameObjPool.asyncSpawn(element.effectGuid)));
+            const elementGos = await Promise.all(elements.map((element) => GameObject.asyncSpawn(element.effectGuid)));
             // 在升级组件初始化出来前，这个塔被删了
             if (!this.root) {
-                elementGos.forEach((effect) => GameObjPool.despawn(effect));
+                elementGos.forEach((effect) => effect.destroy());
                 return;
             }
             elements.forEach((element, index) => {
@@ -255,7 +255,7 @@ export default abstract class TowerBase implements BuffBag {
      * 初始化物体
      */
     protected async initObj() {
-        this.root = await GameObjPool.asyncSpawn(this.cfg.guid[0]);
+        this.root = await GameObject.asyncSpawn(this.cfg.guid[0]);
         if (!this.root) return; //解决线上报错问题
         this.tower = this.root.getChildren()[0];
         if (!this.tower) return;
@@ -302,15 +302,6 @@ export default abstract class TowerBase implements BuffBag {
             (this.tower as Model).setCollision(CollisionStatus.QueryOnly);
         }
         this.tower.tag = "tower" + this.info.placeID;
-        // GameObjPool.asyncSpawn(
-        //     Utils.isLocalPlayer(this.info.playerID)
-        //         ? "C9F5FFD94363A60D67BC4397C21AEC3D"
-        //         : "056EFC0F43BA0708EFCC0091F5BB59DC"
-        // ).then((effect) => {
-        //     if (!effect) return;
-        //     this._bottomEff = effect;
-        //     this._bottomEff.worldTransform.position = this.oriPos;
-        // });
     }
 
     /**
@@ -367,10 +358,10 @@ export default abstract class TowerBase implements BuffBag {
             this.tower.worldTransform = this.oriTransform;
             this.tower.tag = "";
         }
-        this.root && GameObjPool.despawn(this.root);
-        this._bottomEff && GameObjPool.despawn(this._bottomEff);
+        this.root?.destroy();
+        this._bottomEff?.destroy();
         this.buffManager?.destroy();
-        this._levelShow.forEach((go) => go && GameObjPool.despawn(go));
+        this._levelShow.forEach((go) => go?.destroy());
         this._levelShow = [];
         this.root = null;
         this.tower = null;
