@@ -51,9 +51,9 @@ export default class CommonTipsManagerUI extends CommonTipsUI_Generate {
     private _queueCapacity: number = 150;
 
     /**刷新间隔300ms */
-    private _refreshInterval: number = 300;
+    private _refreshInterval: number = 500;
     /**当前时间 */
-    private _curTime: number = 300;
+    private _curTime: number = 500;
 
     //#endregion
 

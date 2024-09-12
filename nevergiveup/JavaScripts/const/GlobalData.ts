@@ -15,10 +15,10 @@ export namespace GlobalData {
 
         public static stageMonsterSkillTitleArr = ["MonsterSkill_1", "MonsterSkill_2", "MonsterSkill_3", "MonsterSkill_4"];
         public static stageMonsterSkillDescArr = ["MonsterSkillDesc_1", "MonsterSkillDesc_2", "MonsterSkillDesc_3", "MonsterSkillDesc_4"];
-        public getStageMonsterSkillInfo(type: StageMonsterSkillType) {
+        public static getStageMonsterSkillInfo(type: StageMonsterSkillType) {
             return {
-                title: Stage.stageMonsterSkillTitleArr[type],
-                desc: Stage.stageMonsterSkillDescArr[type]
+                title: GameConfig.Language.getElement(Stage.stageMonsterSkillTitleArr[type])?.Value ?? '',
+                desc: GameConfig.Language.getElement(Stage.stageMonsterSkillDescArr[type])?.Value ?? '',
             };
         }
     }

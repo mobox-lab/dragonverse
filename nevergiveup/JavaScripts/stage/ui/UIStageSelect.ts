@@ -178,7 +178,7 @@ export class UIStageSelect extends StageSelect_Generate {
             icon.imageGuid = GlobalData.Stage.stageRecommendElementIcon[id - 1];
         }
         const { stealth, fly, healing, berserk } = this.getMonsterBuff(stageCfgId, stageWorldIndex);
-        const skills = [];
+        const skills: StageMonsterSkillType[] = [];
         if (healing) skills.push(StageMonsterSkillType.Healing);
         if (berserk) skills.push(StageMonsterSkillType.Berserk);
         if (stealth) skills.push(StageMonsterSkillType.Stealth);
@@ -195,17 +195,23 @@ export class UIStageSelect extends StageSelect_Generate {
         this.selectedMonsterSkillIndex = 0;
         this.monsterSkillTypes = skills;
         console.log("#debug monsterSkillTypes", skills);
+        const len = skills?.length ?? 0;
         for (let i = 0; i < 5; i++) {
             const skillEle = this[`canvas_MonsterSkillDesc_${i + 1}`] as mw.Canvas;
             const textEle = this[`textMonsterSkill${i + 1}`] as mw.TextBlock;
+            const textDescEle = this[`textMonsterSkillDesc${i + 1}`] as mw.TextBlock;
 
             console.log("#debug skillEle", skillEle);
             if (!skillEle || !textEle) continue;
             const isSelect = i === this.selectedMonsterSkillIndex;
             skillEle.zOrder = isSelect ? 1 : 0;
             textEle.setFontColorByHex(isSelect ? "#FFCB1C" : "#FFFFFF");
-            if (i < skills.length) {
+            if (i < len) {
                 Gtk.trySetVisibility(skillEle, mw.SlateVisibility.SelfHitTestInvisible);
+                const skillType = skills[i];
+                const { title, desc } = GlobalData.Stage.getStageMonsterSkillInfo(skillType) ?? {};
+                textEle.text = title;
+                textDescEle.text = desc;
                 const btn: mw.Button = this[`btn_monsterSkill_${i + 1}`];
                 btn?.onClicked?.clear();
                 btn?.onClicked?.add(() => {
