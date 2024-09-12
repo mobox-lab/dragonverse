@@ -8,7 +8,14 @@
 
 @UIBind('UI/Bless/BlessMain.ui')
 export default class BlessMain_Generate extends UIScript {
-		private mBtnClose_Internal: mw.Button
+		private bgBtn_Internal: mw.Button
+	public get bgBtn(): mw.Button {
+		if(!this.bgBtn_Internal&&this.uiWidgetBase) {
+			this.bgBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/bgBtn') as mw.Button
+		}
+		return this.bgBtn_Internal
+	}
+	private mBtnClose_Internal: mw.Button
 	public get mBtnClose(): mw.Button {
 		if(!this.mBtnClose_Internal&&this.uiWidgetBase) {
 			this.mBtnClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mBtnClose') as mw.Button
@@ -155,6 +162,12 @@ export default class BlessMain_Generate extends UIScript {
 	   
 	   //按钮添加点击
 	   
+	   this.bgBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "bgBtn");
+	   })
+	   this.bgBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.mBtnClose.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "mBtnClose");
 	   })

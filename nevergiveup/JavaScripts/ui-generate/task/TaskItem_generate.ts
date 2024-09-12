@@ -134,12 +134,12 @@ export default class TaskItem_Generate extends UIScript {
 		}
 		return this.canvasDoing_Internal
 	}
-	private btnDoing_Internal: mw.StaleButton
-	public get btnDoing(): mw.StaleButton {
-		if(!this.btnDoing_Internal&&this.uiWidgetBase) {
-			this.btnDoing_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/canvasDoing/btnDoing') as mw.StaleButton
+	private txt_doing_Internal: mw.TextBlock
+	public get txt_doing(): mw.TextBlock {
+		if(!this.txt_doing_Internal&&this.uiWidgetBase) {
+			this.txt_doing_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasmain/canvasDoing/txt_doing') as mw.TextBlock
 		}
-		return this.btnDoing_Internal
+		return this.txt_doing_Internal
 	}
 	private canvasFinish_Internal: mw.Canvas
 	public get canvasFinish(): mw.Canvas {
@@ -237,13 +237,6 @@ export default class TaskItem_Generate extends UIScript {
 	   this.btnReward.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
-	   this.btnDoing.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "btnDoing");
-	   })
-	   this.initLanguage(this.btnDoing);
-	   this.btnDoing.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-	   
-	
 	   //按钮添加点击
 	   
 	   this.btnLock.onClicked.add(()=>{
@@ -264,6 +257,9 @@ export default class TaskItem_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txt_num3)
+	   
+	
+	   this.initLanguage(this.txt_doing)
 	   
 	
 	   this.initLanguage(this.txt_complete)

@@ -41,15 +41,14 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void {
         this.btnLock.touchMethod = ButtonTouchMethod.PreciseTap;
-        this.btnDoing.touchMethod = ButtonTouchMethod.PreciseTap;
         this.btnReward.touchMethod = ButtonTouchMethod.PreciseTap;
         this.btnReward.onClicked.add(async () => {
             await ModuleService.getModule(TaskModuleC).taskFinishAction(this._taskData);
         })
-        this.btnDoing.onClicked.add(() => {
-            GuideManager.guideToTask(this._taskData.taskID);
-            // TipsManager.showTips(GameConfig.Language.getElement("Text_NoFinishTaskTips").Value);
-        })
+        // this.btnDoing.onClicked.add(() => {
+        //     GuideManager.guideToTask(this._taskData.taskID);
+        //     // TipsManager.showTips(GameConfig.Language.getElement("Text_NoFinishTaskTips").Value);
+        // })
         this.btnLock.onClicked.add(() => {
             TipsManager.showTips(GameConfig.Language.getElement("Text_TaskLock").Value);
         })
@@ -75,15 +74,15 @@ export default class UI_TaskItem extends TaskItem_Generate implements IItemRende
         switch (data.taskState) {
             case EmTaskState.Doing:
                 this.btnReward.visibility = mw.SlateVisibility.Hidden;
-                this.btnDoing.visibility = mw.SlateVisibility.Visible;
+                this.txt_doing.visibility = mw.SlateVisibility.Visible;
                 break;
             case EmTaskState.Reward:
                 this.btnReward.visibility = mw.SlateVisibility.Visible;
-                this.btnDoing.visibility = mw.SlateVisibility.Hidden;
+                this.txt_doing.visibility = mw.SlateVisibility.Hidden;
                 break;
             default:
                 this.btnReward.visibility = mw.SlateVisibility.Hidden;
-                this.btnDoing.visibility = mw.SlateVisibility.Visible;
+                this.txt_doing.visibility = mw.SlateVisibility.Visible;
                 break;
         }
         this.setReward(data);

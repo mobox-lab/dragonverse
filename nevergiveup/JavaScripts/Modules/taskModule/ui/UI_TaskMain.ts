@@ -65,7 +65,7 @@ export default class UI_TaskMain extends TaskMain_Generate {
             this.scroll_Task,
             this.content,
             UI_TaskItem,
-            1, 0, 0, 700, 130, 5, 0, 10);
+            1, 0, 0, 700, 108, 5, 0, 16);
         this.btn_Close.onClicked.add(() => {
             TweenCommon.popUpHide(this.rootCanvas, () => {
                 UIService.hideUI(this);
