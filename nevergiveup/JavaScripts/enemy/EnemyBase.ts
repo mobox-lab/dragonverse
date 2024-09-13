@@ -395,10 +395,11 @@ export class Enemy implements BuffBag {
             this.position.set(position[0], position[1], position[2]);
         }
         const guideType = config?.guidType || 1;
-        let go = (await GameObjPool.asyncSpawn("Character")) as Character;
-        if (guideType === 2) {
-            go = (await GameObjPool.asyncSpawn(desc)) as Character;
-        }
+        let go =
+            guideType === 2
+                ? ((await GameObjPool.asyncSpawn(desc)) as Character)
+                : ((await GameObjPool.asyncSpawn("Character")) as Character);
+
         if (!go) {
             GameObjPool.despawn(go);
             return;
