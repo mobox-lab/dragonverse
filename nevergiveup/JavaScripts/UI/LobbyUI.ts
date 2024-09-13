@@ -26,12 +26,19 @@ import SenzuBeanConfirmPanel from "./Bag/SenzuBeanConfirmPanel";
 import P12ShopPanel from "./Shop/P12ShopPanel";
 import { GlobalData } from "../const/GlobalData";
 import JumpProgress_Generate from "../ui-generate/JumpProgress_generate";
+import { AuthModuleC } from "../Modules/auth/AuthModule";
 
 const progressTag = "LobbyTransmitProgress";
 export default class LobbyUI extends LobbyUI_Generate {
     private _progressBar: ProgressBar;
     private _cnvProgressBar: Canvas;
     private inProgress: boolean = false;
+
+    private _authModuleC: AuthModuleC;
+    private get authModuleC(): AuthModuleC | null {
+        if (!this._authModuleC) this._authModuleC = ModuleService.getModule(AuthModuleC);
+        return this._authModuleC;
+    }
     /**
      * 构造UI文件成功后，在合适的时机最先初始化一次
      */
@@ -109,6 +116,10 @@ export default class LobbyUI extends LobbyUI_Generate {
         });
         UIService.show(TowerShopUI, {isShop: true});
         UIService.hide(TowerShopUI);
+
+        // MDBL Token
+        Yoact.bindYoact(() => Gtk.trySetText(this.mToken, Utils.formatEtherInteger(BigInt(this.authModuleC?.currency.count ?? 0))));
+        this.freshTokenBtn.onClicked.add(() => this.authModuleC?.refreshCurrency());
     }
 
     public closeProgress() {
