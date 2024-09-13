@@ -78,34 +78,6 @@ export default class TaskMain_Generate extends UIScript {
 		}
 		return this.changeBtnCanvas_Internal
 	}
-	private dailyTaskCanvas_Internal: mw.Canvas
-	public get dailyTaskCanvas(): mw.Canvas {
-		if(!this.dailyTaskCanvas_Internal&&this.uiWidgetBase) {
-			this.dailyTaskCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/dailyTaskCanvas') as mw.Canvas
-		}
-		return this.dailyTaskCanvas_Internal
-	}
-	private dailyTaskBtn_Internal: mw.StaleButton
-	public get dailyTaskBtn(): mw.StaleButton {
-		if(!this.dailyTaskBtn_Internal&&this.uiWidgetBase) {
-			this.dailyTaskBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/dailyTaskCanvas/dailyTaskBtn') as mw.StaleButton
-		}
-		return this.dailyTaskBtn_Internal
-	}
-	private mImage_hotpoint_2_Internal: mw.Image
-	public get mImage_hotpoint_2(): mw.Image {
-		if(!this.mImage_hotpoint_2_Internal&&this.uiWidgetBase) {
-			this.mImage_hotpoint_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/dailyTaskCanvas/mImage_hotpoint_2') as mw.Image
-		}
-		return this.mImage_hotpoint_2_Internal
-	}
-	private text_dailyTask_Internal: mw.TextBlock
-	public get text_dailyTask(): mw.TextBlock {
-		if(!this.text_dailyTask_Internal&&this.uiWidgetBase) {
-			this.text_dailyTask_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/dailyTaskCanvas/text_dailyTask') as mw.TextBlock
-		}
-		return this.text_dailyTask_Internal
-	}
 	private mainTaskCanvas_Internal: mw.Canvas
 	public get mainTaskCanvas(): mw.Canvas {
 		if(!this.mainTaskCanvas_Internal&&this.uiWidgetBase) {
@@ -134,6 +106,34 @@ export default class TaskMain_Generate extends UIScript {
 		}
 		return this.text_Task_Internal
 	}
+	private dailyTaskCanvas_Internal: mw.Canvas
+	public get dailyTaskCanvas(): mw.Canvas {
+		if(!this.dailyTaskCanvas_Internal&&this.uiWidgetBase) {
+			this.dailyTaskCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/dailyTaskCanvas') as mw.Canvas
+		}
+		return this.dailyTaskCanvas_Internal
+	}
+	private dailyTaskBtn_Internal: mw.StaleButton
+	public get dailyTaskBtn(): mw.StaleButton {
+		if(!this.dailyTaskBtn_Internal&&this.uiWidgetBase) {
+			this.dailyTaskBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/dailyTaskCanvas/dailyTaskBtn') as mw.StaleButton
+		}
+		return this.dailyTaskBtn_Internal
+	}
+	private mImage_hotpoint_2_Internal: mw.Image
+	public get mImage_hotpoint_2(): mw.Image {
+		if(!this.mImage_hotpoint_2_Internal&&this.uiWidgetBase) {
+			this.mImage_hotpoint_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/dailyTaskCanvas/mImage_hotpoint_2') as mw.Image
+		}
+		return this.mImage_hotpoint_2_Internal
+	}
+	private text_dailyTask_Internal: mw.TextBlock
+	public get text_dailyTask(): mw.TextBlock {
+		if(!this.text_dailyTask_Internal&&this.uiWidgetBase) {
+			this.text_dailyTask_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/changeBtnCanvas/dailyTaskCanvas/text_dailyTask') as mw.TextBlock
+		}
+		return this.text_dailyTask_Internal
+	}
 	private scroll_Task_Internal: mw.ScrollBox
 	public get scroll_Task(): mw.ScrollBox {
 		if(!this.scroll_Task_Internal&&this.uiWidgetBase) {
@@ -160,18 +160,18 @@ export default class TaskMain_Generate extends UIScript {
    protected initButtons() {
 	   //按钮添加点击
 	   
-	   this.dailyTaskBtn.onClicked.add(()=>{
-		   Event.dispatchToLocal("PlayButtonClick", "dailyTaskBtn");
-	   })
-	   this.initLanguage(this.dailyTaskBtn);
-	   this.dailyTaskBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
-	   
-	
 	   this.mainTaskBtn.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "mainTaskBtn");
 	   })
 	   this.initLanguage(this.mainTaskBtn);
 	   this.mainTaskBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.dailyTaskBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "dailyTaskBtn");
+	   })
+	   this.initLanguage(this.dailyTaskBtn);
+	   this.dailyTaskBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
 	   //按钮添加点击
@@ -205,10 +205,10 @@ export default class TaskMain_Generate extends UIScript {
 	   this.initLanguage(this.taskCountdownTime)
 	   
 	
-	   this.initLanguage(this.text_dailyTask)
+	   this.initLanguage(this.text_Task)
 	   
 	
-	   this.initLanguage(this.text_Task)
+	   this.initLanguage(this.text_dailyTask)
 	   
 	
 	   //文本多语言

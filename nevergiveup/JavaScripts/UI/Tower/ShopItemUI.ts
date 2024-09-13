@@ -21,7 +21,7 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		if(this.isShop) {
 			if(v === CardState.Lock) {
 				Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Visible);
-				Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Collapsed);
+				Gtk.trySetVisibility(this.imgSelected, SlateVisibility.Collapsed);
 				Gtk.trySetVisibility(this.lockImg, SlateVisibility.Visible);
 				Gtk.trySetVisibility(this.lockBgImg, SlateVisibility.Visible);
 				Gtk.trySetVisibility(this.unlockedTxt, SlateVisibility.Collapsed);
@@ -29,7 +29,7 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 				this.img_money.imageGuid = GlobalData.Shop.priceGoldIconGuid[0];
 			} else {
 				Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Collapsed);
-				Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Collapsed);
+				Gtk.trySetVisibility(this.imgSelected, SlateVisibility.Collapsed);
 				Gtk.trySetVisibility(this.unlockedTxt, SlateVisibility.Visible);
 			}
 			return;
@@ -38,14 +38,18 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 			Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Visible);
 			Gtk.trySetVisibility(this.lockImg, SlateVisibility.Collapsed);
 			Gtk.trySetVisibility(this.lockBgImg, SlateVisibility.Collapsed);
-			Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.imgSelected, SlateVisibility.Collapsed);
 			Gtk.trySetVisibility(this.unlockedTxt, SlateVisibility.Collapsed);
 			Gtk.trySetText(this.txt_sell, this._cfg.spend[0].toFixed(0) ?? "0");
 			this.img_money.imageGuid = GlobalData.Shop.priceGoldIconGuid[1];
 		} else if(v === CardState.Equip) {
 			Gtk.trySetVisibility(this.unlockedTxt, SlateVisibility.Collapsed);
-			Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Collapsed);
-			Gtk.trySetVisibility(this.equipTxt, SlateVisibility.Visible);
+			Gtk.trySetVisibility(this.canvasLock, SlateVisibility.Visible);
+			Gtk.trySetVisibility(this.lockImg, SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.lockBgImg, SlateVisibility.Collapsed);
+			Gtk.trySetVisibility(this.imgSelected, SlateVisibility.Visible);
+			Gtk.trySetText(this.txt_sell, this._cfg.spend[0].toFixed(0) ?? "0");
+			this.img_money.imageGuid = GlobalData.Shop.priceGoldIconGuid[1];
 		}
 	}
 
@@ -67,7 +71,7 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.layer = UILayerMiddle;
 		this.chooseBtn.touchMethod = ButtonTouchMethod.PreciseTap;
 		this.chooseImg.visibility = SlateVisibility.Collapsed;
-		this.equipTxt.visibility = SlateVisibility.Collapsed;
+		this.imgSelected.visibility = SlateVisibility.Collapsed;
 		this.chooseBtn.onClicked.add(() => {
 			UIService.getUI(TowerShopUI).showTowerInfo(this._cfgID, this.state);
 		});

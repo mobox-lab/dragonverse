@@ -141,19 +141,33 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.equipTxt_Internal
 	}
+	private canvas_name_Internal: mw.Canvas
+	public get canvas_name(): mw.Canvas {
+		if(!this.canvas_name_Internal&&this.uiWidgetBase) {
+			this.canvas_name_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_name') as mw.Canvas
+		}
+		return this.canvas_name_Internal
+	}
+	private nameTxt_Internal: mw.TextBlock
+	public get nameTxt(): mw.TextBlock {
+		if(!this.nameTxt_Internal&&this.uiWidgetBase) {
+			this.nameTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_name/nameTxt') as mw.TextBlock
+		}
+		return this.nameTxt_Internal
+	}
+	private imgSelected_Internal: mw.Image
+	public get imgSelected(): mw.Image {
+		if(!this.imgSelected_Internal&&this.uiWidgetBase) {
+			this.imgSelected_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/canvas_name/imgSelected') as mw.Image
+		}
+		return this.imgSelected_Internal
+	}
 	private unlockedTxt_Internal: mw.TextBlock
 	public get unlockedTxt(): mw.TextBlock {
 		if(!this.unlockedTxt_Internal&&this.uiWidgetBase) {
 			this.unlockedTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/unlockedTxt') as mw.TextBlock
 		}
 		return this.unlockedTxt_Internal
-	}
-	private nameTxt_Internal: mw.TextBlock
-	public get nameTxt(): mw.TextBlock {
-		if(!this.nameTxt_Internal&&this.uiWidgetBase) {
-			this.nameTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/nameTxt') as mw.TextBlock
-		}
-		return this.nameTxt_Internal
 	}
 	private chooseBtn_Internal: mw.Button
 	public get chooseBtn(): mw.Button {
@@ -196,10 +210,10 @@ export default class ShopItemUI_Generate extends UIScript {
 	   this.initLanguage(this.equipTxt)
 	   
 	
-	   this.initLanguage(this.unlockedTxt)
+	   this.initLanguage(this.nameTxt)
 	   
 	
-	   this.initLanguage(this.nameTxt)
+	   this.initLanguage(this.unlockedTxt)
 	   
 	
 	   //文本多语言
