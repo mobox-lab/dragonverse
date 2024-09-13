@@ -199,10 +199,14 @@ export default class AttackTower extends TowerBase {
                 for (let i of around) {
                     let damage = 0;
 
-                    if (this.cfg.attackBuff?.[level] && this.cfg.attackBuff?.[level]?.length > 0) {
+                    if (
+                        (this.cfg.attackBuff?.[level] && this.cfg.attackBuff?.[level]?.length > 0) ||
+                        this.buffManager.buffs.length > 0
+                    ) {
                         damage = i.onHurt(this, () => {
                             const towerBuffs = this.buffManager.buffs.map((buff) => buff.id);
-                            const allBuff = [...this.cfg.attackBuff[level], ...towerBuffs];
+                            const buff = this.cfg.attackBuff?.[level] || [];
+                            const allBuff = [...buff, ...towerBuffs];
                             for (let buff of allBuff) {
                                 i.applyBuff(buff);
                             }
@@ -223,12 +227,14 @@ export default class AttackTower extends TowerBase {
             // 单体
             for (let enemy of enemys) {
                 let damage = 0;
-                console.log(JSON.stringify(this.cfg.attackBuff), "this.cfg.attackBuff");
-                console.log(JSON.stringify(enemy.name), "enemy.name");
-                if (this.cfg.attackBuff?.[level] && this.cfg.attackBuff?.[level]?.length > 0) {
+                if (
+                    (this.cfg.attackBuff?.[level] && this.cfg.attackBuff?.[level]?.length > 0) ||
+                    this.buffManager.buffs.length > 0
+                ) {
                     damage = enemy.onHurt(this, () => {
                         const towerBuffs = this.buffManager.buffs.map((buff) => buff.id);
-                        const allBuff = [...this.cfg.attackBuff[level], ...towerBuffs];
+                        const buff = this.cfg.attackBuff?.[level] || [];
+                        const allBuff = [...buff, ...towerBuffs];
                         for (let buff of allBuff) {
                             enemy.applyBuff(buff);
                         }
