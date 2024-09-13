@@ -177,6 +177,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
         let hasOld = MapEx.has(this.achievementStageC, achievementType);
         let curAchievement: AchievementC | AchievementNew | null = hasOld ? MapEx.get(this.achievementStageC, achievementType) : null;
         let costNum = 0;
+        // console.log("#ach " + JSON.stringify(curAchievement) + " hasOld:" + hasOld + " num:" + num + " costNum:" + costNum);
         if(!hasOld) {
             // 之前没有完成过该系列成就
             if (!this.achievementJudgeMap.has(achievementType)) {
@@ -184,7 +185,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
                 return;
             }
             const achievementCfg = this.achievementJudgeMap.get(achievementType);
-            const targetNum = achievementCfg.TragetNum;
+            const targetNum = achievementCfg?.TragetNum;
             const aid = achievementCfg.id;
             const achievement = new AchievementNew(aid, 0, false);
             if (!targetNum) return;
@@ -207,18 +208,26 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
                 // console.log("#temp tempAchievementStage:" + JSON.stringify(this.tempAchievementStage) + " count:" + MapEx.count(this.tempAchievementStage) + " tempAchievement:" + JSON.stringify(tmpAchievement));
                 return;
             }
-            const nextId = GameConfig.Achievements.getElement(aid).NextId;
+            const nextId = GameConfig.Achievements.getElement(aid)?.NextId;
+            if(!nextId && achievement.o) {
+                let tmpAchievement = new AchievementNew(aid, achievement.p, achievement.o);
+                MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
+                // console.log("#temp tempAchievementStage:" + JSON.stringify(this.tempAchievementStage) + " count:" + MapEx.count(this.tempAchievementStage) + " tempAchievement:" + JSON.stringify(tmpAchievement));
+                return;
+            }
             curAchievement = new AchievementNew(nextId, 0, false);
         }
         while(costNum < num) {
+            if(!curAchievement?.i) break;
             // 之前有完成过该系列成就
             const achievement = new AchievementNew(curAchievement.i, curAchievement.p, curAchievement.o);
+            // console.log("#ach " + JSON.stringify(achievement));
             if (achievement.o) {
                 Log4Ts.error(AchievementC, "[成就ID为" + achievement.i + "的成就已完成]");
                 return;
             }
             const aid = achievement.i;
-            const targetNum = GameConfig.Achievements.getElement(aid).TragetNum;
+            const targetNum = GameConfig.Achievements.getElement(aid)?.TragetNum;
             if (!targetNum) break;
             const needNum = targetNum - achievement.p; // 5 - 2 = 3
             const leftNum = num - costNum;
@@ -233,18 +242,25 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
             }
             this.saveAchievementStageC(aid, achievementType, achievement.p, achievement.o);
             this.achievementTips(aid, achievementType, achievement.p, targetNum, achievement.o);
+            const nextId = GameConfig.Achievements.getElement(aid).NextId;
             if(!achievement.o) {
                 let tmpAchievement = new AchievementNew(aid, achievement.p, achievement.o);
                 MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
                 // console.log("#temp tempAchievementStage:" + JSON.stringify(this.tempAchievementStage) + " count:" + MapEx.count(this.tempAchievementStage) + " tempAchievement:" + JSON.stringify(tmpAchievement));
                 return;
+            } 
+            if(!nextId && achievement.o) {
+                let tmpAchievement = new AchievementNew(aid, achievement.p, achievement.o);
+                MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
+                // console.log("#temp tempAchievementStage:" + JSON.stringify(this.tempAchievementStage) + " count:" + MapEx.count(this.tempAchievementStage) + " tempAchievement:" + JSON.stringify(tmpAchievement));
+                return;
             }
-            const nextId = GameConfig.Achievements.getElement(aid).NextId;
             curAchievement = new AchievementNew(nextId, 0, false);
             if(costNum >= num) {
                 let tmpAchievement = curAchievement;
                 MapEx.set(this.tempAchievementStage, achievementType, tmpAchievement);
                 // console.log("#temp tempAchievementStage:" + JSON.stringify(this.tempAchievementStage) + " count:" + MapEx.count(this.tempAchievementStage) + " tempAchievement:" + JSON.stringify(tmpAchievement));
+                return;
             }
         }
     }
