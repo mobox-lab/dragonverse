@@ -97,7 +97,7 @@ export default class TowerUI extends TowerUI_Generate {
         const [leftUpPosX, leftUpPosY] = [456, 850];
         const [leftPadding, rightPadding, gap, itemWidth] = [0, 0, 8, 120];
         const [borderLeftUpPosY] = [60]
-        const [borderWidthLeft, borderPaddingLeft, borderPaddingBottom, borderWidthBottom] = [21, 10, 0, 11]
+        const [borderWidthLeft, borderPaddingLeft, borderPaddingBottom, borderWidthBottom] = [21, 2, 0, 11]
         const maxWidth = leftPadding + rightPadding + (itemWidth + gap) * TowerConfigConstants.maxEquip - gap;  // 最大可能长度（装满TowerConfigConstants.maxEquip个塔）
         let computeWidth = maxWidth;
         if (inStage) {
