@@ -29,7 +29,7 @@ export class P_Bag extends PetBagPanel_Generate {
     /**是否在改名字 */
     private isReName: boolean = false;
     /**改名字ui */
-    private reNameUI: P_ReName = null;
+    public reNameUI: P_ReName = null;
     /**改名字事件 */
     public onReNameAC: Action2<number, string> = new Action2();
 
@@ -679,7 +679,7 @@ export class PetBagItem {
     }
 }
 
-class P_ReName extends ReName_Generate {
+export class P_ReName extends ReName_Generate {
 
     public onReNameAC: Action2<petItemDataNew, string> = new Action2();
 
@@ -687,7 +687,6 @@ class P_ReName extends ReName_Generate {
     private item: petItemDataNew;
 
     onStart() {
-
         this.mSureBtn.onClicked.add(async () => {
             try {
                 let res = await StringUtil.maskWordCheck(this.mNameInputBox.text);
@@ -723,7 +722,6 @@ class P_ReName extends ReName_Generate {
         this.preName = name;
         this.show();
     }
-
 }
 
 
