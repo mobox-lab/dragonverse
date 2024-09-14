@@ -23,7 +23,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
 
     /** 当脚本被实例后，会在第一帧更新前调用此函数 */
     protected onStart(): void {
-        oTraceError("[AchievementModuleC--onStart]");
+        // oTraceError("[AchievementModuleC--onStart]");
         this.initDatas();
         this.bindActions();
 				mw.Event.addServerListener("FUSE_BROADCAST_ACHIEVEMENT_BLEND_TYPE",
@@ -91,7 +91,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
                 this.achievementJudgeMap.set(judge, this.achievements[i]);
             }
         }
-        oTraceError("[AchievementModuleC--initAchievements] achievementJudgeMap.size = ", this.achievementJudgeMap.size);
+        // oTraceError("[AchievementModuleC--initAchievements] achievementJudgeMap.size = ", this.achievementJudgeMap.size);
     }
 
     /**
@@ -344,7 +344,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
      */
     private achievementTips(achievementId: number, achievementType: GlobalEnum.AchievementType, p: number, targetNum: number, o: boolean): void {
         try {        
-            oTraceError("[成就ID为" + achievementId + "的成就进度为" + p + "/" + targetNum + "]" + " a:" + JSON.stringify({achievementId, p, o, achievementType}));
+            Log4Ts.log(AchievementModuleC, "[成就ID为" + achievementId + "的成就进度为" + p + "/" + targetNum + "]" + " a:" + JSON.stringify({achievementId, p, o, achievementType}));
             let currentValue = Number((p / targetNum).toFixed(2));
             if (o) {
                 this.completedPanel.showCompletedTips(achievementId, o, p, targetNum, currentValue);
@@ -514,9 +514,9 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
      * 广播附魔出了 special 词条成就 43~45
      */
     public broadcastAchievementEnchantSpecial = () => {
-				this.onExecuteAchievementAction.call(GlobalEnum.AchievementType.PetEnchantUniqueTagSuccessNum, 1);
-				Log4Ts.log(AchievementModuleC, 'broadcastAchievementEnchantSpecial');
-		}
+        this.onExecuteAchievementAction.call(GlobalEnum.AchievementType.PetEnchantUniqueTagSuccessNum, 1);
+        Log4Ts.log(AchievementModuleC, 'broadcastAchievementEnchantSpecial');
+    }
 
     /**
      * 广播融合类型成就（融合成功数=9&融合传奇宠物数=20）
@@ -576,7 +576,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
             default:
                 break;
         }
-        oTraceError("[broadcastAchievement_destory] achievementType = ", achievementType, " destoryType = ", destoryType);
+        Log4Ts.log(AchievementModuleC, "[broadcastAchievement_destory] achievementType = " + achievementType + " destoryType = " + destoryType);
         this.onExecuteAchievementAction.call(achievementType, 1);
     }
 
@@ -595,7 +595,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
         else if (petInfo.DevType == petDevType.Rainbow) {//彩虹化
             if (isSucc) achievementType = GlobalEnum.AchievementType.RainbowTransformNum;
         }
-        oTraceError("broadcastAchievementType_Num_achievementType = " + achievementType);
+        Log4Ts.log(AchievementModuleC, "broadcastAchievementType_Num_achievementType = " + achievementType);
         this.onExecuteAchievementAction.call(achievementType, 1);
     }
 
@@ -606,7 +606,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
      * @param petIds 使用的宠物ID
      */
     private broadcastAchievementType_Only(endPetId: number, isSucc: boolean, petIds: number[]): void {
-        oTraceError("broadcastAchievementChangeType endPetId = " + endPetId + " isSucc = " + isSucc + " petIds.length = " + petIds.length);
+        Log4Ts.log(AchievementModuleC, "broadcastAchievementChangeType endPetId = " + endPetId + " isSucc = " + isSucc + " petIds.length = " + petIds.length);
         let achievementType: GlobalEnum.AchievementType = null;
         let petInfo = GameConfig.PetARR.getElement(endPetId);
         let petDevType = GlobalEnum.PetDevType;
@@ -627,7 +627,7 @@ export default class AchievementModuleC extends ModuleC<AchievementModuleS, Achi
                 achievementType = GlobalEnum.AchievementType.UseLegendPetToRainbowSuccessNum;
             }
         }
-        oTraceError("broadcastAchievementChangeType = " + achievementType);
+        Log4Ts.log(AchievementModuleC, "broadcastAchievementChangeType = " + achievementType);
         this.onExecuteAchievementAction.call(achievementType, 1);
     }
 }

@@ -4,12 +4,14 @@ import Dev_Generate from "../../ui-generate/Pet/Dev_generate";
 import MessageBox from "../../util/MessageBox";
 import { utils } from "../../util/uitls";
 import { PlayerModuleC } from "../Player/PlayerModuleC";
-import { PetBagItem } from "./P_Bag";
+import { P_Bag, PetBagItem } from "./P_Bag";
 import { PetBagModuleC } from "./PetBagModuleC";
 import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
 import { PetBag_Item } from "./P_BagItem";
 import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import Log4Ts from "mw-log4ts";
+import { P_FusePanel } from "./P_FusePanel";
+import { P_Enchants } from "./P_Enchants";
 
 export class P_Pet_Dev extends Dev_Generate {
     /**当前容器中的所有item */
@@ -40,6 +42,9 @@ export class P_Pet_Dev extends Dev_Generate {
         );
     }
 
+    public hideWhenBagOpen() {
+        this.hide();
+    }
     /**点击按钮进行合成 */
     private onClickDev() {
         if (this.curSelectPets.length <= 0) return;
@@ -137,6 +142,9 @@ export class P_Pet_Dev extends Dev_Generate {
         this.changeCost(0);
     }
     public show(petItems: petItemDataNew[], isGold: boolean, ...param: any[]): void {
+        UIService.getUI(P_Bag).hideWhenBagOpen();
+        UIService.getUI(P_Enchants).hideWhenBagOpen();
+        UIService.getUI(P_FusePanel).hideWhenBagOpen();
         this.init(isGold);
         super.show(...param);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {

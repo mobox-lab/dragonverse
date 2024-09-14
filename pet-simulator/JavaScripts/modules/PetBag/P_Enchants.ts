@@ -1,18 +1,20 @@
-import Gtk from "gtoolkit";
-import Log4Ts from "mw-log4ts";
 import { GameConfig } from "../../config/GameConfig";
 import { GlobalEnum } from "../../const/Enum";
 import { GlobalData } from "../../const/GlobalData";
-import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 import EnchantsPanel_Generate from "../../ui-generate/Enchants/EnchantsPanel_generate";
 import Enchants_item_Generate from "../../ui-generate/Enchants/Enchants_item_generate";
 import { oTraceError } from "../../util/LogManager";
 import MessageBox from "../../util/MessageBox";
 import { utils } from "../../util/uitls";
-import { PetBagItem } from "./P_Bag";
+import { P_Bag, PetBagItem } from "./P_Bag";
+import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
+import Log4Ts from "mw-log4ts";
+import Gtk from "gtoolkit";
 import { PetBag_Item } from "./P_BagItem";
 import { PetBagModuleC } from "./PetBagModuleC";
-import { PetBagModuleData, petItemDataNew } from "./PetBagModuleData";
+import { P_Pet_Dev } from "./P_Pet_Dev";
+import { P_FusePanel } from "./P_FusePanel";
 
 export enum EnchantPetState {
     IS_ALL_ENCHANT = "is_all_enchant", // 已经全部附魔 会重置其中一条
@@ -62,6 +64,10 @@ export class P_Enchants extends EnchantsPanel_Generate {
         this.bagData = DataCenterC.getData(PetBagModuleData);
     }
 	
+    public hideWhenBagOpen() {
+        if(this.isEnchanting) return;
+        this.hide();
+    }
     /**播放特效 */
     private playEffect() {
 		this.onUpdateAc.call(true);
@@ -102,6 +108,9 @@ export class P_Enchants extends EnchantsPanel_Generate {
     }
 
     public showPanel(petData: petItemDataNew[]) {
+        UIService.getUI(P_Bag).hideWhenBagOpen();
+        UIService.getUI(P_FusePanel).hideWhenBagOpen();
+        UIService.getUI(P_Pet_Dev).hideWhenBagOpen();
         if (this.isFirstOpen) {
             this.isFirstOpen = false;
         }
