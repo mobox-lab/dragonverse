@@ -8,7 +8,14 @@
 
 @UIBind('UI/Onlineshop/Online_ReConfirm.ui')
 export default class Online_ReConfirm_Generate extends UIScript {
-		private can_Confirm_Internal: mw.Canvas
+		private closeBtn_Internal: mw.Button
+	public get closeBtn(): mw.Button {
+		if(!this.closeBtn_Internal&&this.uiWidgetBase) {
+			this.closeBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/closeBtn') as mw.Button
+		}
+		return this.closeBtn_Internal
+	}
+	private can_Confirm_Internal: mw.Canvas
 	public get can_Confirm(): mw.Canvas {
 		if(!this.can_Confirm_Internal&&this.uiWidgetBase) {
 			this.can_Confirm_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm') as mw.Canvas
@@ -106,6 +113,12 @@ export default class Online_ReConfirm_Generate extends UIScript {
 	   
 	   //按钮添加点击
 	   
+	   this.closeBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "closeBtn");
+	   })
+	   this.closeBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.btn_Confirm_Use.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "btn_Confirm_Use");
 	   })

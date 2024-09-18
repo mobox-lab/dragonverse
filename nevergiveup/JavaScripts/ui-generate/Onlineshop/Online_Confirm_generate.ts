@@ -8,7 +8,14 @@
 
 @UIBind('UI/Onlineshop/Online_Confirm.ui')
 export default class Online_Confirm_Generate extends UIScript {
-		private can_Confirm_Internal: mw.Canvas
+		private closeBtn_Internal: mw.Button
+	public get closeBtn(): mw.Button {
+		if(!this.closeBtn_Internal&&this.uiWidgetBase) {
+			this.closeBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/closeBtn') as mw.Button
+		}
+		return this.closeBtn_Internal
+	}
+	private can_Confirm_Internal: mw.Canvas
 	public get can_Confirm(): mw.Canvas {
 		if(!this.can_Confirm_Internal&&this.uiWidgetBase) {
 			this.can_Confirm_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm') as mw.Canvas
@@ -36,10 +43,17 @@ export default class Online_Confirm_Generate extends UIScript {
 		}
 		return this.img_Icon_Internal
 	}
+	private canvasNumber_Internal: mw.Canvas
+	public get canvasNumber(): mw.Canvas {
+		if(!this.canvasNumber_Internal&&this.uiWidgetBase) {
+			this.canvasNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Shop_Item/can_Item_Icon/canvasNumber') as mw.Canvas
+		}
+		return this.canvasNumber_Internal
+	}
 	private text_Number_Internal: mw.TextBlock
 	public get text_Number(): mw.TextBlock {
 		if(!this.text_Number_Internal&&this.uiWidgetBase) {
-			this.text_Number_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Shop_Item/can_Item_Icon/text_Number') as mw.TextBlock
+			this.text_Number_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_Confirm/can_Shop_Item/can_Item_Icon/canvasNumber/text_Number') as mw.TextBlock
 		}
 		return this.text_Number_Internal
 	}
@@ -106,6 +120,12 @@ export default class Online_Confirm_Generate extends UIScript {
 	   
 	   //按钮添加点击
 	   
+	   this.closeBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "closeBtn");
+	   })
+	   this.closeBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.btn_UnConfirm_Use.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "btn_UnConfirm_Use");
 	   })
@@ -137,7 +157,7 @@ export default class Online_Confirm_Generate extends UIScript {
 	
 	   //文本多语言
 	   
-	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/can_Shop_Item/can_Item_Icon/MWTextBlock_2147414466") as any);
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/can_Shop_Item/can_Item_Icon/canvasNumber/MWTextBlock_2147414466") as any);
 	   
 	
 	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/can_Confirm/can_Shop_Item/can_Item_Describe/TextBlock_1") as any);

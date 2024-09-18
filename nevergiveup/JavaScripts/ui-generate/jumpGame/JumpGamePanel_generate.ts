@@ -15,19 +15,19 @@ export default class JumpGamePanel_Generate extends UIScript {
 		}
 		return this.codeImage_1_Internal
 	}
-	private codeImage_1_1_Internal: mw.Image
-	public get codeImage_1_1(): mw.Image {
-		if(!this.codeImage_1_1_Internal&&this.uiWidgetBase) {
-			this.codeImage_1_1_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/codeImage_1_1') as mw.Image
-		}
-		return this.codeImage_1_1_Internal
-	}
 	private jumpGameTitle_Internal: mw.TextBlock
 	public get jumpGameTitle(): mw.TextBlock {
 		if(!this.jumpGameTitle_Internal&&this.uiWidgetBase) {
 			this.jumpGameTitle_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/jumpGameTitle') as mw.TextBlock
 		}
 		return this.jumpGameTitle_Internal
+	}
+	private codeImage_1_1_Internal: mw.Image
+	public get codeImage_1_1(): mw.Image {
+		if(!this.codeImage_1_1_Internal&&this.uiWidgetBase) {
+			this.codeImage_1_1_Internal = this.uiWidgetBase.findChildByPath('CodeMainCanvas/codeImage_1_1') as mw.Image
+		}
+		return this.codeImage_1_1_Internal
 	}
 	private jumpGameMainBody_Internal: mw.TextBlock
 	public get jumpGameMainBody(): mw.TextBlock {

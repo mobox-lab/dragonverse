@@ -169,6 +169,13 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.textMonster_Internal
 	}
+	private imgMonsterSkillBg_Internal: mw.Image
+	public get imgMonsterSkillBg(): mw.Image {
+		if(!this.imgMonsterSkillBg_Internal&&this.uiWidgetBase) {
+			this.imgMonsterSkillBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/can_Monster/imgMonsterSkillBg') as mw.Image
+		}
+		return this.imgMonsterSkillBg_Internal
+	}
 	private canvas_MonsterSkillDesc_1_Internal: mw.Canvas
 	public get canvas_MonsterSkillDesc_1(): mw.Canvas {
 		if(!this.canvas_MonsterSkillDesc_1_Internal&&this.uiWidgetBase) {
@@ -182,6 +189,13 @@ export default class StageSelect_Generate extends UIScript {
 			this.btn_monsterSkill_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/can_Monster/canvas_MonsterSkillDesc_1/btn_monsterSkill_1') as mw.Button
 		}
 		return this.btn_monsterSkill_1_Internal
+	}
+	private monsterSkillBg1_Internal: mw.Image
+	public get monsterSkillBg1(): mw.Image {
+		if(!this.monsterSkillBg1_Internal&&this.uiWidgetBase) {
+			this.monsterSkillBg1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/can_Monster/canvas_MonsterSkillDesc_1/monsterSkillBg1') as mw.Image
+		}
+		return this.monsterSkillBg1_Internal
 	}
 	private monsterSkillDesc1_Internal: mw.Image
 	public get monsterSkillDesc1(): mw.Image {
@@ -218,6 +232,13 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.btn_monsterSkill_2_Internal
 	}
+	private monsterSkillBg2_Internal: mw.Image
+	public get monsterSkillBg2(): mw.Image {
+		if(!this.monsterSkillBg2_Internal&&this.uiWidgetBase) {
+			this.monsterSkillBg2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/can_Monster/canvas_MonsterSkillDesc_2/monsterSkillBg2') as mw.Image
+		}
+		return this.monsterSkillBg2_Internal
+	}
 	private monsterSkillDesc2_Internal: mw.Image
 	public get monsterSkillDesc2(): mw.Image {
 		if(!this.monsterSkillDesc2_Internal&&this.uiWidgetBase) {
@@ -253,6 +274,13 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.btn_monsterSkill_3_Internal
 	}
+	private monsterSkillBg3_Internal: mw.Image
+	public get monsterSkillBg3(): mw.Image {
+		if(!this.monsterSkillBg3_Internal&&this.uiWidgetBase) {
+			this.monsterSkillBg3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/can_Monster/canvas_MonsterSkillDesc_3/monsterSkillBg3') as mw.Image
+		}
+		return this.monsterSkillBg3_Internal
+	}
 	private monsterSkillDesc3_Internal: mw.Image
 	public get monsterSkillDesc3(): mw.Image {
 		if(!this.monsterSkillDesc3_Internal&&this.uiWidgetBase) {
@@ -287,6 +315,13 @@ export default class StageSelect_Generate extends UIScript {
 			this.btn_monsterSkill_4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/can_Monster/canvas_MonsterSkillDesc_4/btn_monsterSkill_4') as mw.Button
 		}
 		return this.btn_monsterSkill_4_Internal
+	}
+	private monsterSkillBg4_Internal: mw.Image
+	public get monsterSkillBg4(): mw.Image {
+		if(!this.monsterSkillBg4_Internal&&this.uiWidgetBase) {
+			this.monsterSkillBg4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/can_Monster/canvas_MonsterSkillDesc_4/monsterSkillBg4') as mw.Image
+		}
+		return this.monsterSkillBg4_Internal
 	}
 	private monsterSkillDesc4_Internal: mw.Image
 	public get monsterSkillDesc4(): mw.Image {

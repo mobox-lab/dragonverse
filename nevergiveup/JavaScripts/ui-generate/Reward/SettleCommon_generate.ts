@@ -8,7 +8,14 @@
 
 @UIBind('UI/Reward/SettleCommon.ui')
 export default class SettleCommon_Generate extends UIScript {
-		private enUI_1_Internal: mw.Image
+		private btnScreen_Internal: mw.Button
+	public get btnScreen(): mw.Button {
+		if(!this.btnScreen_Internal&&this.uiWidgetBase) {
+			this.btnScreen_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/btnScreen') as mw.Button
+		}
+		return this.btnScreen_Internal
+	}
+	private enUI_1_Internal: mw.Image
 	public get enUI_1(): mw.Image {
 		if(!this.enUI_1_Internal&&this.uiWidgetBase) {
 			this.enUI_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/enUI_1') as mw.Image
@@ -29,12 +36,19 @@ export default class SettleCommon_Generate extends UIScript {
 		}
 		return this.rewardImg_Internal
 	}
-	private btnScreen_Internal: mw.Button
-	public get btnScreen(): mw.Button {
-		if(!this.btnScreen_Internal&&this.uiWidgetBase) {
-			this.btnScreen_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/btnScreen') as mw.Button
+	private btnConfirm_Internal: mw.Button
+	public get btnConfirm(): mw.Button {
+		if(!this.btnConfirm_Internal&&this.uiWidgetBase) {
+			this.btnConfirm_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/btnConfirm') as mw.Button
 		}
-		return this.btnScreen_Internal
+		return this.btnConfirm_Internal
+	}
+	private textConfirm_Internal: mw.TextBlock
+	public get textConfirm(): mw.TextBlock {
+		if(!this.textConfirm_Internal&&this.uiWidgetBase) {
+			this.textConfirm_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/textConfirm') as mw.TextBlock
+		}
+		return this.textConfirm_Internal
 	}
 	private mCommon_Internal: mw.Canvas
 	public get mCommon(): mw.Canvas {
@@ -63,12 +77,21 @@ export default class SettleCommon_Generate extends UIScript {
 	   this.btnScreen.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.btnConfirm.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "btnConfirm");
+	   })
+	   this.btnConfirm.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 
 	   //按钮多语言
 	   
 	   //文本多语言
 	   
 	   this.initLanguage(this.rewardText1)
+	   
+	
+	   this.initLanguage(this.textConfirm)
 	   
 	
 	   //文本多语言

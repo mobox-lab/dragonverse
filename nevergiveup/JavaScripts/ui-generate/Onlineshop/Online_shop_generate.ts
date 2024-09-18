@@ -8,7 +8,14 @@
 
 @UIBind('UI/Onlineshop/Online_shop.ui')
 export default class Online_shop_Generate extends UIScript {
-		private can_OnlineShop_Internal: mw.Canvas
+		private closeBtn_Internal: mw.Button
+	public get closeBtn(): mw.Button {
+		if(!this.closeBtn_Internal&&this.uiWidgetBase) {
+			this.closeBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/closeBtn') as mw.Button
+		}
+		return this.closeBtn_Internal
+	}
+	private can_OnlineShop_Internal: mw.Canvas
 	public get can_OnlineShop(): mw.Canvas {
 		if(!this.can_OnlineShop_Internal&&this.uiWidgetBase) {
 			this.can_OnlineShop_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/can_OnlineShop') as mw.Canvas
@@ -134,6 +141,12 @@ export default class Online_shop_Generate extends UIScript {
 	   
 	   //按钮添加点击
 	   
+	   this.closeBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "closeBtn");
+	   })
+	   this.closeBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.btn_Buy.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "btn_Buy");
 	   })

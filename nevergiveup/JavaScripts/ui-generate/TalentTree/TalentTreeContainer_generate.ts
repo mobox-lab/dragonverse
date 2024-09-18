@@ -120,73 +120,94 @@ export default class TalentTreeContainer_Generate extends UIScript {
 		}
 		return this.infoTxt_Internal
 	}
+	private canvasInfo_Internal: mw.Canvas
+	public get canvasInfo(): mw.Canvas {
+		if(!this.canvasInfo_Internal&&this.uiWidgetBase) {
+			this.canvasInfo_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo') as mw.Canvas
+		}
+		return this.canvasInfo_Internal
+	}
+	private infoTxtName_Internal: mw.TextBlock
+	public get infoTxtName(): mw.TextBlock {
+		if(!this.infoTxtName_Internal&&this.uiWidgetBase) {
+			this.infoTxtName_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/infoTxtName') as mw.TextBlock
+		}
+		return this.infoTxtName_Internal
+	}
 	private infoTxtDesc_Internal: mw.TextBlock
 	public get infoTxtDesc(): mw.TextBlock {
 		if(!this.infoTxtDesc_Internal&&this.uiWidgetBase) {
-			this.infoTxtDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoTxtDesc') as mw.TextBlock
+			this.infoTxtDesc_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/infoTxtDesc') as mw.TextBlock
 		}
 		return this.infoTxtDesc_Internal
+	}
+	private canvasNumber_Internal: mw.Canvas
+	public get canvasNumber(): mw.Canvas {
+		if(!this.canvasNumber_Internal&&this.uiWidgetBase) {
+			this.canvasNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/canvasNumber') as mw.Canvas
+		}
+		return this.canvasNumber_Internal
 	}
 	private infoLevel1_Internal: mw.TextBlock
 	public get infoLevel1(): mw.TextBlock {
 		if(!this.infoLevel1_Internal&&this.uiWidgetBase) {
-			this.infoLevel1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoLevel1') as mw.TextBlock
+			this.infoLevel1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/canvasNumber/infoLevel1') as mw.TextBlock
 		}
 		return this.infoLevel1_Internal
 	}
 	private levelSlash1_Internal: mw.TextBlock
 	public get levelSlash1(): mw.TextBlock {
 		if(!this.levelSlash1_Internal&&this.uiWidgetBase) {
-			this.levelSlash1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/levelSlash1') as mw.TextBlock
+			this.levelSlash1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/canvasNumber/levelSlash1') as mw.TextBlock
 		}
 		return this.levelSlash1_Internal
 	}
 	private infoLevel2_Internal: mw.TextBlock
 	public get infoLevel2(): mw.TextBlock {
 		if(!this.infoLevel2_Internal&&this.uiWidgetBase) {
-			this.infoLevel2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoLevel2') as mw.TextBlock
+			this.infoLevel2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/canvasNumber/infoLevel2') as mw.TextBlock
 		}
 		return this.infoLevel2_Internal
 	}
 	private levelSlash2_Internal: mw.TextBlock
 	public get levelSlash2(): mw.TextBlock {
 		if(!this.levelSlash2_Internal&&this.uiWidgetBase) {
-			this.levelSlash2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/levelSlash2') as mw.TextBlock
+			this.levelSlash2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/canvasNumber/levelSlash2') as mw.TextBlock
 		}
 		return this.levelSlash2_Internal
 	}
 	private infoLevel3_Internal: mw.TextBlock
 	public get infoLevel3(): mw.TextBlock {
 		if(!this.infoLevel3_Internal&&this.uiWidgetBase) {
-			this.infoLevel3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoLevel3') as mw.TextBlock
+			this.infoLevel3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/canvasNumber/infoLevel3') as mw.TextBlock
 		}
 		return this.infoLevel3_Internal
 	}
 	private levelSlash3_Internal: mw.TextBlock
 	public get levelSlash3(): mw.TextBlock {
 		if(!this.levelSlash3_Internal&&this.uiWidgetBase) {
-			this.levelSlash3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/levelSlash3') as mw.TextBlock
+			this.levelSlash3_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/canvasNumber/levelSlash3') as mw.TextBlock
 		}
 		return this.levelSlash3_Internal
 	}
 	private infoLevel4_Internal: mw.TextBlock
 	public get infoLevel4(): mw.TextBlock {
 		if(!this.infoLevel4_Internal&&this.uiWidgetBase) {
-			this.infoLevel4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoLevel4') as mw.TextBlock
+			this.infoLevel4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/canvasNumber/infoLevel4') as mw.TextBlock
 		}
 		return this.infoLevel4_Internal
 	}
 	private levelSlash4_Internal: mw.TextBlock
 	public get levelSlash4(): mw.TextBlock {
 		if(!this.levelSlash4_Internal&&this.uiWidgetBase) {
-			this.levelSlash4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/levelSlash4') as mw.TextBlock
+			this.levelSlash4_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/canvasNumber/levelSlash4') as mw.TextBlock
 		}
 		return this.levelSlash4_Internal
 	}
 	private infoLevel5_Internal: mw.TextBlock
 	public get infoLevel5(): mw.TextBlock {
 		if(!this.infoLevel5_Internal&&this.uiWidgetBase) {
-			this.infoLevel5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoLevel5') as mw.TextBlock
+			this.infoLevel5_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/canvasInfo/canvasNumber/infoLevel5') as mw.TextBlock
 		}
 		return this.infoLevel5_Internal
 	}
@@ -204,19 +225,26 @@ export default class TalentTreeContainer_Generate extends UIScript {
 		}
 		return this.mRequired_Internal
 	}
-	private infoBtn_Internal: mw.StaleButton
-	public get infoBtn(): mw.StaleButton {
-		if(!this.infoBtn_Internal&&this.uiWidgetBase) {
-			this.infoBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoBtn') as mw.StaleButton
-		}
-		return this.infoBtn_Internal
-	}
 	private txtUnlocked_Internal: mw.TextBlock
 	public get txtUnlocked(): mw.TextBlock {
 		if(!this.txtUnlocked_Internal&&this.uiWidgetBase) {
 			this.txtUnlocked_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/txtUnlocked') as mw.TextBlock
 		}
 		return this.txtUnlocked_Internal
+	}
+	private imgUpgradeBg_Internal: mw.Image
+	public get imgUpgradeBg(): mw.Image {
+		if(!this.imgUpgradeBg_Internal&&this.uiWidgetBase) {
+			this.imgUpgradeBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/imgUpgradeBg') as mw.Image
+		}
+		return this.imgUpgradeBg_Internal
+	}
+	private infoBtn_Internal: mw.StaleButton
+	public get infoBtn(): mw.StaleButton {
+		if(!this.infoBtn_Internal&&this.uiWidgetBase) {
+			this.infoBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/infoCanvas/infoBtn') as mw.StaleButton
+		}
+		return this.infoBtn_Internal
 	}
 	private goldTxt_1_Internal: mw.TextBlock
 	public get goldTxt_1(): mw.TextBlock {
@@ -339,6 +367,9 @@ export default class TalentTreeContainer_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.infoTxt)
+	   
+	
+	   this.initLanguage(this.infoTxtName)
 	   
 	
 	   this.initLanguage(this.infoTxtDesc)
