@@ -1131,7 +1131,6 @@ class WaitState extends StageBaseState {
         );
 
         this.fsm.owner.addGold(currentWave.waveGold);
-        // TODO 把S端的代码改同步
         if (this._wave > 0) {
             for (const player of this.fsm.owner.players) {
                 const goldAmount = TalentUtils.getModuleSRunesValueById(1005, player);
