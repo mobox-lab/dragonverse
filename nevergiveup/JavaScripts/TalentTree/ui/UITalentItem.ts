@@ -11,32 +11,20 @@ export class UITalentItem extends TalentItem_Generate {
 
     protected onStart(): void {
         Gtk.trySetVisibility(this.mLocked, false);
-
-        this.mItem.size = new Vector2(80, 80);
-        this.mItem.position = new Vector2(0, 0);
-
-        this.mNotActive.size = new Vector2(80, 80);
-        this.mNotActive.position = new Vector2(0, 0);
+        Gtk.trySetVisibility(this.textTalentName, false);
 
         this.textTalentLevel.size = new Vector2(80, 15);
         this.textTalentLevel.position = new Vector2(0, 70);
-
-        this.textTalentName.size = new Vector2(80, 15);
-        this.textTalentName.position = new Vector2(0, 100);
 
         Yoact.bindYoact(() => {
             if (this.canActive.status) {
                 Gtk.trySetVisibility(this.mNotActive, false);
                 this.textTalentLevel.fontColor = LinearColor.white;
                 this.textTalentLevel.setOutlineColorByHex(this._talent?.data.outlineColor);
-                this.textTalentName.fontColor = LinearColor.white;
-                this.textTalentName.outlineColor = LinearColor.black;
             } else {
                 Gtk.trySetVisibility(this.mNotActive, true);
                 this.textTalentLevel.setFontColorByHex("#6D6D6D");
                 this.textTalentLevel.setOutlineColorByHex("#BDBDBD");
-                this.textTalentName.setFontColorByHex("#6D6D6D");
-                this.textTalentName.setOutlineColorByHex("#BDBDBD");
             }
         });
     }
@@ -53,6 +41,12 @@ export class UITalentItem extends TalentItem_Generate {
         this.textTalentName.text = GameConfig.Language.getElement(this._talent.data.name).Value;
         this.mItem.normalImageGuid = this._talent.data.icon;
         this.mNotActive.imageGuid = this._talent.data.iconGray;
+
+        this.mItem.size = new Vector2(this._talent.data.infoSize, this._talent.data.infoSize);
+        this.mItem.position = new Vector2(this._talent.data.infoPos[0], this._talent.data.infoPos[1]);
+        this.mNotActive.size = new Vector2(this._talent.data.infoSize, this._talent.data.infoSize);
+        this.mNotActive.position = new Vector2(this._talent.data.infoPos[0], this._talent.data.infoPos[1]);
+
         this.canActive.status = this._talent.canActive.status;
         const level = this._talent.level;
         const maxLevel = this._talent.maxLevel;

@@ -92,9 +92,11 @@ export class TalentItem extends TalentItem_Generate {
         this.mItem.size = new Vector2(data.iconSize, data.iconSize);
         this.mLocked.size = new Vector2(data.iconSize, data.iconSize);
         this.mNotActive.size = new Vector2(data.iconSize, data.iconSize);
+        this.mSelected.size = new Vector2(data.selectedSize, data.selectedSize);
         this.mItem.position = new Vector2(data.iconPos[0], data.iconPos[1]);
         this.mLocked.position = new Vector2(data.iconPos[0], data.iconPos[1]);
         this.mNotActive.position = new Vector2(data.iconPos[0], data.iconPos[1]);
+        this.mSelected.position = new Vector2(data.selectedPos[0], data.selectedPos[1]);
     }
 
     public setCurrentLevel(index: number) {
