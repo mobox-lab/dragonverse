@@ -104,6 +104,7 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
         const cost = talent.getUpdateLevelCost();
         this.goldTxt_1.text = `${cost[0] ?? "--"}`;
         this.techPointTxt_1.text = `${cost[1] ?? "--"}`;
+        this.infoTxtName.text = StringUtil.format(GameConfig.Language.getElement(talent.data.name).Value, value);
         this.infoTxtDesc.text = StringUtil.format(GameConfig.Language.getElement(talent.data.desc).Value, value);
         this.infoBtn.enable = talent.canActive.status && talent.level < talent.maxLevel;
     }
