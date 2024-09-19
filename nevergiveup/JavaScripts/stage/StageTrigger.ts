@@ -254,9 +254,9 @@ export default class StageTrigger extends Script {
             const stages = GameManager.getStages();
             const allGroupIndex = stages.map((stage) => stage.stageCfg.groupIndex);
             const isAlreadyUsed = allGroupIndex.includes(stageInfo.groupIndex);
-            if (isAlreadyUsed) {
-                // todo改多语言
-                console.log("该舞台已经开始，请前往其他舞台开始游戏");
+            const groupIndex = stageInfo.groupIndex;
+
+            if (isAlreadyUsed && groupIndex !== 10056 && groupIndex !== 10057) {
                 const player = Player.getPlayer(playerID);
                 mw.Event.dispatchToClient(
                     player,
