@@ -542,7 +542,10 @@ export class Enemy implements BuffBag {
                 let anim = this.go.loadAnimation(cfg.deadAnim);
                 let speedMultipler = 1;
                 if (GameManager.getStageClient()) {
-                    speedMultipler = GameManager.getStageClient().speedMultipler;
+                    speedMultipler =
+                        GameManager.getStageClient().speedMultipler === 0
+                            ? 1
+                            : GameManager.getStageClient().speedMultipler;
                     anim.speed = speedMultipler;
                 }
                 anim.loop = 1;
