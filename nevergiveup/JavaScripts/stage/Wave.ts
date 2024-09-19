@@ -477,8 +477,8 @@ export class WaveUtil {
 
                     if (Array.isArray(waves)) {
                         let newWaves: WaveConfig[] = waves;
-                        if (this.waveTimes % 5 === 0) {
-                            const times = this.waveTimes / 5;
+                        if (this.waveTimes >= 5) {
+                            const times = Math.floor(this.waveTimes / 5);
                             newWaves = waves.map((item) => {
                                 const newEnemies = item.enemies.map((enemy) => {
                                     const spawnInterval = enemy.spawnInterval * Math.pow(0.8, times);
@@ -488,17 +488,27 @@ export class WaveUtil {
                                         spawnInterval: spawnInterval > 0.5 ? Number(spawnInterval.toFixed(2)) : 0.5,
                                     };
                                 });
-                                const waveTime = item.waveTime * Math.pow(0.8, times);
+                                const waveTime = (item.waveTime > 30 ? 30 : item.waveTime) * Math.pow(0.8, times);
                                 const escapeDamagePercent = 1 * Math.pow(1.2, times);
                                 return {
                                     ...item,
-                                    waveTime: waveTime > 0.5 ? Number(waveTime.toFixed(2)) : 0.5,
-                                    hpMultiplier: item.hpMultiplier * Math.pow(1.2, times),
+                                    waveTime: waveTime > 5 ? Number(waveTime.toFixed(0)) : 5,
+                                    hpMultiplier: 1 * Math.pow(1.2, times),
                                     enemies: newEnemies,
                                     escapeDamagePercent: escapeDamagePercent,
                                 };
                             });
+                        } else {
+                            newWaves = waves.map((item) => {
+                                const waveTime = item.waveTime > 30 ? 30 : item.waveTime;
+                                return {
+                                    ...item,
+                                    waveTime: waveTime,
+                                    hpMultiplier: 1,
+                                };
+                            });
                         }
+
                         waveInfo = newWaves.shift();
                         this.currentWaves = newWaves;
                         this.waveTimes++;

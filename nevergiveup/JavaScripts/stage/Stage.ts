@@ -827,7 +827,7 @@ export class StageC {
                         StageActions.onStageWin.call(this.stageWorldIndex);
                     }
                     SoundUtil.PlaySoundById(2008);
-                }else{
+                } else {
                     SoundUtil.PlaySoundById(2009);
                 }
                 StageActions.onStageComplete.call(this.stageWorldIndex);
