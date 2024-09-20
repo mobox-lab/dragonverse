@@ -759,7 +759,7 @@ export class StageC {
                 ui.setTimer(this.duration);
                 ui.setWave(wave, waveMax);
 
-                WaveManager.addWave(new Wave(waveContent));
+                WaveManager.addWave(new Wave(waveContent, wave - 1));
                 // if (waveContent.airDrop) {
                 //     WaveManager.addAirdrop(new WaveAirdrop(waveContent.airDrop));
                 // }
