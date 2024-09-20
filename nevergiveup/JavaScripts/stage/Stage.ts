@@ -562,12 +562,14 @@ export class StageS {
         }
         if (this._hp + hp >= this._maxHp) {
             // 回血回满
+            this._hp = this._maxHp;
             this.boardcast((player) => {
                 Event.dispatchToClient(player, "setStageHp", this._maxHp, this._maxHp);
             });
         } else {
+            this._hp = this._hp + hp;
             this.boardcast((player) => {
-                Event.dispatchToClient(player, "setStageHp", this._hp + hp, this._maxHp);
+                Event.dispatchToClient(player, "setStageHp", this._hp, this._maxHp);
             });
         }
     }
@@ -754,8 +756,6 @@ export class StageC {
                 // let waves: WaveConfig[] =
                 //     STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(this.stageIndex, this.difficulty)].waves;
                 // let waveMax = waves.length;
-
-                // todo waveMax 为99999的是无尽模式
                 ui.setTimer(this.duration);
                 ui.setWave(wave, waveMax);
 
@@ -1131,6 +1131,8 @@ class WaitState extends StageBaseState {
         );
 
         this.fsm.owner.addGold(currentWave.waveGold);
+        console.log("this._wave: " + this._wave);
+
         if (this._wave > 0) {
             for (const player of this.fsm.owner.players) {
                 const goldAmount = TalentUtils.getModuleSRunesValueById(1005, player);
@@ -1139,6 +1141,7 @@ class WaitState extends StageBaseState {
                 const hpAmount = TalentUtils.getModuleSRunesValueById(1010, player);
                 const hpAmount2 = TalentUtils.getModuleSRunesValueById(1034, player);
                 this.fsm.owner.addPlayerGold(goldAmount + goldAmount2, player);
+                console.log("hpAmount + hpAmount2", hpAmount, hpAmount2);
                 this.fsm.owner.addHp(hpAmount + hpAmount2);
             }
         }
