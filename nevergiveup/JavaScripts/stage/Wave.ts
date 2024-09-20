@@ -31,16 +31,20 @@ export class Wave {
     spawnIntervals: number[][] = [];
     gates: number[][] = [];
     spawnTimers: number[] = [];
-    constructor(wave: WaveConfig) {
-        for (let i = 0; i < wave.enemies.length; i++) {
+    waveInfo: WaveConfig = null;
+    wave: number = null;
+    constructor(waveConfig: WaveConfig, wave?: number) {
+        this.wave = wave;
+        this.waveInfo = waveConfig;
+        for (let i = 0; i < waveConfig.enemies.length; i++) {
             this.enemyTypes[i] = [];
             this.spawnIntervals[i] = [];
             this.gates[i] = [];
-            for (let j = 0; j < wave.enemies[i].count; j++) {
-                this.enemyTypes[i].push(wave.enemies[i].type);
-                this.spawnIntervals[i].push(wave.enemies[i].spawnInterval);
-                if (wave.enemies[i].gate) {
-                    this.gates[i].push(wave.enemies[i].gate);
+            for (let j = 0; j < waveConfig.enemies[i].count; j++) {
+                this.enemyTypes[i].push(waveConfig.enemies[i].type);
+                this.spawnIntervals[i].push(waveConfig.enemies[i].spawnInterval);
+                if (waveConfig.enemies[i].gate) {
+                    this.gates[i].push(waveConfig.enemies[i].gate);
                 } else {
                     this.gates[i].push(0);
                 }
@@ -55,7 +59,9 @@ export class Wave {
             this.spawnIntervals[index].shift();
             let gate = this.gates[index].shift();
             // ... spawn enemy logic here ...
-            let enemy = new Enemy(WaveManager.currentWaveIndex, enemyType, gate);
+            let enemy = this.wave
+                ? new Enemy(this.wave, enemyType, gate)
+                : new Enemy(WaveManager.currentWaveIndex, enemyType, gate, this.waveInfo);
             this.enemies.push(enemy);
             WaveManager.enemies.push(enemy);
             // 新怪物提示删除

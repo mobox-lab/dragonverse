@@ -13,6 +13,7 @@ import { MapManager } from "../MapScript";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 import TowerBase from "../Modules/TowerModule/Tower/TowerBase";
 import TalentUtils from "../Modules/talent/TalentUtils";
+import { WaveConfig } from "../StageEnums";
 import GainUI from "../UI/Tower/GainUI";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
@@ -92,7 +93,7 @@ export class Enemy implements BuffBag {
     armorActive: boolean = false;
     magicResistActive: boolean = false;
 
-    constructor(wave: number, configId: number, gate: number) {
+    constructor(wave: number, configId: number, gate: number, waveInfo?: WaveConfig) {
         this.id = Enemy.count;
         Enemy.count++;
         this.wave = wave;
@@ -101,11 +102,14 @@ export class Enemy implements BuffBag {
         let config = GameConfig.Monster.getElement(configId);
         let stageConfig = GameManager.getStageConfig();
         let stage = GameManager.getStageClient();
-        // let waveConfig = STAGE_CONFIG[StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)].waves[wave]; //老版本
-        const [waveConfig] = WaveUtil.fitOldConfig(stage.stageCfgId, wave + 1);
-        // let waveConfig = NEW_STAGE_CONFIG[
-        //     StageUtil.getIndexFromIdAndDifficulty(stage.stageIndex, stage.difficulty)
-        // ].waves(wave + 1);
+        let waveConfig: WaveConfig;
+        if (waveInfo) {
+            waveConfig = waveInfo;
+        } else {
+            const [wc] = WaveUtil.fitOldConfig(stage.stageCfgId, wave + 1);
+            waveConfig = wc;
+        }
+      
         let waveMultiplier = waveConfig?.hpMultiplier || 1;
         let difficlutyMutliplier = stageConfig.difficultyhp;
         let multiplayerMultiplier = GameManager.getMultiplayerMultiplier();
