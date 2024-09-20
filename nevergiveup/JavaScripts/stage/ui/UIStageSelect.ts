@@ -137,7 +137,6 @@ export class UIStageSelect extends StageSelect_Generate {
             } else {
                 item = UIService.create(UIStageDifficulty);
                 item.mDifficulty.onClicked.add(() => {
-                    console.log(this._ownerId, "ownerId");
                     if (Utils.isLocalPlayer(this._ownerId)) {
                         if (item.unlocked) {
                             this._script.setDifficulty(Player.localPlayer.playerId, i);
@@ -303,7 +302,12 @@ export class UIStageSelect extends StageSelect_Generate {
     onShow(script: StageTrigger) {
         MGSTool.page("level");
         this._script = script;
-        this.setDifficulty();
+        if (this._script.stageWorldIndex === 5 || this._script.stageWorldIndex === 6) {
+            this._difficulty = [];
+            this.mSelectDifficulty.removeAllChildren();
+        } else {
+            this.setDifficulty();
+        }
         TweenCommon.popUpShow(this.rootCanvas);
     }
 
