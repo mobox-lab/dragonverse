@@ -30,6 +30,7 @@ import Gtk from "gtoolkit";
 import PlayerModuleC from "./Modules/PlayerModule/PlayerModuleC";
 import BuildItemUI from "./UI/BuildItemUI";
 import { GlobalData } from "./const/GlobalData";
+import { TowerModuleC } from "./Modules/TowerModule/TowerModuleC";
 
 export const ChatType = {
     Text: 1,
@@ -101,6 +102,7 @@ export namespace GameManager {
                 const waveUtil = new WaveUtil();
                 waveUtil.clearCurrent(id);
                 ModuleService.getModule(WaveModuleC).syncWaveUtil(stage.id, waveUtil);
+                ModuleService.getModule(TowerModuleC).syncMaxSourceTower();
                 StageActions.onStageCreated.call(id);
                 StageActions.onPlayerCountChanged.call(stage.playerIds.length);
                 WaveManager.init();
