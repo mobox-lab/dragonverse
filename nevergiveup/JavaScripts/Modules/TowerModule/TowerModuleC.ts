@@ -48,6 +48,7 @@ import KeyOperationManager from "../../controller/key-operation-manager/KeyOpera
  */
 export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     private _maxTower: number = 20;
+    private _maxSourceTower: number = 3;
     private _try: boolean;
     public get maxTower(): number {
         if (!this._maxTower) {
@@ -57,6 +58,16 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
     }
     public set maxTower(v: number) {
         this._maxTower = v;
+    }
+
+    public get maxSourceTower(): number {
+        if (!this._maxSourceTower) {
+            this._maxSourceTower = 3;
+        }
+        return this._maxSourceTower;
+    }
+    public set maxSourceTower(v: number) {
+        this._maxSourceTower = v;
     }
 
     private _chooseSlotID: number = null;
@@ -411,12 +422,17 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
             this.chooseSlotID = null;
             return;
         } else {
-            let fullFlag = TowerManager.myTowerCount >= this.maxTower;
-            if (fullFlag) {
-                //自创塔满的tips
+            const sourceTower = GameConfig.Tower.getAllElement()
+                .filter((o) => o.type === 3)
+                .map((i) => i.id);
+            let fullFlag = TowerManager.sourceTowerCount >= this.maxSourceTower;
+            if (fullFlag && sourceTower.includes(this._buildID)) {
+                // 资源塔满额了
                 TweenCommon.goldFailedShow(UIService.getUI(UIMain).towerTxt);
                 TipsManager.showTips(GameConfig.Language.getElement("Text_TowerFull").Value);
-            } else if (this._try && this._tryTowerMap.has(this._buildID)) {
+                return;
+            }
+            if (this._try && this._tryTowerMap.has(this._buildID)) {
                 await this.createTower({
                     playerID: this.localPlayer.playerId,
                     playerName: GameManager.playerName,
@@ -425,7 +441,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                     level: 0,
                 });
                 this.cancelChosenTower();
-            } else if (GameManager.checkGold(this._cfg.spend[0]) && !fullFlag) {
+            } else if (GameManager.checkGold(this._cfg.spend[0])) {
                 await this.createTower({
                     playerID: this.localPlayer.playerId,
                     playerName: GameManager.playerName,

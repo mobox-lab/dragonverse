@@ -158,10 +158,13 @@ export class UIMain extends MainUI_Generate {
             this.goldTxt.text = v.toFixed();
         })
         TowerActions.onMyTowerCountChanged.add(() => {
-            this.towerTxt.text = TowerManager.myTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxTower?.toFixed(0);
+            this.towerTxt.text = TowerManager.sourceTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
+        })
+        TowerActions.onSourceTowerCountChanged.add(() => {
+            this.towerTxt.text = TowerManager.sourceTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
         })
         StageActions.onPlayerCountChanged.add(() => {
-            this.towerTxt.text = TowerManager.myTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxTower?.toFixed(0);
+            this.towerTxt.text = TowerManager.sourceTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
         });
 
         for (let i = 0; i < 3; i++) {
@@ -273,7 +276,7 @@ export class UIMain extends MainUI_Generate {
         this.playing = true;
         this.play();
         this.speedDown();
-        this.towerTxt.text = TowerManager.myTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxTower?.toFixed(0);
+        this.towerTxt.text = TowerManager.sourceTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
     }
     protected onHide(): void {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.I);
