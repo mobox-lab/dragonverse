@@ -192,6 +192,17 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         }
     }
 
+    public syncMaxSourceTower() {
+        let stage = GameManager.getStageClient();
+        let currentStage = stage ? stage.stageCfgId : -1;
+        const stageCfg = StageUtil.getStageCfgById(currentStage);
+        if (stageCfg.groupIndex === 10056) {
+            this.maxSourceTower = 5;
+        } else {
+            this.maxSourceTower = 3;
+        }
+    }
+
     /**
      * 状态切换回调
      * @param state 状态
@@ -201,6 +212,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         let stage = GameManager.getStageClient();
         let currentStage = stage ? stage.stageCfgId : -1;
         const stageCfg = StageUtil.getStageCfgById(currentStage);
+
         let currentWave = stage ? stage.currentWave : -1;
         // let currentWave = stage ? stage.stageId : -1;
         switch (state) {
