@@ -67,6 +67,7 @@ export const TowerActions = {
     onUpgradeTower: new Action1<number>(),
     // 新的逻辑，老的不动
     onTowerBuild: new Action1<ElementEnum>(),
+    onSourceTowerCountChanged: new Action1<number>(),
 };
 
 export const InteractActions = {

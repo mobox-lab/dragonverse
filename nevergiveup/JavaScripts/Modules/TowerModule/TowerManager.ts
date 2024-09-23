@@ -23,6 +23,7 @@ import { TowerInfo, TowerType } from "./TowerEnum";
 export namespace TowerManager {
     export let towerMap: Map<number, TowerBase> = new Map();
     export let myTowerCount: number = 0;
+    export let sourceTowerCount: number = 0;
     let quadTree: QuadTree;
 
     export function init() {}
@@ -73,7 +74,19 @@ export namespace TowerManager {
             }
         });
         myTowerCount = count;
+
+        let sourceCount = 0;
+        const sourceTower = GameConfig.Tower.getAllElement()
+            .filter((o) => o.type === 3)
+            .map((i) => i.id);
+        towerMap.forEach((value) => {
+            if (value.info.playerID === playerID && sourceTower.includes(value.info.configID)) {
+                sourceCount++;
+            }
+        });
+        sourceTowerCount = sourceCount;
         TowerActions.onMyTowerCountChanged.call(myTowerCount);
+        TowerActions.onSourceTowerCountChanged.call(sourceTowerCount);
     }
 
     export function upgradeTower(info: TowerInfo, playerId: number = null) {
