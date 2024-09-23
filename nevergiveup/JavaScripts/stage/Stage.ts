@@ -247,6 +247,9 @@ export class StageS {
                                 // 本营死亡
                                 this.settleData.hasWin = false;
                                 this._fsm.changeState(SettleState, false);
+                                this.boardcast((player) => {
+                                    Event.dispatchToClient(player, "setStageHp", 0, this._maxHp);
+                                });
                                 return;
                             }
                         }
