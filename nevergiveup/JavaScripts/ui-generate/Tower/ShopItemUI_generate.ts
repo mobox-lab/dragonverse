@@ -162,13 +162,6 @@ export default class ShopItemUI_Generate extends UIScript {
 		}
 		return this.imgSelected_Internal
 	}
-	private unlockedTxt_Internal: mw.TextBlock
-	public get unlockedTxt(): mw.TextBlock {
-		if(!this.unlockedTxt_Internal&&this.uiWidgetBase) {
-			this.unlockedTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/unlockedTxt') as mw.TextBlock
-		}
-		return this.unlockedTxt_Internal
-	}
 	private chooseBtn_Internal: mw.Button
 	public get chooseBtn(): mw.Button {
 		if(!this.chooseBtn_Internal&&this.uiWidgetBase) {
@@ -211,9 +204,6 @@ export default class ShopItemUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.nameTxt)
-	   
-	
-	   this.initLanguage(this.unlockedTxt)
 	   
 	
 	   //文本多语言
