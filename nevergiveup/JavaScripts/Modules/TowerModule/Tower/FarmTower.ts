@@ -67,7 +67,7 @@ export default class FarmTower extends TowerBase {
     public get outputStr(): string {
         return StringUtil.format(
             GameConfig.Language.getElement("Text_FarmTowerStr").Value,
-            Utils.numTofix(this._accumulateDamage, 2)
+            Utils.formatNumber(Math.floor(this._accumulateDamage))
         );
     }
     /**

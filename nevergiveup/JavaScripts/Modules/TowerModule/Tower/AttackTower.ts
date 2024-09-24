@@ -23,7 +23,7 @@ export default class AttackTower extends TowerBase {
     public get outputStr(): string {
         return StringUtil.format(
             GameConfig.Language.getElement("Text_AttackTowerStr").Value,
-            Utils.numTofix(this._accumulateDamage, 2)
+            Utils.formatNumber(Math.floor(this._accumulateDamage))
         );
     }
 

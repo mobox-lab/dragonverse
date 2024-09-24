@@ -12,12 +12,10 @@ import { TowerModuleC } from "../../Modules/TowerModule/TowerModuleC";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { ITowerElement } from "../../config/Tower";
-import TowerItemUI_Generate from "../../ui-generate/Tower/TowerItemUI_generate";
-import TowerUI from "./TowerUI";
-import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
 import { GlobalData } from "../../const/GlobalData";
+import TowerItemUI_Generate from "../../ui-generate/Tower/TowerItemUI_generate";
+import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
 import TowerShopUI from "./TowerShopUI";
-import TowerSmallTagItem_Generate from "../../ui-generate/Tower/TowerSmallTagItem_generate";
 
 export default class TowerItemUI extends TowerItemUI_Generate {
 	public cfg: ITowerElement = null;
@@ -51,10 +49,10 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 	 * 初始化
 	 * @param cfgID 信息id
 	 */
-	public init(cfgID: number, smallTag: boolean = false) {
+	public init(cfgID: number) {
 		if (!cfgID) this.cfg = null;
 		else this.cfg = GameConfig.Tower.getElement(cfgID);
-		this.initObj(smallTag);
+		this.initObj();
 	}
 
 	public getTags() {
@@ -72,7 +70,7 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 	/**
 	 * 初始化组件
 	*/
-	private initObj(smallTag: boolean = false) {
+	private initObj() {
 		if (!this.cfg) {
 			Gtk.trySetVisibility(this.mCanvas_add, SlateVisibility.Visible);
 			Gtk.trySetVisibility(this.mContainer_tower, SlateVisibility.Collapsed);
@@ -99,7 +97,7 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 			const tags = this.getTags();
 			const len = tags?.length ?? 0;
 			for (let i = 0; i < len; i++) {
-				let item = smallTag ? UIService.create(TowerSmallTagItem_Generate): UIService.create(TowerTagItem_Generate);
+				let item = UIService.create(TowerTagItem_Generate);
 				this.icontagCanvas.addChild(item.uiObject);
 				// item.txt_tag.text = GameConfig.Language.getElement(tags[i])?.Value
 				item.img_tag.imageGuid = tags[i];
