@@ -40,15 +40,14 @@ export namespace GlobalData {
     export class Shop {
         /** 局外金币、局内金币图标 guid */
         public static priceGoldIconGuid: string[] =["376847", "385388"];
-        // 商店 tag 图标： 单体、群体、物理、魔法
-        public static shopTagIconGuid: string[] = ["418947", "418886", "418960", "418940"];
+        // 商店 tag 图标： 单体、群体、物理、魔法、能量、增益
+        public static shopTagIconGuid: string[] = ["418947", "418886", "418960", "418940","427024","427023"];
         /** 商店item背景 各元素对应 光 暗 水 火 木 土 guid */
         public static shopItemBgGuid: string[] = ["426438", "426435", "426447", "426437", "426433", "426434"];
         /** 商店item角标 各元素对应 光 暗 水 火 木 土 guid */
         public static shopItemCornerIconGuid: string[] = ["392791", "392792", "392800", "392788", "392801", "392804"];
         /** 商店攻击力图标 攻击/产出/增益 guid */
         public static shopItemFightIconGuid: string[] = ["423971", "421493", "424749"];
-
         /**筛选 - 元素选项 all, 光暗水火木土 */
         public static shopElementsOpts: string[] = [
             "Sift_1",

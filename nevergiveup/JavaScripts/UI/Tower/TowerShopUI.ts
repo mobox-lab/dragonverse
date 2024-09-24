@@ -209,13 +209,12 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	public getTags() {
 		const cfg = this._cfg;
 		const tags = [];
-		if(cfg?.attackCount?.length)
+		if(cfg?.attackCount?.length && ![3, 4].includes(cfg.adap))
 			tags.push(cfg.attackCount[0] > 1 ? GlobalData.Shop.shopTagIconGuid[1] : GlobalData.Shop.shopTagIconGuid[0]); // shopTagIconGuid[0] 单体 shopTagIconGuid[1] 群体
 		// adap 1为物理伤害，2为法术伤害，3为产出，4为增益
-		if(cfg?.adap === 1)
-			tags.push(GlobalData.Shop.shopTagIconGuid[2]);
-		else if(cfg?.adap === 2)
-			tags.push(GlobalData.Shop.shopTagIconGuid[3]);
+		if(cfg?.adap) {
+			tags.push(GlobalData.Shop.shopTagIconGuid[cfg.adap + 1]);// 1-物理 2-法术 3-产出 4-增益
+		}
 		return tags;
 	}
 

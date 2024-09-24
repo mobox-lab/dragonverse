@@ -99,16 +99,15 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 			this.initObj();
 		}
 	}
-	public getTags() {
-		const cfg = this._cfg;
+	public getTags() { 
+		const cfg = this.cfg;
 		const tags = [];
-		if(cfg?.attackCount?.length)
+		if(cfg?.attackCount?.length && ![3, 4].includes(cfg.adap))
 			tags.push(cfg.attackCount[0] > 1 ? GlobalData.Shop.shopTagIconGuid[1] : GlobalData.Shop.shopTagIconGuid[0]); // shopTagIconGuid[0] 单体 shopTagIconGuid[1] 群体
 		// adap 1为物理伤害，2为法术伤害，3为产出，4为增益
-		if(cfg?.adap === 1)
-			tags.push(GlobalData.Shop.shopTagIconGuid[2]);
-		else if(cfg?.adap === 2)
-			tags.push(GlobalData.Shop.shopTagIconGuid[3]);
+		if(cfg?.adap) {
+			tags.push(GlobalData.Shop.shopTagIconGuid[cfg.adap + 1]);// 1-物理 2-法术 3-产出 4-增益
+		}
 		return tags;
 	}
 	/**
@@ -122,7 +121,13 @@ export default class ShopItemUI extends ShopItemUI_Generate {
 		this.elementImg.imageGuid = GlobalData.Shop.shopItemCornerIconGuid[(this._cfg?.elementTy || 1) - 1];
 		this.nameTxt.text = this._cfg.name;
 		this.txt_sell.text = this._cfg.shopPrice.toFixed(0);
-		this.txt_atk.text = Utils.formatNumber(this._cfg.attackDamage[0]);
+		
+		const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
+		if(!sInfo?.strategyKey && this._cfg?.adap === 4) {
+ 			const { value } = GlobalData.Shop.getTowerBuffTextItem(this._cfg, 0, 0) ?? {};
+			this.txt_atk.text = value;
+		} else this.txt_atk.text = Utils.formatNumber(this._cfg.attackDamage[0]);
+
 		this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[0];
 		if(this._cfg.adap === 3) this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[1];
 		if(this._cfg.adap === 4) this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[2];

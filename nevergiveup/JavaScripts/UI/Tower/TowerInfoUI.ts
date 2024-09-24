@@ -83,13 +83,12 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
 	public getTags() {
 		const cfg = this._cfg;
 		const tags = [];
-		if(cfg?.attackCount?.length)
+		if(cfg?.attackCount?.length && ![3, 4].includes(cfg.adap))
 			tags.push(cfg.attackCount[0] > 1 ? GlobalData.Shop.shopTagIconGuid[1] : GlobalData.Shop.shopTagIconGuid[0]); // shopTagIconGuid[0] 单体 shopTagIconGuid[1] 群体
 		// adap 1为物理伤害，2为法术伤害，3为产出，4为增益
-		if(cfg?.adap === 1)
-			tags.push(GlobalData.Shop.shopTagIconGuid[2]);
-		else if(cfg?.adap === 2)
-			tags.push(GlobalData.Shop.shopTagIconGuid[3]);
+		if(cfg?.adap) {
+			tags.push(GlobalData.Shop.shopTagIconGuid[cfg.adap + 1]);// 1-物理 2-法术 3-产出 4-增益
+		}
 		return tags;
 	}
 
@@ -175,7 +174,17 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         this.ownerTxt.text = StringUtil.format(GameConfig.Language.getElement("Text_CreatePlayerName").Value, Utils.truncateString(this._tower.info.playerName, 13));
         this.valueTxt.text = tower.outputStr;
         this.txt_price_deploy.text = this._cfg.spend.slice(0, tower.level+1).reduce((pre, cur) => pre+cur,0).toFixed(0);
-        this.txt_fight.text = Utils.formatNumber(this._cfg.attackDamage[tower.level]);
+        
+		const sInfo = GlobalData.Shop.getStrategyInfo(this._cfg.id);
+		if(!sInfo?.strategyKey && this._cfg?.adap === 4) {
+ 			const { value } = GlobalData.Shop.getTowerBuffTextItem(this._cfg, tower.level, 0) ?? {};
+			this.txt_fight.text = value;
+		} else  this.txt_fight.text = Utils.formatNumber(this._cfg.attackDamage[tower.level]);
+
+		this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[0];
+		if(this._cfg.adap === 3) this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[1];
+		if(this._cfg.adap === 4) this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[2];
+
         this.updateStrategyUI();
 		const tags = this.getTags();
 		const len = tags?.length ?? 0;
