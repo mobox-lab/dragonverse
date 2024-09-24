@@ -30,20 +30,23 @@ export class UISettleCommon extends SettleCommon_Generate {
      * 初始化UI，并给一些按钮添加点击事件
      */
     onAwake() {
+        super.onAwake();
         this.layer = mw.UILayerSystem;
+        const hideTween = new ZwtTween(this.rootCanvas)
+        .UIOpacityTo(0, 0.2, mw.TweenUtil.Easing.Linear.None, true)
+        .scaleTo(new Vector(1.1), 0.15, false)
+        .scaleTo(Vector.one, 0.15, false)
+        .call(() => {
+            mw.UIService.hideUI(this);
+        })
         // this.enUI_1.imageGuid = GameConfig.Language.getElement("Img_Reward").Value;
         this.btnScreen.onClicked.add(() => {
             // this._callBack && this._callBack();
-            new ZwtTween(this.rootCanvas)
-                .UIOpacityTo(0, 0.2, mw.TweenUtil.Easing.Linear.None, true)
-                .scaleTo(new Vector(1.1), 0.15, false)
-                .scaleTo(Vector.one, 0.15, false)
-                .call(() => {
-                    mw.UIService.hideUI(this);
-                })
-                .start()
+            hideTween.start()
         });
-
+        this.btnConfirm.onClicked.add(() => {
+            hideTween.start()
+        })
         // for (let i = 0; i < 5; i++) {
         //     let item = mw.UIService.create(UICommonItem);
         //     this._commonItems.push(item);
