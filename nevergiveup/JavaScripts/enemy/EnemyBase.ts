@@ -627,6 +627,8 @@ export class Enemy implements BuffBag {
         // });
         // 飞行增伤
         let flyingDamageBoost = 0;
+        let flyingBonus = 0;
+        let flyingBonus2 = 0;
         if (this.hasComponent(FlyingComponent)) {
             const flyingDamageBoosts = buffs.filter((buff) => buff.cfg.flyingDamageBoost !== 0);
             if (flyingDamageBoosts.length > 0) {
@@ -637,6 +639,9 @@ export class Enemy implements BuffBag {
                 }, null);
                 flyingDamageBoost = maxArmorPenItem.cfg.flyingDamageBoost;
             }
+            // 天赋树的对空加成
+            flyingBonus = TalentUtils.getModuleCRunesValueById(1020);
+            flyingBonus2 = TalentUtils.getModuleCRunesValueById(1044);
         }
 
         // 破甲和法穿
@@ -696,9 +701,6 @@ export class Enemy implements BuffBag {
                 "apBonus,apBonus2,apBonusD,apBonusInfinite,damage"
             );
         }
-        // 天赋树的对空加成
-        const flyingBonus = TalentUtils.getModuleCRunesValueById(1020);
-        const flyingBonus2 = TalentUtils.getModuleCRunesValueById(1044);
 
         // 固定增伤
         let attackFixDamage = 0;

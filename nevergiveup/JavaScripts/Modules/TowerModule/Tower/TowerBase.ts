@@ -49,7 +49,7 @@ export default abstract class TowerBase implements BuffBag {
     public buffManager: BuffManager;
     public property: TowerProperty;
     // 临时存的，用来兼容之前的代码
-    public property2: TowerProperty;
+    public propertyPercent: TowerProperty;
     // 暖机的特效
     public propertyWarmUp: TowerProperty;
     public oriTransform: Transform;
@@ -147,12 +147,12 @@ export default abstract class TowerBase implements BuffBag {
         const attackRange = TalentUtils.getModuleCRunesValueById(1016);
         const attackRange2 = TalentUtils.getModuleCRunesValueById(1040);
         const attackRangeD = TalentUtils.getModuleCRunesValueById(2003);
-        this.property2 = {
+        this.propertyPercent = {
             attackTime: 1 - (attackSpeed + attackSpeed2 + attackSpeedD) / 100,
             findRange: 1 + (attackRange + attackRange2 + attackRangeD) / 100,
-            attackCount: 0,
-            attackRange: 0,
-            attackDamage: 0,
+            attackCount: 1,
+            attackRange: 1,
+            attackDamage: 1,
         };
 
         // 初始化科技树的buff
@@ -221,9 +221,9 @@ export default abstract class TowerBase implements BuffBag {
         for (const p in this.property) {
             // console.log(`${property}: ${this.property[property]}`);
             if (this.isWarmUp) {
-                this.property[p] = this.property2[p] * this.calculateAttribute(p) + this.propertyWarmUp[p];
+                this.property[p] = this.propertyPercent[p] * this.calculateAttribute(p) + this.propertyWarmUp[p];
             } else {
-                this.property[p] = this.calculateAttribute(p) * this.property2[p];
+                this.property[p] = this.propertyPercent[p] * this.calculateAttribute(p);
             }
         }
         Event.dispatchToLocal(TowerEvent.UpdateInfo, this);
