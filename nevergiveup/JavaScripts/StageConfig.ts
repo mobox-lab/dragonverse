@@ -1621,8 +1621,8 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 hpMultiplier: 1,
             },
             {
-                enemies: [{ type: 1027, count: 20, spawnInterval: 7 }],
-                waveGold: 150,
+                enemies: [{ type: 1027, count: 15, spawnInterval: 7 }],
+                waveGold: 200,
                 waveTime: 15,
                 hpMultiplier: 1.5,
             },
@@ -1721,14 +1721,14 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
     {
         waves: [
             {
-                enemies: [{ type: 1028, count: 20, spawnInterval: 2 }],
+                enemies: [{ type: 1028, count: 20, spawnInterval: 5 }],
                 waveGold: 200,
-                waveTime: 10,
+                waveTime: 30,
                 hpMultiplier: 1.2,
             },
             {
                 enemies: [{ type: 1026, count: 5, spawnInterval: 5 }],
-                waveGold: 150,
+                waveGold: 200,
                 waveTime: 30,
                 hpMultiplier: 1.2,
             },
@@ -1843,7 +1843,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 30,
-                hpMultiplier: 1,
+                hpMultiplier: 2,
             },
             //4-1-4
             {
@@ -1853,7 +1853,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 50,
-                hpMultiplier: 1,
+                hpMultiplier: 4,
             },
             //4-1-5
             {
@@ -1863,7 +1863,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 30,
-                hpMultiplier: 3.5,
+                hpMultiplier: 20,
             },
             //4-1-6
             {
@@ -1873,8 +1873,8 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 300,
-                hpMultiplier: 2.4,
-            },   
+                hpMultiplier: 13,
+            },     
         ],
     },
     // 世界4-普通
@@ -1917,7 +1917,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 200,
                 waveTime: 25,
-                hpMultiplier: 1,
+                hpMultiplier: 4,
             },
             //4-2-5
             {
@@ -1927,7 +1927,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 200,
                 waveTime: 35,
-                hpMultiplier: 2.5,
+                hpMultiplier: 10,
             },
             //4-2-6
             {
@@ -1937,7 +1937,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 200,
                 waveTime: 20,
-                hpMultiplier: 1.1,
+                hpMultiplier: 4.5,
             },
             //4-2-7
             {
@@ -1946,7 +1946,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 200,
                 waveTime: 25,
-                hpMultiplier: 7,
+                hpMultiplier: 30,
             },
             //4-2-8
             {
@@ -1955,7 +1955,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 200,
                 waveTime: 35,
-                hpMultiplier: 7,
+                hpMultiplier: 27,
             },
             //4-2-9
             {
@@ -1965,7 +1965,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 200,
                 waveTime: 20,
-                hpMultiplier: 13,
+                hpMultiplier: 47,
             },
             //4-2-10
             {
@@ -1975,14 +1975,13 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 200,
                 waveTime: 300,
-                hpMultiplier: 16,
+                hpMultiplier: 65,
             },
         ],
     },
     // 世界4-困难
     {
         waves: [
-            //4-3-1
             //4-3-1
             {
                 enemies: [
@@ -2019,7 +2018,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 30,
-                hpMultiplier: 3,
+                hpMultiplier: 12,
             },
             //4-3-5
             {
@@ -2028,7 +2027,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 25,
-                hpMultiplier: 4,
+                hpMultiplier: 16,
             },
             //4-3-6
             {
@@ -2038,7 +2037,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 25,
-                hpMultiplier: 1.2,
+                hpMultiplier: 5,
             },
             //4-3-7
             {
@@ -2048,7 +2047,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 30,
-                hpMultiplier: 0.7,
+                hpMultiplier: 3,
             },
             //4-3-8
             {
@@ -2057,7 +2056,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 30,
-                hpMultiplier: 4.5,
+                hpMultiplier: 18,
             },
             //4-3-9
             {
@@ -2067,7 +2066,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 30,
-                hpMultiplier: 9,
+                hpMultiplier: 20,
             },
             //4-3-10
             {
@@ -2076,7 +2075,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 25,
-                hpMultiplier: 6,
+                hpMultiplier: 25,
             },
             //4-3-11
             {
@@ -2085,7 +2084,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 25,
-                hpMultiplier: 9,
+                hpMultiplier: 40,
             },
             //4-3-12
             {
@@ -2095,7 +2094,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 40,
-                hpMultiplier: 8,
+                hpMultiplier: 40,
             },
             //4-3-13
             {
@@ -2104,7 +2103,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 25,
-                hpMultiplier: 7,
+                hpMultiplier: 42,
             },
             //4-3-14
             {
@@ -2113,7 +2112,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 30,
-                hpMultiplier: 18,
+                hpMultiplier: 130,
             },
             //4-3-15
             {
@@ -2123,7 +2122,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 250,
                 waveTime: 300,
-                hpMultiplier: 10,
+                hpMultiplier: 70,
             },
         ],
     },
@@ -2153,43 +2152,43 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                     { type: 1043, count: 1, spawnInterval: 5, gate: 0 },
                     { type: 1049, count: 1, spawnInterval: 5, gate: 1 },
                 ],
-                waveGold: 150,
+                waveGold: 120,
                 waveTime: 10,
-                hpMultiplier: 2.2,
+                hpMultiplier: 2.4,
             },
             {
                 enemies: [
                     { type: 1064, count: 15, spawnInterval: 3, gate: 0 },
                     { type: 1044, count: 15, spawnInterval: 3, gate: 1 },
                 ],
-                waveGold: 150,
+                waveGold: 120,
                 waveTime: 45,
-                hpMultiplier: 2.5,
+                hpMultiplier: 6,
             },
             {
                 enemies: [
                     { type: 1052, count: 15, spawnInterval: 3, gate: 0 },
                     { type: 1062, count: 1, spawnInterval: 5, gate: 1 },
                 ],
-                waveGold: 150,
+                waveGold: 120,
                 waveTime: 45,
-                hpMultiplier: 3,
+                hpMultiplier: 9,
             },
             {
                 enemies: [
                     { type: 1028, count: 15, spawnInterval: 2, gate: 0 },
                     { type: 1026, count: 2, spawnInterval: 10, gate: 1 },
                 ],
-                waveGold: 150,
+                waveGold: 120,
                 waveTime: 300,
-                hpMultiplier: 4,
+                hpMultiplier: 15,
             },
         ],
     },
     // 世界5-普通
     {
         waves: [
-//5-2-1
+    //5-2-1
             {
                 enemies: [
                     { type: 1051, count: 25, spawnInterval: 2, gate: 0 },
@@ -2199,239 +2198,239 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 waveTime: 30,
                 hpMultiplier: 2,
             },
-//5-2-2
+    //5-2-2
             {
                 enemies: [
                     { type: 1024, count: 10, spawnInterval: 3, gate: 0 },
                     { type: 1042, count: 2, spawnInterval: 10, gate: 1 },
                 ],
-                waveGold: 200,
+                waveGold: 150,
                 waveTime: 30,
                 hpMultiplier: 3,
             },
-//5-2-3
+    //5-2-3
             {
                 enemies: [
                     { type: 1033, count: 15, spawnInterval: 4, gate: 0 },
                     { type: 1034, count: 10, spawnInterval: 3, gate: 1 },
                 ],
-                waveGold: 200,
+                waveGold: 150,
                 waveTime: 30,
                 hpMultiplier: 4,
             },
-//5-2-4
+    //5-2-4
             {
                 enemies: [
                     { type: 1054, count: 10, spawnInterval: 3, gate: 1 }
                 ],
-                waveGold: 200,
+                waveGold: 150,
                 waveTime: 25,
-                hpMultiplier: 8,
+                hpMultiplier: 16,
             },
-//5-2-5
+    //5-2-5
             {
                 enemies: [
                     { type: 1032, count: 1, spawnInterval: 3, gate: 0 },
                     { type: 1049, count: 1, spawnInterval: 3, gate: 1 },
                 ],
-                waveGold: 200,
+                waveGold: 150,
                 waveTime: 35,
-                hpMultiplier: 3,
+                hpMultiplier: 5,
             },
-//5-2-6
+    //5-2-6
             {
                 enemies: [
                     { type: 1031, count: 1, spawnInterval: 3, gate: 0 },
                     { type: 1012, count: 1, spawnInterval: 3, gate: 1 },
                 ],
-                waveGold: 200,
+                waveGold: 150,
                 waveTime: 20,
-                hpMultiplier: 4,
+                hpMultiplier: 10,
             },
-//5-2-7
+    //5-2-7
             {
                 enemies: [
                     { type: 1056, count: 10, spawnInterval: 2, gate: 0 },
                 ],
-                waveGold: 200,
+                waveGold: 150,
                 waveTime: 25,
-                hpMultiplier: 6,
+                hpMultiplier: 15,
             },
-//5-2-8
+    //5-2-8
             {
                 enemies: [
                     { type: 1023, count: 1, spawnInterval: 5, gate: 1 },
                 ],
-                waveGold: 200,
+                waveGold: 150,
                 waveTime: 35,
-                hpMultiplier: 8,
+                hpMultiplier: 25,
             },
-//5-2-9
+    //5-2-9
             {
                 enemies: [
                     { type: 1052, count: 6, spawnInterval: 3, gate: 0 },
                     { type: 1032, count: 1, spawnInterval: 3, gate: 1 },
                 ],
-                waveGold: 200,
+                waveGold: 150,
                 waveTime: 20,
-                hpMultiplier: 3,
+                hpMultiplier: 12,
             },
-//5-2-10
+    //5-2-10
             {
                 enemies: [
                     { type: 1050, count: 8, spawnInterval: 3, gate: 0 },
                     { type: 1014, count: 1, spawnInterval: 3, gate: 1 },
                 ],
-                waveGold: 200,
+                waveGold: 150,
                 waveTime: 300,
-                hpMultiplier: 3.8,
+                hpMultiplier: 17,
             },
         ],
     },
     // 世界5-困难
     {
         waves: [
-//5-3-1
+    //5-3-1
             {
                 enemies: [
                     { type: 1028, count: 15, spawnInterval: 2, gate: 0 },
                 ],
                 waveGold: 360,
                 waveTime: 35,
-                hpMultiplier: 2,
+                hpMultiplier: 2.2,
             },
-//5-3-2
+    //5-3-2
             {
                 enemies: [
                     { type: 1034, count: 5, spawnInterval: 4, gate: 0 },
                     { type: 1047, count: 5, spawnInterval: 4, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 2,
+                hpMultiplier: 2.4,
             },
-//5-3-3
+    //5-3-3
             {
                 enemies: [
                     { type: 1063, count: 10, spawnInterval: 3, gate: 0 },
                     { type: 1046, count: 5, spawnInterval: 5, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 30,
                 hpMultiplier: 3,
             },
-//5-3-4
+    //5-3-4
             {
                 enemies: [
                     { type: 1019, count: 5, spawnInterval: 5, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 3,
+                hpMultiplier: 6,
             },
-//5-3-5
+    //5-3-5
             {
                 enemies: [
                     { type: 1031, count: 10, spawnInterval: 3, gate: 0 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 6,
+                hpMultiplier: 15,
             },
-//5-3-6
+    //5-3-6
             {
                 enemies: [
                     { type: 1030, count: 30, spawnInterval: 1, gate: 0 },
                     { type: 1051, count: 30, spawnInterval: 1, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 35,
-                hpMultiplier: 2,
+                hpMultiplier: 4,
             },
-//5-3-7
+    //5-3-7
             {
                 enemies: [
                     { type: 1014, count: 3, spawnInterval: 10, gate: 0 },
                     { type: 1056, count: 10, spawnInterval: 3, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 35,
-                hpMultiplier: 5,
+                hpMultiplier: 10,
             },
-//5-3-8
+    //5-3-8
             {
                 enemies: [
                     { type: 1032, count: 3, spawnInterval: 8, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 9,
+                hpMultiplier: 20,
             },
-//5-3-9
+    //5-3-9
             {
                 enemies: [
                     { type: 1065, count: 12, spawnInterval: 2, gate: 0 },
                     { type: 1042, count: 10, spawnInterval: 3, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 4,
+                hpMultiplier: 12,
             },
-//5-3-10
+    //5-3-10
             {
                 enemies: [
                     { type: 1019, count: 3, spawnInterval: 8, gate: 0 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 25,
-                hpMultiplier: 9,
+                hpMultiplier: 30,
             },
-//5-3-11
+    //5-3-11
             {
                 enemies: [
                     { type: 1064, count: 7, spawnInterval: 2, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 25,
-                hpMultiplier: 7,
+                hpMultiplier: 30,
             },
-//5-3-12
+    //5-3-12
             {
                 enemies: [
                     { type: 1049, count: 3, spawnInterval: 8, gate: 0 },
                     { type: 1052, count: 7, spawnInterval: 3, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 5,
+                hpMultiplier: 18,
              },
-//5-3-13
+    //5-3-13
             {
                 enemies: [
                     { type: 1041, count: 3, spawnInterval: 8, gate: 0 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 9,
+                hpMultiplier: 35,
             },
-//5-3-14
+    //5-3-14
             {
                 enemies: [
                     { type: 1063, count: 10, spawnInterval: 2, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 13,
+                hpMultiplier: 55,
             },
-//5-3-15
+    //5-3-15
             {
                 enemies: [
                     { type: 1058, count: 15, spawnInterval: 5, gate: 0 },
                     { type: 1049, count: 3, spawnInterval: 8, gate: 1 },
                 ],
-                waveGold: 300,
+                waveGold: 180,
                 waveTime: 300,
-                hpMultiplier: 8,
+                hpMultiplier: 31,
             },
         ],
     },

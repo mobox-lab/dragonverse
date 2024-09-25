@@ -8,6 +8,7 @@
 
 import { GameConfig } from "../../config/GameConfig";
 import { Reward } from "../../tool/Reward";
+import Utils from "../../Utils";
 import { TimerModuleUtils } from "../TimeModule/time";
 import { EmTaskType, TaskModuleC } from "./TaskModuleC";
 import { TaskModuleDataHelper } from "./TaskModuleDataHelper";
@@ -48,13 +49,26 @@ export class TaskModuleS extends ModuleS<TaskModuleC, TaskModuleDataHelper> {
 	 * @returns 是否完成
 	 */
 	public net_finishTask(taskId: number): boolean {
-		if (!this.currentData.finishTasks.includes(taskId)) {
-			this.currentData.finishTasks.push(taskId);
-			Reward.grantReward(this.currentPlayer, GameConfig.Task.getElement(taskId).rewards)
-			this.currentData.save(false);
-			return true;
+		const userId = this.currentPlayer?.userId ?? '';
+		try {
+			if (!this.currentData.finishTasks.includes(taskId)) {
+				this.currentData.finishTasks.push(taskId);
+				const cfg = GameConfig.Task.getElement(taskId);
+				Utils.logP12Info("A_QuestFinish", {
+					timestamp: Date.now(),
+					userId,
+					questid: taskId,
+					questtype: cfg?.taskType, // 1主线 2日常
+				})
+				Reward.grantReward(this.currentPlayer, cfg.rewards, null, taskId)
+				this.currentData.save(false);
+				return true;
+			}
+			return false;
+		} catch (e) {
+			Utils.logP12Info("A_Error","net_finishTask error" + " userId:" + userId + " error:" + e);
+			return false;
 		}
-		return false;
 	}
 
 }
