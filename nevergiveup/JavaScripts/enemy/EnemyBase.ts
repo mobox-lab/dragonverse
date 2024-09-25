@@ -109,7 +109,7 @@ export class Enemy implements BuffBag {
             const [wc] = WaveUtil.fitOldConfig(stage.stageCfgId, wave + 1);
             waveConfig = wc;
         }
-      
+
         let waveMultiplier = waveConfig?.hpMultiplier || 1;
         let difficlutyMutliplier = stageConfig.difficultyhp;
         let multiplayerMultiplier = GameManager.getMultiplayerMultiplier();
@@ -666,7 +666,14 @@ export class Enemy implements BuffBag {
             const adBonusD = TalentUtils.getModuleCRunesValueById(2001);
             const adBonusInfinite = TalentUtils.getModuleCRunesValueById(1047);
             damage = damage * (1 + (adBonus + adBonus2 + adBonusD + adBonusInfinite) / 100);
-            console.log(adBonus, adBonus2, adBonusD, damage, "adBonus,adBonus2 , adBonusD,damage");
+            console.log(
+                adBonus,
+                adBonus2,
+                adBonusD,
+                adBonusInfinite,
+                damage,
+                "adBonus,adBonus2,adBonusD,adBonusInfinite,damage"
+            );
         } else if (damageType === DamageType.MAGIC) {
             // 天赋树的魔法攻击加成
             // 龙娘祝福
@@ -675,7 +682,14 @@ export class Enemy implements BuffBag {
             const apBonusD = TalentUtils.getModuleCRunesValueById(2002);
             const apBonusInfinite = TalentUtils.getModuleCRunesValueById(1048);
             damage = damage * (1 + (apBonus + apBonus2 + apBonusD + apBonusInfinite) / 100);
-            console.log(apBonus, apBonus2, apBonusD, damage, "apBonus, apBonus2, apBonusD, damage");
+            console.log(
+                apBonus,
+                apBonus2,
+                apBonusD,
+                apBonusInfinite,
+                damage,
+                "apBonus,apBonus2,apBonusD,apBonusInfinite,damage"
+            );
         }
         // 天赋树的对空加成
         const flyingBonus = TalentUtils.getModuleCRunesValueById(1020);
@@ -692,9 +706,29 @@ export class Enemy implements BuffBag {
             }, null);
             attackFixDamage = maxAttackFixItem.cfg.attackFixDamage;
         }
+
+        let attackDamagePercent = 0;
+        const attackPercents = buffs.filter((buff) => buff.cfg.attackDamagePercent !== 0);
+        if (attackPercents.length > 0) {
+            const maxAttackPercentItem = attackPercents.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.attackDamagePercent > (maxItem ? maxItem.cfg.attackDamagePercent : -Infinity)
+                    ? currentItem
+                    : maxItem;
+            }, null);
+            attackDamagePercent = maxAttackPercentItem.cfg.attackDamagePercent;
+        }
+        const attackDamagePercentValue = tower.attackDamage * attackDamagePercent;
+        const fixedDamage = attackFixDamage >= attackDamagePercentValue ? attackFixDamage : attackDamagePercentValue;
         // P1 伤害
-        const P1Damage = damage * (1 + (flyingBonus + flyingBonus2) / 100) + flyingDamageBoost + attackFixDamage;
-        console.log(flyingBonus, flyingBonus2, P1Damage, "flyingBonus, flyingBonus2, P1Damage");
+        const P1Damage = damage * (1 + (flyingBonus + flyingBonus2) / 100) + flyingDamageBoost + fixedDamage;
+        console.log(
+            flyingBonus,
+            flyingBonus2,
+            attackFixDamage,
+            attackDamagePercentValue,
+            P1Damage,
+            "flyingBonus,flyingBonus2,attackFixDamage,attackDamagePercentValue,P1Damage"
+        );
         // P2 伤害
         const P2Percent = this.elementalRestraint(tower);
         const P2Damage = P1Damage * P2Percent;
