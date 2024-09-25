@@ -106,9 +106,9 @@ export class UIStageSelect extends StageSelect_Generate {
                 if (stageC) {
                     // game is already exist
                 } else {
-                    SoundUtil.PlaySoundById(2011);
                     this._script.changeOwnerByClick(Player.localPlayer.playerId);
-                    this._script.startGame(Player.localPlayer.playerId);
+                    const res = this._script.startGame(Player.localPlayer.playerId);
+                    if (res) SoundUtil.PlaySoundById(2011);
                 }
             } else {
                 TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);

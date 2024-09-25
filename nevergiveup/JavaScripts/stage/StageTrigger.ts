@@ -263,11 +263,13 @@ export default class StageTrigger extends Script {
                     GlobalEventName.ServerTipsEventName,
                     GameConfig.Language.getElement("Text_stageAlreadyUsed").Value
                 );
+                return false;
             } else {
                 Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`);
                 if (Utils.isInfiniteMode(groupIndex)) {
                     // 无尽模式直接开始
                     GameManager.startGame(ids, this.stageCfgId);
+                    return true;
                 } else {
                     if (
                         !ModuleService.getModule(EnergyModuleS).isAfford(
@@ -281,10 +283,11 @@ export default class StageTrigger extends Script {
                             GlobalEventName.ServerTipsEventName,
                             GameConfig.Language.getElement("Text_insufficientStamina").Value
                         );
-                        return;
+                        return false;
                     }
                     ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
                     GameManager.startGame(ids, this.stageCfgId);
+                    return true;
                 }
             }
         }
