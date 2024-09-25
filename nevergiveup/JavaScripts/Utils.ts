@@ -521,4 +521,12 @@ export default class Utils {
         const tokenE = token / GameServiceConfig.Ether;
         return tokenE.toString(10);
     }
+
+    public static isInfiniteMode(index: number) {
+        return index === 10056;
+    }
+    
+    public static isInfiniteOrTrainingMode(index: number) {
+        return index === 10056 || index === 10057;
+    }
 }

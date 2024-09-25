@@ -109,7 +109,7 @@ export class Enemy implements BuffBag {
             const [wc] = WaveUtil.fitOldConfig(stage.stageCfgId, wave + 1);
             waveConfig = wc;
         }
-      
+
         let waveMultiplier = waveConfig?.hpMultiplier || 1;
         let difficlutyMutliplier = stageConfig.difficultyhp;
         let multiplayerMultiplier = GameManager.getMultiplayerMultiplier();
@@ -212,6 +212,8 @@ export class Enemy implements BuffBag {
 
     applyBuff(buff: number) {
         const addBuffRes = this.buffManager.addBuff(buff);
+        console.log(buff, addBuffRes, "addBuff");
+
         if (addBuffRes) {
             this.updateAttributes();
         }
@@ -267,7 +269,7 @@ export class Enemy implements BuffBag {
         const slowAndRoot = this.buffManager.buffs.filter((buff) => buff.cfg.speed !== 0);
         if (slowAndRoot.length > 0) {
             // 记录生效时间，和生效的时长
-            const root = slowAndRoot.filter((buff) => buff.cfg.speed === -999);
+            const root = slowAndRoot.filter((buff) => buff.cfg.speed === 999);
             if (root.length > 0) {
                 this.speed = 1;
                 this.anim = this.go.loadAnimation("217836");
@@ -278,12 +280,15 @@ export class Enemy implements BuffBag {
                     this.anim.play();
                 }
             } else {
-                const minSpeedItem = slowAndRoot.reduce((minItem, currentItem) => {
-                    return currentItem.cfg.speed < (minItem ? minItem.cfg.speed : Infinity) ? currentItem : minItem;
+                const maxSpeedItem = slowAndRoot.reduce((maxItem, currentItem) => {
+                    return currentItem.cfg.speed > (maxItem ? maxItem.cfg.speed : -Infinity) ? currentItem : maxItem;
                 }, null);
-                this.speed = this.speed + minSpeedItem.cfg.speed;
+                console.log(maxSpeedItem.cfg.speed, "生效的减速百分比");
+                this.speed = config.speed * (1 - maxSpeedItem.cfg.speed / 100);
+                console.log("减速后的速度", this.speed);
             }
         } else {
+            console.log("减速恢复", config.speed);
             this.speed = config.speed;
         }
     }
@@ -666,7 +671,14 @@ export class Enemy implements BuffBag {
             const adBonusD = TalentUtils.getModuleCRunesValueById(2001);
             const adBonusInfinite = TalentUtils.getModuleCRunesValueById(1047);
             damage = damage * (1 + (adBonus + adBonus2 + adBonusD + adBonusInfinite) / 100);
-            console.log(adBonus, adBonus2, adBonusD, damage, "adBonus,adBonus2 , adBonusD,damage");
+            console.log(
+                adBonus,
+                adBonus2,
+                adBonusD,
+                adBonusInfinite,
+                damage,
+                "adBonus,adBonus2,adBonusD,adBonusInfinite,damage"
+            );
         } else if (damageType === DamageType.MAGIC) {
             // 天赋树的魔法攻击加成
             // 龙娘祝福
@@ -675,7 +687,14 @@ export class Enemy implements BuffBag {
             const apBonusD = TalentUtils.getModuleCRunesValueById(2002);
             const apBonusInfinite = TalentUtils.getModuleCRunesValueById(1048);
             damage = damage * (1 + (apBonus + apBonus2 + apBonusD + apBonusInfinite) / 100);
-            console.log(apBonus, apBonus2, apBonusD, damage, "apBonus, apBonus2, apBonusD, damage");
+            console.log(
+                apBonus,
+                apBonus2,
+                apBonusD,
+                apBonusInfinite,
+                damage,
+                "apBonus,apBonus2,apBonusD,apBonusInfinite,damage"
+            );
         }
         // 天赋树的对空加成
         const flyingBonus = TalentUtils.getModuleCRunesValueById(1020);
@@ -692,9 +711,29 @@ export class Enemy implements BuffBag {
             }, null);
             attackFixDamage = maxAttackFixItem.cfg.attackFixDamage;
         }
+
+        let attackDamagePercent = 0;
+        const attackPercents = buffs.filter((buff) => buff.cfg.attackDamagePercent !== 0);
+        if (attackPercents.length > 0) {
+            const maxAttackPercentItem = attackPercents.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.attackDamagePercent > (maxItem ? maxItem.cfg.attackDamagePercent : -Infinity)
+                    ? currentItem
+                    : maxItem;
+            }, null);
+            attackDamagePercent = maxAttackPercentItem.cfg.attackDamagePercent;
+        }
+        const attackDamagePercentValue = tower.attackDamage * attackDamagePercent;
+        const fixedDamage = attackFixDamage >= attackDamagePercentValue ? attackFixDamage : attackDamagePercentValue;
         // P1 伤害
-        const P1Damage = damage * (1 + (flyingBonus + flyingBonus2) / 100) + flyingDamageBoost + attackFixDamage;
-        console.log(flyingBonus, flyingBonus2, P1Damage, "flyingBonus, flyingBonus2, P1Damage");
+        const P1Damage = damage * (1 + (flyingBonus + flyingBonus2) / 100) + flyingDamageBoost + fixedDamage;
+        console.log(
+            flyingBonus,
+            flyingBonus2,
+            attackFixDamage,
+            attackDamagePercentValue,
+            P1Damage,
+            "flyingBonus,flyingBonus2,attackFixDamage,attackDamagePercentValue,P1Damage"
+        );
         // P2 伤害
         const P2Percent = this.elementalRestraint(tower);
         const P2Damage = P1Damage * P2Percent;
@@ -959,7 +998,31 @@ export class Enemy implements BuffBag {
             const speedBonusD = TalentUtils.getModuleCRunesValueById(2004);
             const config = GameConfig.Monster.getElement(this.configId);
             // this.speed = this.speed * (1 + (speedBonus + speedBonus2 + speedBonusD) / 100);
-            this.speed = config.speed;
+            // 减速和禁锢
+            const slowAndRoot = this.buffManager.buffs.filter((buff) => buff.cfg.speed !== 0);
+            if (slowAndRoot.length > 0) {
+                // 记录生效时间，和生效的时长
+                const root = slowAndRoot.filter((buff) => buff.cfg.speed === 999);
+                if (root.length > 0) {
+                    this.speed = 1;
+                    this.anim = this.go.loadAnimation("217836");
+                    if (GameManager.getStageClient()) {
+                        this.anim.loop = 1;
+                        let speedMultipler = GameManager.getStageClient().speedMultipler || 1;
+                        this.anim.speed = speedMultipler;
+                        this.anim.play();
+                    }
+                } else {
+                    const maxSpeedItem = slowAndRoot.reduce((maxItem, currentItem) => {
+                        return currentItem.cfg.speed > (maxItem ? maxItem.cfg.speed : -Infinity)
+                            ? currentItem
+                            : maxItem;
+                    }, null);
+                    this.speed = config.speed * (1 - maxSpeedItem.cfg.speed / 100);
+                }
+            } else {
+                this.speed = config.speed;
+            }
         }
         if (now - this.createTime > 10 && !this.armorActive) {
             // 恢复护甲
