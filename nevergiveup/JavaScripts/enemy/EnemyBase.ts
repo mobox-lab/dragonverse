@@ -212,6 +212,8 @@ export class Enemy implements BuffBag {
 
     applyBuff(buff: number) {
         const addBuffRes = this.buffManager.addBuff(buff);
+        console.log(buff, addBuffRes, "addBuff");
+
         if (addBuffRes) {
             this.updateAttributes();
         }
@@ -267,7 +269,7 @@ export class Enemy implements BuffBag {
         const slowAndRoot = this.buffManager.buffs.filter((buff) => buff.cfg.speed !== 0);
         if (slowAndRoot.length > 0) {
             // 记录生效时间，和生效的时长
-            const root = slowAndRoot.filter((buff) => buff.cfg.speed === -999);
+            const root = slowAndRoot.filter((buff) => buff.cfg.speed === 999);
             if (root.length > 0) {
                 this.speed = 1;
                 this.anim = this.go.loadAnimation("217836");
@@ -278,12 +280,15 @@ export class Enemy implements BuffBag {
                     this.anim.play();
                 }
             } else {
-                const minSpeedItem = slowAndRoot.reduce((minItem, currentItem) => {
-                    return currentItem.cfg.speed < (minItem ? minItem.cfg.speed : Infinity) ? currentItem : minItem;
+                const maxSpeedItem = slowAndRoot.reduce((maxItem, currentItem) => {
+                    return currentItem.cfg.speed > (maxItem ? maxItem.cfg.speed : -Infinity) ? currentItem : maxItem;
                 }, null);
-                this.speed = this.speed + minSpeedItem.cfg.speed;
+                console.log(maxSpeedItem.cfg.speed, "生效的减速百分比");
+                this.speed = config.speed * (1 - maxSpeedItem.cfg.speed / 100);
+                console.log("减速后的速度", this.speed);
             }
         } else {
+            console.log("减速恢复", config.speed);
             this.speed = config.speed;
         }
     }
@@ -993,7 +998,31 @@ export class Enemy implements BuffBag {
             const speedBonusD = TalentUtils.getModuleCRunesValueById(2004);
             const config = GameConfig.Monster.getElement(this.configId);
             // this.speed = this.speed * (1 + (speedBonus + speedBonus2 + speedBonusD) / 100);
-            this.speed = config.speed;
+            // 减速和禁锢
+            const slowAndRoot = this.buffManager.buffs.filter((buff) => buff.cfg.speed !== 0);
+            if (slowAndRoot.length > 0) {
+                // 记录生效时间，和生效的时长
+                const root = slowAndRoot.filter((buff) => buff.cfg.speed === 999);
+                if (root.length > 0) {
+                    this.speed = 1;
+                    this.anim = this.go.loadAnimation("217836");
+                    if (GameManager.getStageClient()) {
+                        this.anim.loop = 1;
+                        let speedMultipler = GameManager.getStageClient().speedMultipler || 1;
+                        this.anim.speed = speedMultipler;
+                        this.anim.play();
+                    }
+                } else {
+                    const maxSpeedItem = slowAndRoot.reduce((maxItem, currentItem) => {
+                        return currentItem.cfg.speed > (maxItem ? maxItem.cfg.speed : -Infinity)
+                            ? currentItem
+                            : maxItem;
+                    }, null);
+                    this.speed = config.speed * (1 - maxSpeedItem.cfg.speed / 100);
+                }
+            } else {
+                this.speed = config.speed;
+            }
         }
         if (now - this.createTime > 10 && !this.armorActive) {
             // 恢复护甲
