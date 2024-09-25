@@ -196,7 +196,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         let stage = GameManager.getStageClient();
         let currentStage = stage ? stage.stageCfgId : -1;
         const stageCfg = StageUtil.getStageCfgById(currentStage);
-        if (stageCfg.groupIndex === 10056) {
+        if (Utils.isInfiniteMode(stageCfg.groupIndex)) {
             this.maxSourceTower = 5;
         } else {
             this.maxSourceTower = 3;

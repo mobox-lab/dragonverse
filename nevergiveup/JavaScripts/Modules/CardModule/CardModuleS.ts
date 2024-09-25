@@ -56,6 +56,11 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
         return data.equipCards;
     }
 
+    public getPlayerUnlockCards(player: Player) {
+        let data = ModuleService.getModule(CardModuleS).getPlayerData(player);
+        return data.unlockCards;
+    }
+
     /** 脚本被销毁时最后一帧执行完调用此函数 */
     protected onDestroy(): void {}
 }

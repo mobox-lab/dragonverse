@@ -265,22 +265,27 @@ export default class StageTrigger extends Script {
                 );
             } else {
                 Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`);
-                if (
-                    !ModuleService.getModule(EnergyModuleS).isAfford(
-                        playerID,
-                        GameServiceConfig.STAMINA_COST_START_GAME
-                    )
-                ) {
-                    Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
-                    mw.Event.dispatchToClient(
-                        Player.getPlayer(playerID),
-                        GlobalEventName.ServerTipsEventName,
-                        GameConfig.Language.getElement("Text_insufficientStamina").Value
-                    );
-                    return;
+                if (Utils.isInfiniteMode(groupIndex)) {
+                    // 无尽模式直接开始
+                    GameManager.startGame(ids, this.stageCfgId);
+                } else {
+                    if (
+                        !ModuleService.getModule(EnergyModuleS).isAfford(
+                            playerID,
+                            GameServiceConfig.STAMINA_COST_START_GAME
+                        )
+                    ) {
+                        Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
+                        mw.Event.dispatchToClient(
+                            Player.getPlayer(playerID),
+                            GlobalEventName.ServerTipsEventName,
+                            GameConfig.Language.getElement("Text_insufficientStamina").Value
+                        );
+                        return;
+                    }
+                    ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
+                    GameManager.startGame(ids, this.stageCfgId);
                 }
-                ModuleService.getModule(EnergyModuleS).consume(playerID, GameServiceConfig.STAMINA_COST_START_GAME);
-                GameManager.startGame(ids, this.stageCfgId);
             }
         }
     }

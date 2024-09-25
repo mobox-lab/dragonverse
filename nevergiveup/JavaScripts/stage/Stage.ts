@@ -526,8 +526,15 @@ export class StageS {
                 // 卡牌
                 let card = GameConfig.Tower.getElement(item.itemTypeid);
                 this.settleData.reward.push({ guid: card.imgGuid, amount: amount, type: item.itemType });
-                // TODO: 实际添加卡牌
-                ModuleService.getModule(CardModuleS).giveCard(player, card.id);
+                // 实际添加卡牌
+                // 判断卡牌是否已经存在
+                const cards = ModuleService.getModule(CardModuleS).getPlayerUnlockCards(player) || [];
+                if (cards.includes(card.id)) {
+                    // 已经存在，给钱
+                    ModuleService.getModule(PlayerModuleS).changeGold(player, 1000);
+                } else {
+                    ModuleService.getModule(CardModuleS).giveCard(player, card.id);
+                }
             } else if (item.itemType == 3) {
                 // 科技点
                 this.settleData.reward.push({ guid: item.itemImgGuid, amount: amount, type: item.itemType });
@@ -538,14 +545,19 @@ export class StageS {
                 ModuleService.getModule(PlayerModuleS).changeExp(player, amount);
             }
         }
-        if (!this.settleData.hasWin) {
-            // 返还体力
-            this.settleData.reward.push({
-                guid: "376844",
-                amount: GameServiceConfig.STAMINA_BACK_START_GAME,
-                type: null,
-            });
-            ModuleService.getModule(EnergyModuleS).addEnergy(player.userId, GameServiceConfig.STAMINA_BACK_START_GAME);
+        if (!Utils.isInfiniteMode(stageConfig.groupIndex)) {
+            if (!this.settleData.hasWin) {
+                // 返还体力
+                this.settleData.reward.push({
+                    guid: "376844",
+                    amount: GameServiceConfig.STAMINA_BACK_START_GAME,
+                    type: null,
+                });
+                ModuleService.getModule(EnergyModuleS).addEnergy(
+                    player.userId,
+                    GameServiceConfig.STAMINA_BACK_START_GAME
+                );
+            }
         }
     }
 
