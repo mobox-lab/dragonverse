@@ -1,6 +1,7 @@
 import CardModuleS from "../Modules/CardModule/CardModuleS";
 import { PlayerModuleS } from "../Modules/PlayerModule/PlayerModuleS";
 import { UISettleCommon } from "../UI/Reward/UISettleCommon";
+import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
 import { ItemType } from "./Enum";
 
@@ -54,13 +55,25 @@ export namespace Reward {
         return guid;
     }
 
-    export function grantReward(player: Player, rewardArr: number[][], callBack: Function = null) {
+    export function grantReward(player: Player, rewardArr: number[][], callBack: Function = null, taskId?: number) {
         if (SystemUtil.isClient()) {
             showCommonRewards(rewardArr, callBack);
             Event.dispatchToServer("grantRewardC2S", rewardArr);
         } else {
+            const userId = player?.userId ?? '';
             makeReward(player, rewardArr, callBack);
             Event.dispatchToClient(player, "grantRewardS2C", rewardArr);
+            const cfg = GameConfig.Task.getElement(taskId);
+            if(cfg?.rewards){
+                const reward = cfg.rewards.map(([id, count]) => count); // 局外金币，科技点，exp
+                Utils.logP12Info("A_QuestClaim", {
+                    timestamp: Date.now(),
+                    userId,
+                    questid: taskId,
+                    questtype: cfg?.taskType, // 1主线 2日常
+                    reward,
+                })
+            }
         }
     }
 

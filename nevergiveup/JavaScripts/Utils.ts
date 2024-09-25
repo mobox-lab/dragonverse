@@ -41,7 +41,7 @@ export default class Utils {
     private static iconData: { [key: string]: mw.AssetIconData } = {};
 
     // 日志优化 上报
-    public static logP12Info(name: string, info: any, type?: "error" | "info" | "warn"): void {
+    public static logP12Info(name: string, info: any, type: "error" | "info" | "warn" = 'info'): void {
         const announcer = { name };
         const msg = JSON.stringify(info) + " #P12";
         if(type == "error"){

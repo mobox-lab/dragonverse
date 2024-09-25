@@ -6,6 +6,7 @@
  * @FilePath: \nevergiveup\JavaScripts\Modules\CardModule\CardModuleS.ts
  * @Description: 修改描述
  */
+import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import CardModuleC from "./CardModuleC";
@@ -23,19 +24,31 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
      * @param cardID 卡牌id
      */
     public net_buyCard(cardID: number) {
-        if (!this.currentData.unlockCards.includes(cardID)) {
-            if (
-                ModuleService.getModule(PlayerModuleS).changeGold(
-                    this.currentPlayer,
-                    -GameConfig.Tower.getElement(cardID)?.shopPrice
-                )
-            ) {
-                this.currentData.addUnlockCard(cardID);
-                this.currentData.save(false);
-                return true;
+        const userId = this.currentPlayer?.userId ?? '';
+        try {
+            if (!this.currentData.unlockCards.includes(cardID)) {
+                if (
+                    ModuleService.getModule(PlayerModuleS).changeGold(
+                        this.currentPlayer,
+                        -GameConfig.Tower.getElement(cardID)?.shopPrice
+                    )
+                ) {
+                    this.currentData.addUnlockCard(cardID);
+                    this.currentData.save(false);
+                    Utils.logP12Info("A_TowerUnlock", {
+                        timestamp: Date.now(),
+                        userId,
+                        unlocktower: cardID,
+                        cost: GameConfig.Tower.getElement(cardID)?.shopPrice ?? 0
+                    })
+                    return true;
+                }
             }
+            return false;
+        } catch (e) {
+            Utils.logP12Info("A_Error","net_buyCard error" + " userId:" + userId + " error:" + e);
+            return false;
         }
-        return false;
     }
 
     /**
