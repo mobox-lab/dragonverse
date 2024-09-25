@@ -147,10 +147,9 @@ export default abstract class TowerBase implements BuffBag {
         const attackRange = TalentUtils.getModuleCRunesValueById(1016);
         const attackRange2 = TalentUtils.getModuleCRunesValueById(1040);
         const attackRangeD = TalentUtils.getModuleCRunesValueById(2003);
-
         this.property2 = {
-            attackTime: this.property.attackTime * (1 - (attackSpeed + attackSpeed2 + attackSpeedD) / 100),
-            findRange: this.property.findRange * (1 + (attackRange + attackRange2 + attackRangeD) / 100),
+            attackTime: 1 - (attackSpeed + attackSpeed2 + attackSpeedD) / 100,
+            findRange: 1 + (attackRange + attackRange2 + attackRangeD) / 100,
             attackCount: 0,
             attackRange: 0,
             attackDamage: 0,
@@ -222,9 +221,9 @@ export default abstract class TowerBase implements BuffBag {
         for (const p in this.property) {
             // console.log(`${property}: ${this.property[property]}`);
             if (this.isWarmUp) {
-                this.property[p] = this.property2[p] + this.calculateAttribute(p) + this.propertyWarmUp[p];
+                this.property[p] = this.property2[p] * this.calculateAttribute(p) + this.propertyWarmUp[p];
             } else {
-                this.property[p] = this.property2[p] + this.calculateAttribute(p);
+                this.property[p] = this.calculateAttribute(p) * this.property2[p];
             }
         }
         Event.dispatchToLocal(TowerEvent.UpdateInfo, this);
