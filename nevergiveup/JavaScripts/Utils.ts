@@ -7,9 +7,8 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 
+import Log4Ts from "mw-log4ts";
 import { PlayerUtil } from "./Modules/PlayerModule/PlayerUtil";
-import TalentModuleC from "./Modules/talent/TalentModuleC";
-import TalentModuleS from "./Modules/talent/TalentModuleS";
 import { TipsManager } from "./UI/Tips/CommonTipsManagerUI";
 import { IElementBase } from "./config/ConfigBase";
 import { GameConfig } from "./config/GameConfig";
@@ -40,6 +39,19 @@ export default class Utils {
         "https://open.feishu.cn/open-apis/bot/v2/hook/bda5b13e-18b2-4fa7-a9a9-e33b42ed10f4";
 
     private static iconData: { [key: string]: mw.AssetIconData } = {};
+
+    // 日志优化 上报
+    public static logP12Info(name: string, info: any, type?: "error" | "info" | "warn"): void {
+        const announcer = { name };
+        const msg = JSON.stringify(info) + " #P12";
+        if(type == "error"){
+            Log4Ts.error(announcer, msg);
+        } else if(type == "warn"){
+            Log4Ts.warn(announcer, msg);
+        } else {
+            Log4Ts.log(announcer, msg);
+        }
+    }
 
     /*2DUI-多语言=================================================================================================================*/
     /**
