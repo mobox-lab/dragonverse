@@ -48,12 +48,12 @@ export default class CommonTipsManagerUI extends CommonTipsUI_Generate {
     /**排队显示的队列 */
     private _showQueue: Array<IQueueTipsItemUI> = new Array<IQueueTipsItemUI>();
     /**队列容量的大小，防止队列无限增长（正常游玩不会出现这种情况） */
-    private _queueCapacity: number = 150;
+    private _queueCapacity: number = 10;
 
     /**刷新间隔300ms */
-    private _refreshInterval: number = 500;
+    private _refreshInterval: number = 1200;
     /**当前时间 */
-    private _curTime: number = 500;
+    private _curTime: number = 0;
 
     //#endregion
 

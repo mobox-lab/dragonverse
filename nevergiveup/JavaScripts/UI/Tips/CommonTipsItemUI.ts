@@ -63,23 +63,34 @@ export default class CommonTipsItemUI extends CommonTipsItemUI_Generate implemen
                     this.mImage_BG.renderOpacity = val.alpha;
                     this.mText_Tips.renderOpacity = val.alpha;
                 })
-                .onComplete(_ => setTimeout(() => this._fadeOutTween.start(), 700))
-                .duration(200);
+                .duration(200)
         }
         if (!this._moveTween) {
             const temp = this.uiObject.transform;
             const mid = mw.getViewportSize().divide(mw.getViewportScale()).x / 2;
+            const onUpdate = (val:{
+                y: number;
+            }) => {
+                if (!this.uiObject) return;
+                this.uiTrans.position.x = mid - this.mText_Tips.size.x / 2;
+                this.uiTrans.position.y = val.y;
+                // this.uiTrans.size.x = temp.size.x;
+                // this.uiTrans.size.y = temp.size.y;
+                this.uiObject.transform = this.uiTrans;
+            }
             this._moveTween = new mw.Tween<{ y: number }>({ y: start.y })
-                .to({ y: end.y })
-                .onUpdate(val => {
-                    if (!this.uiObject) return;
-                    this.uiTrans.position.x = mid - this.mText_Tips.size.x / 2;
-                    this.uiTrans.position.y = val.y;
-                    // this.uiTrans.size.x = temp.size.x;
-                    // this.uiTrans.size.y = temp.size.y;
-                    this.uiObject.transform = this.uiTrans;
+                .to({ y: start.y })
+                .onUpdate(onUpdate)
+                .onComplete(() => {
+                    new mw.Tween<{ y: number }>({ y: start.y })
+                    .to({ y: end.y })
+                    .onUpdate(onUpdate)
+                    .onComplete(() => {
+                        this._fadeOutTween.start();  
+                    })
+                    .duration(400).start();
                 })
-                .duration(1400);
+                .duration(1000);
         }
 
         if (this._fadeInTween.isPlaying()) {
