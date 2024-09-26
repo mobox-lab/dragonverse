@@ -11,6 +11,11 @@ export default class TalentModuleData extends JModuleData {
     @Decorator.persistence()
     dailyCount: number = 0;
 
+    get allTalents(): Record<string, number> {
+        // return this.talentMap copy
+        return Object.assign({}, this.talentMap);
+    }
+
     protected initDefaultData(): void {
         this.currentVersion = this.version;
         this.talentMap = {};

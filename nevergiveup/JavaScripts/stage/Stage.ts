@@ -7,7 +7,8 @@
  * @Description  : 修改描述
  */
 
-import { EnemyActions, RankActions, StageActions } from "../Actions";
+import Log4Ts from "mw-log4ts";
+import { EnemyActions, StageActions } from "../Actions";
 import { AirdropManager } from "../Airdrop/AirdropManager";
 import { GameManager } from "../GameManager";
 import { MapManager } from "../MapScript";
@@ -17,17 +18,15 @@ import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 import { PlayerModuleS } from "../Modules/PlayerModule/PlayerModuleS";
 import { PlayerUtil } from "../Modules/PlayerModule/PlayerUtil";
 import { TowerManager } from "../Modules/TowerModule/TowerManager";
-import { TowerModuleC } from "../Modules/TowerModule/TowerModuleC";
-import { AuthModuleS } from "../Modules/auth/AuthModule";
 import { DragonDataModuleS } from "../Modules/dragonData/DragonDataModuleS";
+import TalentModuleData from "../Modules/talent/TalentModuleData";
 import TalentUtils from "../Modules/talent/TalentUtils";
 import { WaveModuleC } from "../Modules/waveModule/WaveModuleC";
 import { RankItem } from "../Rank/RankManager";
 import { baseHp } from "../StageConfig";
-import { EStageState, WaveConfig } from "../StageEnums";
+import { EStageState } from "../StageEnums";
 import { StageListener } from "../StageListener";
 import { TweenCommon } from "../TweenCommon";
-import CutsceneUI from "../UI/CutsceneUI";
 import LobbyUI from "../UI/LobbyUI";
 import { TipsManager } from "../UI/Tips/CommonTipsManagerUI";
 import { LastWaveTipsUI } from "../UI/Tips/LastWaveTipsUI";
@@ -37,7 +36,7 @@ import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
 import { IStageElement } from "../config/Stage";
 import GameServiceConfig from "../const/GameServiceConfig";
-import Log4Ts from "mw-log4ts";
+import { GlobalEventName } from "../const/enum";
 import { Enemy } from "../enemy/EnemyBase";
 import { BaseState } from "../fsm/BaseState";
 import { Fsm } from "../fsm/Fsm";
@@ -45,10 +44,9 @@ import EnvironmentManager from "../gameplay/interactiveObj/EnvironmentManager";
 import { EEnemyComponentType } from "../tool/Enum";
 import { MGSTool } from "../tool/MGSTool";
 import { SoundUtil } from "../tool/SoundUtil";
-import { Wave, WaveAirdrop, WaveManager, WaveUtil } from "./Wave";
+import { Wave, WaveManager, WaveUtil } from "./Wave";
 import { UIMain } from "./ui/UIMain";
 import { SettleData, UISettle } from "./ui/UISettle";
-import { GlobalEventName } from "../const/enum";
 
 type DeathData = {
     id: number;
@@ -136,6 +134,29 @@ export class StageS {
         this.registerListeners();
         // this.updateRankItems();
         ModuleService.getModule(DragonDataModuleS).initData(players);
+        
+        const player = players[0];
+        if(!player?.userId) return;
+        try {
+            const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(player);
+            const talent = DataCenterS.getData(player, TalentModuleData)?.allTalents;
+            const dragonBlessList = ModuleService.getModule(DragonDataModuleS).getDragonBlessData(player);
+            TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
+                Utils.logP12Info("A_StartStage", {
+                    timestamp: Date.now(),
+                    userId: player?.userId,
+                    roomId: roomInfo.roomId,
+                    stageId: this.id,
+                    level: stageCfg?.NameCN,
+                    movespeed: this.speedMultipler,
+                    dragonglory: dragonBlessList, // light dark water fire wood earth 
+                    team: cards, //出战阵容
+                    talent, //天赋状态
+                })
+            });
+        } catch (error) {
+            Utils.logP12Info('A_Error','logP12Info error:' + error + ' userId:' + player?.userId, 'error');
+        }
     }
 
     initHp(players: Player[]) {
