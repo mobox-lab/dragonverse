@@ -2447,7 +2447,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 return waveEnemy;
             } else {
                 return {
-                    waveGold: 100,
+                    waveGold: 200,
                     enemies: [],
                     waveTime: 0,
                     hpMultiplier: 0,

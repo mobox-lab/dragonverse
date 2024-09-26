@@ -500,6 +500,7 @@ export class WaveUtil {
                                 hpMultiplier: 1 * Math.pow(1.2, times),
                                 enemies: newEnemies,
                                 escapeDamagePercent: escapeDamagePercent,
+                                waveGold: 0,
                             };
                         });
 
@@ -517,7 +518,7 @@ export class WaveUtil {
         } else {
             // 不执行，只是获取
             const defaultData = {
-                waveGold: 100,
+                waveGold: 200,
                 enemies: [],
                 waveTime: 0,
                 hpMultiplier: 0,
