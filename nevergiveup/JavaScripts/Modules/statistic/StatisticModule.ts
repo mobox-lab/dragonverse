@@ -1,59 +1,29 @@
-import { GlobalEnum } from "../../const/Enum";
+import Gtk, { GtkTypes, Regulator } from "gtoolkit";
+import Log4Ts from "mw-log4ts";
+import Utils from "../../Utils";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
-import Log4Ts from "mw-log4ts";
-import Gtk, { GtkTypes, NoOverride, Regulator } from "gtoolkit";
+import { ItemType } from "../../tool/Enum";
 import { EnergyModuleS } from "../Energy/EnergyModule";
-import { CreSourceStr, PSStatisticPetKey, PetBagModuleData, petItemDataNew } from "../PetBag/PetBagModuleData";
-import { PetSimulatorPlayerModuleData } from "../Player/PlayerModuleData";
-import AuthModuleData, { AuthModuleS, PetSimulatorStatisticNeedFill, PetSimulatorStatisticPetObj } from "../auth/AuthModule";
-import { GameConfig } from "../../config/GameConfig";
-import { GlobalData } from "../../const/GlobalData";
-import { utils } from "../../util/uitls";
+import PlayerModuleData from "../PlayerModule/PlayerModuleData";
+import AuthModuleData, { AuthModuleS, PetSimulatorStatisticPetObj, TDStatisticNeedFill } from "../auth/AuthModule";
 
 /** 一次上下线期间用户行为记录 */
 type PlayerConsumeData = {
-    diamondAdd: number; // 钻石总获取
-    diamondRed: number; // 钻石总消耗
-    gold_1_add: number; // 世界1金币总获取
-    gold_1_red: number; // 世界1金币总消耗
-    gold_2_add: number; // 世界2金币总获取
-    gold_2_red: number; // 世界2金币总消耗
-    gold_3_add: number; // 世界3金币总获取
-    gold_3_red: number; // 世界3金币总消耗
     staPotAdd: number; // 体力药水增加体力
     staPotCnt: number; // 体力药水使用次数
-    petAdd: number; // 本次增加宠物数量
 
-    levelDiaRed: number;    // 升级台消耗钻石数量
-    levelCnt: number;       // 升级台次数
-    fuseDiaRed: number;      // 合成台消耗钻石数量
-    fuseCnt: number;         // 合成台次数
-    enchantDiaRed: number;   // 附魔台消耗钻石数量
-    enchantCnt: number;      // 附魔台次数
-    loveDiaRed: number;      // 爱心化台消耗钻石数量
-    loveCnt: number;         // 爱心化台次数
-    rainbowDiaRed: number;   // 彩虹化台消耗钻石数量
-    rainbowCnt: number;      // 彩虹化台次数
+    goldRed: number; // 本次上线间局外金币总消耗
+    goldAdd: number; // 本次上线间局外金币总获取
+
+    technologyAdd: number; // 本次获得科技点
+    technologyRed: number; // 本次消耗科技点
 }
 // 赛季总统计 - 持久化 log用
-type PersistTotalStatisticData = {
-    hatchCnt?: number; // 赛季总买蛋次数（一次可以买多个蛋）
-    eggCnt?: number; // 赛季总孵化次数
-    fuseCnt?: number; // 赛季总合成次数
-    fuseCostPetNum?: number; // 赛季合成时总消耗宠物数量
-    loveCnt?: number; // 赛季总爱心化次数
-    loveCostPetNum?: number; // 赛季爱心化时总消耗宠物数量
-    rainbowCnt?: number; // 赛季总彩虹化次数
-    rainbowCostPetNum?: number; // 赛季彩虹化时总消耗宠物数量
-    levelCnt?: number; // 赛季总升级次数
-    enchantCnt?: number; // 赛季总附魔次数
-    achievementCnt?: number; // 赛季总成就完成次数
-    onlineRewardCount?: number; // 赛季总领取在线奖励次数
-    unlockAreaCount?: number; // 赛季总解锁关卡次数
-    unlockPortalCount?: number; // 赛季总解锁传送门次数
-}
-export default class PsStatisticModuleData extends JModuleData {
+// type PersistTotalStatisticData = {
+//     // hatchCnt?: number; // 赛季总买蛋次数（一次可以买多个蛋）
+// }
+export default class TdStatisticModuleData extends JModuleData {
     //@Decorator.persistence()
     //public isSave: bool;
     /**
@@ -78,8 +48,8 @@ export default class PsStatisticModuleData extends JModuleData {
     @Decorator.persistence()
     playerLoginRecord: [number, number][] = [];
 
-    @Decorator.persistence()
-    totalStatisticData: PersistTotalStatisticData = {};
+    // @Decorator.persistence()
+    // totalStatisticData: PersistTotalStatisticData = {};
     /**
      * 上次登录时间. ms
      * @return {number}
@@ -125,9 +95,10 @@ export default class PsStatisticModuleData extends JModuleData {
         }
         return todayCounter;
     }
-    protected onJDataInit() {
-        if(!this.totalStatisticData) this.totalStatisticData = {};
-    }
+
+    // protected onJDataInit() {
+    //     if(!this.totalStatisticData) this.totalStatisticData = {};
+    // }
  
     public recordEnter(now: number) {
         ++this.playerEnteredCounterS;
@@ -149,10 +120,11 @@ export default class PsStatisticModuleData extends JModuleData {
         this.save(false);
     }
 
-    public recordTotalData(data: PersistTotalStatisticData) {
-        Object.assign(this.totalStatisticData, data);
-        this.save(false);
-    }
+    // public recordTotalData(data: PersistTotalStatisticData) {
+    //     Object.assign(this.totalStatisticData, data);
+    //     this.save(false);
+    // }
+
     // /**
     //  * 疑似作弊原因.
     //  * @type {string[]}
@@ -188,7 +160,7 @@ interface PlayerIntervalData {
  * @font JetBrainsMono Nerd Font Mono https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip
  * @fallbackFont Sarasa Mono SC https://github.com/be5invis/Sarasa-Gothic/releases/download/v0.41.6/sarasa-gothic-ttf-0.41.6.7z
  */
-export class StatisticModuleC extends JModuleC<StatisticModuleS, PsStatisticModuleData> {
+export class StatisticModuleC extends JModuleC<StatisticModuleS, TdStatisticModuleData> {
     //#region Member
     private _eventListeners: EventListener[] = [];
 
@@ -244,7 +216,7 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, PsStatisticModu
 
     //#region Method
 
-    public getPlayerData(): PsStatisticModuleData {
+    public getPlayerData(): TdStatisticModuleData {
         return super.data;
     }
 
@@ -258,7 +230,7 @@ export class StatisticModuleC extends JModuleC<StatisticModuleS, PsStatisticModu
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 }
 
-export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModuleData> {
+export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModuleData> {
     public destroyPetsMap: { [userId: string]: { [key: number]: PetSimulatorStatisticPetObj } } = {};
     /** 消费统计数据 */
     private _playerConsumeStatistics: Map<string, PlayerConsumeData> = new Map();
@@ -295,12 +267,6 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         super.onExecute(type, ...params);
     }
 
-    protected onPlayerJoined(player: Player): void {
-        super.onPlayerJoined(player);
-        const d = DataCenterS.getData(player, PetBagModuleData)
-        console.log(d.CurBagCapacity); // 触发 PetBag 的 onDataInit
-    }
-
     public getPlayerConsumeRecord(userId: string) {
         if(!userId) return;
         if(!this._playerConsumeStatistics.has(userId)) {
@@ -312,27 +278,12 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
     public resetConsumeRecord(userId: string) {
         if(!userId) return;
         this._playerConsumeStatistics.set(userId, {
-            diamondAdd: 0,
-            diamondRed: 0,
-            gold_1_add: 0,
-            gold_1_red: 0,
-            gold_2_add: 0,
-            gold_2_red: 0,
-            gold_3_add: 0,
-            gold_3_red: 0,
             staPotAdd: 0,
             staPotCnt: 0,
-            petAdd: 0,
-            levelDiaRed: 0,
-            levelCnt: 0,
-            fuseDiaRed: 0,
-            fuseCnt: 0,
-            enchantDiaRed: 0,
-            enchantCnt: 0,
-            loveDiaRed: 0,
-            loveCnt: 0,
-            rainbowDiaRed: 0,
-            rainbowCnt: 0,
+            goldAdd: 0,
+            goldRed: 0,
+            technologyAdd: 0,
+            technologyRed: 0,
         });
     }
 
@@ -341,23 +292,17 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         consumeData[key] += val;
     }
 
-    public recordConsume(coinType: GlobalEnum.CoinType, value: number, userId: string) {
-        Log4Ts.log(PsStatisticModuleData, `record consume. type: ${coinType}. value: ${value} userId: ${userId} #record_consume`);
+    public recordConsume(coinType: ItemType, value: number, userId: string) {
+        Log4Ts.log(TdStatisticModuleData, `record consume. ItemType: ${coinType}. value: ${value} userId: ${userId} #record_consume`);
         const isAdd = value > 0;
         const val = Math.abs(value);
-        let key: keyof PlayerConsumeData = "diamondAdd"; 
+        let key: keyof PlayerConsumeData = 'goldAdd'; 
         switch (coinType) {
-            case GlobalEnum.CoinType.Diamond:
-                isAdd ? key = "diamondAdd": key = "diamondRed";
+            case ItemType.Gold:
+                isAdd ? key = 'goldAdd' : key = 'goldRed';
                 break;
-            case GlobalEnum.CoinType.FirstWorldGold:
-                isAdd ? key = "gold_1_add" : key = "gold_1_red";
-                break;
-            case GlobalEnum.CoinType.SecondWorldGold:
-                isAdd ? key = "gold_2_add" : key = "gold_2_red";
-                break;
-            case GlobalEnum.CoinType.ThirdWorldGold:
-                isAdd ? key = "gold_3_add" : key = "gold_3_red";
+            case ItemType.TechPoint:
+                isAdd ? key = 'technologyAdd' : key = 'technologyRed';
                 break;
             default:
                 break;
@@ -365,243 +310,61 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
         this.addPlayerConsumeData(userId, key, val)
     }
 
-    public recordAddPet(userId: string) {
-        this.addPlayerConsumeData(userId, "petAdd", 1);
-    }
-
     public recordStaPotConsume(count: number, recovery: number, userId: string) {
         this.addPlayerConsumeData(userId, "staPotCnt", count);
         this.addPlayerConsumeData(userId, "staPotAdd", recovery);
     }
 
-    public recordLevelConsume(costDiamond: number, userId: string) {
-        this.addPlayerConsumeData(userId, "levelCnt", 1);
-        this.addPlayerConsumeData(userId, "levelDiaRed", costDiamond);
-    }
-
-    public recordFuseConsume(costDiamond: number, userId: string, type: "fuse" | "rainbow" | "love") {
-        let cntKey: keyof PlayerConsumeData = "fuseCnt";
-        let redKey: keyof PlayerConsumeData = "fuseDiaRed";
-        if(type === "rainbow") {
-            cntKey = "rainbowCnt";
-            redKey = "rainbowDiaRed";
-        } else if(type === "love") {
-            cntKey = "loveCnt";
-            redKey = "loveDiaRed";
-        }
-        this.addPlayerConsumeData(userId, cntKey, 1);
-        this.addPlayerConsumeData(userId, redKey, costDiamond);
-    }
-
-    public recordEnchantConsume(costDiamond: number, userId: string) {
-        this.addPlayerConsumeData(userId, "enchantCnt", 1);
-        this.addPlayerConsumeData(userId, "enchantDiaRed", costDiamond);
-    }
-
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
-        // const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData)
-        // petStatisticData.resetConsumeData()
         const now = Date.now();
         const d = this.getPlayerData(player);
         this.resetConsumeRecord(player?.userId);
         d.recordEnter(now);
         d.save(false);
     }
-    public getPetMaxInfo(pets: petItemDataNew[]) {
-        const emptyData = { petMax: 0, petMaxEnchanted: "", petMaxEnchantScore: 0, totalScore: 0 };
-        if(!pets?.length) return emptyData;
-        let petMax = 0;
-        let petMaxEnchantScore = 0;
-        let petMaxEnchanted = "";
-        for (const pet of pets) {
-            if (pet.p.a > petMax) {
-                petMax = pet.p.a;
-                const { score } = this.getStatisticEnchantedInfo(pet);
-                petMaxEnchantScore = score;
-                petMaxEnchanted = score > 0 ? pet.p.b.join(',') : "";
-            } else if (pet.p.a === petMax) {
-                const { score } = this.getStatisticEnchantedInfo(pet);
-                if(score > petMaxEnchantScore) {
-                    petMaxEnchantScore = score;
-                    petMax = pet.p.a;
-                    petMaxEnchanted = score > 0 ? pet.p.b.join(',') : "";
-                }
-            }
-        }
-        return { petMax, petMaxEnchanted, petMaxEnchantScore, totalScore: petMax + petMaxEnchantScore }
-    }
-    public shouldReportPsStatistic(userId: string) {
-        try {
-            const petBagData = DataCenterS.getData(userId, PetBagModuleData);
-            const curPets = petBagData.PetStatisticArr ?? [];
-            const destroyPets = Object.values(this.destroyPetsMap?.[userId] || {});
-            const totalLen = (curPets?.length ?? 0) + (destroyPets?.length ?? 0);
-            if(totalLen <= GlobalData.Statistic.petArrMaxLength) return; // 未达到上限，不需要上报
-            const player = Player.getPlayer(userId);
-            const petStatistics: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
-                const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
-                const info: PetSimulatorStatisticPetObj = {
-                    petkey: p[PSStatisticPetKey.petKey],
-                    proId: petInfo.I,
-                    name: petInfo.p.n,
-                    attack: petInfo.p.a,
-                    enchanted: this.getStatisticEnchantedInfo(petInfo).enchanted,
-                    status: "exist",
-                    creSource: CreSourceStr[p[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
-                    desSource: "",
-                    create: p[PSStatisticPetKey.create],
-                    update: p[PSStatisticPetKey.update],
-                }
-                return info;
-            }).concat(destroyPets)
-    
-            Log4Ts.log( 
-                StatisticModuleS,
-                "overStatistic shouldReportPsStatistic petStatistics:" + JSON.stringify(petStatistics) + " userId:" + userId,
-            );
-            // destroyed
-            this.destroyPetsMap[userId] = {};
-            const authData = DataCenterS.getData(player, AuthModuleData);
-            const authInfo = {address: authData?.holdAddress ?? '', nickname: authData?.holdNickName ?? ''};
-            ModuleService.getModule(AuthModuleS).reportPetSimulatorPetDataStatistic(player.userId, petStatistics, authInfo);
-        } catch (err) {
-            utils.logP12Info("P_Error", {
-                userId: userId,
-                timestamp: Date.now(),
-                errorMsg: "StatisticModuleS overStatistic shouldReportPsStatistic error: " + err,
-            }, "error");
-        }
-    }
 
-    public getStatisticEnchantedInfo(petInfo: petItemDataNew) {
-		const buffs = Array.from(petInfo.p.b);
-        if(!buffs?.length) return { enchanted: "", score: 0 };
-		const enchanted: string = buffs.join(",");
-        const score = buffs.reduce((pre, cur) => pre + (GameConfig.Enchants.getElement(cur)?.RankScore ?? 0), 0);
-        return { enchanted: enchanted ?? "", score };
-    }
-
-    // 更新宠物销毁数据
-    public updateDestroyPetsInfo(userId: string, delPets: petItemDataNew[],desSource: "删除" | "合成" | "爱心化" | "彩虹化") {
-        try {
-            if(!delPets?.length) return;
-            if(!this.destroyPetsMap[userId]) this.destroyPetsMap[userId] = {};
-            const destroyPets = this.destroyPetsMap[userId];
-            const petBagData = DataCenterS.getData(userId, PetBagModuleData);
-            const now = Math.floor(Date.now() / 1000);
-            const delKeys = [];
-            for (let i = 0; i < delPets.length; i++) {
-                const delPet = delPets[i];
-                if(!delPet?.k || !delPet?.I || !delPet?.p) {
-                    Log4Ts.error(StatisticModuleS, `updateDestroyPetsInfo delPet error: ${JSON.stringify(delPet)} userId: ${userId} desSource: ${desSource}`);
-                    continue;
-                }
-                const key = delPet?.k ?? 0;
-                const persistInfo = petBagData.getPersistStatisticInfoByKey(key);
-                const destroyPetsInfo: PetSimulatorStatisticPetObj = {
-                    petkey: key,
-                    proId: delPet?.I ?? 0,
-                    name: delPet?.p?.n ?? "",
-                    attack: delPet?.p?.a ?? 0,
-                    enchanted: this.getStatisticEnchantedInfo(delPet).enchanted,
-                    status: "destroyed",
-                    creSource: CreSourceStr[persistInfo[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
-                    desSource,
-                    create: persistInfo[PSStatisticPetKey.create],
-                    update: now,
-                }
-                destroyPets[key] = destroyPetsInfo;
-                delKeys.push(key);
-            }
-            petBagData.delPersistPetStatisticByKeys(delKeys);
-            this.shouldReportPsStatistic(userId); // 检查数据是否超过限制，超过的话则上报后清理
-            petBagData.save(true);
-        } catch (e) {
-            utils.logP12Info("P_Error", {
-                userId: userId,
-                timestamp: Date.now(),
-                errorMsg: "StatisticModuleS updateDestroyPetsInfo error: " + e,
-            }, "error");
-        }
-    }
     protected onPlayerLeft(player: Player): void {
         super.onPlayerLeft(player);
         try {
 
             let now = Date.now();
-            const playerData = DataCenterS.getData(player, PetSimulatorPlayerModuleData);
-            const petBagData = DataCenterS.getData(player, PetBagModuleData);
             const authData = DataCenterS.getData(player, AuthModuleData);
-            const petStatisticData = DataCenterS.getData(player, PsStatisticModuleData);
+            const tdStatisticData = DataCenterS.getData(player, TdStatisticModuleData);
+            const tdPlayerData = DataCenterS.getData(player, PlayerModuleData);
             const energyS = ModuleService.getModule(EnergyModuleS);
             const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
             const playerConsumeData = this.getPlayerConsumeRecord(player?.userId);
-            const login = Math.floor((petStatisticData.playerLoginRecord[0][0] || 0) / 1000);
+            const login = Math.floor((tdStatisticData.playerLoginRecord[0][0] || 0) / 1000);
             const logout = Math.floor((now || 0) / 1000);
             const online = logout - login;
-            const petBagSortedItems = petBagData.sortBag();
-            const { petMax, petMaxEnchanted, petMaxEnchantScore, totalScore } = this.getPetMaxInfo(petBagSortedItems)
-    
-            const curPets = petBagData.PetStatisticArr ?? [];
-            const destroyPets = Object.values(this.destroyPetsMap?.[player.userId] || {});
-            const petStatisticsCur: PetSimulatorStatisticPetObj[] = curPets.map((p) => {
-                const petInfo = petBagData.bagItemsByKey(p[PSStatisticPetKey.petKey])
-                const info: PetSimulatorStatisticPetObj = { 
-                    petkey: p[PSStatisticPetKey.petKey],
-                    proId: petInfo.I,
-                    name: petInfo.p.n,
-                    attack: petInfo.p.a,
-                    enchanted: this.getStatisticEnchantedInfo(petInfo).enchanted,
-    
-                    status: "exist",
-                    creSource: CreSourceStr[p[PSStatisticPetKey.creSource]] as "合成" | "爱心化" | "彩虹化" | "孵化" | "初始化",
-                    desSource: "",
-                    create: p[PSStatisticPetKey.create],
-                    update: p[PSStatisticPetKey.update],
-                }
-                return info;
-            })
-            const petStatistics = petStatisticsCur.concat(destroyPets)
-            const statisticData: PetSimulatorStatisticNeedFill = {
-                diamond: playerData?.diamond ?? 0,
-                gold_1: playerData?.gold ?? 0,
-                gold_2: playerData.gold2 ?? 0,
-                gold_3: playerData.gold3 ?? 0,
-                ...playerConsumeData,
+            const statisticData: TDStatisticNeedFill = {
                 login,
                 logout,
                 online,
-                pet: petStatisticsCur,
-                petCnt: petBagSortedItems?.length ?? 0,
-                petMax,
-                petMaxEnchanted,
-                petMaxEnchantScore,
-                totalScore,
                 staMax,
                 staRed,
                 stamina,
+                gold: tdPlayerData?.gold ?? 0,
+                technology: tdPlayerData?.techPoint ?? 0,
+                ...playerConsumeData,
             };
-            petStatisticData.recordLeave(now);
+
+            tdStatisticData.recordLeave(now);
             const userId = player?.userId ?? "";
 
             const auth = {address: authData?.holdAddress ?? '', nickname: authData?.holdNickName ?? ''};
-            ModuleService.getModule(AuthModuleS).reportPetSimulatorStatistic(userId, statisticData, auth);
-            ModuleService.getModule(AuthModuleS).reportPetSimulatorPetDataStatistic(userId, petStatistics, auth);    
+            ModuleService.getModule(AuthModuleS).reportTDStatistic(userId, statisticData, auth);
             Log4Ts.log( 
                 StatisticModuleS,
-                " reportPetSimulatorStatistic statisticData:" + JSON.stringify(statisticData) + " userId:" + userId
-            );
-            Log4Ts.log( 
-                StatisticModuleS,
-                " reportPetSimulatorPetDataStatistic petStatistics:" + JSON.stringify(petStatistics) + " userId:" + userId
+                " reportTDStatistic statisticData:" + JSON.stringify(statisticData) + " userId:" + userId
             );
         } catch (err) {
             const userId = player?.userId ?? '';
-            utils.logP12Info("P_Error", {
+            Utils.logP12Info("A_Error", {
                 userId,
                 timestamp: Date.now(),
-                errorMsg: "StatisticModuleS reportPetSimulatorStatistic error: " + err,
+                errorMsg: "StatisticModuleS reportTDStatistic error: " + err,
             }, "error");
         }
     }
@@ -609,7 +372,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, PsStatisticModu
     //#endregion ⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠐⠒⠒⠒⠒⠚⠛⣿⡟⠄⠄⢠⠄⠄⠄⡄⠄⠄⣠⡶⠶⣶⠶⠶⠂⣠⣶⣶⠂⠄⣸⡿⠄⠄⢀⣿⠇⠄⣰⡿⣠⡾⠋⠄⣼⡟⠄⣠⡾⠋⣾⠏⠄⢰⣿⠁⠄⠄⣾⡏⠄⠠⠿⠿⠋⠠⠶⠶⠿⠶⠾⠋⠄⠽⠟⠄⠄⠄⠃⠄⠄⣼⣿⣤⡤⠤⠤⠤⠤⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄
 
     //#region Method
-    public getPlayerData(player: mw.Player | string | number): PsStatisticModuleData {
+    public getPlayerData(player: mw.Player | string | number): TdStatisticModuleData {
         return super.getPlayerData(player);
     }
 

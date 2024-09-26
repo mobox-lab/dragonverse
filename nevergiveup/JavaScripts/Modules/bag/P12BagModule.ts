@@ -4,6 +4,7 @@ import { AuthModuleS, ConsumeId, P12ItemResId } from "../auth/AuthModule";
 import { JModuleC, JModuleData, JModuleS } from "../../depend/jibu-module/JModule";
 import GameServiceConfig from "../../const/GameServiceConfig";
 import { Regulator } from "gtoolkit";
+import { StatisticModuleS } from "../statistic/StatisticModule";
 
 export class TdP12BagModuleData extends JModuleData {
 }
@@ -72,7 +73,7 @@ export class P12BagModuleC extends JModuleC<P12BagModuleS, TdP12BagModuleData> {
 export class P12BagModuleS extends JModuleS<P12BagModuleC, TdP12BagModuleData> {
     private _authS: AuthModuleS;
     private _energyS: EnergyModuleS;
-    // private _statisticS: StatisticModuleS;
+    private _statisticS: StatisticModuleS;
 
     private get authS(): AuthModuleS | null {
         if (!this._authS) this._authS = ModuleService.getModule(AuthModuleS);
@@ -84,10 +85,10 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, TdP12BagModuleData> {
         return this._energyS;
     }
 
-    // private get statisticS(): StatisticModuleS | null {
-    //     if (!this._statisticS) this._statisticS = ModuleService.getModule(StatisticModuleS);
-    //     return this._statisticS;
-    // }
+    private get statisticS(): StatisticModuleS | null {
+        if (!this._statisticS) this._statisticS = ModuleService.getModule(StatisticModuleS);
+        return this._statisticS;
+    }
 
     protected onPlayerEnterGame(player: mw.Player) {
         super.onPlayerEnterGame(player);
@@ -150,8 +151,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, TdP12BagModuleData> {
      * @private
      */
     private reportStatistic(userId: string, count: number, recovery: number) {
-        // this.statisticS.setAttributeChange(userId, "staPotCnt", count);
-        // this.statisticS.setAttributeChange(userId, "staPotAdd", recovery);
+        ModuleService.getModule(StatisticModuleS).recordStaPotConsume(count, recovery, userId);
         Log4Ts.log(P12BagModuleS, `player ${userId} used ${count} recovery stamina ${recovery}`);
     }
 

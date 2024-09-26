@@ -879,6 +879,60 @@ interface BattleWorldStatistic {
 }
 
 /**
+ * TD塔防 统计信息.
+ */
+interface TDStatistic {
+    user_id: string;
+    address: string;
+    nickname: string;
+    device_id: string;
+
+    login: number;   // 上线时间
+    logout: number;  // 下线时间 不准
+    online: number;  // 本次在线时长 不准
+    
+    stamina: number;  // 当前体力
+    staMax: number;   // 体力上限
+    staRed: number;   // 本次体力消耗
+    
+    staPotCnt: number;  // 体力药水使用次数
+    staPotAdd: number;  // 体力药水增加体力
+    
+    gold: number;    // 当前金币
+    goldRed: number; // 本次金币消耗
+    goldAdd: number; // 本次金币获取
+    
+    technology: number;    // 当前科技点
+    technologyAdd: number; // 本次获得科技点
+    technologyRed: number; // 本次消耗科技点
+
+    // level: number;    // 当前等级
+    // expAdd: number;   // 本次经验获得
+    // scoreMax: string; // 最好成绩 round - 击杀血量比重
+    
+    // talentCnt: number;   // 已解锁天赋数量
+    // talent: { [key: number]: number };      // 已解锁赋天赋详情 {"1001":2,"1002":1}
+    // talentAdd: { [key: number]: number };   // 本次解锁天赋详情
+    
+    // talentGold: number; // 本次天赋金币消耗
+    // talentTech: number; // 本次天赋科技消耗
+   
+    // towerCnt: number; // 已解锁塔数量 4
+    // tower: number[];     // 已解锁塔详情 [1001, 1004, 1005, 1024]
+    // towerAdd: number[];  // 本次解锁塔详情 [1001，1004]
+    // towerGold: number; // 本次解锁塔金币消耗
+    
+    // mainCnt: number;  // 本次完成主线
+    // dailyCnt: number; // 本次完成日常
+    // taskOk: number[];   // 本次完成 任务ID [10001,10002,10003]
+    // taskRes: { [key: number]: string, t: number }[]; // 本次任务完成详情 [ {10001: "res", t:123456479} ] 任务ID : 奖励
+    
+    // taskGold: number; // 本次任务金币获得
+    // taskTech: number; // 本次任务科技获得
+    // taskExp: number;  // 本次任务经验获得
+}
+
+/**
  * 自动填充属性.
  */
 type AutoFillProps = {
@@ -901,6 +955,14 @@ export type PetSimulatorStatisticNeedFill = {
 export type BattleWorldStatisticNeedFill = {
     [K in keyof Omit<BattleWorldStatistic, keyof AutoFillProps>]: NonNullable<BattleWorldStatistic[K]>;
 };
+
+/**
+ * 待填充的 TD塔防 统计信息.
+ */
+export type TDStatisticNeedFill = {
+    [K in keyof Omit<TDStatistic, keyof AutoFillProps>]: NonNullable<TDStatistic[K]>;
+};
+
 
 /**
  * P12 物品 ID 映射枚举表.
@@ -2125,6 +2187,35 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
                 user_id: userId,
                 address: d.holdAddress,
                 nickname: d.holdNickName,
+                device_id: "",
+            },
+        };
+
+        const respInJson = await this.correspondHandler<QueryResp>(
+            requestParam,
+            AuthModuleS.RELEASE_STATISTIC_REPORT_URL,
+            AuthModuleS.TEST_STATISTIC_REPORT_URL,
+        );
+
+        return respInJson?.message === "success";
+    }
+    
+
+    public async reportTDStatistic(userId: string, statistic: TDStatisticNeedFill, authInfo?: { address: string, nickname: string }) {
+        // 可能在 onPlayerLeft 的时候调用，所以在外层传 authInfo。
+        const { address, nickname } = authInfo ?? {};
+        const gameId = GameServiceConfig.chainId;
+        const requestParam: UserStatisticReq<TDStatistic> = {
+            userId,
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
+            address,
+            sceneName: "tower",
+            gameId,
+            data: {
+                ...statistic,
+                user_id: userId,
+                address,
+                nickname,
                 device_id: "",
             },
         };

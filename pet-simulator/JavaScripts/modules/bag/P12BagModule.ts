@@ -145,7 +145,7 @@ export class P12BagModuleS extends JModuleS<P12BagModuleC, PsP12BagModuleData> {
      * @private
      */
     private reportStatistic(userId: string, count: number, recovery: number) {
-        ModuleService.getModule(StatisticModuleS).recordStaPotConsume(recovery, userId);
+        ModuleService.getModule(StatisticModuleS).recordStaPotConsume(count, recovery, userId);
         Log4Ts.log(P12BagModuleS, `player ${userId} used ${count} recovery stamina ${recovery}`);
     }
 

@@ -52,6 +52,7 @@ import { JumpRoomModuleC, JumpRoomModuleS } from "./Modules/JumpRoom/JumpRoomMod
 import LogoAnimUI from "./UI/LogoAnimUI";
 import { P12BagModuleC, P12BagModuleS, TdP12BagModuleData } from "./Modules/bag/P12BagModule";
 import Log4Ts from "mw-log4ts";
+import TdStatisticModuleData, { StatisticModuleC, StatisticModuleS } from "./Modules/statistic/StatisticModule";
 
 export namespace Config {
     export let skipGuide: boolean = false;
@@ -190,6 +191,7 @@ export default class GameStart extends Script {
         ModuleService.registerModule(TaskModuleS, TaskModuleC, TaskModuleDataHelper);
         ModuleService.registerModule(TalentModuleS, TalentModuleC, TalentModuleData);
         ModuleService.registerModule(DragonDataModuleS, DragonDataModuleC, DragonDataModuleData);
+        ModuleService.registerModule(StatisticModuleS, StatisticModuleC, TdStatisticModuleData);
         ModuleService.registerModule(WaveModuleS, WaveModuleC, WaveModuleData);
         ModuleService.registerModule(JumpRoomModuleS, JumpRoomModuleC, null);
         ModuleService.registerModule(P12BagModuleS, P12BagModuleC, TdP12BagModuleData);
