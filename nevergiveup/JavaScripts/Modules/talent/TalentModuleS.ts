@@ -1,13 +1,14 @@
-import { JModuleS } from "../../depend/jibu-module/JModule";
-import TalentModuleC from "./TalentModuleC";
-import TalentModuleData from "./TalentModuleData";
-import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
-import Player = mw.Player;
 import { GameConfig } from "../../config/GameConfig";
 import { ITalentTreeElement } from "../../config/TalentTree";
 import { ETalentType } from "../../const/enum";
+import { JModuleS } from "../../depend/jibu-module/JModule";
+import Utils from "../../Utils";
+import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
 import { PlayerUtil } from "../PlayerModule/PlayerUtil";
 import { TimerModuleUtils } from "../TimeModule/time";
+import TalentModuleC from "./TalentModuleC";
+import TalentModuleData from "./TalentModuleData";
+import Player = mw.Player;
 
 export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleData> {
     private _playS: PlayerModuleS;
@@ -87,7 +88,19 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         const techCost = [talent.cost[1][0], talent.type === ETalentType.Base ? talent.cost[1][level + 1] : talent.cost[1][1]];
         const result = this.playS.checkTalentCost(player, [goldCost, techCost]);
         if (!result) return false;
-
+        try {
+            const userlevel = PlayerUtil.getPlayerScript(player.playerId)?.level ?? 0;
+            Utils.logP12Info('A_TalentUnlock', {
+                timestamp: Date.now(),
+                userId: player?.userId,
+                userlevel,
+                unlocktalent: id,
+                stack: level + 1,
+                cost: [goldCost[1], techCost[1]]
+            });
+        } catch (error) {
+            Utils.logP12Info('A_Error', ' TalentUnlock error:' + error + ' userId:' + player?.userId);
+        }
         await this.setTalent(player, id, level + 1);
         return true;
     }
