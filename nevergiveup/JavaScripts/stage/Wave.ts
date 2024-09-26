@@ -475,7 +475,6 @@ export class WaveUtil {
                     this.currentWaves = waves;
                 } else {
                     // 用完了，重新取
-
                     const currentValue = this._sequence[this.runningIndex];
                     const randomIndex = this.getRandomElementAndRemove(currentValue);
                     this.runningIndex = (this.runningIndex + 1) % this._sequence.length;
@@ -483,37 +482,26 @@ export class WaveUtil {
 
                     if (Array.isArray(waves)) {
                         let newWaves: WaveConfig[] = waves;
-                        if (this.waveTimes >= 5) {
-                            const times = Math.floor(this.waveTimes / 5);
-                            newWaves = waves.map((item) => {
-                                const newEnemies = item.enemies.map((enemy) => {
-                                    const spawnInterval = enemy.spawnInterval * Math.pow(0.8, times);
-                                    return {
-                                        ...enemy,
-                                        count: Math.floor(enemy.count * Math.pow(1.2, times)),
-                                        spawnInterval: spawnInterval > 0.5 ? Number(spawnInterval.toFixed(2)) : 0.5,
-                                    };
-                                });
-                                const waveTime = (item.waveTime > 30 ? 30 : item.waveTime) * Math.pow(0.8, times);
-                                const escapeDamagePercent = 1 * Math.pow(1.2, times);
+                        const times = this.waveTimes;
+                        newWaves = waves.map((item) => {
+                            const newEnemies = item.enemies.map((enemy) => {
+                                const spawnInterval = enemy.spawnInterval * Math.pow(0.8, times);
                                 return {
-                                    ...item,
-                                    waveTime: waveTime > 5 ? Number(waveTime.toFixed(0)) : 5,
-                                    hpMultiplier: 1 * Math.pow(1.2, times),
-                                    enemies: newEnemies,
-                                    escapeDamagePercent: escapeDamagePercent,
+                                    ...enemy,
+                                    count: Math.floor(enemy.count * Math.pow(1.2, times)),
+                                    spawnInterval: spawnInterval > 0.5 ? Number(spawnInterval.toFixed(2)) : 0.5,
                                 };
                             });
-                        } else {
-                            newWaves = waves.map((item) => {
-                                const waveTime = item.waveTime > 30 ? 30 : item.waveTime;
-                                return {
-                                    ...item,
-                                    waveTime: waveTime,
-                                    hpMultiplier: 1,
-                                };
-                            });
-                        }
+                            const waveTime = (item.waveTime > 30 ? 30 : item.waveTime) * Math.pow(0.8, times);
+                            const escapeDamagePercent = 1 * Math.pow(1.2, times);
+                            return {
+                                ...item,
+                                waveTime: waveTime > 5 ? Number(waveTime.toFixed(0)) : 5,
+                                hpMultiplier: 1 * Math.pow(1.2, times),
+                                enemies: newEnemies,
+                                escapeDamagePercent: escapeDamagePercent,
+                            };
+                        });
 
                         waveInfo = newWaves.shift();
                         this.currentWaves = newWaves;
