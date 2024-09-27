@@ -1,5 +1,6 @@
 import CardModuleS from "../Modules/CardModule/CardModuleS";
 import { PlayerModuleS } from "../Modules/PlayerModule/PlayerModuleS";
+import { StatisticModuleS } from "../Modules/statistic/StatisticModule";
 import { UISettleCommon } from "../UI/Reward/UISettleCommon";
 import Utils from "../Utils";
 import { GameConfig } from "../config/GameConfig";
@@ -64,8 +65,22 @@ export namespace Reward {
             makeReward(player, rewardArr, callBack);
             Event.dispatchToClient(player, "grantRewardS2C", rewardArr);
             const cfg = GameConfig.Task.getElement(taskId);
-            if(cfg?.rewards){
-                const reward = cfg.rewards.map(([id, count]) => count); // 局外金币，科技点，exp
+            const rewards = cfg?.rewards;
+            if(rewards?.length){       
+                let rewardGold = 0;
+                let rewardTech = 0;
+                let rewardExp = 0;
+                for(let i = 0; i < rewards.length; i++){
+                    const [id, count] = rewards[i];
+                    if(id === 1){
+                        rewardGold += count;
+                    } else if(id === 2){
+                        rewardTech += count;
+                    } else if(id === 3){
+                        rewardExp += count;
+                    }
+                }
+                const reward = [rewardGold, rewardTech, rewardExp]; // 局外金币，科技点，exp
                 Utils.logP12Info("A_QuestClaim", {
                     timestamp: Date.now(),
                     userId,
@@ -73,6 +88,7 @@ export namespace Reward {
                     questtype: cfg?.taskType, // 1主线 2日常
                     reward,
                 })
+                ModuleService.getModule(StatisticModuleS)?.recordTaskFinish(userId, taskId, cfg?.taskType, reward);
             }
         }
     }

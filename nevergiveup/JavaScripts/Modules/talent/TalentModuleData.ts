@@ -16,6 +16,10 @@ export default class TalentModuleData extends JModuleData {
         return Object.assign({}, this.talentMap);
     }
 
+    get allTalentCount(): number {
+        return Object.keys(this.talentMap)?.length ?? 0;
+    }
+
     protected initDefaultData(): void {
         this.currentVersion = this.version;
         this.talentMap = {};

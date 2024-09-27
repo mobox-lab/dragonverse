@@ -9,6 +9,7 @@ import { TimerModuleUtils } from "../TimeModule/time";
 import TalentModuleC from "./TalentModuleC";
 import TalentModuleData from "./TalentModuleData";
 import Player = mw.Player;
+import { StatisticModuleS } from "../statistic/StatisticModule";
 
 export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleData> {
     private _playS: PlayerModuleS;
@@ -90,6 +91,7 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         if (!result) return false;
         try {
             const userlevel = PlayerUtil.getPlayerScript(player.playerId)?.level ?? 0;
+            ModuleService.getModule(StatisticModuleS)?.recordTalentUnlock(id, level + 1, goldCost[1], techCost[1], player?.userId ?? '');
             Utils.logP12Info('A_TalentUnlock', {
                 timestamp: Date.now(),
                 userId: player?.userId,

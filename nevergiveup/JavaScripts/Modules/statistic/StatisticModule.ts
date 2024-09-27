@@ -8,6 +8,8 @@ import { EnergyModuleS } from "../Energy/EnergyModule";
 import PlayerModuleData from "../PlayerModule/PlayerModuleData";
 import AuthModuleData, { AuthModuleS, PetSimulatorStatisticPetObj, TDStatisticNeedFill } from "../auth/AuthModule";
 import { PlayerUtil } from "../PlayerModule/PlayerUtil";
+import TalentModuleData from "../talent/TalentModuleData";
+import CardModuleData from "../CardModule/CardModuleData";
 
 /** 一次上下线期间用户行为记录 */
 type PlayerConsumeData = {
@@ -19,6 +21,24 @@ type PlayerConsumeData = {
 
     technologyAdd: number; // 本次获得科技点
     technologyRed: number; // 本次消耗科技点
+
+    expAdd: number;   // 本次经验获得
+
+    talentAdd: { [key: number]: number }; // 本次解锁天赋
+    talentGold: number; // 本次天赋金币消耗
+    talentTech: number; // 本次天赋科技消耗
+
+    towerAdd: number[],  // 本次解锁塔详情 [1001，1004]
+    towerGold: number, // 本次解锁塔金币消耗
+       
+    mainCnt: number;  // 本次完成主线
+    dailyCnt: number; // 本次完成日常
+    taskOk: number[];   // 本次完成 任务ID [10001,10002,10003]
+    taskRes: { [id:number]: string, t: number }[], // 本次任务完成详情 [ {10001: "res", t:123456479} ] 任务ID : 奖励
+
+    taskGold: number, // 本次任务金币获得
+    taskTech: number, // 本次任务科技获得
+    taskExp: number,  // 本次任务经验获得
 }
 // 赛季总统计 - 持久化 log用
 // type PersistTotalStatisticData = {
@@ -285,12 +305,26 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
             goldRed: 0,
             technologyAdd: 0,
             technologyRed: 0,
+            expAdd: 0,
+            talentAdd: {},
+            talentGold: 0,
+            talentTech: 0,
+            towerAdd: [],
+            towerGold: 0,
+            mainCnt: 0,
+            dailyCnt: 0,
+            taskOk: [],
+            taskRes: [],
+            taskGold: 0,
+            taskTech: 0,
+            taskExp: 0,
         });
     }
 
     public addPlayerConsumeData(userId: string, key: keyof PlayerConsumeData, val: number) {
         const consumeData = this.getPlayerConsumeRecord(userId);
-        consumeData[key] += val;
+        if(typeof consumeData[key] !== 'number') return;
+        (consumeData[key] as number) += val;
     }
 
     public recordConsume(coinType: ItemType, value: number, userId: string) {
@@ -305,6 +339,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
             case ItemType.TechPoint:
                 isAdd ? key = 'technologyAdd' : key = 'technologyRed';
                 break;
+            case ItemType.Exp:
+                if(isAdd) key = 'expAdd';
+                break;
             default:
                 break;
         }
@@ -316,6 +353,37 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
         this.addPlayerConsumeData(userId, "staPotAdd", recovery);
     }
 
+    public recordTalentUnlock(talentId: number, level: number, gold: number, tech: number, userId: string) {
+        const talentAdd = {
+            [talentId]: level,
+        };
+        const consumeData = this.getPlayerConsumeRecord(userId);
+        if(!consumeData?.talentAdd) consumeData.talentAdd = {};
+        Object.assign(consumeData.talentAdd, talentAdd);
+        consumeData.talentGold += gold;
+        consumeData.talentTech += tech;
+    }
+
+    public recordTowerUnlock(towerId: number, gold: number, userId: string) {
+        const consumeData = this.getPlayerConsumeRecord(userId);
+        if(!consumeData?.towerAdd) consumeData.towerAdd = [];
+        consumeData.towerAdd.push(towerId);
+        consumeData.towerGold += gold;
+    }
+
+    // 任务类型 1 主线 2 日常
+    public recordTaskFinish(userId: string, taskId: number, type: number, reward: number[]) {
+        const consumeData = this.getPlayerConsumeRecord(userId);
+        if(type === 1)
+            consumeData.mainCnt++;
+        else if(type === 2)
+            consumeData.dailyCnt++;
+        consumeData.taskOk.push(taskId);
+        consumeData.taskRes.push({ [taskId]: JSON.stringify(reward), t: Date.now() });
+        consumeData.taskGold += reward[0];
+        consumeData.taskTech += reward[1];
+        consumeData.taskExp += reward[2];
+    }
     protected onPlayerEnterGame(player: Player): void {
         super.onPlayerEnterGame(player);
         const now = Date.now();
@@ -333,6 +401,8 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
             const authData = DataCenterS.getData(player, AuthModuleData);
             const playerScript = PlayerUtil.getPlayerScript(player?.playerId);
             const tdStatisticData = DataCenterS.getData(player, TdStatisticModuleData);
+            const talentData = DataCenterS.getData(player, TalentModuleData);
+            const cardData = DataCenterS.getData(player, CardModuleData);
             const tdPlayerData = DataCenterS.getData(player, PlayerModuleData);
             const energyS = ModuleService.getModule(EnergyModuleS);
             const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
@@ -350,28 +420,13 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
                 gold: tdPlayerData?.gold ?? 0,
                 technology: tdPlayerData?.techPoint ?? 0,
                 level: playerScript?.level ?? 0,    // 当前等级
-                expAdd: 0,   // 本次经验获得
-                scoreMax: '', // 最好成绩 round - 击杀血量比重
-                talentCnt: 0,   // 已解锁天赋数量
-                talent: {},      // 已解锁赋天赋详情 {"1001":2,"1002":1}
-                talentAdd: {},   // 本次解锁天赋详情
-                
-                talentGold: 0, // 本次天赋金币消耗
-                talentTech: 0, // 本次天赋科技消耗
-            
-                towerCnt: 0, // 已解锁塔数量 4
-                tower: [],     // 已解锁塔详情 [1001, 1004, 1005, 1024]
-                towerAdd: [],  // 本次解锁塔详情 [1001，1004]
-                towerGold: 0, // 本次解锁塔金币消耗
-                
-                mainCnt: 0,  // 本次完成主线
-                dailyCnt: 0, // 本次完成日常
-                taskOk: [],   // 本次完成 任务ID [10001,10002,10003]
-                taskRes:[], // 本次任务完成详情 [ {10001: "res", t:123456479} ] 任务ID : 奖励
-                
-                taskGold: 0, // 本次任务金币获得
-                taskTech: 0, // 本次任务科技获得
-                taskExp: 0,  // 本次任务经验获得
+                scoreMax: '', // 无尽模式最好成绩 round - 击杀血量比重 TODO: Green
+                talentCnt: talentData?.allTalentCount ?? 0,   // 已解锁天赋数量
+                talent: talentData?.allTalents ?? {},      // 已解锁赋天赋详情 {"1001":2,"1002":1}
+
+                towerCnt: cardData?.unlockCards?.length ?? 0, // 已解锁塔数量 4
+                tower: cardData?.unlockCards ?? [],     // 已解锁塔详情 [1001, 1004, 1005, 1024]
+
                 ...playerConsumeData,
             };
 
