@@ -14,16 +14,18 @@ export class DragonBlessListUnique implements IUnique {
     public cnt: number;
 
     public static arrayFromByteArray(data: UserDragonRespData, categoryId: DragonElemental): DragonBlessListUnique[] {
-        const dragonIds = GameConfig.Dragon.getAllElement().filter(cfg => cfg.elementalId === categoryId).map(cfg => cfg.dragonPalId);
-        const arr: {id: number, cnt: number, categoryId: DragonElemental}[] = []         
+        const dragonIds = GameConfig.Dragon.getAllElement()
+            .filter((cfg) => cfg.elementalId === categoryId)
+            .map((cfg) => cfg.dragonPalId);
+        const arr: { id: number; cnt: number; categoryId: DragonElemental }[] = [];
         for (const id of dragonIds) {
             const list = data?.DragonPalList ?? [];
-            const cnt = list.length ? (list.find(d => d.dragonPalId === id)?.amount ?? 0) : 0;
-            arr.push({id, cnt, categoryId});
+            const cnt = list.length ? list.find((d) => d.dragonPalId === id)?.amount ?? 0 : 0;
+            arr.push({ id, cnt, categoryId });
         }
         arr.sort((a, b) => b.cnt - a.cnt);
-        console.log("#debug dragonIds:" + dragonIds + " data:" + JSON.stringify(data)); 
-        return arr.map(({id, cnt, categoryId}, index) => new DragonBlessListUnique(id, cnt, categoryId, index));
+        console.log("#debug dragonIds:" + dragonIds + " data:" + JSON.stringify(data));
+        return arr.map(({ id, cnt, categoryId }, index) => new DragonBlessListUnique(id, cnt, categoryId, index));
     }
 
     constructor(id: number, cnt: number, categoryId: DragonElemental, index: number) {
@@ -65,9 +67,14 @@ export class DragonDataModuleC extends JModuleC<DragonDataModuleS, DragonDataMod
     public async queryDragon() {
         const res = await this.server.net_queryUserDragon();
         this.dragonData = res;
-        const categoryIds = Object.values(DragonElemental).filter((v) => Number(v) >= 0).map((v) => Number(v) as DragonElemental);
+        console.log("DragonData:", JSON.stringify(this.dragonData));
+        const categoryIds = Object.values(DragonElemental)
+            .filter((v) => Number(v) >= 0)
+            .map((v) => Number(v) as DragonElemental);
         this.dragonBlessListYoactArr = categoryIds.map((cid) => {
-            return new YoactArray<DragonBlessListUnique>().setAll(DragonBlessListUnique.arrayFromByteArray(this.dragonData, cid));
+            return new YoactArray<DragonBlessListUnique>().setAll(
+                DragonBlessListUnique.arrayFromByteArray(this.dragonData, cid)
+            );
         });
     }
 }
