@@ -10,6 +10,7 @@
 import { PlayerActions } from "../../Actions";
 import { GameConfig } from "../../config/GameConfig";
 import { ItemType } from "../../tool/Enum";
+import { StatisticModuleS } from "../statistic/StatisticModule";
 import { TimerModuleUtils } from "../TimeModule/time";
 // import { GlobalRankModuleS } from "../globalRank/GlobalRankModuleS";
 import PlayerModuleC from "./PlayerModuleC";
@@ -240,6 +241,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         let data = this.getPlayerData(player);
         if (gold >= 0 || (gold < 0 && data.gold >= -gold)) {
             data.gold += gold;
+            ModuleService.getModule(StatisticModuleS)?.recordConsume(ItemType.Gold, gold, player?.userId);
             data.save(true);
             // const rankModuleS = ModuleService.getModule(GlobalRankModuleS);
             // rankModuleS.setScoreOnServer("gold", data.gold, player.playerId);
@@ -252,6 +254,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         let data = this.getPlayerData(player);
         if (techPoint >= 0 || (techPoint < 0 && data.techPoint >= -techPoint)) {
             data.techPoint += techPoint;
+            ModuleService.getModule(StatisticModuleS)?.recordConsume(ItemType.TechPoint, techPoint, player?.userId);
             data.save(true);
             return true;
         }

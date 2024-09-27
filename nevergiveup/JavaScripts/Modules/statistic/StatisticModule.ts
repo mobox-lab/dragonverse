@@ -7,6 +7,7 @@ import { ItemType } from "../../tool/Enum";
 import { EnergyModuleS } from "../Energy/EnergyModule";
 import PlayerModuleData from "../PlayerModule/PlayerModuleData";
 import AuthModuleData, { AuthModuleS, PetSimulatorStatisticPetObj, TDStatisticNeedFill } from "../auth/AuthModule";
+import { PlayerUtil } from "../PlayerModule/PlayerUtil";
 
 /** 一次上下线期间用户行为记录 */
 type PlayerConsumeData = {
@@ -330,6 +331,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
 
             let now = Date.now();
             const authData = DataCenterS.getData(player, AuthModuleData);
+            const playerScript = PlayerUtil.getPlayerScript(player?.playerId);
             const tdStatisticData = DataCenterS.getData(player, TdStatisticModuleData);
             const tdPlayerData = DataCenterS.getData(player, PlayerModuleData);
             const energyS = ModuleService.getModule(EnergyModuleS);
@@ -347,6 +349,29 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
                 stamina,
                 gold: tdPlayerData?.gold ?? 0,
                 technology: tdPlayerData?.techPoint ?? 0,
+                level: playerScript?.level ?? 0,    // 当前等级
+                expAdd: 0,   // 本次经验获得
+                scoreMax: '', // 最好成绩 round - 击杀血量比重
+                talentCnt: 0,   // 已解锁天赋数量
+                talent: {},      // 已解锁赋天赋详情 {"1001":2,"1002":1}
+                talentAdd: {},   // 本次解锁天赋详情
+                
+                talentGold: 0, // 本次天赋金币消耗
+                talentTech: 0, // 本次天赋科技消耗
+            
+                towerCnt: 0, // 已解锁塔数量 4
+                tower: [],     // 已解锁塔详情 [1001, 1004, 1005, 1024]
+                towerAdd: [],  // 本次解锁塔详情 [1001，1004]
+                towerGold: 0, // 本次解锁塔金币消耗
+                
+                mainCnt: 0,  // 本次完成主线
+                dailyCnt: 0, // 本次完成日常
+                taskOk: [],   // 本次完成 任务ID [10001,10002,10003]
+                taskRes:[], // 本次任务完成详情 [ {10001: "res", t:123456479} ] 任务ID : 奖励
+                
+                taskGold: 0, // 本次任务金币获得
+                taskTech: 0, // 本次任务科技获得
+                taskExp: 0,  // 本次任务经验获得
                 ...playerConsumeData,
             };
 
