@@ -174,7 +174,7 @@ export class Enemy implements BuffBag {
                 buff.duration -= dt;
                 if (buff.duration <= 0) {
                     let cfg = GameConfig.Buff.getElement(buff.id);
-                    if (cfg.speed === -999) {
+                    if (cfg.speed === 999) {
                         const config = GameConfig.Monster.getElement(this.configId);
                         this.speed = config.speed;
                         this.anim = this.go.loadAnimation(config.walkAnim);
@@ -232,6 +232,10 @@ export class Enemy implements BuffBag {
         // this.speed = this.calculateAttribute("speed");
         // this.hurtAmount = this.calculateAttribute("hurtAmount");
         const config = GameConfig.Monster.getElement(this.configId);
+        const armorBonus = TalentUtils.getModuleCRunesValueById(1018);
+        const MRBonus = TalentUtils.getModuleCRunesValueById(1019);
+        const armorBonus2 = TalentUtils.getModuleCRunesValueById(1042);
+        const MRBonus2 = TalentUtils.getModuleCRunesValueById(1043);
         // 削魔抗，削弱护甲，减速，禁锢，在这里处理 恢复也需要处理(测试失效)
 
         // 削弱魔抗
@@ -245,9 +249,17 @@ export class Enemy implements BuffBag {
                     ? currentItem
                     : maxItem;
             }, null);
-            this.magicResist = config.magicResist - maxMagicReductionItem.cfg.magicReduction;
+            if (this.magicResistActive) {
+                this.magicResist = config.magicResist - maxMagicReductionItem.cfg.magicReduction;
+            } else {
+                this.magicResist = config.magicResist - maxMagicReductionItem.cfg.magicReduction - MRBonus - MRBonus2;
+            }
         } else {
-            this.magicResist = config.magicResist;
+            if (this.magicResistActive) {
+                this.magicResist = config.magicResist;
+            } else {
+                this.magicResist = config.magicResist - MRBonus - MRBonus2;
+            }
         }
         // 削护甲
         const armorReductions = this.buffManager.buffs.filter((buff) => buff.cfg.armorReduction !== 0);
@@ -260,9 +272,17 @@ export class Enemy implements BuffBag {
                     ? currentItem
                     : maxItem;
             }, null);
-            this.armor = config.armor - maxArmorReductionItem.cfg.armorReduction;
+            if (this.armorActive) {
+                this.armor = config.armor - maxArmorReductionItem.cfg.armorReduction;
+            } else {
+                this.armor = config.armor - maxArmorReductionItem.cfg.armorReduction - armorBonus - armorBonus2;
+            }
         } else {
-            this.armor = config.armor;
+            if (this.armorActive) {
+                this.armor = config.armor;
+            } else {
+                this.armor = config.armor - armorBonus - armorBonus2;
+            }
         }
 
         // 减速和禁锢
@@ -992,13 +1012,13 @@ export class Enemy implements BuffBag {
 
     dealRunes() {
         const now = Math.floor(new Date().getTime() / 1000);
+        const config = GameConfig.Monster.getElement(this.configId);
         if (now - this.createTime > 5 && !this.speedActive) {
             this.speedActive = true;
             // 恢复速度
             const speedBonus = TalentUtils.getModuleCRunesValueById(1014);
             const speedBonus2 = TalentUtils.getModuleCRunesValueById(1038);
             const speedBonusD = TalentUtils.getModuleCRunesValueById(2004);
-            const config = GameConfig.Monster.getElement(this.configId);
             // this.speed = this.speed * (1 + (speedBonus + speedBonus2 + speedBonusD) / 100);
             // 减速和禁锢
             const slowAndRoot = this.buffManager.buffs.filter((buff) => buff.cfg.speed !== 0);

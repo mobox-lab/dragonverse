@@ -42,7 +42,9 @@ export default class TalentUtils {
 
     public static getDragonIndex(id: number): number {
         const dragonData = ModuleService.getModule(DragonDataModuleC).dragonData;
+        console.log("getDragonIndex C", JSON.stringify(dragonData));
         const index = this.getDragonIndexByData(dragonData, id);
+        console.log("getDragonIndex C 2", id, index);
         return index;
     }
 
