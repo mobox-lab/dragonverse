@@ -288,6 +288,9 @@ export class Enemy implements BuffBag {
 
         // 减速和禁锢
         const slowAndRoot = this.buffManager.buffs.filter((buff) => buff.cfg.speed !== 0);
+        const speedBonus = TalentUtils.getModuleCRunesValueById(1014);
+        const speedBonus2 = TalentUtils.getModuleCRunesValueById(1038);
+        const speedBonusD = TalentUtils.getModuleCRunesValueById(2004);
         if (slowAndRoot.length > 0) {
             // 记录生效时间，和生效的时长
             const root = slowAndRoot.filter((buff) => buff.cfg.speed === 999);
@@ -304,13 +307,23 @@ export class Enemy implements BuffBag {
                 const maxSpeedItem = slowAndRoot.reduce((maxItem, currentItem) => {
                     return currentItem.cfg.speed > (maxItem ? maxItem.cfg.speed : -Infinity) ? currentItem : maxItem;
                 }, null);
-                console.log(maxSpeedItem.cfg.speed, "生效的减速百分比");
-                this.speed = config.speed * (1 - maxSpeedItem.cfg.speed / 100);
+                if (this.speedActive) {
+                    this.speed = config.speed * (1 - maxSpeedItem.cfg.speed / 100);
+                } else {
+                    this.speed =
+                        config.speed *
+                        (1 - maxSpeedItem.cfg.speed / 100 - (speedBonus + speedBonus2 + speedBonusD) / 100);
+                }
+                console.log(maxSpeedItem.cfg.speed, speedBonus, speedBonus2, speedBonusD, "生效的减速百分比");
                 console.log("减速后的速度", this.speed);
             }
         } else {
             console.log("减速恢复", config.speed);
-            this.speed = config.speed;
+            if (this.speedActive) {
+                this.speed = config.speed;
+            } else {
+                this.speed = config.speed * (1 - (speedBonus + speedBonus2 + speedBonusD) / 100);
+            }
         }
     }
 
