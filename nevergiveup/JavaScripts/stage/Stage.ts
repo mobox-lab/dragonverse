@@ -134,9 +134,9 @@ export class StageS {
         this.registerListeners();
         // this.updateRankItems();
         ModuleService.getModule(DragonDataModuleS).initData(players);
-        
+
         const player = players[0];
-        if(!player?.userId) return;
+        if (!player?.userId) return;
         try {
             const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(player);
             const talent = DataCenterS.getData(player, TalentModuleData)?.allTalents;
@@ -149,13 +149,13 @@ export class StageS {
                     stageId: this.id,
                     level: stageCfg?.NameCN,
                     movespeed: this.speedMultipler,
-                    dragonglory: dragonBlessList, // light dark water fire wood earth 
+                    dragonglory: dragonBlessList, // light dark water fire wood earth
                     team: cards, //出战阵容
                     talent, //天赋状态
-                })
+                });
             });
         } catch (error) {
-            Utils.logP12Info('A_Error','logP12Info error:' + error + ' userId:' + player?.userId, 'error');
+            Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
         }
     }
 
@@ -735,6 +735,7 @@ export class StageC {
         });
 
         EnemyActions.onEscaped.add((enemy: Enemy) => {
+            SoundUtil.PlaySoundById(2014);
             this._currentEscapeData.push({
                 id: enemy.id,
                 wave: enemy.wave,
@@ -1167,8 +1168,6 @@ class WaitState extends StageBaseState {
         );
 
         this.fsm.owner.addGold(currentWave.waveGold);
-        console.log("this._wave: " + this._wave);
-
         if (this._wave > 0) {
             for (const player of this.fsm.owner.players) {
                 const goldAmount = TalentUtils.getModuleSRunesValueById(1005, player);
@@ -1177,7 +1176,6 @@ class WaitState extends StageBaseState {
                 const hpAmount = TalentUtils.getModuleSRunesValueById(1010, player);
                 const hpAmount2 = TalentUtils.getModuleSRunesValueById(1034, player);
                 this.fsm.owner.addPlayerGold(goldAmount + goldAmount2, player);
-                console.log("hpAmount + hpAmount2", hpAmount, hpAmount2);
                 this.fsm.owner.addHp(hpAmount + hpAmount2);
             }
         }

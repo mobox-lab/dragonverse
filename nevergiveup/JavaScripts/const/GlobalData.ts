@@ -134,7 +134,7 @@ export namespace GlobalData {
                     setStrategyBuffs(TowerStrategyType.ArmorBreak, buff.id);
                     continue;
                 }
-                if (buff.speed === -999) {
+                if (buff.speed === 999) {
                     setStrategyBuffs(TowerStrategyType.StunEffect, buff.id);
                     continue;
                 }
@@ -142,7 +142,7 @@ export namespace GlobalData {
                     setStrategyBuffs(TowerStrategyType.ArmorShred, buff.id);
                     continue;
                 }
-                if (buff.speed !== 0 && buff.speed !== -999) {
+                if (buff.speed !== 0 && buff.speed !== 999) {
                     setStrategyBuffs(TowerStrategyType.SlowEffect, buff.id);
                     continue;
                 }
