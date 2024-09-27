@@ -9,6 +9,7 @@
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { PlayerModuleS } from "../PlayerModule/PlayerModuleS";
+import { StatisticModuleS } from "../statistic/StatisticModule";
 import CardModuleC from "./CardModuleC";
 import CardModuleData from "./CardModuleData";
 
@@ -35,11 +36,13 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
                 ) {
                     this.currentData.addUnlockCard(cardID);
                     this.currentData.save(false);
+                    const cost = GameConfig.Tower.getElement(cardID)?.shopPrice ?? 0;
+                    ModuleService.getModule(StatisticModuleS)?.recordTowerUnlock(cardID, cost, userId);
                     Utils.logP12Info("A_TowerUnlock", {
                         timestamp: Date.now(),
                         userId,
                         unlocktower: cardID,
-                        cost: GameConfig.Tower.getElement(cardID)?.shopPrice ?? 0
+                        cost
                     })
                     return true;
                 }

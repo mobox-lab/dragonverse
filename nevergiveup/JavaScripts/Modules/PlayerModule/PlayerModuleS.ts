@@ -285,6 +285,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         if (exp == null) return false;
         let data = this.getPlayerData(player);
         data.exp += exp;
+        ModuleService.getModule(StatisticModuleS)?.recordConsume(ItemType.Exp, exp, player?.userId);
         data.save(true);
         let script = PlayerUtil.getPlayerScript(player.playerId);
         if (!script) return false;
