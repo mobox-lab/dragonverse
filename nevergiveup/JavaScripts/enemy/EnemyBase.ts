@@ -92,6 +92,7 @@ export class Enemy implements BuffBag {
     speedActive: boolean = false;
     armorActive: boolean = false;
     magicResistActive: boolean = false;
+    isPromiseFinished: boolean = false;
 
     constructor(wave: number, configId: number, gate: number, waveInfo?: WaveConfig) {
         this.id = Enemy.count;
@@ -340,7 +341,11 @@ export class Enemy implements BuffBag {
     }
 
     hasComponentType(type: EEnemyComponentType) {
-        return this._components.some((c) => c.type == type);
+        if (this.isPromiseFinished) {
+            return this._components.some((c) => c.type == type);
+        } else {
+            return true;
+        }
     }
 
     getPositionAndIndex(
@@ -471,6 +476,7 @@ export class Enemy implements BuffBag {
         this.updatePosionAndRotation();
 
         await Promise.all(promises);
+        this.isPromiseFinished = true;
         this.go = go;
         this.go.worldTransform.scale = new Vector(1);
 
