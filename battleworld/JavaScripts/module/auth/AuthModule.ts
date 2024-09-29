@@ -933,6 +933,38 @@ interface TDStatistic {
 }
 
 /**
+ * TD塔防 对局统计信息.
+ */
+export interface TDStageStatisticObj {
+    id: number;
+    gameId: string;
+    scene: string;  // 可加可不加
+    round: number;
+    userId: number;
+    create_time: number; // 记录时间
+    // ======= 上面都是默认配置
+    // gameId、round、address、world 、diff 加个索引，麻烦的话 world、diff 可以去掉
+
+    world: number; // 1 ~ 5 | 6 无尽
+    diff: number;  // 难度
+    playId: string; // roomId + stagingId
+ 
+    startTime: number; // 开始时间戳
+    detail: string;      // 战队、祝福、天赋 json
+
+    roundId: number;  // 完成波数
+    finish: number;   // 最后一波完成度 0 ~ 1 可计算%
+    status: string;   // 通关状态: Failed、Succeed、Perfect、null(无尽模式没这个东西)
+    
+    home: string;  // 基地血量 1100, 1200
+    
+    gold: number;       // 奖励金币
+    technology: number; // 奖励科技
+    exp: number;        // 奖励经验
+    stamina: number;    // 奖励体力
+}
+
+/**
  * 自动填充属性.
  */
 type AutoFillProps = {
@@ -962,7 +994,6 @@ export type BattleWorldStatisticNeedFill = {
 export type TDStatisticNeedFill = {
     [K in keyof Omit<TDStatistic, keyof AutoFillProps>]: NonNullable<TDStatistic[K]>;
 };
-
 
 /**
  * P12 物品 ID 映射枚举表.
@@ -1243,10 +1274,16 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly STATISTIC_REPORT_URI = "/pge-client-log/add";
 
     /**
-     * 宠物汇报 统计信息 Uri.
+     * PS宠物汇报 统计信息 Uri.
      * @private
      */
     private static readonly PET_STATISTIC_REPORT_URI = "/pge-client-log/pet";
+
+    /**
+     * TD对局信息汇报 统计信息 Uri.
+     * @private
+     */
+    private static readonly TD_STAGE_STATISTIC_REPORT_URI = "/pge-client-log/tdlog";
 
     /**
      * 查询 用户 P12 背包 Uri.
@@ -1452,18 +1489,34 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     /**
-     * 测试用 汇报 游戏统计信息 Url.
+     * 测试用 PS宠物数组信息汇报 游戏统计信息 Url.
      */
     private static get TEST_PET_STATISTIC_REPORT_URL() {
         return this.TEST_P12_DOMAIN + this.PET_STATISTIC_REPORT_URI;
     }
 
     /**
-     * 发布用 汇报 游戏统计信息 Url.
+     * 发布用 PS宠物数组信息汇报 游戏统计信息 Url.
      */
     private static get RELEASE_PET_STATISTIC_REPORT_URL() {
         return this.RELEASE_P12_DOMAIN + this.PET_STATISTIC_REPORT_URI;
     }
+
+
+    /**
+     * 测试用 TD对局信息汇报 游戏统计信息 Url.
+     */
+    private static get TEST_TD_STAGE_STATISTIC_REPORT_URL() {
+        return this.TEST_P12_DOMAIN + this.TD_STAGE_STATISTIC_REPORT_URI;
+    }
+
+    /**
+     * 发布用 TD对局信息汇报 游戏统计信息 Url.
+     */
+    private static get RELEASE_TD_STAGE_STATISTIC_REPORT_URL() {
+        return this.RELEASE_P12_DOMAIN + this.TD_STAGE_STATISTIC_REPORT_URI;
+    }
+
 
     /**
      * encrypt token with time salt.
@@ -2228,6 +2281,31 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
 
         return respInJson?.message === "success";
     }
+
+    // 上报 TD 对局信息
+    public async reportTDStageSimulatorPetDataStatistic(userId: string, statistic: TDStageStatisticObj[]) {
+        const d = mwext.DataCenterS.getData(userId, AuthModuleData);
+        const gameId = GameServiceConfig.chainId;
+        const time = Math.floor(Date.now() / 1000);
+        const requestParam: UserStatisticReq<TDStageStatisticObj[]> = {
+            userId,
+            sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
+            address: d?.holdAddress,
+            sceneName: "tower",
+            gameId,
+            time,
+            data: statistic,
+        };
+
+        const respInJson = await this.correspondHandler<QueryResp>(
+            requestParam,
+            AuthModuleS.RELEASE_TD_STAGE_STATISTIC_REPORT_URL,
+            AuthModuleS.TEST_TD_STAGE_STATISTIC_REPORT_URL,
+        );
+
+        return respInJson?.message === "success";
+    }
+
 
     private queryUserId(playerId: number): string | undefined {
         if (!GameServiceConfig.isRelease && !GameServiceConfig.isBeta) return "2033226";
