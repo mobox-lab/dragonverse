@@ -41,12 +41,12 @@ export enum TowerEvent {
  * @param level 等级
  */
 export type TowerInfo = {
-    playerID: number,
-    playerName: string,
-    configID: number,
-    placeID: number,
-    level: number,
-}
+    playerID: number;
+    playerName: string;
+    configID: number;
+    placeID: number;
+    level: number;
+    gold?: number;
+};
 
 export let RANGEUNIT = 200;
-

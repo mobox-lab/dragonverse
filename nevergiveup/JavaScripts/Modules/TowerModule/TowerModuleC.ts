@@ -451,6 +451,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                     configID: this._buildID,
                     placeID: this.chooseSlotID,
                     level: 0,
+                    gold: this._cfg.spend[0],
                 });
                 this.cancelChosenTower();
             } else if (GameManager.checkGold(this._cfg.spend[0])) {
@@ -460,6 +461,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                     configID: this._buildID,
                     placeID: this.chooseSlotID,
                     level: 0,
+                    gold: this._cfg.spend[0],
                 });
                 this.cancelChosenTower();
             } else {
