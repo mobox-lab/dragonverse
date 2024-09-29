@@ -57,6 +57,7 @@ type EscapeData = {
     id: number;
     wave: number;
     escapeDamage: number;
+    configId: number;
 };
 
 export class StageS {
@@ -251,12 +252,20 @@ export class StageS {
         StageListener.addClientListener(
             this.id,
             "onEscaped",
-            (player: Player, enemyIds: number[], waveIds: number[], damages: number[], stageId: number) => {
+            (
+                player: Player,
+                enemyIds: number[],
+                waveIds: number[],
+                damages: number[],
+                configIds: number[],
+                stageId: number
+            ) => {
                 if (stageId == this.id) {
                     for (let i = 0; i < enemyIds.length; i++) {
                         let enemyId = enemyIds[i];
                         let waveId = waveIds[i];
                         let damage = damages[i];
+                        let configId = configIds[i];
                         if (this._deadIds.indexOf(enemyId) == -1) {
                             this._deadIds.push(enemyId);
                             if (this._tempEscapeIds.indexOf(enemyId) == -1) {
@@ -264,6 +273,29 @@ export class StageS {
                             }
                             this.onCountChanged();
                             this._hp -= damage;
+                            try {
+                                TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
+                                    Utils.logP12Info("A_Escape", {
+                                        timestamp: Date.now(),
+                                        userId: player?.userId,
+                                        roomId: roomInfo.roomId,
+                                        stageId: this.id,
+                                        level: this.stageCfg?.NameCN,
+                                        movespeed: this.speedMultipler,
+                                        total: this._maxHp, //base血量上限
+                                        from: this._hp + damage, // 逃跑前血量
+                                        to: this._hp, // 逃跑后血量
+                                        enemy: configId, // 逃跑怪物id
+                                        round: waveId + 1, // 第几波的怪
+                                    });
+                                });
+                            } catch (error) {
+                                Utils.logP12Info(
+                                    "A_Error",
+                                    "logP12Info error:" + error + " userId:" + player?.userId,
+                                    "error"
+                                );
+                            }
                             if (this._hp <= 0) {
                                 // 本营死亡
                                 this.settleData.hasWin = false;
@@ -332,6 +364,24 @@ export class StageS {
         Event.addClientListener("speedUp", (player: Player, id: number, speedMultipler: number) => {
             if (this.id == id) {
                 this.speedMultipler = speedMultipler;
+                try {
+                    TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
+                        Utils.logP12Info("A_SpeedChange", {
+                            timestamp: Date.now(),
+                            userId: player?.userId,
+                            roomId: roomInfo.roomId,
+                            stageId: this.id,
+                            level: this.stageCfg?.NameCN,
+                            movespeed: this.speedMultipler,
+                        });
+                    });
+                } catch (error) {
+                    Utils.logP12Info(
+                        "A_Error",
+                        "logP12Info error:" + error + " userId:" + player?.userId,
+                        "error"
+                    );
+                }
                 this.boardcast((player) => {
                     Event.dispatchToClient(player, "speedUp", speedMultipler);
                 });
@@ -740,6 +790,7 @@ export class StageC {
                 id: enemy.id,
                 wave: enemy.wave,
                 escapeDamage: enemy.escapeDamage,
+                configId: enemy.configId,
             });
             this._lastMonster = enemy.configId;
         });
@@ -1043,6 +1094,7 @@ export class StageC {
                     this._currentEscapeData.map((data) => data.id),
                     this._currentEscapeData.map((data) => data.wave),
                     this._currentEscapeData.map((data) => data.escapeDamage),
+                    this._currentEscapeData.map((data) => data.configId),
                     this.id
                 );
                 this._currentEscapeData = [];

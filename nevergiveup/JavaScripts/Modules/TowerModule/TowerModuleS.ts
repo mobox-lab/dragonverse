@@ -157,12 +157,13 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
                 towerInfos.findIndex((v) => v.placeID == placeID),
                 1
             ); //删除塔
+            const player = Player.getPlayer(towerInfo.playerID);
             const cfg = GameConfig.Tower.getElement(towerInfo.configID);
             try {
-                TeleportService.asyncGetPlayerRoomInfo(this.currentPlayer.userId).then((roomInfo) => {
+                TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
                     Utils.logP12Info("A_RemoveTower", {
                         timestamp: Date.now(),
-                        userId: this.currentPlayer?.userId,
+                        userId: player?.userId,
                         roomId: roomInfo.roomId,
                         stageId: stage.id,
                         level: stage.stageCfg?.NameCN,
@@ -176,7 +177,7 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
             } catch (error) {
                 Utils.logP12Info(
                     "A_Error",
-                    "logP12Info error:" + error + " userId:" + this.currentPlayer?.userId,
+                    "logP12Info error:" + error + " userId:" + player?.userId,
                     "error"
                 );
             }
