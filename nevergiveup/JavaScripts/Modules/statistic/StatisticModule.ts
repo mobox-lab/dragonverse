@@ -40,8 +40,6 @@ type PlayerConsumeData = {
     taskGold: number, // 本次任务金币获得
     taskTech: number, // 本次任务科技获得
     taskExp: number,  // 本次任务经验获得
-
-    stageStatisticData: TDStageStatisticObj[], // 对局信息
 }
 // 赛季总统计 - 持久化 log用
 // type PersistTotalStatisticData = {
@@ -321,7 +319,6 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
             taskGold: 0,
             taskTech: 0,
             taskExp: 0,
-            stageStatisticData: [],
         });
     }
 
@@ -393,19 +390,13 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
     public recordStageInfo(userId: string, info: TDStageStatisticObj) {
         try {
             Utils.logP12Info("A_TDStageStatistic", `userId: ${userId} ` + JSON.stringify(info));
-            const consumeData = this.getPlayerConsumeRecord(userId);
-            if(!consumeData?.stageStatisticData?.length) consumeData.stageStatisticData = [];
-            const arr = consumeData.stageStatisticData;
-            arr.push(info);
-            if(arr.length >= GlobalData.Stage.maxStageStatisticNum) {
-                ModuleService.getModule(AuthModuleS).reportTDStageSimulatorPetDataStatistic(userId, arr ?? []);
-                consumeData.stageStatisticData = [];
-            }
+            ModuleService.getModule(AuthModuleS).reportTDStageSimulatorPetDataStatistic(userId, info);
         } catch (err) {
             Utils.logP12Info("A_Error", {
                 userId,
                 timestamp: Date.now(),
                 errorMsg: "StatisticModuleS recordStageInfo error: " + err,
+                info: JSON.stringify(info),
             }, "error");
         }
     }
@@ -433,7 +424,7 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
             const tdPlayerData = DataCenterS.getData(player, PlayerModuleData);
             const energyS = ModuleService.getModule(EnergyModuleS);
             const [stamina, staMax, staRed] = energyS.getPlayerEnergy(player.playerId);
-            const { stageStatisticData, ...playerConsumeData } = this.getPlayerConsumeRecord(player?.userId);
+            const playerConsumeData = this.getPlayerConsumeRecord(player?.userId);
             const login = Math.floor((tdStatisticData.playerLoginRecord[0][0] || 0) / 1000);
             const logout = Math.floor((now || 0) / 1000);
             const online = logout - login;
@@ -462,14 +453,9 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
 
             const auth = {address: authData?.holdAddress ?? '', nickname: authData?.holdNickName ?? ''};
             ModuleService.getModule(AuthModuleS).reportTDStatistic(userId, statisticData, auth);
-            ModuleService.getModule(AuthModuleS).reportTDStageSimulatorPetDataStatistic(userId, stageStatisticData ?? []);
             Log4Ts.log( 
                 StatisticModuleS,
                 " reportTDStatistic statisticData:" + JSON.stringify(statisticData) + " userId:" + userId
-            );
-            Log4Ts.log( 
-                StatisticModuleS,
-                " reportTDStageSimulatorPetDataStatistic statisticData:" + JSON.stringify(stageStatisticData) + " userId:" + userId
             );
         } catch (err) {
             const userId = player?.userId ?? '';

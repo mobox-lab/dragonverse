@@ -936,32 +936,23 @@ interface TDStatistic {
  * TD塔防 对局统计信息.
  */
 export interface TDStageStatisticObj {
-    id: number;
-    gameId: string;
-    scene: string;  // 可加可不加
-    round: number;
-    userId: number;
-    create_time: number; // 记录时间
-    // ======= 上面都是默认配置
-    // gameId、round、address、world 、diff 加个索引，麻烦的话 world、diff 可以去掉
-
-    world: number; // 1 ~ 5 | 6 无尽
-    diff: number;  // 难度
-    playId: string; // roomId + stagingId
- 
-    startTime: number; // 开始时间戳
-    detail: string;      // 战队、祝福、天赋 json
-
-    roundId: number;  // 完成波数
-    finish: number;   // 最后一波完成度 0 ~ 1 可计算%
-    status: string;   // 通关状态: Failed、Succeed、Perfect、null(无尽模式没这个东西)
-    
-    home: string;  // 基地血量 1100, 1200
-    
-    gold: number;       // 奖励金币
-    technology: number; // 奖励科技
-    exp: number;        // 奖励经验
-    stamina: number;    // 奖励体力
+    userId?: string;
+    address?: string;
+    gameId?: string;
+    createTime: number; // 记录时间 number
+    startTime: number; // 对局开始时间戳 number
+    roundId: number;
+    finish: number; // 最后一波完成度 0 ~ 1 可计算% number
+    gold: number; // 奖励金币 number
+    technology: number; // 奖励科技 number
+    exp: number; // 奖励经验 number
+    stamina: number; // 奖励体力 number
+    world: string; // 1 ~ 5 | 6 无尽 string
+    diff: string; // 难度 string
+    playId: string; // roomId + stagingId string
+    status: string; // string
+    home: string; // string
+    detail: any[]; // 战队、祝福、天赋 TODO
 }
 
 /**
@@ -2283,18 +2274,23 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     // 上报 TD 对局信息
-    public async reportTDStageSimulatorPetDataStatistic(userId: string, statistic: TDStageStatisticObj[]) {
+    public async reportTDStageSimulatorPetDataStatistic(userId: string, statistic: TDStageStatisticObj) {
         const d = mwext.DataCenterS.getData(userId, AuthModuleData);
         const gameId = GameServiceConfig.chainId;
         const time = Math.floor(Date.now() / 1000);
-        const requestParam: UserStatisticReq<TDStageStatisticObj[]> = {
+        const requestParam: UserStatisticReq<TDStageStatisticObj> = {
             userId,
             sceneId: this.getPlayerData(userId)?.lastVisitSceneId,
             address: d?.holdAddress,
             sceneName: "tower",
             gameId,
             time,
-            data: statistic,
+            data: {
+                userId,
+                address: d?.holdAddress,
+                gameId,
+                ...statistic
+            },
         };
 
         const respInJson = await this.correspondHandler<QueryResp>(
