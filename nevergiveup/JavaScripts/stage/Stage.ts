@@ -95,6 +95,7 @@ export class StageS {
     private _shouldSync: boolean = false;
     private _tempDeadIds: number[] = [];
     private _tempEscapeIds: number[] = [];
+    isEarlyQuit: boolean = false;
 
     constructor(public players: Player[], stageCfgId: number) {
         this._fsm = new StageFSM(this);
@@ -376,11 +377,7 @@ export class StageS {
                         });
                     });
                 } catch (error) {
-                    Utils.logP12Info(
-                        "A_Error",
-                        "logP12Info error:" + error + " userId:" + player?.userId,
-                        "error"
-                    );
+                    Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
                 }
                 this.boardcast((player) => {
                     Event.dispatchToClient(player, "speedUp", speedMultipler);
@@ -555,11 +552,18 @@ export class StageS {
         const difficulty = stageConfig.difficulty;
         const unique = Number(index.toString() + difficulty.toString());
         let rewards = [];
+        let settleLogs = {
+            type: 1,
+            rewards: [],
+            firsttime: 0,
+        };
         if (this.settleData.hasWin) {
             if (this._hp == this._maxHp) {
+                settleLogs.type = 3;
                 this.settleData.isPerfect = true;
                 // 完美胜利
                 let isFirst = ModuleService.getModule(PlayerModuleS).setPerfectWin(player, unique);
+                settleLogs.firsttime = isFirst ? 1 : 0;
                 // 既是完美胜利的首次，也是普通胜利的首次
                 const isNotPerfectFirst = ModuleService.getModule(PlayerModuleS).setWin(player, unique);
                 this.settleData.isFirst = isFirst;
@@ -572,9 +576,11 @@ export class StageS {
                 }
             } else {
                 // 普通胜利
+                settleLogs.type = 2;
                 let isFirst = ModuleService.getModule(PlayerModuleS).setWin(player, unique);
                 this.settleData.isFirst = isFirst;
                 if (isFirst) {
+                    settleLogs.firsttime = 1;
                     rewards = stageConfig.firstRewardNormal;
                 } else {
                     rewards = stageConfig.followRewardNormal;
@@ -583,8 +589,28 @@ export class StageS {
         } else {
             // 失败
             rewards = stageConfig.failReward;
+            settleLogs.type = 1;
         }
-
+        settleLogs.rewards = rewards;
+        if (this.isEarlyQuit) {
+            settleLogs.type = 0;
+            settleLogs.firsttime = 0;
+        }
+        try {
+            TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
+                Utils.logP12Info("A_LeaveChallenge", {
+                    timestamp: Date.now(),
+                    userId: player?.userId,
+                    roomId: roomInfo.roomId,
+                    stageId: this.id,
+                    level: this.stageCfg?.NameCN,
+                    movespeed: this.speedMultipler,
+                    ...settleLogs,
+                });
+            });
+        } catch (error) {
+            Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
+        }
         this.settleData.reward = [];
         for (let i = 0; i < rewards.length; i++) {
             let [id, amount] = rewards[i];

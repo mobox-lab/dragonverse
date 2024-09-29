@@ -175,11 +175,7 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
                     });
                 });
             } catch (error) {
-                Utils.logP12Info(
-                    "A_Error",
-                    "logP12Info error:" + error + " userId:" + player?.userId,
-                    "error"
-                );
+                Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
             }
 
             return true;
@@ -205,6 +201,7 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
         if (!this.currentPlayer) return;
         const stage = GameManager.getPlayerStage(this.currentPlayer);
         if (stage) {
+            stage.isEarlyQuit = true;
             stage["_fsm"].changeState(SettleState);
         }
     }
