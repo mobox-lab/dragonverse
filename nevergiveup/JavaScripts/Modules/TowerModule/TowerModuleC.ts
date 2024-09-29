@@ -451,6 +451,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                     configID: this._buildID,
                     placeID: this.chooseSlotID,
                     level: 0,
+                    gold: this._cfg.spend[0],
                 });
                 this.cancelChosenTower();
             } else if (GameManager.checkGold(this._cfg.spend[0])) {
@@ -460,6 +461,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                     configID: this._buildID,
                     placeID: this.chooseSlotID,
                     level: 0,
+                    gold: this._cfg.spend[0],
                 });
                 this.cancelChosenTower();
             } else {
@@ -618,7 +620,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
      */
     public async destroyTower(towerInfo: TowerInfo) {
         if (!towerInfo && !TowerManager.hasTower(towerInfo.placeID)) return;
-        this.server.net_destroyTower(towerInfo.placeID);
+        this.server.net_destroyTower(towerInfo);
     }
 
     public net_destroyTower(placeID: number) {
