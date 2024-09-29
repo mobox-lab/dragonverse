@@ -620,7 +620,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
      */
     public async destroyTower(towerInfo: TowerInfo) {
         if (!towerInfo && !TowerManager.hasTower(towerInfo.placeID)) return;
-        this.server.net_destroyTower(towerInfo.placeID);
+        this.server.net_destroyTower(towerInfo);
     }
 
     public net_destroyTower(placeID: number) {

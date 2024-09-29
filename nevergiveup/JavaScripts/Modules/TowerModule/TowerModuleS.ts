@@ -8,9 +8,11 @@
  */
 
 import { StageActions } from "../../Actions";
+import { GameConfig } from "../../config/GameConfig";
 import { GameManager } from "../../GameManager";
 import { SettleState, StageS } from "../../stage/Stage";
 import Utils from "../../Utils";
+import TowerBase from "./Tower/TowerBase";
 import { TowerInfo } from "./TowerEnum";
 import { TowerModuleC } from "./TowerModuleC";
 import { TowerModuleData } from "./TowerModuleData";
@@ -109,6 +111,28 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
             playerIDs.forEach((playerID) => {
                 this.getClient(playerID).net_upgradeTower(info);
             });
+            const player = Player.getPlayer(info.playerID);
+            const cfg = GameConfig.Tower.getElement(info.configID);
+            try {
+                TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
+                    Utils.logP12Info("A_UpgradeTower", {
+                        timestamp: Date.now(),
+                        userId: player?.userId,
+                        roomId: roomInfo.roomId,
+                        stageId: stage.id,
+                        level: stage.stageCfg?.NameCN,
+                        movespeed: stage.speedMultipler,
+
+                        tower: info.configID, //部署塔编号
+                        position: info.placeID, // 部署地块编号
+                        towerlevel: info.level - addLevel + 1, // 当前塔的等级
+                        upgradeto: info.level + 1, // 升级到2级
+                        cost: cfg.spend[info.level], // 花费能量
+                    });
+                });
+            } catch (error) {
+                Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
+            }
             return true;
         }
         return false;
@@ -120,10 +144,11 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
      * @returns
      */
     @Decorator.noReply()
-    public net_destroyTower(placeID: number) {
+    public net_destroyTower(towerInfo: TowerInfo) {
+        const placeID = towerInfo.placeID;
         const stage = GameManager.getPlayerStage(this.currentPlayer);
         let towerInfos = this._stageMap.get(stage);
-        if (towerInfos && towerInfos.find((v) => v.placeID == placeID) != null) {
+        if (towerInfos && towerInfo != null) {
             let playerIDs = GameManager.getStagePlayersServer(this.currentPlayer);
             playerIDs.forEach((playerID) => {
                 this.getClient(playerID).net_destroyTower(placeID);
@@ -132,6 +157,30 @@ export class TowerModuleS extends ModuleS<TowerModuleC, TowerModuleData> {
                 towerInfos.findIndex((v) => v.placeID == placeID),
                 1
             ); //删除塔
+            const cfg = GameConfig.Tower.getElement(towerInfo.configID);
+            try {
+                TeleportService.asyncGetPlayerRoomInfo(this.currentPlayer.userId).then((roomInfo) => {
+                    Utils.logP12Info("A_RemoveTower", {
+                        timestamp: Date.now(),
+                        userId: this.currentPlayer?.userId,
+                        roomId: roomInfo.roomId,
+                        stageId: stage.id,
+                        level: stage.stageCfg?.NameCN,
+                        movespeed: stage.speedMultipler,
+                        tower: towerInfo.configID, //部署塔编号
+                        position: towerInfo.placeID, // 部署地块编号
+                        towerlevel: towerInfo.level + 1,
+                        cost: -cfg.sellBack[towerInfo.level].toFixed(),
+                    });
+                });
+            } catch (error) {
+                Utils.logP12Info(
+                    "A_Error",
+                    "logP12Info error:" + error + " userId:" + this.currentPlayer?.userId,
+                    "error"
+                );
+            }
+
             return true;
         }
         return false;
