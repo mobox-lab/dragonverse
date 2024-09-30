@@ -47,6 +47,8 @@ import { SoundUtil } from "../tool/SoundUtil";
 import { Wave, WaveManager, WaveUtil } from "./Wave";
 import { UIMain } from "./ui/UIMain";
 import { SettleData, UISettle } from "./ui/UISettle";
+import { TDStageStatisticObj } from "../Modules/auth/AuthModule";
+import { StatisticModuleS } from "../Modules/statistic/StatisticModule";
 
 type DeathData = {
     id: number;
@@ -78,6 +80,7 @@ export class StageS {
     skipped: boolean = false;
     speedMultipler: number = 1;
     rankItems: RankItem[] = [];
+    startTime: number = 0;
 
     settleData: SettleData = {
         hasWin: false,
@@ -98,6 +101,7 @@ export class StageS {
     isEarlyQuit: boolean = false;
 
     constructor(public players: Player[], stageCfgId: number) {
+        this.startTime = Date.now();
         this._fsm = new StageFSM(this);
         StageS.counter++;
         this.id = StageS.counter;
@@ -654,6 +658,54 @@ export class StageS {
                     player.userId,
                     GameServiceConfig.STAMINA_BACK_START_GAME
                 );
+            }
+        } else {
+            try {
+                const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(player);
+                const talent = DataCenterS.getData(player, TalentModuleData)?.allTalents;
+                const dragonBlessList = ModuleService.getModule(DragonDataModuleS).getDragonBlessData(player);
+                TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
+                    // 上报数据
+                    const info: TDStageStatisticObj = {
+                        userId: player.userId,
+                        address: "",
+                        gameId: "",
+                        createTime: Date.now(), // 记录时间 number
+                        startTime: this.startTime, // 对局开始时间戳 number
+                        roundId: this.settleData.waves,
+                        finish: 0, // 最后一波完成度 0 ~ 1 可计算% number
+                        gold: 0, // 奖励金币 number
+                        technology: 0, // 奖励科技 number
+                        exp: 0, // 奖励经验 number
+                        stamina: 0, // 奖励体力 number
+                        world: (index + 1).toString(), // 1 ~ 5 | 6 无尽 string
+                        diff: (difficulty + 1).toString(), // 难度 string
+                        playId: `${roomInfo.roomId}${this.id}`, // roomId + stagingId string
+                        status: this.settleData.hasWin ? "success" : "fail", // string
+                        home: this._hp.toString(), // string
+                        detail: [cards, talent, dragonBlessList], // 战队、祝福、天赋 TODO
+                    };
+
+                    for (let i = 0; i < rewards.length; i++) {
+                        let [id, amount] = rewards[i];
+                        let item = GameConfig.Item.getElement(id);
+                        if (item.itemType == 1) {
+                            // 金币
+                            info.gold = amount;
+                        } else if (item.itemType == 2) {
+                            // 卡牌
+                        } else if (item.itemType == 3) {
+                            // 科技点
+                            info.technology = amount;
+                        } else if (item.itemType == 4) {
+                            // 经验
+                            info.exp = amount;
+                        }
+                    }
+                    ModuleService.getModule(StatisticModuleS)?.recordStageInfo(player.userId, info);
+                });
+            } catch (error) {
+                Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
             }
         }
     }
