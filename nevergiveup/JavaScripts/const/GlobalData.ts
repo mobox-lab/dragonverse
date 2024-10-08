@@ -1,5 +1,8 @@
 import { GameConfig } from "../config/GameConfig";
+import { IMonsterElement } from "../config/Monster";
 import { ITowerElement } from "../config/Tower";
+import { advantageMap, ElementEnum } from "../enemy/EnemyBase";
+import { WaveUtil } from "../stage/Wave";
 import Utils from "../Utils";
 import { StageMonsterSkillType, TowerStrategyType } from "./enum";
 
@@ -19,9 +22,106 @@ export namespace GlobalData {
         public static stageMonsterSkillDescArr = ["MonsterSkillDesc_1", "MonsterSkillDesc_2", "MonsterSkillDesc_3", "MonsterSkillDesc_4"];
         public static getStageMonsterSkillInfo(type: StageMonsterSkillType) {
             return {
-                title: GameConfig.Language.getElement(Stage.stageMonsterSkillTitleArr[type])?.Value ?? '',
-                desc: GameConfig.Language.getElement(Stage.stageMonsterSkillDescArr[type])?.Value ?? '',
+                title: GameConfig.Language.getElement(this.stageMonsterSkillTitleArr[type])?.Value ?? '',
+                desc: GameConfig.Language.getElement(this.stageMonsterSkillDescArr[type])?.Value ?? '',
             };
+        }
+             
+        public static getFitEnemies(id: number): IMonsterElement[] {
+            const allWaves = WaveUtil.getAllConfig(id);
+            if (allWaves && Array.isArray(allWaves)) {
+                const enemyIds: number[] = [];
+                for (let i = 0; i < allWaves.length; i++) {
+                    const wave = allWaves[i];
+                    for (let j = 0; j < wave.enemies.length; j++) {
+                        const enemy = wave.enemies[j];
+                        enemyIds.push(enemy.type);
+                    }
+                }
+                const uniqueEnemyIds = [...new Set(enemyIds)];
+                const allMonster = GameConfig.Monster.getAllElement();
+                const monsters = allMonster.filter((item) => uniqueEnemyIds.includes(item.id));
+                return monsters;
+            }
+            return [];
+        }
+
+        public static findEnemyCounter(element: ElementEnum): ElementEnum {
+            for (const [key, value] of Object.entries(advantageMap)) {
+                if (value === element) {
+                    return Number(key) as ElementEnum;
+                }
+            }
+            throw new Error("Invalid element");
+        }
+
+        public static getWaveMonsterBuff(enemies: IMonsterElement[]) {
+            let stealth = false;
+            let fly = false;
+
+            // 隐身 和 飞行读的老数据，types
+            for (let i = 0; i < enemies.length; i++) {
+                const monster = enemies[i];
+                const types = monster.types;
+                if (types && Array.isArray(types)) {
+                    for (let j = 0; j < types.length; j++) {
+                        const type = types[j];
+                        if (type === 1) {
+                            stealth = true;
+                        }
+                        if (type === 2) {
+                            fly = true;
+                        }
+                    }
+                }
+            }
+            const monsterBuffIds: number[] = [];
+            for (let i = 0; i < enemies.length; i++) {
+                const monster = enemies[i];
+                const buffs = monster.buff;
+                if (buffs && Array.isArray(buffs)) {
+                    for (let j = 0; j < buffs.length; j++) {
+                        const buffId = buffs[j];
+                        monsterBuffIds.push(buffId);
+                    }
+                }
+            }
+
+            const allBuffs = GameConfig.Buff.getAllElement();
+            const activeBuffs = allBuffs.filter((buff) => monsterBuffIds.includes(buff.id));
+            let healing = false;
+            let berserk = false;
+
+            for (let i = 0; i < activeBuffs.length; i++) {
+                const buff = activeBuffs[i];
+                if (buff.healing > 0) {
+                    healing = true;
+                }
+                if (buff.berserk > 0) {
+                    berserk = true;
+                }
+            }
+            console.log(stealth, fly, healing, berserk, "stealth, fly, healing, berserk");
+
+            return {
+                stealth,
+                fly,
+                healing,
+                berserk,
+            };
+        }
+
+        public static getWorldMonsterBuff(id: number, index: number) {
+            if (index === 5 || index === 6) {
+                return {
+                    stealth: true,
+                    fly: true,
+                    healing: true,
+                    berserk: true,
+                };
+            }
+            const monsters = this.getFitEnemies(id);
+            return this.getWaveMonsterBuff(monsters);
         }
     }
     export class Tower {

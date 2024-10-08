@@ -1,4 +1,5 @@
 import Gtk from "gtoolkit";
+import { GameManager } from "../../GameManager";
 import PlayerModuleData from "../../Modules/PlayerModule/PlayerModuleData";
 import { PlayerUtil } from "../../Modules/PlayerModule/PlayerUtil";
 import { NEW_STAGE_CONFIG } from "../../StageConfig";
@@ -7,19 +8,16 @@ import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { IMonsterElement } from "../../config/Monster";
+import { GlobalData } from "../../const/GlobalData";
 import { StageMonsterSkillType } from "../../const/enum";
-import { ElementEnum, advantageMap } from "../../enemy/EnemyBase";
 import { ComponentFactory } from "../../enemy/components/ComponentFactory";
 import { MGSTool } from "../../tool/MGSTool";
+import { SoundUtil } from "../../tool/SoundUtil";
 import StageSelectQueueItem_Generate from "../../ui-generate/HUD/StageSelectQueueItem_generate";
 import StageDifficulty_Generate from "../../ui-generate/Level/StageDifficulty_generate";
 import StageSelect_Generate from "../../ui-generate/Level/StageSelect_generate";
 import { StageUtil } from "../Stage";
 import StageTrigger from "../StageTrigger";
-import { WaveUtil } from "../Wave";
-import { GlobalData } from "../../const/GlobalData";
-import { GameManager } from "../../GameManager";
-import { SoundUtil } from "../../tool/SoundUtil";
 
 export class UIStageSelectItem extends StageSelectQueueItem_Generate {
     init() {}
@@ -176,7 +174,7 @@ export class UIStageSelect extends StageSelect_Generate {
             icon.size = new Vector2(40, 40);
             icon.imageGuid = GlobalData.Stage.stageRecommendElementIcon[id - 1];
         }
-        const { stealth, fly, healing, berserk } = this.getMonsterBuff(stageCfgId, stageWorldIndex);
+        const { stealth, fly, healing, berserk } = GlobalData.Stage.getWorldMonsterBuff(stageCfgId, stageWorldIndex);
         const skills: StageMonsterSkillType[] = [];
         if (healing) skills.push(StageMonsterSkillType.Healing);
         if (berserk) skills.push(StageMonsterSkillType.Berserk);
@@ -317,7 +315,7 @@ export class UIStageSelect extends StageSelect_Generate {
         if (index === 5 || index === 6) {
             monsters = GameConfig.Monster.getAllElement();
         } else {
-            monsters = this.getFitEnemies(id);
+            monsters = GlobalData.Stage.getFitEnemies(id);
         }
 
         const elementIds = monsters.map((item) => {
@@ -326,102 +324,102 @@ export class UIStageSelect extends StageSelect_Generate {
         // 转换成克制的
         // const counterElementIds = [];
         // for (let i = 0; i < elementIds.length; i++) {
-        //     const counterId = this.findCounter(elementIds[i]);
+        //     const counterId = this.findEnemyCounter(elementIds[i]);
         //     if (!counterElementIds.includes(counterId)) counterElementIds.push(counterId);
         // }
         return [...new Set(elementIds)];
     }
 
-    getFitEnemies(id: number): IMonsterElement[] {
-        const allWaves = WaveUtil.getAllConfig(id);
-        if (allWaves && Array.isArray(allWaves)) {
-            const enemyIds: number[] = [];
-            for (let i = 0; i < allWaves.length; i++) {
-                const wave = allWaves[i];
-                for (let j = 0; j < wave.enemies.length; j++) {
-                    const enemy = wave.enemies[j];
-                    enemyIds.push(enemy.type);
-                }
-            }
-            const uniqueEnemyIds = [...new Set(enemyIds)];
-            const allMonster = GameConfig.Monster.getAllElement();
-            const monsters = allMonster.filter((item) => uniqueEnemyIds.includes(item.id));
-            return monsters;
-        }
-        return [];
-    }
+    // getFitEnemies(id: number): IMonsterElement[] {
+    //     const allWaves = WaveUtil.getAllConfig(id);
+    //     if (allWaves && Array.isArray(allWaves)) {
+    //         const enemyIds: number[] = [];
+    //         for (let i = 0; i < allWaves.length; i++) {
+    //             const wave = allWaves[i];
+    //             for (let j = 0; j < wave.enemies.length; j++) {
+    //                 const enemy = wave.enemies[j];
+    //                 enemyIds.push(enemy.type);
+    //             }
+    //         }
+    //         const uniqueEnemyIds = [...new Set(enemyIds)];
+    //         const allMonster = GameConfig.Monster.getAllElement();
+    //         const monsters = allMonster.filter((item) => uniqueEnemyIds.includes(item.id));
+    //         return monsters;
+    //     }
+    //     return [];
+    // }
 
-    findCounter(element: ElementEnum): ElementEnum {
-        for (const [key, value] of Object.entries(advantageMap)) {
-            if (value === element) {
-                return Number(key) as ElementEnum;
-            }
-        }
-        throw new Error("Invalid element");
-    }
+    // findCounter(element: ElementEnum): ElementEnum {
+    //     for (const [key, value] of Object.entries(advantageMap)) {
+    //         if (value === element) {
+    //             return Number(key) as ElementEnum;
+    //         }
+    //     }
+    //     throw new Error("Invalid element");
+    // }
 
-    getMonsterBuff(id: number, index: number) {
-        if (index === 5 || index === 6) {
-            return {
-                stealth: true,
-                fly: true,
-                healing: true,
-                berserk: true,
-            };
-        }
-        const monsters = this.getFitEnemies(id);
-        let stealth = false;
-        let fly = false;
+    // getMonsterBuff(id: number, index: number) {
+    //     if (index === 5 || index === 6) {
+    //         return {
+    //             stealth: true,
+    //             fly: true,
+    //             healing: true,
+    //             berserk: true,
+    //         };
+    //     }
+    //     const monsters = this.getFitEnemies(id);
+    //     let stealth = false;
+    //     let fly = false;
 
-        // 隐身 和 飞行读的老数据，types
-        for (let i = 0; i < monsters.length; i++) {
-            const monster = monsters[i];
-            const types = monster.types;
-            if (types && Array.isArray(types)) {
-                for (let j = 0; j < types.length; j++) {
-                    const type = types[j];
-                    if (type === 1) {
-                        stealth = true;
-                    }
-                    if (type === 2) {
-                        fly = true;
-                    }
-                }
-            }
-        }
-        const monsterBuffIds: number[] = [];
-        for (let i = 0; i < monsters.length; i++) {
-            const monster = monsters[i];
-            const buffs = monster.buff;
-            if (buffs && Array.isArray(buffs)) {
-                for (let j = 0; j < buffs.length; j++) {
-                    const buffId = buffs[j];
-                    monsterBuffIds.push(buffId);
-                }
-            }
-        }
+    //     // 隐身 和 飞行读的老数据，types
+    //     for (let i = 0; i < monsters.length; i++) {
+    //         const monster = monsters[i];
+    //         const types = monster.types;
+    //         if (types && Array.isArray(types)) {
+    //             for (let j = 0; j < types.length; j++) {
+    //                 const type = types[j];
+    //                 if (type === 1) {
+    //                     stealth = true;
+    //                 }
+    //                 if (type === 2) {
+    //                     fly = true;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     const monsterBuffIds: number[] = [];
+    //     for (let i = 0; i < monsters.length; i++) {
+    //         const monster = monsters[i];
+    //         const buffs = monster.buff;
+    //         if (buffs && Array.isArray(buffs)) {
+    //             for (let j = 0; j < buffs.length; j++) {
+    //                 const buffId = buffs[j];
+    //                 monsterBuffIds.push(buffId);
+    //             }
+    //         }
+    //     }
 
-        const allBuffs = GameConfig.Buff.getAllElement();
-        const activeBuffs = allBuffs.filter((buff) => monsterBuffIds.includes(buff.id));
-        let healing = false;
-        let berserk = false;
+    //     const allBuffs = GameConfig.Buff.getAllElement();
+    //     const activeBuffs = allBuffs.filter((buff) => monsterBuffIds.includes(buff.id));
+    //     let healing = false;
+    //     let berserk = false;
 
-        for (let i = 0; i < activeBuffs.length; i++) {
-            const buff = activeBuffs[i];
-            if (buff.healing > 0) {
-                healing = true;
-            }
-            if (buff.berserk > 0) {
-                berserk = true;
-            }
-        }
-        console.log(stealth, fly, healing, berserk, "stealth, fly, healing, berserk");
+    //     for (let i = 0; i < activeBuffs.length; i++) {
+    //         const buff = activeBuffs[i];
+    //         if (buff.healing > 0) {
+    //             healing = true;
+    //         }
+    //         if (buff.berserk > 0) {
+    //             berserk = true;
+    //         }
+    //     }
+    //     console.log(stealth, fly, healing, berserk, "stealth, fly, healing, berserk");
 
-        return {
-            stealth,
-            fly,
-            healing,
-            berserk,
-        };
-    }
+    //     return {
+    //         stealth,
+    //         fly,
+    //         healing,
+    //         berserk,
+    //     };
+    // }
 }

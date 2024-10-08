@@ -22,6 +22,12 @@ import { MGSTool } from "../../tool/MGSTool";
 import MainUI_Generate from "../../ui-generate/HUD/MainUI_generate";
 import { Yoact } from "../../depend/yoact/Yoact";
 import { EnergyModuleC } from "../../Modules/Energy/EnergyModule";
+import { WaveUtil } from "../Wave";
+import { StageC } from "../Stage";
+import { GlobalData } from "../../const/GlobalData";
+import Utils from "../../Utils";
+import MonsterSkillsItem_Generate from "../../ui-generate/HUD/MonsterSkillsItem_generate";
+import { StageMonsterSkillType } from "../../const/enum";
 
 export class UIMain extends MainUI_Generate {
     public maxSpeed: number = 1.5;
@@ -226,6 +232,7 @@ export class UIMain extends MainUI_Generate {
 
     onStateChanged(state: EStageState) {
         this.mSkipWave.visibility = SlateVisibility.Collapsed;
+        console.log("#stage onStateChanged state:", state);
         if (state == EStageState.Game) {
             this.mWave.visibility = SlateVisibility.Visible;
             this.mWait.visibility = SlateVisibility.Collapsed;
@@ -235,13 +242,96 @@ export class UIMain extends MainUI_Generate {
             this.mWave.visibility = SlateVisibility.Collapsed;
             this.mWait.visibility = SlateVisibility.Visible;
         }
+        const stage = GameManager.getStageClient();
+        this.updateWaveInfo(stage, state);
     }
 
     onCanSkipWave(count: number, maxCount: number) {
         let stage = GameManager.getStageClient();
         if (stage && stage.stageWorldIndex == 99) return;
-        this.mSkipWave.visibility = SlateVisibility.Visible;
         this.updateSkipWaveCount(count, maxCount);
+    }
+    createSkillItemUI(skillType: StageMonsterSkillType) {
+        const item = UIService.create(MonsterSkillsItem_Generate);
+        const { title, desc } = GlobalData.Stage.getStageMonsterSkillInfo(skillType) ?? {};
+        Gtk.trySetText(item.txt_skill, title);
+        return item;
+    }
+    updateWaveInfo(stage: StageC, state: EStageState) {
+        try {
+            if(![EStageState.Game, EStageState.Wait].includes(state)) return;
+            const [currentWave] = WaveUtil.fitOldConfig(stage.stageCfgId, state === EStageState.Wait ?  stage.currentWave + 1 : stage.currentWave);
+            const [nextWave] = WaveUtil.fitOldConfig(stage.stageCfgId, state === EStageState.Wait ?  stage.currentWave + 2 : stage.currentWave + 1);
+            if(!currentWave && !nextWave) return; // 结束了
+            if(nextWave) {
+                this.imgMonsterBg.size = new Vector2(346, 305);
+                Gtk.trySetVisibility(this.canvas_coming, SlateVisibility.HitTestInvisible);
+                // const { stealth, fly, healing, berserk } = GlobalData.Stage.getMonsterBuff(stage.stageCfgId, stage.stageWorldIndex);
+                const { enemies } = nextWave;
+                const enemyCfgList = enemies.map(item => GameConfig.Monster.getElement(item?.type));
+                const elementIds = [...new Set(enemyCfgList.map(item => item.elementTy))] ;
+                this.can_waveEleList_2.removeAllChildren();
+                for (const id of elementIds) {
+                    const icon = Image.newObject(this.can_waveEleList_2, `element_${id}_2`) as Image;
+                    icon.size = new Vector2(28, 28);
+                    icon.imageGuid = GlobalData.Stage.stageRecommendElementIcon[id - 1];
+                }
+                const { stealth, fly, healing, berserk } = GlobalData.Stage.getWaveMonsterBuff(enemyCfgList);
+                this.can_skillList_2.removeAllChildren();
+                if(stealth) {
+                    const item =this.createSkillItemUI(StageMonsterSkillType.Stealth);
+                    this.can_skillList_2.addChild(item.uiObject);
+                }
+                if(fly) {
+                    const item =this.createSkillItemUI(StageMonsterSkillType.Fly);
+                    this.can_skillList_2.addChild(item.uiObject);
+                }
+                if(healing) {
+                    const item =this.createSkillItemUI(StageMonsterSkillType.Healing);
+                    this.can_skillList_2.addChild(item.uiObject);
+                }
+                if(berserk) {
+                    const item =this.createSkillItemUI(StageMonsterSkillType.Berserk);
+                    this.can_skillList_2.addChild(item.uiObject);
+                }
+                console.log("#stage updateWaveInfo nextWave elementIds:" + elementIds + " stealth:" + stealth + " fly:" + fly + " healing:" + healing + " berserk:" + berserk);
+
+            } else {
+                Gtk.trySetVisibility(this.canvas_coming, SlateVisibility.Collapsed);
+                this.imgMonsterBg.size = new Vector2(346, 179);
+            }
+            const { enemies } = currentWave;
+            const enemyCfgList = enemies.map(item => GameConfig.Monster.getElement(item?.type));
+            const elementIds = [...new Set(enemyCfgList.map(item => item.elementTy))] ;
+            this.can_waveEleList_1.removeAllChildren();
+            for (const id of elementIds) {
+                const icon = Image.newObject(this.can_waveEleList_1, `element_${id}_1`) as Image;
+                icon.size = new Vector2(28, 28);
+                icon.imageGuid = GlobalData.Stage.stageRecommendElementIcon[id - 1];
+            }
+            const { stealth, fly, healing, berserk } = GlobalData.Stage.getWaveMonsterBuff(enemyCfgList);
+            this.can_skillList_1.removeAllChildren();
+            if(stealth) {
+                const item =this.createSkillItemUI(StageMonsterSkillType.Stealth);
+                this.can_skillList_1.addChild(item.uiObject);
+            }
+            if(fly) {
+                const item =this.createSkillItemUI(StageMonsterSkillType.Fly);
+                this.can_skillList_1.addChild(item.uiObject);
+            }
+            if(healing) {
+                const item =this.createSkillItemUI(StageMonsterSkillType.Healing);
+                this.can_skillList_1.addChild(item.uiObject);
+            }
+            if(berserk) {
+                const item =this.createSkillItemUI(StageMonsterSkillType.Berserk);
+                this.can_skillList_1.addChild(item.uiObject);
+            }
+            console.log("#stage updateWaveInfo currentWave" + " state:" + EStageState[state] + " elementIds:" + elementIds + "\nnextWave:" + JSON.stringify(nextWave) + "\ncurrentWave:" + JSON.stringify(currentWave) + " stealth:" + stealth + " fly:" + fly + " healing:" + healing + " berserk:" + berserk);
+        } catch (error) {
+            const userId = Player.localPlayer?.userId ?? 0;
+            Utils.logP12Info("A_Error", "#stage updateWaveInfo error:" + error + " stage:" + stage.stageCfgId + " state:" + state + " userId:" + userId, "error");
+        }
     }
 
     updateSkipWaveCount(count: number, maxCount: number) {
