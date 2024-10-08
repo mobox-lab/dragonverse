@@ -49,6 +49,7 @@ import { UIMain } from "./ui/UIMain";
 import { SettleData, UISettle } from "./ui/UISettle";
 import { TDStageStatisticObj } from "../Modules/auth/AuthModule";
 import { StatisticModuleS } from "../Modules/statistic/StatisticModule";
+import { WaveModuleS } from "../Modules/waveModule/WaveModuleS";
 
 type DeathData = {
     id: number;
@@ -99,6 +100,7 @@ export class StageS {
     private _tempDeadIds: number[] = [];
     private _tempEscapeIds: number[] = [];
     isEarlyQuit: boolean = false;
+    escapeInfo: { wave: number; id: number; type: number }[] = [];
 
     constructor(public players: Player[], stageCfgId: number) {
         this.startTime = Date.now();
@@ -271,6 +273,7 @@ export class StageS {
                         let waveId = waveIds[i];
                         let damage = damages[i];
                         let configId = configIds[i];
+                        this.escapeInfo.push({ wave: waveId, id: enemyId, type: configId });
                         if (this._deadIds.indexOf(enemyId) == -1) {
                             this._deadIds.push(enemyId);
                             if (this._tempEscapeIds.indexOf(enemyId) == -1) {
@@ -664,6 +667,12 @@ export class StageS {
                 const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(player);
                 const talent = DataCenterS.getData(player, TalentModuleData)?.allTalents;
                 const dragonBlessList = ModuleService.getModule(DragonDataModuleS).getDragonBlessData(player);
+                const maxWave = this.escapeInfo.reduce((max, item) => Math.max(max, item.wave), 0);
+                // 找到具有最大 wave 值的元素数量
+                const maxWaveCount = this.escapeInfo.filter((item) => item.wave === maxWave).length;
+                const allWaves = ModuleService.getModule(WaveModuleS).getAllPassWaves(this.id);
+                const allCount = allWaves[maxWave].enemies.reduce((sum, item) => sum + item.count, 0);
+                const percent = maxWaveCount / allCount;
                 TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
                     // 上报数据
                     const info: TDStageStatisticObj = {
@@ -673,7 +682,7 @@ export class StageS {
                         createTime: Date.now(), // 记录时间 number
                         startTime: this.startTime, // 对局开始时间戳 number
                         roundId: this.settleData.waves,
-                        finish: 0, // 最后一波完成度 0 ~ 1 可计算% number
+                        finish: percent, // 最后一波完成度 0 ~ 1 可计算% number
                         gold: 0, // 奖励金币 number
                         technology: 0, // 奖励科技 number
                         exp: 0, // 奖励经验 number
