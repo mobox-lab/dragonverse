@@ -312,6 +312,7 @@ export class WaveUtil {
     indexArray = [[], [], []]; // 简单关卡剩余状态  普通关卡剩余状态   // 困难关卡剩余状态
     currentWaves: WaveConfig[] = [];
     runningIndex = 0;
+    allPassWaves: WaveConfig[] = [];
 
     protected _sequence = [0, 0, 1, 1, 2];
 
@@ -464,6 +465,16 @@ export class WaveUtil {
         this.baseEnemy.hpMultiplier = this.baseEnemy.hpMultiplier * Math.pow(this.hpBossPercent, multiple);
     }
 
+    getWaveInfoByWaveId(stageId: number) {
+        if (SystemUtil.isClient()) {
+            const waves = ModuleService.getModule(WaveModuleC).allPassWaves;
+            return waves;
+        } else {
+            const waves = ModuleService.getModule(WaveModuleS).getAllPassWaves(stageId);
+            return waves;
+        }
+    }
+
     newCalculateWave(wave: number, execute: boolean, stageId: number) {
         if (execute) {
             if (SystemUtil.isClient()) {
@@ -511,7 +522,9 @@ export class WaveUtil {
                         Log4Ts.error(StageC, "error wave index");
                     }
                 }
+                this.allPassWaves.push(waveInfo);
                 ModuleService.getModule(PlayerModuleC).onInfinityWaveRefresh();
+                ModuleService.getModule(WaveModuleC).syncAllPassWaves(stageId, this.allPassWaves);
                 ModuleService.getModule(WaveModuleC).syncCurrentWave(stageId, waveInfo);
                 return waveInfo;
             }

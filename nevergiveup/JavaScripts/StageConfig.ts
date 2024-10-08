@@ -2496,7 +2496,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 };
             }
         },
-        waveLength: 99999,
+        waveLength: 9999,
     },
     // 5-1
     {
