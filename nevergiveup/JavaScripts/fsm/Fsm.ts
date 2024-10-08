@@ -59,4 +59,8 @@ export abstract class Fsm<T> implements IFsm<T> {
         }
         this.currentState && this.currentState.onUpdate(dt);
     }
+
+    public getCurrentState(){
+        return this.currentState;
+    }
 }
