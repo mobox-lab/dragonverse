@@ -676,9 +676,6 @@ export class StageS {
                 TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
                     // 上报数据
                     const info: TDStageStatisticObj = {
-                        userId: player.userId,
-                        address: "",
-                        gameId: "",
                         createTime: Date.now(), // 记录时间 number
                         startTime: this.startTime, // 对局开始时间戳 number
                         roundId: this.settleData.waves,
