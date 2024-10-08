@@ -82,6 +82,8 @@ export class StageS {
     speedMultipler: number = 1;
     rankItems: RankItem[] = [];
     startTime: number = 0;
+    endWaveTime: number = 0;
+    endState: EStageState = null;
 
     settleData: SettleData = {
         hasWin: false,
@@ -183,6 +185,8 @@ export class StageS {
 
     registerListeners() {
         StageActions.onStageStateChanged.add((state, stageId: number, ...param: number[]) => {
+            console.log(JSON.stringify(param), "onStageStateChanged");
+
             if (stageId == this.id) {
                 if (state == EStageState.End) {
                     GameManager.endStage(this);
@@ -306,6 +310,10 @@ export class StageS {
                             }
                             if (this._hp <= 0) {
                                 // 本营死亡
+                                const state = (this._fsm.getCurrentState() as any)?.state;
+                                const time = (this._fsm.getCurrentState() as any)?.time;
+                                this.endWaveTime = time;
+                                this.endState = state;
                                 this.settleData.hasWin = false;
                                 this._fsm.changeState(SettleState, false);
                                 this.boardcast((player) => {
@@ -667,19 +675,28 @@ export class StageS {
                 const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(player);
                 const talent = DataCenterS.getData(player, TalentModuleData)?.allTalents;
                 const dragonBlessList = ModuleService.getModule(DragonDataModuleS).getDragonBlessData(player);
-                const maxWave = this.escapeInfo.reduce((max, item) => Math.max(max, item.wave), 0);
+                // const maxWave = this.escapeInfo.reduce((max, item) => Math.max(max, item.wave), 0);
                 // 找到具有最大 wave 值的元素数量
-                const maxWaveCount = this.escapeInfo.filter((item) => item.wave === maxWave).length;
-                const allWaves = ModuleService.getModule(WaveModuleS).getAllPassWaves(this.id);
-                const allCount = allWaves[maxWave].enemies.reduce((sum, item) => sum + item.count, 0);
-                const percent = maxWaveCount / allCount;
+                // const maxWaveCount = this.escapeInfo.filter((item) => item.wave === maxWave).length;
+                // const allWaves = ModuleService.getModule(WaveModuleS).getAllPassWaves(this.id);
+                // const allCount = allWaves[maxWave].enemies.reduce((sum, item) => sum + item.count, 0);
+                // const percent = maxWaveCount / allCount;
+                const currentWave = ModuleService.getModule(WaveModuleS).getCurrentWave(this.id);
+                const state = this.endState;
+                const endWaveTime = this.endWaveTime;
+                let time = currentWave.waveTime;
+                if (state === EStageState.Game) {
+                    time = endWaveTime;
+                } else if (state === EStageState.Wait) {
+                    time = currentWave.waveTime + endWaveTime;
+                }
                 TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
                     // 上报数据
                     const info: TDStageStatisticObj = {
                         createTime: Date.now(), // 记录时间 number
                         startTime: this.startTime, // 对局开始时间戳 number
-                        roundId: this.settleData.waves,
-                        finish: percent, // 最后一波完成度 0 ~ 1 可计算% number
+                        roundId: this.settleData.waves + 1,
+                        finish: time, // 最后一波完成度 0 ~ 1 可计算% number
                         gold: 0, // 奖励金币 number
                         technology: 0, // 奖励科技 number
                         exp: 0, // 奖励经验 number
@@ -1248,6 +1265,9 @@ class GameState extends StageBaseState {
     protected get state(): EStageState {
         return EStageState.Game;
     }
+    protected get time(): number {
+        return this._time;
+    }
     onUpdate(dt: number): void {
         this._time -= dt * this.fsm.owner.speedMultipler;
         if (this._time <= 0) {
@@ -1292,6 +1312,9 @@ class WaitState extends StageBaseState {
     private _time: number = 0;
     protected get state(): EStageState {
         return EStageState.Wait;
+    }
+    protected get time(): number {
+        return this._time;
     }
     onEnter(...params: any[]): void {
         this._time = params[0];
