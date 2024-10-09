@@ -86,6 +86,10 @@ export class UIMain extends MainUI_Generate {
             this.speedUp();
         });
 
+        this.mSpeedUp2.onClicked.add(() => {
+            this.speedUp2();
+        });
+
         this.mPause.onClicked.add(() => {
             MGSTool.clickBtn("2");
             this.pause();
@@ -99,6 +103,10 @@ export class UIMain extends MainUI_Generate {
 
         this.mSpeedDown.onClicked.add(() => {
             this.speedDown();
+        });
+
+        this.mSpeedDown2.onClicked.add(() => {
+            this.speedDown2();
         });
         
         this.returnBtn.onClicked.add(() => {// 回到房间
@@ -152,6 +160,26 @@ export class UIMain extends MainUI_Generate {
     speedDown() {
         this.mSpeedUp.visibility = SlateVisibility.Visible;
         this.mSpeedDown.visibility = SlateVisibility.Collapsed;
+        this.curSpeed = 1;
+        if (this.playing) {
+            this.setSpeed(this.curSpeed);
+            this.play();
+        }
+    }
+
+    speedUp2() {
+        this.mSpeedUp2.visibility = SlateVisibility.Collapsed;
+        this.mSpeedDown2.visibility = SlateVisibility.Visible;
+        this.curSpeed = 2;
+        if (this.playing) {
+            this.setSpeed(this.curSpeed);
+            this.play();
+        }
+    }
+
+    speedDown2() {
+        this.mSpeedUp2.visibility = SlateVisibility.Visible;
+        this.mSpeedDown2.visibility = SlateVisibility.Collapsed;
         this.curSpeed = 1;
         if (this.playing) {
             this.setSpeed(this.curSpeed);
