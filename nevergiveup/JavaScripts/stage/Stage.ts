@@ -670,66 +670,69 @@ export class StageS {
                     GameServiceConfig.STAMINA_BACK_START_GAME
                 );
             }
-        } else {
-            try {
-                const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(player);
-                const talent = DataCenterS.getData(player, TalentModuleData)?.allTalents;
-                const dragonBlessList = ModuleService.getModule(DragonDataModuleS).getDragonBlessData(player);
-                // const maxWave = this.escapeInfo.reduce((max, item) => Math.max(max, item.wave), 0);
-                // 找到具有最大 wave 值的元素数量
-                // const maxWaveCount = this.escapeInfo.filter((item) => item.wave === maxWave).length;
-                // const allWaves = ModuleService.getModule(WaveModuleS).getAllPassWaves(this.id);
-                // const allCount = allWaves[maxWave].enemies.reduce((sum, item) => sum + item.count, 0);
-                // const percent = maxWaveCount / allCount;
-                const currentWave = ModuleService.getModule(WaveModuleS).getCurrentWave(this.id);
-                const state = this.endState;
-                const endWaveTime = this.endWaveTime;
-                let time = currentWave.waveTime;
-                if (state === EStageState.Game) {
-                    time = endWaveTime;
-                } else if (state === EStageState.Wait) {
-                    time = currentWave.waveTime + endWaveTime;
-                }
-                TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
-                    // 上报数据
-                    const info: TDStageStatisticObj = {
-                        createTime: Date.now(), // 记录时间 number
-                        startTime: this.startTime, // 对局开始时间戳 number
-                        roundId: this.settleData.waves + 1,
-                        finish: time, // 最后一波完成度 0 ~ 1 可计算% number
-                        gold: 0, // 奖励金币 number
-                        technology: 0, // 奖励科技 number
-                        exp: 0, // 奖励经验 number
-                        stamina: 0, // 奖励体力 number
-                        world: (index + 1).toString(), // 1 ~ 5 | 6 无尽 string
-                        diff: (difficulty + 1).toString(), // 难度 string
-                        playId: `${roomInfo.roomId}${this.id}`, // roomId + stagingId string
-                        status: this.settleData.hasWin ? "success" : "fail", // string
-                        home: this._hp.toString(), // string
-                        detail: [cards, talent, dragonBlessList], // 战队、祝福、天赋 TODO
-                    };
-
-                    for (let i = 0; i < rewards.length; i++) {
-                        let [id, amount] = rewards[i];
-                        let item = GameConfig.Item.getElement(id);
-                        if (item.itemType == 1) {
-                            // 金币
-                            info.gold = amount;
-                        } else if (item.itemType == 2) {
-                            // 卡牌
-                        } else if (item.itemType == 3) {
-                            // 科技点
-                            info.technology = amount;
-                        } else if (item.itemType == 4) {
-                            // 经验
-                            info.exp = amount;
-                        }
-                    }
-                    ModuleService.getModule(StatisticModuleS)?.recordStageInfo(player.userId, info);
-                });
-            } catch (error) {
-                Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
+        }
+        try {
+            const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(player);
+            const talent = DataCenterS.getData(player, TalentModuleData)?.allTalents;
+            const dragonBlessList = ModuleService.getModule(DragonDataModuleS).getDragonBlessData(player);
+            // const maxWave = this.escapeInfo.reduce((max, item) => Math.max(max, item.wave), 0);
+            // 找到具有最大 wave 值的元素数量
+            // const maxWaveCount = this.escapeInfo.filter((item) => item.wave === maxWave).length;
+            // const allWaves = ModuleService.getModule(WaveModuleS).getAllPassWaves(this.id);
+            // const allCount = allWaves[maxWave].enemies.reduce((sum, item) => sum + item.count, 0);
+            // const percent = maxWaveCount / allCount;
+            const currentWave = ModuleService.getModule(WaveModuleS).getCurrentWave(this.id);
+            const state = this.endState;
+            const endWaveTime = this.endWaveTime;
+            let time = currentWave.waveTime;
+            if (state === EStageState.Game) {
+                time = endWaveTime;
+            } else if (state === EStageState.Wait) {
+                time = currentWave.waveTime + endWaveTime;
             }
+            TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
+                // 上报数据
+                const info: TDStageStatisticObj = {
+                    createTime: Date.now(), // 记录时间 number
+                    startTime: this.startTime, // 对局开始时间戳 number
+                    roundId: this.settleData.waves + 1,
+                    finish: time, // 最后一波完成度 0 ~ 1 可计算% number
+                    gold: 0, // 奖励金币 number
+                    technology: 0, // 奖励科技 number
+                    exp: 0, // 奖励经验 number
+                    stamina: Utils.isInfiniteMode(stageConfig.groupIndex)
+                        ? 0
+                        : this.settleData.hasWin
+                        ? 0
+                        : GameServiceConfig.STAMINA_BACK_START_GAME, // 奖励体力 number
+                    world: (index + 1).toString(), // 1 ~ 5 | 6 无尽 string
+                    diff: (difficulty + 1).toString(), // 难度 string
+                    playId: `${roomInfo.roomId}-${this.id}`, // roomId + stagingId string
+                    status: this.settleData.hasWin ? (this._hp == this._maxHp ? "perfect" : "success") : "fail", // string
+                    home: `${this._hp}/${this._maxHp}`, // string
+                    detail: { cards, talent, dragonBlessList, nickName: player.nickname }, // 战队、祝福、天赋 TODO
+                };
+
+                for (let i = 0; i < rewards.length; i++) {
+                    let [id, amount] = rewards[i];
+                    let item = GameConfig.Item.getElement(id);
+                    if (item.itemType == 1) {
+                        // 金币
+                        info.gold = amount;
+                    } else if (item.itemType == 2) {
+                        // 卡牌
+                    } else if (item.itemType == 3) {
+                        // 科技点
+                        info.technology = amount;
+                    } else if (item.itemType == 4) {
+                        // 经验
+                        info.exp = amount;
+                    }
+                }
+                ModuleService.getModule(StatisticModuleS)?.recordStageInfo(player.userId, info);
+            });
+        } catch (error) {
+            Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
         }
     }
 

@@ -344,6 +344,20 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.mSpeedDown_Internal
 	}
+	private mSpeedDown2_Internal: mw.Button
+	public get mSpeedDown2(): mw.Button {
+		if(!this.mSpeedDown2_Internal&&this.uiWidgetBase) {
+			this.mSpeedDown2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSpeedControl/Canvas_3/mSpeedDown2') as mw.Button
+		}
+		return this.mSpeedDown2_Internal
+	}
+	private mSpeedUp2_Internal: mw.Button
+	public get mSpeedUp2(): mw.Button {
+		if(!this.mSpeedUp2_Internal&&this.uiWidgetBase) {
+			this.mSpeedUp2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSpeedControl/Canvas_3/mSpeedUp2') as mw.Button
+		}
+		return this.mSpeedUp2_Internal
+	}
 	private mSpeedUp_Internal: mw.Button
 	public get mSpeedUp(): mw.Button {
 		if(!this.mSpeedUp_Internal&&this.uiWidgetBase) {
@@ -542,6 +556,18 @@ export default class MainUI_Generate extends UIScript {
 	   this.mSpeedDown.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.mSpeedDown2.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "mSpeedDown2");
+	   })
+	   this.mSpeedDown2.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.mSpeedUp2.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "mSpeedUp2");
+	   })
+	   this.mSpeedUp2.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.mSpeedUp.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "mSpeedUp");
 	   })
@@ -667,6 +693,12 @@ export default class MainUI_Generate extends UIScript {
 	   //文本多语言
 	   
 	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSpeedControl/Canvas_3/mSpeedDown/TxtSpeedDown") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSpeedControl/Canvas_3/mSpeedDown2/TxtSpeedDown2") as any);
+	   
+	
+	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSpeedControl/Canvas_3/mSpeedUp2/TxtSpeedUp2") as any);
 	   
 	
 	   this.initLanguage(this.uiWidgetBase.findChildByPath("RootCanvas/mSpeedControl/Canvas_3/mSpeedUp/TxtSpeedUp") as any);

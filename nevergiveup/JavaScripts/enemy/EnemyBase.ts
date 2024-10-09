@@ -93,6 +93,7 @@ export class Enemy implements BuffBag {
     armorActive: boolean = false;
     magicResistActive: boolean = false;
     isPromiseFinished: boolean = false;
+    rootActiveTime: number = 0;
 
     constructor(wave: number, configId: number, gate: number, waveInfo?: WaveConfig) {
         this.id = Enemy.count;
@@ -295,13 +296,17 @@ export class Enemy implements BuffBag {
             // 记录生效时间，和生效的时长
             const root = slowAndRoot.filter((buff) => buff.cfg.speed === 999);
             if (root.length > 0) {
-                this.speed = 1;
-                this.anim = this.go.loadAnimation("217836");
-                if (GameManager.getStageClient()) {
-                    this.anim.loop = 1;
-                    let speedMultipler = GameManager.getStageClient().speedMultipler || 1;
-                    this.anim.speed = speedMultipler;
-                    this.anim.play();
+                const now = Math.floor(new Date().getTime() / 1000);
+                if (now - this.rootActiveTime > 5) {
+                    this.rootActiveTime = now;
+                    this.speed = 1;
+                    this.anim = this.go.loadAnimation("217836");
+                    if (GameManager.getStageClient()) {
+                        this.anim.loop = 1;
+                        let speedMultipler = GameManager.getStageClient().speedMultipler || 1;
+                        this.anim.speed = speedMultipler;
+                        this.anim.play();
+                    }
                 }
             } else {
                 const maxSpeedItem = slowAndRoot.reduce((maxItem, currentItem) => {

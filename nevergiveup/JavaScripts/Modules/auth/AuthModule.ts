@@ -952,7 +952,7 @@ export interface TDStageStatisticObj {
     playId: string; // roomId + stagingId string
     status: string; // string
     home: string; // string
-    detail: any[]; // 战队、祝福、天赋 TODO
+    detail: any; // 战队、祝福、天赋 TODO
 }
 
 /**
