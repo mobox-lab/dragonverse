@@ -33,6 +33,7 @@ export class UIMain extends MainUI_Generate {
     public maxSpeed: number = 1.5;
     public curSpeed: number = 1;
     public playing: boolean = true;
+    public infoPanelExpand: boolean = true;
     private _tryTowerUIs: TryTowerUI[] = [];
     private _oriBagPos: mw.Vector2;
 
@@ -63,6 +64,12 @@ export class UIMain extends MainUI_Generate {
 
         Event.addServerListener("updateSkipWave", (count: number, maxCount: number) => {
             this.updateSkipWaveCount(count, maxCount);
+        });
+        
+        this.monsterInfofoldBtn.onClicked.add(() => {
+            this.infoPanelExpand = !this.infoPanelExpand;
+            const visibility = this.infoPanelExpand ? SlateVisibility.Visible : SlateVisibility.Collapsed;
+            Gtk.trySetVisibility(this.canvas_monster, visibility);
         });
 
         this.mSkip.onClicked.add(() => {
