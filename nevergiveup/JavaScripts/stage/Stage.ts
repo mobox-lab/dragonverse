@@ -684,11 +684,11 @@ export class StageS {
             const currentWave = ModuleService.getModule(WaveModuleS).getCurrentWave(this.id);
             const state = this.endState;
             const endWaveTime = this.endWaveTime;
-            let time = currentWave.waveTime;
+            let time = currentWave?.waveTime || 30;
             if (state === EStageState.Game) {
                 time = endWaveTime;
             } else if (state === EStageState.Wait) {
-                time = currentWave.waveTime + endWaveTime;
+                time = time + endWaveTime;
             }
             TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
                 // 上报数据
