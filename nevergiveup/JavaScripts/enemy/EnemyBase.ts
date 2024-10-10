@@ -922,8 +922,8 @@ export class Enemy implements BuffBag {
         }
         // 光克暗 暗克木 木克土 土克水 水克火 火克光
         // （从1—6分别为光、暗、水、火、木、土）
-        const buffPercent = 0.2;
-        const debuffPercent = 0.2;
+        const buffPercent = 0.3;
+        const debuffPercent = 0.3;
 
         if (advantageMap[towerElement] === monsterElement) {
             // 塔克制怪物
