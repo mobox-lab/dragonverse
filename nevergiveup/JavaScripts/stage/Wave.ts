@@ -496,19 +496,19 @@ export class WaveUtil {
                         const times = this.waveTimes;
                         newWaves = waves.map((item) => {
                             const newEnemies = item.enemies.map((enemy) => {
-                                const spawnInterval = enemy.spawnInterval * Math.pow(0.8, times);
+                                const spawnInterval = enemy.spawnInterval * Math.pow(0.85, times);
                                 return {
                                     ...enemy,
-                                    count: Math.floor(enemy.count * Math.pow(1.2, times)),
+                                    count: Math.floor(enemy.count * Math.pow(1.13, times)),
                                     spawnInterval: spawnInterval > 0.5 ? Number(spawnInterval.toFixed(2)) : 0.5,
                                 };
                             });
-                            const waveTime = (item.waveTime > 30 ? 30 : item.waveTime) * Math.pow(0.8, times);
+                            const waveTime = (item.waveTime > 30 ? 30 : item.waveTime) * Math.pow(0.85, times);
                             const escapeDamagePercent = 1 * Math.pow(1.2, times);
                             return {
                                 ...item,
                                 waveTime: waveTime > 5 ? Number(waveTime.toFixed(0)) : 5,
-                                hpMultiplier: 1 * Math.pow(1.2, times),
+                                hpMultiplier: 1 * Math.pow(1.4, times),
                                 enemies: newEnemies,
                                 escapeDamagePercent: escapeDamagePercent,
                                 waveGold: 0,
