@@ -695,7 +695,7 @@ export class StageS {
                 const info: TDStageStatisticObj = {
                     createTime: Date.now(), // 记录时间 number
                     startTime: this.startTime, // 对局开始时间戳 number
-                    roundId: this.settleData.waves + 1,
+                    roundId: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
                     finish: time, // 最后一波完成度 0 ~ 1 可计算% number
                     gold: 0, // 奖励金币 number
                     technology: 0, // 奖励科技 number
