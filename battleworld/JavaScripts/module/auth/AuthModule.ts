@@ -183,6 +183,27 @@ addGMCommand(
 );
 
 addGMCommand(
+    "report td | Auth",
+    "void",
+    undefined,
+    (player) => {
+        Log4Ts.log(AuthModuleS, `report td rank data...`);
+        mwext.ModuleService.getModule(AuthModuleS)
+            .reportTDRankData(player.playerId, {
+                roundId: 0, // 完成波数 number
+                finish: 20, // 最后一波完成度 时间 20 30
+                recordTIme: 0, // 上榜时间
+                detail: [] // 装备卡片的 ids
+            })
+            .then(() => {
+                Log4Ts.log(AuthModuleS, `report td rank data success.`);
+            });
+    },
+    undefined,
+    "Root",
+);
+
+addGMCommand(
     "report ps statistic | Auth",
     "void",
     undefined,
@@ -521,6 +542,26 @@ interface UpdateBattleWorldRankDataReq extends UserDataReq {
     gradeOriginalPower: number;
     round: number;
     recordTime: number;
+}
+
+/**
+ * 汇报 TD塔防排行榜 请求参数.
+ */
+interface UpdateTDRankDataReq extends UserDataReq {
+    userName: string;
+    userAvatar: string;
+    round: number; //赛季 round 传 0 就行
+    roundId: number; // 完成波数 number
+    finish: number; // 最后一波完成度 时间 20 30
+    recordTIme: number; // 上榜时间
+    detail: number[]; // 装备卡片的 ids
+}
+
+export type UpdateTDRankDataNeedFill = {
+    roundId: number; // 完成波数 number
+    finish: number; // 最后一波完成度 时间 20 30
+    recordTIme: number; // 上榜时间
+    detail: number[]; // 装备卡片的 ids
 }
 
 /**
@@ -1259,6 +1300,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     private static readonly B_W_RANK_REPORT_URI = "/pge-game/rank/fight/update";
 
     /**
+     * 汇报 TD排行榜 Uri.
+     * @private
+     */
+    private static readonly T_D_RANK_REPORT_URI = "/pge-game/rank/defense/update";
+
+    /**
      * 汇报 统计信息 Uri.
      * @private
      */
@@ -1466,6 +1513,20 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     }
 
     /**
+     * 测试用 汇报 TD 排行榜 Url.
+     */
+    private static get TEST_T_D_RANK_REPORT_URL() {
+        return this.TEST_P12_DOMAIN + this.T_D_RANK_REPORT_URI;
+    }
+
+    /**
+     * 发布用 汇报 TD 排行榜 Url.
+     */
+    private static get RELEASE_T_D_RANK_REPORT_URL() {
+        return this.RELEASE_P12_DOMAIN + this.T_D_RANK_REPORT_URI;
+    }
+
+    /**
      * 测试用 汇报 游戏统计信息 Url.
      */
     private static get TEST_STATISTIC_REPORT_URL() {
@@ -1580,6 +1641,12 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
     public userBWRankDataReporter: Map<string, (requestParam: UpdateBattleWorldRankDataReq) => void> = new Map();
 
     /**
+     * 用户 TD 上报函数.
+     * @type {Map<string, () => void>}
+     */
+    public userTDRankDataReporter: Map<string, (requestParam: UpdateTDRankDataReq) => void> = new Map();
+
+    /**
      * @type {Map<string, string>} key: userId, value: token.
      * @private
      */
@@ -1637,6 +1704,9 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         this.userBWRankDataReporter.set(this.queryUserId(player.playerId), (requestParam) =>
             this.innerReportBattleWorldRankData(requestParam),
         );
+        this.userTDRankDataReporter.set(this.queryUserId(player.playerId), (requestParam) => {
+            this.innerReportTDRankData(requestParam);
+        });
     }
 
     protected onPlayerEnterGame(player: Player): void {
@@ -1659,6 +1729,7 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
         mw.setTimeout(() => {
             this.userPSRankDataReporter.delete(player.userId);
             this.userBWRankDataReporter.delete(player.userId);
+            this.userTDRankDataReporter.delete(player.userId);
         }, GameServiceConfig.REPORT_REQUEST_WAIT_TIME * 2);
     }
 
@@ -2157,6 +2228,37 @@ export class AuthModuleS extends JModuleS<AuthModuleC, AuthModuleData> {
             requestParam,
             AuthModuleS.RELEASE_B_W_RANK_REPORT_URL,
             AuthModuleS.TEST_B_W_RANK_REPORT_URL,
+        );
+    }
+
+    public async reportTDRankData(playerId: number, info: UpdateTDRankDataNeedFill) {
+        const userId = this.queryUserId(playerId);
+        if (Gtk.isNullOrEmpty(userId)) return;
+
+        const player = Player.getPlayer(playerId);
+        const userName = this.getPlayerData(player)?.holdNickName ?? player.nickname;
+        const userAvatar = player["avatarUrl"];
+        const sceneId = await this.querySceneId(userId);
+        const gameId = GameServiceConfig.chainId;
+        const requestParam: UpdateTDRankDataReq = {
+            userId,
+            sceneId,
+            sceneName: "tower",
+            userName,
+            userAvatar, 
+            round: 0,
+            gameId,
+            ...info,
+        };
+
+        Gtk.waitDo(requestParam, this.userTDRankDataReporter.get(userId), GameServiceConfig.REPORT_REQUEST_WAIT_TIME);
+    }
+
+    private async innerReportTDRankData(requestParam: UpdateTDRankDataReq) {
+        this.correspondHandler<QueryResp>(
+            requestParam,
+            AuthModuleS.RELEASE_T_D_RANK_REPORT_URL,
+            AuthModuleS.TEST_T_D_RANK_REPORT_URL,
         );
     }
 
