@@ -688,7 +688,7 @@ export class StageS {
             if (state === EStageState.Game) {
                 time = endWaveTime;
             } else if (state === EStageState.Wait) {
-                time = currentWave?.waveTime + endWaveTime;
+                time = time + endWaveTime;
             }
             TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
                 // 上报数据
