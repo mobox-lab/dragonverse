@@ -2164,7 +2164,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 200,
                 waveTime: 300,
-                hpMultiplier: 225,
+                hpMultiplier: 140,
             },
         ],
     },
