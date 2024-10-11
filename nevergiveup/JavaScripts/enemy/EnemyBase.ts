@@ -9,7 +9,7 @@
 import { EnemyActions, StageActions } from "../Actions";
 import { CycleUtil } from "../CycleUtil";
 import { GameManager } from "../GameManager";
-import { MapManager, stageCfgId } from "../MapScript";
+import { MapManager } from "../MapScript";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 import TowerBase from "../Modules/TowerModule/Tower/TowerBase";
 import TalentUtils from "../Modules/talent/TalentUtils";
