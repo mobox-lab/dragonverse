@@ -192,12 +192,13 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         }
     }
 
-    public syncMaxSourceTower() {
+    public syncMaxSourceTower(max: number) {
         let stage = GameManager.getStageClient();
         let currentStage = stage ? stage.stageCfgId : -1;
         const stageCfg = StageUtil.getStageCfgById(currentStage);
         if (Utils.isInfiniteMode(stageCfg.groupIndex)) {
-            this.maxSourceTower = 5;
+            this.maxSourceTower = max;
+            TowerActions.onSourceTowerCountChanged.call(0);
         } else {
             this.maxSourceTower = 3;
         }
