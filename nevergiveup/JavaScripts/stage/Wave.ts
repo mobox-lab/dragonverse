@@ -24,6 +24,7 @@ import { UIMain } from "./ui/UIMain";
 import Log4Ts from "mw-log4ts";
 import { WaveModuleC } from "../Modules/waveModule/WaveModuleC";
 import { WaveModuleS } from "../Modules/waveModule/WaveModuleS";
+import { TowerModuleC } from "../Modules/TowerModule/TowerModuleC";
 
 export class Wave {
     enemyTypes: number[][] = [];
@@ -522,6 +523,10 @@ export class WaveUtil {
                         Log4Ts.error(StageC, "error wave index");
                     }
                 }
+                const maxSource = Math.floor(wave / 20) + 1;
+                const max = Math.min(maxSource, 5);
+                ModuleService.getModule(TowerModuleC).syncMaxSourceTower(max);
+
                 this.allPassWaves.push(waveInfo);
                 ModuleService.getModule(PlayerModuleC).onInfinityWaveRefresh();
                 ModuleService.getModule(WaveModuleC).syncAllPassWaves(stageId, this.allPassWaves);
