@@ -90,8 +90,16 @@ export class TalentTreeContainer extends TalentTreeContainer_Generate {
                 Gtk.trySetVisibility(info[1], true);
                 info[1].text = type === ETalentBuffValue.Integer ? `${data[index]}` : `${data[index]}%`;
                 info[1].setFontColorByHex("#FFFFFF");
-                info[1].renderOpacity = 0.5;
+                if (level - 1 > index) {
+                    info[0] && (info[0].renderOpacity = 1);
+                    info[1].renderOpacity = 1;
+                }
+                if (level - 1 < index) {
+                    info[0] && (info[0].renderOpacity = 0.3);
+                    info[1].renderOpacity = 0.3;
+                }
                 if (level - 1 === index || talent.type === ETalentType.Peak) {
+                    info[0] && (info[0].renderOpacity = 1);
                     info[1].setFontColorByHex("#FFCB1C");
                     info[1].renderOpacity = 1;
                 }

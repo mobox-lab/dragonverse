@@ -12,6 +12,7 @@ import { TalentTree } from "../../TalentTree/ui/TalentTree";
 import { PlayerUtil } from "../PlayerModule/PlayerUtil";
 import { StageActions } from "../../Actions";
 import { TimerModuleUtils } from "../TimeModule/time";
+import TalentUtils from "./TalentUtils";
 
 export class TalentItemUnique implements IUnique {
     public id: number;
@@ -121,9 +122,10 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
             return false;
         }
         // 判断是否足够解锁
+        const nextLv = level + 1;
         const updateCost = item.type === ETalentType.Base
-            ? [item.cost[0][level + 1], item.cost[1][level + 1]]
-            : [item.cost[0][1], item.cost[1][1]];
+            ? [item.cost[0][nextLv], item.cost[1][nextLv]]
+            : [TalentUtils.calcExp4Lv(nextLv, item.cost[0][1], item.lvTimes), TalentUtils.calcExp4Lv(nextLv, item.cost[1][1], item.lvTimes)];
         const isEnoughCost = this.checkEnoughCost(updateCost);
         if (!isEnoughCost) {
             TipsManager.showTips(GameConfig.Language.getElement("Text_LessMaterial").Value);

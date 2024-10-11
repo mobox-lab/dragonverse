@@ -145,4 +145,20 @@ export default class TalentUtils {
             return 0;
         }
     }
+
+    public static calcExp4Lv(lv: number, exp: number, times: number[][]) {
+        let multiplier = times[0][1];
+
+        let currentSegmentIndex = 0;
+
+        for (let currentLevel = 1; currentLevel < lv; currentLevel++) {
+            if (currentSegmentIndex < times.length - 1 && currentLevel >= times[currentSegmentIndex + 1][0]) {
+                currentSegmentIndex++;
+                multiplier = times[currentSegmentIndex][1];
+            }
+            exp *= multiplier;
+        }
+
+        return Math.round(exp);
+    }
 }

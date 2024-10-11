@@ -7,6 +7,7 @@ import { ITalentBuffElement } from "../../config/TalentBuff";
 import TalentItem_Generate from "../../ui-generate/TalentTree/TalentItem_generate";
 import { TalentTreeActions } from "./TalentTreeContainer";
 import TalentModuleC from "../../Modules/talent/TalentModuleC";
+import TalentUtils from "../../Modules/talent/TalentUtils";
 
 /**
  * 基础天赋
@@ -85,6 +86,7 @@ export class TalentItem extends TalentItem_Generate {
         const currentLevel = this.talentC.getTalentIndex(data.id);
         this.setCurrentLevel(currentLevel);
         this.refreshCanActive();
+        if (data.type === ETalentType.Peak) this.mSelected.imageGuid = "434894";
 
         this.textTalentName.text = GameConfig.Language.getElement(data.name).Value;
         this.mItem.normalImageGuid = data.icon;
@@ -139,7 +141,10 @@ export class TalentItem extends TalentItem_Generate {
     public getUpdateLevelCost(): [number | null, number | null] {
         if (!this.data || this._level >= this._maxLevel) return [null, null];
         const cost = this.data.cost;
-        if (this.type === ETalentType.Peak) return [cost[0][1], cost[1][1]];
+        if (this.type === ETalentType.Peak) return [
+            TalentUtils.calcExp4Lv(this._level + 1, cost[0][1], this.data.lvTimes),
+            TalentUtils.calcExp4Lv(this._level + 1, cost[1][1], this.data.lvTimes),
+        ];
         return [cost[0][this._level + 1], cost[0][this._level + 1]];
     }
 }

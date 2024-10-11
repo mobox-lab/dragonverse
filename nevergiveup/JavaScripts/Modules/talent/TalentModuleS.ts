@@ -10,6 +10,7 @@ import TalentModuleC from "./TalentModuleC";
 import TalentModuleData from "./TalentModuleData";
 import Player = mw.Player;
 import { StatisticModuleS } from "../statistic/StatisticModule";
+import TalentUtils from "./TalentUtils";
 
 export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleData> {
     private _playS: PlayerModuleS;
@@ -85,25 +86,26 @@ export default class TalentModuleS extends JModuleS<TalentModuleC, TalentModuleD
         const level = this.getPlayerTalentIndex(player.userId, id);
         if (level >= talent.maxLevel) return false;
         // 巅峰天赋解锁金额固定
-        const goldCost = [talent.cost[0][0], talent.type === ETalentType.Base ? talent.cost[0][level + 1] : talent.cost[0][1]];
-        const techCost = [talent.cost[1][0], talent.type === ETalentType.Base ? talent.cost[1][level + 1] : talent.cost[1][1]];
+        const nextLv = level + 1;
+        const goldCost = [talent.cost[0][0], talent.type === ETalentType.Base ? talent.cost[0][nextLv] : TalentUtils.calcExp4Lv(nextLv, talent.cost[0][1], talent.lvTimes)];
+        const techCost = [talent.cost[1][0], talent.type === ETalentType.Base ? talent.cost[1][nextLv] : TalentUtils.calcExp4Lv(nextLv, talent.cost[1][1], talent.lvTimes)];
         const result = this.playS.checkTalentCost(player, [goldCost, techCost]);
         if (!result) return false;
         try {
             const userlevel = PlayerUtil.getPlayerScript(player.playerId)?.level ?? 0;
-            ModuleService.getModule(StatisticModuleS)?.recordTalentUnlock(id, level + 1, goldCost[1], techCost[1], player?.userId ?? '');
+            ModuleService.getModule(StatisticModuleS)?.recordTalentUnlock(id, nextLv, goldCost[1], techCost[1], player?.userId ?? "");
             Utils.logP12Info('A_TalentUnlock', {
                 timestamp: Date.now(),
                 userId: player?.userId,
                 userlevel,
                 unlocktalent: id,
-                stack: level + 1,
+                stack: nextLv,
                 cost: [goldCost[1], techCost[1]]
             });
         } catch (error) {
             Utils.logP12Info('A_Error', ' TalentUnlock error:' + error + ' userId:' + player?.userId);
         }
-        await this.setTalent(player, id, level + 1);
+        await this.setTalent(player, id, nextLv);
         return true;
     }
 
