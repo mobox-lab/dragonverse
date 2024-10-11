@@ -313,7 +313,7 @@ export class Enemy implements BuffBag {
                     return currentItem.cfg.speed > (maxItem ? maxItem.cfg.speed : -Infinity) ? currentItem : maxItem;
                 }, null);
                 if (this.speedActive) {
-                    this.speed = config.speed * (1 - maxSpeedItem.cfg.speed / 100);
+                    this.speed = config.speed * (1 - (speedBonusD + maxSpeedItem.cfg.speed) / 100);
                 } else {
                     this.speed =
                         config.speed *
@@ -325,7 +325,7 @@ export class Enemy implements BuffBag {
         } else {
             console.log("减速恢复", config.speed);
             if (this.speedActive) {
-                this.speed = config.speed;
+                this.speed = config.speed * (1 - speedBonusD / 100);
             } else {
                 this.speed = config.speed * (1 - (speedBonus + speedBonus2 + speedBonusD) / 100);
             }
@@ -1067,10 +1067,10 @@ export class Enemy implements BuffBag {
                             ? currentItem
                             : maxItem;
                     }, null);
-                    this.speed = config.speed * (1 - maxSpeedItem.cfg.speed / 100);
+                    this.speed = config.speed * (1 - (speedBonusD + maxSpeedItem.cfg.speed) / 100);
                 }
             } else {
-                this.speed = config.speed;
+                this.speed = config.speed * (1 - speedBonusD / 100);
             }
         }
         if (now - this.createTime > 10 && !this.armorActive) {
