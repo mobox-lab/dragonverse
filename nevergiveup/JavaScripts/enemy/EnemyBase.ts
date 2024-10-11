@@ -9,7 +9,7 @@
 import { EnemyActions, StageActions } from "../Actions";
 import { CycleUtil } from "../CycleUtil";
 import { GameManager } from "../GameManager";
-import { MapManager } from "../MapScript";
+import { MapManager, stageCfgId } from "../MapScript";
 import PlayerModuleC from "../Modules/PlayerModule/PlayerModuleC";
 import TowerBase from "../Modules/TowerModule/Tower/TowerBase";
 import TalentUtils from "../Modules/talent/TalentUtils";
@@ -649,7 +649,10 @@ export class Enemy implements BuffBag {
                 // 狂暴
                 types.push(12);
             }
-            ModuleService.getModule(PlayerModuleC).onEnemyTypeKilled(types);
+            let stage = GameManager.getStageClient();
+            const stageCfg = GameConfig.Stage.getElement(stage.stageCfgId);
+            const isInfinity = Utils.isInfiniteMode(stageCfg.groupIndex);
+            ModuleService.getModule(PlayerModuleC).onEnemyTypeKilled(types, isInfinity);
         } catch (error) {
             console.log(error);
         }
