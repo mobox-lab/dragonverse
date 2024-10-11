@@ -1,3 +1,4 @@
+import { GameManager } from "../../GameManager";
 import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { UserDragonRespData } from "../auth/AuthModule";
@@ -102,8 +103,15 @@ export default class TalentUtils {
         // 无尽天赋
         if (id === 1047 || id === 1048 || id === 1049) {
             if (index > 0) {
-                const value = this.getInfiniteRunesConfigByKey(id);
-                return index * value;
+                const stage = GameManager.getStageClient();
+                const stageCfg = GameConfig.Stage.getElement(stage.stageCfgId);
+                const isInfinite = Utils.isInfiniteMode(stageCfg.groupIndex);
+                if (isInfinite) {
+                    const value = this.getInfiniteRunesConfigByKey(id);
+                    return index * value;
+                } else {
+                    return 0;
+                }
             } else {
                 return 0;
             }
