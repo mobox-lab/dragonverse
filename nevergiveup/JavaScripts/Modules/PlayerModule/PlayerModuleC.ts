@@ -127,7 +127,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this._towerLevelUpCount++;
     }
 
-    public onEnemyTypeKilled(type: number[]) {
+    public onEnemyTypeKilled(type: number[], isInfinity?: boolean) {
         if (type.includes(1)) {
             this._enemyStealthCount++;
         }
@@ -142,7 +142,9 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         }
         if (type.includes(5)) {
             // boss
-            this._enemyInfinityBossCount++;
+            if (isInfinity) {
+                this._enemyInfinityBossCount++;
+            }
         }
     }
 

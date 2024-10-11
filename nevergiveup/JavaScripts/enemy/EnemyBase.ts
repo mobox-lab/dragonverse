@@ -313,7 +313,7 @@ export class Enemy implements BuffBag {
                     return currentItem.cfg.speed > (maxItem ? maxItem.cfg.speed : -Infinity) ? currentItem : maxItem;
                 }, null);
                 if (this.speedActive) {
-                    this.speed = config.speed * (1 - maxSpeedItem.cfg.speed / 100);
+                    this.speed = config.speed * (1 - (speedBonusD + maxSpeedItem.cfg.speed) / 100);
                 } else {
                     this.speed =
                         config.speed *
@@ -325,7 +325,7 @@ export class Enemy implements BuffBag {
         } else {
             console.log("减速恢复", config.speed);
             if (this.speedActive) {
-                this.speed = config.speed;
+                this.speed = config.speed * (1 - speedBonusD / 100);
             } else {
                 this.speed = config.speed * (1 - (speedBonus + speedBonus2 + speedBonusD) / 100);
             }
@@ -649,7 +649,10 @@ export class Enemy implements BuffBag {
                 // 狂暴
                 types.push(12);
             }
-            ModuleService.getModule(PlayerModuleC).onEnemyTypeKilled(types);
+            let stage = GameManager.getStageClient();
+            const stageCfg = GameConfig.Stage.getElement(stage.stageCfgId);
+            const isInfinity = Utils.isInfiniteMode(stageCfg.groupIndex);
+            ModuleService.getModule(PlayerModuleC).onEnemyTypeKilled(types, isInfinity);
         } catch (error) {
             console.log(error);
         }
@@ -1064,10 +1067,10 @@ export class Enemy implements BuffBag {
                             ? currentItem
                             : maxItem;
                     }, null);
-                    this.speed = config.speed * (1 - maxSpeedItem.cfg.speed / 100);
+                    this.speed = config.speed * (1 - (speedBonusD + maxSpeedItem.cfg.speed) / 100);
                 }
             } else {
-                this.speed = config.speed;
+                this.speed = config.speed * (1 - speedBonusD / 100);
             }
         }
         if (now - this.createTime > 10 && !this.armorActive) {
