@@ -288,6 +288,20 @@ export class Enemy implements BuffBag {
         }
 
         // 减速和禁锢
+        const buffs = this.buffManager.buffs;
+        let speedUpTotal = 1;
+        // 狂暴化
+        const berserks = buffs.filter((buff) => buff.cfg.berserk !== 0);
+        if (berserks.length > 0) {
+            const maxBerserksItem = berserks.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.berserk > (maxItem ? maxItem.cfg.berserk : -Infinity) ? currentItem : maxItem;
+            }, null);
+            const speedUp = maxBerserksItem.cfg.berserk;
+            if (this.isBerserk) {
+                speedUpTotal = speedUp;
+            }
+        }
+
         const slowAndRoot = this.buffManager.buffs.filter((buff) => buff.cfg.speed !== 0);
         const speedBonus = TalentUtils.getModuleCRunesValueById(1014);
         const speedBonus2 = TalentUtils.getModuleCRunesValueById(1038);
@@ -313,11 +327,12 @@ export class Enemy implements BuffBag {
                     return currentItem.cfg.speed > (maxItem ? maxItem.cfg.speed : -Infinity) ? currentItem : maxItem;
                 }, null);
                 if (this.speedActive) {
-                    this.speed = config.speed * (1 - (speedBonusD + maxSpeedItem.cfg.speed) / 100);
+                    this.speed = config.speed * (1 - (speedBonusD + maxSpeedItem.cfg.speed) / 100) * speedUpTotal;
                 } else {
                     this.speed =
                         config.speed *
-                        (1 - maxSpeedItem.cfg.speed / 100 - (speedBonus + speedBonus2 + speedBonusD) / 100);
+                        (1 - maxSpeedItem.cfg.speed / 100 - (speedBonus + speedBonus2 + speedBonusD) / 100) *
+                        speedUpTotal;
                 }
                 console.log(maxSpeedItem.cfg.speed, speedBonus, speedBonus2, speedBonusD, "生效的减速百分比");
                 console.log("减速后的速度", this.speed);
@@ -325,9 +340,9 @@ export class Enemy implements BuffBag {
         } else {
             console.log("减速恢复", config.speed);
             if (this.speedActive) {
-                this.speed = config.speed * (1 - speedBonusD / 100);
+                this.speed = config.speed * (1 - speedBonusD / 100) * speedUpTotal;
             } else {
-                this.speed = config.speed * (1 - (speedBonus + speedBonus2 + speedBonusD) / 100);
+                this.speed = config.speed * (1 - (speedBonus + speedBonus2 + speedBonusD) / 100) * speedUpTotal;
             }
         }
     }
@@ -638,9 +653,9 @@ export class Enemy implements BuffBag {
         try {
             let config = GameConfig.Monster.getElement(this.configId);
             let types: number[] = config.types;
-            const buffs = this.buffManager.buffs;
-            const heal = buffs.filter((buff) => buff.cfg.healing !== 0);
-            const berserk = buffs.filter((buff) => buff.cfg.berserk !== 0);
+            const buffs = (config?.buff || []).map((item) => GameConfig.Buff.getElement(item));
+            const heal = buffs.filter((buff) => buff.healing !== 0);
+            const berserk = buffs.filter((buff) => buff.berserk !== 0);
             if (heal.length > 0) {
                 // 复原力
                 types.push(11);
@@ -1025,14 +1040,12 @@ export class Enemy implements BuffBag {
                 return currentItem.cfg.healing > (maxItem ? maxItem.cfg.healing : -Infinity) ? currentItem : maxItem;
             }, null);
             healing = maxHealingItem.cfg.healing;
-
             const date = new Date();
             const timestampInSeconds = Math.floor(date.getTime() / 1000);
-            if (timestampInSeconds - this.healingTime > 0) {
+            if (timestampInSeconds - this.healingTime > 1) {
                 this.hp = this.hp + healing;
                 this.healingTime = timestampInSeconds;
-            } else {
-                this.healingTime = timestampInSeconds;
+                this.onHealthChanged();
             }
         }
     }
@@ -1040,6 +1053,19 @@ export class Enemy implements BuffBag {
     dealRunes() {
         const now = Math.floor(new Date().getTime() / 1000);
         const config = GameConfig.Monster.getElement(this.configId);
+        const buffs = this.buffManager.buffs;
+        let speedUpTotal = 1;
+        // 狂暴化
+        const berserks = buffs.filter((buff) => buff.cfg.berserk !== 0);
+        if (berserks.length > 0) {
+            const maxBerserksItem = berserks.reduce((maxItem, currentItem) => {
+                return currentItem.cfg.berserk > (maxItem ? maxItem.cfg.berserk : -Infinity) ? currentItem : maxItem;
+            }, null);
+            const speedUp = maxBerserksItem.cfg.berserk;
+            if (this.isBerserk) {
+                speedUpTotal = speedUp;
+            }
+        }
         if (now - this.createTime > 5 && !this.speedActive) {
             this.speedActive = true;
             // 恢复速度
@@ -1067,10 +1093,10 @@ export class Enemy implements BuffBag {
                             ? currentItem
                             : maxItem;
                     }, null);
-                    this.speed = config.speed * (1 - (speedBonusD + maxSpeedItem.cfg.speed) / 100);
+                    this.speed = config.speed * (1 - (speedBonusD + maxSpeedItem.cfg.speed) / 100) * speedUpTotal;
                 }
             } else {
-                this.speed = config.speed * (1 - speedBonusD / 100);
+                this.speed = config.speed * (1 - speedBonusD / 100) * speedUpTotal;
             }
         }
         if (now - this.createTime > 10 && !this.armorActive) {
