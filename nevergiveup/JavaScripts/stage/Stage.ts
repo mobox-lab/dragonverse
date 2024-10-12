@@ -47,7 +47,7 @@ import { SoundUtil } from "../tool/SoundUtil";
 import { Wave, WaveManager, WaveUtil } from "./Wave";
 import { UIMain } from "./ui/UIMain";
 import { SettleData, UISettle } from "./ui/UISettle";
-import { TDStageStatisticObj } from "../Modules/auth/AuthModule";
+import { AuthModuleS, TDStageStatisticObj, UpdateTDRankDataNeedFill } from "../Modules/auth/AuthModule";
 import { StatisticModuleS } from "../Modules/statistic/StatisticModule";
 import { WaveModuleS } from "../Modules/waveModule/WaveModuleS";
 
@@ -730,6 +730,15 @@ export class StageS {
                     }
                 }
                 ModuleService.getModule(StatisticModuleS)?.recordStageInfo(player.userId, info);
+                if (Utils.isInfiniteMode(stageConfig.groupIndex)) {
+                    const rankInfo: UpdateTDRankDataNeedFill = {
+                        roundId: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
+                        finish: time,
+                        recordTIme: Date.now(), // 记录时间 number
+                        detail: cards,
+                    };
+                    ModuleService.getModule(AuthModuleS)?.reportTDRankData(player.playerId, rankInfo);
+                }
             });
         } catch (error) {
             Utils.logP12Info("A_Error", "logP12Info error:" + error + " userId:" + player?.userId, "error");
