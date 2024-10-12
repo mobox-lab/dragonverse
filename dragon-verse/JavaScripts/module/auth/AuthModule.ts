@@ -192,7 +192,7 @@ addGMCommand(
             .reportTDRankData(player.playerId, {
                 roundId: 0, // 完成波数 number
                 finish: 20, // 最后一波完成度 时间 20 30
-                recordTIme: 0, // 上榜时间
+                recordTime: 0, // 上榜时间
                 detail: [] // 装备卡片的 ids
             })
             .then(() => {
@@ -553,14 +553,14 @@ interface UpdateTDRankDataReq extends UserDataReq {
     round: number; //赛季 round 传 0 就行
     roundId: number; // 完成波数 number
     finish: number; // 最后一波完成度 时间 20 30
-    recordTIme: number; // 上榜时间
+    recordTime: number; // 上榜时间
     detail: number[]; // 装备卡片的 ids
 }
 
 export type UpdateTDRankDataNeedFill = {
     roundId: number; // 完成波数 number
     finish: number; // 最后一波完成度 时间 20 30
-    recordTIme: number; // 上榜时间
+    recordTime: number; // 上榜时间
     detail: number[]; // 装备卡片的 ids
 }
 

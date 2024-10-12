@@ -734,7 +734,7 @@ export class StageS {
                     const rankInfo: UpdateTDRankDataNeedFill = {
                         roundId: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
                         finish: time,
-                        recordTIme: Date.now(), // 记录时间 number
+                        recordTime: Date.now(), // 记录时间 number
                         detail: cards,
                     };
                     ModuleService.getModule(AuthModuleS)?.reportTDRankData(player.playerId, rankInfo);
