@@ -1704,25 +1704,25 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 hpMultiplier: 1,
             },
             {
-                enemies: [{ type: 1042, count: 6, spawnInterval: 5 }],
+                enemies: [{ type: 1042, count: 6, spawnInterval: 4 }],
                 waveGold: 150,
                 waveTime: 30,
                 hpMultiplier: 2.5,
             },
             {
-                enemies: [{ type: 1034, count: 10, spawnInterval: 5 }],
+                enemies: [{ type: 1034, count: 10, spawnInterval: 4 }],
                 waveGold: 150,
                 waveTime: 40,
                 hpMultiplier: 1.5,
             },
             {
-                enemies: [{ type: 1048, count: 15, spawnInterval: 5 }],
+                enemies: [{ type: 1048, count: 15, spawnInterval: 4 }],
                 waveGold: 150,
                 waveTime: 30,
                 hpMultiplier: 2.5,
             },
             {
-                enemies: [{ type: 1051, count: 15, spawnInterval: 5 }],
+                enemies: [{ type: 1051, count: 15, spawnInterval: 4 }],
                 waveGold: 150,
                 waveTime: 20,
                 hpMultiplier: 3.2,
@@ -1734,7 +1734,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 hpMultiplier: 6,
             },
             {
-                enemies: [{ type: 1065, count: 15, spawnInterval: 5 }],
+                enemies: [{ type: 1065, count: 15, spawnInterval: 3 }],
                 waveGold: 100,
                 waveTime: 50,
                 hpMultiplier: 5,
@@ -1746,7 +1746,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 hpMultiplier: 5,
             },
             {
-                enemies: [{ type: 1045, count: 8, spawnInterval: 5 }],
+                enemies: [{ type: 1045, count: 8, spawnInterval: 3 }],
                 waveGold: 100,
                 waveTime: 50,
                 hpMultiplier: 20,
@@ -1764,37 +1764,37 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
         waves: [
             {
                 enemies: [{ type: 1028, count: 20, spawnInterval: 5 }],
-                waveGold: 150,
+                waveGold: 120,
                 waveTime: 30,
                 hpMultiplier: 1,
             },
             {
                 enemies: [{ type: 1026, count: 6, spawnInterval: 5 }],
-                waveGold: 150,
+                waveGold: 120,
                 waveTime: 35,
                 hpMultiplier: 1,
             },
             {
-                enemies: [{ type: 1029, count: 15, spawnInterval: 5 }],
-                waveGold: 300,
+                enemies: [{ type: 1029, count: 15, spawnInterval: 4 }],
+                waveGold: 100,
                 waveTime: 50,
                 hpMultiplier: 2,
             },
             {
                 enemies: [{ type: 1063, count: 20, spawnInterval: 3 }],
-                waveGold: 150,
+                waveGold: 100,
                 waveTime: 50,
                 hpMultiplier: 3,
             },
             {
                 enemies: [{ type: 1041, count: 1, spawnInterval: 3 }],
-                waveGold: 150,
+                waveGold: 100,
                 waveTime: 100,
                 hpMultiplier: 30,
             },
             {
                 enemies: [{ type: 1048, count: 20, spawnInterval: 3 }],
-                waveGold: 150,
+                waveGold: 100,
                 waveTime: 40,
                 hpMultiplier: 5,
             },
@@ -1824,30 +1824,30 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
             },
             {
                 enemies: [{ type: 1038, count: 20, spawnInterval: 4 }],
-                waveGold: 120,
+                waveGold: 100,
                 waveTime: 30,
                 hpMultiplier: 4,
             },
             {
-                enemies: [{ type: 1040, count: 15, spawnInterval: 5 }],
-                waveGold: 120,
-                waveTime: 60,
+                enemies: [{ type: 1040, count: 15, spawnInterval: 4 }],
+                waveGold: 100,
+                waveTime: 40,
                 hpMultiplier: 5,
             },
             {
-                enemies: [{ type: 1066, count: 12, spawnInterval: 5 }],
-                waveGold: 120,
-                waveTime: 50,
+                enemies: [{ type: 1066, count: 12, spawnInterval: 4 }],
+                waveGold: 100,
+                waveTime: 40,
                 hpMultiplier: 4,
             },
             {
                 enemies: [{ type: 1057, count: 15, spawnInterval: 3 }],
                 waveGold: 150,
-                waveTime: 50,
+                waveTime: 40,
                 hpMultiplier: 10,
             },
             {
-                enemies: [{ type: 1059, count: 1, spawnInterval: 5 }],
+                enemies: [{ type: 1059, count: 1, spawnInterval: 4 }],
                 waveGold: 0,
                 waveTime: 400,
                 hpMultiplier: 40,
@@ -2287,7 +2287,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 20,
-                hpMultiplier: 23,
+                hpMultiplier: 26,
             },
     //5-2-7
             {
@@ -2296,7 +2296,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 25,
-                hpMultiplier: 40,
+                hpMultiplier: 52,
             },
     //5-2-8
             {
@@ -2315,7 +2315,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 20,
-                hpMultiplier: 21,
+                hpMultiplier: 23,
             },
     //5-2-10
             {
@@ -2325,7 +2325,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 300,
-                hpMultiplier: 28,
+                hpMultiplier: 33,
             },
         ],
     },
