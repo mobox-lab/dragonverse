@@ -100,6 +100,10 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
         UIService.getUI(TowerShopUI).refreshItemsState();
     }
 
+    public net_equipCard(cardID: number, isEquip: boolean) {
+        this.equipCard(cardID, isEquip);
+    }
+
     /**
      * 买卡牌
      * @param cardID 卡牌ID
@@ -131,9 +135,7 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
         } else {
             !checkFlag && TweenCommon.goldFailedShow(UIService.getUI(LobbyUI).goldTxt);
             TipsManager.showTips(
-                !checkFlag
-                    ? GameConfig.Language.Text_Less_1.Value
-                    : GameConfig.Language.Text_CardIsUnlock.Value
+                !checkFlag ? GameConfig.Language.Text_Less_1.Value : GameConfig.Language.Text_CardIsUnlock.Value
             );
         }
     }
