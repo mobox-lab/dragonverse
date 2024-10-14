@@ -25,7 +25,7 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
      * @param cardID 卡牌id
      */
     public net_buyCard(cardID: number) {
-        const userId = this.currentPlayer?.userId ?? '';
+        const userId = this.currentPlayer?.userId ?? "";
         try {
             if (!this.currentData.unlockCards.includes(cardID)) {
                 if (
@@ -42,14 +42,14 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
                         timestamp: Date.now(),
                         userId,
                         unlocktower: cardID,
-                        cost
-                    })
+                        cost,
+                    });
                     return true;
                 }
             }
             return false;
         } catch (e) {
-            Utils.logP12Info("A_Error","net_buyCard error" + " userId:" + userId + " error:" + e);
+            Utils.logP12Info("A_Error", "net_buyCard error" + " userId:" + userId + " error:" + e);
             return false;
         }
     }
@@ -64,6 +64,7 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
             data.addUnlockCard(cardID);
             data.save(false);
             this.getClient(player).net_addUnlockCard(cardID);
+            this.getClient(player).net_equipCard(cardID, true);
         }
     }
 
