@@ -140,6 +140,6 @@ export namespace SoundUtil {
     }
 
     export function playBGM() {
-        mw.SoundService.playBGM("404265", bgmVoiceFactor);
+        mw.SoundService.playBGM("434721", bgmVoiceFactor);
     }
 }
