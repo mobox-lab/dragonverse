@@ -651,23 +651,23 @@ export class Enemy implements BuffBag {
         this.destroy(showAnim);
         ModuleService.getModule(PlayerModuleC).onEnemyKilled();
         try {
-            let config = GameConfig.Monster.getElement(this.configId);
-            let types: number[] = config.types;
-            const buffs = (config?.buff || []).map((item) => GameConfig.Buff.getElement(item));
+            const monsterConfig = GameConfig.Monster.getElement(this.configId);
+            const typesPlus: number[] = [...monsterConfig.types];
+            const buffs = (monsterConfig?.buff || []).map((item) => GameConfig.Buff.getElement(item));
             const heal = buffs.filter((buff) => buff.healing !== 0);
             const berserk = buffs.filter((buff) => buff.berserk !== 0);
             if (heal.length > 0) {
                 // 复原力
-                types.push(11);
+                typesPlus.push(11);
             }
             if (berserk.length > 0) {
                 // 狂暴
-                types.push(12);
+                typesPlus.push(12);
             }
             let stage = GameManager.getStageClient();
             const stageCfg = GameConfig.Stage.getElement(stage.stageCfgId);
             const isInfinity = Utils.isInfiniteMode(stageCfg.groupIndex);
-            ModuleService.getModule(PlayerModuleC).onEnemyTypeKilled(types, isInfinity);
+            ModuleService.getModule(PlayerModuleC).onEnemyTypeKilled(typesPlus, isInfinity);
         } catch (error) {
             console.log(error);
         }
