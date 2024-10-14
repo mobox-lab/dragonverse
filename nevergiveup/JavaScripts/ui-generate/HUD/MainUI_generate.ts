@@ -43,20 +43,6 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.textCurrent_Internal
 	}
-	private textCurrentElement_Internal: mw.TextBlock
-	public get textCurrentElement(): mw.TextBlock {
-		if(!this.textCurrentElement_Internal&&this.uiWidgetBase) {
-			this.textCurrentElement_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_monster/canvas_monsterInfo/canvas_current/textCurrentElement') as mw.TextBlock
-		}
-		return this.textCurrentElement_Internal
-	}
-	private can_waveEleList_1_Internal: mw.Canvas
-	public get can_waveEleList_1(): mw.Canvas {
-		if(!this.can_waveEleList_1_Internal&&this.uiWidgetBase) {
-			this.can_waveEleList_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_monster/canvas_monsterInfo/canvas_current/can_waveEleList_1') as mw.Canvas
-		}
-		return this.can_waveEleList_1_Internal
-	}
 	private canvas_currentMonsterSkill_Internal: mw.Canvas
 	public get canvas_currentMonsterSkill(): mw.Canvas {
 		if(!this.canvas_currentMonsterSkill_Internal&&this.uiWidgetBase) {
@@ -78,6 +64,27 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.can_skillList_1_Internal
 	}
+	private canvas_currentMonsterEle_1_Internal: mw.Canvas
+	public get canvas_currentMonsterEle_1(): mw.Canvas {
+		if(!this.canvas_currentMonsterEle_1_Internal&&this.uiWidgetBase) {
+			this.canvas_currentMonsterEle_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_monster/canvas_monsterInfo/canvas_current/canvas_currentMonsterEle_1') as mw.Canvas
+		}
+		return this.canvas_currentMonsterEle_1_Internal
+	}
+	private textCurrentElement_Internal: mw.TextBlock
+	public get textCurrentElement(): mw.TextBlock {
+		if(!this.textCurrentElement_Internal&&this.uiWidgetBase) {
+			this.textCurrentElement_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_monster/canvas_monsterInfo/canvas_current/canvas_currentMonsterEle_1/textCurrentElement') as mw.TextBlock
+		}
+		return this.textCurrentElement_Internal
+	}
+	private can_waveEleList_1_Internal: mw.Canvas
+	public get can_waveEleList_1(): mw.Canvas {
+		if(!this.can_waveEleList_1_Internal&&this.uiWidgetBase) {
+			this.can_waveEleList_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_monster/canvas_monsterInfo/canvas_current/canvas_currentMonsterEle_1/can_waveEleList_1') as mw.Canvas
+		}
+		return this.can_waveEleList_1_Internal
+	}
 	private canvas_coming_Internal: mw.Canvas
 	public get canvas_coming(): mw.Canvas {
 		if(!this.canvas_coming_Internal&&this.uiWidgetBase) {
@@ -92,17 +99,24 @@ export default class MainUI_Generate extends UIScript {
 		}
 		return this.textCurrent_1_Internal
 	}
+	private canvas_currentMonsterEle_2_Internal: mw.Canvas
+	public get canvas_currentMonsterEle_2(): mw.Canvas {
+		if(!this.canvas_currentMonsterEle_2_Internal&&this.uiWidgetBase) {
+			this.canvas_currentMonsterEle_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_monster/canvas_monsterInfo/canvas_coming/canvas_currentMonsterEle_2') as mw.Canvas
+		}
+		return this.canvas_currentMonsterEle_2_Internal
+	}
 	private textCurrentElement_1_Internal: mw.TextBlock
 	public get textCurrentElement_1(): mw.TextBlock {
 		if(!this.textCurrentElement_1_Internal&&this.uiWidgetBase) {
-			this.textCurrentElement_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_monster/canvas_monsterInfo/canvas_coming/textCurrentElement_1') as mw.TextBlock
+			this.textCurrentElement_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_monster/canvas_monsterInfo/canvas_coming/canvas_currentMonsterEle_2/textCurrentElement_1') as mw.TextBlock
 		}
 		return this.textCurrentElement_1_Internal
 	}
 	private can_waveEleList_2_Internal: mw.Canvas
 	public get can_waveEleList_2(): mw.Canvas {
 		if(!this.can_waveEleList_2_Internal&&this.uiWidgetBase) {
-			this.can_waveEleList_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_monster/canvas_monsterInfo/canvas_coming/can_waveEleList_2') as mw.Canvas
+			this.can_waveEleList_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvas_monster/canvas_monsterInfo/canvas_coming/canvas_currentMonsterEle_2/can_waveEleList_2') as mw.Canvas
 		}
 		return this.can_waveEleList_2_Internal
 	}
@@ -618,10 +632,10 @@ export default class MainUI_Generate extends UIScript {
 	   this.initLanguage(this.textCurrent)
 	   
 	
-	   this.initLanguage(this.textCurrentElement)
+	   this.initLanguage(this.textCurrentSkill)
 	   
 	
-	   this.initLanguage(this.textCurrentSkill)
+	   this.initLanguage(this.textCurrentElement)
 	   
 	
 	   this.initLanguage(this.textCurrent_1)

@@ -99,6 +99,20 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.bg_Internal
 	}
+	private imgImperfect_Internal: mw.Image
+	public get imgImperfect(): mw.Image {
+		if(!this.imgImperfect_Internal&&this.uiWidgetBase) {
+			this.imgImperfect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/imgImperfect') as mw.Image
+		}
+		return this.imgImperfect_Internal
+	}
+	private imgPerfect_Internal: mw.Image
+	public get imgPerfect(): mw.Image {
+		if(!this.imgPerfect_Internal&&this.uiWidgetBase) {
+			this.imgPerfect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/imgPerfect') as mw.Image
+		}
+		return this.imgPerfect_Internal
+	}
 	private can_inner_Internal: mw.Canvas
 	public get can_inner(): mw.Canvas {
 		if(!this.can_inner_Internal&&this.uiWidgetBase) {
