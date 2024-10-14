@@ -21,6 +21,7 @@ export default class NewBuyUI extends NewBuyUI_Generate {
         return this._cnt;
     }
     public set cnt(value: number) {
+        if(value === this._cnt) return;
         this._cnt = value;
         this.inp_Number.text = value.toString();
         const cost = this.unitPrice * value;
@@ -28,8 +29,14 @@ export default class NewBuyUI extends NewBuyUI_Generate {
         const totalGold = this.getTotalGold();
         const leftNum = totalGold - cost;
         this.text_Left.text = leftNum < 0 ? `-${utils.formatNumber(Math.abs(leftNum))}`: utils.formatNumber(leftNum);
-        if(totalGold - cost <= 0) this.text_Left.setFontColorByHex("#FF0000");
-        else this.text_Left.setFontColorByHex("#FFFFFF");
+        if(totalGold - cost <= 0) {
+            this.text_Left.setFontColorByHex("#FF0000");
+            TipsManager.showTips(GameConfig.Language.Text_tips_4.Value);
+            this.btn_Buy.enable = false;
+        } else {
+            this.text_Left.setFontColorByHex("#FFFFFF");
+            this.btn_Buy.enable = true;
+        }
     }
 
     private getTotalGold() {
@@ -101,6 +108,7 @@ export default class NewBuyUI extends NewBuyUI_Generate {
                 this.inp_Number.setFontColorByHex("#FF0000");
             }
         })
+        this.btn_Buy.enable = true;
     }
 
     protected onShow(cfg: IEggMachineElement, buyEggCallBack: (buyEggNum: number) => void ): void {
