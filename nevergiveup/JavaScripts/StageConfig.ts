@@ -2406,7 +2406,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 50,
+                hpMultiplier: 55,
             },
     //5-3-9
             {
@@ -2416,7 +2416,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 35,
-                hpMultiplier: 28,
+                hpMultiplier: 34,
             },
     //5-3-10
             {
@@ -2425,7 +2425,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 25,
-                hpMultiplier: 60,
+                hpMultiplier: 66,
             },
     //5-3-11
             {
@@ -2434,7 +2434,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 25,
-                hpMultiplier: 70,
+                hpMultiplier: 77,
             },
     //5-3-12
             {
@@ -2444,7 +2444,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 50,
+                hpMultiplier: 60,
              },
     //5-3-13
             {
@@ -2453,7 +2453,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 120,
+                hpMultiplier: 125,
             },
     //5-3-14
             {
@@ -2462,7 +2462,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 200,
+                hpMultiplier: 210,
             },
     //5-3-15
             {
@@ -2472,7 +2472,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 300,
-                hpMultiplier: 150,
+                hpMultiplier: 165,
             },
         ],
     },
