@@ -670,6 +670,8 @@ export class StageS {
                     GameServiceConfig.STAMINA_BACK_START_GAME
                 );
             }
+        } else {
+            this.settleData.reward = [];
         }
         try {
             const cards = ModuleService.getModule(CardModuleS).getPlayerEquipCards(player);
