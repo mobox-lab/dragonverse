@@ -457,6 +457,8 @@ export class StatisticModuleS extends JModuleS<StatisticModuleC, TdStatisticModu
                 StatisticModuleS,
                 " reportTDStatistic statisticData:" + JSON.stringify(statisticData) + " userId:" + userId
             );
+            
+            PlayerUtil.deletePlayerScript(player.playerId);
         } catch (err) {
             const userId = player?.userId ?? '';
             Utils.logP12Info("A_Error", {

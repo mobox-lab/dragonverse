@@ -229,7 +229,8 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
     }
 
     protected onPlayerLeft(player: mw.Player): void {
-        PlayerUtil.deletePlayerScript(player.playerId);
+        // 改为在 StatisticModuleS 中处理
+        // PlayerUtil.deletePlayerScript(player.playerId);
     }
 
     getScript(): Promise<PlayerScript> {
