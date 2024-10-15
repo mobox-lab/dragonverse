@@ -34,7 +34,7 @@ export default class NewBuyUI extends NewBuyUI_Generate {
             TipsManager.showTips(GameConfig.Language.Text_tips_4.Value);
             this.btn_Buy.enable = false;
         } else {
-            this.text_Left.setFontColorByHex("#FFFFFF");
+            this.text_Left.setFontColorByHex("#000000");
             this.btn_Buy.enable = true;
         }
     }
@@ -102,7 +102,7 @@ export default class NewBuyUI extends NewBuyUI_Generate {
                     this.inp_Number.setFontColorByHex("#FF0000");
                     return;
                 };
-                this.inp_Number.setFontColorByHex("#FFFFFF");
+                this.inp_Number.setFontColorByHex("#000000");
                 this.cnt = cnt;
             } catch {
                 this.inp_Number.setFontColorByHex("#FF0000");
