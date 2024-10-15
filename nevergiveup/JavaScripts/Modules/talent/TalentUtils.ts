@@ -104,11 +104,15 @@ export default class TalentUtils {
         if (id === 1047 || id === 1048 || id === 1049) {
             if (index > 0) {
                 const stage = GameManager.getStageClient();
-                const stageCfg = GameConfig.Stage.getElement(stage.stageCfgId);
-                const isInfinite = Utils.isInfiniteMode(stageCfg.groupIndex);
-                if (isInfinite) {
-                    const value = this.getInfiniteRunesConfigByKey(id);
-                    return index * value;
+                if (stage && stage.stageCfgId) {
+                    const stageCfg = GameConfig.Stage.getElement(stage.stageCfgId);
+                    const isInfinite = Utils.isInfiniteMode(stageCfg?.groupIndex);
+                    if (isInfinite) {
+                        const value = this.getInfiniteRunesConfigByKey(id);
+                        return index * value;
+                    } else {
+                        return 0;
+                    }
                 } else {
                     return 0;
                 }
