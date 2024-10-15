@@ -146,8 +146,9 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
         }
     }
 
-    public getTalentCount() {
-        return this.talentItemYoact.getAll().length;
+    public getTalentTotalUnlockCnt() {
+        // return this.talentItemYoact.getAll().length;
+        return this.talentItemYoact.getAll().reduce((acc, cur) => acc + (cur?.index ?? 0), 0);
     }
 
     public getDailyCount() {

@@ -723,9 +723,9 @@ export class Task {
     }
 
     private initTalentCount() {
-        this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentCount();
+        this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentTotalUnlockCnt();
         StageActions.onTalentActivate.add(() => {
-            this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentCount();
+            this.curSolveTime = ModuleService.getModule(TalentModuleC).getTalentTotalUnlockCnt();
             this.checkState();
         });
     }
