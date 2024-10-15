@@ -126,6 +126,20 @@ export class UIStageSelect extends StageSelect_Generate {
         });
     }
 
+    setPerfectImg(stageCfgId: number) {
+        const firstPerfectClears = DataCenterC.getData(PlayerModuleData).firstPerfectClears;
+        const cfg = StageUtil.getStageCfgById(stageCfgId);
+        const unique = Number(cfg.index.toString() + cfg.difficulty.toString());
+        console.log("#debug firstPerfectClears:" + firstPerfectClears + " stageCfgId:" + stageCfgId);
+        if(firstPerfectClears.includes(unique)) {
+            Gtk.trySetVisibility(this.imgPerfect, mw.SlateVisibility.Visible);
+            Gtk.trySetVisibility(this.imgImperfect, mw.SlateVisibility.Collapsed);
+        } else {
+            Gtk.trySetVisibility(this.imgPerfect, mw.SlateVisibility.Collapsed);
+            Gtk.trySetVisibility(this.imgImperfect, mw.SlateVisibility.Visible);
+        }
+    }
+
     setDifficulty() {
         let unlockMaxDifficultyIdx = 0;
         for (let i = 0; i < 3; i++) {
@@ -138,6 +152,7 @@ export class UIStageSelect extends StageSelect_Generate {
                     if (Utils.isLocalPlayer(this._ownerId)) {
                         if (item.unlocked) {
                             this._script.setDifficulty(Player.localPlayer.playerId, i);
+                            this.setPerfectImg(item.stageCfgId);
                         } else {
                             TipsManager.showTips(GameConfig.Language.getElement("Text_AfterLastDifficulty").Value);
                         }
@@ -152,11 +167,17 @@ export class UIStageSelect extends StageSelect_Generate {
             if (item.unlocked) unlockMaxDifficultyIdx = i;
         }
         setTimeout(() => {
-            if (this._script.stageWorldIndex === 5 || this._script.stageWorldIndex === 6) {
-                this._script.setDifficulty(Player.localPlayer.playerId, 0); // 默认0
-            } else {
-                this._script.setDifficulty(Player.localPlayer.playerId, unlockMaxDifficultyIdx); // 选择已解锁的最高难度
+            let initSelectDifficulty = 0; // 默认0 初始难度
+            if (this._script.stageWorldIndex !== 5 && this._script.stageWorldIndex !== 6) {
+                initSelectDifficulty = unlockMaxDifficultyIdx; // 选择已解锁的最高难度
             }
+            this._script.setDifficulty(Player.localPlayer.playerId, initSelectDifficulty);
+            const stageCfgId = StageUtil.getIdFromGroupIndexAndDifficulty(
+                this._script.stageWorldIndex,
+                this._script.stageGroupId,
+                initSelectDifficulty
+            );
+            this.setPerfectImg(stageCfgId);
         }, 0);
     }
 
@@ -303,6 +324,8 @@ export class UIStageSelect extends StageSelect_Generate {
         if (this._script.stageWorldIndex === 5 || this._script.stageWorldIndex === 6) {
             this._difficulty = [];
             this.mSelectDifficulty.removeAllChildren();
+            Gtk.trySetVisibility(this.imgImperfect, mw.SlateVisibility.Collapsed);
+            Gtk.trySetVisibility(this.imgPerfect, mw.SlateVisibility.Collapsed); 
         } else {
             this.setDifficulty();
         }
