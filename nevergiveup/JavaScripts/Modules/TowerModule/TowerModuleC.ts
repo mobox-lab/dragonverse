@@ -86,6 +86,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
 
     public set chooseTowerID(v: number) {
         this._chooseTowerID = v;
+        UIService.hideUI(this._towerInfoUI);
         if (this.chooseTowerID == null) {
             UIService.hideUI(this._towerInfoUI);
         } else if (this._towerInfoUI) {
@@ -94,7 +95,9 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
                 "#debug chooseTowerID tower:" + JSON.stringify(towerClass.info) + " placeID:" + this.chooseTowerID
             );
             if (towerClass) {
-                UIService.showUI(this._towerInfoUI, UILayerTop, towerClass);
+                mw.setTimeout(() => {
+                    UIService.showUI(this._towerInfoUI, UILayerTop, towerClass);
+                }, 10)
                 TowerActions.onTowerSelected.call(towerClass.info.placeID);
                 this.isBuild = false; //把建造状态关了
             }
