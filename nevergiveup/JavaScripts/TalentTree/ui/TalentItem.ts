@@ -86,7 +86,11 @@ export class TalentItem extends TalentItem_Generate {
         const currentLevel = this.talentC.getTalentIndex(data.id);
         this.setCurrentLevel(currentLevel);
         this.refreshCanActive();
-        if (data.type === ETalentType.Peak) this.mSelected.imageGuid = "434894";
+        if (data.type === ETalentType.Peak) {
+            this.mSelected.imageGuid = "434894";
+            this.textTalentLevel.position = new Vector2(0, 65);
+            this.textTalentName.position = new Vector2(0, 85);
+        }
 
         this.textTalentName.text = GameConfig.Language.getElement(data.name).Value;
         this.mItem.normalImageGuid = data.icon;
