@@ -506,10 +506,11 @@ export class WaveUtil {
                             });
                             const waveTime = (item.waveTime > 30 ? 30 : item.waveTime) * Math.pow(0.85, times);
                             const escapeDamagePercent = 1 * Math.pow(1.2, times);
+                            const hpX = 0.5;
                             return {
                                 ...item,
                                 waveTime: waveTime > 5 ? Number(waveTime.toFixed(0)) : 5,
-                                hpMultiplier: 1 * Math.pow(1.4, times),
+                                hpMultiplier: 1 * Math.pow(1.4, times) * hpX * item.hpMultiplier,
                                 enemies: newEnemies,
                                 escapeDamagePercent: escapeDamagePercent,
                                 waveGold: 0,
