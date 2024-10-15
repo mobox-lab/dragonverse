@@ -846,7 +846,7 @@ export class Enemy implements BuffBag {
         );
         const finalDamage = Math.min(P3Damage, this.hp);
         console.log(finalDamage, "finalDamage");
-        // this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
+        this._components.forEach((component) => component.onHurt({ amount: damage }, tower.attackTags));
         // 多段伤害
         const multiHits = buffs.filter((buff) => buff.cfg.multiHit !== 0);
 

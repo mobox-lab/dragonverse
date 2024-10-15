@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-11 14:20:01
  * @LastEditors  : xiaohao.li
@@ -35,7 +35,8 @@ export class BossComponent extends IEnemyComponent {
         }
     }
 
-    onHurt(damage: { amount: number; }): void {
+    onHurt(damage: { amount: number }): void {
+        EnemyActions.onBossSpawned.call(this.enemy);
     }
 
     onDestroy() {
