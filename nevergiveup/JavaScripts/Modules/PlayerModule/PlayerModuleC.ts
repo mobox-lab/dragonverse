@@ -167,7 +167,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         );
         this._enemyCount = 0;
 
-        this.data.infinityWaveTimes = this.data.infinityWaveTimes + this._waveCount;
+        this.data.infinityWaveTimes = this._waveCount;
         this.server.net_saveInfinityWaveTimes(this.data.infinityWaveTimes);
         this._waveCount = 0;
 
