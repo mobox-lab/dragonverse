@@ -13,6 +13,7 @@ import { PlayerUtil } from "../PlayerModule/PlayerUtil";
 import { StageActions } from "../../Actions";
 import { TimerModuleUtils } from "../TimeModule/time";
 import TalentUtils from "./TalentUtils";
+import Utils from "../../Utils";
 
 export class TalentItemUnique implements IUnique {
     public id: number;
@@ -118,7 +119,7 @@ export default class TalentModuleC extends JModuleC<TalentModuleS, TalentModuleD
         // TODO: 判断当前玩家等级是否能解锁
         const isEnoughLevel = this.checkUnlockLevel(item.unlockLevel);
         if (!isEnoughLevel) {
-            TipsManager.showTips("Unlock level");
+            TipsManager.showTips(Utils.Format(GameConfig.Language.Text_Tips_1.Value, item.unlockLevel));
             return false;
         }
         // 判断是否足够解锁
