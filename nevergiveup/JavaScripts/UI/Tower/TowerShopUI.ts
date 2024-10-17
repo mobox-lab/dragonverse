@@ -51,6 +51,7 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 			const towerCfg = cfg[i];
 			if(options?.ele && options.ele != towerCfg.elementTy) continue;
 			if(options?.target) {
+				if([3, 4].includes(towerCfg.adap)) continue; // 产出塔和增益塔跳过
 				if(options.target === TowerTargetType.Single && towerCfg.attackCount[0] > 1) continue; // 为1则为单体
 				if(options.target === TowerTargetType.Multiple && towerCfg.attackCount[0] <= 1) continue; // 1以上则为aoe
 			}
