@@ -164,6 +164,12 @@ export default class StageTrigger extends Script {
             this.changeOwner();
         }
     }
+
+    @mw.RemoteFunction(mw.Server)
+    changeOwnerByClick(owner: number) {
+        this.owner = owner;
+    }
+
     changeOwner() {
         let ids = this.parsePlayerIds();
         if (ids.length == 1 && this.owner != ids[0]) {
@@ -176,11 +182,6 @@ export default class StageTrigger extends Script {
             this.waitTime = this.countDown;
             this.difficulty = 0;
         }
-    }
-
-    // 谁先点go，谁是owner
-    public changeOwnerByClick(owner: number) {
-        this.owner = owner;
     }
 
     onTriggeredPlayerChanged() {
