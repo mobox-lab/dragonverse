@@ -1885,7 +1885,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 30,
-                hpMultiplier: 2,
+                hpMultiplier: 3,
             },
             //4-1-4
             {
@@ -1895,7 +1895,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 25,
-                hpMultiplier: 6,
+                hpMultiplier: 10,
             },
             //4-1-5
             {
@@ -1905,7 +1905,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 30,
-                hpMultiplier: 8,
+                hpMultiplier: 12,
             },
             //4-1-6
             {
@@ -1915,7 +1915,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 150,
                 waveTime: 300,
-                hpMultiplier: 30,
+                hpMultiplier: 35,
             },
         ],
     },
@@ -1950,7 +1950,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 30,
-                hpMultiplier: 4,
+                hpMultiplier: 10,
             },
             //4-2-4
             {
@@ -1959,7 +1959,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 25,
-                hpMultiplier: 4,
+                hpMultiplier: 5,
             },
             //4-2-5
             {
@@ -1969,7 +1969,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 35,
-                hpMultiplier: 10,
+                hpMultiplier: 14,
             },
             //4-2-6
             {
@@ -1979,7 +1979,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 20,
-                hpMultiplier: 35,
+                hpMultiplier: 40,
             },
             //4-2-7
             {
@@ -1988,7 +1988,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 25,
-                hpMultiplier: 26,
+                hpMultiplier: 35,
             },
             //4-2-8
             {
@@ -1997,7 +1997,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 35,
-                hpMultiplier: 15,
+                hpMultiplier: 20,
             },
             //4-2-9
             {
@@ -2007,7 +2007,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 20,
-                hpMultiplier: 47,
+                hpMultiplier: 75,
             },
             //4-2-10
             {
@@ -2017,7 +2017,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 180,
                 waveTime: 300,
-                hpMultiplier: 25,
+                hpMultiplier: 60,
             },
         ],
     },
@@ -2164,7 +2164,7 @@ export const NEW_STAGE_CONFIG: NewStageConfig[] = [
                 ],
                 waveGold: 200,
                 waveTime: 300,
-                hpMultiplier: 140,
+                hpMultiplier: 160,
             },
         ],
     },
