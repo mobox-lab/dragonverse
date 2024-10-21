@@ -162,19 +162,21 @@ export class P_TransmitTips extends WorldtipsUI_Generate {
 
     /**透明度tween */
     public tweenOpacity() {
-        const bezier = GlobalData.TransferPoint.tipsTweenBezier;
-        let tween = new mw.Tween({ o: 0 }).to({ o: 1 }, GlobalData.TransferPoint.tipsTime * 1000)
+        new mw.Tween({ o: 0 }).to({ o: 1 }, 500)
             .onUpdate((value) => {
                 this.mText_Worldname.renderOpacity = value.o;
             }).onComplete((obj) => {
-                this.hide();
-                this.mText_Worldname.renderOpacity = 1;
-            }).start().easing(cubicBezier(bezier[0], bezier[1], bezier[2], bezier[3])).yoyo(true).repeat(1);
+                new mw.Tween({ o: 1 }).to({ o: 0 }, 500).onUpdate((value) => {
+                    this.mText_Worldname.renderOpacity = value.o;
+                }).onComplete(() => {
+                    this.hide();
+                }).delay(1000).start();
+            }).start()
     }
 
 
     protected onShow(...params: any[]): void {
-        utils.showUITween(this);
+        // utils.showUITween(this);
     }
 }
 

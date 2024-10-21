@@ -34,7 +34,7 @@ export default class NewBuyUI extends NewBuyUI_Generate {
             TipsManager.showTips(GameConfig.Language.Text_tips_4.Value);
             this.btn_Buy.enable = false;
         } else {
-            this.text_Left.setFontColorByHex("#000000");
+            this.text_Left.setFontColorByHex("#ffffff");
             this.btn_Buy.enable = true;
         }
     }
