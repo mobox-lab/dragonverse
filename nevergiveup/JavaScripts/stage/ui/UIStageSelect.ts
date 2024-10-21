@@ -99,18 +99,21 @@ export class UIStageSelect extends StageSelect_Generate {
         }
 
         this.mGo.onClicked.add(() => {
-            if (Utils.isLocalPlayer(this._ownerId)) {
-                const stageC = GameManager.getStageClient();
-                if (stageC) {
-                    // game is already exist
+            this._script.changeOwnerByClick(Player.localPlayer.playerId);
+            setTimeout(() => {
+                if (Utils.isLocalPlayer(this._ownerId)) {
+                    const stageC = GameManager.getStageClient();
+                    if (stageC) {
+                        console.log("game is already exist");
+                        // game is already exist
+                    } else {
+                        const res = this._script.startGame(Player.localPlayer.playerId);
+                        if (res) SoundUtil.PlaySoundById(2011);
+                    }
                 } else {
-                    this._script.changeOwnerByClick(Player.localPlayer.playerId);
-                    const res = this._script.startGame(Player.localPlayer.playerId);
-                    if (res) SoundUtil.PlaySoundById(2011);
+                    TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
                 }
-            } else {
-                TipsManager.showTips(GameConfig.Language.getElement("Text_StartHouseOwner").Value);
-            }
+            }, 1000);
         });
 
         this.mClose.onClicked.add(() => {
@@ -131,7 +134,7 @@ export class UIStageSelect extends StageSelect_Generate {
         const cfg = StageUtil.getStageCfgById(stageCfgId);
         const unique = Number(cfg.index.toString() + cfg.difficulty.toString());
         console.log("#debug firstPerfectClears:" + firstPerfectClears + " stageCfgId:" + stageCfgId);
-        if(firstPerfectClears.includes(unique)) {
+        if (firstPerfectClears.includes(unique)) {
             Gtk.trySetVisibility(this.imgPerfect, mw.SlateVisibility.Visible);
             Gtk.trySetVisibility(this.imgImperfect, mw.SlateVisibility.Collapsed);
         } else {
@@ -325,7 +328,7 @@ export class UIStageSelect extends StageSelect_Generate {
             this._difficulty = [];
             this.mSelectDifficulty.removeAllChildren();
             Gtk.trySetVisibility(this.imgImperfect, mw.SlateVisibility.Collapsed);
-            Gtk.trySetVisibility(this.imgPerfect, mw.SlateVisibility.Collapsed); 
+            Gtk.trySetVisibility(this.imgPerfect, mw.SlateVisibility.Collapsed);
         } else {
             this.setDifficulty();
         }
