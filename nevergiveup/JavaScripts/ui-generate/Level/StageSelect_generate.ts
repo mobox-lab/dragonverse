@@ -127,12 +127,26 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.mStageName_Internal
 	}
+	private can_eleTitle_Internal: mw.Canvas
+	public get can_eleTitle(): mw.Canvas {
+		if(!this.can_eleTitle_Internal&&this.uiWidgetBase) {
+			this.can_eleTitle_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/Canvas_Element/can_eleTitle') as mw.Canvas
+		}
+		return this.can_eleTitle_Internal
+	}
 	private textElement_Internal: mw.TextBlock
 	public get textElement(): mw.TextBlock {
 		if(!this.textElement_Internal&&this.uiWidgetBase) {
-			this.textElement_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/Canvas_Element/textElement') as mw.TextBlock
+			this.textElement_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/Canvas_Element/can_eleTitle/textElement') as mw.TextBlock
 		}
 		return this.textElement_Internal
+	}
+	private counterInfoBtn_Internal: mw.Button
+	public get counterInfoBtn(): mw.Button {
+		if(!this.counterInfoBtn_Internal&&this.uiWidgetBase) {
+			this.counterInfoBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/Canvas_Element/can_eleTitle/counterInfoBtn') as mw.Button
+		}
+		return this.counterInfoBtn_Internal
 	}
 	private mCanvas_recoElements_Internal: mw.Canvas
 	public get mCanvas_recoElements(): mw.Canvas {
@@ -393,6 +407,209 @@ export default class StageSelect_Generate extends UIScript {
 		}
 		return this.textMonsterSkillDesc5_Internal
 	}
+	private canvas_Reward_Internal: mw.Canvas
+	public get canvas_Reward(): mw.Canvas {
+		if(!this.canvas_Reward_Internal&&this.uiWidgetBase) {
+			this.canvas_Reward_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward') as mw.Canvas
+		}
+		return this.canvas_Reward_Internal
+	}
+	private imgRewardBg1_Internal: mw.Image
+	public get imgRewardBg1(): mw.Image {
+		if(!this.imgRewardBg1_Internal&&this.uiWidgetBase) {
+			this.imgRewardBg1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/imgRewardBg1') as mw.Image
+		}
+		return this.imgRewardBg1_Internal
+	}
+	private imgRewardBg1_1_Internal: mw.Image
+	public get imgRewardBg1_1(): mw.Image {
+		if(!this.imgRewardBg1_1_Internal&&this.uiWidgetBase) {
+			this.imgRewardBg1_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/imgRewardBg1_1') as mw.Image
+		}
+		return this.imgRewardBg1_1_Internal
+	}
+	private textNormalReward_Internal: mw.TextBlock
+	public get textNormalReward(): mw.TextBlock {
+		if(!this.textNormalReward_Internal&&this.uiWidgetBase) {
+			this.textNormalReward_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/textNormalReward') as mw.TextBlock
+		}
+		return this.textNormalReward_Internal
+	}
+	private texPerfectReward_Internal: mw.TextBlock
+	public get texPerfectReward(): mw.TextBlock {
+		if(!this.texPerfectReward_Internal&&this.uiWidgetBase) {
+			this.texPerfectReward_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/texPerfectReward') as mw.TextBlock
+		}
+		return this.texPerfectReward_Internal
+	}
+	private can_completeRewardList_Internal: mw.Canvas
+	public get can_completeRewardList(): mw.Canvas {
+		if(!this.can_completeRewardList_Internal&&this.uiWidgetBase) {
+			this.can_completeRewardList_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_completeRewardList') as mw.Canvas
+		}
+		return this.can_completeRewardList_Internal
+	}
+	private can_rewardGoldComplete_Internal: mw.Canvas
+	public get can_rewardGoldComplete(): mw.Canvas {
+		if(!this.can_rewardGoldComplete_Internal&&this.uiWidgetBase) {
+			this.can_rewardGoldComplete_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_completeRewardList/can_rewardGoldComplete') as mw.Canvas
+		}
+		return this.can_rewardGoldComplete_Internal
+	}
+	private imgGold1_1_Internal: mw.Image
+	public get imgGold1_1(): mw.Image {
+		if(!this.imgGold1_1_Internal&&this.uiWidgetBase) {
+			this.imgGold1_1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_completeRewardList/can_rewardGoldComplete/imgGold1_1') as mw.Image
+		}
+		return this.imgGold1_1_Internal
+	}
+	private text_rewardGoldComplete_Internal: mw.TextBlock
+	public get text_rewardGoldComplete(): mw.TextBlock {
+		if(!this.text_rewardGoldComplete_Internal&&this.uiWidgetBase) {
+			this.text_rewardGoldComplete_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_completeRewardList/can_rewardGoldComplete/text_rewardGoldComplete') as mw.TextBlock
+		}
+		return this.text_rewardGoldComplete_Internal
+	}
+	private can_rewardTechComplete_Internal: mw.Canvas
+	public get can_rewardTechComplete(): mw.Canvas {
+		if(!this.can_rewardTechComplete_Internal&&this.uiWidgetBase) {
+			this.can_rewardTechComplete_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_completeRewardList/can_rewardTechComplete') as mw.Canvas
+		}
+		return this.can_rewardTechComplete_Internal
+	}
+	private imgTalent1_Internal: mw.Image
+	public get imgTalent1(): mw.Image {
+		if(!this.imgTalent1_Internal&&this.uiWidgetBase) {
+			this.imgTalent1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_completeRewardList/can_rewardTechComplete/imgTalent1') as mw.Image
+		}
+		return this.imgTalent1_Internal
+	}
+	private text_rewardTechComplete_Internal: mw.TextBlock
+	public get text_rewardTechComplete(): mw.TextBlock {
+		if(!this.text_rewardTechComplete_Internal&&this.uiWidgetBase) {
+			this.text_rewardTechComplete_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_completeRewardList/can_rewardTechComplete/text_rewardTechComplete') as mw.TextBlock
+		}
+		return this.text_rewardTechComplete_Internal
+	}
+	private can_rewardExpComplete_Internal: mw.Canvas
+	public get can_rewardExpComplete(): mw.Canvas {
+		if(!this.can_rewardExpComplete_Internal&&this.uiWidgetBase) {
+			this.can_rewardExpComplete_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_completeRewardList/can_rewardExpComplete') as mw.Canvas
+		}
+		return this.can_rewardExpComplete_Internal
+	}
+	private imgExp1_Internal: mw.Image
+	public get imgExp1(): mw.Image {
+		if(!this.imgExp1_Internal&&this.uiWidgetBase) {
+			this.imgExp1_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_completeRewardList/can_rewardExpComplete/imgExp1') as mw.Image
+		}
+		return this.imgExp1_Internal
+	}
+	private text_rewardExpComplete_Internal: mw.TextBlock
+	public get text_rewardExpComplete(): mw.TextBlock {
+		if(!this.text_rewardExpComplete_Internal&&this.uiWidgetBase) {
+			this.text_rewardExpComplete_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_completeRewardList/can_rewardExpComplete/text_rewardExpComplete') as mw.TextBlock
+		}
+		return this.text_rewardExpComplete_Internal
+	}
+	private can_perfectRewardList_Internal: mw.Canvas
+	public get can_perfectRewardList(): mw.Canvas {
+		if(!this.can_perfectRewardList_Internal&&this.uiWidgetBase) {
+			this.can_perfectRewardList_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_perfectRewardList') as mw.Canvas
+		}
+		return this.can_perfectRewardList_Internal
+	}
+	private can_rewardGoldPerfect_Internal: mw.Canvas
+	public get can_rewardGoldPerfect(): mw.Canvas {
+		if(!this.can_rewardGoldPerfect_Internal&&this.uiWidgetBase) {
+			this.can_rewardGoldPerfect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_perfectRewardList/can_rewardGoldPerfect') as mw.Canvas
+		}
+		return this.can_rewardGoldPerfect_Internal
+	}
+	private imgGold1_2_Internal: mw.Image
+	public get imgGold1_2(): mw.Image {
+		if(!this.imgGold1_2_Internal&&this.uiWidgetBase) {
+			this.imgGold1_2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_perfectRewardList/can_rewardGoldPerfect/imgGold1_2') as mw.Image
+		}
+		return this.imgGold1_2_Internal
+	}
+	private text_rewardGoldPerfect_Internal: mw.TextBlock
+	public get text_rewardGoldPerfect(): mw.TextBlock {
+		if(!this.text_rewardGoldPerfect_Internal&&this.uiWidgetBase) {
+			this.text_rewardGoldPerfect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_perfectRewardList/can_rewardGoldPerfect/text_rewardGoldPerfect') as mw.TextBlock
+		}
+		return this.text_rewardGoldPerfect_Internal
+	}
+	private can_rewardTechPerfect_Internal: mw.Canvas
+	public get can_rewardTechPerfect(): mw.Canvas {
+		if(!this.can_rewardTechPerfect_Internal&&this.uiWidgetBase) {
+			this.can_rewardTechPerfect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_perfectRewardList/can_rewardTechPerfect') as mw.Canvas
+		}
+		return this.can_rewardTechPerfect_Internal
+	}
+	private imgTalent2_Internal: mw.Image
+	public get imgTalent2(): mw.Image {
+		if(!this.imgTalent2_Internal&&this.uiWidgetBase) {
+			this.imgTalent2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_perfectRewardList/can_rewardTechPerfect/imgTalent2') as mw.Image
+		}
+		return this.imgTalent2_Internal
+	}
+	private text_rewardTechPerfect_Internal: mw.TextBlock
+	public get text_rewardTechPerfect(): mw.TextBlock {
+		if(!this.text_rewardTechPerfect_Internal&&this.uiWidgetBase) {
+			this.text_rewardTechPerfect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_perfectRewardList/can_rewardTechPerfect/text_rewardTechPerfect') as mw.TextBlock
+		}
+		return this.text_rewardTechPerfect_Internal
+	}
+	private can_rewardExpPerfect_Internal: mw.Canvas
+	public get can_rewardExpPerfect(): mw.Canvas {
+		if(!this.can_rewardExpPerfect_Internal&&this.uiWidgetBase) {
+			this.can_rewardExpPerfect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_perfectRewardList/can_rewardExpPerfect') as mw.Canvas
+		}
+		return this.can_rewardExpPerfect_Internal
+	}
+	private imgExp2_Internal: mw.Image
+	public get imgExp2(): mw.Image {
+		if(!this.imgExp2_Internal&&this.uiWidgetBase) {
+			this.imgExp2_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_perfectRewardList/can_rewardExpPerfect/imgExp2') as mw.Image
+		}
+		return this.imgExp2_Internal
+	}
+	private text_rewardExpPerfect_Internal: mw.TextBlock
+	public get text_rewardExpPerfect(): mw.TextBlock {
+		if(!this.text_rewardExpPerfect_Internal&&this.uiWidgetBase) {
+			this.text_rewardExpPerfect_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_perfectRewardList/can_rewardExpPerfect/text_rewardExpPerfect') as mw.TextBlock
+		}
+		return this.text_rewardExpPerfect_Internal
+	}
+	private can_firstPerfectRewardList_Internal: mw.Canvas
+	public get can_firstPerfectRewardList(): mw.Canvas {
+		if(!this.can_firstPerfectRewardList_Internal&&this.uiWidgetBase) {
+			this.can_firstPerfectRewardList_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_firstPerfectRewardList') as mw.Canvas
+		}
+		return this.can_firstPerfectRewardList_Internal
+	}
+	private textTowerReward_Internal: mw.TextBlock
+	public get textTowerReward(): mw.TextBlock {
+		if(!this.textTowerReward_Internal&&this.uiWidgetBase) {
+			this.textTowerReward_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_firstPerfectRewardList/textTowerReward') as mw.TextBlock
+		}
+		return this.textTowerReward_Internal
+	}
+	private imgModragon_Internal: mw.Image
+	public get imgModragon(): mw.Image {
+		if(!this.imgModragon_Internal&&this.uiWidgetBase) {
+			this.imgModragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_firstPerfectRewardList/imgModragon') as mw.Image
+		}
+		return this.imgModragon_Internal
+	}
+	private textModragon_Internal: mw.TextBlock
+	public get textModragon(): mw.TextBlock {
+		if(!this.textModragon_Internal&&this.uiWidgetBase) {
+			this.textModragon_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/canvas_Reward/can_firstPerfectRewardList/textModragon') as mw.TextBlock
+		}
+		return this.textModragon_Internal
+	}
 	private mSelectDifficulty_Internal: mw.Canvas
 	public get mSelectDifficulty(): mw.Canvas {
 		if(!this.mSelectDifficulty_Internal&&this.uiWidgetBase) {
@@ -420,6 +637,27 @@ export default class StageSelect_Generate extends UIScript {
 			this.mClose_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mContainer/can_inner/can_btnGroup/mClose') as mw.StaleButton
 		}
 		return this.mClose_Internal
+	}
+	private canvasElementCounter_Internal: mw.Canvas
+	public get canvasElementCounter(): mw.Canvas {
+		if(!this.canvasElementCounter_Internal&&this.uiWidgetBase) {
+			this.canvasElementCounter_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasElementCounter') as mw.Canvas
+		}
+		return this.canvasElementCounter_Internal
+	}
+	private imgElementCounter_Internal: mw.Image
+	public get imgElementCounter(): mw.Image {
+		if(!this.imgElementCounter_Internal&&this.uiWidgetBase) {
+			this.imgElementCounter_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasElementCounter/imgElementCounter') as mw.Image
+		}
+		return this.imgElementCounter_Internal
+	}
+	private textElementCounter_Internal: mw.TextBlock
+	public get textElementCounter(): mw.TextBlock {
+		if(!this.textElementCounter_Internal&&this.uiWidgetBase) {
+			this.textElementCounter_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/canvasElementCounter/textElementCounter') as mw.TextBlock
+		}
+		return this.textElementCounter_Internal
 	}
 	private mOff_Internal: mw.StaleButton
 	public get mOff(): mw.StaleButton {
@@ -463,6 +701,12 @@ export default class StageSelect_Generate extends UIScript {
 	
 	   //按钮添加点击
 	   
+	   this.counterInfoBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "counterInfoBtn");
+	   })
+	   this.counterInfoBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.btn_monsterSkill_1.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "btn_monsterSkill_1");
 	   })
@@ -547,6 +791,39 @@ export default class StageSelect_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.textMonsterSkillDesc5)
+	   
+	
+	   this.initLanguage(this.textNormalReward)
+	   
+	
+	   this.initLanguage(this.texPerfectReward)
+	   
+	
+	   this.initLanguage(this.text_rewardGoldComplete)
+	   
+	
+	   this.initLanguage(this.text_rewardTechComplete)
+	   
+	
+	   this.initLanguage(this.text_rewardExpComplete)
+	   
+	
+	   this.initLanguage(this.text_rewardGoldPerfect)
+	   
+	
+	   this.initLanguage(this.text_rewardTechPerfect)
+	   
+	
+	   this.initLanguage(this.text_rewardExpPerfect)
+	   
+	
+	   this.initLanguage(this.textTowerReward)
+	   
+	
+	   this.initLanguage(this.textModragon)
+	   
+	
+	   this.initLanguage(this.textElementCounter)
 	   
 	
 	   //文本多语言

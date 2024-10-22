@@ -18,6 +18,8 @@ import StageDifficulty_Generate from "../../ui-generate/Level/StageDifficulty_ge
 import StageSelect_Generate from "../../ui-generate/Level/StageSelect_generate";
 import { StageUtil } from "../Stage";
 import StageTrigger from "../StageTrigger";
+import { IStageElement } from "../../config/Stage";
+import { ItemType } from "../../tool/Enum";
 
 export class UIStageSelectItem extends StageSelectQueueItem_Generate {
     init() {}
@@ -88,7 +90,7 @@ export class UIStageSelect extends StageSelect_Generate {
     private _script: StageTrigger;
     public selectedMonsterSkillIndex: number = 0;
     public monsterSkillTypes: StageMonsterSkillType[] = [];
-
+    public isShowCounterInfo: boolean = false;
     onStart() {
         this.layer = UILayerTop;
         for (let i = 0; i < 4; i++) {
@@ -126,6 +128,10 @@ export class UIStageSelect extends StageSelect_Generate {
             if (Utils.isLocalPlayer(this._ownerId)) {
                 this._script.clickLeaveBtn(Player.localPlayer.playerId);
             }
+        });
+
+        this.counterInfoBtn.onClicked.add(() => { 
+            this.setCounterInfoShow(!this.isShowCounterInfo);
         });
     }
 
@@ -184,6 +190,72 @@ export class UIStageSelect extends StageSelect_Generate {
         }, 0);
     }
 
+    setRewardsUI(cfg: IStageElement) {
+        const isInfiniteOrTrainingMode = Utils.isInfiniteOrTrainingMode(cfg.groupIndex);
+        if (isInfiniteOrTrainingMode) {
+            Gtk.trySetVisibility(this.canvas_Reward, mw.SlateVisibility.Collapsed);
+            return;
+        }
+        Gtk.trySetVisibility(this.canvas_Reward, mw.SlateVisibility.Visible);
+        Gtk.trySetVisibility(this.can_rewardGoldComplete, mw.SlateVisibility.Collapsed);
+        Gtk.trySetVisibility(this.can_rewardTechComplete, mw.SlateVisibility.Collapsed);
+        Gtk.trySetVisibility(this.can_rewardExpComplete, mw.SlateVisibility.Collapsed);
+
+        Gtk.trySetVisibility(this.can_rewardGoldPerfect, mw.SlateVisibility.Collapsed);
+        Gtk.trySetVisibility(this.can_rewardTechPerfect, mw.SlateVisibility.Collapsed);
+        Gtk.trySetVisibility(this.can_rewardExpPerfect, mw.SlateVisibility.Collapsed);
+
+        Gtk.trySetVisibility(this.can_firstPerfectRewardList, mw.SlateVisibility.Collapsed);
+        const completeRewards = cfg.followRewardNormal;
+        if (completeRewards?.length) {
+            for (const reward of completeRewards) {
+                const [id, amount] = reward;
+                const rewardCfg = GameConfig.Item.getElement(id);
+                if (rewardCfg.itemType === ItemType.Gold) {
+                    Gtk.trySetVisibility(this.can_rewardGoldComplete, mw.SlateVisibility.Visible);
+                    Gtk.trySetText(this.text_rewardGoldComplete, Utils.formatNumber(amount));
+                } else if (rewardCfg.itemType === ItemType.TechPoint) {
+                    Gtk.trySetVisibility(this.can_rewardTechComplete, mw.SlateVisibility.Visible);
+                    Gtk.trySetText(this.text_rewardTechComplete, Utils.formatNumber(amount));
+                } else if (rewardCfg.itemType === ItemType.Exp) {
+                    Gtk.trySetVisibility(this.can_rewardExpComplete, mw.SlateVisibility.Visible);
+                    Gtk.trySetText(this.text_rewardExpComplete, Utils.formatNumber(amount));
+                }
+            }
+        }
+        const perfectRewards = cfg.followRewardPerfect;
+        if (perfectRewards?.length) {
+            for (const reward of perfectRewards) {
+                const [id, amount] = reward;
+                const rewardCfg = GameConfig.Item.getElement(id);
+                if (rewardCfg.itemType === ItemType.Gold) {
+                    Gtk.trySetVisibility(this.can_rewardGoldPerfect, mw.SlateVisibility.Visible);
+                    Gtk.trySetText(this.text_rewardGoldPerfect, Utils.formatNumber(amount));
+                } else if (rewardCfg.itemType === ItemType.TechPoint) {
+                    Gtk.trySetVisibility(this.can_rewardTechPerfect, mw.SlateVisibility.Visible);
+                    Gtk.trySetText(this.text_rewardTechPerfect, Utils.formatNumber(amount));
+                } else if (rewardCfg.itemType === ItemType.Exp) {
+                    Gtk.trySetVisibility(this.can_rewardExpPerfect, mw.SlateVisibility.Visible);
+                    Gtk.trySetText(this.text_rewardExpPerfect, Utils.formatNumber(amount));
+                }
+            }
+        }
+        const firstPerfect = cfg.firstRewardPerfect;
+        if (firstPerfect?.length) {
+            // 首次通关送的塔，只有一个
+            for (const reward of firstPerfect) {
+                const [id] = reward;
+                const rewardCfg = GameConfig.Item.getElement(id);
+                if (rewardCfg.itemType === ItemType.Card) {
+                    Gtk.trySetVisibility(this.can_firstPerfectRewardList, mw.SlateVisibility.Visible);
+                    const towerCfg = GameConfig.Tower.getElement(id);
+                    this.imgModragon.imageGuid = towerCfg.imgGuid;
+                    Gtk.trySetText(this.textModragon, towerCfg.name);
+                }
+            }
+        }
+    }
+
     setData(stageWorldIndex: number, difficulty: number, stageGroupId: number) {
         const stageCfg = StageUtil.getCfgFromGroupIndexAndDifficulty(stageWorldIndex, stageGroupId, difficulty);
         const stageCfgId = stageCfg.id;
@@ -191,6 +263,10 @@ export class UIStageSelect extends StageSelect_Generate {
             this._difficulty = [];
             this.mSelectDifficulty.removeAllChildren();
         }
+        // 通关奖励
+        this.setRewardsUI(stageCfg);
+
+        // 怪物技能
         const elementIds = this.getRecommendElement(stageCfgId, stageWorldIndex);
         this.mCanvas_recoElements.removeAllChildren();
         for (const id of elementIds) {
@@ -204,18 +280,19 @@ export class UIStageSelect extends StageSelect_Generate {
         if (berserk) skills.push(StageMonsterSkillType.Berserk);
         if (stealth) skills.push(StageMonsterSkillType.Stealth);
         if (fly) skills.push(StageMonsterSkillType.Fly);
-
+        const rewardHeight = 156;
+        const isInfiniteOrTrainingMode = Utils.isInfiniteOrTrainingMode(stageCfg.groupIndex);
         if (skills?.length) {
             Gtk.trySetVisibility(this.can_Monster, mw.SlateVisibility.Visible);
-            this.bg.size = new Vector2(444, 540);
+            this.bg.size = new Vector2(444, 548 + (isInfiniteOrTrainingMode ? 0 : rewardHeight));
         } else {
             Gtk.trySetVisibility(this.can_Monster, mw.SlateVisibility.Collapsed);
-            this.bg.size = new Vector2(444, 372);
+            this.bg.size = new Vector2(444, 372 + (isInfiniteOrTrainingMode ? 0 : rewardHeight));
         }
 
         this.selectedMonsterSkillIndex = 0;
         this.monsterSkillTypes = skills;
-        console.log("#debug monsterSkillTypes", skills);
+        // console.log("#debug monsterSkillTypes", skills);
         const len = skills?.length ?? 0;
         for (let i = 0; i < 5; i++) {
             const skillEle = this[`canvas_MonsterSkillDesc_${i + 1}`] as mw.Canvas;
@@ -321,7 +398,13 @@ export class UIStageSelect extends StageSelect_Generate {
         this._ownerId = id;
     }
 
+    setCounterInfoShow(isShow: boolean) {
+        this.isShowCounterInfo = isShow;
+        Gtk.trySetVisibility(this.canvasElementCounter, isShow ? mw.SlateVisibility.Visible : mw.SlateVisibility.Collapsed);
+    }
+
     onShow(script: StageTrigger) {
+        this.setCounterInfoShow(false);
         MGSTool.page("level");
         this._script = script;
         if (this._script.stageWorldIndex === 5 || this._script.stageWorldIndex === 6) {
@@ -333,6 +416,10 @@ export class UIStageSelect extends StageSelect_Generate {
             this.setDifficulty();
         }
         TweenCommon.popUpShow(this.rootCanvas);
+    }
+
+    onHide() {
+        this.setCounterInfoShow(false);
     }
 
     getRecommendElement(id: number, index: number) {

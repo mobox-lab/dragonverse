@@ -323,6 +323,34 @@ export default class LobbyUI_Generate extends UIScript {
 		}
 		return this.txtButtonshop_Internal
 	}
+	private questionCanvas_Internal: mw.Canvas
+	public get questionCanvas(): mw.Canvas {
+		if(!this.questionCanvas_Internal&&this.uiWidgetBase) {
+			this.questionCanvas_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/questionCanvas') as mw.Canvas
+		}
+		return this.questionCanvas_Internal
+	}
+	private questionBtn_Internal: mw.Button
+	public get questionBtn(): mw.Button {
+		if(!this.questionBtn_Internal&&this.uiWidgetBase) {
+			this.questionBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/questionCanvas/questionBtn') as mw.Button
+		}
+		return this.questionBtn_Internal
+	}
+	private imgQuestion_Internal: mw.Image
+	public get imgQuestion(): mw.Image {
+		if(!this.imgQuestion_Internal&&this.uiWidgetBase) {
+			this.imgQuestion_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/questionCanvas/imgQuestion') as mw.Image
+		}
+		return this.imgQuestion_Internal
+	}
+	private txtBtnQuestion_Internal: mw.TextBlock
+	public get txtBtnQuestion(): mw.TextBlock {
+		if(!this.txtBtnQuestion_Internal&&this.uiWidgetBase) {
+			this.txtBtnQuestion_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/buttonCanvas/questionCanvas/txtBtnQuestion') as mw.TextBlock
+		}
+		return this.txtBtnQuestion_Internal
+	}
 	private roomidCanvas_Internal: mw.Canvas
 	public get roomidCanvas(): mw.Canvas {
 		if(!this.roomidCanvas_Internal&&this.uiWidgetBase) {
@@ -452,6 +480,12 @@ export default class LobbyUI_Generate extends UIScript {
 	   this.shopBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.questionBtn.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "questionBtn");
+	   })
+	   this.questionBtn.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   this.freshTokenBtn.onClicked.add(()=>{
 		   Event.dispatchToLocal("PlayButtonClick", "freshTokenBtn");
 	   })
@@ -509,6 +543,9 @@ export default class LobbyUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txtButtonshop)
+	   
+	
+	   this.initLanguage(this.txtBtnQuestion)
 	   
 	
 	   this.initLanguage(this.text_roomid)
