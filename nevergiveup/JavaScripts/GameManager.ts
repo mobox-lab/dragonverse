@@ -135,6 +135,31 @@ export namespace GameManager {
                     }
                 }
             });
+            setInterval(() => {
+                const allExistGroupIndex = [];
+                for (let i = 0; i < allPlayers.length; i++) {
+                    const stage = stages[i];
+                    allExistGroupIndex.push(stage.stageCfg.groupIndex);
+                }
+                for (let j = 0; j < allPlayers.length; j++) {
+                    const allStages = GameConfig.Stage.getAllElement();
+                    for (let k = 0; k < allStages.length; k++) {
+                        const stageItem = allStages[k];
+                        if (allExistGroupIndex.includes(stageItem.groupIndex)) {
+                            // do nothing
+                        } else {
+                            const stageState = {
+                                groupIndex: this.stageCfg.groupIndex,
+                            };
+                            Event.dispatchToClient(
+                                allPlayers[j],
+                                GlobalEventName.ServerStageState,
+                                JSON.stringify(stageState)
+                            );
+                        }
+                    }
+                }
+            }, 1000 * 60 * 10);
         } else {
             // RankManager.init();
             UIService.show(TowerUI);
@@ -142,7 +167,7 @@ export namespace GameManager {
 
             Event.addServerListener(GlobalEventName.ServerStageState, (state: string) => {
                 const stageState: StageState = JSON.parse(state);
-                console.log(JSON.stringify(stageState), "广播的stageState");
+                console.log(JSON.stringify(stageState), "stageState");
                 if (stageState?.groupIndex) {
                     const index = allGroupIndex.indexOf(stageState?.groupIndex);
                     const guid = allGuid[index];

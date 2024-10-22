@@ -65,7 +65,7 @@ export class UIMain extends MainUI_Generate {
         Event.addServerListener("updateSkipWave", (count: number, maxCount: number) => {
             this.updateSkipWaveCount(count, maxCount);
         });
-        
+
         this.monsterInfofoldBtn.onClicked.add(() => {
             this.infoPanelExpand = !this.infoPanelExpand;
             const visibility = this.infoPanelExpand ? SlateVisibility.Visible : SlateVisibility.Collapsed;
@@ -115,23 +115,24 @@ export class UIMain extends MainUI_Generate {
         this.mSpeedDown2.onClicked.add(() => {
             this.speedDown2();
         });
-        
-        this.returnBtn.onClicked.add(() => {// 回到房间
+
+        this.returnBtn.onClicked.add(() => {
+            // 回到房间
             mw.UIService.show(ReturnUI);
         });
         this.settingBtn.onClicked.add(() => {
             UIService.show(SettingUI);
         });
         Yoact.bindYoact(() =>
-            Gtk.trySetText(this.mStamina_2,
-                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
-                    .toString()));
+            Gtk.trySetText(
+                this.mStamina_2,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data).toString()
+            )
+        );
         Yoact.bindYoact(() =>
-            Gtk.trySetText(this.mStamina,
-                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString()));
+            Gtk.trySetText(this.mStamina, Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString())
+        );
     }
-
-
 
     setSpeed(speedMultipler: number) {
         let stage = GameManager.getStageClient();
@@ -197,15 +198,24 @@ export class UIMain extends MainUI_Generate {
     private initCompont() {
         StageActions.onGoldChanged.add((v: number) => {
             this.goldTxt.text = v.toFixed();
-        })
+        });
         TowerActions.onMyTowerCountChanged.add(() => {
-            this.towerTxt.text = TowerManager.sourceTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
-        })
+            this.towerTxt.text =
+                TowerManager.sourceTowerCount.toFixed() +
+                "/" +
+                ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
+        });
         TowerActions.onSourceTowerCountChanged.add(() => {
-            this.towerTxt.text = TowerManager.sourceTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
-        })
+            this.towerTxt.text =
+                TowerManager.sourceTowerCount.toFixed() +
+                "/" +
+                ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
+        });
         StageActions.onPlayerCountChanged.add(() => {
-            this.towerTxt.text = TowerManager.sourceTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
+            this.towerTxt.text =
+                TowerManager.sourceTowerCount.toFixed() +
+                "/" +
+                ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
         });
 
         for (let i = 0; i < 3; i++) {
@@ -214,7 +224,8 @@ export class UIMain extends MainUI_Generate {
             this._tryTowerUIs.push(item);
         }
         this._oriBagPos = this.bagCanvas.position.clone();
-        setTimeout(() => {// 延时初始化 等适配完在初始化
+        setTimeout(() => {
+            // 延时初始化 等适配完在初始化
             this._oriBagPos = this.bagCanvas.position.clone();
         }, 1500);
     }
@@ -232,10 +243,10 @@ export class UIMain extends MainUI_Generate {
             this._tryTowerUIs[i]?.init(null, 0);
         }
 
-        this.bagCanvas.position = this._oriBagPos.clone().add(new Vector2(-count * (this._tryTowerUIs[0].rootCanvas.size.x + 40), 0));
+        this.bagCanvas.position = this._oriBagPos
+            .clone()
+            .add(new Vector2(-count * (this._tryTowerUIs[0].rootCanvas.size.x + 40), 0));
     }
-
-
 
     setTimer(time: number) {
         let minutes = Math.floor(time / 60);
@@ -248,7 +259,11 @@ export class UIMain extends MainUI_Generate {
     }
 
     setWave(wave: number, waveMax: number) {
-        this.mWave.text = GameConfig.Language.getElement("Text_Wave").Value + wave.toFixed(0) + "/" + waveMax.toFixed(0);
+        this.mWave.text =
+            GameConfig.Language.getElement("Text_Wave").Value +
+            wave.toFixed(0) +
+            "/" +
+            `${waveMax === 9999 ? "∞" : waveMax.toFixed(0)}`;
     }
 
     setHp(hp: number, maxHp: number) {
@@ -272,8 +287,7 @@ export class UIMain extends MainUI_Generate {
             this.mWave.visibility = SlateVisibility.Visible;
             this.mWait.visibility = SlateVisibility.Collapsed;
             this.updateSpeedControl();
-        }
-        else if (state == EStageState.Wait) {
+        } else if (state == EStageState.Wait) {
             this.mWave.visibility = SlateVisibility.Collapsed;
             this.mWait.visibility = SlateVisibility.Visible;
         }
@@ -294,17 +308,23 @@ export class UIMain extends MainUI_Generate {
     }
     updateWaveInfo(stage: StageC, state: EStageState) {
         try {
-            if(![EStageState.Game, EStageState.Wait].includes(state)) return;
-            const [currentWave] = WaveUtil.fitOldConfig(stage.stageCfgId, state === EStageState.Wait ?  stage.currentWave + 1 : stage.currentWave);
-            const [nextWave] = WaveUtil.fitOldConfig(stage.stageCfgId, state === EStageState.Wait ?  stage.currentWave + 2 : stage.currentWave + 1);
-            if(!currentWave && !nextWave) return; // 结束了
-            if(nextWave) {
+            if (![EStageState.Game, EStageState.Wait].includes(state)) return;
+            const [currentWave] = WaveUtil.fitOldConfig(
+                stage.stageCfgId,
+                state === EStageState.Wait ? stage.currentWave + 1 : stage.currentWave
+            );
+            const [nextWave] = WaveUtil.fitOldConfig(
+                stage.stageCfgId,
+                state === EStageState.Wait ? stage.currentWave + 2 : stage.currentWave + 1
+            );
+            if (!currentWave && !nextWave) return; // 结束了
+            if (nextWave) {
                 this.imgMonsterBg.size = new Vector2(346, 305);
                 Gtk.trySetVisibility(this.canvas_coming, SlateVisibility.HitTestInvisible);
                 // const { stealth, fly, healing, berserk } = GlobalData.Stage.getMonsterBuff(stage.stageCfgId, stage.stageWorldIndex);
                 const { enemies } = nextWave;
-                const enemyCfgList = enemies.map(item => GameConfig.Monster.getElement(item?.type));
-                const elementIds = [...new Set(enemyCfgList.map(item => item.elementTy))] ;
+                const enemyCfgList = enemies.map((item) => GameConfig.Monster.getElement(item?.type));
+                const elementIds = [...new Set(enemyCfgList.map((item) => item.elementTy))];
                 this.can_waveEleList_2.removeAllChildren();
                 for (const id of elementIds) {
                     const icon = Image.newObject(this.can_waveEleList_2, `element_${id}_2`) as Image;
@@ -313,31 +333,41 @@ export class UIMain extends MainUI_Generate {
                 }
                 const { stealth, fly, healing, berserk } = GlobalData.Stage.getWaveMonsterBuff(enemyCfgList);
                 this.can_skillList_2.removeAllChildren();
-                if(stealth) {
-                    const item =this.createSkillItemUI(StageMonsterSkillType.Stealth);
+                if (stealth) {
+                    const item = this.createSkillItemUI(StageMonsterSkillType.Stealth);
                     this.can_skillList_2.addChild(item.uiObject);
                 }
-                if(fly) {
-                    const item =this.createSkillItemUI(StageMonsterSkillType.Fly);
+                if (fly) {
+                    const item = this.createSkillItemUI(StageMonsterSkillType.Fly);
                     this.can_skillList_2.addChild(item.uiObject);
                 }
-                if(healing) {
-                    const item =this.createSkillItemUI(StageMonsterSkillType.Healing);
+                if (healing) {
+                    const item = this.createSkillItemUI(StageMonsterSkillType.Healing);
                     this.can_skillList_2.addChild(item.uiObject);
                 }
-                if(berserk) {
-                    const item =this.createSkillItemUI(StageMonsterSkillType.Berserk);
+                if (berserk) {
+                    const item = this.createSkillItemUI(StageMonsterSkillType.Berserk);
                     this.can_skillList_2.addChild(item.uiObject);
                 }
-                console.log("#stage updateWaveInfo nextWave elementIds:" + elementIds + " stealth:" + stealth + " fly:" + fly + " healing:" + healing + " berserk:" + berserk);
-
+                console.log(
+                    "#stage updateWaveInfo nextWave elementIds:" +
+                        elementIds +
+                        " stealth:" +
+                        stealth +
+                        " fly:" +
+                        fly +
+                        " healing:" +
+                        healing +
+                        " berserk:" +
+                        berserk
+                );
             } else {
                 Gtk.trySetVisibility(this.canvas_coming, SlateVisibility.Collapsed);
                 this.imgMonsterBg.size = new Vector2(346, 179);
             }
             const { enemies } = currentWave;
-            const enemyCfgList = enemies.map(item => GameConfig.Monster.getElement(item?.type));
-            const elementIds = [...new Set(enemyCfgList.map(item => item.elementTy))] ;
+            const enemyCfgList = enemies.map((item) => GameConfig.Monster.getElement(item?.type));
+            const elementIds = [...new Set(enemyCfgList.map((item) => item.elementTy))];
             this.can_waveEleList_1.removeAllChildren();
             for (const id of elementIds) {
                 const icon = Image.newObject(this.can_waveEleList_1, `element_${id}_1`) as Image;
@@ -346,26 +376,55 @@ export class UIMain extends MainUI_Generate {
             }
             const { stealth, fly, healing, berserk } = GlobalData.Stage.getWaveMonsterBuff(enemyCfgList);
             this.can_skillList_1.removeAllChildren();
-            if(stealth) {
-                const item =this.createSkillItemUI(StageMonsterSkillType.Stealth);
+            if (stealth) {
+                const item = this.createSkillItemUI(StageMonsterSkillType.Stealth);
                 this.can_skillList_1.addChild(item.uiObject);
             }
-            if(fly) {
-                const item =this.createSkillItemUI(StageMonsterSkillType.Fly);
+            if (fly) {
+                const item = this.createSkillItemUI(StageMonsterSkillType.Fly);
                 this.can_skillList_1.addChild(item.uiObject);
             }
-            if(healing) {
-                const item =this.createSkillItemUI(StageMonsterSkillType.Healing);
+            if (healing) {
+                const item = this.createSkillItemUI(StageMonsterSkillType.Healing);
                 this.can_skillList_1.addChild(item.uiObject);
             }
-            if(berserk) {
-                const item =this.createSkillItemUI(StageMonsterSkillType.Berserk);
+            if (berserk) {
+                const item = this.createSkillItemUI(StageMonsterSkillType.Berserk);
                 this.can_skillList_1.addChild(item.uiObject);
             }
-            console.log("#stage updateWaveInfo currentWave" + " state:" + EStageState[state] + " elementIds:" + elementIds + "\nnextWave:" + JSON.stringify(nextWave) + "\ncurrentWave:" + JSON.stringify(currentWave) + " stealth:" + stealth + " fly:" + fly + " healing:" + healing + " berserk:" + berserk);
+            console.log(
+                "#stage updateWaveInfo currentWave" +
+                    " state:" +
+                    EStageState[state] +
+                    " elementIds:" +
+                    elementIds +
+                    "\nnextWave:" +
+                    JSON.stringify(nextWave) +
+                    "\ncurrentWave:" +
+                    JSON.stringify(currentWave) +
+                    " stealth:" +
+                    stealth +
+                    " fly:" +
+                    fly +
+                    " healing:" +
+                    healing +
+                    " berserk:" +
+                    berserk
+            );
         } catch (error) {
             const userId = Player.localPlayer?.userId ?? 0;
-            Utils.logP12Info("A_Error", "#stage updateWaveInfo error:" + error + " stage:" + stage.stageCfgId + " state:" + state + " userId:" + userId, "error");
+            Utils.logP12Info(
+                "A_Error",
+                "#stage updateWaveInfo error:" +
+                    error +
+                    " stage:" +
+                    stage.stageCfgId +
+                    " state:" +
+                    state +
+                    " userId:" +
+                    userId,
+                "error"
+            );
         }
     }
 
@@ -377,17 +436,14 @@ export class UIMain extends MainUI_Generate {
         let stage = GameManager.getStageClient();
         if (stage && stage.stageWorldIndex == 99) {
             this.mSpeedControl.visibility = SlateVisibility.Collapsed;
-        }
-        else {
+        } else {
             if (stage && stage.playerIds.length == 1) {
                 this.mSpeedControl.visibility = SlateVisibility.Visible;
-            }
-            else {
+            } else {
                 this.mSpeedControl.visibility = SlateVisibility.Collapsed;
             }
         }
     }
-
 
     onShow() {
         KeyOperationManager.getInstance().onKeyUp(this, Keys.T, () => {
@@ -395,13 +451,16 @@ export class UIMain extends MainUI_Generate {
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
             const ui = UIService.getUI(SettingUI);
-            if(ui.visible) ui.hide(); 
+            if (ui.visible) ui.hide();
             else ui.show();
         });
         this.playing = true;
         this.play();
         this.speedDown();
-        this.towerTxt.text = TowerManager.sourceTowerCount.toFixed() + "/" + ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
+        this.towerTxt.text =
+            TowerManager.sourceTowerCount.toFixed() +
+            "/" +
+            ModuleService.getModule(TowerModuleC).maxSourceTower?.toFixed(0);
     }
     protected onHide(): void {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.I);
