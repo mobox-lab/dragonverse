@@ -444,8 +444,9 @@ export class Enemy implements BuffBag {
         }
         this.onHealthChanged();
         character.attachToSlot(this.headUI, HumanoidSlotType.Nameplate);
+        const v = this.configId === 1013 ? new Vector(0, 0, 220) : new Vector(0);
 
-        this.headUI.localTransform.position = new Vector(0);
+        this.headUI.localTransform.position = v;
     }
 
     private async initTail(character: Character, guid: string, slot: HumanoidSlotType) {

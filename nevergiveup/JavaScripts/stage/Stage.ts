@@ -185,8 +185,6 @@ export class StageS {
 
     registerListeners() {
         StageActions.onStageStateChanged.add((state, stageId: number, ...param: number[]) => {
-            console.log(JSON.stringify(param), "onStageStateChanged");
-
             if (stageId == this.id) {
                 if (state == EStageState.End) {
                     GameManager.endStage(this);
