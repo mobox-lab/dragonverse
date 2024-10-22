@@ -471,9 +471,9 @@ export class Task {
     private initUnlockTech() {
         this.totalSolveTime = 1;
         if (this.type === EmTaskType.Daily) {
-            this.curSolveTime = ModuleService.getModule(TalentModuleC).getDailyCount();
+            this.curSolveTime = Math.min(ModuleService.getModule(TalentModuleC).getDailyCount(), this.totalSolveTime);
             StageActions.onTalentActivate.add((id: number) => {
-                this.curSolveTime = ModuleService.getModule(TalentModuleC).getDailyCount();
+                this.curSolveTime = Math.min(ModuleService.getModule(TalentModuleC).getDailyCount(), this.totalSolveTime);
                 this.checkState();
             });
             return;
