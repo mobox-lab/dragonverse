@@ -117,7 +117,9 @@ export default class FarmTower extends TowerBase {
     }
 
     protected farm() {
-        let value = this.property.attackDamage;
+        // let value = this.property.attackDamage;
+        // 这里不该读取加成后的
+        const value = this.cfg.attackDamage[this.level];
         const goldAffect = TalentUtils.getModuleCRunesValueById(1006);
         const goldAffect2 = TalentUtils.getModuleCRunesValueById(1030);
         GameManager.addGold(
