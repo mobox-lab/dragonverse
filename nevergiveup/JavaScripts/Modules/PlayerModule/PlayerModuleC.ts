@@ -150,12 +150,6 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         }
     }
 
-    public onUserLevelUp() {
-        this.data.levelUpCount.sum = this.data.levelUpCount.sum + 1;
-        this.data.levelUpCount.daily = this.data.levelUpCount.daily + 1;
-        this.server.net_saveLevelUpCount(this.data.levelUpCount.sum, this.data.levelUpCount.daily);
-    }
-
     public onStageCompleted(isPerfect: boolean, index?: number) {
         this.data.completeStageCount.sum = this.data.completeStageCount.sum + 1;
         this.data.completeStageCount.daily = this.data.completeStageCount.daily + 1;
