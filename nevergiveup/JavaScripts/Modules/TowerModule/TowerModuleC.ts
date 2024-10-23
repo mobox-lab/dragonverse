@@ -97,7 +97,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
             if (towerClass) {
                 mw.setTimeout(() => {
                     UIService.showUI(this._towerInfoUI, UILayerTop, towerClass);
-                }, 10)
+                }, 10);
                 TowerActions.onTowerSelected.call(towerClass.info.placeID);
                 this.isBuild = false; //把建造状态关了
             }
@@ -149,6 +149,8 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         InteractActions.onInteractEnd.add(this.onInteractEnd.bind(this));
         this.initEffect();
         this.initUI();
+        KeyOperationManager.getInstance().onKeyUp(undefined, Keys.Q, this.sellTowerByKey.bind(this));
+        KeyOperationManager.getInstance().onKeyUp(undefined, Keys.E, this.levelUpTowerByKey.bind(this));
     }
 
     protected onUpdate(dt: number): void {
@@ -275,6 +277,17 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         UIService.showUI(interactUI, UILayerTop);
         interactUI.rootCanvas.size = new Vector2(63.5, 61.5);
         KeyOperationManager.getInstance().onKeyUp(interactUI, Keys.F, this.interactToShowInfo.bind(this, index));
+    }
+
+    sellTowerByKey() {
+        if (this.towerInfoUI) {
+            this.towerInfoUI.sellTower();
+        }
+    }
+    levelUpTowerByKey() {
+        if (this.towerInfoUI) {
+            this.towerInfoUI.levelUpTower();
+        }
     }
 
     interactToShowInfo = (id: number) => {
