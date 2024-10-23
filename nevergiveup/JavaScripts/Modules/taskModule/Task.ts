@@ -112,6 +112,9 @@ export class Task {
             case EmTaskWay.TalentCount:
                 // name = "TalentCount";
                 break;
+            case EmTaskWay.LevelUp:
+                // name = "TalentCount";
+                break;
             case EmTaskWay.TalentUlti01:
                 // name = "TalentUlti01";
                 break;
@@ -203,6 +206,9 @@ export class Task {
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             case EmTaskWay.TalentCount:
+                info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
+                break;
+            case EmTaskWay.LevelUp:
                 info = StringUtil.format(this.cfg.taskInfo, this.cfg.taskSolvetime);
                 break;
             case EmTaskWay.TalentUlti01:
@@ -341,6 +347,9 @@ export class Task {
                 break;
             case EmTaskWay.TowerLevelUpCount:
                 this.initStageCompleteByType("towerLevelUpCount");
+                break;
+            case EmTaskWay.LevelUp:
+                this.initLevelUpCount();
                 break;
             case EmTaskWay.UnlockTowerDaily:
                 this.initUnlockTowerDaily();
@@ -575,6 +584,19 @@ export class Task {
         StageActions.onStageComplete.add(() => {
             this.curSolveTime =
                 DataCenterC.getData(PlayerModuleData).levelThreeCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+            this.checkState();
+        });
+    }
+
+    /**
+     * 初始化单一种任务类型
+     */
+    private initLevelUpCount() {
+        this.curSolveTime =
+            DataCenterC.getData(PlayerModuleData).levelUpCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
+        PlayerActions.onPlayerLevelChangedClient2.add((v) => {
+            this.curSolveTime =
+                DataCenterC.getData(PlayerModuleData).levelUpCount[this.type == EmTaskType.Daily ? "daily" : "sum"];
             this.checkState();
         });
     }

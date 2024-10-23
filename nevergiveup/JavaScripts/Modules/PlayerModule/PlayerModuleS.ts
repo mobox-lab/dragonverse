@@ -69,6 +69,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
             data.infinityGameTimes.daily = 0;
             data.infinityBossCount.daily = 0;
             data.towerLevelUpCount.daily = 0;
+            data.levelUpCount.daily = 0;
             data.unlockTowerDaily = 0;
             data.save(false);
         }
@@ -223,6 +224,12 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
         this.currentData.save(false);
     }
 
+    public net_saveLevelUpCount(sum: number, daily: number) {
+        this.currentData.levelUpCount.sum = sum;
+        this.currentData.levelUpCount.daily = daily;
+        this.currentData.save(false);
+    }
+
     public net_saveUnlockTowerDaily(daily: number) {
         this.currentData.unlockTowerDaily = daily;
         this.currentData.save(false);
@@ -297,6 +304,14 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
 
     setLevel(player: Player, level: number) {
         let script = PlayerUtil.getPlayerScript(player.playerId);
+        if (level > script.level) {
+            let data = this.getPlayerData(player).levelUpCount;
+            const newData = {
+                sum: level,
+                daily: data.daily + 1,
+            };
+            this.net_saveLevelUpCount(newData.sum, newData.daily);
+        }
         script.level = level;
         // const rankModuleS = ModuleService.getModule(GlobalRankModuleS);
         // rankModuleS.setScoreOnServer("level", level, player.playerId);
