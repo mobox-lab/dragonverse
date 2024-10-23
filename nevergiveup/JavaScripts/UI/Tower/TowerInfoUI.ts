@@ -78,6 +78,25 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         ModuleService.getModule(TowerModuleC).setAttackEffect(null);
     }
 
+    public sellTower() {
+        if (this.visible) {
+            SoundUtil.PlaySoundById(2007);
+            ModuleService.getModule(TowerModuleC).destroyTowerByUI(this._tower.info);
+            UIService.hideUI(this);
+        }
+    }
+
+    public levelUpTower() {
+        if (this.visible) {
+            if (ModuleService.getModule(TowerModuleC).upgradeTowerByUI(this._tower.info, ++this._upgradeCount)) {
+                SoundUtil.PlaySoundById(2006);
+                this.showLevel();
+            } else {
+                --this._upgradeCount;
+            }
+        }
+    }
+
     public getTags() {
         const cfg = this._cfg;
         const tags = [];
