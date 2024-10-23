@@ -635,7 +635,7 @@ export class StageS {
             } else if (item.itemType == 2) {
                 // 卡牌
                 let card = GameConfig.Tower.getElement(item.itemTypeid);
-                this.settleData.reward.push({ guid: card.imgGuid, amount: amount, type: item.itemType });
+                this.settleData.reward.push({ guid: card.iconGuid, amount: amount, type: item.itemType });
                 // 实际添加卡牌
                 // 判断卡牌是否已经存在
                 const cards = ModuleService.getModule(CardModuleS).getPlayerUnlockCards(player) || [];

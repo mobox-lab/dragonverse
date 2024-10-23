@@ -249,7 +249,7 @@ export class UIStageSelect extends StageSelect_Generate {
                 if (rewardCfg.itemType === ItemType.Card) {
                     Gtk.trySetVisibility(this.can_firstPerfectRewardList, mw.SlateVisibility.Visible);
                     const towerCfg = GameConfig.Tower.getElement(id);
-                    this.imgModragon.imageGuid = towerCfg.imgGuid;
+                    this.imgModragon.imageGuid = towerCfg.iconGuid;
                     Gtk.trySetText(this.textModragon, towerCfg.name);
                 }
             }
