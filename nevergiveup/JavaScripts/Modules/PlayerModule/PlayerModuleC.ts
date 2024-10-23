@@ -79,6 +79,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
         this.data.infinityGameTimes.daily = 0;
         this.data.infinityBossCount.daily = 0;
         this.data.towerLevelUpCount.daily = 0;
+        this.data.levelUpCount.daily = 0;
         this.data.unlockTowerDaily = 0;
         if (isSave) {
             this.server.net_SaveSumCount(
@@ -107,6 +108,7 @@ export default class PlayerModuleC extends ModuleC<PlayerModuleS, PlayerModuleDa
             this.server.net_saveInfinityGameTimes(this.data.infinityGameTimes.sum, this.data.infinityGameTimes.daily);
             this.server.net_saveInfinityBossCount(this.data.infinityBossCount.sum, this.data.infinityBossCount.daily);
             this.server.net_saveTowerLevelUpCount(this.data.towerLevelUpCount.sum, this.data.towerLevelUpCount.daily);
+            this.server.net_saveLevelUpCount(this.data.levelUpCount.sum, this.data.levelUpCount.daily);
             this.server.net_saveUnlockTowerDaily(this.data.unlockTowerDaily);
         }
     }

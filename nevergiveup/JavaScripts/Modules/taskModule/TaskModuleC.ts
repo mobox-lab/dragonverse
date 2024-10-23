@@ -75,6 +75,8 @@ export enum EmTaskWay {
     UnlockTowerDaily = 25,
     /**天赋总解锁数量 */
     TalentCount = 26,
+    /** 人物完成一次升级 */
+    LevelUp = 27,
     /**终极天赋物理 */
     TalentUlti01 = 1047,
     /**终极天赋魔法 */
@@ -269,7 +271,7 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
         if (this.data.finishTasks.includes(taskId)) return true;
         if (await this.finishTask(taskId)) {
             //服务器验证
-            SoundUtil.PlaySoundById(2013)
+            SoundUtil.PlaySoundById(2013);
             console.log("hsf====================== 领取奖励", JSON.stringify(taskId));
             Event.dispatchToLocal(EmTaskEvent.TaskFinish, taskId);
             this.refreshUI();

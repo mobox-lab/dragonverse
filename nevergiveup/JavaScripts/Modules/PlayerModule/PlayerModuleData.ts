@@ -94,6 +94,9 @@ export default class PlayerModuleData extends Subdata {
     @Decorator.persistence()
     unlockTowerDaily: number;
 
+    @Decorator.persistence()
+    levelUpCount: SumCount;
+
     public get dataName() {
         return "TdPlayerModuleData";
     }
@@ -175,6 +178,10 @@ export default class PlayerModuleData extends Subdata {
             daily: 0,
         };
         this.towerLevelUpCount = {
+            sum: 0,
+            daily: 0,
+        };
+        this.levelUpCount = {
             sum: 0,
             daily: 0,
         };
@@ -271,6 +278,11 @@ export default class PlayerModuleData extends Subdata {
             };
         if (this.towerLevelUpCount === undefined)
             this.towerLevelUpCount = {
+                sum: 0,
+                daily: 0,
+            };
+        if (this.levelUpCount === undefined)
+            this.levelUpCount = {
                 sum: 0,
                 daily: 0,
             };

@@ -46,6 +46,7 @@ export interface ITaskElement extends IElementBase{
 24.升级防御塔的次数
 25.日常解锁一次塔（只支持日常）
 26.累计天赋解锁
+27.人物升级的等级数
 1047.终极天赋物理
 1048.终极天赋魔法
 1049.终极天赋耐久*/
