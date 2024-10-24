@@ -304,13 +304,14 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
 
     setLevel(player: Player, level: number) {
         let script = PlayerUtil.getPlayerScript(player.playerId);
-        if (level > script.level) {
-            let data = this.getPlayerData(player).levelUpCount;
+        if (level > script.level && script.level !== 0) {
+            let data = this.getPlayerData(player);
             const newData = {
                 sum: level,
-                daily: data.daily + 1,
+                daily: data.levelUpCount.daily + 1,
             };
-            this.net_saveLevelUpCount(newData.sum, newData.daily);
+            data.levelUpCount = newData;
+            data.save(true);
         }
         script.level = level;
         // const rankModuleS = ModuleService.getModule(GlobalRankModuleS);
