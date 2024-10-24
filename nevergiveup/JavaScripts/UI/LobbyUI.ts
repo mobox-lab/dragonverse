@@ -27,6 +27,7 @@ import P12ShopPanel from "./Shop/P12ShopPanel";
 import { GlobalData } from "../const/GlobalData";
 import JumpProgress_Generate from "../ui-generate/JumpProgress_generate";
 import { AuthModuleC } from "../Modules/auth/AuthModule";
+import QuestionUI from "./QuestionUI";
 
 const progressTag = "LobbyTransmitProgress";
 export default class LobbyUI extends LobbyUI_Generate {
@@ -69,6 +70,9 @@ export default class LobbyUI extends LobbyUI_Generate {
         this.addTowerBtn.onClicked.add(() => {
             Gtk.trySetVisibility(this.teamCanvas, mw.SlateVisibility.Collapsed)
             UIService.show(TowerUI);
+        });
+        this.questionBtn.onClicked.add(() => {
+            UIService.show(QuestionUI);
         });
         Yoact.bindYoact(() =>
             Gtk.trySetText(this.mStamina_2,
