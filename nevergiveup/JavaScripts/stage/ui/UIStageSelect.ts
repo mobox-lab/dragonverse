@@ -130,8 +130,13 @@ export class UIStageSelect extends StageSelect_Generate {
             }
         });
 
-        this.counterInfoBtn.onClicked.add(() => { 
-            this.setCounterInfoShow(!this.isShowCounterInfo);
+        this.counterInfoBtn.onHovered.add(() => {
+            this.setCounterInfoShow(true);
+
+        });
+
+        this.counterInfoBtn.onUnhovered.add(() => {
+            this.setCounterInfoShow(false);
         });
     }
 
