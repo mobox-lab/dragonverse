@@ -151,6 +151,7 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         this.initUI();
         KeyOperationManager.getInstance().onKeyUp(undefined, Keys.Q, this.sellTowerByKey.bind(this));
         KeyOperationManager.getInstance().onKeyUp(undefined, Keys.E, this.levelUpTowerByKey.bind(this));
+        KeyOperationManager.getInstance().onKeyUp(undefined, Keys.Escape, this.hideByKey.bind(this));
     }
 
     protected onUpdate(dt: number): void {
@@ -287,9 +288,16 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
             this.towerInfoUI.sellTower();
         }
     }
+
     levelUpTowerByKey() {
         if (this.towerInfoUI) {
             this.towerInfoUI.levelUpTower();
+        }
+    }
+
+    hideByKey() {
+        if (this.towerInfoUI) {
+            this.towerInfoUI.hideTowerInfo();
         }
     }
 
