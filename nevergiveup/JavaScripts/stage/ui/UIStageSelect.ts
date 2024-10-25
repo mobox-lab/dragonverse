@@ -132,7 +132,8 @@ export class UIStageSelect extends StageSelect_Generate {
 
         this.counterInfoBtn.onHovered.add(() => {
             this.setCounterInfoShow(true);
-
+            if(this.textElement?.size?.x)
+                this.canvasElementCounter.position = new Vector2(this.mContainer.position.x + 40 + this.counterInfoBtn.position.x - 98 + 12, 322);
         });
 
         this.counterInfoBtn.onUnhovered.add(() => {
