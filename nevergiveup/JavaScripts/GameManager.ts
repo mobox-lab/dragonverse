@@ -529,11 +529,11 @@ export namespace GameManager {
 
     export function switchDifficultToText(difficult: number) {
         if (difficult == 0) {
-            return "简单";
+            return GameConfig.Language.getElement("Text_Easy").Value;
         } else if (difficult == 1) {
-            return "普通";
+            return GameConfig.Language.getElement("Text_Normal").Value;
         } else if (difficult == 2) {
-            return "困难";
+            return GameConfig.Language.getElement("Text_Difficult").Value;
         } else {
             return "";
         }
