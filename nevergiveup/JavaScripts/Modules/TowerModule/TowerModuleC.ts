@@ -202,6 +202,9 @@ export class TowerModuleC extends ModuleC<TowerModuleS, TowerModuleData> {
         let currentStage = stage ? stage.stageCfgId : -1;
         const stageCfg = StageUtil.getStageCfgById(currentStage);
         if (Utils.isInfiniteMode(stageCfg.groupIndex)) {
+            if (max > this.maxSourceTower) {
+                TipsManager.showTips(GameConfig.Language.getElement("Text_TowerUnlock").Value);
+            }
             this.maxSourceTower = max;
             TowerActions.onSourceTowerCountChanged.call(0);
         } else {
