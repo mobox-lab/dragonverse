@@ -97,6 +97,12 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
         }
     }
 
+    public hideTowerInfo() {
+        if (this.visible) {
+            UIService.hideUI(this);
+        }
+    }
+
     public getTags() {
         const cfg = this._cfg;
         const tags = [];
