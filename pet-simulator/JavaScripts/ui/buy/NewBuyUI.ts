@@ -17,14 +17,20 @@ export default class NewBuyUI extends NewBuyUI_Generate {
     private _cnt: number = 1;
     public cfg: IEggMachineElement;
     public goldType: GlobalEnum.CoinType = GlobalEnum.CoinType.FirstWorldGold;
+
     public get cnt() {
         return this._cnt;
     }
+
     public set cnt(value: number) {
         if(value === this._cnt) return;
-        this._cnt = value;
-        this.inp_Number.text = value.toString();
-        const cost = this.unitPrice * value;
+        this.changePrice(value);
+    }
+
+    public changePrice(cnt: number) { 
+        this._cnt = cnt;
+        this.inp_Number.text = cnt.toString();
+        const cost = this.unitPrice * cnt;
         this.text_All.text = utils.formatNumber(cost);
         const totalGold = this.getTotalGold();
         const leftNum = totalGold - cost;
@@ -117,7 +123,7 @@ export default class NewBuyUI extends NewBuyUI_Generate {
         this.cfg = cfg;
         this.judgeGoldType();
         this.unitPrice = cfg.Price[0];
-        this.cnt = 1;
+        this.changePrice(1);
     }
     onHide() {
         InterBtn.instance.isShow = false;
