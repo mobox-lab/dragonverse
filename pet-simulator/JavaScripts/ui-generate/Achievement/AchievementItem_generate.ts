@@ -36,6 +36,13 @@ export default class AchievementItem_Generate extends UIScript {
 		}
 		return this.mImage_GradeBG_Internal
 	}
+	private mImgProgressBarBg_Internal: mw.Image
+	public get mImgProgressBarBg(): mw.Image {
+		if(!this.mImgProgressBarBg_Internal&&this.uiWidgetBase) {
+			this.mImgProgressBarBg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/mImgProgressBarBg') as mw.Image
+		}
+		return this.mImgProgressBarBg_Internal
+	}
 	private mProgressBar_Internal: mw.ProgressBar
 	public get mProgressBar(): mw.ProgressBar {
 		if(!this.mProgressBar_Internal&&this.uiWidgetBase) {

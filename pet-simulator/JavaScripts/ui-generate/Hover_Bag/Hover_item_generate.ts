@@ -39,21 +39,21 @@ export default class Hover_item_Generate extends UIScript {
 	private textScoreUp_Internal: mw.TextBlock
 	public get textScoreUp(): mw.TextBlock {
 		if(!this.textScoreUp_Internal&&this.uiWidgetBase) {
-			this.textScoreUp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/textScoreUp') as mw.TextBlock
+			this.textScoreUp_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/Canvas/textScoreUp') as mw.TextBlock
 		}
 		return this.textScoreUp_Internal
 	}
 	private textScoreNumber_Internal: mw.TextBlock
 	public get textScoreNumber(): mw.TextBlock {
 		if(!this.textScoreNumber_Internal&&this.uiWidgetBase) {
-			this.textScoreNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/textScoreNumber') as mw.TextBlock
+			this.textScoreNumber_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/Canvas/textScoreNumber') as mw.TextBlock
 		}
 		return this.textScoreNumber_Internal
 	}
 	private picScore_Internal: mw.Image
 	public get picScore(): mw.Image {
 		if(!this.picScore_Internal&&this.uiWidgetBase) {
-			this.picScore_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/picScore') as mw.Image
+			this.picScore_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mCanvas/Canvas/picScore') as mw.Image
 		}
 		return this.picScore_Internal
 	}
