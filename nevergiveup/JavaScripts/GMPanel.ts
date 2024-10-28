@@ -19,6 +19,7 @@ import { addGMCommand } from "mw-god-mod";
 import { GameConfig } from "./config/GameConfig";
 import TalentModuleS from "./Modules/talent/TalentModuleS";
 import { Wave, WaveManager } from "./stage/Wave";
+import { TaskModuleC } from "./Modules/taskModule/TaskModuleC";
 
 // new GMPanel
 addGMCommand(
@@ -38,6 +39,17 @@ addGMCommand(
     () => {
         let gameID = GameManager.getStageClient().id;
         Event.dispatchToServer("gmEndGame", gameID);
+    },
+    () => {},
+    undefined,
+    undefined
+);
+
+addGMCommand(
+    "清空日常任务",
+    "void",
+    () => {
+        ModuleService.getModule(TaskModuleC).clearDaily(true);
     },
     () => {},
     undefined,
@@ -81,9 +93,9 @@ addGMCommand(
 );
 
 addGMCommand("增加局内金币", "string", (value) => {
-    if(value){
+    if (value) {
         GameManager.addGold(+value);
-    }else{
+    } else {
         GameManager.addGold(+100000);
     }
 });

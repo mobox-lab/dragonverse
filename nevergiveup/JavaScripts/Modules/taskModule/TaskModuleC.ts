@@ -135,6 +135,10 @@ export class TaskModuleC extends ModuleC<TaskModuleS, TaskModuleDataHelper> {
         this.initTask();
     }
 
+    public clearDaily(isSave: boolean) {
+        this.clearFinishDailyTask(isSave);
+    }
+
     //清空data中已经完成的日常任务
     private clearFinishDailyTask(isSave: boolean) {
         console.log("hsf111====================== C端日常任务刷新", isSave);
