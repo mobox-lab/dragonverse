@@ -308,7 +308,7 @@ export class PlayerModuleS extends ModuleS<PlayerModuleC, PlayerModuleData> {
             let data = this.getPlayerData(player);
             const newData = {
                 sum: level,
-                daily: data.levelUpCount.daily + 1,
+                daily: 1,
             };
             data.levelUpCount = newData;
             data.save(true);
