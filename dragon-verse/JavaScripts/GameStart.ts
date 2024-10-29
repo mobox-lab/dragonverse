@@ -276,6 +276,8 @@ export default class GameStart extends mw.Script {
         InputUtil.mouseLockOptionEnabled = false;
         InputUtil.isLockMouse = true;
         // InputUtil.isCursorLocked = true;
+
+        SettingService.setSettingButtonVisible(false);
     }
 
     private initializeServer() {

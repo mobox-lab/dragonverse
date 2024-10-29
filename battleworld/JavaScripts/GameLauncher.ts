@@ -148,6 +148,8 @@ export default class GameLauncher extends mw.Script {
             if (!GameServiceConfig.isRelease) {
                 this.registerGMVisibleKey();
             }
+
+            SettingService.setSettingButtonVisible(false);
         }
         console.log(`isPIE: ${SystemUtil.isPIE}`);
         DataStorage.setTemporaryStorage(SystemUtil.isPIE);

@@ -154,6 +154,8 @@ export default class GameStart extends Script {
             Utils.requestAssetIcons(GameConfig.Tower.getAllElement(), "imgGuid", true);
             DanmuManager.init();
             ComponentFactory.init();
+
+            SettingService.setSettingButtonVisible(false);
         }
         mwaction;
         GameManager.init(this);

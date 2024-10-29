@@ -178,6 +178,8 @@ export default class GameStart extends mw.Script {
                 .registerUpdater((callback) => {
                     mw.TimeUtil.onEnterFrame.add(callback);
                 }).setThreshold(GtkTypes.Interval.Hz60);
+
+            SettingService.setSettingButtonVisible(false);
         }
 
         this.useUpdate = true;
