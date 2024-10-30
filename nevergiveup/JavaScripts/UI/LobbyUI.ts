@@ -55,7 +55,7 @@ export default class LobbyUI extends LobbyUI_Generate {
             if (GameManager.getStageClient()) {
                 return;
             }
-            UIService.show(TowerShopUI, {isShop: true});
+            UIService.show(TowerShopUI, { isShop: true });
         });
         this.settingBtn.onClicked.add(() => {
             UIService.show(SettingUI);
@@ -68,25 +68,28 @@ export default class LobbyUI extends LobbyUI_Generate {
         this.taskBtn.onClicked.add(this.showTaskPanel.bind(this));
         Gtk.trySetVisibility(this.teamCanvas, mw.SlateVisibility.Collapsed);
         this.addTowerBtn.onClicked.add(() => {
-            Gtk.trySetVisibility(this.teamCanvas, mw.SlateVisibility.Collapsed)
+            Gtk.trySetVisibility(this.teamCanvas, mw.SlateVisibility.Collapsed);
             UIService.show(TowerUI);
         });
         this.questionBtn.onClicked.add(() => {
             UIService.show(QuestionUI);
         });
+
         Yoact.bindYoact(() =>
-            Gtk.trySetText(this.mStamina_2,
-                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data)
-                    .toString()));
+            Gtk.trySetText(
+                this.mStamina_2,
+                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergyLimit.data).toString()
+            )
+        );
         Yoact.bindYoact(() =>
-            Gtk.trySetText(this.mStamina,
-                Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString()));
+            Gtk.trySetText(this.mStamina, Math.floor(ModuleService.getModule(EnergyModuleC).viewEnergy.data).toString())
+        );
         this.freshBtn.onClicked.add(() => {
             ModuleService.getModule(EnergyModuleC).refreshStaminaLimit();
         });
         // 脱离卡死
         this.returnBtn.onClicked.add(() => {
-            if(this.inProgress) {
+            if (this.inProgress) {
                 this.closeProgress();
                 return;
             }
@@ -97,7 +100,7 @@ export default class LobbyUI extends LobbyUI_Generate {
             this._progressBar.percent = 0;
             this._cnvProgressBar.renderOpacity = 0;
             this.playProgress();
-        })
+        });
 
         this.jumpBtn.onClicked.add(() => {
             if (UIService.getUI(JumpGamePanel).isShowing) {
@@ -118,11 +121,13 @@ export default class LobbyUI extends LobbyUI_Generate {
         this.addBtn.onClicked.add(() => {
             UIService.show(SenzuBeanConfirmPanel);
         });
-        UIService.show(TowerShopUI, {isShop: true});
+        UIService.show(TowerShopUI, { isShop: true });
         UIService.hide(TowerShopUI);
 
         // MDBL Token
-        Yoact.bindYoact(() => Gtk.trySetText(this.mToken, Utils.formatEtherInteger(BigInt(this.authModuleC?.currency.count ?? 0))));
+        Yoact.bindYoact(() =>
+            Gtk.trySetText(this.mToken, Utils.formatEtherInteger(BigInt(this.authModuleC?.currency.count ?? 0)))
+        );
         this.freshTokenBtn.onClicked.add(() => this.authModuleC?.refreshCurrency());
     }
 
@@ -137,29 +142,37 @@ export default class LobbyUI extends LobbyUI_Generate {
      * 播放 Progress 动画.
      */
     public playProgress() {
-        if(this.inProgress) return;
+        if (this.inProgress) return;
         this.inProgress = true;
-        const progressTask = actions.tween(this._progressBar).setTag(progressTag).to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, {percent: 1}).call(() => {
-            this.onProgressDone();
-        });
-        actions.tween(this._cnvProgressBar).setTag(progressTag).to(100, {renderOpacity: 1}).call(() => {
-            progressTask.start();
-        }).start();
+        const progressTask = actions
+            .tween(this._progressBar)
+            .setTag(progressTag)
+            .to(GameServiceConfig.SUB_GAME_SCENE_JUMP_PROGRESS_DURATION, { percent: 1 })
+            .call(() => {
+                this.onProgressDone();
+            });
+        actions
+            .tween(this._cnvProgressBar)
+            .setTag(progressTag)
+            .to(100, { renderOpacity: 1 })
+            .call(() => {
+                progressTask.start();
+            })
+            .start();
     }
 
     onProgressDone() {
         this.inProgress = false;
         UIService.hide(JumpProgress_Generate);
         const character = Player.localPlayer.character;
-        if(!character) return;
+        if (!character) return;
         character.worldTransform.position = GlobalData.Global.resetWorldPosition.clone();
-        
     }
 
     public showTaskPanel() {
-        if(!Utils.checkLevel(GameConfig.Global.getElement(1).unlockTaskLevel)) return;
+        if (!Utils.checkLevel(GameConfig.Global.getElement(1).unlockTaskLevel)) return;
         const ui = UIService.getUI(UI_TaskMain);
-        if(ui.visible) ui.hide(); 
+        if (ui.visible) ui.hide();
         else ui.show();
     }
 
@@ -205,20 +218,25 @@ export default class LobbyUI extends LobbyUI_Generate {
                 return;
             }
             const ui = UIService.getUI(TowerShopUI);
-            if(ui.visible) ui.hideTween(); 
+            if (ui.visible) ui.hideTween();
             else UIService.show(TowerShopUI, { isShop: true });
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.I, () => {
             const ui = UIService.getUI(SettingUI);
-            if(ui.visible) ui.hide(); 
+            if (ui.visible) ui.hide();
             else ui.show();
         });
         KeyOperationManager.getInstance().onKeyUp(this, Keys.L, () => {
             this.showTaskPanel();
         });
-        KeyOperationManager.getInstance().onKeyUp(this, Keys.O, () => {            
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.O, () => {
             const ui = UIService.getUI(JumpGamePanel);
-            if(ui.visible) ui.hide(); 
+            if (ui.visible) ui.hide();
+            else ui.show();
+        });
+        KeyOperationManager.getInstance().onKeyUp(this, Keys.G, () => {
+            const ui = UIService.getUI(QuestionUI);
+            if (ui.visible) ui.hide();
             else ui.show();
         });
         this.updateCurrency();
@@ -231,29 +249,27 @@ export default class LobbyUI extends LobbyUI_Generate {
         KeyOperationManager.getInstance().unregisterKey(this, Keys.I);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.L);
         KeyOperationManager.getInstance().unregisterKey(this, Keys.O);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.G);
     }
     /**
      * 构造UI文件成功后，onStart之后
      * 对于UI的根节点的添加操作，进行调用
      * 注意：该事件可能会多次调用
      */
-    protected onAdded() {
-    }
+    protected onAdded() {}
 
     /**
      * 构造UI文件成功后，onAdded之后
      * 对于UI的根节点的移除操作，进行调用
      * 注意：该事件可能会多次调用
      */
-    protected onRemoved() {
-    }
+    protected onRemoved() {}
 
     /**
      * 构造UI文件成功后，UI对象再被销毁时调用
      * 注意：这之后UI对象已经被销毁了，需要移除所有对该文件和UI相关对象以及子对象的引用
      */
-    protected onDestroy() {
-    }
+    protected onDestroy() {}
 
     /**
      * 每一帧调用
@@ -342,5 +358,4 @@ export default class LobbyUI extends LobbyUI_Generate {
      */
     //protected onDragCancelled(InDragDropEvent:mw.PointerEvent,InDragDropOperation:mw.DragDropOperation) {
     //}
-
 }

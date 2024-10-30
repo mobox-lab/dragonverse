@@ -27,6 +27,7 @@ import { MGSTool } from "../../tool/MGSTool";
 import { SoundUtil } from "../../tool/SoundUtil";
 import TowerInfoUI_Generate from "../../ui-generate/Tower/TowerInfoUI_generate";
 import TowerTagItem_Generate from "../../ui-generate/Tower/TowerTagItem_generate";
+import KeyOperationManager from "../../controller/key-operation-manager/KeyOperationManager";
 
 export default class TowerInfoUI extends TowerInfoUI_Generate {
     private _cfg: ITowerElement;
@@ -71,11 +72,17 @@ export default class TowerInfoUI extends TowerInfoUI_Generate {
             this.icontagCanvas.addChild(item.uiObject);
             this._tagItemUIs.push(item);
         }
+        KeyOperationManager.getInstance().onKeyUp(undefined, Keys.Q, this.sellTower.bind(this));
+        KeyOperationManager.getInstance().onKeyUp(undefined, Keys.E, this.levelUpTower.bind(this));
+        KeyOperationManager.getInstance().onKeyUp(undefined, Keys.Escape, this.hideTowerInfo.bind(this));
     }
 
     protected onHide() {
         this._upgradeCount = 0;
         ModuleService.getModule(TowerModuleC).setAttackEffect(null);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.E);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Q);
+        KeyOperationManager.getInstance().unregisterKey(this, Keys.Escape);
     }
 
     public sellTower() {
