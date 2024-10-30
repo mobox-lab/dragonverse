@@ -1,4 +1,4 @@
-/** 
+/**
  * @Author       : xiaohao.li
  * @Date         : 2023-12-18 19:19:36
  * @LastEditors  : xiaohao.li
@@ -15,22 +15,21 @@ import SettleRewardItemUI_Generate from "../../ui-generate/Level/SettleRewardIte
 import SettleUI_Generate from "../../ui-generate/Level/SettleUI_generate";
 
 export type SettleData = {
-    hasWin: boolean,
-    isPerfect: boolean,
-    isFirst: boolean,
-    time: number,
-    waves: number,
-    wavesMax: number,
-    reward: { guid: string, amount: number, type: number }[]
-}
+    hasWin: boolean;
+    isPerfect: boolean;
+    isFirst: boolean;
+    time: number;
+    waves: number;
+    wavesMax: number;
+    reward: { guid: string; amount: number; type: number }[];
+};
 
 export class UISettleRewardItem extends SettleRewardItemUI_Generate {
-    setData(item: { guid: string, amount: number, type: number }) {
+    setData(item: { guid: string; amount: number; type: number }) {
         if (item.type == 2) {
             Utils.setImageByAssetGuid(this.mRewardItem, item.guid);
             this.mAmount.text = `*${item.amount.toFixed(0)}`;
-        }
-        else {
+        } else {
             this.mRewardItem.imageGuid = item.guid;
             this.mAmount.text = `*${item.amount.toFixed(0)}`;
         }
@@ -50,20 +49,20 @@ export class UISettle extends SettleUI_Generate {
 
     onShow(settleData: SettleData) {
         this.showTween();
-        let result = settleData.hasWin ? GameConfig.Language.getElement("Text_Win").Value : GameConfig.Language.getElement("Text_Defeat").Value
+        let result = settleData.hasWin
+            ? GameConfig.Language.getElement("Text_Win").Value
+            : GameConfig.Language.getElement("Text_Defeat").Value;
         if (settleData.hasWin) {
             if (settleData.isPerfect) {
                 result = GameConfig.Language.getElement("Text_Perfect").Value + result;
                 this.showSettleImage(0);
-            }
-            else {
+            } else {
                 this.showSettleImage(1);
             }
             if (settleData.isFirst) {
                 result = GameConfig.Language.getElement("Text_First").Value + result;
             }
-        }
-        else {
+        } else {
             this.showSettleImage(2);
         }
         this.mResultTxt.text = result;
@@ -72,7 +71,9 @@ export class UISettle extends SettleUI_Generate {
         let minStr = min < 10 ? "0" + min : min.toString();
         let secStr = sec < 10 ? "0" + sec : sec.toString();
         this.mTimeTaken.text = GameConfig.Language.getElement("Text_GameTime").Value + `${minStr}:${secStr}`;
-        this.mWaves.text = GameConfig.Language.getElement("Text_FinishWave").Value + `${settleData.waves}/${settleData.wavesMax}`;
+        this.mWaves.text =
+            GameConfig.Language.getElement("Text_FinishWave").Value +
+            `${settleData.waves}/${settleData.wavesMax === 9999 ? "∞" : settleData.wavesMax}`;
         let reward = settleData.reward;
         for (let i = 0; i < reward.length; i++) {
             let item = this._rewardItemList[i];
@@ -97,7 +98,7 @@ export class UISettle extends SettleUI_Generate {
     hideTween() {
         TweenCommon.popUpHide(this.rootCanvas, () => {
             mw.UIService.hideUI(this);
-        })
+        });
     }
 
     showSettleImage(index: number) {
@@ -107,15 +108,13 @@ export class UISettle extends SettleUI_Generate {
             this.canvas_win.visibility = SlateVisibility.Collapsed;
             this.canvas_lose.visibility = SlateVisibility.Collapsed;
             this.mResultTxt.setFontColorByHex("#BAB8EF");
-        }
-        else if (index == 1) {
+        } else if (index == 1) {
             // 胜利
             this.canvas_TotalWin.visibility = SlateVisibility.Collapsed;
             this.canvas_win.visibility = SlateVisibility.Visible;
             this.canvas_lose.visibility = SlateVisibility.Collapsed;
             this.mResultTxt.setFontColorByHex("#F8C000");
-        }
-        else {
+        } else {
             // 失败
             this.canvas_TotalWin.visibility = SlateVisibility.Collapsed;
             this.canvas_win.visibility = SlateVisibility.Collapsed;

@@ -269,6 +269,24 @@ export default class StageTrigger extends Script {
                 Log4Ts.log(StageTrigger, `startGame playerID:${playerID}`);
                 if (Utils.isInfiniteMode(groupIndex)) {
                     // 无尽模式直接开始
+                    if (
+                        !ModuleService.getModule(EnergyModuleS).isAfford(
+                            playerID,
+                            GameServiceConfig.STAMINA_COST_START_INFINITE
+                        )
+                    ) {
+                        Log4Ts.log(StageTrigger, `Stamina is not enough. playerID:${playerID}`);
+                        mw.Event.dispatchToClient(
+                            Player.getPlayer(playerID),
+                            GlobalEventName.ServerTipsEventName,
+                            GameConfig.Language.getElement("Text_insufficientStamina").Value
+                        );
+                        return false;
+                    }
+                    ModuleService.getModule(EnergyModuleS).consume(
+                        playerID,
+                        GameServiceConfig.STAMINA_COST_START_INFINITE
+                    );
                     GameManager.startGame(ids, this.stageCfgId);
                     return true;
                 } else {
