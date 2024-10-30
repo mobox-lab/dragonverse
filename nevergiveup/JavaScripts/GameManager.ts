@@ -139,7 +139,9 @@ export namespace GameManager {
                 const allExistGroupIndex = [];
                 for (let i = 0; i < allPlayers.length; i++) {
                     const stage = stages[i];
-                    allExistGroupIndex.push(stage.stageCfg.groupIndex);
+                    if (stage && stage.stageCfg) {
+                        allExistGroupIndex.push(stage.stageCfg.groupIndex);
+                    }
                 }
                 for (let j = 0; j < allPlayers.length; j++) {
                     const allStages = GameConfig.Stage.getAllElement();
@@ -149,7 +151,7 @@ export namespace GameManager {
                             // do nothing
                         } else {
                             const stageState = {
-                                groupIndex: this.stageCfg.groupIndex,
+                                groupIndex: stageItem.groupIndex,
                             };
                             Event.dispatchToClient(
                                 allPlayers[j],
@@ -159,7 +161,7 @@ export namespace GameManager {
                         }
                     }
                 }
-            }, 1000 * 60 * 10);
+            }, 1000 * 60);
         } else {
             // RankManager.init();
             UIService.show(TowerUI);
