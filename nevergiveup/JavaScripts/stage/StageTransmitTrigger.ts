@@ -89,18 +89,18 @@ export default class StageTransmitTrigger extends Script {
     }
 
     onProgressDone() {
-        // UIService.show(CutsceneUI, () => {
-        const character = Player.localPlayer.character;
-        character.worldTransform = new Transform(
-            this.location,
-            this.isRefreshObjectRotation ? this.endRotation : character.worldTransform.rotation,
-            character.worldTransform.scale,
-        );
-        if (this.isRefreshCameraRotation) this._nolan.lookToward(this.endRotation.rotateVector(Vector.forward));
-        // });
-        // TimeUtil.delaySecond(GlobalData.Anim.stageCrossAnimSeconds).then(() => {
-        //     UIService.getUI(CutsceneUI).hideCanvas();
-        // });
-    }
+        UIService.show(CutsceneUI, () => {
+            const character = Player.localPlayer.character;
+            character.worldTransform = new Transform(
+                this.location,
+                this.isRefreshObjectRotation ? this.endRotation : character.worldTransform.rotation,
+                character.worldTransform.scale,
+            );
+            if (this.isRefreshCameraRotation) this._nolan.lookToward(this.endRotation.rotateVector(Vector.forward));
 
+        });
+        TimeUtil.delaySecond(GlobalData.Anim.stageCrossAnimSeconds).then(() => {
+            UIService.getUI(CutsceneUI).hideCanvas();
+        });
+    }
 }
