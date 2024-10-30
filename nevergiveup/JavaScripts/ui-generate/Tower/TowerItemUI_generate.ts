@@ -8,7 +8,21 @@
 
 @UIBind('UI/Tower/TowerItemUI.ui')
 export default class TowerItemUI_Generate extends UIScript {
-		private itemBtn_Internal: mw.Button
+		private hoverImg_Internal: mw.Image
+	public get hoverImg(): mw.Image {
+		if(!this.hoverImg_Internal&&this.uiWidgetBase) {
+			this.hoverImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/hoverImg') as mw.Image
+		}
+		return this.hoverImg_Internal
+	}
+	private hoverNameTxt_Internal: mw.TextBlock
+	public get hoverNameTxt(): mw.TextBlock {
+		if(!this.hoverNameTxt_Internal&&this.uiWidgetBase) {
+			this.hoverNameTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/hoverNameTxt') as mw.TextBlock
+		}
+		return this.hoverNameTxt_Internal
+	}
+	private itemBtn_Internal: mw.Button
 	public get itemBtn(): mw.Button {
 		if(!this.itemBtn_Internal&&this.uiWidgetBase) {
 			this.itemBtn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/itemBtn') as mw.Button
@@ -173,6 +187,9 @@ export default class TowerItemUI_Generate extends UIScript {
 	   
 	   //文本多语言
 	   
+	   this.initLanguage(this.hoverNameTxt)
+	   
+	
 	   this.initLanguage(this.nameTxt)
 	   
 	
