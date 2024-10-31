@@ -43,6 +43,12 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 				UIService.getUI(TowerShopUI).show({ isShop: false, cfgId: this.cfg?.id  });
 			}
 		})
+		this.itemBtn.onHovered.add(() => {
+			Gtk.trySetVisibility(this.can_hover, this.hoverNameTxt.text ? SlateVisibility.Visible : SlateVisibility.Collapsed);
+		})
+		this.itemBtn.onUnhovered.add(() => {
+			Gtk.trySetVisibility(this.can_hover, SlateVisibility.Collapsed);
+		})
 	}
 
 	/**
@@ -86,7 +92,9 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 				 const { value } = GlobalData.Shop.getTowerBuffTextItem(this.cfg, 0, 0) ?? {};
 				this.txt_attack.text = value;
 			} else this.txt_attack.text = Utils.formatNumber(this.cfg.attackDamage[0]);
-	
+
+			this.hoverNameTxt.text = sInfo?.strategyTitle ?? "";
+
 			this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[0];
 			if(this.cfg.adap === 3) this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[1];
 			if(this.cfg.adap === 4) this.fightImg.imageGuid = GlobalData.Shop.shopItemFightIconGuid[2];	

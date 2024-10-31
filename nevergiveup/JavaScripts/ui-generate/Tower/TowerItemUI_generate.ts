@@ -8,17 +8,24 @@
 
 @UIBind('UI/Tower/TowerItemUI.ui')
 export default class TowerItemUI_Generate extends UIScript {
-		private hoverImg_Internal: mw.Image
+		private can_hover_Internal: mw.Canvas
+	public get can_hover(): mw.Canvas {
+		if(!this.can_hover_Internal&&this.uiWidgetBase) {
+			this.can_hover_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_hover') as mw.Canvas
+		}
+		return this.can_hover_Internal
+	}
+	private hoverImg_Internal: mw.Image
 	public get hoverImg(): mw.Image {
 		if(!this.hoverImg_Internal&&this.uiWidgetBase) {
-			this.hoverImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/hoverImg') as mw.Image
+			this.hoverImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_hover/hoverImg') as mw.Image
 		}
 		return this.hoverImg_Internal
 	}
 	private hoverNameTxt_Internal: mw.TextBlock
 	public get hoverNameTxt(): mw.TextBlock {
 		if(!this.hoverNameTxt_Internal&&this.uiWidgetBase) {
-			this.hoverNameTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/hoverNameTxt') as mw.TextBlock
+			this.hoverNameTxt_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/Canvas/can_hover/hoverNameTxt') as mw.TextBlock
 		}
 		return this.hoverNameTxt_Internal
 	}
