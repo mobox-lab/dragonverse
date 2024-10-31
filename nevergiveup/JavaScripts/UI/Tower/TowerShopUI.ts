@@ -74,11 +74,11 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 	protected onStart() {
 		//设置能否每帧触发onUpdate
 		this.canUpdate = false;
-		this.layer = UILayerTop;
+		this.layer = UILayerMiddle;
 		this._selectLevel = 0;
         this.closeBtn.onClicked.add(() => this.hideTween());
 		this.infoBtn.onClicked.add(() => {
-			ModuleService.getModule(CardModuleC).btnExecute(this._cfgID, this._state);
+			ModuleService.getModule(CardModuleC).btnExecute(this._cfgID, this._state, this.isShop);
 		}); 
 		for (let i = 0; i < 4; i++) {
 			let item = UIService.create(TowerTagItem_Generate);
@@ -244,10 +244,10 @@ export default class TowerShopUI extends TowerShopUI_Generate {
 				this.infoBtn.text = GameConfig.Language.getElement("Text_BuyCard").Value;
 				break;
 			case CardState.Equip:
-				this.infoBtn.text = GameConfig.Language.getElement("Text_UnEquipCard").Value;
+				this.infoBtn.text = this.isShop ? GameConfig.Language.Text_BtnTowerReturn.Value : GameConfig.Language.getElement("Text_UnEquipCard").Value;
 				break;
 			case CardState.Unlock:
-				this.infoBtn.text = GameConfig.Language.getElement("Text_EquipCard").Value;
+				this.infoBtn.text = this.isShop ? GameConfig.Language.Text_BtnTowerReturn.Value : GameConfig.Language.getElement("Text_EquipCard").Value;
 				break;
 			default: break;
 		}

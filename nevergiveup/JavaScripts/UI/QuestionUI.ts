@@ -4,11 +4,15 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
+import { CardState } from "../Modules/CardModule/CardModuleC";
 import { TweenCommon } from "../TweenCommon";
+import { GameConfig } from "../config/GameConfig";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
 import QuestionUI_Generate from "../ui-generate/HUD/QuestionUI_generate";
 
 export default class QuestionUI extends QuestionUI_Generate {
+    public onConfirm: () => void | undefined = undefined;
+    public onCancel: () => void | undefined = undefined;
     /**
      * 构造UI文件成功后，在合适的时机最先初始化一次
      */
@@ -17,17 +21,22 @@ export default class QuestionUI extends QuestionUI_Generate {
         this.canUpdate = false;
         this.layer = UILayerMiddle;
         this.closeBtn.onClicked.add(() => {
+            this.onCancel?.();
             TweenCommon.popUpHide(this.rootCanvas, () => {
                 UIService.hideUI(this);
             });
         });
         this.btn_UnConfirm_Use.onClicked.add(() => {
+            this.onCancel?.();
             TweenCommon.popUpHide(this.rootCanvas, () => {
                 UIService.hideUI(this);
             });
         });
         this.btn_Confirm_Use.onClicked.add(() => {
-            StringUtil.clipboardCopy("https://dragonverseneo.mobox.app/");
+            this.onConfirm?.();
+            TweenCommon.popUpHide(this.rootCanvas, () => {
+                UIService.hideUI(this);
+            });
         });
     }
 
@@ -62,10 +71,17 @@ export default class QuestionUI extends QuestionUI_Generate {
     /**
      * 设置显示时触发
      */
-    protected onShow(...params: any[]) {
+    protected onShow(options?: {text?: string, onConfirm: () => void, onCancel: () => void}) {
+        const {text, onConfirm, onCancel} = options ?? {}; 
+        this.onConfirm = onConfirm;
+        this.onCancel = onCancel;
+        this.text_Recovery.text = text ?? GameConfig.Language.QuestionText_1.Value;
+        this.text_Confirm_Use.text = onConfirm ? GameConfig.Language.Return_text_2.Value : GameConfig.Language.QuestionText_2.Value;
+        this.text_UnConfirm_Use.text = onConfirm ? GameConfig.Language.Return_text_3.Value : GameConfig.Language.QuestionText_3.Value;
         TweenCommon.popUpShow(this.rootCanvas);
         KeyOperationManager.getInstance().onKeyUp(this, Keys.Escape, () => {
             TweenCommon.popUpHide(this.rootCanvas, () => {
+                this.onCancel?.();
                 UIService.hideUI(this);
             });
         });

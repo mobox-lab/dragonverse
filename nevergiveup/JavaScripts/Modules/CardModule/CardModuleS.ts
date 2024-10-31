@@ -21,6 +21,37 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
     }
 
     /**
+     * 卖卡牌
+     * @param cardID 卡牌ID
+     */
+    public net_sellCard(cardID: number) {
+        const userId = this.currentPlayer?.userId ?? "";
+        const data = this.currentData;
+        const player = this.currentPlayer;
+        console.log("#debug server net_sellCard:", cardID);
+        try {
+            if (!data.unlockCards.includes(cardID))
+                return false; // 未解锁卡牌不能卖
+            if (data.equipCards.includes(cardID)) data.equipCards = data.equipCards.filter((id) => id !== cardID);
+            // 给金币
+            const config = GameConfig.Tower.getElement(cardID);
+            const sellPrice = (config?.shopPrice ?? 0) / 2;
+            console.log("#debug server net_sellCard sellPrice:", sellPrice);
+            const res = ModuleService.getModule(PlayerModuleS).changeGold(player, sellPrice);
+            if (res) {
+                data.unlockCards = data.unlockCards.filter((id) => id !== cardID); // 从解锁卡牌中移除
+                console.log("#debug server net_sellCard res unlockCards:", res, data.unlockCards);
+                data.save(true);
+                return true;
+            }
+            return false;
+        } catch (e) {
+            Utils.logP12Info("A_Error", "net_sellCard error" + " userId:" + userId + " error:" + e);
+            return false;
+        }
+    }
+
+    /**
      * 购买卡牌
      * @param cardID 卡牌id
      */

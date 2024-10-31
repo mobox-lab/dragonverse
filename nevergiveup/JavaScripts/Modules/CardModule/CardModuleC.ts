@@ -8,9 +8,11 @@
  */
 import { TweenCommon } from "../../TweenCommon";
 import LobbyUI from "../../UI/LobbyUI";
+import QuestionUI from "../../UI/QuestionUI";
 import { TipsManager } from "../../UI/Tips/CommonTipsManagerUI";
 import TowerShopUI from "../../UI/Tower/TowerShopUI";
 import TowerUI, { TowerConfigConstants } from "../../UI/Tower/TowerUI";
+import Utils from "../../Utils";
 import { GameConfig } from "../../config/GameConfig";
 import { MGSTool } from "../../tool/MGSTool";
 import { SoundUtil } from "../../tool/SoundUtil";
@@ -26,6 +28,7 @@ export enum CardState {
 
 export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
     private _canBuyCard: boolean = true;
+    private _canSellCard: boolean = true;
 
     public get unlockCards(): number[] {
         return this.data.unlockCards;
@@ -48,7 +51,15 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
      */
     protected onUpdate(dt: number): void {}
 
-    public btnExecute(cardID: number, state: CardState) {
+    public btnExecute(cardID: number, state: CardState, isShop: boolean) {
+        if(isShop && [CardState.Unlock, CardState.Equip].includes(state)) {
+            const text = Utils.Format(GameConfig.Language.Text_TowerReturn.Value, Math.floor((GameConfig.Tower.getElement(cardID)?.shopPrice ?? 0) / 2));
+            UIService.show(QuestionUI, {text, onConfirm: () => {
+                if(state === CardState.Equip) this.equipCard(cardID, false); // 先卸载
+                this.sellCard(cardID);
+            }});
+            return;
+        }
         switch (state) {
             case CardState.Unlock:
                 SoundUtil.PlaySoundById(2002);
@@ -65,6 +76,8 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
             default:
                 break;
         }
+        
+        
     }
 
     /**
@@ -102,6 +115,33 @@ export default class CardModuleC extends ModuleC<CardModuleS, CardModuleData> {
 
     public net_equipCard(cardID: number, isEquip: boolean) {
         this.equipCard(cardID, isEquip);
+    }
+
+    /**
+     * 卖卡牌
+     * @param cardID 卡牌ID
+     * @returns
+     */
+    private async sellCard(cardID: number) {
+        if (!this._canSellCard) {
+            TipsManager.showTips(GameConfig.Language.Text_TooFase.Value);
+            return;
+        }
+        console.log("#debug sellCard:", cardID);
+        if (this.data.unlockCards.includes(cardID)) {
+            this._canSellCard = false;
+            try {
+                let flag = await this.server.net_sellCard(cardID);
+                TipsManager.showTips(
+                    flag ? GameConfig.Language.Text_TowerReturn_1.Value : GameConfig.Language.Text_TowerReturn_2.Value
+                ); 
+                if(flag) UIService.getUI(TowerShopUI).refreshItemsState();
+            } catch (error) {
+                console.error(`hsf----net_buyCard:${error}`);
+            } finally {
+                this._canSellCard = true;
+            }
+        } else TipsManager.showTips(GameConfig.Language.Text_TowerReturn_2.Value);
     }
 
     /**
