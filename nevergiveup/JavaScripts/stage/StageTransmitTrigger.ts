@@ -3,6 +3,7 @@ import CutsceneUI from "../UI/CutsceneUI";
 import { GlobalData } from "../const/GlobalData";
 import GameServiceConfig from "../const/GameServiceConfig";
 import JumpProgress_Generate from "../ui-generate/JumpProgress_generate";
+import LogoAnimUI from "../UI/LogoAnimUI";
 
 const progressTag = "StageProgress";
 
@@ -89,7 +90,8 @@ export default class StageTransmitTrigger extends Script {
     }
 
     onProgressDone() {
-        UIService.show(CutsceneUI, () => {
+        UIService.show(LogoAnimUI, {framesPerSecond: 6})
+        // UIService.show(CutsceneUI, () => {
             const character = Player.localPlayer.character;
             character.worldTransform = new Transform(
                 this.location,
@@ -98,7 +100,7 @@ export default class StageTransmitTrigger extends Script {
             );
             if (this.isRefreshCameraRotation) this._nolan.lookToward(this.endRotation.rotateVector(Vector.forward));
 
-        });
+        // });
         TimeUtil.delaySecond(GlobalData.Anim.stageCrossAnimSeconds).then(() => {
             UIService.getUI(CutsceneUI).hideCanvas();
         });

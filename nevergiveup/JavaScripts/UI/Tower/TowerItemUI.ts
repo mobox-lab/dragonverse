@@ -49,7 +49,6 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 		this.itemBtn.onUnhovered.add(() => {
 			Gtk.trySetVisibility(this.can_hover, SlateVisibility.Collapsed);
 		})
-		this.hoverNameTxt.text = ''
 	}
 
 	/**
@@ -81,6 +80,7 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 		if (!this.cfg) {
 			Gtk.trySetVisibility(this.mCanvas_add, SlateVisibility.Visible);
 			Gtk.trySetVisibility(this.mContainer_tower, SlateVisibility.Collapsed);
+			this.hoverNameTxt.text = '';
 		} else {
 			Gtk.trySetVisibility(this.mCanvas_add, SlateVisibility.Collapsed);
 			Gtk.trySetVisibility(this.mContainer_tower, SlateVisibility.Visible);

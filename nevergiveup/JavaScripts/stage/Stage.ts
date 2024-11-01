@@ -50,7 +50,7 @@ import { SettleData, UISettle } from "./ui/UISettle";
 import { AuthModuleS, TDStageStatisticObj, UpdateTDRankDataNeedFill } from "../Modules/auth/AuthModule";
 import { StatisticModuleS } from "../Modules/statistic/StatisticModule";
 import { WaveModuleS } from "../Modules/waveModule/WaveModuleS";
-import CutsceneUI from "../UI/CutsceneUI";
+import LogoAnimUI from "../UI/LogoAnimUI";
 
 type DeathData = {
     id: number;
@@ -870,7 +870,8 @@ export class StageC {
             });
         Enemy.count = 0;
 
-        UIService.show(CutsceneUI, () => {
+        UIService.show(LogoAnimUI, {framesPerSecond: 6})
+        // UIService.show(CutsceneUI, () => {
             Player.asyncGetLocalPlayer().then((player: Player) => {
                 GameManager.backToLobby();
             });
@@ -879,7 +880,7 @@ export class StageC {
                 this.stage = go;
                 MapManager.stageCfgId = this.stageCfgId;
             });
-        });
+        // });
 
         this.registerListeners();
         this.playBGM();
@@ -940,7 +941,7 @@ export class StageC {
                 }
             });
             this.hasLoaded = true;
-            UIService.getUI(CutsceneUI).hideCanvas();
+            // UIService.getUI(CutsceneUI).hideCanvas();
             UIService.getUI(TowerUI).setStageTowerUI(true);
         });
 

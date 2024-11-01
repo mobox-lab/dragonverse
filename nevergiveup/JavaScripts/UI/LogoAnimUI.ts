@@ -49,9 +49,12 @@ export default class LogoAnimUI extends logo_anim_Generate {
      * 设置显示时触发
      * @param callback 回调
      */
-    protected onShow(callback?: () => void) {
+    protected onShow(opts:{callback?: () => void, framesPerSecond?: number}) {
+        const { callback, framesPerSecond } = opts ?? {};
         this._callback = callback;
         this.maskImg.renderOpacity = 0;
+        this.resetAnim();
+        this.flip_anim1.framesPerSecond = framesPerSecond ?? 3;
         new mw.Tween({percent: 0.01}).to({percent: 1}, GlobalData.Anim.logoCrossAnimSeconds * 1000).onUpdate((obj) => {
             this.maskImg.renderOpacity = obj.percent;
         }).easing(TweenUtil.Easing.Quintic.Out).onComplete(() => {
