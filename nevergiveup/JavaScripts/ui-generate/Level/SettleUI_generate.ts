@@ -190,6 +190,13 @@ export default class SettleUI_Generate extends UIScript {
 		}
 		return this.mRewardContainer_Internal
 	}
+	private mTips_Internal: mw.TextBlock
+	public get mTips(): mw.TextBlock {
+		if(!this.mTips_Internal&&this.uiWidgetBase) {
+			this.mTips_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mCanvas_ItemDetails/mTips') as mw.TextBlock
+		}
+		return this.mTips_Internal
+	}
 	private mCanvas_InfiniteDetails_Internal: mw.Canvas
 	public get mCanvas_InfiniteDetails(): mw.Canvas {
 		if(!this.mCanvas_InfiniteDetails_Internal&&this.uiWidgetBase) {
@@ -273,6 +280,9 @@ export default class SettleUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.mRewards)
+	   
+	
+	   this.initLanguage(this.mTips)
 	   
 	
 	   this.initLanguage(this.mInfiniteWaves)
