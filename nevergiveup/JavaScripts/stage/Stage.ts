@@ -220,7 +220,8 @@ export class StageS {
                             this.settleData.reward.map((reward) => reward.guid),
                             this.settleData.reward.map((reward) => reward.amount),
                             this.settleData.reward.map((reward) => reward.type),
-                            this._hp
+                            this._hp,
+                            this.settleData.infinite
                         );
                     });
                 }
@@ -559,6 +560,20 @@ export class StageS {
     updateSettleData(player: Player) {
         this.settleData.time = this.time;
         this.settleData.waves = this.settleData.hasWin ? this.currentWave : this.currentWave - 1;
+        const state = this.endState;
+        const endWaveTime = this.endWaveTime;
+        const currentWave = ModuleService.getModule(WaveModuleS).getCurrentWave(this.id);
+
+        let time = currentWave?.waveTime || 30;
+        if (state === EStageState.Game) {
+            time = endWaveTime;
+        } else if (state === EStageState.Wait) {
+            time = time + endWaveTime;
+        }
+        this.settleData.infinite = {
+            wave: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
+            time: time,
+        };
         const [, length] = WaveUtil.fitOldConfig(this.stageCfgId);
         this.settleData.wavesMax = length;
         const stageConfig = StageUtil.getStageCfgById(this.stageCfgId);
@@ -682,15 +697,7 @@ export class StageS {
             // const allWaves = ModuleService.getModule(WaveModuleS).getAllPassWaves(this.id);
             // const allCount = allWaves[maxWave].enemies.reduce((sum, item) => sum + item.count, 0);
             // const percent = maxWaveCount / allCount;
-            const currentWave = ModuleService.getModule(WaveModuleS).getCurrentWave(this.id);
-            const state = this.endState;
-            const endWaveTime = this.endWaveTime;
-            let time = currentWave?.waveTime || 30;
-            if (state === EStageState.Game) {
-                time = endWaveTime;
-            } else if (state === EStageState.Wait) {
-                time = time + endWaveTime;
-            }
+
             TeleportService.asyncGetPlayerRoomInfo(player.userId).then((roomInfo) => {
                 // 上报数据
                 const info: TDStageStatisticObj = {
@@ -1017,8 +1024,19 @@ export class StageC {
                     }
                 }
             } else if (this.state == EStageState.Settle) {
-                let [hasWin, isPerfect, isFirst, time, waves, wavesMax, rewardGuids, rewardAmounts, rewardTypes, hp] =
-                    param;
+                let [
+                    hasWin,
+                    isPerfect,
+                    isFirst,
+                    time,
+                    waves,
+                    wavesMax,
+                    rewardGuids,
+                    rewardAmounts,
+                    rewardTypes,
+                    hp,
+                    infinite,
+                ] = param;
                 GuideDialog.hide();
                 ModuleService.getModule(PlayerModuleC).onStageCompleted(isPerfect, this.stageWorldIndex);
                 if (hasWin) {
@@ -1043,6 +1061,7 @@ export class StageC {
                     reward: rewardGuids.map((guid, index) => {
                         return { guid: guid, amount: rewardAmounts[index], type: rewardTypes[index] };
                     }),
+                    infinite,
                 };
                 TimeUtil.delayExecute(() => {
                     let rewardGold = settleData.reward.find((v) => v.type == 1);
