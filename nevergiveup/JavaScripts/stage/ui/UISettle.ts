@@ -6,6 +6,7 @@
  * @FilePath     : \nevergiveup\JavaScripts\stage\ui\UISettle.ts
  * @Description  : 修改描述
  */
+import Gtk from "gtoolkit";
 import { GameManager } from "../../GameManager";
 import { TweenCommon } from "../../TweenCommon";
 import Utils from "../../Utils";
@@ -58,13 +59,16 @@ export class UISettle extends SettleUI_Generate {
             : GameConfig.Language.getElement("Text_Defeat").Value;
         if (settleData.hasWin) {
             if (settleData.isPerfect) {
-                result = GameConfig.Language.getElement("Text_Perfect").Value + result;
+                // result = GameConfig.Language.getElement("Text_Perfect").Value + result;
                 this.showSettleImage(0);
+                this.rewardImg.imageGuid = "457346";
             } else {
                 this.showSettleImage(1);
+                this.rewardImg.imageGuid = "453763";
             }
             if (settleData.isFirst) {
-                result = GameConfig.Language.getElement("Text_First").Value + result;
+                // result = GameConfig.Language.getElement("Text_First").Value + result;
+                this.rewardImg.imageGuid = "457347";
             }
         } else {
             this.showSettleImage(2);
@@ -124,19 +128,21 @@ export class UISettle extends SettleUI_Generate {
             this.canvas_TotalWin.visibility = SlateVisibility.Visible;
             this.canvas_win.visibility = SlateVisibility.Collapsed;
             this.canvas_lose.visibility = SlateVisibility.Collapsed;
-            this.mResultTxt.setFontColorByHex("#BAB8EF");
+            this.mTips.visibility = SlateVisibility.Visible;
+            Gtk.trySetText(this.mTips, GameConfig.Language.Text_Complete_2.Value);
         } else if (index == 1) {
             // 胜利
             this.canvas_TotalWin.visibility = SlateVisibility.Collapsed;
             this.canvas_win.visibility = SlateVisibility.Visible;
             this.canvas_lose.visibility = SlateVisibility.Collapsed;
-            this.mResultTxt.setFontColorByHex("#F8C000");
+            this.mTips.visibility = SlateVisibility.Visible;
+            Gtk.trySetText(this.mTips, GameConfig.Language.Text_Complete_1.Value);
         } else {
             // 失败
             this.canvas_TotalWin.visibility = SlateVisibility.Collapsed;
             this.canvas_win.visibility = SlateVisibility.Collapsed;
             this.canvas_lose.visibility = SlateVisibility.Visible;
-            this.mResultTxt.setFontColorByHex("#B8B7B8");
+            this.mTips.visibility = SlateVisibility.Collapsed;
         }
     }
 }
