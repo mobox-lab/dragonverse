@@ -78,7 +78,7 @@ export class UISettle extends SettleUI_Generate {
         let secStr = sec < 10 ? "0" + sec : sec.toString();
         if (isInfinity) {
             this.mInfiniteWaves.text =
-                GameConfig.Language.getElement("Text_FinishWave").Value +
+                GameConfig.Language.getElement("Text_InfiniteWave").Value +
                 `${settleData?.infinite?.wave}` +
                 `(${settleData?.infinite?.time}s)`;
             this.mCanvas_ItemDetails.visibility = SlateVisibility.Hidden;
