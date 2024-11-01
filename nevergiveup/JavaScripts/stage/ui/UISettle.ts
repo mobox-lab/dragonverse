@@ -22,6 +22,10 @@ export type SettleData = {
     waves: number;
     wavesMax: number;
     reward: { guid: string; amount: number; type: number }[];
+    infinite?: {
+        wave: number;
+        time: number;
+    };
 };
 
 export class UISettleRewardItem extends SettleRewardItemUI_Generate {
@@ -65,15 +69,28 @@ export class UISettle extends SettleUI_Generate {
         } else {
             this.showSettleImage(2);
         }
+        const isInfinity = settleData.wavesMax === 9999;
+
         this.mResultTxt.text = result;
         let min = Math.floor(settleData.time / 60);
         let sec = Math.floor(settleData.time % 60);
         let minStr = min < 10 ? "0" + min : min.toString();
         let secStr = sec < 10 ? "0" + sec : sec.toString();
-        this.mTimeTaken.text = GameConfig.Language.getElement("Text_GameTime").Value + `${minStr}:${secStr}`;
-        this.mWaves.text =
-            GameConfig.Language.getElement("Text_FinishWave").Value +
-            `${settleData.waves}/${settleData.wavesMax === 9999 ? "∞" : settleData.wavesMax}`;
+        if (isInfinity) {
+            this.mInfiniteWaves.text =
+                GameConfig.Language.getElement("Text_FinishWave").Value +
+                `${settleData?.infinite?.wave}` +
+                `(${settleData?.infinite?.time}s)`;
+            this.mCanvas_ItemDetails.visibility = SlateVisibility.Hidden;
+            this.mCanvas_InfiniteDetails.visibility = SlateVisibility.Visible;
+        } else {
+            this.mTimeTaken.text = GameConfig.Language.getElement("Text_GameTime").Value + `${minStr}:${secStr}`;
+            this.mWaves.text =
+                GameConfig.Language.getElement("Text_FinishWave").Value +
+                `${settleData.waves}/${isInfinity ? "∞" : settleData.wavesMax}`;
+            this.mCanvas_ItemDetails.visibility = SlateVisibility.Visible;
+            this.mCanvas_InfiniteDetails.visibility = SlateVisibility.Hidden;
+        }
         let reward = settleData.reward;
         for (let i = 0; i < reward.length; i++) {
             let item = this._rewardItemList[i];
