@@ -49,6 +49,7 @@ export default class TowerItemUI extends TowerItemUI_Generate {
 		this.itemBtn.onUnhovered.add(() => {
 			Gtk.trySetVisibility(this.can_hover, SlateVisibility.Collapsed);
 		})
+		this.hoverNameTxt.text = ''
 	}
 
 	/**
