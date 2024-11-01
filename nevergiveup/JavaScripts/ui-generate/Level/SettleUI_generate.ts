@@ -190,6 +190,20 @@ export default class SettleUI_Generate extends UIScript {
 		}
 		return this.mRewardContainer_Internal
 	}
+	private mCanvas_InfiniteDetails_Internal: mw.Canvas
+	public get mCanvas_InfiniteDetails(): mw.Canvas {
+		if(!this.mCanvas_InfiniteDetails_Internal&&this.uiWidgetBase) {
+			this.mCanvas_InfiniteDetails_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mCanvas_InfiniteDetails') as mw.Canvas
+		}
+		return this.mCanvas_InfiniteDetails_Internal
+	}
+	private mInfiniteWaves_Internal: mw.TextBlock
+	public get mInfiniteWaves(): mw.TextBlock {
+		if(!this.mInfiniteWaves_Internal&&this.uiWidgetBase) {
+			this.mInfiniteWaves_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mCanvas_InfiniteDetails/mInfiniteWaves') as mw.TextBlock
+		}
+		return this.mInfiniteWaves_Internal
+	}
 	private mCanvas_BtnBottom_Internal: mw.Canvas
 	public get mCanvas_BtnBottom(): mw.Canvas {
 		if(!this.mCanvas_BtnBottom_Internal&&this.uiWidgetBase) {
@@ -259,6 +273,9 @@ export default class SettleUI_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.mRewards)
+	   
+	
+	   this.initLanguage(this.mInfiniteWaves)
 	   
 	
 	   this.initLanguage(this.mTxt_Btn_Mint)
