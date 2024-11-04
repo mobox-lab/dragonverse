@@ -57,11 +57,18 @@ export class UISettle extends SettleUI_Generate {
         let result = settleData.hasWin
             ? GameConfig.Language.getElement("Text_Win").Value
             : GameConfig.Language.getElement("Text_Defeat").Value;
+        this.rewardImg.size = new Vector2(164, 24);
         if (settleData.hasWin) {
+            this.mResultTxt.setFontColorByHex("#FFCB1C");
+            this.mResultTxt.setOutlineColorByHex("#632508");
+            this.mWaves.setOutlineColorByHex("#412013");
+            this.mTimeTaken.setOutlineColorByHex("#412013");
+            this.rewardImg.size = new Vector2(217, 29);
             if (settleData.isPerfect) {
                 // result = GameConfig.Language.getElement("Text_Perfect").Value + result;
                 this.showSettleImage(0);
                 this.rewardImg.imageGuid = "457346";
+                if(settleData.isFirst) this.rewardImg.size = new Vector2(286, 29);
             } else {
                 this.showSettleImage(1);
                 this.rewardImg.imageGuid = "453763";
@@ -71,6 +78,10 @@ export class UISettle extends SettleUI_Generate {
                 this.rewardImg.imageGuid = "457347";
             }
         } else {
+            this.mResultTxt.setFontColorByHex("#FFFFFF");
+            this.mResultTxt.setOutlineColorByHex("#232B39");
+            this.mWaves.setOutlineColorByHex("#232B39");
+            this.mTimeTaken.setOutlineColorByHex("#232B39");
             this.showSettleImage(2);
         }
         const isInfinity = settleData.wavesMax === 9999;
