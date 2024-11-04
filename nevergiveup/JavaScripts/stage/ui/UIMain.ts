@@ -30,7 +30,7 @@ import MonsterSkillsItem_Generate from "../../ui-generate/HUD/MonsterSkillsItem_
 import { StageMonsterSkillType } from "../../const/enum";
 
 export class UIMain extends MainUI_Generate {
-    public maxSpeed: number = 1.5;
+    public maxSpeed: number = 2;
     public curSpeed: number = 1;
     public playing: boolean = true;
     public infoPanelExpand: boolean = true;
