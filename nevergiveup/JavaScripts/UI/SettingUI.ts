@@ -6,7 +6,7 @@
 
 import { TweenCommon } from "../TweenCommon";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
-import { VoiceEvent } from "../tool/SoundUtil";
+import { VoiceEvent } from '../tool/SoundUtil';
 import Setting_Generate from "../ui-generate/Setting/Setting_generate";
 
 export default class SettingUI extends Setting_Generate {
@@ -47,6 +47,21 @@ export default class SettingUI extends Setting_Generate {
             this.txtVoiceOn.visibility = SlateVisibility.Visible;
             this.txtVoiceOff.visibility = SlateVisibility.Hidden;
             Event.dispatchToLocal(VoiceEvent.Bgm, 0.3);
+        });
+
+        this.sFXSelectTrue.onClicked.add(() => {
+            this.sFXSelectTrue.visibility = SlateVisibility.Collapsed;
+            this.sFXSelectFalse.visibility = SlateVisibility.Visible;
+            this.txtSFXOn.visibility = SlateVisibility.Hidden;
+            this.txtSFXOff.visibility = SlateVisibility.Visible;
+            Event.dispatchToLocal(VoiceEvent.Attack, 0);
+        });
+        this.sFXSelectFalse.onClicked.add(() => {
+            this.sFXSelectFalse.visibility = SlateVisibility.Collapsed;
+            this.sFXSelectTrue.visibility = SlateVisibility.Visible;
+            this.txtSFXOn.visibility = SlateVisibility.Visible;
+            this.txtSFXOff.visibility = SlateVisibility.Hidden;
+            Event.dispatchToLocal(VoiceEvent.Attack, 1);
         });
         this.bgmSelectFalse.visibility = SlateVisibility.Collapsed;
         this.bgmSelectTrue.visibility = SlateVisibility.Visible;

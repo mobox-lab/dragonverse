@@ -83,6 +83,7 @@ export namespace SoundUtil {
         isDestroy: boolean = true
     ): Promise<mw.Sound> {
         if (!cfg) return null;
+        if (attackVoiceFactor === 0) return;
         let soundObj = (await GameObjPool.asyncSpawn(cfg.Guid)) as mw.Sound;
         soundObj.isLoop = cfg.isLoop;
         // soundObj.volume = cfg.Volume * bgmVoiceFactor + 100;
