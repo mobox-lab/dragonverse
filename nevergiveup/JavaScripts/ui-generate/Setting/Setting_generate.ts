@@ -106,6 +106,13 @@ export default class Setting_Generate extends UIScript {
 		}
 		return this.txtProgressHigh_Internal
 	}
+	private txtSFXAttack_Internal: mw.TextBlock
+	public get txtSFXAttack(): mw.TextBlock {
+		if(!this.txtSFXAttack_Internal&&this.uiWidgetBase) {
+			this.txtSFXAttack_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/txtSFXAttack') as mw.TextBlock
+		}
+		return this.txtSFXAttack_Internal
+	}
 	private img_fakeEsc_Internal: mw.Image
 	public get img_fakeEsc(): mw.Image {
 		if(!this.img_fakeEsc_Internal&&this.uiWidgetBase) {
@@ -190,6 +197,41 @@ export default class Setting_Generate extends UIScript {
 		}
 		return this.txtVoiceBgm_1_Internal
 	}
+	private chooseCanvasSFX_Internal: mw.Canvas
+	public get chooseCanvasSFX(): mw.Canvas {
+		if(!this.chooseCanvasSFX_Internal&&this.uiWidgetBase) {
+			this.chooseCanvasSFX_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasSFX') as mw.Canvas
+		}
+		return this.chooseCanvasSFX_Internal
+	}
+	private sFXSelectTrue_Internal: mw.StaleButton
+	public get sFXSelectTrue(): mw.StaleButton {
+		if(!this.sFXSelectTrue_Internal&&this.uiWidgetBase) {
+			this.sFXSelectTrue_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasSFX/sFXSelectTrue') as mw.StaleButton
+		}
+		return this.sFXSelectTrue_Internal
+	}
+	private txtSFXOn_Internal: mw.TextBlock
+	public get txtSFXOn(): mw.TextBlock {
+		if(!this.txtSFXOn_Internal&&this.uiWidgetBase) {
+			this.txtSFXOn_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasSFX/txtSFXOn') as mw.TextBlock
+		}
+		return this.txtSFXOn_Internal
+	}
+	private sFXSelectFalse_Internal: mw.StaleButton
+	public get sFXSelectFalse(): mw.StaleButton {
+		if(!this.sFXSelectFalse_Internal&&this.uiWidgetBase) {
+			this.sFXSelectFalse_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasSFX/sFXSelectFalse') as mw.StaleButton
+		}
+		return this.sFXSelectFalse_Internal
+	}
+	private txtSFXOff_Internal: mw.TextBlock
+	public get txtSFXOff(): mw.TextBlock {
+		if(!this.txtSFXOff_Internal&&this.uiWidgetBase) {
+			this.txtSFXOff_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/settingCanvas/chooseCanvasSFX/txtSFXOff') as mw.TextBlock
+		}
+		return this.txtSFXOff_Internal
+	}
 
 
 
@@ -230,6 +272,20 @@ export default class Setting_Generate extends UIScript {
 	   this.bgmSelectFalse.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
 	   
 	
+	   this.sFXSelectTrue.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "sFXSelectTrue");
+	   })
+	   this.initLanguage(this.sFXSelectTrue);
+	   this.sFXSelectTrue.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
+	   this.sFXSelectFalse.onClicked.add(()=>{
+		   Event.dispatchToLocal("PlayButtonClick", "sFXSelectFalse");
+	   })
+	   this.initLanguage(this.sFXSelectFalse);
+	   this.sFXSelectFalse.touchMethod = (mw.ButtonTouchMethod.PreciseTap);
+	   
+	
 	   //按钮添加点击
 	   
 	   this.closeBtn.onClicked.add(()=>{
@@ -261,6 +317,9 @@ export default class Setting_Generate extends UIScript {
 	   this.initLanguage(this.txtProgressHigh)
 	   
 	
+	   this.initLanguage(this.txtSFXAttack)
+	   
+	
 	   this.initLanguage(this.txtVoiceOn)
 	   
 	
@@ -268,6 +327,12 @@ export default class Setting_Generate extends UIScript {
 	   
 	
 	   this.initLanguage(this.txtVoiceBgm_1)
+	   
+	
+	   this.initLanguage(this.txtSFXOn)
+	   
+	
+	   this.initLanguage(this.txtSFXOff)
 	   
 	
 	   //文本多语言
