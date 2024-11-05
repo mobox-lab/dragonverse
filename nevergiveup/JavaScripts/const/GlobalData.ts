@@ -13,6 +13,8 @@ export namespace GlobalData {
         public static resetWorldPosition: Vector = new Vector(413, 151.25, 317);
     }
     export class Stage {
+        /** 结算奖励图标 guid 失败 完美通关 首次完美通关 */
+        public static settleRewardImgGuid: string[] = ["453763","457346", "457347"];
         /** 达到多少场对局就上报 */
         public static maxStageStatisticNum: number = 5;
         /** 关卡推荐元素图标 各元素对应 光 暗 水 火 木 土 guid */

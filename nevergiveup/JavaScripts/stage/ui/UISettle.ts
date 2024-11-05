@@ -14,6 +14,7 @@ import { GameConfig } from "../../config/GameConfig";
 import { SoundUtil } from "../../tool/SoundUtil";
 import SettleRewardItemUI_Generate from "../../ui-generate/Level/SettleRewardItemUI_generate";
 import SettleUI_Generate from "../../ui-generate/Level/SettleUI_generate";
+import { GlobalData } from "../../const/GlobalData";
 
 export type SettleData = {
     hasWin: boolean;
@@ -58,20 +59,23 @@ export class UISettle extends SettleUI_Generate {
             ? GameConfig.Language.getElement("Text_Win").Value
             : GameConfig.Language.getElement("Text_Defeat").Value;
         this.rewardImg.size = new Vector2(164, 24);
+        this.rewardImg.imageGuid = GlobalData.Stage.settleRewardImgGuid[0];
         if (settleData.hasWin) {
             this.mResultTxt.setFontColorByHex("#FFCB1C");
             this.mResultTxt.setOutlineColorByHex("#632508");
             this.mWaves.setOutlineColorByHex("#412013");
             this.mTimeTaken.setOutlineColorByHex("#412013");
-            this.rewardImg.size = new Vector2(217, 29);
             if (settleData.isPerfect) {
                 // result = GameConfig.Language.getElement("Text_Perfect").Value + result;
                 this.showSettleImage(0);
-                this.rewardImg.imageGuid = "457346";
-                if(settleData.isFirst) this.rewardImg.size = new Vector2(286, 29);
+                this.rewardImg.size = new Vector2(217, 29);
+                this.rewardImg.imageGuid = GlobalData.Stage.settleRewardImgGuid[1];
+                if(settleData.isFirst) {
+                    this.rewardImg.size = new Vector2(286, 29);
+                    this.rewardImg.imageGuid = GlobalData.Stage.settleRewardImgGuid[2];
+                }
             } else {
                 this.showSettleImage(1);
-                this.rewardImg.imageGuid = "453763";
             }
             if (settleData.isFirst) {
                 // result = GameConfig.Language.getElement("Text_First").Value + result;
