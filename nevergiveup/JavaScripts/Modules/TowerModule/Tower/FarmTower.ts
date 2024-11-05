@@ -129,7 +129,7 @@ export default class FarmTower extends TowerBase {
         let towerPos = this.tower?.worldTransform?.position;
         towerPos && ScreenUtil.projectWorldPositionToWidgetPosition(Player.localPlayer, towerPos, pos, true);
         if (pos && pos.x > 0 && pos.y > 0) {
-            CycleUtil.playUIOnPosition(GainUI, pos, UILayerBottom, "+" + this.property.attackDamage);
+            CycleUtil.playUIOnPosition(GainUI, pos, UILayerBottom, "+" + Math.floor(value));
         }
         this.farmShow();
     }
