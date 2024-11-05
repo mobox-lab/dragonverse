@@ -4,9 +4,10 @@
  * ATTENTION: onStart 等UI脚本自带函数不可改写为异步执行，有需求的异步逻辑请使用函数封装，通过函数接口在内部使用
  */
 
+import PlayerModuleData from "../Modules/PlayerModule/PlayerModuleData";
 import { TweenCommon } from "../TweenCommon";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
-import { VoiceEvent } from '../tool/SoundUtil';
+import { VoiceEvent } from "../tool/SoundUtil";
 import Setting_Generate from "../ui-generate/Setting/Setting_generate";
 
 export default class SettingUI extends Setting_Generate {
@@ -63,8 +64,26 @@ export default class SettingUI extends Setting_Generate {
             this.txtSFXOff.visibility = SlateVisibility.Hidden;
             Event.dispatchToLocal(VoiceEvent.Attack, 1);
         });
-        this.bgmSelectFalse.visibility = SlateVisibility.Collapsed;
-        this.bgmSelectTrue.visibility = SlateVisibility.Visible;
+        const bgmVoiceFactor = DataCenterC.getData(PlayerModuleData).bgmVoiceFactor;
+        const attackVoiceFactor = DataCenterC.getData(PlayerModuleData).attackVoiceFactor;
+        if (bgmVoiceFactor === 0) {
+            this.bgmSelectFalse.visibility = SlateVisibility.Visible;
+            this.bgmSelectTrue.visibility = SlateVisibility.Collapsed;
+        } else {
+            this.bgmSelectFalse.visibility = SlateVisibility.Collapsed;
+            this.bgmSelectTrue.visibility = SlateVisibility.Visible;
+        }
+        if (attackVoiceFactor === 0) {
+            this.sFXSelectFalse.visibility = SlateVisibility.Visible;
+            this.sFXSelectTrue.visibility = SlateVisibility.Collapsed;
+            this.txtSFXOn.visibility = SlateVisibility.Hidden;
+            this.txtSFXOff.visibility = SlateVisibility.Visible;
+        } else {
+            this.sFXSelectFalse.visibility = SlateVisibility.Collapsed;
+            this.sFXSelectTrue.visibility = SlateVisibility.Visible;
+            this.txtSFXOn.visibility = SlateVisibility.Visible;
+            this.txtSFXOff.visibility = SlateVisibility.Hidden;
+        }
     }
 
     /**
