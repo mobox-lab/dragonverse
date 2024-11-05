@@ -92,6 +92,7 @@ export default class StageTransmitTrigger extends Script {
     onProgressDone() {
         UIService.show(LogoAnimUI, {framesPerSecond: 6})
         // UIService.show(CutsceneUI, () => {
+        setTimeout(() => {
             const character = Player.localPlayer.character;
             character.worldTransform = new Transform(
                 this.location,
@@ -99,10 +100,11 @@ export default class StageTransmitTrigger extends Script {
                 character.worldTransform.scale,
             );
             if (this.isRefreshCameraRotation) this._nolan.lookToward(this.endRotation.rotateVector(Vector.forward));
+        }, GlobalData.Anim.logoCrossAnimSeconds * 1000);
 
         // });
-        TimeUtil.delaySecond(GlobalData.Anim.stageCrossAnimSeconds).then(() => {
-            UIService.getUI(CutsceneUI).hideCanvas();
-        });
+        // TimeUtil.delaySecond(GlobalData.Anim.stageCrossAnimSeconds).then(() => {
+        //     UIService.getUI(CutsceneUI).hideCanvas();
+        // });
     }
 }

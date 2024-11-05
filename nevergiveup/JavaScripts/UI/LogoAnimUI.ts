@@ -50,7 +50,7 @@ export default class LogoAnimUI extends logo_anim_Generate {
      * @param callback 回调
      */
     protected onShow(opts:{callback?: () => void, framesPerSecond?: number}) {
-        const { callback, framesPerSecond } = opts ?? {};
+        const { callback, framesPerSecond = 3 } = opts ?? {};
         this._callback = callback;
         this.maskImg.renderOpacity = 0;
         this.resetAnim();

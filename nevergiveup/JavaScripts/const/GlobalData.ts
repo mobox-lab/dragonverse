@@ -129,7 +129,7 @@ export namespace GlobalData {
     }
     export class Anim {
         public static stageCrossAnimSeconds = 1; // Stage 过场过渡动画时间
-        public static logoCrossAnimSeconds = 1; // Logo 过场黑屏渐进过渡动画时间
+        public static logoCrossAnimSeconds = 0.3; // Logo 过场黑屏渐进过渡动画时间
         public static logoScaleAnimSeconds = 0.8; // Logo 缩放过渡动画时间
     }
     export class Bless {

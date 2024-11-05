@@ -51,6 +51,7 @@ import { AuthModuleS, TDStageStatisticObj, UpdateTDRankDataNeedFill } from "../M
 import { StatisticModuleS } from "../Modules/statistic/StatisticModule";
 import { WaveModuleS } from "../Modules/waveModule/WaveModuleS";
 import LogoAnimUI from "../UI/LogoAnimUI";
+import { GlobalData } from "../const/GlobalData";
 
 type DeathData = {
     id: number;
@@ -872,6 +873,7 @@ export class StageC {
 
         UIService.show(LogoAnimUI, {framesPerSecond: 6})
         // UIService.show(CutsceneUI, () => {
+        setTimeout(() => {
             Player.asyncGetLocalPlayer().then((player: Player) => {
                 GameManager.backToLobby();
             });
@@ -880,6 +882,7 @@ export class StageC {
                 this.stage = go;
                 MapManager.stageCfgId = this.stageCfgId;
             });
+        }, GlobalData.Anim.logoCrossAnimSeconds * 1000);
         // });
 
         this.registerListeners();
