@@ -176,10 +176,17 @@ export default class SettleUI_Generate extends UIScript {
 		}
 		return this.mRewards_Internal
 	}
+	private mCanvasrewardImg_Internal: mw.Canvas
+	public get mCanvasrewardImg(): mw.Canvas {
+		if(!this.mCanvasrewardImg_Internal&&this.uiWidgetBase) {
+			this.mCanvasrewardImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mCanvas_ItemDetails/mCanvasrewardImg') as mw.Canvas
+		}
+		return this.mCanvasrewardImg_Internal
+	}
 	private rewardImg_Internal: mw.Image
 	public get rewardImg(): mw.Image {
 		if(!this.rewardImg_Internal&&this.uiWidgetBase) {
-			this.rewardImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mCanvas_ItemDetails/rewardImg') as mw.Image
+			this.rewardImg_Internal = this.uiWidgetBase.findChildByPath('RootCanvas/mSettle/mCanvas_ItemDetails/mCanvasrewardImg/rewardImg') as mw.Image
 		}
 		return this.rewardImg_Internal
 	}
