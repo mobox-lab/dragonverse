@@ -7,7 +7,7 @@
 import PlayerModuleData from "../Modules/PlayerModule/PlayerModuleData";
 import { TweenCommon } from "../TweenCommon";
 import KeyOperationManager from "../controller/key-operation-manager/KeyOperationManager";
-import { SoundUtil, VoiceEvent } from "../tool/SoundUtil";
+import { VoiceEvent } from "../tool/SoundUtil";
 import Setting_Generate from "../ui-generate/Setting/Setting_generate";
 
 export default class SettingUI extends Setting_Generate {
