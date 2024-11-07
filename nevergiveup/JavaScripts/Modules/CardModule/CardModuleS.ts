@@ -40,7 +40,14 @@ export default class CardModuleS extends ModuleS<CardModuleC, CardModuleData> {
             const res = ModuleService.getModule(PlayerModuleS).changeGold(player, sellPrice);
             if (res) {
                 data.unlockCards = data.unlockCards.filter((id) => id !== cardID); // 从解锁卡牌中移除
-                console.log("#debug server net_sellCard res unlockCards:", res, data.unlockCards);
+                Utils.logP12Info("A_TowerRecycle", {
+                    // general
+                    timestamp: Date.now(),
+                    userId,
+                    // for action
+                    recycletower: cardID, // tower id
+                    cost: -sellPrice //局外金币
+                })
                 data.save(true);
                 return true;
             }
