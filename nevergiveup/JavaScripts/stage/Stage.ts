@@ -705,7 +705,7 @@ export class StageS {
                     createTime: Date.now(), // 记录时间 number
                     startTime: this.startTime, // 对局开始时间戳 number
                     roundId: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
-                    finish: time, // 最后一波完成度 0 ~ 1 可计算% number
+                    finish: Math.floor(time), // 秒
                     gold: 0, // 奖励金币 number
                     technology: 0, // 奖励科技 number
                     exp: 0, // 奖励经验 number
@@ -871,7 +871,7 @@ export class StageC {
             });
         Enemy.count = 0;
 
-        UIService.show(LogoAnimUI, {framesPerSecond: 6})
+        UIService.show(LogoAnimUI, { framesPerSecond: 6 });
         // UIService.show(CutsceneUI, () => {
         setTimeout(() => {
             Player.asyncGetLocalPlayer().then((player: Player) => {
