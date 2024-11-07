@@ -70,7 +70,7 @@ export class UISettle extends SettleUI_Generate {
                 this.showSettleImage(0);
                 this.rewardImg.size = new Vector2(217, 29);
                 this.rewardImg.imageGuid = GlobalData.Stage.settleRewardImgGuid[1];
-                if(settleData.isFirst) {
+                if (settleData.isFirst) {
                     this.rewardImg.size = new Vector2(286, 29);
                     this.rewardImg.imageGuid = GlobalData.Stage.settleRewardImgGuid[2];
                 }
@@ -99,7 +99,7 @@ export class UISettle extends SettleUI_Generate {
             this.mInfiniteWaves.text =
                 GameConfig.Language.getElement("Text_InfiniteWave").Value +
                 `${settleData?.infinite?.wave}` +
-                `(${Math.floor(settleData?.infinite?.time)}s)`;
+                `(${(settleData?.infinite?.time).toFixed(2)}s)`;
             this.mCanvas_ItemDetails.visibility = SlateVisibility.Hidden;
             this.mCanvas_InfiniteDetails.visibility = SlateVisibility.Visible;
         } else {
