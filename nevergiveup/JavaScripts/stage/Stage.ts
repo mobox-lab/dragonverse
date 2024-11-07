@@ -705,7 +705,7 @@ export class StageS {
                     createTime: Date.now(), // 记录时间 number
                     startTime: this.startTime, // 对局开始时间戳 number
                     roundId: state === EStageState.Wait ? this.settleData.waves + 2 : this.settleData.waves + 1,
-                    finish: Math.floor(time), // 秒
+                    finish: time, // 秒
                     gold: 0, // 奖励金币 number
                     technology: 0, // 奖励科技 number
                     exp: 0, // 奖励经验 number
