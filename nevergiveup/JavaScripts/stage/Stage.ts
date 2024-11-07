@@ -182,6 +182,9 @@ export class StageS {
             const userHPInfinite = TalentUtils.getModuleSRunesValueById(1049, player);
             this._hp = Math.floor(bh + userHP + userHP2 + userHPD + userHPInfinite);
             this._maxHp = this._hp;
+            this.boardcast((player) => {
+                Event.dispatchToClient(player, "setStageHp", this._hp, this._maxHp);
+            });
         }
     }
 
