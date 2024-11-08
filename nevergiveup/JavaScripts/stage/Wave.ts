@@ -510,7 +510,7 @@ export class WaveUtil {
                             return {
                                 ...item,
                                 waveTime: waveTime > 5 ? Number(waveTime.toFixed(0)) : 5,
-                                hpMultiplier: 1 * Math.pow(1.4, times) * hpX * item.hpMultiplier,
+                                hpMultiplier: 1 * Math.pow(1.5, times) * hpX * item.hpMultiplier,
                                 enemies: newEnemies,
                                 escapeDamagePercent: escapeDamagePercent,
                                 waveGold: 0,
@@ -524,7 +524,7 @@ export class WaveUtil {
                         Log4Ts.error(StageC, "error wave index");
                     }
                 }
-                const maxSource = Math.floor(wave / 20) + 1;
+                const maxSource = Math.floor(wave / 25) + 1;
                 const max = Math.min(maxSource, 5);
                 ModuleService.getModule(TowerModuleC).syncMaxSourceTower(max);
 
