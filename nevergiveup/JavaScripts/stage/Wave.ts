@@ -481,12 +481,10 @@ export class WaveUtil {
             if (SystemUtil.isClient()) {
                 let waveInfo: WaveConfig;
                 if (this.currentWaves.length > 0) {
-                    // 取出来了，但是没用完，直接用
                     const waves = this.currentWaves;
                     waveInfo = waves.shift();
                     this.currentWaves = waves;
                 } else {
-                    // 用完了，重新取
                     const currentValue = this._sequence[this.runningIndex];
                     const randomIndex = this.getRandomElementAndRemove(currentValue);
                     this.runningIndex = (this.runningIndex + 1) % this._sequence.length;
@@ -505,14 +503,14 @@ export class WaveUtil {
                                 };
                             });
                             const waveTime = (item.waveTime > 30 ? 30 : item.waveTime) * Math.pow(0.85, times);
-                            const escapeDamagePercent = 1 * Math.pow(1.2, times);
+                            // const escapeDamagePercent = 1 * Math.pow(1.2, times);
                             const hpX = 0.5;
                             return {
                                 ...item,
-                                waveTime: waveTime > 5 ? Number(waveTime.toFixed(0)) : 5,
+                                waveTime: waveTime > 10 ? Number(waveTime.toFixed(0)) : 10,
                                 hpMultiplier: 1 * Math.pow(1.5, times) * hpX * item.hpMultiplier,
                                 enemies: newEnemies,
-                                escapeDamagePercent: escapeDamagePercent,
+                                // escapeDamagePercent: escapeDamagePercent,
                                 waveGold: 0,
                             };
                         });
